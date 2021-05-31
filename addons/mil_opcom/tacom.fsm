@@ -83,8 +83,8 @@ link36[] = {24,25};
 link37[] = {25,26};
 link38[] = {26,10};
 link39[] = {27,28};
-globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-516.804260,221.786346,925.066467,21.938335,606,741,1};
-window[] = {0,-1,-1,-1,-1,969,127,1848,56,1,624};
+globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-755.556030,358.539001,1067.251099,-293.194946,606,740,1};
+window[] = {0,-1,-1,-1,-1,962,100,1821,50,1,624};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -445,7 +445,7 @@ class FSM
                          "            };" \n
                          "" \n
                          "            if (_success) then {" \n
-                         "                private _event = ['TACOM_ORDER_COMPLETE', [_opcomID,_objective,_state,_side,_factions, _opcomOrderCompleteArgs], ""TACOM""] call ALIVE_fnc_event;" \n
+                         "                private _event = ['TACOM_ORDER_COMPLETE', [_opcomID,_objective,_state,_side,_factions, _success, _opcomOrderCompleteArgs], ""TACOM""] call ALIVE_fnc_event;" \n
                          "                [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "            };" \n
                          "            " \n

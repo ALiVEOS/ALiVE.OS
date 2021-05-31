@@ -3,7 +3,7 @@
 /*
 item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-720.395935,-937.944458,-630.395935,-887.944458,0.000000,"INIT" \n "COMPLETE"};
-item2[] = {"ANALYZE",2,4346,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
+item2[] = {"ANALYZE",2,250,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
 item3[] = {"OPCOM_FEEDER",4,218,-711.187256,-222.682648,-621.187195,-172.682648,1.000000,"OPCOM" \n "FEEDER"};
 item4[] = {"ATTACK_Condition",4,218,-891.552124,-203.731567,-801.552002,-153.731567,5.000000,"ATTACK" \n "Conditions"};
 item5[] = {"",7,210,-341.155090,36.380066,-333.155060,44.380096,0.000000,""};
@@ -12,7 +12,7 @@ item7[] = {"DEFEND_condition",4,218,-787.492737,-203.595917,-697.492737,-153.595
 item8[] = {"RESERVE_conditio",4,218,-642.570801,-201.616302,-552.570740,-151.616302,3.000000,"RESERVE" \n "conditions"};
 item9[] = {"OPCOM_RECEIVER",4,218,-717.074463,-838.579346,-627.074646,-788.579346,1.000000,"OPCOM" \n "RECEIVER"};
 item10[] = {"CUSTOM_condition",4,218,-502.155029,-201.889679,-412.155121,-151.889679,2.000000,"CUSTOM" \n "conditions"};
-item11[] = {"ORDER_TACOM",2,250,-924.860840,-94.510040,-425.593536,-50.306946,0.000000,"ORDER" \n "TACOM"};
+item11[] = {"ORDER_TACOM",2,4346,-924.860840,-94.510040,-425.593536,-50.306946,0.000000,"ORDER" \n "TACOM"};
 item12[] = {"TACOM_CONFIRM",4,218,-651.682068,14.823029,-561.682068,64.823029,0.000000,"TACOM" \n "CONFIRM"};
 item13[] = {"TACOM_NOT_CONFIR",4,218,-767.100525,23.245697,-677.100647,73.245697,0.000000,"TACOM" \n "NOT CONFIRM"};
 item14[] = {"",7,210,-1031.257935,34.909210,-1023.257385,42.909210,0.000000,""};
@@ -113,8 +113,8 @@ link53[] = {38,6};
 link54[] = {39,40};
 link55[] = {40,6};
 link56[] = {41,18};
-globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1206.204346,-172.737244,186.192780,-812.331299,769,743,1};
-window[] = {0,-1,-1,-1,-1,973,107,1862,58,1,787};
+globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1099.695801,-279.246155,83.286316,-709.423828,769,743,1};
+window[] = {0,-1,-1,-1,-1,1005,166,1921,90,1,787};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -680,10 +680,10 @@ class FSM
                          "" \n
                          "//transmit" \n
                          "switch (_operation) do {" \n
-                         "        case ( ""attack"") : {    _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_attack]];};" \n
-                         "        case (""defend"") : {_TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_defend]];};" \n
-                         "        case (""reserve"") : {_TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_reserve]];};" \n
-                         "        case (""custom"") : {};" \n
+                         "        case ( ""attack""):   { _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_attack]] };" \n
+                         "        case (""defend""):    { _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_defend]] };" \n
+                         "        case (""reserve""):   { _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_reserve]] };" \n
+                         "        case (""custom""):    {};" \n
                          "        default {};" \n
                          "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;

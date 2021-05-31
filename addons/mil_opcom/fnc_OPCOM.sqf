@@ -533,45 +533,36 @@ switch(_operation) do {
             } foreach _profiles;
         };
 
+        // Find any active objectives where the assigned profiles have no waypoints
+        // and reset their state so it can be reconsidered for new orders
         case "cleanupduplicatesections": {
-            private ["_objectives","_objective","_section","_proID","_state","_size_reserve","_pending_orders","_profile","_wayPoints","_orders","_profileIDs"];
+            private _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
+            private _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
+            private _size_reserve = [_logic,"sectionsamount_reserve",1] call ALiVE_fnc_HashGet;
+            private _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
 
-                _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
-                _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
-                _size_reserve = [_logic,"sectionsamount_reserve",1] call ALiVE_fnc_HashGet;
-                _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
-                //_profileIDs = [ALIVE_profileHandler, "getProfilesBySide",[_logic,"side"] call ALiVE_fnc_HashGet] call ALIVE_fnc_profileHandler;
-
-                _profileIDs = [];
-                {
-                    _profileIDs = _profileIDs + ([ALIVE_profileHandler, "getProfilesByFaction",_x] call ALIVE_fnc_profileHandler);
-                } foreach _factions;
+            private _idlestates = ["unassigned","idle"];
 
             {
-                private ["_objective","_section","_state","_idlestates","_wps"];
+                private _objective = _x;
+                private _section = [_objective,"section",[]] call ALiVE_fnc_HashGet;
 
-                _objective = _x;
-                _section = [_objective,"section",[]] call ALiVE_fnc_HashGet;
-                _state = [_objective,"opcom_state",[]] call ALiVE_fnc_HashGet;
-                _idlestates = ["unassigned","idle"];
-
-                _wps = 0;
+                private _sectionWaypoints = 0;
                 {
-                    private ["_profile"];
-
-                    _profile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+                    private _profile = [ALiVE_ProfileHandler,"getProfile", _x] call ALiVE_fnc_ProfileHandler;
 
                     if !(isnil "_profile") then {
-                        _wps = _wps + (count (_profile select 2 select 16));
+                        private _profileWaypoints = _profile select 2 select 16;
+                        _sectionWaypoints = _sectionWaypoints + (count _profileWaypoints);
                     } else {
-                        [_logic,"resetorders",_x] call ALiVE_fnc_OPCOM;
+                        [_logic,"resetorders", _x] call ALiVE_fnc_OPCOM;
                     };
                 } foreach _section;
 
-                _section = [_objective,"section",_section] call ALiVE_fnc_HashGet;
-                if (!(_state in _idlestates) && {count _section > 0} && {_wps == 0}) then {
-                    {[_logic,"resetorders",_x] call ALiVE_fnc_OPCOM} foreach _section;
-                    [_logic,"resetObjective",([_objective,"objectiveID"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_OPCOM;
+                private _state = [_objective,"opcom_state",[]] call ALiVE_fnc_HashGet;
+                if (!(_state in _idlestates) && {count _section > 0} && {_sectionWaypoints == 0}) then {
+                    {[_logic,"resetorders", _x] call ALiVE_fnc_OPCOM} foreach _section;
+                    [_logic,"resetObjective", ([_objective,"objectiveID"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_OPCOM;
                 };
             } foreach _objectives;
         };
@@ -941,23 +932,19 @@ switch(_operation) do {
             private _pendingOrders = [_logic,"pendingorders", []] call ALiVE_fnc_HashGet;
             private _synchronized = false;
 
-            for "_i" from 0 to ((count _pendingOrders)-1) do {
+            for "_i" from 0 to ((count _pendingOrders) - 1) do {
                 if (_i >= (count _pendingOrders)) exitwith {};
 
-                private _item = _pendingOrders select _i;
+                (_pendingOrders select _i) params ["_pos","_profileID","_objectiveID","_time"];
 
-                if (_item isequaltype []) then {
-                    _item params ["_pos","_profileID","_objectiveID","_time"];
+                private _dead = isnil { [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler };
+                private _timeout = (time - _time) > 3600;
 
-                    private _dead = isnil { [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler };
-                    private _timeout = (time - _time) > 3600;
-
-                    if (_dead || { _timeout } || { _ProfileID == _ProfileIDInput }) then {
-                        _pendingOrders deleteat _i;
-                        private _objectiveFound = _pendingOrders findIf { _objectiveID == (_x select 2) };
-                        if (_objectiveFound == -1) then {
-                           _synchronized = true; 
-                        };
+                if (_dead || { _timeout } || { _ProfileID == _ProfileIDInput }) then {
+                    _pendingOrders deleteat _i;
+                    private _objectiveFound = _pendingOrders findIf { _objectiveID == (_x select 2) };
+                    if (_objectiveFound == -1) then {
+                        _synchronized = true; 
                     };
                 };
             };
@@ -1237,27 +1224,32 @@ switch(_operation) do {
         };
 
         case "resetObjective": {
-            if(isnil "_args") then {
-                _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
-            } else {
-                private ["_objective"];
+            if (!isnil "_args") then {
+                private _objectiveID = _args;
+                private _objective = [_logic,"getobjectivebyid", _objectiveID] call ALiVE_fnc_OPCOM;
+                private _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
 
-                _objective = [_logic,"getobjectivebyid",_args] call ALiVE_fnc_OPCOM;
-                _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
+                private _previousTacomState = [_objective,"tacom_state"] call ALiVE_fnc_hashGet;
 
-                [_objective,"tacom_state","none"] call AliVE_fnc_HashSet;
-                [_objective,"opcom_state","unassigned"] call AliVE_fnc_HashSet;
-                [_objective,"danger",-1] call AliVE_fnc_HashSet;
-                [_objective,"section",[]] call AliVE_fnc_HashSet;
-                [_objective,"opcom_orders","none"] call AliVE_fnc_HashSet;
-                [_objective,"objectiveType",[_objective,"objectiveType","MIL"] call AliVE_fnc_HashGet] call AliVE_fnc_HashSet;
+                [_objective,"tacom_state", "none"] call AliVE_fnc_HashSet;
+                [_objective,"opcom_state", "unassigned"] call AliVE_fnc_HashSet;
+                [_objective,"danger", -1] call AliVE_fnc_HashSet;
+                [_objective,"section", []] call AliVE_fnc_HashSet;
+                [_objective,"opcom_orders", "none"] call AliVE_fnc_HashSet;
+                [_objective,"objectiveType", [_objective,"objectiveType","MIL"] call AliVE_fnc_HashGet] call AliVE_fnc_HashSet;
 
-                if (_debug) then {_args setMarkerColorLocal "ColorWhite"};
+                private _opcomID = [_logic,"opcomID"] call ALiVE_fnc_hashGet;
+                private _side = [_logic,"side"] call ALiVE_fnc_hashGet;
+                private _factions = [_logic,"factions"] call ALiVE_fnc_hashGet;
+                private _event = ['TACOM_ORDER_COMPLETE', [_opcomID,_objective,_previousTacomState,_side,_factions, false, []], "TACOM"] call ALIVE_fnc_event;
+                [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
+                if (_debug) then {
+                    _objectiveID setMarkerColorLocal "ColorWhite";
+                };
             };
 
-            _result = _args;
+            _result = [_logic,"objectives", []] call ALIVE_fnc_hashGet;
         };
 
         case "initObjective": {
