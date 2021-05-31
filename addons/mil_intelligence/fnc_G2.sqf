@@ -360,12 +360,14 @@ switch(_operation) do {
                     };
                 };
                 case "TACOM_ORDER_COMPLETE": {
-                    _eventData params ["_opcomID","_target","_operation","_side","_factions","_orderArguments"];
+                    _eventData params ["_opcomID","_target","_operation","_side","_factions","_success","_orderArguments"];
 
                     if (_operation in ["recon","capture"]) then {
-                        systemchat format ["ORDER COMPLETE - %1 | %2", _operation, [_target,"objectiveID"] call ALiVE_fnc_hashGet];
-
                         [_logic,"removeFriendlyTACOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
+
+                        if (!_success) then {
+                            [_logic,"removeFriendlyOPCOMOrder", [_opcomID, _target]] call MAINCLASS;
+                        };
                     };
                 };
             };
@@ -374,6 +376,22 @@ switch(_operation) do {
 
     case "createFriendlyOPCOMOrder": {
         _args params ["_opcomID","_target","_operation"];
+
+        private _objectiveID = [_target,"objectiveID"] call ALiVE_fnc_hashGet;
+        private _objectiveIntelKey = [_opcomID, _objectiveID];
+
+        private _intelByObjectiveID = _logic getvariable "intelByObjectiveID";
+        private _existingObjectiveIntel = _intelByObjectiveID get _objectiveIntelKey;
+        if (isnil "_existingObjectiveIntel") then {
+            _existingObjectiveIntel = createHashMap;
+            _intelByObjectiveID set [_objectiveIntelKey, _existingObjectiveIntel];
+        };
+
+        if ("base" in _existingObjectiveIntel) then {
+            // dafuq you doing opcom?
+            private _baseIntel = _existingObjectiveIntel get "base";
+            [_logic,"removeIntelReports", [_baseIntel]] call MAINCLASS;
+        };
 
         private _opcomOrderIntel = createHashMapFromArray [
             ["type", "friendlyOPCOMOrder"],
@@ -384,36 +402,24 @@ switch(_operation) do {
 
         private _reportID = [_logic,"storeIntelReport", _opcomOrderIntel] call MAINCLASS;
 
-        private _objectiveID = [_target,"objectiveID"] call ALiVE_fnc_hashGet;
-
-        private _intelByObjectiveID = _logic getvariable "intelByObjectiveID";
-        private _existingObjectiveIntel = _intelByObjectiveID get [_opcomID, _objectiveID];
-        if (isnil "_existingObjectiveIntel") then {
-            _existingObjectiveIntel = createHashMap;
-            _intelByObjectiveID set [[_opcomID, _objectiveID], _existingObjectiveIntel];
-        };
-
-        if ("base" in _existingObjectiveIntel) then {
-            systemchat "ADDING BASE WHEN ALREADY THERE";
-        };
         _existingObjectiveIntel set ["base", _reportID];
     };
 
     case "removeFriendlyOPCOMOrder": {
-        _args params ["_opcomID","_target","_operation"];
+        _args params ["_opcomID","_target"];
 
         private _objectiveID = [_target,"objectiveID"] call ALiVE_fnc_hashGet;
         private _objectiveIntelKey = [_opcomID, _objectiveID];
 
         private _intelByObjectiveID = _logic getvariable "intelByObjectiveID";
-        private _objectiveIntel = _intelByObjectiveID get _objectiveIntelKey;
+        private _existingObjectiveIntel = _intelByObjectiveID get _objectiveIntelKey;
 
-        if (isnil "_objectiveIntel") exitwith {};
+        private _outstandingOrderIntel = keys _existingObjectiveIntel;
+        private _outstandingReports = _outstandingOrderIntel apply { _existingObjectiveIntel get _x };
+
+        [_logic,"removeIntelReports", _outstandingReports] call MAINCLASS;
 
         _intelByObjectiveID deleteat _objectiveIntelKey;
-
-        private _allObjectiveIntel = (keys _objectiveIntel) apply {_objectiveIntel get _x};
-        [_logic,"removeIntelReports", (keys _objectiveIntel) apply {_objectiveIntel get _x}] call MAINCLASS;
     };
 
     case "createFriendlyTACOMOrder": {
@@ -450,16 +456,18 @@ switch(_operation) do {
         private _objectiveID = [_target,"objectiveID"] call ALiVE_fnc_hashGet;
 
         private _intelByObjectiveID = _logic getvariable "intelByObjectiveID";
-        private _existingObjectiveIntel = _intelByObjectiveID get [_opcomID, _objectiveID];
+        private _objectiveIntelKey = [_opcomID, _objectiveID];
+        private _existingObjectiveIntel = _intelByObjectiveID get _objectiveIntelKey;
         if (!isnil "_existingObjectiveIntel") then {
             private _operationIntel = _existingObjectiveIntel get _operation;
-            if (isnil "_operationIntel") exitwith {
-                systemchat format ["TACOM INTEL MISSING ON REMOVE %1 - %2", _operation, _objectiveID];
-            };
 
             [_logic,"removeIntelReports", [_operationIntel]] call MAINCLASS;
 
             _existingObjectiveIntel deleteat _operation;
+
+            if (_operation in ["capture","defend"]) then {
+                [_logic,"removeFriendlyOPCOMOrder", [_opcomID, _target]] call MAINCLASS;
+            };
         };
     };
 
@@ -666,7 +674,7 @@ switch(_operation) do {
                 private _objectiveSize = [_objective,"size"] call ALiVE_fnc_hashGet;
                 private _objectiveSection = [_objective,"section"] call ALiVE_fnc_hashGet;
 
-                private _assignedProfiles = _objectiveSection apply { [ALiVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler };
+                private _assignedProfiles = (_objectiveSection apply { [ALiVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler }) select { !isnil "_x" };
                 private _profilePositions = _assignedProfiles apply { _x select 2 select 2 };
                 private _profilePositionsMidpoint = _profilePositions call ALiVE_fnc_findMidpoint;
                 private _dirToAttackers = _objectivePosition getdir _profilePositionsMidpoint;
