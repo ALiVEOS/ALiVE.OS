@@ -48,6 +48,20 @@ class arrayFrameSplitter
 	RECOMPILE;
 };
 
+class deleteAtMany
+{
+	file = "\x\alive\addons\x_lib\functions\arrays\fnc_deleteAtMany.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class deleteIf
+{
+	file = "\x\alive\addons\x_lib\functions\arrays\fnc_deleteIf.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class erase
 {
 	file = "\x\alive\addons\x_lib\functions\arrays\fnc_erase.sqf";

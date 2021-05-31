@@ -14,6 +14,8 @@ arrays
 
 	ALiVE_fnc_arrayBlockHandler
 	ALiVE_fnc_arrayFrameSplitter
+	ALiVE_fnc_deleteAtMany
+	ALiVE_fnc_deleteIf
 	ALiVE_fnc_erase
 	ALiVE_fnc_getNearestObjectInArray
 	ALiVE_fnc_heapSort
