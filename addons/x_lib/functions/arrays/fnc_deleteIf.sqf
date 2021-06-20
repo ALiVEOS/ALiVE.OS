@@ -27,14 +27,6 @@ Author:
 
 params ["_array","_condition"];
 
-private _arrSize = count _array;
-private _i = 0;
-while { _i < _arrSize } do {
-    private _x = _array select _i;
-    if (call _condition) then {
-        _array deleteat _i;
-        _arrSize = _arrSize - 1;
-    } else {
-        _i = _i + 1;
-    };
-};
+private _indexes = (_array select { call _condition }) apply { _array find _x };
+
+[_array, _indexes] call ALiVE_fnc_deleteAtMany;
