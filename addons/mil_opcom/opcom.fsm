@@ -113,8 +113,8 @@ link53[] = {38,6};
 link54[] = {39,40};
 link55[] = {40,6};
 link56[] = {41,18};
-globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1276.020752,-184.001953,157.933228,-897.164246,769,743,1};
-window[] = {0,-1,-1,-32000,-32000,941,26,1781,26,1,787};
+globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1296.222168,-411.687134,-19.027405,-873.655518,769,743,1};
+window[] = {0,-1,-1,-32000,-32000,967,121,1876,52,1,787};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -905,13 +905,13 @@ class FSM
                 {
                         name = "PERFORM_ANALYSIS";
                         itemno = 23;
-                        init = /*%FSM<STATEINIT""">*/"switch (_analyze) do {" \n
+                        init = /*%FSM<STATEINIT""">*/"private [""_clusterOccupationAnalysis"",""_troopsAnalysis"",""_enemyScan""];" \n
+                         "" \n
+                         "switch (_analyze) do {" \n
                          "    case (""analysis"") : {" \n
                          "        _clusterOccupationAnalysis = [_OPCOM_HANDLER,""analyzeclusteroccupation"",[_sidesFriendly,_sidesEnemy]] spawn ALiVE_fnc_OPCOM;" \n
                          "        _troopsAnalysis = [_OPCOM_HANDLER,""scantroops""] spawn ALiVE_fnc_OPCOM;" \n
                          "        _enemyScan = [_OPCOM_HANDLER,""scanFriendliesForNearEnemies""] spawn ALIVE_fnc_OPCOM;" \n
-                         "" \n
-                         "//systemchat format [""Scripts: %1"", [isnil ""_clusterOccupationAnalysis"", isnil ""_troopsAnalysis"", isnil ""_enemyScan""]];" \n
                          "	};" \n
                          "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
