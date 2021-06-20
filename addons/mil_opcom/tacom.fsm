@@ -3,7 +3,7 @@
 /*
 item0[] = {"INIT",0,250,-191.791229,-248.493942,-101.791237,-198.494003,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-194.557098,-181.067123,-104.557114,-131.067123,0.000000,"INIT" \n "COMPLETE"};
-item2[] = {"ANALYZE",2,4346,-398.915314,190.635864,98.822098,238.500443,0.000000,"ANALYZE"};
+item2[] = {"ANALYZE",2,250,-398.915314,190.635864,98.822098,238.500443,0.000000,"ANALYZE"};
 item3[] = {"RECEIVE",4,218,-194.508545,-19.777693,-104.508537,30.222303,0.000000,"RECEIVE"};
 item4[] = {"CAPTURE_Conditio",4,218,-296.383759,269.200836,-206.383591,319.200775,3.000000,"CAPTURE" \n "Conditions"};
 item5[] = {"",7,210,176.004105,761.434937,184.004105,769.434814,0.000000,""};
@@ -11,7 +11,7 @@ item6[] = {"",7,210,174.604492,1.165148,182.604553,9.165155,0.000000,""};
 item7[] = {"DEFEND_condition",4,218,-197.909698,270.277069,-107.909790,320.277069,2.000000,"DEFEND" \n "conditions"};
 item8[] = {"RESERVE_conditio",4,218,-98.860970,268.983917,-8.860947,318.983917,1.000000,"RESERVE" \n "conditions"};
 item9[] = {"CUSTOM_condition",4,218,5.405207,267.636688,95.405060,317.636871,0.000000,"CUSTOM" \n "conditions"};
-item10[] = {"ISSUE_ORDERS",2,250,-405.948853,673.407532,93.318497,717.610718,0.000000,"ISSUE ORDERS"};
+item10[] = {"ISSUE_ORDERS",2,4346,-405.948853,673.407532,93.318497,717.610718,0.000000,"ISSUE ORDERS"};
 item11[] = {"GROUP_NOT_CONFIR",4,218,-146.461060,733.516846,-56.461060,783.517090,0.000000,"GROUP" \n "NOT" \n "CONFIRM"};
 item12[] = {"GROUP_CONFIRM",4,218,-250.579010,734.345947,-160.579208,784.346069,0.000000,"GROUP" \n "CONFIRM"};
 item13[] = {"",7,210,-509.836731,753.771851,-501.836670,761.771851,0.000000,""};
@@ -83,8 +83,8 @@ link36[] = {24,25};
 link37[] = {25,26};
 link38[] = {26,10};
 link39[] = {27,28};
-globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-755.556030,358.539001,1067.251099,-293.194946,606,740,1};
-window[] = {0,-1,-1,-1,-1,962,100,1821,50,1,624};
+globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-596.514893,199.497864,915.546021,-56.482750,606,740,1};
+window[] = {0,-1,-1,-1,-1,986,144,1865,74,1,624};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -298,9 +298,11 @@ class FSM
                          "                };" \n
                          "" \n
                          "                case (""defend"") : {" \n
+                         "                    //systemchat ""Analyzing Defend"";" \n
+                         "                    " \n
                          "                    //Define defense conditions" \n
                          "                    //Detect near enemies" \n
-                         "                    _nearEnemies = [_objective,""findProfilesNearPosition"",[_pos,_sidesEnemy,false]] call ALiVE_fnc_OPCOM;" \n
+                         "                    _nearEnemies = [_OPCOM_HANDLER,""findProfilesNearPosition"",[_pos,_sidesEnemy,false]] call ALiVE_fnc_OPCOM;" \n
                          "                    " \n
                          "                    //Defend until no enemies are near" \n
                          "                    if (count _nearEnemies > 0) then {" \n
@@ -315,6 +317,11 @@ class FSM
                          "                    } else {" \n
                          "                        _size = _sectionsamount_reserve;" \n
                          "                        _reserve = [_objective,_size];" \n
+                         "                        " \n
+                         "                        //systemchat format [""DEFEND IS COMPLETE""];" \n
+                         "                        private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
+                         "                        private _event = ['TACOM_ORDER_COMPLETE', [_opcomID,_objective,""defend"",_side,_factions, true, []], ""TACOM""] call ALIVE_fnc_event;" \n
+                         "                        [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "                    };" \n
                          "                };" \n
                          "        " \n
@@ -664,13 +671,11 @@ class FSM
                          "            [_objective,""tacom_state"",""capture""] call AliVE_fnc_HashSet;" \n
                          "" \n
                          "            {" \n
-                         "                private [""_profile"",""_profileID"",""_statements""];" \n
+                         "                private _profileID = _x;" \n
                          "" \n
-                         "                    _profileID = _x;" \n
-                         "" \n
-                         "                    if (_profileID in _profiles) then {" \n
-                         "                        [_OPCOM_HANDLER,""setorders"",[([_pos,50] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
-                         "                    };" \n
+                         "                if (_profileID in _profiles) then {" \n
+                         "                    [_OPCOM_HANDLER,""setorders"",[([_pos,50] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
+                         "                };" \n
                          "            } foreach _section;" \n
                          "" \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
@@ -692,13 +697,11 @@ class FSM
                          "            [_objective,""tacom_state"",""defend""] call AliVE_fnc_HashSet;" \n
                          "" \n
                          "            {" \n
-                         "                private [""_profileID"",""_statements""];" \n
+                         "                private _profileID = _x;" \n
                          "" \n
-                         "                    _profileID = _x;" \n
-                         "" \n
-                         "                    if (_profileID in _profiles) then {" \n
-                         "                        [_OPCOM_HANDLER,""setorders"",[([_pos,50] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
-                         "                    };" \n
+                         "                if (_profileID in _profiles) then {" \n
+                         "                    [_OPCOM_HANDLER,""setorders"",[([_pos,50] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
+                         "                };" \n
                          "            } foreach _section;" \n
                          "            " \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
@@ -720,13 +723,11 @@ class FSM
                          "            [_objective,""tacom_state"",""reserve""] call AliVE_fnc_HashSet;" \n
                          "" \n
                          "            {" \n
-                         "                private [""_profileID"",""_statements""];" \n
+                         "                private _profileID = _x;" \n
                          "" \n
-                         "                    _profileID = _x;" \n
-                         "" \n
-                         "                    if (_profileID in _profiles) then {" \n
-                         "                        [_OPCOM_HANDLER,""setorders"",[([_pos,15] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
-                         "                    };" \n
+                         "                if (_profileID in _profiles) then {" \n
+                         "                    [_OPCOM_HANDLER,""setorders"",[([_pos,15] call CBA_fnc_RandPos),_profileID,_objectiveID,_operation]] call ALiVE_fnc_OPCOM;" \n
+                         "                };" \n
                          "            } foreach _section;" \n
                          "            " \n
                          "            private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
@@ -932,11 +933,31 @@ class FSM
                          "_timestamp = time;" \n
                          "" \n
                          "//prepare data" \n
-                         "if !(isnil ""_recon"") then {_operation = ""recon""; _objective = _recon select 0; _size = _recon select 1};" \n
-                         "if !(isnil ""_capture"") then {_operation = ""capture""; _objective = _capture select 0; _size = _capture select 1};" \n
-                         "if !(isnil ""_defend"") then {_operation = ""defend""; _objective = _defend select 0; _size = _defend select 1};" \n
-                         "if !(isnil ""_reserve"") then {_operation = ""reserve""; _objective = _reserve select 0; _size = _reserve select 1};" \n
-                         "if !(isnil ""_custom"") then {_operation = ""custom""; _objective = _custom select 0; _size = _custom select 1};" \n
+                         "if !(isnil ""_recon"") then {" \n
+                         "    _operation = ""recon"";" \n
+                         "    _objective = _recon select 0;" \n
+                         "    _size = _recon select 1;" \n
+                         "};" \n
+                         "if !(isnil ""_capture"") then {" \n
+                         "    _operation = ""capture"";" \n
+                         "    _objective = _capture select 0;" \n
+                         "    _size = _capture select 1;" \n
+                         "};" \n
+                         "if !(isnil ""_defend"") then {" \n
+                         "    _operation = ""defend"";" \n
+                         "    _objective = _defend select 0;" \n
+                         "    _size = _defend select 1;" \n
+                         "};" \n
+                         "if !(isnil ""_reserve"") then {" \n
+                         "    _operation = ""reserve"";" \n
+                         "    _objective = _reserve select 0;" \n
+                         "    _size = _reserve select 1;" \n
+                         "};" \n
+                         "if !(isnil ""_custom"") then {" \n
+                         "    _operation = ""custom"";" \n
+                         "    _objective = _custom select 0;" \n
+                         "    _size = _custom select 1;" \n
+                         "};" \n
                          "" \n
                          "_section = [_objective, ""section"",[]] call ALiVE_fnc_HashGet;" \n
                          "{" \n

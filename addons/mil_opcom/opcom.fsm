@@ -12,7 +12,7 @@ item7[] = {"DEFEND_condition",4,218,-787.492737,-203.595917,-697.492737,-153.595
 item8[] = {"RESERVE_conditio",4,218,-642.570801,-201.616302,-552.570740,-151.616302,3.000000,"RESERVE" \n "conditions"};
 item9[] = {"OPCOM_RECEIVER",4,218,-717.074463,-838.579346,-627.074646,-788.579346,1.000000,"OPCOM" \n "RECEIVER"};
 item10[] = {"CUSTOM_condition",4,218,-502.155029,-201.889679,-412.155121,-151.889679,2.000000,"CUSTOM" \n "conditions"};
-item11[] = {"ORDER_TACOM",2,4346,-924.860840,-94.510040,-425.593536,-50.306946,0.000000,"ORDER" \n "TACOM"};
+item11[] = {"ORDER_TACOM",2,250,-924.860840,-94.510040,-425.593536,-50.306946,0.000000,"ORDER" \n "TACOM"};
 item12[] = {"TACOM_CONFIRM",4,218,-651.682068,14.823029,-561.682068,64.823029,0.000000,"TACOM" \n "CONFIRM"};
 item13[] = {"TACOM_NOT_CONFIR",4,218,-767.100525,23.245697,-677.100647,73.245697,0.000000,"TACOM" \n "NOT CONFIRM"};
 item14[] = {"",7,210,-1031.257935,34.909210,-1023.257385,42.909210,0.000000,""};
@@ -24,7 +24,7 @@ item19[] = {"NOT_BUSY_1",2,250,-520.941284,16.271149,-430.941254,66.271149,0.000
 item20[] = {"COLLECT_TO_QUEUE",2,250,-599.758545,-647.769531,-509.758667,-597.769531,0.000000,"COLLECT" \n "TO QUEUE"};
 item21[] = {"ENTRIES_IN_QUEUE",4,218,-598.921387,-529.275208,-508.921387,-479.275299,2.000000,"ENTRIES" \n "IN QUEUE"};
 item22[] = {"ANALYZE_Conditio",4,218,-1203.018188,-310.200287,-1113.017944,-260.200104,0.000000,"ANALYZE" \n "Conditions"};
-item23[] = {"PERFORM_ANALYSIS",2,250,-1205.917603,-535.859314,-1115.917603,-485.859314,0.000000,"PERFORM" \n "ANALYSIS"};
+item23[] = {"PERFORM_ANALYSIS",2,4346,-1205.917603,-535.859314,-1115.917603,-485.859314,0.000000,"PERFORM" \n "ANALYSIS"};
 item24[] = {"ANALYSIS_DONE",4,218,-1209.427368,-599.538696,-1119.427368,-549.538696,0.000000,"ANALYSIS" \n "DONE"};
 item25[] = {"RESET",2,250,-1210.631958,-838.320801,-1120.631958,-788.320801,0.000000,"RESET"};
 item26[] = {"PERFORM_CLEANUP",2,250,-1201.964966,-382.972961,-1111.964966,-332.972961,0.000000,"PERFORM" \n "CLEANUP"};
@@ -113,8 +113,8 @@ link53[] = {38,6};
 link54[] = {39,40};
 link55[] = {40,6};
 link56[] = {41,18};
-globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1099.695801,-279.246155,83.286316,-709.423828,769,743,1};
-window[] = {0,-1,-1,-1,-1,1005,166,1921,90,1,787};
+globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1276.020752,-184.001953,157.933228,-897.164246,769,743,1};
+window[] = {0,-1,-1,-32000,-32000,941,26,1781,26,1,787};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -304,7 +304,14 @@ class FSM
                          "" \n
                          "            //AnalyzeClusterOccupation" \n
                          "            _targetOccupation = [_OPCOM_HANDLER,""clusteroccupation"",[]] call ALiVE_fnc_HashGet;" \n
-                         "            if (((count _targetOccupation > 0) && {time - (_targetOccupation select 4) > _cycleTime}) || {count _targetOccupation == 0}) then {_analyze = ""analysis""};" \n
+                         "            _targetOccupation params [""_friendlyObjectives"",""_enemyObjectives"",""_contestedObjectives"",""_timeLastAnalysis""];" \n
+                         "            if (" \n
+                         "                ( (_targetOccupation isnotequalto []) && {time - _timeLastAnalysis > _cycleTime} )" \n
+                         "                ||" \n
+                         "                { _targetOccupation isequalto [] }" \n
+                         "            ) then {" \n
+                         "                _analyze = ""analysis"";" \n
+                         "            };" \n
                          "" \n
                          "            //Exit if analysis should happen" \n
                          "            if !(isnil ""_analyze"") exitwith {_busy = false};" \n
@@ -898,14 +905,13 @@ class FSM
                 {
                         name = "PERFORM_ANALYSIS";
                         itemno = 23;
-                        init = /*%FSM<STATEINIT""">*/"private [""_clusterOccupationAnalysis"",""_troopsAnalysis"",""_enemyScan""];" \n
-                         "" \n
-                         "switch (_analyze) do {" \n
+                        init = /*%FSM<STATEINIT""">*/"switch (_analyze) do {" \n
                          "    case (""analysis"") : {" \n
-                         "        //ANALYSISDONE = false; [_OPCOM_HANDLER,_sidesFriendly,_sidesEnemy] execFSM ""\x\alive\addons\mil_opcom\analyze.fsm"";" \n
                          "        _clusterOccupationAnalysis = [_OPCOM_HANDLER,""analyzeclusteroccupation"",[_sidesFriendly,_sidesEnemy]] spawn ALiVE_fnc_OPCOM;" \n
                          "        _troopsAnalysis = [_OPCOM_HANDLER,""scantroops""] spawn ALiVE_fnc_OPCOM;" \n
                          "        _enemyScan = [_OPCOM_HANDLER,""scanFriendliesForNearEnemies""] spawn ALIVE_fnc_OPCOM;" \n
+                         "" \n
+                         "//systemchat format [""Scripts: %1"", [isnil ""_clusterOccupationAnalysis"", isnil ""_troopsAnalysis"", isnil ""_enemyScan""]];" \n
                          "	};" \n
                          "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -946,7 +952,6 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""reset"";" \n
                          "_timestamp = time;" \n
                          "" \n
-                         "// debug ---------------------------------------" \n
                          "if (_debug) then {" \n
                          "    [""OPCOM analysis finished""] call ALIVE_fnc_dump;" \n
                          "    [] call ALIVE_fnc_timer;" \n
@@ -978,7 +983,6 @@ class FSM
                          "        } forEach _OPCOM_SKIP_OBJECTIVES;" \n
                          "    };" \n
                          "};" \n
-                         "// debug ---------------------------------------" \n
                          "" \n
                          "_OPCOM_SKIP_OBJECTIVES = [];" \n
                          "_OPCOM_DATA = [""analyze"", nil];" \n
@@ -1018,17 +1022,15 @@ class FSM
                         itemno = 26;
                         init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""analysis"";" \n
                          "" \n
-                         "// debug ---------------------------------------" \n
-                         "            if(_debug) then {" \n
-                         "                [""---------------------""] call ALIVE_fnc_dump;" \n
-                         "                [""OPCOM analysis started""] call ALIVE_fnc_dumpR;" \n
-                         "                [true] call ALIVE_fnc_timer;" \n
-                         "            };" \n
-                         "// debug ---------------------------------------    " \n
+                         "if (_debug) then {" \n
+                         "    [""---------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""OPCOM analysis started""] call ALIVE_fnc_dumpR;" \n
+                         "    [true] call ALIVE_fnc_timer;" \n
+                         "};  " \n
                          "" \n
-                         "private [""_cleanup""];" \n
-                         "" \n
-                         "_cleanup = [_OPCOM_HANDLER] spawn {[_this select 0,""cleanupduplicatesections""] call ALiVE_fnc_OPCOM};"/*%FSM</STATEINIT""">*/;
+                         "private _cleanup = [_OPCOM_HANDLER] spawn {" \n
+                         "    [_this select 0,""cleanupduplicatesections""] call ALiVE_fnc_OPCOM;" \n
+                         "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
