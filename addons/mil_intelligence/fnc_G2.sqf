@@ -339,7 +339,8 @@ switch(_operation) do {
                 case "OPCOM_ORDER_CONFIRMED": {
                     _eventData params ["_opcomID","_target","_operation","_side","_factions"];
 
-                    if (_operation in ["attack","defend"]) then {
+                    // ["attack","defend"]
+                    if (_operation in ["attack"]) then {
                         //systemchat format ["Creating OPCOM Order: %1", _operation];
                         [_logic,"createFriendlyOPCOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
                     };
