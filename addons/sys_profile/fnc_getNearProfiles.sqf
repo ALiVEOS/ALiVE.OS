@@ -26,10 +26,12 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private _position = _this select 0;
-private _radius = _this select 1;
-private _categorySelector = param [2, []];
-private _filter2D = param [3, false];
+params [
+    "_position",
+    "_radius",
+    ["_categorySelector", []],
+    ["_filter2D", false]
+];
 
 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
 private _near = ([_spacialGrid,"findInRange", [_position,_radius,_filter2D]] call ALiVE_fnc_spacialGrid) apply {_x select 1};
