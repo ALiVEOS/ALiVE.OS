@@ -360,6 +360,14 @@ class CfgVehicles {
                             property = QGVAR(__LINE__);
                             displayName = " GLOBAL INTEL PARAMETERS";
                     };
+                    class opcomIntelSides : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_opcomIntelSides";
+                            displayName = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES_COMMENT";
+                            typeName = "STRING";
+                            defaultValue = """""";
+                    };
                     class displayIntel : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_displayIntel";

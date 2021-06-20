@@ -799,10 +799,16 @@ if (!_simAttacks) then {
                                                     if (_unitCount == 0) then {
                                                         _toBeKilled pushbackunique [_attacker,_targetToAttack];
                                                         _targetsToAttack deleteAt 0;
+
+                                                        private _attackTargetsKilled = _attack select 2 select 9;
+                                                        _attackTargetsKilled pushback (_targetToAttack select 2 select 4);
                                                     };
                                                 } else {
                                                     _toBeKilled pushbackunique [_attacker,_targetToAttack];
                                                     _targetsToAttack deleteAt 0;
+
+                                                    private _attackTargetsKilled = _attack select 2 select 9;
+                                                    _attackTargetsKilled pushback (_targetToAttack select 2 select 4);
                                                 };
                                             } else {
                                                 // attacking vehicle
@@ -859,6 +865,9 @@ if (!_simAttacks) then {
                                                     _toBeKilled pushbackunique [_attacker,_targetToAttack];
                                                     _targetsToAttack deleteAt 0;
 
+                                                    private _attackTargetsKilled = _attack select 2 select 9;
+                                                    _attackTargetsKilled pushback (_targetToAttack select 2 select 4);
+
                                                     // if this vehicle is the last vehicle it's commanding entity controls
                                                     // kill the commanding entity as well
 
@@ -868,6 +877,8 @@ if (!_simAttacks) then {
 
                                                         if (_assignedVehicles isEqualTo [_targetToAttackID]) then {
                                                             _toBeKilled pushbackunique [_attacker, [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler];
+                                                            
+                                                            _attackTargetsKilled pushback _x;
                                                         };
                                                     } foreach ([_targetToAttack,"entitiesInCommandOf"] call ALiVE_fnc_hashGet);
                                                 };

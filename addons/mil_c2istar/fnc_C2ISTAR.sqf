@@ -353,6 +353,13 @@ switch(_operation) do {
     case "scomIntelLimit": {
         _result = [_logic,_operation,_args,DEFAULT_SCOM_LIMIT,["SIDE","FACTION","ALL"]] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "opcomIntelSides": {
+        if (_args isequaltype []) then {
+            _logic setVariable ["opcomIntelSides", _args];
+        } else {
+            _result = _logic getVariable ["opcomIntelSides", []];
+        };
+    };
     case "displayIntel": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["displayIntel", _args];
@@ -507,6 +514,9 @@ switch(_operation) do {
         // Call SITREP and PATROLREP
         [] spawn ALIVE_fnc_sitrepInit;
         [] spawn ALIVE_fnc_patrolrepInit;
+        
+        private _opcomIntelSides = ([_logic,"opcomIntelSides"] call MAINCLASS) call ALiVE_fnc_stringListToArray;
+        [_logic,"opcomIntelSides", _opcomIntelSides apply { toupper _x }] call MAINCLASS;
 
         private["_gmLimit","_gm"];
 

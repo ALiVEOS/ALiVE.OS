@@ -48,6 +48,20 @@ class arrayFrameSplitter
 	RECOMPILE;
 };
 
+class deleteAtMany
+{
+	file = "\x\alive\addons\x_lib\functions\arrays\fnc_deleteAtMany.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class deleteIf
+{
+	file = "\x\alive\addons\x_lib\functions\arrays\fnc_deleteIf.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class erase
 {
 	file = "\x\alive\addons\x_lib\functions\arrays\fnc_erase.sqf";
@@ -648,9 +662,30 @@ class toString
 	RECOMPILE;
 };
 
+class doSegmentsIntersect
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_doSegmentsIntersect.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class encodeJSON
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_encodeJSON.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class findConvexHull
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_findConvexHull.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class findMidpoint
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_findMidpoint.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
