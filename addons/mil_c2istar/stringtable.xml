@@ -182,6 +182,12 @@
 <Key ID="STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_COMMENT">
     <English>Display nearby friendly units</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES">
+    <English>Commander Intel Sides:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES_COMMENT">
+    <English>Commanders for these sides will display intel on the map. Players can only see intel displayed by commanders of the same side. Possible values: [East,West,Independent], separate sides with a comma.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_RADIUS">
     <English>Friendly Radius:</English>
 </Key>
