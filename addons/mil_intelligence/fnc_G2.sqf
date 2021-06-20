@@ -121,7 +121,6 @@ switch(_operation) do {
     };
 
     case "createSpotrep": {
-        if (true) exitwith {};
         _args params ["_side","_faction","_profileID","_groupPosition","_groupType","_groupCount","_groupSpeed","_groupDirection","_timeSinceSeen"];
 
         private _maxIntelLifetime = _logic getvariable "maxIntelLifetime";
@@ -222,7 +221,6 @@ switch(_operation) do {
     };
 
     case "removeProfileSpotreps": {
-        if (true) exitwith {};
         private _profiles = _args;
 
         private _spotrepsByProfileID = _logic getvariable "spotrepsByProfileID";
@@ -342,15 +340,9 @@ switch(_operation) do {
                     _eventData params ["_opcomID","_target","_operation","_side","_factions"];
 
                     if (_operation in ["attack","defend"]) then {
+                        //systemchat format ["Creating OPCOM Order: %1", _operation];
                         [_logic,"createFriendlyOPCOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
                     };
-                };
-                case "OPCOM_ORDER_COMPLETE": {
-                    // _eventData params ["_opcomID","_target","_operation","_side","_factions","_orderArguments"];
-
-                    // if (_operation in ["capture","defend"]) then {
-                    //     [_logic,"removeFriendlyOPCOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
-                    // };
                 };
                 case "TACOM_ORDER_ISSUED": {
                     _eventData params ["_opcomID","_target","_operation","_side","_factions","_orderArguments"];
@@ -362,6 +354,7 @@ switch(_operation) do {
                 case "TACOM_ORDER_COMPLETE": {
                     _eventData params ["_opcomID","_target","_operation","_side","_factions","_success","_orderArguments"];
 
+                    // ["defend","recon","capture"]
                     if (_operation in ["recon","capture"]) then {
                         [_logic,"removeFriendlyTACOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
 
@@ -414,12 +407,14 @@ switch(_operation) do {
         private _intelByObjectiveID = _logic getvariable "intelByObjectiveID";
         private _existingObjectiveIntel = _intelByObjectiveID get _objectiveIntelKey;
 
-        private _outstandingOrderIntel = keys _existingObjectiveIntel;
-        private _outstandingReports = _outstandingOrderIntel apply { _existingObjectiveIntel get _x };
+        if (!isnil "_existingObjectiveIntel") then {
+            private _outstandingOrderIntel = keys _existingObjectiveIntel;
+            private _outstandingReports = _outstandingOrderIntel apply { _existingObjectiveIntel get _x };
 
-        [_logic,"removeIntelReports", _outstandingReports] call MAINCLASS;
+            [_logic,"removeIntelReports", _outstandingReports] call MAINCLASS;
 
-        _intelByObjectiveID deleteat _objectiveIntelKey;
+            _intelByObjectiveID deleteat _objectiveIntelKey;
+        };
     };
 
     case "createFriendlyTACOMOrder": {
@@ -460,12 +455,13 @@ switch(_operation) do {
         private _existingObjectiveIntel = _intelByObjectiveID get _objectiveIntelKey;
         if (!isnil "_existingObjectiveIntel") then {
             private _operationIntel = _existingObjectiveIntel get _operation;
+            if (!isnil "_operationIntel") then {
+                [_logic,"removeIntelReports", [_operationIntel]] call MAINCLASS;
+                _existingObjectiveIntel deleteat _operation;
+            };
 
-            [_logic,"removeIntelReports", [_operationIntel]] call MAINCLASS;
-
-            _existingObjectiveIntel deleteat _operation;
-
-            if (_operation in ["capture","defend"]) then {
+            //["capture","defend"]
+            if (_operation in ["capture"]) then {
                 [_logic,"removeFriendlyOPCOMOrder", [_opcomID, _target]] call MAINCLASS;
             };
         };
