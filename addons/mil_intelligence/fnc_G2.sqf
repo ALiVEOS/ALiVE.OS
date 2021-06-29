@@ -71,7 +71,6 @@ switch(_operation) do {
     };
 
     case "start": {
-        if (_logic getvariable "side" != "WEST") exitwith {};
         private _timeBetweenConfidenceDecay = _logic getvariable "timeBetweenConfidenceDecay";
 
         private _perFrameID = [{
