@@ -527,7 +527,9 @@ switch(_operation) do {
 
                     if (_opcomSide == _attackerSide) then {
                         private _G2 = [_logic,"G2"] call ALiVE_fnc_hashGet;
-                        [_G2,"removeProfileSpotreps", _targetsKilled] call ALiVE_fnc_G2;
+                        if (!isnil "_G2") then {
+                            [_G2,"removeProfileSpotreps", _targetsKilled] call ALiVE_fnc_G2;
+                        };
                     };
                 };
             };
