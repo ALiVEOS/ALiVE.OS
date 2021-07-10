@@ -340,7 +340,6 @@ switch(_operation) do {
 
                     // ["attack","defend"]
                     if (_operation in ["attack"]) then {
-                        //systemchat format ["Creating OPCOM Order: %1", _operation];
                         [_logic,"createFriendlyOPCOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
                     };
                 };
@@ -589,7 +588,7 @@ switch(_operation) do {
                     ["position", _objectivePosition],
                     ["shape", "ELLIPSE"],
                     ["size", [_objectiveSize,_objectiveSize]],
-                    ["type", "hq_dot"],
+                    ["type", "EmptyIcon"],
                     ["color", _markerColor],
                     ["alpha",  0.4]
                 ];
@@ -599,7 +598,7 @@ switch(_operation) do {
                     ["position", _objectivePosition],
                     ["shape", "ICON"],
                     ["size", [0.6,0.6]],
-                    ["type", "hd_dot_noshadow"],
+                    ["type", "EmptyIcon"],
                     ["color", "ColorBlack"],
                     ["alpha",  0.7],
                     ["text", _markerText]
@@ -623,6 +622,12 @@ switch(_operation) do {
                 private _assignedProfiles = _objectiveSection apply { [ALiVE_profileHandler,"getProfile", _x] call ALiVE_fnc_profileHandler };
                 private _profilePositions = _assignedProfiles apply { _x select 2 select 2 };
                 private _profilePositionsMidpoint = _profilePositions call ALiVE_fnc_findMidpoint;
+                if (_assignedProfiles isequalto []) then {
+                    systemchat format ["Assigned Profiles is Empty"];
+                };
+                if (isnil "_objectivePosition") then {
+                    systemchat format ["Objective Position is null"];
+                };
                 private _dirToAttackers = _objectivePosition getdir _profilePositionsMidpoint;
                 private _dirToObjective = _dirToAttackers - 180;
 
@@ -726,10 +731,11 @@ switch(_operation) do {
     case "onRemoveMAP": {
         _args params ["_logic","_report"];
 
+        private _sideObject = _logic getvariable "sideObject";
+        private _playersToSendMarkerTo = allPlayers select { side (group _X) == _sideObject };
+
         private _reportMarkers = _report get "markers";
-        {
-            deletemarker _x;
-        } foreach _reportMarkers;
+        [nil,"deleteMarkersLocally", _reportMarkers] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
     };
 
     case "createPolylinePath": {
@@ -790,24 +796,42 @@ switch(_operation) do {
         } foreach _markersData;
     };
 
+    case "deleteMarkersLocally": {
+        private _markers = _args;
+
+        {
+            deleteMarkerLocal _x;
+        } foreach _markers;
+    };
+
     case "determineMarkerTypeandColor": {
         _args params ["_side","_groupType"];
 
         private ["_typePrefix","_color"];
-        switch (_side) do {
-            case "EAST": {
-                _typePrefix = "b";
-                _color = "ColorOPFOR";
-            };
-            case "WEST": {
-                _typePrefix = "o";
-                _color = "ColorBLUFOR";
-            };
-            case "GUER": {
-                _typePrefix = "n";
-                _color = "ColorIndependent";
-            };
+        private _friendlySide = _logic getvariable "side";
+
+        if (_side == _friendlySide) then {
+            _typePrefix = "b";
+            _color = "ColorBLUFOR";
+        } else {
+            _typePrefix = "o";
+            _color = "ColorOPFOR";
         };
+
+        // switch (_side) do {
+        //     case "EAST": {
+        //         _typePrefix = "o";
+        //         _color = "ColorOPFOR";
+        //     };
+        //     case "WEST": {
+        //         _typePrefix = "b";
+        //         _color = "ColorBLUFOR";
+        //     };
+        //     case "GUER": {
+        //         _typePrefix = "n";
+        //         _color = "ColorIndependent";
+        //     };
+        // };
 
         private _markerType = switch (_groupType) do {
             case "infantry": { format ["%1_inf", _typePrefix] };
