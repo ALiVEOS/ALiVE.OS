@@ -515,8 +515,8 @@ switch(_operation) do {
         [] spawn ALIVE_fnc_sitrepInit;
         [] spawn ALIVE_fnc_patrolrepInit;
         
-        private _opcomIntelSides = ([_logic,"opcomIntelSides"] call MAINCLASS) call ALiVE_fnc_stringListToArray;
-        [_logic,"opcomIntelSides", _opcomIntelSides apply { toupper _x }] call MAINCLASS;
+        // private _opcomIntelSides = ([_logic,"opcomIntelSides"] call MAINCLASS) call ALiVE_fnc_stringListToArray;
+        // [_logic,"opcomIntelSides", _opcomIntelSides apply { toupper _x }] call MAINCLASS;
 
         private["_gmLimit","_gm"];
 
