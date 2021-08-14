@@ -110,3 +110,20 @@ ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
 #include "logistics\RHS_USAF.hpp"
 #include "logistics\IFA3.hpp"
 #include "logistics\CFP.hpp"
+
+// load from config
+
+private _configPath = configfile >> "ALiVE" >> "Logistics" >> "Factions";
+for "_i" from 0 to (count _configPath - 1) do {
+	private _entry = _configPath select _i;
+	if (isclass _configPath) then {
+		private _faction = configname _entry;
+		private _vehiclesLandTransport = getarray (_entry >> "landTransportVehicles");
+		private _vehiclesAirTransport = getarray (_entry >> "airTransportVehicles");
+		private _containers = getarray (_entry >> "containers");
+
+		[ALIVE_factionDefaultTransport, _faction, _vehiclesLandTransport] call ALIVE_fnc_hashSet;
+		[ALIVE_factionDefaultAirTransport, _faction, _vehiclesAirTransport] call ALIVE_fnc_hashSet;
+		[ALIVE_factionDefaultContainers, _faction, _containers] call ALIVE_fnc_hashSet;
+	};
+};

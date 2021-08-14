@@ -7,3 +7,15 @@
 #include "Eventhandlers.hpp"
 #include "CfgHints.hpp"
 #include "\x\alive\addons\main\data\ui\main.hpp"
+
+
+class ALiVE {
+    class Logistics {
+        class Sides {
+
+        };
+        class Factions {
+
+        };
+    };
+};
