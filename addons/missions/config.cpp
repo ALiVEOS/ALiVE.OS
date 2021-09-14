@@ -38,6 +38,14 @@ class CfgMissions
             overviewText = "Stratis is reeling from a brutal insurgency campaign. IED's litter the landscape, its your job to identify and disarm IEDs to ensure the safety of the civilian population. Beware of the local militia!";
             author = "ALiVE Mod Team";   
         };
+        class Showcase_Khe_Sanh_Valley
+        {
+            briefingName = "ALiVE | Khe Sanh Valley (Khe Sanh)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Khe_Sanh_Valley.vn_khe_sanh";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Khe_Sanh_Valley.vn_khe_sanh\pics\splash.paa";
+            overviewText = "PAVN and VC Forces continue to hold key areas with in the Khe Sanh valley.";
+            author = "ALiVE Mod Team";
+        };
         class Showcase_Van_Tien
         {
             briefingName = "ALiVE | Op Van Tien (Cam Lao Nam)";
@@ -152,7 +160,15 @@ class CfgMissions
             overviewPicture = "x\alive\addons\missions\logo_alive.paa";
             overviewText = "Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island.";
             author = "ALiVE Mod Team";   
-        };            
+        };
+        class MP_COOP_Khe_Sanh_Valley
+        {
+            briefingName = "ALiVE | Khe Sanh Valley (COOP 12)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Khe_Sanh_Valley.vn_khe_sanh";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Khe_Sanh_Valley.vn_khe_sanh\pics\splash.paa";
+            overviewText = "PAVN and VC Forces continue to hold key areas with in the Khe Sanh valley.";
+            author = "ALiVE Mod Team";
+        };   
         class MP_COOP_Van_Tien
         {
             briefingName = "ALiVE | Op Van Tien (COOP 12)";
