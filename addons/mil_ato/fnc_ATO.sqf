@@ -2045,11 +2045,11 @@ switch(_operation) do {
                                                     _compType = "Guerrilla";
                                                 };
 
-                                                private _hangar = selectRandom ([_compType, ["Airports"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
-																								if !(isNil "_hangar") then {
-                                                  private _flatPos = [position _x,150,50] call ALiVE_fnc_findFlatArea;
-                                                  [_hangar, _flatPos, direction _x, _faction] call ALiVE_fnc_spawnComposition;
-                                                };
+                                            private _hangar = selectRandom ([_compType, ["Airports"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
+                                            if !(isNil "_hangar") then {
+                                                private _flatPos = [position _x,150,50] call ALiVE_fnc_findFlatArea;
+                                                [_hangar, _flatPos, direction _x, _faction] call ALiVE_fnc_spawnComposition;
+                                            };
                                             };
                                         };
                                     };
