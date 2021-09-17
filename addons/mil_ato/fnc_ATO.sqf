@@ -38,6 +38,7 @@ Tupolov
 #define MTEMPLATE "ALiVE_ATO_%1"
 #define DEFAULT_FACTION "OPF_F"
 #define DEFAULT_AIRSPACE []
+#define DEFAULT_PILOTBUILDING ""
 #define DEFAULT_EVENT_QUEUE []
 #define DEFAULT_ANALYSIS []
 #define DEFAULT_SIDE "EAST"
@@ -587,6 +588,9 @@ switch(_operation) do {
     case "currentBase": {
         _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "pilotbuilding": {
+        _result = [_logic,_operation,_args,DEFAULT_PILOTBUILDING] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -887,12 +891,25 @@ switch(_operation) do {
 
                                 // Get nearest building position
                                 if !(_isOnCarrier) then {
-                                    // Select indoor building position
-                                    _crewPos = selectRandom([_position, 100] call ALIVE_fnc_findIndoorHousePositions);
-                                    if (isNil "_crewPos") then {
-                                        _crewPos = _position getpos [10 + (random 15), random 360];
+                                 // Select indoor building position
+                                 
+                                 // if pilotbuilding is defined
+                                 private _pilotbuilding = [_logic, "pilotbuilding"] call MAINCLASS;
+                                 if (count _pilotbuilding >0) then {
+                                    private _vnbuildings = nearestObjects [_position, [_pilotbuilding],200];
+                                    if (count _vnbuildings > 0) then {
+                                     private _thisbuilding = selectRandom _vnbuildings;
+                                     private _thispos = [_thisbuilding,1] call ALIVE_fnc_findIndoorHousePositions;
+                                     _crewPos = selectRandom _thispos;
                                     };
-
+                                 } else {
+                                 	 _crewpos = selectRandom([_position, 100] call ALIVE_fnc_findIndoorHousePositions);
+                                 };
+                                 
+                                 if (isNil "_crewPos") then {
+                                     _crewPos = _position getpos [10 + (random 15), random 360];
+                                 };
+                               
                                 } else {
                                     private _bridge = (_position nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
                                     _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]); // entities are saved as ATL positions
@@ -2029,11 +2046,10 @@ switch(_operation) do {
                                                 };
 
                                                 private _hangar = selectRandom ([_compType, ["Airports"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
-
-                                                private _flatPos = [position _x,150,50] call ALiVE_fnc_findFlatArea;
-
-                                                [_hangar, _flatPos, direction _x, _faction] call ALiVE_fnc_spawnComposition;
-
+																								if !(isNil "_hangar") then {
+                                                  private _flatPos = [position _x,150,50] call ALiVE_fnc_findFlatArea;
+                                                  [_hangar, _flatPos, direction _x, _faction] call ALiVE_fnc_spawnComposition;
+                                                };
                                             };
                                         };
                                     };
@@ -5161,7 +5177,22 @@ switch(_operation) do {
                         // Crew should be unassigned from aircraft
                         _grp leaveVehicle _vehicle;
 
-                        private _crewpos = selectRandom([_startPosition, 100] call ALIVE_fnc_findIndoorHousePositions);
+                    
+                        				 private _crewpos = +_startPosition;
+                                 // if pilotbuilding is defined
+                                 private _pilotbuilding = [_logic, "pilotbuilding"] call MAINCLASS;
+                                 if (count _pilotbuilding >0) then {
+                                    private _vnbuildings = nearestObjects [_startPosition, [_pilotbuilding],200];
+                                    if (count _vnbuildings > 0) then {
+                                     private _thisbuilding = selectRandom _vnbuildings;
+                                     private _thispos = [_thisbuilding,1] call ALIVE_fnc_findIndoorHousePositions;
+                                     _crewPos = selectRandom _thispos;
+                                    };
+                                 } else {
+                                 	_crewpos = selectRandom([_startPosition, 100] call ALIVE_fnc_findIndoorHousePositions);
+                                 };
+                        
+                        
 
                         if (isNil "_crewPos") then {
                             _crewPos = _startPosition getpos [10 + (random 15), random 360];
@@ -5200,7 +5231,7 @@ switch(_operation) do {
                     _vehicle setDir ([_aircraft,"startDir"] call ALiVE_fnc_hashGet);
 
                     if !(_isOnCarrier) then {
-                        _vehicle setposATL _startPosition;
+                        _vehicle setposATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
                     };
 
                     // Airport is no longer busy

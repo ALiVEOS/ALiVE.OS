@@ -26,6 +26,12 @@
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO_COMMENT">
     <English>Broadcast radio messages on ATO activity</English>
 </Key>
+<Key ID="STR_ALIVE_ATO_PILOTBUILDING">
+    <English>Pilot Ready Room:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_PILOTBUILDING_COMMENT">
+    <English>Pilots will spawn in this building classname</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_FACTION">
     <English>Faction:</English>
 </Key>
