@@ -6,53 +6,121 @@ class vn_whitelisted_arsenal_loadouts
 	  
 		weapons[] = 
 		{
-			{"vn_dp28",{3,-1,-1,3}},
-			{"vn_fkb1",{0,0,0,0}},
-			{"vn_fkb1_pm",{-1,3,3,-1}},
-			{"vn_fkb1_pm_sd",{-1,4,4,-1}},
-			{"vn_fkb1_red",{0,1,1,1}},
-			{"vn_hd",{-1,4,5,-1}},
-			{"vn_hp",{-1,3,5,-1}},
-			{"vn_izh54",{1,-1,0,0}},
-			{"vn_izh54_p",{4,-1,4,4}},
-			{"vn_izh54_shorty",{2,-1,2,2}},
-			{"vn_k50m",{3,-1,-1,-1}},
-			{"vn_m10",{-1,1,1,-1}},
-			{"vn_m10_sd",{-1,1,1,-1}},
-			{"vn_m127",{-1,0,0,-1}},
+			//Rifles
+			{"vn_m1891",{2,-1,-1,3}}, //5rnd Bolt Action
+			{"vn_m38",{1,-1,-1,1}}, //5rnd Bolt Action
+			{"vn_m9130",{2,-1,-1,2}}, //5rnd Bolt Action
+			{"vn_m40a1",{-1,3,-1,-1}}, //5rnd Bolt Action
+			{"vn_m40a1_camo",{-1,4,-1,-1}}, //5rnd Bolt Action
+			{"vn_sks",{3,-1,-1,4}}, //10rnd Semi-auto
+			{"vn_sks_gl",{4,-1,-1,5}}, //10rnd Semi-auto, Rifle Grenades
 			{"vn_m14",{-1,1,3,-1}},
 			{"vn_m14_camo",{-1,5,-1,-1}},
-			{"vn_m16",{-1,0,0,-1}},
+			//Assault Rifles
+			{"vn_m16",{-1,0,0,-1}}, //Default Green Hornet Loadout
 			{"vn_m16_camo",{-1,4,-1,-1}},
-			{"vn_m16_xm148",{-1,5,6,-1}},
-			{"vn_m1891",{2,-1,-1,3}},
-			{"vn_m1895",{0,-1,-1,1}},
-			{"vn_m1897",{-1,0,1,-1}},
-			{"vn_m1911",{-1,2,2,-1}},
-			{"vn_m1carbine",{0,0,0,0}},
-			{"vn_m1carbine_gl",{5,1,-1,5}},
-			{"vn_m2carbine",{1,1,1,1}},
-			{"vn_m2carbine_gl",{5,2,-1,5}},
-			{"vn_m38",{1,-1,-1,1}},
-			{"vn_m3a1",{-1,0,0,0}},
-			{"vn_m3carbine",{4,4,4,-1}},
-			{"vn_m3sd",{-1,0,0,0}},
-			{"vn_m40a1",{-1,3,-1,-1}},
-			{"vn_m40a1_camo",{-1,4,-1,-1}},
+			{"vn_m16_xm148",{-1,5,6,-1}}, //Underslung Grenade Launcher
+			{"vn_m63a",{-1,3,-1,-1}}, //30rnd Magazines
+			{"vn_type56",{0,3,2,4}},
+			{"vn_xm177_stock",{-1,5,2,-1}}, //Hard Butt-stock, Heavier
+			{"vn_xm177_stock_camo",{-1,5,2,-1}}, //Hard Butt-stock, Heavier
+			{"vn_xm177_short",{-1,3,3,-1}}, //Shorter Barrel
+			{"vn_xm177",{-1,0,1,-1}}, //Set to 0 for the default loadout, but I think the hard butt-stock should be the default
+			{"vn_xm177_camo",{-1,5,-1,-1}},
+			{"vn_xm177_fg",{-1,5,-1,-1}}, //Foregrip
+			{"vn_xm177_xm148",{-1,6,6,-1}}, //Underbarrel Grenade Launcher
+			{"vn_xm177_xm148_camo",{-1,6,-1,-1}}, //Underbarrel Grenade Launcher
+			//Carbine
+			{"vn_m1carbine",{0,0,0,0}}, //Default Spike Team Loadout
+			{"vn_m1carbine_gl",{5,1,-1,5}}, //Rifle Grenades
+			{"vn_m2carbine",{1,1,1,1}}, //Automatic
+			{"vn_m2carbine_gl",{5,2,-1,5}}, //Automatic, Rifle Grenades
+			{"vn_m3carbine",{4,4,4,-1}}, //Automatic, Integrated Night Vision
+			{"vn_m4956",{4,-1,-1,4}},
+			{"vn_m4956_gl",{5,-1,-1,5}}, //Rifle Grenades
+			//Light Machine Guns
+			{"vn_rpd_shorty",{-1,4,4,-1}},
+			{"vn_rpd_shorty_01",{-1,4,4,-1}},
+			{"vn_rpd",{4,-1,-1,-1}},
+			{"vn_dp28",{3,-1,-1,3}},
+			{"vn_m60_shorty",{-1,2,2,-1}},
+			{"vn_m60_shorty_camo",{-1,3,3,-1}},
+			{"vn_m60",{-1,0,0,-1}}, //Better Iron Sights
+			{"vn_pk",{4,-1,-1,-1}},
+			//1.1 Content
+			{"vn_m63a_cdo",{-1,6,-1,-1}}, //150rnd
+			{"vn_m63a_lmg",{-1,4,-1,-1}}, //100rnd, Longer Barrel
+			//---
+			//Submachine Guns
+			{"vn_k50m",{3,-1,-1,-1}},
+			{"vn_m3a1",{-1,0,0,0}}, //Default ACAV loadout
+			{"vn_m3sd",{-1,0,0,0}}, //Not available in arsenal
 			{"vn_m45",{-1,3,3,-1}},
 			{"vn_m45_camo",{-1,5,6,-1}},
 			{"vn_m45_fold",{-1,4,4,-1}},
-			{"vn_m4956",{4,-1,-1,4}},
-			{"vn_m4956_gl",{5,-1,-1,5}},
-			{"vn_m60",{-1,0,0,-1}},
-			{"vn_m60_shorty",{-1,2,2,-1}},
-			{"vn_m60_shorty_camo",{-1,3,3,-1}},
-			{"vn_m63a",{-1,3,-1,-1}},
-			{"vn_m712",{4,-1,-1,4}},
-			{"vn_m72",{-1,0,0,-1}},
-			{"vn_m79",{-1,0,0,-1}},
-			{"vn_m79_p",{-1,4,-1,-1}},
-			{"vn_m9130",{2,-1,-1,2}},
+			{"vn_mat49",{-1,2,2,2}},
+			{"vn_mat49_f",{-1,1,1,1}},
+			{"vn_mat49_vc",{0,-1,-1,0}}, //Longer Barrel
+			{"vn_mc10",{-1,4,4,-1}},
+			{"vn_mc10_sd",{-1,5,6,-1}}, //Not found in arsenal
+			{"vn_mp40",{2,-1,-1,3}},
+			{"vn_pps43",{2,-1,-1,2}}, //No Butt-stock
+			{"vn_pps52",{2,-1,-1,2}}, //Butt-stock
+			{"vn_ppsh41",{3,-1,-1,2}},
+			{"vn_sten",{-1,0,0,0}},
+			{"vn_sten_sd",{-1,0,0,0}}, //Not found in arsenal
+			//1.1 Content
+			{"vn_vz61",{-1,2,-1,-1}},
+			{"vn_m1928_tommy",{-1,4,-1,-1}}, //Foregrip
+			{"vn_m1928a1_tommy",{-1,3,-1,-1}}, //More range???
+			{"vn_m1a1_tommy",{-1,2,-1,-1}},
+			{"vn_m1a1_tommy_so",{-1,1,-1,-1}}, //Shorter, Weighs the same???
+			{"vn_mpu",{-1,2,-1,-1}},
+			//---
+			//Shotguns
+			{"vn_izh54",{1,-1,0,0}}, //Double Barrel
+			{"vn_izh54_shorty",{2,-1,2,2}}, //Double Barrel
+			{"vn_m1897",{-1,0,1,-1}}, //6rnd Pump Action
+			//Sidearm
+			{"vn_fkb1_pm",{-1,3,3,-1}}, //Flashlight
+			{"vn_fkb1_pm_sd",{-1,4,4,-1}}, //Not found in arsenal
+			{"vn_mx991_m1911",{-1,3,3,-1}}, //Flashlight
+			{"vn_mx991_m1911_sd",{-1,4,4,-1}}, //Not found in arsenal
+			{"vn_welrod",{-1,3,-1,-1}}, //Bolt action meme pistol
+			{"vn_pm",{3,-1,-1,-1}},
+			{"vn_pm_sd",{3,-1,-1,-1}}, //Not found in arsenal
+			{"vn_tt33",{0,-1,-1,-1}},
+			{"vn_hd",{-1,4,5,-1}},
+			{"vn_hp",{-1,3,5,-1}},
+			{"vn_m1911",{-1,2,2,-1}},
+			{"vn_mk22",{-1,5,-1,-1}},
+			{"vn_m712",{4,-1,-1,4}}, //20rnd Magazine
+			{"vn_izh54_p",{4,-1,4,4}}, //Shotgun
+			{"vn_m10",{-1,1,1,-1}}, //Revolver (Need to check reload speed)
+			{"vn_m10_sd",{-1,1,1,-1}}, //Not found in arsenal
+			{"vn_m1895",{0,-1,-1,1}}, //Revolver
+			{"vn_p38s",{-1,0,0,0}}, //Revolver
+			//1.1 Content
+			{"vn_vz61_p",{-1,4,-1,-1}}, //Sidearm SMG
+			//---
+			//Launchers
+			{"vn_m72",{-1,0,0,-1}}, //Single-Use
+			{"vn_m79",{-1,0,0,-1}}, //Grenade Launcher, Primary Slot
+			{"vn_m79_p",{-1,4,-1,-1}}, //Grenade Launcher, Smaller, Sidearm Slot
+			{"vn_rpg2",{0,-1,-1,0}}, //Smaller Warheads
+			{"vn_rpg7",{2,-1,-1,-1}},
+			{"vn_sa7",{4,-1,-1,-1}}, //AA Launcher
+			{"vn_sa7b",{5,-1,-1,-1}}, //AA Launcher, More Impact
+			//Other
+			{"vn_mx991",{0,0,0,0}}, //Flashlight, Sidearm Slot
+			{"vn_mx991_red",{0,1,1,1}}, //Flashlight, Sidearm Slot
+			{"vn_fkb1",{0,0,0,0}}, //Flashlight, Sidearm Slot
+			{"vn_fkb1_red",{0,1,1,1}}, //Flashlight, Sidearm Slot
+			{"vn_m127",{-1,0,0,-1}}, //Flare launcher, Launcher
+			//1.1 Content
+			{"vn_mk1_udg",{-1,2,-1,-1}},
+			//--
+			//Melee Weapons:
 			{"vn_m_axe_01",{0,0,0,0}},
 			{"vn_m_axe_fire",{0,0,0,0}},
 			{"vn_m_bayo_carbine",{0,0,0,0}},
@@ -70,51 +138,12 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_m_shovel_01",{0,0,0,0}},
 			{"vn_m_typeivaxe_01",{0,0,0,0}},
 			{"vn_m_vc_knife_01",{0,0,0,0}},
-			{"vn_m_wrench_01",{0,0,0,0}},
-			{"vn_mat49",{-1,2,2,2}},
-			{"vn_mat49_f",{-1,1,1,1}},
-			{"vn_mat49_vc",{0,-1,-1,0}},
-			{"vn_mc10",{-1,4,4,-1}},
-			{"vn_mc10_sd",{-1,5,6,-1}},
-			{"vn_mk22",{-1,5,-1,-1}},
-			{"vn_mp40",{2,-1,-1,3}},
-			{"vn_mx991",{0,0,0,0}},
-			{"vn_mx991_m1911",{-1,3,3,-1}},
-			{"vn_mx991_m1911_sd",{-1,4,4,-1}},
-			{"vn_mx991_red",{0,1,1,1}},
-			{"vn_p38s",{-1,0,0,0}},
-			{"vn_pk",{4,-1,-1,-1}},
-			{"vn_pm",{3,-1,-1,-1}},
-			{"vn_pm_sd",{3,-1,-1,-1}},
-			{"vn_pps43",{2,-1,-1,2}},
-			{"vn_pps52",{2,-1,-1,2}},
-			{"vn_ppsh41",{3,-1,-1,2}},
-			{"vn_rpd",{4,-1,-1,-1}},
-			{"vn_rpd_shorty",{-1,4,4,-1}},
-			{"vn_rpd_shorty_01",{-1,4,4,-1}},
-			{"vn_rpg2",{0,-1,-1,0}},
-			{"vn_rpg7",{2,-1,-1,-1}},
-			{"vn_sa7",{4,-1,-1,-1}},
-			{"vn_sa7b",{5,-1,-1,-1}},
-			{"vn_sks",{3,-1,-1,4}},
-			{"vn_sks_gl",{4,-1,-1,5}},
-			{"vn_sten",{-1,0,0,0}},
-			{"vn_sten_sd",{-1,0,0,0}},
-			{"vn_tt33",{0,-1,-1,-1}},
-			{"vn_type56",{0,3,2,4}},
-			{"vn_welrod",{-1,3,-1,-1}},
-			{"vn_xm177",{-1,4,1,-1}},
-			{"vn_xm177_camo",{-1,5,-1,-1}},
-			{"vn_xm177_fg",{-1,5,-1,-1}},
-			{"vn_xm177_short",{-1,3,3,-1}},
-			{"vn_xm177_stock",{-1,5,2,-1}},
-			{"vn_xm177_xm148",{-1,6,6,-1}},
-			{"vn_xm177_xm148_camo",{-1,6,-1,-1}}
-	  };
-	  
+			{"vn_m_wrench_01",{0,0,0,0}}
+		};
+	
 		magazines[] = 
 		{
-			{"MineDetector",{0,0,0,0}},
+			//Rifle Grenades
 			{"vn_22mm_cs_mag",{0,-1,-1,-1}},
 			{"vn_22mm_he_mag",{0,-1,-1,-1}},
 			{"vn_22mm_lume_mag",{0,-1,-1,-1}},
@@ -125,6 +154,7 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_22mm_m60_frag_mag",{-1,1,1,-1}},
 			{"vn_22mm_m60_heat_mag",{-1,2,2,-1}},
 			{"vn_22mm_m9_heat_mag",{0,-1,-1,-1}},
+			//40mm Grenader Launcher Ammo
 			{"vn_40mm_m381_he_mag",{-1,0,0,-1}},
 			{"vn_40mm_m397_ab_mag",{-1,2,3,-1}},
 			{"vn_40mm_m406_he_mag",{-1,1,1,-1}},
@@ -140,66 +170,107 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_40mm_m715_smoke_g_mag",{-1,1,1,-1}},
 			{"vn_40mm_m716_smoke_y_mag",{-1,2,2,-1}},
 			{"vn_40mm_m717_smoke_p_mag",{-1,2,2,-1}},
-			{"vn_b_item_trapkit",{0,0,0,0}},
-			{"vn_carbine_15_mag",{5,4,4,5}},
-			{"vn_carbine_15_t_mag",{5,4,4,5}},
-			{"vn_carbine_30_mag",{5,4,4,5}},
-			{"vn_carbine_30_t_mag",{5,4,4,5}},
-			{"vn_chicom_grenade_mag",{0,-1,-1,0}},
-			{"vn_dp28_mag",{3,-1,-1,3}},
-			{"vn_f1_grenade_mag",{0,-1,-1,0}},
-			{"vn_hd_mag",{-1,4,5,-1}},
-			{"vn_hp_mag",{-1,4,5,-1}},
-			{"vn_izh54_mag",{4,-1,4,4}},
-			{"vn_izh54_so_mag",{4,-1,4,4}},
+			
+			//Rifle Cartridge
+				//Clips
+				{"vn_m38_mag",{2,-1,-1,3}},
+				{"vn_m38_t_mag",{2,-1,-1,3}},
+				{"vn_m40a1_mag",{-1,4,-1,-1}},
+				{"vn_m40a1_t_mag",{-1,4,-1,-1}},
+				{"vn_sks_mag",{4,-1,-1,5}},
+				{"vn_sks_t_mag",{4,-1,-1,5}},
+				//Mags
+				{"vn_dp28_mag",{3,-1,-1,3}},
+				{"vn_m14_10_mag",{-1,5,3,-1}},
+				{"vn_m14_10_t_mag",{-1,5,4,-1}},
+				{"vn_m14_mag",{-1,5,4,-1}},
+				{"vn_m14_t_mag",{-1,5,5,-1}},
+				{"vn_m16_20_mag",{-1,0,6,-1}},
+				{"vn_m16_20_t_mag",{-1,0,6,-1}},
+				{"vn_m16_30_mag",{-1,4,6,-1}},
+				{"vn_m16_30_t_mag",{-1,4,6,-1}},
+				{"vn_m16_40_mag",{-1,6,6,-1}},
+				{"vn_m16_40_t_mag",{-1,6,6,-1}},
+				{"vn_m4956_10_mag",{5,-1,-1,5}},
+				{"vn_m4956_10_t_mag",{5,-1,-1,5}},
+				{"vn_m60_100_mag",{-1,3,3,-1}},
+				{"vn_m63a_30_mag",{-1,3,-1,-1}},
+				{"vn_m63a_30_t_mag",{-1,4,-1,-1}},
+				{"vn_pk_100_mag",{4,-1,-1,-1}},
+				{"vn_rpd_100_mag",{4,4,4,-1}},
+				{"vn_rpd_125_mag",{4,4,4,-1}},
+				{"vn_type56_mag",{0,3,2,4}},
+				{"vn_type56_t_mag",{1,4,3,5}},
+			//Pistol Cartridge
+				//Sidearm Mags
+				{"vn_hd_mag",{-1,4,5,-1}},
+				{"vn_hp_mag",{-1,4,5,-1}},
+				{"vn_m1911_mag",{-1,4,4,-1}},
+				{"vn_m712_mag",{4,-1,-1,4}},
+				{"vn_mk22_mag",{-1,5,-1,-1}},
+				{"vn_pm_mag",{3,4,4,3}},
+				{"vn_tt33_mag",{0,-1,-1,1}},
+				{"vn_welrod_mag",{-1,3,-1,-1}},
+				//Primary Mags
+				{"vn_carbine_15_mag",{5,0,4,5}},
+				{"vn_carbine_30_mag",{5,4,4,5}},
+				{"vn_carbine_15_t_mag",{5,0,4,5}},
+				{"vn_carbine_30_t_mag",{5,4,4,5}},
+				{"vn_m3a1_mag",{-1,0,1,1}},
+				{"vn_m3a1_t_mag",{-1,0,2,2}},
+				{"vn_m45_mag",{-1,5,6,-1}},
+				{"vn_m45_t_mag",{-1,5,6,-1}},
+				{"vn_mat49_mag",{-1,2,2,2}},
+				{"vn_mat49_t_mag",{-1,2,2,2}},
+				{"vn_mat49_vc_mag",{0,-1,-1,0}}, //Not sure what this is
+				{"vn_mc10_mag",{-1,5,6,-1}},
+				{"vn_mc10_t_mag",{-1,5,6,-1}},
+				{"vn_mp40_mag",{2,-1,-1,3}},
+				{"vn_mp40_t_mag",{2,-1,-1,3}},
+				{"vn_pps_mag",{3,-1,-1,3}},
+				{"vn_pps_t_mag",{4,-1,-1,4}},
+				{"vn_ppsh41_35_mag",{3,-1,-1,2}},
+				{"vn_ppsh41_35_t_mag",{3,-1,-1,2}},
+				{"vn_ppsh41_71_mag",{3,-1,-1,3}},
+				{"vn_ppsh41_71_t_mag",{4,-1,-1,4}},
+				{"vn_sten_mag",{-1,1,1,1}},
+				{"vn_sten_t_mag",{-1,2,2,2}},
+			//Revolver Ammo
 			{"vn_m10_mag",{-1,1,1,0}},
-			{"vn_m127_mag",{-1,0,0,-1}},
-			{"vn_m128_mag",{-1,0,0,-1}},
-			{"vn_m129_mag",{-1,0,0,-1}},
-			{"vn_m14_10_mag",{-1,5,3,-1}},
-			{"vn_m14_10_t_mag",{-1,5,4,-1}},
-			{"vn_m14_grenade_mag",{-1,4,5,-1}},
-			{"vn_m14_mag",{-1,5,4,-1}},
-			{"vn_m14_t_mag",{-1,5,5,-1}},
-			{"vn_m16_20_mag",{-1,6,6,-1}},
-			{"vn_m16_20_t_mag",{-1,6,6,-1}},
-			{"vn_m16_30_mag",{-1,6,6,-1}},
-			{"vn_m16_30_t_mag",{-1,6,6,-1}},
-			{"vn_m16_40_mag",{-1,6,6,-1}},
-			{"vn_m16_40_t_mag",{-1,6,6,-1}},
-			{"vn_m1895_mag",{0,-1,-1,1}},
+			{"vn_m1895_mag",{0,-1,-1,1}}, //7rnds
+			//Shotgun Ammo
+			{"vn_izh54_mag",{4,-1,4,4}},
+			{"vn_izh54_so_mag",{4,-1,4,4}}, //Sawed-off Rounds, I know it doesn't make sense
 			{"vn_m1897_buck_mag",{-1,0,1,-1}},
 			{"vn_m1897_fl_mag",{-1,2,3,-1}},
-			{"vn_m18_green_mag",{-1,0,3,-1}},
-			{"vn_m18_purple_mag",{-1,0,1,-1}},
-			{"vn_m18_red_mag",{-1,0,1,-1}},
-			{"vn_m18_white_mag",{-1,0,0,-1}},
-			{"vn_m18_yellow_mag",{-1,0,2,-1}},
-			{"vn_m1911_mag",{-1,4,4,-1}},
-			{"vn_m34_grenade_mag",{-1,3,6,-1}},
-			{"vn_m38_mag",{2,-1,-1,3}},
-			{"vn_m38_t_mag",{2,-1,-1,3}},
-			{"vn_m3a1_mag",{-1,1,1,1}},
-			{"vn_m3a1_t_mag",{-1,2,2,2}},
-			{"vn_m40a1_mag",{-1,4,-1,-1}},
-			{"vn_m40a1_t_mag",{-1,4,-1,-1}},
-			{"vn_m45_mag",{-1,5,6,-1}},
-			{"vn_m45_t_mag",{-1,5,6,-1}},
-			{"vn_m4956_10_mag",{5,-1,-1,5}},
-			{"vn_m4956_10_t_mag",{5,-1,-1,5}},
-			{"vn_m60_100_mag",{-1,3,3,-1}},
-			{"vn_m61_grenade_mag",{-1,0,0,-1}},
-			{"vn_m63a_30_mag",{-1,3,-1,-1}},
-			{"vn_m63a_30_t_mag",{-1,4,-1,-1}},
-			{"vn_m67_grenade_mag",{-1,1,2,-1}},
-			{"vn_m712_mag",{4,-1,-1,4}},
-			{"vn_m72_mag",{-1,0,0,-1}},
-			{"vn_m7_grenade_mag",{-1,3,4,-1}},
-			{"vn_mat49_mag",{-1,2,2,2}},
-			{"vn_mat49_t_mag",{-1,2,2,2}},
-			{"vn_mat49_vc_mag",{0,-1,-1,0}},
-			{"vn_mc10_mag",{-1,5,6,-1}},
-			{"vn_mc10_t_mag",{-1,5,6,-1}},
+			//Grenades
+			{"vn_chicom_grenade_mag",{0,-1,-1,0}}, //Frag
+			{"vn_f1_grenade_mag",{0,-1,-1,0}}, //Frag
+			{"vn_t67_grenade_mag",{2,-1,-1,-1}}, //Frag
+			{"vn_rg42_grenade_mag",{2,-1,-1,-1}}, //Frag
+			{"vn_rgd33_grenade_mag",{1,-1,-1,-1}}, //Frag
+			{"vn_rgd5_grenade_mag",{4,-1,-1,-1}}, //Frag
+			{"vn_v40_grenade_mag",{-1,3,4,-1}}, //Frag
+			{"vn_m61_grenade_mag",{-1,0,0,-1}}, //Standard US Frag
+			{"vn_m67_grenade_mag",{-1,1,2,-1}}, //Improved US Frag
+			{"vn_rkg3_grenade_mag",{5,-1,-1,-1}}, //HEAT (Anti-Tank) Grenade
+			{"vn_molotov_grenade_mag",{0,-1,-1,0}}, //Incendiary, Contact
+			{"vn_m14_grenade_mag",{-1,4,5,-1}}, //Incendiary
+			{"vn_m34_grenade_mag",{-1,0,6,-1}}, //White Phosphorus
+			{"vn_m7_grenade_mag",{-1,3,4,-1}}, //CS Gas
+			{"vn_m18_green_mag",{-1,0,3,-1}}, //Smoke
+			{"vn_m18_purple_mag",{-1,0,1,-1}}, //Smoke
+			{"vn_m18_red_mag",{-1,0,1,-1}}, //Smoke
+			{"vn_m18_white_mag",{-1,0,0,-1}}, //Smoke
+			{"vn_m18_yellow_mag",{-1,0,2,-1}}, //Smoke
+			{"vn_rdg2_mag",{0,-1,-1,-1}}, //Smoke, Non-US, White
+			//Rockets/Missiles
+			{"vn_m72_mag",{-1,0,0,-1}}, //Standard Rocket
+			{"vn_rpg2_mag",{0,-1,-1,0}},
+			{"vn_rpg7_mag",{2,-1,-1,-1}},
+			{"vn_sa7_mag",{4,-1,-1,-1}}, //AA Missile
+			{"vn_sa7b_mag",{5,-1,-1,-1}}, //AA Missile
+			//Explosives
 			{"vn_mine_ammobox_range_mag",{-1,0,-1,-1}},
 			{"vn_mine_m112_remote_mag",{-1,0,0,-1}},
 			{"vn_mine_m14_mag",{-1,0,0,-1}},
@@ -221,18 +292,23 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_mine_tripwire_m16_04_mag",{-1,0,0,-1}},
 			{"vn_mine_tripwire_m49_02_mag",{0,0,0,0}},
 			{"vn_mine_tripwire_m49_04_mag",{0,0,0,0}},
-			{"vn_mk22_mag",{-1,5,-1,-1}},
-			{"vn_molotov_grenade_mag",{0,-1,-1,0}},
-			{"vn_mp40_mag",{2,-1,-1,3}},
-			{"vn_mp40_t_mag",{2,-1,-1,3}},
-			{"vn_pk_100_mag",{4,-1,-1,-1}},
-			{"vn_pm_mag",{3,4,4,3}},
-			{"vn_pps_mag",{3,-1,-1,3}},
-			{"vn_pps_t_mag",{4,-1,-1,4}},
-			{"vn_ppsh41_35_mag",{3,-1,-1,2}},
-			{"vn_ppsh41_35_t_mag",{3,-1,-1,2}},
-			{"vn_ppsh41_71_mag",{3,-1,-1,3}},
-			{"vn_ppsh41_71_t_mag",{4,-1,-1,4}},
+			//Other
+			{"vn_m127_mag",{-1,0,0,-1}}, //Flare
+			{"vn_m128_mag",{-1,0,0,-1}}, //Flare (Green)
+			{"vn_m129_mag",{-1,0,0,-1}}, //Flare (Red)
+			{"vn_prop_fort_mag",{0,0,0,0}}, //Sandbag
+			//Not sure
+			{"vn_type56_v_12_he_mag",{5,5,-1,-1}}, //Uh, what?
+			{"vn_type56_v_12_heat_mag",{5,5,-1,-1}}, //Uh, what?
+			{"MineDetector",{0,0,0,0}}, //???Magazines???
+			{"vn_b_item_trapkit",{0,0,0,0}}, //???Magazines???
+			//Vehicle Ammo, I think???
+			{"vn_v_m18r_mag",{-1,0,-1,-1}},
+			{"vn_v_m61_mag",{-1,0,-1,-1}},
+			{"vn_v_m7_mag",{-1,3,-1,-1}},
+			{"vn_v_rdg2_mag",{-1,0,-1,-1}},
+			{"vn_v_rgd5_mag",{-1,3,-1,-1}},
+			//Food and Drink
 			{"vn_prop_drink_01",{0,0,0,0}},
 			{"vn_prop_drink_02",{0,0,0,0}},
 			{"vn_prop_drink_03",{0,0,0,0}},
@@ -333,69 +409,52 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_prop_food_pir_01_05",{0,0,0,0}},
 			{"vn_prop_food_sack_01",{0,0,0,0}},
 			{"vn_prop_food_sack_02",{0,0,0,0}},
-			{"vn_prop_fort_mag",{0,0,0,0}},
+			//Medication
 			{"vn_prop_med_antibiotics",{0,0,0,0}},
 			{"vn_prop_med_antimalaria",{0,0,0,0}},
 			{"vn_prop_med_antivenom",{0,0,0,0}},
 			{"vn_prop_med_dysentery",{0,0,0,0}},
 			{"vn_prop_med_painkillers",{0,0,0,0}},
-			{"vn_prop_med_wormpowder",{0,0,0,0}},
-			{"vn_rdg2_mag",{0,-1,-1,-1}},
-			{"vn_rg42_grenade_mag",{2,-1,-1,-1}},
-			{"vn_rgd33_grenade_mag",{1,-1,-1,-1}},
-			{"vn_rgd5_grenade_mag",{4,-1,-1,-1}},
-			{"vn_rkg3_grenade_mag",{5,-1,-1,-1}},
-			{"vn_rpd_100_mag",{4,4,4,-1}},
-			{"vn_rpd_125_mag",{4,4,4,-1}},
-			{"vn_rpg2_mag",{0,-1,-1,0}},
-			{"vn_rpg7_mag",{2,-1,-1,-1}},
-			{"vn_sa7_mag",{4,-1,-1,-1}},
-			{"vn_sa7b_mag",{5,-1,-1,-1}},
-			{"vn_sks_mag",{4,-1,-1,5}},
-			{"vn_sks_t_mag",{4,-1,-1,5}},
-			{"vn_sten_mag",{-1,1,1,1}},
-			{"vn_sten_t_mag",{-1,2,2,2}},
-			{"vn_t67_grenade_mag",{2,-1,-1,-1}},
-			{"vn_tt33_mag",{0,-1,-1,1}},
-			{"vn_type56_mag",{0,3,2,4}},
-			{"vn_type56_t_mag",{1,4,3,5}},
-			{"vn_type56_v_12_he_mag",{5,5,-1,-1}},
-			{"vn_type56_v_12_heat_mag",{5,5,-1,-1}},
-			{"vn_v40_grenade_mag",{-1,3,4,-1}},
-			{"vn_v_m18r_mag",{-1,0,-1,-1}},
-			{"vn_v_m61_mag",{-1,0,-1,-1}},
-			{"vn_v_m7_mag",{-1,3,-1,-1}},
-			{"vn_v_rdg2_mag",{-1,0,-1,-1}},
-			{"vn_v_rgd5_mag",{-1,3,-1,-1}},
-			{"vn_welrod_mag",{-1,3,-1,-1}}
+			{"vn_prop_med_wormpowder",{0,0,0,0}}
 		};
-		
+	
 		items[] = 
 		{
-			{"ALiVE_Handgrenade_stone",{0,0,0,0}},
-			{"ALiVE_Handgrenade_can",{0,0,0,0}},
-			{"ALiVE_Handgrenade_bottle",{0,0,0,0}},
-			{"ALiVE_Waterbottle",{0,0,0,0}},
-			{"ALiVE_Humrat",{0,0,0,0}},
+			//Basics
 			{"FirstAidKit",{0,0,0,0}},
-			{"G_Aviator",{0,0,0,0}},
-			{"G_Bandanna_aviator",{0,0,0,0}},
-			{"G_Bandanna_blk",{0,0,0,0}},
-			{"G_Bandanna_oli",{0,0,0,0}},
-			{"G_Spectacles_Tinted",{0,0,0,0}},
 			{"ItemCompass",{0,0,0,0}},
 			{"ItemMap",{0,0,0,0}},
 			{"ItemRadio",{0,0,0,0}},
 			{"ItemWatch",{0,0,0,0}},
 			{"Medikit",{0,0,0,0}},
 			{"Toolkit",{0,0,0,0}},
-			{"vn_anpvs2_binoc",{-1,5,5,6}},
-			{"vn_b_acc_goggles_01",{-1,1,1,-1}},
+			{"vn_o_item_firstaidkit",{0,-1,-1,0}},
+			{"vn_o_item_map",{0,-1,-1,0}},
+			{"vn_o_item_radio_m252",{0,-1,-1,0}},
+			{"vn_b_item_compass",{0,0,0,0}},
+			{"vn_b_item_compass_sog",{0,3,0,0}},
+			{"vn_b_item_firstaidkit",{-1,0,0,-1}},
+			{"vn_b_item_map",{-1,0,0,-1}},
+			{"vn_b_item_medikit_01",{0,0,0,0}},
+			{"vn_b_item_radio_urc10",{-1,0,0,-1}},
+			{"vn_b_item_toolkit",{0,0,0,0}},
+			{"vn_b_item_watch",{0,0,0,0}},
+			{"vn_b_item_wiretap",{0,0,0,0}},
+			//1.1 Content
+			{"vn_b_prop_camera_01",{-1,5,-1,-1}},
+			//---
+			//Facewear
+			{"G_Aviator",{0,0,0,0}},
+			{"G_Bandanna_aviator",{0,0,0,0}},
+			{"G_Bandanna_blk",{0,0,0,0}},
+			{"G_Bandanna_oli",{0,0,0,0}},
+			{"G_Spectacles_Tinted",{0,0,0,0}},
+			{"vn_b_acc_goggles_01",{-1,0,1,-1}},
 			{"vn_b_acc_m17_01",{-1,1,1,-1}},
 			{"vn_b_acc_m17_02",{-1,1,1,-1}},
 			{"vn_b_acc_ms22001_01",{-1,2,2,-1}},
 			{"vn_b_acc_ms22001_02",{-1,4,4,-1}},
-			{"vn_b_aviator",{-1,1,-1,-1}},
+			{"vn_b_aviator",{-1,0,-1,-1}},
 			{"vn_b_bandana_01",{0,0,0,0}},
 			{"vn_b_bandana_02",{-1,1,1,-1}},
 			{"vn_b_bandana_03",{0,2,2,0}},
@@ -404,6 +463,29 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_b_bandana_06",{-1,5,5,-1}},
 			{"vn_b_bandana_07",{-1,6,6,-1}},
 			{"vn_b_bandana_a",{-1,1,-1,-1}},
+			{"vn_b_scarf_01_01",{0,0,0,0}},
+			{"vn_b_scarf_01_03",{0,0,0,0}},
+			{"vn_b_spectacles",{-1,1,-1,-1}},
+			{"vn_b_spectacles_tinted",{-1,1,-1,-1}},
+			{"vn_b_squares",{-1,1,-1,-1}},
+			{"vn_b_squares_tinted",{-1,1,-1,-1}},
+			{"vn_g_glasses_01",{-1,2,2,4}},
+			{"vn_g_spectacles_01",{0,0,0,0}},
+			{"vn_g_spectacles_02",{-1,1,2,3}},
+			{"vn_o_acc_goggles_01",{3,-1,-1,-1}},
+			{"vn_o_acc_goggles_02",{4,-1,-1,-1}},
+			{"vn_o_acc_goggles_03",{6,-1,-1,-1}},
+			{"vn_o_acc_km32_01",{5,-1,-1,-1}}, //Gasmask
+			{"vn_o_poncho_01_01",{4,4,4,4}},
+			{"vn_o_scarf_01_01",{0,0,0,0}},
+			{"vn_o_scarf_01_02",{1,1,1,1}},
+			{"vn_o_scarf_01_03",{2,2,2,2}},
+			{"vn_o_scarf_01_04",{3,3,3,3}},
+			{"vn_o_bandana_b",{-1,1,-1,-1}},
+			{"vn_o_bandana_g",{-1,1,-1,-1}},
+			//1.1 Content
+			{"vn_b_acc_seal_01",{-1,3,-1,-1}}, //Diving Mask
+			//Headgear
 			{"vn_b_beret_01_01",{-1,0,0,-1}},
 			{"vn_b_beret_01_02",{-1,5,5,-1}},
 			{"vn_b_beret_01_03",{-1,2,2,-1}},
@@ -418,9 +500,9 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_b_boonie_01_06",{-1,5,5,-1}},
 			{"vn_b_boonie_01_07",{-1,6,6,-1}},
 			{"vn_b_boonie_02_01",{-1,0,0,-1}},
-			{"vn_b_boonie_02_02",{-1,1,1,-1}},
+			{"vn_b_boonie_02_02",{-1,0,1,-1}},
 			{"vn_b_boonie_02_03",{-1,2,2,-1}},
-			{"vn_b_boonie_02_04",{-1,3,3,-1}},
+			{"vn_b_boonie_02_04",{-1,0,3,-1}},
 			{"vn_b_boonie_02_05",{-1,4,4,-1}},
 			{"vn_b_boonie_02_06",{-1,5,5,-1}},
 			{"vn_b_boonie_02_07",{-1,6,6,-1}},
@@ -445,10 +527,6 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_b_boonie_05_05",{-1,4,4,-1}},
 			{"vn_b_boonie_05_06",{-1,5,5,-1}},
 			{"vn_b_boonie_05_07",{-1,6,6,-1}},
-			{"vn_b_camo_m14",{-1,4,4,-1}},
-			{"vn_b_camo_m40a1",{-1,4,4,-1}},
-			{"vn_b_camo_m9130",{-1,4,4,-1}},
-			{"vn_b_carbine",{-1,1,-1,-1}},
 			{"vn_b_headband_01",{0,0,0,0}},
 			{"vn_b_headband_02",{-1,1,1,-1}},
 			{"vn_b_headband_03",{0,2,2,0}},
@@ -483,7 +561,7 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_b_helmet_m1_09_01",{-1,3,3,-1}},
 			{"vn_b_helmet_m1_09_02",{-1,4,4,-1}},
 			{"vn_b_helmet_sog_01",{-1,5,5,-1}},
-			{"vn_b_helmet_svh4_01_01",{-1,1,1,-1}},
+			{"vn_b_helmet_svh4_01_01",{-1,0,1,-1}},
 			{"vn_b_helmet_svh4_01_02",{-1,2,2,-1}},
 			{"vn_b_helmet_svh4_01_03",{-1,3,3,-1}},
 			{"vn_b_helmet_svh4_01_04",{-1,4,4,-1}},
@@ -495,40 +573,71 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_b_helmet_svh4_02_04",{-1,4,4,-1}},
 			{"vn_b_helmet_svh4_02_05",{-1,0,0,-1}},
 			{"vn_b_helmet_svh4_02_06",{-1,5,5,-1}},
-			{"vn_b_helmet_t56_01_01",{-1,4,4,-1}},
+			{"vn_b_helmet_t56_01_01",{-1,0,4,-1}},
 			{"vn_b_helmet_t56_01_02",{-1,5,5,-1}},
 			{"vn_b_helmet_t56_01_03",{-1,6,6,-1}},
 			{"vn_b_helmet_t56_02_01",{-1,3,3,-1}},
 			{"vn_b_helmet_t56_02_02",{-1,4,4,-1}},
 			{"vn_b_helmet_t56_02_03",{-1,5,5,-1}},
-			{"vn_b_item_compass",{0,0,0,0}},
-			{"vn_b_item_compass_sog",{0,3,0,0}},
-			{"vn_b_item_firstaidkit",{-1,0,0,-1}},
-			{"vn_b_item_map",{-1,0,0,-1}},
-			{"vn_b_item_medikit_01",{0,0,0,0}},
-			{"vn_b_item_radio_urc10",{-1,0,0,-1}},
-			{"vn_b_item_toolkit",{0,0,0,0}},
-			{"vn_b_item_watch",{0,0,0,0}},
-			{"vn_b_item_wiretap",{0,0,0,0}},
-			{"vn_b_m14",{-1,0,0,-1}},
-			{"vn_b_m16",{-1,1,1,-1}},
-			{"vn_b_m1897",{-1,2,2,-1}},
-			{"vn_b_m38",{0,-1,-1,0}},
-			{"vn_b_m4956",{4,-1,-1,4}},
-			{"vn_b_scarf_01_01",{0,0,0,0}},
-			{"vn_b_scarf_01_03",{0,0,0,0}},
-			{"vn_b_sks",{1,-1,-1,1}},
-			{"vn_b_spectacles",{-1,1,-1,-1}},
-			{"vn_b_spectacles_tinted",{-1,1,-1,-1}},
-			{"vn_b_squares",{-1,1,-1,-1}},
-			{"vn_b_squares_tinted",{-1,1,-1,-1}},
-			{"vn_b_type56",{2,-1,-1,2}},
+			//1.1 Content
+			{"vn_b_helmet_m1_12_01",{-1,3,-1,-1}},
+			{"vn_b_helmet_m1_12_02",{-1,4,-1,-1}},
+			{"vn_b_helmet_m1_10_01",{-1,5,-1,-1}},
+			{"vn_b_helmet_m1_11_01",{-1,6,-1,-1}},
+			//---
+			{"vn_o_helmet_nva_01",{0,0,0,0}},
+			{"vn_o_helmet_nva_02",{2,-1,-1,0}},
+			{"vn_o_helmet_nva_03",{3,-1,-1,0}},
+			{"vn_o_helmet_nva_04",{4,-1,-1,0}},
+			{"vn_o_helmet_nva_05",{6,-1,-1,0}},
+			{"vn_o_helmet_nva_06",{5,-1,-1,0}},
+			{"vn_o_helmet_shl61_01",{4,-1,-1,4}},
+			{"vn_o_helmet_shl61_02",{3,-1,-1,3}},
+			{"vn_o_helmet_tsh3_01",{2,-1,-1,2}},
+			{"vn_o_helmet_tsh3_02",{1,-1,-1,1}},
+			{"vn_o_helmet_vc_01",{0,-1,-1,0}},
+			{"vn_o_helmet_vc_02",{1,-1,-1,1}},
+			{"vn_o_helmet_vc_03",{2,-1,-1,2}},
+			{"vn_o_helmet_vc_04",{3,-1,-1,3}},
+			{"vn_o_helmet_zsh3_01",{2,-1,-1,2}},
+			{"vn_o_helmet_zsh3_02",{1,-1,-1,1}},
+			{"vn_o_boonie_nva_02_01",{4,-1,-1,-1}},
+			{"vn_o_boonie_nva_02_02",{5,-1,-1,-1}},
+			{"vn_o_boonie_vc_01_01",{0,-1,-1,0}},
+			{"vn_o_boonie_vc_01_02",{1,-1,-1,1}},
+			{"vn_o_boonie_vc_02_01",{2,-1,-1,-1}},
+			{"vn_o_boonie_vc_02_02",{3,-1,-1,-1}},
+			{"vn_o_cap_navy_01",{0,-1,-1,0}},
+			//1.1 Content
+			{"vn_o_helmet_nva_10",{-1,-1,-1,-1}},
+			{"vn_o_helmet_nva_09",{-1,-1,-1,-1}},
+			{"vn_o_helmet_nva_07",{-1,-1,-1,-1}},
+			{"vn_o_helmet_vc_05",{-1,-1,-1,-1}},
+			{"vn_o_helmet_nva_08",{-1,-1,-1,-1}},
+			//---
+			{"vn_i_helmet_m1_01_01",{-1,-1,0,-1}},
+			{"vn_i_helmet_m1_01_02",{-1,-1,2,-1}},
+			//1.1 Content
+			{"vn_i_helmet_m1_02_01",{-1,-1,-1,-1}},
+			{"vn_i_helmet_m1_03_01",{-1,-1,-1,-1}},
+			{"vn_i_helmet_m1_02_02",{-1,-1,-1,-1}},
+			{"vn_i_helmet_m1_03_02",{-1,-1,-1,-1}},
+			//---
+			{"vn_c_conehat_01",{0,0,0,0}},
+			{"vn_c_conehat_02",{0,0,0,0}},
+			{"vn_c_headband_01",{0,0,0,0}},
+			{"vn_c_headband_02",{0,0,0,0}},
+			{"vn_c_headband_03",{0,0,0,0}},
+			{"vn_c_headband_04",{0,0,0,0}},
+			//Uniforms
+			//US Air Uniforms
 			{"vn_b_uniform_heli_01_01",{0,0,0,0}},
 			{"vn_b_uniform_k2b_01_01",{0,0,0,0}},
 			{"vn_b_uniform_k2b_01_02",{0,0,0,0}},
 			{"vn_b_uniform_k2b_02_01",{0,0,0,0}},
 			{"vn_b_uniform_k2b_02_02",{0,0,0,0}},
 			{"vn_b_uniform_k2b_02_03",{0,0,0,0}},
+			//US Infantry Uniforms
 			{"vn_b_uniform_macv_01_01",{0,0,0,0}},
 			{"vn_b_uniform_macv_01_02",{0,0,0,0}},
 			{"vn_b_uniform_macv_01_03",{0,0,0,0}},
@@ -581,95 +690,40 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_b_uniform_sog_02_04",{0,0,0,0}},
 			{"vn_b_uniform_sog_02_05",{0,0,0,0}},
 			{"vn_b_uniform_sog_02_06",{0,0,0,0}},
-			{"vn_b_vest_aircrew_01",{0,3,3,0}},
-			{"vn_b_vest_aircrew_02",{0,4,4,0}},
-			{"vn_b_vest_aircrew_03",{0,5,5,0}},
-			{"vn_b_vest_aircrew_04",{0,5,5,0}},
-			{"vn_b_vest_aircrew_05",{0,5,5,0}},
-			{"vn_b_vest_aircrew_06",{0,6,6,0}},
-			{"vn_b_vest_aircrew_07",{0,6,6,0}},
-			{"vn_b_vest_sog_01",{-1,6,6,-1}},
-			{"vn_b_vest_sog_02",{-1,5,5,-1}},
-			{"vn_b_vest_sog_03",{-1,4,4,-1}},
-			{"vn_b_vest_sog_04",{-1,4,4,-1}},
-			{"vn_b_vest_sog_05",{-1,5,5,-1}},
-			{"vn_b_vest_sog_06",{-1,6,6,-1}},
-			{"vn_b_vest_usarmy_01",{-1,0,0,-1}},
-			{"vn_b_vest_usarmy_02",{-1,1,1,-1}},
-			{"vn_b_vest_usarmy_03",{-1,2,2,-1}},
-			{"vn_b_vest_usarmy_04",{-1,2,2,-1}},
-			{"vn_b_vest_usarmy_05",{-1,3,3,-1}},
-			{"vn_b_vest_usarmy_06",{-1,4,4,-1}},
-			{"vn_b_vest_usarmy_07",{-1,4,4,-1}},
-			{"vn_b_vest_usarmy_08",{-1,5,5,-1}},
-			{"vn_b_vest_usarmy_09",{-1,6,6,-1}},
-			{"vn_b_vest_usarmy_10",{-1,6,6,-1}},
-			{"vn_b_vest_usarmy_11",{0,4,4,0}},
-			{"vn_b_vest_usarmy_12",{0,5,5,0}},
-			{"vn_b_vest_usarmy_13",{0,5,5,0}},
-			{"vn_b_vest_usarmy_14",{0,6,6,0}},
-			{"vn_c_conehat_01",{0,0,0,0}},
-			{"vn_c_conehat_02",{0,0,0,0}},
-			{"vn_c_headband_01",{0,0,0,0}},
-			{"vn_c_headband_02",{0,0,0,0}},
-			{"vn_c_headband_03",{0,0,0,0}},
-			{"vn_c_headband_04",{0,0,0,0}},
-			{"vn_g_glasses_01",{-1,2,2,4}},
-			{"vn_g_spectacles_01",{0,0,0,0}},
-			{"vn_g_spectacles_02",{-1,1,2,3}},
-			{"vn_i_helmet_m1_01_01",{-1,-1,0,-1}},
-			{"vn_i_helmet_m1_01_02",{-1,-1,2,-1}},
-			{"vn_m19_binocs_grey",{-1,2,2,-1}},
-			{"vn_m19_binocs_grn",{0,0,0,0}},
-			{"vn_mk21_binocs",{-1,4,4,6}},
-			{"vn_o_3x_m84",{1,3,1,1}},
-			{"vn_o_3x_m9130",{2,-1,-1,2}},
-			{"vn_o_4x_m16",{-1,4,3,-1}},
-			{"vn_o_4x_m4956",{5,-1,-1,5}},
-			{"vn_o_9x_m14",{-1,6,5,-1}},
-			{"vn_o_9x_m16",{-1,6,4,-1}},
-			{"vn_o_9x_m40a1",{-1,3,2,-1}},
-			{"vn_o_9x_m40a1_camo",{-1,3,-1,-1}},
-			{"vn_o_acc_goggles_01",{3,-1,-1,-1}},
-			{"vn_o_acc_goggles_02",{4,-1,-1,-1}},
-			{"vn_o_acc_goggles_03",{6,-1,-1,-1}},
-			{"vn_o_acc_km32_01",{5,-1,-1,-1}},
-			{"vn_o_anpvs2_m14",{-1,6,6,-1}},
-			{"vn_o_anpvs2_m16",{-1,6,5,-1}},
-			{"vn_o_anpvs2_m40a1",{-1,6,4,-1}},
-			{"vn_o_bandana_b",{-1,1,-1,-1}},
-			{"vn_o_bandana_g",{-1,1,-1,-1}},
-			{"vn_o_boonie_nva_02_01",{4,-1,-1,-1}},
-			{"vn_o_boonie_nva_02_02",{5,-1,-1,-1}},
-			{"vn_o_boonie_vc_01_01",{0,-1,-1,0}},
-			{"vn_o_boonie_vc_01_02",{1,-1,-1,1}},
-			{"vn_o_boonie_vc_02_01",{2,-1,-1,-1}},
-			{"vn_o_boonie_vc_02_02",{3,-1,-1,-1}},
-			{"vn_o_cap_navy_01",{0,-1,-1,0}},
-			{"vn_o_helmet_nva_01",{0,0,0,0}},
-			{"vn_o_helmet_nva_02",{2,-1,-1,0}},
-			{"vn_o_helmet_nva_03",{3,-1,-1,0}},
-			{"vn_o_helmet_nva_04",{4,-1,-1,0}},
-			{"vn_o_helmet_nva_05",{6,-1,-1,0}},
-			{"vn_o_helmet_nva_06",{5,-1,-1,0}},
-			{"vn_o_helmet_shl61_01",{4,-1,-1,4}},
-			{"vn_o_helmet_shl61_02",{3,-1,-1,3}},
-			{"vn_o_helmet_tsh3_01",{2,-1,-1,2}},
-			{"vn_o_helmet_tsh3_02",{1,-1,-1,1}},
-			{"vn_o_helmet_vc_01",{0,-1,-1,0}},
-			{"vn_o_helmet_vc_02",{1,-1,-1,1}},
-			{"vn_o_helmet_vc_03",{2,-1,-1,2}},
-			{"vn_o_helmet_vc_04",{3,-1,-1,3}},
-			{"vn_o_helmet_zsh3_01",{2,-1,-1,2}},
-			{"vn_o_helmet_zsh3_02",{1,-1,-1,1}},
-			{"vn_o_item_firstaidkit",{0,-1,-1,0}},
-			{"vn_o_item_map",{0,-1,-1,0}},
-			{"vn_o_item_radio_m252",{0,-1,-1,0}},
-			{"vn_o_poncho_01_01",{4,4,4,4}},
-			{"vn_o_scarf_01_01",{0,0,0,0}},
-			{"vn_o_scarf_01_02",{1,1,1,1}},
-			{"vn_o_scarf_01_03",{2,2,2,2}},
-			{"vn_o_scarf_01_04",{3,3,3,3}},
+			//1.1 Content:
+			{"vn_b_uniform_seal_01_06",{-1,0,-1,-1}}, //Uniform SEAL 1 (ERDL)
+			{"vn_b_uniform_seal_01_01",{-1,0,-1,-1}}, //Uniform SEAL 1 (Olive Dirty)
+			{"vn_b_uniform_seal_01_07",{-1,0,-1,-1}}, //Uniform SEAL 1 (Olive)
+			{"vn_b_uniform_seal_01_05",{-1,0,-1,-1}}, //Uniform SEAL 1 (Tiger Green)
+			{"vn_b_uniform_seal_01_02",{-1,0,-1,-1}}, //Uniform SEAL 1 (Tiger)
+			{"vn_b_uniform_seal_02_06",{-1,0,-1,-1}}, //Uniform SEAL 2 (ERDL)
+			{"vn_b_uniform_seal_02_01",{-1,0,-1,-1}}, //Uniform SEAL 2 (Olive Dirty)
+			{"vn_b_uniform_seal_02_07",{-1,0,-1,-1}}, //Uniform SEAL 2 (Olive)
+			{"vn_b_uniform_seal_02_05",{-1,0,-1,-1}}, //Uniform SEAL 2 (Tiger Green)
+			{"vn_b_uniform_seal_02_02",{-1,0,-1,-1}}, //Uniform SEAL 2 (Tiger)
+			{"vn_b_uniform_seal_03_01",{-1,0,-1,-1}}, //Uniform SEAL 3 (Blue)
+			{"vn_b_uniform_seal_04_01",{-1,0,-1,-1}}, //Uniform SEAL 4 (Blue)
+			{"vn_b_uniform_seal_05_06",{-1,0,-1,-1}}, //Uniform SEAL 5 (ERDL)
+			{"vn_b_uniform_seal_05_01",{-1,0,-1,-1}}, //Uniform SEAL 5 (Olive Dirty)
+			{"vn_b_uniform_seal_05_07",{-1,0,-1,-1}}, //Uniform SEAL 5 (Olive)
+			{"vn_b_uniform_seal_05_05",{-1,0,-1,-1}}, //Uniform SEAL 5 (Tiger Green)
+			{"vn_b_uniform_seal_05_02",{-1,0,-1,-1}}, //Uniform SEAL 5 (Tiger)
+			{"vn_b_uniform_seal_06_06",{-1,0,-1,-1}}, //Uniform SEAL 6 (ERDL)
+			{"vn_b_uniform_seal_06_01",{-1,0,-1,-1}}, //Uniform SEAL 6 (Olive Dirty)
+			{"vn_b_uniform_seal_06_07",{-1,0,-1,-1}}, //Uniform SEAL 6 (Olive)
+			{"vn_b_uniform_seal_06_05",{-1,0,-1,-1}}, //Uniform SEAL 6 (Tiger Green)
+			{"vn_b_uniform_seal_06_02",{-1,0,-1,-1}}, //Uniform SEAL 6 (Tiger)
+			{"vn_b_uniform_seal_07_01",{-1,0,-1,-1}}, //Uniform UDT 1 (Blue/ Khaki)
+			{"vn_b_uniform_seal_07_02",{-1,0,-1,-1}}, //Uniform UDT 1 (Blue/ Tiger)
+			{"vn_b_uniform_seal_07_03",{-1,0,-1,-1}}, //Uniform UDT 1 (Yellow/ Khaki)
+			{"vn_b_uniform_seal_07_04",{-1,0,-1,-1}}, //Uniform UDT 1 (Yellow/ Tiger)
+			{"vn_b_uniform_seal_08_01",{-1,0,-1,-1}}, //Uniform UDT 2 (Blue/ Khaki)
+			{"vn_b_uniform_seal_08_02",{-1,0,-1,-1}}, //Uniform UDT 2 (Blue/ Tiger)
+			{"vn_b_uniform_seal_08_03",{-1,0,-1,-1}}, //Uniform UDT 2 ( Yellow/ Khaki)
+			{"vn_b_uniform_seal_08_04",{-1,0,-1,-1}}, //Uniform UDT 2 ( Yellow/ Tiger)
+			{"vn_b_uniform_seal_09_01",{-1,0,-1,-1}}, //Uniform UDT 3 (Beaver Wetsuit)
+			//---
+			//NVA Infantry Uniforms
 			{"vn_o_uniform_nva_air_01",{1,-1,-1,1}},
 			{"vn_o_uniform_nva_army_01_01",{2,-1,-1,2}},
 			{"vn_o_uniform_nva_army_01_02",{2,-1,-1,2}},
@@ -717,6 +771,7 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_o_uniform_nva_navy_02",{1,-1,-1,1}},
 			{"vn_o_uniform_nva_navy_03",{3,-1,-1,3}},
 			{"vn_o_uniform_nva_navy_04",{4,-1,-1,4}},
+			//VC Uniforms
 			{"vn_o_uniform_vc_01_01",{0,-1,-1,-1}},
 			{"vn_o_uniform_vc_01_02",{0,-1,-1,-1}},
 			{"vn_o_uniform_vc_01_03",{0,-1,-1,-1}},
@@ -763,6 +818,45 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_o_uniform_vc_reg_12_08",{2,-1,-1,2}},
 			{"vn_o_uniform_vc_reg_12_09",{2,-1,-1,2}},
 			{"vn_o_uniform_vc_reg_12_10",{3,-1,-1,3}},
+			//Vests
+			//US Vests
+			{"vn_b_vest_aircrew_01",{0,0,3,0}},
+			{"vn_b_vest_aircrew_02",{0,4,4,0}},
+			{"vn_b_vest_aircrew_03",{0,5,5,0}},
+			{"vn_b_vest_aircrew_04",{0,5,5,0}},
+			{"vn_b_vest_aircrew_05",{0,5,5,0}},
+			{"vn_b_vest_aircrew_06",{0,6,6,0}},
+			{"vn_b_vest_aircrew_07",{0,6,6,0}},
+			{"vn_b_vest_sog_01",{-1,6,6,-1}},
+			{"vn_b_vest_sog_02",{-1,0,5,-1}},
+			{"vn_b_vest_sog_03",{-1,4,4,-1}},
+			{"vn_b_vest_sog_04",{-1,4,4,-1}},
+			{"vn_b_vest_sog_05",{-1,5,5,-1}},
+			{"vn_b_vest_sog_06",{-1,6,6,-1}},
+			{"vn_b_vest_usarmy_01",{-1,0,0,-1}},
+			{"vn_b_vest_usarmy_02",{-1,1,1,-1}},
+			{"vn_b_vest_usarmy_03",{-1,0,2,-1}},
+			{"vn_b_vest_usarmy_04",{-1,2,2,-1}},
+			{"vn_b_vest_usarmy_05",{-1,3,3,-1}},
+			{"vn_b_vest_usarmy_06",{-1,4,4,-1}},
+			{"vn_b_vest_usarmy_07",{-1,4,4,-1}},
+			{"vn_b_vest_usarmy_08",{-1,5,5,-1}},
+			{"vn_b_vest_usarmy_09",{-1,6,6,-1}},
+			{"vn_b_vest_usarmy_10",{-1,6,6,-1}},
+			{"vn_b_vest_usarmy_11",{0,4,4,0}},
+			{"vn_b_vest_usarmy_12",{0,0,5,0}},
+			{"vn_b_vest_usarmy_13",{0,5,5,0}},
+			{"vn_b_vest_usarmy_14",{0,6,6,0}},
+			//1.1 Content
+			{"vn_b_vest_seal_01",{-1,5,-1,-1}},
+			{"vn_b_vest_seal_07",{-1,5,-1,-1}},
+			{"vn_b_vest_seal_06",{-1,5,-1,-1}},
+			{"vn_b_vest_seal_03",{-1,5,-1,-1}},
+			{"vn_b_vest_seal_04",{-1,5,-1,-1}},
+			{"vn_b_vest_seal_05",{-1,5,-1,-1}},
+			{"vn_b_vest_seal_02",{-1,5,-1,-1}},
+			//---
+			//NVA Vests
 			{"vn_o_vest_01",{5,-1,-1,5}},
 			{"vn_o_vest_02",{2,-1,-1,2}},
 			{"vn_o_vest_03",{3,-1,-1,3}},
@@ -771,11 +865,22 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_o_vest_06",{4,-1,-1,4}},
 			{"vn_o_vest_07",{2,-1,-1,2}},
 			{"vn_o_vest_08",{6,-1,-1,6}},
+			//VC Vests
 			{"vn_o_vest_vc_01",{1,-1,-1,1}},
 			{"vn_o_vest_vc_02",{1,-1,-1,1}},
 			{"vn_o_vest_vc_03",{1,-1,-1,1}},
 			{"vn_o_vest_vc_04",{1,-1,-1,1}},
-			{"vn_o_vest_vc_05",{1,-1,-1,1}},
+			{"vn_o_vest_vc_05",{1,-1,-1,1}},	
+			//Binoculars
+			{"vn_m19_binocs_grey",{-1,0,2,-1}},
+			{"vn_m19_binocs_grn",{0,0,0,0}},
+			{"vn_mk21_binocs",{-1,4,4,6}},
+			{"vn_anpvs2_binoc",{-1,5,5,6}}, //Nightvision Binocs
+			//Not sure
+			{"vn_b_camo_m14",{-1,4,4,-1}},
+			{"vn_b_camo_m40a1",{-1,4,4,-1}},
+			{"vn_b_camo_m9130",{-1,4,4,-1}},
+			{"vn_b_carbine",{-1,1,-1,-1}},
 			{"vn_rocket_m128_launcher",{-1,0,-1,-1}},
 			{"vn_s_m14",{-1,6,6,-1}},
 			{"vn_s_m16",{-1,5,5,-1}},
@@ -789,21 +894,29 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_s_mk22",{-1,4,4,-1}},
 			{"vn_s_pm",{4,-1,-1,4}},
 			{"vn_s_sten",{-1,4,4,-1}},
-			{"vn_type56_v_03",{5,5,-1,-1}}
+			{"vn_type56_v_03",{5,5,-1,-1}},
+			{"vn_b_m14",{-1,0,0,-1}},
+			{"vn_b_m16",{-1,1,1,-1}},
+			{"vn_b_m1897",{-1,2,2,-1}},
+			{"vn_b_m38",{0,-1,-1,0}},
+			{"vn_b_m4956",{4,-1,-1,4}},
+			{"vn_b_sks",{1,-1,-1,1}},
+			{"vn_b_type56",{2,-1,-1,2}},
+			{"vn_o_3x_m84",{1,3,1,1}},
+			{"vn_o_3x_m9130",{2,-1,-1,2}},
+			{"vn_o_4x_m16",{-1,4,3,-1}},
+			{"vn_o_4x_m4956",{5,-1,-1,5}},
+			{"vn_o_9x_m14",{-1,6,5,-1}},
+			{"vn_o_9x_m16",{-1,6,4,-1}},
+			{"vn_o_9x_m40a1",{-1,3,2,-1}},
+			{"vn_o_9x_m40a1_camo",{-1,3,-1,-1}},
+			{"vn_o_anpvs2_m14",{-1,6,6,-1}},
+			{"vn_o_anpvs2_m16",{-1,6,5,-1}},
+			{"vn_o_anpvs2_m40a1",{-1,6,4,-1}}
 		};
-		
+	
 		backpacks[] = 
 		{
-			{"vn_b_pack_lw_01_m79_p",{-1,3,3,-1}},
-			{"vn_b_pack_lw_01_m79_p",{-1,3,3,-1}},
-			{"vn_b_pack_lw_02_m60_pl",{-1,3,3,-1}},
-			{"vn_b_pack_lw_01_m16_pl",{-1,3,3,-1}},
-			{"vn_b_pack_lw_04_eng_m1897_pl",{-1,3,3,-1}},
-			{"vn_b_pack_m5_01_medic_m16_pl",{-1,3,3,-1}},
-			{"vn_b_pack_02_sten_pl",{-1,3,3,-1}},
-			{"vn_b_pack_01_xm177_pl",{-1,3,3,-1}},
-			{"vn_b_pack_lw_02_rpd_pl",{-1,3,3,-1}},
-			{"vn_b_pack_trp_03_02_eng_m3a1_pl",{-1,3,3,-1}},
 			{"vn_b_pack_01",{-1,3,3,-1}},
 			{"vn_b_pack_01_02",{-1,3,3,-1}},
 			{"vn_b_pack_02",{-1,4,4,-1}},
@@ -823,6 +936,7 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_b_pack_lw_07",{-1,2,2,-1}},
 			{"vn_b_pack_m5_01",{-1,4,4,-1}},
 			{"vn_b_pack_prc77_01",{-1,4,4,-1}},
+			//Blufor Static Backpacks
 			{"vn_b_pack_static_ammo_01",{-1,6,6,-1}},
 			{"vn_b_pack_static_base_01",{-1,0,0,-1}},
 			{"vn_b_pack_static_m1919a4_high_01",{-1,3,3,-1}},
@@ -852,6 +966,10 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_o_pack_06",{5,-1,-1,5}},
 			{"vn_o_pack_07",{6,-1,-1,6}},
 			{"vn_o_pack_08",{4,-1,-1,4}},
+			//1.1 Content
+			{"vn_o_pack_static_type56rr_01",{-1,-1,-1,-1}},
+			//---
+			//Opfor Static Backpacks
 			{"vn_o_pack_static_ammo_01",{6,-1,-1,6}},
 			{"vn_o_pack_static_base_01",{0,-1,-1,0}},
 			{"vn_o_pack_static_dp28_01",{1,-1,-1,1}},
@@ -864,7 +982,7 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_o_pack_static_type63_01",{5,-1,-1,5}},
 			{"vn_o_pack_t884_01",{1,-1,-1,1}}
 		};
-		
+	
 		vehicles[] = 
 		{
 			{"NonSteerable_Parachute_F",{0,0,0,0}},
@@ -1277,7 +1395,19 @@ class vn_whitelisted_arsenal_loadouts
 			{"vn_o_wheeled_z157_repair",{0,-1,-1,-1}},
 			{"vn_o_wheeled_z157_repair_nva65",{0,-1,-1,-1}},
 			{"vn_o_wheeled_z157_repair_nvam",{0,-1,-1,-1}},
-			{"vn_o_wheeled_z157_repair_vcmf",{0,-1,-1,-1}}
+			{"vn_o_wheeled_z157_repair_vcmf",{0,-1,-1,-1}},
+			//1.1 Content
+			{"vn_b_wheeled_m151_mg_05",{-1,4,-1,-1}},
+			{"vn_c_car_01_01",{-1,-1,-1,-1}},
+			{"vn_c_car_02_01",{-1,-1,-1,-1}},
+			{"vn_c_car_03_01",{-1,-1,-1,-1}},
+			{"vn_c_car_04_01",{-1,-1,-1,-1}},
+			{"vn_o_car_04_mg_01",{-1,-1,-1,-1}},
+			{"vn_o_nva_navy_static_v11m",{-1,-1,-1,-1}},
+			{"vn_o_nva_65_static_type56rr",{-1,-1,-1,-1}},
+			{"vn_b_navy_static_l60mk3",{-1,-1,-1,-1}},
+			{"vn_b_navy_static_l70mk2",{-1,-1,-1,-1}}
+			//---
 		};
 		
 	};
