@@ -172,7 +172,7 @@
             class Object162	{side = 8; vehicle = "Land_vn_b_prop_litter_01"; rank = ""; position[] = {75.043,-1.21582,0}; dir = 285.243;};
             class Object163	{side = 8; vehicle = "Land_vn_bagfence_01_long_green_f"; rank = ""; position[] = {73.5992,-11.5742,0.662085}; dir = 0;};
             class Object164	{side = 8; vehicle = "Land_vn_bagfence_01_long_green_f"; rank = ""; position[] = {74.0536,-11.5842,1.63087}; dir = 0;};
-            class Object165	{side = 8; vehicle = "EmptyDetectorArea10x10"; rank = ""; position[] = {90.0684,18.7305,0}; dir = 0;};
+            class Object165	{side = 8; vehicle = "vn_b_ammobox_supply_04"; rank = ""; position[] = {90.0684,18.7305,0}; dir = 0;};
             class Object166	{side = 8; vehicle = "Land_vn_b_trench_firing_05"; rank = ""; position[] = {76.631,11.0234,0}; dir = 313.048;};
             class Object167	{side = 8; vehicle = "Land_vn_b_trench_revetment_05_01"; rank = ""; position[] = {69.9147,12.6121,0}; dir = 131.66;};
             class Object168	{side = 8; vehicle = "Land_vn_b_trench_revetment_05_01"; rank = ""; position[] = {72.0514,10.6414,0.178359}; dir = 131.66;};
