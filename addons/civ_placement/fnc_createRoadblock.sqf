@@ -91,16 +91,63 @@ for "_j" from 1 to (count _roadpoints) do {
     // check for non road position (should be obsolete due to filtering at the beginning)
     if (!isOnRoad _roadpos) exitWith {["Roadblock %1 is not on a road %2! Not created...",_roadpos, position _roadpos] call ALiVE_fnc_dump};
 
-    _roadConnectedTo = roadsConnectedTo _roadpos;
+    _connectedRoads = roadsConnectedTo _roadpos;
 
-    if (count _roadConnectedTo == 0) exitWith {["Selected road %1 for roadblock is a dead end! Not created...",_roadpos] call ALiVE_fnc_dump};
+    if (count _connectedRoads == 0) exitWith {["Selected road %1 for roadblock is a dead end! Not created...",_roadpos] call ALiVE_fnc_dump};
 
-    GVAR(ROADBLOCKS) pushBack (position _roadpos);
+    // get connected roads and filter out the one that are already in the list
+    private ["tempRoads"];
+    tempRoads = _connectedRoads select 0;
 
-    _connectedRoad = _roadConnectedTo select 0;
+    for (i=1, count _connectedRoads) do {
+        if (isInArray GVAR(ROADBLOCKS) tempRoads) then {
+            removeFromArray tempRoads i;
+        };
+    };
+
+    // get the first road that is not in the list yet and add it to the list of roads to be connected to this roadblock. 
+    private ["_connectedRoad"];
+
+    if (count tempRoads > 0) then {
+        _connectedRoad = tempRoads select 0;
+
+        GVAR(ROADBLOCKS).insertAt(_j, position _roadpos);
+
+        // check if there are more roads connected to this one and add them as well. 
+        private ["_newConnectedRods"];
+
+        _newConnectedRods = roadsConnectedTo position _roadpos select 1;
+
+        for (i=0, count _newConnectedRods) do {
+            if (isInArray GVAR(ROADBLOCKS) _newConnectedRods select i) then {
+                removeFromArray _newConnectedRods i;
+            };
+
+        };
+
+        for (i=0, count _newConnectedRods) do {
+            GVAR(ROADBLOCKS).insertAt(_j + 1, position _roadpos);
+
+            // check if there are more roads connected to this one and add them as well. 
+            private ["_nextNewConnectedRoads"];
+
+            _nextNewConnectedRoads = roadsConnectedTo position _roadpos select i;
+
+            for (k=0, count _nextNewConnectedRoads) do {
+                if (isInArray GVAR(ROADBLOCKS) _nextNewConnectedRoads select k) then {
+                    removeFromArray _nextNewConnectedRoads k;
+                };
+
+            };
+
+        };        
+
+    } else exitWith {["Selected road %1 for roadblock is a dead end! Not created...",_roadpos] call ALiVE_fnc_dump};
+
+    // get the direction of the connected roads
+    private ["_direction"];
+
     _direction = (_roadpos getDir _connectedRoad);
-
-    if (_direction < 181) then {_direction = _direction + 180} else {_direction = _direction - 180;};
 
     if (_debug) then {
         private ["_id"];
@@ -109,7 +156,7 @@ for "_j" from 1 to (count _roadpoints) do {
 
         ["Position of Road Block is %1, dir %2", getpos _roadpos, _direction] call ALiVE_fnc_dump;
 
-        [format["roadblock_%1", _id], _roadpos, "Icon", [1,1], "TYPE:", "mil_dot", "TEXT:", "RoadBlock",  "GLOBAL"] call CBA_fnc_createMarker;
+        [format["roadblock_%1", _id], position(_x), "Icon", [1,1], "TYPE:", "mil_dot", "TEXT:", "RoadBlock",  "GLOBAL"] call CBA_fnc_createMarker;
     };
 
     // Get a composition
