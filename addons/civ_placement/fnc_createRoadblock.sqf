@@ -201,7 +201,6 @@ for "_j" from 1 to (count _roadpoints) do {
         _enemy = createUnit [_fac, "Soldier", position _vehicle + vector (0,5,0), 0];
     };
 
-    // Spawn static virtual group if Profile System is loaded and get them to defend
     if !(isnil "ALiVE_ProfileHandler") then {
         private _group = ["Infantry",_fac] call ALIVE_fnc_configGetRandomGroup;
         private _guards = [_group, position _roadpos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
@@ -221,7 +220,11 @@ for "_j" from 1 to (count _roadpoints) do {
             _vehicle = _this select 0;
             _roadpos = _this select 1;
             _fac = _this select 2;
-            _side = _fac call ALiVE_fnc_factionSide;
+            if (isNil "ALiVE") then {  // If ALiVE is not loaded then use the default faction side. This will be a problem if you are using custom factions.  You need to add a line like this: ["FAC", "side", "SideName"] call ALIVE_fnc_configGetRandomGroup in your mission file for each custom faction.  The SideName is the name of the side defined in the mission editor.   See https://github.com/ALiVE-Simulation/ALiVE.OS/wiki for more information
+                _side = "FAC";
+            } else {
+                _side = ALiVE call ALIVE_fnc_factionSide;
+            };
 
             // Spawn group and get them to defend
             _blockers = [getpos _roadpos, _side, "Infantry", _fac] call ALiVE_fnc_randomGroupByType;
