@@ -159,7 +159,6 @@ for "_j" from 1 to (count _roadpoints) do {
         [format["roadblock_%1", _id], position(_x), "Icon", [1,1], "TYPE:", "mil_dot", "TEXT:", "RoadBlock",  "GLOBAL"] call CBA_fnc_createMarker;
     };
 
-    // Get a composition
     private _compType = "Military";
 
     If (_fac call ALiVE_fnc_factionSide == RESISTANCE) then {
@@ -172,7 +171,7 @@ for "_j" from 1 to (count _roadpoints) do {
         private ["_cat","_size"];
         _cat = ["CheckpointsBarricades"];
         _size = ["Medium","Small"];
-        _checkpoint = (selectRandom ([_compType, _cat, _size] call ALiVE_fnc_getCompositions));
+        _checkpoint = (selectRandom ([[], [], []] call ALiVE_fnc_getCompositions)); // TODO: Add the faction to the list of compositions.  This will allow for more dynamic compositions.  Also, add a blacklist so that certain factions can't use certain compositions.  For example, you don't want guerrillas to use military compositions.
     };
 
     // Spawn compositions
@@ -182,17 +181,24 @@ for "_j" from 1 to (count _roadpoints) do {
 
     // Place a vehicle
     private _vehicleTypes = [1, _fac, "Car"] call ALiVE_fnc_findVehicleType;
-    _vehicleTypes = _vehicleTypes - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
-
-    _vehtype = selectRandom _vehicleTypes;
-    if (!isNil "_vehtype") then {
+    if (!isNil "_vehicleTypes") then {
         if !(isnil "ALiVE_ProfileHandler") then {
-            _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, [position _roadpos, 10,30,2,0,5,0] call BIS_fnc_findsafepos, _direction, true, _fac] call ALiVE_fnc_createProfileVehicle;
+            _vehicle = [selectRandom (_vehicleTypes), [], 0] call ALiVE_fnc_createProfileVehicle;
         } else {
-            _vehicle = createVehicle [_vehtype, [position _roadpos, 10,30,2,0,5,0] call BIS_fnc_findsafepos, [], 0, "NONE"];
-            _vehicle setDir _direction;
-            _vehicle setposATL (getposATL _vehicle);
+            private ["rnd", "_x", "_y"];  // TODO: Add the faction to the list of vehicles.  This will allow for more dynamic vehicles.  Also add a blacklist so that certain factions can't use certain vehicles.  For example, you don't want guerrillas to use military vehicles.
+            rnd = random (1, _vehicleTypes count);
+            _x = random (0, 10);
+            _y = random (0, 10);
+
+            // TODO: Add a function that will find a safe position for the vehicle to spawn at.  This will allow for more dynamic spawns and prevent vehicles from spawning on top of each other.
+
+            _vehicle = createVehicle [_vehtype, [position _roadpos + vector (_x,_y), 0] call BIS_fnc_findsafepos];
         };
+    };
+
+    // Place an enemy unit in front of the vehicle if it exists.  This is done so that the player doesn't have to worry about destroying the vehicle before killing the enemy unit in front of it.  The enemy unit is placed slightly ahead of the vehicle so that it's not directly on top of it when spawned.
+    if (!isNil "_vehicle") then {
+        _enemy = createUnit [_fac, "Soldier", position _vehicle + vector (0,5,0), 0];
     };
 
     // Spawn static virtual group if Profile System is loaded and get them to defend
