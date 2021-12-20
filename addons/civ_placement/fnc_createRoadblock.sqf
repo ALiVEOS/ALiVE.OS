@@ -30,7 +30,7 @@ shukari
 private [
     "_grp","_roadpos","_vehicle","_vehtype","_blockers","_roads",
     "_roadConnectedTo", "_connectedRoad","_direction","_checkpoint",
-    "_checkpointComp","_roadpoints"
+    "_connectedRoads","_checkpointComp","_roadpoints"
 ];
 
 params [
