@@ -24,6 +24,9 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
+
+
+
 private ["_profile","_markerCount","_createMarker","_debug","_active","_position","_side","_profileID","_type","_objectType","_vehicleAssignments",
 "_sector","_sectorData","_sectorTerrain","_sectorTerrainSamples","_samples","_sectors","_spawnPosition",
 "_vehicleProfile","_vehicleObjectType","_entitiesInCommandOf","_entitiesInCommandOf","_vehicleClass","_direction",
@@ -141,15 +144,7 @@ switch(_type) do {
 
 					///*
 
-                    _spawnPosition = [_position] call ALIVE_fnc_getClosestRoad;
-
-                    ///*
-                    _positionSeries = [_spawnPosition,100,10] call ALIVE_fnc_getSeriesRoadPositions;
-
-                    if (count _positionSeries > 0) then {
-                        _spawnPosition = selectRandom _positionSeries;
-                    };
-                    //*/
+                   _spawnPosition = _position;
 
                     if (surfaceIsWater _spawnPosition) then {
                         //["GGSP [%1] - car closest road is water",_profileID] call ALIVE_fnc_dump;
@@ -157,25 +152,12 @@ switch(_type) do {
                         _spawnPosition = [_position,0,500,1,1,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
                     };
 
-                    //Set position on ground
-                    _spawnPosition set [2,0];
-
-                    //Check direction of street
-                    _roads = _spawnPosition nearRoads 25;
-                    _roadsConnected = roadsConnectedTo (_roads select 0);
-
-                    if (!isnil "_roadsConnected" && {count _roadsConnected > 1}) then {
-                        _roads = _roadsConnected;
-                        _direction = (_roads select 0) getDir (_roads select 1);
-                    } else {
-                        if (count _roads > 1) then {
-                            _direction = (_roads select 0) getDir (_roads select 1);
-                        };
-                    };
                     //*/
-
+                    //_vehicleClass = _vehicleProfile select 2 select 11;
+                    //systemChat str (_vehicleClass);
+                    //_spawnPosition = [_spawnPosition,0,100,10,0,0.5,0,[],[_spawnPosition], _vehicleClass] call ALIVE_fnc_findFilteredSafePos;
                     //_spawnPosition = [_position,0,100,10,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
-
+                    
                     //["GGSP [%1] - road position: %2 road direction: %3",_profileID,_spawnPosition,_direction] call ALIVE_fnc_dump;
                     //[_spawnPosition,"ROAD",_profileID] call _createMarker;
                 };
@@ -187,10 +169,12 @@ switch(_type) do {
 
                 // update any vehicle profile positions
                 if (_inCommand) then {
+                    //systemChat "In command of a vehicle!";
 
                     //["GGSP [%1] - IN COMMAND count vehicle: %2",_profileID,count _vehicles] call ALIVE_fnc_dump;
 
                     if (count _vehicles > 1) then  {
+                        //systemChat "More than 1 vehicle!";
 
                         // lead vehicle
                         _vehicleProfile = _vehicles select 0;
@@ -198,12 +182,18 @@ switch(_type) do {
                         [_vehicleProfile,"position",_spawnPosition] call ALIVE_fnc_profileVehicle;
                         [_vehicleProfile,"mergePositions"] call ALIVE_fnc_profileVehicle;
 
+                        //systemChat "Spawned lead vehicle?";
+                        //systemChat str(_vehicleProfile select 2 select 10);
+                        //systemChat str(alive (_vehicleProfile select 2 select 10));
+                        //systemChat str(position (_vehicleProfile select 2 select 10));
                         // vehicle is already spawned, move it..
 
                         if (_vehicleProfile select 2 select 1) then {
                             _vehicle = _vehicleProfile select 2 select 10;
                             if !(isNil '_vehicle') then {
-                                _vehicle setPos _spawnPosition;
+                                //_vehicle setPos _spawnPosition;
+                               // systemChat "Set position of lead vehicle!";
+
                             };
                         };
 
@@ -221,8 +211,13 @@ switch(_type) do {
 
                             if (_inAir) then {
                                 _position = _spawnPosition getPos [(100 * ((_forEachIndex)+1)), _direction];
+                                //group of vehicles being paradropped?
+                                _position = [_position,0,50,20,0,0.5,0,[],[_position], _vehicleProfile select 2 select 6] call ALIVE_fnc_findFilteredSafePos;
                             } else {
+                                //_position = _spawnPosition getPos [(20 * ((_forEachIndex)+1)), _direction];
                                 _position = _spawnPosition getPos [(20 * ((_forEachIndex)+1)), _direction];
+                                //_position = [_intendedPos,0,100,10,0,0.5,0,[],[_intendedPos]] call ALIVE_fnc_findFilteredSafePos;
+
                             };
 
                             //["GROUP POS: %1",_position] call ALIVE_fnc_dump;
@@ -243,7 +238,8 @@ switch(_type) do {
 
 							*/
 
-                            _position = [_position,0,20,10,0,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
+                            
+                            //_position = [_position,0,20,10,0,0.5,0,[],[_position]] call ALIVE_fnc_findFilteredSafePos;
 
                             //["GROUP POS FINAL: %1",_position] call ALIVE_fnc_dump;
                             //[_position,"GROUP FINAL",_profileID] call _createMarker;
@@ -256,7 +252,7 @@ switch(_type) do {
                             if (_vehicleProfile select 2 select 1) then {
                                 _vehicle = _vehicleProfile select 2 select 10;
                                 if !(isNil '_vehicle') then {
-                                    _vehicle setPos _position;
+                                    //_vehicle setPos _position;
                                 };
                             };
                              /*
@@ -278,7 +274,7 @@ switch(_type) do {
                             if (_vehicleProfile select 2 select 1) then {
                                 _vehicle = _vehicleProfile select 2 select 10;
                                 if !(isNil '_vehicle') then {
-                                    _vehicle setPos _spawnPosition;
+                                    //_vehicle setPos _spawnPosition;
                                 };
                             };
                              /*
@@ -296,7 +292,7 @@ switch(_type) do {
 
             //Not in command of a vehicle
             if !(_inCommand) then {
-
+                //systemChat "Not in command of a vehicle!";
                 // spawn position is in the water
                 if (surfaceIsWater _position) then {
 
