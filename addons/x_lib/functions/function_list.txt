@@ -214,6 +214,7 @@ map
 	ALiVE_fnc_getObjectsByType
 	ALiVE_fnc_getRandomPositionLand
 	ALiVE_fnc_getSeriesRoadPositions
+	ALiVE_fnc_getSortedSeriesRoadPositions
 	ALiVE_fnc_gridPos
 	ALiVE_fnc_isHouseEnterable
 	ALiVE_fnc_nearShip

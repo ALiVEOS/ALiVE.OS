@@ -38,6 +38,8 @@ Parameters:
 	8: (Optional) ARRAY - array in format [landPosition, seaPosition], where:
 			landPosition: ARRAY - in format [x,y] or [x,y,z] - default position on land
 			seaPosition: ARRAY - in format [x,y] or [x,y,z] - default position on water
+	
+	9: (Optional) STRING - string that defines the type of the vehicle: car, truck, armored or tank
 
 Returns:
 	ARRAY - position solution
@@ -60,7 +62,7 @@ params [
 	["_shoreMode",0], 
 	["_posBlacklist",[]],
 	["_defaultPos",[]],
-	["_vehicleType", []]
+	["_vehicleType", ""]
 ];
 
 private _debugging = false;
@@ -88,11 +90,57 @@ fn_vehicleTypeIsCar = {
 
 // false = the area is clear
 fn_checkForStatic = {
-	params [["_vehicleClass", ""], ["_position", [0,0,0]]];
+	params [
+		["_position", [0,0,0]],
+		["_avoidanceDistance", _objectProximity],
+		["_staticIgnore", []]
+	];
 
-	if !(_position nearObjects ["house", _objectProximity] isEqualTo []) exitWith {["[CFS] Too close from a house", 0] call fn_debugMessage; true};
-	if !(_position nearObjects ["Ruins", _objectProximity] isEqualTo []) exitWith {["[CFS] Too close from a ruin", 0] call fn_debugMessage; true};
-	if !(_position nearObjects ["Wreck_Base", _objectProximity] isEqualTo []) exitWith {["[CFS] Too close from a wreck", 0] call fn_debugMessage; true};
+	_staticObjectsToCheck = ["BUILDING", 
+			"BUNKER", 
+			"BUSH", //<--- problematic, invisible bushes exist for some reason, should exclude from road check, no bushes in roads, right? 
+			"BUSSTOP", 
+			"CHAPEL", 
+			"CHURCH", 
+			"CROSS", 
+			"FENCE", 
+			"FOREST BORDER", 
+			"FOREST SQUARE", 
+			"FOREST TRIANGLE", 
+			"FOREST", 
+			"FORTRESS", 
+			"FOUNTAIN", 
+			"FUELSTATION", 
+			"HIDE", // <--- problematic, disable always
+			"HOSPITAL", 
+			"HOUSE", 
+			"LIGHTHOUSE", 
+			"POWER LINES", 
+			"POWERSOLAR", 
+			"POWERWAVE", 
+			"POWERWIND", 
+			"QUAY", 
+			"RAILWAY", 
+			"ROCK", 
+			"ROCKS", 
+			"RUIN", 
+			"SHIPWRECK",
+			"SMALL TREE",
+			"STACK", 
+			"TOURISM", 
+			"TRANSMITTER", 
+			"TREE",
+			"VIEW-TOWER", 
+			"WALL", 
+			"WATERTOWER", 
+			"Wreck_Base"
+	];
+	 if !(nearestTerrainObjects [_position, _staticObjectsToCheck - _staticIgnore, _avoidanceDistance, false, true] isEqualTo []) exitWith {["[CFS] Too close from a static object", 0] call fn_debugMessage; true};
+			//TODO: Test without the +5, it is currently to assert a big truck won't get near a big debris
+
+	if !(_position nearObjects ["house", _avoidanceDistance] isEqualTo []) exitWith {["[CFS] Too close from a house", 0] call fn_debugMessage; true};
+	if !(_position nearObjects ["Ruins", _avoidanceDistance] isEqualTo []) exitWith {["[CFS] Too close from a ruin", 0] call fn_debugMessage; true};
+	if !(_position nearObjects ["Wreck_Base", _avoidanceDistance] isEqualTo []) exitWith {["[CFS] Too close from a wreck", 0] call fn_debugMessage; true};
 	false
 };
 
@@ -186,66 +234,15 @@ private _rem = 1 - _off;
 private _gradientRadius = 1 max _objectProximity * 0.1;
 
 
-//Run and call manually, will plot the nearby roads where it's possible to spawn
-//_distance is the obstacle avoidance distance
-fn_debugRoads = {
-	params [["_position", []], ["_distance", 0]];
-	// Find near roads suitable for the vehicles
 
-	//debug
-	_dbgVehicleTypeBadPos = "Sign_Arrow_Large_F";
-	_dbgVehicleTypeGoodPos = "Sign_Arrow_Large_Green_F";
-	//////
-
-	////Map nearby roads and create the markers to check the logic
-
-	_spawnPosition = [_position] call ALIVE_fnc_getClosestRoad;
-	_positionSeries = [_spawnPosition, 100, 30] call ALIVE_fnc_getSeriesRoadPositions;
-	systemChat str(_spawnPosition);
-
-	_sortedPositionSeries = [_positionSeries, [_spawnPosition], { _input0 distance _x }, "ASCEND", { true }] call BIS_fnc_sortBy;
-
-	_positionsPossible = count _positionSeries;
-	_found = false;
-	_goodPositions = [];
-	_badPositions = [];
-	//if there are one or more canditates for spawn
-	if (_positionsPossible > 0) then {
-		for "_i" from 0 to _positionsPossible-1 do
-		{
-			systemChat str(_i);
-			_spawnPosition = _sortedPositionSeries select _i;
-			if ([_spawnPosition, _distance] call fn_checkForOtherVehiclesNear) then {
-				["[Road finder] There's another vehicle in this road", 0] call fn_debugMessage;
-				_badPositions pushBack _spawnPosition;
-				continue;
-			};
-			if ([_spawnPosition] call fn_checkIfIsBridge) then {
-				["[Road finder] Spawn on bridge not implemented, skip "+str(_spawnPosition), 1] call fn_debugMessage;
-				_badPositions pushBack _spawnPosition;
-				continue;
-			};
-			_goodPositions pushBack _spawnPosition;
-		};
-		{
-			_dbgVehicleTypeGoodPos createVehicleLocal _x;
-		}forEach _goodPositions;
-		{
-			_dbgVehicleTypeBadPos createVehicleLocal _x;
-		}forEach _badPositions;
-	
-	};
-};
+private _spawnPosition = [_position] call ALIVE_fnc_getClosestRoad;
+private _sortedPositionSeries = [_spawnPosition, _maxDistance, 30] call ALIVE_fnc_getSortedSeriesRoadPositions;
 
 
-_spawnPosition = [_position] call ALIVE_fnc_getClosestRoad;
-_positionSeries = [_spawnPosition, _maxDistance, 30] call ALIVE_fnc_getSeriesRoadPositions;
+//_sortedPositionSeries = [_positionSeries, [_spawnPosition], { _input0 distance _x }, "ASCEND", { true }] call BIS_fnc_sortBy;
 
-
-_sortedPositionSeries = [_positionSeries, [_spawnPosition], { _input0 distance _x }, "ASCEND", { true }] call BIS_fnc_sortBy;
-
-_positionsPossible = count _positionSeries;
-_found = false;
+private _positionsPossible = count _sortedPositionSeries;
+private _found = false;
 
 //if there are one or more canditates for spawn
 if (_positionsPossible > 0) then {
@@ -255,6 +252,7 @@ if (_positionsPossible > 0) then {
 		if (_found) exitWith {_spawnPosition};
 		_spawnPosition = _sortedPositionSeries select _i;
 		if ([_spawnPosition, _objectProximity] call fn_checkForOtherVehiclesNear) then {["[Road finder] There's another vehicle in this road", 0] call fn_debugMessage; continue;};
+		if ([_spawnPosition, 2, ["BUSH", "HIDE"]] call fn_checkForStatic) then {["[Road finder] There's a small obstacle in this road", 0] call fn_debugMessage; continue;};
 		if ([_spawnPosition] call fn_checkIfIsBridge) then {["[Road finder] Spawn on bridge not implemented, skip "+str(_spawnPosition), 1] call fn_debugMessage; continue;};
 		_found = true;
 	};
@@ -274,55 +272,6 @@ for "_i" from 1 to MAX_TRIES do
 		// position is roughly suitable
 		if (_this isFlatEmpty [-1, -1, _maxGradient, _gradientRadius, _waterMode, _shoreMode] isEqualTo []) then {continue;};
 		
-		// away from other objects, but allow for roads, trails and other not dangerously places for vehicles
-		if (_checkProximity && {!(nearestTerrainObjects [_this, [
-			"BUILDING", 
-			"BUNKER", 
-			"BUSH", 
-			"BUSSTOP", 
-			"CHAPEL", 
-			"CHURCH", 
-			"CROSS", 
-			"FENCE", 
-			"FOREST BORDER", 
-			"FOREST SQUARE", 
-			"FOREST TRIANGLE", 
-			"FOREST", 
-			"FORTRESS", 
-			"FOUNTAIN", 
-			"FUELSTATION", 
-			"HIDE", 
-			"HOSPITAL", 
-			"HOUSE", 
-			"LIGHTHOUSE", 
-			"POWER LINES", 
-			"POWERSOLAR", 
-			"POWERWAVE", 
-			"POWERWIND", 
-			"QUAY", 
-			"RAILWAY", 
-			"ROCK", 
-			"ROCKS", 
-			"RUIN", 
-			"SHIPWRECK",
-			"SMALL TREE",
-			"STACK", 
-			"TOURISM", 
-			"TRANSMITTER", 
-			"TREE",
-			"VIEW-TOWER", 
-			"WALL", 
-			"WATERTOWER", 
-			"Wreck_Base"
-			], _objectProximity + 5, false, true] isEqualTo [])}) then {continue;};
-			//TODO: Test without the +5, it is currently to assert a big truck won't get near a big debris
-				
-		// not inside something
-		if !(lineIntersectsSurfaces [AGLtoASL _this, AGLtoASL _this vectorAdd [0, 0, 50], objNull, objNull, false, 1, "GEOM", "NONE"] isEqualTo []) then {continue;};
-		
-		// not in blacklist
-		if (_checkBlacklist && {{if (_this inArea _x) exitWith {true}; false} forEach _posBlacklist}) then {continue};
-		
 		// Vehicle is dangerously close to static things
 		/*
 		Note: Building distance is measured from the center, due to this, the below function isn't perfect
@@ -333,7 +282,14 @@ for "_i" from 1 to MAX_TRIES do
 		Another possible way to handle the gigantic structures is calculating intersections with the nearest buildings using
 		the bounding box, should be quick and may be worth a try
 		*/
-		if ([_this] call fn_checkForStatic) then {continue};
+		if ([_this, _objectProximity + 5, ["HIDE"]] call fn_checkForStatic) then {continue};
+				
+		// not inside something
+		if !(lineIntersectsSurfaces [AGLtoASL _this, AGLtoASL _this vectorAdd [0, 0, 50], objNull, objNull, false, 1, "GEOM", "NONE"] isEqualTo []) then {continue;};
+		
+		// not in blacklist
+		if (_checkBlacklist && {{if (_this inArea _x) exitWith {true}; false} forEach _posBlacklist}) then {continue};
+		
 
 		// Vehicle is dangerously close to another vehicle
 		if ([_this, _objectProximity] call fn_checkForOtherVehiclesNear) then {continue};
