@@ -1164,7 +1164,10 @@ switch(_operation) do {
 
                     _eventID = [_event, "id"] call ALIVE_fnc_hashGet;
                     _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
-                    _eventForceMakeup = _eventData select 3;
+                    
+                    //Sanitize _eventForceMakeup, 0 is the minimum for every reinforcement type
+                    _eventForceMakeup = (_eventData select 3) apply { _x max 0 };
+                    
                     _eventType = _eventData select 4;
 
                     _forceMakeupTotal = 0;

@@ -24,7 +24,7 @@ item19[] = {"NOT_BUSY_1",2,250,-520.941284,16.271149,-430.941254,66.271149,0.000
 item20[] = {"COLLECT_TO_QUEUE",2,250,-599.758545,-647.769531,-509.758667,-597.769531,0.000000,"COLLECT" \n "TO QUEUE"};
 item21[] = {"ENTRIES_IN_QUEUE",4,218,-598.921387,-529.275208,-508.921387,-479.275299,2.000000,"ENTRIES" \n "IN QUEUE"};
 item22[] = {"ANALYZE_Conditio",4,218,-1203.018188,-310.200287,-1113.017944,-260.200104,0.000000,"ANALYZE" \n "Conditions"};
-item23[] = {"PERFORM_ANALYSIS",2,4346,-1205.917603,-535.859314,-1115.917603,-485.859314,0.000000,"PERFORM" \n "ANALYSIS"};
+item23[] = {"PERFORM_ANALYSIS",2,250,-1205.917603,-535.859314,-1115.917603,-485.859314,0.000000,"PERFORM" \n "ANALYSIS"};
 item24[] = {"ANALYSIS_DONE",4,218,-1209.427368,-599.538696,-1119.427368,-549.538696,0.000000,"ANALYSIS" \n "DONE"};
 item25[] = {"RESET",2,250,-1210.631958,-838.320801,-1120.631958,-788.320801,0.000000,"RESET"};
 item26[] = {"PERFORM_CLEANUP",2,250,-1201.964966,-382.972961,-1111.964966,-332.972961,0.000000,"PERFORM" \n "CLEANUP"};
@@ -34,7 +34,7 @@ item29[] = {"END",1,250,-712.089600,226.488464,-622.089539,276.488434,0.000000,"
 item30[] = {"REEINFORCE_Condi",4,218,-269.226440,-306.737396,-179.226395,-256.737396,0.000000,"REEINFORCE" \n "Conditions"};
 item31[] = {"REQUEST_REEINFOR",2,250,-269.835327,-838.042908,-179.835312,-788.042908,0.000000,"REQUEST" \n "REEINFORCEMENTS"};
 item32[] = {"",7,210,-1164.081909,36.036972,-1156.081909,44.036972,0.000000,""};
-item33[] = {"PERFORM_POSTANAL",2,250,-1209.788086,-683.964172,-1119.788086,-633.964172,0.000000,"PERFORM" \n "POSTANALYSIS"};
+item33[] = {"PERFORM_POSTANAL",2,4346,-1209.788086,-683.964172,-1119.788086,-633.964172,0.000000,"PERFORM" \n "POSTANALYSIS"};
 item34[] = {"POST_ANALYSIS_DO",4,218,-1208.969116,-760.668579,-1118.969116,-710.668579,0.000000,"POST" \n "ANALYSIS" \n "DONE"};
 item35[] = {"QRF_Conditions",4,218,-133.845856,-306.268250,-43.845856,-256.268250,0.000000,"QRF" \n "Conditions"};
 item36[] = {"REQUEST_QRF",2,250,-133.738892,-834.303589,-43.738892,-784.303650,0.000000,"REQUEST" \n "QRF"};
@@ -113,8 +113,8 @@ link53[] = {38,6};
 link54[] = {39,40};
 link55[] = {40,6};
 link56[] = {41,18};
-globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1296.222168,-411.687134,-19.027405,-873.655518,769,743,1};
-window[] = {0,-1,-1,-32000,-32000,967,121,1876,52,1,787};
+globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1296.222168,-411.687134,-19.027405,-873.655518,597,572,1};
+window[] = {2,-1,-1,-32000,-32000,892,104,1490,104,3,615};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -1243,7 +1243,15 @@ class FSM
                          "    _startCount = _startCount + (_startForcesStrength select _i);" \n
                          "    _currentCount = _currentCount + (_currentForceStrength select _i);" \n
                          "" \n
-                         "    _diff pushback ((_startForcesStrength select _i)-(_currentForceStrength select _i));" \n
+                         "" \n
+                         "	private _calcDiff = (_startForcesStrength select _i)-(_currentForceStrength select _i);" \n
+                         "	// Sanitize _calcDiff to not allow excess units from after the game started, like logistic vehicles and player profiled entities." \n
+                         "	// _currentForceStrenght > _startForcesStrength used to break the logistics and stall OPCOM, see issue #765" \n
+                         "	_calcDiff = _calcDiff max 0;" \n
+                         "" \n
+                         "	//oof" \n
+                         "	//_diff pushback ((_startForcesStrength select _i)-(_currentForceStrength select _i));" \n
+                         "	_diff pushback _calcDiff;" \n
                          "  };" \n
                          "" \n
                          "  if ( _currentCount != 0 && _startCount != 0 && [""ALiVE_MIL_LOGISTICS""] call ALiVE_fnc_isModuleAvailable) then {" \n
