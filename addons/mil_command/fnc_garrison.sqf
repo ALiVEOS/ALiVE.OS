@@ -37,6 +37,7 @@ if (_args isEqualType []) then {
     _onlyProfiles = (_args param [1, "false", [""]]) == "true";
 };
 
+if (isnil "_profile") exitWith {};
 _id = [_profile,"profileID","error"] call ALiVE_fnc_HashGet;
 _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
 _type = [_profile,"type",""] call ALiVE_fnc_HashGet;

@@ -266,15 +266,17 @@ switch(_operation) do {
 
     case "buildSpotrepForProfile": {
         _args params ["_profile","_timeSinceSeen"];
-
+        
         if (_profile isequaltype "") then {
             _profile = [ALiVE_profileHandler,"getProfile", _profile] call ALiVE_fnc_profileHandler;
         };
 
+        //Sanitize _profile, it may be dead and unregistered, thus returning null.
+        if (isnil "_profile") exitWith {};
+
         private _profileID = _profile select 2 select 4;
         private _side = _profile select 2 select 3;
         private _position = _profile select 2 select 2;
-
         private _faction = [_profile,"faction"] call ALiVE_fnc_hashGet;
 
         private _entityType = _profile select 2 select 5;
