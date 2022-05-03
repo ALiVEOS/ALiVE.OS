@@ -1164,15 +1164,16 @@ switch(_operation) do {
 
                     _eventID = [_event, "id"] call ALIVE_fnc_hashGet;
                     _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
-                    
-                    //Sanitize _eventForceMakeup, 0 is the minimum for every reinforcement type
-                    _eventForceMakeup = (_eventData select 3) apply { _x max 0 };
-                    
+                    _eventForceMakeup = _eventData select 3;
                     _eventType = _eventData select 4;
 
                     _forceMakeupTotal = 0;
 
                     if(_eventType == "STANDARD" || _eventType == "AIRDROP" || _eventType == "HELI_INSERT") then {
+
+                        //Sanitize _eventForceMakeup, 0 is the minimum for every reinforcement type, only for default logistics
+                        //Restricted to opcom calls as the player logistic requests are made different
+                        _eventForceMakeup = (_eventData select 3) apply { _x max 0 };
 
                         _allowInfantry = [_logic, "allowInfantryReinforcement"] call MAINCLASS;
                         _allowMechanised = [_logic, "allowMechanisedReinforcement"] call MAINCLASS;
