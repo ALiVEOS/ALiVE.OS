@@ -1164,7 +1164,6 @@ switch(_operation) do {
 
                     _eventID = [_event, "id"] call ALIVE_fnc_hashGet;
                     _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
-                    _eventForceMakeup = _eventData select 3;
                     _eventType = _eventData select 4;
 
                     _forceMakeupTotal = 0;
@@ -1235,6 +1234,8 @@ switch(_operation) do {
 
                     }else{
 
+                        _eventForceMakeup = _eventData select 3; //The array of player logistics is different than opcom one
+                        
                         _playerID = _eventData select 5;
                         _requestID = _eventForceMakeup select 0;
 
