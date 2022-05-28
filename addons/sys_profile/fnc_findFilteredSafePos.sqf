@@ -65,19 +65,29 @@ params [
 	["_vehicleType", ""]
 ];
 
-private _debugging = false;
-private _logLevel = 0;
+private [
+	"_fn_debugMessage",
+	"_fn_vehicleTypeIsCar",
+	"_fn_checkForStatic",
+	"_fn_checkForOtherVehiclesNear",
+	"_fn_checkIfIsBridge"
+];
 
-fn_debugMessage = {
+private _debugging = false;
+//minimum message log level, used to filter the debugMessages: ["message", logLevel] call fn_debugMessage;
+private _logLevel = 0; 
+
+//debugMessage will only print when _debugging is on, will also filter the logs by level
+_fn_debugMessage = {
 	params [["_message", ""], ["_messageLevel", 0]];
-	if !(_debugging) exitWith {};
-	if (_logLevel > _messageLevel) exitWith {};
+	if !(_debugging) exitWith { false };
+	if (_logLevel > _messageLevel) exitWith { false };
 	if (isNil "_message") exitWith { false };
 	systemChat _message;
-	_message
+	true
 };
 
-fn_vehicleTypeIsCar = {
+_fn_vehicleTypeIsCar = {
 	_inCar = false;
 	switch tolower(_vehicleType) do {
 		case "car" : {_inCar = true};
@@ -89,14 +99,15 @@ fn_vehicleTypeIsCar = {
 };
 
 // false = the area is clear
-fn_checkForStatic = {
+_fn_checkForStatic = {
 	params [
 		["_position", [0,0,0]],
 		["_avoidanceDistance", _objectProximity],
 		["_staticIgnore", []]
 	];
 
-	_staticObjectsToCheck = ["BUILDING", 
+	_staticObjectsToCheck = [
+			"BUILDING", 
 			"BUNKER", 
 			"BUSH", //<--- problematic, invisible bushes exist for some reason, should exclude from road check, no bushes in roads, right? 
 			"BUSSTOP", 
@@ -111,7 +122,7 @@ fn_checkForStatic = {
 			"FORTRESS", 
 			"FOUNTAIN", 
 			"FUELSTATION", 
-			"HIDE", // <--- problematic, disable always
+			"HIDE",
 			"HOSPITAL", 
 			"HOUSE", 
 			"LIGHTHOUSE", 
@@ -135,35 +146,42 @@ fn_checkForStatic = {
 			"WATERTOWER", 
 			"Wreck_Base"
 	];
-	 if !(nearestTerrainObjects [_position, _staticObjectsToCheck - _staticIgnore, _avoidanceDistance, false, true] isEqualTo []) exitWith {["[CFS] Too close from a static object", 0] call fn_debugMessage; true};
-			//TODO: Test without the +5, it is currently to assert a big truck won't get near a big debris
+	 if !(nearestTerrainObjects [_position, _staticObjectsToCheck - _staticIgnore, _avoidanceDistance, false, true] isEqualTo []) exitWith {["[CFS] Too close from a static object", 0] call _fn_debugMessage; true};
 
-	if !(_position nearObjects ["house", _avoidanceDistance] isEqualTo []) exitWith {["[CFS] Too close from a house", 0] call fn_debugMessage; true};
-	if !(_position nearObjects ["Ruins", _avoidanceDistance] isEqualTo []) exitWith {["[CFS] Too close from a ruin", 0] call fn_debugMessage; true};
-	if !(_position nearObjects ["Wreck_Base", _avoidanceDistance] isEqualTo []) exitWith {["[CFS] Too close from a wreck", 0] call fn_debugMessage; true};
+	if(_debugging) then {
+		if !(_position nearObjects ["house", _avoidanceDistance] isEqualTo []) exitWith {["[CFS] Too close from a house", 0] call _fn_debugMessage; true};
+		if !(_position nearObjects ["Ruins", _avoidanceDistance] isEqualTo []) exitWith {["[CFS] Too close from a ruin", 0] call _fn_debugMessage; true};
+		if !(_position nearObjects ["Wreck_Base", _avoidanceDistance] isEqualTo []) exitWith {["[CFS] Too close from a wreck", 0] call _fn_debugMessage; true};
+	} else {
+		if !(nearestObjects [_position, ["house", "Ruins", "Wreck_Base"], _avoidanceDistance] isEqualTo []) exitWith {true};
+	};
 	false
 };
 
 //false = the area is clear
-fn_checkForOtherVehiclesNear = {
+_fn_checkForOtherVehiclesNear = {
 	params [["_position", []], ["_distance", 0]];
 
-	if !(_position nearObjects ["Car", _distance] isEqualTo []) exitWith {["[CFOVN] Too close from another car", 0] call fn_debugMessage; true};
-	if !(_position nearObjects ["Truck", _distance] isEqualTo []) exitWith {["[CFOVN] Too close from another Truck", 0] call fn_debugMessage; true};
-	if !(_position nearObjects ["Tank", _distance] isEqualTo []) exitWith {["[CFOVN] Too close from another Tank", 0] call fn_debugMessage; true};
-	if !(_position nearObjects ["Plane", _distance] isEqualTo []) exitWith {["[CFOVN] Too close from another Plane", 0] call fn_debugMessage; true};
-	if !(_position nearObjects ["Helicopter", _distance] isEqualTo []) exitWith {["[CFOVN] Too close from another Helicopter", 0] call fn_debugMessage; true};
-	false
+	if (_debugging) then {
+		if !(_position nearObjects ["Car", _distance] isEqualTo []) exitWith {["[CFOVN] Too close from another car", 0] call _fn_debugMessage; true};
+		if !(_position nearObjects ["Truck", _distance] isEqualTo []) exitWith {["[CFOVN] Too close from another Truck", 0] call _fn_debugMessage; true};
+		if !(_position nearObjects ["Tank", _distance] isEqualTo []) exitWith {["[CFOVN] Too close from another Tank", 0] call _fn_debugMessage; true};
+		if !(_position nearObjects ["Plane", _distance] isEqualTo []) exitWith {["[CFOVN] Too close from another Plane", 0] call _fn_debugMessage; true};
+		if !(_position nearObjects ["Helicopter", _distance] isEqualTo []) exitWith {["[CFOVN] Too close from another Helicopter", 0] call _fn_debugMessage; true};
+		false
+	} else {
+		if !(nearestObjects [_position, ["Car", "Truck", "Tank", "Plane", "Helicopter"], _distance] isEqualTo []) exitWith {true};
+	};
 };
 
 //false = it's not a bridge
-fn_checkIfIsBridge = {
+_fn_checkIfIsBridge = {
 	params [["_position", []]];
 
 	_road = roadAt _position;
 	if (isNil "_road") exitWith { false };
 	_info = getRoadInfo _road;
-	if (_info select 8) exitWith {["[BRIDGE] This segment is a bridge", 1] call fn_debugMessage; true}; //isBridge
+	if (_info select 8) exitWith {["[BRIDGE] This segment is a bridge", 1] call _fn_debugMessage; true}; //isBridge
 	false
 };
 
@@ -187,8 +205,8 @@ private _fnc_defaultPos =
 	_defaultCenterPos
 };
 
-//Do not handle other things that are not vehicles!
-if !(call fn_vehicleTypeIsCar) exitWith {["[Vehicle type] Do not handle non cars", 2] call fn_debugMessage; _checkPos};
+//Do not handle vehicles that aren't supposed to spawn on roads, like static weapons and planes!
+if !(call _fn_vehicleTypeIsCar) exitWith {["[Vehicle type] Do not handle non cars", 2] call _fn_debugMessage; _checkPos};
 
 
 if (_checkPos isEqualTo []) then
@@ -236,10 +254,14 @@ private _gradientRadius = 1 max _objectProximity * 0.1;
 
 
 private _spawnPosition = [_position] call ALIVE_fnc_getClosestRoad;
+
+/*
+30 is the number of segments returned from the function, can reduce this number,
+but it also represents the number of vehicles that can be stacked like a convoy
+when they attempt to spawn at the exact same position
+*/
+
 private _sortedPositionSeries = [_spawnPosition, _maxDistance, 30] call ALIVE_fnc_getSortedSeriesRoadPositions;
-
-
-//_sortedPositionSeries = [_positionSeries, [_spawnPosition], { _input0 distance _x }, "ASCEND", { true }] call BIS_fnc_sortBy;
 
 private _positionsPossible = count _sortedPositionSeries;
 private _found = false;
@@ -251,18 +273,17 @@ if (_positionsPossible > 0) then {
 		//When the perfect road candidate is found, break out of this loop and return _spawnPosition 
 		if (_found) exitWith {_spawnPosition};
 		_spawnPosition = _sortedPositionSeries select _i;
-		if ([_spawnPosition, _objectProximity] call fn_checkForOtherVehiclesNear) then {["[Road finder] There's another vehicle in this road", 0] call fn_debugMessage; continue;};
-		if ([_spawnPosition, 2, ["BUSH", "HIDE"]] call fn_checkForStatic) then {["[Road finder] There's a small obstacle in this road", 0] call fn_debugMessage; continue;};
-		if ([_spawnPosition] call fn_checkIfIsBridge) then {["[Road finder] Spawn on bridge not implemented, skip "+str(_spawnPosition), 1] call fn_debugMessage; continue;};
+		if ([_spawnPosition, _objectProximity] call _fn_checkForOtherVehiclesNear) then {["[Road finder] There's another vehicle in this road", 0] call _fn_debugMessage; continue;};
+		if ([_spawnPosition, 2, ["BUSH", "HIDE"]] call _fn_checkForStatic) then {["[Road finder] There's a small obstacle in this road", 0] call _fn_debugMessage; continue;};
+		if ([_spawnPosition] call _fn_checkIfIsBridge) then {["[Road finder] Spawn on bridge not implemented, skip "+str(_spawnPosition), 1] call _fn_debugMessage; continue;};
 		_found = true;
 	};
 	if (_found) exitWith {_spawnPosition};
 };
 if (_found) exitWith {_spawnPosition};
 
-
 //Tried every road near and they either doesn't exist or are too busy
-["[Road finder] Exhausted tries! going for heuristic search", 2] call fn_debugMessage;
+["[Road finder] Exhausted tries! going for heuristic search", 2] call _fn_debugMessage;
 
 
 for "_i" from 1 to MAX_TRIES do
@@ -282,7 +303,7 @@ for "_i" from 1 to MAX_TRIES do
 		Another possible way to handle the gigantic structures is calculating intersections with the nearest buildings using
 		the bounding box, should be quick and may be worth a try
 		*/
-		if ([_this, _objectProximity + 5, ["HIDE"]] call fn_checkForStatic) then {continue};
+		if ([_this, _objectProximity + 5, ["HIDE"]] call _fn_checkForStatic) then {continue};
 				
 		// not inside something
 		if !(lineIntersectsSurfaces [AGLtoASL _this, AGLtoASL _this vectorAdd [0, 0, 50], objNull, objNull, false, 1, "GEOM", "NONE"] isEqualTo []) then {continue;};
@@ -292,7 +313,7 @@ for "_i" from 1 to MAX_TRIES do
 		
 
 		// Vehicle is dangerously close to another vehicle
-		if ([_this, _objectProximity] call fn_checkForOtherVehiclesNear) then {continue};
+		if ([_this, _objectProximity] call _fn_checkForOtherVehiclesNear) then {continue};
 
 		_this select [0, 2] breakOut "main";
 	};
@@ -300,6 +321,6 @@ for "_i" from 1 to MAX_TRIES do
 
 
 // Search failed, will spawn in the default position from the profile, not checking anything and will probably explode
-["[Heuristic] Heuristic search failed, area isn't safe, default pos", 2] call fn_debugMessage;
+["[Heuristic] Heuristic search failed, area isn't safe, default pos", 2] call _fn_debugMessage;
 
 (_waterMode != 0) call _fnc_defaultPos 
