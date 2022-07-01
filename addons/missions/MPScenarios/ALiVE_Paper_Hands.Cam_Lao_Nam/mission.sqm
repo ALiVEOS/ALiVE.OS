@@ -274,10 +274,6 @@ class AddonsMetaData
 		};
 	};
 };
-dlcs[]=
-{
-	"VN"
-};
 randomSeed=8300791;
 class ScenarioData
 {

@@ -336,7 +336,6 @@ class AddonsMetaData
 };
 dlcs[]=
 {
-	"VN",
 	"Argo",
 	"Expansion",
 	"Tank",
