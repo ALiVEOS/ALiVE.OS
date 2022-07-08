@@ -11,7 +11,7 @@ item6[] = {"create_equip_tas",2,250,-72.606003,-123.204498,27.393997,-73.204498,
 item7[] = {"near_arsenal",4,218,-71.489258,-23.824707,28.510742,26.175293,1.000000,"near arsenal"};
 item8[] = {"Move_out",2,250,-69.707367,217.961304,30.292633,267.961304,0.000000,"Move out"};
 item9[] = {"travel_to_one_marked",2,250,-69.060150,600.163940,30.939850,650.163940,0.000000,"travel to one" \n "marked area"};
-item10[] = {"___500m_distance",4,218,-81.702271,699.362244,35.938477,764.217529,1.000000,"< 500m" \n "distance to" \n "AO"};
+item10[] = {"___300m_distance",4,218,-81.702271,699.362244,35.938477,764.217529,1.000000,"< 300m" \n "distance to" \n "AO"};
 item11[] = {"rescue_successfu",4,218,-260.078705,901.061890,-44.021118,982.629883,0.000000,"rescue successful"};
 item12[] = {"task_succeeded",2,250,-153.305725,1041.054443,-53.305725,1091.054443,0.000000,"task succeeded"};
 item13[] = {"_",8,218,-78.305725,1116.054443,21.694275,1166.054443,0.000000,""};
@@ -22,8 +22,8 @@ item17[] = {"",7,210,47.336548,885.060547,55.336548,893.060303,0.000000,""};
 item18[] = {"",7,210,-102.663437,885.060547,-94.663452,893.060303,0.000000,""};
 item19[] = {"",7,210,-107.305733,1137.054443,-99.305717,1145.054443,0.000000,""};
 item20[] = {"",7,210,42.694275,1137.054443,50.694275,1145.054443,0.000000,""};
-item21[] = {"mission_end",1,4346,-76.640503,1208.837524,23.359497,1258.837524,0.000000,"mission end"};
-item22[] = {"__x_task_done",2,250,-80.396034,423.443481,40.656311,483.159912,0.000000,"2x task done"};
+item21[] = {"mission_end",1,250,-76.640503,1208.837524,23.359497,1258.837524,0.000000,"mission end"};
+item22[] = {"task_2_done",2,250,-80.396034,423.443481,40.656311,483.159912,0.000000," task 2 done"};
 item23[] = {"time_passed_",4,218,-82.703522,509.259460,46.813873,578.509949,0.000000,"time passed?"};
 item24[] = {"in_AO",2,250,-72.576416,799.928223,27.423584,849.928223,0.000000,"in AO"};
 item25[] = {"let_them_equip_and",2,250,-71.489258,51.175293,28.510742,101.175293,0.000000,"let them equip" \n "and set timer"};
@@ -31,7 +31,7 @@ item26[] = {"time_passed_",4,218,-71.489258,130.445099,28.510742,180.445099,0.00
 item27[] = {"",7,210,-24.410835,-32.015686,-16.410820,-24.015678,0.000000,""};
 item28[] = {"",7,210,-19.948189,594.038757,-11.948174,602.038757,0.000000,""};
 item29[] = {"",7,210,42.674072,1125.137695,50.674072,1133.137695,0.000000,""};
-item30[] = {"___600m_distance",4,218,-78.086273,298.891357,39.554474,363.746643,1.000000,"> 600m" \n "distance"};
+item30[] = {"___500m_distance",4,4314,-78.086273,298.891357,39.554474,363.746643,1.000000,"> 500m" \n "distance"};
 link0[] = {0,1};
 link1[] = {0,3};
 link2[] = {1,2};
@@ -63,8 +63,8 @@ link27[] = {27,7};
 link28[] = {28,9};
 link29[] = {29,20};
 link30[] = {30,22};
-globals[] = {0.000000,0,0,0,0,640,480,1,219,6316128,1,-409.717651,154.590637,1473.829590,650.841675,613,894,1};
-window[] = {2,-1,-1,-1,-1,1127,234,1913,234,3,631};
+globals[] = {0.000000,0,0,0,0,640,480,1,219,6316128,1,-455.406921,200.278870,968.018982,11.765976,613,894,1};
+window[] = {2,-1,-1,-1,-1,997,104,1783,104,3,631};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -76,7 +76,7 @@ class FSM
                 {
                         name = "author__Jman";
                         itemno = 0;
-                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"vn_failOnWipe = 1;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -222,6 +222,13 @@ class FSM
                         itemno = 8;
                         init = /*%FSM<STATEINIT""">*/"vn_task_debug = false;" \n
                          "" \n
+                         "// Mark tasks 01 as finished" \n
+                         "[""vn_tasks_coalive_task01"", ""SUCCEEDED""] call BIS_fnc_taskSetState;" \n
+                         "" \n
+                         "" \n
+                         "// Add radio to players who don't have one" \n
+                         "[] remoteExecCall [""vn_ms_fnc_addMissingRadio"", _alphaGroups];" \n
+                         "" \n
                          "" \n
                          "// Create task 02" \n
                          "[" \n
@@ -243,12 +250,12 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "___600m_distance">*/
-                                class ___600m_distance
+                                /*%FSM<LINK "___500m_distance">*/
+                                class ___500m_distance
                                 {
                                         itemno = 30;
                                         priority = 1.000000;
-                                        to="__x_task_done";
+                                        to="task_2_done";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_grpUnits = [];" \n
                                          "" \n
@@ -260,7 +267,7 @@ class FSM
                                          "vn_task_debug" \n
                                          "|| {" \n
                                          "	!((_grpUnits select {" \n
-                                         "		(_x distance2d (markerPos ""NOPL"")) > 600" \n
+                                         "		(_x distance2d (markerPos ""NOPL"")) > 500" \n
                                          "	}) isEqualTo [])" \n
                                          "}" \n
                                          "" \n
@@ -292,8 +299,8 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "___500m_distance">*/
-                                class ___500m_distance
+                                /*%FSM<LINK "___300m_distance">*/
+                                class ___300m_distance
                                 {
                                         itemno = 10;
                                         priority = 1.000000;
@@ -309,7 +316,7 @@ class FSM
                                          "vn_task_debug" \n
                                          "|| {" \n
                                          "	!((_grpUnits select {" \n
-                                         "		(_x distance2d (markerPos ""marker_ao"")) < 500" \n
+                                         "		(_x distance2d (markerPos ""marker_ao"")) < 300" \n
                                          "	}) isEqualTo [])" \n
                                          "}" \n
                                          "" \n
@@ -389,18 +396,15 @@ class FSM
                         };
                 };
                 /*%FSM</STATE>*/
-                /*%FSM<STATE "__x_task_done">*/
-                class __x_task_done
+                /*%FSM<STATE "task_2_done">*/
+                class task_2_done
                 {
-                        name = "__x_task_done";
+                        name = "task_2_done";
                         itemno = 22;
                         init = /*%FSM<STATEINIT""">*/"vn_task_debug = false;" \n
                          "" \n
-                         "// Add radio to players who don't have one" \n
-                         "[] remoteExecCall [""vn_ms_fnc_addMissingRadio"", _alphaGroups];" \n
                          "" \n
-                         "// Mark tasks 01 as finished" \n
-                         "[""vn_tasks_coalive_task01"", ""SUCCEEDED""] call BIS_fnc_taskSetState;" \n
+                         "" \n
                          "// Mark task 02 as finished" \n
                          "[""vn_tasks_coalive_task02"", ""SUCCEEDED""] call BIS_fnc_taskSetState;" \n
                          "" \n
@@ -439,7 +443,7 @@ class FSM
                          "" \n
                          "// Create task 04" \n
                          "[" \n
-                         "    _xrayGroups," \n
+                         "    _alphaGroups," \n
                          "    ""vn_tasks_coalive_task04""," \n
                          "    """"," \n
                          "    objNull," \n

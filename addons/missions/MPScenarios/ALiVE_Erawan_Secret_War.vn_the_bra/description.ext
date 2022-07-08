@@ -82,14 +82,6 @@ class Params
 	    default = 0;
 	    function = "vn_alivems_fnc_params_aimCoef";
 	};
-	class FailOnWipe
-	{
-	    title = $STR_VN_PARAMS_FAILONWIPE;
-	    values[] = {0, 1};
-	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 0;
-	    function = "vn_alivems_fnc_params_failOnWipe";
-	};
 	class TeleportAction
 	{
 	    title = $STR_VN_PARAMS_TELEPORTACTION;

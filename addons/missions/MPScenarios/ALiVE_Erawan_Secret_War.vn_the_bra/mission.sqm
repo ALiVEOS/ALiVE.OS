@@ -8,7 +8,7 @@ class EditorData
 	toggles=521;
 	class ItemIDProvider
 	{
-		nextID=299;
+		nextID=300;
 	};
 	class MarkerIDProvider
 	{
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=138;
+		nextID=159;
 	};
 	class Camera
 	{
@@ -247,6 +247,10 @@ class AddonsMetaData
 			author="ALiVE Mod Team";
 		};
 	};
+};
+dlcs[]=
+{
+	"VN"
 };
 randomSeed=260768;
 class ScenarioData
@@ -7123,8 +7127,8 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={983.83368,7.2084384,1467.944};
-						angles[]={0,4.5056157,0};
+						position[]={983.83398,7.2084384,1467.9441};
+						angles[]={0,4.50562,0};
 					};
 					side="West";
 					flags=7;
@@ -7134,7 +7138,7 @@ class Mission
 						skill=0.84953868;
 						ammo=0;
 						rank="CAPTAIN";
-						init="this setcaptive true; removeAllWeapons this;";
+						init="null = [this] execVM ""hostageScript.sqf"";";
 						name="cia_pilot";
 						stance="Middle";
 					};
@@ -7189,8 +7193,8 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={930.83191,7.1014385,1461.7291};
-						angles[]={0,0.87969041,0};
+						position[]={930.83197,7.1014385,1461.729};
+						angles[]={0,0.87969828,0};
 					};
 					side="West";
 					flags=5;
@@ -7200,7 +7204,7 @@ class Mission
 						skill=0.80232882;
 						ammo=0;
 						rank="SERGEANT";
-						init="this setcaptive true; removeAllWeapons this;";
+						init="null = [this] execVM ""hostageScript.sqf"";";
 						name="cia_chief";
 						stance="Middle";
 					};
