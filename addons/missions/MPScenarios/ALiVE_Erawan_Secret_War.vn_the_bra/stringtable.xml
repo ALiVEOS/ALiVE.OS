@@ -93,7 +93,7 @@
 <Package name="CO01 Briefing">
 <Key ID="STR_VN_DEBRIEFING_COALIVE_OVERVIEW_SEAL">
 <Chinese></Chinese>
-<English>Your team is tasked to infiltrate the POW camp, secure our CIA operatives and extract to Camp Striker by means of the hijacked 'Air America One' asset.</English>
+<English>Your team was tasked to infiltrate the POW camp, secure our CIA operatives and extract to Camp Striker by means of the hijacked 'Air America One' asset.</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -240,6 +240,66 @@
 <Key ID="STR_VN_TASKS_COALIVE_A01_T01_DESCR_SEAL">
 <Chinese></Chinese>
 <English>Gather your equipment and assemble your supplies from the ammo crates. Ammo crates are located under the Camouflage netting.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T02_TITLE_SEAL">
+<Chinese></Chinese>
+<English>Move out!</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T02_DESCR_SEAL">
+<Chinese></Chinese>
+<English>Advance on foot south into the Laos Jungle.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T03_TITLE_SEAL">
+<Chinese></Chinese>
+<English>Nearing the POW Camp</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T03_DESCR_SEAL">
+<Chinese></Chinese>
+<English>You have reached the AO.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T04_TITLE_SEAL">
+<Chinese></Chinese>
+<English>Complete the mission</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T04_DESCR_SEAL">
+<Chinese></Chinese>
+<English>Infiltrate the POW Camp. Free the prisoners and exfil them to Camp Striker.</English>
 <French></French>
 <German></German>
 <Italian></Italian>

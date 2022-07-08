@@ -16,10 +16,6 @@ class CfgFunctions
             {
                 postInit = 1;
             };
-            class coalive_typeWrite
-            {
-                postInit = 1;
-            };
         };
 				class params
 				{
@@ -61,5 +57,13 @@ class CfgFunctions
 							recompile = 0;
 						};
 				};
+        class coalive_fsm
+        {
+            file = "fsm";
+            class coalive_alpha
+            {
+              ext = ".fsm";
+            };
+        };	
     };
 };

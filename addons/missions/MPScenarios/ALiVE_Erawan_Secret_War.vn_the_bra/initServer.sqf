@@ -10,6 +10,9 @@
 * */
 // ====================================================================================
 
+// Start task FSM
+[] call vn_alivems_fnc_coalive_alpha;
+
 if (isDedicated) then  { 
 	disableRemoteSensors true; 
 };

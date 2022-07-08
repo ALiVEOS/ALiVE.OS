@@ -17,14 +17,14 @@
 if (isServer) then {
 
     // Add playable groups to respawn
-    [vn_grp_marinesquad_01] call vn_ms_fnc_respawn_addGroup;
+    [vn_alivegrp_alpha_1] call vn_ms_fnc_respawn_addGroup;
 
 
     // Throw out bodies of disconnecting pilots and gunners to prevent respawn issues
     addMissionEventHandler ["HandleDisconnect", {
         params ["_unit"];
 
-        if (_unit distance2d (markerPos "respawn_west") < 500 && _unit distance2d (markerPos "respawn_west_fsb") < 500) exitWith {
+        if (_unit distance2d (markerPos "respawn_west") < 500) exitWith {
             deleteVehicle _unit;
         };
 
