@@ -78,6 +78,14 @@ class CfgMissions
             overviewText = "Viet Cong and NVA are using three underground bunkers as command and control facilities in the Tri-Border area. Locate, clear the bunkers and collect intellgence.";
             author = "ALiVE Mod Team";
         };
+        class Showcase_Erawan_Secret_War
+        {
+            briefingName = "ALiVE | Erawan Secret War (The Bra)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Erawan_Secret_War.vn_the_bra";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Erawan_Secret_War.vn_the_bra\img\splash.paa";
+            overviewText = "A CIA embedded pilot and crew chief have been lost in Laos. Intel suggests they have been captured and they are being held by Pathet Lao forces within the Laos jungle.";
+            author = "ALiVE Mod Team";
+        }; 
         class Showcase_Getting_Started_APEX
         {
             briefingName = "ALiVE | Quick Start APEX (Tanoa)";
@@ -199,6 +207,14 @@ class CfgMissions
             directory = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam";
             overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam\pics\scenario.paa";
             overviewText = "Viet Cong and NVA are using three underground bunkers as command and control facilities in the Tri-Border area. Locate, clear the bunkers and collect intellgence.";
+            author = "ALiVE Mod Team";
+        };
+        class MP_COOP_Erawan_Secret_War
+        {
+            briefingName = "ALiVE | Erawan Secret War (COOP 12)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Erawan_Secret_War.vn_the_bra";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Erawan_Secret_War.vn_the_bra\img\splash.paa";
+            overviewText = "A CIA embedded pilot and crew chief have been lost in Laos. Intel suggests they have been captured and they are being held by Pathet Lao forces within the Laos jungle.";
             author = "ALiVE Mod Team";
         };
     };
