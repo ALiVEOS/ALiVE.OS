@@ -320,10 +320,6 @@ class AddonsMetaData
 		};
 	};
 };
-dlcs[]=
-{
-	"VN"
-};
 randomSeed=6550447;
 class ScenarioData
 {
@@ -13343,7 +13339,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="[""vn_arsenal_alive""]";
+							value="[""vn_default""]";
 						};
 					};
 				};

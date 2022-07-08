@@ -318,11 +318,6 @@ class AddonsMetaData
 		};
 	};
 };
-dlcs[]=
-{
-	"Tank",
-	"Expansion"
-};
 randomSeed=8300791;
 class ScenarioData
 {
@@ -9936,7 +9931,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="[""vn_arsenal_alive""]";
+							value="[""vn_default""]";
 						};
 					};
 				};
