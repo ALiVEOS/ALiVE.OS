@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=159;
+		nextID=166;
 	};
 	class Camera
 	{
-		pos[]={3332.4971,55.317463,4383.0229};
-		dir[]={0.31244311,-0.58967704,0.74475527};
-		up[]={0.22812232,0.80763912,0.543764};
-		aside[]={0.92213863,0,-0.38685977};
+		pos[]={3366.8567,68.011185,4390.2383};
+		dir[]={-0.75409973,-0.65647888,-0.019442087};
+		up[]={-0.65626627,0.75434023,-0.016919827};
+		aside[]={-0.025773538,7.2900548e-008,0.99967337};
 	};
 };
 binarizationWanted=0;
@@ -247,10 +247,6 @@ class AddonsMetaData
 			author="ALiVE Mod Team";
 		};
 	};
-};
-dlcs[]=
-{
-	"VN"
 };
 randomSeed=260768;
 class ScenarioData
@@ -7289,8 +7285,8 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={911.94373,7.0999999,1409.3448};
-				angles[]={0,0.84525573,0};
+				position[]={934.62714,7.1843815,1519.6947};
+				angles[]={-0,0.84525573,0};
 			};
 			side="Empty";
 			flags=4;
@@ -7299,14 +7295,15 @@ class Mission
 			};
 			id=280;
 			type="Land_vn_b_helipad_01";
+			atlOffset=0.044381618;
 		};
 		class Item45
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={911.25403,9.9181376,1407.562};
-				angles[]={0,1.0245082,0};
+				position[]={933.93744,10.00252,1517.9119};
+				angles[]={0,1.0245082,-0};
 			};
 			side="Empty";
 			flags=4;
@@ -7319,6 +7316,7 @@ class Mission
 			};
 			id=282;
 			type="vn_b_air_uh1d_04_09";
+			atlOffset=0.044382095;
 			class CustomAttributes
 			{
 				class Attribute0
