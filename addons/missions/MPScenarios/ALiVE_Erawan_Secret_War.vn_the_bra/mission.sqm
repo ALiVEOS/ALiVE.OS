@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=166;
+		nextID=173;
 	};
 	class Camera
 	{
 		pos[]={3366.8567,68.011185,4390.2383};
-		dir[]={-0.75409973,-0.65647888,-0.019442087};
-		up[]={-0.65626627,0.75434023,-0.016919827};
-		aside[]={-0.025773538,7.2900548e-008,0.99967337};
+		dir[]={-0.75409645,-0.65647584,-0.01944204};
+		up[]={-0.65625781,0.75434709,-0.016919574};
+		aside[]={-0.025773339,0,0.99966788};
 	};
 };
 binarizationWanted=0;
@@ -386,12 +386,12 @@ class Mission
 					dataType="Logic";
 					class PositionInfo
 					{
-						position[]={1202.426,13.462891,1324.5062};
-						angles[]={6.1167397,0,6.2033553};
+						position[]={1202.426,13.462935,1324.506};
+						angles[]={6.1167336,0,6.2033539};
 					};
 					id=45;
 					type="ALiVE_civ_placement";
-					atlOffset=-6.9618225e-005;
+					atlOffset=9.5367432e-007;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -523,7 +523,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="";
+									value="1";
 								};
 							};
 						};
@@ -637,7 +637,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="0";
+									value="1";
 								};
 							};
 						};
@@ -656,7 +656,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="";
+									value="1";
 								};
 							};
 						};
@@ -3974,7 +3974,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="0";
+							value="1";
 						};
 					};
 				};
@@ -4126,7 +4126,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="";
+							value="1";
 						};
 					};
 				};
@@ -4437,7 +4437,7 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={3375.3857,42.990002,4383.8984};
+				position[]={3375.386,42.990002,4383.8979};
 			};
 			id=202;
 			type="ALiVE_mil_placement";
@@ -4553,7 +4553,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="0";
+							value="1";
 						};
 					};
 				};
@@ -4743,7 +4743,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="0";
+							value="";
 						};
 					};
 				};
@@ -4800,7 +4800,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="0";
+							value="";
 						};
 					};
 				};
@@ -7286,7 +7286,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={934.62714,7.1843815,1519.6947};
-				angles[]={-0,0.84525573,0};
+				angles[]={0,0.84525573,0};
 			};
 			side="Empty";
 			flags=4;
@@ -7303,7 +7303,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={933.93744,10.00252,1517.9119};
-				angles[]={0,1.0245082,-0};
+				angles[]={0,1.0245082,0};
 			};
 			side="Empty";
 			flags=4;
