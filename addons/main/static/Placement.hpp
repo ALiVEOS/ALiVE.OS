@@ -78,6 +78,7 @@ ALiVE_PLACEMENT_UNITBLACKLIST = ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST +
     "vn_b_men_army_23",
     "vn_b_men_aircrew_07",
     "vn_b_men_army_13",
+    "vn_b_men_army_26",
     "vn_b_men_army_14",
     "vn_b_men_aircrew_06",
     "vn_b_men_aircrew_17",
@@ -91,8 +92,65 @@ ALiVE_PLACEMENT_UNITBLACKLIST = ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST +
     "vn_o_men_aircrew_01",
     "vn_o_men_aircrew_04",
     "vn_o_men_aircrew_03",
-    "vn_o_men_aircrew_02"
-
+    "vn_o_men_aircrew_02",
+    "vn_b_men_aircrew_38",
+    "vn_b_men_aircrew_39",
+    "vn_b_men_aircrew_40",
+    "vn_b_men_aircrew_37",
+    "vn_b_men_aircrew_32",
+    "vn_b_men_aircrew_33",
+    "vn_b_men_aircrew_34",
+    "vn_b_men_aircrew_31",
+    "vn_b_men_aircrew_28",
+    "vn_b_men_aircrew_29",
+    "vn_b_men_aircrew_30",
+    "vn_b_men_aircrew_27",
+    "vn_b_men_aus_army_66_14",
+    "vn_b_men_aus_army_66_13",
+    "vn_b_men_aus_army_66_23",
+    "vn_b_men_aus_army_66_24",
+    "vn_b_men_aus_army_66_25",
+    "vn_b_men_aus_army_68_14",
+    "vn_b_men_aus_army_68_13",
+    "vn_b_men_aus_army_70_14",
+    "vn_b_men_aus_army_70_13",
+    "vn_b_men_aus_army_70_23",
+    "vn_b_men_aus_army_70_24",
+    "vn_b_men_aus_army_70_25",
+    "vn_b_men_nz_army_66_21",
+    "vn_b_men_nz_army_66_22",
+    "vn_b_men_rok_army_65_29",
+    "vn_b_men_rok_army_65_31",
+    "vn_b_men_rok_army_65_30",
+    "vn_b_men_rok_army_65_26",
+    "vn_b_men_rok_army_65_14",
+    "vn_b_men_rok_army_65_13",
+    "vn_b_men_rok_army_68_14",
+    "vn_b_men_rok_army_68_13",
+    "vn_b_men_rok_army_68_23",
+    "vn_b_men_rok_army_68_24",
+    "vn_b_men_rok_army_68_25",
+    "vn_b_men_rok_army_68_29",
+    "vn_b_men_rok_army_68_30",
+    "vn_b_men_rok_army_68_26",
+    "vn_b_men_rok_marine_65_14",
+    "vn_b_men_rok_marine_65_13",
+    "vn_b_men_rok_marine_65_29",
+    "vn_b_men_rok_marine_65_31",
+    "vn_b_men_rok_marine_65_30",
+    "vn_b_men_rok_marine_68_14",
+    "vn_b_men_rok_marine_68_13",
+    "vn_b_men_rok_marine_68_29",
+    "vn_b_men_rok_marine_68_31",
+    "vn_b_men_rok_marine_68_30",
+    "vn_i_men_rla_14",
+    "vn_i_men_rla_13",
+    "vn_i_men_rla_25",
+    "vn_i_men_rla_24",
+    "vn_i_men_rla_23",
+    "vn_o_men_pl_18",
+    "vn_o_men_pl_20",
+    "vn_o_men_pl_19"
 ];
 
 /*
@@ -289,6 +347,19 @@ ALIVE_factionDefaultSupports = [] call ALIVE_fnc_hashCreate;
     "vn_o_wheeled_z157_02_vcmf"
 ]] call ALIVE_fnc_hashSet;
 
+[ALIVE_factionDefaultSupports, "O_PL", [
+    "vn_o_bicycle_01_pl",
+    "vn_o_bicycle_02_pl",
+    "vn_o_wheeled_btr40_mg_02_pl",
+    "vn_o_wheeled_btr40_02_pl",
+    "vn_o_wheeled_btr40_01_pl",
+    "vn_o_wheeled_z157_ammo_pl",
+    "vn_o_wheeled_z157_fuel_pl",
+    "vn_o_wheeled_z157_repair_pl",
+    "vn_o_wheeled_z157_02_pl",
+    "vn_o_wheeled_z157_01_pl"
+]] call ALIVE_fnc_hashSet;
+
 [ALIVE_factionDefaultSupports, "I_ARVN", [
     "vn_i_wheeled_m54_03",
     "vn_i_wheeled_m151_01",
@@ -300,6 +371,17 @@ ALIVE_factionDefaultSupports = [] call ALIVE_fnc_hashCreate;
     "vn_i_wheeled_m54_ammo",
     "vn_i_wheeled_m54_01",
     "vn_i_wheeled_m54_02"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "I_LAO", [
+    "vn_i_wheeled_m54_fuel_rla",
+    "vn_i_wheeled_m54_ammo_rla",
+    "vn_i_wheeled_m151_02_rla",
+    "vn_i_wheeled_m151_01_rla",
+    "vn_i_wheeled_m54_03_rla",
+    "vn_i_wheeled_m54_repair_rla",
+    "vn_i_wheeled_m54_01_rla",
+    "vn_i_wheeled_m54_02_rla"
 ]] call ALIVE_fnc_hashSet;
 
 [ALIVE_factionDefaultSupports, "B_MACV", [
@@ -314,6 +396,39 @@ ALIVE_factionDefaultSupports = [] call ALIVE_fnc_hashCreate;
     "vn_b_wheeled_m54_01",
     "vn_b_wheeled_m54_02_sog",
     "vn_b_wheeled_m54_02"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "B_AUS", [
+    "vn_b_wheeled_m54_03_aus_army",
+    "vn_b_wheeled_m151_01_aus_army",
+    "vn_b_wheeled_m151_02_aus_army",
+    "vn_b_wheeled_m54_repair_aus_army",
+    "vn_b_wheeled_m54_fuel_aus_army",
+    "vn_b_wheeled_m54_ammo_aus_army",
+    "vn_b_wheeled_m54_01_aus_army",
+    "vn_b_wheeled_m54_02_aus_army"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "B_NZ", [
+    "vn_b_wheeled_m54_03_nz_army",
+    "vn_b_wheeled_m151_01_nz_army",
+    "vn_b_wheeled_m151_02_nz_army",
+    "vn_b_wheeled_m54_repair_nz_army",
+    "vn_b_wheeled_m54_fuel_nz_army",
+    "vn_b_wheeled_m54_ammo_nz_army",
+    "vn_b_wheeled_m54_01_nz_army",
+    "vn_b_wheeled_m54_02_nz_army"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "B_ROK", [
+    "vn_b_wheeled_m54_03_rok_army",
+    "vn_b_wheeled_m151_01_rok_army",
+    "vn_b_wheeled_m151_02_rok_army",
+    "vn_b_wheeled_m54_repair_rok_army",
+    "vn_b_wheeled_m54_fuel_rok_army",
+    "vn_b_wheeled_m54_ammo_rok_army",
+    "vn_b_wheeled_m54_01_rok_army",
+    "vn_b_wheeled_m54_02_rok_army"
 ]] call ALIVE_fnc_hashSet;
 
 /*
@@ -364,6 +479,17 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
     "vn_o_ammobox_full_05"
 ]] call ALIVE_fnc_hashSet;
 
+
+[ALIVE_factionDefaultSupplies, "O_PL", [
+    "vn_o_ammobox_full_02",
+    "vn_o_ammobox_full_01",
+    "vn_o_ammobox_full_03",
+    "vn_o_ammobox_full_02",
+    "vn_o_ammobox_full_04",
+    "vn_o_ammobox_full_11"
+]] call ALIVE_fnc_hashSet;
+
+
 [ALIVE_factionDefaultSupplies, "I_ARVN", [
     "vn_b_ammobox_full_09",
     "vn_b_ammobox_supply_01",
@@ -375,6 +501,19 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
     "vn_b_ammobox_full_09"
 ]] call ALIVE_fnc_hashSet;
 
+[ALIVE_factionDefaultSupplies, "I_LAO", [
+    "vn_b_ammobox_full_09",
+    "vn_b_ammobox_supply_01",
+    "vn_b_ammobox_full_01",
+    "vn_b_ammobox_full_10",
+    "vn_b_ammobox_full_03",
+    "vn_b_ammobox_full_02",
+    "vn_b_ammobox_full_04",
+    "vn_b_ammobox_full_09",
+    "vn_b_ammobox_full_25",
+    "vn_b_ammobox_full_20"
+]] call ALIVE_fnc_hashSet;
+
 [ALIVE_factionDefaultSupplies, "B_MACV", [
     "vn_b_ammobox_supply_01",
     "vn_b_ammobox_full_01",
@@ -384,4 +523,43 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
     "vn_b_ammobox_full_04",
     "vn_b_ammobox_kit_sog",
     "vn_b_ammobox_full_09"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupplies, "B_AUS", [
+    "vn_b_ammobox_full_09",
+    "vn_b_ammobox_supply_01",
+    "vn_b_ammobox_full_01",
+    "vn_b_ammobox_full_10",
+    "vn_b_ammobox_full_03",
+    "vn_b_ammobox_full_02",
+    "vn_b_ammobox_full_04",
+    "vn_b_ammobox_full_09",
+    "vn_b_ammobox_full_23",
+    "vn_b_ammobox_full_22",
+    "vn_b_ammobox_full_16"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupplies, "B_NZ", [
+    "vn_b_ammobox_full_09",
+    "vn_b_ammobox_supply_01",
+    "vn_b_ammobox_full_01",
+    "vn_b_ammobox_full_10",
+    "vn_b_ammobox_full_03",
+    "vn_b_ammobox_full_02",
+    "vn_b_ammobox_full_04",
+    "vn_b_ammobox_full_09",
+    "vn_b_ammobox_full_17"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupplies, "B_ROK", [
+    "vn_b_ammobox_full_09",
+    "vn_b_ammobox_supply_01",
+    "vn_b_ammobox_full_01",
+    "vn_b_ammobox_full_10",
+    "vn_b_ammobox_full_03",
+    "vn_b_ammobox_full_02",
+    "vn_b_ammobox_full_04",
+    "vn_b_ammobox_full_09",
+    "vn_b_ammobox_full_24",
+    "vn_b_ammobox_full_19"
 ]] call ALIVE_fnc_hashSet;

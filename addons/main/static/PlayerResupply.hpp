@@ -147,8 +147,14 @@ ALIVE_factionDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 // VN
 [ALIVE_factionDefaultResupplyIndividualOptions, "O_PAVN", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "O_VC", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "O_PL", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "I_ARVN", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "I_LAO", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "B_MACV", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "B_AUS", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "B_NZ", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "B_ROK", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "B_CIA", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "C_VIET", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
 // THE FOLLOWING IS A BLACKLIST
@@ -201,7 +207,23 @@ ALIVE_VNDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 "vn_i_group_motor_army",
 "vn_i_group_mech_army",
 "vn_i_group_armor_army",
-"vn_i_group_air_army"
+"vn_i_group_air_army",
+"vn_o_group_motor_pl",
+"vn_o_group_mech_pl",
+"vn_o_group_armor_pl",
+"vn_i_group_motor_rla",
+"vn_i_group_mech_rla",
+"vn_b_group_motor_aus_army",
+"vn_b_group_mech_aus_army",
+"vn_b_group_air_aus_army",
+"vn_b_group_motor_nz_army",
+"vn_b_group_mech_nz_army",
+"vn_b_group_mech_rok_army",
+"vn_b_group_mech_rok_marines",
+"vn_b_group_motor_rok_army",
+"vn_b_group_motor_rok_marines",
+"vn_b_group_air_cia"
+
 ]] call ALIVE_fnc_hashSet;
 
 [ALIVE_VNDefaultResupplyGroupOptions, "PR_HELI_INSERT", ["Armored","Mechanized","vn_b_group_motor_army","vn_b_group_mech_army","vn_b_group_armor_army","vn_b_group_armor_usmc","vn_b_group_air_army","vn_b_group_air_usmc","vn_b_group_air_navy","vn_b_group_air_usaf","vn_b_group_men_aircrew","vn_b_group_men_navy","vn_b_group_boats",
@@ -220,7 +242,22 @@ ALIVE_VNDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 "vn_i_group_motor_army",
 "vn_i_group_mech_army",
 "vn_i_group_armor_army",
-"vn_i_group_air_army"
+"vn_i_group_air_army",
+"vn_o_group_motor_pl",
+"vn_o_group_mech_pl",
+"vn_o_group_armor_pl",
+"vn_i_group_motor_rla",
+"vn_i_group_mech_rla",
+"vn_b_group_motor_aus_army",
+"vn_b_group_mech_aus_army",
+"vn_b_group_air_aus_army",
+"vn_b_group_motor_nz_army",
+"vn_b_group_mech_nz_army",
+"vn_b_group_mech_rok_army",
+"vn_b_group_mech_rok_marines",
+"vn_b_group_motor_rok_army",
+"vn_b_group_motor_rok_marines",
+"vn_b_group_air_cia"
 ]] call ALIVE_fnc_hashSet;
 
 [ALIVE_VNDefaultResupplyGroupOptions, "PR_STANDARD", []] call ALIVE_fnc_hashSet;
@@ -228,8 +265,14 @@ ALIVE_VNDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 
 [ALIVE_factionDefaultResupplyGroupOptions, "O_PAVN", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "O_VC", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "O_PL", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "I_LAO", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "I_ARVN", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "B_MACV", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "B_AUS", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "B_NZ", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "B_ROK", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "B_CIA", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "C_VIET", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 
 // OVER
