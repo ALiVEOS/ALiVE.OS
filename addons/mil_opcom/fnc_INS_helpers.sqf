@@ -113,8 +113,8 @@ ALiVE_fnc_INS_ambush = {
                     _trg setTriggerActivation ["ANY","PRESENT",true];
                     _trg setTriggerStatements [
                         "this && {(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0",
-                            format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",100,str(_id),ceil(random 2)],
-                            format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",str(_id)]
+                            format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",100,text _id,ceil(random 2)],
+                            format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",text _id]
                     ];
                 };
 
@@ -245,7 +245,7 @@ ALiVE_fnc_INS_factory = {
 };
 
 ALiVE_fnc_INS_ied = {
-                private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_building","_section","_objective"];
+                private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_building","_section","_objective", "_num"];
 
                 _timeTaken = _this select 0;
                 _pos = _this select 1;
@@ -270,11 +270,14 @@ ALiVE_fnc_INS_ied = {
                     _trg = createTrigger ["EmptyDetector",_pos];
                     _trg setTriggerArea [_size + 250, _size + 250,0,false];
                     _trg setTriggerActivation ["ANY","PRESENT",true];
+                    _num = ceil(_size/100);
                     _trg setTriggerStatements [
                         "this && {(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0",
-                            format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",_size,str(_id),ceil(_size/100)],
-                            format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",str(_id)]
+                            format["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size,text _id,_num],
+                            format["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _id]
                     ];
+
+                    [MOD(MIL_IED), "storeTrigger", [_size,format["%1",_id],_pos,true,"IED",_num]] call ALiVE_fnc_IED;
 
                     [_pos,_size,1] call ALiVE_fnc_placeVBIED;
 
