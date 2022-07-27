@@ -193,7 +193,7 @@ class FSM
                          "_side = _this select 10;" \n
                          "_removeFSM = false;" \n
                          "" \n
-                         "diag_log format[""START ARTY FSM: %1"",_this];" \n
+                         "[""START ARTY FSM: %1"",_this] call ALiVE_fnc_dump;" \n
                          "" \n
                          "private " \n
                          "[" \n
@@ -331,7 +331,25 @@ class FSM
                                          "deleteVehicle _dummy;" \n
                                          "" \n
                                          "//Validate Fire Mission" \n
-                                         "_inRange = _target inRangeOfArtillery [[_battery], _ordnance];" \n
+                                         "private _minRange = 0;" \n
+                                         "private _testPos = position (leader _grp);" \n
+                                         "private _timeout = diag_tickTime + 1; // just in case :)" \n
+                                         "" \n
+                                         "while {diag_tickTime < _timeout} do {" \n
+                                         "    private _testPosInRange = _testPos inRangeOfArtillery [units _grp, _ordnance];" \n
+                                         "" \n
+                                         "    if (_testPosInRange) exitWith {" \n
+                                         "        _minRange = (position (leader _grp)) distance2D _testPos;" \n
+                                         "        _minRange = _minRange + 50;" \n
+                                         "    };" \n
+                                         "" \n
+                                         "    _testPos = [_testPos, 1, 0] call BIS_fnc_relPos;" \n
+                                         "};" \n
+                                         "" \n
+                                         "_inRange = false;" \n
+                                         "if (_target distance2D (position (leader _grp)) > _minRange) then {" \n
+                                         "    _inRange = _target inRangeOfArtillery [units _grp, _ordnance];" \n
+                                         "};" \n
                                          "_available = true;" \n
                                          "_viable = true;" \n
                                          "" \n

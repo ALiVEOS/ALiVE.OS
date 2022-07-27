@@ -565,7 +565,7 @@ SABOTAGE_fnc_initPlayer = {
         "private ['_building']; _building = (nearestobjects [_this, ['House_F'],20]) select 0; !(isnil '_building') && {({((getposATL _this) distance (getposATL _x)) < 500} count (_this getvariable ['SABOTAGE_HIDEOUTS',[]])) == 0}"
     ];
 
-    ["ALiVE | SABOTAGE - Added clientside establish safehouse action! ID %1...",_id] call ALiVE_fnc_Dump;
+    ["| SABOTAGE - Added clientside establish safehouse action! ID %1...",_id] call ALiVE_fnc_dump;
 
     _id = _unit addAction [
         "Use safehouse as respawn",
@@ -578,7 +578,7 @@ SABOTAGE_fnc_initPlayer = {
         "({((getposATL _this) distance (getposATL _x)) < 15} count (_this getvariable ['SABOTAGE_HIDEOUTS',[]])) > 0 && {(getmarkerpos (format['ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1',faction _this])) distance _this > 50}"
     ];
 
-    ["ALiVE | SABOTAGE - Added safehouse as respawn action! ID %1...",_id] call ALiVE_fnc_Dump;
+    ["| SABOTAGE - Added safehouse as respawn action! ID %1...",_id] call ALiVE_fnc_dump;
 
     _id = _unit addAction [
         "Repair and Refuel",
@@ -591,7 +591,7 @@ SABOTAGE_fnc_initPlayer = {
         "vehicle _this != _this && {damage (vehicle _this) > 0.01 || {!canMove (vehicle _this)} || {fuel vehicle _this < 0.9}} && {({(getposATL _x) distance _this < 25} count (_this getvariable ['SABOTAGE_HIDEOUTS',[]])) > 0}"
     ];
 
-    ["ALiVE | SABOTAGE - Added Repair and Refuel action! ID %1...",_id] call ALiVE_fnc_Dump;
+    ["| SABOTAGE - Added Repair and Refuel action! ID %1...",_id] call ALiVE_fnc_dump;
 
     _id = _unit addAction [
         "Impersonate",
@@ -604,5 +604,5 @@ SABOTAGE_fnc_initPlayer = {
         "isnil {_this getvariable 'SABOTAGE_DETECTIONRATE'} && {!alive cursortarget} && {cursortarget distance _this < 5} && {cursortarget isKindOf 'CAManBase'} && {(((typeOf cursortarget) call ALiVE_fnc_classSide) getfriend ((typeOf _this) call ALiVE_fnc_classSide)) < 0.6}"
     ];
 
-    ["ALiVE | SABOTAGE - Added Impersonate action! ID %1...",_id] call ALiVE_fnc_Dump;
+    ["| SABOTAGE - Added Impersonate action! ID %1...",_id] call ALiVE_fnc_dump;
 };

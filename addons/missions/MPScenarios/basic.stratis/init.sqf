@@ -3,7 +3,7 @@
 #endif
 
 //Starting Init
-["ALiVE | Getting Started - Executing init.sqf..."] call ALiVE_fnc_Dump;
+["| Getting Started - Executing init.sqf..."] call ALiVE_fnc_dump;
 
 /////////////////////
 // Init server
@@ -20,7 +20,7 @@ if (isServer) then {
 
 if (hasInterface) then {
 
-    ["ALiVE | Divide and Rule - Running ClientInit..."] call ALiVE_fnc_Dump;
+    ["| Divide and Rule - Running ClientInit..."] call ALiVE_fnc_dump;
 
     player createDiaryRecord ["Diary", ["Drive back occupying forces!",
         "Stratis is occupied by CSAT forces, your pathfinding unit, supported by CAS and Air assets, need to drive back the occupying force!"

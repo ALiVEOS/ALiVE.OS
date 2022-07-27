@@ -3,30 +3,36 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_playeroptions">
-    <Original>ALiVE Player Options</Original>
+    <English>ALiVE Player Options</English>
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_SHORT">
-    <Original>Player Options</Original>
+    <English>Player Options</English>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_COMMENT">
-    <Original>Set in game player options such as view distance, respawn, player persistence, crew info, player tags and more</Original>
+    <English>Set in game player options such as view distance, respawn, player persistence, crew info, player tags and more</English>
 </Key>
 <Key ID="STR_ALIVE_playeroptionsPARAMS">
-    <Original>Template Parameters</Original>
+    <English>Template Parameters</English>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_ERROR1">
-    <Original>Only one module template allowed</Original>
+    <English>Only one module template allowed</English>
 </Key>
 <Key ID="STR_ALIVE_playeroptionsPARAMS_COMMENT">
-    <Original>Over-ride default parameters for the Module Template</Original>
+    <English>Over-ride default parameters for the Module Template</English>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_DEBUG">
-    <Original>Debug:</Original>
+    <English>Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_DEBUG_COMMENT">
-    <Original>Enable Debug</Original>
+    <English>Enable Debug</English>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_USAGE">
-    <Original>Simply place the ALiVE Player Options module and set the appropriate parameters. You do not need to sync, position or orientate this module.</Original>
+    <English>Simply place the ALiVE Player Options module and set the appropriate parameters. You do not need to sync, position or orientate this module.</English>
+</Key>
+<Key ID="STR_ALIVE_player_RESTORE_MARKERS">
+    <English>Restore ALiVE Markers</English>
+</Key>
+<Key ID="STR_ALIVE_player_RESTORE_MARKERS_COMMENT">
+    <English>Reinitialise the ALiVE SYS Marker Store locally</English>
 </Key>
 </Container></Package></Project>

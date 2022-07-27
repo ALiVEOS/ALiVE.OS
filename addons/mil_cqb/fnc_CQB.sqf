@@ -121,7 +121,7 @@ switch(_operation) do {
             waituntil {!isnil QMOD(CQB)};
 
             //Only one init per instance is allowed
-            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE MIL CQB - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["MIL CQB - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
             //Start init
             _logic setVariable ["initGlobal", false];
@@ -263,7 +263,7 @@ switch(_operation) do {
 
                             {_collection pushback [([_x,"center"] call ALiVE_fnc_HashGet), ([_x,"size"] call ALiVE_fnc_HashGet)]} foreach _objectives;
 
-                            ["ALiVE CQB Houses loaded from MIL/CIV Placement module!"] call ALiVE_fnc_Dump;
+                            ["CQB Houses loaded from MIL/CIV Placement module!"] call ALiVE_fnc_dump;
                         };
 
                         if (typeof _mod == "ALiVE_mil_OPCOM") then {
@@ -280,7 +280,7 @@ switch(_operation) do {
                             _factions = [_logic,"factions",_factions] call ALiVE_fnc_CQB;
                             _logic setVariable ["CQB_UseDominantFaction", false];
 
-                            ["ALiVE CQB Houses prepared for use with OPCOM Insurgency!"] call ALiVE_fnc_Dump;
+                            ["CQB Houses prepared for use with OPCOM Insurgency!"] call ALiVE_fnc_dump;
                         };
                     };
                 } else {
@@ -302,7 +302,7 @@ switch(_operation) do {
                         default {};
                     };
 
-                    ["ALiVE CQB Houses loaded from map!"] call ALiVE_fnc_Dump;
+                    ["CQB Houses loaded from map!"] call ALiVE_fnc_dump;
                 };
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 2
@@ -367,7 +367,7 @@ switch(_operation) do {
                         } foreach (_data select 2);
                     } foreach (MOD(CQB) getVariable ["instances",[]]);
 
-                    ["ALiVE CQB DATA loaded from DB! CQB states were reset!"] call ALiVE_fnc_Dump;
+                    ["CQB DATA loaded from DB! CQB states were reset!"] call ALiVE_fnc_dump;
                 };
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 7
@@ -393,7 +393,7 @@ switch(_operation) do {
                 Publicvariable _id;
 
                 #ifdef DEBUG_MODE_FULL
-                    ["ALiVE CQB State: %1",([_logic, "state"] call ALiVE_fnc_CQB)] call ALiVE_fnc_Dump;
+                    ["CQB State: %1",([_logic, "state"] call ALiVE_fnc_CQB)] call ALiVE_fnc_dump;
                 #endif
             };
 
@@ -445,7 +445,7 @@ switch(_operation) do {
 
                     //Set value
                     _args = [_logic,"pause",_args,false] call ALIVE_fnc_OOsimpleOperation;
-                    ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_Dump;
+                    ["Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_dump;
             };
         };
 
@@ -1012,7 +1012,7 @@ switch(_operation) do {
 
                 // 100x100m sub sector doesn't have any CQB houses
                 if (_count == 0) then {
-                    ["ALiVE MIL CQB Cleared sub sector %1!", _sectorID] call ALiVE_fnc_Dump;
+                    ["MIL CQB Cleared sub sector %1!", _sectorID] call ALiVE_fnc_dump;
 
                     private _cleared = MOD(CQB) getVariable ["cleared", []];
                     _cleared pushBack _sectorID;
@@ -1022,7 +1022,7 @@ switch(_operation) do {
 
                     // 1x1km sector doesn't have any CQB houses
                     if (_parentCount == 0) then {
-                        ["ALiVE MIL CQB Cleared sector %1!", _parentSectorID] call ALiVE_fnc_Dump;
+                        ["MIL CQB Cleared sector %1!", _parentSectorID] call ALiVE_fnc_dump;
                         _cleared pushBack _parentSectorID;
 
                         // Remove sub sectors from cleared variable
@@ -1035,7 +1035,7 @@ switch(_operation) do {
                     };
                 };
             } else {
-                ["ALiVE MIL CQB Warning: Group %1 is still alive! Removing...", _grp] call ALiVE_fnc_Dump;
+                ["MIL CQB Warning: Group %1 is still alive! Removing...", _grp] call ALiVE_fnc_dump;
 
                 [_logic, "delGroup", _grp] call ALiVE_fnc_CQB;
                 [_logic,"houses",[_house],true,true] call BIS_fnc_variableSpaceRemove;
@@ -1272,7 +1272,7 @@ switch(_operation) do {
 
 	    if (isNil "_args" || {count _args < 2} || {isNull (_args select 0)} || {_args select 1 <= 0}) exitWith {
 
-            //["ALiVE CQB Input does not allow for creation of static weapons: %1!",_args] call ALiVE_fnc_Dump;
+            //["CQB Input does not allow for creation of static weapons: %1!",_args] call ALiVE_fnc_dump;
 
 	    	_args = [];
 
@@ -1288,7 +1288,7 @@ switch(_operation) do {
 
         if ({alive _x} count _staticWeapons > 0) exitwith {
 
-            //["ALiVE CQB Static weapons exisiting: %1! Not creating new ones...",_staticWeapons] call ALiVE_fnc_DumpR;
+            //["CQB Static weapons exisiting: %1! Not creating new ones...",_staticWeapons] call ALiVE_fnc_dumpR;
 
         	_args = _staticWeapons;
 
@@ -1309,7 +1309,7 @@ switch(_operation) do {
 			}
 		] call ALiVE_fnc_SortBy;
 
-        //["ALiVE CQB Found building positions: %1",_positions] call ALiVE_fnc_DumpR;
+        //["CQB Found building positions: %1",_positions] call ALiVE_fnc_dumpR;
 
 		{
 		    private _position = AGLtoASL _x;
@@ -1320,7 +1320,7 @@ switch(_operation) do {
 		    };
 		} foreach _positions;
 
-        //["ALiVE CQB Found on top positions: %1",_onTop] call ALiVE_fnc_DumpR;
+        //["CQB Found on top positions: %1",_onTop] call ALiVE_fnc_dumpR;
 
 		if (random 1 < _count && {count _onTop > 0}) then {
 
@@ -1354,7 +1354,7 @@ switch(_operation) do {
         if (count _staticWeapons > 0) then {
             _building setvariable ["staticWeapons",_staticWeapons,true];
 
-            //["ALiVE CQB Static weapons created: %1",_staticWeapons] call ALiVE_fnc_DumpR;
+            //["CQB Static weapons created: %1",_staticWeapons] call ALiVE_fnc_dumpR;
         };
 
 		_args = _staticWeapons;

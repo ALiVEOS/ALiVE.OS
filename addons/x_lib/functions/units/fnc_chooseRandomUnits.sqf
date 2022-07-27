@@ -37,7 +37,7 @@ DEFAULT_PARAM(2,_blacklist,[]);
 DEFAULT_PARAM(3,_armed,false);
 
 if (!(typename _factions == "ARRAY") || !(typename _count == "SCALAR") || !(typename _blacklist == "ARRAY")) then {
-    format["ALiVE Main ALiVE_fnc_chooseRandomUnits probably failes due to wrong params given! Factions (Array): %1 | Max. units (Number): %2 | Blacklist (Array): %3", _factions, _count, _blacklist] call ALiVE_fnc_logger;
+    ["Main ALiVE_fnc_chooseRandomUnits probably failes due to wrong params given! Factions (Array): %1 | Max. units (Number): %2 | Blacklist (Array): %3", _factions, _count, _blacklist] call ALiVE_fnc_dump;
 };
 
 _types = [0, selectRandom _factions,"Man",_armed] call ALiVE_fnc_findVehicleType;

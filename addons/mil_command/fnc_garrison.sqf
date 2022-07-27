@@ -28,7 +28,7 @@ private ["_type","_waypoints","_unit","_active","_pos","_radius","_onlyProfiles"
 params [["_profile", ["",[],[],nil], [[]]], ["_args", 200, [-1,[]]]];
 
 _radius = _args;
-_onlyProfiles = false;
+_onlyProfiles = true;
 
 if (_args isEqualType []) then {
     _radius = _args param [0, 200, [-1]];
@@ -42,18 +42,21 @@ _waypoints = [_profile,"waypoints",[]] call ALiVE_fnc_HashGet;
 _assignments = [_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_HashGet;
 
 if (isnil "_pos") exitwith {
-    // ["ALiVE MIL COMMAND Garrison - Detected wrong input for profile %1! Exiting...",_id] call ALiVE_fnc_Dump;
+    // ["MIL COMMAND Garrison - Detected wrong input for profile %1! Exiting...",_id] call ALiVE_fnc_dump;
 };
 
 if (count _waypoints > 0) then {
-    // ["ALiVE MIL COMMAND Garrison - Detected existing waypoints for profile %1! Deleting...",_id] call ALiVE_fnc_Dump;
+    // ["MIL COMMAND Garrison - Detected existing waypoints for profile %1! Deleting...",_id] call ALiVE_fnc_dump;
 
 	[_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
 };
 
 [_profile,_radius/3] call ALiVE_fnc_ambientMovement;
 
-waituntil {sleep 0.5; [_profile,"active"] call ALiVE_fnc_HashGet};
+waituntil {
+    sleep 0.5;
+    [_profile,"active"] call ALiVE_fnc_HashGet;
+};
 sleep 0.3;
 
 if (_type == "entity" && {count (_assignments select 1) == 0}) then {

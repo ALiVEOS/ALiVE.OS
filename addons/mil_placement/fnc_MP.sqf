@@ -184,7 +184,7 @@ switch(_operation) do {
             ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
             _result = _args;
-        };
+    };
     case "placeHelis": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeHelis", _args];
@@ -349,7 +349,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE MP - Startup"] call ALIVE_fnc_dump;
+                ["MP - Startup"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -518,7 +518,6 @@ switch(_operation) do {
                 [_logic, "objectives", _clusters + _landclusters] call MAINCLASS;
 
 
-
                 //Move on to special objectives
                 if !(isnil "ALIVE_clustersMilHQ") then {
                     _HQClusters = ALIVE_clustersMilHQ select 2;
@@ -563,11 +562,12 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE MP - Startup completed"] call ALIVE_fnc_dump;
-                    ["ALIVE MP - Count clusters %1",count _clusters] call ALIVE_fnc_dump;
-                    ["ALIVE MP - Count land clusters %1",count _landClusters] call ALIVE_fnc_dump;
-                    ["ALIVE MP - Count air clusters %1",count _airClusters] call ALIVE_fnc_dump;
-                    ["ALIVE MP - Count heli clusters %1",count _heliClusters] call ALIVE_fnc_dump;
+                    ["MP %1 - Startup completed", _faction] call ALiVE_fnc_dump;
+                    ["MP %2 - Count clusters %1",count _clusters, _faction] call ALiVE_fnc_dump;
+                    ["MP %2 - Count HQ clusters %1",count _HQClusters, _faction] call ALiVE_fnc_dump;
+                    ["MP %2 - Count land clusters %1",count _landClusters, _faction] call ALiVE_fnc_dump;
+                    ["MP %2 - Count air clusters %1",count _airClusters, _faction] call ALiVE_fnc_dump;
+                    ["MP %2 - Count heli clusters %1",count _heliClusters, _faction] call ALiVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -578,7 +578,7 @@ switch(_operation) do {
                         // start placement
                         [_logic, "placement"] call MAINCLASS;
                     }else{
-                        ["ALIVE MP [%1] - Warning no locations found for placement, you need to include military locations within the TAOR marker",_faction] call ALIVE_fnc_dumpR;
+                        ["MP [%1] - Warning no locations found for placement, you need to include military locations within the TAOR marker: %2",_faction, _taor] call ALiVE_fnc_dumpR;
 
                         // set module as started
                         _logic setVariable ["startupComplete", true];
@@ -587,7 +587,7 @@ switch(_operation) do {
                 }else{
 
                     // DEBUG -------------------------------------------------------------------------------------
-                    if(_debug) then { ["ALIVE MP - Objectives Only"] call ALIVE_fnc_dump; };
+                    if(_debug) then { ["MP - Objectives Only"] call ALiVE_fnc_dump; };
                     // DEBUG -------------------------------------------------------------------------------------
 
                     // set module as started
@@ -617,7 +617,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE MP - Placement"] call ALIVE_fnc_dump;
+                ["MP - Placement"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -697,8 +697,8 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE MP [%1] - Size: %2 Type: %3 SideNum: %4 Side: %5 Faction: %6",_faction,_size,_type,_factionSideNumber,_side,_faction] call ALIVE_fnc_dump;
-                ["ALIVE MP [%1] - Ambient Vehicles: %2 Create HQ: %3 Create Field HQ: %4 Place Helis: %5 Place Supplies: %6",_faction,_ambientVehicleAmount,_createHQ,_createFieldHQ,_placeHelis,_placeSupplies] call ALIVE_fnc_dump;
+                ["MP [%1] - Size: %2 Type: %3 SideNum: %4 Side: %5 Faction: %6",_faction,_size,_type,_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
+                ["MP [%1] - Ambient Vehicles: %2 Create HQ: %3 Create Field HQ: %4 Place Helis: %5 Place Supplies: %6",_faction,_ambientVehicleAmount,_createHQ,_createFieldHQ,_placeHelis,_placeSupplies] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -762,12 +762,12 @@ switch(_operation) do {
 
                         [_logic, "HQBuilding", _hqBuilding] call MAINCLASS;
 
-                        ["ALIVE MP - HQ building selected: %1",[_logic, "HQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
+                        ["MP - HQ building selected: %1",[_logic, "HQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
                     } else {
-                        ["ALIVE MP - Warning no HQ locations found"] call ALIVE_fnc_dump;
+                        ["MP - Warning no HQ locations found"] call ALiVE_fnc_dump;
                     }
                 } else {
-                    ["ALIVE MP - Warning no HQ locations found"] call ALIVE_fnc_dump;
+                    ["MP - Warning no HQ locations found"] call ALiVE_fnc_dump;
                 };
             };
 
@@ -825,11 +825,11 @@ switch(_operation) do {
                     if(_debug) then {
                         [_flatPos, 4] call ALIVE_fnc_placeDebugMarker;
 
-                        ["ALIVE MP - Field HQ created: %1 - %2", configName _HQ, [_logic, "FieldHQBuilding"] call MAINCLASS] call ALIVE_fnc_dump;
+                        ["MP - Field HQ created: %1 - %2", configName _HQ, [_logic, "FieldHQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
                 } else {
-                    ["ALIVE MP - Warning no Field HQ locations found"] call ALIVE_fnc_dump;
+                    ["MP - Warning no Field HQ locations found"] call ALiVE_fnc_dump;
                 };
             };
 
@@ -904,6 +904,7 @@ switch(_operation) do {
                             _vehicleClass = (selectRandom _supplyClasses);
 
                             if(random 1 > 0.6) then {
+
                                 _box = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
                                 _countSupplies = _countSupplies + 1;
                             };
@@ -914,7 +915,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE MP [%1] - Supplies placed: %2",_faction,_countSupplies] call ALIVE_fnc_dump;
+                ["MP [%1] - Supplies placed: %2",_faction,_countSupplies] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -922,7 +923,7 @@ switch(_operation) do {
             if(ALIVE_loadProfilesPersistent) exitWith {
 
                 // DEBUG -------------------------------------------------------------------------------------
-                if(_debug) then { ["ALIVE MP - Profiles are persistent, no creation of profiles"] call ALIVE_fnc_dump; };
+                if(_debug) then { ["MP - Profiles are persistent, no creation of profiles"] call ALiVE_fnc_dump; };
                 // DEBUG -------------------------------------------------------------------------------------
 
                 // set module as started
@@ -976,7 +977,7 @@ switch(_operation) do {
 
                                 if !(_position isEqualTo [0,0,0]) then {
 
-    	                            if(random 1 > 0.8) then {
+    	                            if(random 1 > 0.2) then {
     	                                [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
 
     	                                _countProfiles = _countProfiles + 1;
@@ -998,7 +999,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE MP [%1] - Heli units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedHelis,_countUncrewedHelis] call ALIVE_fnc_dump;
+                ["MP [%1] - Heli units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedHelis,_countUncrewedHelis] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1053,7 +1054,23 @@ switch(_operation) do {
                                 // Find safe place to put aircraft
                                 private ["_pavement","_runway"];
                                 if ( ([tolower(typeOf _x), "hangar"] call CBA_fnc_find != -1) && !_large) then {
+
                                     _direction = direction _x;
+
+                                    // Handle reversed hangars
+                                    if (typeof _x in ALIVE_problematicHangarBuildings || str(_position) in ALIVE_problematicHangarBuildings) then {
+                                        // reverse the direction of planes
+                                        _direction = _direction + 180;
+                                    };
+
+                                    // open all doors of hangar
+                                    private _numOfDoors = getNumber (configfile >> "CfgVehicles" >> typeOf _x >> "numberOfDoors");
+                                    if (_numOfDoors > 0) then {
+                                        for "_i" from 1 to _numOfDoors do {
+                                            [_x, _i, 1] call BIS_fnc_door;
+                                        };
+                                    }
+
                                 } else { // find a taxiway
                                     _runway = [];
                                     {
@@ -1062,7 +1079,7 @@ switch(_operation) do {
                                         };
                                     } foreach (nearestObjects [position _x, [], 100]);
                                     if (count _runway > 0) then {
-                                        // diag_log format["Cannot find hangar, choosing safe taxiway from: %1", _runway];
+                                        // ["Cannot find hangar, choosing safe taxiway from: %1", _runway] call ALiVE_fnc_dump;
 
                                         _pavement = selectRandom _runway;
                                         _position = [_pavement, 0, _aircraftSize * 3, _aircraftSize * 1.2, 0, 0.065, 0, [], [position _pavement, position _pavement]] call BIS_fnc_findSafePos;
@@ -1070,7 +1087,7 @@ switch(_operation) do {
                                         _direction = direction _pavement;
                                     } else {
                                         // Find safe place near by
-                                        // diag_log format["Cannot find hangar or taxiway, looking for safe place to put aircraft %1", _x];
+                                        // ["Cannot find hangar or taxiway, looking for safe place to put aircraft %1", _x] call ALiVE_fnc_dump;
                                         _position = [position _x, 25, 200, _aircraftSize, 0, 0.2, 0] call BIS_fnc_findSafePos;
                                         _direction = direction _x;
                                     };
@@ -1102,7 +1119,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE MP [%1] - Air units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedAir,_countUncrewedAir] call ALIVE_fnc_dump;
+                ["MP [%1] - Air units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedAir,_countUncrewedAir] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1246,7 +1263,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE MP [%1] - Ambient land units placed: %2",_faction,_countLandUnits] call ALIVE_fnc_dump;
+                ["MP [%1] - Ambient land units placed: %2",_faction,_countLandUnits] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1259,7 +1276,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE MP [%1] - Size: %2",_faction,_size] call ALIVE_fnc_dump;
+                ["MP [%1] - Size: %2",_faction,_size] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1274,7 +1291,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE MP [%1] - TYPE: %2", _faction, _type] call ALiVE_fnc_dump;
+                ["MP [%1] - TYPE: %2", _faction, _type] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
             // Force Composition
@@ -1352,7 +1369,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE MP [%1] - Main force creation ",_faction] call ALIVE_fnc_dump;
+                ["MP [%1] - Main force creation ",_faction] call ALiVE_fnc_dump;
                 ["Count Armor: %1",_countArmored] call ALIVE_fnc_dump;
                 ["Count Mech: %1",_countMechanized] call ALIVE_fnc_dump;
                 ["Count Motor: %1",_countMotorized] call ALIVE_fnc_dump;
@@ -1434,7 +1451,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE MP [%1] - Groups ",_groups] call ALIVE_fnc_dump;
+                ["MP [%1] - Groups ",_groups] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1460,7 +1477,7 @@ switch(_operation) do {
 
                         _guardGroup = (selectRandom _infantryGroups);
                         _guards = [_guardGroup, _center, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-                        // ["ALIVE MP [%2] - Placing Guards - %1",_guardGroup, _guardProbability] call ALIVE_fnc_dump;
+                        // ["MP [%2] - Placing Guards - %1",_guardGroup, _guardProbability] call ALiVE_fnc_dump;
                         //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
@@ -1549,15 +1566,15 @@ switch(_operation) do {
                 } forEach _clusters;
 
             }else{
-                ["ALIVE MP - Warning no usable groups found to use, the faction (%1) may be faulty.", _faction] call ALIVE_fnc_dumpR;
+                ["MP - Warning no usable groups found to use, the faction (%1) may be faulty.", _faction] call ALiVE_fnc_dumpR;
             };
 
-            ["ALIVE MP %2 - Total profiles created: %1",_countProfiles, _faction] call ALIVE_fnc_dump;
+            ["MP %2 - Total profiles created: %1",_countProfiles, _faction] call ALiVE_fnc_dump;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                //["ALIVE MP - Total profiles created: %1",_countProfiles] call ALIVE_fnc_dump;
-                ["ALIVE MP - Placement completed"] call ALIVE_fnc_dump;
+                //["MP - Total profiles created: %1",_countProfiles] call ALiVE_fnc_dump;
+                ["MP - Placement completed"] call ALiVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };

@@ -26,7 +26,7 @@ Highhead
 
 private _object = _this select 0;
 
-if (side _object != CIVILIAN || {isnil QGVAR(ROLES_DISABLED)} || {GVAR(ROLES_DISABLED)}) exitWith {}; // only add actions if civilian roles module field != none
+if ((side group _object) != CIVILIAN || {isnil QGVAR(ROLES_DISABLED)} || {GVAR(ROLES_DISABLED)}) exitWith {}; // only add actions if civilian roles module field != none
 
 private _role = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_TOWNELDER";
 private _text = format[localize "STR_ALIVE_CIV_INTERACT_ACTIONS_TALKTO",_role];

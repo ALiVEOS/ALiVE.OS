@@ -1,0 +1,540 @@
+/*%FSM<COMPILE "D:\Steam\steamapps\common\Arma 3 Tools\FSMEditor\scriptedFSM.cfg, Xray Tasks">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"author__Jman",0,250,-75.000000,-425.000000,25.000000,-375.000000,0.000000,"author:" \n "Jman"};
+item1[] = {"_",8,218,-200.000000,-425.000000,-100.000000,-375.000000,0.000000,""};
+item2[] = {"exit",1,250,-325.000000,-425.000000,-225.000000,-375.000000,0.000000,"exit"};
+item3[] = {"isServer_",4,218,-75.000000,-350.000000,25.000000,-300.000000,1.000000,"isServer?"};
+item4[] = {"init_and_wait_for",2,250,-75.000000,-275.000000,25.000000,-225.000000,0.000000,"init and" \n "wait for players"};
+item5[] = {"units___0_",4,218,-75.000000,-200.000000,25.000000,-150.000000,0.000000,"units > 0?"};
+item6[] = {"create_equip_tas",2,250,-72.606003,-123.204498,27.393997,-73.204498,0.000000,"create equip task"};
+item7[] = {"near_arsenal",4,218,-71.489258,-23.824707,28.510742,26.175293,1.000000,"near arsenal"};
+item8[] = {"Move_out",2,250,-69.707367,217.961304,30.292633,267.961304,0.000000,"Move out"};
+item9[] = {"travel_to_one_marked",2,250,-69.060150,600.163940,30.939850,650.163940,0.000000,"travel to one" \n "marked area"};
+item10[] = {"___300m_distance",4,218,-81.702271,699.362244,35.938477,764.217529,1.000000,"< 300m" \n "distance to" \n "AO"};
+item11[] = {"rescue_successfu",4,218,-260.078705,901.061890,-44.021118,982.629883,0.000000,"rescue successful"};
+item12[] = {"task_succeeded",2,250,-153.305725,1041.054443,-53.305725,1091.054443,0.000000,"task succeeded"};
+item13[] = {"_",8,218,-78.305725,1116.054443,21.694275,1166.054443,0.000000,""};
+item14[] = {"all_CIA_dead",4,4314,1.336548,889.920288,140.331909,964.060547,1.000000,"all CIA dead"};
+item15[] = {"task_failed",2,250,-3.305725,1041.054443,96.694275,1091.054443,0.000000,"task failed"};
+item16[] = {"",7,210,-27.663452,885.060547,-19.663452,893.060303,0.000000,""};
+item17[] = {"",7,210,47.336548,885.060547,55.336548,893.060303,0.000000,""};
+item18[] = {"",7,210,-102.663437,885.060547,-94.663452,893.060303,0.000000,""};
+item19[] = {"",7,210,-107.305733,1137.054443,-99.305717,1145.054443,0.000000,""};
+item20[] = {"",7,210,42.694275,1137.054443,50.694275,1145.054443,0.000000,""};
+item21[] = {"mission_end",1,250,-76.640503,1208.837524,23.359497,1258.837524,0.000000,"mission end"};
+item22[] = {"task_2_done",2,250,-80.396034,423.443481,40.656311,483.159912,0.000000," task 2 done"};
+item23[] = {"time_passed_",4,218,-82.703522,509.259460,46.813873,578.509949,0.000000,"time passed?"};
+item24[] = {"in_AO",2,250,-72.576416,799.928223,27.423584,849.928223,0.000000,"in AO"};
+item25[] = {"let_them_equip_and",2,250,-71.489258,51.175293,28.510742,101.175293,0.000000,"let them equip" \n "and set timer"};
+item26[] = {"time_passed_",4,218,-71.489258,130.445099,28.510742,180.445099,0.000000,"time passed?"};
+item27[] = {"",7,210,-24.410835,-32.015686,-16.410820,-24.015678,0.000000,""};
+item28[] = {"",7,210,-19.948189,594.038757,-11.948174,602.038757,0.000000,""};
+item29[] = {"",7,210,42.674072,1125.137695,50.674072,1133.137695,0.000000,""};
+item30[] = {"___500m_distance",4,218,-78.086273,298.891357,39.554474,363.746643,1.000000,"> 500m" \n "distance"};
+link0[] = {0,1};
+link1[] = {0,3};
+link2[] = {1,2};
+link3[] = {3,4};
+link4[] = {4,5};
+link5[] = {5,6};
+link6[] = {6,27};
+link7[] = {7,25};
+link8[] = {8,30};
+link9[] = {9,10};
+link10[] = {10,24};
+link11[] = {11,12};
+link12[] = {12,19};
+link13[] = {13,21};
+link14[] = {14,15};
+link15[] = {15,29};
+link16[] = {16,17};
+link17[] = {16,18};
+link18[] = {17,14};
+link19[] = {18,11};
+link20[] = {19,13};
+link21[] = {20,13};
+link22[] = {22,23};
+link23[] = {23,28};
+link24[] = {24,16};
+link25[] = {25,26};
+link26[] = {26,8};
+link27[] = {27,7};
+link28[] = {28,9};
+link29[] = {29,20};
+link30[] = {30,22};
+globals[] = {0.000000,0,0,0,0,640,480,1,219,6316128,1,-455.406921,200.278870,968.018982,11.765976,613,894,1};
+window[] = {2,-1,-1,-32000,-32000,919,26,1705,26,3,631};
+*//*%FSM</HEAD>*/
+class FSM
+{
+        fsmName = "Xray Tasks";
+        class States
+        {
+                /*%FSM<STATE "author__Jman">*/
+                class author__Jman
+                {
+                        name = "author__Jman";
+                        itemno = 0;
+                        init = /*%FSM<STATEINIT""">*/"vn_failOnWipe = 1;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "isServer_">*/
+                                class isServer_
+                                {
+                                        itemno = 3;
+                                        priority = 1.000000;
+                                        to="init_and_wait_for";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"isServer"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "_">*/
+                                class _
+                                {
+                                        itemno = 1;
+                                        priority = 0.000000;
+                                        to="exit";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "exit">*/
+                class exit
+                {
+                        name = "exit";
+                        itemno = 2;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "init_and_wait_for">*/
+                class init_and_wait_for
+                {
+                        name = "init_and_wait_for";
+                        itemno = 4;
+                        init = /*%FSM<STATEINIT""">*/"[""ALiVE | The Battle of Hue - Executing fn_coalive_alpha.fsm...""] call ALiVE_fnc_dump;" \n
+                         "// All infantry groups" \n
+                         "private _alphaGroups = [vn_alivegrp_alpha_1];" \n
+                         "private _ciaGroups = [vn_alivegrp_cia_1];" \n
+                         "" \n
+                         "// Debug variable to skip task if set to true" \n
+                         "vn_task_debug = false;" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "units___0_">*/
+                                class units___0_
+                                {
+                                        itemno = 5;
+                                        priority = 0.000000;
+                                        to="create_equip_tas";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"private _grpUnits = [];" \n
+                                         "" \n
+                                         "{" \n
+                                         "    _grpUnits append (units _x);" \n
+                                         "} forEach _alphaGroups;" \n
+                                         "" \n
+                                         "" \n
+                                         "!(_grpUnits isEqualTo []) && time > 40"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "create_equip_tas">*/
+                class create_equip_tas
+                {
+                        name = "create_equip_tas";
+                        itemno = 6;
+                        init = /*%FSM<STATEINIT""">*/"_grpUnits = [];" \n
+                         "{" \n
+                         "  _grpUnits append (units _x);" \n
+                         "} forEach _alphaGroups;" \n
+                         "" \n
+                         "// Fade sound" \n
+                         "{" \n
+                         "  [10, 0] remoteExecCall [""fadeMusic"", _x];" \n
+                         "} forEach (_alphaGroups);" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         "// Create task xray" \n
+                         "[" \n
+                         "    _alphaGroups," \n
+                         "    ""vn_tasks_coalive_task01""," \n
+                         "    """"," \n
+                         "    getPos vn_obj_arsenal," \n
+                         "    ""ASSIGNED""," \n
+                         "    0," \n
+                         "    true," \n
+                         "    ""rifle""," \n
+                         "    true" \n
+                         "] call BIS_fnc_taskCreate;" \n
+                         "" \n
+                         "// Add time for next hint, if enabled" \n
+                         "private _nextMsg = diag_tickTime + 20;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "near_arsenal">*/
+                                class near_arsenal
+                                {
+                                        itemno = 7;
+                                        priority = 1.000000;
+                                        to="let_them_equip_and";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_grpUnits = [];" \n
+                                         "" \n
+                                         "{" \n
+                                         "  _grpUnits append (units _x);" \n
+                                         "} forEach _alphaGroups;" \n
+                                         "" \n
+                                         "vn_task_debug" \n
+                                         "||" \n
+                                         "{" \n
+                                         "    [_grpUnits, vn_obj_arsenal, 5, true] call vn_ms_fnc_isNear" \n
+                                         "}" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Move_out">*/
+                class Move_out
+                {
+                        name = "Move_out";
+                        itemno = 8;
+                        init = /*%FSM<STATEINIT""">*/"vn_task_debug = false;" \n
+                         "" \n
+                         "// Mark tasks 01 as finished" \n
+                         "[""vn_tasks_coalive_task01"", ""SUCCEEDED""] call BIS_fnc_taskSetState;" \n
+                         "" \n
+                         "" \n
+                         "// Add radio to players who don't have one" \n
+                         "[] remoteExecCall [""vn_ms_fnc_addMissingRadio"", _alphaGroups];" \n
+                         "" \n
+                         "" \n
+                         "// Create task 02" \n
+                         "[" \n
+                         "    _alphaGroups," \n
+                         "    ""vn_tasks_coalive_task02""," \n
+                         "    """"," \n
+                         "    objNull," \n
+                         "    ""ASSIGNED""," \n
+                         "    0," \n
+                         "    true," \n
+                         "    ""use""," \n
+                         "    true" \n
+                         "] call BIS_fnc_taskCreate;" \n
+                         "" \n
+                         "// Add time for next hint, if enabled" \n
+                         "private _nextMsg = diag_tickTime + 20;" \n
+                         "" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "___500m_distance">*/
+                                class ___500m_distance
+                                {
+                                        itemno = 30;
+                                        priority = 1.000000;
+                                        to="task_2_done";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_grpUnits = [];" \n
+                                         "" \n
+                                         "{" \n
+                                         "  _grpUnits append (units _x);" \n
+                                         "} forEach _alphaGroups;" \n
+                                         "" \n
+                                         "" \n
+                                         "vn_task_debug" \n
+                                         "|| {" \n
+                                         "	!((_grpUnits select {" \n
+                                         "		(_x distance2d (markerPos ""NOPL"")) > 500" \n
+                                         "	}) isEqualTo [])" \n
+                                         "}" \n
+                                         "" \n
+                                         "" \n
+                                         "" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "travel_to_one_marked">*/
+                class travel_to_one_marked
+                {
+                        name = "travel_to_one_marked";
+                        itemno = 9;
+                        init = /*%FSM<STATEINIT""">*/"// Create task 03" \n
+                         "[" \n
+                         "    _alphaGroups," \n
+                         "    ""vn_tasks_coalive_task03""," \n
+                         "    """"," \n
+                         "    objNull," \n
+                         "    ""ASSIGNED""," \n
+                         "    0," \n
+                         "    true," \n
+                         "    ""walk""" \n
+                         "] call BIS_fnc_taskCreate;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "___300m_distance">*/
+                                class ___300m_distance
+                                {
+                                        itemno = 10;
+                                        priority = 1.000000;
+                                        to="in_AO";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_grpUnits = [];" \n
+                                         "" \n
+                                         "{" \n
+                                         "  _grpUnits append (units _x);" \n
+                                         "} forEach _alphaGroups;" \n
+                                         "" \n
+                                         "" \n
+                                         "vn_task_debug" \n
+                                         "|| {" \n
+                                         "	!((_grpUnits select {" \n
+                                         "		(_x distance2d (markerPos ""marker_ao"")) < 300" \n
+                                         "	}) isEqualTo [])" \n
+                                         "}" \n
+                                         "" \n
+                                         "" \n
+                                         "" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "task_succeeded">*/
+                class task_succeeded
+                {
+                        name = "task_succeeded";
+                        itemno = 12;
+                        init = /*%FSM<STATEINIT""">*/"// Mark task 04 as finished" \n
+                         "[""vn_tasks_coalive_task04"", ""SUCCEEDED""] call BIS_fnc_taskSetState;" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "_">*/
+                                class _
+                                {
+                                        itemno = 13;
+                                        priority = 0.000000;
+                                        to="mission_end";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "task_failed">*/
+                class task_failed
+                {
+                        name = "task_failed";
+                        itemno = 15;
+                        init = /*%FSM<STATEINIT""">*/"// Mark task 04 as failed" \n
+                         "[""vn_tasks_coalive_task04"", ""FAILED""] call BIS_fnc_taskSetState;" \n
+                         "" \n
+                         "" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "_">*/
+                                class _
+                                {
+                                        itemno = 13;
+                                        priority = 0.000000;
+                                        to="mission_end";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "mission_end">*/
+                class mission_end
+                {
+                        name = "mission_end";
+                        itemno = 21;
+                        init = /*%FSM<STATEINIT""">*/"[] spawn {" \n
+                         "    sleep 120;" \n
+                         "    vn_coalive_finished = true;" \n
+                         "};"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "task_2_done">*/
+                class task_2_done
+                {
+                        name = "task_2_done";
+                        itemno = 22;
+                        init = /*%FSM<STATEINIT""">*/"vn_task_debug = false;" \n
+                         "" \n
+                         "" \n
+                         "" \n
+                         "// Mark task 02 as finished" \n
+                         "[""vn_tasks_coalive_task02"", ""SUCCEEDED""] call BIS_fnc_taskSetState;" \n
+                         "" \n
+                         "// Next task after 10 seconds" \n
+                         "_nextMsg = diag_tickTime + 10;" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "time_passed_">*/
+                                class time_passed_
+                                {
+                                        itemno = 23;
+                                        priority = 0.000000;
+                                        to="travel_to_one_marked";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"vn_task_debug" \n
+                                         "||" \n
+                                         "diag_tickTime >= _nextMsg"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "in_AO">*/
+                class in_AO
+                {
+                        name = "in_AO";
+                        itemno = 24;
+                        init = /*%FSM<STATEINIT""">*/"vn_task_debug = false;" \n
+                         "" \n
+                         "" \n
+                         "// Mark task 03 as finished" \n
+                         "[""vn_tasks_coalive_task03"", ""SUCCEEDED""] call BIS_fnc_taskSetState;" \n
+                         "" \n
+                         "// Create task 04" \n
+                         "[" \n
+                         "    _alphaGroups," \n
+                         "    ""vn_tasks_coalive_task04""," \n
+                         "    """"," \n
+                         "    objNull," \n
+                         "    ""ASSIGNED""," \n
+                         "    0," \n
+                         "    true," \n
+                         "    ""attack""" \n
+                         "] call BIS_fnc_taskCreate;" \n
+                         "" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "all_CIA_dead">*/
+                                class all_CIA_dead
+                                {
+                                        itemno = 14;
+                                        priority = 1.000000;
+                                        to="task_failed";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"vn_failOnWipe > 0" \n
+                                         "&&" \n
+                                         "{" \n
+                                         "    time > 180;" \n
+                                         "}" \n
+                                         "&&" \n
+                                         "{" \n
+                                         "    (!alive cia_chief || !alive cia_pilot || !alive cia_uh1)" \n
+                                         "}" \n
+                                         ""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "rescue_successfu">*/
+                                class rescue_successfu
+                                {
+                                        itemno = 11;
+                                        priority = 0.000000;
+                                        to="task_succeeded";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_grpUnits = [];" \n
+                                         "" \n
+                                         "{" \n
+                                         "  _grpUnits append (units _x);" \n
+                                         "} forEach _ciaGroups;" \n
+                                         "" \n
+                                         "" \n
+                                         "vn_task_debug" \n
+                                         "|| {" \n
+                                         "	!((_grpUnits select {" \n
+                                         "		(_x distance2d (markerPos ""NOPL"")) < 100" \n
+                                         "	}) isEqualTo [])" \n
+                                         "}"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "let_them_equip_and">*/
+                class let_them_equip_and
+                {
+                        name = "let_them_equip_and";
+                        itemno = 25;
+                        init = /*%FSM<STATEINIT""">*/"// Next task after 10 seconds" \n
+                         "_nextMsg = diag_tickTime + 10;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "time_passed_">*/
+                                class time_passed_
+                                {
+                                        itemno = 26;
+                                        priority = 0.000000;
+                                        to="Move_out";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"vn_task_debug" \n
+                                         "||" \n
+                                         "diag_tickTime >= _nextMsg"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+        };
+        initState="author__Jman";
+        finalStates[] =
+        {
+                "exit",
+                "mission_end",
+        };
+};
+/*%FSM</COMPILE>*/

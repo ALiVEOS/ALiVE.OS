@@ -50,7 +50,7 @@ if(ALIVE_saveProfilesPersistent) then {
             }else{
 
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["ALiVE SAVE PROFILE DATA Please wait at least 5 minutes before saving again!"] call ALIVE_fnc_dumpMPH;
+                    ["SAVE PROFILE DATA Please wait at least 5 minutes before saving again!"] call ALiVE_fnc_dumpMPH;
                 };
 
             };

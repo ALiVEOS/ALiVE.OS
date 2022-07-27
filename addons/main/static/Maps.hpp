@@ -4,11 +4,14 @@
  * Map bounds for analysis grid, this is for when the map bounds function is faulty
  * due to incorrect map size values from config.
  */
- 
+
 ALIVE_mapBounds = [] call ALIVE_fnc_hashCreate;
 [ALIVE_mapBounds, "Imrali", 11000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "wake", 11000] call ALIVE_fnc_hashSet;
 [ALIVE_mapBounds, "Colleville", 6000] call ALIVE_fnc_hashSet;
+
+// Add fix for problematic hangars
+ALIVE_problematicHangarBuildings = [];
 
 /*
  * CP MP building types for cluster generation
@@ -26,7 +29,7 @@ if (!isDedicated) then {
     _fileExists = [format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)]] call ALiVE_fnc_fileExists;
 
     If (_fileExists) then {
-        ["ALiVE LOADING MAP DATA: %1",_worldName] call ALIVE_fnc_dump;
+        ["LOADING MAP DATA: %1",_worldName] call ALiVE_fnc_dump;
         _file = format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)];
         call compile preprocessFileLineNumbers _file;
     };
@@ -34,7 +37,7 @@ if (!isDedicated) then {
 
 if (!_fileExists) then {
 
-    ["ALiVE SETTING UP MAP: %1",_worldName] call ALIVE_fnc_dump;
+    ["SETTING UP MAP: %1",_worldName] call ALiVE_fnc_dump;
 
     ALIVE_airBuildingTypes = [];
     ALIVE_militaryParkingBuildingTypes = [];
@@ -168,6 +171,10 @@ if (!_fileExists) then {
             "households"
         ];
 
+        ALIVE_problematicHangarBuildings = ALIVE_problematicHangarBuildings + [
+            "[14401.4,16225.4,-0.000520706]"
+        ];
+
     };
 
     // Iron Front
@@ -257,8 +264,11 @@ if (!_fileExists) then {
     };
 
     if (count ALIVE_civilianPopulationBuildingTypes == 0) then { // if no buildings try loading from file
-        ["MAP NOT INDEXED OR DEDI SERVER FILE LOAD... ALiVE LOADING MAP DATA: %1",_worldName] call ALIVE_fnc_dump;
+        ["MAP NOT INDEXED OR DEDI SERVER FILE LOAD... LOADING MAP DATA: %1",_worldName] call ALiVE_fnc_dump;
         _file = format["x\alive\addons\main\static\%1_staticData.sqf", toLower(worldName)];
-        call compile preprocessFileLineNumbers _file;
+        // why the hell are we even calling this here
+        if ([_file] call ALiVE_fnc_fileExists) then {
+            call compile preprocessFileLineNumbers _file;
+        };
     };
 };

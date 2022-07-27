@@ -109,7 +109,7 @@ switch(_operation) do {
 
                     //Set value
                     _args = [_logic,"pause",_args,false] call ALIVE_fnc_OOsimpleOperation;
-                    ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_DumpR;
+                    ["Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_dumpR;
             };
             _result = _args;
         };
@@ -162,7 +162,7 @@ switch(_operation) do {
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
                         ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                        ["ALiVE Command Router - Activate Command [%1] %2",_profileID,_activeCommand] call ALIVE_fnc_dump;
+                        ["Command Router - Activate Command [%1] %2",_profileID,_activeCommand] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -192,7 +192,7 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        ["ALiVE Command Router - Current Command State:"] call ALIVE_fnc_dump;
+                        ["Command Router - Current Command State:"] call ALiVE_fnc_dump;
                         _commandState call ALIVE_fnc_inspectHash;
                         ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
                     };
@@ -226,7 +226,7 @@ switch(_operation) do {
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
                             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                            ["ALiVE Command Router - De-activate Command [%1] %2",_profileID,_activeCommand] call ALIVE_fnc_dump;
+                            ["Command Router - De-activate Command [%1] %2",_profileID,_activeCommand] call ALiVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
@@ -251,7 +251,7 @@ switch(_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                            ["ALiVE Command Router - Current Command State:"] call ALIVE_fnc_dump;
+                            ["Command Router - Current Command State:"] call ALiVE_fnc_dump;
                             _commandState call ALIVE_fnc_inspectHash;
                             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
                         };
@@ -278,7 +278,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALiVE Command Router - Command Manager Started"] call ALIVE_fnc_dump;
+                ["Command Router - Command Manager Started"] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -317,7 +317,7 @@ switch(_operation) do {
                                     // DEBUG -------------------------------------------------------------------------------------
                                     if(_debug) then {
                                         ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                                        ["ALiVE Command Router - Manage Command [%1] %2",_profileID,_activeCommand] call ALIVE_fnc_dump;
+                                        ["Command Router - Manage Command [%1] %2",_profileID,_activeCommand] call ALiVE_fnc_dump;
                                     };
                                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -368,7 +368,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if (_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALiVE Command Router - Command Manager Stopped"] call ALIVE_fnc_dump;
+                ["Command Router - Command Manager Stopped"] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
         };

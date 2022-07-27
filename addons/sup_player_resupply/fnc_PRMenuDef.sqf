@@ -50,7 +50,7 @@ _userItems = [[MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR,"ALIVE_Tabl
 _result = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _userItems) > 0);
 
 if (typeName _params == typeName []) then {
-    if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
+    if (count _params < 1) exitWith {["Error: Invalid params: %1, %2", _this, __FILE__] call ALiVE_fnc_dump;};
     _menuName = _params select 0;
     _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
 } else {
@@ -82,7 +82,7 @@ _menus =
                 localize "STR_ALIVE_PR_COMMENT",
                 "",
                 -1,
-                (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side player)], false]),
+                (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side group player)], false]),
                 !([QMOD(mil_C2ISTAR)] call ALiVE_fnc_isModuleAvailable) && {_result}
             ]
         ]

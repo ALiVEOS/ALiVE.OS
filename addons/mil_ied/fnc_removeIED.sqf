@@ -29,7 +29,7 @@ _removeIED = {
 
     // Assuming 3rd party IED mods are using mines
     if (isNil "_IEDObj" || {(!(mineActive _IEDObj) && (_thirdParty))}) then {
-        //diag_log format["IED NOT FOUND at %1 for %2", _IEDpos, _IEDskin];
+        //["IED NOT FOUND at %1 for %2", _IEDpos, _IEDskin] call ALiVE_fnc_dump;
 
         // Remove the IED from the store
         [_IEDs, _key] call ALiVE_fnc_hashRem;
@@ -41,7 +41,7 @@ _removeIED = {
         {
 
             if ((markerPos _x) distance _IEDpos < 3) then {
-                // diag_log format["IED delete marker: %1, %2, %3", _x, markerpos _x, _IEDpos];
+                // ["IED delete marker: %1, %2, %3", _x, markerpos _x, _IEDpos] call ALiVE_fnc_dump;
                 [_x] call cba_fnc_deleteEntity;
                 _debugmarkers set [_foreachindex, -1];
                 ADDON setVariable ["debugmarkers", _debugmarkers - [-1]];

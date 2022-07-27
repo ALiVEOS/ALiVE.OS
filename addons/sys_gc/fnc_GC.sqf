@@ -138,7 +138,7 @@ switch(_operation) do {
                         // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
                                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                                ["ALiVE Garbage Collector turned off..."] call ALIVE_fnc_dumpR;
+                                ["Garbage Collector turned off..."] call ALiVE_fnc_dumpR;
                             };
                         // DEBUG -------------------------------------------------------------------------------------
                     };
@@ -146,7 +146,7 @@ switch(_operation) do {
                     // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
                             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                            ["ALIVE Garbage Collector starting..."] call ALIVE_fnc_dumpR;
+                            ["Garbage Collector starting..."] call ALiVE_fnc_dumpR;
                         };
                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -223,7 +223,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Garbage Collector started collecting at %1...",_time] call ALIVE_fnc_dumpR;
+                    ["Garbage Collector started collecting at %1...",_time] call ALiVE_fnc_dumpR;
                 };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -253,7 +253,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE Garbage Collector collection finished at %1! Time taken %2...",_time,(time - _time)] call ALIVE_fnc_dumpR;
+                    ["Garbage Collector collection finished at %1! Time taken %2...",_time,(time - _time)] call ALiVE_fnc_dumpR;
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
                 };
             // DEBUG -------------------------------------------------------------------------------------
@@ -295,7 +295,7 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE GC trashed %1! Time to die %2...",_object,_timeToDie] call ALIVE_fnc_dumpR;
+                    ["GC trashed %1! Time to die %2...",_object,_timeToDie] call ALiVE_fnc_dumpR;
                 };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -316,7 +316,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Garbage Collector deletion started at %1 for %2 objects...",_timeCheck,(count _queue)] call ALIVE_fnc_dumpR;
+                    ["Garbage Collector deletion started at %1 for %2 objects...",_timeCheck,(count _queue)] call ALiVE_fnc_dumpR;
                 };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -368,7 +368,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE Garbage Collector deletion processed at %1! Time taken: %2! Objects left in queue: %3",_timeCheck,(time - _timeCheck),(count _queue)] call ALIVE_fnc_dumpR;
+                    ["Garbage Collector deletion processed at %1! Time taken: %2! Objects left in queue: %3",_timeCheck,(time - _timeCheck),(count _queue)] call ALiVE_fnc_dumpR;
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
                 };
             // DEBUG -------------------------------------------------------------------------------------

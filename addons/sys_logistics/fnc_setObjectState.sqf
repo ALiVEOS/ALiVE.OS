@@ -48,7 +48,7 @@ if (_object isKindof "LandVehicle" || _object isKindOf "Air" || _object isKindOf
 	// _damageModel returns Nil if HP currently not set. This is needed for backwards compatibility
 	if (isNil "_damageModel") then {
 		if(ALiVE_SYS_DATA_DEBUG_ON) then {
-			["ALiVE SYS_LOGISTICS - RESTORING LEGACY DAMAGE FOR %1", _object] call ALIVE_fnc_dump;
+			["SYS_LOGISTICS - RESTORING LEGACY DAMAGE FOR %1", _object] call ALiVE_fnc_dump;
 		};
 		[_object,([_state,QGVAR(DAMAGE)] call ALiVE_fnc_HashGet)] call ALiVE_fnc_setObjectDamage;
 	} else {

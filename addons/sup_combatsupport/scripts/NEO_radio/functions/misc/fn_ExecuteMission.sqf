@@ -15,7 +15,7 @@ _dispersion = _this select 8;
 _units = _this select 9;
 
 
-diag_log format["MISSION: %1", _this];
+["MISSION: %1", _this] call ALiVE_fnc_dump;
 
 // Arty is on mission
 _battery setVariable ["ARTY_SHOTCALLED", false, true];
@@ -42,7 +42,7 @@ sleep 2;
     _dummy = "Land_HelipadEmpty_F" createVehicleLocal (_this select 1);
     _eta = (vehicle _battery) getArtilleryETA [getPos _dummy, _this select 2];
     deleteVehicle _dummy;
-    //diag_log format["BATTERY: %1 due in %2 seconds", _battery, _eta];
+    //["BATTERY: %1 due in %2 seconds", _battery, _eta] call ALiVE_fnc_dump;
 
     sleep _eta;
 

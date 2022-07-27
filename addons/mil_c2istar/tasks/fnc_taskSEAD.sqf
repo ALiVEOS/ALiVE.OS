@@ -107,7 +107,9 @@ switch (_taskState) do {
 
             if (typeName _targetVehicle != "OBJECT") then {
                 _vehicleProfile = [ALIVE_profileHandler, "getProfile", _targetVehicle] call ALIVE_fnc_profileHandler;
-                _vehicleProfile call ALIVE_fnc_inspectHash;
+                if (_debug) then {
+                    _vehicleProfile call ALIVE_fnc_inspectHash;
+                };
                 _vehiclePosition = _vehicleProfile select 2 select 2;
                 _vehicleType = _vehicleProfile select 2 select 11;
             } else {
@@ -230,7 +232,20 @@ switch (_taskState) do {
         _lastState = [_params,"lastState"] call ALIVE_fnc_hashGet;
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
-        _vehicleProfiles = [_params,"vehicleProfileIDs"] call ALIVE_fnc_hashGet;
+        _vehicleProfiles = [_params,"vehicleProfileIDs",[]] call ALIVE_fnc_hashGet;
+
+        if (count _vehicleProfiles == 0) exitWith {
+            [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+
+            _task set [8,"Succeeded"];
+            _task set [10, "N"];
+            _result = _task;
+
+            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+
+            ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+
+        };
 
         if(_lastState != "Destroy") then {
 

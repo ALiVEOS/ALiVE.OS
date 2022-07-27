@@ -159,7 +159,7 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
             [_weatherHash,_realWeather select _i, _realWeather select (_i+1)] call ALiVE_fnc_hashSet;
         };
 
-        diag_log format["--------------------------------- WEATHER IN %1 AT %2 ---------------------------------", WEATHER_CYCLE_REAL_LOCATION, _date];
+        ["--------------------------------- WEATHER IN %1 AT %2 ---------------------------------", WEATHER_CYCLE_REAL_LOCATION, _date] call ALiVE_fnc_dump;
 
         if (WEATHER_DEBUG) then {
             _weatherHash call ALiVE_fnc_inspectHash;
@@ -168,10 +168,10 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
         _result = _weatherHash;
 
     } else {
-        diag_log format["--------------------------------- ERROR GETTING REAL WEATHER : %1", _realWeather];
+        ["--------------------------------- ERROR GETTING REAL WEATHER : %1", _realWeather] call ALiVE_fnc_dump;
     };
 } else {
-    diag_log format["--------------------------------- ERROR GETTING REAL WEATHER : %1", _newLoc];
+    ["--------------------------------- ERROR GETTING REAL WEATHER : %1", _newLoc] call ALiVE_fnc_dump;
 };
 
 _result

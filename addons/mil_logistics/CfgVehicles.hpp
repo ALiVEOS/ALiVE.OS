@@ -248,6 +248,25 @@ class CfgVehicles
                                         };
                                 };
                         };
+                        class enableAirTransport
+                        {
+                            displayName = "$STR_ALIVE_ML_ENABLE_AIR_TRANSPORT";
+                            description = "$STR_ALIVE_ML_ENABLE_AIR_TRANSPORT_COMMENT";
+                            class Values
+                            {
+                                class Yes
+                                {
+                                    name = "Yes";
+                                    value = true;
+                                    default = 1;
+                                };
+                                class No
+                                {
+                                    name = "No";
+                                    value = false;
+                                };
+                            };
+                        };
                         class limitTransportToFaction
                         {
                                 displayName = "$STR_ALIVE_ML_LIMIT";
@@ -265,7 +284,6 @@ class CfgVehicles
                                                 name = "Faction Only";
                                                 value = true;
                                         };
-
                                 };
                         };
                 };

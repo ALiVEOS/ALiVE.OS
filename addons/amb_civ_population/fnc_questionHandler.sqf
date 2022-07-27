@@ -100,8 +100,9 @@ switch (_question) do {
             _response2 = format [localize "STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_2", _civName];
             _response3 = format [localize "STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_3", _civName];
             _response4 = format [localize "STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_4", _civName];
-            _response5 = format [localize "STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_6", _civName];
-            _response = [_response1,_response2,_response3,_response4,_response5] call BIS_fnc_selectRandom;
+            _response5 = format [localize "STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_5", _civName];
+            _response6 = format [localize "STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_6", _civName];
+            _response = [_response1,_response2,_response3,_response4,_response5,_response6] call BIS_fnc_selectRandom;
             CIVINTERACT_RESPONSELIST ctrlSetText _response;
 
             //-- Create marker on home

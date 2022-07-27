@@ -1,8 +1,8 @@
 if (hasInterface && {!isMultiplayer}) then {
 
     titleText ["The ALiVE Team presents...", "BLACK IN",999999];
-    
-    ["ALiVE | Air Superiority - Running ClientInit..."] call ALiVE_fnc_Dump;
+
+    ["| Air Superiority - Running ClientInit..."] call ALiVE_fnc_dump;
 
     //Intro
     [] spawn {
@@ -13,15 +13,15 @@ if (hasInterface && {!isMultiplayer}) then {
         private ["_cam","_camx","_camy","_camz","_object"];
 
 	_object = player;
-	
+
 	_object setCaptive true;
 
         _start = time;
 
         waituntil {(player getvariable ["alive_sys_player_playerloaded",false]) || ((time - _start) > 20)};
-        
+
 	sleep 10;
-        
+
         _camx = getposATL player select 0;
         _camy = getposATL player select 1;
         _camz = getposATL player select 2;
@@ -39,7 +39,7 @@ if (hasInterface && {!isMultiplayer}) then {
         _cam CamCommit 20;
         sleep 5;
         sleep 15;
-                
+
         _cam CameraEffect ["Terminate","Back"];
         CamDestroy _cam;
 
@@ -75,7 +75,7 @@ if (hasInterface && {!isMultiplayer}) then {
         _text = format["%1<t>Special objectives will be issued through the ALiVE task system if available! Be aware that this mission is persistent!</t>",_title];
 
         ["openSideSmall",0.4] call ALIVE_fnc_displayMenu;
-        ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;        
+        ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;
     };
 };
 

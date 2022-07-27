@@ -35,7 +35,7 @@ _text = " ------------------ Inspecting Target -------------------- ";
 [" model: %1", getText(configFile >> "CfgVehicles" >> (typeOf _target) >> "model")] call ALIVE_fnc_dump;
 [" data type: %1", typeName _target] call ALIVE_fnc_dump;
 [" class name: %1", typeOf _target] call ALIVE_fnc_dump;
-[" is alive: %1", alive _target] call ALIVE_fnc_dump;
+[" is alive: %1", _target] call ALiVE_fnc_dump;
 [" is player: %1", isPlayer _target] call ALIVE_fnc_dump;
 [" is leader: %1", isFormationLeader _target] call ALIVE_fnc_dump;
 [" group: %1", group _target] call ALIVE_fnc_dump;

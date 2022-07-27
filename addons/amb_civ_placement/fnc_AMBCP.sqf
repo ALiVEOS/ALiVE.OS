@@ -151,7 +151,6 @@ switch(_operation) do {
         if(_args isEqualType "") then {
             _args = [_args, " ", ""] call CBA_fnc_replace;
             _args = [_args, ","] call CBA_fnc_split;
-
             if(count _args > 0) then {
                 _logic setVariable [_operation, _args];
             };
@@ -291,7 +290,7 @@ switch(_operation) do {
 
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE AMBCP - Startup"] call ALIVE_fnc_dump;
+                ["AMBCP - Startup"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
 
@@ -307,7 +306,7 @@ switch(_operation) do {
             waituntil {!(isnil "ALIVE_loadedCIVClusters") && {ALIVE_loadedCIVClusters}};
 
             if (isnil "ALIVE_clustersCivSettlement") exitwith {
-                ["ALIVE AMBCP - Exiting because of lack of civilian settlements..."] call ALIVE_fnc_dump;
+                ["AMBCP - Exiting because of lack of civilian settlements..."] call ALiVE_fnc_dump;
                 _logic setVariable ["startupComplete", true];
             };
 
@@ -524,8 +523,8 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE AMBCP - Startup completed"] call ALIVE_fnc_dump;
-                    ["ALIVE AMBCP - Count clusters %1",count _clusters] call ALIVE_fnc_dump;
+                    ["AMBCP - Startup completed"] call ALiVE_fnc_dump;
+                    ["AMBCP - Count clusters %1",count _clusters] call ALiVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -537,7 +536,7 @@ switch(_operation) do {
                     // start registration
                     [_logic, "registration"] call MAINCLASS;
                 }else{
-                    ["ALIVE AMBCP - Warning no locations found for placement, you need to include civilian locations within the TAOR marker"] call ALIVE_fnc_dumpR;
+                    ["AMBCP - Warning no locations found for placement, you need to include civilian locations within the TAOR marker: %1", _taor] call ALiVE_fnc_dumpR;
 
                     // set module as started
                     _logic setVariable ["startupComplete", true];
@@ -558,11 +557,10 @@ switch(_operation) do {
 
             private _debug = [_logic, "debug"] call MAINCLASS;
 
-
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE AMBCP - Registration"] call ALIVE_fnc_dump;
+                ["AMBCP - Registration"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -594,6 +592,14 @@ switch(_operation) do {
                 [ALIVE_clusterHandler, "debug", true] call ALIVE_fnc_clusterHandler;
             };
 
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+                ["AMBCP - Registration Completed"] call ALiVE_fnc_dump;
+                [] call ALIVE_fnc_timer;
+                ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+            };
+            // DEBUG -------------------------------------------------------------------------------------
+
             // start placement
             [_logic, "placement"] call MAINCLASS;
 
@@ -611,7 +617,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE AMBCP - Placement"] call ALIVE_fnc_dump;
+                ["AMBCP - Placement"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -652,7 +658,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE AMBCP [%1] SideNum: %2 Side: %3 Faction: %4",_faction,_factionSideNumber,_side,_faction] call ALIVE_fnc_dump;
+                ["AMBCP [%1] SideNum: %2 Side: %3 Faction: %4",_faction,_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -791,7 +797,7 @@ switch(_operation) do {
             // avoid error that stems from BIS population module CIV_F unit classes
             // https://github.com/ALiVEOS/ALiVE.OS/issues/522
             private _minScope = 1;
-            if (_faction == "CIV_F") then {_minScope = 2};
+            if (_faction == "CIV_F" || _faction == "C_VIET") then {_minScope = 2};
 
             private _civClasses = [0,_faction,"Man",false,_minScope] call ALiVE_fnc_findVehicleType;
 
@@ -868,6 +874,14 @@ switch(_operation) do {
                             [_agent, "homeCluster", _clusterID] call ALIVE_fnc_civilianAgent;
                             [_agent, "homePosition", _buildingPosition] call ALIVE_fnc_civilianAgent;
 
+                            // Add persistent name to civ
+                            private _genName = getText(configFile >> "CfgVehicles" >> _unitClass >> "genericNames");
+                            private _firstName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") -1) ));
+                            private _lastName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") -1) ));
+
+                            [_agent, "firstName", _firstName] call ALIVE_fnc_civilianAgent;
+                            [_agent, "lastName", _lastName] call ALIVE_fnc_civilianAgent;
+
                             if (count _ambientCivilianRoles > 0 && {random 1 > 0.5}) then {
                                 private _role = selectRandom _ambientCivilianRoles;
                                 //private _roles = _ambientCivilianRoles - [_role];
@@ -887,12 +901,12 @@ switch(_operation) do {
                 } forEach _clusters;
             };
 
-            ["ALIVE AMBCP [%1] - Ambient land vehicles placed: %2",_faction,_countLandUnits] call ALIVE_fnc_dump;
-            ["ALIVE AMBCP [%1] - Ambient civilian units placed: %2",_faction,_countCivilianUnits] call ALIVE_fnc_dump;
+            ["AMBCP [%1] - Ambient land vehicles placed: %2",_faction,_countLandUnits] call ALiVE_fnc_dump;
+            ["AMBCP [%1] - Ambient civilian units placed: %2",_faction,_countCivilianUnits] call ALiVE_fnc_dump;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE AMBCP - Placement completed"] call ALIVE_fnc_dump;
+                ["AMBCP - Placement completed"] call ALiVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };

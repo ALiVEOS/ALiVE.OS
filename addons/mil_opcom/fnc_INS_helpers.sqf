@@ -113,8 +113,8 @@ ALiVE_fnc_INS_ambush = {
                     _trg setTriggerActivation ["ANY","PRESENT",true];
                     _trg setTriggerStatements [
                         "this && {(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0",
-                            format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",100,str(_id),ceil(random 2)],
-                            format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",str(_id)]
+                            format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",100,text _id,ceil(random 2)],
+                            format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",text _id]
                     ];
                 };
 
@@ -245,7 +245,7 @@ ALiVE_fnc_INS_factory = {
 };
 
 ALiVE_fnc_INS_ied = {
-                private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_building","_section","_objective"];
+                private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_building","_section","_objective", "_num"];
 
                 _timeTaken = _this select 0;
                 _pos = _this select 1;
@@ -270,11 +270,14 @@ ALiVE_fnc_INS_ied = {
                     _trg = createTrigger ["EmptyDetector",_pos];
                     _trg setTriggerArea [_size + 250, _size + 250,0,false];
                     _trg setTriggerActivation ["ANY","PRESENT",true];
+                    _num = ceil(_size/100);
                     _trg setTriggerStatements [
                         "this && {(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0",
-                            format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",_size,str(_id),ceil(_size/100)],
-                            format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",str(_id)]
+                            format["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size,text _id,_num],
+                            format["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _id]
                     ];
+
+                    [MOD(MIL_IED), "storeTrigger", [_size,format["%1",_id],_pos,true,"IED",_num]] call ALiVE_fnc_IED;
 
                     [_pos,_size,1] call ALiVE_fnc_placeVBIED;
 
@@ -497,7 +500,7 @@ ALiVE_fnc_INS_roadblocks = {
 
                                 [getpos _charge,30] remoteExec  ["ALiVE_fnc_RemoveComposition",2];
 
-                                ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
+                                ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
 
                                 deletevehicle _charge;
                             },
@@ -697,14 +700,17 @@ ALiVE_fnc_spawnFurniture = {
 
     _furnitures = ["Land_RattanTable_01_F"];
     _bombs = ["ALIVE_IEDUrbanSmall_Remote_Ammo","ALIVE_IEDLandSmall_Remote_Ammo","ALIVE_IEDLandBig_Remote_Ammo"];
-    _objects = ["Fridge_01_open_F","Land_MapBoard_F","Land_WaterCooler_01_new_F"];
-    _boxes = ["Box_East_AmmoOrd_F"];
+    _objects = ["Land_Canteen_F","Land_TinContainer_F"];
+    _boxes = ["VirtualReammoBox_small_F"];
     _created = [];
 
     _pos = getposATL _building;
     _positions = [_pos,15] call ALIVE_fnc_findIndoorHousePositions;
 
-    if (count _positions == 0) exitwith {[]};
+    if (count _positions == 0) exitwith {
+        ["ALiVE MIL OPCOM Insurgency has not found indoor Houspositions to place IED Factory/HQ/depot objects for building %1 at %2",_building, getposATL _building] call ALiVE_fnc_Dump;
+        [];
+    };
 
     {
         private ["_pos"];
@@ -714,7 +720,12 @@ ALiVE_fnc_spawnFurniture = {
         if ({(_pos select 2) - (_x select 2) < 0.5} count _positions > 1) then {
             if (random 1 < 0.3) then {
                 _furniture = createVehicle [(selectRandom _furnitures), _pos, [], 0, "CAN_COLLIDE"];
+                _furniture setposATL _pos;
                 _furniture setdir getdir _building;
+
+                // Disable sim to avoid flipping furniture. Bombs are not affected and still exploding.
+                // Once building is destroyed or site is disabled, the furniture gets deleted.
+                _furniture enableSimulation false;
 
                 _created pushback _furniture;
 
@@ -750,9 +761,13 @@ ALiVE_fnc_spawnFurniture = {
                 };
             } else {
                 if (_add && {random 1 < 0.5}) then {
-                    _object = createVehicle [(selectRandom _objects), _pos, [], 0, "CAN_COLLIDE"];
-                    _object setdir (_building getDir _object);
+                    _furniture = createVehicle [(selectRandom _furnitures), _pos, [], 0, "CAN_COLLIDE"];
+                    _furniture setdir getdir _building;
 
+                    _object = createVehicle [(selectRandom _objects), _pos, [], 0, "CAN_COLLIDE"];
+                    _object attachTo [_furniture, [0,0,(_furniture call ALiVE_fnc_getRelativeTop) + 0.15]];
+ 
+                    _created pushback _furniture;
                     _created pushback _object;
                 } else {
                     if (_ammo && {random 1 < 0.5}) then {
@@ -798,7 +813,7 @@ ALiVE_fnc_INS_spawnIEDfactory = {
 
             [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
 
-            ["Nice Job", format ["%1 disabled the IED factory at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
+            ["Nice Job", format ["%1 disabled the IED factory at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
         },
         {},
         [],
@@ -834,7 +849,7 @@ ALiVE_fnc_INS_spawnHQ = {
             _target setVariable [QGVAR(HQ_DISABLED),true,true];
             [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
 
-            ["Congratulations", format ["%1 disabled the Recruitment HQ at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
+            ["Congratulations", format ["%1 disabled the Recruitment HQ at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
         },
         {},
         [],
@@ -871,7 +886,7 @@ ALiVE_fnc_INS_spawnDepot = {
             _target setVariable [QGVAR(DEPOT_DISABLED),true,true];
             [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
 
-            ["Good work", format ["%1 disabled the weapons depot at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
+            ["Good work", format ["%1 disabled the weapons depot at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
         },
         {},
         [],
@@ -974,3 +989,54 @@ ALiVE_fnc_INS_compileList = {
             _list = [_list, ",", ", "] call CBA_fnc_replace;
             _list;
 };
+
+ALiVE_fnc_INS_filterObjectiveBuildings = {
+
+    params ["_center","_size"];
+
+    private _buildings = [_center, _size] call ALiVE_fnc_getEnterableHouses;
+
+    //["Enterable buildings total: %1",_buildings] call ALiVE_fnc_DumpR;
+
+    {
+        private _h = _x;
+        private _type = typeOf _h;
+        private _index = _foreachIndex;
+        private _blacklist = ["tower","cage","platform","trench","bridge"];
+
+        //["Building selected: %1 | %2",typeOf _h, _h] call ALiVE_fnc_DumpR;
+
+        private _buildingPositions = [getposATL _h,5] call ALIVE_fnc_findIndoorHousePositions;
+        
+        if (count _buildingPositions == 0) then {
+            //["Deleted buildingtype %1! No indoor houseposition!",typeof _h] call ALiVE_fnc_DumpR;
+            _buildings set [_index,objNull];
+        } else {          
+            private _dimensions = _h call BIS_fnc_boundingBoxDimensions;
+
+            // too small
+            if (((_dimensions select 0) + (_dimensions select 1)) < 10) then {
+                //["Deleted buildingtype %1! Building is too small!",typeof _h] call ALiVE_fnc_DumpR;
+
+                _buildings set [_index,objNull];
+            } else {
+                if (
+                    //Building is double as high as broad and is very likely a tower, or contains a blacklisted class
+                    (((_dimensions select 2)/2) > (_dimensions select 0) && {((_dimensions select 2)/2) > (_dimensions select 1)})
+                    ||
+                    {{[_type , _x] call CBA_fnc_find != -1} count _blacklist > 0}
+                ) then {
+                    //["Deleted buildingtype %1! Building is a tower or blacklisted!",typeof _h] call ALiVE_fnc_DumpR;
+                    _buildings set [_index,objNull];
+                };
+            };
+        };
+    } foreach _buildings;
+
+    _buildings = _buildings - [objNull];
+
+    //["Enterable buildings filtered: %1",_buildings] call ALiVE_fnc_DumpR;
+
+    _buildings;
+};
+

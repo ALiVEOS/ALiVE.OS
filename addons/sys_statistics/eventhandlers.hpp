@@ -1,9 +1,7 @@
-class Extended_PreInit_EventHandlers
-{
- class alive_sys_statistics
- {
-  init = "call ('\x\alive\addons\sys_statistics\XEH_preInit.sqf' call SLX_XEH_COMPILE)";
- };
+class Extended_PreInit_EventHandlers {
+    class alive_sys_statistics {
+        init = "call compile preprocessFileLineNumbers '\x\alive\addons\sys_statistics\XEH_preInit.sqf'";
+    };
 };
 
 class Extended_Killed_Eventhandlers

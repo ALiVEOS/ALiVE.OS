@@ -1,0 +1,180 @@
+/*%FSM<COMPILE "D:\Steam\steamapps\common\Arma 3 Tools\FSMEditor\scriptedFSM.cfg, missionFlow">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"author__Jman",0,250,-75.000000,-175.000000,25.000000,-125.000000,0.000000,"author:" \n "Jman"};
+item1[] = {"_",8,218,-200.000000,-175.000000,-100.000000,-125.000000,0.000000,""};
+item2[] = {"exit",1,250,-325.000000,-175.000000,-225.000000,-125.000000,0.000000,"exit"};
+item3[] = {"isServer_",4,218,-75.000000,-100.000000,25.000000,-50.000000,1.000000,"isServer?"};
+item4[] = {"initialize_Missi",2,250,-75.000000,-25.000000,25.000000,25.000000,0.000000,"initialize Mission"};
+item5[] = {"_",8,218,-75.000000,50.000000,25.000000,100.000000,0.000000,""};
+item6[] = {"mission_running",2,250,-75.000000,125.000000,25.000000,175.000000,0.000000,"mission running"};
+item7[] = {"all_CIA__killed",4,4314,-202.550964,118.197479,-100.000000,175.000000,0.000000,"all CIA " \n "killed?"};
+item8[] = {"mission_failed",1,250,-325.000000,125.000000,-225.000000,175.000000,0.000000,"mission failed"};
+item9[] = {"tasks_succeeded",4,218,-75.850281,190.646484,32.652893,256.802582,0.000000,"tasks" \n "succeeded?"};
+item10[] = {"mission_won",1,250,-75.000000,275.000000,25.000000,325.000000,0.000000,"mission won"};
+link0[] = {0,1};
+link1[] = {0,3};
+link2[] = {1,2};
+link3[] = {3,4};
+link4[] = {4,5};
+link5[] = {5,6};
+link6[] = {6,7};
+link7[] = {6,9};
+link8[] = {7,8};
+link9[] = {9,10};
+globals[] = {0.000000,0,0,0,0,640,480,1,14,6316128,1,-373.222626,117.355408,390.531708,-235.196625,559,713,1};
+window[] = {0,-1,-1,-1,-1,1015,130,1492,130,1,577};
+*//*%FSM</HEAD>*/
+class FSM
+{
+        fsmName = "missionFlow";
+        class States
+        {
+                /*%FSM<STATE "author__Jman">*/
+                class author__Jman
+                {
+                        name = "author__Jman";
+                        itemno = 0;
+                        init = /*%FSM<STATEINIT""">*/"vn_failOnWipe = 1;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "isServer_">*/
+                                class isServer_
+                                {
+                                        itemno = 3;
+                                        priority = 1.000000;
+                                        to="initialize_Missi";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"isServer"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "_">*/
+                                class _
+                                {
+                                        itemno = 1;
+                                        priority = 0.000000;
+                                        to="exit";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "exit">*/
+                class exit
+                {
+                        name = "exit";
+                        itemno = 2;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "initialize_Missi">*/
+                class initialize_Missi
+                {
+                        name = "initialize_Missi";
+                        itemno = 4;
+                        init = /*%FSM<STATEINIT""">*/"[""| Erawan Secret War - Executing missionFlow.fsm...""] call ALiVE_fnc_dump;" \n
+                         "// Mission finished trigger" \n
+                         "vn_coalive_finished = false;" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "_">*/
+                                class _
+                                {
+                                        itemno = 5;
+                                        priority = 0.000000;
+                                        to="mission_running";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "mission_running">*/
+                class mission_running
+                {
+                        name = "mission_running";
+                        itemno = 6;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "tasks_succeeded">*/
+                                class tasks_succeeded
+                                {
+                                        itemno = 9;
+                                        priority = 0.000000;
+                                        to="mission_won";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"vn_coalive_finished"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "all_CIA__killed">*/
+                                class all_CIA__killed
+                                {
+                                        itemno = 7;
+                                        priority = 0.000000;
+                                        to="mission_failed";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"vn_failOnWipe > 0" \n
+                                         "&&" \n
+                                         "{" \n
+                                         "    time > 180;" \n
+                                         "}" \n
+                                         "&&" \n
+                                         "{" \n
+                                         "    (!alive cia_chief || !alive cia_pilot || !alive cia_uh1)" \n
+                                         "}"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "mission_failed">*/
+                class mission_failed
+                {
+                        name = "mission_failed";
+                        itemno = 8;
+                        init = /*%FSM<STATEINIT""">*/"[""coalive_fail2"", false] remoteExecCall [""vn_fnc_endMission""];"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "mission_won">*/
+                class mission_won
+                {
+                        name = "mission_won";
+                        itemno = 10;
+                        init = /*%FSM<STATEINIT""">*/"[""coalive_victory""] remoteExecCall [""vn_fnc_endMission""];"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+        };
+        initState="author__Jman";
+        finalStates[] =
+        {
+                "exit",
+                "mission_failed",
+                "mission_won",
+        };
+};
+/*%FSM</COMPILE>*/

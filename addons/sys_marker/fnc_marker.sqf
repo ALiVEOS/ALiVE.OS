@@ -150,7 +150,7 @@ switch (_operation) do {
              [_logic, "drawToggle", DEFAULT_TOGGLE] call ALIVE_fnc_marker;
              [_logic, "drawing", false] call ALIVE_fnc_marker;
 
-            //             diag_log format["TOGGLE: %1", [_logic, "drawToggle",[]] call MAINCLASS];
+            //             ["TOGGLE: %1", [_logic, "drawToggle",[]] call MAINCLASS] call ALiVE_fnc_dump;
 
             // Define module basics on server
             if (isServer) then {
@@ -319,7 +319,7 @@ switch (_operation) do {
 
                 waitUntil {
                     sleep 1;
-                    ((str side player) != "UNKNOWN")
+                    ((str side group player) != "UNKNOWN")
                 };
 
                 // Wait until game map is opened and register map controls
@@ -340,7 +340,7 @@ switch (_operation) do {
                     _control = _display displayCtrl MAP_CONTROL;
                     _control ctrlAddEventHandler ["MouseButtonClick", "[ALiVE_SYS_marker,'mouseButton',[player, _this]] call ALiVE_fnc_marker;"];
                     _control ctrlAddEventHandler ["MouseButtonDblClick", "if !(ALIVE_SYS_MARKER_HINT) then { hintSilent 'Only ALIVE Advanced Markers will be stored. Default BIS markers are not supported by ALIVE. CTRL-MOUSE BUTTON to create an Advanced Marker.'; ALIVE_SYS_MARKER_HINT = true;};"];
-                       _control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
+                    _control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
                     _control ctrlAddEventHandler ["MouseMoving", {[ALiVE_SYS_marker,"mouseMoving",[player, _this]] call ALiVE_fnc_marker;}];
 
                     _display displayAddEventHandler ["keyDown", {[ALiVE_SYS_marker,"keyDown",[player, _this]] call ALiVE_fnc_marker;}];
@@ -521,7 +521,7 @@ switch (_operation) do {
                 _result = false;
 
             } else {
-                _result = true;
+                _result = false;
             };
         };
 

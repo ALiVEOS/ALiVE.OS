@@ -37,7 +37,7 @@ func_getRank = {
                 _type isKindOf "Helicopter" ||
                 _type isKindOf "Tank") then {
                     if (_tagsInVehicle) then {
-                                ["ALIVE Player Tags - _tagsInVehicle: %1", _tagsInVehicle] call ALIVE_fnc_dump;
+                                ["Player Tags - _tagsInVehicle: %1", _tagsInVehicle] call ALiVE_fnc_dump;
                             _vehicle = _obj;
                             _objTypeStr = format["%1", (typeOf _vehicle)];
                             _name = getText(configFile >> "cfgVehicles" >> _objTypeStr >> "displayName");

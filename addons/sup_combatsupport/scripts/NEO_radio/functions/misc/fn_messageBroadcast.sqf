@@ -2,7 +2,7 @@
     _unit = _this select 0;
     _text = _this select 1;
     _radio = _this select 2;
-    _side = side _unit;
+    _side = side group _unit;
 
     //enableRadio true;
     //enableSentences true;

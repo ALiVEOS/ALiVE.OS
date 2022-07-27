@@ -31,6 +31,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_intelligence\fnc_PSDInit.sqf";
                                 RECOMPILE;
                         };
+                        class G2 {
+                                description = "The main class";
+                                file = "\x\alive\addons\mil_intelligence\fnc_G2.sqf";
+                                RECOMPILE;
+                        };
                 };
         };
 };

@@ -2,7 +2,7 @@ private["_worldName"];
 
 _worldName = tolower(worldName);
 
-["ALiVE SETTING UP MAP: dakrong"] call ALIVE_fnc_dump;
+["SETTING UP MAP: dakrong"] call ALiVE_fnc_dump;
 
 ALIVE_Indexing_Blacklist = [];
 ALIVE_airBuildingTypes = [];
@@ -188,7 +188,7 @@ if(tolower(_worldName) == "dakrong") then {
     ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + ["uns_buildings\west_buildings\uns_hootche1.p3d","uns_buildings\west_buildings\uns_army_med.p3d","uns_buildings\west_buildings\uns_bunker_troop.p3d","uns_buildings\west_buildings\uns_hootche.p3d","uns_buildings\west_buildings\uns_guardhouse.p3d","a3\structures_f_exp\military\pillboxes\pillboxbunker_01_rectangle_f.p3d","a3\structures_f_exp\military\pillboxes\pillboxbunker_01_hex_f.p3d","uns_buildings\west_buildings\sb_bunker_main.p3d","uns_buildings\west_buildings\sb_bunker_main02.p3d","a3\structures_f_exp\military\fortifications\bagbunker_01_large_green_f.p3d","raz_nam_obj\m\tent\tent_east.p3d","raz_nam_obj\m\tent\tent_east_m.p3d","raz_nam_obj\m\tent\tent_east_o.p3d"];
     ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + ["uns_buildings\west_buildings\uns_hootche1.p3d","uns_buildings\west_buildings\uns_army_med.p3d","a3\structures_f_exp\military\pillboxes\pillboxbunker_01_rectangle_f.p3d","a3\structures_f_exp\military\pillboxes\pillboxbunker_01_hex_f.p3d","uns_buildings\west_buildings\sb_bunker_main.p3d","uns_buildings\west_buildings\sb_bunker_main02.p3d","a3\structures_f_exp\military\pillboxes\pillboxbunker_01_big_f.p3d","a3\structures_f_exp\military\fortifications\bagbunker_01_small_green_f.p3d","a3\structures_f_exp\military\fortifications\bagbunker_01_large_green_f.p3d","raz_nam_obj\m\tent\tent_east.p3d","raz_nam_obj\m\tent\tent_east_m.p3d","raz_nam_obj\m\tent\tent_east_o.p3d","uns_buildings\west_objects\sb_revetment.p3d","uns_buildings\west_buildings\tarp_1.p3d","wx_objects\wx_defenceposition_01.p3d"];
     ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + [];
-    
+
     ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [];
     ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [];
     ALIVE_civilianAirBuildingTypes = ALIVE_civilianAirBuildingTypes + [];
@@ -237,7 +237,7 @@ if(tolower(_worldName) == "dakrong") then {
         "uns_buildings\civilian_buildings\uns_leanto1.p3d",
         "uns_buildings\civilian_buildings\uns_leanto2.p3d"
     ];
-    
+
     ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + [
         "uns_buildings\civilian_buildings\csj_hut01.p3d",
         "uns_buildings\civilian_buildings\csj_hut02.p3d",

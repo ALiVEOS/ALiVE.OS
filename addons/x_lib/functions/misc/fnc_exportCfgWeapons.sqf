@@ -171,9 +171,9 @@ if (_mode == "json") then {
                      _newType = _itemType;
                 };
             };
-            diag_log format["{'type':'%1',", _newType];
-            diag_log format["'class':'%1',", _class];
-            diag_log format["'name':'%1'},", _disName];
+            ["{'type':'%1',", _newType] call ALiVE_fnc_dump;
+            ["'class':'%1',", _class] call ALiVE_fnc_dump;
+            ["'name':'%1'},", _disName] call ALiVE_fnc_dump;
         };
         [_itemType,_class] call bis_fnc_log;
         if (_screenshots) then {

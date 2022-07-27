@@ -45,7 +45,7 @@ if (GVAR(ENABLED)) then {
     _position = _this select 1;
     _unit = _this select 2;
 
-    //diag_log format["GetOut: %1", _this];
+    //["GetOut: %1", _this] call ALiVE_fnc_dump;
 
     if (local _unit && isPlayer _unit) then {
 

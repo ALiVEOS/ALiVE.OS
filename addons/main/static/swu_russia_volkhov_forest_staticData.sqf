@@ -1,6 +1,6 @@
 private["_worldName"];
  _worldName = tolower(worldName);
- ["ALiVE SETTING UP MAP: swu_russia_volkhov_forest"] call ALIVE_fnc_dump;
+ ["SETTING UP MAP: swu_russia_volkhov_forest"] call ALiVE_fnc_dump;
  ALIVE_Indexing_Blacklist = [];
  ALIVE_airBuildingTypes = [];
  ALIVE_militaryParkingBuildingTypes = [];

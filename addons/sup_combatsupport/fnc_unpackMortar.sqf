@@ -78,7 +78,7 @@ if (isNil "_gunner" || isNil "_assistant") exitWith {
     };
 
     if (!_timein && _wait) then {
-        diag_log format["unpack timedout %1",(nearestObjects [position _gunner, [], 3])];
+        ["unpack timedout %1",(nearestObjects [position _gunner, [], 3])] call ALiVE_fnc_dump;
         removeBackpackGlobal _gunner;
         removeBackpackGlobal _assistant;
         _weapon = createVehicle [_weapont, position _gunner, [], 3, "NONE"];

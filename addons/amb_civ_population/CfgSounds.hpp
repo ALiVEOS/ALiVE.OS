@@ -246,10 +246,13 @@ class CfgSounds
 
     #include "audio\African\CfgSounds.cpp"
     #include "audio\MiddleEast\CfgSounds.cpp"
-    //#include "audio\WW2\CfgSounds.cpp"
     #include "audio\pacific\CfgSounds.hpp"
+    #include "audio\vn\CfgSounds.hpp"
+    //#include "audio\WW2\CfgSounds.cpp"
 
     #include "audio\fear\CfgSounds.hpp"
     #include "audio\crowds\CfgSounds.hpp"
     #include "audio\buildings\CfgSounds.hpp"
+
+
 };

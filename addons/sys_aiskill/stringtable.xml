@@ -3,127 +3,127 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_AISKILL">
-    <Original>Military AI Skill</Original>
+    <English>Military AI Skill</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_COMMENT">
-    <Original>Set AI Skill levels per faction by presets or custom settings</Original>
+    <English>Set AI Skill levels per faction by presets or custom settings</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_ERROR1">
-    <Original>Only one AI SKILL module allowed</Original>
+    <English>Only one AI SKILL module allowed</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_DEBUG">
-    <Original>Enable Debug:</Original>
+    <English>Enable Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_DEBUG_COMMENT">
-    <Original>Enables AI Skill Module Debug</Original>
+    <English>Enables AI Skill Module Debug</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_RECRUIT">
-    <Original>Recruit Factions:</Original>
+    <English>Recruit Factions:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_RECRUIT_COMMENT">
-    <Original>Faction units will be given recruit skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</Original>
+    <English>Faction units will be given recruit skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_REGULAR">
-    <Original>Regular Factions:</Original>
+    <English>Regular Factions:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_REGULAR_COMMENT">
-    <Original>Faction units will be given regular skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</Original>
+    <English>Faction units will be given regular skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_VETERAN">
-    <Original>Veteran Factions:</Original>
+    <English>Veteran Factions:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_VETERAN_COMMENT">
-    <Original>Faction units will be given veteran skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</Original>
+    <English>Faction units will be given veteran skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_EXPERT">
-    <Original>Expert Factions:</Original>
+    <English>Expert Factions:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_EXPERT_COMMENT">
-    <Original>Faction units will be given expert skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</Original>
+    <English>Faction units will be given expert skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM">
-    <Original>Custom Skill:</Original>
+    <English>Custom Skill:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMENT">
-    <Original>Factions that will have the following custom skill settings, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</Original>
+    <English>Factions that will have the following custom skill settings, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN">
-    <Original>Minimum Ability:</Original>
+    <English>Minimum Ability:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN_COMMENT">
-    <Original>Minimum Ability</Original>
+    <English>Minimum Ability</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX">
-    <Original>Maximum Ability:</Original>
+    <English>Maximum Ability:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX_COMMENT">
-    <Original>Maximum Ability</Original>
+    <English>Maximum Ability</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY">
-    <Original>Aim Accuracy:</Original>
+    <English>Aim Accuracy:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY_COMMENT">
-    <Original>Aim Accuracy</Original>
+    <English>Aim Accuracy</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SHAKE">
-    <Original>Aim Shake:</Original>
+    <English>Aim Shake:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SHAKE_COMMENT">
-    <Original>Aim Shake</Original>
+    <English>Aim Shake</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED">
-    <Original>Aim Speed</Original>
+    <English>Aim Speed</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED_COMMENT">
-    <Original>Aim Speed</Original>
+    <English>Aim Speed</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE">
-    <Original>Endurance:</Original>
+    <English>Endurance:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE_COMMENT">
-    <Original>Endurance</Original>
+    <English>Endurance</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE">
-    <Original>Spot Distance:</Original>
+    <English>Spot Distance:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE_COMMENT">
-    <Original>Spot Distance</Original>
+    <English>Spot Distance</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_TIME">
-    <Original>Spot Time:</Original>
+    <English>Spot Time:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_TIME_COMMENT">
-    <Original>Spot Time</Original>
+    <English>Spot Time</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COURAGE">
-    <Original>Courage:</Original>
+    <English>Courage:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COURAGE_COMMENT">
-    <Original>Courage</Original>
+    <English>Courage</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_FLEEING">
-    <Original>Cowardice:</Original>
+    <English>Cowardice:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_FLEEING_COMMENT">
-    <Original>How easily the unit will flee</Original>
+    <English>How easily the unit will flee</English>
 </Key>
 
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_RELOAD">
-    <Original>Reload:</Original>
+    <English>Reload:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_RELOAD_COMMENT">
-    <Original>Reload</Original>
+    <English>Reload</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMANDING">
-    <Original>Commanding:</Original>
+    <English>Commanding:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMANDING_COMMENT">
-    <Original>Commanding</Original>
+    <English>Commanding</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_GENERAL">
-    <Original>General:</Original>
+    <English>General:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_GENERAL_COMMENT">
-    <Original>General</Original>
+    <English>General</English>
 </Key>
 </Container></Package></Project>

@@ -3,81 +3,81 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_LOGISTICS">
-    <Original>Player Logistics</Original>
+    <English>Player Logistics</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_COMMENT">
-    <Original>Enables the possibility to use the ALiVE Logistics system</Original>
+    <English>Enables the possibility to use the ALiVE Logistics system</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELOG">
-    <Original>Disable Logistics:</Original>
+    <English>Disable Logistics:</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELOG_COMMENT">
-    <Original>Kills Player Logistics completely!</Original>
+    <English>Kills Player Logistics completely!</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICSDISABLE">
-    <Original>Player Logistics (Disable)</Original>
+    <English>Player Logistics (Disable)</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICSDISABLE_COMMENT">
-    <Original>Disables the possibility to move, load, unload and tow on all or specific objects ()!</Original>
+    <English>Disables the possibility to move, load, unload and tow on all or specific objects ()!</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICSDISABLE_USAGE">
-    <Original>Place 'Disable Player Logistics'-module in your mission and set the appropriate settings and if you want to disable certain player logistics features or sync objects that you want to exclude completely!</Original>
+    <English>Place 'Disable Player Logistics'-module in your mission and set the appropriate settings and if you want to disable certain player logistics features or sync objects that you want to exclude completely!</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DEBUG">
-    <Original>Debug:</Original>
+    <English>Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DEBUG_COMMENT">
-    <Original>Enable Debug</Original>
+    <English>Enable Debug</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLEACTIONS_COMMENT">
-    <Original>Deactivate Logistics Actions</Original>
+    <English>Deactivate Logistics Actions</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_ENABLEACTIONS_COMMENT">
-    <Original>Activate Logistics Actions</Original>
+    <English>Activate Logistics Actions</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_ERROR1">
-    <Original>Only one player logistics module allowed</Original>
+    <English>Only one player logistics module allowed</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE">
-    <Original>Disable Persistence:</Original>
+    <English>Disable Persistence:</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE_COMMENT">
-    <Original>Disables the possibility to save to DB!</Original>
+    <English>Disables the possibility to save to DB!</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELOAD">
-    <Original>Disable Load/Unload:</Original>
+    <English>Disable Load/Unload:</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELOAD_COMMENT">
-    <Original>Disables the possibility to load / unload!</Original>
+    <English>Disables the possibility to load / unload!</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLECARRY">
-    <Original>Disable Carry:</Original>
+    <English>Disable Carry:</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLECARRY_COMMENT">
-    <Original>Disables the possibility to carry objects!</Original>
+    <English>Disables the possibility to carry objects!</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLETOW">
-    <Original>Disable Towing:</Original>
+    <English>Disable Towing:</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLETOW_COMMENT">
-    <Original>Disables the possibility to tow vehicles!</Original>
+    <English>Disables the possibility to tow vehicles!</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELIFT">
-    <Original>Disable Lifting:</Original>
+    <English>Disable Lifting:</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELIFT_COMMENT">
-    <Original>Disables lifting objects/vehicles!</Original>
+    <English>Disables lifting objects/vehicles!</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLE3D">
-    <Original>Disable 3D:</Original>
+    <English>Disable 3D:</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLE3D_COMMENT">
-    <Original>Disables 3D Editor (WIP)</Original>
+    <English>Disables 3D Editor (WIP)</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_BLACKLIST">
-    <Original>Blacklist:</Original>
+    <English>Blacklist:</English>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_BLACKLIST_COMMENT">
-    <Original>Excludes given class from any ALiVE Logistics feature (f.e. "B_Soldier_F","Land")</Original>
+    <English>Excludes given class from any ALiVE Logistics feature (f.e. "B_Soldier_F","Land")</English>
 </Key>
 </Container></Package></Project>

@@ -1,0 +1,313 @@
+<?xml version="1.0" ?>
+<Project name="missions_coalive">
+<Package name="Actions">
+</Package>
+<Package name="Descriptions">
+<Key ID="STR_VN_MISSIONS_DESC_MISSION_ALIVE_SEAL">
+<Chinese></Chinese>
+<English>A CIA embedded pilot and crew chief have been lost in Laos. Intel suggests that the Air America transport helicopter they were traveling in have been captured and they are being held by Pathet Lao forces within the Laos jungle. Your team is tasked to infiltrate the POW camp, secure our CIA operatives and extract to Camp Striker by means of the hijacked 'Air America One' asset.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_MINDESC_MISSION_ALIVE_SEAL">
+<Chinese></Chinese>
+<English>A CIA embedded pilot and crew chief have been lost in Laos. Intel suggests that the Air America transport helicopter they were traveling in have been captured and they are being held by Pathet Lao forces within the Laos jungle.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="General">
+<Key ID="STR_VN_MISSIONS_AUTH_MISSION_ALIVE_SEAL">
+<Chinese></Chinese>
+<English>ALiVE Mod Team || Mission by Jman</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Misc">
+</Package>
+<Package name="Debrief">
+<Key ID="STR_VN_DEBRIEFING_FAILDEATH_TITLE_SEAL">
+<Chinese></Chinese>
+<English>CIA operatives KIA</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_FAILDEATH_SUBTITLE_SEAL">
+<Chinese></Chinese>
+<English>We lost the CIA operatives.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>	
+<Key ID="STR_VN_DEBRIEFING_COALIVE_FAILDEATH_SEAL">
+<Chinese></Chinese>
+<English>Rest-in-Peace. Your mission is over.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_VICTORY_SUBTITLE_SEAL">
+<Chinese></Chinese>
+<English>Mission Accomplished.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_COALIVE_VICTORY_SEAL">
+<Chinese></Chinese>
+<English>Well done! Seal Team Alpha successfully rescued the CIA operatives and returned 'Air America One'.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="CO01 Briefing">
+<Key ID="STR_VN_DEBRIEFING_COALIVE_OVERVIEW_SEAL">
+<Chinese></Chinese>
+<English>Your team was tasked to infiltrate the POW camp, secure our CIA operatives and extract to Camp Striker by means of the hijacked 'Air America One' asset.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_DEBRIEFING_COALIVE_NOTES_SEAL">
+<Chinese></Chinese>
+<English>From 1960 to 1961, the CIA initiated operations code-named Erawan. U.S. Special Forces infiltrated the Lao countryside and began training Laotians in unconventional warfare and anti-guerilla tactics.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>	
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEHOWTO_SEAL">
+<Chinese></Chinese>
+<English>ALiVE populates the entire map with a full scale war. Two or more AI commanders fight it out using conventional or asymmetric warfare tactics. Infantry, motorized, mechanized, armored units and aircraft are used to capture or defend strategic objectives across the area of operations.&lt;br/&gt;&lt;br/&gt;AI commanders even call in resupply, reinforcements, close air support, air patrols, air strikes, boat patrols, setup roadblocks, IEDs, conduct suicide bombings and sabotage. Meanwhile, the civilian population actively support or turn against combatants based on their actions and interactions.&lt;br/&gt;&lt;br/&gt;As a squad playing an ALiVE mission, you must work together to use the tools at your disposal to patrol, identify and attack enemy units, positions and assets. Player Commanders using the ALiVE Menu can manage operations and tasks in coordination with AI commanders.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEMENUINTER_SEAL">
+<Chinese></Chinese>
+<English>The ALiVE Menu can be activated using the RIGHT APP MENU key (or a user defined key 20).&lt;br/&gt;&lt;br/&gt;For ADMINS, the ALiVE Menu offers the chance to debug issues, teleport players, access the debug console and more.&lt;br/&gt;&lt;br/&gt;For PLAYERS, the ALiVE Menu offers some basic settings and a chance to save your position and loadout.&lt;br/&gt;&lt;br/&gt;PLAYERS may also enable the ALiVE logistics system to pick up, carry and load objects onto and off vehicles, build FOBs and more. Using the scroll wheel on certain objects will allow players to pick them up.&lt;br/&gt;&lt;br/&gt;Using the scroll wheel,PLAYERS can interact with civilians to question them on the local situation and even influence them by giving them rations. Civilians though won't forgive collateral damage.&lt;br/&gt;&lt;br/&gt;Using the map, PLAYERS can leave SPOTREPS and ADVANCED MARKERS by hitting the LEFT CTRL key when creating a map marker.&lt;br/&gt;&lt;br/&gt;For PLAYER COMMANDERS with an appropriate radio (PRC-77) the ALiVE Menu enables you to access COMMANDER ACTIONS to manage personnel, logistics, tasks, combat support and more.&lt;br/&gt;&lt;br/&gt;</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_ALIVEACTIONS_SEAL">
+<Chinese></Chinese>
+<English>ALiVE COMMANDER ACTIONS (requires PRC-77)&lt;br/&gt;&lt;br/&gt;Press the ALiVE Menu key to access Commander Actions.&lt;br/&gt;&lt;br/&gt;Personnel - Move players and AI units between groups&lt;br/&gt;&lt;br/&gt;Intel - Provides access to your side's AI Commander objectives as well as marking any known units on the map.&lt;br/&gt;&lt;br/&gt;Logistics - Call in resupplies, from individuals and groups to vehicles, weapons and fortifications. Use convoys, airdrop or airlift.&lt;br/&gt;&lt;br/&gt;Tasks - Request tasks from the AI commander in order to contribute to the overall battlefield situation.&lt;br/&gt;&lt;br/&gt;Operations - Direct AI groups and issue waypoints or join AI controlled groups and fight alongside them.&lt;br/&gt;&lt;br/&gt;Combat Support - Request artillery, close air support or transport from assets within the AO.&lt;br/&gt;&lt;br/&gt;Reports - Commanders can leave PATROLREPS and SITREPS in order to keep other commanders up to date with player and enemy activities.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_SITUATION_SEAL">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;img\situation.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;From 1960 to 1961, the CIA initiated operations code-named Erawan. U.S. Special Forces infiltrated the Lao countryside and began training Laotians in unconventional warfare and anti-guerilla tactics. Air America hired four experienced U.S. Marine Corps helicopter pilots who obtained their discharges in Okinawa to fly the H-19s. Later in the year, the CIA arranged for the Marine Corps to transfer four UH-34 helicopters to Air America to replace the H-19s.  One of these crews has been hijacked and is being held in the Laos Jungle.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish>.</Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_MISSION_SEAL">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;img\mission.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;Your SEAL team must return both the crew and helicopter asset to complete the mission. Seal Team Alpha are based at &lt;marker name='respawn_west'&gt;Camp Striker&lt;/marker&gt;. Your team is tasked to infiltrate the POW camp, secure our CIA operatives and extract to Camp Striker by means of the hijacked 'Air America One' asset.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_TACTICAL_SEAL">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;img\tactical.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;&lt;marker name='marker_cs'&gt;Combat Support&lt;/marker&gt; is available. Artillery is on call for Close Support.&lt;br/&gt;&lt;br/&gt;There are a number of PRC-77 radios available for the RTO to request and coord support from HQ.&lt;br/&gt;&lt;br/&gt;The Duty Officer at Camp Striker can despatch you directly to your squad (if its enabled in mission settings).&lt;br/&gt;&lt;br/&gt;Command can manage taskings using the PRC-77.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_BRIEFING_COALIVE_EXECUTION_SEAL">
+<Chinese></Chinese>
+<English>&lt;img image=&quot;img\execution.paa&quot; width=&quot;380&quot; height=&quot;190&quot;/&gt;&lt;br/&gt;&lt;br/&gt;This is a sensitive operation over the fence. You are weapons free on this one. Advance on foot south into the Laos Jungle, infiltrate the POW camp, secure our CIA operatives and return to Camp Striker in 'Air America One'.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Parameters">
+<Key ID="STR_VN_COALIVE_PARAMS_MAPMARKERS_SEAL">
+<Chinese></Chinese>
+<English>Side Map Markers</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_PARAMS_ROTORLIB_SEAL">
+<Chinese></Chinese>
+<English>Enable Advanced Rotor Flight Model</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Titles">
+<Key ID="STR_VN_MISSIONS_TITLE_MISSION_ALIVE_SEAL">
+<Chinese></Chinese>
+<English>ALiVE | Erawan Secret War</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_MISSIONS_AUTHOR_ALIVE_SEAL">
+<Chinese></Chinese>
+<English>ALiVE Mod Team</English>
+<French>ALiVE Mod Team</French>
+<German>ALiVE Mod Team</German>
+<Italian>ALiVE Mod Team</Italian>
+<Portuguese>ALiVE Mod Team</Portuguese>
+<Russian>ALiVE Mod Team</Russian>
+<Spanish>ALiVE Mod Team</Spanish>
+</Key>
+</Package>
+<Package name="COALIVE Tasks">
+<Key ID="STR_VN_TASKS_COALIVE_A01_T01_TITLE_SEAL">
+<Chinese></Chinese>
+<English>Gather equipment and assemble supplies</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T01_DESCR_SEAL">
+<Chinese></Chinese>
+<English>Gather your equipment and assemble your supplies from the ammo crates. Ammo crates are located under the Camouflage netting.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T02_TITLE_SEAL">
+<Chinese></Chinese>
+<English>Move out!</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T02_DESCR_SEAL">
+<Chinese></Chinese>
+<English>Advance on foot south into the Laos Jungle.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T03_TITLE_SEAL">
+<Chinese></Chinese>
+<English>Locate the AO</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T03_DESCR_SEAL">
+<Chinese></Chinese>
+<English>Locate the POW Camp.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T04_TITLE_SEAL">
+<Chinese></Chinese>
+<English>Complete the mission</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_VN_TASKS_COALIVE_A01_T04_DESCR_SEAL">
+<Chinese></Chinese>
+<English>Infiltrate the POW Camp. Free the prisoners and exfil them to Camp Striker.</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+</Package>
+<Package name="Waypoints">
+</Package>
+</Project>

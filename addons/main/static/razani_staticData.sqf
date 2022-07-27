@@ -1,6 +1,6 @@
 private["_worldName"];
  _worldName = tolower(worldName);
- ["ALiVE SETTING UP MAP: razani"] call ALIVE_fnc_dump;
+ ["SETTING UP MAP: razani"] call ALiVE_fnc_dump;
  ALIVE_Indexing_Blacklist = [];
  ALIVE_airBuildingTypes = [];
  ALIVE_militaryParkingBuildingTypes = [];

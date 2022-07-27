@@ -36,7 +36,10 @@ DEFAULT_PARAM(1,_spawnDistance,1500);
 DEFAULT_PARAM(2,_jetSpawnDistance,0);
 DEFAULT_PARAM(3,_helicopterSpawnDistance,1500);
 
-_players = allPlayers + allCurators;
+_players = allPlayers;
+if (!isnil "ALIVE_profileSystem" && { [ALIVE_profileSystem,"zeusSpawn"] call ALiVE_fnc_hashGet }) then {
+    _players append allCurators;
+};
 
 _anyInRange = false;
 

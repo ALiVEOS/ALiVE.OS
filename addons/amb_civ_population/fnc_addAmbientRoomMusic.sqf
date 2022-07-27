@@ -24,7 +24,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-params ["_building",["_faction","CIV"]];
+params ["_building",["_faction","CIV_F"]];
 
 private _musicSource = "RoadCone_L_F" createVehicle position _building;
 _musicSource attachTo [_building,[1,1,1]];
@@ -35,6 +35,7 @@ hideObjectGlobal _musicSource;
     private _tracksPlayed = 1;
     private _source = [ALIVE_civilianFactionHouseTracks, _faction, []] call ALIVE_fnc_hashGet;
     if (count _source == 0) then {
+        ["Warning: Cannot find %1 in ALIVE_civilianFactionHouseTracks", _faction] call ALiVE_fnc_dump;
         _source = ALIVE_civilianHouseTracks;
     };
     private _totalTracks = count (_source select 1);
@@ -45,10 +46,10 @@ hideObjectGlobal _musicSource;
 
             // Don't play night sounds during the day
             if (_trackName in ALiVE_CivPop_NightSounds && daytime < 21 && dayTime > 3) then {
-                _trackName = "ALiVE_Civpop_Audio_19";
+                _trackName = "ALiVE_Civpop_Audio_18";
             };
 
-            private _trackDuration = [_source, _trackName] call ALIVE_fnc_hashGet;
+            private _trackDuration = [_source, _trackName, 30] call ALIVE_fnc_hashGet;
 
             if(isMultiplayer) then {
                 [_building, _musicSource, _trackName] remoteExec ["ALIVE_fnc_clientAddAmbientRoomMusic"];

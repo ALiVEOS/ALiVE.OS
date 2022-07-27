@@ -137,6 +137,10 @@ switch(_operation) do {
     };
 
     default {
+        if (_operation == "debug") then {
+            ["FIX THIS SHIT: ALiVE_fnc_profile was called with 'debug' operation from '%1'", _fnc_scriptNameParent] call ALiVE_fnc_Dump;
+        };
+
         _result = [_logic, _operation, _args] call SUPERCLASS;
     };
 

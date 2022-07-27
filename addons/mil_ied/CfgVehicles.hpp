@@ -33,6 +33,26 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class persistence
+                        {
+                                displayName = "$STR_ALIVE_IED_PERSISTENCE";
+                                description = "$STR_ALIVE_IED_PERSISTENCE_COMMENT";
+                                typeName = "BOOL";
+                                class Values
+                                {
+                                        class Yes
+                                        {
+                                                name = "Yes";
+                                                value = 1;
+                                        };
+                                        class No
+                                        {
+                                                name = "No";
+                                                value = 0;
+                                                default = 1;
+                                        };
+                                };
+                        };
                         class taor
                         {
                                 displayName = "$STR_ALIVE_IED_TAOR";
@@ -49,6 +69,41 @@ class CfgVehicles {
                         {
                                 displayName = "$STR_ALIVE_ied_IED_Threat";
                                 description = "$STR_ALIVE_ied_IED_Threat_COMMENT";
+                                typeName = "NUMBER";
+                                class Values
+                                {
+                                        class None
+                                        {
+                                                name = "None";
+                                                value = 0;
+                                                default = 1;
+                                        };
+                                        class Low
+                                        {
+                                                name = "Low";
+                                                value = 50;
+                                        };
+                                        class Med
+                                        {
+                                                name = "Medium";
+                                                value = 100;
+                                        };
+                                        class High
+                                        {
+                                                name = "High";
+                                                value = 200;
+                                        };
+                                        class Extreme
+                                        {
+                                                name = "Extreme";
+                                                value = 350;
+                                        };
+                                };
+                        };
+                        class IED_Starting_Threat
+                        {
+                                displayName = "$STR_ALIVE_ied_IED_Starting_Threat";
+                                description = "$STR_ALIVE_ied_IED_Starting_Threat_COMMENT";
                                 typeName = "NUMBER";
                                 class Values
                                 {

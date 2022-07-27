@@ -37,7 +37,7 @@ _startPos = [_profile,"position"] call ALiVE_fnc_HashGet;
 _profileSide = [_profile,"side"] call ALIVE_fnc_hashGet;
 
 if (_debug) then {
-    ["ALIVE SEA PATROL - Starting Sea Patrol for: %1 on water (%3) with params: %2",  _profileID, _params, surfaceIsWater _startPos] call ALIVE_fnc_dump;
+    ["SEA PATROL - Starting Sea Patrol for: %1 on water (%3) with params: %2",  _profileID, _params, surfaceIsWater _startPos] call ALiVE_fnc_dump;
 };
 
 //defaults
@@ -74,7 +74,16 @@ switch(_profileSide) do {
     };
 };
 
-// Add startpoint as waypoint
+// Ensure first start-WP is in water
+if !(surfaceIsWater _startpos) then {
+
+    _startPos = [_startPos, 10, 50, 10, 2, 5 , 0, [], [_startPos]] call BIS_fnc_findSafePos;
+
+    if (_debug) then {
+        ["SEA PATROL - Start-WP of Sea Patrol has not been in water! Switched position to be in water: %1 on water (%3) with params: %2",  _profileID, _params, surfaceIsWater _startPos] call ALiVE_fnc_dump;
+    };
+};
+
 _profileWaypoint = [_startPos, 15, _type, _speed, 30, [], _formation, "NO CHANGE", _behaviour] call ALIVE_fnc_createProfileWaypoint;
 [_profileWaypoint,"statements",["true","_disableSimulation = true;"]] call ALIVE_fnc_hashSet;
 [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
@@ -123,7 +132,7 @@ while {count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5} do {
     if !(surfaceIsWater _gpos) then {
 
         if (_debug) then {
-            ["ALIVE SEA PATROL - ALERT NON WATER INITIAL POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALIVE_fnc_dump;
+            ["SEA PATROL - ALERT NON WATER INITIAL POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALiVE_fnc_dump;
         };
 
         // Find a position that is definitely in water
@@ -159,14 +168,14 @@ while {count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5} do {
             };
         } else {
             if (_debug) then {
-                ["ALIVE AMB SEA PATROL [WP] - ALERT WAYPOINT MUST CROSS LAND LastPos: %1 - New Pos: %2",  _lastpos, _gpos] call ALIVE_fnc_dump;
+                ["AMB SEA PATROL [WP] - ALERT WAYPOINT MUST CROSS LAND LastPos: %1 - New Pos: %2",  _lastpos, _gpos] call ALiVE_fnc_dump;
             };
         };
 
     } else {
         // start pos was not in water?
         if (_debug) then {
-            ["ALIVE AMB SEA PATROL [WP] - ALERT NON WATER FINAL POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALIVE_fnc_dump;
+            ["AMB SEA PATROL [WP] - ALERT NON WATER FINAL POSITION Pos: %1 - On Water: %2",  _gpos, surfaceIsWater _gpos] call ALiVE_fnc_dump;
         };
         _radius = _radius * 1.1;
 
@@ -174,5 +183,5 @@ while {count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet) < 5} do {
 };
 
 if (_debug) then {
-    ["ALIVE %1 - Placing Sea Patrol: %2 at %3. On water: %4 with %5 waypoints",_profileSide, _profileID, _startPos, surfaceIsWater _startPos, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)] call ALIVE_fnc_dump;
+    ["%1 - Placing Sea Patrol: %2 at %3. On water: %4 with %5 waypoints",_profileSide, _profileID, _startPos, surfaceIsWater _startPos, count ([_profile,"waypoints",[]] call ALiVE_fnc_HashGet)] call ALiVE_fnc_dump;
 };

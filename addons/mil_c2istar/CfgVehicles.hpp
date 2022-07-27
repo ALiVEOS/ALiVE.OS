@@ -303,6 +303,26 @@ class CfgVehicles {
                                     };
                             };
                     };
+                    class scomOpsAllowImageIntelligence : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_scomOpsAllowImageIntelligence";
+                            displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_IMAGE_INTELLIGENCE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SCOM_OPS_IMAGE_INTELLIGENCE_COMMENT";
+                            defaultValue = """true""";
+                            class Values
+                            {
+                                    class No
+                                    {
+                                            name = "No";
+                                            value = "false";
+                                    };
+                                    class Yes
+                                    {
+                                            name = "Yes";
+                                            value = "true";
+                                    };
+                            };
+                    };
                     // INTEL TABLET
                     class INTEL_TABLET: ALiVE_ModuleSubTitle
                     {
@@ -339,6 +359,14 @@ class CfgVehicles {
                     {
                             property = QGVAR(__LINE__);
                             displayName = " GLOBAL INTEL PARAMETERS";
+                    };
+                    class opcomIntelSides : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_opcomIntelSides";
+                            displayName = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES_COMMENT";
+                            typeName = "STRING";
+                            defaultValue = """""";
                     };
                     class displayIntel : Combo
                     {

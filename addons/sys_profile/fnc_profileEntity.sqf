@@ -1076,17 +1076,17 @@ switch(_operation) do {
             [_logic,"units", _units] call ALIVE_fnc_hashSet;
             [_logic,"active", true] call ALIVE_fnc_hashSet;
 
-            //["Profile [%1] Spawn - Create Waypoints",_profileID] call ALIVE_fnc_dump;
-            //[true] call ALIVE_fnc_timer;
-            // create waypoints from profile waypoints
-            _waypoints append _waypointsCompleted;
-            [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
-            //[] call ALIVE_fnc_timer;
-
             //["Profile [%1] Spawn - Create Vehicle Assignments",_profileID] call ALIVE_fnc_dump;
             //[true] call ALIVE_fnc_timer;
             // create vehicle assignments from profile vehicle assignments
             [_vehicleAssignments, _logic] call ALIVE_fnc_profileVehicleAssignmentsToVehicleAssignments;
+            //[] call ALIVE_fnc_timer;
+			
+			//["Profile [%1] Spawn - Create Waypoints",_profileID] call ALIVE_fnc_dump;
+            //[true] call ALIVE_fnc_timer;
+            // create waypoints from profile waypoints
+            _waypoints append _waypointsCompleted;
+            [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
             //[] call ALIVE_fnc_timer;
 
             //["Profile [%1] Spawn - Process Commands",_profileID] call ALIVE_fnc_dump;
@@ -1111,6 +1111,25 @@ switch(_operation) do {
             private _attackID = [_logic,"attackID"] call ALiVE_fnc_hashGet;
             if (!isnil "_attackID") then {
                 private _attack = [MOD(profileCombatHandler),"getAttack", _attackID] call ALiVE_fnc_profileCombatHandler;
+                
+                // if targets are active
+                // reveal them to use so we can keep the party going
+                private _targets = _attack select 2 select 8;
+                {
+                    private _targetProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
+                    if (!isnil "_targetProfile" && { [_targetProfile,"active"] call ALiVE_fnc_hashGet }) then {
+                        private _targetGroup = _targetProfile select 2 select 13;
+                        {
+                            _group reveal [_x, 3];
+                        } foreach (units _targetGroup);
+
+                        // also reveal us to them in case we weren't active when they spawned
+                        {
+                            _targetGroup reveal [_x, 3];
+                        } foreach (units _group);
+                    };
+                } foreach _targets;
+
                 [MOD(profileCombatHandler),"removeAttacks", [_attack]] call ALiVE_fnc_profileCombatHandler;
             };
 
@@ -1163,19 +1182,28 @@ switch(_operation) do {
         // not already inactive
         if (_active) then {
 
-            // if any linked profiles have despawn prevented
             private _despawnPrevented = false;
             private _linked = [_logic] call ALIVE_fnc_vehicleAssignmentsGetLinkedProfiles;
             //_linked call ALIVE_fnc_inspectHash;
+
+            // check if any linked profiles have despawn prevented
             if (count (_linked select 1) > 1) then {
                 {
-                    private _spawnType = [_x,"spawnType"] call ALIVE_fnc_hashGet;
+                    private _spawnType = [_x,"spawnType",[]] call ALIVE_fnc_hashGet;
                     if (count _spawnType > 0) then {
                         if(_spawnType select 0 == "preventDespawn") then {
                             _despawnPrevented = true;
                         };
                     }
                 } forEach (_linked select 2);
+            // check if entity-profile itself has despawn prevented
+            } else {
+                private _spawnType = [_logic, "spawnType",[]] call ALIVE_fnc_HashGet;
+                if (count _spawnType > 0) then {
+                    if(_spawnType select 0 == "preventDespawn") then {
+                        _despawnPrevented = true;
+                    };
+                };
             };
 
             if !(_despawnPrevented) then {

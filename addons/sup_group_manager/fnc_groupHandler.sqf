@@ -115,7 +115,7 @@ switch(_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Group Handler - Group Join event received"] call ALIVE_fnc_dump;
+            ["Group Handler - Group Join event received"] call ALiVE_fnc_dump;
             _eventData call ALIVE_fnc_inspectArray;
         };
         // DEBUG -------------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ switch(_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Group Handler - Leave Group event received"] call ALIVE_fnc_dump;
+            ["Group Handler - Leave Group event received"] call ALiVE_fnc_dump;
             _eventData call ALIVE_fnc_inspectArray;
         };
         // DEBUG -------------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ switch(_operation) do {
 
             _unit setVariable ["profileID",""];
 
-            _newGroup = createGroup (side _unit);
+            _newGroup = createGroup (side group _unit);
 
             [_unit] joinSilent _newGroup;
 

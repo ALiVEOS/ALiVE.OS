@@ -91,10 +91,10 @@ switch(_operation) do {
                 /*
                 MODEL - no visual just reference data
                 */
-                if (_logic getVariable ["playertags_style_setting","Modern"] == "None") exitWith {["ALiVE SYS PLAYERTAGS - Feature turned off! Exiting..."] call ALiVE_fnc_Dump};
+                if (_logic getVariable ["playertags_style_setting","Modern"] == "None") exitWith {["SYS PLAYERTAGS - Feature turned off! Exiting..."] call ALiVE_fnc_dump};
 
                 //Only one init per instance is allowed
-                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PLAYERTAGS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SYS PLAYERTAGS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
                 //Start init
                 _logic setVariable ["initGlobal", false];
@@ -127,6 +127,7 @@ switch(_operation) do {
                 playertags_group = (_logic getvariable ["playertags_displaygroup_setting","true"]) == "true";
                 playertags_rank = (_logic getvariable ["playertags_displayrank_setting","true"]) == "true";
                 playertags_invehicle = (_logic getvariable ["playertags_invehicle_setting","false"]) == "true";
+                playertags_restricttofriendly = (_logic getvariable ["playertags_restricttofriendly_setting","true"]) == "true";
                 playertags_distance = _logic getvariable ["playertags_distance_setting",20];
                 playertags_tolerance = _logic getvariable ["playertags_tolerance_setting",0.75];
                 playertags_scale = _logic getvariable ["playertags_scale_setting",0.65];
@@ -175,7 +176,7 @@ switch(_operation) do {
 
                 // Debug
                 if (GVAR(DEBUG)) then {
-                    ["ALIVE Player Tags - Menu Starting... Radius: %1, playertags_tolerance: %2, playertags_scale:, %3", playertags_distance, playertags_tolerance, playertags_scale] call ALIVE_fnc_dump;
+                    ["Player Tags - Menu Starting... Radius: %1, playertags_tolerance: %2, playertags_scale:, %3", playertags_distance, playertags_tolerance, playertags_scale] call ALiVE_fnc_dump;
                 };
 
                 /*
@@ -197,10 +198,21 @@ switch(_operation) do {
                 if (_args) then {
                     _logic setvariable [QGVAR(EH_DRAW3D), addMissionEventHandler ["Draw3D", {
 
-                        _onView = {true}; if (GVAR(ONVIEW)) then {_onView = {cursortarget == _x}};
+                        private _onView = if (GVAR(ONVIEW)) then {
+                            { cursortarget == _x }
+                        } else {
+                            { true }
+                        };
+                        
+                        private _playerSide = playerSide;
 
                         {
-                            if ((_x distance player < GVAR(RADIUS)) && {call _onView} && {!(lineIntersects [eyePos player, eyePos _x, player, _x])}) then {
+                            if (
+                                (_x distance player < GVAR(RADIUS)) &&
+                                {call _onView} &&
+                                {!(lineIntersects [eyePos player, eyePos _x, player, _x])} &&
+                                { !playertags_restricttofriendly || { side group _x == _playerSide } }
+                            ) then {
 
                                     private ["_icon","_color"];
 
@@ -208,7 +220,7 @@ switch(_operation) do {
                                     _width = 0.9; _height = 0.9;
                                     _name = name _x;
 
-                                    switch (side _x) do {
+                                    switch (side group _x) do {
                                         case (WEST) : {_color = [0.259,0.235,0.941,1]};
                                         case (EAST) : {_color = [0.91,0.145,0.275,1]};
                                         case (RESISTANCE) : {_color = [0.278,0.788,0.404,1]};

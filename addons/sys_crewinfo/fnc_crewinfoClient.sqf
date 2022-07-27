@@ -2,7 +2,7 @@ _vehArray = ["O_SDV_01_F","B_SDV_01_F","I_G_Offroad_01_armed_F","B_G_Offroad_01_
 
 disableSerialization;
 
-["ALiVE CrewInfo - Clientside process started!"] call ALiVE_fnc_Dump;
+["CrewInfo - Clientside process started!"] call ALiVE_fnc_dump;
 
 while {true} do {
 
@@ -78,4 +78,4 @@ while {true} do {
     sleep _sleep;
 };
 
-["ALiVE CrewInfo - Clientside process ended!"] call ALiVE_fnc_Dump;
+["CrewInfo - Clientside process ended!"] call ALiVE_fnc_dump;

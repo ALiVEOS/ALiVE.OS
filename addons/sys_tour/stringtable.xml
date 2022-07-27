@@ -3,15 +3,15 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_TOUR">
-    <Original>ALiVE Tour</Original>
+    <English>ALiVE Tour</English>
 </Key>
 <Key ID="STR_ALIVE_TOUR_COMMENT">
-    <Original>Drop on a mission to enable a tour for players</Original>
+    <English>Drop on a mission to enable a tour for players</English>
 </Key>
 <Key ID="STR_ALIVE_TOUR_DEBUG">
-    <Original>Enable Debug:</Original>
+    <English>Enable Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_TOUR_DEBUG_COMMENT">
-    <Original>Enables Tour Module Debug</Original>
+    <English>Enables Tour Module Debug</English>
 </Key>
 </Container></Package></Project>

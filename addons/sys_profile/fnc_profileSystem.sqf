@@ -66,8 +66,9 @@ switch(_operation) do {
             [_logic,"spawnRadius",1000] call ALIVE_fnc_hashSet;
             [_logic,"spawnTypeJetRadius",1000] call ALIVE_fnc_hashSet;
             [_logic,"spawnTypeHeliRadius",1000] call ALIVE_fnc_hashSet;
-			[_logic,"spawnRadiusUAV", 1000] call ALiVE_fnc_hashSet;
+            [_logic,"spawnRadiusUAV", 1000] call ALiVE_fnc_hashSet;
             [_logic,"activeLimiter",30] call ALIVE_fnc_hashSet;
+            [_logic,"zeusSpawn",true] call ALIVE_fnc_hashSet;
             [_logic,"spawnCycleTime",1] call ALIVE_fnc_hashSet;
             [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
             [_logic,"speedModifier",1] call ALIVE_fnc_hashSet;
@@ -129,7 +130,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE ProfileSystem - Startup"] call ALIVE_fnc_dump;
+                ["ProfileSystem - Startup"] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -199,19 +200,19 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE ProfileSystem - Startup completed"] call ALIVE_fnc_dump;
-                ["ALIVE Sector grid created"] call ALIVE_fnc_dump;
-                ["ALIVE Profile handler created"] call ALIVE_fnc_dump;
-                ["ALIVE Map units converted to profiles"] call ALIVE_fnc_dump;
-                ["ALIVE Simulation controller created"] call ALIVE_fnc_dump;
-                ["ALIVE Spawn controller created"] call ALIVE_fnc_dump;
-                ["ALIVE Active Limit: %1", _activeLimiter] call ALIVE_fnc_dump;
-                ["ALIVE Spawn Radius: %1", _spawnRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALIVE_fnc_dump;
-				["ALIVE Spawn in UAV Radius: %1",_spawnTypeUAVRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn Cycle Time: %1", _spawnCycleTime] call ALIVE_fnc_dump;
-                ["ALIVE Persistent: %1",_persistent] call ALIVE_fnc_dump;
+                ["ProfileSystem - Startup completed"] call ALiVE_fnc_dump;
+                ["Sector grid created"] call ALiVE_fnc_dump;
+                ["Profile handler created"] call ALiVE_fnc_dump;
+                ["Map units converted to profiles"] call ALiVE_fnc_dump;
+                ["Simulation controller created"] call ALiVE_fnc_dump;
+                ["Spawn controller created"] call ALiVE_fnc_dump;
+                ["Active Limit: %1", _activeLimiter] call ALiVE_fnc_dump;
+                ["Spawn Radius: %1", _spawnRadius] call ALiVE_fnc_dump;
+                ["Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALiVE_fnc_dump;
+                ["Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALiVE_fnc_dump;
+				["Spawn in UAV Radius: %1",_spawnTypeUAVRadius] call ALiVE_fnc_dump;
+                ["Spawn Cycle Time: %1", _spawnCycleTime] call ALiVE_fnc_dump;
+                ["Persistent: %1",_persistent] call ALiVE_fnc_dump;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -291,7 +292,7 @@ switch(_operation) do {
         };
         ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
-        ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_DumpR;
+        ["Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_dumpR;
 
         if(_args) then {
 
@@ -415,6 +416,12 @@ switch(_operation) do {
                     [_logic,"activeLimiter",_args] call ALIVE_fnc_hashSet;
             };
             _result = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
+    };
+    case "zeusSpawn": {
+            if(typeName _args == "BOOL") then {
+                    [_logic,"zeusSpawn",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"zeusSpawn"] call ALIVE_fnc_hashGet;
     };
     case "syncMode": {
             if(typeName _args == "STRING") then {

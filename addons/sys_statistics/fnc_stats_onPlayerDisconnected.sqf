@@ -92,7 +92,7 @@ if (GVAR(ENABLED)) then {
         waitUntil {sleep 1; _shotsfired = [GVAR(shotsFired), _uid, []] call ALiVE_fnc_hashGet; count _shotsfired > 0 || diag_tickTime > _waitTime};
 
         if (count _shotsfired > 0) then {
-            diag_log format["Saving shots fired: %1", _shotsfired];
+            ["Saving shots fired: %1", _shotsfired] call ALiVE_fnc_dump;
             _shotsFiredData = [];
             {
                 private ["_weaponCount","_weapon","_count","_muzzle","_shotsFiredHash"];

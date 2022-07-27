@@ -106,7 +106,7 @@ switch(_operation) do {
 
                     //Set value
                     _args = [_logic,"pause",_args,false] call ALIVE_fnc_OOsimpleOperation;
-                    ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_DumpR;
+                    ["Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_dumpR;
             };
             _result = _args;
         };
@@ -128,7 +128,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - register job"] call ALIVE_fnc_dump;
+                    ["Live Analysis - register job"] call ALiVE_fnc_dump;
                     _job call ALIVE_fnc_inspectHash;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -154,7 +154,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - cancel job: %1",_jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - cancel job: %1",_jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -226,7 +226,7 @@ switch(_operation) do {
                             _jobID = _args select 3;
                             _jobArgs = _args select 4;
 
-                            //["ALIVE Live Analysis - job: %1 lastRun: %2 runEvery: %3 timer: %4 runTimes: %5 of %6",_jobID,_lastRun,_runEvery,(time - _lastRun),_runCount,_maxRunCount] call ALIVE_fnc_dump;
+                            //["Live Analysis - job: %1 lastRun: %2 runEvery: %3 timer: %4 runTimes: %5 of %6",_jobID,_lastRun,_runEvery,(time - _lastRun),_runCount,_maxRunCount] call ALiVE_fnc_dump;
 
                             // run count maxed cancel the job
                             if(_runCount > _maxRunCount && !(_maxRunCount == 0)) then {
@@ -238,7 +238,7 @@ switch(_operation) do {
                                     // DEBUG -------------------------------------------------------------------------------------
                                     if(_debug) then {
                                         ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                                        ["ALIVE Live Analysis - job: %1 lastRun: %2 runEvery: %3 runTimes: %4 of %5",_jobID,_lastRun,_runEvery,_runCount,_maxRunCount] call ALIVE_fnc_dump;
+                                        ["Live Analysis - job: %1 lastRun: %2 runEvery: %3 runTimes: %4 of %5",_jobID,_lastRun,_runEvery,_runCount,_maxRunCount] call ALiVE_fnc_dump;
                                     };
                                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -305,7 +305,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - grid entity profile positions"] call ALIVE_fnc_dump;
+                    ["Live Analysis - grid entity profile positions"] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -338,7 +338,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - cleanup grid entity profile positions"] call ALIVE_fnc_dump;
+                    ["Live Analysis - cleanup grid entity profile positions"] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -364,7 +364,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - active sector analysis"] call ALIVE_fnc_dump;
+                    ["Live Analysis - active sector analysis"] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -397,7 +397,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - cleanup active sector positions"] call ALIVE_fnc_dump;
+                    ["Live Analysis - cleanup active sector positions"] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -424,7 +424,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - intelligence item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - intelligence item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -626,7 +626,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - intelligence item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - intelligence item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -666,7 +666,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - KIA intelligence item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - KIA intelligence item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -763,7 +763,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - KIA intelligence item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - KIA intelligence item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -794,7 +794,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - Agent KIA intelligence item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - Agent KIA intelligence item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -872,7 +872,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - Agent KIA intelligence item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - Agent KIA intelligence item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -903,7 +903,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - Logistics insertion item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - Logistics insertion item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1000,7 +1000,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - Logistics insertion item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - Logistics insertion item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1031,7 +1031,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - Logistics destination item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - Logistics destination item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1128,7 +1128,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - Logistics destination item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - Logistics destination item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1162,7 +1162,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - show friendlies"] call ALIVE_fnc_dump;
+                    ["Live Analysis - show friendlies"] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1201,8 +1201,8 @@ switch(_operation) do {
                             _sides = [];
                             {
                                 _player = _x select 0;
-                                if!((side _player) in _sides) then {
-                                    _sides pushback (side _player);
+                                if!((side group _player) in _sides) then {
+                                    _sides pushback (side group _player);
                                 };
 
                             } forEach _active;
@@ -1254,7 +1254,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Live Analysis - intelligence item id: %1", _jobID] call ALIVE_fnc_dump;
+                    ["Live Analysis - intelligence item id: %1", _jobID] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 

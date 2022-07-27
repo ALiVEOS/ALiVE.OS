@@ -129,7 +129,7 @@ switch(_operation) do {
     case "init": {
 
         //Only one init per instance is allowed
-        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP GM - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SUP GM - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
         //Start init
         _logic setVariable ["initGlobal", false];
@@ -164,10 +164,10 @@ switch(_operation) do {
 
             waitUntil {
                 sleep 1;
-                ((str side player) != "UNKNOWN")
+                ((str side group player) != "UNKNOWN")
             };
 
-            _playerSide = side player;
+            _playerSide = side group player;
             _sideNumber = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
             _sideText = [_sideNumber] call ALIVE_fnc_sideNumberToText;
 
@@ -213,8 +213,8 @@ switch(_operation) do {
 
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE Group Manager State"] call ALIVE_fnc_dump;
-                ["ALIVE Group Manager Side: %1, Faction: %2, Limit: %3",_sideText,_playerFaction,_limit] call ALIVE_fnc_dump;
+                ["Group Manager State"] call ALiVE_fnc_dump;
+                ["Group Manager Side: %1, Faction: %2, Limit: %3",_sideText,_playerFaction,_limit] call ALiVE_fnc_dump;
                 _groupState call ALIVE_fnc_inspectHash;
             };
 
@@ -298,7 +298,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALiVE GM - Handle server response event received"] call ALIVE_fnc_dump;
+                ["GM - Handle server response event received"] call ALiVE_fnc_dump;
                 _event call ALIVE_fnc_inspectHash;
             };
             // DEBUG -------------------------------------------------------------------------------------
