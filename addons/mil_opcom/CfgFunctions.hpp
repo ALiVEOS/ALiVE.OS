@@ -56,6 +56,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMDropIntel.sqf";
                                 RECOMPILE;
                         };
+                        class OPCOMgetHighestPrioObjective {
+                                description = "Drops Intel by chance";
+                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMgetHighestPrioObjective.sqf";
+                                RECOMPILE;
+                        };                        
                 };
         };
 };

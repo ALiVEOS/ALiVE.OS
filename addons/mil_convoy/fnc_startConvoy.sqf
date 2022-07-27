@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_convoy\script_component.hpp>
+#include "\x\alive\addons\mil_convoy\script_component.hpp"
 
 private _logic = _this select 0;
 private _intensity = _logic getvariable ["conv_intensity_setting",1];
@@ -97,13 +97,13 @@ for "_j" from 1 to _intensity do {
                             _pos;
                         };
 
-                        if !(!(isnil "_convoyLocs") && {typeName _convoyLocs == "ARRAY"} && {count _convoyLocs > 3}) exitwith {["ALiVE MIL CONVOYS No convoy locations found for faction %1! Exiting!",_factionsConvoy] call ALiVE_fnc_Dump};
+                        if !(!(isnil "_convoyLocs") && {typeName _convoyLocs == "ARRAY"} && {count _convoyLocs > 3}) exitwith {["MIL CONVOYS No convoy locations found for faction %1! Exiting!",_factionsConvoy] call ALiVE_fnc_dump};
                         _startpos = _convoyLocs call _fncSelectPos;
                         _destpos = _convoyLocs call _fncSelectPos;
                         _endpos = _convoyLocs call _fncSelectPos;
-                        if !(!(isnil "_startpos") && {!isnil "_destpos"} && {!isnil "_destpos"}) exitwith {["ALiVE MIL CONVOYS Not enough positions found for faction %1! Exiting!",_factionsConvoy] call ALiVE_fnc_Dump};
+                        if !(!(isnil "_startpos") && {!isnil "_destpos"} && {!isnil "_destpos"}) exitwith {["MIL CONVOYS Not enough positions found for faction %1! Exiting!",_factionsConvoy] call ALiVE_fnc_dump};
 
-                        ["ALiVE MIL CONVOYS Start: %1 Dest.: %2 End: %3", _startpos,_destpos,_endpos] call ALiVE_fnc_Dump;
+                        ["MIL CONVOYS Start: %1 Dest.: %2 End: %3", _startpos,_destpos,_endpos] call ALiVE_fnc_dump;
 
                         private _startposList = [];
                         private _i = 500;
@@ -248,7 +248,7 @@ for "_j" from 1 to _intensity do {
 
                         // Delete convoy
                         if (_debug) then {
-                            diag_log format["ALIVE-%1 Convoy: %3 deleting %2", time, _grp, _j];
+                            ["ALIVE-%1 Convoy: %3 deleting %2", time, _grp, _j] call ALiVE_fnc_dump;
                             {deletemarker _x} foreach [_marker_start,_marker_dest,_marker_end];
                         };
                         {deleteVehicle (vehicle _x); deleteVehicle _x;} forEach units _grp;

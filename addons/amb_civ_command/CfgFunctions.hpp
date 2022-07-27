@@ -21,6 +21,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_command\fnc_cc_idle.sqf";
                 RECOMPILE;
             };
+            class cc_flee {
+                description = "Flee command";
+                file = "\x\alive\addons\amb_civ_command\fnc_cc_flee.sqf";
+                RECOMPILE;
+            };
             class cc_housework {
                 description = "Housework command";
                 file = "\x\alive\addons\amb_civ_command\fnc_cc_housework.sqf";

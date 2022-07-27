@@ -13,7 +13,7 @@
 // ====================================================================================
 // MAIN
 
-#include <\x\alive\addons\sys_data\script_component.hpp>
+#include "\x\alive\addons\sys_data\script_component.hpp"
 SCRIPT(data_onPlayerDisconnected);
 
 private ["_result","_name"];
@@ -28,13 +28,13 @@ if (_name == "__SERVER__") then {
     // Save mission date / time
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["ALiVE SYS_DATA - Server OPD %1 %2",MOD(sys_data), MOD(sys_data) getVariable "saveDateTime"] call ALIVE_fnc_dump;
+        ["SYS DATA - Server OPD %1 %2",MOD(sys_data), MOD(sys_data) getVariable "saveDateTime"] call ALiVE_fnc_dump;
     };
 
     if !(GVAR(DISABLED)) then {
 
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-            ["ALiVE SYS_DATA - SERVER EXIT SAVING DATA"] call ALIVE_fnc_dump;
+            ["SYS DATA - SERVER EXIT SAVING DATA"] call ALiVE_fnc_dump;
         };
 
         if (MOD(sys_data) getVariable ["saveDateTime","false"] == "true") then {
@@ -47,7 +47,7 @@ if (_name == "__SERVER__") then {
             _result = [GVAR(datahandler), "write", ["sys_data", GVAR(mission_data), false, _missionName] ] call ALIVE_fnc_Data;
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - SAVED DATE TIME: %1",_result] call ALIVE_fnc_dump;
+                ["SYS DATA - SAVED DATE TIME: %1",_result] call ALiVE_fnc_dump;
             };
         };
 
@@ -60,7 +60,7 @@ if (_name == "__SERVER__") then {
             };
 
             // Add any roadblock locations from civ placement
-            if (["ALiVE_civ_placement"] call ALiVE_fnc_isModuleAvailable) then {
+            if (["ALiVE_civ_placement"] call ALiVE_fnc_isModuleAvailable && {!isnil "ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS"} && {count ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS > 0}) then {
                 [MOD(PCOMPOSITIONS),"roadblock_locs",ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS] call ALiVE_fnc_hashSet;
             };
 
@@ -69,19 +69,19 @@ if (_name == "__SERVER__") then {
             _result = [GVAR(datahandler), "write", ["sys_data", MOD(PCOMPOSITIONS), false, _missionName] ] call ALIVE_fnc_Data;
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - SAVED COMPOSITIONS: %1",_result] call ALIVE_fnc_dump;
+                ["SYS DATA - SAVED COMPOSITIONS: %1",_result] call ALiVE_fnc_dump;
             };
         };
 
         // Save Data Dictionary
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-            ["ALiVE SYS_DATA: DATA DICTIONARY SIZE: %1",[str(ALIVE_DataDictionary)] call CBA_fnc_strLen] call ALIVE_fnc_dump;
+            ["SYS_DATA - DATA DICTIONARY SIZE: %1",[str(ALIVE_DataDictionary)] call CBA_fnc_strLen] call ALiVE_fnc_dump;
         };
 
         if (([str(ALIVE_DataDictionary)] call CBA_fnc_strLen) > DATA_INBOUND_LIMIT) then {
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - DICTIONARY OVER LIMIT"] call ALIVE_fnc_dump;
+                ["SYS_DATA - DICTIONARY OVER LIMIT"] call ALiVE_fnc_dump;
             };
 
             private ["_tempHash","_saveHash","_dictionaryName"];
@@ -94,7 +94,7 @@ if (_name == "__SERVER__") then {
                     if(([str(GVAR(tempHash))] call CBA_fnc_strLen) < DATA_INBOUND_LIMIT) then {
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE SYS_DATA - DICTIONARY HASH: %1",[str(GVAR(tempHash))] call CBA_fnc_strLen] call ALIVE_fnc_dump;
+                            ["SYS DATA - DICTIONARY HASH: %1",[str(GVAR(tempHash))] call CBA_fnc_strLen] call ALiVE_fnc_dump;
                         };
 
                         [GVAR(tempHash), _key, _value] call CBA_fnc_hashSet;
@@ -111,7 +111,7 @@ if (_name == "__SERVER__") then {
                         _result = [GVAR(datahandler), "write", ["sys_data", GVAR(tempHash), false, _dictionaryName] ] call ALIVE_fnc_Data;
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE SYS_DATA - SAVED DATA DICTIONARY: %1 %2",_dictionaryName,_result] call ALIVE_fnc_dump;
+                            ["SYS DATA - SAVED DATA DICTIONARY: %1 %2",_dictionaryName,_result] call ALiVE_fnc_dump;
                         };
 
                         GVAR(tempHash) = [] call CBA_fnc_hashCreate;
@@ -136,7 +136,7 @@ if (_name == "__SERVER__") then {
             _result = [GVAR(datahandler), "write", ["sys_data", GVAR(tempHash), false, _dictionaryName] ] call ALIVE_fnc_Data;
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - SAVED DATA DICTIONARY: %1 %2",_dictionaryName,_result] call ALIVE_fnc_dump;
+                ["SYS DATA - SAVED DATA DICTIONARY: %1 %2",_dictionaryName,_result] call ALiVE_fnc_dump;
             };
 
 
@@ -147,14 +147,14 @@ if (_name == "__SERVER__") then {
             _result = [GVAR(datahandler), "write", ["sys_data", ALIVE_DataDictionary, false, _dictionaryName] ] call ALIVE_fnc_Data;
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - SAVED DATA DICTIONARY: %1 %2",_dictionaryName,_result] call ALIVE_fnc_dump;
+                ["SYS DATA - SAVED DATA DICTIONARY: %1 %2",_dictionaryName,_result] call ALiVE_fnc_dump;
             };
         };
 
 
     } else {
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-            ["ALiVE SYS_DATA: SERVER EXIT BUT DATA DISABLED"] call ALIVE_fnc_dump;
+            ["SYS_DATA - SERVER EXIT BUT DATA DISABLED"] call ALiVE_fnc_dump;
         };
     };
 };

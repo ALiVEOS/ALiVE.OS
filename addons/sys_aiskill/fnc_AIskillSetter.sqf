@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_aiskill\script_component.hpp>
+#include "\x\alive\addons\sys_aiskill\script_component.hpp"
 SCRIPT(AISkillSetter);
 
 /* ----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ waituntil {time > 0};
 
 // Exit if main class is not available (or has not been initialised yet)
 if (isnil QUOTE(ADDON) || {!(ADDON getVariable ["startupComplete", false])}) exitwith {
-    //["ALiVE AI Skill not active exiting! Unit: %1!",_unit] call ALiVE_fnc_DumpR
+    //["AI Skill not active exiting! Unit: %1!",_unit] call ALiVE_fnc_dumpR
 };
 
 private _factionSkills = [ADDON, "factionSkills"] call ALiVE_fnc_AISkill;
@@ -48,7 +48,7 @@ private _aimingAccuracy = _unit skill "aimingAccuracy";
 private _aimingShake = _unit skill "aimingShake";
 private _aimingSpeed = _unit skill "aimingSpeed";
 
-if ((_faction in (_factionSkills select 1)) && {!(side _unit == CIVILIAN)}) then {
+if ((_faction in (_factionSkills select 1)) && {!(side group _unit == CIVILIAN)}) then {
     _factionSkill = [_factionSkills,_faction] call ALIVE_fnc_hashGet;
 
     if((_aimingAccuracy != _factionSkill select 2) && {_aimingShake != _factionSkill select 3} && {_aimingSpeed != _factionSkill select 4}) then {
@@ -76,7 +76,7 @@ if ((_faction in (_factionSkills select 1)) && {!(side _unit == CIVILIAN)}) then
 
         _unit allowFleeing _fleeing;
 
-        if (_debug) then {["ALiVE Skill set on %1: %2",_unit,_factionSkill] call ALiVE_fnc_DumpR};
+        if (_debug) then {["Skill set on %1: %2",_unit,_factionSkill] call ALiVE_fnc_dumpR};
     };
 };
 

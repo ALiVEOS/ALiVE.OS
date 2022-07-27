@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(addEventToServer);
 
 /* ----------------------------------------------------------------------------
@@ -25,8 +25,4 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_event"];
-
-_event = _this select 0;
-
-[ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+[ALIVE_eventLog,"addEvent", _this select 0] call ALIVE_fnc_eventLog;

@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\amb_civ_command\script_component.hpp>
+#include "\x\alive\addons\amb_civ_command\script_component.hpp"
 SCRIPT(test_command);
 
 //execVM "\x\alive\addons\amb_civ_command\tests\test_civCommandRouter.sqf"
@@ -40,7 +40,7 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 

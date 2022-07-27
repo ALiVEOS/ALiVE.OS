@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(profileAttack);
 
 /* ----------------------------------------------------------------------------
@@ -44,24 +44,28 @@ params [
 
 switch (_operation) do {
 
-    case "init": {
+    case "create": {
 
-        [_logic,"super", QUOTE(SUPERCLASS)] call ALiVE_fnc_hashSet; // select 2 select 0
-        [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;  // select 2 select 1
+        private _position = _args select 0;
+        private _attacker = _args select 1;
+        private _targets = _args select 2;
+        private _attackerSide = _args select 3;
 
-        [_logic,"attackID", ""] call ALiVE_fnc_hashSet;             // select 2 select 2
-        [_logic,"position", [0,0,0]] call ALiVE_fnc_hashSet;        // select 2 select 3
-        [_logic,"timeStarted", time] call ALiVE_fnc_hashSet;        // select 2 select 4
-
-        [_logic,"attacker", []] call ALiVE_fnc_hashSet;             // select 2 select 5
-        [_logic,"targets", []] call ALiVE_fnc_hashSet;              // select 2 select 6
-
-        // for arty set to max arty range, else leave default
-
-        [_logic,"maxRange", [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet] call ALiVE_fnc_hashSet;            // select 2 select 7
-
-        [_logic,"cyclesLeft", 9999] call ALiVE_fnc_hashSet;         // select 2 select 8
-        [_logic,"attackerSide", "WEST"] call ALiVE_fnc_hashSet;     // select 2 select 9
+        _result = [
+            [
+                ["super", QUOTE(SUPERCLASS)],       // select 2 select 0
+                ["class", QUOTE(MAINCLASS)],        // select 2 select 1
+                ["cyclesLeft", 9999],               // select 2 select 2
+                ["attackID", ""],                   // select 2 select 3
+                ["attackerSide", _attackerSide],    // select 2 select 4
+                ["position", _position],            // select 2 select 5
+                ["timeStarted", time],              // select 2 select 6
+                ["attacker", _attacker],            // select 2 select 7
+                ["targets", _targets],              // select 2 select 8
+                ["targetsKilled", []],              // select 2 select 9
+                ["maxRange", [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet] // for arty set to max arty range, else leave default
+            ]
+        ] call ALiVE_fnc_hashCreate;
 
     };
 

@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\sup_player_resupply\script_component.hpp>
+#include "\x\alive\addons\sup_player_resupply\script_component.hpp"
 SCRIPT(PR);
 
 /* ----------------------------------------------------------------------------
@@ -405,7 +405,7 @@ switch(_operation) do {
     case "init": {
 
         //Only one init per instance is allowed
-        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP RESUPPLY - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SUP RESUPPLY - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
         //Start init
         _logic setVariable ["initGlobal", false];
@@ -418,10 +418,7 @@ switch(_operation) do {
         ALIVE_SUP_PLAYER_RESUPPLY = _logic;
 
         // load static data
-        if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-            _file = "\x\alive\addons\main\static\staticData.sqf";
-            call compile preprocessFileLineNumbers _file;
-        };
+        call ALiVE_fnc_staticDataHandler;
 
         // Set faction whitelist
         ALIVE_PR_FACTIONLIST = [_logic, "factions", _logic getVariable ["pr_factionWhitelist", DEFAULT_FACTIONS]] call MAINCLASS;
@@ -446,10 +443,10 @@ switch(_operation) do {
 
             waitUntil {
                 sleep 0.1;
-                ((str side player) != "UNKNOWN")
+                ((str side group player) != "UNKNOWN")
             };
 
-            _playerSide = side player;
+            _playerSide = side group player;
             _sideNumber = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
             _sideText = [_sideNumber] call ALIVE_fnc_sideNumberToText;
 
@@ -613,20 +610,21 @@ switch(_operation) do {
             private ["_file"];
 
             // load static data
-            if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-                _file = "\x\alive\addons\main\static\staticData.sqf";
-                call compile preprocessFileLineNumbers _file;
-            };
+            call ALiVE_fnc_staticDataHandler;
 
             private _sortedVehicles = [] call ALiVE_fnc_hashCreate;
             private _sortedGroups = [] call ALiVE_fnc_hashCreate;
+
+            // Check to see if there's a faction whitelist
+            private _pr_faction_whitelist = [_logic, "factions", _logic getVariable ["pr_factionWhitelist", DEFAULT_FACTIONS]] call MAINCLASS;
+            private _civ = count _pr_faction_whitelist == 0;
 
             // get sorted config data
             if(_restrictionType == "SIDE") then {
                 _sortedVehicles = [_sideText,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST] call ALIVE_fnc_sortCFGVehiclesByClass;
             }else{
                 {
-                    private _tempVehicles = [_x,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST] call ALIVE_fnc_sortCFGVehiclesByFactionClass;
+                    private _tempVehicles = [_x,ALiVE_PR_BLACKLIST,ALiVE_PR_WHITELIST, _civ] call ALIVE_fnc_sortCFGVehiclesByFactionClass;
                     private _mergeHash = {
                         private _listOfVeh = [_sortedVehicles, _key, []] call ALiVE_fnc_hashGet;
                         {
@@ -695,9 +693,9 @@ switch(_operation) do {
                     -9500,
                     [
                             "call ALIVE_fnc_PRMenuDef",
-                            "main"
+                            ["main", "alive_flexiMenu_rscPopup"]
                     ]
-            ] call ALiVE_fnc_flexiMenu_Add;
+            ] call CBA_fnc_flexiMenu_Add;
 
         };
     };
@@ -969,14 +967,15 @@ switch(_operation) do {
 
                         params ["_logic","_position"];
 
-                        sleep 180;
+                        //Needs investigation: REQUEST_DELIVERED is called twice for some reason. Thats why those markers are not being deleted.
+                        //Workaround: reduced from 180 to 30.
+                        sleep 30;
 
                         private _markers = [_logic,"destinationMarker"] call MAINCLASS;
 
                         {
                                 deleteMarker _x;
                         } foreach _markers;
-
                     };
 
                 };
@@ -1442,7 +1441,7 @@ switch(_operation) do {
                             createDialog "PRTablet";
 
                             private _ctrlBackground = ((findDisplay 60001) displayCtrl 60000);
-                            _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                            _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                             _ctrlBackground ctrlSetPosition [
                                 0.15 * safezoneW + safezoneX,
                                 -0.242 * safezoneH + safezoneY,
@@ -1976,11 +1975,24 @@ switch(_operation) do {
                                     case "Groups": {
 
                                         _options = ["<< Back"];
+                                        _values = _options;
                                         _factions = _sortedGroups select 1;
                                         _options = _options + _factions;
 
+                                        {
+
+                                            if (_x != "<< Back") then {
+                                                private _displayName = getText(configfile >> "CfgFactionClasses" >> _x >> "displayName");
+
+                                                ["Set %1 to %2", _x, _displayName] call ALiVE_fnc_dump;
+                                                _options set [_foreachindex, _displayName];
+                                                _values set [_foreachindex, _x];
+                                            };
+
+                                        } forEach _options;
+
                                         _selectedReinforceListOptions set [1,_options];
-                                        _selectedReinforceListValues set [1,_options];
+                                        _selectedReinforceListValues set [1,_values];
 
                                     };
                                 };
@@ -1996,6 +2008,7 @@ switch(_operation) do {
                                     // display categories
 
                                     _options = ["<< Back"];
+                                    _values = _options;
                                     _categories = [_sortedGroups,_selectedValue] call ALIVE_fnc_hashGet;
                                     _categories = _categories select 1;
                                     _options = _options + _categories;
@@ -2014,24 +2027,30 @@ switch(_operation) do {
 
                                     _blacklistOptions = [_staticOptions,_selectedDeliveryValue] call ALIVE_fnc_hashGet;
 
-                                    /*
-                                    switch(_selectedDeliveryValue) do {
-                                        case "PR_AIRDROP": {
-                                            _blacklistOptions = ["Armored","Support"];
-                                        };
-                                        case "PR_HELI_INSERT": {
-                                            _blacklistOptions = ["Armored","Mechanized","Motorized","Motorized_MTP","SpecOps","Support"];
-                                        };
-                                        case "PR_STANDARD": {
-                                            _blacklistOptions = ["Support"];
-                                        };
-                                    };
-                                    */
-
                                     _options = _options - _blacklistOptions;
 
+                                    private _groupfaction = _faction;
+
+                                    if(!isNil "ALIVE_factionCustomMappings") then {
+                                        if(_groupfaction in (ALIVE_factionCustomMappings select 1)) then {
+                                            private _customMappings = [ALIVE_factionCustomMappings, _groupfaction] call ALIVE_fnc_hashGet;
+                                            _groupfaction = [_customMappings, "GroupFactionName"] call ALIVE_fnc_hashGet;
+                                        };
+                                    };
+
+                                    {
+
+                                        if (_x != "<< Back") then {
+                                            private _displayName = getText(configFile >> "CfgGroups" >> _side >> _groupFaction >> _x >> "name");
+
+                                            _options set [_foreachindex, _displayName];
+                                            _values set [_foreachindex, _x];
+                                        };
+
+                                    } forEach _options;
+
                                     _selectedReinforceListOptions set [2,_options];
-                                    _selectedReinforceListValues set [2,_options];
+                                    _selectedReinforceListValues set [2,_values];
 
                                 }else{
 
@@ -2488,12 +2507,13 @@ switch(_operation) do {
                                         _customMappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
                                         _groups = [_customMappings, "Groups"] call ALIVE_fnc_hashGet;
 
-                                        _groups call ALIVE_fnc_inspectHash;
+                                        //_groups call ALIVE_fnc_inspectHash;
 
                                         {
                                             _groupNames = [_groups, _x] call ALIVE_fnc_hashGet;
 
-                                            _groupNames call ALIVE_fnc_inspectArray;
+
+                                            //_groupNames call ALIVE_fnc_inspectArray;
 
                                             if(_payloadClass in _groupNames) then {
                                                 _payloadInfo set [2,_x];

@@ -10,8 +10,8 @@ author = ALiVE Mod Team || Mission by Tupolov;
 onLoadMission = "Stratis is reeling from a brutal insurgency campaign. IED's litter the landscape, its your job to identify and disarm IEDs to ensure the safety of the civilian population. Beware of the local militia!";
 onLoadIntroTime = 1;
 onLoadMissionTime = 1;
-onLoadName = ALiVE | Hurt Locker;
 loadScreen = "x\alive\addons\missions\logo_alive.paa";
+overviewPicture = "x\alive\addons\missions\logo_alive.paa";
 
 aiKills = 0;
 briefing = 0;

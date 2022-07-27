@@ -1,78 +1,42 @@
 private["_worldName"];
-
-_worldName = tolower(worldName);
-
-["ALiVE SETTING UP MAP: %1", _worldName] call ALIVE_fnc_dump;
-
-ALIVE_Indexing_Blacklist = [];
-ALIVE_airBuildingTypes = [];
-ALIVE_militaryParkingBuildingTypes = [];
-ALIVE_militarySupplyBuildingTypes = [];
-ALIVE_militaryHQBuildingTypes = [];
-ALIVE_militaryAirBuildingTypes = [];
-ALIVE_civilianAirBuildingTypes = [];
-ALiVE_HeliBuildingTypes = [];
-ALIVE_militaryHeliBuildingTypes = [];
-ALIVE_civilianHeliBuildingTypes = [];
-ALIVE_militaryBuildingTypes = [];
-ALIVE_civilianPopulationBuildingTypes = [];
-ALIVE_civilianHQBuildingTypes = [];
-ALIVE_civilianPowerBuildingTypes = [];
-ALIVE_civilianCommsBuildingTypes = [];
-ALIVE_civilianMarineBuildingTypes = [];
-ALIVE_civilianRailBuildingTypes = [];
-ALIVE_civilianFuelBuildingTypes = [];
-ALIVE_civilianConstructionBuildingTypes = [];
-ALIVE_civilianSettlementBuildingTypes = [];
-
-ALiVE_mapCompositionType = "Woodland";
-
-if (_worldName == "saralite") then {
-    ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + [
-        "army",
-        "vez",
-        "budova"
-    ];
-
-    ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + [
-        "army"
-    ];
-
-    ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + [
-        "mesto3"
-    ];
-
-    ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
-        "vez",
-        "hlaska",
-        "budova",
-        "posed",
-        "hospital"
-    ];
-
-    ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + [
-        "rohova"
-    ];
-
-    ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
-        "olezlina",
-        "domek",
-        "dum",
-        "kulna",
-        "statek",
-        "afbar",
-        "panelak",
-        "deutshe",
-        "mesto",
-        "hotel"
-    ];
-
-    ALIVE_civilianMarineBuildingTypes = ALIVE_civilianMarineBuildingTypes + [
-        "najezd",
-        "cargo",
-        "nabrezi",
-        "podesta"
-    ];
-
-    ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [];
+ _worldName = tolower(worldName);
+ ["SETTING UP MAP: saralite"] call ALiVE_fnc_dump;
+ ALIVE_Indexing_Blacklist = [];
+ ALIVE_airBuildingTypes = [];
+ ALIVE_militaryParkingBuildingTypes = [];
+ ALIVE_militarySupplyBuildingTypes = [];
+ ALIVE_militaryHQBuildingTypes = [];
+ ALIVE_militaryAirBuildingTypes = [];
+ ALIVE_civilianAirBuildingTypes = [];
+ ALiVE_HeliBuildingTypes = [];
+ ALIVE_militaryHeliBuildingTypes = [];
+ ALIVE_civilianHeliBuildingTypes = [];
+ ALIVE_militaryBuildingTypes = [];
+ ALIVE_civilianPopulationBuildingTypes = [];
+ ALIVE_civilianHQBuildingTypes = [];
+ ALIVE_civilianPowerBuildingTypes = [];
+ ALIVE_civilianCommsBuildingTypes = [];
+ ALIVE_civilianMarineBuildingTypes = [];
+ ALIVE_civilianRailBuildingTypes = [];
+ ALIVE_civilianFuelBuildingTypes = [];
+ ALIVE_civilianConstructionBuildingTypes = [];
+ ALIVE_civilianSettlementBuildingTypes = [];
+ ALiVE_mapCompositionType = "Woodland";
+ if(tolower(_worldName) == "saralite") then {
+ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + ["ca\buildings\misc\leseni2x.p3d","ca\misc\sloupyeli.p3d","ca\misc\sidewalks\sidewalk6shortend.p3d","ca\misc\sidewalks\sidewalk6turn10deg.p3d","ca\misc\sidewalks\sidewalk6turn5deg.p3d","ca\buildings\misc\plot_istan2.p3d","ca\buildings\podesta_1_stairs4.p3d","ca\misc\bilboard_test.p3d","ca\misc\bilboard_che.p3d","ca\misc\container.p3d","ca\misc\bilboard_pivo_small.p3d","ca\misc\container2.p3d","ca\roads\most_bez_lamp.p3d","ca\buildings\misc\zed_dira_civil.p3d","ca\buildings\misc\zed_civil.p3d","ca\buildings\misc\zavora.p3d","ca\buildings\misc\zavora_2_a1.p3d","ca\buildings\bordel_zidka.p3d","ca\buildings\misc\zed_podplaz_civil.p3d","ca\buildings\misc\leseni4x.p3d","ca\buildings\podesta_1_stairs2.p3d","ca\buildings\podesta_1_mid_cornp.p3d","ca\buildings\podesta_1_mid_cornl.p3d","ca\buildings\podesta_1_stairs.p3d","ca\buildings\podesta_10.p3d","ca\buildings\podesta_5.p3d","ca\misc\bilboard_hellmart.p3d","ca\buildings\shop2.p3d","ca\buildings\podesta_s5.p3d","ca\buildings\kap02.p3d","ca\misc\bilboard_ada.p3d","ca\buildings\misc\zed_desert.p3d","ca\buildings\misc\zed_podplaz_desert.p3d","ca\roads\runway_poj_end9.p3d","ca\buildings\zvonice.p3d","ca\buildings\misc\zavora_sloupek.p3d","ca\roads\most_stred30.p3d","ca\buildings\nabrezi.p3d","ca\buildings\nabrezi_najezd.p3d","ca\buildings\trafostanica_velka_draty.p3d","ca\buildings\podesta_1_stairs3.p3d","ca\buildings\bozi_muka.p3d","ca\buildings\misc\plutek.p3d","ca\buildings\misc\hrobecek_krizek2.p3d","ca\buildings\podesta_1_cube.p3d","ca\buildings\dum_istan4_zidka.p3d","ca\roads\runway_poj_end27.p3d","ca\roads\runway_end27.p3d","ca\buildings\misc\pletivo.p3d","ca\buildings\misc\pletivo_dira.p3d","ca\buildings\misc\zed.p3d","ca\buildings\misc\hrobecek.p3d","ca\buildings\misc\hrobecek_krizek1.p3d","ca\buildings\misc\zed_dira.p3d","ca\buildings\misc\zed_podplaz.p3d","ca\buildings\molo_krychle.p3d","ca\buildings\molo_beton.p3d","ca\misc\bilboard_revolucion.p3d","ca\misc\bilboard_traidores.p3d","ca\buildings\molo_krychle2.p3d"];
+ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + ["ca\buildings\misc\plot_rust_vrat_o.p3d","ca\misc\bilboard_nopassarao.p3d","ca\roads\kamenny_most30v2.p3d","ca\buildings\castle\helfenburk_cimburi.p3d","ca\buildings\castle\helfenburk_zed.p3d","ca\roads\kamenny_most30.p3d"];
+ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["ca\buildings\army_hut2_int.p3d","ca\buildings\army_hut_storrage.p3d","ca\buildings\posed.p3d","ca\buildings\hlidac_budka.p3d","ca\buildings\budova1.p3d","ca\buildings\repair_center.p3d","ca\buildings\budova5.p3d","ca\buildings\misc\lampa_vysoka.p3d","ca\buildings\army_hut3_long_int.p3d","ca\buildings\garaz_bez_tanku.p3d","ca\buildings\hangar_2.p3d","ca\buildings\army_hut_int.p3d","ca\buildings\hlaska.p3d","ca\buildings\army_hut3_long.p3d","ca\buildings\garaz_s_tankem.p3d","ca\buildings\ammostore2.p3d","ca\buildings\army_hut2.p3d","ca\buildings\letistni_hala.p3d","ca\buildings\budova4.p3d","ca\buildings\budova4_in.p3d","ca\buildings\castle\helfenburk.p3d","ca\buildings\castle\helfenburk_budova2.p3d"];
+ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + ["ca\buildings\hangar_2.p3d","ca\buildings\letistni_hala.p3d"];
+ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + ["ca\buildings\hlidac_budka.p3d","ca\buildings\budova1.p3d","ca\buildings\hangar_2.p3d","ca\buildings\army_hut_int.p3d","ca\buildings\budova4.p3d","ca\buildings\budova4_in.p3d"];
+ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + ["ca\buildings\letistni_hala.p3d","ca\buildings\budova4.p3d","ca\buildings\budova4_in.p3d"];
+ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + ["ca\roads\runway_poj_tcross.p3d","ca\roads\runway_end9.p3d","ca\roads\runway_main_tcross.p3d","ca\roads\runway_main.p3d"];
+ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + ["ca\roads\runway_poj_tcross.p3d","ca\roads\runway_end9.p3d","ca\roads\runway_main_tcross.p3d","ca\roads\runway_main.p3d"];
+ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianPopulationBuildingTypes + ["ca\buildings\dum_olez_istan1.p3d","ca\buildings\hut_old02.p3d","ca\buildings\bouda2_vnitrek.p3d","ca\buildings\dum_olez_istan2_maly.p3d","ca\buildings\hut03.p3d","ca\buildings\dum_istan2.p3d","ca\buildings\hut01.p3d","ca\buildings\hut06.p3d","ca\buildings\hut04.p3d","ca\buildings\hut02.p3d","ca\buildings\dum_istan3_hromada.p3d","ca\buildings\dum_istan3_hromada2.p3d","ca\buildings\kostel.p3d","ca\buildings\house_y.p3d","ca\buildings\dum_istan2b.p3d","ca\buildings\sara_stodola2.p3d","ca\buildings\orlhot.p3d","ca\buildings\afdum_mesto3.p3d","ca\buildings\dum_olezlina.p3d","ca\buildings\sara_domek_sedy.p3d","ca\buildings\deutshe_mini.p3d","ca\buildings\sara_zluty_statek_in.p3d","ca\buildings\cihlovej_dum_mini.p3d","ca\buildings\hruzdum.p3d","ca\buildings\hospoda_mesto.p3d","ca\misc\bilboard_revolucion_bez_noh.p3d","ca\buildings\sara_domek_zluty.p3d","ca\buildings\sara_stodola.p3d","ca\buildings\dum_rasovna.p3d","ca\buildings\budova3.p3d","ca\buildings\dum_mesto_in.p3d"];
+ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + ["ca\buildings\hospital.p3d","ca\buildings\orlhot.p3d","ca\buildings\dum_olezlina.p3d","ca\buildings\sara_zluty_statek_in.p3d","ca\buildings\hospoda_mesto.p3d","ca\buildings\dum_mesto_in.p3d"];
+ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + ["ca\buildings\kulna.p3d","ca\buildings\dum_olez_istan1.p3d","ca\buildings\bouda_plech.p3d","ca\buildings\dum_olez_istan2.p3d","ca\buildings\hut_old02.p3d","ca\buildings\dum_olez_istan2_maly2.p3d","ca\buildings\bouda2_vnitrek.p3d","ca\buildings\kostelik.p3d","ca\buildings\dum_olez_istan2_maly.p3d","ca\buildings\hut03.p3d","ca\buildings\dum_istan2.p3d","ca\buildings\hut01.p3d","ca\buildings\hut06.p3d","ca\buildings\dum_istan4.p3d","ca\buildings\dum_istan4_inverse.p3d","ca\buildings\shop5_short.p3d","ca\buildings\misc\stanek_1.p3d","ca\buildings\hut04.p3d","ca\buildings\hut02.p3d","ca\buildings\dum_istan2_01.p3d","ca\buildings\misc\stanek_2.p3d","ca\buildings\dum_istan3_hromada.p3d","ca\buildings\dum_istan3.p3d","ca\buildings\dum_istan2_04a.p3d","ca\buildings\garaz.p3d","ca\buildings\dum_istan3_hromada2.p3d","ca\buildings\dum_mesto3_istan.p3d","ca\buildings\zalchata.p3d","ca\buildings\dum_zboreny.p3d","ca\buildings\dulni_bs.p3d","ca\buildings\dum_zboreny_lidice.p3d","ca\buildings\dum_istan4_detaily1.p3d","ca\buildings\dum_istan2_03.p3d","ca\buildings\shop2_double.p3d","ca\buildings\shop3_short.p3d","ca\buildings\shop1.p3d","ca\buildings\watertower1.p3d","ca\buildings\zastavka_jih.p3d","ca\buildings\kostel_mexico.p3d","ca\buildings\hospital.p3d","ca\buildings\shop3.p3d","ca\buildings\podesta_1_cornl.p3d","ca\buildings\podesta_1_mid.p3d","ca\buildings\podesta_1_cornp.p3d","ca\buildings\dum_zboreny_total.p3d","ca\buildings\misc\stanek_4.p3d","ca\buildings\misc\stanek_2c.p3d","ca\buildings\misc\stanek_1b.p3d","ca\buildings\misc\stanek_1c.p3d","ca\buildings\shop1_double.p3d","ca\buildings\shop5_double.p3d","ca\buildings\kostel.p3d","ca\buildings\house_y.p3d","ca\buildings\shop2_short.p3d","ca\buildings\dum_istan2_03a.p3d","ca\buildings\dum01.p3d","ca\buildings\dum_istan4_chodnik.p3d","ca\buildings\statek_kulna.p3d","ca\buildings\dum_istan4_big.p3d","ca\buildings\dum_istan4_big_inverse.p3d"];
+ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + ["ca\buildings\bouda1.p3d","ca\buildings\stanice.p3d","ca\buildings\dum_istan2b.p3d","ca\buildings\shop4.p3d","ca\buildings\sara_stodola2.p3d","ca\buildings\dum_istan2_02.p3d","ca\buildings\orlhot.p3d","ca\buildings\dumruina.p3d","ca\buildings\dum_mesto.p3d","ca\buildings\bouda3.p3d","ca\buildings\afbarabizna.p3d","ca\buildings\hut_old02d2.p3d","ca\buildings\hut_old02d1.p3d","ca\buildings\shop5.p3d","ca\buildings\misc\stanek_2b.p3d","ca\buildings\misc\stanek_4c.p3d","ca\buildings\budova2.p3d","ca\buildings\podesta_1_cube_long.p3d","ca\buildings\afdum_mesto3.p3d","ca\buildings\afdum_mesto2.p3d","ca\buildings\deutshe.p3d","ca\buildings\misc\stanek_4b.p3d","ca\buildings\kostel3.p3d","ca\buildings\dum_olezlina.p3d","ca\buildings\zastavka_sever.p3d","ca\buildings\dum_mesto2.p3d","ca\buildings\statek_hl_bud.p3d","ca\buildings\sara_domek_podhradi_1.p3d","ca\buildings\sara_domek_sedy.p3d","ca\buildings\deutshe_mini.p3d","ca\buildings\sara_stodola3.p3d","ca\buildings\sara_domek_hospoda.p3d","ca\buildings\sara_zluty_statek_in.p3d","ca\buildings\dum02.p3d","ca\buildings\cihlovej_dum_mini.p3d","ca\buildings\dum_mesto3.p3d","ca\buildings\hruzdum.p3d","ca\buildings\hospoda_mesto.p3d","ca\buildings\dum_mesto2l.p3d","ca\buildings\cihlovej_dum.p3d","ca\buildings\sara_domek_kovarna.p3d","ca\buildings\sara_hasic_zbroj.p3d","ca\misc\bilboard_revolucion_bez_noh.p3d","ca\buildings\sara_domek_ruina.p3d","ca\buildings\dumruina_mini.p3d","ca\buildings\sara_domek_zluty.p3d","ca\buildings\sara_stodola.p3d","ca\buildings\dum_rasovna.p3d","ca\buildings\budova3.p3d","ca\buildings\afdum_mesto2l.p3d","ca\buildings\kostel_trosky.p3d","ca\buildings\garaz_mala.p3d","ca\buildings\afhospoda_mesto.p3d","ca\buildings\kasarna_rohova.p3d","ca\buildings\kasarna.p3d","ca\buildings\kasarna_prujezd.p3d","ca\buildings\dum_mesto_in.p3d"];
+ALIVE_civilianPowerBuildingTypes = ALIVE_civilianPowerBuildingTypes + ["ca\buildings\trafostanica_velka.p3d","ca\buildings\trafostanica_mala.p3d"];
+ALIVE_civilianCommsBuildingTypes = ALIVE_civilianCommsBuildingTypes + ["ca\buildings\majak_podesta.p3d","ca\buildings\vysilac_fm.p3d","ca\buildings\telek1.p3d"];
+ALIVE_civilianMarineBuildingTypes = ALIVE_civilianMarineBuildingTypes + ["ca\buildings\majak2.p3d","ca\buildings\majak.p3d","ca\buildings\majak_v_celku.p3d"];
+ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + ["ca\buildings\benzina_schnell.p3d","ca\buildings\komin.p3d","ca\buildings\fuelstation_army.p3d"];
 };

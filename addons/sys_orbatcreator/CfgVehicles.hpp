@@ -27,7 +27,43 @@ class CfgVehicles {
                                     };
                             };
                     };
+                    class background {
+                            displayName = "$STR_ALIVE_ORBATCREATOR_BACKGROUND";
+                            description = "$STR_ALIVE_ORBATCREATOR_BACKGROUND_COMMENT";
+                            class Values {
+                                    class Yes {
+                                            name = "Yes";
+                                            value = true;
+                                            default = 1;
+                                    };
+                                    class No {
+                                            name = "No";
+                                            value = false;
 
+                                    };
+                            };
+                    };
+                    class prefix
+                    {
+                            displayName = "$STR_ALIVE_ORBATCREATOR_PREFIX";
+                            description = "$STR_ALIVE_ORBATCREATOR_PREFIX_COMMENT";
+                            defaultValue = "";
+                    };
+                    class copyParent {
+                            displayName = "$STR_ALIVE_ORBATCREATOR_COPY";
+                            description = "$STR_ALIVE_ORBATCREATOR_COPY_COMMENT";
+                            class Values {
+                                    class Yes {
+                                            name = "Yes";
+                                            value = true;
+                                    };
+                                    class No {
+                                            name = "No";
+                                            value = false;
+                                            default = 1;
+                                    };
+                            };
+                    };
                 };
 
         };

@@ -48,6 +48,20 @@ class arrayFrameSplitter
 	RECOMPILE;
 };
 
+class deleteAtMany
+{
+	file = "\x\alive\addons\x_lib\functions\arrays\fnc_deleteAtMany.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class deleteIf
+{
+	file = "\x\alive\addons\x_lib\functions\arrays\fnc_deleteIf.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class erase
 {
 	file = "\x\alive\addons\x_lib\functions\arrays\fnc_erase.sqf";
@@ -139,6 +153,33 @@ class addCamera
 	RECOMPILE;
 };
 
+class angleShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_angleShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class followShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_followShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class sideShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_sideShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class targetShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_targetShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
 class chaseAngleShot
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_chaseAngleShot.sqf";
@@ -160,6 +201,13 @@ class chaseSideShot
 	RECOMPILE;
 };
 
+class chaseTarget
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_chaseTarget.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class chaseWheelShot
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_chaseWheelShot.sqf";
@@ -167,6 +215,26 @@ class chaseWheelShot
 	RECOMPILE;
 };
 
+class closeUpShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_closeUpShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class dollyZoomShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_dollyZoomShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class establishShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_establishShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
 class createLiveFeedCamera
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_createLiveFeedCamera.sqf";
@@ -184,6 +252,13 @@ class createLiveFeedEffect
 class flyInShot
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_flyInShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class flyOverShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_flyOverShot.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
@@ -310,6 +385,13 @@ class getCompositions
 class spawnComposition
 {
 	file = "\x\alive\addons\x_lib\functions\composition\fnc_spawnComposition.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class removeComposition
+{
+	file = "\x\alive\addons\x_lib\functions\composition\fnc_removeComposition.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
@@ -454,6 +536,13 @@ class getArtyRounds
 	RECOMPILE;
 };
 
+class isMagazineOfOrdnanceType
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_isMagazineOfOrdnanceType.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class getConfigValue
 {
 	file = "\x\alive\addons\x_lib\functions\config\fnc_getConfigValue.sqf";
@@ -573,9 +662,30 @@ class toString
 	RECOMPILE;
 };
 
+class doSegmentsIntersect
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_doSegmentsIntersect.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class encodeJSON
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_encodeJSON.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class findConvexHull
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_findConvexHull.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class findMidpoint
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_findMidpoint.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
@@ -671,9 +781,9 @@ class ProfileNameSpaceWipe
 	RECOMPILE;
 };
 
-class quadtree
+class spacialGrid
 {
-	file = "\x\alive\addons\x_lib\functions\data\fnc_quadtree.sqf";
+	file = "\x\alive\addons\x_lib\functions\data\fnc_spacialGrid.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
@@ -1329,6 +1439,13 @@ class emptyInit
 	RECOMPILE;
 };
 
+class exportCfgComposition
+{
+	file = "\x\alive\addons\x_lib\functions\composition\fnc_exportCfgComposition.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class exportCfgVehicles
 {
 	file = "\x\alive\addons\x_lib\functions\misc\fnc_exportCfgVehicles.sqf";
@@ -1353,6 +1470,14 @@ class exportCfgWeapons
 class exportMapWarRoom
 {
 	file = "\x\alive\addons\x_lib\functions\misc\fnc_exportMapWarRoom.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+
+class exportORBATEditorPreviews
+{
+	file = "\x\alive\addons\x_lib\functions\misc\fnc_exportORBATEditorPreviews.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
@@ -1511,6 +1636,13 @@ class selBinStr
 	RECOMPILE;
 };
 
+class stringListToArray
+{
+	file = "\x\alive\addons\x_lib\functions\strings\fnc_stringListToArray.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class timeToRead
 {
 	file = "\x\alive\addons\x_lib\functions\strings\fnc_timeToRead.sqf";
@@ -1605,6 +1737,13 @@ class chooseRandomUnits
 class doMoveRemote
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_doMoveRemote.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class disguise
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_disguise.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
@@ -1714,6 +1853,27 @@ class landRemote
 	RECOMPILE;
 };
 
+class orderGetInRemote
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_orderGetInRemote.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class moveInAnyRemote
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_moveInAnyRemote.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class addVehicleRemote
+{
+	file = "\x\alive\addons\x_lib\functions\groups\fnc_addVehicleRemote.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class PlayersInRangeIncludeAir
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_PlayersInRangeIncludeAir.sqf";
@@ -1752,6 +1912,13 @@ class unitArraySortByRank
 class unitArraySortSide
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_unitArraySortSide.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class unitsInArea
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_unitsInArea.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };

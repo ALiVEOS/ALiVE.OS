@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_perf\script_component.hpp>
+#include "\x\alive\addons\sys_perf\script_component.hpp"
 SCRIPT(perfInit);
 
 /* ----------------------------------------------------------------------------
@@ -119,7 +119,7 @@ if (isDedicated && GVAR(ENABLED)) then {
     // Get custom perf code
     private "_customCode";
     _customCode = _logic getVariable ["customPerfMonCode","[['entities',150],['vehicles',300],['agents',450],['allDead',600],['objects',750],['triggers',900]]"];
-    _customCode = call compile _customCode;
+    _customCode = parseSimpleArray _customCode;
 
     // Start FSM now
     GVAR(fsmHandle) = [_customCode] execFSM "\x\alive\addons\sys_perf\fnc_perfMonitor.fsm";
@@ -150,9 +150,9 @@ if(!isDedicated && !isHC && GVAR(ENABLED)) then {
                 -9500,
                 [
                         "call ALIVE_fnc_perfMenuDef",
-                        "main"
+                        ["main", "alive_flexiMenu_rscPopup"]
                 ]
-        ] call ALiVE_fnc_flexiMenu_Add;
+        ] call CBA_fnc_flexiMenu_Add;
 };
 
 ADDON = true;

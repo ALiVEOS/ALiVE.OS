@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(inspectVehicle);
 
 /* ----------------------------------------------------------------------------
@@ -33,7 +33,7 @@ _text = " ----------- "+_cfg+" ----------- ";
 [_text] call ALIVE_fnc_dump;
 
 [""] call ALIVE_fnc_dump;
-["ALIVE functions -------"] call ALIVE_fnc_dump;
+["functions -------"] call ALiVE_fnc_dump;
 
 
 ["Class: %1", _cfg call ALIVE_fnc_configGetVehicleClass] call ALIVE_fnc_dump;

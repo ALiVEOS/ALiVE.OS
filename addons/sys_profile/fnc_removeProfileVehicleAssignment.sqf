@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(removeProfileVehicleAssignment);
 
 /* ----------------------------------------------------------------------------
@@ -25,53 +25,47 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_profileEntity","_profileVehicle","_deleteAssignment","_entityID","_vehicleID","_assignments","_units","_entityAssignments","_vehicleAssignments","_assignment",
-"_vehicle","_vehicleAssignment","_entityInCommandOf","_entityInCargoOf","_vehicleInCommandOf","_vehicleInCargoOf"];
+params ["_profileEntity","_profileVehicle",["_deleteAssignment", true]];
 
-_profileEntity = _this select 0;
-_profileVehicle = _this select 1;
-_deleteAssignment = if(count _this > 2) then {_this select 2} else {true};
+private _entityID = [_profileEntity, "profileID"] call ALIVE_fnc_hashGet;
+private _vehicleID = [_profileVehicle, "profileID"] call ALIVE_fnc_hashGet;
 
-_entityID = [_profileEntity, "profileID"] call ALIVE_fnc_hashGet;
-_vehicleID = [_profileVehicle, "profileID"] call ALIVE_fnc_hashGet;
-
-_entityAssignments = [_profileEntity,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-_vehicleAssignments = [_profileVehicle,"vehicleAssignments"] call ALIVE_fnc_hashGet;
+private _entityAssignments = [_profileEntity,"vehicleAssignments", ["",[],[],""]] call ALIVE_fnc_hashGet;
+private _vehicleAssignments = [_profileVehicle,"vehicleAssignments", ["",[],[],""]] call ALIVE_fnc_hashGet;
 
 if(_entityID in (_vehicleAssignments select 1)) then {
-
     // if spawned make the units get out
-    if([_profileEntity,"active"] call ALIVE_fnc_hashGet) then {
-        _units = [_profileEntity,"units"] call ALIVE_fnc_hashGet;
-        _assignment = [_entityAssignments,_vehicleID] call ALIVE_fnc_hashGet;
-        _vehicle = [_profileVehicle,"vehicle"] call ALIVE_fnc_hashGet;
-        _vehicleAssignment = [_assignment,_units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
+
+    private _profileActive = [_profileEntity,"active"] call ALIVE_fnc_hashGet;
+    if (_profileActive) then {
+        private _units = [_profileEntity,"units"] call ALIVE_fnc_hashGet;
+        private _assignment = [_entityAssignments,_vehicleID] call ALIVE_fnc_hashGet;
+        private _vehicleAssignment = [_assignment,_units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
+        private _vehicle = [_profileVehicle,"vehicle"] call ALIVE_fnc_hashGet;
+
         [_vehicleAssignment, _vehicle] call ALIVE_fnc_vehicleDismount;
     };
 
     // remove the assignments from the entity and vehicle profile
-    if(_deleteAssignment) then {
+
+    if (_deleteAssignment) then {
         [_entityAssignments, _vehicleID] call ALIVE_fnc_hashRem;
         [_vehicleAssignments, _entityID] call ALIVE_fnc_hashRem;
     };
 
     // remove keys from in cargo arrays
-    _entityInCommandOf = [_profileEntity,"vehiclesInCommandOf"] call ALIVE_fnc_hashGet;
-    _entityInCargoOf = [_profileEntity,"vehiclesInCargoOf"] call ALIVE_fnc_hashGet;
 
-    _entityInCommandOf = _entityInCommandOf - [_vehicleID];
-    _entityInCargoOf = _entityInCargoOf - [_vehicleID];
+    private _entityInCommandOf = [_profileEntity,"vehiclesInCommandOf"] call ALIVE_fnc_hashGet;
+    private _entityInCargoOf = [_profileEntity,"vehiclesInCargoOf"] call ALIVE_fnc_hashGet;
 
-    [_profileEntity,"vehiclesInCommandOf",_entityInCommandOf] call ALIVE_fnc_hashSet;
-    [_profileEntity,"vehiclesInCargoOf",_entityInCargoOf] call ALIVE_fnc_hashSet;
+    _entityInCommandOf deleteat (_entityInCommandOf find _vehicleID);
+    _entityInCargoOf deleteat (_entityInCargoOf find _vehicleID);
 
     // remove keys from in command arrays
-    _vehicleInCommandOf = [_profileVehicle,"entitiesInCommandOf"] call ALIVE_fnc_hashGet;
-    _vehicleInCargoOf = [_profileVehicle,"entitiesInCargoOf"] call ALIVE_fnc_hashGet;
 
-    _vehicleInCommandOf = _vehicleInCommandOf - [_entityID];
-    _vehicleInCargoOf = _vehicleInCargoOf - [_entityID];
+    private _vehicleInCommandOf = [_profileVehicle,"entitiesInCommandOf"] call ALIVE_fnc_hashGet;
+    private _vehicleInCargoOf = [_profileVehicle,"entitiesInCargoOf"] call ALIVE_fnc_hashGet;
 
-    [_profileVehicle,"entitiesInCommandOf",_vehicleInCommandOf] call ALIVE_fnc_hashSet;
-    [_profileVehicle,"entitiesInCargoOf",_vehicleInCargoOf] call ALIVE_fnc_hashSet;
+    _vehicleInCommandOf deleteat (_vehicleInCommandOf find _entityID);
+    _vehicleInCargoOf deleteat (_vehicleInCargoOf find _entityID);
 };

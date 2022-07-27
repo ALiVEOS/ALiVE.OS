@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(findVehicleType);
 
 /* ----------------------------------------------------------------------------
@@ -35,6 +35,7 @@ ASSERT_TRUE(typeName _cargoslots == "SCALAR",_err);
 DEFAULT_PARAM(1,_fac,nil);
 DEFAULT_PARAM(2,_type,nil);
 DEFAULT_PARAM(3,_noWeapons,false);
+DEFAULT_PARAM(4,_minScope,1);
 
 _id = _fac;
 
@@ -75,7 +76,7 @@ _allvehs = [];
 for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
     _entry = (configFile >> "CfgVehicles") select _y;
 
-    if(getNumber (_entry >> "scope") >= 1) then {
+    if(getNumber (_entry >> "scope") >= _minScope) then {
         if (!(getText(_entry >> "simulation") in _nonsims)) then {
             _entryConfigName = configName _entry;
 

@@ -1,6 +1,6 @@
 private["_worldName"];
  _worldName = tolower(worldName);
- ["ALiVE SETTING UP MAP: hyde_sark"] call ALIVE_fnc_dump;
+ ["SETTING UP MAP: hyde_sark"] call ALiVE_fnc_dump;
  ALIVE_Indexing_Blacklist = [];
  ALIVE_airBuildingTypes = [];
  ALIVE_militaryParkingBuildingTypes = [];

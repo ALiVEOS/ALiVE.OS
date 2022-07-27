@@ -26,7 +26,7 @@ if (GVAR(ENABLED)) then {
 
         private ["_shotsfired","_weaponName","_i","_shots","_idx"];
 
-        //diag_log format["playerFired: type:%1, vehicle:%2, %3", typeof _player, typeof vehicle _player, _this];
+        //["playerFired: type:%1, vehicle:%2, %3", typeof _player, typeof vehicle _player, _this] call ALiVE_fnc_dump;
 
         _shotsfired = GVAR(playerShotsFired);
 
@@ -58,7 +58,7 @@ if (GVAR(ENABLED)) then {
             _shotsfired set [_idx, [_muzzle, _shots + 1, _weapon, _weaponName]];
         };
 
-        // diag_log format["SF: %1", _shotsfired];
+        // ["SF: %1", _shotsfired] call ALiVE_fnc_dump;
 
         GVAR(playerShotsFired) = _shotsfired;
     };

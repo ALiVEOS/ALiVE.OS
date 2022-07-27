@@ -1,5 +1,5 @@
-#include <\x\alive\addons\sys_xstream\script_component.hpp>
-#include <\x\cba\addons\ui_helper\script_dikCodes.hpp>
+#include "\x\alive\addons\sys_xstream\script_component.hpp"
+#include "\a3\editor_f\Data\Scripts\dikCodes.h"
 
 SCRIPT(xstreamMenuDef);
 
@@ -49,7 +49,7 @@ diag_log format [">>>>>%1<<<<<<<",_this];
 TRACE_1("sys_xstream",_this);
 
 if (typeName _params == typeName []) then {
-    if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
+    if (count _params < 1) exitWith {["Error: Invalid params: %1, %2", _this, __FILE__] call ALiVE_fnc_dump;};
     _menuName = _params select 0;
     _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
 } else {

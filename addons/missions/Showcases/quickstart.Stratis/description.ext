@@ -1,0 +1,5 @@
+//////////--Author and Loadscreen information--//////////        -----> https://community.bistudio.com/wiki/Loading_Screens
+author = "HeroesandvillaindOS";
+OnLoadName = "ALiVE | Quickstart II";
+OnLoadMission = "Jump into the action with this Quickstart template from the ALiVE mod wiki.";
+loadScreen = "x\alive\addons\missions\logo_alive.paa";

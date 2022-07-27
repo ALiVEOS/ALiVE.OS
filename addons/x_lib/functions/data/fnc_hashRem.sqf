@@ -1,5 +1,5 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
-#include <\x\cba\addons\hashes\script_hashes.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
+#include "\x\cba\addons\hashes\script_hashes.hpp"
 SCRIPT(hashRem);
 
 /* ----------------------------------------------------------------------------
@@ -25,7 +25,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_hash","_key","_defaultValue"];
+private ["_hash","_key","_defaultValue"];
 
 _hash = _this select 0;
 _key = _this select 1;

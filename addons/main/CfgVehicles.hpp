@@ -1,3 +1,6 @@
+#define MODULE_NAME ALiVE_require
+#define MVAR(var) DOUBLES(MODULE_NAME,var)
+
 // Add a game logic which does nothing except requires the addon in the mission.
 
 class CfgFactionClasses {
@@ -36,6 +39,48 @@ class Cfg3DEN
             };
         };
     };
+    // Configuration of all objects
+    class Object
+    {
+        // Categories collapsible in "Edit Attributes" window
+        class AttributeCategories
+        {
+              // Category class, can be anything
+              class State
+              {
+                    class Attributes
+                    {
+                          // Attribute class, can be anything
+                          class ALiVE_OverrideLoadout
+                          {
+                                //--- Mandatory properties
+                                displayName = "Override ALiVE ORBAT Loadout"; // Name assigned to UI control class Title
+                                tooltip = " ALiVE ORBAT Creator units have scripted loadouts. Enable this to override this loadout."; // Tooltip assigned to UI control class Title
+                                property = "ALiVE_OverrideLoadout"; // Unique config property name saved in SQM
+                                control = "Checkbox"; // UI control base class displayed in Edit Attributes window, points to Cfg3DEN >> Attributes
+
+                                // Expression called when applying the attribute in Eden and at the scenario start
+                                // The expression is called twice - first for data validation, and second for actual saving
+                                // Entity is passed as _this, value is passed as _value
+                                // %s is replaced by attribute config name. It can be used only once in the expression
+                                // In MP scenario, the expression is called only on server.
+                                expression = "_this setVariable ['%s',_value];";
+
+                                // Expression called when custom property is undefined yet (i.e., when setting the attribute for the first time)
+                                // Entity is passed as _this
+                                // Returned value is the default value
+                                // Used when no value is returned, or when it's of other type than NUMBER, STRING or ARRAY
+                                // Custom attributes of logic entities (e.g., modules) are saved always, even when they have default value
+                                defaultValue = "false";
+
+                                //--- Optional properties
+                                condition = "objectControllable";
+                                typeName = "BOOL"; // Defines data type of saved value, can be STRING, NUMBER or BOOL. Used only when control is "Combo", "Edit" or their variants
+                          };
+                    };
+              };
+        };
+    };
 };
 
 class CfgVehicles {
@@ -72,6 +117,16 @@ class CfgVehicles {
                 control = "ALiVE_ModuleSubTitle";
                 defaultValue = "''";
             };
+            class ALiVE_EditMulti3 : Default
+            {
+                control = "EditMulti3";
+                defaultValue = "''";
+            };
+            class ALiVE_EditMulti5 : Default
+            {
+                control = "EditMulti5";
+                defaultValue = "''";
+            };
         };
     };
 
@@ -90,7 +145,7 @@ class CfgVehicles {
         {
             class debug: Combo
             {
-                    property =  QGVAR(debug);
+                    property =  MVAR(debug);
                     displayName = "$STR_ALIVE_DEBUG";
                     tooltip = "$STR_ALIVE_DEBUG_COMMENT";
                     defaultValue = """false""";
@@ -110,7 +165,7 @@ class CfgVehicles {
             };
             class ALiVE_Versioning: Combo
             {
-                    property =  QGVAR(Versioning);
+                    property =  MVAR(ALiVE_Versioning);
                     displayName = "$STR_ALIVE_REQUIRES_ALIVE_VERSIONING";
                     tooltip = "$STR_ALIVE_REQUIRES_ALIVE_VERSIONING_COMMENT";
                     defaultValue = """warning""";
@@ -131,7 +186,7 @@ class CfgVehicles {
 
             class ALiVE_AI_DISTRIBUTION: Combo
             {
-                    property =  QGVAR(AI_DISTRIBUTION);
+                    property =  MVAR(ALiVE_AI_DISTRIBUTION);
                     displayName = "$STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION";
                     tooltip = "$STR_ALIVE_REQUIRES_ALIVE_AI_DISTRIBUTION_COMMENT";
                     defaultValue = """false""";
@@ -152,7 +207,7 @@ class CfgVehicles {
 
             class ALiVE_DISABLESAVE: Combo
             {
-                    property =  QGVAR(DISABLESAVE);
+                    property =  MVAR(ALiVE_DISABLESAVE);
                     displayName = "$STR_ALIVE_DISABLESAVE";
                     tooltip = "$STR_ALIVE_DISABLESAVE_COMMENT";
                     defaultValue = """true""";
@@ -172,7 +227,7 @@ class CfgVehicles {
             };
             class ALiVE_DISABLEMARKERS: Combo
             {
-                    property =  QGVAR(DISABLEMARKERS);
+                    property =  MVAR(ALiVE_DISABLEMARKERS);
                     displayName = "$STR_ALIVE_DISABLEMARKERS";
                     tooltip = "$STR_ALIVE_DISABLEMARKERS_COMMENT";
                     typeName = "BOOL";
@@ -193,7 +248,7 @@ class CfgVehicles {
             };
             class ALiVE_DISABLEADMINACTIONS: Combo
             {
-                    property =  QGVAR(DISABLEADMINACTIONS);
+                    property =  MVAR(ALiVE_DISABLEADMINACTIONS);
 
                     displayName = "$STR_ALIVE_DISABLEADMINACTIONS";
                     tooltip = "$STR_ALIVE_DISABLEADMINACTIONS_COMMENT";
@@ -215,7 +270,7 @@ class CfgVehicles {
             };
             class ALiVE_PAUSEMODULES: Combo
             {
-                    property =  QGVAR(PAUSEMODULES);
+                    property =  MVAR(ALiVE_PAUSEMODULES);
                     displayName = "$STR_ALiVE_PAUSEMODULES";
                     tooltip = "$STR_ALiVE_PAUSEMODULES_COMMENT";
                     typeName = "BOOL";
@@ -236,28 +291,28 @@ class CfgVehicles {
             };
             class ALiVE_GC_INTERVAL: Edit
             {
-                    property =  QGVAR(GC_INTERVAL);
+                    property =  MVAR(ALiVE_GC_INTERVAL);
                     displayName = "$STR_ALIVE_GC_INTERVAL";
                     tooltip = "$STR_ALIVE_GC_INTERVAL_COMMENT";
                     defaultValue = """300""";
             };
             class ALiVE_GC_THRESHHOLD: Edit
             {
-                    property =  QGVAR(GC_THRESHHOLD);
+                    property =  MVAR(ALiVE_GC_THRESHHOLD);
                     displayName = "$STR_ALIVE_GC_THRESHHOLD";
                     tooltip = "$STR_ALIVE_GC_THRESHHOLD_COMMENT";
                     defaultValue = """100""";
             };
             class ALiVE_GC_INDIVIDUALTYPES: Edit
             {
-                    property =  QGVAR(GC_INDIVIDUALTYPES);
+                    property =  MVAR(ALiVE_GC_INDIVIDUALTYPES);
                     displayName = "$STR_ALIVE_GC_INDIVIDUALTYPES";
                     tooltip = "$STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT";
                     defaultValue = """""";
             };
             class ALiVE_TABLET_MODEL: Combo
             {
-                property =  QGVAR(TABLET_MODEL);
+                property =  MVAR(ALiVE_TABLET_MODEL);
                 displayName = "$STR_ALiVE_TABLET_MODEL";
                 tooltip = "$STR_ALiVE_TABLET_MODEL_COMMENT";
                 typeName = "STRING";

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_data_couchdb\script_component.hpp>
+#include "\x\alive\addons\sys_data_couchdb\script_component.hpp"
 
 #define TESTS ["convertData","parseJSON"]; //,"restoreData","readData","writeData","updateData"
 

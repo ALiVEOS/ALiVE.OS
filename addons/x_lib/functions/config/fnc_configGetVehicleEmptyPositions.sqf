@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(configGetVehicleEmptyPositions);
 
 /* ----------------------------------------------------------------------------
@@ -40,75 +40,34 @@ _turretEmptyCount = 0;
 _playerTurretEmptyCount = 0;
 
 _findRecurse = {
-    private ["_root","_turret","_path","_currentPath","_hasGunner","_primaryGunner","_primaryObserver","_copilot","_isPersonTurret"];
-
-    _root = (_this select 0);
-    _path = +(_this select 1);
-
-    for "_i" from 0 to count _root -1 do {
-
-        _turret = _root select _i;
-
-        if (isClass _turret) then {
-            _currentPath = _path + [_i];
-
-            _primaryGunner = false;
-            _primaryObserver = false;
-            _copilot = false;
-            _isPersonTurret = false;
-
-            if(getNumber(_turret >> "primaryGunner") == 1) then {
-                _primaryGunner = true;
-                _positions set [1, 1];
-            };
-
-            if(getNumber(_turret >> "primaryObserver") == 1) then {
-                _primaryObserver = true;
-                _positions set [2, 1];
-            };
-
-            if(getNumber(_turret >> "isCopilot") == 1) then {
-                if(_vehicle == "B_Heli_Light_01_F") then {
-                    _copilot = true;
-                    _turretEmptyCount = _turretEmptyCount +1;
+    {
+        if (getNumber (_x >> "dontCreateAi") != 1) then {
+            if (getNumber (_x >> "showAsCargo") == 0) then {
+                if(getNumber(_x >> "primaryGunner") == 1) then {
+                    _positions set [1, 1];
+                } else {
+                    if(getNumber(_x >> "primaryObserver") == 1) then {
+                        _positions set [2, 1];
+                    } else {
+                        _turretEmptyCount = _turretEmptyCount + 1;
+                    };
                 };
+            } else {
+                _playerTurretEmptyCount = _playerTurretEmptyCount + 1;
             };
 
-            if(getNumber(_turret >> "isPersonTurret") == 1) then {
-                _isPersonTurret = true;
-            };
-
-            if(!(_primaryGunner) && !(_primaryObserver) && !(_copilot)) then {
-                if!(_isPersonTurret) then {
-                    _turretEmptyCount = _turretEmptyCount +1;
-                }else{
-                    _playerTurretEmptyCount = _playerTurretEmptyCount +1;
-                };
-            };
-
-            //["PG: %1 PO: %2", _primaryGunner,_primaryObserver] call ALIVE_fnc_dump;
-
-            _turret = _turret >> "turrets";
-
-            if (isClass _turret) then {
-                [_turret, _currentPath] call _findRecurse;
+            if (isClass (_x >> "Turrets")) then {
+                _x call _findRecurse;
             };
         };
-    };
+    } forEach ("true" configClasses (_this >> "Turrets")); // mimic BIS_fnc_crewCount (this skips over the inherited MainTurret which is good :))
 };
 
-_turrets = (configFile >> "CfgVehicles" >> _vehicle >> "turrets");
-
-[_turrets, []] call _findRecurse;
+_class call _findRecurse;
 
 
 _positions set [3, _turretEmptyCount];
 _positions set [4, getNumber(_class >> "transportSoldier")];
 _positions set [5, _playerTurretEmptyCount];
-
-/*
-["GET EMPTY POSITIONS: %1 %2",_vehicle,_positions] call ALIVE_fnc_dump;
-_positions call ALIVE_fnc_inspectArray;
-*/
 
 _positions;

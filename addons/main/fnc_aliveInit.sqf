@@ -1,4 +1,4 @@
-#include <\x\alive\addons\main\script_component.hpp>
+#include "\x\alive\addons\main\script_component.hpp"
 SCRIPT(aliveInit);
 
 
@@ -72,7 +72,7 @@ if (isnil "_logic") then {
 _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
 
 //Only one init per instance is allowed
-if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE Require - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+if !(isnil {_logic getVariable "initGlobal"}) exitwith {["Require - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
 //Start init
 _logic setVariable ["initGlobal", false];
@@ -95,6 +95,14 @@ TRACE_1("Launching Base ALiVE Systems",true);
 
 //Start ALiVE loading screen on all localities during init
 ["ALiVE_LOADINGSCREEN"] call BIS_fnc_startLoadingScreen;
+
+ALiVE_lastFrameCheckTime = time;
+ALiVE_gamePaused = false;
+
+[{
+    ALiVE_gamePaused = time == ALiVE_lastFrameCheckTime;
+    ALiVE_lastFrameCheckTime = time;
+}, 1, []] call CBA_fnc_addPerFrameHandler;
 
 // NewsFeed
 [] spawn ALiVE_fnc_newsFeedInit;
@@ -140,7 +148,7 @@ if (isServer) then {
     Publicvariable QMOD(DISABLESAVE);
 
     //Activates dynamic AI distribution to all available headless clients
-    MOD(AI_DISTRIBUTION) = call compile (_logic getvariable [QMOD(AI_DISTRIBUTION),"false"]);
+    MOD(AI_DISTRIBUTION) = ((_logic getvariable [QMOD(AI_DISTRIBUTION),"false"]) == "true");
     MOD(AI_DISTRIBUTION) spawn ALiVE_fnc_AI_Distributor;
 
     MOD(TABLET_MODEL) = _logic getvariable [QMOD(TABLET_MODEL), "Tablet01"];
@@ -174,7 +182,7 @@ if (isServer) then {
 if (hasInterface) then {
     waituntil {!isnil QMOD(DISABLESAVE)}; // Wait for global var to be set on Server
 
-    if (call compile MOD(DISABLESAVE)) then {enableSaving [false, false]};
+    if (MOD(DISABLESAVE) == "true") then {enableSaving [false, false]};
 
     if (isMultiplayer) then {
 
@@ -196,12 +204,12 @@ if (hasInterface) then {
                     _name = name player;
                     _uid = getPlayerUID player;
 
-                    ["ALiVE Exit - Exit Player id: %1 name: %2 uid: %3",_id,_name,_uid] call ALIVE_fnc_dump;
+                    ["Exit - Exit Player id: %1 name: %2 uid: %3",_id,_name,_uid] call ALiVE_fnc_dump;
 
-                    //diag_log format["STATS ENABLED: %1",MOD(sys_statistics_ENABLED)];
+                    //["STATS ENABLED: %1",MOD(sys_statistics_ENABLED)] call ALiVE_fnc_dump;
 
                     if (!isNil QMOD(sys_statistics) && (MOD(sys_statistics_ENABLED))) then {
-                        ["ALiVE Exit - Player Stats OPD"] call ALIVE_fnc_dump;
+                        ["Exit - Player Stats OPD"] call ALiVE_fnc_dump;
 
                         if (!isNil "ALIVE_sys_statistics_playerShotsFired") then {
 
@@ -219,14 +227,14 @@ if (hasInterface) then {
 
                     if (["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) then {
 
-                        ["ALiVE Exit - Player Profile Handler OPD"] call ALIVE_fnc_dump;
+                        ["Exit - Player Profile Handler OPD"] call ALiVE_fnc_dump;
                         // Profiles module onPlayerDisconnected call
                         [[_id, _name, _uid],"ALIVE_fnc_profile_onPlayerDisconnected", false, false] call BIS_fnc_MP;
 
                     };
-                    ["ALiVE Exit - [ABORT] Ending mission"] call ALIVE_fnc_dump;
+                    ["Exit - [ABORT] Ending mission"] call ALiVE_fnc_dump;
                 }];
-                ["ALiVE has hooked abort button: %1", player] call ALiVE_fnc_Dump;
+                ["has hooked abort button: %1", player] call ALiVE_fnc_dump;
             };
         }] call CBA_fnc_addKeyHandler;
     };
@@ -247,6 +255,6 @@ _logic setVariable ["bis_fnc_initModules_activate",true];
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
 
-["ALiVE Global INIT COMPLETE"] call ALIVE_fnc_dump;
+["Global INIT COMPLETE"] call ALiVE_fnc_dump;
 [false,"ALiVE Global Init Timer Complete","INIT"] call ALIVE_fnc_timer;
 [" "] call ALIVE_fnc_dump;

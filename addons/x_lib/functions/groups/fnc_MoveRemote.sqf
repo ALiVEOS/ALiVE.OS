@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(MoveRemote);
 
 /* ----------------------------------------------------------------------------
@@ -40,8 +40,8 @@ if (local _group) exitwith {
 
 //if !local send to server to distribute
 if !(isServer) then {
-    _this remoteExec ["ALiVE_fnc_MoveRemote",2];
+    _this remoteExecCall ["ALiVE_fnc_MoveRemote",2];
 } else {
-    _this remoteExec ["ALiVE_fnc_MoveRemote",groupOwner _group];
+    _this remoteExecCall ["ALiVE_fnc_MoveRemote", groupOwner _group];
 };
 

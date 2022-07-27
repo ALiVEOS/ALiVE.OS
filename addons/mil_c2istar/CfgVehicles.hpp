@@ -93,18 +93,23 @@ class CfgVehicles {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateBlufor";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_COMMENT";
-                            defaultValue = """false""";
+                            defaultValue = """None""";
                             class Values
                             {
-                                    class No
+                                    class None
                                     {
-                                            name = "No";
-                                            value = "false";
+                                            name = "None";
+                                            value = "None";
                                     };
-                                    class Yes
+                                    class Strategic
                                     {
-                                            name = "Yes";
-                                            value = "true";
+                                            name = "Strategic";
+                                            value = "Strategic";
+                                    };
+                                    class Constant
+                                    {
+                                            name = "Constant";
+                                            value = "Constant";
                                     };
                             };
                     };
@@ -127,31 +132,36 @@ class CfgVehicles {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateOpfor";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_COMMENT";
-                            defaultValue = """false""";
+                            defaultValue = """None""";
                             class Values
                             {
-                                    class No
+                                    class None
                                     {
-                                            name = "No";
-                                            value = "false";
+                                            name = "None";
+                                            value = "None";
                                     };
-                                    class Yes
+                                    class Strategic
                                     {
-                                            name = "Yes";
-                                            value = "true";
+                                            name = "Strategic";
+                                            value = "Strategic";
+                                    };
+                                    class Constant
+                                    {
+                                            name = "Constant";
+                                            value = "Constant";
                                     };
                             };
                     };
                     class autoGenerateOpforFaction : Edit
                     {
-                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforEnemyFaction";
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforFaction";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION_COMMENT";
                             defaultValue = """OPF_F""";
                     };
                     class autoGenerateOpforEnemyFaction : Edit
                     {
-                            property = "ALiVE_MIL_C2ISTAR_autoGenerateBluforEnemyFaction";
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforEnemyFaction";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION_COMMENT";
                             defaultValue = """BLU_F""";
@@ -161,18 +171,23 @@ class CfgVehicles {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateIndfor";
                             displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR";
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_COMMENT";
-                            defaultValue = """false""";
+                            defaultValue = """None""";
                             class Values
                             {
-                                    class No
+                                    class None
                                     {
-                                            name = "No";
-                                            value = "false";
+                                            name = "None";
+                                            value = "None";
                                     };
-                                    class Yes
+                                    class Strategic
                                     {
-                                            name = "Yes";
-                                            value = "true";
+                                            name = "Strategic";
+                                            value = "Strategic";
+                                    };
+                                    class Constant
+                                    {
+                                            name = "Constant";
+                                            value = "Constant";
                                     };
                             };
                     };
@@ -194,7 +209,7 @@ class CfgVehicles {
                     class GROUP_MANAGEMENT: ALiVE_ModuleSubTitle
                     {
                             property = QGVAR(__LINE__);
-                            displayName = " GROUP MANAGEMENT PARAMETERS ";
+                            displayName = " GROUP MANAGEMENT PARAMETERS";
                     };
                     class gmLimit : Combo
                     {
@@ -288,6 +303,26 @@ class CfgVehicles {
                                     };
                             };
                     };
+                    class scomOpsAllowImageIntelligence : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_scomOpsAllowImageIntelligence";
+                            displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_IMAGE_INTELLIGENCE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SCOM_OPS_IMAGE_INTELLIGENCE_COMMENT";
+                            defaultValue = """true""";
+                            class Values
+                            {
+                                    class No
+                                    {
+                                            name = "No";
+                                            value = "false";
+                                    };
+                                    class Yes
+                                    {
+                                            name = "Yes";
+                                            value = "true";
+                                    };
+                            };
+                    };
                     // INTEL TABLET
                     class INTEL_TABLET: ALiVE_ModuleSubTitle
                     {
@@ -306,7 +341,6 @@ class CfgVehicles {
                                     {
                                             name = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_SIDE";
                                             value = "SIDE";
-                                            default = 1;
                                     };
                                     class FACTION
                                     {
@@ -326,11 +360,39 @@ class CfgVehicles {
                             property = QGVAR(__LINE__);
                             displayName = " GLOBAL INTEL PARAMETERS";
                     };
+                    class opcomIntelSides : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_opcomIntelSides";
+                            displayName = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES_COMMENT";
+                            typeName = "STRING";
+                            defaultValue = """""";
+                    };
                     class displayIntel : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_displayIntel";
                             displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_INTEL";
                             tooltip = "$STR_ALIVE_C2ISTAR_DISPLAY_INTEL_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class Yes
+                                    {
+                                            name = "Yes";
+                                            value = "true";
+                                    };
+                                    class No
+                                    {
+                                            name = "No";
+                                            value = "false";
+                                    };
+                            };
+                    };
+                    class displayDiarySpotrep : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_displayDiarySpotrep";
+                            displayName = "$STR_ALIVE_C2ISTAR_SPOTREP_DIARY_ENTRIES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SPOTREP_DIARY_ENTRIES_COMMENT";
                             defaultValue = """false""";
                             class Values
                             {

@@ -14,4 +14,4 @@ class CfgPatches {
     };
 };
 
-//#include <\x\alive\addons\sys_newsfeed\newsfeed\newsfeed.hpp>
+//#include "\x\alive\addons\sys_newsfeed\newsfeed\newsfeed.hpp"

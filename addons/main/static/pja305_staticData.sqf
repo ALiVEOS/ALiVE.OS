@@ -1,153 +1,36 @@
 private["_worldName"];
-
-_worldName = tolower(worldName);
-
-["ALiVE SETTING UP MAP: pja305"] call ALIVE_fnc_dump;
-
-ALIVE_Indexing_Blacklist = [];
-ALIVE_airBuildingTypes = [];
-ALIVE_militaryParkingBuildingTypes = [];
-ALIVE_militarySupplyBuildingTypes = [];
-ALIVE_militaryHQBuildingTypes = [];
-ALIVE_militaryAirBuildingTypes = [];
-ALIVE_civilianAirBuildingTypes = [];
-ALiVE_HeliBuildingTypes = [];
-ALIVE_militaryHeliBuildingTypes = [];
-ALIVE_civilianHeliBuildingTypes = [];
-ALIVE_militaryBuildingTypes = [];
-ALIVE_civilianPopulationBuildingTypes = [];
-ALIVE_civilianHQBuildingTypes = [];
-ALIVE_civilianPowerBuildingTypes = [];
-ALIVE_civilianCommsBuildingTypes = [];
-ALIVE_civilianMarineBuildingTypes = [];
-ALIVE_civilianRailBuildingTypes = [];
-ALIVE_civilianFuelBuildingTypes = [];
-ALIVE_civilianConstructionBuildingTypes = [];
-ALIVE_civilianSettlementBuildingTypes = [];
-
-ALiVE_mapCompositionType = "Desert";
-
-if (tolower(_worldName) == "pja305") then {
-    [ALIVE_mapBounds, worldName, 21000] call ALIVE_fnc_hashSet;
-
-    ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + [];
-
-    ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + [
-        "army_hut",
-        "vez",
-        "watchtower",
-        "fortified",
-        "miloffices"
-    ];
-
-    ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + [
-        "fortified"
-    ];
-
-    ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + [
-        "barrack",
-        "mil_house",
-        "mil_controltower",
-        "fortified"
-    ];
-
-    ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + [
-        "barrack",
-        "mil_house",
-        "mil_guardhouse",
-        "mil_controltower"
-    ];
-
-    ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + [
-        "hangar"
-    ];
-
-    ALIVE_militaryAirBuildingTypes = ALIVE_militaryAirBuildingTypes + [];
-
-    ALIVE_civilianAirBuildingTypes = ALIVE_civilianAirBuildingTypes + [
-        "ss_hangar",
-        "hangar_2",
-        "hangar"
-    ];
-
-    ALIVE_heliBuildingTypes = ALIVE_heliBuildingTypes + [];
-
-    ALIVE_militaryHeliBuildingTypes = ALIVE_militaryHeliBuildingTypes + [];
-
-    ALIVE_civilianHeliBuildingTypes = ALIVE_civilianHeliBuildingTypes + [];
-
-    ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianPopulationBuildingTypes + [
-        "hospital",
-        "dum",
-        "shed",
-        "hut",
-        "house",
-        "minaret",
-        "mosque",
-        "offices_01_v1_f",
-        "a_office01",
-        "a_office02",
-        "villa"
-    ];
-
-    ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + [
-        "a_office01",
-        "a_office02"
-    ];
-
-    ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + [
-        "hospital",
-        "dum",
-        "shed",
-        "hut",
-        "house",
-        "minaret",
-        "mosque",
-        "offices_01_v1_f",
-        "a_office01",
-        "a_office02",
-        "villa"
-    ];
-
-    ALIVE_civilianPowerBuildingTypes = ALIVE_civilianPowerBuildingTypes + [
-        "pec_",
-        "powerstation",
-        "trafostanica"
-    ];
-
-    ALIVE_civilianCommsBuildingTypes = ALIVE_civilianCommsBuildingTypes + [
-        "illuminanttower",
-        "vysilac_fm",
-        "telek"
-    ];
-
-    ALIVE_civilianMarineBuildingTypes = ALIVE_civilianMarineBuildingTypes + [
-        "crane",
-        "wtower",
-        "najezd",
-        "cargo"
-    ];
-
-    ALIVE_civilianRailBuildingTypes = ALIVE_civilianRailBuildingTypes + [
-        "stationhouse"
-    ];
-
-    ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + [
-        "fuelstation",
-        "expedice",
-        "indpipe",
-        "komin",
-        "ind_tankbig",
-        "fuel_tank_big"
-    ];
-
-    ALIVE_civilianConstructionBuildingTypes = ALIVE_civilianConstructionBuildingTypes + [
-        "ind_mlyn_01",
-        "ind_pec_01",
-        "wip",
-        "sawmillpen",
-        "workshop",
-        "coltan",
-        "ind_cementworks"
-    ];
+ _worldName = tolower(worldName);
+ ["SETTING UP MAP: pja305"] call ALiVE_fnc_dump;
+ ALIVE_Indexing_Blacklist = [];
+ ALIVE_airBuildingTypes = [];
+ ALIVE_militaryParkingBuildingTypes = [];
+ ALIVE_militarySupplyBuildingTypes = [];
+ ALIVE_militaryHQBuildingTypes = [];
+ ALIVE_militaryAirBuildingTypes = [];
+ ALIVE_civilianAirBuildingTypes = [];
+ ALiVE_HeliBuildingTypes = [];
+ ALIVE_militaryHeliBuildingTypes = [];
+ ALIVE_civilianHeliBuildingTypes = [];
+ ALIVE_militaryBuildingTypes = [];
+ ALIVE_civilianPopulationBuildingTypes = [];
+ ALIVE_civilianHQBuildingTypes = [];
+ ALIVE_civilianPowerBuildingTypes = [];
+ ALIVE_civilianCommsBuildingTypes = [];
+ ALIVE_civilianMarineBuildingTypes = [];
+ ALIVE_civilianRailBuildingTypes = [];
+ ALIVE_civilianFuelBuildingTypes = [];
+ ALIVE_civilianConstructionBuildingTypes = [];
+ ALIVE_civilianSettlementBuildingTypes = [];
+ if(tolower(_worldName) == "pja305") then {
+[ALIVE_mapBounds, worldName, 21000] call ALIVE_fnc_hashSet;
+ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + ["ca\buildings2\ind_workshop01\ind_workshop01_box.p3d","ca\structures_e\ind\ind_fuelstation\ind_fuelstation_feed_ep1.p3d","ca\buildings2\ind_cementworks\ind_malykomin\ind_malykomin.p3d","ca\buildings\komin.p3d","ca\buildings2\ind_cementworks\ind_expedice\ind_expedice_3.p3d","ca\buildings2\a_advertisingcolumn\a_advertcolumn.p3d","ca\structures_e\wall\wall_l\wall_l3_5m_ep1.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_rail_end_ep1.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_main_ep1.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_rail_switch_ep1.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_hopper_ep1.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv2_ep1.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_rail_ep1.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ruins_ep1.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_main_part2_ep1.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_end_ep1.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_conv1_10_ep1.p3d","ca\structures_e\housea\a_villa\a_villa_ruins_ep1.p3d","ca\structures\house\church_05r\church_05r.p3d","ca\structures_e\misc\misc_powerline\powlineb_ep1.p3d"];
+ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["a3\structures_f\mil\barracks\i_barracks_v2_f.p3d","ca\buildings\army_hut3_long_int.p3d","ca\buildings\army_hut2_int.p3d","ca\structures\mil\mil_barracks_i.p3d","ca\buildings\budova4.p3d","ca\buildings\budova4_in.p3d","a3\structures_f_exp\military\fortifications\bagbunker_01_large_green_f.p3d","ca\buildings\army_hut_storrage.p3d","ca\buildings\army_hut_int.p3d","ca\misc2\barrack2\barrack2.p3d","ca\structures\mil\mil_barracks_l.p3d","ca\structures\ind_sawmill\ind_illuminanttower.p3d","ca\buildings\fuelstation_army.p3d","ca\structures\mil\mil_controltower.p3d","ca\structures\mil\mil_barracks.p3d","ca\structures\mil\mil_house.p3d"];
+ALIVE_militaryHQBuildingTypes = ALIVE_militaryHQBuildingTypes + ["a3\structures_f\mil\barracks\i_barracks_v2_f.p3d","ca\structures\mil\mil_controltower.p3d"];
+ALIVE_civilianPopulationBuildingTypes = ALIVE_civilianPopulationBuildingTypes + ["ca\structures_e\housek\house_k_5_ep1.p3d","ca\structures_e\housel\house_l_3_ep1.p3d","ca\structures_e\housel\house_l_1_ep1.p3d","ca\structures_e\housel\house_l_4_ep1.p3d","ca\structures_e\housek\house_k_1_ep1.p3d","ca\structures_e\housel\house_l_7_ep1.p3d","ca\structures_e\housec\house_c_5_ep1.p3d","ca\structures_e\housec\house_c_5_v2_ep1.p3d","ca\structures_e\housec\house_c_5_v1_ep1.p3d","ca\structures_e\housec\house_c_5_v3_ep1.p3d","ca\structures_e\housec\house_c_2_ep1.p3d","ca\structures_e\housec\house_c_1_ep1.p3d","ca\buildings\dum_olez_istan2.p3d","ca\structures_e\housec\house_c_11_ep1.p3d","ca\buildings\hut06.p3d","ca\buildings\dum_olez_istan1.p3d","ca\buildings\dum_olez_istan2_maly.p3d","ca\buildings\dum_istan3_hromada.p3d","ca\structures_e\housec\house_c_1_v2_ep1.p3d","ca\structures_e\housec\house_c_4_ep1.p3d","ca\structures_e\ind\ind_garage01\ind_garage01_ep1.p3d","ca\structures_e\housea\a_stationhouse\a_stationhouse_ep1.p3d","ca\buildings\dum_istan3_hromada2.p3d","ca\buildings\dum_istan2_01.p3d","ca\buildings2\ind_workshop01\ind_workshop01_04.p3d","ca\buildings2\ind_workshop01\ind_workshop01_03.p3d","ca\buildings\dum_istan4.p3d","ca\buildings\dum_istan4_detaily1.p3d","ca\buildings\dum_istan4_big.p3d","ca\buildings\dum_istan4_big_inverse.p3d","ca\buildings\dum_istan4_inverse.p3d","ca\buildings\dum_istan2b.p3d","ca\buildings\dum_istan2.p3d","ca\structures_e\housec\house_c_3_ep1.p3d","ca\buildings2\a_generalstore_01\a_generalstore_01.p3d","ca\structures_e\housec\house_c_10_ep1.p3d","ca\structures_e\housec\house_c_9_ep1.p3d","ca\structures_e\housec\house_c_12_ep1.p3d","ca\buildings\hut02.p3d","ca\buildings\hut01.p3d","ca\buildings\hut04.p3d","ca\structures_e\housea\a_office01\a_office01_ep1.p3d","ca\buildings2\ind_cementworks\ind_pec\ind_pec_03a.p3d","ca\buildings\hangar_2.p3d","ca\structures_e\proxy_buildingparts\house_c\house_c_5_addon01_ep1.p3d","ca\buildings\budova2.p3d","ca\structures_e\housea\a_villa\a_villa_ep1.p3d","ca\buildings2\ind_garage01\ind_garage01.p3d","ca\buildings2\ind_workshop01\ind_workshop01_l.p3d","ca\structures\house\a_office01\a_office01.p3d","ca\buildings2\ind_workshop01\ind_workshop01_02.p3d","ca\buildings2\ind_workshop01\ind_workshop01_01.p3d","ca\structures_e\ind\ind_oil_mine\ind_oil_tower_ep1.p3d","ca\buildings\budova1.p3d"];
+ALIVE_civilianHQBuildingTypes = ALIVE_civilianHQBuildingTypes + ["ca\buildings\dum_olez_istan1.p3d","ca\structures_e\housec\house_c_4_ep1.p3d","ca\structures_e\housea\a_stationhouse\a_stationhouse_ep1.p3d","ca\buildings2\a_generalstore_01\a_generalstore_01.p3d","ca\structures_e\housec\house_c_9_ep1.p3d","ca\structures_e\housea\a_office01\a_office01_ep1.p3d","ca\structures_e\housea\a_villa\a_villa_ep1.p3d","ca\structures\house\a_office01\a_office01.p3d"];
+ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + ["ca\structures_e\housek\house_k_5_ep1.p3d","ca\structures_e\housel\house_l_3_ep1.p3d","ca\structures_e\housel\house_l_1_ep1.p3d","ca\structures_e\housel\house_l_4_ep1.p3d","ca\structures_e\housek\house_k_1_ep1.p3d","ca\structures_e\housel\house_l_7_ep1.p3d","ca\buildings\dum_mesto3_istan.p3d","ca\structures_e\housec\house_c_5_ep1.p3d","ca\structures_e\housec\house_c_5_v2_ep1.p3d","ca\structures_e\housec\house_c_5_v1_ep1.p3d","ca\structures_e\housec\house_c_5_v3_ep1.p3d","ca\structures_e\housec\house_c_2_ep1.p3d","ca\structures_e\housec\house_c_1_ep1.p3d","ca\buildings\dum_istan3.p3d","ca\buildings\garaz.p3d","ca\buildings\dum_olez_istan2.p3d","ca\structures_e\housec\house_c_11_ep1.p3d","ca\structures_e\misc\shed_m01_ep1.p3d","ca\structures_e\misc\shed_w03_ep1.p3d","ca\structures_e\misc\shed_w02_ep1.p3d","ca\buildings\hut06.p3d","ca\buildings\dum_olez_istan1.p3d","ca\buildings\dum_olez_istan2_maly2.p3d","ca\buildings\dum_olez_istan2_maly.p3d","ca\buildings\dum_istan3_hromada.p3d","ca\structures_e\housec\house_c_1_v2_ep1.p3d","ca\structures_e\misc\misc_market\kiosk_ep1.p3d","ca\structures_e\housec\house_c_4_ep1.p3d","ca\structures_e\ind\ind_garage01\ind_garage01_ep1.p3d","ca\structures_e\housea\a_stationhouse\a_stationhouse_ep1.p3d","ca\structures\house\a_office02\a_office02.p3d","ca\buildings\dum_istan3_hromada2.p3d","ca\buildings\dum_istan2_01.p3d","ca\buildings\dum_istan2_03a.p3d","ca\buildings\dum_istan2_03.p3d","ca\buildings2\ind_workshop01\ind_workshop01_04.p3d","ca\buildings2\ind_workshop01\ind_workshop01_03.p3d","ca\buildings\dum_istan4.p3d","ca\buildings\dum_istan4_detaily1.p3d","ca\buildings\dum_istan4_big.p3d","ca\buildings\dum_istan4_big_inverse.p3d","ca\structures_e\misc\misc_market\market_stalls_01_ep1.p3d","ca\buildings\dum_istan4_inverse.p3d","ca\buildings\dum_istan2b.p3d","ca\buildings\dum_istan2_04a.p3d","ca\buildings\dum_istan2_02.p3d","ca\buildings\dum_istan2.p3d","ca\structures_e\housec\house_c_3_ep1.p3d","ca\buildings2\a_generalstore_01\a_generalstore_01.p3d","ca\structures_e\housec\house_c_10_ep1.p3d","ca\structures_e\housec\house_c_9_ep1.p3d","ca\structures_e\housec\house_c_12_ep1.p3d","ca\buildings2\ind_tank\ind_tankbig.p3d","ca\buildings\hut02.p3d","ca\buildings\hut01.p3d","ca\buildings\hut03.p3d","ca\buildings\hut04.p3d","ca\structures_e\housea\a_office01\a_office01_ep1.p3d","ca\buildings2\farm_wtower\farm_wtower.p3d","ca\buildings2\ind_cementworks\ind_pec\ind_pec_03a.p3d"];
+ALIVE_civilianSettlementBuildingTypes = ALIVE_civilianSettlementBuildingTypes + ["ca\buildings\repair_center.p3d","ca\buildings\hangar_2.p3d","ca\structures_e\proxy_buildingparts\house_c\house_c_5_addon01_ep1.p3d","ca\buildings\budova2.p3d","ca\structures\ind_sawmill\ind_sawmillpen.p3d","ca\structures\house\housebt\houseb_tenement.p3d","ca\structures\house\a_hospital\a_hospital.p3d","ca\structures_e\housea\a_villa\a_villa_ep1.p3d","ca\buildings2\ind_garage01\ind_garage01.p3d","ca\buildings2\ind_workshop01\ind_workshop01_l.p3d","ca\structures\house\a_office01\a_office01.p3d","ca\buildings2\ind_workshop01\ind_workshop01_02.p3d","ca\structures_e\ind\ind_coltan_mine\ind_coltan_main_ep1.p3d","ca\buildings2\ind_workshop01\ind_workshop01_01.p3d","ca\structures_e\ind\ind_oil_mine\ind_oil_tower_ep1.p3d","ca\buildings\posed.p3d","ca\buildings2\ind_cementworks\ind_silovelke\ind_silovelke_01.p3d","ca\buildings\budova1.p3d","ca\buildings\hospital.p3d","ca\buildings2\misc_powerstation\misc_powerstation.p3d"];
+ALIVE_civilianPowerBuildingTypes = ALIVE_civilianPowerBuildingTypes + ["ca\buildings\trafostanica_velka.p3d","ca\buildings\trafostanica_mala.p3d"];
+ALIVE_civilianCommsBuildingTypes = ALIVE_civilianCommsBuildingTypes + ["ca\buildings\vysilac_fm.p3d","ca\buildings\telek1.p3d"];
+ALIVE_civilianFuelBuildingTypes = ALIVE_civilianFuelBuildingTypes + ["ca\buildings\fuelstation.p3d","ca\structures_e\ind\ind_fuelstation\ind_fuelstation_build_ep1.p3d","ca\buildings\benzina_schnell.p3d","ca\structures_e\ind\ind_oil_mine\ind_oil_pump_ep1.p3d","ca\structures_e\ind\ind_oil_mine\ind_oil_tower_ep1.p3d"];
 };

@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\sup_command\script_component.hpp>
+#include "\x\alive\addons\sup_command\script_component.hpp"
 SCRIPT(SCOM);
 
 /* ----------------------------------------------------------------------------
@@ -167,6 +167,23 @@ switch (_operation) do {
 
     };
 
+    case "scomOpsAllowImageIntelligence": {
+
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["scomOpsAllowImageIntelligence", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsAllowImageIntelligence", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["scomOpsAllowImageIntelligence", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+
+    };
+
     case "intelLimit": {
 
         _result = [_logic,_operation,_args,DEFAULT_SCOM_LIMIT,["SIDE","FACTION","ALL"]] call ALIVE_fnc_OOsimpleOperation;
@@ -206,7 +223,7 @@ switch (_operation) do {
     case "init": {
 
         //Only one init per instance is allowed
-        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP Command - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SUP Command - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
         //Start init
         _logic setVariable ["initGlobal", false];
@@ -241,10 +258,10 @@ switch (_operation) do {
 
             waitUntil {
                 sleep 1;
-                ((str side player) != "UNKNOWN")
+                ((str side group player) != "UNKNOWN")
             };
 
-            _playerSide = side player;
+            _playerSide = side group player;
             _sideNumber = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
             _sideText = [_sideNumber] call ALIVE_fnc_sideNumberToText;
 
@@ -274,8 +291,18 @@ switch (_operation) do {
 
             // intel state
 
-            [_commandState,"intelTypeOptions",["Commander Objectives","Unit Marking","Imagery"]] call ALIVE_fnc_hashSet;
-            [_commandState,"intelTypeValues",["Objectives","Marking","IMINT"]] call ALIVE_fnc_hashSet;
+            private _enableImageIntelligence = [_logic,"scomOpsAllowImageIntelligence"] call MAINCLASS;
+
+            private _intelTypeOptions = ["Commander Objectives","Unit Marking"];
+            private _intelTypeValues = ["Objectives","Marking"];
+
+            if (_enableImageIntelligence) then {
+                _intelTypeOptions pushback "Imagery";
+                _intelTypeValues pushback "IMINT";
+            };
+
+            [_commandState,"intelTypeOptions",_intelTypeOptions] call ALIVE_fnc_hashSet;
+            [_commandState,"intelTypeValues",_intelTypeValues] call ALIVE_fnc_hashSet;
             [_commandState,"intelTypeSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
             [_commandState,"intelTypeSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
 
@@ -356,8 +383,8 @@ switch (_operation) do {
 
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE Command State"] call ALIVE_fnc_dump;
-                ["ALIVE Command Side: %1, Faction: %2, OPS Limit: %3 Intel Limit: %4",_sideText,_playerFaction,_opsLimit,_intelLimit] call ALIVE_fnc_dump;
+                ["Command State"] call ALiVE_fnc_dump;
+                ["Command Side: %1, Faction: %2, OPS Limit: %3 Intel Limit: %4",_sideText,_playerFaction,_opsLimit,_intelLimit] call ALiVE_fnc_dump;
                 _commandState call ALIVE_fnc_inspectHash;
             };
 
@@ -388,7 +415,7 @@ switch (_operation) do {
             private _debug = [_logic, "debug"] call MAINCLASS;
             if (_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALiVE_fnc_dump;
-                ["ALiVE SCOM - %1 Event received", _type] call ALiVE_fnc_dump;
+                ["SCOM - %1 Event received", _type] call ALiVE_fnc_dump;
                 _data call ALiVE_fnc_inspectArray;
             };
 
@@ -615,7 +642,7 @@ switch (_operation) do {
                         case "Mapbag01": {
                             createDialog "SCOMTablet";
                             private _ctrlBackground = ((findDisplay 12001) displayCtrl 12002);
-                            _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALiVE_mapbag.paa";
+                            _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                             _ctrlBackground ctrlSetPosition [
                                 0.15 * safezoneW + safezoneX,
                                 -0.242 * safezoneH + safezoneY,
@@ -650,7 +677,7 @@ switch (_operation) do {
                         case "Mapbag01": {
                             createDialog "SCOMTablet";
                             private _ctrlBackground = ((findDisplay 12001) displayCtrl 12002);
-                            _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                            _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                             _ctrlBackground ctrlSetPosition [
                                 0.15 * safezoneW + safezoneX,
                                 -0.242 * safezoneH + safezoneY,

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(radioBroadcastToSide);
 
 /* ----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ _radioBroadcast = _this select 1;
 _sideNumber = [_side] call ALIVE_fnc_sideTextToNumber;
 
 {
-    _playerSide = side _x;
+    _playerSide = side group _x;
     _playerSideNumber = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
     if(_sideNumber == _playerSideNumber) then {
         if(isDedicated) then {

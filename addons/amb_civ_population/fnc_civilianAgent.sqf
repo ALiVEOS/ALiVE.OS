@@ -1,4 +1,4 @@
-#include <\x\alive\addons\amb_civ_population\script_component.hpp>
+#include "\x\alive\addons\amb_civ_population\script_component.hpp"
 SCRIPT(civilianAgent);
 
 /* ----------------------------------------------------------------------------
@@ -102,6 +102,8 @@ switch(_operation) do {
             [_logic,"homePosition",[0,0]] call ALIVE_fnc_hashSet; // select 2 select 10
             [_logic,"activeCommands",[]] call ALIVE_fnc_hashSet; // select 2 select 11
             [_logic,"posture",0] call ALIVE_fnc_hashSet; // select 2 select 12
+            [_logic,"firstName","John"] call ALIVE_fnc_hashSet; // select 2 select 13
+            [_logic,"lastName","Smith"] call ALIVE_fnc_hashSet; // select 2 select 14
         };
 
     };
@@ -192,6 +194,17 @@ switch(_operation) do {
         };
 
         _result = [_logic,"type"] call ALIVE_fnc_hashGet;
+
+    };
+
+    case "lastName";
+    case "firstName": {
+
+        if(_args isEqualType "") then {
+            [_logic,_operation,_args] call ALIVE_fnc_hashSet;
+        };
+
+        _result = [_logic,_operation] call ALIVE_fnc_hashGet;
 
     };
 
@@ -289,7 +302,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 private _agentID = _logic select 2 select 3;
-                ["ALIVE Agent [%1] Add Active Command - %2", _agentID, _args select 0] call ALIVE_fnc_dump;
+                ["Agent [%1] Add Active Command - %2", _agentID, _args select 0] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -328,25 +341,27 @@ switch(_operation) do {
         private _priest = [_logic,"priest",false] call ALiVE_fnc_HashGet;
         private _muezzin = [_logic,"muezzin",false] call ALiVE_fnc_HashGet;
         private _politician = [_logic,"politician",false] call ALiVE_fnc_HashGet;
+        private _firstName = [_logic,"firstName",""] call ALIVE_fnc_hashGet;
+        private _lastName = [_logic,"lastName",""] call ALIVE_fnc_hashGet;
 
         private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
 
         if !(_active) then {
 
-/*
+            /*
 			// Causes units to return to group leader and pile up there - #277)
             private _group = [ALIVE_civilianPopulationSystem, "civGroup"] call ALiVE_fnc_HashGet;
             if (isnil "_group" || {isnull _group}) then {
                 _group = createGroup _sideObject;
                 [ALIVE_civilianPopulationSystem, "civGroup", _group] call ALiVE_fnc_HashSet;
             };
-*/
+            */
 			private _group = createGroup _sideObject;
             private _unit = _group createUnit [_agentClass, _homePosition, [], 0, "CAN_COLLIDE"];
-            
+
             _unit disableAI "AUTOTARGET";
             _unit disableAI "AUTOCOMBAT";
-            
+
             //set low skill to save performance
             _unit setSkill 0.1;
             _unit setBehaviour "CARELESS";
@@ -362,8 +377,14 @@ switch(_operation) do {
             _unit setVariable ["priest", _priest,_priest];
             _unit setVariable ["politician", _politician,_politician];
 
+            // Set Name
+            if (_firstName != "" && _lastName != "") then {
+                _unit setName [format["%1 %2",_firstName, _lastName], _firstName, _lastName];
+            };
+
             // killed event handler
             private _eventID = _unit addMPEventHandler["MPKilled", ALIVE_fnc_agentKilledEventHandler];
+            _eventID = _unit addEventHandler["FiredNear", ALIVE_fnc_agentFiredNearEventHandler];
 
             // set agent as active and store a reference to the unit on the agent
             [_logic,"unit",_unit] call ALIVE_fnc_hashSet;
@@ -398,7 +419,7 @@ switch(_operation) do {
 
         // not already inactive
         if(_active) then {
-            
+
             if (_unit getvariable ["detained",false]) exitwith {
 	            // DEBUG -------------------------------------------------------------------------------------
 	            if(_debug) then {
@@ -562,7 +583,7 @@ switch(_operation) do {
         if(_agentPosture >= 70 && {_agentPosture < 100}) then {_debugColor = "ColorOrange"};
         if(_agentPosture >= 100) then {_debugColor = "ColorRed"};
         if(_insurgentCommandActive) then {_debugColor = "ColorWhite"};
-           
+
         private _text = if (count _activeCommands > 0) then {_activeCommands select 0 select 0} else {""};
         private _debugIcon = "n_unknown";
 

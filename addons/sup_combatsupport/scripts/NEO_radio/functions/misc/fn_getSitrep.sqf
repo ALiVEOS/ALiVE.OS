@@ -1,10 +1,10 @@
-private ["_display","_lb","_index","_asset","_callsign"];
+private ["_display","_lb","_index","_asset","_callsign","_grp"];
 
 disableSerialization;
 _display = findDisplay 655555;
 _tasklb = _display displayctrl 655565;
 _task = _tasklb lbText (lbCurSel _tasklb);
-diag_log format["_task: %1", _task];
+["_task: %1", _task] call ALiVE_fnc_dump;
 
 
 switch (toUpper _task) do
@@ -17,10 +17,16 @@ switch (toUpper _task) do
 
         if ((lbCurSel _transportUnitLb) < 0) exitwith {};
 
-        _asset = _transportArray select (lbCurSel _transportUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then { _asset = vehicle player };
-        _unit = _transportArray select (lbCurSel _transportUnitLb) select 0;
-        _grp = _transportArray select (lbCurSel _transportUnitLb) select 1; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then { _grp = group (driver _unit) };
-        _callsign = _transportArray select (lbCurSel _transportUnitLb) select 2; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then { _callsign = (format ["%1", _grp]) call NEO_fnc_callsignFix };
+        if (!isNil {NEO_radioLogic getVariable "NEO_radioTalkWithPilot"}) then {
+            _asset = NEO_radioLogic getVariable "NEO_radioTalkWithPilot";
+            _grp = group (driver _asset);
+            _callsign = (format ["%1", _grp]) call NEO_fnc_callsignFix;
+        }
+        else {
+            _asset = _transportArray select (lbCurSel _transportUnitLb) select 0;
+            _grp = _transportArray select (lbCurSel _transportUnitLb) select 1;
+            _callsign = _transportArray select (lbCurSel _transportUnitLb) select 2;
+        };
     };
     case "CAS" : {
         private ["_casUnitLb","_casArray"];

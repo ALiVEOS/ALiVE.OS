@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(findNearHousePositions);
 
 /* ----------------------------------------------------------------------------
@@ -10,7 +10,7 @@ Provide a list of house positions in the area
 Parameters:
 Array - Position
 Number - Radius to search
-String - Object type to search for (optional)
+Array - Array of Object types to search for (optional)
 
 Returns:
 Array - A list of building positions
@@ -21,7 +21,7 @@ Examples:
 _bldgpos = [_pos,50] call ALIVE_fnc_findNearHousePositions;
 
 // find nearby Buildings
-_bldgpos = [_pos,150,"Building"] call ALIVE_fnc_findNearHousePositions;
+_bldgpos = [_pos,150,["Building","House"]] call ALIVE_fnc_findNearHousePositions;
 (end)
 
 See Also:
@@ -32,15 +32,15 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_pos","_radius","_positions","_nearbldgs"];
+params [
+    ["_pos", [0,0,0]],
+    ["_radius", 50],
+    ["_types", ["House","Building","Land_vn_cave_base"]]
+];
 
-PARAMS_2(_pos,_radius);
-DEFAULT_PARAM(2,_type,"House");
+private _nearbldgs = nearestObjects [_pos, _types, _radius];
 
-_positions = [];
-//_nearbldgs = nearestObjects [_pos, [_type], _radius];
-_nearbldgs = _pos nearObjects [_type, _radius];
-
+private _positions = [];
 {
     _positions = _positions + ([_x] call ALIVE_fnc_getBuildingPositions);
 } forEach _nearbldgs;

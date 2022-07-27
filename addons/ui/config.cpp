@@ -1,5 +1,5 @@
-#include <script_component.hpp>
-#include <CfgPatches.hpp>
+#include "script_component.hpp"
+#include "CfgPatches.hpp"
 #include "CfgFunctions.hpp"
 #include "c_ui.hpp"
 
@@ -39,6 +39,7 @@ class _flexiMenu_RscShortcutButton: RscShortcutButton
     };
 };
 //-----------------------------------------------------------------------------
+#include "\x\cba\addons\ui\flexiMenu\data\common.hpp"
 #include "flexiMenu\data\menu_popup.hpp"
 
 class RscStandardDisplay;
@@ -242,21 +243,21 @@ class CfgDebriefing
     };
 };
 
-#include <\x\alive\addons\ui\menu\data\menu_common.hpp>
-#include <\x\alive\addons\ui\menu\data\menu_full.hpp>
-#include <\x\alive\addons\ui\menu\data\menu_full_image.hpp>
-#include <\x\alive\addons\ui\menu\data\menu_full_map.hpp>
-#include <\x\alive\addons\ui\menu\data\menu_modal.hpp>
-#include <\x\alive\addons\ui\menu\data\menu_wide.hpp>
+#include "\x\alive\addons\ui\menu\data\menu_common.hpp"
+#include "\x\alive\addons\ui\menu\data\menu_full.hpp"
+#include "\x\alive\addons\ui\menu\data\menu_full_image.hpp"
+#include "\x\alive\addons\ui\menu\data\menu_full_map.hpp"
+#include "\x\alive\addons\ui\menu\data\menu_modal.hpp"
+#include "\x\alive\addons\ui\menu\data\menu_wide.hpp"
 
 class RscTitles {
-    #include <\x\alive\addons\ui\menu\data\splash.hpp>
-    #include <\x\alive\addons\ui\menu\data\menu_side.hpp>
-    #include <\x\alive\addons\ui\menu\data\menu_side_small.hpp>
-    #include <\x\alive\addons\ui\menu\data\menu_side_top.hpp>
-    #include <\x\alive\addons\ui\menu\data\menu_side_top_small.hpp>
-    #include <\x\alive\addons\ui\menu\data\menu_side_full.hpp>
-    #include <\x\alive\addons\ui\menu\data\subtitle_side_small.hpp>
+    #include "\x\alive\addons\ui\menu\data\splash.hpp"
+    #include "\x\alive\addons\ui\menu\data\menu_side.hpp"
+    #include "\x\alive\addons\ui\menu\data\menu_side_small.hpp"
+    #include "\x\alive\addons\ui\menu\data\menu_side_top.hpp"
+    #include "\x\alive\addons\ui\menu\data\menu_side_top_small.hpp"
+    #include "\x\alive\addons\ui\menu\data\menu_side_full.hpp"
+    #include "\x\alive\addons\ui\menu\data\subtitle_side_small.hpp"
 };
 
 class RscEdit;

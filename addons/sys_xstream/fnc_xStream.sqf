@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\sys_xstream\script_component.hpp>
+#include "\x\alive\addons\sys_xstream\script_component.hpp"
 
 SCRIPT(xStream);
 
@@ -97,7 +97,7 @@ switch(_operation) do {
     case "init": {
 
         //Only one init per instance is allowed
-        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS XSTREAM - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SYS XSTREAM - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
         //Start init
         _logic setVariable ["initGlobal", false];
@@ -123,8 +123,6 @@ switch(_operation) do {
             // FIXME - potentially move this below the last command to signify
             // init has completed
             TRACE_1("After module init",_logic);
-
-            [_logic, "register"] call MAINCLASS;
 
             _logic setVariable ["init",true,true];
         };
@@ -152,9 +150,9 @@ switch(_operation) do {
                         -9500,
                         [
                                 "call ALIVE_fnc_xstreamMenuDef",
-                                "main"
+                                ["main", "alive_flexiMenu_rscPopup"]
                         ]
-                ] call ALiVE_fnc_flexiMenu_Add;
+                ] call CBA_fnc_flexiMenu_Add;
         };
 
         /*
@@ -166,19 +164,6 @@ switch(_operation) do {
             GVAR(cameraStarted) = false;
 
         };
-    };
-    case "register": {
-        private["_registration","_moduleType"];
-
-        _moduleType = _logic getVariable "moduleType";
-        _registration = [_logic, _moduleType, []];
-
-        if(isNil "ALIVE_registry") then {
-            ALIVE_registry = [nil, "create"] call ALIVE_fnc_registry;
-            [ALIVE_registry, "init"] call ALIVE_fnc_registry;
-        };
-
-        [ALIVE_registry, "register", _registration] call ALIVE_fnc_registry;
     };
     case "clientID": {
 

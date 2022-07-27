@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_command\script_component.hpp>
+#include "\x\alive\addons\mil_command\script_component.hpp"
 SCRIPT(garrison);
 
 /* ----------------------------------------------------------------------------
@@ -30,11 +30,11 @@ _profile = [_this, 0, ["",[],[],nil], [[]]] call BIS_fnc_param;
 _args = [_this, 1, 200, [-1,[]]] call BIS_fnc_param;
 
 _radius = _args;
-_onlyProfiles = false;
+_onlyProfiles = true;
 
-if (typeName _args == "ARRAY") then {
+if (_args isEqualType []) then {
     _radius = [_args, 0, 200, [-1]] call BIS_fnc_param;
-    _onlyProfiles = call compile ([_args, 1, "false", [""]] call BIS_fnc_param);
+    _onlyProfiles = (_args param [1, "false", [""]]) == "true";
 };
 
 _id = [_profile,"profileID","error"] call ALiVE_fnc_HashGet;
@@ -44,18 +44,21 @@ _waypoints = [_profile,"waypoints",[]] call ALiVE_fnc_HashGet;
 _assignments = [_profile,"vehicleAssignments",["",[],[],nil]] call ALIVE_fnc_HashGet;
 
 if (isnil "_pos") exitwith {
-    // ["ALiVE MIL COMMAND Garrison - Detected wrong input for profile %1! Exiting...",_id] call ALiVE_fnc_Dump;
+    // ["MIL COMMAND Garrison - Detected wrong input for profile %1! Exiting...",_id] call ALiVE_fnc_dump;
 };
 
 if (count _waypoints > 0) then {
-    // ["ALiVE MIL COMMAND Garrison - Detected existing waypoints for profile %1! Deleting...",_id] call ALiVE_fnc_Dump;
+    // ["MIL COMMAND Garrison - Detected existing waypoints for profile %1! Deleting...",_id] call ALiVE_fnc_dump;
 
 	[_profile, "clearWaypoints"] call ALiVE_fnc_profileEntity;
 };
 
 [_profile,_radius/3] call ALiVE_fnc_ambientMovement;
 
-waituntil {sleep 0.5; [_profile,"active"] call ALiVE_fnc_HashGet};
+waituntil {
+    sleep 0.5;
+    [_profile,"active"] call ALiVE_fnc_HashGet;
+};
 sleep 0.3;
 
 if (_type == "entity" && {count (_assignments select 1) == 0}) then {

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
 SCRIPT(taskGetSideCluster);
 
 /* ----------------------------------------------------------------------------
@@ -8,6 +8,9 @@ Description:
 Get a enemy cluster for a task
 
 Parameters:
+checkMilCustom: bool. Check if custom military objectives allows player tasking.
+    true: ignore custom military objectives that do not allow player tasking.
+    false: assume all objectives allow player tasking.
 
 Returns:
 
@@ -22,19 +25,21 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_taskLocation","_taskLocationType","_side","_type","_sideClusters","_targetPosition","_debug","_result","_nextState","_sortedClusters"];
+private ["_sideClusters","_targetPosition","_debug","_result","_nextState","_sortedClusters"];
 
-_taskLocation = _this select 0;
-_taskLocationType = _this select 1;
-_side = _this select 2;
-_type = if(count _this > 3) then {_this select 3} else {""};
+params [
+    "_taskLocation",
+    "_taskLocationType",
+    "_side",
+    ["_type", ""],
+    ["_checkMilCustom", false]
+];
 
 if(_type != "") then {
-    _sideClusters = [ALIVE_battlefieldAnalysis,"getClustersOwnedBySideAndType",[[_side] call ALIVE_fnc_sideTextToObject,_type]] call ALIVE_fnc_battlefieldAnalysis;
+    _sideClusters = [ALIVE_battlefieldAnalysis,"getClustersOwnedBySideAndType",[[_side] call ALIVE_fnc_sideTextToObject, _type, _checkMilCustom]] call ALIVE_fnc_battlefieldAnalysis;
 }else{
-    _sideClusters = [ALIVE_battlefieldAnalysis,"getClustersOwnedBySide",[[_side] call ALIVE_fnc_sideTextToObject]] call ALIVE_fnc_battlefieldAnalysis;
+    _sideClusters = [ALIVE_battlefieldAnalysis,"getClustersOwnedBySide",[[_side] call ALIVE_fnc_sideTextToObject, _checkMilCustom]] call ALIVE_fnc_battlefieldAnalysis;
 };
-
 
 _targetPosition = [];
 

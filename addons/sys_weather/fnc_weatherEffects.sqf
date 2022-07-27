@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_weather\script_component.hpp>
+#include "\x\alive\addons\sys_weather\script_component.hpp"
 SCRIPT(weatherEffects);
 
 /* ----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ if (isDedicated) exitWith {};
 
 params ["_type","_args"];
 
-diag_log format["WEATHER EFFECTS: %1",_this];
+["WEATHER EFFECTS: %1",_this] call ALiVE_fnc_dump;
 
 switch (_type) do {
     case "Mist": {
@@ -89,7 +89,7 @@ switch (_type) do {
                 // Initialise effect
                 GVAR(snowHost) = "Land_Bucket_F" createVehicleLocal (position vehicle player);
                 GVAR(snowHost) attachTo [player,[0,0,0]];
-                GVAR(snowHost) hideObject true;
+                GVAR(snowHost) hideObjectGlobal true;
                 GVAR(snowHost) allowDamage false;
                 GVAR(snowHost) enableSimulation false;
                 GVAR(snowHost) setDir (windDir);

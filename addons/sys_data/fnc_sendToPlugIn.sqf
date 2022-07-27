@@ -37,14 +37,14 @@ _response = "ALiVEPlugIn" callExtension _cmd;
 
 // If null response return error
 if (isNil "_response" || _response == "") exitWith {
-	diag_log "THERE IS A PROBLEM WITH THE ALIVE PLUGIN!";
+	["SYS DATA - No response received from ALiVEPlugIn."] call ALiVE_fnc_dump;
 	_response = "SYS_DATA_ERROR";
 	_response
 };
 
 // Need to check for errors here with new plugin grab 2nd and 3rd array values.
 if (([toLower(_response), "error"] call CBA_fnc_find != -1) && ([tolower(_response), "terror"] call CBA_fnc_find == -1)) exitWith {
-	["ALiVE Extension (ALiVEPlugIn) Error: %1 CMD: %2",_response,_cmd] call ALiVE_fnc_dump;
+	["SYS DATA - Extension (ALiVEPlugIn) Error: %1 CMD: %2",_response,_cmd] call ALiVE_fnc_dump;
 
 	if (_response find "not authorized" != -1) then {
 		_response = "YOU ARE NOT AUTHORIZED";

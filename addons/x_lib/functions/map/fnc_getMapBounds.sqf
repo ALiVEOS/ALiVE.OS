@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(getMapBounds);
 
 /* ----------------------------------------------------------------------------
@@ -44,6 +44,6 @@ if!(isNil "ALIVE_mapBounds") then {
     };
 };
 
-["ALiVE MAP BOUNDS: %1",_result] call ALIVE_fnc_dump;
+["MAP BOUNDS: %1",_result] call ALiVE_fnc_dump;
 
 _result;

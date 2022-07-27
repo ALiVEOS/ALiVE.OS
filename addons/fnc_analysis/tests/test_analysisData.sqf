@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(test_analysisData);
 
 //execVM "\x\alive\addons\fnc_analysis\tests\test_analysisData.sqf"
@@ -43,7 +43,7 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 
@@ -88,7 +88,7 @@ ASSERT_TRUE(typeName _surroundingSectors == "ARRAY", _err);
 
 
 _allSectors = [_grid, "sectors"] call ALIVE_fnc_sectorGrid;
-diag_log format["Sectors created: %1",count _allSectors];
+["Sectors created: %1",count _allSectors] call ALiVE_fnc_dump;
 
 
 STAT("Run Profile Analysis");
@@ -126,7 +126,7 @@ STAT("Output sector data");
     _sector = _x;
     _sectorData = [_sector, "data"] call ALIVE_fnc_sector;
     _id = [_sector, "id"] call ALIVE_fnc_sector;
-    diag_log format["Sector: %1",_id];
+    ["Sector: %1",_id] call ALiVE_fnc_dump;
     _sectorData call ALIVE_fnc_inspectHash;
 } forEach _surroundingSectors;
 

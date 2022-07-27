@@ -1,4 +1,4 @@
-private ["_display", "_text", "_lb", "_index", "_slider", "_sliderText", "_show"];
+private ["_display", "_text", "_lb", "_index", "_slider", "_sliderText", "_show", "_chopper"];
 _display = findDisplay 655555;
 _text = _display displayCtrl 655573;
 _lb = _this select 0;
@@ -9,7 +9,13 @@ _objectLb = _display displayCtrl 655580;
 
 _transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", playerSide];
 _transportUnitLb = _display displayCtrl 655568;
-_chopper = _transportArray select (lbCurSel _transportUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then { _chopper = vehicle player };
+
+if (!isNil {NEO_radioLogic getVariable "NEO_radioTalkWithPilot"}) then {
+    _chopper = NEO_radioLogic getVariable "NEO_radioTalkWithPilot";
+}
+else {
+    _chopper = _transportArray select (lbCurSel _transportUnitLb) select 0;
+};
 
 _show = switch (toUpper (_lb lbText _index)) do
 {
@@ -94,7 +100,7 @@ _task = switch (_lb lbText _index) do
 
         _pos = getMarkerPos (uinamespace getVariable ["NEO_transportMarkerCreated","unknown"]);
 
-        if (isNil "_pos" || {str(_pos) == "[0,0,0]"}) then {_pos = getpos player;};
+        if (_pos isEqualTo [0,0,0]) then {_pos = getpos player;};
 
         _objectLb ctrlEnable true;
         lbClear _objectLb;
@@ -116,7 +122,7 @@ _task = switch (_lb lbText _index) do
         "
             private [""_lb"", ""_pos"", ""_sliderText""];
             _lb = _this select 0;
-            _pos = call compile (_lb lbData (_this select 1));
+            _pos = parseSimpleArray (_lb lbData (_this select 1));
             _marker = NEO_radioLogic getVariable ""NEO_supportMarker"";
             _marker setMarkerPosLocal _pos;
             uinamespace setVariable [""NEO_transportMarkerCreated"", _marker];

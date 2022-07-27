@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
 SCRIPT(taskDestroyInfantry);
 
 /* ----------------------------------------------------------------------------
@@ -78,8 +78,13 @@ switch (_taskState) do {
 
             _profile = [ALiVE_ProfileHandler, "getProfile",_x] call ALIVE_fnc_ProfileHandler;
 
-            if (([_profile,"side"] call ALiVE_fnc_HashGet) == _Input1) then {
-                _final = ([_profile,"position"] call ALiVE_fnc_HashGet) distance _Input0
+            if (!isNil "_profile") then {
+
+                if (([_profile,"side"] call ALiVE_fnc_HashGet) == _Input1) then {
+                    _final = ([_profile,"position"] call ALiVE_fnc_HashGet) distance _Input0
+                } else {
+                    _final = 999999
+                };
             } else {
                 _final = 999999
             };
@@ -91,11 +96,11 @@ switch (_taskState) do {
 
         if(count _targetEntity > 0) then {
 
-            _targetEntity call ALiVE_fnc_InspectHash;
+            // _targetEntity call ALiVE_fnc_InspectHash;
 
             private["_entityPosition","_entityID"];
 
-            _targetEntity call ALIVE_fnc_inspectHash;
+            // _targetEntity call ALIVE_fnc_inspectHash;
             _entityPosition = _targetEntity select 2 select 2;
             _entityID = _targetEntity select 2 select 4;
 

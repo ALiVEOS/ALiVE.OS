@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_CQB\script_component.hpp>
+#include "\x\alive\addons\mil_CQB\script_component.hpp"
 SCRIPT(CQBSaveData);
 
 /* ----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ private _keys = [];
 private _values = [];
 private _data = [] call ALiVE_fnc_HashCreate;
 {
-    if (call compile (_x getvariable ["CQB_persistent","false"])) then {
+    if ((_x getvariable ["CQB_persistent","false"]) == "true") then {
         private _state = [_x,"state"] call ALiVE_fnc_CQB;
         private _houses = [_state,"houses"] call ALiVE_fnc_HashGet;
 
@@ -58,7 +58,7 @@ if (count (_data select 1) == 0) exitwith {
     [["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
 };
 
-["ALiVE SAVE CQB DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dumpMPH;
+["SAVE CQB DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dumpMPH;
 
 _data call ALIVE_fnc_inspectHash;
 
@@ -71,7 +71,7 @@ if (isNil QGVAR(DATAHANDLER)) then {
 _result = [GVAR(DATAHANDLER), "bulkSave", ["mil_cqb", _data, _missionName, _async]] call ALIVE_fnc_Data;
 
 [false, "ALiVE CQB persistence save data complete","cqbper"] call ALIVE_fnc_timer;
-["ALiVE CQB SAVE DATA RESULT: %1",_result] call ALiVE_fnc_Dump;
+["CQB SAVE DATA RESULT: %1",_result] call ALiVE_fnc_dump;
 
 [["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
 

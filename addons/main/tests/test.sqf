@@ -1,4 +1,4 @@
-#include <\x\alive\addons\main\script_component.hpp>
+#include "\x\alive\addons\main\script_component.hpp"
 
 #define TESTS ["baseClass","OOsimpleOperation","RequireALiVE"]
 

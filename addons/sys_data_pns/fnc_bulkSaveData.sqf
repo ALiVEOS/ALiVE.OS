@@ -39,7 +39,7 @@ _data = +_data;
 TRACE_3("Saving data", _logic, _args);
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_PNS - BULK SAVE"] call ALIVE_fnc_dump;
+    ["SYS_DATA_PNS - BULK SAVE"] call ALiVE_fnc_dump;
 };
 
 _result = "";

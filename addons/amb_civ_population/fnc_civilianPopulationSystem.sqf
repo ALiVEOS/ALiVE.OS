@@ -1,4 +1,4 @@
-#include <\x\alive\addons\amb_civ_population\script_component.hpp>
+#include "\x\alive\addons\amb_civ_population\script_component.hpp"
 SCRIPT(civilianPopulationSystem);
 
 /* ----------------------------------------------------------------------------
@@ -76,7 +76,7 @@ switch(_operation) do {
         if (isServer) then {
 
             waituntil {!(isnil "ALIVE_profileSystemInit")};
-            
+
             private _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
             private _spawnRadius = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
             private _spawnTypeJetRadius = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
@@ -84,11 +84,15 @@ switch(_operation) do {
             private _activeLimiter = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
             private _spawnCycleTime = [_logic,"spawnCycleTime"] call ALIVE_fnc_hashGet;
             private _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
+            private _ambientCrowdSpawn = [_logic,"ambientCrowdSpawn"] call ALIVE_fnc_hashGet;
+            private _ambientCrowdDensity = [_logic,"ambientCrowdDensity"] call ALIVE_fnc_hashGet;
+            private _ambientCrowdLimit = [_logic,"ambientCrowdLimit"] call ALIVE_fnc_hashGet;
+            private _ambientCrowdFaction = [_logic,"ambientCrowdFaction"] call ALIVE_fnc_hashGet;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE CivilianPopulationSystem - Startup"] call ALIVE_fnc_dump;
+                ["CivilianPopulationSystem - Startup"] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -111,16 +115,16 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CivilianPopulationSystem - Startup completed"] call ALIVE_fnc_dump;
-                ["ALIVE Cluster handler created"] call ALIVE_fnc_dump;
-                ["ALIVE Agent handler created"] call ALIVE_fnc_dump;
-                ["ALIVE Civ command router created"] call ALIVE_fnc_dump;
-                ["ALIVE Active Limit: %1", _activeLimiter] call ALIVE_fnc_dump;
-                ["ALIVE Spawn Radius: %1", _spawnRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALIVE_fnc_dump;
-                ["ALIVE Spawn Cycle Time: %1", _spawnCycleTime] call ALIVE_fnc_dump;
-                ["ALIVE Initial civilian hostility settings:"] call ALIVE_fnc_dump;
+                ["CivilianPopulationSystem - Startup completed"] call ALiVE_fnc_dump;
+                ["Cluster handler created"] call ALiVE_fnc_dump;
+                ["Agent handler created"] call ALiVE_fnc_dump;
+                ["Civ command router created"] call ALiVE_fnc_dump;
+                ["Active Limit: %1", _activeLimiter] call ALiVE_fnc_dump;
+                ["Spawn Radius: %1", _spawnRadius] call ALiVE_fnc_dump;
+                ["Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALiVE_fnc_dump;
+                ["Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALiVE_fnc_dump;
+                ["Spawn Cycle Time: %1", _spawnCycleTime] call ALiVE_fnc_dump;
+                ["Initial civilian hostility settings:"] call ALiVE_fnc_dump;
                 ALIVE_civilianHostility call ALIVE_fnc_inspectHash;
 
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
@@ -131,8 +135,13 @@ switch(_operation) do {
             [_logic,"startupComplete",true] call ALIVE_fnc_hashSet;
 
             // start the cluster activator
-            private _clusterActivatorFSM = [_logic,_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\amb_civ_population\clusterActivator_v2.fsm";
+            private _clusterActivatorFSM = [_logic,_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\amb_civ_population\clusterActivator.fsm";
             [_logic,"activator_FSM",_clusterActivatorFSM] call ALIVE_fnc_hashSet;
+
+            if (_ambientCrowdSpawn > 0) then {
+                private _crowdActivatorFSM = [_logic,_ambientCrowdSpawn,_ambientCrowdDensity,_spawnCycleTime,_ambientCrowdLimit,_ambientCrowdFaction] execFSM "\x\alive\addons\amb_civ_population\crowdActivator.fsm";
+                [_logic,"crowd_FSM",_crowdActivatorFSM] call ALIVE_fnc_hashSet;
+            };
 
             // start listening for events
             [_logic,"listen"] call MAINCLASS;
@@ -213,10 +222,17 @@ switch(_operation) do {
         };
         ASSERT_TRUE(_args isEqualType true, str _args);
 
+        private _ambientCrowdSpawn = [_logic,"ambientCrowdSpawn"] call ALIVE_fnc_hashGet;
+
         if(_args) then {
 
             private _clusterActivatorFSM = [_logic, "activator_FSM"] call ALiVE_fnc_HashGet;
             _clusterActivatorFSM setFSMVariable ["_pause",true];
+
+            if (_ambientCrowdSpawn > 0) then {
+                private _crowdActivatorFSM = [_logic, "crowd_FSM"] call ALiVE_fnc_HashGet;
+                _crowdActivatorFSM setFSMVariable ["_pause",true];
+            };
 
             [ALIVE_civCommandRouter, "pause", true] call ALIVE_fnc_civCommandRouter;
 
@@ -224,6 +240,11 @@ switch(_operation) do {
 
             private _clusterActivatorFSM = [_logic, "activator_FSM"] call ALiVE_fnc_HashGet;
             _clusterActivatorFSM setFSMVariable ["_pause",false];
+
+            if (_ambientCrowdSpawn > 0) then {
+                private _crowdActivatorFSM = [_logic, "crowd_FSM"] call ALiVE_fnc_HashGet;
+                _crowdActivatorFSM setFSMVariable ["_pause",false];
+            };
 
             [ALIVE_civCommandRouter, "pause", false] call ALIVE_fnc_civCommandRouter;
 
@@ -237,12 +258,18 @@ switch(_operation) do {
 
         [_logic, "debug", false] call MAINCLASS;
 
+        private _ambientCrowdSpawn = [_logic,"ambientCrowdSpawn"] call ALIVE_fnc_hashGet;
+
         if (isServer) then {
             [_logic, "destroy"] call SUPERCLASS;
 
             private _clusterActivatorFSM = [_logic, "activator_FSM"] call ALiVE_fnc_HashGet;
             _clusterActivatorFSM setFSMVariable ["_destroy",true];
 
+            if (_ambientCrowdSpawn > 0) then {
+                private _crowdActivatorFSM = [_logic, "crowd_FSM"] call ALiVE_fnc_HashGet;
+                _crowdActivatorFSM setFSMVariable ["_destroy",true];
+            };
         };
 
     };
@@ -337,6 +364,26 @@ switch(_operation) do {
 
         _result = [_logic,"ambientCivilianRoles"] call ALIVE_fnc_hashGet;
 
+    };
+
+    case "ambientCrowdSpawn";
+    case "ambientCrowdDensity";
+    case "ambientCrowdLimit" : {
+
+        if(_args isEqualType 0) then {
+            [_logic, _operation, _args] call ALIVE_fnc_hashSet;
+        };
+
+        _result = [_logic, _operation] call ALIVE_fnc_hashGet;
+
+    };
+
+    case "ambientCrowdFaction" : {
+        if(_args isEqualType "") then {
+            [_logic,_operation,_args] call ALIVE_fnc_hashSet;
+        };
+
+        _result = [_logic,_operation] call ALIVE_fnc_hashGet;
     };
 
     case "state": {

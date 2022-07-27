@@ -70,6 +70,21 @@ class CfgVehicles {
                                                 name = "$STR_ALIVE_MP_SIZE_FILTER_LARGE";
                                                 value = "300";
                                         };
+                                        class SMALL_INVERSE
+                                        {
+                                                name = "$STR_ALIVE_MP_SIZE_FILTER_SMALL_INVERSE";
+                                                value = "-100";
+                                        };
+                                        class MEDIUM_INVERSE
+                                        {
+                                                name = "$STR_ALIVE_MP_SIZE_FILTER_MEDIUM_INVERSE";
+                                                value = "-200";
+                                        };
+                                        class LARGE_INVERSE
+                                        {
+                                                name = "$STR_ALIVE_MP_SIZE_FILTER_LARGE_INVERSE";
+                                                value = "-300";
+                                        };
                                 };
                         };
                         class priorityFilter
@@ -406,6 +421,35 @@ class CfgVehicles {
                                         {
                                                 name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_HIGH";
                                                 value = "1";
+                                        };
+                                };
+                        };
+                        class guardProbability
+                        {
+                                displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT";
+                                description = "$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_COMMENT";
+                                class Values
+                                {
+                                        class NONE
+                                        {
+                                                name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_NONE";
+                                                value = "0";
+                                        };
+                                        class LOW
+                                        {
+                                                name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_LOW";
+                                                value = "0.2";
+                                        };
+                                        class MEDIUM
+                                        {
+                                                name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_MEDIUM";
+                                                value = "0.6";
+                                        };
+                                        class HIGH
+                                        {
+                                                name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_HIGH";
+                                                value = "1";
+                                                default = 1;
                                         };
                                 };
                         };

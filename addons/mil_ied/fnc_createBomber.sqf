@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_IED\script_component.hpp>
+#include "\x\alive\addons\mil_IED\script_component.hpp"
 SCRIPT(createBomber);
 
 // Suicide Bomber - create Suicide Bomber at location
@@ -36,7 +36,7 @@ if (isNil "_bomber") then {
             _class = ([[_faction], 1, ALiVE_MIL_CQB_UNITBLACKLIST, true] call ALiVE_fnc_chooseRandomUnits) select 0;
         };
     } else {
-        _class = (selectRandom (call compile (ADDON getVariable "Bomber_Type")));
+        _class = (selectRandom (parseSimpleArray (ADDON getVariable "Bomber_Type")));
     };
     if (isNil "_class") exitWith {diag_log "No bomber class defined."};
     _bomber = _grp createUnit [_class, _pos, [], _size, "NONE"];
@@ -128,7 +128,7 @@ if (_debug) then {
             _marker = _bomber getVariable ["marker", ""];
             [_marker] call CBA_fnc_deleteEntity;
         };
-        if ((random 100) > 30) then { // Dead man switch
+        if ((random 100) > 50) then { // Dead man switch
             _shell = [["M_Mo_120mm_AT","M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[8,4,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
             _shell createVehicle [(getpos _bomber) select 0, (getpos _bomber) select 1,0];
             sleep 0.3;

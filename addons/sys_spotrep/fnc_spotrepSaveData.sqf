@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_spotrep\script_component.hpp>
+#include "\x\alive\addons\sys_spotrep\script_component.hpp"
 SCRIPT(spotrepSaveData);
 
 /* ----------------------------------------------------------------------------
@@ -53,7 +53,7 @@ _messages pushback _message;
 
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SAVE SYS SPOTREP DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
+    ["SAVE SYS SPOTREP DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
     _data call ALIVE_fnc_inspectHash;
 };
 
@@ -77,7 +77,7 @@ _messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [false, "ALiVE SYS SPOTREP - Save data complete","spotrepper"] call ALIVE_fnc_timer;
-    ["ALiVE SYS SPOTREP SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_Dump;
+    ["SYS SPOTREP SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_dump;
 };
 
 

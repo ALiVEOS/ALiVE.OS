@@ -1,4 +1,4 @@
-#include <\x\alive\addons\amb_civ_command\script_component.hpp>
+#include "\x\alive\addons\amb_civ_command\script_component.hpp"
 SCRIPT(cc_joinGathering);
 
 /* ----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ private _nextStateArgs = [];
 
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
-    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+    ["Managed Script Command - [%1] called args: %2",_agentID,_args] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -76,7 +76,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -85,7 +85,7 @@ switch (_state) do {
 		if (!isNil "_target" && {!isnull _target}) then {
 
         	if(_agent call ALiVE_fnc_unitReadyRemote) then {
-                
+
                 _agent lookAt _target;
                 _target lookAt _agent;
 
@@ -114,7 +114,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -129,14 +129,14 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
 		_agent switchMove "";
         if (_homePosition distance [0,0] > 500) then {[_agent,_homeposition] call ALiVE_fnc_doMoveRemote};
         _agent setVariable ["ALIVE_agentBusy", false, false];
-        
+
 
         _nextState = "complete";
         _nextStateArgs = [];

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(profileWaypointsToWaypoints);
 
 /* ----------------------------------------------------------------------------
@@ -25,31 +25,35 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_waypoints","_group","_cycleWaypoints"];
+params ["_waypoints","_group"];
 
-_waypoints = _this select 0;
-_group = _this select 1;
+private _cycleWaypoints = [];
 
-_cycleWaypoints = [];
-
-//Add all waypoints but cycle first
+// add all waypoints but cycle first
 {
-    if !(([_x,"type",""] call ALiVE_fnc_HashGet) == "CYCLE") then {
-        if(_forEachIndex == 0) then {
-            [_x, _group, true] call ALIVE_fnc_profileWaypointToWaypoint;
+    private _waypoint = _x;
+    private _waypointType = [_waypoint,"type",""] call ALiVE_fnc_HashGet;
+
+    if (_waypointType != "CYCLE") then {
+        if (_forEachIndex == 0) then {
+            // set first waypoint as current
+            [_waypoint, _group, true] call ALIVE_fnc_profileWaypointToWaypoint;
         } else {
-            [_x, _group] call ALIVE_fnc_profileWaypointToWaypoint;
+            [_waypoint, _group] call ALIVE_fnc_profileWaypointToWaypoint;
         };
     } else {
-        _cycleWaypoints pushback _x;
+        _cycleWaypoints pushback _waypoint;
     };
 } forEach _waypoints;
 
-//Add cycle waypoints at the end to avoid stuck groups
+// add cycle waypoints at the end to avoid stuck groups
 {
-    if(_forEachIndex == 0) then {
-        [_x, _group, true] call ALIVE_fnc_profileWaypointToWaypoint;
+    private _cycleWaypoint = _x;
+
+    if (_forEachIndex == 0) then {
+        // set first waypoint as current
+        [_cycleWaypoint, _group, true] call ALIVE_fnc_profileWaypointToWaypoint;
     } else {
-        [_x, _group] call ALIVE_fnc_profileWaypointToWaypoint;
+        [_cycleWaypoint, _group] call ALIVE_fnc_profileWaypointToWaypoint;
     };
 } forEach _cycleWaypoints;

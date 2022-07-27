@@ -14,6 +14,8 @@ arrays
 
 	ALiVE_fnc_arrayBlockHandler
 	ALiVE_fnc_arrayFrameSplitter
+	ALiVE_fnc_deleteAtMany
+	ALiVE_fnc_deleteIf
 	ALiVE_fnc_erase
 	ALiVE_fnc_getNearestObjectInArray
 	ALiVE_fnc_heapSort
@@ -107,7 +109,11 @@ conversions
 
 data
 
+	ALiVE_fnc_doSegmentsIntersect
 	ALiVE_fnc_encodeJSON
+	ALiVE_fnc_findConvexHull
+	ALiVE_fnc_findMidpoint
+	ALiVE_fnc_findOffsetFromSegment
 	ALiVE_fnc_hashAddWarRoomData
 	ALiVE_fnc_hashCopy
 	ALiVE_fnc_hashCreate
@@ -121,7 +127,7 @@ data
 	ALiVE_fnc_ProfileNameSpaceLoad
 	ALiVE_fnc_ProfileNameSpaceSave
 	ALiVE_fnc_ProfileNameSpaceWipe
-	ALiVE_fnc_quadtree
+	ALiVE_fnc_spacialGrid
 	ALiVE_fnc_unorderedMap
 
 diagnostics
@@ -277,6 +283,7 @@ strings
 	ALiVE_fnc_formatNumber
 	ALiVE_fnc_realTimeToDTG
 	ALiVE_fnc_selBinStr
+	ALiVE_fnc_stringListToArray
 	ALiVE_fnc_timeToRead
 
 ui
@@ -297,6 +304,7 @@ units
 	ALiVE_fnc_anyPlayersInRangeIncludeAir
 	ALiVE_fnc_chooseRandomUnits
 	ALiVE_fnc_doMoveRemote
+	ALiVE_fnc_disguise
 	ALiVE_fnc_getNearUnits
 	ALiVE_fnc_getPlayerByUID
 	ALiVE_fnc_getPlayerByUIDOnConnect

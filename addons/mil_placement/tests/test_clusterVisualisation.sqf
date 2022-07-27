@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\mil_placement\script_component.hpp>
+#include "\x\alive\addons\mil_placement\script_component.hpp"
 SCRIPT(test_clusterVisualisation);
 
 //execVM "\x\alive\addons\mil_placement\tests\test_clusterVisualisation.sqf"
@@ -113,9 +113,9 @@ SLEEP 30;
 
 
 
-["ALIVE MP - Count clusters %1",count _clusters] call ALIVE_fnc_dump;
-["ALIVE MP - Count air clusters %1",count _airClusters] call ALIVE_fnc_dump;
-["ALIVE MP - Count heli clusters %1",count _heliClusters] call ALIVE_fnc_dump;
+["MP - Count clusters %1",count _clusters] call ALiVE_fnc_dump;
+["MP - Count air clusters %1",count _airClusters] call ALiVE_fnc_dump;
+["MP - Count heli clusters %1",count _heliClusters] call ALiVE_fnc_dump;
 
 
 nil;

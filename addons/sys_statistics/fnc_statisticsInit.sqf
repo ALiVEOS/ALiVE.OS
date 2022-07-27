@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_statistics\script_component.hpp>
+#include "\x\alive\addons\sys_statistics\script_component.hpp"
 SCRIPT(statisticsInit);
 
 /* ----------------------------------------------------------------------------
@@ -29,7 +29,7 @@ PARAMS_1(_logic);
 // Confirm init function available
 ASSERT_DEFINED("ALIVE_fnc_data","Main function missing");
 
-If (isnil "ALiVE_SYS_DATA" || {ALiVE_SYS_DATA_DISABLED}) exitwith {["ALiVE SYS STATS REQUIRES SYS DATA! Exiting..."] call ALiVE_fnc_Dump};
+If (isnil "ALiVE_SYS_DATA" || {ALiVE_SYS_DATA_DISABLED}) exitwith {["SYS STATS REQUIRES SYS DATA! Exiting..."] call ALiVE_fnc_dump};
 
 LOG(MSG_INIT);
 
@@ -38,7 +38,7 @@ ADDON = false;
 TRACE_2("SYS_STATS",isDedicated,GVAR(ENABLED));
 
 // Make sure we don't init stats more than once on client/dedi
-if (!isNil QGVAR(statsInitialized)) exitWith {["ALiVE SYS STATS - Stats already initialised! Exiting..."] call ALiVE_fnc_Dump};
+if (!isNil QGVAR(statsInitialized)) exitWith {["SYS STATS - Stats already initialised! Exiting..."] call ALiVE_fnc_dump};
 
 if (isDedicated && GVAR(ENABLED)) then {
 
@@ -124,7 +124,7 @@ if (isDedicated && GVAR(ENABLED)) then {
         //};
     };
 
-    diag_log format["Operation: %1",GVAR(operation)];
+    ["Operation: %1",GVAR(operation)] call ALiVE_fnc_dump;
 
     // Register Operation with DB and setup OPD
     private ["_data"];
@@ -139,7 +139,7 @@ if (isDedicated && GVAR(ENABLED)) then {
     // Create player start time hash
     GVAR(PlayerStartTime) = []call ALIVE_fnc_hashCreate;
 
-    // diag_log format["TimeStarted: %1", GVAR(timeStarted)];
+    // ["TimeStarted: %1", GVAR(timeStarted)] call ALiVE_fnc_dump;
 
     // Create shotsFired hash on both server
     GVAR(shotsFired) = [] call ALIVE_fnc_hashCreate;
@@ -234,7 +234,7 @@ If (isClass (configFile >> "cfgMods" >> "ace") && GVAR(ENABLED)) then {
     ["Adding ACE Stats EHs to player %1", player] call ALiVE_fnc_dump;
     ["medical_onSetDead",
         {
-            // diag_log format["ACE MEDICAL ON SETDEAD CALLED: %1", _this];
+            // ["ACE MEDICAL ON SETDEAD CALLED: %1", _this] call ALiVE_fnc_dump;
             [_this select 0, nil] call alive_sys_statistics_fnc_unitKilledEH;
         }
     ] call CBA_fnc_addEventHandler;
@@ -267,9 +267,9 @@ if(!isDedicated && !isHC && GVAR(ENABLED)) then {
                 -9500,
                 [
                         "call ALIVE_fnc_statisticsMenuDef",
-                        "main"
+                        ["main", "alive_flexiMenu_rscPopup"]
                 ]
-        ] call ALiVE_fnc_flexiMenu_Add;
+        ] call CBA_fnc_flexiMenu_Add;
 };
 
 GVAR(statsInitialized) = true;

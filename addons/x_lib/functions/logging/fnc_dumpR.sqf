@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(dumpR);
 
 /* ----------------------------------------------------------------------------
@@ -46,5 +46,6 @@ if(isNil {_variableType}) then {
     };
 };
 
-diag_log text _output;
 player sidechat _output;
+
+_this call ALIVE_fnc_dump;

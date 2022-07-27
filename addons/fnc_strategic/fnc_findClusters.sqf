@@ -1,4 +1,4 @@
-#include <\x\alive\addons\fnc_strategic\script_component.hpp>
+#include "\x\alive\addons\fnc_strategic\script_component.hpp"
 SCRIPT(findClusters);
 
 #undef DEBUG_MODE_FULL

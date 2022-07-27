@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\mil_placement\script_component.hpp>
+#include "\x\alive\addons\mil_placement\script_component.hpp"
 SCRIPT(milClusterGeneration);
 
 /* ----------------------------------------------------------------------------
@@ -28,11 +28,7 @@ nil
 
 private ["_file","_obj_array","_types","_clusters","_clusters_tmp","_size"];
 
-if(isNil "ALIVE_militaryHQBuildingTypes") then {
-    _file = "\x\alive\addons\main\static\staticData.sqf";
-    call compile preprocessFileLineNumbers _file;
-};
-
+call ALiVE_fnc_staticDataHandler;
 
 // Find HQ locations
 // ------------------------------------------------------------------

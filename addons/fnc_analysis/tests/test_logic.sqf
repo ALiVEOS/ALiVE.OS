@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\main\script_component.hpp>
+#include "\x\alive\addons\main\script_component.hpp"
 SCRIPT(test_logic);
 
 // ----------------------------------------------------------------------------
@@ -27,12 +27,12 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 
 _testIterations = 1000;
-diag_log format["TEST ITERATIONS: %1", _testIterations];
+["TEST ITERATIONS: %1", _testIterations] call ALiVE_fnc_dump;
 
 
 _logics = [];
@@ -137,7 +137,7 @@ TIMERSTART
 for "_i" from 0 to _testIterations do {
     _pos = [0, 0, 0];
     _logic = createAgent ["LOGIC", [0,0], [], 0, "NONE"];
-    hideObject _logic;
+    hideObjectGlobal _logic;
     _logics pushback _logic;
 };
 TIMEREND

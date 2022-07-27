@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_logistics\script_component.hpp>
+#include "\x\alive\addons\sys_logistics\script_component.hpp"
 SCRIPT(logistics);
 
 /* ----------------------------------------------------------------------------
@@ -89,7 +89,7 @@ switch (_operation) do {
             private ["_exit"];
 
             //Only one init per instance is allowed
-            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS LOGISTICS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SYS LOGISTICS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
             //Start init
             _logic setVariable ["initGlobal", false];
@@ -109,7 +109,7 @@ switch (_operation) do {
             if (["AliVE_SYS_LOGISTICSDISABLE"] call ALiVE_fnc_isModuleAvailable) then {waituntil {!isnil {_logic getvariable "DEBUG"}}};
 
             // Exit if disabled
-            if (_logic getvariable ["DISABLELOG",false]) exitwith {["ALiVE SYS LOGISTICS DISABLED! Exiting..."] call ALiVE_fnc_Dump};
+            if (_logic getvariable ["DISABLELOG",false]) exitwith {["SYS LOGISTICS DISABLED! Exiting..."] call ALiVE_fnc_dump};
 
             TRACE_1("Creating data store",true);
 
@@ -117,10 +117,7 @@ switch (_operation) do {
             GVAR(STORE) = [] call ALIVE_fnc_hashCreate;
 
             // load static data
-            if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-                _file = "\x\alive\addons\main\static\staticData.sqf";
-                call compile preprocessFileLineNumbers _file;
-            };
+            call ALiVE_fnc_staticDataHandler;
 
             // Get all containers
             private "_containers";
@@ -174,12 +171,12 @@ switch (_operation) do {
                 // Reset states with provided data;
                 if !(_logic getvariable ["DISABLEPERSISTENCE",false]) then {
                     if (isServer && {[QMOD(SYS_DATA)] call ALiVE_fnc_isModuleAvailable}) then {
-                        
+
                         waituntil {!isnil QMOD(SYS_DATA) && {MOD(SYS_DATA) getvariable ["startupComplete",false]}};
                     };
 
 					_state = call ALiVE_fnc_logisticsLoadData;
-                    
+
                     if !(typeName _state == "BOOL") then {
                         GVAR(STORE) = _state;
                     };
@@ -242,9 +239,9 @@ switch (_operation) do {
                             -9500,
                             [
                                     "call ALIVE_fnc_logisticsMenuDef",
-                                    "main"
+                                    ["main", "alive_flexiMenu_rscPopup"]
                             ]
-                    ] call ALiVE_fnc_flexiMenu_Add;
+                    ] call CBA_fnc_flexiMenu_Add;
                 };
             };
 
@@ -279,7 +276,7 @@ switch (_operation) do {
                 private ["_args","_id","_cont"];
 
                 //Ensure object is existing and not profiled
-                if (!(isnil "_x") && {!(isNull _x)} && {isnil {_x getVariable "profileID"}}) then {
+                if (!(isnil "_x") && {!(isNull _x)} && {!(_x getVariable [QGVAR(DISABLE),false])} && {isnil {_x getVariable "profileID"}}) then {
                     _id = [_logic,"id",_x] call ALiVE_fnc_logistics;
                     _args = [GVAR(STORE),_id] call ALiVE_fnc_HashGet;
 
@@ -297,6 +294,7 @@ switch (_operation) do {
                     [_args,QGVAR(CARGO),[_x] call ALiVE_fnc_getObjectCargo] call ALiVE_fnc_HashSet;
                     [_args,QGVAR(FUEL),[_x] call ALiVE_fnc_getObjectFuel] call ALiVE_fnc_HashSet;
                     [_args,QGVAR(DAMAGE),[_x] call ALiVE_fnc_getObjectDamage] call ALiVE_fnc_HashSet;
+                    [_args,QGVAR(POINTDAMAGE),[_x] call ALiVE_fnc_getObjectPointDamage] call ALiVE_fnc_HashSet;
 
                     //Set dynamic data (to fight errors on loading back existing data from DB)
                     if (!isnil {_x getvariable QGVAR(CONTAINER)} && {!isnull (_x getvariable QGVAR(CONTAINER))}) then {
@@ -433,7 +431,7 @@ switch (_operation) do {
             _object setvariable [QGVAR(CONTAINER),_container,true];
             _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) + [_object],true];
 
-            if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObject true; _object enableSimulation false};
+            if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObjectGlobal true; _object enableSimulation false};
 
             [_logic,"updateObject",[_container,_object]] call ALIVE_fnc_logistics;
 
@@ -477,7 +475,7 @@ switch (_operation) do {
             _object setvariable [QGVAR(CONTAINER),nil,true];
             _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) - [_object],true];
 
-            if (isMultiplayer && isServer) then {_object hideObjectGlobal false; _object enableSimulationGlobal true} else {_object hideObject false; _object enableSimulation true};
+            if (isMultiplayer && isServer) then {_object hideObjectGlobal false; _object enableSimulationGlobal true} else {_object hideObjectGlobal false; _object enableSimulation true};
 
             _object setpos (
             [
@@ -507,6 +505,8 @@ switch (_operation) do {
 
             _object = [_args, 0, objNull, [objNull]] call BIS_fnc_param;
             _container = [_args, 1, objNull, [objNull]] call BIS_fnc_param;
+
+            // if (isNull _container) then {_container = _object};
 
             _objectID = [_logic,"id",_object] call ALiVE_fnc_logistics;
             _containerID = [_logic,"id",_container] call ALiVE_fnc_logistics;
@@ -643,7 +643,7 @@ switch (_operation) do {
                 _object setvariable [QGVAR(CONTAINER),_container,true];
                 _container setvariable [QGVAR(CARGO),(_container getvariable [QGVAR(CARGO),[]]) + [_object],true];
 
-                if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObject true; _object enableSimulation false};
+                if (isMultiplayer && isServer) then {_object hideObjectGlobal true; _object enableSimulationGlobal false} else {_object hideObjectGlobal true; _object enableSimulation false};
 
                 _list set [_foreachIndex,_object];
             } foreach _list;
@@ -693,50 +693,73 @@ switch (_operation) do {
             switch (_operation) do {
                 case ("carryObject") : {
                     _text = "Carry object";
-                    _input = "(nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_CARRYABLE select 1, 5]) select 0";
-                    _container = "_this select 1";
+                    _input = {(nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_CARRYABLE select 1, 5]) select 0};
+                    _container = {_this select 1};
                     _condition = "private _nearestObject = (nearestObjects [_target, ALiVE_SYS_LOGISTICS_CARRYABLE select 1, 10]) select 0; alive _target && {_nearestObject distance _target < 5} && {isnil {_nearestObject getvariable 'ALiVE_SYS_LOGISTICS_CONTAINER'}} && {[_nearestObject,_target] call ALiVE_fnc_canCarry}";
                 };
                 case ("dropObject") : {
                     _text = "Drop object";
-                    _input = "call {private ['_objs','_player','_result']; _player = _this select 1; _objs = attachedObjects _player; {if (!isnull _x) exitwith {_result = _x}} foreach _objs; if (isnil '_result') then {_result = (_player getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) select 0}; if !(isnil '_result') then {_result}}";
-                    _container = "_this select 1";
-                    _condition = "alive _target && {vehicle _target == _target} && {{!isnull _x} count (attachedObjects _target) > 0 || {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}}";
+                    _input = {
+                        private _player = _this select 1;
+                        private _objs = attachedObjects _player;
+                        private _result = objNull;
+
+                        //See comment below regarding "Drop-object"-action. Needed if all attached objs should be droppable
+                        /*
+                        {
+                            if (!isNull _x) exitWith {
+                                _result = _x;
+                            };
+                        } forEach _objs;
+                        */
+
+                        if (isNull _result) then {
+                            _result = (_player getVariable ["ALiVE_SYS_LOGISTICS_CARGO",[]]) select 0;
+                        };
+
+                        _result;
+                    };
+                    _container = {_this select 1};
+                    //Enable to show "Drop object"-action as soon as any object is attached! If anything goes wrong player is able to detach all objects.
+                    //_condition = "alive _target && {vehicle _target == _originalTarget} && {{!isnull _x} count (attachedObjects _target) > 0 || {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}}";
+                    
+                    //Show "Drop object"-action only if player is carrying something.
+                    _condition = "alive _target && {vehicle _target == _originalTarget} && {count (_target getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}";
                 };
                 case ("unloadObjects") : {
                     _text = "Load out cargo";
-                    _input = "cursortarget";
-                    _container = "((nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_STOWABLE select 0, 8]) select 0)";
+                    _input = {cursortarget};
+                    _container = {((nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_STOWABLE select 0, 8]) select 0)};
                     _condition = "alive _target && {cursortarget distance _target < 5} && {count (cursortarget getvariable ['ALiVE_SYS_LOGISTICS_CARGO',[]]) > 0}";
                 };
                 case ("stowObjects") : {
                     _text  = "Stow in cargo";
-                    _input = "objNull";
-                    _container = "cursortarget";
+                    _input = {objNull};
+                    _container = {cursortarget};
                     _condition = "alive _target && {cursortarget distance _target < 5} && {[((nearestObjects [cursortarget, ALiVE_SYS_LOGISTICS_STOWABLE select 1, 8]) select 0),cursortarget] call ALiVE_fnc_canStow}";
                 };
                 case ("towObject") : {
                     _text  = "Tow object";
-                    _input = "cursortarget";
-                    _container = "((nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_TOWABLE select 0, 15]) select 0)";
+                    _input = {cursortarget};
+                    _container = {((nearestObjects [_this select 1, ALiVE_SYS_LOGISTICS_TOWABLE select 0, 15]) select 0)};
                     _condition = "alive _target && {cursortarget distance player < 5} && {[cursortarget,(nearestObjects [cursortarget, ALiVE_SYS_LOGISTICS_TOWABLE select 0, 15]) select 0] call ALiVE_fnc_canTow}";
                 };
                 case ("untowObject") : {
                     _text  = "Untow object";
-                    _input = "cursortarget";
-                    _container = "attachedTo cursortarget";
+                    _input = {cursortarget};
+                    _container = {attachedTo cursortarget};
                     _condition = "alive _target && {cursortarget distance _target < 5} && {{_x == cursortarget} count ((attachedTo cursortarget) getvariable ['ALiVE_SYS_LOGISTICS_CARGO_TOW',[]]) > 0}";
                 };
                 case ("liftObject") : {
                     _text  = "Lift object";
-                    _input = "((nearestObjects [vehicle (_this select 1), ALiVE_SYS_LOGISTICS_LIFTABLE select 1, 15]) select 0)";
-                    _container = "vehicle (_this select 1)";
+                    _input = {((nearestObjects [vehicle (_this select 1), ALiVE_SYS_LOGISTICS_LIFTABLE select 1, 15]) select 0)};
+                    _container = {vehicle (_this select 1)};
                     _condition = "alive _target && {(getposATL (vehicle _target) select 2) > 10} && {(getposATL (vehicle _target) select 2) < 20} && {[(nearestObjects [vehicle (_target), ALiVE_SYS_LOGISTICS_LIFTABLE select 1, 20]) select 0, vehicle _target] call ALiVE_fnc_canLift}";
                 };
                 case ("releaseObject") : {
                     _text  = "Release object";
-                    _input = "attachedObjects (vehicle (_this select 1)) select 0";
-                    _container = "vehicle (_this select 1)";
+                    _input = {attachedObjects (vehicle (_this select 1)) select 0};
+                    _container = {vehicle (_this select 1)};
                     _condition = "alive _target && {(getposATL (vehicle _target) select 2) > 10} && {(getposATL (vehicle _target) select 2) < 20} && {count ((vehicle _target) getvariable ['ALiVE_SYS_LOGISTICS_CARGO_LIFT',[]]) > 0}";
                 };
                 default {_die = true};
@@ -746,7 +769,8 @@ switch (_operation) do {
 
             _id = _object addAction [
                 _text,
-                {[MOD(SYS_LOGISTICS),(_this select 3 select 0),[call compile (_this select 3 select 1), call compile (_this select 3 select 2)]] call ALiVE_fnc_logistics},
+                {[MOD(SYS_LOGISTICS), (_this select 3 select 0), [_this call (_this select 3 select 1),
+                    _this call (_this select 3 select 2)]] call ALiVE_fnc_logistics},
                 [_operation,_input,_container],
                 1,
                 false,
@@ -781,12 +805,32 @@ switch (_operation) do {
             _result = call GVAR(ACTIONS);
         };
 
+        // Copy of removeActions with BIS_fnc_MP call removed
+        // Aim to avoid recurring call
+        case "removeActionsTerm": {
+            if (hasInterface) then {
+                _args = [_this, 2, player, [objNull]] call BIS_fnc_param;
+
+                [_logic,"removeAction",[_args,"carryObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"dropObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"stowObjects"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"unloadObjects"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"towObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"untowObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"liftObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"releaseObject"]] call ALiVE_fnc_logistics;
+
+                _args setvariable [QGVAR(ACTIONS),nil];
+            };
+            _result = false;
+        };
+
         case "removeActions": {
 
             _args = [_this, 2, player, [objNull]] call BIS_fnc_param;
 
             if !(hasInterface) exitwith {
-                [[_logic, _operation, _args],"ALIVE_fnc_logistics", owner _args, false] call BIS_fnc_MP;
+                [[_logic, "removeActionsTerm", _args],"ALIVE_fnc_logistics", owner _args, false] call BIS_fnc_MP;
             };
 
             [_logic,"removeAction",[_args,"carryObject"]] call ALiVE_fnc_logistics;
@@ -819,7 +863,7 @@ switch (_operation) do {
                 switch _args do {
                     case (QGVAR(BUILDINGCHANGED)) : {
 
-                        _result = addMissionEventHandler ["BuildingChanged", 
+                        _result = addMissionEventHandler ["BuildingChanged",
                         {
                             params ["_from", "_to", "_isRuins"];
 
@@ -828,7 +872,7 @@ switch (_operation) do {
                             };
 
                             if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
-                                ["ALiVE SYS LOGISTICS EH BUILDINGCHANGED firing"] call ALiVE_fnc_DumpR;
+                                ["SYS LOGISTICS EH BUILDINGCHANGED firing"] call ALiVE_fnc_dumpR;
                             };
                         }];
                     };
@@ -855,16 +899,16 @@ switch (_operation) do {
                                 //Update vehicle if player is in a vehicle
 		                        [MOD(SYS_LOGISTICS),"updateObject",[vehicle _object]] call ALIVE_fnc_logistics;
                             };
-                            
+
                             //Deactivate actions
-                            [MOD(SYS_LOGISTICS),"removeActions",_object] call ALIVE_fnc_logistics;                   
+                            [MOD(SYS_LOGISTICS),"removeActions",_object] call ALIVE_fnc_logistics;
                         };
 
                         //Update object to persist the destroyed state
                         [MOD(SYS_LOGISTICS),"updateObject",[_object]] call ALIVE_fnc_logistics;
 
                         if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
-                            ["ALiVE SYS LOGISTICS EH Killed firing"] call ALiVE_fnc_DumpR;
+                            ["SYS LOGISTICS EH Killed firing"] call ALiVE_fnc_dumpR;
                         };
                 }]]];
 
@@ -872,10 +916,10 @@ switch (_operation) do {
                 if (hasInterface) then {
                     //apply these EHs on players
                     _object setvariable [QGVAR(EH_INVENTORYCLOSED),_object getvariable [QGVAR(EH_INVENTORYCLOSED),
-                        
+
                         _object addEventHandler ["InventoryClosed", {
                             if !((_this select 1) isKindOf "Man") then {[ALiVE_SYS_LOGISTICS,"updateObject",[_this select 1, _this select 0]] call ALIVE_fnc_logistics};
-                            if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["ALiVE SYS LOGISTICS EH InventoryClosed firing"] call ALiVE_fnc_DumpR};
+                            if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {["SYS LOGISTICS EH InventoryClosed firing"] call ALiVE_fnc_dumpR};
                         }]
                     ]];
                 };
@@ -892,7 +936,7 @@ switch (_operation) do {
                                     if !(typeof (_this select 0) in _blacklist) then {
                                         [ALiVE_SYS_LOGISTICS,"updateObject",[_this select 0]] call ALIVE_fnc_logistics;
                                         if (!isnil QMOD(SYS_LOGISTICS) && {MOD(SYS_LOGISTICS) getvariable [QGVAR(LISTENER),false]}) then {
-                                            ["ALiVE SYS LOGISTICS EH Getout firing"] call ALiVE_fnc_DumpR
+                                            ["SYS LOGISTICS EH Getout firing"] call ALiVE_fnc_dumpR
                                         };
                                     };
                                 };
@@ -946,9 +990,9 @@ switch (_operation) do {
                             -9500,
                             [
                                     "call ALIVE_fnc_logisticsMenuDef",
-                                    "main"
+                                    ["main", "alive_flexiMenu_rscPopup"]
                             ]
-                    ] call ALiVE_fnc_flexiMenu_Remove;
+                    ] call CBA_fnc_flexiMenu_Remove;
             };
 
             //delay
@@ -1029,7 +1073,7 @@ switch (_operation) do {
 
                     //Get 2D position without altering original data
                     private _position = +([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet); _position resize 2;
-                    
+
                     //Filter existing objects of same type in a 1m² radius
                     private _near = nearestObjects [_position,[_type],20];
                     private _exists = [];
@@ -1047,7 +1091,7 @@ switch (_operation) do {
                         _object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
                         _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
-                        ["ALiVE SYS LOGISTICS - recreated non existing object %1 of type %2",_object,_type] call ALiVE_fnc_Dump;
+                        ["SYS LOGISTICS - recreated non existing object %1 of type %2",_object,_type] call ALiVE_fnc_dump;
 
                     } else {
                         TRACE_1("ALiVE SYS LOGISTICS Remapping existing map object!",_x);
@@ -1057,7 +1101,7 @@ switch (_operation) do {
                         [_args,QGVAR(ID),[MOD(SYS_LOGISTICS),"id",_object] call ALiVE_fnc_logistics] call ALiVE_fnc_HashSet;
                         [_args,QGVAR(POSITION),getposATL _object] call ALiVE_fnc_hashSet;
 
-                        ["ALiVE SYS LOGISTICS - remapped existing object %1 of type %2",_object,_type] call ALiVE_fnc_Dump;
+                        ["SYS LOGISTICS - remapped existing object %1 of type %2",_object,_type] call ALiVE_fnc_dump;
                     };
 
                     _createdObjects pushback _object;
@@ -1075,27 +1119,27 @@ switch (_operation) do {
                 _args = [GVAR(STORE),_x getvariable QGVAR(ID)] call ALiVE_fnc_HashGet;
 
                 if !(isnil "_args") then {
-                
+
                 	private _damage = [_args,QGVAR(DAMAGE),0] call ALiVE_fnc_HashGet;
-                
+
                 	if !(_damage == 1) then {
-                	
+
                     	TRACE_1("ALiVE SYS LOGISTICS Resetting state for object!",_x);
                     	[_x,_args] call ALiVE_fnc_setObjectState;
-	
+
                    	} else {
 
                         if (_x isKindOf "House") then {
                             TRACE_1("ALiVE SYS LOGISTICS Destroying building which has been destroyed in a previous session!",_x);
 
-                            ["ALiVE SYS LOGISTICS - Destroying building %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_Dump;
+                            ["SYS LOGISTICS - Destroying building %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_dump;
 
                             // Do not setdamage or delete directly here but destroy the buildings when mission has started
                             _buildings pushback _x;
                         } else {
                    		    TRACE_1("ALiVE SYS LOGISTICS Deleting object which has been destroyed in a previous session!",_x);
 
-                            ["ALiVE SYS LOGISTICS - Deleting object %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_Dump;
+                            ["SYS LOGISTICS - Deleting object %1 which has been destroyed in a previous session!",_x] call ALiVE_fnc_dump;
 
                    		    deleteVehicle _x;
                         };
@@ -1129,6 +1173,7 @@ switch (_operation) do {
                 [QGVAR(CARGO),"ASL_CA"],
                 [QGVAR(FUEL),"ASL_FU"],
                 [QGVAR(DAMAGE),"ASL_DA"],
+                [QGVAR(POINTDAMAGE),"ASL_HP"],
                 [QGVAR(CONTAINER),"ASL_CO"],
                 ["_rev","_rev"]
             ];
@@ -1150,7 +1195,6 @@ switch (_operation) do {
                 _args = [_data,_x] call ALiVE_fnc_HashGet;
 
                 {[_convertedObject,call _selection_1,[_args,call _selection_2] call ALiVE_fnc_HashGet] call ALiVE_fnc_HashSet} foreach _dataSet;
-
                 [_convertedData,_x,_convertedObject] call ALiVE_fnc_HashSet;
             } foreach (_data select 1);
 

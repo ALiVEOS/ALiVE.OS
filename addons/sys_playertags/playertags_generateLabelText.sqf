@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_playertags\script_component.hpp>
+#include "\x\alive\addons\sys_playertags\script_component.hpp"
 private ['_lineCount', '_tmpText', '_type', '_vehicle', '_playerVehicle'];
 
 _obj = _this select 0;
@@ -37,7 +37,7 @@ func_getRank = {
                 _type isKindOf "Helicopter" ||
                 _type isKindOf "Tank") then {
                     if (_tagsInVehicle) then {
-                                ["ALIVE Player Tags - _tagsInVehicle: %1", _tagsInVehicle] call ALIVE_fnc_dump;
+                                ["Player Tags - _tagsInVehicle: %1", _tagsInVehicle] call ALiVE_fnc_dump;
                             _vehicle = _obj;
                             _objTypeStr = format["%1", (typeOf _vehicle)];
                             _name = getText(configFile >> "cfgVehicles" >> _objTypeStr >> "displayName");

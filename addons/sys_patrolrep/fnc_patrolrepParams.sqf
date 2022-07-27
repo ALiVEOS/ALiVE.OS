@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_patrolrep\script_component.hpp>
+#include "\x\alive\addons\sys_patrolrep\script_component.hpp"
 SCRIPT(patrolrepParams);
 
 /* ----------------------------------------------------------------------------
@@ -32,6 +32,6 @@ _debug = _logic getvariable ["DEBUG","false"];
 
 waituntil {!isnil QMOD(SYS_patrolrep)};
 
-MOD(SYS_patrolrep) setvariable ["DEBUG", call compile _debug, true];
+MOD(SYS_patrolrep) setvariable ["DEBUG", (_debug == "true"), true];
 
 _logic

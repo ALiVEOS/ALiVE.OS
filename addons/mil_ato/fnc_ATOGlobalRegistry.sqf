@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_ato\script_component.hpp>
+#include "\x\alive\addons\mil_ato\script_component.hpp"
 SCRIPT(registry);
 
 /* ----------------------------------------------------------------------------
@@ -162,8 +162,8 @@ switch(_operation) do {
 
         _debug = [_logic, "debug"] call MAINCLASS;
 
-        if(typeName _state == "STRING") then {
-            _state = call compile _state;
+        if(_state isEqualType "") then {
+            _state = parseSimpleArray _state;
         };
 
         _modules = [_logic, "modules"] call ALIVE_fnc_hashGet;

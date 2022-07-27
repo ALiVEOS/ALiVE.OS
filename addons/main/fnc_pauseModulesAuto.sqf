@@ -1,4 +1,4 @@
-#include <\x\alive\addons\main\script_component.hpp>
+#include "\x\alive\addons\main\script_component.hpp"
 SCRIPT(PauseModulesAuto);
 
 /* ----------------------------------------------------------------------------
@@ -24,7 +24,7 @@ Highhead
 
 if !(isServer) exitwith {};
 
-["ALiVE - Auto Pause Modules Initialising..."] call ALiVE_fnc_Dump;
+["- Auto Pause Modules Initialising..."] call ALiVE_fnc_dump;
 
 
 MOD(PAUSEMODULES_EH_DISCONNECTED) = addMissionEventHandler ["PlayerDisconnected", {
@@ -34,7 +34,7 @@ MOD(PAUSEMODULES_EH_DISCONNECTED) = addMissionEventHandler ["PlayerDisconnected"
 
         if (({isPlayer _x} count playableUnits) == 0) then {
 
-            ["ALiVE - Pausing Modules"] call ALiVE_fnc_DumpR;
+            ["- Pausing Modules"] call ALiVE_fnc_dumpR;
 
             [
                 "ALIVE_SYS_PROFILE",
@@ -56,7 +56,7 @@ MOD(PAUSEMODULES_EH_CONNECTED) = addMissionEventHandler ["PlayerConnected", {
         GVAR(PAUSEMODULES_PAUSED) = nil;
         PublicVariable QGVAR(PAUSEMODULES_PAUSED);
 
-        ["ALiVE - Starting Modules"] call ALiVE_fnc_DumpR;
+        ["- Starting Modules"] call ALiVE_fnc_dumpR;
 
         [
             "ALIVE_SYS_PROFILE",

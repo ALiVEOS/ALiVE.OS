@@ -1,6 +1,9 @@
-private ["_veh", "_grp", "_callsign", "_pos", "_dir","_height","_type", "_respawn","_code","_tasks","_faction","_side","_sides"];
+private [
+    "_grp", "_callsign", "_pos", "_type", "_respawn","_code", "_side",
+    "_leader", "_unitCount", "_rounds", "_roundsUnit", "_roundsAvailable",
+    "_canMove", "_units", "_grp", "_vehDir", "_artyBatteries"
+];
 
-private ["_pos", "_class", "_callsign", "_unitCount", "_rounds", "_code", "_roundsUnit", "_roundsAvailable", "_canMove", "_units", "_grp", "_vehDir","_artyBatteries"];
 _units = _this select 0;
 _grp = _this select 1;
 _callsign = _this select 2;
@@ -10,26 +13,15 @@ _canMove = _this select 5;
 _type = _this select 6;
 _battery = _this select 7;
 _respawn = _this select 8;
+_code = _this select 9;
+_leader = _battery;
+_side = _this select 10;
 
 _unitCount = count _units; if (_unitCount > 4) then { _unitCount = 4 }; if (_unitCount < 1) then { _unitCount = 1 };
 _canMove = if (_type in ["B_MBT_01_arty_F", "O_MBT_02_arty_F", "B_MBT_01_mlrs_F","O_Mortar_01_F", "B_Mortar_01_F","I_Mortar_01_F","BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then { true } else { false };
 _rounds = _availableRounds;
 _roundsUnit = _type call NEO_fnc_artyUnitAvailableRounds;
 _roundsAvailable = [];
-
-
-//define defaults
-_code = _this select 9;
-_faction = gettext(configfile >> "CfgVehicles" >> _type >> "faction");
-_sides = [WEST,EAST,RESISTANCE,CIVILIAN];
-
-//get side
-switch ((getNumber(configfile >> "CfgVehicles" >> _type >> "side"))) do {
-    case 0 : {_side = EAST};
-    case 1 : {_side = WEST};
-    case 2 : {_side = RESISTANCE};
-    default {_side = EAST};
-};
 
 //Exit if limit is reached
 if (ARTY_RESPAWN_LIMIT == 0) exitwith {
@@ -41,22 +33,26 @@ if (ARTY_RESPAWN_LIMIT == 0) exitwith {
 sleep _respawn;
 ARTY_RESPAWN_LIMIT = ARTY_RESPAWN_LIMIT - 1;
 
-//Remove from all side-lists
-_toDelete = [];
+//Validate rounds
 {
-        private ["_sideArray","_sideIn"];
-        _sideIn = _x;
-        _sideArray = NEO_radioLogic getVariable [format["NEO_radioArtyArray_%1", _sideIn],[]];
-        {
-            if (count _units > 0) then {
-                _toDelete pushback _x;
+    if ((_x select 0) in _roundsUnit) then
+    {
+        _roundsAvailable pushback _x;
+    };
+} forEach _rounds;
 
-                _sideArray set [_foreachIndex, -1];
-                _sideArray = _sideArray - [-1];
-            };
-        } foreach _sideArray;
-        NEO_radioLogic setVariable [format["NEO_radioArtyArray_%1", _sideIn], _sideArray, true];
-} foreach _sides;
+//This unit cannot be used anymore, remove from side-list
+_sideArray = NEO_radioLogic getVariable [format["NEO_radioArtyArray_%1", _side], []];
+
+{
+    if (_leader isEqualTo (_x select 0)) exitWith {
+        _sideArray set [_forEachIndex, [-1]];
+    };
+
+} forEach _sideArray;
+
+_sideArray = _sideArray - [[-1]];
+NEO_radioLogic setVariable [format["NEO_radioArtyArray_%1", _side], _sideArray, true];
 
 //Delete objects and groups
 {deleteVehicle _x} foreach _units;
@@ -90,12 +86,19 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
         _veh = createVehicle [_type, _vehPos, [], 0, "CAN_COLLIDE"];
         _veh setDir _vehDir;
         _veh setPosATL _vehPos;
-        [_veh, _grp] call BIS_fnc_spawnCrew;
+        createVehicleCrew _veh;
+        _crew = crew _veh;
+        _crew joinSilent _grp;
+        _grp addVehicle _veh;
         _veh lock true;
         _vehDir = _vehDir + 90;
 
         _units pushback _veh;
         _artyBatteries pushback _veh;
+
+        // Exclude CS from VCOM
+        // CS only runs serverside so no PV is needed
+        (driver _veh) setvariable ["VCOM_NOAI", true];
 
         // set ownership flag for other modules
         _veh setVariable ["ALIVE_CombatSupport", true];
@@ -105,14 +108,6 @@ if (_side == WEST && _type == "BUS_MotInf_MortTeam") then {
 {_x setVariable ["NEO_radioArtyModule", [leader _grp, _callsign], true]} forEach _units;
 
 [[(units _grp select 0),_callsign], "fnc_setGroupID", false, false] spawn BIS_fnc_MP;
-
-//Validate rounds
-{
-    if ((_x select 0) in _roundsUnit) then
-    {
-        _roundsAvailable pushback _x;
-    };
-} forEach _rounds;
 
 leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
 
@@ -131,15 +126,16 @@ _codeArray = [_code, ";"] Call CBA_fnc_split;
     } forEach _codeArray;
 } forEach _artyBatteries;
 
-_audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
+private _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 
 //FSM
-[_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _type, leader _grp, _code, _audio] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
+private _artyfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
+private _fsmHandle = [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _type, leader _grp, _code, _audio, _side] execFSM _artyfsm;
 
-_a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
-_a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable]);
+private _artyAsset = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
+_artyAsset pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable, _fsmHandle]);
 
-NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
+NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _artyAsset, true];
 
 _replen = format["All units this is %1! We are back on station and are ready for tasking", _callsign] ;
 [[player,_replen,"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;

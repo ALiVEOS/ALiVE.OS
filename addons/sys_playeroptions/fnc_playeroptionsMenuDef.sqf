@@ -1,5 +1,5 @@
-#include <\x\alive\addons\sys_playeroptions\script_component.hpp>
-#include <\x\cba\addons\ui_helper\script_dikCodes.hpp>
+#include "\x\alive\addons\sys_playeroptions\script_component.hpp"
+#include "\a3\editor_f\Data\Scripts\dikCodes.h"
 
 SCRIPT(playeroptionsMenuDef);
 
@@ -45,7 +45,7 @@ _menuName = "";
 _menuRsc = "popup";
 
 if (typeName _params == typeName []) then {
-    if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
+    if (count _params < 1) exitWith {["Error: Invalid params: %1, %2", _this, __FILE__] call ALiVE_fnc_dump;};
     _menuName = _params select 0;
     _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
 } else {
@@ -152,6 +152,15 @@ if (_menuName == "playeroptions") then {
                     -1,
                      (MOD(sys_player) getVariable ["allowManualSave", true]),
                      !isNil QMOD(sys_player) && MOD(sys_player) getVariable ["enablePlayerPersistence",false] && (MOD(sys_player) getVariable ["allowManualSave", true])
+                ],
+                [localize "STR_ALIVE_player_RESTORE_MARKERS",
+                    {[ALIVE_SYS_MARKER, "restoreMarkers", [ALIVE_SYS_MARKER_STORE]] call ALiVE_fnc_marker},
+                    "",
+                    localize "STR_ALIVE_player_RESTORE_MARKERS_COMMENT",
+                     "",
+                     -1,
+                     true,
+                     !(MOD(require) getVariable["ALiVE_DISABLEMARKERS",false])
                 ]
             ]
         ]

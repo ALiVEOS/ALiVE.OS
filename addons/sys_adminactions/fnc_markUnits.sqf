@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_adminactions\script_component.hpp>
+#include "\x\alive\addons\sys_adminactions\script_component.hpp"
 SCRIPT(markUnits);
 
 /* ----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ private ["_m","_markers","_delay"];
         _m setMarkerSizeLocal [.6,.6];
         _markers pushback _m;
 
-        switch (side _x) do {
+        switch (side group _x) do {
             case west: {
                 _m setMarkerTypeLocal "b_unknown";
                 _m setMarkerColorLocal "ColorBLUFOR";
@@ -103,15 +103,18 @@ private ["_m","_markers","_delay"];
     waitUntil {
         sleep .75;
         _i = _i - .025;
-        if (_i > 0) then {
-            {
-                _x setMarkerAlphaLocal _i;
-            } forEach _markers;
-        } else {
+        
+        if (_i <= 0) exitWith { 
             {
                 deleteMarkerLocal _x;
             } forEach _markers;
-            true;
+            true       
         };
+        
+        {
+            _x setMarkerAlphaLocal _i;
+        } forEach _markers;
+        
+        false
     };
 };

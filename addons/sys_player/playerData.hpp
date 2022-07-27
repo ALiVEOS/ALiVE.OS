@@ -238,6 +238,7 @@ GVAR(LOADOUT_DATA) = [
         _target selectWeapon _weap;
         _magazines;},
      {
+        removeBackpack (_this select 0);
         (_this select 0) addbackpack "B_Bergen_mcamo"; // as a place to put items temporarily
         {
             [(_this select 0), _x] call addItemToUniformOrVest;
@@ -270,7 +271,7 @@ GVAR(LOADOUT_DATA) = [
          {
                 (_this select 0) addMagazine _x;
          } foreach (_this select 1);
-         //[0, {diag_log format['post mags: %1', magazinesAmmoFull _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+         //[0, {['post mags: %1', magazinesAmmoFull _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
     }],
     ["handgunWeapon", {handgunWeapon (_this select 0);}, {
         (_this select 0) addWeaponGlobal (_this select 1);
@@ -310,7 +311,7 @@ GVAR(LOADOUT_DATA) = [
     ["uniform", {uniform (_this select 0);}, {
         //if (uniform (_this select 0) != (_this select 1)) then {
                 removeUniform (_this select 0);
-                //[0, {diag_log format['remove uniform: %1', uniform _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+                //[0, {['remove uniform: %1', uniform _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
 
                 if ((_this select 0) isUniformAllowed (_this select 1)) then {
                     (_this select 0) addUniform (_this select 1);
@@ -318,17 +319,17 @@ GVAR(LOADOUT_DATA) = [
                     (_this select 0) forceAddUniform (_this select 1);
                 };
                 // Check to see uniform state on client and server
-                //[0, {diag_log format['add uniform: %1', uniform _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+                //[0, {['add uniform: %1', uniform _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
 
                 {
                     (_this select 0) removeItemFromUniform _x;
 //                    ["server",QMOD(sys_player),[[(_this select 0), _x],{(_this select 0) removeItemFromUniform (_this select 1);}]] call ALIVE_fnc_BUS; // removeItemFromUniform is not global
-                    //[0, {diag_log format['uniformItems pre: %1', uniformItems _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+                    //[0, {['uniformItems pre: %1', uniformItems _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
                 } foreach uniformItems (_this select 0);
         /*} else {
 
-                [0, {diag_log format['server no change uniform: %1', uniform _this];},  (_this select 0)] call CBA_fnc_globalExecute;
-                [0, {diag_log format['server remove uniform items: %1', uniformItems _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+                [0, {['server no change uniform: %1', uniform _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
+                [0, {['server remove uniform items: %1', uniformItems _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
         };*/
     }],
 
@@ -344,13 +345,23 @@ GVAR(LOADOUT_DATA) = [
         } foreach uniformItems (_this select 0);
         _uniformItems;
      }, {
+        private ["_acreActive"];
         PLACEHOLDERCOUNT = 0;
+        _acreActive = isClass(configFile >> "CfgPatches" >> "acre_main");
         {
             //[(_this select 0), _x] call addItemToUniformOrVest;
-            (_this select 0) addItemToUniform _x;
+            if ((_acreActive) && {_x call acre_api_fnc_isRadio}) then
+            {
+                (_this select 0) addItemToUniform (_x call acre_api_fnc_getBaseRadio);
+            }
+            else
+            {
+                (_this select 0) addItemToUniform _x;
+            };
+           // (_this select 0) addItemToUniform _x;
 //            ["server",QMOD(sys_player),[[(_this select 0), _x],{(_this select 0) addItemToUniform (_this select 1);}]] call ALIVE_fnc_BUS; // addItemToUniform is not global
         } foreach (_this select 1);
-        //[0, {diag_log format['uniformItems: %1', uniformItems _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+        //[0, {['uniformItems: %1', uniformItems _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
     }],
     ["uniformMagazines", {
         private ["_uniformMags"];
@@ -361,16 +372,16 @@ GVAR(LOADOUT_DATA) = [
         {
             [(_this select 0), _x] call addItemToUniformOrVest;
         } foreach (_this select 1);
-        //[0, {diag_log format['uni mags: %1', magazinesAmmoFull _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+        //[0, {['uni mags: %1', magazinesAmmoFull _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
         [(_this select 0),"uniform"] call fillContainer;
     }],
     ["vest", {vest (_this select 0);}, {
                 removeVest (_this select 0);
-                //[0, {diag_log format['remove vest: %1', vest _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+                //[0, {['remove vest: %1', vest _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
 
                 (_this select 0) addVest (_this select 1);
                 // Check to see vest state on client and server
-                //[0, {diag_log format['add vest: %1', vest _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+                //[0, {['add vest: %1', vest _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
 
                 {
                     (_this select 0) removeItemFromVest _x;
@@ -388,11 +399,21 @@ GVAR(LOADOUT_DATA) = [
         } foreach vestItems (_this select 0);
         _vestItems;
     }, {
+        private ["_acreActive"];
+        _acreActive = isClass(configFile >> "CfgPatches" >> "acre_main");
         {
-            (_this select 0) addItemToVest _x;
+            if ((_acreActive) && {_x call acre_api_fnc_isRadio}) then
+            {
+                (_this select 0) addItemToVest (_x call acre_api_fnc_getBaseRadio);
+            }
+            else
+            {
+                (_this select 0) addItemToVest _x;
+            };
+            //(_this select 0) addItemToVest _x;
 //            ["server",QMOD(sys_player),[[(_this select 0), _x],{(_this select 0) addItemToVest (_this select 1);}]] call ALIVE_fnc_BUS; // addItemToVest is not global
         } foreach (_this select 1);
-        //[0, {diag_log format['vestItems: %1', vestItems _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+        //[0, {['vestItems: %1', vestItems _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
     }],
     ["vestMagazines", {
         private ["_vestMags"];
@@ -403,7 +424,7 @@ GVAR(LOADOUT_DATA) = [
         {
             [(_this select 0), _x] call addItemToUniformOrVest;
         } foreach (_this select 1);
-        //[0, {diag_log format['vest mags: %1', magazinesAmmoFull _this];},  (_this select 0)] call CBA_fnc_globalExecute;
+        //[0, {['vest mags: %1', magazinesAmmoFull _this];},  (_this select 0)] call ALiVE_fnc_dump call CBA_fnc_globalExecute;
         [(_this select 0),"vest"] call fillContainer;
     }],
     ["backpack", {backpack (_this select 0);}, {
@@ -425,8 +446,9 @@ GVAR(LOADOUT_DATA) = [
         } foreach (_cargo select 0);
         _backpacks;
     },{
+        private ["_acreActive","_target"];
         clearAllItemsFromBackpack (_this select 0);
-        private ["_target"];
+        _acreActive = isClass(configFile >> "CfgPatches" >> "acre_main");
         _target = _this select 0;
         {
             private "_item";
@@ -434,7 +456,15 @@ GVAR(LOADOUT_DATA) = [
             if(_item != "") then {
                 if(getNumber(configFile>>"CfgVehicles">>_item>>"isbackpack")==1) then {
                     TRACE_2("adding item to backpack", _target, _item);
-                    (unitBackpack _target) addBackpackCargoGlobal [_item,1];
+                    if ((_acreActive) && {_x call acre_api_fnc_isRadio}) then
+                    {
+                        (unitBackpack _target) addItemCargoGlobal [(_item call acre_api_fnc_getBaseRadio),1];
+                    }
+                    else
+                    {
+                        (unitBackpack _target) addBackpackCargoGlobal [_item,1];
+                    };
+                    //(unitBackpack _target) addBackpackCargoGlobal [_item,1];
                 };
             };
         } foreach (_this select 1);
@@ -459,8 +489,9 @@ GVAR(LOADOUT_DATA) = [
         } foreach backpackitems (_this select 0);
         _bp;
     }, {
-        private ["_target"];
+        private ["_target","_acreActive"];
         _target = _this select 0;
+        _acreActive = isClass(configFile >> "CfgPatches" >> "acre_main");
         {
             private "_item";
             _item = _x;
@@ -469,8 +500,20 @@ GVAR(LOADOUT_DATA) = [
                     if(isClass(configFile>>"CfgWeapons">>_item>>"WeaponSlotsInfo") && getNumber(configFile>>"CfgWeapons">>_item>>"showempty")==1) then {
                         (unitBackpack _target) addWeaponCargoGlobal [_item,1];
                     } else {
-                        _target addItem _item;
-                    };
+                        if ((_acreActive) && {_x call acre_api_fnc_isRadio}) then
+                        {
+                           (unitBackpack _target) addItemCargoGlobal [(_item call acre_api_fnc_getBaseRadio),1];
+                        }
+                        else
+                        {
+                            if (_item == "ItemRadio") then {
+                                (unitBackpack _target) addItemCargoGlobal [_item,1];
+                            } else {
+                                _target addItem _item;
+                            };
+                        };
+                            //_target addItem _item;
+                        };
             };
         } foreach (_this select 1);
         // remove item placeholders from vest and uniform
@@ -513,8 +556,8 @@ GVAR(LOADOUT_DATA) = [
     ["weaponstate", {
         private ["_currentweapon","_currentmode","_isFlash","_isIR","_weapLow","_data"];
         if (typeof (vehicle (_this select 0)) == typeof (_this select 0)) then {
-            _currentweapon = currentMuzzle (_this select 0);
-            _currentmode = currentWeaponMode (_this select 0);
+            _currentweapon = (weaponState (_this select 0)) select 1;
+            _currentmode = (weaponState (_this select 0)) select 2;
             _isFlash = (_this select 0) isFlashlightOn _currentweapon;
             _isIR = (_this select 0) isIRLaserOn _currentweapon;
             _nvg = currentVisionMode (_this select 0);

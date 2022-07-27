@@ -1,4 +1,4 @@
-#include <\x\alive\addons\main\script_component.hpp>
+#include "\x\alive\addons\main\script_component.hpp"
 SCRIPT(AI_Distributor);
 
 /* ----------------------------------------------------------------------------
@@ -8,11 +8,14 @@ Description:
 Switches AI to available headlessClients
 
 Parameters:
-BOOL (true to turn on, false to turn off)
+BOOL (true to turn on, false to turn off, default is false)
+SCALAR (seconds between distribution cycles, default is 60)
 
 Examples:
 (begin example)
-true call ALiVE_fnc_AI_Distributor
+[true] spawn ALiVE_fnc_AI_Distributor
+[true, 30] spawn ALiVE_fnc_AI_Distributor
+[false] spawn ALiVE_fnc_AI_Distributor
 (end)
 
 See Also:
@@ -22,63 +25,113 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
+params
+[
+    ["_mode", false],
+    ["_interval", 60]
+];
+
+if (!isServer) exitwith {["AI Distributor should ONLY run on the server !"] call ALiVE_fnc_Dump};
+
+GVAR(AI_DISTRIBUTOR_MODE) = _mode;
+
+// Initialize GVAR as correctly //
+if (isNil QGVAR(AI_DISTRIBUTOR)) then {
+    GVAR(AI_DISTRIBUTOR) = scriptNull;
+};
+
+// Handle mode: <false> (disabled) calls //
+if (!GVAR(AI_DISTRIBUTOR_MODE) && {isNull GVAR(AI_DISTRIBUTOR)}) exitWith {["AI Distributor not enabled (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_dump};
+
+// Handle duplicate start calls //
+if (GVAR(AI_DISTRIBUTOR_MODE) && {!isNull GVAR(AI_DISTRIBUTOR)}) exitwith {["AI Distributor already running !"] call ALiVE_fnc_dump};
+
+// Handle shutdown call //
+if (!GVAR(AI_DISTRIBUTOR_MODE) && {!isNull GVAR(AI_DISTRIBUTOR)}) exitWith {
+    ["AI Distributor shutting down (mode: %1).", GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_dump;
+    terminate GVAR(AI_DISTRIBUTOR);
+    waitUntil {scriptDone GVAR(AI_DISTRIBUTOR)};
+};
+
 waituntil {time > 0};
 
-private ["_mode","_headlessClients"];
+// ACEX Headless detection //
+if (isClass(configFile >> "CfgPatches" >> "acex_headless")) then {
+    waitUntil {!isNil "acex_headless_enabled"};
 
-GVAR(AI_DISTRIBUTOR_MODE) = _this;
+    if (acex_headless_enabled) then {
+        ["AI Distributor detected ACEX Headless module enabled, shutting down !"] call ALiVE_fnc_dump;
+        terminate _thisScript;
+        waitUntil {scriptDone _thisScript};
+    };
+};
 
-if (!isServer || {isnil "HEADLESSCLIENTS"} || {count HEADLESSCLIENTS == 0}) exitwith {["ALIVE AI Distributor exiting, no headless clients %1 or not server %2",HEADLESSCLIENTS,!isServer] call ALiVE_fnc_Dump};
+GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
 
-GVAR(AI_DISTRIBUTOR) = [] spawn {
+    params ["_delay"];
 
-    private ["_HC_index","_debug"];
+    private _HC_index = 0;
+    private _debug = false;
 
-    _HC_index = 0;
-    _debug = false;
+    waitUntil {!isNil QMOD(REQUIRE_INITIALISED)};
 
-    WHILE {GVAR(AI_DISTRIBUTOR_MODE)} do {
+    ["AI Distributor starting."] call ALiVE_fnc_dump;
 
-        // Create data
+    while {GVAR(AI_DISTRIBUTOR_MODE)} do {
+
+        // Create data //
         GVAR(AI_LOCALITIES) = [] call ALiVE_fnc_HashCreate;
 
+        // Detect HCs //
+        GVAR(AI_DISTRIBUTOR_HCLIST) = [];
+
         {
-            if (local _x && {{alive _x && {!((vehicle _x) getvariable ["ALiVE_CombatSupport",false])}} count units _x > 0}) then {
+            if ((typeOf _x) == "HeadlessClient_F") then
+            {
+                GVAR(AI_DISTRIBUTOR_HCLIST) pushBack _x;
+            };
+        } forEach allPlayers;
 
-                //Distribute to all available HCs
-                if (_HC_index > ((count HEADLESSCLIENTS)-1)) then {_HC_index = 0};
+        {
+            // Abandon loop if no HCs connected //
+            if (GVAR(AI_DISTRIBUTOR_HCLIST) isEqualTo []) exitWith {["AI Distributor detected no HCs, idling for %1 seconds.", _delay] call ALiVE_fnc_Dump};
 
-                private _HC = HEADLESSCLIENTS select _HC_index; _HC_index = _HC_index + 1;
+            if ( (local _x) && { { (alive _x) && { !((vehicle _x) getVariable ["ALiVE_CombatSupport", false])} && {!(_x getVariable ["ALiVE_ignore_HC", false])}} count (units _x) > 0}) then {
+
+                // Distribute to available HCs //
+                if (_HC_index > ((count GVAR(AI_DISTRIBUTOR_HCLIST)) -1)) then {_HC_index = 0};
+
+                private _HC = (GVAR(AI_DISTRIBUTOR_HCLIST) select _HC_index);
+                _HC_index = (_HC_index + 1);
 
                 _x setGroupOwner (owner _HC);
 
-                ["ALIVE AI Distributor switching group %1 to HC %2",_x, _HC] call ALiVE_fnc_Dump;
+                ["AI Distributor switching group '%1' to HC '%2'.", _x, _HC] call ALiVE_fnc_dump;
             };
 
-            [GVAR(AI_LOCALITIES),groupOwner _x,([GVAR(AI_LOCALITIES),groupOwner _x,[]] call ALiVE_fnc_HashGet) + [_x]] call ALiVE_fnc_HashSet;
+            if (_debug) then {
+                [GVAR(AI_LOCALITIES), (groupOwner _x), ([GVAR(AI_LOCALITIES), (groupOwner _x), []] call ALiVE_fnc_HashGet) + [_x]] call ALiVE_fnc_HashSet;
+            };
 
             sleep 0.5;
        } foreach allGroups;
 
+        // Debug section //
         if (_debug) then {
-            private _t = ["AI DISTRIBUTION",lineBreak];
+            private _t = ["AI DISTRIBUTION", lineBreak];
             {
-                private _key = (GVAR(AI_LOCALITIES) select 1) select _foreachIndex;
-                private _valueCount = count _x;
+                private _key = ((GVAR(AI_LOCALITIES) select 1) select _foreachIndex);
+                private _valueCount = (count _x);
 
-                _t = _t + [format["Loc. %1 | Groups: %2",_key,_valueCount],lineBreak];
+                _t = _t + [format ["Loc. %1 | Groups: %2", _key, _valueCount], lineBreak];
             } foreach (GVAR(AI_LOCALITIES) select 2);
 
             [composeText _t] call ALiVE_fnc_DumpMPH;
         };
 
-        // Delete data
+        // Delete data //
         GVAR(AI_LOCALITIES) = nil;
 
-        sleep 10;
+        sleep _delay;
     };
-
-    ["ALIVE AI Distributor turned off (mode: %1)",GVAR(AI_DISTRIBUTOR_MODE)] call ALiVE_fnc_Dump;
-
-    terminate GVAR(AI_DISTRIBUTOR);
 };

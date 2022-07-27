@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(updateTraceGrid);
 
 /* ----------------------------------------------------------------------------
@@ -34,7 +34,7 @@ _fill = if (count _this > 1) then {_this select 1} else {"Solid"};
 
 {
     private _pos = getposATL _x;
-    private _side = side _x;
+    private _side = side group _x;
 
     private _cleared = [GVAR(TRACEGRID_STORE),str(_side),[]] call ALiVE_fnc_HashGet;
 

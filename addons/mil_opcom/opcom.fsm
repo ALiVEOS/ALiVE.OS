@@ -1,20 +1,20 @@
-/*%FSM<COMPILE "C:\Program Files (x86)\Bohemia Interactive\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, opcom">*/
+/*%FSM<COMPILE "scriptedFSM.cfg, opcom">*/
 /*%FSM<HEAD>*/
 /*
 item0[] = {"INIT",0,250,-717.630066,-1005.371277,-627.630066,-955.371338,0.000000,"INIT"};
 item1[] = {"INIT_COMPLETE",4,218,-720.395935,-937.944458,-630.395935,-887.944458,0.000000,"INIT" \n "COMPLETE"};
 item2[] = {"ANALYZE",2,250,-915.210754,-306.293610,-417.475098,-258.428986,0.000000,"ANALYZE"};
 item3[] = {"OPCOM_FEEDER",4,218,-711.187256,-222.682648,-621.187195,-172.682648,1.000000,"OPCOM" \n "FEEDER"};
-item4[] = {"ATTACK_Condition",4,218,-924.627625,-202.879486,-834.627502,-152.879486,5.000000,"ATTACK" \n "Conditions"};
+item4[] = {"ATTACK_Condition",4,218,-891.552124,-203.731567,-801.552002,-153.731567,5.000000,"ATTACK" \n "Conditions"};
 item5[] = {"",7,210,-341.155090,36.380066,-333.155060,44.380096,0.000000,""};
 item6[] = {"",7,210,-347.610199,-817.749023,-339.610168,-809.749023,0.000000,""};
 item7[] = {"DEFEND_condition",4,218,-787.492737,-203.595917,-697.492737,-153.595917,4.000000,"DEFEND" \n "conditions"};
 item8[] = {"RESERVE_conditio",4,218,-642.570801,-201.616302,-552.570740,-151.616302,3.000000,"RESERVE" \n "conditions"};
-item9[] = {"OPCOM_RECEIVER",4,4314,-717.074463,-838.579346,-627.074646,-788.579346,1.000000,"OPCOM" \n "RECEIVER"};
+item9[] = {"OPCOM_RECEIVER",4,218,-717.074463,-838.579346,-627.074646,-788.579346,1.000000,"OPCOM" \n "RECEIVER"};
 item10[] = {"CUSTOM_condition",4,218,-502.155029,-201.889679,-412.155121,-151.889679,2.000000,"CUSTOM" \n "conditions"};
 item11[] = {"ORDER_TACOM",2,250,-924.860840,-94.510040,-425.593536,-50.306946,0.000000,"ORDER" \n "TACOM"};
 item12[] = {"TACOM_CONFIRM",4,218,-651.682068,14.823029,-561.682068,64.823029,0.000000,"TACOM" \n "CONFIRM"};
-item13[] = {"TACOM_NOT_CONFIR",4,218,-767.965027,13.736359,-677.965149,63.736359,0.000000,"TACOM" \n "NOT CONFIRM"};
+item13[] = {"TACOM_NOT_CONFIR",4,218,-767.100525,23.245697,-677.100647,73.245697,0.000000,"TACOM" \n "NOT CONFIRM"};
 item14[] = {"",7,210,-1031.257935,34.909210,-1023.257385,42.909210,0.000000,""};
 item15[] = {"_",-1,250,-433.177032,51.216019,-430.091949,51.216019,0.000000,""};
 item16[] = {"",7,210,-1032.922607,-816.473755,-1024.922607,-808.473755,0.000000,""};
@@ -34,7 +34,7 @@ item29[] = {"END",1,250,-712.089600,226.488464,-622.089539,276.488434,0.000000,"
 item30[] = {"REEINFORCE_Condi",4,218,-269.226440,-306.737396,-179.226395,-256.737396,0.000000,"REEINFORCE" \n "Conditions"};
 item31[] = {"REQUEST_REEINFOR",2,250,-269.835327,-838.042908,-179.835312,-788.042908,0.000000,"REQUEST" \n "REEINFORCEMENTS"};
 item32[] = {"",7,210,-1164.081909,36.036972,-1156.081909,44.036972,0.000000,""};
-item33[] = {"PERFORM_POSTANAL",2,250,-1209.788086,-683.964172,-1119.788086,-633.964172,0.000000,"PERFORM" \n "POSTANALYSIS"};
+item33[] = {"PERFORM_POSTANAL",2,4346,-1209.788086,-683.964172,-1119.788086,-633.964172,0.000000,"PERFORM" \n "POSTANALYSIS"};
 item34[] = {"POST_ANALYSIS_DO",4,218,-1208.969116,-760.668579,-1118.969116,-710.668579,0.000000,"POST" \n "ANALYSIS" \n "DONE"};
 item35[] = {"QRF_Conditions",4,218,-133.845856,-306.268250,-43.845856,-256.268250,0.000000,"QRF" \n "Conditions"};
 item36[] = {"REQUEST_QRF",2,250,-133.738892,-834.303589,-43.738892,-784.303650,0.000000,"REQUEST" \n "QRF"};
@@ -42,6 +42,7 @@ item37[] = {"RECON_Conditions",4,218,9.105785,-308.301544,99.105774,-258.301483,
 item38[] = {"REQUEST_RECON",2,250,10.006296,-836.706787,100.006363,-786.706909,0.000000,"REQUEST" \n "RECON"};
 item39[] = {"OCA_Conditions",4,218,150.274902,-304.513031,240.274811,-254.513000,0.000000,"OCA" \n "Conditions"};
 item40[] = {"REQUEST_OCA",2,250,150.634949,-836.432495,240.634949,-786.432495,0.000000,"REQUEST" \n "OCA"};
+item41[] = {"Skip_Objective",4,218,-994.924133,-204.559387,-904.923767,-154.559387,0.000000,"Skip" \n "Objective"};
 version=1;
 class LayoutItems
 {
@@ -69,49 +70,51 @@ link10[] = {2,30};
 link11[] = {2,35};
 link12[] = {2,37};
 link13[] = {2,39};
-link14[] = {3,2};
-link15[] = {4,11};
-link16[] = {5,6};
-link17[] = {5,28};
-link18[] = {6,9};
-link19[] = {7,11};
-link20[] = {8,11};
-link21[] = {9,20};
-link22[] = {10,11};
-link23[] = {11,12};
-link24[] = {11,13};
-link25[] = {12,19};
-link26[] = {13,18};
-link27[] = {14,16};
-link28[] = {14,28};
-link29[] = {16,9};
-link30[] = {17,9};
-link31[] = {18,14};
-link32[] = {19,5};
-link33[] = {20,9};
-link34[] = {20,21};
-link35[] = {21,2};
-link36[] = {22,26};
-link37[] = {23,24};
-link38[] = {23,32};
-link39[] = {24,33};
-link40[] = {25,16};
-link41[] = {26,27};
-link42[] = {27,23};
-link43[] = {28,29};
-link44[] = {30,31};
-link45[] = {31,6};
-link46[] = {32,28};
-link47[] = {33,34};
-link48[] = {34,25};
-link49[] = {35,36};
-link50[] = {36,6};
-link51[] = {37,38};
-link52[] = {38,6};
-link53[] = {39,40};
-link54[] = {40,6};
-globals[] = {0.000000,0,0,0,0,640,480,1,94,6316128,1,-998.704529,-433.507751,-219.055542,-974.044739,676,903,1};
-window[] = {2,-1,-1,-1,-1,1290,198,2130,198,3,693};
+link14[] = {2,41};
+link15[] = {3,2};
+link16[] = {4,11};
+link17[] = {5,6};
+link18[] = {5,28};
+link19[] = {6,9};
+link20[] = {7,11};
+link21[] = {8,11};
+link22[] = {9,20};
+link23[] = {10,11};
+link24[] = {11,12};
+link25[] = {11,13};
+link26[] = {12,19};
+link27[] = {13,18};
+link28[] = {14,16};
+link29[] = {14,28};
+link30[] = {16,9};
+link31[] = {17,9};
+link32[] = {18,14};
+link33[] = {19,5};
+link34[] = {20,9};
+link35[] = {20,21};
+link36[] = {21,2};
+link37[] = {22,26};
+link38[] = {23,24};
+link39[] = {23,32};
+link40[] = {24,33};
+link41[] = {25,16};
+link42[] = {26,27};
+link43[] = {27,23};
+link44[] = {28,29};
+link45[] = {30,31};
+link46[] = {31,6};
+link47[] = {32,28};
+link48[] = {33,34};
+link49[] = {34,25};
+link50[] = {35,36};
+link51[] = {36,6};
+link52[] = {37,38};
+link53[] = {38,6};
+link54[] = {39,40};
+link55[] = {40,6};
+link56[] = {41,18};
+globals[] = {0.000000,0,0,0,0,640,480,1,97,6316128,1,-1296.222168,-411.687134,-19.027405,-873.655518,597,572,1};
+window[] = {2,-1,-1,-32000,-32000,892,104,1490,104,3,615};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -151,12 +154,17 @@ class FSM
                          "private _lastanalyze = 0;" \n
                          "private _orderFailed = false;" \n
                          "private _colorside = ""ColorRed"";" \n
+                         "private _reinforcementsInProgress = false;" \n
+                         "" \n
+                         "private _OPCOM_SKIP_OBJECTIVES = [];" \n
                          "" \n
                          "switch (_side) do {" \n
                          "    case (""WEST"") : {_colorside = ""ColorBlue""};" \n
                          "    case (""EAST"") : {_colorside = ""ColorRed""};" \n
                          "    case (""GUER"") : {_colorside = ""ColorGreen""};" \n
                          "};" \n
+                         "" \n
+                         "" \n
                          "" \n
                          "// debug ---------------------------------------" \n
                          "if(_debug) then {" \n
@@ -168,37 +176,37 @@ class FSM
                          "/*" \n
                          "//Mock targets for testing purposes" \n
                          "" \n
-                         "                        // markers m_0 -  m_15" \n
-                         "                        _objectives_unsorted = [];" \n
-                         "                        for ""_i"" from 0 to 15 do {" \n
-                         "                            _objectives_unsorted pushback [(getmarkerpos format[""m_%1"",_i]),150,""civilian"",25];" \n
-                         "                        };" \n
+                         "// markers m_0 -  m_15" \n
+                         "_objectives_unsorted = [];" \n
+                         "for ""_i"" from 0 to 15 do {" \n
+                         "	_objectives_unsorted pushback [(getmarkerpos format[""m_%1"",_i]),150,""civilian"",25];" \n
+                         "};" \n
                          "" \n
-                         "                        _objectives = [_objectives_unsorted,[],{([_OPCOM_HANDLER,""position""] call ALiVE_fnc_HashGet) distance (_x select 0)},""ASCEND""] call ALiVE_fnc_SortBy;" \n
-                         "                        " \n
-                         "                        //Create objectives for OPCOM and set it on the OPCOM Handler " \n
-                         "                        //GetObjectivesByPriority" \n
-                         "                        {" \n
-                         "                                    _target = [nil, ""createhashobject""] call ALIVE_fnc_OPCOM;" \n
-                         "                        " \n
-                         "                                    _id = format[""OPCOM_objective_%1_%2"",_side,_foreachIndex]; [_target, ""objectiveID"",_id] call ALIVE_fnc_HashSet;" \n
-                         "                                    _pos = _x select 0; [_target, ""center"",_pos] call ALIVE_fnc_HashSet;" \n
-                         "                                    _size = _x select 1; [_target, ""size"",_size] call ALIVE_fnc_HashSet;" \n
-                         "                                    _type = _x select 2; [_target, ""objectiveType"",_type] call ALIVE_fnc_HashSet;" \n
-                         "                                    _priority = _x select 3; [_target, ""priority"",_priority] call ALIVE_fnc_HashSet;" \n
-                         "                                    _opcom_state = ""unassigned""; [_target, ""opcom_state"",_opcom_state] call ALIVE_fnc_HashSet;" \n
-                         "                        " \n
-                         "                                    if  (_debug) then {" \n
-                         "                                        _m = createMarkerLocal [_id, _pos];" \n
-                         "                                        _m setMarkerShapeLocal ""RECTANGLE"";" \n
-                         "                                        _m setMarkerSizeLocal [_size, _size];" \n
-                         "                                        _m setMarkerTypeLocal ""hd_dot"";" \n
-                         "                                        _m setMarkerColorLocal ""ColorWhite"";" \n
-                         "                                        //_m setMarkerTextLocal format[""Objective Priority %1"",_foreachIndex];" \n
-                         "                                    };" \n
-                         "                    " \n
-                         "                                    _objectives set [_forEachIndex, _target];" \n
-                         "                         } foreach _objectives;" \n
+                         "_objectives = [_objectives_unsorted,[],{([_OPCOM_HANDLER,""position""] call ALiVE_fnc_HashGet) distance (_x select 0)},""ASCEND""] call ALiVE_fnc_SortBy;" \n
+                         "" \n
+                         "//Create objectives for OPCOM and set it on the OPCOM Handler " \n
+                         "//GetObjectivesByPriority" \n
+                         "{" \n
+                         "	_target = [nil, ""createhashobject""] call ALIVE_fnc_OPCOM;" \n
+                         "" \n
+                         "	_id = format[""OPCOM_objective_%1_%2"",_side,_foreachIndex]; [_target, ""objectiveID"",_id] call ALIVE_fnc_HashSet;" \n
+                         "	_pos = _x select 0; [_target, ""center"",_pos] call ALIVE_fnc_HashSet;" \n
+                         "	_size = _x select 1; [_target, ""size"",_size] call ALIVE_fnc_HashSet;" \n
+                         "	_type = _x select 2; [_target, ""objectiveType"",_type] call ALIVE_fnc_HashSet;" \n
+                         "	_priority = _x select 3; [_target, ""priority"",_priority] call ALIVE_fnc_HashSet;" \n
+                         "	_opcom_state = ""unassigned""; [_target, ""opcom_state"",_opcom_state] call ALIVE_fnc_HashSet;" \n
+                         "" \n
+                         "	if  (_debug) then {" \n
+                         "		_m = createMarkerLocal [_id, _pos];" \n
+                         "		_m setMarkerShapeLocal ""RECTANGLE"";" \n
+                         "		_m setMarkerSizeLocal [_size, _size];" \n
+                         "		_m setMarkerTypeLocal ""hd_dot"";" \n
+                         "		_m setMarkerColorLocal ""ColorWhite"";" \n
+                         "		//_m setMarkerTextLocal format[""Objective Priority %1"",_foreachIndex];" \n
+                         "	};" \n
+                         "" \n
+                         "	_objectives set [_forEachIndex, _target];" \n
+                         " } foreach _objectives;" \n
                          "" \n
                          "_objectives = [_OPCOM_HANDLER,""objectives"",_objectives] call ALiVE_fnc_OPCOM;" \n
                          "*/" \n
@@ -237,7 +245,7 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""switch"";" \n
                          "_timestamp = time;" \n
                          "" \n
-                         "private [""_target"",""_obj"",""_attack"",""_defend"",""_reserve"",""_custom"",""_qrf"",""_operation"",""_priorities"",""_data_operation"",""_data_value"",""_targetsWithState"",""_OPCOM_ACTION"",""_targetOccupation"",""_analyze"",""_data""];" \n
+                         "private [""_target"",""_targetId"",""_obj"",""_attack"",""_defend"",""_reserve"",""_custom"",""_qrf"",""_recon"",""_oca"",""_operation"",""_priorities"",""_data_operation"",""_data_value"",""_targetsWithState"",""_OPCOM_ACTION"",""_targetOccupation"",""_analyze"",""_data""];" \n
                          "" \n
                          "_busy = true;" \n
                          "" \n
@@ -250,13 +258,13 @@ class FSM
                          "private _reserve = nil;" \n
                          "private _custom = nil;" \n
                          "" \n
+                         "private _skipObjective = false;" \n
+                         "" \n
                          "_data_operation = nil;" \n
                          "_data_value = nil;" \n
                          "" \n
                          "if (count _OPCOM_QUEUE > 0) then {" \n
-                         "    _OPCOM_ACTION = _OPCOM_QUEUE select 0;" \n
-                         "    _OPCOM_QUEUE set [0,""x""];" \n
-                         "    _OPCOM_QUEUE = _OPCOM_QUEUE - [""x""];" \n
+                         "    _OPCOM_ACTION = _OPCOM_QUEUE deleteat 0;" \n
                          "};" \n
                          "" \n
                          "_timeout = ((isnil ""_OPCOM_ACTION"") && {(time - _lastAnalyze) >= _cycleTime});" \n
@@ -271,18 +279,13 @@ class FSM
                          "    //select operation type" \n
                          "    switch (_DATA_OPERATION) do {" \n
                          "        case (""init"") : {" \n
-                         "" \n
-                         "                    // debug ---------------------------------------" \n
-                         "                    if (_debug) then {" \n
-                         "                        [_OPCOM_HANDLER,""OPCOM_monitor"",true] call AliVE_fnc_OPCOM;" \n
-                         "                    };" \n
-                         "             // debug ---------------------------------------" \n
+                         "            if (_debug) then {" \n
+                         "                [_OPCOM_HANDLER,""OPCOM_monitor"",true] call AliVE_fnc_OPCOM;" \n
+                         "            };" \n
                          "" \n
                          "            _OPCOM_DATA= [""analyze"",nil];" \n
                          "" \n
-                         "            // debug ---------------------------------------" \n
                          "            if(_debug) then { [""OPCOM initialized, %1!"",_DATA_VALUE] call ALIVE_fnc_dumpR; };" \n
-                         "            // debug ---------------------------------------" \n
                          "" \n
                          "            _busy = false;" \n
                          "        };" \n
@@ -301,7 +304,14 @@ class FSM
                          "" \n
                          "            //AnalyzeClusterOccupation" \n
                          "            _targetOccupation = [_OPCOM_HANDLER,""clusteroccupation"",[]] call ALiVE_fnc_HashGet;" \n
-                         "            if (((count _targetOccupation > 0) && {time - (_targetOccupation select 4) > _cycleTime}) || {count _targetOccupation == 0}) then {_analyze = ""analysis""};" \n
+                         "            _targetOccupation params [""_friendlyObjectives"",""_enemyObjectives"",""_contestedObjectives"",""_timeLastAnalysis""];" \n
+                         "            if (" \n
+                         "                ( (_targetOccupation isnotequalto []) && {time - _timeLastAnalysis > _cycleTime} )" \n
+                         "                ||" \n
+                         "                { _targetOccupation isequalto [] }" \n
+                         "            ) then {" \n
+                         "                _analyze = ""analysis"";" \n
+                         "            };" \n
                          "" \n
                          "            //Exit if analysis should happen" \n
                          "            if !(isnil ""_analyze"") exitwith {_busy = false};" \n
@@ -312,33 +322,32 @@ class FSM
                          "            //Get objectives" \n
                          "            _obj = ([_OPCOM_HANDLER,""objectives"",[]] call AliVE_fnc_HashGet);" \n
                          "" \n
-                         "            _targetsTaken = _targetOccupation select 0;" \n
-                         "            _targetsAttacked = _targetOccupation select 1;" \n
-                         "            _targetsTakenEnemy = _targetOccupation select 2;" \n
-                         "            _targetsAttackedEnemy = _targetOccupation select 3;" \n
+                         "            _un = [];" \n
+                         "            _at = [];" \n
+                         "            _def = [];" \n
+                         "            _res = [];" \n
+                         "            _idl = [];" \n
+                         "            _active = 0;" \n
                          "" \n
-                         "                        _un = [];" \n
-                         "                        _at = [];" \n
-                         "                        _def = [];" \n
-                         "                        _res = [];" \n
-                         "                        _idl = [];" \n
-                         "                        _active = 0;" \n
+                         "            {" \n
+                         "                private _objectiveID = [_x, ""objectiveID""] call AliVE_fnc_HashGet;" \n
                          "" \n
-                         "                        {" \n
-                         "                            private [""_state""];" \n
+                         "                if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {" \n
+                         "                    private [""_state""];" \n
                          "" \n
-                         "                            _state = _x select 2 select 5;" \n
+                         "                    _state = _x select 2 select 5;" \n
                          "" \n
-                         "                            switch (_state) do {" \n
-                         "                                case (""unassigned"") : {_un pushback _x};" \n
-                         "                                case (""attack"") : {_at pushback _x};" \n
-                         "                                case (""defend"") : {_def pushback _x};" \n
-                         "                                case (""reserve"") : {_res pushback _x};" \n
-                         "                                case (""idle"") : {_idl pushback _x};" \n
-                         "                            };" \n
+                         "                    switch (_state) do {" \n
+                         "                        case (""unassigned"") : {_un pushback _x};" \n
+                         "                        case (""attack"") : {_at pushback _x};" \n
+                         "                        case (""defend"") : {_def pushback _x};" \n
+                         "                        case (""reserve"") : {_res pushback _x};" \n
+                         "                        case (""idle"") : {_idl pushback _x};" \n
+                         "                    };" \n
                          "" \n
-                         "                            if (_state in [""attacking"",""defending""]) then {_active = _active + 1};" \n
-                         "                        } foreach _obj;" \n
+                         "                    if (_state in [""attacking"",""defending""]) then {_active = _active + 1};" \n
+                         "                };" \n
+                         "            } foreach _obj;" \n
                          "" \n
                          "            //AnalyzeResults - prepare orders" \n
                          "" \n
@@ -346,148 +355,161 @@ class FSM
                          "                    case (""invasion"") : {" \n
                          "" \n
                          "                        _priorities = [" \n
-                         "                            [(count _res > 0),_targetsTaken,""reserve""]," \n
-                         "                            [(count _un > 0),[],""unassigned""]," \n
-                         "                            [(count _at > 0) && (_active <= _simultanObjectives),_targetsTakenEnemy,""attack""]," \n
-                         "                            [(count _def > 0),_targetsAttacked,""defend""]" \n
+                         "                            [(count _res > 0),""reserve""]," \n
+                         "                            [(count _un > 0),""unassigned""]," \n
+                         "                            [(count _at > 0) && (_active <= _simultanObjectives),""attack""]," \n
+                         "                            [(count _def > 0),""defend""]" \n
                          "                        ];" \n
                          "                    };" \n
                          "        " \n
                          "                    case (""occupation"") : {" \n
                          "                        _priorities = [" \n
-                         "                            [(count _res > 0),_targetsTaken,""reserve""]," \n
-                         "                            [(count _def > 0),_targetsAttacked,""defend""]," \n
-                         "                            [(count _at > 0),_targetsTakenEnemy,""attack""]," \n
-                         "                            [(count _un > 0),[],""unassigned""]" \n
+                         "                            [(count _res > 0),""reserve""]," \n
+                         "                            [(count _def > 0),""defend""]," \n
+                         "                            [(count _at > 0),""attack""]," \n
+                         "                            [(count _un > 0),""unassigned""]" \n
                          "                        ];" \n
                          "                    };" \n
                          "                };" \n
                          "" \n
-                         "                        {" \n
-                         "                            if (_x select 0) exitwith {" \n
-                         "                                _targetsWithState = (_x select 2);" \n
-                         "                            };" \n
-                         "                        } foreach _priorities;" \n
+                         "                {" \n
+                         "                    if (_x select 0) exitwith {" \n
+                         "                        _targetsWithState = (_x select 1);" \n
+                         "                    };" \n
+                         "                } foreach _priorities;" \n
                          "" \n
                          "            //Select orders and execute" \n
-                         "                        if !(isnil ""_targetsWithState"") then {" \n
-                         "                    _orders = [_OPCOM_HANDLER,""selectordersbystate"",_targetsWithState] call ALiVE_fnc_OPCOM;" \n
-                         "                    " \n
-                         "                    if !(isnil ""_orders"") then {" \n
-                         "                        private [""_o""];" \n
+                         "            if !(isnil ""_targetsWithState"") then {" \n
+                         "                _orders = [_OPCOM_HANDLER,""selectordersbystate"",_targetsWithState] call ALiVE_fnc_OPCOM;" \n
+                         "                " \n
+                         "                if !(isnil ""_orders"") then {" \n
+                         "                    private [""_o""];" \n
                          "" \n
-                         "                        _o = _orders select 1;" \n
-                         "                        _operation = [_o,""opcom_orders""] call AliVE_fnc_HashGet;" \n
+                         "                    _o = _orders select 1;" \n
+                         "                    _operation = [_o,""opcom_orders""] call AliVE_fnc_HashGet;" \n
                          "" \n
-                         "                        switch (_operation) do {" \n
-                         "                            case (""attack"") : {" \n
-                         "                                _attack = _o;" \n
-                         "                            };" \n
-                         "                            case (""defend"") : {" \n
-                         "                                _defend = _o;" \n
-                         "                            };" \n
-                         "                            case (""reserve"") : {" \n
-                         "                                _reserve = _o;" \n
-                         "                            };" \n
-                         "                            //Custom" \n
+                         "                    switch (_operation) do {" \n
+                         "                        case (""attack"") : {" \n
+                         "                            _attack = _o;" \n
                          "                        };" \n
-                         "                    // debug ---------------------------------------" \n
-                         "                        if(_debug) then { [""OPCOM orders TACOM to %1 target %2"",([_o,""opcom_orders""] call AliVE_fnc_HashGet),([_o,""objectiveID""] call AliVE_fnc_HashGet)] call ALIVE_fnc_dumpR; };" \n
-                         "                    // debug ---------------------------------------" \n
-                         "                    } else {" \n
-                         "                                _busy = false;" \n
-                         "                            };" \n
+                         "                        case (""defend"") : {" \n
+                         "                            _defend = _o;" \n
+                         "                        };" \n
+                         "                        case (""reserve"") : {" \n
+                         "                            _reserve = _o;" \n
+                         "                        };" \n
+                         "                        //Custom" \n
+                         "                    };" \n
+                         "                    if(_debug) then { [""OPCOM orders TACOM to %1 target %2"",([_o,""opcom_orders""] call AliVE_fnc_HashGet),([_o,""objectiveID""] call AliVE_fnc_HashGet)] call ALIVE_fnc_dumpR; };" \n
                          "                } else {" \n
                          "                    _busy = false;" \n
                          "                };" \n
+                         "            } else {" \n
+                         "                _busy = false;" \n
+                         "            };" \n
                          "        };" \n
                          "" \n
                          "        //Handle TACOM confirmation by state" \n
                          "        case (""confirmed"") : {" \n
                          "            _confirmed = _DATA_VALUE select 0;" \n
                          "            _information = _DATA_VALUE select 1;" \n
+                         "" \n
                          "            _target = _information select 0;" \n
                          "            _return = _information select 1;" \n
+                         "" \n
+                         "            _faction = selectRandom _factions;" \n
+                         "            _enemySide = selectRandom _sidesEnemy;" \n
+                         "" \n
                          "            _operation = [_target,""opcom_orders""] call AliVE_fnc_HashGet;" \n
                          "            _pos = [_target,""center""] call AliVE_fnc_HashGet;" \n
+                         "            _targetId = [_target,""objectiveID""] call AliVE_fnc_HashGet;" \n
                          "" \n
                          "            if (_confirmed) then {" \n
                          "                switch (_operation) do {" \n
                          "                    case (""attack"") : {" \n
                          "                        [_target,""opcom_state"",""attacking""] call AliVE_fnc_HashSet;" \n
                          "" \n
-                         "								//Assist TACOM by sending air recon after TACOMs attack confirmation" \n
-                         "							   _OPCOM_DATA = [""RECON"",[[_target,""objectiveID"",""""] call AliVE_fnc_HashGet]];" \n
+                         "                        if ([_side,[""attacking""]] call ALIVE_fnc_OPCOMgetHighestPrioObjective == _targetId) then {" \n
+                         "                            _targets = [_pos, 300, [_enemySide,""entity""],true] call ALIVE_fnc_getNearProfiles;" \n
+                         "                            [_side,_faction,""CaptureObjective"",_targets,""OPCOM"",true] call ALiVE_fnc_taskRequest;" \n
+                         "                        };" \n
+                         "" \n
+                         "                        //Assist TACOM by sending air recon after TACOMs attack confirmation" \n
+                         "                        _OPCOM_DATA = [""RECON"",[[_target,""objectiveID"",""""] call AliVE_fnc_HashGet]];" \n
                          "                    };" \n
                          "                    case (""defend"") : {" \n
                          "                        [_target,""opcom_state"",""defending""] call AliVE_fnc_HashSet;" \n
                          "" \n
-                         "                			//Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
-                         "                			_OPCOM_DATA = [""analyze"",nil];" \n
-                         "" \n
+                         "                        //Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
+                         "                        _OPCOM_DATA = [""analyze"",nil];" \n
                          "                    };" \n
                          "                    case (""reserve"") : {" \n
                          "                        [_target,""opcom_state"",""reserving""] call AliVE_fnc_HashSet;" \n
                          "" \n
-                         "                			//Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
-                         "                			_OPCOM_DATA = [""analyze"",nil];" \n
+                         "                        //Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
+                         "                        _OPCOM_DATA = [""analyze"",nil];" \n
                          "                    };" \n
                          "                    default {" \n
-                         "                			//Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
-                         "                			_OPCOM_DATA = [""analyze"",nil];" \n
-                         "						  };" \n
+                         "                        //Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
+                         "                        _OPCOM_DATA = [""analyze"",nil];" \n
+                         "                    };" \n
                          "                };" \n
+                         "				" \n
+                         "                private _opcomID = [_OPCOM_HANDLER,""opcomID""] call ALiVE_fnc_hashGet;" \n
+                         "                private _event = ['OPCOM_ORDER_CONFIRMED', [_opcomID, _target,_operation, _side, _factions], ""OPCOM""] call ALIVE_fnc_event;" \n
+                         "                [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "" \n
-                         "                // debug ---------------------------------------" \n
                          "                if(_debug) then { [""TACOM message received: %1 %2! Details: %3!"",([_target,""opcom_state""] call AliVE_fnc_HashGet),([_target,""objectiveID""] call AliVE_fnc_HashGet),_return] call ALIVE_fnc_dumpR; };" \n
-                         "                // debug ---------------------------------------" \n
                          "" \n
                          "            }  else {" \n
+                         "                _OPCOM_SKIP_OBJECTIVES pushBack ([_target, ""objectiveID""] call AliVE_fnc_HashGet);" \n
+                         "                _OPCOM_DATA = [""analyze"", nil];" \n
+                         "                _skipObjective = true;" \n
+                         "" \n
                          "                [_target,""opcom_orders"",""none""] call ALiVE_fnc_HashSet;" \n
                          "" \n
-                         "                // debug ---------------------------------------" \n
-                         "                if(_debug) then { [""TACOM message received: %1"",_return] call ALIVE_fnc_dumpR; };" \n
-                         "                // debug ---------------------------------------" \n
+                         "                if(_debug) then {" \n
+                         "                    [""TACOM message received: %1"", _return] call ALIVE_fnc_dumpR;" \n
+                         "                    [""OPCOM skipping objective %1 for this cycle"", [_target, ""objectiveID""] call AliVE_fnc_HashGet] call ALIVE_fnc_dumpR;" \n
+                         "                };" \n
                          "" \n
                          "            };" \n
                          "            _busy = false;" \n
                          "        };" \n
                          "" \n
                          "        case (""QRF"") : {" \n
-                         "		_target = _DATA_VALUE select 0;" \n
+                         "            _target = _DATA_VALUE select 0;" \n
                          "" \n
-                         "		// debug ---------------------------------------" \n
-                         "		 if(_debug) then { [""OPCOM retrieved request for QRF on %1!"",_target] call ALIVE_fnc_dumpR; };" \n
-                         "		 // debug ---------------------------------------" \n
-                         "		" \n
-                         "		_qrf = [""air"",_target];" \n
-                         "	 };" \n
+                         "             if(_debug) then { [""OPCOM retrieved request for QRF on %1!"",_target] call ALIVE_fnc_dumpR; };" \n
+                         "" \n
+                         "            _qrf = [""air"",_target];" \n
+                         "        };" \n
                          "" \n
                          "        case (""RECON"") : {" \n
-                         "		_target = _DATA_VALUE select 0;" \n
+                         "            _target = _DATA_VALUE select 0;" \n
                          "" \n
-                         "		// debug ---------------------------------------" \n
-                         "		 if(_debug) then { [""OPCOM retrieved request for RECON on %1!"",_target] call ALIVE_fnc_dumpR; };" \n
-                         "		 // debug ---------------------------------------" \n
-                         "		" \n
-                         "		_recon = [""air"",_target];" \n
-                         "	 };" \n
+                         "             if(_debug) then { [""OPCOM retrieved request for RECON on %1!"",_target] call ALIVE_fnc_dumpR; };" \n
+                         "" \n
+                         "            _recon = [""air"",_target];" \n
+                         "        };" \n
+                         "        " \n
                          "        case (""OCA"") : {" \n
-                         "		_target = _DATA_VALUE select 0;" \n
+                         "            _target = _DATA_VALUE select 0;" \n
                          "" \n
-                         "		// debug ---------------------------------------" \n
-                         "		 if(_debug) then { [""OPCOM retrieved request for OCA  on %1!"",_target] call ALIVE_fnc_dumpR; };" \n
-                         "		 // debug ---------------------------------------" \n
-                         "		" \n
-                         "		_oca = [""air"",_target];" \n
-                         "	 };" \n
+                         "             if(_debug) then { [""OPCOM retrieved request for OCA  on %1!"",_target] call ALIVE_fnc_dumpR; };" \n
+                         "" \n
+                         "            _oca = [""air"",_target];" \n
+                         "        };" \n
+                         "        " \n
                          "        case (""custom"") : {_custom = _DATA_VALUE};" \n
+                         "        " \n
                          "        default {};" \n
                          "    };" \n
                          "" \n
                          "};" \n
                          "" \n
-                         "_lastAnalyze = time;"/*%FSM</STATEINIT""">*/;
+                         "_lastAnalyze = time;" \n
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -596,7 +618,7 @@ class FSM
                                         priority = 0.000000;
                                         to="REQUEST_REEINFOR";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_reinforce"");"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_reinforce"") && !_reinforcementsInProgress;"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -633,6 +655,17 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                                /*%FSM<LINK "Skip_Objective">*/
+                                class Skip_Objective
+                                {
+                                        itemno = 41;
+                                        priority = 0.000000;
+                                        to="NOT_BUSY";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_skipObjective"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                         };
                 };
                 /*%FSM</STATE>*/
@@ -654,10 +687,10 @@ class FSM
                          "" \n
                          "//transmit" \n
                          "switch (_operation) do {" \n
-                         "        case ( ""attack"") : {    _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_attack]];};" \n
-                         "        case (""defend"") : {_TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_defend]];};" \n
-                         "        case (""reserve"") : {_TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_reserve]];};" \n
-                         "        case (""custom"") : {};" \n
+                         "        case ( ""attack""):   { _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_attack]] };" \n
+                         "        case (""defend""):    { _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_defend]] };" \n
+                         "        case (""reserve""):   { _TACOM_FSM setFSMVariable [""_TACOM_DATA"",[""analyze"",_reserve]] };" \n
+                         "        case (""custom""):    {};" \n
                          "        default {};" \n
                          "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -876,10 +909,9 @@ class FSM
                          "" \n
                          "switch (_analyze) do {" \n
                          "    case (""analysis"") : {" \n
-                         "        //ANALYSISDONE = false; [_OPCOM_HANDLER,_sidesFriendly,_sidesEnemy] execFSM ""\x\alive\addons\mil_opcom\analyze.fsm"";" \n
                          "        _clusterOccupationAnalysis = [_OPCOM_HANDLER,""analyzeclusteroccupation"",[_sidesFriendly,_sidesEnemy]] spawn ALiVE_fnc_OPCOM;" \n
                          "        _troopsAnalysis = [_OPCOM_HANDLER,""scantroops""] spawn ALiVE_fnc_OPCOM;" \n
-                         "        _enemyScan = [_OPCOM_HANDLER,""scanallenemies""] spawn ALIVE_fnc_OPCOM;" \n
+                         "        _enemyScan = [_OPCOM_HANDLER,""scanFriendliesForNearEnemies""] spawn ALIVE_fnc_OPCOM;" \n
                          "	};" \n
                          "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -920,30 +952,42 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""reset"";" \n
                          "_timestamp = time;" \n
                          "" \n
-                         "// debug ---------------------------------------" \n
-                         "            if(_debug) then {" \n
-                         "                [""OPCOM analysis finished""] call ALIVE_fnc_dump;" \n
-                         "                [] call ALIVE_fnc_timer;" \n
-                         "                [""---------------------""] call ALIVE_fnc_dump;" \n
+                         "if (_debug) then {" \n
+                         "    [""OPCOM analysis finished""] call ALIVE_fnc_dump;" \n
+                         "    [] call ALIVE_fnc_timer;" \n
+                         "    [""---------------------""] call ALIVE_fnc_dump;" \n
                          "" \n
-                         "                private [""_obj""];" \n
-                         "                _obj = [_OPCOM_HANDLER,""objectives"",[]] call ALiVE_fnc_HashGet;" \n
+                         "    private [""_obj""];" \n
+                         "    _obj = [_OPCOM_HANDLER,""objectives"",[]] call ALiVE_fnc_HashGet;" \n
                          "" \n
-                         "                     [""ALiVE OPCOM %9 analyzed: Total of %1 targets | unassigned: %2 | assigned: %3 | completed: %4 | defending: %5 | secured: %6 | internal: %7 | others: %8""," \n
-                         "                         count _obj," \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""unassigned""} count _obj), " \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""attacking""} count _obj)," \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""reserving""} count _obj)," \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""defending""} count _obj)," \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""idle""} count _obj)," \n
-                         "                        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""internal""} count _obj)," \n
-                         "                        ({!(([_x,""opcom_state""] call AliVE_fnc_HashGet) in [""internal"",""idle"",""defending"",""reserving"",""attacking"",""unassigned""])} count _obj)," \n
-                         "                        _side" \n
-                         "                    ] call ALIVE_fnc_dumpR; " \n
-                         "                };" \n
-                         "// debug ---------------------------------------" \n
+                         "    [" \n
+                         "        ""ALiVE OPCOM %9 analyzed: Total of %1 targets | unassigned: %2 | assigned: %3 | completed: %4 | defending: %5 | secured: %6 | internal: %7 | others: %8""," \n
+                         "        count _obj," \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""unassigned""} count _obj), " \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""attacking""} count _obj)," \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""reserving""} count _obj)," \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""defending""} count _obj)," \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""idle""} count _obj)," \n
+                         "        ({([_x,""opcom_state""] call AliVE_fnc_HashGet) == ""internal""} count _obj)," \n
+                         "        ({!(([_x,""opcom_state""] call AliVE_fnc_HashGet) in [""internal"",""idle"",""defending"",""reserving"",""attacking"",""unassigned""])} count _obj)," \n
+                         "        _side" \n
+                         "    ] call ALIVE_fnc_dumpR;" \n
                          "" \n
-                         "_OPCOM_DATA= [""analyze"",nil]; _busy = false;"/*%FSM</STATEINIT""">*/;
+                         "    if ((count _OPCOM_SKIP_OBJECTIVES) > 0) then {" \n
+                         "        {" \n
+                         "            [" \n
+                         "                ""ALiVE OPCOM %1: Reconsidering skipped objective %2""," \n
+                         "                _side," \n
+                         "                _x" \n
+                         "            ] call ALiVE_fnc_dumpR;" \n
+                         "        } forEach _OPCOM_SKIP_OBJECTIVES;" \n
+                         "    };" \n
+                         "};" \n
+                         "" \n
+                         "_OPCOM_SKIP_OBJECTIVES = [];" \n
+                         "_OPCOM_DATA = [""analyze"", nil];" \n
+                         "_busy = false;" \n
+                         ""/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -978,17 +1022,15 @@ class FSM
                         itemno = 26;
                         init = /*%FSM<STATEINIT""">*/"_OPCOM_status = ""analysis"";" \n
                          "" \n
-                         "// debug ---------------------------------------" \n
-                         "            if(_debug) then {" \n
-                         "                [""---------------------""] call ALIVE_fnc_dump;" \n
-                         "                [""OPCOM analysis started""] call ALIVE_fnc_dumpR;" \n
-                         "                [true] call ALIVE_fnc_timer;" \n
-                         "            };" \n
-                         "// debug ---------------------------------------    " \n
+                         "if (_debug) then {" \n
+                         "    [""---------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""OPCOM analysis started""] call ALIVE_fnc_dumpR;" \n
+                         "    [true] call ALIVE_fnc_timer;" \n
+                         "};  " \n
                          "" \n
-                         "private [""_cleanup""];" \n
-                         "" \n
-                         "_cleanup = [_OPCOM_HANDLER] spawn {[_this select 0,""cleanupduplicatesections""] call ALiVE_fnc_OPCOM};"/*%FSM</STATEINIT""">*/;
+                         "private _cleanup = [_OPCOM_HANDLER] spawn {" \n
+                         "    [_this select 0,""cleanupduplicatesections""] call ALiVE_fnc_OPCOM;" \n
+                         "};"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -1033,31 +1075,30 @@ class FSM
                          "    _base = [_OPCOM_HANDLER,""findReinforcementBase""] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "    if (isnil ""_base"") exitwith {" \n
-                         "        if (_debug) then {[""ALiVE OPCOM - Requesting reinforcments for side %1 not possible! No position secured!"",_side] call ALiVE_fnc_DumpR};" \n
+                         "        if (_debug) then {[""OPCOM - Requesting reinforcments for side %1 not possible! No position secured!"",_side] call ALiVE_fnc_dumpR};" \n
                          "    };" \n
                          "    " \n
-                         "    [_base,_reinforce,_factions,_side] spawn {" \n
+                         "    [_OPCOM_HANDLER, _base,_reinforce,_factions,_side] spawn {" \n
                          "" \n
-                         "        _base = _this select 0;" \n
-                         "        _reinforce = _this select 1;" \n
-                         "        _factions = _this select 2;" \n
-                         "        _side = _this select 3;" \n
-                         "        _debug = false;" \n
+                         "		params [""_opcom"",""_base"",""_reinforce"",""_factions"",""_side""];" \n
+                         "" \n
+                         "		private _opcomFSM = [_opcom,""OPCOM_FSM""] call ALiVE_fnc_hashGet;" \n
+                         "        _debug = [_opcom,""debug""] call ALiVE_fnc_hashGet;" \n
                          "" \n
                          "        // Reinforcement of air assets is handled by ATO" \n
                          "        _reinforce set [4,0]; // air" \n
                          "" \n
-                         "        _infantry = if ((_reinforce select 0) > 8) then {8} else {_reinforce select 0};" \n
-                         "        _motorized = if ((_reinforce select 1) > 5) then {5} else {_reinforce select 1};" \n
-                         "        _mechanized = if ((_reinforce select 2) > 10) then {10} else {_reinforce select 2};" \n
-                         "        _armoured = if ((_reinforce select 3) > 10) then {10} else {_reinforce select 3};" \n
-                         "        _air = if ((_reinforce select 4) > 5) then {5} else {_reinforce select 4};" \n
+                         "        _infantry = (_reinforce select 0) min 8;" \n
+                         "        _motorized = (_reinforce select 1) min 5;" \n
+                         "        _mechanized = (_reinforce select 2) min 10;" \n
+                         "        _armoured = ((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7)) min 10;" \n
+                         "        _air = (_reinforce select 4) min 5;" \n
                          "        " \n
                          "        _position = [_base,""center""] call ALiVE_fnc_HashGet;" \n
                          "        _faction = selectRandom _factions;" \n
                          "" \n
                          "        // Calculate total amount of air vehicles that could be present" \n
-                         "        _airAssets = _air + _infantry + _motorized;        " \n
+                         "        _airAssets = _air + _infantry + _motorized;" \n
                          "                            " \n
                          "        if (_airAssets > 2) then {" \n
                          "" \n
@@ -1068,20 +1109,31 @@ class FSM
                          "                _mechanized,	//mechanized" \n
                          "                _armoured,		//armoured" \n
                          "                0,				//planes" \n
-                         "                0					//helicopters" \n
+                         "                0				//helicopters" \n
                          "            ];" \n
                          "" \n
                          "            _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
                          "            _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;            " \n
                          "" \n
-                         "            // Then send air transports and reinforced air assets with a 70 seconds delay so they do not crash in each other            " \n
-                         "            for ""_i"" from 1 to ceil(_airAssets / 2) do {" \n
+                         "            // Then send air transports and reinforced air assets with a 210 second delay so they do not crash in each other" \n
+                         "			private _numberOfWaves = ceil(_airAssets / 2);" \n
+                         "			if (_numberOfWaves > 1) then {" \n
+                         "				_opcomFSM setFSMVariable [""_reinforcementsInProgress"", true];" \n
+                         "			};" \n
+                         "			" \n
+                         "            for ""_i"" from 1 to _numberOfWaves do {" \n
                          "" \n
                          "                sleep 10;" \n
+                         "				" \n
+                         "				private _infantryToSend = _infantry min 2;" \n
+                         "				private _motorizedToSend = _motorized min 2;" \n
+                         "				" \n
+                         "				_infantry = _infantry - _infantryToSend;" \n
+                         "				_motorized = _motorized - _motorizedToSend;" \n
                          "" \n
                          "                _forceMakeup = [" \n
-                         "                    if (_infantry > 2) then {_infantry = _infantry - 2; 2} else {_infantryTmp = _infantry; _infantry = 0; _infantryTmp}," \n
-                         "                    if (_motorized > 2) then {_motorized = _motorized - 2; 2} else {_motorizedTmp = _motorized; _motorized = 0; _motorizedTmp}," \n
+                         "                    _infantryToSend," \n
+                         "                    _motorizedToSend," \n
                          "                    0," \n
                          "                    0," \n
                          "                    0, // Zero since plane reinforcements are handled by ATO " \n
@@ -1091,20 +1143,22 @@ class FSM
                          "                _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
                          "                _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n
                          "" \n
-                         "					 if ((_air + _infantry + _motorized) == 0) exitwith {};" \n
+                         "                if ((_air + _infantry + _motorized) == 0) exitwith {" \n
+                         "					_opcomFSM setFSMVariable [""_reinforcementsInProgress"", false];" \n
+                         "				};" \n
                          "" \n
-                         "                sleep 60;" \n
+                         "                sleep 200;" \n
                          "            };" \n
                          "" \n
                          "        } else {" \n
                          "" \n
                          "            _forceMakeup = [" \n
-                         "                if ((_reinforce select 0) > 10) then {10} else {_reinforce select 0}," \n
-                         "                if ((_reinforce select 1) > 10) then {10} else {_reinforce select 1}," \n
-                         "                if ((_reinforce select 2) > 10) then {10} else {_reinforce select 2}," \n
-                         "                if ((_reinforce select 3) > 10) then {10} else {_reinforce select 3}," \n
-                         "                if ((_reinforce select 4) > 10) then {10} else {_reinforce select 4}," \n
-                         "                if ((_reinforce select 5) > 10) then {10} else {_reinforce select 5}" \n
+                         "                (_reinforce select 0) min 10," \n
+                         "                (_reinforce select 1) min 10," \n
+                         "                (_reinforce select 2) min 10," \n
+                         "                ((_reinforce select 3) + (_reinforce select 6) + (_reinforce select 7)) min 10," \n
+                         "                (_reinforce select 4) min 10," \n
+                         "                (_reinforce select 5) min 10" \n
                          "            ];" \n
                          "" \n
                          "            _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,""STANDARD""],""OPCOM""] call ALIVE_fnc_event;" \n
@@ -1113,9 +1167,7 @@ class FSM
                          "        " \n
                          "        if (_debug) then {" \n
                          "            {" \n
-                         "                private [""_typeReinf""];" \n
-                         "            " \n
-                         "                _typeReinf = _foreachIndex;" \n
+                         "                private _typeReinf = _foreachIndex;" \n
                          "            " \n
                          "                switch (_typeReinf) do {" \n
                          "                    case 0 : {_typeReinf = ""infantry""};" \n
@@ -1128,8 +1180,17 @@ class FSM
                          "                    case 7 : {_typeReinf = ""Artillery""};" \n
                          "                };" \n
                          "            " \n
-                         "                [""ALiVE OPCOM - Requesting reinforcments for side %3 %1x %2 units!"",_x,_typeReinf,_side] call ALiVE_fnc_DumpR;" \n
+                         "                [""OPCOM - Requesting reinforcments for side %3 %1x %2 units!"",_x,_typeReinf,_side] call ALiVE_fnc_dumpR;" \n
                          "            } foreach _reinforce;" \n
+                         "" \n
+                         "			[""ALiVE OPCOM - FORCEMAKEUP DATA %1 | %2 | %3 | %4""," \n
+                         "				_infantry," \n
+                         "				_motorized," \n
+                         "				_mechanized," \n
+                         "				_armoured," \n
+                         "				0," \n
+                         "				0" \n
+                         "			] call ALiVE_fnc_DumpR;" \n
                          "        };" \n
                          "    };" \n
                          "};" \n
@@ -1182,20 +1243,28 @@ class FSM
                          "    _startCount = _startCount + (_startForcesStrength select _i);" \n
                          "    _currentCount = _currentCount + (_currentForceStrength select _i);" \n
                          "" \n
-                         "    _diff pushback ((_startForcesStrength select _i)-(_currentForceStrength select _i));" \n
+                         "" \n
+                         "	private _calcDiff = (_startForcesStrength select _i)-(_currentForceStrength select _i);" \n
+                         "	// Sanitize _calcDiff to not allow excess units from after the game started, like logistic vehicles and player profiled entities." \n
+                         "	// _currentForceStrenght > _startForcesStrength used to break the logistics and stall OPCOM, see issue #765" \n
+                         "	_calcDiff = _calcDiff max 0;" \n
+                         "" \n
+                         "	//oof" \n
+                         "	//_diff pushback ((_startForcesStrength select _i)-(_currentForceStrength select _i));" \n
+                         "	_diff pushback _calcDiff;" \n
                          "  };" \n
                          "" \n
                          "  if ( _currentCount != 0 && _startCount != 0 && [""ALiVE_MIL_LOGISTICS""] call ALiVE_fnc_isModuleAvailable) then {" \n
                          "" \n
                          "    if (_debug) then {" \n
-                         "        [""ALiVE OPCOM analysing troops for logistics""] call ALiVE_fnc_DumpR;" \n
+                         "        [""OPCOM analysing troops for logistics""] call ALiVE_fnc_dumpR;" \n
                          "        [""Starting Forces: %1"",_startForcesStrength] call ALiVE_fnc_DumpR;" \n
                          "        [""Current Forces: %1"",_currentForceStrength] call ALiVE_fnc_DumpR;" \n
                          "        [""Difference: %1"",_diff] call ALiVE_fnc_DumpR;" \n
                          "        [""Starting Count: %1"",_startCount] call ALiVE_fnc_DumpR;" \n
                          "        [""Current Count: %1"",_currentCount] call ALiVE_fnc_DumpR;" \n
                          "        [""Needed Ratio: %1"",_reinforcementRatio] call ALiVE_fnc_DumpR;" \n
-                         "        [""ALiVE OPCOM reinforcements needed: %1"",((_currentCount / _startCount) < _reinforcementRatio)] call ALiVE_fnc_DumpR;" \n
+                         "        [""OPCOM reinforcements needed: %1"",((_currentCount / _startCount) < _reinforcementRatio)] call ALiVE_fnc_dumpR;" \n
                          "    };" \n
                          "      " \n
                          "    if ((_currentCount / _startCount) < _reinforcementRatio) then {_reinforce = +_diff};" \n
@@ -1280,20 +1349,24 @@ class FSM
                          "" \n
                          "	if (isnil ""_profile"") exitwith {};" \n
                          "" \n
-                         "   private _vehicleIDs = ([_profile,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1;" \n
+                         "	private _vehicleIDs = ([_profile,""vehicleAssignments"",[[],[]]] call ALIVE_fnc_hashGet) select 1;" \n
                          "	" \n
                          "	if (count _vehicleIDs > 0) then {" \n
                          "" \n
                          "		private _vehicleID = _vehicleIDs select 0;" \n
                          "		private _profileVehicle = [ALiVE_ProfileHandler,""getProfile"",_vehicleID] call ALiVE_fnc_ProfileHandler;" \n
-                         "		private _objectType = [_profileVehicle,""objectType"",""""] call ALiVE_fnc_HashGet;" \n
                          "" \n
-                         "		switch (_objectType) do {" \n
-                         "			case ""Plane"" : {_QRFtype = ""air""};" \n
-                         "			case ""Helicopter"" : {_QRFtype = ""air""};" \n
-                         "			case ""Tank"" : {_QRFtype = ""air""};" \n
-                         "			case ""Car"" : {_QRFtype = ""armored""};" \n
-                         "			default {_QRFtype = ""infantry""};" \n
+                         "		if (!isnil ""_profileVehicle"") then {" \n
+                         "" \n
+                         "            private _objectType = [_profileVehicle,""objectType"",""""] call ALiVE_fnc_HashGet;" \n
+                         "" \n
+                         "            switch (_objectType) do {" \n
+                         "                case ""Plane"" : {_QRFtype = ""air""};" \n
+                         "                case ""Helicopter"" : {_QRFtype = ""air""};" \n
+                         "                case ""Tank"" : {_QRFtype = ""air""};" \n
+                         "                case ""Car"" : {_QRFtype = ""armored""};" \n
+                         "                default {_QRFtype = ""infantry""};" \n
+                         "            };" \n
                          "		};" \n
                          "	};" \n
                          "	" \n

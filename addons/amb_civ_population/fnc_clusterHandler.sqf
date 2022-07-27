@@ -1,4 +1,4 @@
-#include <\x\alive\addons\amb_civ_population\script_component.hpp>
+#include "\x\alive\addons\amb_civ_population\script_component.hpp"
 SCRIPT(clusterHandler);
 
 /* ----------------------------------------------------------------------------
@@ -95,7 +95,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_args) then {
                     //["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE Cluster Handler State"] call ALIVE_fnc_dump;
+                    ["Cluster Handler State"] call ALiVE_fnc_dump;
                     private _state = [_logic, "state"] call MAINCLASS;
                     _state call ALIVE_fnc_inspectHash;
                 };

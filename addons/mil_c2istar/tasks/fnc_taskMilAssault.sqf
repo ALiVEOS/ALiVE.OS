@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
 SCRIPT(taskMilAssault);
 
 /* ----------------------------------------------------------------------------
@@ -63,7 +63,8 @@ switch (_taskState) do {
         // establish the location for the task
         // get enemy occupied cluster position
 
-        _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide,"MIL"] call ALIVE_fnc_taskGetSideCluster;
+        // true = ignore custom military objectives that do not allow player tasking
+        _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide,"MIL",true] call ALIVE_fnc_taskGetSideCluster;
 
         // ["pl %1 tar %2",getpos player, _targetPosition] call ALiVE_fnc_DumpR;
 

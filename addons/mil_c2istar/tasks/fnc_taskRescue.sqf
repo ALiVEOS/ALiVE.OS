@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
 SCRIPT(taskRescue);
 
 /* ----------------------------------------------------------------------------
@@ -115,17 +115,18 @@ switch (_taskState) do {
 
                     _targetPosition = [_targetPosition,500] call ALiVE_fnc_findFlatArea;
 
-                    //[_targetPosition, "camps", _taskEnemyFaction, 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
-                    private ["_category","_compType"];
-                    _compType = "Military";
-                    If (_taskEnemySide == "GUER") then {
-                        _compType = "Guerrilla";
-                        _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Communications"];
-                    } else {
-                        _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Communications"];
+                    // Check for building nearby, if not, spawn composition
+                    if (count ([_targetPosition] call ALIVE_fnc_findNearHousePositions) == 0) then {
+                        private ["_category","_compType"];
+                        _compType = "Military";
+                        If (_taskEnemySide == "GUER") then {
+                            _compType = "Guerrilla";
+                            _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Communications"];
+                        } else {
+                            _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Communications"];
+                        };
+                        [_targetPosition, _compType, _category, _taskEnemyFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
                     };
-                    [_targetPosition, _compType, _category, _taskEnemyFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
-
                 };
             } else {
                 _targetPosition = [_taskLocation,500] call ALiVE_fnc_findFlatArea;
@@ -133,15 +134,17 @@ switch (_taskState) do {
         } else {
             _targetPosition = _taskLocation;
 
-            private ["_category","_compType"];
-            _compType = "Military";
-            If (_taskEnemySide == "GUER") then {
-                _compType = "Guerrilla";
-                _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Communications"];
-            } else {
-                _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Communications"];
+            if (count ([_targetPosition] call ALIVE_fnc_findNearHousePositions) == 0) then {
+                private ["_category","_compType"];
+                _compType = "Military";
+                If (_taskEnemySide == "GUER") then {
+                    _compType = "Guerrilla";
+                    _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Communications"];
+                } else {
+                    _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Communications"];
+                };
+                [_targetPosition, _compType, _category, _taskEnemyFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
             };
-            [_targetPosition, _compType, _category, _taskEnemyFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         // establish the location for the return task
@@ -170,7 +173,7 @@ switch (_taskState) do {
             };
 
             _returnPosition = [_returnPosition, 250] call ALIVE_fnc_findFlatArea;
-            
+
             _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
                 _compType = "Guerrilla";
@@ -193,15 +196,30 @@ switch (_taskState) do {
 
             // format the dialog options
 
-            private["_nearestTown","_dialog","_formatDescription","_formatChat","_formatMessage","_formatMessageText"];
+            private["_units","_nearestTown","_dialog","_formatDescription","_formatChat","_formatMessage","_formatMessageText"];
+
+            _units = [[_taskFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
 
             // Rescue
             _nearestTown = [_targetPosition] call ALIVE_fnc_taskGetNearestLocationName;
 
             _dialog = [_dialogOption,"Rescue"] call ALIVE_fnc_hashGet;
 
+            private _unitRankNo = random (count (configFile >> "CfgRanks") -2);
+            private _unitRank = getText((configFile >> "CfgRanks") select _unitRankNo >> "rank");
+            private _unitTypeName = getText(configFile >> "CfgVehicles" >> _units select 0 >> "displayName");
+            if (_unitRankNo > 3) then {
+                _unitTypeName = "Officer";
+            };
+            private _genName = getText(configFile >> "CfgVehicles" >> _units select 0 >> "genericNames");
+            private _firstName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") -1) ));
+            private _surName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") -1) ));
+            private _unitname = Format["%1 %2", _firstName, _surName];
+
+            private _unitDescr = format["%1 %2 (%3)", _unitRank, _unitName, _unitTypeName];
+
             _formatDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-            _formatDescription = format[_formatDescription,_nearestTown];
+            _formatDescription = format[_formatDescription,_nearestTown,_unitDescr];
             [_dialog,"description",_formatDescription] call ALIVE_fnc_hashSet;
 
             _formatChat = [_dialog,"chat_start"] call ALIVE_fnc_hashGet;
@@ -329,6 +347,7 @@ switch (_taskState) do {
             [_taskParams,"hostageAnims",_hostageAnims] call ALIVE_fnc_hashSet;
             [_taskParams,"enemyFaction",_taskEnemyFaction] call ALIVE_fnc_hashSet;
             [_taskParams,"targetPosition",_targetPosition] call ALIVE_fnc_hashSet;
+            [_taskParams,"unit",[_units, _firstName, _surName, _unitRank, _unitTypeName]] call ALIVE_fnc_hashSet;
             // return the created tasks and params
 
             _result = [_tasks,_taskParams];
@@ -365,6 +384,7 @@ switch (_taskState) do {
         _startTime = [_params,"startTime"] call ALIVE_fnc_hashGet;
         _activeFirst = [_params,"activeFirst",false] call ALIVE_fnc_hashGet;
         _targetPosition = [_params,"targetPosition"] call ALIVE_fnc_hashGet;
+        private _unitDetails = [_params,"unit"] call ALIVE_fnc_hashGet;
 
         if(_lastState != "Rescue") then {
 
@@ -406,26 +426,20 @@ switch (_taskState) do {
                         if (count _bldgPos > 0) then {
                             _targetPosition = (selectRandom _bldgPos);
                             _tablePosition = (selectRandom _bldgPos);
-                            _table = createVehicle [_tableClass,_tablePosition,[],0.5,"NONE"];
-                        } else {
-                            _table = createVehicle [_tableClass,_targetPosition,[],4,"NONE"];
+                            _table = createVehicle [_tableClass,_tablePosition,[],1,"NONE"];
+                            _table setdir 0;
+                            // _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
+                            _document = [_table,_documentClass] call ALIVE_fnc_taskSpawnOnTopOf;
+                            private _chair = createVehicle [_chairClass,position _table,[],3,"NONE"];
                         };
 
-
-                        _table setdir 0;
-                        private _chair = createVehicle [_chairClass,position _table,[],3,"NONE"];
-
-                        _electronic = [_table,_electronicClass] call ALIVE_fnc_taskSpawnOnTopOf;
-                        _document = [_table,_documentClass] call ALIVE_fnc_taskSpawnOnTopOf;
-
                         // create the profiles
+                        private["_hostageProfile1","_hostageProfile1ID","_hostageGroup","_hostage","_hostage1Active"];
 
-                        private["_units","_hostageProfile1","_hostageProfile1ID","_hostageGroup","_hostage","_hostage1Active"];
-
-                        _units = [[_taskFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
-
-                        _hostageProfile1 = [_units,_taskSide,_taskFaction, _targetPosition,random(360),_taskFaction,true] call ALIVE_fnc_createProfileEntity;
+                        _hostageProfile1 = [_unitDetails select 0,_taskSide,_taskFaction, _targetPosition,random(360),_taskFaction,true] call ALIVE_fnc_createProfileEntity;
                         _hostageProfile1ID = _hostageProfile1 select 2 select 4;
+
+                        [_hostageProfile1,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileEntity;
 
                         waitUntil {
                             sleep 1;
@@ -436,6 +450,8 @@ switch (_taskState) do {
                         _hostageGroup = _hostageProfile1 select 2 select 13;
                         _hostage = leader _hostageGroup;
                         _hostage setCaptive true;
+                        _hostage setName [format["%1 %2",(_unitDetails select 1), (_unitDetails select 2)], (_unitDetails select 1), (_unitDetails select 2)];
+                        _hostage setRank toUpper(_unitDetails select 3);
                         removeAllWeapons _hostage;
                         removeAllItems _hostage;
                         removeBackpack _hostage;
@@ -444,19 +460,28 @@ switch (_taskState) do {
                         removeVest _hostage;
                         removeAllAssignedItems _hostage;
                         if ((random 1) > 0.6) then {
-                            removeUniform _hostage;
                             _hostage setDamage (random 0.4);
-                            _hostage forceAddUniform "U_C_WorkerCoveralls";
                         };
                         _hostage setformdir 0;
-                        _hostage setpos [getpos _table select 0,(getpos _table select 1)-2,0];
+
+                        if (!isNil "_table") then {
+                            _hostage setpos [getpos _table select 0,(getpos _table select 1)-2,0];
+                        };
+
+                        // Check for cage, cave or cell
+                        private _cages = ["Land_vn_o_prop_cong_cage_01","Land_vn_o_prop_cong_cage_03","Land_vn_cave_base"];
+                        private _cagePos = [position _hostage,50,_cages] call ALIVE_fnc_findNearHousePositions;
+                        if (count _cagePos > 0) then {
+                            _hostage setpos (selectRandom _cagePos);
+                        };
+
                         _hostage disableAI "MOVE";
 
                         // Hostage Anim
                         _anims = ([_hostageAnims, "boundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
                         _hostage switchMove (selectRandom _anims);
 
-                        [_hostage, format ["Rescue %1",name _hostage], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",0];
+                        [_hostage, format ["Rescue %1",name _hostage], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",0, true];
 
                         // Chat update
                         private _formatChat = [_currentTaskDialog,"chat_update"] call ALIVE_fnc_hashGet;
@@ -489,13 +514,23 @@ switch (_taskState) do {
             _entitiesState = [_entityProfiles] call ALIVE_fnc_taskGetStateOfEntityProfiles;
             _dead = [_entitiesState,"allDestroyed"] call ALIVE_fnc_hashGet;
 
-            if (_dead || time > _startTime + 3300) then {
+            if (_dead || {time > _startTime + 3300}) then {
 
+                //execute hostage as a sort of cleanup :)
+                _hostage setCaptive false;
+
+                // Next Task will be empty so a new one gets created
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
-                _task set [8,"Failed"];
-                _task set [10, "N"];
-                _result = _task;
+                // Mission Over in first state - if dead or timeout update the parent-task instead of the child so all children get updated
+                _parent = _task select 11;
+                _parent = if (_parent == "None") then {_taskID} else {_parent};
+                _parentTask = [ALiVE_TaskHandler,"getTask",_parent] call ALiVE_fnc_TaskHandler;
+
+                _parentTask set [8,"Failed"];
+                _parentTask set [10,"N"];
+
+                [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
 
                 [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
@@ -516,20 +551,17 @@ switch (_taskState) do {
                         private "_hostage";
 
                         _group = _profile select 2 select 13;
-                        _hostage = leader _group;
 
+                        _hostage = leader _group;
                         _position = getPos _hostage;
 
-
                         // [position _hostage,_taskSide,_taskPlayers,_taskID,"hostage"] call ALIVE_fnc_taskCreateMarkersForPlayers;
-
                         // _distance = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination;
-
 
                         if (_hostage getVariable ["rescued",false]) then {
 
 							// Get closest player
-							private _saver = group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition);
+							private _saverGroup = group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition);
 
                             // End Hostage Anim
                             _anims = ([_hostageAnims, "unboundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
@@ -544,7 +576,9 @@ switch (_taskState) do {
                             sleep 1;
 
                             // Join player group
-                            [_hostage] joinSilent _saver;
+							private _prevLeader = leader _saverGroup;
+                            [_hostage] joinSilent _saverGroup;
+							[_saverGroup, _prevLeader] remoteExecCall ["selectLeader", groupOwner _saverGroup];
 
                             _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
                             [_params,"nextTask",_taskIDs select 2] call ALIVE_fnc_hashSet;
@@ -557,7 +591,7 @@ switch (_taskState) do {
 
                             ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-                            [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
+
                         };
                     };
 
@@ -599,7 +633,7 @@ switch (_taskState) do {
         };
 
         // the players have not yet reached the
-        // insertion location
+        // return location
         if!(_returnReached) then {
 
             private["_entityProfiles","_entitiesState","_dead","_profiles","_destinationReached"];
@@ -623,7 +657,7 @@ switch (_taskState) do {
 
             }else{
 
-                _destinationReached = [_taskPosition, _taskPlayers, 40] call ALIVE_fnc_taskHavePlayersReachedDestination;
+                _destinationReached = [_taskPosition, _taskPlayers, 10] call ALIVE_fnc_taskHavePlayersReachedDestination;
 
                 // the players are at the return point
                 if(_destinationReached) then {
@@ -638,18 +672,17 @@ switch (_taskState) do {
                         _active = _profile select 2 select 1;
                         _unit = _profile select 2 select 10;
 
-                        if(_active && {vehicle _unit == _unit && _unit distance _taskPosition < 40}) then {
+                        if(_active && {vehicle _unit == _unit} && {(getpos _unit) select 2 < 2} && {_unit distance _taskPosition <= 10}) then {
+                            
                             [_unit] joinSilent grpNull;
                             [_unit, _taskPosition] call ALiVE_fnc_doMoveRemote;
+                            
                             _returnReached = true;
-                            [_params,"returnReached",true] call ALIVE_fnc_hashSet;
+                            [_params,"returnReached",_returnReached] call ALIVE_fnc_hashSet;
                         };
                     } foreach _profiles;
-
                 };
-
             };
-
         }else{
 
             // the players have reached the return location

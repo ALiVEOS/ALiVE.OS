@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(getCompositions);
 
 /* ----------------------------------------------------------------------------
@@ -65,7 +65,7 @@ if (!isNil "ALiVE_mapCompositionType") then {
 };
 
 if (_env != "Urban") then {
-    _compType = format["%1_%2",_comp,_env]; // Civilian_Pacific etc
+    _compType = format["%1_%2",_comp,_env]; // Civilian_Pacific, Military_Jungle etc
 };
 
 private _configPaths = [
@@ -122,8 +122,8 @@ if (count _faction != 0) then {
                     _enemyFactions pushback _x;
                 };
             } foreach (_enemy call ALiVE_fnc_getSideFactions);
-            // diag_log format["FRIEND %1",_friendlySide];
-            // diag_log format["ENEMY %1",_enemy];
+            // ["FRIEND %1",_friendlySide] call ALiVE_fnc_dump;
+            // ["ENEMY %1",_enemy] call ALiVE_fnc_dump;
         } foreach _enemySide;
     } foreach _faction;
 
@@ -160,7 +160,7 @@ if (count _faction != 0) then {
 } foreach _configPaths;
 
 
-if (count _result == 0 && !_recursive) then {
+if (count _result == 0 && _recursive) then {
     private _temp = "Urban";
     if (!isNil "ALiVE_mapCompositionType") then {
         // If we can't find any compositions for the current environment i.e. desert/woodland then check urban for any size composition

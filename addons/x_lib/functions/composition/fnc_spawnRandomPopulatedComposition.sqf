@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(spawnRandomPopulatedComposition);
 
 /* ----------------------------------------------------------------------------
@@ -56,11 +56,17 @@ params [
 ];
 
 private _compositions = [_type, _category, _size, _faction, _recursive, _searchString] call ALiVE_fnc_getCompositions;
+
+if (count _compositions == 0) exitWith {
+    ["WARNING: Could not find a composition for the following request %1", _this] call ALiVE_fnc_dump;
+};
+
 private _composition = selectRandom _compositions;
 
 // should probably exit if no composition is spawned
 // TODO: return spawned composition (and maybe it's guard groups)
 if (count _composition > 0) then {
+
     [_composition, _position, _direction, _faction] call ALIVE_fnc_spawnComposition;
 };
 

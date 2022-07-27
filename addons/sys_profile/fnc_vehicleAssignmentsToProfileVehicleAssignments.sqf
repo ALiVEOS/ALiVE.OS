@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(vehicleAssignmentsToProfileVehicleAssignments);
 
 /* ----------------------------------------------------------------------------
@@ -32,6 +32,11 @@ _profile = _this select 0;
 _profileType = _profile select 2 select 5; //[_profile,"type"] call ALIVE_fnc_hashGet;
 _profileID = _profile select 2 select 4; //[_profile,"profileID"] call ALIVE_fnc_hashGet;
 _profileActive = _profile select 2 select 1; //[_profile,"active"] call ALIVE_fnc_hashGet;
+
+// reset data
+[_profile,"vehicleAssignments",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
+[_profile,"entitiesInCommandOf",[]] call ALIVE_fnc_hashSet;
+[_profile,"entitiesInCargoOf",[]] call ALIVE_fnc_hashSet;
 
 if(_profileType == "vehicle") then {
 

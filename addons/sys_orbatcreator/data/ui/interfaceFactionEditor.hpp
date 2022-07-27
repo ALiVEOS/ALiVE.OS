@@ -203,29 +203,11 @@ class ALiVE_orbatCreator_interface_createFaction {
                     colorBackground[] = COLOR_BLACK_HARD;
                 };
 
-                class className_title : orbatCreator_common_popup_attribute_subtitle {
-                    idc = 8313;
-                    text = "Class Name";
-                    x = 0.033 * safezoneW;
-                    y = 0.145 * safezoneH;
-                    w = 0.125 * safezoneW;
-                    h = 0.035 * safezoneH;
-                };
-
-                class className_input : orbatCreator_RscEdit {
-                    idc = 8314;
-                    x = 0.172 * safezoneW;
-                    y = 0.15 * safezoneH;
-                    w = 0.225 * safezoneW;
-                    h = 0.03 * safezoneH;
-                    colorBackground[] = COLOR_BLACK_HARD;
-                };
-
                 class side_title : orbatCreator_common_popup_attribute_subtitle {
                     idc = 8315;
                     text = "Side";
                     x = 0.033 * safezoneW;
-                    y = 0.2175 * safezoneH;
+                    y = 0.145 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
                 };
@@ -233,7 +215,84 @@ class ALiVE_orbatCreator_interface_createFaction {
                 class side_input : orbatCreator_RscCombo {
                     idc = 8316;
                     x = 0.172 * safezoneW;
-                    y = 0.218 * safezoneH;
+                    y = 0.15 * safezoneH;
+                    w = 0.225 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class country_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 8321;
+                    text = "Country";
+                    x = 0.033 * safezoneW;
+                    y = 0.2 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                    tooltip = "Use an ISO Alpha 2 Country code i.e. US, GB etc.";
+                };
+
+                class country_input : orbatCreator_RscEdit {
+                    idc = 8322;
+                    x = 0.172 * safezoneW;
+                    y = 0.205 * safezoneH;
+                    w = 0.225 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class force_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 8323;
+                    text = "Armed Force";
+                    x = 0.033 * safezoneW;
+                    y = 0.255 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                    tooltip = "Use Army, Navy, Marines, AF (for Air Force).";
+                };
+
+                class force_input : orbatCreator_RscEdit {
+                    idc = 8324;
+                    x = 0.172 * safezoneW;
+                    y = 0.26 * safezoneH;
+                    w = 0.225 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class camo_title : orbatCreator_common_popup_attribute_subtitle {
+                    idc = 8326;
+                    text = "Theater/Camo";
+                    x = 0.033 * safezoneW;
+                    y = 0.31 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                    tooltip = "Use DES, WDL or SNW. Leave blank if the faction use a multi-terrain camo.";
+                };
+
+                class camo_input : orbatCreator_RscEdit {
+                    idc = 8327;
+                    x = 0.172 * safezoneW;
+                    y = 0.315 * safezoneH;
+                    w = 0.225 * safezoneW;
+                    h = 0.03 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class className_button_generateClassname : orbatCreator_RscButton {
+                    idc = 8325;
+                    text = "Generate Classname";
+                    tooltip = "Generate a classname based on the side, country and armed force.";
+                    x = 0.033 * safezoneW;
+                    y = 0.365 * safezoneH;
+                    w = 0.125 * safezoneW;
+                    h = 0.035 * safezoneH;
+                    colorBackground[] = COLOR_BLACK_HARD;
+                };
+
+                class classname_input : orbatCreator_RscEdit {
+                    idc = 8314;
+                    x = 0.172 * safezoneW;
+                    y = 0.37 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
                     colorBackground[] = COLOR_BLACK_HARD;
@@ -243,7 +302,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                     idc = 8317;
                     text = "";
                     x = 0 * safezoneW;
-                    y = 0.29 * safezoneH;
+                    y = 0.42 * safezoneH;
                     w = 0.44 * safezoneW;
                     h = 0.00125 * safezoneH;
                     colorBackground[] = COLOR_GREY_TITLE_HARD;
@@ -253,7 +312,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                     idc = 8318;
                     text = "Appearance";
                     x = 0.005 * safezoneW;
-                    y = 0.30 * safezoneH;
+                    y = 0.43 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
                 };
@@ -262,7 +321,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                     idc = 8319;
                     text = "Flag";
                     x = 0.033 * safezoneW;
-                    y = 0.370 * safezoneH;
+                    y = 0.485 * safezoneH;
                     w = 0.125 * safezoneW;
                     h = 0.035 * safezoneH;
                 };
@@ -270,7 +329,7 @@ class ALiVE_orbatCreator_interface_createFaction {
                 class flag_input : orbatCreator_RscCombo {
                     idc = 8320;
                     x = 0.172 * safezoneW;
-                    y = 0.375 * safezoneH;
+                    y = 0.490 * safezoneH;
                     w = 0.225 * safezoneW;
                     h = 0.03 * safezoneH;
                     colorBackground[] = COLOR_BLACK_HARD;
@@ -296,7 +355,7 @@ class ALiVE_orbatCreator_interface_editFaction : ALiVE_orbatCreator_interface_cr
 
         class header : orbatCreator_common_popup_header {
             idc = 8301;
-            text = "Create Faction";
+            text = "Edit Faction";
         };
 
         class background : orbatCreator_common_popup_background {

@@ -16,7 +16,7 @@ PREPMAIN(ZEUSinit);
                 private _test = execVM format["\x\alive\addons\%1\tests\test.sqf",_x];
                 waituntil {scriptdone _test};
             } else {
-                ["ALiVE Automated Tests: %1 already existing! Exiting test...",_x] call ALiVE_fnc_DumpH;
+                ["Automated Tests: %1 already existing! Exiting test...",_x] call ALiVE_fnc_dumpH;
             };
         } foreach _this;
 };

@@ -1,11 +1,15 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
 SCRIPT(taskDestroyBuilding);
 
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_taskDestroyBuilding
 
 Description:
-ATO Task
+ATO Task - although this might be called by player or by auto tasking...
+
+ATO task will provide a building
+Player task will provide either a location type or location
+Auto task will provide a location type of Short
 
 Parameters:
 
@@ -33,41 +37,41 @@ _result = [];
 switch (_taskState) do {
     case "init":{
 
-        private [
-            "_taskID","_requestPlayerID","_taskSide","_taskFaction","_taskLocationType","_taskLocation","_taskEnemyFaction","_taskCurrent",
-            "_taskApplyType","_startTime","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetBuilding","_targetBuildings",
-            "_targetTypes","_blacklist","_tasksCurrent"
-        ];
+        private ["_startTime","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetTypes","_blacklist"];
 
-        _taskID = [_task, 0, "", [""]] call BIS_fnc_param;
-        _requestPlayerID = [_task, 1, "", [""]] call BIS_fnc_param;
-        _taskSide = [_task, 2, "", [""]] call BIS_fnc_param;
-        _taskFaction = [_task, 3, "", [""]] call BIS_fnc_param;
-        _taskLocationType = [_task, 5, "", [""]] call BIS_fnc_param;
-        _taskLocation = [_task, 6, [], [[]]] call BIS_fnc_param;
-        _taskPlayers = [_task, 7, [], [[]]] call BIS_fnc_param;
-        _taskEnemyFaction = [_task, 8, "", [""]] call BIS_fnc_param;
-        _taskCurrent = [_taskData, 9, "", [""]] call BIS_fnc_param;
-        _taskApplyType = [_taskData, 10, "", [""]] call BIS_fnc_param;
-        _targetBuilding = [_taskData, 11, objnull, [objnull]] call BIS_fnc_param;
+        private _taskID = [_task, 0, "", [""]] call BIS_fnc_param;
+        private _requestPlayerID = [_task, 1, "", [""]] call BIS_fnc_param;
+        private _taskSide = [_task, 2, "", [""]] call BIS_fnc_param;
+        private _taskFaction = [_task, 3, "", [""]] call BIS_fnc_param;
+        private _taskType = [_task, 4, "", [""]] call BIS_fnc_param;
+        private _taskLocationType = [_task, 5, "", [""]] call BIS_fnc_param;
+        private _taskLocation = [_task, 6, [], [[]]] call BIS_fnc_param;
+        private _taskPlayers = [_task, 7, [], [[]]] call BIS_fnc_param;
+        private _taskEnemyFaction = [_task, 8, "", [""]] call BIS_fnc_param;
+        private _taskCurrent = [_task, 9, "", [""]] call BIS_fnc_param;
+        private _taskApplyType = [_task, 10, "", [""]] call BIS_fnc_param;
+        private _targetBuildings = [_task, 11, [], [objnull,[]]] call BIS_fnc_param;
+        private _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
 
-        _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
+        private _targetBuilding = objNull;
 
-        /*
-        //Inputs
-        ["%1 | %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9 | %10",
-            _taskID,
-            _requestPlayerID,
-            _taskSide,
-            _taskFaction,
-            _taskLocationType,
-            _taskLocation,
-            _taskPlayers,
-            _taskEnemyFaction,
-            _taskCurrent,
-            _taskApplyType
-        ] call ALiVE_fnc_Dump;
-        */
+        if (_debug) then {
+            //Inputs
+            ["ALIVE_fnc_taskDestroyBuilding Task inputs: %1 | %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9 | %10 | %11 | %12",
+                _taskID,
+                _requestPlayerID,
+                _taskSide,
+                _taskFaction,
+                _taskLocationType,
+                _taskLocation,
+                _taskPlayers,
+                _taskEnemyFaction,
+                _taskCurrent,
+                _taskApplyType,
+                _taskType,
+                _targetBuildings
+            ] call ALiVE_fnc_Dump;
+        };
 
         if (_taskID == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
         if (_requestPlayerID == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
@@ -77,24 +81,21 @@ switch (_taskState) do {
         if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
         if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
         if (_taskApplyType == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
-        if (count _targetBuilding == 0) exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _targetBuilding!"] call ALiVE_fnc_Dump};
 
         _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
 
         // establish the location for the task
-        // get enemy location based on input
 
-        if (isnil "_taskLocation") exitwith {["C2ISTAR - Task DestroyBuilding - No location selected!"] call ALiVE_fnc_Dump};
+        // Check to see if targetbuildings is set
+        if (count _targetBuildings == 0) then {
+            // Find a building based on the location type
+            private _clusterPos = [_taskLocation, _taskLocationType, _taskEnemySide, "MIL"] call ALIVE_fnc_taskGetSideCluster;
+            _targetBuildings = nearestObjects [_clusterPos, ["House", "Building"], 300];
+        };
 
-        private["_targetPosition","_targetID","_targetDisplayType"];
-
-        _targetPosition = getposATL _targetBuilding;
-        _targetID = str(floor(_targetPosition select 0)) + str(floor(_targetPosition select 1));
-        _targetDisplayType = getText(configfile >> "CfgVehicles" >> (typeOf _targetBuilding) >> "displayName");
-
-        ["C2ISTAR - Task DestroyBuilding - Building: %1 | Type: %2 | Pos: %3!",_targetBuilding,_targetDisplayType,_targetPosition] call ALiVE_fnc_Dump;
+        if (count _targetBuildings == 0) exitwith {["C2ISTAR - Task DestroyBuilding - Could not find building!"] call ALiVE_fnc_Dump};
 
         private["_stagingPosition","_dialogOptions","_dialogOption","_buildingType","_reward"];
 
@@ -113,18 +114,21 @@ switch (_taskState) do {
                     private _type = _x select 0;
                     private _typeText = _x select 1;
                     private _points = _x select 2;
+                    private _actType = missionNamespace getVariable _type;
 
                     if (
-                        !(isnil {call compile _type}) &&
+                        !(isnil "_actType") &&
                         {
-                            {([toLower (_model), toLower _x] call CBA_fnc_find) > -1} count (call compile _type) > 0 ||
-                            {{([toLower (typeOf _object), toLower _x] call CBA_fnc_find) > -1} count (call compile _type) > 0} //Remove when all indexes have been rebuilt with CLIT
+                            {([toLower (_model), toLower _x] call CBA_fnc_find) > -1} count _actType > 0 ||
+                            {{([toLower (typeOf _object), toLower _x] call CBA_fnc_find) > -1} count _actType > 0} //Remove when all indexes have been rebuilt with CLIT
                         }
                     ) exitwith {
+                        _targetBuilding = _object;
                         _buildingType = _typeText;
                         _reward = _points;
                     };
 
+                    _targetBuilding = _object;
                     _buildingType = "location";
                     _reward = 10;
 
@@ -149,7 +153,15 @@ switch (_taskState) do {
                     ["ALIVE_civilianSettlementBuildingTypes","civilian settlement building",10]
                 ];
             };
-        } foreach [_targetBuilding];
+        } foreach _targetBuildings;
+
+        private["_targetPosition","_targetID","_targetDisplayType"];
+
+        _targetPosition = getposATL _targetBuilding;
+        _targetID = str(floor(_targetPosition select 0)) + str(floor(_targetPosition select 1));
+        _targetDisplayType = getText(configfile >> "CfgVehicles" >> (typeOf _targetBuilding) >> "displayName");
+
+        ["C2ISTAR - Task DestroyBuilding - Building: %1 | Type: %2 | Pos: %3!",_targetBuilding,_targetDisplayType,_targetPosition] call ALiVE_fnc_Dump;
 
         // select the random text
         _dialogOptions = [ALIVE_generatedTasks,"DestroyBuilding"] call ALIVE_fnc_hashGet;
@@ -199,6 +211,9 @@ switch (_taskState) do {
 
         // create the destroy task
         _dialog = [_dialogOption,"Destroy"] call ALIVE_fnc_hashGet;
+
+        // Set the reward
+        [_dialog,"reward",["forcePool",_reward]] call ALIVE_fnc_hashSet;
 
         _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
         _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;

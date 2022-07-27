@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(profileGetInEventHandler);
 
 /* ----------------------------------------------------------------------------
@@ -31,7 +31,11 @@ if(isPlayer _getInUnit) then {
     _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
 
     if (isnil "_profile") exitwith {};
+    
+    private _entitiesInCommandOf = _profile select 2 select 8;
+    private _entitiesInCargoOf = _profile select 2 select 9;
 
-    [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
+    if (_entitiesInCommandOf isequalto [] && { _entitiesInCargoOf isequalto [] }) then {
+        [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
+    };
 };
-

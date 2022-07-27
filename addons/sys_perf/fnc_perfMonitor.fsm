@@ -45,7 +45,7 @@ class FSM
                                         to="finit";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"(_abort)"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"diag_log format[ ""perfMonitor.fsm is aborting. Abort :%1"", _abort] ;"/*%FSM</ACTION""">*/;
+                                        action=/*%FSM<ACTION""">*/"[ ""perfMonitor.fsm is aborting. Abort :%1"", _abort] call ALiVE_fnc_dump ;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                                 /*%FSM<LINK "custom__monitor">*/
@@ -95,11 +95,11 @@ class FSM
                                          "" \n
                                          "            _customValue = _activeScriptsSpawn + _activeScriptsExecVM + _activeScriptsExec + _activeScriptsExecFSM;" \n
                                          "        };" \n
-                                         "        default {_customValue = call compile format [""count %1"",_customCounter];};" \n
+                                         "        default {_customValue = count (missionNamespace getVariable _customCounter);};" \n
                                          "    };" \n
                                          "    _data = _data + [[_customCounter,_customValue]];" \n
                                          "" \n
-                                         "    diag_log format[""perfMonitor.fsm message sent: %1"", _data];" \n
+                                         "    [""perfMonitor.fsm message sent: %1"", _data] call ALiVE_fnc_dump;" \n
                                          "                    " \n
                                          "    // Send data to server to be written to DB" \n
                                          "    ALIVE_SYS_PERF_UPDATE_PERF = _data;" \n
@@ -158,7 +158,7 @@ class FSM
                                          "         _data = _data +  [ [""Active"", _activeCount],  [""Inactive"", _inactiveCount], [""Units"", _unitCount], [""PVehicles"", _vehicleCount]];" \n
                                          "    };" \n
                                          "" \n
-                                         "    diag_log format[""perfMonitor.fsm message sent: %1"", _data];" \n
+                                         "    [""perfMonitor.fsm message sent: %1"", _data] call ALiVE_fnc_dump;" \n
                                          "                    " \n
                                          "    // Send data to server to be written to DB" \n
                                          "    ALIVE_SYS_PERF_UPDATE_PERF = _data;" \n
@@ -222,7 +222,7 @@ class FSM
                                         to="finit";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"(!isnil (""PerfMonRunning"") || !(isDedicated))"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"diag_log format[ ""perfMonitor.fsm already started or is client machine - IsDedicated:%1"", isDedicated] ;"/*%FSM</ACTION""">*/;
+                                        action=/*%FSM<ACTION""">*/"[ ""perfMonitor.fsm already started or is client machine - IsDedicated:%1"", isDedicated] call ALiVE_fnc_dump ;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                                 /*%FSM<LINK "first">*/

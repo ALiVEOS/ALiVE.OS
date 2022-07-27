@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\civ_placement\script_component.hpp>
+#include "\x\alive\addons\civ_placement\script_component.hpp"
 SCRIPT(civClusterGeneration);
 
 /* ----------------------------------------------------------------------------
@@ -25,10 +25,7 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-if(isNil "ALIVE_civilianHQBuildingTypes") then {
-    private _file = "\x\alive\addons\main\static\staticData.sqf";
-    call compile preprocessFileLineNumbers _file;
-};
+call ALiVE_fnc_staticDataHandler;
 
 
 // Find HQ locations

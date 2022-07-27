@@ -93,6 +93,30 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class killFeed
+                        {
+                                displayName = "$STR_ALIVE_data_killFeed";
+                                description = "$STR_ALIVE_data_killFeed_COMMENT";
+                                class Values
+                                {
+                                        class Group
+                                        {
+                                                name = "Group";
+                                                value = "group";
+                                        };
+                                        class Yes
+                                        {
+                                                name = "Side";
+                                                value = "side";
+                                        };
+                                        class None
+                                        {
+                                                name = "None";
+                                                value = "None";
+                                                default = 1;
+                                        };
+                                };
+                        };
                         class disableStats
                         {
                                 displayName = "$STR_ALIVE_data_disableStats";

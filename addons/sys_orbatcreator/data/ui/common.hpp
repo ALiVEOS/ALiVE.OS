@@ -611,7 +611,7 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
         class Export {
 
             text = "Export";
-            items[] = {"Export_Faction","Export_Units","Export_Groups","Export_Full","Export_CfgPatches"}; // Separator, Export_Settings
+            items[] = {"Export_Faction","Export_Crates","Export_Images","Export_Units","Export_Groups","Export_Full","Export_FullWrite","Export_FullWriteImages","Export_CfgPatches"}; // Separator, Export_Settings
 
         };
 
@@ -622,6 +622,19 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
 
         };
 
+        class Export_Crates : menuStrip_button_action {
+
+            text = "Crates";
+            data = "exportCrates";
+
+        };
+
+        class Export_Images : menuStrip_button_action {
+
+            text = "Preview Images";
+            data = "exportImages";
+
+        };
         class Export_Units {
 
             text = "Units";
@@ -641,6 +654,20 @@ class orbatCreator_common_header_menuStrip : orbatCreator_ctrlMenuStrip {
 
             text = "Full Faction";
             data = "exportFull";
+
+        };
+
+        class Export_FullWrite : menuStrip_button_action {
+
+            text = "Full Faction (To File)";
+            data = "exportFullWrite";
+
+        };
+
+        class Export_FullWriteImages : menuStrip_button_action {
+
+            text = "Full Faction (To File) + Preview Images";
+            data = "exportFullWriteImages";
 
         };
 

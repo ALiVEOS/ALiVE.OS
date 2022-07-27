@@ -365,7 +365,7 @@ class FSM
        "" \n
        "deleteMarkerLocal format[""HP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "    diag_log format[""%1 aborting Simple House Patrol FSM"",  _unit];" \n
+       "    [""%1 aborting Simple House Patrol FSM"",  _unit] call ALiVE_fnc_dump;" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -381,7 +381,7 @@ class FSM
        "" \n
        "deleteMarkerLocal format[""HP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "    diag_log format[""%1 killed - ending Simple House Patrol FSM"",  _unit];" \n
+       "    [""%1 killed - ending Simple House Patrol FSM"",  _unit] call ALiVE_fnc_dump;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -396,7 +396,7 @@ class FSM
       name = "End_2";
       init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal format[""HP:%1"", _unit];" \n
        "if(_debug) then {" \n
-       "    diag_log format[""%1 patrol over -  Simple House Patrol FSM"",  _unit];" \n
+       "    [""%1 patrol over -  Simple House Patrol FSM"",  _unit] call ALiVE_fnc_dump;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;

@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(test_elevationAnalysis);
 
 //execVM "\x\alive\addons\fnc_analysis\tests\test_elevationAnalysis.sqf"
@@ -41,7 +41,7 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 
@@ -60,7 +60,7 @@ TIMEREND
 
 
 _allSectors = [_grid, "sectors"] call ALIVE_fnc_sectorGrid;
-diag_log format["Sectors created: %1",count _allSectors];
+["Sectors created: %1",count _allSectors] call ALiVE_fnc_dump;
 
 
 STAT("Create Sector Plotter");

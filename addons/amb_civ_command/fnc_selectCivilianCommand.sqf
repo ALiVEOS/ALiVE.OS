@@ -1,4 +1,4 @@
-#include <\x\alive\addons\amb_civ_command\script_component.hpp>
+#include "\x\alive\addons\amb_civ_command\script_component.hpp"
 SCRIPT(selectCivilianCommand);
 
 /* ----------------------------------------------------------------------------
@@ -47,8 +47,8 @@ if(isNil "ALIVE_civCommands") then {
     ALIVE_civCommands = [] call ALIVE_fnc_hashCreate;
 
     [ALIVE_civCommands, "idle", ["ALIVE_fnc_cc_idle", "managed", [0.1,0.1,0.1], [10,30]]] call ALIVE_fnc_hashSet;
-    [ALIVE_civCommands, "randomMovement", ["ALIVE_fnc_cc_randomMovement", "managed", [0.35,0.01,0.01], [100]]] call ALIVE_fnc_hashSet;
-    [ALIVE_civCommands, "journey", ["ALIVE_fnc_cc_journey", "managed", [0.2,0.5,0.2], []]] call ALIVE_fnc_hashSet;
+    [ALIVE_civCommands, "randomMovement", ["ALIVE_fnc_cc_randomMovement", "managed", [0.35,0.2,0.01], [100]]] call ALIVE_fnc_hashSet;
+    [ALIVE_civCommands, "journey", ["ALIVE_fnc_cc_journey", "managed", [0.5,0.5,0.2], []]] call ALIVE_fnc_hashSet;
     [ALIVE_civCommands, "housework", ["ALIVE_fnc_cc_housework", "managed", [0.25,0.5,0.2], []]] call ALIVE_fnc_hashSet;
     [ALIVE_civCommands, "sleep", ["ALIVE_fnc_cc_sleep", "managed", [0,0.1,0.9], [300,1000]]] call ALIVE_fnc_hashSet;
     [ALIVE_civCommands, "campfire", ["ALIVE_fnc_cc_campfire", "managed", [0,0.25,0.3], [60,300]]] call ALIVE_fnc_hashSet;
@@ -163,9 +163,9 @@ if(count (ALIVE_civCommands select 1) > 0) then {
     if(_debug) then {
         private _agentID = _agentData select 2 select 3;
         ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-        ["ALIVE Select Civilian Command [%1]", _agentID] call ALIVE_fnc_dump;
-        ["ALIVE Select Civilian Command - Time of day: %1", _dayState] call ALIVE_fnc_dump;
-        ["ALIVE Select Civilian Command - Dice roll: %1 Current Probability: %2 Command: %3", _diceRoll, _timeProbability, _command select 0] call ALIVE_fnc_dump;
+        ["Select Civilian Command [%1]", _agentID] call ALiVE_fnc_dump;
+        ["Select Civilian Command - Time of day: %1", _dayState] call ALiVE_fnc_dump;
+        ["Select Civilian Command - Dice roll: %1 Current Probability: %2 Command: %3", _diceRoll, _timeProbability, _command select 0] call ALiVE_fnc_dump;
     };
     // DEBUG -------------------------------------------------------------------------------------
 
@@ -179,7 +179,7 @@ if(count (ALIVE_civCommands select 1) > 0) then {
 
         // random command dice roll failed
 
-        if(random 1 > 0.7) then {
+        if(random 1 > 0.6) then {
 
             // secondary dice roll succeeded pick a time appropriate command
 

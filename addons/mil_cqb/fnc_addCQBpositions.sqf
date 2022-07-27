@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_cqb\script_component.hpp>
+#include "\x\alive\addons\mil_cqb\script_component.hpp"
 SCRIPT(addCQBpositions);
 
 /* ----------------------------------------------------------------------------
@@ -7,7 +7,7 @@ Description:
 Creates the server side object to store settings
 
 Parameters:
-_this select 0: ARRAY - position of center
+_this select 0: ARRAY - position of center in [0,0,0] format
 _this select 1: NUMBER - radius
 
 Returns:

@@ -3,8 +3,8 @@ private ["_var","_type"];
 _var = _this select 0;
 _type = _this select 1;
 
-diag_log format["MenuButton: %1", _var];
-diag_log format["_type: %1", _type];
+["MenuButton: %1", _var] call ALiVE_fnc_dump;
+["_type: %1", _type] call ALiVE_fnc_dump;
 
 switch _type do
 {
@@ -13,11 +13,12 @@ switch _type do
     _return = getText(configfile >> "ALiVE_UserConfig" >> _var)
 
     };
-diag_log format["MenuButton: %1", _return];
+["MenuButton: %1", _return] call ALiVE_fnc_dump;
     case "number":
     {
     _return = getNumber(configfile >> "ALiVE_UserConfig" >> _var)
     };
-    call compile format ["%1 = %2", _var,_return];
+    missionNamespace setVariable [_var,_return];
+    //call compile format ["%1 = %2", _var,_return];
 _return
 }

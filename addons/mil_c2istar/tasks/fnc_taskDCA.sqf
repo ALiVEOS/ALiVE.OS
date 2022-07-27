@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
 SCRIPT(taskDestroyVehicles);
 
 /* ----------------------------------------------------------------------------
@@ -149,7 +149,7 @@ switch (_taskState) do {
             _formatChat set [0,_formatMessage];
             [_dialog,"chat_start",_formatChat] call ALIVE_fnc_hashSet;
 
-            _dialogOption call ALIVE_fnc_inspectHash;
+            // _dialogOption call ALIVE_fnc_inspectHash;
 
             // create the tasks
 
@@ -230,7 +230,7 @@ switch (_taskState) do {
 
         if(_lastState != "Destroy") then {
 
-            _currentTaskDialog call ALIVE_fnc_inspectHash;
+            // _currentTaskDialog call ALIVE_fnc_inspectHash;
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 

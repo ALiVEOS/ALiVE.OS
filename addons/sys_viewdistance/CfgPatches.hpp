@@ -13,4 +13,4 @@ class CfgPatches {
         authorUrl = "http://alivemod.com/";
     };
 };
-#include <\x\alive\addons\sys_viewdistance\vdist.hpp>
+#include "\x\alive\addons\sys_viewdistance\vdist.hpp"

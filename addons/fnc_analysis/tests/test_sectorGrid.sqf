@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(test_sectorGrid);
 
 //execVM "\x\alive\addons\fnc_analysis\tests\test_sectorGrid.sqf"
@@ -40,15 +40,11 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 
-
-if(isNil "ALIVE_civilianHQBuildingTypes") then {
-    _file = "\x\alive\addons\main\static\staticData.sqf";
-    call compile preprocessFileLineNumbers _file;
-};
+call ALiVE_fnc_staticDataHandler;
 
 _logic = nil;
 
@@ -91,7 +87,7 @@ _result = [_logic, "positionToGridIndex", getPos player] call ALIVE_fnc_sectorGr
 _err = "set positionToGridIndex";
 ASSERT_TRUE(typeName _result == "ARRAY", _err);
 
-diag_log format["Player position to sector: %1",_result];
+["Player position to sector: %1",_result] call ALiVE_fnc_dump;
 
 
 STAT("Grid Index To Sector");

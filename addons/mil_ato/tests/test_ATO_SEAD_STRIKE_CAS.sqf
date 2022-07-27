@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\mil_ato\script_component.hpp>
+#include "\x\alive\addons\mil_ato\script_component.hpp"
 SCRIPT(test_ATO_HELI_INSERT);
 
 //execVM "\x\alive\addons\mil_ato\tests\test_ATO_SEAD_STRIKE_CAS.sqf"

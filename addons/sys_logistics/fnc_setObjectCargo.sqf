@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_logistics\script_component.hpp>
+#include "\x\alive\addons\sys_logistics\script_component.hpp"
 SCRIPT(setObjectCargo);
 
 /* ----------------------------------------------------------------------------
@@ -27,10 +27,12 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_input","_id","_cargo","_cargoR","_cargoT","_cargoL","_cargoWMI","_cargoW","_cargoM","_cargoI","_typesLogistics","_typesWeapons","_global"];
+private ["_input","_id","_cargo","_cargoR","_cargoT","_cargoL","_cargoWMI","_cargoW","_cargoM","_cargoI","_typesLogistics","_typesWeapons", "_acreActive", "_baseRadio"];
 
 _input = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
 _id = [MOD(SYS_LOGISTICS),"id",_input] call ALiVE_fnc_Logistics;
+
+_acreActive = isClass(configFile >> "CfgPatches" >> "acre_main");
 
 if (count _this > 1) then {
     _cargo = [_this, 1, [], [[]]] call BIS_fnc_param;
@@ -52,29 +54,68 @@ _cargoM = [_cargoWMI, 1, [], [[]]] call BIS_fnc_param;
 _cargoI = [_cargoWMI, 2, [], [[]]] call BIS_fnc_param;
 
 // Detect local/global commands
-if (isMultiplayer && {isServer}) then {_global = "Global"} else {_global = ""};
+private _global = isMultiplayer && isServer;
 
 // Reset Magazines state
-call (compile format["
-            {_input removeMagazine%1 _x} forEach (magazines _input);
-            {_input addMagazine [_x select 0,_x select 1]} foreach _ammo;
-        ",
-        _global
-    ]
-);
+if (_global) then {
+    {_input removeMagazineGlobal _x} forEach (magazines _input);
+} else {
+    {_input removeMagazine _x} forEach (magazines _input);
+};
 
-// Reset weapons and items state
+ {_input addMagazine [_x select 0,_x select 1]} forEach _ammo;
+
+// Reset weapons and items state. Replace ACRE radios with Base Class if ACRE is running
+
 _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"ItemCargo"]];
 {
     private ["_content","_current","_operation"];
+    private _actions = if (_global) then {
+        [{clearWeaponCargoGlobal _input}, {clearMagazineCargoGlobal _input},{clearItemCargoGlobal _input}];
+    } else {
+        [{clearWeaponCargo _input}, {clearMagazineCargo _input},{clearItemCargo _input}];
+    };
+
+    private _actions2 = if (_global) then {
+        [{_input addWeaponCargoGlobal [_type,_count]}, {_input addMagazineCargoGlobal [_type,_count]},{
+            if !(_acreActive) then {
+                _input addItemCargoGlobal [_type,_count];
+            } else {
+               if (_type call acre_api_fnc_isRadio) then {
+                    _baseRadio = _type call acre_api_fnc_isBaseRadio;
+                    if !(_baseRadio) then {_type = _type call acre_api_fnc_getBaseRadio};
+                    _input addItemCargoGlobal [_type, _count];
+                } else {
+                    _input addItemCargoGlobal [_type, _count];
+                };
+            };
+        }]; 
+    } else {
+        [{_input addWeaponCargo [_type,_count]}, {_input addMagazineCargo [_type,_count]},{
+            if !(_acreActive) then {
+                _input addItemCargo [_type,_count];
+            } else {
+                if (_type call acre_api_fnc_isRadio) then {
+                    _baseRadio = _type call acre_api_fnc_isBaseRadio;
+                    if !(_baseRadio) then {_type = _type call acre_api_fnc_getBaseRadio};
+                    _input addItemCargo [_type, _count];
+                } else {
+                    _input addItemCargo [_type, _count];
+                };
+            };
+        }];
+    };
 
     _content = _x select 0;
     _operation = _x select 1;
-    _current = call (compile format["get%1 _input",_operation]);
 
-    if !(str(_content) == str(_current)) then {
+    _currenttemp = [{getWeaponCargo _input}, {getMagazineCargo _input},{getItemCargo _input}];
+    _current = call (_currenttemp select (["weaponcargo","magazinecargo","itemcargo"] find (tolower _operation)));
 
-        if (count (_current select 0) > 0) then {call (compile format["clear%1%2 _input",_operation,_global])};
+    if !(_content isEqualTo _current) then {
+        if (count (_current select 0) > 0) then {
+            call (_actions select _forEachIndex); 
+        };
 
         for "_i" from 0 to (count (_content select 0))-1 do {
             private ["_type","_count"];
@@ -82,7 +123,7 @@ _typesWeapons = [[_cargoW,"WeaponCargo"],[_cargoM,"MagazineCargo"],[_cargoI,"Ite
             _type = _content select 0 select _i;
             _count = _content select 1 select _i;
 
-            call (compile format["_input add%1%2 %3",_operation,_global,[_type,_count]]);
+            call (_actions2 select _forEachIndex);
         };
     };
 } foreach _typesWeapons;

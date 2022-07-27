@@ -2,17 +2,18 @@
 #define MAINCLASS ALIVE_fnc_ied
 #define DEFAULT_VB_IED_THREAT 5
 #define DEFAULT_VBIED_SIDE "CIV"
-#include <\x\alive\addons\mil_IED\script_component.hpp>
+#include "\x\alive\addons\mil_IED\script_component.hpp"
 SCRIPT(createVBIED);
 
 private ["_IEDskins","_IED","_trg","_vehicle","_debug","_threat","_side"];
 
 if (isNil QUOTE(ADDON)) exitWith {};
 
-_debug = ADDON getVariable ["debug", false];
-_threat = ADDON getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT];
-_side = ADDON getvariable ["VB_IED_Side", DEFAULT_VBIED_SIDE];
 _vehicle = _this select 0;
+_threat = if (count _this > 1) then {_this select 1} else {ADDON getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT]};
+
+_debug = ADDON getVariable ["debug", false];
+_side = ADDON getvariable ["VB_IED_Side", DEFAULT_VBIED_SIDE];
 
 if (_vehicle getVariable [QUOTE(ADDON(VBIED)),false]) exitWith {};
 
@@ -55,9 +56,17 @@ if !(_t) exitWith {};
 //_IEDskins = ["Land_IED_v1_PMC","Land_IED_v2_PMC","Land_IED_v3_PMC","Land_IED_v4_PMC"];
 
 _IED = createVehicle ["ALIVE_DemoCharge_Remote_Ammo",getposATL _vehicle, [], 0, "CAN_COLLIDE"];
-_IED attachTo [_vehicle, [0,-1,-1.08]];
 _IED setDir 270;
+if (_vehicle isKindOf "vn_bicycle_base" || _vehicle isKindOf "Motorcycle") then {
+    _IED attachTo [_vehicle, [0,0,-1]];
+} else {
+
+    _IED attachTo [_vehicle, [0,-1,-1.08]];
+};
 _IED setVectorUp [0,0,-1];
+
+
+
 
 [_vehicle] spawn {
     _vehicle = _this select 0;
@@ -102,6 +111,9 @@ _ehID = _IED addeventhandler ["HandleDamage",{
     {
         deleteVehicle _x;
     } foreach _trgr;
+
+    // Update Sector Hostility
+    [position (_this select 0), [str(side (_this select 3))], +10] call ALiVE_fnc_updateSectorHostility;
 
     deletevehicle (_this select 0);
 }];

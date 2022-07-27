@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(panShot);
 
 /* ----------------------------------------------------------------------------
@@ -37,10 +37,16 @@ _target2 = _this select 2;
 _duration = if(count _this > 3) then {_this select 3} else {5};
 _hideTargets = if(count _this > 4) then {_this select 4} else {false};
 
+if(isNil "_target2") then {
+	_randomPosition = ((position _target1) getPos [(random 50), (random 360)]);
+	_target2 = "RoadCone_L_F" createVehicle _randomPosition;
+	_target2 hideObjectGlobal true;
+};
+
 if(_hideTargets) then
 {
-    hideObject _target1;
-    hideObject _target2;
+    hideObjectGlobal _target1;
+    hideObjectGlobal _target2;
 };
 
 _camera camPrepareTarget _target1;

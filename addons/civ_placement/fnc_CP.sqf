@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\civ_placement\script_component.hpp>
+#include "\x\alive\addons\civ_placement\script_component.hpp"
 SCRIPT(CP);
 
 /* ----------------------------------------------------------------------------
@@ -51,6 +51,7 @@ ARJay
 #define DEFAULT_READINESS_LEVEL "1"
 #define DEFAULT_RB "10"
 #define DEFAULT_SEAPATROL_CHANCE 0
+#define DEFAULT_AMBIENT_GUARD_AMOUNT "1"
 
 private ["_logic","_operation","_args","_result"];
 
@@ -140,6 +141,9 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "guardProbability": {
+        _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "customInfantryCount": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -212,8 +216,8 @@ switch(_operation) do {
 
         if (isnil "_args") exitwith {_result = DEFAULT_WITH_PLACEMENT};
 
-        if (typename _args == "STRING") then {_args = call compile _args};
-        if (typename _args == "BOOL") then {_args = _args};
+        if (_args isEqualType "") then {_args = (_args == "true")};
+        if (_args isEqualType true) then {_args = _args};
 
         _result = [_logic,_operation,_args,DEFAULT_WITH_PLACEMENT] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -299,7 +303,7 @@ switch(_operation) do {
 
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE CP - Startup"] call ALIVE_fnc_dump;
+                ["CP - Startup"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
 
@@ -535,19 +539,17 @@ switch(_operation) do {
                     if !(isnil "ALIVE_clustersCivMarine") then {
                         private _marineClusters = ALIVE_clustersCivMarine select 2;
 
-                        //["ALIVE CP [%1] - Marine Clusters Count: %2",_faction, count _marineClusters] call ALIVE_fnc_dump;
+                        //["CP [%1] - Marine Clusters Count: %2",_faction, count _marineClusters] call ALiVE_fnc_dump;
 
                         _marineClusters = [_marineClusters,0,_priorityFilter] call ALIVE_fnc_copyClusters;
 
-                        //["ALIVE CP [%1] - Marine Clusters Filtered Count: %2 - Size: %3 - Prio: %4",_faction, count _marineClusters, _sizeFilter, _priorityFilter] call ALIVE_fnc_dump;
+                        //["CP [%1] - Marine Clusters Filtered Count: %2 - Size: %3 - Prio: %4",_faction, count _marineClusters, _sizeFilter, _priorityFilter] call ALiVE_fnc_dump;
 
                         _marineClusters = [_marineClusters, _taor] call ALIVE_fnc_clustersInsideMarker;
 
-                        //["ALIVE CP [%1] - Marine Clusters TAOR Count: %2",_faction, count _marineClusters] call ALIVE_fnc_dump;
+                        //["CP [%1] - Marine Clusters TAOR Count: %2",_faction, count _marineClusters] call ALiVE_fnc_dump;
 
                         _marineClusters = [_marineClusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-
-                        ["ALIVE CP [%1] - Marine Clusters Count: %2",_faction, count _marineClusters] call ALIVE_fnc_dump;
 
                         /*
                         {
@@ -562,8 +564,18 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALIVE CP - Startup completed"] call ALIVE_fnc_dump;
-                    ["ALIVE CP - Count clusters %1",count _clusters] call ALIVE_fnc_dump;
+                    ["CP %1 - Startup completed", _faction] call ALiVE_fnc_dump;
+                    ["CP %2 - Filtered Civ clusters %1",count _clusters, _faction] call ALiVE_fnc_dump;
+                    ["CP %2 - All Civilian clusters %1", count (ALIVE_clustersCiv select 2), _faction] call ALiVE_fnc_dump;
+                    ["CP %2 - Settlement clusters %1", count (ALIVE_clustersCivSettlement select 2), _faction] call ALiVE_fnc_dump;
+                    ["CP %2 - HQ clusters %1",count (ALIVE_clustersCivHQ select 2), _faction] call ALiVE_fnc_dump;
+                    ["CP %2 - Marine clusters %1",count (ALIVE_clustersCivMarine select 2), _faction] call ALiVE_fnc_dump;
+                    ["CP %2 - Rail clusters %1",count (ALIVE_clustersCivRail select 2), _faction] call ALiVE_fnc_dump;
+                    ["CP %2 - Fuel clusters %1",count (ALIVE_clustersCivFuel select 2), _faction] call ALiVE_fnc_dump;
+                    ["CP %2 - Power clusters %1",count (ALIVE_clustersCivPower select 2), _faction] call ALiVE_fnc_dump;
+                    ["CP %2 - Comms clusters %1",count (ALIVE_clustersCivComms select 2), _faction] call ALiVE_fnc_dump;
+                    ["CP %2 - Construction clusters %1",count (ALIVE_clustersCivConstruction select 2), _faction] call ALiVE_fnc_dump;
+
                     [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -576,7 +588,7 @@ switch(_operation) do {
                             // start placement
                             [_logic, "placement"] call MAINCLASS;
                         }else{
-                            ["ALIVE CP [%1] - Warning no locations found for placement, you need to inclcude civilian locations within the TAOR marker",_faction] call ALIVE_fnc_dumpR;
+                            ["CP [%1] - Warning no locations found for placement, you need to inclcude civilian locations within the TAOR marker: %2",_faction, _taor] call ALiVE_fnc_dumpR;
 
                             // set module as started
                             _logic setVariable ["startupComplete", true];
@@ -585,7 +597,7 @@ switch(_operation) do {
                     }else{
 
                         // DEBUG -------------------------------------------------------------------------------------
-                        if(_debug) then { ["ALIVE CP - Profiles are persistent, no creation of profiles"] call ALIVE_fnc_dump; };
+                        if(_debug) then { ["CP - Profiles are persistent, no creation of profiles"] call ALiVE_fnc_dump; };
                         // DEBUG -------------------------------------------------------------------------------------
 
                         // need to start roadblock spawn loop though...
@@ -640,7 +652,7 @@ switch(_operation) do {
 
                                 GVAR(ROADBLOCK_LOCATIONS) = GVAR(ROADBLOCK_LOCATIONS) - [-1];
 
-                                if (_debug) then {["ALiVE Roadblock iteration time: %1 secs for %2 entries...", time - _timer, count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_Dump};
+                                if (_debug) then {["Roadblock iteration time: %1 secs for %2 entries...", time - _timer, count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump};
 
                                 sleep 1;
                             };
@@ -650,7 +662,7 @@ switch(_operation) do {
                 }else{
 
                     // DEBUG -------------------------------------------------------------------------------------
-                    if(_debug) then { ["ALIVE CP - Objectives Only"] call ALIVE_fnc_dump; };
+                    if(_debug) then { ["CP - Objectives Only"] call ALiVE_fnc_dump; };
                     // DEBUG -------------------------------------------------------------------------------------
 
                     // set module as started
@@ -678,7 +690,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE CP - Placement"] call ALIVE_fnc_dump;
+                ["CP - Placement"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -687,6 +699,8 @@ switch(_operation) do {
             //waituntil {sleep 5; (!(isnil {([_logic, "objectives"] call MAINCLASS)}) && {count ([_logic, "objectives"] call MAINCLASS) > 0})};
 
             _clusters = [_logic, "objectives"] call MAINCLASS;
+
+            private _guardProbability = parseNumber([_logic, "guardProbability"] call MAINCLASS);
 
             _customInfantryCount = [_logic, "customInfantryCount"] call MAINCLASS;
 
@@ -741,17 +755,13 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CP [%1] - Size: %2 Type: %3 SideNum: %4 Side: %5 Faction: %6",_faction,_size,_type,_factionSideNumber,_side,_faction] call ALIVE_fnc_dump;
+                ["CP [%1] - Size: %2 Type: %3 SideNum: %4 Side: %5 Faction: %6",_faction,_size,_type,_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
 
             // Load static data
-
-            if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-                _file = "\x\alive\addons\main\static\staticData.sqf";
-                call compile preprocessFileLineNumbers _file;
-            };
+            call ALiVE_fnc_staticDataHandler;
 
             // Spawn the main force
 
@@ -763,7 +773,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CP [%1] - Size: %2",_faction,_size] call ALIVE_fnc_dump;
+                ["CP [%1] - Size: %2",_faction,_size] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -849,7 +859,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CP [%1] - Main force creation ",_faction] call ALIVE_fnc_dump;
+                ["CP [%1] - Main force creation ",_faction] call ALiVE_fnc_dump;
                 ["Count Armor: %1",_countArmored] call ALIVE_fnc_dump;
                 ["Count Mech: %1",_countMechanized] call ALIVE_fnc_dump;
                 ["Count Motor: %1",_countMotorized] call ALIVE_fnc_dump;
@@ -950,7 +960,7 @@ switch(_operation) do {
                 private _marineClusters = [_logic, "objectivesMarine"] call MAINCLASS;
 
                 if(_debug) then {
-                    ["ALIVE CP [%1] - Placing Sea Patrols at %2 marine clusters",_faction, count _marineClusters] call ALIVE_fnc_dump;
+                    ["CP [%1] - Placing Sea Patrols at %2 marine clusters",_faction, count _marineClusters] call ALiVE_fnc_dump;
                 };
 
                 { // For each marine cluster
@@ -985,20 +995,20 @@ switch(_operation) do {
 
                             // Didn't find a position in the sea
                             if(_debug) then {
-                                ["ALIVE CP [%1] - Pos: %2 - Didn't find sea sector for naval patrol",_faction,_pos] call ALIVE_fnc_dump;
+                                ["CP [%1] - Pos: %2 - Didn't find sea sector for naval patrol",_faction,_pos] call ALiVE_fnc_dump;
                             };
                         };
                     } else {
 
                         // Didn't find a naval group
                         if(_debug) then {
-                            ["ALIVE CP [%1] - Size: %2 - Didn't find group for naval patrol",_faction,_size] call ALIVE_fnc_dump;
+                            ["CP [%1] - Size: %2 - Didn't find group for naval patrol",_faction,_size] call ALiVE_fnc_dump;
                         };
                     };
                 } forEach _marineClusters;
 
                 if(true) then {
-                    ["ALIVE CP [%1] - Created %2 Sea Patrols",_faction, _countSeaPatrols] call ALIVE_fnc_dump;
+                    ["CP [%1] - Created %2 Sea Patrols",_faction, _countSeaPatrols] call ALiVE_fnc_dump;
                 };
             };
 
@@ -1008,10 +1018,10 @@ switch(_operation) do {
                 _center = [_x, "center"] call ALIVE_fnc_hashGet;
                 _size = [_x, "size"] call ALIVE_fnc_hashGet;
 
-                if(count _infantryGroups > 0) then {
+                if(count _infantryGroups > 0 && random(1) < _guardProbability) then {
                     _guardGroup = (selectRandom _infantryGroups);
                     _guards = [_guardGroup, _center, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-
+                    // ["MP [%2] - Placing Guards - %1",_guardGroup, _guardProbability] call ALiVE_fnc_dump;
                     //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
                     {
                         if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
@@ -1105,11 +1115,11 @@ switch(_operation) do {
 
             } forEach _clusters;
 
+            ["CP %2 - Total profiles created: %1",_countProfiles, _faction] call ALiVE_fnc_dump;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CP - Total profiles created: %1",_countProfiles] call ALIVE_fnc_dump;
-                ["ALIVE CP - Placement completed"] call ALIVE_fnc_dump;
+                ["CP - Placement completed"] call ALiVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };

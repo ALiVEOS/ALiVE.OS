@@ -46,9 +46,29 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_agentGetInEventHandler.sqf";
                 RECOMPILE;
             };
+            class agentFiredNearEventHandler {
+                description = "agentFiredNearEventHandler";
+                file = "\x\alive\addons\amb_civ_population\fnc_agentFiredNearEventHandler.sqf";
+                RECOMPILE;
+            };
+            class crowdKilledEventHandler {
+                description = "crowdKilledEventHandler";
+                file = "\x\alive\addons\amb_civ_population\fnc_crowdKilledEventHandler.sqf";
+                RECOMPILE;
+            };
+            class crowdFiredNearEventHandler {
+                description = "crowdFiredNearEventHandler";
+                file = "\x\alive\addons\amb_civ_population\fnc_crowdFiredNearEventHandler.sqf";
+                RECOMPILE;
+            };
             class agentHandler {
                 description = "agentHandler";
                 file = "\x\alive\addons\amb_civ_population\fnc_agentHandler.sqf";
+                RECOMPILE;
+            };
+            class addCustomBuildingSound {
+                description = "addCustomBuildingSound";
+                file = "\x\alive\addons\amb_civ_population\fnc_addCustomBuildingSound.sqf";
                 RECOMPILE;
             };
             class addAmbientRoomMusic {
@@ -81,6 +101,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_getAgentEnemyNear.sqf";
                 RECOMPILE;
             };
+            class getNearestActiveAgent {
+                description = "getNearestActiveAgent";
+                file = "\x\alive\addons\amb_civ_population\fnc_getNearestActiveAgent.sqf";
+                RECOMPILE;
+            };
             class getGlobalPosture {
                 description = "getGlobalPosture";
                 file = "\x\alive\addons\amb_civ_population\fnc_getGlobalPosture.sqf";
@@ -101,6 +126,27 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_selectRoleAction.sqf";
                 RECOMPILE;
             };
+            class addCivilianInteraction {
+                description = "Adds interact option to civilians";
+                file = "\x\alive\addons\amb_civ_population\fnc_addCivilianInteraction.sqf";
+                RECOMPILE;
+            };
+            class civInteract {
+                description = "Main handler for civilian interraction";
+                file = "\x\alive\addons\amb_civ_population\fnc_civInteract.sqf";
+                RECOMPILE;
+            };
+            class civInteractInit {
+                description = "Initializes civilian interaction";
+                file = "\x\alive\addons\amb_civ_population\fnc_civInteractInit.sqf";
+                RECOMPILE;
+            };
+            class questionHandler {
+                description = "Main handler for questions";
+                file = "\x\alive\addons\amb_civ_population\fnc_questionHandler.sqf";
+                RECOMPILE;
+            };
+
         };
     };
 };

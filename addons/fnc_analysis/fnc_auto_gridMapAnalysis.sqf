@@ -1,4 +1,4 @@
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(auto_gridMapAnalysis);
 
 /* ----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ if(_export) then {
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-    ["ALIVE Starting Map Analysis"] call ALIVE_fnc_dump;
+    ["Starting Map Analysis"] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 

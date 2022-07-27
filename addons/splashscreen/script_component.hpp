@@ -11,4 +11,4 @@
     #define DEBUG_SETTINGS DEBUG_SETTINGS_splashscreen
 #endif
 
-#include <\x\cba\addons\main\script_macros.hpp>
+#include "\x\cba\addons\main\script_macros.hpp"

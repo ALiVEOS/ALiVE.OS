@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sup_command\script_component.hpp>
+#include "\x\alive\addons\sup_command\script_component.hpp"
 SCRIPT(commandHandler);
 
 /* ----------------------------------------------------------------------------
@@ -109,7 +109,7 @@ switch(_operation) do {
             private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
             if (_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALiVE_fnc_dump;
-                ["ALiVE Command Handler - %1 Event received", _type] call ALiVE_fnc_dump;
+                ["Command Handler - %1 Event received", _type] call ALiVE_fnc_dump;
                 _data call ALiVE_fnc_inspectArray;
             };
 
@@ -819,7 +819,7 @@ switch(_operation) do {
                     // add all uavs connected to a unit
 
                     {
-                        if (side _x == _side) then {
+                        if (side group _x == _side) then {
 
                             // get unit connected uav if one exists
 

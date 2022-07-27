@@ -1,4 +1,4 @@
-#include <\x\alive\addons\amb_civ_command\script_component.hpp>
+#include "\x\alive\addons\amb_civ_command\script_component.hpp"
 SCRIPT(civCommandRouter);
 
 /* ----------------------------------------------------------------------------
@@ -62,7 +62,7 @@ switch(_operation) do {
             [_logic,"debug",false] call ALIVE_fnc_hashSet; // select 2 select 0
             [_logic,"commandState",[] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet; // select 2 select 1
             [_logic,"isManaging",false] call ALIVE_fnc_hashSet; // select 2 select 2
-            [_logic,"managerHandle",objNull] call ALIVE_fnc_hashSet; // select 2 select 3
+            [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashSet; // select 2 select 3
         };
 
     };
@@ -108,7 +108,7 @@ switch(_operation) do {
 
                 //Set value
                 _args = [_logic,"pause",_args,false] call ALIVE_fnc_OOsimpleOperation;
-                ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_DumpR;
+                ["Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_dumpR;
         };
 
         _result = _args;
@@ -161,7 +161,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALiVE Civ Command Router - Activate Command [%1] %2",_agentID,_activeCommand] call ALIVE_fnc_dump;
+                ["Civ Command Router - Activate Command [%1] %2",_agentID,_activeCommand] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -174,7 +174,7 @@ switch(_operation) do {
                 };
                 case "spawn": {
                     // spawn the command script and store the handle on the internal command states hash
-                    private _handle = [_agent, _commandArgs, true] spawn (call compile _commandName);
+                    private _handle = [_agent, _commandArgs, true] spawn (missionNamespace getVariable _commandName);
                     [_commandState, _agentID, [_handle, _activeCommand]] call ALIVE_fnc_hashSet;
                 };
                 case "managed": {
@@ -191,7 +191,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALiVE Civ Command Router - Current Command State:"] call ALIVE_fnc_dump;
+                ["Civ Command Router - Current Command State:"] call ALiVE_fnc_dump;
                 _commandState call ALIVE_fnc_inspectHash;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
@@ -222,7 +222,7 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALiVE Civ Command Router - De-activate Command [%1] %2",_agentID,_activeCommand] call ALIVE_fnc_dump;
+                    ["Civ Command Router - De-activate Command [%1] %2",_agentID,_activeCommand] call ALiVE_fnc_dump;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -247,7 +247,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    ["ALiVE Civ Command Router - Current Command State:"] call ALIVE_fnc_dump;
+                    ["Civ Command Router - Current Command State:"] call ALiVE_fnc_dump;
                     _commandState call ALIVE_fnc_inspectHash;
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
                 };
@@ -274,7 +274,7 @@ switch(_operation) do {
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Command Router - Command Manager Started"] call ALIVE_fnc_dump;
+            ["Command Router - Command Manager Started"] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -317,7 +317,7 @@ switch(_operation) do {
                         private _commandType = _activeCommand select 1;
 
                         /*
-                        ["ALiVE Command Router - Active Command: %1",_commandType] call ALIVE_fnc_dump;
+                        ["Command Router - Active Command: %1",_commandType] call ALiVE_fnc_dump;
                         _activeCommand call ALIVE_fnc_inspectArray;
                         */
 
@@ -329,7 +329,7 @@ switch(_operation) do {
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
                                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                                ["ALiVE Civ Command Router - Manage Command [%1] %2",_agentID,_activeCommand] call ALIVE_fnc_dump;
+                                ["Civ Command Router - Manage Command [%1] %2",_agentID,_activeCommand] call ALiVE_fnc_dump;
                             };
                             // DEBUG -------------------------------------------------------------------------------------
 
@@ -339,21 +339,21 @@ switch(_operation) do {
                                 private _nextStateArgs = _activeCommand select 4;
 
                                 /*
-                                ["ALiVE Command Router - Next State: %1",_nextState] call ALIVE_fnc_dump;
-                                ["ALiVE Command Router - Next State Args: %1",_nextStateArgs] call ALIVE_fnc_dump;
+                                ["Command Router - Next State: %1",_nextState] call ALiVE_fnc_dump;
+                                ["Command Router - Next State Args: %1",_nextStateArgs] call ALiVE_fnc_dump;
                                 */
 
                                 // if the managed command has not completed
                                 if!(_nextState == "complete") then {
 
-                                    //["ALiVE Command Router - Managed command not completed: %1",_commandName] call ALIVE_fnc_dump;
+                                    //["Command Router - Managed command not completed: %1",_commandName] call ALiVE_fnc_dump;
 
                                     [_agent, _commandState, _commandName, _nextStateArgs, _nextState, _debug] call (call compile _commandName);
                                 }else{
 
                                     /*
-                                    ["ALiVE Command Router - Managed command completed: %1",_commandName] call ALIVE_fnc_dump;
-                                    ["ALiVE Command Router - Selecting a new command"] call ALIVE_fnc_dump;
+                                    ["Command Router - Managed command completed: %1",_commandName] call ALiVE_fnc_dump;
+                                    ["Command Router - Selecting a new command"] call ALiVE_fnc_dump;
                                     */
 
                                     [_logic,"deactivate",_agent] call MAINCLASS;
@@ -386,20 +386,20 @@ switch(_operation) do {
 
     case "stopManagement": {
 
-        private _debug = _logic select 2 select 0;
-        private _handle = _logic select 2 select 3;
+        private _debug = [_logic,"debug",false] call ALIVE_fnc_hashGet;
+        private _handle = [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashGet;
 
-        if!(scriptDone _handle) then {
+        if (!isNull _handle) then {
             terminate _handle;
         };
 
         [_logic,"isManaging",false] call ALIVE_fnc_hashSet;
-        [_logic,"managerHandle",objNull] call ALIVE_fnc_hashSet;
+        [_logic,"managerHandle",scriptNull] call ALIVE_fnc_hashSet;
 
         // DEBUG -------------------------------------------------------------------------------------
-        if(_debug) then {
+        if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-            ["ALiVE Civ Command Router - Command Manager Stopped"] call ALIVE_fnc_dump;
+            ["Civ Command Router - Command Manager Stopped"] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 

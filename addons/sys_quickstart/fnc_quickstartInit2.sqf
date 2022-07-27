@@ -1,4 +1,4 @@
-#include <\x\alive\addons\main\script_component.hpp>
+#include "\x\alive\addons\main\script_component.hpp"
 SCRIPT(aliveAutoInit);
 
 /* ----------------------------------------------------------------------------
@@ -117,6 +117,6 @@ if (hasInterface) then {
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
 
-["ALiVE Global INIT COMPLETE"] call ALIVE_fnc_dump;
+["Global INIT COMPLETE"] call ALiVE_fnc_dump;
 [false,"ALiVE Global Init Timer Complete","INIT"] call ALIVE_fnc_timer;
 [" "] call ALIVE_fnc_dump;

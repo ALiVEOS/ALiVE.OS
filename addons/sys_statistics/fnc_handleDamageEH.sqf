@@ -32,7 +32,7 @@ if (GVAR(ENABLED)) then {
     if ((isPlayer _wounded) || (isPlayer _source)) then {
 
         _sideWounded = side (group _wounded); // group side is more reliable
-        _sidesource = side _source;
+        _sidesource = side (group _source);
 
         _factionsource = getText (((faction _source) call ALiVE_fnc_configGetFactionClass) >> "displayName");
         _factionwounded = getText (((faction _wounded) call ALiVE_fnc_configGetFactionClass) >> "displayName");

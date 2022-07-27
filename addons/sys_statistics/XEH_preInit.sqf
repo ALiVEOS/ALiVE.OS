@@ -37,5 +37,3 @@ PREP(getOutEH);
 
 // Handling Combat Dives
 PREP(divingEH);
-
-

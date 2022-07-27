@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_playertags\script_component.hpp>
+#include "\x\alive\addons\sys_playertags\script_component.hpp"
 
 if (!enable_playertags || visibleMap) exitWith {foundUnitsCount = 0;};
 
@@ -6,7 +6,7 @@ _gen = player;
 _tolerance = playertags_tolerance;
 _maxDistance = playertags_distance;
 _possibleVehicles = playertags_targetvehicles;
-_ownSide = side _gen;
+_ownSide = side group _gen;
 _playerVehicle = vehicle _gen;
 _genPos = getPos _gen;
 _objects = [];

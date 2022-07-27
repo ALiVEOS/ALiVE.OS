@@ -1,5 +1,5 @@
-#include <\x\alive\addons\sup_combatsupport\script_component.hpp>
-#include <\x\cba\addons\ui_helper\script_dikCodes.hpp>
+#include "\x\alive\addons\sup_combatsupport\script_component.hpp"
+#include "\a3\editor_f\Data\Scripts\dikCodes.h"
 
 SCRIPT(combatSupportDef);
 
@@ -43,14 +43,26 @@ PARAMS_2(_target,_params);
 
 _menuName = "";
 _menuRsc = "popup";
-_items = assignedItems player + items player;
-_backpacks = Backpack player;
-_userItems = [NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"]];
+_userItems = NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"];
+_userItems = _userItems call ALiVE_fnc_stringListToArray;
+_userItems = _userItems apply {tolower _x};
 //Finds selected userItem-string(s) in assignedItems
-_result = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _userItems) > 0);
+_items = (assignedItems player) + (items player) + ([backpack player]);
+_items = _items apply {tolower _x};
+
+//_result = count (_items arrayIntersect _userItems) > 0;
+// for backwards compat use 'find' to support partial matches
+private _itemsString = _items joinstring ",";
+_result = false;
+{
+	private _requiredItem = _x;
+	if (_itemsString find _requiredItem != -1) exitwith {
+		_result = true;
+	};
+} foreach _userItems;
 
 if (typeName _params == typeName []) then {
-    if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
+    if (count _params < 1) exitWith {["Error: Invalid params: %1, %2", _this, __FILE__] call ALiVE_fnc_dump;};
     _menuName = _params select 0;
     _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
 } else {

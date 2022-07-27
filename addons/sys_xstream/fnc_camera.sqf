@@ -1,27 +1,25 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\sys_xstream\script_component.hpp>
+#include "\x\alive\addons\sys_xstream\script_component.hpp"
 SCRIPT(camera);
-
 
 private ["_relpos","_cam","_cameraTarget","_fov","_sceneChoice","_subChoice","_loopHandle","_logic"];
 
 _logic = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
 
 // Setup params from logic
-
-
-
-TargetFired = [];
-subjects = [player];
+ALiVE_VehicleFired = [];
+ALiVE_UnitFired = [];
+subjects = [];
 infantry = [player];
 _cameraTarget = player;
 
+// Spawn a process to hook into units alive and units that are firing
 _loopHandle = [] spawn {
 
-        // Set Side to show
+    // Set Side to show
     private "_sideMask";
 
-    _sideMask = [WEST,EAST,resistance, civilian];
+    _sideMask = [WEST,EAST,resistance];
 
     while {GVAR(cameraStarted)} do {
 
@@ -32,304 +30,315 @@ _loopHandle = [] spawn {
                  subjects pushback _x;
                 _nn = _x getVariable "EHfired";
                 if (isNil "_nn") then {
-                    _fh = _x addeventhandler["fired", { TargetFired pushback ([(_this select 0),time])}];
+                    _fh = _x addeventhandler["fired", { ALiVE_VehicleFired pushback ([(_this select 0),time])}];
                     _x setVariable["EHfired", _fh];
                 };
             };
         } foreach vehicles;
 
         // Get List of Man units from Mission
-        { if ((side _x in _sideMask) && (_x != player) && (_x isKindOf "MAN")) then
+        { if (((side group _x) in _sideMask) && (_x != player) && (_x isKindOf "MAN")) then
             {
                 private ["_nn","_fh"];
                 infantry pushback _x;
                 _nn = _x getVariable "EHfired";
                 if (isNil "_nn") then {
-                    _fh = _x addeventhandler["fired", { TargetFired pushback ([(_this select 0),time])}];
+                    _fh = _x addeventhandler["fired", { ALiVE_UnitFired pushback ([(_this select 0),time])}];
                     _x setVariable["EHfired", _fh];
                 };
             };
         } foreach allUnits;
-        diag_log format["Subjects: %1", subjects];
-        diag_log format["Infantry: %1", infantry];
-        sleep 30;
+
+        ["Subjects: %1", subjects] call ALiVE_fnc_dump;
+        ["Infantry: %1", infantry] call ALiVE_fnc_dump;
+
+        sleep 10;
+
+        // Clean up Fired arrays
+        {
+            if (time - (_x select 1) > 5) then {
+                ALiVE_UnitFired set [_foreachIndex,-1];
+            };
+        } foreach ALiVE_UnitFired;
+        ALiVE_UnitFired = ALiVE_UnitFired - [-1];
+
+        {
+            if (time - (_x select 1) > 5) then {
+                ALiVE_VehicleFired set [_foreachIndex,-1];
+            };
+        } foreach ALiVE_VehicleFired;
+        ALiVE_VehicleFired = ALiVE_VehicleFired - [-1];
+
         subjects = [];
         infantry = [];
     };
 };
 
 // Set up visual effects
-0 setOvercast random 0.2;
+    0 setOvercast random 0.2;
 
-"colorCorrections" ppEffectAdjust [1, 1, -0.004, [0.0, 0.0, 0.0, 0.0], [1, 0.8, 0.6, 0.5],  [0.199, 0.587, 0.114, 0.0]];
-"colorCorrections" ppEffectCommit 0;
-"colorCorrections" ppEffectEnable false ;
-"filmGrain" ppEffectEnable false;
-"filmGrain" ppEffectAdjust [0.04, 1, 1, 0.1, 1, false];
-"filmGrain" ppEffectCommit 0;
+    "colorCorrections" ppEffectAdjust [1, 1, -0.004, [0.0, 0.0, 0.0, 0.0], [1, 0.8, 0.6, 0.5],  [0.199, 0.587, 0.114, 0.0]];
+    "colorCorrections" ppEffectCommit 0;
+    "colorCorrections" ppEffectEnable false ;
+    "filmGrain" ppEffectEnable false;
+    "filmGrain" ppEffectAdjust [0.04, 1, 1, 0.1, 1, false];
+    "filmGrain" ppEffectCommit 0;
 
-"radialBlur" ppEffectEnable false;
-"wetDistortion" ppEffectEnable false;
-"chromAberration" ppEffectEnable false;
-"dynamicBlur" ppEffectEnable false;
+    "radialBlur" ppEffectEnable false;
+    "wetDistortion" ppEffectEnable false;
+    "chromAberration" ppEffectEnable false;
+    "dynamicBlur" ppEffectEnable false;
 
 enableRadio false;
 
 // Introductory Scenes =======================================================
+/*
+    titleCut ["", "BLACK FADED", 0];
 
-titleCut ["", "BLACK FADED", 0];
+    // Close up of subject
+    private _cam = "camera" camCreate (position _cameraTarget);
+    _cam cameraEffect ["INTERNAL", "BACK"];
+    showCinemaBorder true;
+    cameraEffectEnableHUD false;
+    showHUD false;
 
-// Close up of subject
-_cam = "camera" camCreate (position _cameraTarget);
-_cam cameraEffect ["INTERNAL", "BACK"];
-showCinemaBorder true;
-cameraEffectEnableHUD false;
-showHUD false;
+    waituntil {(preloadcamera (position _cameraTarget))};
+    setacctime 0;
 
-waituntil {(preloadcamera (position _cameraTarget))};
-setacctime 0;
+    setacctime 1;
 
-setacctime 1;
+    _cam attachTo [_cameraTarget,[2,15,1]];
+    _cam camPrepareTarget _cameraTarget;
+    _cam camPrepareFOV 0.6;
+    _cam camCommitPrepared 0;
+    waituntil {camcommitted _cam};
 
-_cam attachTo [_cameraTarget,[2,15,1]];
-_cam camPrepareTarget _cameraTarget;
-_cam camPrepareFOV 0.6;
-_cam camCommitPrepared 0;
-waituntil {camcommitted _cam};
+    // Author details
+    titleCut ["", "BLACK IN", 4];
 
-// Author details
-titleCut ["", "BLACK IN", 4];
+    sleep 5;
 
-sleep 5;
+    //Close up of subject
+    if (count subjects > 0) then {
+        _cameraTarget = (subjects select (floor(random count subjects)));
+    };
 
-//Close up of subject
-if (count subjects > 0) then {
-    _cameraTarget = (subjects select (floor(random count subjects)));
-};
+    waituntil {(preloadcamera (position _cameraTarget)) || time > 5};
+    _cam attachTo [_cameraTarget,[-2,15,-1]];
+    _cam camPrepareTarget _cameraTarget;
+    _cam camPrepareFOV 0.6;
+    _cam camCommitPrepared 0;
+    waituntil {camcommitted _cam};
 
-waituntil {(preloadcamera (position _cameraTarget)) || time > 5};
-_cam attachTo [_cameraTarget,[-2,15,-1]];
-_cam camPrepareTarget _cameraTarget;
-_cam camPrepareFOV 0.6;
-_cam camCommitPrepared 0;
-waituntil {camcommitted _cam};
+    // Map Details
+    titleCut ["", "BLACK IN", 4];
 
-// Map Details
-titleCut ["", "BLACK IN", 4];
+    sleep 5;
 
-sleep 5;
+    _cam cameraEffect ["terminate","back"];
+    camDestroy _cam;
 
-_cam cameraEffect ["terminate","back"];
-camDestroy _cam;
-
-titleCut ["", "BLACK FADED", 0];
-
+    titleCut ["", "BLACK FADED", 0];
+*/
 //  End Introductory Scenes =======================================================
+
+ALIVE_cameraType = "CAMERA";
+GVAR(Camera) = [player,false,"HIGH"] call ALIVE_fnc_addCamera;
+
+private _handle = [player, "Starting ALiVE xStream System", 500, 250, 75, 1, [], 0, true] spawn BIS_fnc_establishingShot;
+waitUntil { scriptDone _handle };
+
+diag_log "Starting camera";
+[GVAR(Camera),true] call ALIVE_fnc_startCinematic;
+
+// Establishing Shot
+[GVAR(Camera),_logic] call ALiVE_fnc_establishShot;
 
 // Loop through series of scenes
 while { ((count subjects + count infantry) > 0) && GVAR(cameraStarted)} do {
 
-    private ["_timely","_shotTime"];
+    diag_log "Looping camera shot selection";
+    private _timely = 0;
+    private _shotTime = 0;
+    private _cameraTarget = subjects select 0;
+    private _subChoice = (random 1);
+    private _duration = 3;
+
     //Choose a subject
+    ["Vehicle Fired count:%1 - %2", count ALiVE_VehicleFired, ALiVE_VehicleFired] call ALiVE_fnc_dump;
+    ["Unit Fired count:%1 - %2", count ALiVE_UnitFired, ALiVE_UnitFired] call ALiVE_fnc_dump;
 
-    diag_log format["TargetFired count:%1 - %2", count TargetFired, TargetFired];
+    private _firingUnits = ALiVE_UnitFired + ALiVE_VehicleFired;
 
-    _timely = 0;
-    _shotTime = 0;
-    _cameraTarget = vehicles select 0;
+    if (count _firingUnits < 1) then {
 
-    if (count TargetFired < 1) then {
-        _subChoice = (random 1);
-        if (_subChoice > 0.3) then {
+        if (_subChoice > 0.45) then {
             _cameraTarget = (subjects select (floor(random count subjects)));
+            if (isnil "_cameraTarget") then {
+                _cameraTarget = (infantry select (floor(random count infantry)));
+            };
         } else {
             _cameraTarget = (infantry select (floor(random count infantry)));
+            if (isnil "_cameraTarget") then {
+                _cameraTarget = (subjects select (floor(random count subjects)));
+            };
         };
     } else {
-        private ["_i"];
-        _i = 0;
         _timely = 6;
-        while {(_timely > 5 || _i < (count TargetFired - 1) )} do {
-            _cameraTarget = (TargetFired select _i) select 0;
-            _shotTime = (TargetFired select _i) select 1;
-            TargetFired set [_i,-1];
-            TargetFired = TargetFired - [-1];
+        reverse _firingUnits;
+        {
+            _shotTime = _x select 1;
             _timely = time - _shotTime;
-            _i = _i + 1;
-        };
+            if (_timely < 6 && alive (_x select 0)) exitWith {
+                _cameraTarget = _x select 0;
+            };
+            if (_timely > 5 || !(alive (_x select 0))) then {
+
+            };
+        } foreach _firingUnits;
+
     };
 
-    // If the subject is a Man and he is in a vehicle, make the vehicle the subject
-    if (vehicle _cameraTarget != _cameraTarget) then {
-        _cameraTarget = vehicle _cameraTarget;
-    };
+    if !(isNil "_cameraTarget") then{
 
-    // Make sure the subject is not dead or fatally wounded
-    if (((alive _cameraTarget) || ((damage _cameraTarget) < 0.4)) && ((speed _cameraTarget > 0) || ((_timely > 0) && (_timely < 5))) ) then {
-
-        // Destroy last camera
-        _cam cameraEffect ["terminate","back"];
-        camDestroy _cam;
-
-        // Create new camera
-        _cam = "camera" camCreate (position _cameraTarget);
-        showCinemaBorder true;
-        cameraEffectEnableHUD false;
-        showHUD false;
-
-        // Randomly set a Field of View
-        _fov = 0.2+(random 0.5);
-
-        // Randomly pick a number (0-5 Flyby, 6-7 First Person, 8-10 Follow, 11 Pan)
-        _sceneChoice = (round(random 15));
-
-        diag_log format["sys_xstream target:%1, sc:%2, scene:%3, speed:%4",_cameraTarget, _subChoice, _sceneChoice, speed _cameraTarget];
-
-        // Set up scene and Fade into the shot
-        _cam camPrepareTarget _cameraTarget;
-        _cam camPrepareFOV _fov;
-        titleCut ["", "BLACK IN", 2];
-
-        // Over the Shoulder shot looking at target
-        if (_timely > 0 || _sceneChoice > 10) then {
-            // Check to see if it is a Man, if so get closer
-            if (_cameraTarget iskindof "MAN") then {
-                x = (2-(round(random 4))) * cos(random 90);
-                y = 0.3 + (random 2);
-                z = (eyePos _cameraTarget) select 2;
-            } else {
-                _fov = _fov + 0.3;
-                x = (5-(round(random 10))) * cos(random 90);
-                y = (sizeOf (typeOf _cameraTarget)) + (random 10);
-                z = 3;
-            };
-
-            _relpos = [x , y, z];
-            _cam attachTo [_cameraTarget,_relpos];
-            _cam camSetTarget (assignedTarget _cameraTarget);
-            _cam camSetFOV _fov;
-            _cam cameraEffect ["INTERNAL", "BACK"];
-            _cam camCommit 0;
-            sleep 5;
-            _sceneChoice = 12;
+        // If the subject is a Man and he is in a vehicle, make the vehicle the subject
+        if (vehicle _cameraTarget != _cameraTarget) then {
+            _cameraTarget = vehicle _cameraTarget;
         };
 
+        // Make sure the subject is not dead or fatally wounded
+        if (((alive _cameraTarget) && ((damage _cameraTarget) < 0.5)) || ((speed _cameraTarget > 0) || ((_timely > 0) && (_timely < 5))) ) then {
 
-        // Fly By
-        if (_sceneChoice < 6) then {
-            if (_cameraTarget iskindof "MAN") then {
-                x = 10-(round(random 20));
-                y = 10-(round(random 20));
-                z = 1+(round(random 2));
-            } else {
-                x = (round(random 120));
-                y = (round(random 120));
-                z = 10+(round(random 120));
-            };
-            _relpos = [x * cos(random 180), y * sin(random 180), z];
-            _cam camPrepareRelPos _relpos;
-            _cam camSetTarget _cameraTarget;
-            _cam camSetRelPos _relpos;
-            _cam camSetFOV _fov;
-            _cam cameraEffect ["INTERNAL", "BACK"];
-            _cam camCommit 0;
-            sleep 5;
-        };
 
-        // Follow
-        if ((_sceneChoice >5) && (_sceneChoice < 11)) then {
-            // Check to see if it is a Man, if so get closer
-            if (_cameraTarget iskindof "MAN") then {
-                x = (2-(round(random 4))) * cos(random 180);
-                y = (2+(round(random 8)));
-                z = (1.5+(round(random 0.5)));
-            } else {
-                _fov = _fov + 0.3;
-                x = (5-(round(random 10))) * cos(random 180);
-                y = (12+(round(random 8)));
-                z = (5-(round(random 10))) * sin(random 180);
+            private _sceneChoice = ["ZOOM",0.1,"FLY_OVER",0.2,"CHASE_SIDE",0.3,"CHASE_ANGLE",0.3,"CHASE",0.3,"ANGLE",0.5,"SIDE",0.5];
+            private _dist = 0 - ((sizeOf _cameraTarget) / 2);
+            private _height = 1;
+
+			// Target is a moving vehicle, then use chase shots or follow shot
+            if (!(_cameraTarget isKindOf "MAN") && speed _cameraTarget > 1) then {
+                _sceneChoice = ["FLY_OVER",0.2,"CHASE",0.3,"CHASE_SIDE",0.3,"CHASE_ANGLE",0.4,"FOLLOW",0.5];
             };
 
-            _relpos = [x , y, z];
-            _cam attachTo [_cameraTarget,_relpos];
-            _cam camSetTarget _cameraTarget;
-            _cam camSetFOV _fov;
-            _cam cameraEffect ["INTERNAL", "BACK"];
-            _cam camCommit 0;
-            sleep 5;
-        };
-
-        /*
-        // First Person
-        if ((_sceneChoice > 8) && (_sceneChoice < 11)) then {
-            _cam camPrepareRelPos (position _cameraTarget);
-            _cam cameraEffect ["terminate","back"];
-            camDestroy _cam;
-            _cameraTarget switchCamera "INTERNAL";
-            sleep 5;
-        };
-
-        // Pan
-        if (_sceneChoice > 10) then {
-            // If the target is a person, get closer
-            if (_cameraTarget iskindof "MAN") then {
-                _dist = 1+(random 4);
-                _alt = 1+(random 2);
-            } else {
-                _dist = (sizeOf (typeOf _cameraTarget)) + (random 10);
-                _alt = ((random _dist)/3) + 6;
+			// If the target is a stationary man
+            if (_cameraTarget isKindOf "MAN" && speed _cameraTarget < 1) then {
+                _sceneChoice = _sceneChoice + ["SIDE",0.2,"DOLLYZOOM",0.2,"ANGLE",0.3,"FRONT",0.5];
             };
 
-            _stopScene = false;
-            _startTime = time;
-            _stopTime = _startTime + 8;
-            _newTarget = objNull;
-            _istep = 0.22 + (random 3) * (0.001 * 1);
-            _groupTarget = createGroup sideLogic;
-            _newTarget = _groupTarget createUnit ["Logic", (position _cameraTarget), [], 0, "NONE"];
-            _iterator = 0;
-            _switchDir = (round(random 1));
-            _angle = 0;
-            _targetPos = [];
-            x = (position _cameraTarget select 0) + _dist;
-            y = (position _cameraTarget select 1) + _dist;
-            z = (position _cameraTarget select 2) + _alt;
-            _relpos = [x , y, z];
-            _cam camSetTarget _newTarget;
-            _cam camSetPos _relpos;
-            _cam camSetFOV _fov;
-            _cam cameraEffect ["INTERNAL", "BACK"];
-            _cam camCommit 0;
-            _startangle = [_cam,_cameraTarget] call BIS_fnc_relativeDirTo;
-            _startangle = _startangle % 360;
+            // CHeck for recent firing, then set up over the shoulder shot or other close up side/front shot
+            if (_timely > 0) then {
+                _sceneChoice = ["SIDE",0.3,"FRONT",0.3,"CHASE_TARGET",0.7,"TARGET",0.8];
+            };
 
-            while {!_stopScene} do {
-                _iterator = _iterator + 1;
-                _angle = _startangle + (_iterator * _istep);
-                if (_switchDir == 0) then {
-                    _targetPos = [x + _dist * cos(_angle), y + _dist * sin(_angle), z];
-                } else {
-                    _targetPos = [x + _dist * cos(_angle), y - _dist * sin(_angle), z];
+            private _shot = selectRandomWeighted _sceneChoice;
+
+            private _target1 = _cameraTarget;
+            private _target2 = assignedTarget _cameraTarget;
+
+            if !(_target1 isKindOf "MAN") then {
+                _target2 = assignedTarget gunner _target1;
+                _height = (ASLtoATL (eyepos gunner _target1)) select 2;
+            };
+
+            if (isNull _target2) then {
+                _target2 = _target1 findNearestEnemy _target1;
+                diag_log str(_target2);
+            };
+
+            if (_target1 isKindOf "MAN") then {
+                _dist = -2;
+            };
+
+            ["%3 - %1 : Target: %2 - %6, Dist: %5 ShotTime: %4", time, typeof _target1, _shot, _shotTime, _dist, _target1] call ALiVE_fnc_dump;
+
+            if (ALIVE_cameraType == "CAMERA") then {
+
+                switch(_shot) do {
+                    case "CHASE_TARGET":{
+                        _height = (ASLtoATL (eyepos _target1) select 2);
+                        _dist = -0.15;
+                        if !(_target1 isKindOf "MAN") then {
+                            _dist = -0.2 - (random 5);
+                        };
+                        ["Spawning %1 camera call with %2 distance and %3 height. Target2: %4", _shot, _dist, _height, _target2] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1, _target2, _duration, false, _dist, _height] spawn ALIVE_fnc_chaseTarget;
+                    };
+                    case "TARGET":{
+                        _height = (ASLtoATL (eyepos _target1) select 2);
+                        _dist = -0.15;
+                        if !(_target1 isKindOf "MAN") then {
+                            _dist = -0.2 - (random 5);
+                        };
+                        ["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1, _target2, _duration, false, _dist, _height] spawn ALIVE_fnc_targetShot;
+                    };
+                    case "FLY_IN":{
+                        ["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration] spawn ALIVE_fnc_flyInShot;
+                    };
+                    case "FLY_OVER":{
+                    	_height = 30;
+                    	_dist = 60;
+                        ["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration] spawn ALIVE_fnc_flyOverShot;
+                    };
+                    case "ZOOM":{
+                        ["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration] spawn ALIVE_fnc_zoomShot;
+                    };
+                    case "DOLLYZOOM":{
+                        ["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration] spawn ALIVE_fnc_dollyZoomShot;
+                    };
+                    case "STATIC":{
+                        ["Spawning %1 camera call with %2 distance and %3 height. Target %4", _shot, _dist, _height, _target2] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration] spawn ALIVE_fnc_staticShot;
+                    };
+                    case "CHASE":{
+                        ["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, _height] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration,false,_dist] spawn ALIVE_fnc_chaseShot;
+                    };
+                    case "CHASE_SIDE":{
+                        ["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, _height] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration,false,_dist,_height] spawn ALIVE_fnc_chaseSideShot;
+                    };
+                    case "CHASE_ANGLE":{
+                        ["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, _height] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration,false,_dist,_height] spawn ALIVE_fnc_chaseAngleShot;
+                    };
+                    case "SIDE":{
+                        ["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, _height] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration,false,_dist,_height] spawn ALIVE_fnc_sideShot;
+                    };
+                    case "ANGLE":{
+                        ["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, _height] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration,false,_dist,_height] spawn ALIVE_fnc_angleShot;
+                    };
+                    case "FRONT":{
+                        _dist = 0 - _dist;
+                        ["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, (ASLtoATL (eyepos _target1)) select 2] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration, false, _dist, (ASLtoATL (eyepos _target1)) select 2, 0.3-(random 0.6)] spawn ALIVE_fnc_chaseShot;
+                    };
+                    case "FOLLOW":{
+                        _dist = sizeof _target1 * 5;
+                        ["Spawning %1 camera call with %2 distance and %3 height", _shot, _dist, (ASLtoATL (eyepos _target1)) select 2] call ALiVE_fnc_dump;
+                        [GVAR(Camera),_target1,_duration, false, _dist, (ASLtoATL (eyepos _target1)) select 2, 0.3-(random 0.6)] spawn ALIVE_fnc_followShot;
+                    };
                 };
-                _newTarget setPos _targetPos;
-                sleep 0.001;
-                if (time > _stopTime) then {_stopScene = true};
+
+            }else{
+
+                [_target1,"FIRST_PERSON"] call ALIVE_fnc_switchCamera;
+
             };
-            deleteVehicle _newTarget;
-            _groupTarget call ALiVE_fnc_DeleteGroupRemote;
+
         };
-
-        // Satellite
-
-        // Cameraman
-
-        //
-        */
     };
+    sleep (_duration);
 };
 
 //exit
-_cam cameraEffect ["terminate","back"];
-camDestroy _cam;
+[GVAR(Camera),true] call ALIVE_fnc_stopCinematic;
+[GVAR(Camera)] call ALIVE_fnc_removeCamera;
+
 exit;
 

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(canSee);
 
 /* ----------------------------------------------------------------------------
@@ -14,7 +14,7 @@ BOOL
 
 Examples:
 (begin example)
-[player,testunit] call ALIVE_fnc_canSee;
+_playerCanSeeTestunit = [_player, _testunit] call ALIVE_fnc_canSee;
 (end)
 
 See Also:
@@ -28,8 +28,8 @@ params [
     ["_target", objNull, [objNull]]
 ];
 
-if !(alive _target) exitwith {false};
+if !(alive _unit) exitwith {false};
 
-private _dir = (_unit getRelDir _target) - (getDir _unit);
+private _dir = _unit getRelDir _target;
 
-(_dir > -50 && {_dir < 50}) && {!(lineIntersects [eyePos _unit, eyePos _target , _unit, _target])};
+(_dir < 60 || {_dir > 300}) && {!(lineIntersects [eyePos _unit, eyePos _target , _unit, _target])};

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(isEnemyNear);
 
 /* ----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ _entities = _position nearEntities ["CAManBase", _radius];
 
 if(count _entities > 0) then {
     {
-        _entitySide = side _x;
+        _entitySide = side group _x;
         if(_entitySide in _enemySides) exitWith {
             _found = true;
         };

@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\mil_intelligence\script_component.hpp>
+#include "\x\alive\addons\mil_intelligence\script_component.hpp"
 SCRIPT(PSD);
 
 /* ----------------------------------------------------------------------------
@@ -101,7 +101,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE PSD - Startup"] call ALIVE_fnc_dump;
+                ["PSD - Startup"] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -123,7 +123,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE PSD - Startup completed"] call ALIVE_fnc_dump;
+                ["PSD - Startup completed"] call ALiVE_fnc_dump;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------

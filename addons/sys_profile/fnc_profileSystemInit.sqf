@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(profileSystemInit);
 
 /* ----------------------------------------------------------------------------
@@ -38,17 +38,20 @@ if(isServer) then {
 
     MOD(SYS_PROFILE) = _logic;
 
-    private _debug = call compile (_logic getVariable ["debug","false"]);
-    private _persistent = call compile (_logic getVariable ["persistent","false"]);
+    private _debug = (_logic getVariable ["debug","false"]) == "true";
+    private _persistent = (_logic getVariable ["persistent","false"]) == "true";
     private _syncMode = _logic getVariable ["syncronised","ADD"];
     private _syncedUnits = synchronizedObjects _logic;
     private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
     private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
+	private _spawnTypeUAVRadius = parseNumber (_logic getVariable ["spawnRadiusUAV", "-1"]);
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
-    private _speedModifier = _logic getVariable ["speedModifier",1];
-    private _virtualCombatSpeedModifier = _logic getVariable ["virtualcombat_speedmodifier", "1"];
-    private _seaTransport = call compile (_logic getVariable ["seaTransport", "false"]);
+    private _zeusSpawn = (_logic getvariable ["zeusSpawn", "true"]) == "true";
+    private _speedModifier = (_logic getVariable ["speedModifier","1"]) call BIS_fnc_parseNumber;
+    private _virtualCombatSpeedModifier = parsenumber (_logic getVariable ["virtualcombat_speedmodifier", "1"]);
+    private _pathfinding = (_logic getVariable ["pathfinding", "false"]) == "true";
+    private _seaTransport = (_logic getVariable ["seaTransport", "false"]) == "true";
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
 
     //Ensure Event Log is loaded
@@ -66,10 +69,13 @@ if(isServer) then {
     [ALIVE_profileSystem, "syncedUnits", _syncedUnits] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "spawnRadius", _spawnRadius] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "spawnTypeJetRadius", _spawnTypeJetRadius] call ALIVE_fnc_profileSystem;
+	[ALIVE_profileSystem, "spawnRadiusUAV", _spawnTypeUAVRadius] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "spawnTypeHeliRadius", _spawnTypeHeliRadius] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "zeusSpawn", _zeusSpawn] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "speedModifier", _speedModifier] call ALIVE_fnc_profileSystem;
-    [ALIVE_profileSystem, "combatRate", parseNumber _virtualCombatSpeedModifier] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "combatRate", _virtualCombatSpeedModifier] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "pathfinding", _pathfinding] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "seaTransport", _seaTransport] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "smoothSpawn", _smoothSpawn] call ALIVE_fnc_profileSystem;
 

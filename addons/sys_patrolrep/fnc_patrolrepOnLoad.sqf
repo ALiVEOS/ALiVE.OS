@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_patrolrep\script_component.hpp>
+#include "\x\alive\addons\sys_patrolrep\script_component.hpp"
 
 SCRIPT(patrolrepOnLoad);
 
@@ -53,22 +53,28 @@ _vehControl = _display displayctrl VEH_LIST;
 // veh
 _csControl = _display displayctrl CS_LIST;
 
-_state = [
+private _states = [
     ["GREEN", 1],
     ["AMBER", 2],
     ["RED", 3]
 ];
+private _ammoStates = _states + [["BLACK",4]];
 
 {
     _index = _ammoControl lbAdd (_x select 0);
     _ammoControl lbSetData [_index, str(_x select 1)];
+} foreach _ammoStates;
+
+{
     _index = _casControl lbAdd (_x select 0);
     _casControl lbSetData [_index, str(_x select 1)];
+
     _index = _vehControl lbAdd (_x select 0);
     _vehControl lbSetData [_index, str(_x select 1)];
+
     _index = _csControl lbAdd (_x select 0);
     _csControl lbSetData [_index, str(_x select 1)];
-} foreach _state;
+} foreach _states;
 
 
 // SPOTREPS
@@ -97,7 +103,7 @@ _sitreps = {
 _eyesControl = _display displayctrl EYES_LIST;
 _eyes = [
     ["UNCLASSIFIED (PUBLIC)", "GLOBAL"],
-    [format ["CLASSIFIED Confidential (%1 ONLY)", side player], "SIDE"],
+    [format ["CLASSIFIED Confidential (%1 ONLY)", side group player], "SIDE"],
     [format ["CLASSIFIED Secret (%1 ONLY)", getText (((faction player) call ALiVE_fnc_configGetFactionClass) >> "displayName")], "FACTION"],
     [format ["CLASSIFIED Top Secret (%1 ONLY)", group player], "GROUP"],
     ["PRIVATE", "LOCAL"]

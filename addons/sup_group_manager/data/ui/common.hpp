@@ -374,6 +374,7 @@ class GMTablet_RscMap
     style = 48;
     text = "#(argb,8,8,3)color(1,1,1,1)";
     type = 101;
+    widthRailWay = 1;
     x = "(safeZoneX + (safeZoneW / 1.67))";
     y = "(safeZoneY + (safeZoneH / 2.49))";
     w = "(safeZoneW / 4.05)";

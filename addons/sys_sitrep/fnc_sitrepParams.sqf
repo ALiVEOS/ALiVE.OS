@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_sitrep\script_component.hpp>
+#include "\x\alive\addons\sys_sitrep\script_component.hpp"
 SCRIPT(sitrepParams);
 
 /* ----------------------------------------------------------------------------
@@ -32,6 +32,6 @@ _debug = _logic getvariable ["DEBUG","false"];
 
 waituntil {!isnil QMOD(SYS_sitrep)};
 
-MOD(SYS_sitrep) setvariable ["DEBUG", call compile _debug, true];
+MOD(SYS_sitrep) setvariable ["DEBUG", (_debug == "true"), true];
 
 _logic

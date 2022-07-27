@@ -1,5 +1,5 @@
 //#define DEBUG_MPDE_FULL
-#include <\x\alive\addons\mil_placement_custom\script_component.hpp>
+#include "\x\alive\addons\mil_placement_custom\script_component.hpp"
 SCRIPT(CMP);
 
 /* ----------------------------------------------------------------------------
@@ -219,11 +219,41 @@ switch(_operation) do {
                 _logic setVariable ["composition", _args];
         };
 
+        // Catch a bug that was introduced by the conversion of the
+        // "composition" module field from dropdown to text field
+        if (_args == "false") then {
+            _logic setVariable ["composition", ""];
+            _args = "";
+        };
+
         _result = _args;
     };
 
     case "objectives": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
+    };
+
+    case "allowPlayerTasking": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["allowPlayerTasking", _args];
+        } else {
+            _args = _logic getVariable ["allowPlayerTasking", true];
+        };
+
+        if (typeName _args == "STRING") then {
+            if (_args == "true") then {
+                _args = true;
+            }
+            else {
+                _args = false;
+            };
+
+            _logic setVariable ["allowPlayerTasking", _args];
+        };
+
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
     };
 
     // Main process
@@ -259,10 +289,14 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE CMP - Startup"] call ALIVE_fnc_dump;
+                ["CMP - Startup"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
+
+            if (isNil "ALIVE_clustersMilCustom") then {
+                ALIVE_clustersMilCustom = [] call ALIVE_fnc_hashCreate;
+            };
 
             // instantiate static vehicle position data
             if(isNil "ALIVE_groupConfig") then {
@@ -290,7 +324,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE CMP - Placement"] call ALIVE_fnc_dump;
+                ["CMP - Placement"] call ALiVE_fnc_dump;
                 [true] call ALIVE_fnc_timer;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -333,16 +367,14 @@ switch(_operation) do {
             private _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             private _countProfiles = 0;
             private _position = position _logic;
+            private _allowPlayerTasking = [_logic, "allowPlayerTasking"] call MAINCLASS;
 
             // Load static data
-            if(isNil "ALiVE_STATIC_DATA_LOADED") then {
-                private _file = "\x\alive\addons\main\static\staticData.sqf";
-                call compile preprocessFileLineNumbers _file;
-            };
+            call ALiVE_fnc_staticDataHandler;
 
             // Spawn the composition
 
-            if (typeName _composition == "STRING" && _composition != "") then {
+            if (typeName _composition == "STRING" && _composition != "" && _composition != "false") then {
                 if (isNil QMOD(COMPOSITIONS_LOADED)) then {
                     // Get a composition
                     private _compType = "Military";
@@ -355,8 +387,13 @@ switch(_operation) do {
                     if (count _comp > 0) then {
                         [_comp, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
                     } else {
-                        _comp = selectRandom ([_compType, [_composition], [], _faction] call ALiVE_fnc_getCompositions);
-                        [_comp, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
+                        private _compDef = ([_compType, [_composition], [], _faction] call ALiVE_fnc_getCompositions);
+
+                        if (count _compDef > 0) then {
+                            [(selectRandom _compDef), _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
+                        } else {
+                            ["CMP: Custom composition '%1' not found!", _composition] call ALiVE_fnc_dump;
+                        };
                     };
                 };
             };
@@ -364,8 +401,9 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CMP [%1] - Size: %1 Priority: %2",_size,_priority] call ALIVE_fnc_dump;
-                ["ALIVE CMP [%1] - SideNum: %1 Side: %2 Faction: %3 Composition: %4",_factionSideNumber,_side,_faction,_composition] call ALIVE_fnc_dump;
+                ["CMP [%1] - Size: %1 Priority: %2",_size,_priority] call ALiVE_fnc_dump;
+                ["CMP [%1] - SideNum: %1 Side: %2 Faction: %3 Composition: %4",_factionSideNumber,_side,_faction,_composition] call ALiVE_fnc_dump;
+                ["CMP Allow player tasking: %1", _allowPlayerTasking] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -395,15 +433,17 @@ switch(_operation) do {
             [_cluster,"size", _size] call ALIVE_fnc_hashSet;
             [_cluster,"type", "MIL"] call ALIVE_fnc_hashSet;
             [_cluster,"priority", _priority] call ALIVE_fnc_hashSet;
+            [_cluster,"allowPlayerTasking", _allowPlayerTasking] call ALIVE_fnc_hashSet;
             [_cluster,"debug", _debug] call ALIVE_fnc_cluster;
 
             [_logic, "objectives", [_cluster]] call MAINCLASS;
 
+            [ALIVE_clustersMilCustom, _objectiveName, _cluster] call ALIVE_fnc_hashSet;
 
             if(ALIVE_loadProfilesPersistent) exitWith {
 
                 // DEBUG -------------------------------------------------------------------------------------
-                if(_debug) then { ["ALIVE CMP - Profiles are persistent, no creation of profiles"] call ALIVE_fnc_dump; };
+                if(_debug) then { ["CMP - Profiles are persistent, no creation of profiles"] call ALiVE_fnc_dump; };
                 // DEBUG -------------------------------------------------------------------------------------
 
                 // set module as started
@@ -416,12 +456,12 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CMP [%1] - Force creation ",_faction] call ALIVE_fnc_dump;
-                ["ALIVE CMP Count Armor: %1",_countArmored] call ALIVE_fnc_dump;
-                ["ALIVE CMP Count Mech: %1",_countMechanized] call ALIVE_fnc_dump;
-                ["ALIVE CMP Count Motor: %1",_countMotorized] call ALIVE_fnc_dump;
-                ["ALIVE CMP Count Infantry: %1",_countInfantry] call ALIVE_fnc_dump;
-                ["ALIVE CMP Count Spec Ops: %1",_countSpecOps] call ALIVE_fnc_dump;
+                ["CMP [%1] - Force creation ",_faction] call ALiVE_fnc_dump;
+                ["CMP Count Armor: %1",_countArmored] call ALiVE_fnc_dump;
+                ["CMP Count Mech: %1",_countMechanized] call ALiVE_fnc_dump;
+                ["CMP Count Motor: %1",_countMotorized] call ALiVE_fnc_dump;
+                ["CMP Count Infantry: %1",_countInfantry] call ALiVE_fnc_dump;
+                ["CMP Count Spec Ops: %1",_countSpecOps] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -485,7 +525,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CMP [%1] - Groups ",_groups] call ALIVE_fnc_dump;
+                ["CMP [%1] - Groups ",_groups] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -557,8 +597,8 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CMP - Total profiles created: %1",_countProfiles] call ALIVE_fnc_dump;
-                ["ALIVE CMP - Placement completed"] call ALIVE_fnc_dump;
+                ["CMP - Total profiles created: %1",_countProfiles] call ALiVE_fnc_dump;
+                ["CMP - Placement completed"] call ALiVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
@@ -579,7 +619,7 @@ switch(_operation) do {
                 if (count _buildings == 0) then {_buildings = [_modulePosition, _size, ALIVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes] call ALIVE_fnc_findNearObjectsByType};
 
                 if (count _buildings == 0) then {
-                    ["ALIVE CMP - Warning no HQ locations found, spawning composition"] call ALIVE_fnc_dump;
+                    ["CMP - Warning no HQ locations found, spawning composition"] call ALiVE_fnc_dump;
 
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
 
@@ -617,7 +657,7 @@ switch(_operation) do {
 
                     [_logic, "HQBuilding", _hqBuilding] call MAINCLASS;
                 } else {
-                    ["ALIVE CMP - Warning no HQ locations found"] call ALIVE_fnc_dump;
+                    ["CMP - Warning no HQ locations found"] call ALiVE_fnc_dump;
                 };
 
             };
@@ -665,7 +705,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CMP [%1] - Supplies placed: %2",_faction,_countSupplies] call ALIVE_fnc_dump;
+                ["CMP [%1] - Supplies placed: %2",_faction,_countSupplies] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -709,7 +749,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CMP [%1] - Heli units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedHelis,_countUncrewedHelis] call ALIVE_fnc_dump;
+                ["CMP [%1] - Heli units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedHelis,_countUncrewedHelis] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -814,27 +854,32 @@ switch(_operation) do {
                             //["VEHICLE CLASS: %1",_vehicleClass] call ALIVE_fnc_dump;
 
                             private _parkingPosition = [_vehicleClass,_building] call ALIVE_fnc_getParkingPosition;
-                            private _positionOK = true;
 
-                            {
-                                private _position = _x select 0;
-                                if((_parkingPosition select 0) distance _position < 10) then {
-                                    _positionOK = false;
+                            if (count _parkingPosition == 2) then {
+
+                                private _positionOK = true;
+
+                                {
+                                    private _position = _x select 0;
+                                    if((_parkingPosition select 0) distance _position < 10) then {
+                                        _positionOK = false;
+                                    };
+                                } forEach _usedPositions;
+
+                                //["POS OK: %1",_positionOK] call ALIVE_fnc_dump;
+
+                                if(_positionOK) then {
+                                    [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
+
+                                    _countLandUnits = _countLandUnits + 1;
+
+                                    _usedPositions pushback _parkingPosition;
+
+                                    if(_supportPlacement) then {
+                                        _supportCount = _supportCount + 1;
+                                    };
                                 };
-                            } forEach _usedPositions;
 
-                            //["POS OK: %1",_positionOK] call ALIVE_fnc_dump;
-
-                            if(_positionOK) then {
-                                [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
-
-                                _countLandUnits = _countLandUnits + 1;
-
-                                _usedPositions pushback _parkingPosition;
-
-                                if(_supportPlacement) then {
-                                    _supportCount = _supportCount + 1;
-                                };
                             };
                         };
 
@@ -846,7 +891,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE CMP [%1] - Ambient land units placed: %2",_faction,_countLandUnits] call ALIVE_fnc_dump;
+                ["CMP [%1] - Ambient land units placed: %2",_faction,_countLandUnits] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 

@@ -1,11 +1,11 @@
-#include <\x\alive\addons\amb_civ_population\script_component.hpp>
+#include "\x\alive\addons\amb_civ_population\script_component.hpp"
 SCRIPT(agentGetInEventHandler);
 
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_agentGetInEventHandler
 
 Description:
-Killed event handler for agent units
+Get In event handler for agent units
 
 Parameters:
 

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(getEnterableHouses);
 
 /* ----------------------------------------------------------------------------
@@ -41,10 +41,10 @@ ASSERT_TRUE(typeName _radius == "SCALAR",_err);
 
 _enterable = [];
 {
-    if([_x] call ALIVE_fnc_isHouseEnterable) then{
+    if ([_x] call ALIVE_fnc_isHouseEnterable) then {
         _enterable pushback _x;
     };
-} forEach (_position nearObjects ["House", _radius]);
+} forEach (nearestObjects [_position, ["House","Building","land_vn_cave_base"], _radius]);
 _err = "enterable array not valid";
 ASSERT_TRUE(typeName _enterable == "ARRAY",_err);
 

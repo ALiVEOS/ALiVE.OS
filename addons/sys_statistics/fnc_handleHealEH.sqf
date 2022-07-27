@@ -27,7 +27,7 @@ if (GVAR(ENABLED)) then {
     if ((isPlayer _patient) || (isPlayer _medic)) then {
 
         _sidepatient = side (group _patient); // group side is more reliable
-        _sidemedic = side _medic;
+        _sidemedic = side (group _medic);
 
         _factionmedic = getText (((faction _medic) call ALiVE_fnc_configGetFactionClass) >> "displayName");
         _factionpatient = getText (((faction _patient) call ALiVE_fnc_configGetFactionClass) >> "displayName");

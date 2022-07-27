@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_ied\script_component.hpp>
+#include "\x\alive\addons\mil_ied\script_component.hpp"
 SCRIPT(ied);
 
 /* ----------------------------------------------------------------------------
@@ -172,7 +172,7 @@ switch(_operation) do {
                             GVAR(STORE) = _state;
                             GVAR(Loaded) = true;
                             // DEBUG -------------------------------------------------------------------------------------
-                            if(_debug) then { ["ALIVE IED - IEDs have been loaded from Database"] call ALIVE_fnc_dump; };
+                            if(_debug) then { ["IED - IEDs have been loaded from Database"] call ALiVE_fnc_dump; };
                             // DEBUG -------------------------------------------------------------------------------------
                         } else {
                             LOG("No data loaded...");
@@ -228,30 +228,13 @@ switch(_operation) do {
 
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE IED - Startup"] call ALIVE_fnc_dump;
+                    ["IED - Startup"] call ALiVE_fnc_dump;
                     [true] call ALIVE_fnc_timer;
                 };
 
                 _taor = [_logic, "taor"] call MAINCLASS;
                 _blacklist = [_logic, "blacklist"] call MAINCLASS;
                 _side = _logic getvariable ["VB_IED_Side", DEFAULT_VB_IED_SIDE];
-
-                if (count synchronizedObjects _logic > 0) then {
-                    for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
-
-                        _mod = (synchronizedObjects _logic) select _i;
-
-                        if (typeof _mod == "ALiVE_mil_OPCOM") then {
-
-                            _logic setvariable ["IED_Threat", 0];
-                            _logic setvariable ["Bomber_Threat", 0];
-                            _logic setvariable ["VB_IED_Threat", 0];
-                            _logic setvariable ["VB_IED_Side", "CIV"];
-
-                            ["ALiVE MIL IED reset for usage with OPCOM Insurgency!"] call ALiVE_fnc_Dump;
-                        };
-                    };
-                };
 
                 if !(GVAR(Loaded)) then {
                     // Initialise Locations
@@ -275,6 +258,23 @@ switch(_operation) do {
                 } else {
                     _locations = [GVAR(STORE), "locations",[]] call ALiVE_fnc_hashGet;
 
+                };
+
+                if (count synchronizedObjects _logic > 0) then {
+                    for "_i" from 0 to ((count synchronizedObjects _logic) - 1) do {
+
+                        _mod = (synchronizedObjects _logic) select _i;
+
+                        // if the module is synced to OPCOM, let OPCOM handle the locations but leave other settings for better customization
+                        if (typeof _mod == "ALiVE_mil_OPCOM") then {
+
+                            _locations = [];
+
+                            [GVAR(STORE), "locations", _locations] call ALiVE_fnc_hashSet;
+
+                            ["MIL IED reset for usage with OPCOM Insurgency!"] call ALiVE_fnc_dump;
+                        };
+                    };
                 };
 
                 // Set up Bombers and IED triggers at each location (except any player starting location)
@@ -363,7 +363,7 @@ switch(_operation) do {
                             _trg setTriggerArea[(_size+250),(_size+250),0,false];
 
                             _trg setTriggerActivation["ANY","PRESENT",false];
-                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_placeVBIED",_size, text _twn], ""];
+                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1] call ALIVE_fnc_placeVBIED",_size], ""];
 
                              if (_debug) then {
                                 diag_log format ["ALIVE-%1 VBIED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
@@ -410,8 +410,8 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if ([_logic, "debug"] call MAINCLASS) then {
-                    ["ALIVE IED - Startup completed"] call ALIVE_fnc_dump;
-                    ["ALIVE IED - Count IED Locations %1", count ([GVAR(STORE), "locations"] call ALiVE_fnc_hashGet)] call ALIVE_fnc_dump;
+                    ["IED - Startup completed"] call ALiVE_fnc_dump;
+                    ["IED - Count IED Locations %1", count ([GVAR(STORE), "locations"] call ALiVE_fnc_hashGet)] call ALiVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------

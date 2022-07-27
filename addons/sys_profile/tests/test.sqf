@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 
 #define TESTS ["profile","profileEntity","profileVehicle","profileHandler","getNearProfiles","profileWaypoint","vehicleAssignment","createUnitsFromMap","vehicleAssignmentsReal","profileVehicleAssignments","configGroupToProfile","groupConfigBestPlacesSpawn","UAVProfiles"];
 

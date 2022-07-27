@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\mil_intelligence\script_component.hpp>
+#include "\x\alive\addons\mil_intelligence\script_component.hpp"
 SCRIPT(SD);
 
 /* ----------------------------------------------------------------------------
@@ -112,8 +112,8 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                ["ALIVE SD - Startup"] call ALIVE_fnc_dump;
-                ["ALIVE SD - Run every: %1",_runEvery] call ALIVE_fnc_dump;
+                ["SD - Startup"] call ALiVE_fnc_dump;
+                ["SD - Run every: %1",_runEvery] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -135,7 +135,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["ALIVE SD - Startup completed"] call ALIVE_fnc_dump;
+                ["SD - Startup completed"] call ALiVE_fnc_dump;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\sys_adminactions\script_component.hpp>
+#include "\x\alive\addons\sys_adminactions\script_component.hpp"
 SCRIPT(test_adminActions);
 
 // ----------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\mil_opcom\script_component.hpp>
+#include "\x\alive\addons\mil_opcom\script_component.hpp"
 SCRIPT(INS_helpers);
 
 /* ----------------------------------------------------------------------------
@@ -167,10 +167,10 @@ ALiVE_fnc_INS_retreat = {
 
                     [_objective,_x] call ALiVE_fnc_HashRem;
                 } foreach ["factory","hq","ambush","depot","sabotage","ied","suicide"];
-                
+
                 // Reset all actions done on that objective so they can be performed again
                 [_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashSet;
-                
+
                 // Reduce hostility level after retreat
                 [_pos,_sides, 20] call ALiVE_fnc_updateSectorHostility;
                 [_pos, _allSides - _sides, -20] call ALiVE_fnc_updateSectorHostility;
@@ -265,8 +265,8 @@ ALiVE_fnc_INS_ied = {
                 // Timeout
                 waituntil {time - _timeTaken > 120};
 
-                // Place ambient IED trigger
-                if (!isnil "ALiVE_mil_IED") then {
+                // If IED module is used add IEDs and VBIEDs according to IED module settings
+                if (!isnil "ALiVE_MIL_IED") then {
                     _trg = createTrigger ["EmptyDetector",_pos];
                     _trg setTriggerArea [_size + 250, _size + 250,0,false];
                     _trg setTriggerActivation ["ANY","PRESENT",true];
@@ -275,6 +275,8 @@ ALiVE_fnc_INS_ied = {
                             format["null = [getpos thisTrigger,%1,%2,%3] call ALIVE_fnc_createIED",_size,str(_id),ceil(_size/100)],
                             format["null = [getpos thisTrigger,%1] call ALIVE_fnc_removeIED",str(_id)]
                     ];
+
+                    [_pos,_size,1] call ALiVE_fnc_placeVBIED;
 
                     _placeholders = ((nearestobjects [_pos,["Static"],150]) + (_pos nearRoads 150));
                     if (!isnil "_placeholders" && {count _placeholders > 0}) then {_trg = _placeholders select 0};
@@ -436,11 +438,78 @@ ALiVE_fnc_INS_roadblocks = {
                 // Spawn CQB
                 [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
-                // Spawn roadblock only if it hasn't been set up already (esp. if it has been reloaded from DB)
-                if (isnil "ALiVE_CIV_PLACEMENT_ROADBLOCKS" || {{_pos distance _x < _size} count ALiVE_CIV_PLACEMENT_ROADBLOCKS < ceil(_size/200)}) then {[_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock};
-                
+                // Spawn roadblock only until a max amount of roadblocks per objective is reached (size 600 will allow for 3 roadblocks)
+                if (isnil "ALiVE_CIV_PLACEMENT_ROADBLOCKS" || {{_pos distance _x < _size} count ALiVE_CIV_PLACEMENT_ROADBLOCKS < ceil(_size/200)}) then {
+                    private _roads = [_pos, _size, ceil(_size/200), false] call ALiVE_fnc_createRoadblock;
+
+                    // Create disable action on newly created roadblocks
+                    {
+                        private ["_charge","_actionObjects","_actionObject","_nearRoads","_road","_roadConnectedTo","_connectedRoad","_direction","_roadSidePos"];
+                        _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", position _x, [], 0, "CAN_COLLIDE"];
+                        _charge hideObjectGlobal true;
+                        _charge allowDamage false;
+
+                        // Check if bargate is withing spawned composition
+                        _actionObjects = nearestObjects [_x, ["Land_BarGate_F"], 10];
+
+                        // Check if bargate was found. If not we'll spawn a crate.
+                        if (count _actionObjects > 0) then {
+                            
+                            // Select the bargate.
+                            _actionObject = _actionObjects select 0;
+                        } else {
+                            // Check for roads near composition creation position
+                           _nearRoads = position _x nearRoads 10;
+
+                            // Check if near roads were found. If they were, we get direction.
+                            if(count _nearRoads > 0) then {
+                                _road = _nearRoads select 0;
+                                _roadConnectedTo = roadsConnectedTo _road;
+                                _connectedRoad = _roadConnectedTo select 0;
+                                if!(isNil '_connectedRoad') then {
+                                    _direction = _road getRelDir _connectedRoad;
+                                };
+                            };
+
+                            // Create the crate and set its position and move it sideways to be on the roadside. (Works Okay for now)
+                            _actionObject = createVehicle ["Box_FIA_Wps_F", position _road, [], 0, "CAN_COLLIDE"];
+                            _actionObject allowDamage false;
+                            _actionObject setDir _direction;
+                            _objectLocation = getPos _actionObject;
+                            _roadSidePos = [(_objectLocation select 0) - 6, (_objectLocation select 1) + 6];
+                            _actionObject setPos _roadSidePos;
+                            _actionObject setVectorUp [0,0,1];
+                        };
+
+                        [
+                            _actionObject,
+                            "disable the roadblock!",
+                            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+                            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+                            "_this distance2D _target < 3",
+                            "_caller distance2D _target < 3",
+                            {},
+                            {},
+                            {
+                                params ["_target", "_caller", "_ID", "_arguments"];
+
+                                private _charge = _arguments select 0;
+
+                                [getpos _charge,30] remoteExec  ["ALiVE_fnc_RemoveComposition",2];
+
+                                ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
+
+                                deletevehicle _charge;
+                            },
+                            {},
+                            [_charge],
+                            15
+                        ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
+                    } foreach _roads;
+                };
+
                 // Identify location
-                [_objective,"roadblocks",[[],"convertObject",_pos nearestObject ""] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
+                [_objective,"roadblocks",[[],"convertObject",_pos nearestObject "building"] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet;
 
                 _event = ['OPCOM_RESERVE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
@@ -582,22 +651,22 @@ ALiVE_fnc_INS_recruit = {
                     _created = 0;
 
                     for "_i" from 1 to (count _agents) do {
-                        
-                        // Delay 30-60 mins before a recruitment takes place. 
+
+                        // Delay 30-60 mins before a recruitment takes place.
                         sleep (1800 + random 1800);
-                        
+
                         // Only recruit if there is an HQ existing and up to 5 groups at max to not spam the map
                         if (!alive _HQ || {_created >= 5}) exitwith {};
-                        
+
                         // 50/50 chance the agent turns into insurgents
                         if (random 1 < 0.5) then {
 	                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
 	                        _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 	                        {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
-	
+
 	                        [_pos,_sides, 10] call ALiVE_fnc_updateSectorHostility;
 	                        [_pos,_allSides - _sides, -10] call ALiVE_fnc_updateSectorHostility;
-	
+
 	                        _created = _created + 1;
                          };
                     };
@@ -624,20 +693,21 @@ ALiVE_fnc_spawnFurniture = {
     _add = _this select 2;
     _ammo = _this select 3;
 
-    if (!(alive _building) || {_building getvariable [QGVAR(furnitured),false]}) exitwith {[]};
+    if (!(alive _building) || {count (_building getvariable [QGVAR(furnitured),[]]) > 0}) exitwith {[]};
 
     _furnitures = ["Land_RattanTable_01_F"];
     _bombs = ["ALIVE_IEDUrbanSmall_Remote_Ammo","ALIVE_IEDLandSmall_Remote_Ammo","ALIVE_IEDLandBig_Remote_Ammo"];
-    _objects = ["Fridge_01_open_F","Land_MapBoard_F","Land_WaterCooler_01_new_F"];
-    _boxes = ["Box_East_AmmoOrd_F"];
+    _objects = ["Land_Canteen_F","Land_TinContainer_F"];
+    _boxes = ["VirtualReammoBox_small_F"];
     _created = [];
 
     _pos = getposATL _building;
     _positions = [_pos,15] call ALIVE_fnc_findIndoorHousePositions;
 
-    if (count _positions == 0) exitwith {[]};
-
-    _building setvariable [QGVAR(furnitured),true];
+    if (count _positions == 0) exitwith {
+        ["ALiVE MIL OPCOM Insurgency has not found indoor Houspositions to place IED Factory/HQ/depot objects for building %1 at %2",_building, getposATL _building] call ALiVE_fnc_Dump;
+        [];
+    };
 
     {
         private ["_pos"];
@@ -647,7 +717,12 @@ ALiVE_fnc_spawnFurniture = {
         if ({(_pos select 2) - (_x select 2) < 0.5} count _positions > 1) then {
             if (random 1 < 0.3) then {
                 _furniture = createVehicle [(selectRandom _furnitures), _pos, [], 0, "CAN_COLLIDE"];
+                _furniture setposATL _pos;
                 _furniture setdir getdir _building;
+
+                // Disable sim to avoid flipping furniture. Bombs are not affected and still exploding.
+                // Once building is destroyed or site is disabled, the furniture gets deleted.
+                _furniture enableSimulation false;
 
                 _created pushback _furniture;
 
@@ -679,12 +754,17 @@ ALiVE_fnc_spawnFurniture = {
                     _bomb setvariable ["charge", _charge, true];
 
                     _created pushback _bomb;
+                    _created pushback _charge;
                 };
             } else {
                 if (_add && {random 1 < 0.5}) then {
-                    _object = createVehicle [(selectRandom _objects), _pos, [], 0, "CAN_COLLIDE"];
-                    _object setdir (_building getDir _object);
+                    _furniture = createVehicle [(selectRandom _furnitures), _pos, [], 0, "CAN_COLLIDE"];
+                    _furniture setdir getdir _building;
 
+                    _object = createVehicle [(selectRandom _objects), _pos, [], 0, "CAN_COLLIDE"];
+                    _object attachTo [_furniture, [0,0,(_furniture call ALiVE_fnc_getRelativeTop) + 0.15]];
+ 
+                    _created pushback _furniture;
                     _created pushback _object;
                 } else {
                     if (_ammo && {random 1 < 0.5}) then {
@@ -697,6 +777,8 @@ ALiVE_fnc_spawnFurniture = {
             };
         };
     } foreach _positions;
+
+    _building setvariable [QGVAR(furnitured),_created];
 
     _created
 };
@@ -712,6 +794,29 @@ ALiVE_fnc_INS_spawnIEDfactory = {
     _building setvariable [QGVAR(factory),_id];
     _building addEventHandler["killed", ALIVE_fnc_INS_buildingKilledEH];
 
+    [
+        _building,
+        "disable the IED factory!",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "_this distance2D _target < 3 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_FACTORY_DISABLED'}}",
+        "_caller distance2D _target < 3",
+        {},
+        {},
+        {
+            params ["_target", "_caller", "_ID", "_arguments"];
+
+            _target setVariable [QGVAR(FACTORY_DISABLED),true,true];
+
+            [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
+
+            ["Nice Job", format ["%1 disabled the IED factory at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
+        },
+        {},
+        [],
+        10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0, true];
+
     [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
 };
 
@@ -726,6 +831,29 @@ ALiVE_fnc_INS_spawnHQ = {
     _building setvariable [QGVAR(HQ),_id];
     _building addEventHandler["killed", ALIVE_fnc_INS_buildingKilledEH];
 
+    [
+        _building,
+        "disable the Recruitment HQ!",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "_this distance2D _target < 3 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_HQ_DISABLED'}}",
+        "_caller distance2D _target < 3",
+        {},
+        {},
+        {
+            params ["_target", "_caller", "_ID", "_arguments"];
+
+            _target setVariable [QGVAR(HQ_DISABLED),true,true];
+            [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
+
+            ["Congratulations", format ["%1 disabled the Recruitment HQ at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
+        },
+        {},
+        [],
+        10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
+
+    [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
     [_building,true,true,false] call ALiVE_fnc_spawnFurniture;
 };
 
@@ -739,6 +867,28 @@ ALiVE_fnc_INS_spawnDepot = {
 
     _building setvariable [QGVAR(depot),_id];
     _building addEventHandler["killed", ALIVE_fnc_INS_buildingKilledEH];
+
+    [
+        _building,
+        "disable the weapons depot!",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+        "_this distance2D _target < 3 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_DEPOT_DISABLED'}}",
+        "_caller distance2D _target < 3",
+        {},
+        {},
+        {
+            params ["_target", "_caller", "_ID", "_arguments"];
+
+            _target setVariable [QGVAR(DEPOT_DISABLED),true,true];
+            [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
+
+            ["Good work", format ["%1 disabled the weapons depot at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
+        },
+        {},
+        [],
+        10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
 
     [_building,true,false,true] call ALiVE_fnc_spawnFurniture;
 };
@@ -761,25 +911,60 @@ ALIVE_fnc_INS_buildingKilledEH = {
     _killer = _this select 1;
     _pos = getposATL _building;
 
-    _factory = _building getvariable QGVAR(factory);
-    _depot = _building getvariable QGVAR(depot);
-    _HQ = _building getvariable QGVAR(HQ);
+    private _factory = _building getvariable QGVAR(factory);
+    private _depot = _building getvariable QGVAR(depot);
+    private _HQ = _building getvariable QGVAR(HQ);
+    private _furniture = _building getvariable [QGVAR(furnitured),[]];
 
-    if !(isnil "_factory") then {_id = _factory};
-    if !(isnil "_depot") then {_id = _depot};
-    if !(isnil "_HQ") then {_id = _HQ};
+    private _installationType = "";
+    if !(isnil "_factory") then {
+        _id = _factory;
+        _installationType = "factory";
+    };
+    if !(isnil "_depot") then {
+        _id = _depot;
+        _installationType = "depot";
+    };
+    if !(isnil "_HQ") then {
+        _id = _HQ;
+        _installationType = "hq";
+    };
 
     if (isnil "_id") exitwith {};
 
-    _objective = [[],"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
-    _opcomID = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
+    // fire event
+    // TODO: cba events should be fired from core event loop, not here
+
+    ["ASYMM_INSTALLATION_DESTROYED", [_installationType,_building,_killer]] call CBA_fnc_globalEvent;
+
+    private _event = ['ASYMM_INSTALLATION_DESTROYED', [_installationType,_building,_killer],"OPCOM"] call ALIVE_fnc_event;
+    [ALiVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
+
+    private _objective = [[],"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
+    private _opcomID = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
     _pos = [_objective,"center",_pos] call ALiVE_fnc_HashGet;
 
-    if !(isnil "_factory") then {[_objective,"factory"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["factory"]] call ALiVE_fnc_HashSet};
-    if !(isnil "_depot") then {[_objective,"depot"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["depot"]] call ALiVE_fnc_HashSet};
-    if !(isnil "_HQ") then {[_objective,"HQ"] call ALiVE_fnc_HashRem; [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["recruit"]] call ALiVE_fnc_HashSet};
+    if !(isnil "_factory") then {
+        [_objective,"factory"] call ALiVE_fnc_HashRem;
+        [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["factory"]] call ALiVE_fnc_HashSet;
+    };
+    if !(isnil "_depot") then {
+        [_objective,"depot"] call ALiVE_fnc_HashRem;
+        [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["depot"]] call ALiVE_fnc_HashSet;
+    };
+    if !(isnil "_HQ") then {
+        [_objective,"HQ"] call ALiVE_fnc_HashRem;
+        [_objective,"actionsFulfilled",([_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashGet) - ["recruit"]] call ALiVE_fnc_HashSet;
+    };
 
-    {if (([_x,"opcomID"," "] call ALiVE_fnc_HashGet) == _opcomID) exitwith {_opcom = _x}} foreach OPCOM_instances;
+    {deleteVehicle _x} foreach _furniture;
+    _building setvariable [QGVAR(furnitured),[]];
+
+    {
+        if (([_x,"opcomID"," "] call ALiVE_fnc_HashGet) == _opcomID) exitwith {
+            _opcom = _x
+        }
+    } foreach OPCOM_instances;
 
     if !(isnil "_opcom") then {
         _enemy = [_opcom,"sidesenemy",[]] call ALiVE_fnc_HashGet;
@@ -801,3 +986,54 @@ ALiVE_fnc_INS_compileList = {
             _list = [_list, ",", ", "] call CBA_fnc_replace;
             _list;
 };
+
+ALiVE_fnc_INS_filterObjectiveBuildings = {
+
+    params ["_center","_size"];
+
+    private _buildings = [_center, _size] call ALiVE_fnc_getEnterableHouses;
+
+    //["Enterable buildings total: %1",_buildings] call ALiVE_fnc_DumpR;
+
+    {
+        private _h = _x;
+        private _type = typeOf _h;
+        private _index = _foreachIndex;
+        private _blacklist = ["tower","cage","platform","trench","bridge"];
+
+        //["Building selected: %1 | %2",typeOf _h, _h] call ALiVE_fnc_DumpR;
+
+        private _buildingPositions = [getposATL _h,5] call ALIVE_fnc_findIndoorHousePositions;
+        
+        if (count _buildingPositions == 0) then {
+            //["Deleted buildingtype %1! No indoor houseposition!",typeof _h] call ALiVE_fnc_DumpR;
+            _buildings set [_index,objNull];
+        } else {          
+            private _dimensions = _h call BIS_fnc_boundingBoxDimensions;
+
+            // too small
+            if (((_dimensions select 0) + (_dimensions select 1)) < 10) then {
+                //["Deleted buildingtype %1! Building is too small!",typeof _h] call ALiVE_fnc_DumpR;
+
+                _buildings set [_index,objNull];
+            } else {
+                if (
+                    //Building is double as high as broad and is very likely a tower, or contains a blacklisted class
+                    (((_dimensions select 2)/2) > (_dimensions select 0) && {((_dimensions select 2)/2) > (_dimensions select 1)})
+                    ||
+                    {{[_type , _x] call CBA_fnc_find != -1} count _blacklist > 0}
+                ) then {
+                    //["Deleted buildingtype %1! Building is a tower or blacklisted!",typeof _h] call ALiVE_fnc_DumpR;
+                    _buildings set [_index,objNull];
+                };
+            };
+        };
+    } foreach _buildings;
+
+    _buildings = _buildings - [objNull];
+
+    //["Enterable buildings filtered: %1",_buildings] call ALiVE_fnc_DumpR;
+
+    _buildings;
+};
+

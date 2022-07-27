@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(profileVehicleAssignmentToVehicleAssignment);
 
 /* ----------------------------------------------------------------------------
@@ -29,7 +29,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_vehicleAssignment","_profile","_orderGetIn","_profileType","_vehicle","_entityProfileID","_entityProfile",
-"_entityProfileActive","_units","_vehicleProfileID","_vehicleProfile","_indexes","_vehicleProfileActive"];
+"_entityProfileActive","_units","_unitAssignments","_vehicleProfileID","_vehicleProfile","_vehicleProfileActive"];
 
 _vehicleAssignment = _this select 0;
 _profile = _this select 1;
@@ -50,12 +50,11 @@ if(_profileType == "vehicle") then {
             [_entityProfile,"spawn"] call ALIVE_fnc_profileEntity;
         } else {
             _units = _entityProfile select 2 select 21; //[_entityProfile,"units"] call ALIVE_fnc_hashGet;
-            _indexes = _vehicleAssignment;
-            _vehicleAssignment = [_indexes,_units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
-            if(_orderGetIn) then {
-                [_vehicleAssignment, _vehicle] call ALIVE_fnc_vehicleMount;
-            }else{
-                [_vehicleAssignment, _vehicle] call ALIVE_fnc_vehicleMoveIn;
+            _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
+            if (_orderGetIn) then {
+                [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMount;
+            } else {
+                [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMoveIn;
             };
         };
     };
@@ -72,12 +71,11 @@ if(_profileType == "vehicle") then {
             [_vehicleProfile,"spawn"] call ALIVE_fnc_profileVehicle;
         } else {
             _vehicle = _vehicleProfile select 2 select 10; //[_vehicleProfile,"vehicle"] call ALIVE_fnc_hashGet;
-            _indexes = _vehicleAssignment;
-            _vehicleAssignment = [_indexes,_units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
-            if(_orderGetIn) then {
-                [_vehicleAssignment, _vehicle] call ALIVE_fnc_vehicleMount;
-            }else{
-                [_vehicleAssignment, _vehicle] call ALIVE_fnc_vehicleMoveIn;
+            _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
+            if (_orderGetIn) then {
+                [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMount;
+            } else {
+                [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMoveIn;
             };
         };
     };

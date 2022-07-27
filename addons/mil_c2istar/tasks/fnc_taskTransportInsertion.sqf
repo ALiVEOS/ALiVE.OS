@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
 SCRIPT(taskTransportInsertion);
 
 /* ----------------------------------------------------------------------------
@@ -400,9 +400,15 @@ switch (_taskState) do {
 
                                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
-                                _task set [8,"Failed"];
-                                _task set [10, "N"];
-                                _result = _task;
+                                // Mission Over in first state - if dead or timeout update the parent-task instead of the child so all children get updated
+                                _parent = _task select 11;
+                                _parent = if (_parent == "None") then {_taskID} else {_parent};
+                                _parentTask = [ALiVE_TaskHandler,"getTask",_parent] call ALiVE_fnc_TaskHandler;
+
+                                _parentTask set [8,"Failed"];
+                                _parentTask set [10,"N"];
+                                
+                                [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
 
                                 ["chat_failed",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
@@ -417,12 +423,17 @@ switch (_taskState) do {
 
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
-                _task set [8,"Cancelled"];
-                _task set [10, "N"];
-                _result = _task;
+                // Mission Over in first state - if dead or timeout or cancel update the parent-task instead of the child so all children get updated
+                _parent = _task select 11;
+                _parent = if (_parent == "None") then {_taskID} else {_parent};
+                _parentTask = [ALiVE_TaskHandler,"getTask",_parent] call ALiVE_fnc_TaskHandler;
+
+                _parentTask set [8,"Canceled"];
+                _parentTask set [10,"N"];
+                
+                [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
 
                 ["chat_cancelled",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-
             };
 
         }else{

@@ -19,5 +19,5 @@ class Extended_PreInit_EventHandlers {
     };
 };
  class RscTitles {
-    #include <\x\alive\addons\sys_playertags\playertags_overlay.hpp>
+    #include "\x\alive\addons\sys_playertags\playertags_overlay.hpp"
 };

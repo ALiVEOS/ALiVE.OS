@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
 SCRIPT(taskHandlerSaveData);
 
 /* ----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ _messages = _result select 1;
 _messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SAVE TASK HANDLER DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
+    ["SAVE TASK HANDLER DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
     if (! isNil "_data") then {_data call ALIVE_fnc_inspectHash;};
 };
 
@@ -75,7 +75,7 @@ _messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [false, "ALiVE TASK HANDLER - Save data complete","taskHandlerper"] call ALIVE_fnc_timer;
-    ["ALiVE TASK HANDLER SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_Dump;
+    ["TASK HANDLER SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_dump;
 };
 
 

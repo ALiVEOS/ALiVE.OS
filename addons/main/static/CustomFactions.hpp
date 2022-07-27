@@ -55,6 +55,192 @@ BLU_GEN_F_typeMappings = [] call ALIVE_fnc_hashCreate;
 // ---------------------------------------------------------------------------------------------------------------------
 
 
+// VN CDLC ---------------------------------------------------------------------------------------------------------------------
+
+// PAVN
+O_PAVN_mappings = [] call ALIVE_fnc_hashCreate;
+[O_PAVN_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
+[O_PAVN_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
+[O_PAVN_mappings, "FactionName", "O_PAVN"] call ALIVE_fnc_hashSet;
+[O_PAVN_mappings, "GroupFactionName", "VN_PAVN"] call ALIVE_fnc_hashSet;
+
+O_PAVN_typeMappings = [] call ALIVE_fnc_hashCreate;
+[O_PAVN_typeMappings, "Air", "vn_o_group_air_army"] call ALIVE_fnc_hashSet;
+[O_PAVN_typeMappings, "Armored", "vn_o_group_armor_nva"] call ALIVE_fnc_hashSet;
+[O_PAVN_typeMappings, "Infantry", "vn_o_group_men_nva"] call ALIVE_fnc_hashSet;
+[O_PAVN_typeMappings, "Mechanized", "vn_o_group_mech_nva"] call ALIVE_fnc_hashSet;
+[O_PAVN_typeMappings, "Motorized", "vn_o_group_motor_nva"] call ALIVE_fnc_hashSet;
+[O_PAVN_typeMappings, "Motorized_MTP", "vn_o_group_motor_nvam"] call ALIVE_fnc_hashSet;
+[O_PAVN_typeMappings, "SpecOps", "vn_o_group_men_nva_dc"] call ALIVE_fnc_hashSet;
+[O_PAVN_typeMappings, "Naval", "vn_o_group_boats"] call ALIVE_fnc_hashSet;
+
+
+[O_PAVN_Mappings, "GroupFactionTypes", O_PAVN_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "O_PAVN", O_PAVN_Mappings] call ALIVE_fnc_hashSet;
+
+// VC
+O_VC_mappings = [] call ALIVE_fnc_hashCreate;
+[O_VC_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
+[O_VC_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
+[O_VC_mappings, "FactionName", "O_VC"] call ALIVE_fnc_hashSet;
+[O_VC_mappings, "GroupFactionName", "VN_VC"] call ALIVE_fnc_hashSet;
+
+O_VC_typeMappings = [] call ALIVE_fnc_hashCreate;
+[O_VC_typeMappings, "Armored", "vn_o_group_armor_vcmf"] call ALIVE_fnc_hashSet;
+[O_VC_typeMappings, "Infantry", "vn_o_group_men_vc_local"] call ALIVE_fnc_hashSet;
+[O_VC_typeMappings, "Mechanized", "vn_o_group_mech_vcmf"] call ALIVE_fnc_hashSet;
+[O_VC_typeMappings, "Motorized", "vn_o_group_motor_vcmf"] call ALIVE_fnc_hashSet;
+[O_VC_typeMappings, "SpecOps", "vn_o_group_men_vc_regional"] call ALIVE_fnc_hashSet;
+[O_VC_typeMappings, "Naval", "vn_o_group_boats_vcmf"] call ALIVE_fnc_hashSet;
+
+
+[O_VC_Mappings, "GroupFactionTypes", O_VC_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "O_VC", O_VC_Mappings] call ALIVE_fnc_hashSet;
+
+// Pathet Lao
+O_PL_mappings = [] call ALIVE_fnc_hashCreate;
+[O_PL_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
+[O_PL_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
+[O_PL_mappings, "FactionName", "O_PL"] call ALIVE_fnc_hashSet;
+[O_PL_mappings, "GroupFactionName", "VN_PL"] call ALIVE_fnc_hashSet;
+
+O_PL_typeMappings = [] call ALIVE_fnc_hashCreate;
+[O_PL_typeMappings, "Armored", "vn_o_group_armor_pl"] call ALIVE_fnc_hashSet;
+[O_PL_typeMappings, "Infantry", "vn_o_group_men_pl"] call ALIVE_fnc_hashSet;
+[O_PL_typeMappings, "Mechanized", "vn_o_group_mech_pl"] call ALIVE_fnc_hashSet;
+[O_PL_typeMappings, "Motorized", "vn_o_group_motor_pl"] call ALIVE_fnc_hashSet;
+[O_PL_typeMappings, "Naval", "vn_o_group_boats_pl"] call ALIVE_fnc_hashSet;
+
+
+[O_PL_Mappings, "GroupFactionTypes", O_PL_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "O_PL", O_PL_Mappings] call ALIVE_fnc_hashSet;
+
+// Royal Laotian Army
+I_LAO_mappings = [] call ALIVE_fnc_hashCreate;
+[I_LAO_mappings, "Side", "INDEP"] call ALIVE_fnc_hashSet;
+[I_LAO_mappings, "GroupSideName", "INDEP"] call ALIVE_fnc_hashSet;
+[I_LAO_mappings, "FactionName", "I_LAO"] call ALIVE_fnc_hashSet;
+[I_LAO_mappings, "GroupFactionName", "VN_RLA"] call ALIVE_fnc_hashSet;
+
+I_LAO_typeMappings = [] call ALIVE_fnc_hashCreate;
+[I_LAO_typeMappings, "Infantry", "vn_i_group_men_rla"] call ALIVE_fnc_hashSet;
+[I_LAO_typeMappings, "Mechanized", "vn_i_group_mech_rla"] call ALIVE_fnc_hashSet;
+[I_LAO_typeMappings, "Motorized", "vn_i_group_motor_rla"] call ALIVE_fnc_hashSet;
+
+
+[I_LAO_Mappings, "GroupFactionTypes", I_LAO_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "I_LAO", I_LAO_Mappings] call ALIVE_fnc_hashSet;
+
+// ARVN
+I_ARVN_mappings = [] call ALIVE_fnc_hashCreate;
+[I_ARVN_mappings, "Side", "INDEP"] call ALIVE_fnc_hashSet;
+[I_ARVN_mappings, "GroupSideName", "INDEP"] call ALIVE_fnc_hashSet;
+[I_ARVN_mappings, "FactionName", "I_ARVN"] call ALIVE_fnc_hashSet;
+[I_ARVN_mappings, "GroupFactionName", "VN_ARVN"] call ALIVE_fnc_hashSet;
+
+I_ARVN_typeMappings = [] call ALIVE_fnc_hashCreate;
+[O_PAVN_typeMappings, "Air", "vn_i_group_air_army"] call ALIVE_fnc_hashSet;
+[I_ARVN_typeMappings, "Armored", "vn_i_group_armor_army"] call ALIVE_fnc_hashSet;
+[I_ARVN_typeMappings, "Infantry", "vn_i_group_men_army"] call ALIVE_fnc_hashSet;
+[I_ARVN_typeMappings, "Mechanized", "vn_i_group_mech_army"] call ALIVE_fnc_hashSet;
+[I_ARVN_typeMappings, "Motorized", "vn_i_group_motor_army"] call ALIVE_fnc_hashSet;
+[I_ARVN_typeMappings, "SpecOps", "vn_i_group_men_sf"] call ALIVE_fnc_hashSet;
+
+
+[I_ARVN_Mappings, "GroupFactionTypes", I_ARVN_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "I_ARVN", I_ARVN_Mappings] call ALIVE_fnc_hashSet;
+
+// MACV
+B_MACV_mappings = [] call ALIVE_fnc_hashCreate;
+[B_MACV_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[B_MACV_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[B_MACV_mappings, "FactionName", "B_MACV"] call ALIVE_fnc_hashSet;
+[B_MACV_mappings, "GroupFactionName", "VN_MACV"] call ALIVE_fnc_hashSet;
+
+B_MACV_typeMappings = [] call ALIVE_fnc_hashCreate;
+[B_MACV_typeMappings, "Air", "vn_b_group_air_army"] call ALIVE_fnc_hashSet;
+[B_MACV_typeMappings, "Armored", "vn_b_group_armor_army"] call ALIVE_fnc_hashSet;
+[B_MACV_typeMappings, "Infantry", "vn_b_group_men_army"] call ALIVE_fnc_hashSet;
+[B_MACV_typeMappings, "Mechanized", "vn_b_group_mech_army"] call ALIVE_fnc_hashSet;
+[B_MACV_typeMappings, "Motorized", "vn_b_group_motor_army"] call ALIVE_fnc_hashSet;
+[B_MACV_typeMappings, "SpecOps", "vn_b_group_men_sog"] call ALIVE_fnc_hashSet;
+[B_MACV_typeMappings, "Support", "vn_b_group_men_lrrp"] call ALIVE_fnc_hashSet;
+[B_MACV_typeMappings, "Naval", "vn_b_group_boats"] call ALIVE_fnc_hashSet;
+
+
+[B_MACV_Mappings, "GroupFactionTypes", B_MACV_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "B_MACV", B_MACV_Mappings] call ALIVE_fnc_hashSet;
+
+// Australian
+B_AUS_mappings = [] call ALIVE_fnc_hashCreate;
+[B_AUS_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[B_AUS_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[B_AUS_mappings, "FactionName", "B_AUS"] call ALIVE_fnc_hashSet;
+[B_AUS_mappings, "GroupFactionName", "VN_AUS"] call ALIVE_fnc_hashSet;
+
+B_AUS_typeMappings = [] call ALIVE_fnc_hashCreate;
+[B_AUS_typeMappings, "Air", "vn_b_group_air_aus_army"] call ALIVE_fnc_hashSet;
+[B_AUS_typeMappings, "Infantry", "vn_b_group_men_aus_army_68"] call ALIVE_fnc_hashSet;
+[B_AUS_typeMappings, "Mechanized", "vn_b_group_mech_aus_army"] call ALIVE_fnc_hashSet;
+[B_AUS_typeMappings, "Motorized", "vn_b_group_motor_aus_army"] call ALIVE_fnc_hashSet;
+[B_AUS_typeMappings, "SpecOps", "vn_b_group_men_aus_sas_66"] call ALIVE_fnc_hashSet;
+
+
+[B_AUS_Mappings, "GroupFactionTypes", B_AUS_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "B_AUS", B_AUS_Mappings] call ALIVE_fnc_hashSet;
+
+// New Zealand
+B_NZ_mappings = [] call ALIVE_fnc_hashCreate;
+[B_NZ_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[B_NZ_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[B_NZ_mappings, "FactionName", "B_NZ"] call ALIVE_fnc_hashSet;
+[B_NZ_mappings, "GroupFactionName", "VN_NZ"] call ALIVE_fnc_hashSet;
+
+B_NZ_typeMappings = [] call ALIVE_fnc_hashCreate;
+[B_NZ_typeMappings, "Infantry", "vn_b_group_men_nz_army_68"] call ALIVE_fnc_hashSet;
+[B_NZ_typeMappings, "Mechanized", "vn_b_group_mech_nz_army"] call ALIVE_fnc_hashSet;
+[B_NZ_typeMappings, "Motorized", "vn_b_group_motor_nz_army"] call ALIVE_fnc_hashSet;
+[B_NZ_typeMappings, "SpecOps", "vn_b_group_men_nz_sas_66"] call ALIVE_fnc_hashSet;
+
+
+[B_NZ_Mappings, "GroupFactionTypes", B_NZ_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "B_NZ", B_NZ_Mappings] call ALIVE_fnc_hashSet;
+
+// Republic Of Korea
+B_ROK_mappings = [] call ALIVE_fnc_hashCreate;
+[B_ROK_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[B_ROK_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[B_ROK_mappings, "FactionName", "B_ROK"] call ALIVE_fnc_hashSet;
+[B_ROK_mappings, "GroupFactionName", "VN_ROK"] call ALIVE_fnc_hashSet;
+
+B_ROK_typeMappings = [] call ALIVE_fnc_hashCreate;
+[B_ROK_typeMappings, "Infantry", "vn_b_group_men_rok_army_68"] call ALIVE_fnc_hashSet;
+[B_ROK_typeMappings, "Mechanized", "vn_b_group_mech_rok_army"] call ALIVE_fnc_hashSet;
+[B_ROK_typeMappings, "Motorized", "vn_b_group_motor_rok_army"] call ALIVE_fnc_hashSet;
+[B_ROK_typeMappings, "SpecOps", "vn_b_group_men_rok_marines_68"] call ALIVE_fnc_hashSet;
+
+
+[B_ROK_Mappings, "GroupFactionTypes", B_ROK_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "B_ROK", B_ROK_Mappings] call ALIVE_fnc_hashSet;
+
+// US CIA
+B_CIA_mappings = [] call ALIVE_fnc_hashCreate;
+[B_CIA_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[B_CIA_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[B_CIA_mappings, "FactionName", "B_CIA"] call ALIVE_fnc_hashSet;
+[B_CIA_mappings, "GroupFactionName", "B_CIA"] call ALIVE_fnc_hashSet;
+
+B_CIA_typeMappings = [] call ALIVE_fnc_hashCreate;
+[B_CIA_typeMappings, "Air", "vn_b_group_air_cia"] call ALIVE_fnc_hashSet;
+[B_CIA_typeMappings, "Infantry", "vn_b_group_men_cia"] call ALIVE_fnc_hashSet;
+
+
+[B_CIA_Mappings, "GroupFactionTypes", B_CIA_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "B_CIA", B_CIA_Mappings] call ALIVE_fnc_hashSet;
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 // African
 // ---------------------------------------------------------------------------------------------------------------------
 mas_afr_rebl_o_mappings = [] call ALIVE_fnc_hashCreate;
@@ -377,6 +563,11 @@ ALIVE_RHSResupplyVehicleOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyVehicleOptions, "rhs_faction_rva", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyVehicleOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
 
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultResupplyVehicleOptions, "rhssaf_faction_un", ALIVE_RHSResupplyVehicleOptions] call ALIVE_fnc_hashSet;
+
 
 
 ALIVE_RHSResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
@@ -402,6 +593,11 @@ ALIVE_RHSResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyIndividualOptions, "rhs_faction_vvs_c", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "rhs_faction_rva", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultResupplyIndividualOptions, "rhssaf_faction_un", ALIVE_RHSResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
 
 
@@ -524,6 +720,11 @@ ALIVE_RHSResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyGroupOptions, "rhs_faction_rva", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "rhs_faction_insurgents", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
 
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_cdf_ground", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "rhsgref_faction_nationalist", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultResupplyGroupOptions, "rhssaf_faction_un", ALIVE_RHSResupplyGroupOptions] call ALIVE_fnc_hashSet;
+
 
 
 // RHS USAF ----------------------------------------------------------------------------------------------------------------
@@ -556,7 +757,7 @@ rhs_faction_usarmy_wd_mappings = [] call ALiVE_fnc_hashCreate;
 
 [ALIVE_factionDefaultSupports, "rhs_faction_usarmy_wd", ["rhsusf_rg33_usmc_wd","rhsusf_rg33_m2_usmc_wd","rhsusf_m998_w_s_2dr","rhsusf_m998_w_s_2dr_halftop","rhsusf_m998_w_s_2dr_fulltop","rhsusf_m998_w_s_4dr","rhsusf_m998_w_s_4dr_halftop","rhsusf_m998_w_s_4dr_fulltop","rhsusf_m1025_w_s","rhsusf_m1025_w_s_m2","rhsusf_m1025_w_s_Mk19","rhsusf_rg33_wd","rhsusf_rg33_m2_wd","rhsusf_m998_w_2dr","rhsusf_m998_w_2dr_halftop","rhsusf_m998_w_2dr_fulltop","rhsusf_m998_w_4dr","rhsusf_m998_w_4dr_halftop","rhsusf_m998_w_4dr_fulltop","rhsusf_m1025_w","rhsusf_m1025_w_m2","rhsusf_m1025_w_mk19","rhsusf_m109_usarmy","RHS_M6_wd"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "rhs_faction_usarmy_wd", ["rhsusf_M1078A1P2_B_wd_fmtv_usarmy","rhsusf_M1078A1P2_wd_fmtv_usarmy","rhsusf_M1083A1P2_B_wd_fmtv_usarmy","rhsusf_M1083A1P2_wd_fmtv_usarmy","rhsusf_M977A2_usarmy_wd","rhsusf_M977A2_CPK_usarmy_wd"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "rhs_faction_usarmy_wd", ["RHS_CH_47F","RHS_UH60M","RHS_UH60M_MEV","RHS_UH60M_MEV2"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "rhs_faction_usarmy_wd", ["RHS_CH_47F","RHS_UH60M"]] call ALIVE_fnc_hashSet;
 
 
 // rhs_faction_usarmy_d
@@ -587,7 +788,7 @@ rhs_faction_usarmy_d_mappings = [] call ALiVE_fnc_hashCreate;
 
 [ALIVE_factionDefaultSupports, "rhs_faction_usarmy_d", ["rhsusf_m998_d_s_2dr","rhsusf_m998_d_s_2dr_halftop","rhsusf_m998_d_s_2dr_fulltop","rhsusf_m998_d_s_4dr","rhsusf_m998_d_s_4dr_halftop","rhsusf_m998_d_s_4dr_fulltop","rhsusf_m1025_d_s","rhsusf_m1025_d_s_m2","rhsusf_m1025_d_s_Mk19","rhsusf_rg33_usmc_d","rhsusf_rg33_m2_usmc_d","RHS_M6","rhsusf_m109d_usarmy","rhsusf_m998_d_2dr","rhsusf_m998_d_2dr_halftop","rhsusf_m998_d_2dr_fulltop","rhsusf_m998_d_4dr","rhsusf_m998_d_4dr_halftop","rhsusf_m998_d_4dr_fulltop","rhsusf_m1025_d","rhsusf_m1025_d_m2","rhsusf_m1025_d_Mk19","rhsusf_rg33_d","rhsusf_rg33_m2_d"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "rhs_faction_usarmy_d", ["rhsusf_M1078A1P2_B_d_fmtv_usarmy","rhsusf_M1078A1P2_d_fmtv_usarmy","rhsusf_M1083A1P2_B_d_fmtv_usarmy","rhsusf_M1083A1P2_d_fmtv_usarmy","rhsusf_m998_d_2dr","rhsusf_m998_d_2dr_halftop","rhsusf_m998_d_2dr_fulltop","rhsusf_m998_d_4dr","rhsusf_m998_d_4dr_halftop","rhsusf_m998_d_4dr_fulltop","rhsusf_m1025_d","rhsusf_m1025_d_m2","rhsusf_m1025_d_Mk19"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "rhs_faction_usarmy_d", ["RHS_CH_47F_light","RHS_UH60M_d","RHS_UH60M_MEV_d","RHS_UH60M_MEV2_d"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "rhs_faction_usarmy_d", ["RHS_CH_47F_light","RHS_UH60M_d"]] call ALIVE_fnc_hashSet;
 
 // rhs_faction_usmc_wd
 
@@ -618,7 +819,7 @@ rhs_faction_usmc_wd_mappings = [] call ALiVE_fnc_hashCreate;
 
 [ALIVE_factionDefaultSupports, "rhs_faction_usmc_wd", ["rhsusf_rg33_usmc_wd","rhsusf_rg33_m2_usmc_wd","rhsusf_m998_w_s_2dr","rhsusf_m998_w_s_2dr_halftop","rhsusf_m998_w_s_2dr_fulltop","rhsusf_m998_w_s_4dr","rhsusf_m998_w_s_4dr_halftop","rhsusf_m998_w_s_4dr_fulltop","rhsusf_m1025_w_s","rhsusf_m1025_w_s_m2","rhsusf_m1025_w_s_Mk19","rhsusf_rg33_wd","rhsusf_rg33_m2_wd","rhsusf_m998_w_2dr","rhsusf_m998_w_2dr_halftop","rhsusf_m998_w_2dr_fulltop","rhsusf_m998_w_4dr","rhsusf_m998_w_4dr_halftop","rhsusf_m998_w_4dr_fulltop","rhsusf_m1025_w","rhsusf_m1025_w_m2","rhsusf_m1025_w_mk19","rhsusf_m109_usarmy","RHS_M6_wd"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "rhs_faction_usmc_wd", ["rhsusf_M1078A1P2_B_wd_fmtv_usarmy","rhsusf_M1078A1P2_wd_fmtv_usarmy","rhsusf_M1083A1P2_B_wd_fmtv_usarmy","rhsusf_M1083A1P2_wd_fmtv_usarmy","rhsusf_M977A2_usarmy_wd","rhsusf_M977A2_CPK_usarmy_wd","rhsusf_m998_w_s_2dr","rhsusf_m998_w_s_2dr_halftop","rhsusf_m998_w_s_2dr_fulltop","rhsusf_m998_w_s_4dr","rhsusf_m998_w_s_4dr_halftop","rhsusf_m998_w_s_4dr_fulltop","rhsusf_m1025_w_s","rhsusf_m1025_w_s_m2","rhsusf_m1025_w_s_Mk19"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "rhs_faction_usmc_wd", ["RHS_CH_47F","rhsusf_CH53E_USMC","RHS_UH60M","RHS_UH60M_MEV","RHS_UH60M_MEV2"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "rhs_faction_usmc_wd", ["RHS_CH_47F","rhsusf_CH53E_USMC","RHS_UH60M"]] call ALIVE_fnc_hashSet;
 
 
 // rhs_faction_usmc_d
@@ -649,7 +850,7 @@ rhs_faction_usmc_d_mappings = [] call ALiVE_fnc_hashCreate;
 
 [ALIVE_factionDefaultSupports, "rhs_faction_usmc_d", ["rhsusf_m998_d_s_2dr","rhsusf_m998_d_s_2dr_halftop","rhsusf_m998_d_s_2dr_fulltop","rhsusf_m998_d_s_4dr","rhsusf_m998_d_s_4dr_halftop","rhsusf_m998_d_s_4dr_fulltop","rhsusf_m1025_d_s","rhsusf_m1025_d_s_m2","rhsusf_m1025_d_s_Mk19","rhsusf_rg33_usmc_d","rhsusf_rg33_m2_usmc_d","RHS_M6","rhsusf_m109d_usarmy","rhsusf_m998_d_2dr","rhsusf_m998_d_2dr_halftop","rhsusf_m998_d_2dr_fulltop","rhsusf_m998_d_4dr","rhsusf_m998_d_4dr_halftop","rhsusf_m998_d_4dr_fulltop","rhsusf_m1025_d","rhsusf_m1025_d_m2","rhsusf_m1025_d_Mk19","rhsusf_rg33_d","rhsusf_rg33_m2_d"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "rhs_faction_usmc_d", ["rhsusf_M1078A1P2_B_d_fmtv_usarmy","rhsusf_M1078A1P2_d_fmtv_usarmy","rhsusf_M1083A1P2_B_d_fmtv_usarmy","rhsusf_M1083A1P2_d_fmtv_usarmy","rhsusf_m998_d_s_2dr","rhsusf_m998_d_s_2dr_halftop","rhsusf_m998_d_s_2dr_fulltop","rhsusf_m998_d_s_4dr","rhsusf_m998_d_s_4dr_halftop","rhsusf_m998_d_s_4dr_fulltop","rhsusf_m1025_d_s","rhsusf_m1025_d_s_m2","rhsusf_m1025_d_s_Mk19"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "rhs_faction_usmc_d", ["RHS_CH_47F_light","rhsusf_CH53E_USMC_D","RHS_UH60M_d","RHS_UH60M_MEV_d","RHS_UH60M_MEV2_d"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "rhs_faction_usmc_d", ["RHS_CH_47F_light","rhsusf_CH53E_USMC_D","RHS_UH60M_d"]] call ALIVE_fnc_hashSet;
 
 // RHS AFRF ----------------------------------------------------------------------------------------------------------------
 
@@ -1101,24 +1302,126 @@ rhssaf_faction_army_mappings = [] call ALiVE_fnc_hashCreate;
 // UNSUNG A3
 // ---------------------------------------------------------------------------------------------------------------------
 
+// UNSUNG_E
+
 unsung_e_mappings = [] call ALIVE_fnc_hashCreate;
 [unsung_e_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
 [unsung_e_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
 [unsung_e_mappings, "FactionName", "UNSUNG_E"] call ALIVE_fnc_hashSet;
-[unsung_e_mappings, "GroupFactionName", "UNSUNG_E"] call ALIVE_fnc_hashSet;
+[unsung_e_mappings, "GroupFactionName", "UNSUNG_E_NVA"] call ALIVE_fnc_hashSet;
 
 unsung_e_typeMappings = [] call ALIVE_fnc_hashCreate;
-[unsung_e_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
-[unsung_e_typeMappings, "Armored", "Armored"] call ALIVE_fnc_hashSet;
-[unsung_e_typeMappings, "Infantry", "NVA65Infantry"] call ALIVE_fnc_hashSet;
+[unsung_e_typeMappings, "Air", "uns_eastairplanes"] call ALIVE_fnc_hashSet;
+[unsung_e_typeMappings, "Armored", "uns_nvatrackedvehicles"] call ALIVE_fnc_hashSet;
+[unsung_e_typeMappings, "Infantry", "NVA68Infantry"] call ALIVE_fnc_hashSet;
 [unsung_e_typeMappings, "Mechanized", "uns_nvapatrolvehicles"] call ALIVE_fnc_hashSet;
 [unsung_e_typeMappings, "Motorized", "uns_nvapatrolvehicles"] call ALIVE_fnc_hashSet;
 [unsung_e_typeMappings, "Motorized_MTP", "uns_nvapatrolvehicles"] call ALIVE_fnc_hashSet;
-[unsung_e_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+[unsung_e_typeMappings, "SpecOps", "DacCongInfantry"] call ALIVE_fnc_hashSet;
 [unsung_e_typeMappings, "Support", "NVA65Infantry"] call ALIVE_fnc_hashSet;
 
 [unsung_e_mappings, "GroupFactionTypes", unsung_e_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "UNSUNG_E", unsung_e_mappings] call ALIVE_fnc_hashSet;
 
 [ALIVE_factionDefaultSupplies, "UNSUNG_E", ["uns_medcrate","uns_82mmammobox_VC","uns_AmmoBoxNVA","uns_EQPT_NVA","uns_resupply_crate_NVA"]] call ALIVE_fnc_hashSet;
+
+// UNSUNG_W
+
+unsung_w_mappings = [] call ALIVE_fnc_hashCreate;
+[unsung_w_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[unsung_w_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[unsung_w_mappings, "FactionName", "UNSUNG_W"] call ALIVE_fnc_hashSet;
+[unsung_w_mappings, "GroupFactionName", "UNSUNG_W_US"] call ALIVE_fnc_hashSet;
+
+unsung_w_typeMappings = [] call ALIVE_fnc_hashCreate;
+[unsung_w_typeMappings, "Air", "uns_UShelis"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Armored", "UNS_ustrackedvehicles"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Infantry", "ussfInfantry68"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Mechanized", "UNS_ustrackedvehicles"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Motorized", "UNS_ustrackedvehicles"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Motorized_MTP", "UNS_ustrackedvehicles"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "SpecOps", "LRRPS_1AC"] call ALIVE_fnc_hashSet;
+[unsung_w_typeMappings, "Support", "usarmyInfantry25ID"] call ALIVE_fnc_hashSet;
+
+[unsung_w_mappings, "GroupFactionTypes", unsung_w_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "UNSUNG_W", unsung_w_mappings] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupplies, "UNSUNG_W", ["uns_medcrate","uns_82mmammobox_US","uns_AmmoBoxUS_army","uns_EQPT_US","uns_resupply_crate_US"]] call ALIVE_fnc_hashSet;
+
 // ---------------------------------------------------------------------------------------------------------------------
+
+// Global Mobilization
+// gm_dk_army_m84 / gm_dk_army_win
+
+gm_dk_army_m84_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_dk_army_m84_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[gm_dk_army_m84_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[gm_dk_army_m84_mappings, "FactionName", "gm_fc_DK"] call ALIVE_fnc_hashSet;
+[gm_dk_army_m84_mappings, "GroupFactionName", "gm_fc_DK"] call ALIVE_fnc_hashSet;
+
+gm_dk_army_m84_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_dk_army_m84_typeMappings, "Infantry", "gm_infantry"] call ALIVE_fnc_hashSet;
+[gm_dk_army_m84_mappings, "GroupFactionTypes", gm_dk_army_m84_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_fc_DK", gm_dk_army_m84_mappings] call ALIVE_fnc_hashSet;
+
+gm_dk_army_win_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_dk_army_win_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_mappings, "FactionName", "gm_dk_army_win"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_mappings, "GroupFactionName", "gm_dk_army_win"] call ALIVE_fnc_hashSet;
+
+gm_dk_army_win_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_dk_army_win_typeMappings, "Infantry", "gm_infantry"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_mappings, "GroupFactionTypes", gm_dk_army_win_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_dk_army_win", gm_dk_army_win_mappings] call ALIVE_fnc_hashSet;
+
+// gm_ge_army / gm_ge_army_win
+
+gm_ge_army_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_ge_army_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[gm_ge_army_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[gm_ge_army_mappings, "FactionName", "gm_fc_GE"] call ALIVE_fnc_hashSet;
+[gm_ge_army_mappings, "GroupFactionName", "gm_fc_GE"] call ALIVE_fnc_hashSet;
+
+gm_ge_army_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_ge_army_typeMappings, "Air", "gm_air"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Armored", "gm_armored"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Infantry", "gm_infantry"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Mechanized", "gm_mechanizedInfantry"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Motorized", "gm_motorizedinfantry"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Support", "gm_support"] call ALIVE_fnc_hashSet;
+[gm_ge_army_mappings, "GroupFactionTypes", gm_ge_army_typeMappings] call ALIVE_fnc_hashSet;
+
+gm_ge_army_factionCustomGroups = [] call ALIVE_fnc_hashCreate;
+[gm_ge_army_factionCustomGroups, "gm_motorizedinfantry", ["gm_ge_army_mechanizedInfantry_squad_m113a1g","gm_ge_army_motorizedInfantry_squad_u1300l","gm_ge_army_mechanizedInfantry_squad_fuchs1a0_milan"]] call ALIVE_fnc_hashSet;
+[gm_ge_army_factionCustomGroups, "gm_supply", ["gm_ge_army_supply_team_01"]] call ALIVE_fnc_hashSet;
+[gm_ge_army_factionCustomGroups, "gm_armored", ["gm_platoon_gm_ge_army_Leopard1a1a1_wdl","gm_platoon_gm_ge_army_Leopard1a3_wdl"]] call ALIVE_fnc_hashSet;
+[gm_ge_army_factionCustomGroups, "gm_mechanizedInfantry", ["gm_ge_army_mechanizedInfantry_squad_m113a1g"]] call ALIVE_fnc_hashSet;
+[gm_ge_army_factionCustomGroups, "gm_recon", ["gm_platoon_gm_ge_army_iltis_cargo_wdl"]] call ALIVE_fnc_hashSet;
+[gm_ge_army_factionCustomGroups, "gm_AntiTank", ["gm_platoon_gm_ge_army_iltis_milan_wdl"]] call ALIVE_fnc_hashSet;
+[gm_ge_army_factionCustomGroups, "gm_infantry", ["gm_ge_army_infantry_squad_80_ols","gm_ge_army_infantry_mggroup_80_ols","gm_ge_army_infantry_atgroup_80_ols","gm_ge_army_infantry_atgmgroup_80_ols"]] call ALIVE_fnc_hashSet;
+[gm_ge_army_factionCustomGroups, "gm_antiair", ["gm_platoon_gm_ge_army_fuchsa0_command_wdl_gm_ge_army_gepard1a1_wdl","gm_platoon_gm_ge_army_gepard1a1_wdl"]] call ALIVE_fnc_hashSet;
+[gm_ge_army_mappings, "Groups", gm_ge_army_factionCustomGroups] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionCustomMappings, "gm_fc_GE", gm_ge_army_mappings] call ALIVE_fnc_hashSet;
+
+gm_ge_army_win_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_ge_army_win_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_mappings, "FactionName", "gm_ge_army_win"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_mappings, "GroupFactionName", "gm_ge_army_win"] call ALIVE_fnc_hashSet;
+
+gm_ge_army_win_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_ge_army_win_typeMappings, "Air", "gm_air"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Armored", "gm_armored"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Infantry", "gm_infantry"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Mechanized", "gm_mechanizedInfantry"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Motorized", "gm_motorizedinfantry"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Support", "gm_support"] call ALIVE_fnc_hashSet;
+
+[gm_ge_army_win_mappings, "GroupFactionTypes", gm_ge_army_win_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_ge_army_win", gm_ge_army_win_mappings] call ALIVE_fnc_hashSet;
+
+// gm_gc_army / gm_gc_army_win
+
+// ----------------------------------------------------------------------------------------------------------------------

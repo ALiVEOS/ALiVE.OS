@@ -71,7 +71,7 @@ _types = +_types;
 private _allTypes = count _types == 0;
 
 player enablesimulation false;
-player hideobject true;
+player hideObjectGlobal true;
 
 switch tolower _mode do {
     case "json";
@@ -160,11 +160,11 @@ switch tolower _mode do {
                                  _newType = str(_unitAddons);
                             };
                         };
-                        diag_log format["{'type':'%1',", _newType];
-                        diag_log format["'side':'%1',", [_side] call ALiVE_fnc_sideNumberToText];
-                        diag_log format["'faction':'%1',", [((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName")] call ALiVE_fnc_getConfigValue];
-                        diag_log format["'class':'%1',", _class];
-                        diag_log format["'name':'%1'},", _disName];
+                        ["{'type':'%1',", _newType] call ALiVE_fnc_dump;
+                        ["'side':'%1',", [_side] call ALiVE_fnc_sideNumberToText] call ALiVE_fnc_dump;
+                        ["'faction':'%1',", [((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName")] call ALiVE_fnc_getConfigValue] call ALiVE_fnc_dump;
+                        ["'class':'%1',", _class] call ALiVE_fnc_dump;
+                        ["'name':'%1'},", _disName] call ALiVE_fnc_dump;
                     };
                     [_unitAddons, _side, _class] call bis_fnc_log;
                     _ni = _ni + 1;
@@ -271,6 +271,6 @@ switch tolower _mode do {
 };
 
 player enablesimulation true;
-player hideobject false;
+player hideObjectGlobal false;
 
 true

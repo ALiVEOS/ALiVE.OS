@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_crewinfo\script_component.hpp>
+#include "\x\alive\addons\sys_crewinfo\script_component.hpp"
 SCRIPT(crewinfo);
 
 /* ----------------------------------------------------------------------------
@@ -83,10 +83,10 @@ switch(_operation) do {
                 - server side object only
                                 - enabled/disabled
                 */
-                if (_logic getVariable ["crewinfo_ui_setting","Left"] == "0") exitWith {["ALiVE SYS CREWINFO - Feature turned off! Exiting..."] call ALiVE_fnc_Dump};
+                if (_logic getVariable ["crewinfo_ui_setting","Left"] == "0") exitWith {["SYS CREWINFO - Feature turned off! Exiting..."] call ALiVE_fnc_dump};
 
                 //Only one init per instance is allowed
-                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS CREWINFO - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SYS CREWINFO - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
                 //Start init
                 _logic setVariable ["initGlobal", false];
@@ -123,18 +123,18 @@ switch(_operation) do {
                 // Only on player clients
                 if (hasInterface) then {
 
-                    CREWINFO_DEBUG = call compile (_logic getvariable ["debug","false"]);
-                      CREWINFO_UILOC = call compile (_logic getvariable ["crewinfo_ui_setting","1"]);
+                    CREWINFO_DEBUG = (_logic getvariable ["debug","false"]) == "true";
+                    CREWINFO_UILOC = parseNumber (_logic getvariable ["crewinfo_ui_setting","1"]);
 
                     Waituntil {!isnil "CREWINFO_DEBUG" && {!isnil "CREWINFO_UILOC"}};
 
                     // DEBUG -------------------------------------------------------------------------------------
                         if(CREWINFO_DEBUG) then {
-                            ["ALIVE Crew Info - Starting..."] call ALIVE_fnc_dump;
+                            ["Crew Info - Starting..."] call ALiVE_fnc_dump;
                             if (CREWINFO_UILOC == 1) then {
-                                ["ALIVE Crew Info - Drawing UI right (%1)", CREWINFO_UILOC] call ALIVE_fnc_dump;
+                                ["Crew Info - Drawing UI right (%1)", CREWINFO_UILOC] call ALiVE_fnc_dump;
                             } else {
-                                ["ALIVE Crew Info - Drawing UI left (%1)", CREWINFO_UILOC] call ALIVE_fnc_dump;
+                                ["Crew Info - Drawing UI left (%1)", CREWINFO_UILOC] call ALiVE_fnc_dump;
                             };
                         };
                     // DEBUG -------------------------------------------------------------------------------------

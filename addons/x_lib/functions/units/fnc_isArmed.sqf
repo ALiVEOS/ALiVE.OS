@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(isArmed);
 
 /* ----------------------------------------------------------------------------
@@ -46,7 +46,7 @@ if (_object isKindOf "CAManBase") then {
 
     if (_object isKindOf "AllVehicles" && {!(_object isKindof "Plane")}) then {
         // Checks if magazines are set for the main turrets, tbc: AH9 Pawnee seems to be misconfiged (no magazines)
-        _isArmed = count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> "MainTurret" >> "Magazines")) > 0 || count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> "M2_Turret" >> "Magazines")) > 0;
+        _isArmed = count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> "MainTurret" >> "Magazines")) > 0 || count (getArray(configfile >> "CfgVehicles" >> _object >> "Turrets" >> "M2_Turret" >> "Magazines")) > 0 || count (configfile >> "CfgVehicles" >> _object >> "Components" >> "TransportPylonsComponent" >> "pylons") > 0;
     } else {
 	    if (_object isKindOf "Plane") then {
 	

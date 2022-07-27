@@ -1,37 +1,31 @@
-#include <\x\alive\addons\civ_placement\script_component.hpp>
+#include "\x\alive\addons\civ_placement\script_component.hpp"
 SCRIPT(createRoadBlock);
-/*
- =======================================================================================================================
-Script: fnc_createRoadBlock.sqf v1.0
-Author(s): Tupolov
-        Thanks to Evaider for roadblock layout
+/* ----------------------------------------------------------------------------
+Function: ALIVE_fnc_createRoadBlock
 
 Description:
-Group will setup a roadblock on the nearest road within 500m and man it
+Generates a RoadBlock
 
-Parameter(s):
-_this select 1: radius
-_this select 0: defense position (Array)
-_this select 2: number
+Parameters:
+Array - position
+Scalar - radius
+Scalar - roadblock count
+(Bool - Debugmode)
 
 Returns:
-Boolean - success flag
+Array of road positions where roadblocks have been created
 
-Example(s):
-null = [group this,(getPos this)] call ALiVE_fnc_createRoadBlock
+Examples:
+(begin example)
+[getPos player, 100, 2] call ALiVE_fnc_createRoadblock;
+(end)
 
------------------------------------------------------------------------------------------------------------------------
-Notes:
+See Also:
 
-Type of roadblock will be based on faction.
-Roadblock will be deployed on nearest road to the position facing along the road
-Group will man static weaponary
-
-to do: Current issue if road ahead bends.
-     Change roadblock based on faction
-
-=======================================================================================================================
-*/
+Author:
+Tupolov
+shukari
+---------------------------------------------------------------------------- */
 
 private [
     "_grp","_roadpos","_vehicle","_vehtype","_blockers","_roads",
@@ -46,57 +40,60 @@ params [
     ["_debug", false, [true]]
 ];
 
-if (isnil QGVAR(ROADBLOCKS)) then {GVAR(ROADBLOCKS) = []};
+private _result = [];
 
-if (_num > 5) then {_num = 5};
+if (isnil QGVAR(ROADBLOCKS)) then {GVAR(ROADBLOCKS) = []};
 
 private _fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
 
 if (isNil "_fac") exitWith {
     ["Unable to find a dominant faction within %1 radius", _radius] call ALiVE_fnc_Dump;
+
+    _result;
 };
 
-// Find all the checkpoints pos
-_roads = _pos nearRoads (_radius + 20);
-// scan road positions, filter trails and find those roads on outskirts, filter runways
-{
-    if (_x distance _pos < (_radius - 10) || {!isOnRoad _x} || {str(_x) find "invisible" != -1}) then {
-        _roads set [_foreachIndex,objNull];
-    };
-} foreach _roads;
-_roads = _roads - [objNull];
+// Limit Roadblock number
+if (_num > 5) then {_num = 5};
 
-if (count _roads == 0) exitWith {["ALiVE No roads found for roadblock! Cannot create..."] call ALiVE_fnc_Dump};
+// Find all the roads
+_roads = _pos nearRoads (_radius + 20);
+
+// scan road positions, filter trails, filter runways and find those roads on outskirts
+_roads = _roads select {_x distance _pos >= (_radius - 10) || {isOnRoad _x} || {(str _x) find "invisible" == -1}};
+
+if (_roads isEqualTo []) exitWith {
+    ["No roads found for roadblock! Cannot create..."] call ALiVE_fnc_dump;
+
+    _result;
+};
 
 if (_num > count _roads) then {_num = count _roads};
 
-_roadpoints = [];
-
+private _roadpoints = [];
 for "_i" from 1 to _num do {
     private "_roadsel";
     while {
-        _roadsel = (selectRandom _roads);
+        _roadsel = selectRandom _roads;
         (count _roads > 1 && ({_roadsel distance _x < 60} count _roadpoints) != 0)
     } do {
         _roads = _roads - [_roadsel];
     };
 
     _roadpoints pushback _roadsel;
-
 };
 
 for "_j" from 1 to (count _roadpoints) do {
 
     _roadpos = _roadpoints select (_j - 1);
 
-    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["ALiVE Roadblock %1 to close to another! Not created...",_roadpos] call ALiVE_fnc_Dump};
+    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["Roadblock %1 to close to another! Not created...",_roadpos] call ALiVE_fnc_dump};
 
     // check for non road position (should be obsolete due to filtering at the beginning)
-    if (!isOnRoad _roadpos) exitWith {["ALiVE Roadblock %1 is not on a road %2! Not created...",_roadpos, position _roadpos] call ALiVE_fnc_Dump};
+    if (!isOnRoad _roadpos) exitWith {["Roadblock %1 is not on a road %2! Not created...",_roadpos, position _roadpos] call ALiVE_fnc_dump};
 
     _roadConnectedTo = roadsConnectedTo _roadpos;
 
-    if (count _roadConnectedTo == 0) exitWith {["ALiVE Selected road %1 for roadblock is a dead end! Not created...",_roadpos] call ALiVE_fnc_Dump};
+    if (count _roadConnectedTo == 0) exitWith {["Selected road %1 for roadblock is a dead end! Not created...",_roadpos] call ALiVE_fnc_dump};
 
     GVAR(ROADBLOCKS) pushBack (position _roadpos);
 
@@ -110,7 +107,7 @@ for "_j" from 1 to (count _roadpoints) do {
 
         _id = str(floor((getpos _roadpos) select 0)) + str(floor((getpos _roadpos) select 1));
 
-        ["ALiVE Position of Road Block is %1, dir %2", getpos _roadpos, _direction] call ALiVE_fnc_Dump;
+        ["Position of Road Block is %1, dir %2", getpos _roadpos, _direction] call ALiVE_fnc_dump;
 
         [format["roadblock_%1", _id], _roadpos, "Icon", [1,1], "TYPE:", "mil_dot", "TEXT:", "RoadBlock",  "GLOBAL"] call CBA_fnc_createMarker;
     };
@@ -134,8 +131,13 @@ for "_j" from 1 to (count _roadpoints) do {
     // Spawn compositions
     [_checkpoint,_roadpos,_direction,_fac] spawn {[_this select 0, position (_this select 1), _this select 2, _this select 3] call ALiVE_fnc_spawnComposition};
 
+    _result pushback _roadpos;
+
     // Place a vehicle
-    _vehtype = (selectRandom ([1, _fac, "Car"] call ALiVE_fnc_findVehicleType));
+    private _vehicleTypes = [1, _fac, "Car"] call ALiVE_fnc_findVehicleType;
+    _vehicleTypes = _vehicleTypes - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+
+    _vehtype = selectRandom _vehicleTypes;
     if (!isNil "_vehtype") then {
         if !(isnil "ALiVE_ProfileHandler") then {
             _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, [position _roadpos, 10,30,2,0,5,0] call BIS_fnc_findsafepos, _direction, true, _fac] call ALiVE_fnc_createProfileVehicle;
@@ -182,3 +184,4 @@ for "_j" from 1 to (count _roadpoints) do {
 
 };
 
+_result;

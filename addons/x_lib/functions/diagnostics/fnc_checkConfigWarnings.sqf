@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(checkConfigWarnings);
 
 /* ----------------------------------------------------------------------------
@@ -522,7 +522,7 @@ if (_validateGroupMembership) then {
 };
 
 if (isNil "ALiVE_profileHandler") exitWith {
-    ["ALiVE Virtual AI Module not placed, so cannot validate profiles for %1 vehicles.", _faction] call ALiVE_fnc_dump;
+    ["Virtual AI Module not placed, so cannot validate profiles for %1 vehicles.", _faction] call ALiVE_fnc_dump;
 };
 
 private ["_spawnPosition","_vehicleType"];

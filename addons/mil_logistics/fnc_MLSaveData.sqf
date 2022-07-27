@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_logistics\script_component.hpp>
+#include "\x\alive\addons\mil_logistics\script_component.hpp"
 SCRIPT(MLSaveData);
 
 /* ----------------------------------------------------------------------------
@@ -76,7 +76,7 @@ _messages = _result select 1;
 _messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SAVE MIL LOGISTICS DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
+    ["SAVE MIL LOGISTICS DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
     _data call ALIVE_fnc_inspectHash;
 };
 
@@ -101,7 +101,7 @@ _messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [false, "ALiVE MIL LOGISTICS - Save data complete","mlper"] call ALIVE_fnc_timer;
-    ["ALiVE MIL LOGISTICS SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_Dump;
+    ["MIL LOGISTICS SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_dump;
 };
 
 _result

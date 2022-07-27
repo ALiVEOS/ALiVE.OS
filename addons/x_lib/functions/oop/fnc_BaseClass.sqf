@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(baseClass);
 
 /* ----------------------------------------------------------------------------
@@ -58,9 +58,8 @@ _result = true;
 
 switch(_operation) do {
     default {
-        private["_err"];
-        _err = format["%1 does not support ""%2"" operation", _logic, _operation];
-        _err call ALiVE_fnc_logger;
+        private _baseclass = _logic getvariable ["class", _fnc_scriptNameParent];
+        ["class '%3' does not support operation '%2' - %1", _logic, _operation, _baseclass] call ALiVE_fnc_dump;
     };
     case "create": {
         // Create a module object for settings and persistence

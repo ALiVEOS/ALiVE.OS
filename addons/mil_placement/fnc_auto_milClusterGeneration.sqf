@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\mil_placement\script_component.hpp>
+#include "\x\alive\addons\mil_placement\script_component.hpp"
 SCRIPT(auto_milClusterGeneration);
 
 /* ----------------------------------------------------------------------------
@@ -131,7 +131,7 @@ _worldName = toLower(worldName);
 
 _clusterCount = 0;
 
-"ALiVEClient" callExtension format["clusterData~%1|%2|#include <\x\alive\addons\civ_placement\script_component.hpp>",worldName, "mil"];
+"ALiVEClient" callExtension format["clusterData~%1|%2|#include ""\x\alive\addons\civ_placement\script_component.hpp""",worldName, "mil"];
 
 "ALiVEClient" callExtension format["clusterData~%1|%2|ALIVE_clusterBuild = [CLUSTERBUILD];",worldName, "mil"];
 

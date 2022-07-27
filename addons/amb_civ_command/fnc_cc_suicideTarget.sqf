@@ -1,4 +1,4 @@
-#include <\x\alive\addons\amb_civ_command\script_component.hpp>
+#include "\x\alive\addons\amb_civ_command\script_component.hpp"
 SCRIPT(cc_suicideTarget);
 
 /* ----------------------------------------------------------------------------
@@ -35,7 +35,7 @@ private _nextStateArgs = [];
 
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
-    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+    ["Managed Script Command - [%1] called args: %2",_agentID,_args] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -58,13 +58,7 @@ switch (_state) do {
         private _agentCluster = [ALIVE_clusterHandler,"getCluster",_agentClusterID] call ALIVE_fnc_clusterHandler;
 
         private _targetSide = selectRandom (_args select 0);
-
-        //Thank you, BIS...
-        if (_targetSide in ["GUER","INDEP"]) then {_targetSide = RESISTANCE} else {
-            if (_targetSide in ["CIV","CIVILIAN"]) then {_targetSide = CIVILIAN} else {
-                _targetSide = call compile _targetSide;
-            };
-        };
+        _targetSide = [_targetSide] call ALIVE_fnc_sideTextToObject;
 
         private _target = [getPosASL _agent, 600, _targetSide] call ALIVE_fnc_getSideManOrPlayerNear;
 
@@ -99,7 +93,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -137,7 +131,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -162,7 +156,7 @@ switch (_state) do {
 
                     private _distance = _agent distance _target;
 
-                    //["SPAWNED SUICIDE distance: %1 alive: %2 condition: %3",_distance, (alive _agent), ((_distance < 5) || !(alive _agent))] call ALIVE_fnc_dump;
+                    //["SPAWNED SUICIDE distance: %1 alive: %2 condition: %3",_distance, (_agent), ((_distance < 5) || !(_agent))] call ALiVE_fnc_dump;
 
                     ((_distance < 5) || !(alive _agent))
                 };
@@ -202,7 +196,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -230,7 +224,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 

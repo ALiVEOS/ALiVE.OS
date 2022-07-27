@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\mil_placement\script_component.hpp>
+#include "\x\alive\addons\mil_placement\script_component.hpp"
 SCRIPT(test_clusterGeneration);
 
 //execVM "\x\alive\addons\mil_placement\tests\test_clusterGeneration.sqf"

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(dumpModuleInit);
 
 /* ----------------------------------------------------------------------------
@@ -14,7 +14,7 @@ Returns:
 
 Examples:
 (begin example)
-// dump variable 
+// dump variable
 [_logic] call ALIVE_fnc_dumpModuleInit;
 (end)
 
@@ -37,17 +37,17 @@ if(isNil "ALIVE_firstModuleInit") then {
     ALIVE_firstModuleInit = true;
     ALIVE_moduleCount = 0;
     [] call ALIVE_fnc_dumpLogo;
-    ["ALiVE Global INIT"] call ALIVE_fnc_dump;
-    [true,"ALiVE Global Init Timer Started","INIT"] call ALIVE_fnc_timer;
+    ["Global INIT"] call ALiVE_fnc_dump;
+    [true,"Global Init Timer Started","INIT"] call ALIVE_fnc_timer;
 };
 
 if(_start) then {
     _moduleID = format["m_%1", ALIVE_moduleCount];
-    _message = format["ALiVE [%3|%1] Module %2 INIT",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
+    _message = format["[%3|%1] Module %2 INIT",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
     [true, _message, _moduleID] call ALIVE_fnc_timer;
     ALIVE_moduleCount = ALIVE_moduleCount + 1;
 }else{
-    _message = format["ALiVE [%3|%1] Module %2 INIT COMPLETE TIME: ",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
+    _message = format["[%3|%1] Module %2 INIT COMPLETE TIME: ",(getNumber(configfile >> "CfgVehicles" >>  typeOf _logic >> "functionPriority")), typeof _logic, _moduleID];
     [false, _message, _moduleID] call ALIVE_fnc_timer;
 };
 

@@ -52,7 +52,7 @@ if (GVAR(ENABLED)) then {
     if ( ((isPlayer _hit) || (isPlayer _source)) && MOD(sys_data) getVariable ["EventLevel",5] > 5) then {
 
         _sidehit = side (group _hit); // group side is more reliable
-        _sidesource = side _source;
+        _sidesource = side (group _source);
 
         _factionsource = getText (((faction _source) call ALiVE_fnc_configGetFactionClass) >> "displayName");
         _factionhit = getText (((faction _hit) call ALiVE_fnc_configGetFactionClass) >> "displayName");

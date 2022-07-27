@@ -1,17 +1,17 @@
-#include <\x\alive\addons\sys_logistics\script_component.hpp>
-SCRIPT(setObjectFuel);
+#include "\x\alive\addons\sys_logistics\script_component.hpp"
+SCRIPT(setObjectDamage);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_setObjectFuel
+Function: ALIVE_fnc_setObjectDamage
 Description:
 
-Gets fuel state of the given object.
+Set damage of given object
 
 Parameters:
 _this: ARRAY of OBJECTs
 
 Returns:
-NUMBER - Fuel
+SCALAR - Damage
 
 See Also:
 - <ALIVE_fnc_setObjectCargo>

@@ -1,5 +1,5 @@
-#include <\x\alive\addons\amb_civ_population\script_component.hpp>
-#include <\x\cba\addons\ui_helper\script_dikCodes.hpp>
+#include "\x\alive\addons\amb_civ_population\script_component.hpp"
+#include "\a3\editor_f\Data\Scripts\dikCodes.h"
 
 SCRIPT(civilianPopulationMenuDef);
 
@@ -44,7 +44,7 @@ private _menuName = "";
 private _menuRsc = "popup";
 
 if (typeName _params == typeName []) then {
-    if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
+    if (count _params < 1) exitWith {["Error: Invalid params: %1, %2", _this, __FILE__] call ALiVE_fnc_dump;};
     _menuName = _params select 0;
     _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
 } else {
@@ -91,7 +91,7 @@ if (_menuName == "civpop") then {
                     "",
                     -1,
                     [QUOTE(ADDON)] call ALiVE_fnc_isModuleAvailable,
-                    !isnil QUOTE(ADDON) && {!(call compile (ADDON getVariable ["debug","false"]))}
+                    !isnil QUOTE(ADDON) && {!((ADDON getVariable ["debug","false"]) == "true")}
                 ],
                 [localize "STR_ALIVE_CIV_POP_DEBUG_DISABLE",
                     { ADDON setVariable ["debug","false",true]; [] call ALIVE_fnc_agentSystemDebug; },
@@ -100,7 +100,7 @@ if (_menuName == "civpop") then {
                     "",
                     -1,
                     [QUOTE(ADDON)] call ALiVE_fnc_isModuleAvailable,
-                    !isnil QUOTE(ADDON) && {(call compile (ADDON getVariable ["debug","false"]))}
+                    !isnil QUOTE(ADDON) && {((ADDON getVariable ["debug","false"]) == "true")}
                 ]
             ]
         ]

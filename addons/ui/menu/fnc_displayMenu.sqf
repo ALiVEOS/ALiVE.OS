@@ -1,4 +1,4 @@
-#include <\x\alive\addons\ui\script_component.hpp>
+#include "\x\alive\addons\ui\script_component.hpp"
 SCRIPT(displayMenu);
 
 /* ----------------------------------------------------------------------------

@@ -1,5 +1,13 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(spawnComposition);
+
+#define MAP_TYPES_BUILDING          []
+#define MAP_TYPES_VEGETATION        ["TREE","SMALL TREE","BUSH"]
+#define MAP_TYPES_WALL              []
+#define MAP_TYPES_MISC              ["ROCK","ROCKS"]
+
+#define CATEGORY_COMP               [MAP_TYPES_BUILDING,MAP_TYPES_WALL,MAP_TYPES_VEGETATION,MAP_TYPES_MISC]
+
 
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_spawnComposition
@@ -46,6 +54,49 @@ private _brokenCheckpoints = [
     "CheckpointHBarrier"
 ];
 
+
+// Hide Terrain objects around composition
+private _hideLocaly = false;
+private _flags = 12 call bis_fnc_decodeFlags2;
+private _radius = 20;
+private _hidingCode = switch (true) do
+{
+    case (_hideLocaly && isServer):
+    {
+        {
+            _x hideObject true;
+            _x allowDamage false;
+        };
+    };
+    case (_hideLocaly && !isServer):
+    {
+        {_x hideObject true;};
+    };
+    default
+    {
+        {
+            if (_x isEqualType objNull && {!(_x isKindOf "Logic")} ) then {
+                _x hideObjectGlobal true;
+                _x allowDamage false;
+                //["Removing object: %1", _x] call ALiVE_fnc_dump;
+            };
+        };
+    };
+
+};
+
+{
+    if (_x == 1) then
+    {
+        private _found = nearestTerrainObjects [_position,CATEGORY_COMP select _forEachIndex,_radius,false,true];
+        ["Removing objects: %1", CATEGORY_COMP select _forEachIndex] call ALiVE_fnc_dump;
+        _found call ALiVE_fnc_inspectArray;
+        _hidingCode forEach (_found inAreaArray [_position, _radius, _radius]);
+    };
+}
+forEach _flags;
+
+
 if (typename _config == "ARRAY") then {
     _config = [_config, configFile] call BIS_fnc_configPath;
 };
@@ -75,6 +126,7 @@ private _multiplyMatrixFunc =
 private _objects = [];
 private _positions = [];
 private _azis = [];
+private _created = [];
 private _isFurniture = false;
 
 if (str(_config) find "Furniture" != -1) then {
@@ -125,8 +177,38 @@ for "_i" from 0 to ((count _objects) - 1) do {
     } else {
         _newObj setDir (_azi + _azimuth);
         _newObj setPos _newPos;
-    };
 
+        _created pushBack _newObj;
+
+    	// If vn trapdoor exists, 50% chance of spawning a tunnel. Random params.
+    	if (typeOf _newObj == "Land_vn_o_trapdoor_01") then {
+    		private _chance = [1,101] call BIS_fnc_randomInt;
+			if (_chance >50) then {
+				private _tunnelPosition = position _newObj;
+				private _tunneltype = selectRandom [1,2,3,4,5,6];
+				private _tunnelsize = selectRandom [2,3,4];
+				private _tunnelClassname = selectRandom ["pavn_vc_local","pavn_vc_regional","pavn_vc_main"];
+				private _classes = call compile getText(configfile >> "CfgVehicles" >> "vn_module_tunnel_init" >> "Attributes" >> "garrison_classnames_preselection" >> "values" >> _tunnelClassname >> "value");
+				private _tunnelmoduleGroup = createGroup sideLogic;
+			    private _tunnel = "vn_module_tunnel_init" createUnit [
+				  	_tunnelPosition,
+				 	 _tunnelmoduleGroup,
+				  	format["this setVariable ['tunnel_position', %1, true]; this setVariable ['garrison_classnames_preselection', %2, true]; this setVariable ['garrison_side', 1, true]; this setVariable ['garrison_size', %3, true];  this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];", _tunneltype, _classes, _tunnelsize]
+				  ];
+			 	  ["Placing tunnel entrance for tunnel %1 at %2, enemy are %3 man %4 group", _tunneltype, _tunnelPosition, _tunnelsize * 10, _tunnelClassname] call ALiVE_fnc_dump;
+			    [_tunnelPosition] spawn
+			    {
+			        params["_tunnelPosition"];
+			        private _object = objNull;
+			        waitUntil { _object = _tunnelPosition nearestObject "Land_vn_o_trapdoor_01"; !isNull _object};
+			        private _heightAdjust = random [0.2, 0.4, 0.5];
+			        _object setpos [position _object select 0, position _object select 1, (position _object select 2) - _heightAdjust];
+			    };
+
+			};
+			deleteVehicle _newObj;
+		};
+    };
 };
 
 if (isNil QMOD(PCOMPOSITIONS)) then {
@@ -148,3 +230,12 @@ if !(_position in (_comp select 0)) then {
     (_comp select 1) pushBack [_config,_azi,_faction];
     [MOD(PCOMPOSITIONS), "compositions",_comp] call ALiVE_fnc_hashSet;
 };
+
+// Save created objects for removal during runtime
+_charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo",_position, [], 0, "CAN_COLLIDE"];
+_charge setvariable [QGVAR(COMPOSITION_OBJECTS),_created];
+_charge enableSimulation false;
+_charge hideObjectGlobal true;
+
+
+

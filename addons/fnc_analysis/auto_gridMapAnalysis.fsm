@@ -62,7 +62,7 @@ class FSM
        "[_plotter, ""init""] call ALIVE_fnc_plotSectors;" \n
        "" \n
        "_allSectors = [_grid, ""sectors""] call ALIVE_fnc_sectorGrid;" \n
-       "diag_log format[""Sectors created: %1"",count _allSectors];" \n
+       "[""Sectors created: %1"",count _allSectors] call ALiVE_fnc_dump;" \n
        "" \n
        "[_grid, [], true, true] call ALIVE_fnc_auto_gridMapAnalysis;"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;

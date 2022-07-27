@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_player\script_component.hpp>
+#include "\x\alive\addons\sys_player\script_component.hpp"
 SCRIPT(player);
 
 /* ----------------------------------------------------------------------------
@@ -96,7 +96,7 @@ switch(_operation) do {
         case "init": {
 
             //Only one init per instance is allowed
-            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PLAYER - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SYS PLAYER - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
             //Start init
             _logic setVariable ["initGlobal", false];
@@ -126,13 +126,20 @@ switch(_operation) do {
 
             MOD(sys_player) setVariable ["saved", false];
 
-           MOD(sys_player) setVariable ["super", QUOTE(SUPERCLASS)];
-           MOD(sys_player) setVariable ["class", QUOTE(MAINCLASS)];
+            MOD(sys_player) setVariable ["super", QUOTE(SUPERCLASS)];
+            MOD(sys_player) setVariable ["class", QUOTE(MAINCLASS)];
 
-           if !(_logic getVariable ["enablePlayerPersistence",true]) exitWith {_logic setVariable ["bis_fnc_initModules_activate",true]; ["ALiVE SYS PLAYER - Feature turned off! Exiting..."] call ALiVE_fnc_Dump};
+            if !(_logic getVariable ["enablePlayerPersistence",true]) exitWith {
+                _logic setVariable ["bis_fnc_initModules_activate",true];
+
+                MOD(sys_player) setVariable ["init", true, true];
+                MOD(sys_player) setVariable ["startupComplete", true, true];
+
+                ["SYS PLAYER - Feature turned off! Exiting..."] call ALiVE_fnc_dump;
+            };
 
             // DEFINE PLAYER DATA
-            #include <playerData.hpp>
+            #include "playerData.hpp"
 
             // Create Player and Gear Store in memory on client and server
             GVAR(player_data) = [] call ALIVE_fnc_hashCreate;
@@ -262,9 +269,9 @@ switch(_operation) do {
                             -9500,
                             [
                                     "call ALIVE_fnc_playerMenuDef",
-                                    "main"
+                                    ["main", "alive_flexiMenu_rscPopup"]
                             ]
-                    ] call ALiVE_fnc_flexiMenu_Add;
+                    ] call CBA_fnc_flexiMenu_Add;
             };
 
             /*
@@ -570,9 +577,9 @@ switch(_operation) do {
                                 -9500,
                                 [
                                         "call playerMenuDef",
-                                        "main"
+                                        ["main", "alive_flexiMenu_rscPopup"]
                                 ]
-                        ] call ALiVE_fnc_flexiMenu_Remove;
+                        ] call CBA_fnc_flexiMenu_Remove;
                 };
         };
         default {

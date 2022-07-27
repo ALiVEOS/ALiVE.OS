@@ -267,6 +267,12 @@ class CfgVehicles {
                                         };
                                 };
                         };
+                        class CQB_staticWeaponsClassnames
+                        {
+								displayName = "$STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES";
+								description = "$STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES_COMMENT";
+								defaultValue = "B_HMG_01_high_F,O_Mortar_01_F,O_HMG_01_high_F";
+                        };
                         class CQB_UseDominantFaction
                         {
                                 displayName = "$STR_ALIVE_CQB_USEDOMINANTFACTION";
@@ -291,6 +297,12 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_CQB_SPAWNDISTANCE";
                                 description = "$STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT";
                                 defaultValue = 700;
+                        };
+                        class CQB_spawndistanceStatic
+                        {
+                                displayName = "$STR_ALIVE_CQB_SPAWNDISTANCESTATIC";
+                                description = "$STR_ALIVE_CQB_SPAWNDISTANCESTATIC_COMMENT";
+                                defaultValue = 1200;
                         };
                         class CQB_spawndistanceHeli
                         {
@@ -320,6 +332,12 @@ class CfgVehicles {
                         {
                                 displayName = "$STR_ALIVE_CQB_BLACKLIST";
                                 description = "$STR_ALIVE_CQB_BLACKLIST_COMMENT";
+                                defaultValue = "";
+                        };
+                        class units_blacklist
+                        {
+                                displayName = "$STR_ALIVE_CQB_UNIT_BLACKLIST";
+                                description = "$STR_ALIVE_CQB_UNIT_BLACKLIST_COMMENT";
                                 defaultValue = "";
                         };
                 };

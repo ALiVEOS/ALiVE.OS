@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_convoy\script_component.hpp>
+#include "\x\alive\addons\mil_convoy\script_component.hpp"
 SCRIPT(convoy);
 
 /* ----------------------------------------------------------------------------
@@ -72,20 +72,20 @@ switch(_operation) do {
                 _CONVOY_intensity = _logic getvariable ["conv_intensity_setting",1];
                 if (typename (_CONVOY_intensity) == "STRING") then {_CONVOY_intensity = call compile _CONVOY_intensity};
             CONVOY_intensity = _CONVOY_intensity;
-diag_log format["Convoy Instensity: %1", CONVOY_intensity];
+["Convoy Instensity: %1", CONVOY_intensity] call ALiVE_fnc_dump;
 
                  CONVOY_safearea = _logic getvariable ["conv_safearea_setting",2000];
                 if (typename (CONVOY_safearea) == "STRING") then {CONVOY_safearea = call compile CONVOY_safearea};
                 _logic setVariable ["convoy_safearea", CONVOY_safearea];
-diag_log format["Safe Area: %1", CONVOY_safearea];
+["Safe Area: %1", CONVOY_safearea] call ALiVE_fnc_dump;
 
                 factionsConvoy = _logic getvariable ["CONV_FACTIONS","OPF_F"];
                 factionsConvoy = [_logic,"convoy_factions",factionsConvoy] call ALiVE_fnc_CONVOY;
-diag_log format["FActions: %1", factionsConvoy];
+["FActions: %1", factionsConvoy] call ALiVE_fnc_dump;
 
                 CONVOY_GLOBALDEBUG = _logic getvariable ["conv_debug_setting",false];
                 if (typename (CONVOY_GLOBALDEBUG) == "STRING") then {CONVOY_GLOBALDEBUG = call compile CONVOY_GLOBALDEBUG};
-diag_log format["DEBUG: %1", CONVOY_GLOBALDEBUG];
+["DEBUG: %1", CONVOY_GLOBALDEBUG] call ALiVE_fnc_dump;
 
                    if (isServer && {!(isNil QMOD(CONVOY))}) exitWith {
                         ERROR_WITH_TITLE(str _logic, localize "STR_ALIVE_CONVOY_ERROR1");

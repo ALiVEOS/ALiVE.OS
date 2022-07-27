@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_logistics\script_component.hpp>
+#include "\x\alive\addons\sys_logistics\script_component.hpp"
 SCRIPT(logisticsSaveSata);
 
 /* ----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ _message = format["ALiVE Player Logistics - Preparing to save %1 logistics items
 _messages = _result select 1;
 _messages pushback _message;
 
-["ALiVE SAVE SYS LOGISTICS DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
+["SAVE SYS LOGISTICS DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
 
 _data = [MOD(SYS_LOGISTICS),"convertData",_data] call ALiVE_fnc_logistics;
 _saveResult = [QMOD(SYS_LOGISTICS),_data] call ALiVE_fnc_profileNameSpaceSave;
@@ -59,6 +59,6 @@ _messages = _result select 1;
 _messages pushback _message;
 
 [false, "ALiVE SYS LOGISTICS - Save data complete","logisticsper"] call ALIVE_fnc_timer;
-["ALiVE SYS LOGISTICS SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_Dump;
+["SYS LOGISTICS SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_dump;
 
 _result

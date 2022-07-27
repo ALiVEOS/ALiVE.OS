@@ -34,7 +34,7 @@ _categories = [
 if (_custom) then {
     [">>>>>>>>>>>>>>>>>> Starting static data creation"] call ALiVE_fnc_dump;
     {
-        call compile format["%1 = []", _x select 0];
+        missionNameSpace setVariable [_x select 0, []];
     } foreach _categories;
 
     {
@@ -320,9 +320,19 @@ if (_mapBounds != 0) then {
 {
     private ["_array","_arrayActual","_result"];
     _array = _x select 0;
-    _arrayActual = call compile _array;
-    diag_log format['staticData~%1|%2 = %2 + %3;',worldName,_array, _arrayActual];
-    _result = "ALiVEClient" callExtension format['staticData~%1|%2 = %2 + %3;',worldName,_array, _arrayActual];
+    private _category = missionNamespace getVariable _array;
+    // Window length set based on an example of cut off, 100 objects is probably accurate, 60 is conservative
+    _windowLength = 60;
+    if !(_category isEqualTo []) then {
+        _windowStart=0;
+        // Split into chunks that won't be too large to pass to the extension
+        while {_windowStart < (count _category - 1)} do {
+            _partialArray = _category select [_windowStart,_windowLength min (count _category - _windowStart)];
+            ['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray] call ALiVE_fnc_dump;
+            _result = "ALiVEClient" callExtension format['staticData~%1|%2 = %2 + %3;',worldName,_array, _partialArray];
+            _windowStart = _windowStart + _windowLength;
+        };
+	};
     //diag_log str(_result);
 } foreach _categories;
 

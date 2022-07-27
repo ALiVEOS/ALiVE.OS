@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(hashGet);
 
 /* ----------------------------------------------------------------------------
@@ -38,7 +38,7 @@ _key = _this select 1;
 
 //Avoid passing a non-existing hash or key to the CBA function
 if (isnil "_hash" || {isnil "_key"} || {!(typeName _hash == "ARRAY")}) exitwith {
-    ["ALiVE_fnc_HashGet retrieved wrong input %1 from %2!",_this,_fnc_scriptNameParent] call ALiVE_fnc_Dump;
+    ["ALiVE_fnc_HashGet retrieved wrong input from %2 - %1",_this,_fnc_scriptNameParent] call ALiVE_fnc_Dump;
 };
 
 if(count _this > 2) then {

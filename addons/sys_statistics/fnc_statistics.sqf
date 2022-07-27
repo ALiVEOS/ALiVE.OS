@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_statistics\script_component.hpp>
+#include "\x\alive\addons\sys_statistics\script_component.hpp"
 SCRIPT(statistics);
 
 /* ----------------------------------------------------------------------------
@@ -62,7 +62,7 @@ switch(_operation) do {
                 };
 
                 //Only one init per instance is allowed
-                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS STATISTICS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SYS STATISTICS - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
                 //Start init
                 _logic setVariable ["initGlobal", false];
@@ -117,7 +117,7 @@ switch(_operation) do {
                                         "call ALIVE_fnc_statisticsMenuDef",
                                         "adminActions"
                                 ]
-                        ] call ALIVE_fnc_flexiMenu_Add; */
+                        ] call CBA_fnc_flexiMenu_Add; */
                 };
 
                 /*
@@ -145,9 +145,9 @@ switch(_operation) do {
                                 -9500,
                                 [
                                         "call ALIVE_fnc_statisticsMenuDef",
-                                        "main"
+                                        ["main", "alive_flexiMenu_rscPopup"]
                                 ]
-                        ] call ALIVE_fnc_flexiMenu_Remove;
+                        ] call CBA_fnc_flexiMenu_Remove;
                 };
         };
         default {

@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\sys_aiskill\script_component.hpp>
+#include "\x\alive\addons\sys_aiskill\script_component.hpp"
 SCRIPT(AISkill);
 
 /* ----------------------------------------------------------------------------
@@ -127,7 +127,7 @@ switch(_operation) do {
 
                 //Set value
                 _args = [_logic,"pause",_args,false] call ALIVE_fnc_OOsimpleOperation;
-                ["ALiVE Pausing state of %1 instance set to %2!",QUOTE(ADDON),_args] call ALiVE_fnc_DumpR;
+                ["Pausing state of %1 instance set to %2!",QUOTE(ADDON),_args] call ALiVE_fnc_dumpR;
         };
         _result = _args;
     };
@@ -373,12 +373,12 @@ switch(_operation) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE AISKILL Recruit:[%1] Regular:[%2] Veteran:[%3] Expert:[%4]",_skillFactionsRecruit,_skillFactionsRegular,_skillFactionsVeteran,_skillFactionsExpert] call ALIVE_fnc_dump;
-            ["ALiVE AISKILL Custom Skill: Factions:[%1]",_customSkillFactions] call ALIVE_fnc_dump;
-            ["ALiVE AISKILL Custom Skill: Min Ability:%1 Max Ability:%2",_customSkillAbilityMin,_customSkillAbilityMax] call ALIVE_fnc_dump;
-            ["ALiVE AISKILL Custom Skill: Aim Accuracy:%1 Aim Shake:%2 Aim Speed:%3",_customSkillAimAccuracy,_customSkillAimShake,_customSkillAimSpeed] call ALIVE_fnc_dump;
-            ["ALiVE AISKILL Custom Skill: Courage:%1 Fleeing:%2 Endurance:%3 Spot Distance:%4 Spot Time:%5",_customSkillCourage,_customSkillFleeing,_customSkillEndurance,_customSkillSpotDistance,_customSkillSpotTime] call ALIVE_fnc_dump;
-            ["ALiVE AISKILL Custom Skill: Reload:%1 Commanding:%2 General:%3",_customSkillReload,_customSkillCommanding,_customSkillGeneral] call ALIVE_fnc_dump;
+            ["AISKILL Recruit:[%1] Regular:[%2] Veteran:[%3] Expert:[%4]",_skillFactionsRecruit,_skillFactionsRegular,_skillFactionsVeteran,_skillFactionsExpert] call ALiVE_fnc_dump;
+            ["AISKILL Custom Skill: Factions:[%1]",_customSkillFactions] call ALiVE_fnc_dump;
+            ["AISKILL Custom Skill: Min Ability:%1 Max Ability:%2",_customSkillAbilityMin,_customSkillAbilityMax] call ALiVE_fnc_dump;
+            ["AISKILL Custom Skill: Aim Accuracy:%1 Aim Shake:%2 Aim Speed:%3",_customSkillAimAccuracy,_customSkillAimShake,_customSkillAimSpeed] call ALiVE_fnc_dump;
+            ["AISKILL Custom Skill: Courage:%1 Fleeing:%2 Endurance:%3 Spot Distance:%4 Spot Time:%5",_customSkillCourage,_customSkillFleeing,_customSkillEndurance,_customSkillSpotDistance,_customSkillSpotTime] call ALiVE_fnc_dump;
+            ["AISKILL Custom Skill: Reload:%1 Commanding:%2 General:%3",_customSkillReload,_customSkillCommanding,_customSkillGeneral] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -426,7 +426,7 @@ switch(_operation) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE AISKILL Faction Skill Hash:"] call ALIVE_fnc_dump;
+            ["AISKILL Faction Skill Hash:"] call ALiVE_fnc_dump;
             _factionSkills call ALIVE_fnc_inspectHash;
         };
         // DEBUG -------------------------------------------------------------------------------------

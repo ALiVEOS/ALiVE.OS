@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\mil_opcom\script_component.hpp>
+#include "\x\alive\addons\mil_opcom\script_component.hpp"
 SCRIPT(test_loadOPCOMobjectives);
 
 //execVM "\x\alive\addons\mil_opcom\tests\test_loadOPCOMobjectives.sqf"
@@ -26,7 +26,7 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 
@@ -42,7 +42,7 @@ _resultset = [];
         _resultset pushback ([([_x,"loadData"] call ALIVE_fnc_OPCOM)]);
     } foreach OPCOM_INSTANCES;
 [] call ALiVE_fnc_timer;
-{["ALiVE OPCOM LOAD DATA RESULT: %1",_x] call ALiVE_fnc_Dump} foreach _resultset;
+{["OPCOM LOAD DATA RESULT: %1",_x] call ALiVE_fnc_dump} foreach _resultset;
 
 [["ALiVE_LOADINGSCREEN_DATA"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
 

@@ -1,0 +1,1798 @@
+/*%FSM<COMPILE "C:\Program Files (x86)\Steam\steamapps\common\Arma 3 Tools\FSMEditor\scriptedFSM.cfg, Crowd Activator">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"MOVE",2,250,-835.013550,511.870850,-745.013550,561.870850,0.000000,"MOVE"};
+item1[] = {"INIT",0,250,-277.342499,-271.307617,-187.342514,-221.307678,0.000000,"INIT"};
+item2[] = {"INIT_COMPLETE",4,218,-277.365326,-192.055389,-187.365341,-142.055359,0.000000,"INIT" \n "COMPLETE"};
+item3[] = {"_",-1,250,-440.685394,-235.585892,-437.600311,-235.585892,0.000000,""};
+item4[] = {"DESTROY",4,218,-157.505569,-114.375870,-67.505569,-64.375847,0.000000,"DESTROY"};
+item5[] = {"END",1,250,-42.178448,-112.469040,47.821583,-62.469131,0.000000,"END"};
+item6[] = {"TIMER",2,250,-277.336182,-116.064003,-187.336166,-66.063988,0.000000,"TIMER"};
+item7[] = {"COMPLETE",4,218,347.567993,276.133881,437.568237,326.133942,0.000000,"COMPLETE"};
+item8[] = {"START",4,218,-277.977234,-41.899986,-187.977158,8.099995,2.000000,"START"};
+item9[] = {"DO_ACTIVATE",4,218,14.122589,355.190216,104.122711,405.190277,1.000000,"DO" \n "ACTIVATE"};
+item10[] = {"DONE",2,250,202.889771,668.202148,289.549194,714.861816,0.000000,"DONE"};
+item11[] = {"ACTIVATE_LOOP",2,250,10.058136,435.696259,100.058258,485.696381,0.000000,"ACTIVATE" \n "LOOP"};
+item12[] = {"ITERATE",4,218,137.170258,435.505951,227.170288,485.506073,1.000000,"ITERATE"};
+item13[] = {"END__LOOP",4,218,9.993988,510.461639,99.994049,560.461670,0.000000,"END " \n "LOOP"};
+item14[] = {"WAIT",4,218,-132.312729,-7.478668,-42.312721,42.521286,4.000000,"WAIT"};
+item15[] = {"COMPLETE",4,218,-484.242279,400.308411,-394.242157,450.308350,0.000000,"COMPLETE"};
+item16[] = {"CHECK_ACTIVE_CLU",2,250,-272.305481,32.477703,-182.305450,82.477707,0.000000,"CHECK" \n "ACTIVE" \n "CLUSTERS"};
+item17[] = {"HAS_NEW__BUILDIN",4,218,-94.943115,202.020569,-4.943207,252.020691,1.000000,"HAS" \n "NEW " \n "BUILDINGS"};
+item18[] = {"WAIT",4,218,-402.581726,-117.430069,-312.581726,-67.430016,1.000000,"WAIT"};
+item19[] = {"NO__ACTIVATE",4,218,201.312622,276.080139,291.312500,326.080261,0.000000,"NO " \n "ACTIVATE"};
+item20[] = {"ANALYSE_NEW_HOUS",2,250,13.272003,273.792206,103.272133,323.792389,0.000000,"ANALYSE" \n "NEW" \n "HOUSES"};
+item21[] = {"SPAWN_LOOP",2,4346,12.918488,595.304810,102.918610,645.305054,0.000000,"SPAWN" \n "LOOP"};
+item22[] = {"ITERATE",4,218,144.952240,594.056030,234.952271,644.056152,1.000000,"ITERATE"};
+item23[] = {"END_LOOP",4,218,13.280243,665.988647,103.280182,715.988647,0.000000,"END" \n "LOOP"};
+item24[] = {"ANALYSE_ACTIVE_A",2,250,-565.516724,302.894653,-475.516846,352.894592,0.000000,"ANALYSE" \n "ACTIVE" \n "AGENTS"};
+item25[] = {"DO__DESPAWN",4,218,-565.214600,382.365112,-475.214844,432.365112,1.000000,"DO " \n "DESPAWN"};
+item26[] = {"DESPAWN_LOOP",2,250,-566.215576,466.252441,-476.215332,516.252563,0.000000,"DESPAWN" \n "LOOP"};
+item27[] = {"ITERATE",4,218,-687.852539,464.363159,-597.852539,514.363281,1.000000,"ITERATE"};
+item28[] = {"HAS__ACTIVE_AGEN",4,218,-564.880005,203.000092,-474.880249,253.000092,3.000000,"HAS " \n "ACTIVE" \n "AGENTS"};
+item29[] = {"NO__DESPAWN",4,218,-668.906372,383.243896,-578.906372,433.243896,0.000000,"NO " \n "DESPAWN"};
+item30[] = {"ITERATE",4,218,-685.258789,303.231934,-595.258667,353.231995,2.000000,"ITERATE"};
+item31[] = {"END__LOOP",4,218,-567.379028,539.201050,-477.379272,589.201416,0.000000,"END " \n "LOOP"};
+item32[] = {"HAS__ACTIVE_BUIL",4,218,-267.032440,295.253143,-177.032578,345.253052,2.000000,"HAS " \n "ACTIVE" \n "BUILDINGS"};
+item33[] = {"CHECK",2,250,-671.677246,687.335938,-581.677246,737.335938,0.000000,"CHECK"};
+item34[] = {"COMPLETE",4,218,-810.574829,303.772278,-720.574707,353.772217,2.000000,"COMPLETE"};
+item35[] = {"ANALYSE_ACTIVE_B",2,250,-266.146393,392.628845,-176.146317,442.628845,0.000000,"ANALYSE" \n "ACTIVE" \n "BUILDINGS"};
+item36[] = {"DO__DEACTIVATE",4,218,-270.206940,473.190247,-180.206924,523.190308,1.000000,"DO " \n "DEACTIVATE"};
+item37[] = {"DESPAWN_LOOP_1",2,250,-270.050018,554.762451,-180.049942,604.762573,0.000000,"DESPAWN" \n "LOOP"};
+item38[] = {"ITERATE",4,218,-392.845367,555.188354,-302.844818,605.188354,1.000000,"ITERATE"};
+item39[] = {"END__LOOP",4,218,-269.882660,630.026123,-179.882645,680.026367,0.000000,"END " \n "LOOP"};
+item40[] = {"NO__DEACTIVATE",4,218,-132.190872,473.729706,-42.190865,523.729736,0.000000,"NO " \n "DEACTIVATE"};
+item41[] = {"ITERATE",4,218,-386.779022,395.214355,-296.778351,445.214294,2.000000,"ITERATE"};
+item42[] = {"CHECK_1",2,250,-270.602142,712.513184,-180.602127,762.513184,0.000000,"CHECK"};
+item43[] = {"HAS__ACTIVE_BUIL",4,218,-522.035034,615.982727,-432.035522,665.982605,1.000000,"HAS " \n "ACTIVE" \n "BUILDINGS"};
+item44[] = {"HAS__NEW_BUILDIN",4,218,-164.224426,709.781311,-74.224518,759.781433,1.000000,"HAS " \n "NEW" \n "BUILDINGS"};
+item45[] = {"HAS_NEW__BUILDIN",4,218,-124.059883,817.495544,-34.059937,867.495667,0.000000,"HAS" \n "NEW " \n "BUILDINGS"};
+item46[] = {"CHECK_AGENTS___B",2,250,-272.305634,201.426880,-182.305466,251.426849,0.000000,"CHECK" \n "AGENTS &" \n "BUILDINGS"};
+item47[] = {"HAS__ACTIVE_CLUS",4,218,-271.029877,109.415131,-181.030029,159.415070,2.000000,"HAS " \n "ACTIVE" \n "CLUSTERS"};
+item48[] = {"WAIT",4,218,-418.227722,107.093781,-328.227692,157.093735,4.000000,"WAIT"};
+item49[] = {"ITERATE",4,218,-965.547302,509.613403,-875.547180,559.613403,1.000000,"ITERATE"};
+item50[] = {"END_LOOP",4,218,-804.335205,608.089233,-714.335205,658.089233,0.000000,"END" \n "LOOP"};
+version=1;
+class LayoutItems
+{
+	class Item3
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+};
+link0[] = {0,49};
+link1[] = {0,50};
+link2[] = {1,2};
+link3[] = {2,6};
+link4[] = {4,5};
+link5[] = {6,4};
+link6[] = {6,8};
+link7[] = {6,18};
+link8[] = {7,6};
+link9[] = {8,16};
+link10[] = {9,11};
+link11[] = {10,7};
+link12[] = {11,12};
+link13[] = {11,13};
+link14[] = {12,11};
+link15[] = {13,21};
+link16[] = {14,6};
+link17[] = {15,6};
+link18[] = {16,14};
+link19[] = {16,47};
+link20[] = {17,20};
+link21[] = {18,6};
+link22[] = {19,10};
+link23[] = {20,9};
+link24[] = {20,19};
+link25[] = {21,22};
+link26[] = {21,23};
+link27[] = {22,21};
+link28[] = {23,10};
+link29[] = {24,25};
+link30[] = {24,29};
+link31[] = {24,30};
+link32[] = {25,26};
+link33[] = {26,27};
+link34[] = {26,31};
+link35[] = {27,26};
+link36[] = {28,24};
+link37[] = {29,0};
+link38[] = {30,24};
+link39[] = {31,33};
+link40[] = {32,35};
+link41[] = {33,34};
+link42[] = {33,43};
+link43[] = {33,45};
+link44[] = {34,6};
+link45[] = {35,36};
+link46[] = {35,40};
+link47[] = {35,41};
+link48[] = {36,37};
+link49[] = {37,38};
+link50[] = {37,39};
+link51[] = {38,37};
+link52[] = {39,42};
+link53[] = {40,42};
+link54[] = {41,35};
+link55[] = {42,15};
+link56[] = {42,44};
+link57[] = {43,35};
+link58[] = {44,20};
+link59[] = {45,20};
+link60[] = {46,17};
+link61[] = {46,28};
+link62[] = {46,32};
+link63[] = {46,48};
+link64[] = {47,46};
+link65[] = {48,6};
+link66[] = {49,0};
+link67[] = {50,33};
+globals[] = {0.000000,0,0,0,0,640,480,1,214,6316128,1,-1295.704712,197.535278,1217.912476,-12.320534,1215,1001,1};
+window[] = {0,-1,-1,-32000,-32000,1355,182,2682,182,1,1233};
+*//*%FSM</HEAD>*/
+class FSM
+{
+        fsmName = "Crowd Activator";
+        class States
+        {
+                /*%FSM<STATE "MOVE">*/
+                class MOVE
+                {
+                        name = "MOVE";
+                        itemno = 0;
+                        init = /*%FSM<STATEINIT""">*/"private _agent = _activeAgents select _count;" \n
+                         "" \n
+                         "if!(isnil ""_agent"") then {" \n
+                         "" \n
+                         "	private _timedout = _agent getVariable [""ALiVE_Crowd_Busy"",time];" \n
+                         "	private _busy = time < _timedout;" \n
+                         " 	private _fleeing = _agent getVariable [""ALiVE_Crowd_Fleeing"", false];" \n
+                         "  	private _crowding = _agent getVariable [""ALiVE_Crowd_Crowding"", false];" \n
+                         "	private _inPosition = if (position _agent distance (_agent getVariable [""ALiVE_Crowd_Pos"", [0,0,0]]) < 2 ) then {true} else {false};" \n
+                         "      private _action = _agent getVariable [""ALIVE_CIV_ACTION"", ""None""];" \n
+                         "      private _position = position _agent;" \n
+                         "" \n
+                         "  if (unitReady _agent && _busy && alive _agent && !_fleeing && _inPosition) then {" \n
+                         "" \n
+                         "       switch (_action) do {" \n
+                         "            case ""Crowd"": {" \n
+                         "			// If Leader play crowd noise" \n
+                         "			if (_agent getVariable [""ALiVE_Crowd_Leader"", false] && (time >= _agent getVariable [""ALiVE_Crowd_Music"", time]) ) then {" \n
+                         "				private _crowdNoise = selectRandom ALiVE_CivPop_Crowd_Noises;" \n
+                         "				if (isMultiplayer) then {" \n
+                         "					[_agent, (_crowdNoise select 0)] remoteExec [""say3D""];" \n
+                         "				} else {" \n
+                         "					_agent say3D (_crowdNoise select 0);" \n
+                         "				};" \n
+                         "				_agent setVariable [""ALiVE_Crowd_Music"", time + (_crowdNoise select 1), false];" \n
+                         "			};" \n
+                         "			// Play animations" \n
+                         "                 if (_protesting) then {" \n
+                         "                 		// Play angry anim" \n
+                         "				if (random 1 < 0.9) then {" \n
+                         "					if !((animationState _agent) in ALiVE_CivPop_Crowd_Anims_Protest) then {  [_agent, selectRandom ALiVE_CivPop_Crowd_Anims_Protest] call ALiVE_fnc_switchMove; };" \n
+                         "				} else {" \n
+                         "					_weapon = selectRandom ALiVE_CivPop_Crowd_Weapons;" \n
+                         "					doStop _agent;" \n
+                         "					[_agent, """"] call ALIVE_fnc_switchMove;" \n
+                         "					 private _target = [position _agent, _spawnDistance * 2] call ALIVE_fnc_getRandomPlayerNear;  " \n
+                         "					_agent setDir (_agent getDir (_target select 0));" \n
+                         "					_agent addWeapon ""Throw"";" \n
+                         "					_agent addMagazine [(_weapon select 0),1];" \n
+                         "					_agent selectWeapon ""Throw"";" \n
+                         "					_agent forceWeaponFire [(_weapon select 1),(_weapon select 1)];" \n
+                         "				};" \n
+                         "                 } else {" \n
+                         "				if !((animationState _agent) in ALiVE_CivPop_Crowd_Anims) then {  [_agent, selectRandom ALiVE_CivPop_Crowd_Anims] call ALiVE_fnc_switchMove; };" \n
+                         "                 };" \n
+                         "            };" \n
+                         "            case ""Observe"": {" \n
+                         "                 if (_protesting) then {" \n
+                         "                      // Play angry anim" \n
+                         "				if !((animationState _agent) in ALiVE_CivPop_Crowd_Anims_Protest) then {  [_agent, selectRandom ALiVE_CivPop_Crowd_Anims_Protest] call ALiVE_fnc_switchMove; };" \n
+                         "                 } else {" \n
+                         "                      // play arms behind back" \n
+                         "                      [_agent,""c5calming_zevl4""] call ALIVE_fnc_switchMove;" \n
+                         "                 };" \n
+                         "            };" \n
+                         "            case ""Stones"": {" \n
+                         "                 if (_protesting) then {" \n
+                         "                      // Throw stones" \n
+                         "					_weapon = selectRandom ALiVE_CivPop_Crowd_Weapons;" \n
+                         "					doStop _agent;" \n
+                         "					[_agent, """"] call ALIVE_fnc_switchMove;" \n
+                         "					 private _target = [position _agent, _spawnDistance * 2] call ALIVE_fnc_getRandomPlayerNear;  " \n
+                         "					_agent setDir (_agent getDir  (_target select 0));" \n
+                         "					_agent addWeapon ""Throw"";" \n
+                         "					_agent addMagazine [(_weapon select 0),1];" \n
+                         "					_agent selectWeapon ""Throw"";" \n
+                         "					_agent forceWeaponFire [(_weapon select 1),(_weapon select 1)];" \n
+                         "                 } else {" \n
+                         "                      // Play angry anim" \n
+                         "				if !((animationState _agent) in ALiVE_CivPop_Crowd_Anims_Protest) then {  [_agent, selectRandom ALiVE_CivPop_Crowd_Anims_Protest] call ALiVE_fnc_switchMove; };" \n
+                         "                 };" \n
+                         "            };" \n
+                         "       };" \n
+                         "  };" \n
+                         "" \n
+                         "  if (unitReady _agent && !_busy && alive _agent) then {" \n
+                         "" \n
+                         "       // Reset Fleeing" \n
+                         "       if (_fleeing) then {" \n
+                         "            [_agent, """"] call ALIVE_fnc_switchMove;" \n
+                         "            _agent setVariable [""ALiVE_Crowd_Fleeing"", false, false];" \n
+                         "       };" \n
+                         "" \n
+                         "       // Reset crowd leader" \n
+                         "       if ((_agent getVariable [""ALIVE_CIV_ACTION"", ""None""]) == ""Crowd"") then {" \n
+                         "            _notCrowding = true;" \n
+                         "            _crowdChoice = false;" \n
+                         "            _crowdTarget = objNull;" \n
+                         "            _crowdPos = [];" \n
+                         "       };" \n
+                         "" \n
+                         "	// Reset Crowd" \n
+                         "       if (_crowding) then {" \n
+                         "            [_agent, """"] call ALIVE_fnc_switchMove;" \n
+                         "            _agent setVariable [""ALiVE_Crowd_Crowding"", false, false];" \n
+                         "       };" \n
+                         "" \n
+                         "	_agent forceWalk true;" \n
+                         "	_agent setVariable  [""ALiVE_Crowd_Pos"",[0,0,0], false];" \n
+                         "       _agent doWatch objNull;" \n
+                         "       _agent setSpeedMode ""NORMAL"";" \n
+                         "       group _agent setCombatMode ""GREEN"";" \n
+                         "       group _agent setBehaviour ""CARELESS"";" \n
+                         "" \n
+                         "       // Check hostility" \n
+                         "" \n
+                         "       private _player = [_position, _spawnDistance * 2] call ALIVE_fnc_getRandomPlayerNear;" \n
+                         "		 if (count _player == 0) then {" \n
+                         "				_player = allplayers select {alive _x};" \n
+                         "       };" \n
+                         "       private _clusterHostilityLevel = _agent getVariable [""ALiVE_CivPop_Hostility"",-99];" \n
+                         "" \n
+                         "       if (_clusterHostilityLevel == -99) then {" \n
+                         "            private _nearestAgent = [position _agent] call ALiVE_fnc_getNearestActiveAgent;" \n
+                         "            if (count _nearestAgent > 0) then {" \n
+                         "                 " \n
+                         "                 private _clusterID = [_nearestAgent, ""homeCluster""] call ALiVE_fnc_hashGet;" \n
+                         "					  _agent setVariable [""ALiVE_clusterID"", _clusterID, false];" \n
+                         "                 private _cluster = [_activeClusters, _clusterID,[]] call ALIVE_fnc_hashGet;" \n
+                         "					" \n
+                         "                 private _clusterHostility = [_cluster, ""hostility"",[]] call ALiVE_fnc_hashGet;" \n
+                         "" \n
+                         "                 _clusterHostilityLevel = [_clusterHostility, str(side (_player select 0)),0] call ALIVE_fnc_hashGet;" \n
+                         "            } else {" \n
+                         "                 _clusterHostilityLevel = [ALIVE_civilianHostility, str(side (_player select 0)), 0] call ALIVE_fnc_hashGet;" \n
+                         "            };" \n
+                         "				if (isNil ""_clusterHostilityLevel"") then {_clusterHostilityLevel = 0;};" \n
+                         "            _agent setVariable [""ALiVE_CivPop_Hostility"",_clusterHostilityLevel,false];" \n
+                         "			" \n
+                         "       };" \n
+                         "" \n
+                         "      // CHANCES           DEF    10>40    40>70   70>100    100+" \n
+                         "      // MOVE TO BUILDING   35     30       25      20         15 " \n
+                         "      // MOVE TO OBJECT     40     40        35      30        25" \n
+                         "      // MOVE TO PLAYERS    25     20        15      10         5" \n
+                         "      // OBSERVE PLAYERS     0     10        15      20        25 " \n
+                         "      // THROW STONES        0      0        10      20        30" \n
+                         "       // CHILL" \n
+                         "" \n
+                         "      private _movementChances = [" \n
+                         "            [""Move"",35,""Object"",35,""Player"",30,""Observe"",0,""Stones"",0,""Chill"",0]," \n
+                         "            [""Move"",30,""Object"",40,""Player"",20,""Observe"",10,""Stones"",0,""Chill"",0]," \n
+                         "            [""Move"",25,""Object"",35,""Player"",15,""Observe"",15,""Stones"",10,""Chill"",0]," \n
+                         "            [""Move"",20,""Object"",30,""Player"",10,""Observe"",20,""Stones"",20,""Chill"",0]," \n
+                         "            [""Move"",15,""Object"",25,""Player"",5,""Observe"",25,""Stones"",30,""Chill"",0]" \n
+                         "       ];" \n
+                         " " \n
+                         "      // Set chances based on hostility" \n
+                         "      private _chances = _movementChances select 0; " \n
+                         "" \n
+                         "       if(_clusterHostilityLevel >= 10 && {_clusterHostilityLevel < 40}) then {" \n
+                         "            _chances = _movementChances select 1; " \n
+                         "            _protesting = false;" \n
+                         "       };" \n
+                         "" \n
+                         "       if(_clusterHostilityLevel >= 40 && {_clusterHostilityLevel < 70}) then {" \n
+                         "          _chances = _movementChances select 2;" \n
+                         "            _protesting = false;" \n
+                         "                     group _agent setCombatMode ""GREEN"";" \n
+                         "                   group _agent setBehaviour ""SAFE"";" \n
+                         "       };" \n
+                         "" \n
+                         "       if(_clusterHostilityLevel >= 70 && {_clusterHostilityLevel < 100}) then {" \n
+                         "          _chances = _movementChances select 3;" \n
+                         "            _protesting = true;" \n
+                         "                      group _agent setCombatMode ""YELLOW"";" \n
+                         "                   group _agent setBehaviour ""AWARE"";" \n
+                         "       };" \n
+                         "" \n
+                         "       if(_clusterHostilityLevel >= 100) then {" \n
+                         "          _chances = _movementChances select 4;" \n
+                         "            _protesting = true;" \n
+                         "                   group _agent setCombatMode ""RED"";" \n
+                         "                   group _agent setBehaviour ""COMBAT"";" \n
+                         "       };" \n
+                         "      " \n
+                         "       // Choose an action" \n
+                         "       _action = selectRandomWeighted _chances;" \n
+                         "" \n
+                         "       If (_crowdChoice || (!_notCrowding && {_agent distance _crowdPos < 60}) ) then {" \n
+                         "" \n
+                         "            _action = ""Crowd"";" \n
+                         "" \n
+                         "       } else {" \n
+                         "" \n
+                         "            if (_countActiveBuildings < 2) then {" \n
+                         "                 _action = ""Player"";" \n
+                         "            };" \n
+                         "" \n
+                         "            if (_action == ""Chill"" && isOnRoad _position) then {" \n
+                         "                 _action = ""Move"";" \n
+                         "            };" \n
+                         "       };" \n
+                         "  " \n
+                         "       switch (_action) do {" \n
+                         "" \n
+                         "            case ""Crowd"" : {" \n
+                         "                 if (_crowdChoice) then {" \n
+                         "" \n
+                         "                      // This is the leader" \n
+                         "" \n
+                         "                      if ((_clusterHostilityLevel > 50 || random 1 > 0.6) && count _player > 0) then {" \n
+                         "                           // Crowd player" \n
+                         "                           _crowdtarget = selectRandom _player;" \n
+                         "                           _crowdPos = _crowdTarget getpos [2 + random 5, random 360];" \n
+                         "                      } else {" \n
+                         "                           private _nearHouses = _position nearObjects [""House"",50];" \n
+                         "                           private _nearSpecialPlaces = [];" \n
+                         "                           {" \n
+                         "                                private _house = _x;" \n
+                         "                                {" \n
+                         "                                     if (toLower(typeOf _house) find _x != -1) then {" \n
+                         "                                          _nearSpecialPlaces pushback _house;" \n
+                         "                                     };" \n
+                         "                                } foreach (ALIVE_CivPop_Crowd_Objects - [""shop"", ""store"", ""garage""]);" \n
+                         "                           } foreach _nearHouses;" \n
+                         "" \n
+                         "                           if (count _nearSpecialPlaces > 0) then {" \n
+                         "                                _crowdTarget = (selectRandom _nearSpecialPlaces);" \n
+                         "                                _crowdPos = _crowdTarget getpos [random 5, random 180];" \n
+                         "                           } else {" \n
+                         "                                if(count _player > 0) then {" \n
+                         "                                     _crowdtarget = selectRandom _player;" \n
+                         "                                     _crowdPos = _crowdTarget getpos [2 + random 5, random 360];" \n
+                         "                                } else {" \n
+                         "                                     _crowdtarget = _agent;" \n
+                         "                                     _crowdPos = position _agent;" \n
+                         "                                };" \n
+                         "                           };" \n
+                         "                      };" \n
+                         "                      // Play crowd noise based on protesting or not" \n
+                         "			" \n
+                         "                      _notCrowding = false;" \n
+                         "                      _agent setVariable [""ALiVE_Crowd_Leader"", true, false];" \n
+                         "                      _agent setVariable [""ALiVE_Crowd_Busy"", (time + 110), false];" \n
+                         "                      _crowdChoice = false;" \n
+                         "                      _position = _crowdPos;" \n
+                         "                 } else {" \n
+                         "                      _position = _crowdPos getpos [random 5, random 180];" \n
+                         "                      _agent setVariable [""ALiVE_Crowd_Busy"", (time + 120), false];" \n
+                         "                 };" \n
+                         "			_agent setVariable [""ALiVE_Crowd_Crowding"", true, false];" \n
+                         "			_agent setVariable  [""ALiVE_Crowd_Pos"",_position, false];" \n
+                         "			_agent doTarget _crowdTarget;" \n
+                         "                 _agent lookAt _crowdTarget;" \n
+                         "            };" \n
+                         "" \n
+                         "            case ""Move"" : {" \n
+                         "                 private _building = selectRandom _activeBuildings;" \n
+                         "" \n
+                         "                 if!(isnil ""_building"") then {" \n
+                         "                                " \n
+                         "                      _position = selectRandom ([position _building, 3] call ALIVE_fnc_findIndoorHousePositions);" \n
+                         "" \n
+                         "                 };" \n
+                         "            };" \n
+                         "" \n
+                         "            case ""Object"" : {" \n
+                         "                 private _nearHouses = _position nearObjects [""House"",50];" \n
+                         "                 private _nearSpecialPlaces = [];" \n
+                         "                 {" \n
+                         "                      private _house = _x;" \n
+                         "                      {" \n
+                         "                           if (toLower(typeOf _house) find _x != -1) then {" \n
+                         "                                _nearSpecialPlaces pushback _house;" \n
+                         "                           };" \n
+                         "                      } foreach ALIVE_CivPop_Crowd_Objects;" \n
+                         "                 } foreach _nearHouses;" \n
+                         "" \n
+                         "                 if (count _nearSpecialPlaces > 0) then {" \n
+                         "                      _position = position (selectRandom _nearSpecialPlaces);" \n
+                         "                      _agent setVariable [""ALiVE_Crowd_Busy"", (time + 15), false];" \n
+                         "			    _agent setVariable  [""ALiVE_Crowd_Pos"",_position, false];" \n
+                         "                 } else {" \n
+                         "                      private _building = selectRandom _activeBuildings;" \n
+                         "" \n
+                         "                      if!(isnil ""_building"") then {" \n
+                         "" \n
+                         "                           _position = selectRandom ([position _building, 3] call ALIVE_fnc_findIndoorHousePositions);" \n
+                         "" \n
+                         "                      };" \n
+                         "                 };" \n
+                         "            };" \n
+                         "" \n
+                         "            case ""Player"" : {" \n
+                         "                 if (count _player > 0) then {" \n
+                         "" \n
+                         "                      _position = (_player select 0) getpos [5 + random 10, random 360];" \n
+                         "" \n
+                         "                 } else {" \n
+                         "" \n
+                         "                      private _building = selectRandom _activeBuildings;" \n
+                         "" \n
+                         "                      if!(isnil ""_building"") then {" \n
+                         "" \n
+                         "                           _position = selectRandom ([position _building, 3] call ALIVE_fnc_findIndoorHousePositions);" \n
+                         "" \n
+                         "                      };" \n
+                         "                 };" \n
+                         "            };" \n
+                         "" \n
+                         "            case ""Observe"" : {" \n
+                         "                 if (count _player > 0) then {" \n
+                         "                      _agent setVariable [""ALiVE_Crowd_Busy"",(time + 20), false];" \n
+                         "                      _position = (_player select 0) getpos [10 + random 10, random 360];" \n
+                         "			    _agent setVariable  [""ALiVE_Crowd_Pos"",_position, false];" \n
+                         "                      //_agent lookAt (_player select 0);" \n
+                         "			   _agent doTarget _crowdTarget;" \n
+                         "                 } else {" \n
+                         "                      private _building = selectRandom _activeBuildings;" \n
+                         "" \n
+                         "                      if!(isnil ""_building"") then {" \n
+                         "" \n
+                         "                           _position = selectRandom ([position _building, 3] call ALIVE_fnc_findIndoorHousePositions);" \n
+                         "" \n
+                         "                      };" \n
+                         "                 };                  " \n
+                         "            };" \n
+                         "            " \n
+                         "            case ""Stones"" : {" \n
+                         "                 if (count _player > 0) then {" \n
+                         "                      _agent setVariable [""ALiVE_Crowd_Busy"",(time + 20), false];" \n
+                         "                      _position = (_player select 0) getpos [5 + random 5, random 360];" \n
+                         "			    _agent setVariable  [""ALiVE_Crowd_Pos"",_position, false];" \n
+                         "			    _agent doTarget (_player select 0);" \n
+                         "                      //_agent lookAt (_player select 0);" \n
+                         "                       group _agent setCombatMode ""RED"";" \n
+                         "                   	group _agent setBehaviour ""COMBAT"";" \n
+                         "                 };" \n
+                         "            };" \n
+                         "" \n
+                         "            case ""Chill"" : {" \n
+                         "                 _agent setVariable [""ALiVE_Crowd_Busy"", (time + 15), false];" \n
+                         "                 if (count _player > 0) then {" \n
+                         "                      _agent doWatch (_player select 0);" \n
+                         "                 };" \n
+                         "            };" \n
+                         "       };" \n
+                         "       _agent setVariable [""ALIVE_CIV_ACTION"", _action, false];" \n
+                         "	if (isNil ""_position"") then {_position = position _agent;};" \n
+                         "       _agent moveTo _position;" \n
+                         "" \n
+                         "  };" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - Moving agent %1 (%2) to %3 who is busy %4, fleeing %5, crowding %6 and in position %7"",_agent,_action,_position, _busy, _fleeing, _crowding, _inposition] call ALiVE_fnc_dump;" \n
+                         "    [""Crowd activator - perf check - Frame: %3-  FPS MIN: %1 AVE: %2"",diag_fpsmin ,diag_fps, diag_frameno] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "};" \n
+                         "" \n
+                         "_count = _count + 1;" \n
+                         "" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "ITERATE">*/
+                                class ITERATE
+                                {
+                                        itemno = 49;
+                                        priority = 1.000000;
+                                        to="MOVE";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_count < _countActive"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "END_LOOP">*/
+                                class END_LOOP
+                                {
+                                        itemno = 50;
+                                        priority = 0.000000;
+                                        to="CHECK";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_count >= _countActive"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "INIT">*/
+                class INIT
+                {
+                        name = "INIT";
+                        itemno = 1;
+                        init = /*%FSM<STATEINIT""">*/"params [""_civPopSystem"",""_spawnDistance"",""_ambientCrowdDensity"",""_spawnCycleTime"",""_activeLimiter"",""_faction""];" \n
+                         "" \n
+                         "/* TODO:" \n
+                         "  moveTo to doMoveRemote?" \n
+                         "  WW2 sounds" \n
+                         "  Pray" \n
+                         "  Optimise - remove/cache checks" \n
+                         "*/" \n
+                         "" \n
+                         "private _lastSpawnTime = time -_spawnCycleTime; // to prevent delay at mission start" \n
+                         "" \n
+                         "private _destroy = false;" \n
+                         "private _pause = false;" \n
+                         "private _debug = [_civPopSystem,""debug"",false] call ALiVE_fnc_HashGet;" \n
+                         "" \n
+                         "private _noCombat = time;" \n
+                         "private _protesting = true;" \n
+                         "private _crowdPos = [];" \n
+                         "private _crowdTarget = objNull;" \n
+                         "private _notCrowding = true;" \n
+                         "" \n
+                         "private _activeAgents = [];" \n
+                         "private _activeBuildings = [];" \n
+                         "private _civClasses = [];" \n
+                         "private _civilianClasses = [] call ALive_fnc_hashCreate;" \n
+                         "" \n
+                         "private _taorCheck = false;" \n
+                         "private _taorMarkers = [];" \n
+                         "private _blacklistMarkers = [];" \n
+                         "" \n
+                         "// Get default faction civ" \n
+                         "if (_faction != """") then {" \n
+                         "" \n
+                         "  private _minScope = 1;" \n
+                         "  if (_faction == ""CIV_F"" || _faction == ""C_VIET"" ) then {_minScope = 2};" \n
+                         "  _civClasses = [0,_faction,""Man"",false,_minScope] call ALiVE_fnc_findVehicleType;" \n
+                         "  _civCLasses = _civCLasses - ALIVE_PLACEMENT_UNITBLACKLIST;" \n
+                         "" \n
+                         "} else {" \n
+                         "" \n
+                         "  // Get all civ faction config to avoid stutter during config look up and spawn" \n
+                         "  private _allFactions = [] call ALiVE_fnc_configGetFactions;" \n
+                         "  {" \n
+                         "       _factionConfig = _x call ALiVE_fnc_configGetFactionClass;" \n
+                         "       _factionSide = getNumber (_factionConfig >> ""side"");" \n
+                         "       if (_factionSide == 3) then {" \n
+                         "            _factionConfigName = configName _factionConfig;" \n
+                         "            private _minScope = 1;" \n
+                         "            if (_factionConfigName == ""CIV_F"" || _factionConfigName == ""C_VIET"") then {_minScope = 2};" \n
+                         "            _classes = [0,_factionConfigName,""Man"",false,_minScope] call ALiVE_fnc_findVehicleType;" \n
+                         "            _classes = _classes - ALIVE_PLACEMENT_UNITBLACKLIST;" \n
+                         "             [_civilianCLasses, _factionConfigName, _classes] call ALiVE_fnc_hashSet;" \n
+                         "       };" \n
+                         "  } foreach _allFactions;" \n
+                         "" \n
+                         "};" \n
+                         "" \n
+                         "// debug ---------------------------------------" \n
+                         "  if(_debug) then {" \n
+                         "       ALIVE_CIV_POP_CROWD = _activeAgents;" \n
+                         "       [""crowd activator FSM init""] call ALiVE_fnc_dump; " \n
+                         "       addMissionEventHandler [""Draw3D"", {" \n
+                         "            {" \n
+                         "                 if !(_x isEqualType 0) then {" \n
+                         "                      _pos = getPosVisual _x;" \n
+                         "                      drawIcon3D [" \n
+                         "                           """", " \n
+                         "                           [0,1,0,1], " \n
+                         "                           [(_pos select 0),(_pos select 1), 0.2], 0.8, 0.8, 0, " \n
+                         "                           toUpper(_x getVariable [""ALIVE_CIV_ACTION"",""NONE""]) + "" "" + str(_x getVariable [""ALiVE_CivPop_Hostility"",0]), " \n
+                         "                           1, 0.0315, ""EtelkaMonospacePro""" \n
+                         "                      ];" \n
+                         "                 };" \n
+                         "            } foreach ALIVE_CIV_POP_CROWD;" \n
+                         "       }];" \n
+                         "  };" \n
+                         "// debug ---------------------------------------" \n
+                         "" \n
+                         "ALiVE_fnc_isPositionAllowed = {" \n
+                         "	params [""_pos""];" \n
+                         "	if !(_taorCheck) then {" \n
+                         "		// Get TAOR & Blacklist areas" \n
+                         "		{" \n
+                         "			if (_x getVariable [""moduleType"",""""] == ""ALIVE_AMBCP"") then {" \n
+                         "				_taorMarkers = _taorMarkers + ([_x, ""taor""] call ALiVE_fnc_AMBCP);" \n
+                         "				_blacklistMarkers= _blacklistMarkers + ([_x, ""blacklist""] call ALiVE_fnc_AMBCP);" \n
+                         "			};" \n
+                         "		} foreach (entities ""Module_F"");" \n
+                         "      	// [""Crowd activator - MARKERS: %1 %2"",_taorMarkers,_blacklistMarkers] call ALiVE_fnc_dump;" \n
+                         "		_taorCheck = true;" \n
+                         "	};" \n
+                         "	private _result = true;" \n
+                         "	if (count _taorMarkers > 0) then {_result = false;};" \n
+                         "	{" \n
+                         "		if (_pos inArea _x) then {_result = true;};" \n
+                         "		// [""Crowd activator - position allowed: %1 %2 %3"",_pos,_result,_x ] call ALiVE_fnc_dump;" \n
+                         "	} foreach _taorMarkers;" \n
+                         "	{" \n
+                         "		if (_pos inArea _x) then {_result = false;};" \n
+                         "		// [""Crowd activator - position allowed: %1 %2 %3"",_pos,_result,_x ] call ALiVE_fnc_dump;" \n
+                         "	} foreach _blacklistMarkers;" \n
+                         "	_result" \n
+                         "};" \n
+                         "" \n
+                         "ALiVE_fnc_isSpecialCivBuilding = {" \n
+                         "	params [""_building""];" \n
+                         "	private _result = [false, """"];" \n
+                         "	{" \n
+                         "		if (toLower(typeOf _building) find _x != -1) then {" \n
+                         "			_result = [true, _x];" \n
+                         "		};" \n
+                         "	} foreach (ALiVE_CivPop_customBuildings select 1);" \n
+                         "	_result" \n
+                         "};" \n
+                         "" \n
+                         "ALiVE_fnc_isCivBuilding = {" \n
+                         "	params [""_building""];" \n
+                         "	private _result = false;" \n
+                         "  private _model = toLower(getText(configFile >> ""CfgVehicles"" >> (typeOf _building) >> ""model""));" \n
+                         "	{" \n
+                         "		if (_model find _x != -1) exitWith {" \n
+                         "			_result = true;" \n
+                         "		};" \n
+                         "	} foreach ALIVE_civilianSettlementBuildingTypes;" \n
+                         "	_result" \n
+                         "};" \n
+                         "" \n
+                         "ALiVE_fnc_isInHouse = {" \n
+                         "  // need to fix stuttering" \n
+                         "  params [""_pos""];" \n
+                         "  private _building = nearestObject [_pos, ""Building""];" \n
+                         "  private _result = false;" \n
+                         "  private _box = _building getVariable [""ALiVE_BBR"",[]];" \n
+                         "  if (count _box == 0 ) then {" \n
+                         "      _box = boundingboxreal _building;" \n
+                         "      _building setVariable [""ALiVE_BBR"", _box, false];" \n
+                         "  };" \n
+                         "  private _bpos = position _building; " \n
+                         "  private _result = if (" \n
+                         "          _pos select 0 > ((_bpos select 0) + (_box select 0 select 1)) && " \n
+                         "          _pos select 1 > ((_bpos select 1) + (_box select 0 select 0)) && " \n
+                         "          _pos select 2 > ((_bpos select 2) + (_box select 0 select 2)) && " \n
+                         "          _pos select 0 < ((_bpos select 0) + (_box select 1 select 1)) && " \n
+                         "          _pos select 1 < ((_bpos select 1) + (_box select 1 select 0)) && " \n
+                         "          _pos select 2 < ((_bpos select 2) + (_box select 1 select 2))" \n
+                         "      ) then {" \n
+                         "          true" \n
+                         "      }else{" \n
+                         "          false" \n
+                         "  };" \n
+                         "  [""Crowd activator - analyse agent: %1 is in house %3: %2"",_pos,_result,_building] call ALiVE_fnc_dump;" \n
+                         "  _result" \n
+                         "};"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "INIT_COMPLETE">*/
+                                class INIT_COMPLETE
+                                {
+                                        itemno = 2;
+                                        priority = 0.000000;
+                                        to="TIMER";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "END">*/
+                class END
+                {
+                        name = "END";
+                        itemno = 5;
+                        init = /*%FSM<STATEINIT""">*/"// debug ---------------------------------------" \n
+                         "  if(_debug) then { [""CROWD SIMULATION CONTROLLER destroyed""] call ALIVE_fnc_dump; };" \n
+                         "// debug ---------------------------------------"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "TIMER">*/
+                class TIMER
+                {
+                        name = "TIMER";
+                        itemno = 6;
+                        init = /*%FSM<STATEINIT""">*/"// DEBUG ------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - timer last run:%1 cycle time: %2"",time - _lastSpawnTime,_spawnCycleTime] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "" \n
+                         "if(_pause) then {" \n
+                         "    [""CROWD SPAWNER PAUSED""] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "START">*/
+                                class START
+                                {
+                                        itemno = 8;
+                                        priority = 2.000000;
+                                        to="CHECK_ACTIVE_CLU";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"((time - _lastSpawnTime) > _spawnCycleTime) && !(_pause)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "WAIT">*/
+                                class WAIT
+                                {
+                                        itemno = 18;
+                                        priority = 1.000000;
+                                        to="TIMER";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"((time - _lastSpawnTime) < _spawnCycleTime) && (_pause)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "DESTROY">*/
+                                class DESTROY
+                                {
+                                        itemno = 4;
+                                        priority = 0.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_destroy"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "DONE">*/
+                class DONE
+                {
+                        name = "DONE";
+                        itemno = 10;
+                        init = /*%FSM<STATEINIT""">*/"_lastSpawnTime = time;" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator completed activating %2 houses at %1"",_lastSpawnTime, _countToSpawn] call ALiVE_fnc_dump;" \n
+                         "[""Crowd activator - perf check - Frame: %3-  FPS MIN: %1 AVE: %2"",diag_fpsmin ,diag_fps, diag_frameno] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "COMPLETE">*/
+                                class COMPLETE
+                                {
+                                        itemno = 7;
+                                        priority = 0.000000;
+                                        to="TIMER";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "ACTIVATE_LOOP">*/
+                class ACTIVATE_LOOP
+                {
+                        name = "ACTIVATE_LOOP";
+                        itemno = 11;
+                        init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
+                         "/*" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - activate house loop %2 of %1"",_countToSpawn,_spawnCount] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "*/" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "" \n
+                         "private _building = (_toSpawn select _spawnCount) select 0;" \n
+                         "" \n
+                         "if!(isnil ""_building"") then {" \n
+                         "" \n
+                         "    // DEBUG -------------------------------------------------------------------------------------" \n
+                         "    " \n
+                         "    if(_debug) then {" \n
+                         "        [""Crowd activator - activate [%1]"",_building] call ALiVE_fnc_dump;            " \n
+                         "    };" \n
+                         "    " \n
+                         "    // DEBUG -------------------------------------------------------------------------------------                    " \n
+                         "    " \n
+                         "  private _isSpecialCivBuilding  = [_building] call ALiVE_fnc_isSpecialCivBuilding;" \n
+                         "  _activeBuildings pushBack _building;" \n
+                         "" \n
+                         "  if (count _activeBuildings < 6 || _isSpecialCivBuilding select 0) then {" \n
+                         "       // Add Sound" \n
+                         "      private _soundFaction = _faction;" \n
+                         "	private _soundSource = objNull;" \n
+                         "       if (_soundFaction == """") then {" \n
+                         "            _soundFaction = _building getVariable [""ALiVE_CivPop_Faction"",""CIV_F""];" \n
+                         "       };" \n
+                         "  	if (_isSpecialCivBuilding select 0) then {" \n
+                         "		_soundSource = [_isSpecialCivBuilding select 1, _building] call ALIVE_fnc_addCustomBuildingSound;" \n
+                         "	} else {" \n
+                         "       	_soundSource = [_building, _soundFaction] call ALIVE_fnc_addAmbientRoomMusic;" \n
+                         "	};" \n
+                         "	if !(isNull _soundSource) then {" \n
+                         "      	_building setVariable [""ALIVE_CivPop_Crowd_SoundSource"",_soundSource, false];" \n
+                         "	};" \n
+                         "  } else {" \n
+                         "	if(_debug) then {" \n
+                         "    		[""Crowd activator - sound limit reached for buildings:6 out of  %1"",count _activeBuildings] call ALiVE_fnc_dump;" \n
+                         "	};" \n
+                         "  };" \n
+                         "" \n
+                         "  if (_debug) then {" \n
+                         "      private _marker = ""Sign_Arrow_Green_F"" createVehicle position _building;" \n
+                         "      _marker setpos [position _building select 0, position _building select 1, sizeOf typeof _building / 2];" \n
+                         "      _building setVariable [""ALIVE_BUILDING_MARKER"",_marker, false];" \n
+                         "  };" \n
+                         "};" \n
+                         "" \n
+                         "_spawnCount = _spawnCount + 1;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "ITERATE">*/
+                                class ITERATE
+                                {
+                                        itemno = 12;
+                                        priority = 1.000000;
+                                        to="ACTIVATE_LOOP";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_spawnCount < _countToSpawn "/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "END__LOOP">*/
+                                class END__LOOP
+                                {
+                                        itemno = 13;
+                                        priority = 0.000000;
+                                        to="SPAWN_LOOP";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_spawnCount >= _countToSpawn"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "CHECK_ACTIVE_CLU">*/
+                class CHECK_ACTIVE_CLU
+                {
+                        name = "CHECK_ACTIVE_CLU";
+                        itemno = 16;
+                        init = /*%FSM<STATEINIT""">*/"private _activeClusters = [ALIVE_clusterHandler, ""getActive""] call ALIVE_fnc_clusterHandler;" \n
+                         "private _agentsActive = [ALIVE_agentHandler, ""agentsActive""] call ALIVE_fnc_hashGet;" \n
+                         "" \n
+                         "//_activeClusters call ALiVE_fnc_inspectHash;" \n
+                         "" \n
+                         "private _countClustersActive = count (_activeClusters select 1);" \n
+                         "private _countActiveBuildings = count _activeBuildings;" \n
+                         "private _countActive = count _activeAgents;" \n
+                         "" \n
+                         "// Active Agent checks" \n
+                         "private _analysisCount = 0;" \n
+                         "private _analysisComplete = false;" \n
+                         "private _despawnCount = 0;" \n
+                         "private _countToDespawn = 0;" \n
+                         "private _toDespawn = [];" \n
+                         "private _checkDelay = 0;" \n
+                         "" \n
+                         "private _agentsToDespawn = [];" \n
+                         "private _agentsDespawned = 0;" \n
+                         "" \n
+                         "private _inactiveAgents = [];" \n
+                         "private _agentsToSpawn = [];" \n
+                         "private _agentsSpawned = 0;" \n
+                         "" \n
+                         "private _agentAnalysisCount = 0;" \n
+                         "private _agentAnalysisComplete = false;" \n
+                         "" \n
+                         "// New Buildings" \n
+                         "private _spawnCount = 0;" \n
+                         "private _countToSpawn = 0;" \n
+                         "private _toSpawn = [];" \n
+                         "private _spawnDelay = 0;" \n
+                         "private _agentSpawnCount = 0;" \n
+                         "" \n
+                         "if((_countActive == 0) && (_countClustersActive == 0)) then {" \n
+                         "    _lastSpawnTime = time;" \n
+                         "};" \n
+                         "" \n
+                         "" \n
+                         "//[""CROWD ACTIVATOR RUNNING""] call ALiVE_fnc_dump;" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - main check - clusters active: %1 - buildings active: %2 - agents active: %3"",_countClustersActive,_countActiveBuildings, _countActive] call ALiVE_fnc_dump;" \n
+                         "   ALIVE_CIV_POP_CROWD = _activeAgents;" \n
+                         "};" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "WAIT">*/
+                                class WAIT
+                                {
+                                        itemno = 14;
+                                        priority = 4.000000;
+                                        to="TIMER";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(_countClustersActive == 0  && _countActiveBuildings == 0)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "HAS__ACTIVE_CLUS">*/
+                                class HAS__ACTIVE_CLUS
+                                {
+                                        itemno = 47;
+                                        priority = 2.000000;
+                                        to="CHECK_AGENTS___B";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(_countClustersActive > 0 && sunOrMoon > 0.5) || _countActiveBuildings > 0"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "ANALYSE_NEW_HOUS">*/
+                class ANALYSE_NEW_HOUS
+                {
+                        name = "ANALYSE_NEW_HOUS";
+                        itemno = 20;
+                        init = /*%FSM<STATEINIT""">*/"private _civSpawnCount = 0;" \n
+                         "private _lightAdjustedCrowdDensity = _ambientCrowdDensity;" \n
+                         "{" \n
+                         "" \n
+                         "    private _building = _x;" \n
+                         "" \n
+                         "    if!(isnil ""_building"") then {" \n
+                         "        private _exit = false;" \n
+                         "        private _position = position _building;" \n
+                         "        private _indoorPositions = [_position,4] call ALIVE_fnc_findIndoorHousePositions;" \n
+                         "	    private _isSpecialCivBuilding = ([_building] call ALiVE_fnc_isSpecialCivBuilding) select 0;" \n
+                         "      private _isCivBuilding = [_building] call ALiVE_fnc_isCivBuilding;" \n
+                         "" \n
+                         "        if ((_isCivBuilding && count _indoorPositions > 0) || _isSpecialCivBuilding) then {" \n
+                         "" \n
+                         "                 // Get faction for building if no default && not cached" \n
+                         "                 if (_faction == """") then {" \n
+                         "                    private _houseCivClasses = _building getVariable [""ALiVE_CivPop_CivClasses"", []];" \n
+                         "                    " \n
+                         "					if (count _houseCivClasses == 0) then {" \n
+                         "                     	private _nearCivs = [_position, 500, civilian] call ALIVE_fnc_getSideManNear;" \n
+                         "                     	" \n
+                         "						if (count _nearCivs > 0) then {" \n
+                         "                      		private _fac = faction (_nearCivs select 0);" \n
+                         "                          	private _minScope = 1;" \n
+                         "                     		" \n
+                         "							if (_fac == ""CIV_F"" || _fac == ""C_VIET"") then {_minScope = 2};" \n
+                         "" \n
+                         "                     		_houseCivClasses = [_civilianClasses, _fac,[]] call ALiVE_fnc_hashGet;" \n
+                         "" \n
+                         "							_building setVariable [""ALiVE_CivPop_CivClasses"", _houseCivClasses, false];" \n
+                         "							_building setVariable [""ALiVE_CivPop_Faction"", _fac, false];" \n
+                         "							_civClasses = _houseCivClasses;" \n
+                         "" \n
+                         "                     		} else {" \n
+                         "                                	// if no amb civs, then give up like a c***" \n
+                         "                                	_exit = true;" \n
+                         "                          	};" \n
+                         "                     	} else {" \n
+                         "                        	_civClasses = _houseCivClasses;" \n
+                         "                    };" \n
+                         "                };" \n
+                         "		    if (count _indoorPositions == 0) then {_indoorPositions = [_position]};" \n
+                         "" \n
+                         "            if !(_exit) then {_toSpawn pushback [_building, _indoorPositions, _civClasses]};" \n
+                         "              " \n
+                         "            if(_debug) then {" \n
+                         "                      [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "                      [""Crowd activator - analyse new houses - new house to activate: %1  positions:%2"",_building, count _indoorPositions] call ALiVE_fnc_dump;" \n
+                         "            };" \n
+                         "        };" \n
+                         "    };" \n
+                         "" \n
+                         "  _analysisCount = _analysisCount + 1;" \n
+                         "" \n
+                         "} forEach _newBuildings;" \n
+                         "" \n
+                         "" \n
+                         "if(_analysisCount >= _countNewBuildings) then {" \n
+                         "  // Sort buildings by distance" \n
+                         "  private _sortCode = {" \n
+                         "      private _value = 9999;" \n
+                         "      private _pos = position (_this select 0);" \n
+                         "      {" \n
+                         "          _value = _value min (_x distance _pos);" \n
+                         "      } foreach (allPlayers + allCurators);" \n
+                         "      _value" \n
+                         "  };" \n
+                         "  _toSpawn = [_toSpawn, _sortCode] call ALiVE_fnc_shellSort;" \n
+                         "  _countToSpawn = count _toSpawn;" \n
+                         "" \n
+                         "  _lightAdjustedCrowdDensity = if (sunOrMoon == 1) then {" \n
+                         "       _ambientCrowdDensity" \n
+                         "  } else {" \n
+                         "       round(_ambientCrowdDensity * (sunOrMoon / 2))" \n
+                         "  };" \n
+                         "  " \n
+                         "  _civSpawnCount = (count _toSpawn) * _lightAdjustedCrowdDensity;" \n
+                         "  _agentSpawnCount = 0;" \n
+                         "" \n
+                         "    // DEBUG -------------------------------------------------------------------------------------" \n
+                         "    " \n
+                         "    if(_debug) then {" \n
+                         "        [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "        [""Crowd activator - analyse new houses - new houses to activate: %1, civs to spawn: %2"",_countToSpawn, _civSpawnCount] call ALiVE_fnc_dump;" \n
+                         "      [""Crowd activator - perf check - Frame: %3-  FPS MIN: %1 AVE: %2"",diag_fpsmin ,diag_fps, diag_frameno] call ALiVE_fnc_dump;  " \n
+                         "  };" \n
+                         "    " \n
+                         "    // DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "    _analysisComplete = true;" \n
+                         "" \n
+                         "};"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "DO_ACTIVATE">*/
+                                class DO_ACTIVATE
+                                {
+                                        itemno = 9;
+                                        priority = 1.000000;
+                                        to="ACTIVATE_LOOP";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"((_countToSpawn > 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "NO__ACTIVATE">*/
+                                class NO__ACTIVATE
+                                {
+                                        itemno = 19;
+                                        priority = 0.000000;
+                                        to="DONE";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"((_countToSpawn == 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "SPAWN_LOOP">*/
+                class SPAWN_LOOP
+                {
+                        name = "SPAWN_LOOP";
+                        itemno = 21;
+                        init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - spawner loop %2 of %1"",_civSpawnCount,_agentSpawnCount] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "" \n
+                         "private _index = 0;" \n
+                         "" \n
+                         "if (_agentSpawnCount > 0 && _lightAdjustedCrowdDensity > 0) then {" \n
+                         "	 _index = round (_agentSpawnCount / _lightAdjustedCrowdDensity);" \n
+                         "};" \n
+                         "" \n
+                         "private _building = _toSpawn select _index select 0;" \n
+                         "" \n
+                         "if!(isnil ""_building"") then {" \n
+                         "" \n
+                         "  private _positions = _toSpawn select _index select 1;" \n
+                         "  private _civClasses = _toSpawn select _index select 2;" \n
+                         "" \n
+                         "  _countActive = count _activeAgents;" \n
+                         "" \n
+                         "  //[""COUNT ACTIVE AGENTS: %1 LIMITER: %2"",_countActive, _activeLimiter] call ALIVE_fnc_dump;" \n
+                         "" \n
+                         "  if(_countActive >= _activeLimiter) then {" \n
+                         "" \n
+                         "      if(_debug) then {" \n
+                         "              [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "              [""ACTIVE AGENT LIMIT REACHED at %1"", _countActive] call ALIVE_fnc_dump;" \n
+                         "      };" \n
+                         "" \n
+                         "      // Exit iterations" \n
+                         "      _agentSpawnCount = _civSpawnCount;" \n
+                         "" \n
+                         "  } else {" \n
+                         "" \n
+                         "		if (!isnil ""_civClasses"" && {count _civClasses > 0} && {!isnil ""_building"" }) then {" \n
+                         "" \n
+                         "		private _m = createAgent [selectRandom _civClasses, selectRandom _positions, [], 0, ""CAN_COLLIDE""]; " \n
+                         "		_m setVariable [""BIS_fnc_animalBehaviour_disable"", true];" \n
+                         "		_m setVariable [""ALiVE_homePos"", position _building];" \n
+                         "		_m disableAI ""FSM"";" \n
+                         "		_m setBehaviour ""CARELESS"";" \n
+                         "		_m forceWalk true;" \n
+                         "		_m addWeapon ""Throw"";" \n
+                         "" \n
+                         "		_m addEventHandler[""Killed"", ALIVE_fnc_crowdKilledEventHandler];" \n
+                         "		_m addEventHandler[""FiredNear"", ALIVE_fnc_crowdFiredNearEventHandler];" \n
+                         "" \n
+                         "		// Move unit" \n
+                         "		private _building = selectRandom _activeBuildings;" \n
+                         "		private _position = position _building;" \n
+                         "		private _positions = [position _building, 3] call ALIVE_fnc_findIndoorHousePositions;" \n
+                         "" \n
+                         "		if (count _positions > 0) then {_position = selectRandom _positions};" \n
+                         "" \n
+                         "		_m setVariable [""ALIVE_CIV_ACTION"", ""Init Move"", false];" \n
+                         "		" \n
+                         "		if (random 1 > 0.5 || _countActiveBuildings == 1) then {" \n
+                         "			private _player = [position _m, _spawndistance * 2] call ALIVE_fnc_getRandomPlayerNear;" \n
+                         "			if (count _player > 0) then {" \n
+                         "				_position = (_player select 0) getpos [5 + random 10, random 360];" \n
+                         "				_m setVariable [""ALIVE_CIV_ACTION"", ""Init Player"", false];" \n
+                         "			};" \n
+                         "		};" \n
+                         "	" \n
+                         "		_m moveTo _position;" \n
+                         "" \n
+                         "      	if(_debug) then {" \n
+                         "              private _d = createMarker [format[""%1_debug"",(time + random 10000)], position _m];" \n
+                         "              _d setMarkerShape ""ICON"";" \n
+                         "              _d setMarkerSize [.65, .65];" \n
+                         "              _d setMarkerType ""mil_dot"";" \n
+                         "              _d setMarkerColor ""ColorGreen"";" \n
+                         "              _d setMarkerAlpha 1;" \n
+                         "              _m setVariable [""CP_Marker"", _d, false];" \n
+                         "      	};" \n
+                         "" \n
+                         "      	_activeAgents pushback _m;" \n
+                         "      	_spawnDelay = time;" \n
+                         "" \n
+                         "	};" \n
+                         "      " \n
+                         "  };" \n
+                         "};" \n
+                         "" \n
+                         "_agentSpawnCount = _agentSpawnCount + 1;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "ITERATE">*/
+                                class ITERATE
+                                {
+                                        itemno = 22;
+                                        priority = 1.000000;
+                                        to="SPAWN_LOOP";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/"time - _spawnDelay > ALiVE_smoothSpawn"/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(_index < _countToSpawn) && (_agentSpawnCount < _civSpawnCount)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "END_LOOP">*/
+                                class END_LOOP
+                                {
+                                        itemno = 23;
+                                        priority = 0.000000;
+                                        to="DONE";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_agentSpawnCount >= _civSpawnCount || _index >= _countToSpawn"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "ANALYSE_ACTIVE_A">*/
+                class ANALYSE_ACTIVE_A
+                {
+                        name = "ANALYSE_ACTIVE_A";
+                        itemno = 24;
+                        init = /*%FSM<STATEINIT""">*/"" \n
+                         "private _block = [ALIVE_arrayBlockHandler,""getNextBlock"",[""activeAgents"",_activeAgents,30]] call ALIVE_fnc_arrayBlockHandler;" \n
+                         "" \n
+                         "{" \n
+                         "    private _agent = _x;" \n
+                         "" \n
+                         "    if!(isnil ""_agent"") then {" \n
+                         "      private _position = getposATL _agent;" \n
+                         "      // [""Crowd activator - analyse agent %1 at %2"",_agent,_position] call ALiVE_fnc_dump;" \n
+                         "      if (true) then {" \n
+                         "" \n
+                         "        if !([_position, _spawnDistance, false] call ALiVE_fnc_anyPlayersInRangeExcludeAir) then {" \n
+                         "" \n
+                         "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
+                         "              _toDespawn set [count _toDespawn, _agent];" \n
+                         "            };" \n
+                         "" \n
+                         "        };" \n
+                         "" \n
+                         "      };" \n
+                         "" \n
+                         "      if(_debug) then {" \n
+                         "              deleteMarker (_agent getVariable [""CP_Marker"",""""]);" \n
+                         "              private _d = createMarker [format[""%1_debug"",(time + random 10000)], position _agent];" \n
+                         "              _d setMarkerShape ""ICON"";" \n
+                         "              _d setMarkerSize [.65, .65];" \n
+                         "              _d setMarkerType ""mil_dot"";" \n
+                         "              _d setMarkerColor ""ColorGreen"";" \n
+                         "              _d setMarkerAlpha 1;" \n
+                         "              _agent setVariable [""CP_Marker"", _d];" \n
+                         "      };" \n
+                         "      _checkDelay = time;" \n
+                         "    };" \n
+                         "" \n
+                         "} forEach _block;" \n
+                         "" \n
+                         "_analysisCount = _analysisCount + 30;" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "/*" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - analyse active agents: %1 of %2"",_analysisCount,_countActive] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "*/" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "" \n
+                         "if(_analysisCount >= _countActive) then {" \n
+                         "    _analysisComplete = true;" \n
+                         "    _countToDespawn = count _toDespawn;" \n
+                         "" \n
+                         "    // DEBUG -------------------------------------------------------------------------------------" \n
+                         "            " \n
+                         "    if(_debug) then {" \n
+                         "        [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "        [""Crowd activator - analysed %2 active agents - active agents to despawn: %1"",_countToDespawn, _countActive] call ALiVE_fnc_dump;" \n
+                         "        [""Crowd activator - perf check - Frame: %3-  FPS MIN: %1 AVE: %2"",diag_fpsmin ,diag_fps, diag_frameno] call ALiVE_fnc_dump;" \n
+                         "    };" \n
+                         "    " \n
+                         "    // DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "};"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "ITERATE">*/
+                                class ITERATE
+                                {
+                                        itemno = 30;
+                                        priority = 2.000000;
+                                        to="ANALYSE_ACTIVE_A";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/"time - _checkDelay > ALiVE_smoothSpawn"/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_analysisCount < _countActive"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "DO__DESPAWN">*/
+                                class DO__DESPAWN
+                                {
+                                        itemno = 25;
+                                        priority = 1.000000;
+                                        to="DESPAWN_LOOP";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"((_countToDespawn > 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "NO__DESPAWN">*/
+                                class NO__DESPAWN
+                                {
+                                        itemno = 29;
+                                        priority = 0.000000;
+                                        to="MOVE";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"((_countToDespawn == 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"private _count = 0;" \n
+                                         "private _crowdChoice = (random 1 > 0.9) && _notCrowding;"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "DESPAWN_LOOP">*/
+                class DESPAWN_LOOP
+                {
+                        name = "DESPAWN_LOOP";
+                        itemno = 26;
+                        init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
+                         "/*" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - despawn active agents loop %2 of %1"",_countToDespawn,_despawnCount] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "*/" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "private _agent = _toDespawn select _despawnCount;" \n
+                         "" \n
+                         "if!(isnil ""_agent"") then {" \n
+                         "  private _index = _activeAgents find _agent;" \n
+                         "" \n
+                         "  if (_index > -1) then {" \n
+                         "" \n
+                         "            _activeAgents set [_index, -1];" \n
+                         "" \n
+                         "            if(_debug) then {" \n
+                         "          deleteMarker (_agent getVariable [""CP_Marker"",""""]);" \n
+                         "            };" \n
+                         "" \n
+                         "       // End crowding if leader despawns" \n
+                         "       if (_agent getVariable [""ALiVE_Crowd_Leader"",false]) then {" \n
+                         "            _notCrowding = true;" \n
+                         "            _crowdTarget = objNull;" \n
+                         "            _crowdPos = [];" \n
+                         "       };" \n
+                         "" \n
+                         "            deleteVehicle _agent;" \n
+                         "   };" \n
+                         "};" \n
+                         "" \n
+                         "_despawnCount = _despawnCount + 1;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "ITERATE">*/
+                                class ITERATE
+                                {
+                                        itemno = 27;
+                                        priority = 1.000000;
+                                        to="DESPAWN_LOOP";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_despawnCount < _countToDespawn"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "END__LOOP">*/
+                                class END__LOOP
+                                {
+                                        itemno = 31;
+                                        priority = 0.000000;
+                                        to="CHECK";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_despawnCount >= _countToDespawn"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_activeAgents = _activeAgents - [-1];"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "CHECK">*/
+                class CHECK
+                {
+                        name = "CHECK";
+                        itemno = 33;
+                        init = /*%FSM<STATEINIT""">*/"_analysisCount = 0;" \n
+                         "_analysisComplete = false;" \n
+                         "" \n
+                         "_agentAnalysisCount = 0;" \n
+                         "_agentAnalysisComplete = false;" \n
+                         "" \n
+                         "_despawnCount = 0;" \n
+                         "_toDespawn = [];" \n
+                         "" \n
+                         "_countActiveBuildings = count _activeBuildings;" \n
+                         "" \n
+                         "if((_countActive == 0) && (_countActiveBuildings == 0)) then {" \n
+                         "    _lastSpawnTime = time;" \n
+                         "};" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - Completed active agent check. Checking active buildings %1 (also there are %2 new buildings)"",_countActiveBuildings,_countNewBuildings] call ALiVE_fnc_dump;" \n
+                         "  [""Crowd activator - perf check - Frame: %3-  FPS MIN: %1 AVE: %2"",diag_fpsmin ,diag_fps, diag_frameno] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "COMPLETE">*/
+                                class COMPLETE
+                                {
+                                        itemno = 34;
+                                        priority = 2.000000;
+                                        to="TIMER";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(_countActiveBuildings == 0)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "HAS__ACTIVE_BUIL">*/
+                                class HAS__ACTIVE_BUIL
+                                {
+                                        itemno = 43;
+                                        priority = 1.000000;
+                                        to="ANALYSE_ACTIVE_B";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_countActiveBuildings > 0"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "HAS_NEW__BUILDIN">*/
+                                class HAS_NEW__BUILDIN
+                                {
+                                        itemno = 45;
+                                        priority = 0.000000;
+                                        to="ANALYSE_NEW_HOUS";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_countNewBuildings > 0 && _countActiveBuildings == 0"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "ANALYSE_ACTIVE_B">*/
+                class ANALYSE_ACTIVE_B
+                {
+                        name = "ANALYSE_ACTIVE_B";
+                        itemno = 35;
+                        init = /*%FSM<STATEINIT""">*/"" \n
+                         "" \n
+                         "private _block = [ALIVE_arrayBlockHandler,""getNextBlock"",[""activeBuildings"",_activeBuildings,1]] call ALIVE_fnc_arrayBlockHandler;" \n
+                         "" \n
+                         "{" \n
+                         "    private _building = _x;" \n
+                         "" \n
+                         "    if!(isnil ""_building"") then {" \n
+                         "        " \n
+                         "        private _position = position _building;" \n
+                         "" \n
+                         "        if !([_position, _spawnDistance] call ALiVE_fnc_anyPlayersInRangeExcludeAir) then {" \n
+                         "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
+                         "              _toDespawn set [count _toDespawn, _building];" \n
+                         "                  if(_debug) then {" \n
+                         "                      [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "                      [""Crowd activator - analyse active buildings - active buildings to despawn: %1"",_building] call ALiVE_fnc_dump;" \n
+                         "                  };" \n
+                         "            };" \n
+                         "        };" \n
+                         "    };" \n
+                         "} forEach _block;" \n
+                         "" \n
+                         "_analysisCount = _analysisCount + 1;" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "/*" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - analyse active buildings: %1 of %2"",_analysisCount,_countActiveBuildings] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "*/" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "" \n
+                         "if(_analysisCount >= _countActiveBuildings) then {" \n
+                         "    _analysisComplete = true;" \n
+                         "    _countToDespawn = count _toDespawn;" \n
+                         "" \n
+                         "" \n
+                         "    // DEBUG -------------------------------------------------------------------------------------" \n
+                         "    " \n
+                         "    if(_debug) then {" \n
+                         "        [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "        [""Crowd activator- analyse active buildings - to deactivate: %1"",_countToDespawn] call ALiVE_fnc_dump;" \n
+                         "    };" \n
+                         "    " \n
+                         "    // DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "};"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "ITERATE">*/
+                                class ITERATE
+                                {
+                                        itemno = 41;
+                                        priority = 2.000000;
+                                        to="ANALYSE_ACTIVE_B";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_analysisCount < _countActiveBuildings"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "DO__DEACTIVATE">*/
+                                class DO__DEACTIVATE
+                                {
+                                        itemno = 36;
+                                        priority = 1.000000;
+                                        to="DESPAWN_LOOP_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"((_countToDespawn > 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "NO__DEACTIVATE">*/
+                                class NO__DEACTIVATE
+                                {
+                                        itemno = 40;
+                                        priority = 0.000000;
+                                        to="CHECK_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"((_countToDespawn == 0) && (_analysisComplete))"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "DESPAWN_LOOP_1">*/
+                class DESPAWN_LOOP_1
+                {
+                        name = "DESPAWN_LOOP_1";
+                        itemno = 37;
+                        init = /*%FSM<STATEINIT""">*/"// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - despawn active building loop %2 of %1"",_countToDespawn,_despawnCount] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "private _building = _toDespawn select _despawnCount;" \n
+                         "" \n
+                         "if!(isnil ""_building"") then {" \n
+                         "" \n
+                         "    // DEBUG -------------------------------------------------------------------------------------" \n
+                         "    " \n
+                         "    if(_debug) then {" \n
+                         "        [""Crowd activator - despawn [%1]"",_building] call ALiVE_fnc_dump;" \n
+                         "          private _marker = _building getVariable [""ALIVE_BUILDING_MARKER"",objNull];" \n
+                         "          deleteVehicle _marker;    " \n
+                         "    };" \n
+                         "    " \n
+                         "    // DEBUG -------------------------------------------------------------------------------------                " \n
+                         "" \n
+                         "  _activeBuildings set [(_activeBuildings find _building), -1];" \n
+                         "" \n
+                         "  // Remove sound source" \n
+                         "  private _soundSource = _building getVariable [""ALIVE_CivPop_Crowd_SoundSource"", objNull];" \n
+                         "  _building setVariable [""ALIVE_CivPop_Crowd_SoundSource"", objNull, false];" \n
+                         "" \n
+                         "  if !(isNull _soundSource) then {" \n
+                         "       deleteVehicle _soundSource;" \n
+                         "  };" \n
+                         "  " \n
+                         "};" \n
+                         "" \n
+                         "_despawnCount = _despawnCount + 1;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "ITERATE">*/
+                                class ITERATE
+                                {
+                                        itemno = 38;
+                                        priority = 1.000000;
+                                        to="DESPAWN_LOOP_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_despawnCount < _countToDespawn"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "END__LOOP">*/
+                                class END__LOOP
+                                {
+                                        itemno = 39;
+                                        priority = 0.000000;
+                                        to="CHECK_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_despawnCount >= _countToDespawn"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_activeBuildings = _activeBuildings - [-1];"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "CHECK_1">*/
+                class CHECK_1
+                {
+                        name = "CHECK_1";
+                        itemno = 42;
+                        init = /*%FSM<STATEINIT""">*/"" \n
+                         "_analysisCount = 0;" \n
+                         "_analysisComplete = false;" \n
+                         "" \n
+                         "_agentAnalysisCount = 0;" \n
+                         "_agentAnalysisComplete = false;" \n
+                         "" \n
+                         "if(_countNewBuildings == 0) then {" \n
+                         "    _lastSpawnTime = time;" \n
+                         "};" \n
+                         "" \n
+                         "_countActiveBuildings = count _activeBuildings;" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "    [""Crowd activator - completed active building check. Now checking new buildings to possibly spawn: %1"",_countNewBuildings] call ALiVE_fnc_dump;" \n
+                         "  [""Crowd activator - perf check - Frame: %3-  FPS MIN: %1 AVE: %2"",diag_fpsmin ,diag_fps, diag_frameno] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "HAS__NEW_BUILDIN">*/
+                                class HAS__NEW_BUILDIN
+                                {
+                                        itemno = 44;
+                                        priority = 1.000000;
+                                        to="ANALYSE_NEW_HOUS";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_countNewBuildings > 0"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "COMPLETE">*/
+                                class COMPLETE
+                                {
+                                        itemno = 15;
+                                        priority = 0.000000;
+                                        to="TIMER";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_countNewBuildings == 0"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "CHECK_AGENTS___B">*/
+                class CHECK_AGENTS___B
+                {
+                        name = "CHECK_AGENTS___B";
+                        itemno = 46;
+                        init = /*%FSM<STATEINIT""">*/"private _houseCheckComplete = false;" \n
+                         "" \n
+                         "// Check to see if there has been any combat near civs recently" \n
+                         "private _noCombatTimeout = time >= _noCombat; " \n
+                         "private _countNewBuildings = 0;" \n
+                         "private _newBuildings = [];" \n
+                         "" \n
+                         "if (_noCombatTimeout && _countClustersActive > 0) then {" \n
+                         "  // Check to see if there are new houses near players" \n
+                         "  {" \n
+                         "	private _positionIsAllowed = [position _x] call ALiVE_fnc_isPositionAllowed;" \n
+                         "	if (_positionIsAllowed) then {" \n
+                         "             private _buildings = [position _x, _spawnDistance] call ALiVE_fnc_getEnterableHouses;" \n
+                         "            {" \n
+                         "                       if (!(_x in _activeBuildings) && (random 1) <= sunOrMoon) then {" \n
+                         "                           _newBuildings pushBackUnique _x;" \n
+                         "                       };" \n
+                         "              } foreach _buildings;" \n
+                         "	};" \n
+                         "  } foreach (allPlayers + allCurators);" \n
+                         "" \n
+                         "  _countNewBuildings = count _newBuildings;" \n
+                         "};" \n
+                         "" \n
+                         "if((_countActive == 0) && (_countActiveBuildings == 0) && (_countNewBuildings == 0)) then {" \n
+                         "    _lastSpawnTime = time;" \n
+                         "};" \n
+                         "" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "if(_debug) then {" \n
+                         "    [""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
+                         "   [""Crowd activator - house/agent check - Combat: %4 - new houses: %1 - buildings active: %2 - agents active: %3"",_countNewBuildings,_countActiveBuildings, _countActive, !_noCombatTimeout] call ALiVE_fnc_dump;" \n
+                         "  [""Crowd activator - perf check - Frame: %3-  FPS MIN: %1 AVE: %2"",diag_fpsmin ,diag_fps, diag_frameno] call ALiVE_fnc_dump;" \n
+                         "};" \n
+                         "" \n
+                         "// DEBUG -------------------------------------------------------------------------------------" \n
+                         "" \n
+                         "_houseCheckComplete = true;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "WAIT">*/
+                                class WAIT
+                                {
+                                        itemno = 48;
+                                        priority = 4.000000;
+                                        to="TIMER";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"((_countActive == 0) && (_countActiveBuildings == 0) && (_countNewBuildings == 0))"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "HAS__ACTIVE_AGEN">*/
+                                class HAS__ACTIVE_AGEN
+                                {
+                                        itemno = 28;
+                                        priority = 3.000000;
+                                        to="ANALYSE_ACTIVE_A";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_countActive > 0 && _houseCheckComplete"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "HAS__ACTIVE_BUIL">*/
+                                class HAS__ACTIVE_BUIL
+                                {
+                                        itemno = 32;
+                                        priority = 2.000000;
+                                        to="ANALYSE_ACTIVE_B";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_countActiveBuildings > 0 && _houseCheckComplete"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "HAS_NEW__BUILDIN">*/
+                                class HAS_NEW__BUILDIN
+                                {
+                                        itemno = 17;
+                                        priority = 1.000000;
+                                        to="ANALYSE_NEW_HOUS";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_countNewBuildings > 0 && _houseCheckComplete && _noCombatTimeOut && _countClustersActive > 0"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+        };
+        initState="INIT";
+        finalStates[] =
+        {
+                "END",
+        };
+};
+/*%FSM</COMPILE>*/

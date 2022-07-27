@@ -1,4 +1,4 @@
-#include <\x\alive\addons\amb_civ_population\script_component.hpp>
+#include "\x\alive\addons\amb_civ_population\script_component.hpp"
 SCRIPT(civilianPopulationSystemInit);
 
 /* ----------------------------------------------------------------------------
@@ -31,7 +31,7 @@ if(isServer) then {
 
     MOD(amb_civ_population) = _logic;
 
-    private _debug = call compile (_logic getVariable ["debug","false"]);
+    private _debug = (_logic getVariable ["debug","false"]) == "true";
     private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
     private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
@@ -40,6 +40,21 @@ if(isServer) then {
     private _hostilityEast = parseNumber (_logic getVariable ["hostilityEast","0"]);
     private _hostilityIndep = parseNumber (_logic getVariable ["hostilityIndep","0"]);
     private _ambientCivilianRoles = call compile (_logic getVariable ["ambientCivilianRoles","[]"]);
+    private _ambientCrowdSpawn = parseNumber (_logic getVariable ["ambientCrowdSpawn","0"]);
+    private _ambientCrowdDensity = parseNumber (_logic getVariable ["ambientCrowdDensity","4"]);
+    private _ambientCrowdLimit = parseNumber (_logic getVariable ["ambientCrowdLimit","50"]);
+    private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction",""]);
+
+    private _customWaterItems = [_logic getvariable "customWaterItems", " ", ""] call CBA_fnc_replace;
+    _customWaterItems = [_customWaterItems, ","] call CBA_fnc_split;
+
+    private _customRationItems = [_logic getvariable "customRationItems", " ", ""] call CBA_fnc_replace;
+    _customRationItems = [_customRationItems, ","] call CBA_fnc_split;
+
+    waitUntil {!isnil "ALiVE_STATIC_DATA_LOADED"};
+
+    _logic setVariable ["waterItems", ALiVE_CivPop_Interaction_WaterItems + _customWaterItems, true];
+    _logic setVariable ["rationItems", ALiVE_CivPop_Interaction_RationItems + _customRationItems, true];
 
 //Check if a SYS Profile Module is available
     private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
@@ -67,6 +82,10 @@ if(isServer) then {
     [ALIVE_civilianPopulationSystem, "spawnTypeHeliRadius", _spawnTypeHeliRadius] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCivilianRoles", _ambientCivilianRoles] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "ambientCrowdSpawn", _ambientCrowdSpawn] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "ambientCrowdDensity", _ambientCrowdDensity] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "ambientCrowdLimit", _ambientCrowdLimit] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "ambientCrowdFaction", _ambientCrowdFaction] call ALIVE_fnc_civilianPopulationSystem;
 
     if (count _ambientCivilianRoles == 0) then {GVAR(ROLES_DISABLED) = true} else {GVAR(ROLES_DISABLED) = false};
     PublicVariable QGVAR(ROLES_DISABLED);
@@ -78,5 +97,7 @@ if(isServer) then {
     [ALIVE_civilianPopulationSystem,"start"] call ALIVE_fnc_civilianPopulationSystem;
 
 };
+
+[_logic] call ALiVE_fnc_civInteractInit;
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;

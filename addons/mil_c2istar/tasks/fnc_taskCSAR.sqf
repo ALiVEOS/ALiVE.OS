@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
 SCRIPT(taskCSAR);
 
 /* ----------------------------------------------------------------------------
@@ -60,14 +60,14 @@ switch (_taskState) do {
 
         _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
 
-        if (_taskID == "") exitwith {["C2ISTAR - Task Rescue - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
-        if (_requestPlayerID == "") exitwith {["C2ISTAR - Task Rescue - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
-        if (_taskFaction == "") exitwith {["C2ISTAR - Task Rescue - Wrong input for _taskFaction!"] call ALiVE_fnc_Dump};
-        if (_taskLocationType == "") exitwith {["C2ISTAR - Task Rescue - Wrong input for _taskLocationType!"] call ALiVE_fnc_Dump};
-        if (count _taskLocation == 0) exitwith {["C2ISTAR - Task Rescue - Wrong input for _taskLocation!"] call ALiVE_fnc_Dump};
-        if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task Rescue - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
-        if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task Rescue - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
-        if (_taskApplyType == "") exitwith {["C2ISTAR - Task Rescue - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
+        if (_taskID == "") exitwith {["C2ISTAR - Task CSAR - Wrong input for _taskID!"] call ALiVE_fnc_Dump};
+        if (_requestPlayerID == "") exitwith {["C2ISTAR - Task CSAR - Wrong input for _requestPlayerID!"] call ALiVE_fnc_Dump};
+        if (_taskFaction == "") exitwith {["C2ISTAR - Task CSAR - Wrong input for _taskFaction!"] call ALiVE_fnc_Dump};
+        if (_taskLocationType == "") exitwith {["C2ISTAR - Task CSAR - Wrong input for _taskLocationType!"] call ALiVE_fnc_Dump};
+        if (count _taskLocation == 0) exitwith {["C2ISTAR - Task CSAR - Wrong input for _taskLocation!"] call ALiVE_fnc_Dump};
+        if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task CSAR - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
+        if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task CSAR - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
+        if (_taskApplyType == "") exitwith {["C2ISTAR - Task CSAR - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
 
         _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
@@ -88,7 +88,7 @@ switch (_taskState) do {
 
         // establish the location for the task
         // get enemy cluster position
-		if (isNil "_taskLocation") then {
+		if (isNil "_taskLocation" || [_taskLocation, _taskPlayers select 0] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination < 600) then {
 		    _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
 		} else {
             _targetPosition = _taskLocation;
@@ -152,7 +152,7 @@ switch (_taskState) do {
 
             // Get a faction aircraft
             if (isNil "_aircraft") then {
-            	_aircraft = selectRandom ((([0,_taskFaction,"Helicopter"] call ALiVE_fnc_findVehicleType) + ([0,_taskFaction,"Plane"] call ALiVE_fnc_findVehicleType)) - ALiVE_PLACEMENT_VEHICLEBLACKLIST);
+            	_aircraft = selectRandom ((([1,_taskFaction,"Helicopter"] call ALiVE_fnc_findVehicleType) + ([1,_taskFaction,"Plane"] call ALiVE_fnc_findVehicleType)) - ALiVE_PLACEMENT_VEHICLEBLACKLIST);
 			};
             if (isNil "_aircraft") then {
                 _aircraft = "C_Heli_Light_01_civil_F";
@@ -170,27 +170,55 @@ switch (_taskState) do {
 
                 // Spawn composition
                 _compType = "Military";
-                _site = "smallAH99Crashsite1";
-                _comp = [_site, _CompType] call ALiVE_fnc_findComposition;
-                [_comp,_targetposition,random 360,_taskFaction] call ALiVE_fnc_spawnComposition;
+                _site = "crashsites";
 
-                // replace wreck with downed bird
-                _wreck = nearestObject [_targetposition, "Land_Wreck_Heli_Attack_01_F"];
-                _pos = getposATL _wreck;
-                _dir = getdir _wreck;
-                deleteVehicle _wreck;
+                // Get the aircraft displayname and first string before a white space and remove any dashes i.e. UH1D or F4B ugh
+                private _displayName = getText(configFile >> "CfgVehicles" >> _aircraft >> "displayName");
+                private _tempText = (_displayName splitString " ") select 0;
+                _tempText = [_tempText, "-", ""] call CBA_fnc_replace;
+                _comp = [_compType, [_site], [], _taskFaction, false, [_tempText]] call ALiVE_fnc_getCompositions;
 
-                // Spawn downed bird
-                _vehicle = createVehicle [_aircraft, _pos, [], 0, "CAN_COLLIDE"];
-                _vehicle setDir _dir;
-                _vehicle setposATL _pos;
-                _vehicle setDamage 1;
-                // diag_log format["%1 spawned at %2 with %3 damage", _aircraft, _pos, damage _vehicle];
+                if (count _comp == 0) then {
+                    _site = "smallAH99Crashsite1";
+                    _comp = [_site, _CompType] call ALiVE_fnc_findComposition;
 
+                    [_comp,_targetposition,random 360,_taskFaction] call ALiVE_fnc_spawnComposition;
+
+                    // replace wreck with downed bird
+                    _wreck = nearestObject [_targetposition, "Land_Wreck_Heli_Attack_01_F"];
+                    _pos = getposATL _wreck;
+                    _dir = getdir _wreck;
+                    deleteVehicle _wreck;
+
+                    // Spawn downed bird
+                    _vehicle = createVehicle [_aircraft, _pos, [], 0, "CAN_COLLIDE"];
+                    _vehicle setDir _dir;
+                    _vehicle setposATL _pos;
+                    _vehicle setDamage 1;
+                    // ["%1 spawned at %2 with %3 damage", _aircraft, _pos, damage _vehicle] call ALiVE_fnc_dump;
+                } else {
+                    [_comp select 0,_targetposition,random 360,_taskFaction] call ALiVE_fnc_spawnComposition;
+                };
             } else {
                 // Spawn parachute on ground
 
             };
+
+            // Assign or create the crew profile
+            private["_units","_crewProfile1"];
+
+            _units = _aircraft call ALIVE_fnc_configGetVehicleCrew;
+
+            switch typeName _units do {
+                case "STRING" : {_units = [_units]};
+                case "ARRAY" : {};
+                default {};
+            };
+
+            _crewProfile1 = [_units, _taskSide, _taskFaction, _targetPosition, random(360), _taskFaction, true] call ALIVE_fnc_createProfileEntity;
+            _crewID = _crewProfile1 select 2 select 4;
+
+            ["C2ISTAR - Task CSAR - Created profile %1 with units %2!",_crewID,_units] call ALiVE_fnc_Dump;
 
             _dialogOption = _dialogOptions select _choice; // Downed Pilot rescue or Crashsite recovery
 
@@ -200,8 +228,8 @@ switch (_taskState) do {
 
             _aircraftName = getText(configFile >> "CfgVehicles" >> _aircraft >> "displayName");
 
-            // For CSAR missions place the marker within 1000m of the actual crashsite or crew, so that players have to search
-            _newTaskPosition = _targetPosition getpos [350 + (random 350),random 360];
+            // For CSAR missions place the marker within 400m of the actual crashsite or crew, so that players have to search
+            _newTaskPosition = _targetPosition getpos [200 + (random 200),random 360];
 
             // Rescue
             _nearestTown = [_newTaskPosition] call ALIVE_fnc_taskGetNearestLocationName;
@@ -273,15 +301,18 @@ switch (_taskState) do {
             _taskIDs pushback _taskID;
 
             // Create secure task
-            _dialog = [_dialogOption,"DefenceWave"] call ALIVE_fnc_hashGet;
-            _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
-            _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-            _newTaskID = format["%1_c2",_taskID];
-            _taskSource = format["%1-CSAR-DefenceWave",_taskID];
-            _newTask = [_newTaskID,_requestPlayerID,_taskSide,_newTaskPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
+            // IF ATO or OPCOM is calling, don't create a wave of attackers.
+            if (_requestPlayerID != "ATO" && _requestPlayerID != "OPCOM" ) then {
+                _dialog = [_dialogOption,"DefenceWave"] call ALIVE_fnc_hashGet;
+                _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
+                _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
+                _newTaskID = format["%1_c2",_taskID];
+                _taskSource = format["%1-CSAR-DefenceWave",_taskID];
+                _newTask = [_newTaskID,_requestPlayerID,_taskSide,_newTaskPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
 
-            _tasks pushback _newTask;
-            _taskIDs pushback _newTaskID;
+                _tasks pushback _newTask;
+                _taskIDs pushback _newTaskID;
+            };
 
             // create the return task
             _dialog = [_dialogOption,"Return"] call ALIVE_fnc_hashGet;
@@ -335,7 +366,7 @@ switch (_taskState) do {
         private [
             "_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
             "_destinationReached","_taskIDs","_crewSpawned","_crewSpawnType","_lastState","_taskDialog","_currentTaskDialog","_taskApplyType",
-            "_startTime","_crashsite","_vehicleClass","_targetposition","_crewFound","_irstrobe"
+            "_startTime","_crashsite","_vehicleClass","_targetposition","_crewFound","_irstrobe","_crewID"
         ];
 
         _taskID = _task select 0;
@@ -352,7 +383,7 @@ switch (_taskState) do {
         _lastState = [_params,"lastState"] call ALIVE_fnc_hashGet;
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
-        private _crewID = [_params,"crewID"] call ALIVE_fnc_hashGet;
+        _crewID = [_params,"crewID"] call ALIVE_fnc_hashGet;
         _crewSpawned = [_params,"crewSpawned"] call ALIVE_fnc_hashGet;
         _crewSpawnType = [_params,"crewSpawnType"] call ALIVE_fnc_hashGet;
         _startTime = [_params,"startTime"] call ALIVE_fnc_hashGet;
@@ -381,23 +412,30 @@ switch (_taskState) do {
                     case "static":{ // Crashsite or pilot
 
                         private["_taskObjects","_tables","_chairs","_electronics","_documents","_tableClass","_electronicClass",
-                        "_documentClass","_table","_electronic","_document","_anims"];
+                        "_documentClass","_table","_electronic","_document","_anims","_crewGroup","_crew","_crew1Active"];
 
                         // create the profiles
 
-                        private["_units","_crewProfile1","_crewProfile1ID","_crewGroup","_crew","_crew1Active"];
+                        _crewProfile1 = [ALiVE_ProfileHandler,"getProfile",_crewID] call ALiVE_fnc_ProfileHandler;
+                        _crewProfile1ID = _crewID;
 
-                        if (_crewID != "") then {
-                            _crewProfile1 = [ALIVE_ProfileHandler,"getProfile",_crewID] call ALIVE_fnc_profileHandler;
-                            _crewProfile1ID = _crewID;
-                        };
+                        // Fail mission if there is an error and crew isnt created
+                        if (isnil "_crewProfile1") exitwith {
+                            [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
-                        if (isNil "_crewProfile1") then {
-                            // Get an aircraft list of crew, spawn as profiles
-                            _units = _vehicleClass call ALIVE_fnc_configGetVehicleCrew;
+                            // Mission Over intermediate state - if dead or timeout update the parent-task instead of the child so all children get updated
+                            _parent = _task select 11;
+                            _parent = if (_parent == "None") then {_taskID} else {_parent};
+                            _parentTask = [ALiVE_TaskHandler,"getTask",_parent] call ALiVE_fnc_TaskHandler;
 
-                            _crewProfile1 = [[_units], _taskSide, _taskFaction, _targetPosition, random(360), _taskFaction, true] call ALIVE_fnc_createProfileEntity;
-                            _crewProfile1ID = _crewProfile1 select 2 select 4;
+                            _parentTask set [8,"Canceled"];
+                            _parentTask set [10,"N"];
+
+                            [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
+
+                            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+
+                            ["chat_cancelled",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
                         };
 
                         waitUntil {
@@ -407,6 +445,8 @@ switch (_taskState) do {
                         };
 
                         _crewGroup = _crewProfile1 select 2 select 13;
+
+                        ["C2ISTAR - Task CSAR - Spawned CSAR crew %1 at %2!",_crewGroup, getposATL leader _crewGroup] call ALiVE_fnc_Dump;
 
                         {
                             _x setCaptive true;
@@ -419,7 +459,7 @@ switch (_taskState) do {
                             };
                             _x setformdir 0;
 
-                            [_x, format ["Rescue %1",name _x], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",0];
+                            [_x, format ["Rescue %1",name _x], "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa","_this distance _target < 2", "_caller distance _target < 2", {}, {}, {_target setVariable ["rescued",true,true]; ["Rescue", format ["You have rescued %1!",name _target]] call BIS_fnc_showSubtitle;},{},[],8] remoteExec ["BIS_fnc_holdActionAdd",0, true];
 
                         } foreach units _crewGroup;
 
@@ -448,9 +488,15 @@ switch (_taskState) do {
 
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
-                _task set [8,"Failed"];
-                _task set [10, "N"];
-                _result = _task;
+                // Mission Over in first state - if dead or timeout update the parent-task instead of the child so all children get updated
+                _parent = _task select 11;
+                _parent = if (_parent == "None") then {_taskID} else {_parent};
+                _parentTask = [ALiVE_TaskHandler,"getTask",_parent] call ALiVE_fnc_TaskHandler;
+
+                _parentTask set [8,"Failed"];
+                _parentTask set [10,"N"];
+
+                [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
 
                 [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
@@ -475,7 +521,7 @@ switch (_taskState) do {
 
                         _position = getPos _crew;
 
-                        if (!_crashsite && !_crewFound && [_targetposition,_taskPlayers,350] call ALIVE_fnc_taskHavePlayersReachedDestination) then {
+                        if (!_crewFound && [_targetposition,_taskPlayers,500] call ALIVE_fnc_taskHavePlayersReachedDestination) then {
                             // Chat update
                             _formatChat = [_currentTaskDialog,"chat_update"] call ALIVE_fnc_hashGet;
                             _formatMessage = _formatChat select 0;
@@ -498,6 +544,8 @@ switch (_taskState) do {
 
                         if (_crew getVariable ["rescued",false]) then {
 
+                            private _player = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
+
                             {
                                 if (!isNil "_irstrobe") then {
                                     detach _irstrobe;
@@ -505,8 +553,10 @@ switch (_taskState) do {
                                 };
 
                                 _x setCaptive false;
-                                [_x] joinSilent (group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition));
+                                [_x] joinSilent (group _player);
                             } foreach units _group;
+
+                            (group _player) selectLeader _player;
 
                             _task set [8,"Succeeded"];
                             _task set [10, "N"];
@@ -734,9 +784,17 @@ switch (_taskState) do {
 
                 [_params,"nextTask",""] call ALIVE_fnc_hashSet;
 
-                _task set [8,"Failed"];
-                _task set [10, "N"];
-                _result = _task;
+                // Mission Over intermediate state - if dead or timeout update the parent-task instead of the child so all children get updated
+                _parent = _task select 11;
+                _parent = if (_parent == "None") then {_taskID} else {_parent};
+                _parentTask = [ALiVE_TaskHandler,"getTask",_parent] call ALiVE_fnc_TaskHandler;
+
+                _parentTask set [8,"Failed"];
+                _parentTask set [10,"N"];
+
+                [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
+
+                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
                 ["chat_failed",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
@@ -799,7 +857,7 @@ switch (_taskState) do {
 
             }else{
 
-                _destinationReached = [_taskPosition, _taskPlayers, 50] call ALIVE_fnc_taskHavePlayersReachedDestination;
+                _destinationReached = [_taskPosition, _taskPlayers, 10] call ALIVE_fnc_taskHavePlayersReachedDestination;
 
                 // the players are at the return point
                 if(_destinationReached) then {
@@ -814,11 +872,12 @@ switch (_taskState) do {
                         _active = _profile select 2 select 1;
                         _unit = _profile select 2 select 10;
 
-                        if(_active && {vehicle _unit == _unit && _unit distance _taskPosition < 40}) then {
+                        if(_active && {vehicle _unit == _unit} && {(getpos _unit) select 2 < 2} && {_unit distance _taskPosition <= 10}) then {
                             [_unit] joinSilent grpNull;
                             [_unit, _taskPosition] call ALiVE_fnc_doMoveRemote;
+
                             _returnReached = true;
-                            [_params,"returnReached",true] call ALIVE_fnc_hashSet;
+                            [_params,"returnReached",_returnReached] call ALIVE_fnc_hashSet;
                         };
                     } foreach _profiles;
 
@@ -847,6 +906,8 @@ switch (_taskState) do {
                 _task set [8,"Failed"];
                 _task set [10, "N"];
                 _result = _task;
+
+                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
                 ["chat_failed",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 

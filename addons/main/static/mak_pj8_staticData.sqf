@@ -1,6 +1,6 @@
 private["_worldName"];
  _worldName = tolower(worldName);
- ["ALiVE SETTING UP MAP: mak_pj8"] call ALIVE_fnc_dump;
+ ["SETTING UP MAP: mak_pj8"] call ALiVE_fnc_dump;
  ALIVE_Indexing_Blacklist = [];
  ALIVE_airBuildingTypes = [];
  ALIVE_militaryParkingBuildingTypes = [];
@@ -21,9 +21,9 @@ private["_worldName"];
  ALIVE_civilianFuelBuildingTypes = [];
  ALIVE_civilianConstructionBuildingTypes = [];
  ALIVE_civilianSettlementBuildingTypes = [];
- 
+
  ALiVE_mapCompositionType = "Woodland";
- 
+
  if(tolower(_worldName) == "mak_pj8") then {
 ALIVE_Indexing_Blacklist = ALIVE_Indexing_Blacklist + ["ca\wheeled\skodovka_wrecked.p3d","ca\structures_e\housel\house_l_8_ruins_ep1.p3d","ca\structures_e\housel\house_l_7_ruins_ep1.p3d","ca\structures_e\housel\house_l_3_ruins_ep1.p3d","ca\structures_e\housek\house_k_1_ruins_ep1.p3d","ca\structures_e\housek\house_k_5_ruins_ep1.p3d","ca\structures_e\housek\house_k_6_ruins_ep1.p3d"];
 ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["ca\misc2\barrack2\barrack2.p3d","ca\structures_e\mil\mil_repair_center_ep1.p3d","ca\structures_e\ind\ind_shed\ind_shed_02_ep1.p3d","ca\structures_e\mil\mil_barracks_i_ep1.p3d","ca\structures_e\mil\mil_barracks_ep1.p3d","ca\structures_e\mil\mil_guardhouse_ep1.p3d","ca\structures_e\mil\mil_house_ep1.p3d","ca\structures_e\mil\mil_barracks_l_ep1.p3d","ca\misc_e\fort_watchtower_ep1.p3d","ca\misc_e\fortified_nest_small_ep1.p3d","ca\structures_e\mil\mil_hangar_ep1.p3d","ca\structures_e\mil\mil_controltower_ep1.p3d","ca\buildings2\a_advertisingcolumn\a_advertcolumn.p3d"];

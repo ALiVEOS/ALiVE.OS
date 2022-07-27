@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(test_runMapAnalysis);
 
 //execVM "\x\alive\addons\fnc_analysis\tests\test_runMapAnalysis.sqf"
@@ -40,18 +40,12 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 
-
-if(isNil "ALIVE_civilianHQBuildingTypes") then {
-    _file = "\x\alive\addons\main\static\staticData.sqf";
-    call compile preprocessFileLineNumbers _file;
-};
-
+call ALiVE_fnc_staticDataHandler;
 
 _FSMtest = [] execFSM "\x\alive\addons\fnc_analysis\gridMapAnalysis.fsm";
-
 
 nil;

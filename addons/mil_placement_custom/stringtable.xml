@@ -3,102 +3,108 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CMP">
-    <Original>Military Placement (Cust. Obj.)</Original>
+    <English>Military Placement (Cust. Obj.)</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMMENT">
-    <Original>Custom Military Objective</Original>
+    <English>Custom Military Objective</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_DEBUG">
-    <Original>Enable Debug:</Original>
+    <English>Enable Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_DEBUG_COMMENT">
-    <Original>Enables CMP Module Debug</Original>
+    <English>Enables CMP Module Debug</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_FACTION">
-    <Original>Force Faction:</Original>
+    <English>Force Faction:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_FACTION_COMMENT">
-    <Original>Faction of the units to be placed (BLU_F, OPF_F, IND_F, BLU_G_F)</Original>
+    <English>Faction of the units to be placed (BLU_F, OPF_F, IND_F, BLU_G_F)</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_PRIORITY">
-    <Original>Objective priority:</Original>
+    <English>Objective priority:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_PRIORITY_COMMENT">
-    <Original>Priority of the custom objective. Used by OPCOM and others for target evaluation</Original>
+    <English>Priority of the custom objective. Used by OPCOM and others for target evaluation</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_SIZE">
-    <Original>Objective size:</Original>
+    <English>Objective size:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_SIZE_COMMENT">
-    <Original>Size of the custom objective. Used by OPCOM and others for target evaluation</Original>
+    <English>Size of the custom objective. Used by OPCOM and others for target evaluation</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT">
-    <Original>Infantry Count:</Original>
+    <English>Infantry Count:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT_COMMENT">
-    <Original>Set count of Infantry groups to be spawned, set to 0 for none</Original>
+    <English>Set count of Infantry groups to be spawned, set to 0 for none</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT">
-    <Original>Motorised Count:</Original>
+    <English>Motorised Count:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT_COMMENT">
-    <Original>Set count of Motorised groups to be spawned, set to 0 for none</Original>
+    <English>Set count of Motorised groups to be spawned, set to 0 for none</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT">
-    <Original>Mechanised Count:</Original>
+    <English>Mechanised Count:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT_COMMENT">
-    <Original>Set count of Mechanised groups to be spawned, set to 0 for none</Original>
+    <English>Set count of Mechanised groups to be spawned, set to 0 for none</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT">
-    <Original>Armour Count:</Original>
+    <English>Armour Count:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT_COMMENT">
-    <Original>Set count of Armour groups to be spawned, set to 0 for none</Original>
+    <English>Set count of Armour groups to be spawned, set to 0 for none</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT">
-    <Original>SpecOps Count:</Original>
+    <English>SpecOps Count:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT_COMMENT">
-    <Original>Set count of SpecOps groups to be spawned, set to 0 for none</Original>
+    <English>Set count of SpecOps groups to be spawned, set to 0 for none</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION">
-    <Original>Spawn Composition:</Original>
+    <English>Spawn Composition:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_COMMENT">
-    <Original>Enter in the type (HQ, Fort, Heliport etc.) or classname of a composition (Go to Config Viewer, CfgGroups > Empty and copy the classname)</Original>
+    <English>Enter in the type (HQ, Fort, Heliport etc.) or classname of a composition (Go to Config Viewer, CfgGroups > Empty and copy the classname)</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_A">
-    <Original>BIS - Camp Audacity</Original>
+    <English>BIS - Camp Audacity</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_B">
-    <Original>BIS - Camp Bravery</Original>
+    <English>BIS - Camp Bravery</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_C">
-    <Original>BIS - Camp Courage</Original>
+    <English>BIS - Camp Courage</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_D">
-    <Original>BIS - Camp Defiance</Original>
+    <English>BIS - Camp Defiance</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_E">
-    <Original>BIS - Camp Endurance</Original>
+    <English>BIS - Camp Endurance</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_F">
-    <Original>BIS - Camp Fortitude</Original>
+    <English>BIS - Camp Fortitude</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CREATE_HQ">
-    <Original>Create as HQ:</Original>
+    <English>Create as HQ:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CREATE_HQ_COMMENT">
-    <Original>Selects HQ objective close to the module or if unavailable spawns an HQ composition at the module position</Original>
+    <English>Selects HQ objective close to the module or if unavailable spawns an HQ composition at the module position</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_USAGE">
-    <Original>Place the Custom Military Objective module in the editor, select the desired Size, Priority and force composition. Custom factions can be entered in the text box (separated by a comma).</Original>
+    <English>Place the Custom Military Objective module in the editor, select the desired Size, Priority and force composition. Custom factions can be entered in the text box (separated by a comma).</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL">
-    <Original>Readiness:</Original>
+    <English>Readiness:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL_COMMENT">
-    <Original>The amount of troops that will be on duty and patrolling</Original>
+    <English>The amount of troops that will be on duty and patrolling</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_ALLOW_PLAYER_TASK">
+    <English>Allow player tasking:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_ALLOW_PLAYER_TASK_COMMENT">
+    <English>MilAssault/MilDefend C2ISTAR tasks</English>
 </Key>
 </Container></Package></Project>

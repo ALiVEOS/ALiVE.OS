@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(BUS);
 
 /* ----------------------------------------------------------------------------
@@ -110,7 +110,7 @@ if (isnil "ALiVE_BUSEH") then {
             case "finished" : {
                 //inform sender and prepare data for local queue-set
                 _entry = [_id,[_data,_status,_ret]];
-                //diag_log format["BUS End: %1, Id: %2, Value returned: %3",time,_id,_ret];
+                //["BUS End: %1, Id: %2, Value returned: %3",time,_id,_ret] call ALiVE_fnc_dump;
             };
         };
 

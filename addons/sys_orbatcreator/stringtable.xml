@@ -3,15 +3,33 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ORBATCREATOR">
-    <Original>ORBAT Creator</Original>
+    <English>ALiVE ORBAT Creator</English>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_COMMENT">
-    <Original>Open the ORBAT Creator</Original>
+    <English>Open the ORBAT Creator</English>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_DEBUG">
-    <Original>Enable Debug:</Original>
+    <English>Enable Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_DEBUG_COMMENT">
-    <Original>Enables Module Debug</Original>
+    <English>Enables Module Debug</English>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_BACKGROUND">
+    <English>Enable Background:</English>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_BACKGROUND_COMMENT">
+    <English>Creates a grey background for editing purposes. Alternatively, the editor will use the current map and position of the module.</English>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_PREFIX">
+    <English>Addon Prefix:</English>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_PREFIX_COMMENT">
+    <English>Enter an addon prefix here if applicable i.e. CUP</English>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_COPY">
+    <English>Copy Parent Classes:</English>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_COPY_COMMENT">
+    <English>Advanced usage - if you wish to copy the parent class of existing units, rather than existing class, select Yes. No by default.</English>
 </Key>
 </Container></Package></Project>

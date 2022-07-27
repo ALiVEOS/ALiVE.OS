@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(anyPlayersInRangeExcludeAir);
 
 /* ----------------------------------------------------------------------------
@@ -33,7 +33,11 @@ PARAMS_1(_pos);
 DEFAULT_PARAM(1,_dist,2500);
 DEFAULT_PARAM(2,_includeHelicopters,false);
 
-_players = allPlayers + allCurators;
+_players = allPlayers;
+if (!isnil "ALIVE_profileSystem" && { [ALIVE_profileSystem,"zeusSpawn"] call ALiVE_fnc_hashGet }) then {
+    _players append allCurators;
+};
+
 _anyInRange = false;
 
 scopeName "main";

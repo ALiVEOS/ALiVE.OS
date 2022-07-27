@@ -156,6 +156,51 @@ class CfgVehicles
                                 };
                         };
                 };
+                class Resupply
+                {
+                        displayName = "$STR_ALIVE_ATO_RESUPPLY";
+                        description = "$STR_ALIVE_ATO_RESUPPLY_COMMENT";
+                        class Values
+                        {
+                                class Yes
+                                {
+                                        name = "Yes";
+                                        value = true;
+                                };
+                                class No
+                                {
+                                        name = "No";
+                                        value = false;
+                                        default = 1;
+                                };
+                        };
+                };
+                class broadcastOnRadio
+                {
+                        displayName = "$STR_ALIVE_ATO_BROADCASTONRADIO";
+                        description = "$STR_ALIVE_ATO_BROADCASTONRADIO_COMMENT";
+                        class Values
+                        {
+                                class Yes
+                                {
+                                        name = "Yes";
+                                        value = true;
+                                        default = 1;
+                                };
+                                class No
+                                {
+                                        name = "No";
+                                        value = false;
+                                };
+                        };
+                };
+                class pilotbuilding
+                {
+                        displayName = "$STR_ALIVE_ATO_PILOTBUILDING";
+                        description = "$STR_ALIVE_ATO_PILOTBUILDING_COMMENT";
+                        defaultValue = "";
+                        typeName = "STRING";
+                };
         };
         class ModuleDescription
         {

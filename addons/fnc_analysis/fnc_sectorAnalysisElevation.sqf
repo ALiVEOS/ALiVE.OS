@@ -1,4 +1,4 @@
-#include <\x\alive\addons\fnc_analysis\script_component.hpp>
+#include "\x\alive\addons\fnc_analysis\script_component.hpp"
 SCRIPT(sectorAnalysisElevation);
 
 /* ----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 
     if(_terrainData == "SEA") then {
         _m = [_centerPosition] call ALIVE_fnc_spawnDebugMarker;
-        hideObject _m;
+        hideObjectGlobal _m;
         _markers pushback _m;
         _elevation = ((getPosATL _m) select 2);
         _elevation = _elevation - (_elevation * 2);
@@ -55,7 +55,7 @@ ASSERT_TRUE(typeName _sectors == "ARRAY",_err);
 
     } else {
         _m = [_centerPosition] call ALIVE_fnc_spawnDebugMarker;
-        hideObject _m;
+        hideObjectGlobal _m;
         _markers pushback _m;
         _elevation = ((getPosASL _m) select 2);
         _elevationData pushback [_centerPosition,_elevation];

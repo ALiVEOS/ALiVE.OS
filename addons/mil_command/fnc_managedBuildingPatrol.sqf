@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_command\script_component.hpp>
+#include "\x\alive\addons\mil_command\script_component.hpp"
 SCRIPT(testManagedCommand);
 
 /* ----------------------------------------------------------------------------
@@ -45,7 +45,7 @@ _nextStateArgs = [];
 
 // DEBUG -------------------------------------------------------------------------------------
 //if(_debug) then {
-    ["ALiVE Managed Script Command - [%1] called args: %2",_profileID,_args] call ALIVE_fnc_dump;
+    ["Managed Script Command - [%1] called args: %2",_profileID,_args] call ALiVE_fnc_dump;
 //};
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -54,7 +54,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         //if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_profileID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_profileID,_state] call ALiVE_fnc_dump;
         //};
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         //if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_profileID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_profileID,_state] call ALiVE_fnc_dump;
         //};
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         //if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_profileID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_profileID,_state] call ALiVE_fnc_dump;
         //};
         // DEBUG -------------------------------------------------------------------------------------
 

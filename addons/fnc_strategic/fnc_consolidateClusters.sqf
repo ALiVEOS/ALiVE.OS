@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include <\x\alive\addons\fnc_strategic\script_component.hpp>
+#include "\x\alive\addons\fnc_strategic\script_component.hpp"
 SCRIPT(consolidateClusters);
 
 /* ----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ Peer Review:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_err","_result","_nodes_out","_nodes_x"];
+private ["_result","_nodes_out","_nodes_x"];
 
 TRACE_1("consolidateClusters - input",_this);
 
@@ -41,12 +41,6 @@ params [
     ["_redundant", [], [[]]]
 ];
 
-_err = "objects provided not valid";
-ASSERT_DEFINED("_master", _err);
-ASSERT_DEFINED("_redundant", _err);
-ASSERT_OP(typeName _master, == ,"ARRAY", _err);
-ASSERT_OP(typeName _redundant, == ,"ARRAY", _err);
-ASSERT_OP(count _master,>,0,_err);
 _result = _master;
 
 {

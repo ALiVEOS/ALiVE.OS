@@ -1,4 +1,4 @@
-#include <\x\alive\addons\amb_civ_command\script_component.hpp>
+#include "\x\alive\addons\amb_civ_command\script_component.hpp"
 SCRIPT(cc_idle);
 
 /* ----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ private _nextStateArgs = [];
 
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
-    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+    ["Managed Script Command - [%1] called args: %2",_agentID,_args] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -70,11 +70,40 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
         _args params ["_timeout","_timer"];
+
+        private _dayState = (call ALIVE_fnc_getEnvironment) select 0;
+
+        if(_dayState == "EVENING" || {_dayState == "DAY"}) then {
+
+            private _homePosition = _agentData select 2 select 10;
+
+            if([_homePosition, 30] call ALiVE_fnc_anyPlayersInRange > 0 && random 1 > 0.4) then {
+                if!(_agent getVariable ["ALIVE_agentHouseMusicOn",false]) then {
+                    private _building = _homePosition nearestObject "House";
+                    private _music = [_building, faction _agent] call ALIVE_fnc_addAmbientRoomMusic;
+                    _agent setVariable ["ALIVE_agentHouseMusic", _music, false];
+                    _agent setVariable ["ALIVE_agentHouseMusicOn", true, false];
+                };
+            };
+
+        };
+
+        if(_dayState == "EVENING" || {_dayState == "NIGHT"}) then {
+
+            private _homePosition = _agentData select 2 select 10;
+
+            if!(_agent getVariable ["ALIVE_agentHouseLightOn",false]) then {
+                private _building = _homePosition nearestObject "House";
+                private _light = [_building] call ALIVE_fnc_addAmbientRoomLight;
+                _agent setVariable ["ALIVE_agentHouseLight", _light, false];
+                _agent setVariable ["ALIVE_agentHouseLightOn", true, false];
+            };
+        };
 
         if(_timer > _timeout) then
         {
@@ -95,7 +124,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 

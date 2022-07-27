@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(configGetRandomGroup);
 
 /* ----------------------------------------------------------------------------
@@ -81,7 +81,7 @@ if(!isNil "ALIVE_factionCustomMappings") then {
                     _side = _factionSide call ALIVE_fnc_sideNumberToText;
                 };
             } else {
-                ["Warning Side: %1 Faction: %3 maybe incorrectly configured for ALiVE (Group Type: %2)",_side,_type,_faction] call ALIVE_fnc_dump;
+                ["Warning Side: %1 Faction: %3 maybe incorrectly configured for (Group Type: %2)",_side,_type,_faction] call ALiVE_fnc_dump;
                 _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
 
                 _factionSide = getNumber(_factionConfig >> "side");
@@ -123,7 +123,7 @@ if!(_customGroup) then {
     for "_i" from 0 to count _typeConfig -1 do {
         _class = _typeConfig select _i;
 
-        if (isClass _class) then {
+        if (isClass _class && !((configName _class) in ALiVE_PLACEMENT_GROUPBLACKLIST)) then {
 
             _countUnits = 0;
             for "_y" from 0 to count _class -1 do {

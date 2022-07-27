@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_convoy\script_component.hpp>
+#include "\x\alive\addons\mil_convoy\script_component.hpp"
 
 SCRIPT(CONVOYInit);
 

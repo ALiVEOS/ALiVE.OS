@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(findIndoorHousePositions);
 
 /* ----------------------------------------------------------------------------
@@ -28,18 +28,32 @@ Author:
 Highhead
 ---------------------------------------------------------------------------- */
 
-private ["_pos","_radius","_positions","_nearbldgs","_tmppositions","_house"];
+params ["_pos","_radius"];
 
-PARAMS_2(_pos,_radius);
-_positions = [];
-_nearbldgs = nearestObjects [_pos, ["House"], _radius];
+private _positions = [];
+private _nearbldgs = nearestObjects [_pos, ["House"], _radius];
+
 {
-        _house = _x;
-        _tmpPositions = [_house] call ALIVE_fnc_getBuildingPositions;
+        private _house = _x;
+        private _tmpPositions = [_house] call ALIVE_fnc_getBuildingPositions;
         {
+                /*
+                // Still there if we need it.
                 if((_x select 2) < (((boundingBox _house) select 1) select 2) - 0.5) then {
                         _positions pushback _x;
                 };
+                */
+
+                // Better results with a roof check
+                private _position = ATLtoASL _x;
+
+                if (lineIntersects [
+                        [_position select 0, _position select 1, (_position select 2) + 0.5],
+                        [_position select 0, _position select 1, (_position select 2) + 2.5]
+                ]) then {
+                        _positions pushback _x;
+                };
+
         } forEach _tmppositions;
 } forEach _nearbldgs;
 

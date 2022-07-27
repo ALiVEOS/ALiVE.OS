@@ -1,5 +1,5 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
-#include <\x\cba\addons\ui_helper\script_dikCodes.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\a3\editor_f\Data\Scripts\dikCodes.h"
 
 SCRIPT(C2MenuDef);
 
@@ -36,33 +36,67 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_menuDef","_target","_params","_menuName","_menuRsc","_menus","_backpacks","_userItems","_items","_result","_prUserItems","_otherResult","_csUserItems","_csResult"];
+private ["_menuDef","_target","_params","_menuName","_menuRsc","_menus","_userItems","_items","_result","_prUserItems","_otherResult","_csUserItems","_csResult"];
 // _this==[_target, _menuNameOrParams]
 
 PARAMS_2(_target,_params);
 
 _menuName = "";
 _menuRsc = "popup";
-_items = assignedItems player + items player;
-_backpacks = Backpack player;
-_userItems = [[MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR,"ALIVE_Tablet"];
+_items = (assignedItems player) + (items player) + ([backpack player]);
+_items = _items apply {tolower _x};
+_userItems = ([MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR) call ALiVE_fnc_stringListToArray;
+_userItems pushback "ALIVE_Tablet";
+_userItems = _userItems apply {tolower _x};
 //Finds selected userItem-string(s) in assignedItems
-_result = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _userItems) > 0);
+
+private _itemsString = _items joinstring ",";
+
+_result = false;
+{
+	private _requiredItem = _x;
+	if (_itemsString find _requiredItem != -1) exitwith {
+		_result = true;
+	};
+} foreach _userItems;
+
+// for backwards compat use 'find' to support partial matches
+//_result = count (_items arrayIntersect _userItems) > 0;
 _otherResult = false;
 _csResult = false;
 
 if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
-    _prUserItems = [[MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR];
-    _otherResult = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _prUserItems) > 0);
+    _prUserItems = [MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR;
+	_prUserItems = _prUserItems call ALiVE_fnc_stringListToArray;
+	_prUserItems = _prUserItems apply {tolower _x};
+
+	//_otherResult = count (_items arrayIntersect _prUserItems) > 0;
+	_otherResult = false;
+	{
+		private _requiredItem = _x;
+		if (_itemsString find _requiredItem != -1) exitwith {
+			_otherResult = true;
+		};
+	} foreach _prUserItems;
 };
 
 if ([QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable) then {
-    _csUserItems = [NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"]];
-    _csResult = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _csUserItems) > 0);
+    _csUserItems = NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"];
+	_csUserItems = _csUserItems call ALiVE_fnc_stringListToArray;
+	_csUserItems = _csUserItems apply {tolower _x};
+
+	//_csResult = count (_items arrayIntersect _csUserItems) > 0;
+	_csResult = false;
+	{
+		private _requiredItem = _x;
+		if (_itemsString find _requiredItem != -1) exitwith {
+			_csResult = true;
+		};
+	} foreach _csUserItems;
 };
 
 if (typeName _params == typeName []) then {
-    if (count _params < 1) exitWith {diag_log format["Error: Invalid params: %1, %2", _this, __FILE__];};
+    if (count _params < 1) exitWith {["Error: Invalid params: %1, %2", _this, __FILE__] call ALiVE_fnc_dump;};
     _menuName = _params select 0;
     _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
 } else {
@@ -131,7 +165,7 @@ if (_menuName == "C2ISTAR") then {
                     localize "STR_ALIVE_PR_COMMENT",
                      "",
                      -1,
-                     (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side player)], false]),
+                     (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side group player)], false]),
                      [QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable && {_otherResult}
                 ],
                 ["Tasks",
@@ -173,7 +207,7 @@ if (_menuName == "C2ISTAR") then {
                                 createDialog "RscDisplayALIVESITREP";
 
                                 private _ctrlBackground = ((findDisplay 90001) displayCtrl 90002);
-                                _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                                _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                                 _ctrlBackground ctrlSetPosition [
                                     0.15 * safezoneW + safezoneX,
                                     -0.242 * safezoneH + safezoneY,
@@ -206,7 +240,7 @@ if (_menuName == "C2ISTAR") then {
                                 createDialog "RscDisplayALIVEPATROLREP";
 
                                 private _ctrlBackground = ((findDisplay 90002) displayCtrl 90003);
-                                _ctrlBackground ctrlsettext "x\alive\addons\mil_c2istar\data\ui\ALIVE_mapbag.paa";
+                                _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                                 _ctrlBackground ctrlSetPosition [
                                     0.15 * safezoneW + safezoneX,
                                     -0.242 * safezoneH + safezoneY,

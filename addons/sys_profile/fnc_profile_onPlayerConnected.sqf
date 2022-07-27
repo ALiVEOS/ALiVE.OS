@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(profile_onPlayerConnected);
 
 /* ----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ if(isServer) then {
         _unit = [_uid] call ALIVE_fnc_getPlayerByUIDOnConnect;
 
         if !(isNull _unit) then {
-            //["ALIVE CONNECT: uid:%1",_uid] call ALIVE_fnc_dump;
+            //["CONNECT: uid:%1",_uid] call ALiVE_fnc_dump;
             ["CONNECT",_uid,_unit] call ALIVE_fnc_createProfilesFromPlayers;
         };
     };

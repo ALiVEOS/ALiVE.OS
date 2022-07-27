@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(chaseWheelShot);
 
 /* ----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ _hideTarget = if(count _this > 3) then {_this select 3} else {false};
 
 if(_hideTarget) then
 {
-    hideObject _target;
+    hideObjectGlobal _target;
 };
 
 _startTime = time;

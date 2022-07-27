@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 
-#include <\x\alive\addons\civ_placement\script_component.hpp>
+#include "\x\alive\addons\civ_placement\script_component.hpp"
 SCRIPT(test_clusterVisualisation);
 
 //execVM "\x\alive\addons\civ_placement\tests\test_clusterVisualisation.sqf"
@@ -191,14 +191,14 @@ SLEEP 30;
 
 
 
-["ALIVE CP - Count clusters %1",count _clusters] call ALIVE_fnc_dump;
-["ALIVE CP - Count power clusters %1",count _powerClusters] call ALIVE_fnc_dump;
-["ALIVE CP - Count comms clusters %1",count _commsClusters] call ALIVE_fnc_dump;
-["ALIVE CP - Count marine clusters %1",count _marineClusters] call ALIVE_fnc_dump;
-["ALIVE CP - Count rail clusters %1",count _railClusters] call ALIVE_fnc_dump;
-["ALIVE CP - Count fuel clusters %1",count _fuelClusters] call ALIVE_fnc_dump;
-["ALIVE CP - Count construction clusters %1",count _constructionClusters] call ALIVE_fnc_dump;
-["ALIVE CP - Count settlement clusters %1",count _settlementClusters] call ALIVE_fnc_dump;
+["CP - Count clusters %1",count _clusters] call ALiVE_fnc_dump;
+["CP - Count power clusters %1",count _powerClusters] call ALiVE_fnc_dump;
+["CP - Count comms clusters %1",count _commsClusters] call ALiVE_fnc_dump;
+["CP - Count marine clusters %1",count _marineClusters] call ALiVE_fnc_dump;
+["CP - Count rail clusters %1",count _railClusters] call ALiVE_fnc_dump;
+["CP - Count fuel clusters %1",count _fuelClusters] call ALiVE_fnc_dump;
+["CP - Count construction clusters %1",count _constructionClusters] call ALiVE_fnc_dump;
+["CP - Count settlement clusters %1",count _settlementClusters] call ALiVE_fnc_dump;
 
 
 nil;

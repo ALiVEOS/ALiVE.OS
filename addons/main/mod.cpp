@@ -1,5 +1,5 @@
 dir = "@ALIVE";
-name = "Arma 3: ALiVE";
+name = "Arma 3 ALiVE";
 picture = "x\alive\addons\main\logo_alive.paa";
 actionName = "$STR_MOD_LAUNCHER_ACTION";
 action = "http://alivemod.com";

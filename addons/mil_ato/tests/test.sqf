@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_ato\script_component.hpp>
+#include "\x\alive\addons\mil_ato\script_component.hpp"
 
 #define TESTS ["ATO_OCA","ATO_RECCE","ATO_SEAD_STRIKE_CAS"]
 

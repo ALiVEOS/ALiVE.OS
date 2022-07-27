@@ -87,43 +87,84 @@ class CfgVehicles {
                         description = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT";
                         defaultvalue = "0";
                     };
+                    class spawnRadiusUAV
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT";
+                        defaultvalue = "-1";
+                    };
                     class activeLimiter
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER";
                         description = "$STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER_COMMENT";
                         defaultvalue = "144";
                     };
+                    class zeusSpawn
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN_COMMENT";
+                        class Values
+                        {
+                            class Yes
+                            {
+                                name = "Yes";
+                                value = true;
+                                default = 1;
+                            };
+                            class No
+                            {
+                                name = "No";
+                                value = false;
+                            };
+                        };
+                    };
                     class speedModifier
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER";
                         description = "$STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT";
+                        typeName = "STRING";
                         class Values
                         {
-                            class None
-                            {
-                                name = "None";
-                                value = 1;
-                                default = 1;
-                            };
                             class Low
                             {
                                 name = "25%";
-                                value = 0.25;
+                                value = "0.25";
                             };
-                            class Med
+                            class Medium
                             {
                                 name = "50%";
-                                value = 0.5;
+                                value = "0.50";
                             };
                             class High
                             {
                                 name = "75%";
-                                value = 0.75;
+                                value = "0.75";
+                            };
+                            class None
+                            {
+                                name = "100%";
+                                value = "1.00";
+                                default = 1;
                             };
                             class Extreme
                             {
                                 name = "125%";
-                                value = 1.25;
+                                value = "1.25";
+                            };
+                            class Extremer
+                            {
+                                name = "150%";
+                                value = "1.50";
+                            };
+                            class Crazy
+                            {
+                                name = "175%";
+                                value = "1.75";
+                            };
+                            class Insane
+                            {
+                                name = "200%";
+                                value = "2.00";
                             };
                         };
                     };
@@ -136,31 +177,50 @@ class CfgVehicles {
 							class Regular
 							{
 								name = "Regular";
-								Value = 1;
+								Value = 0.75;
 								default = 1;
 							};
 							class Fastest
 							{
 								name = "Fastest";
-								Value = 2;
+								Value = 1.75;
 							};
 							class Faster
 							{
 								name = "Faster";
-								Value = 1.5;
+								Value = 1.25;
 							};
 							class Slower
 							{
 								name = "Slower";
-								Value = 0.5;
+								Value = 0.35;
 							};
 							class Slowest
 							{
 								name = "Slowest";
-								Value = 0.2;
+								Value = 0.1;
 							};
 						};
 					};
+                    class pathfinding
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT";
+                        class Values
+                        {
+                            class No
+                            {
+                                name = "No";
+                                value = false;
+                                default = 1;
+                            };
+                            class Yes
+                            {
+                                name = "Yes";
+                                value = true;
+                            };
+                        };
+                    };
                     class seaTransport
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT";

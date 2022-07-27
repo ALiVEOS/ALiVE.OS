@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_CQB\script_component.hpp>
+#include "\x\alive\addons\mil_CQB\script_component.hpp"
 SCRIPT(CQBSaveData);
 
 /* ----------------------------------------------------------------------------
@@ -43,7 +43,7 @@ private _keys = [];
 private _values = [];
 _data = [] call ALiVE_fnc_HashCreate;
 {
-    if (call compile (_x getvariable ["CQB_persistent","false"])) then {
+    if ((_x getvariable ["CQB_persistent","false"]) == "true") then {
         private _state = [_x,"state"] call ALiVE_fnc_CQB;
         private _type = [_state,"instancetype"] call AliVE_fnc_HashGet;
         private _id = format["CQB_%1_%2",_type,_foreachIndex];
@@ -65,7 +65,7 @@ _messages = _result select 1;
 _messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SAVE CQB DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
+    ["SAVE CQB DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
     _data call ALIVE_fnc_inspectHash;
 };
 
@@ -91,7 +91,7 @@ _messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [false, "ALiVE CQB - Save data complete","cqbper"] call ALIVE_fnc_timer;
-    ["ALiVE CQB SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_Dump;
+    ["CQB SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_dump;
 };
 
 _result

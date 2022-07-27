@@ -120,9 +120,16 @@ class FSM
        "_grp = _this select 1;" \n
        "_leader = leader _grp;" \n
        "_mkr = format[""HP:%1"", _leader];" \n
-       "_spawn = _logic getVariable [""spawnDistance"", 800];" \n
+       "_spawn = _logic getVariable [""spawnDistance"", 700];" \n
+       "_spawnStatic = _logic getVariable [""spawnDistanceStatic"", 1200];" \n
        "_spawnHeli = _logic getVariable [""spawnDistanceHeli"", 0];" \n
        "_spawnJet = _logic getVariable [""spawnDistanceJet"", 0];" \n
+       "" \n
+       "// add static weapon distance to spawn distance" \n
+       "_staticRange = 0;" \n
+       "if (!isNil {(_leader getVariable ""house"") getVariable ""staticWeapons""}) then {" \n
+       "    _staticRange = 0 max (_spawnStatic - _spawn);" \n
+       "};" \n
        "" \n
        "_radius = 50;" \n
        "if(count _this > 2) then {_radius = _this select 2;};" \n
@@ -137,7 +144,7 @@ class FSM
        "" \n
        "_pos = getPosATL _leader;" \n
        "_posDespawn = _pos;" \n
-       "_bldgpos = [_pos,_radius,""building""] call ALiVE_fnc_findNearHousePositions;" \n
+       "_bldgpos = [_pos,_radius] call ALiVE_fnc_findNearHousePositions;" \n
        "_staticWeapons = nearestObjects [_pos, [""StaticWeapon""], 20];" \n
        "" \n
        "if ((count _bldgpos) < (count units _grp)*1.2) then {" \n
@@ -149,7 +156,7 @@ class FSM
        "//[""Buildingpos: %1 - units: %2 - patrol %3"",_posNo,_grpTH,_pat] call ALiVE_fnc_DumpR;" \n
        "" \n
        "if (count _bldgpos == 0) exitwith {" \n
-       "    diag_log format[""CQB error: Group %1 has no buildingpositions! Deleting..."",_grp];" \n
+       "    [""CQB error: Group %1 has no buildingpositions! Deleting..."",_grp] call ALiVE_fnc_dump;" \n
        "    [_logic, ""delGroup"", _grp] call ALiVE_fnc_CQB;" \n
        "    _abort = true;" \n
        "};"/*%FSM</STATEINIT""">*/;
@@ -251,7 +258,7 @@ class FSM
           priority = 0.000000;
           to="Move_home";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, _spawn*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, (_spawn + _staticRange)*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -293,7 +300,7 @@ class FSM
        "" \n
        "		_unit moveInGunner _staticWeapon;" \n
        "" \n
-       "		//[""ALiVE CQB Housepatrol assigned unit %1 as gunner of %2! Total static weapons %3"",_unit,_staticWeapon,_staticWeaponsCopy] call ALiVE_fnc_DumpR;" \n
+       "		//[""CQB Housepatrol assigned unit %1 as gunner of %2! Total static weapons %3"",_unit,_staticWeapon,_staticWeaponsCopy] call ALiVE_fnc_dumpR;" \n
        "		" \n
        "		_staticWeaponsCopy = _staticWeaponsCopy - [_staticWeapon];" \n
        "	} else {" \n
@@ -302,14 +309,14 @@ class FSM
        "			if (_pat) then {" \n
        "			    _pos = [_pos,100] call CBA_fnc_Randpos;" \n
        "" \n
-       "				//[""ALiVE CQB Housepatrol assigned unit %1 to patrol 100mtrs from %2!"",_unit,_pos] call ALiVE_fnc_DumpR;" \n
+       "				//[""CQB Housepatrol assigned unit %1 to patrol 100mtrs from %2!"",_unit,_pos] call ALiVE_fnc_dumpR;" \n
        "" \n
        "			} else {" \n
        "			    _pos = _bldgpos select 0;" \n
        "			" \n
        "			    _bldgpos pushback _pos;" \n
        "" \n
-       "				//[""ALiVE CQB Housepatrol assigned unit %1 to move to house position %2!"",_unit,_pos] call ALiVE_fnc_DumpR;" \n
+       "				//[""CQB Housepatrol assigned unit %1 to move to house position %2!"",_unit,_pos] call ALiVE_fnc_dumpR;" \n
        "" \n
        "				_bldgpos set [0,""x""];" \n
        "				_bldgpos = _bldgpos - [""x""];" \n
@@ -372,7 +379,7 @@ class FSM
           priority = 0.000000;
           to="Move_home";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, _spawn*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, (_spawn + _staticRange)*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -434,7 +441,7 @@ class FSM
           priority = 0.000000;
           to="Move_home";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, _spawn*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, (_spawn + _staticRange)*1.2, _spawnJet*1.2, _spawnHeli*1.2] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -457,7 +464,7 @@ class FSM
       name = "End";
       init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal _mkr;" \n
        "if(_debug) then {" \n
-       "    format[""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "    [""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_dump;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -477,11 +484,11 @@ class FSM
        "    _leader setVariable [""FSM"", [_hdl,_fsm], true];" \n
        "" \n
        "    if(_debug) then {" \n
-       "        format[""%1 killed - Passing Simple House Patrol FSM to %2"",  _leader,_leaderNew] call ALiVE_fnc_logger;" \n
+       "        [""%1 killed - Passing Simple House Patrol FSM to %2"",  _leader,_leaderNew] call ALiVE_fnc_dump;" \n
        "    };" \n
        "} else {" \n
        "    if(_debug) then {" \n
-       "        format[""%1 killed - Ending Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "        [""%1 killed - Ending Simple House Patrol FSM"",  _leader] call ALiVE_fnc_dump;" \n
        "    };" \n
        "};" \n
        "deleteMarkerLocal _mkr;" \n
@@ -499,7 +506,7 @@ class FSM
       name = "End_1";
       init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal _mkr;" \n
        "if(_debug) then {" \n
-       "    format[""%1 patrol over -  Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "    [""%1 patrol over -  Simple House Patrol FSM"",  _leader] call ALiVE_fnc_dump;" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -535,7 +542,7 @@ class FSM
           priority = 3.000000;
           to="End_delete_group";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, _spawn*2.5, _spawnJet*2, _spawnHeli*2] call ALiVE_fnc_anyPlayersInRangeIncludeAir) && {({alive _x} count (units _grp) > 0)}"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"!([_posDespawn, (_spawn + _staticRange)*2.5, _spawnJet*2, _spawnHeli*2] call ALiVE_fnc_anyPlayersInRangeIncludeAir) && {({alive _x} count (units _grp) > 0)}"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -555,7 +562,7 @@ class FSM
           priority = 0.000000;
           to="Select_floors";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-          condition=/*%FSM<CONDITION""">*/"([_posDespawn, _spawn, _spawn, spawnJet,_spawnHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"([_posDespawn, (_spawn + _staticRange), spawnJet,_spawnHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir);"/*%FSM</CONDITION""">*/;
           action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
         };
         /*%FSM</LINK>*/
@@ -570,7 +577,7 @@ class FSM
        "[_logic, ""delGroup"", _grp] call ALiVE_fnc_CQB;" \n
        "" \n
        "if(_debug) then {" \n
-       "    format[""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "    [""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_dump;" \n
        "};" \n
        "" \n
        "deleteMarkerLocal _mkr;" \n

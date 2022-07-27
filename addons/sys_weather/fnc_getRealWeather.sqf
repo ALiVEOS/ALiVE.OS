@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_weather\script_component.hpp>
+#include "\x\alive\addons\sys_weather\script_component.hpp"
 SCRIPT(getWeather);
 
 /* ----------------------------------------------------------------------------
@@ -63,6 +63,9 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
     diag_log format ["WEATHER LOCATION: %1 = %2",_location, _newloc];
 
     private _year = _date select 0;
+    private _mon = _date select 1;
+    private _day = _date select 2;
+    private _hour = _date select 3;
 
     // Work out which year should be used
 
@@ -73,15 +76,22 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
     private _curDay = parseNumber (_curDate select 0);
     private _curHour = parseNumber (_curDate select 3);
 
-    // Check to see if we are in the future or earlier than 2007
-    if (((_date select 0) >= _curYear && (_date select 1) >= _curMon && (_date select 2) > _curDay) || ((_date select 0) < 2007)) then {
-        _date set [0,_curYear - 1]; // set year
+    if (_year > _curYear || _year < 2007) then {
+        _date set [0,_curYear - 1];
     };
 
-    // If we are going for current time then move back 1 hour
-    if ((_date select 0) == _curYear && (_date select 1) == _curMon && (_date select 2) == _curDay && (_date select 3) >= _curHour) then {
-        _date set [3,_curHour -1];
+    if (_year == _curYear && _mon > _curMon) then {
+        _date set [1,_curMon - 1];
     };
+
+    if (_year == _curYear && _mon == _curMon && _day > _curDay) then {
+        _date set [2,_curDay - 1];
+    };
+
+    if (_year == _curYear && _mon == _curMon && _day == _curDay && _hour >= _curHour) then {
+        _date set [3,_curHour - 1];
+    };
+
 
     // convert date back to string to handle values less than 10
     {
@@ -149,7 +159,7 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
             [_weatherHash,_realWeather select _i, _realWeather select (_i+1)] call ALiVE_fnc_hashSet;
         };
 
-        diag_log format["--------------------------------- WEATHER IN %1 AT %2 ---------------------------------", WEATHER_CYCLE_REAL_LOCATION, _date];
+        ["--------------------------------- WEATHER IN %1 AT %2 ---------------------------------", WEATHER_CYCLE_REAL_LOCATION, _date] call ALiVE_fnc_dump;
 
         if (WEATHER_DEBUG) then {
             _weatherHash call ALiVE_fnc_inspectHash;
@@ -158,10 +168,10 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
         _result = _weatherHash;
 
     } else {
-        diag_log format["--------------------------------- ERROR GETTING REAL WEATHER : %1", _realWeather];
+        ["--------------------------------- ERROR GETTING REAL WEATHER : %1", _realWeather] call ALiVE_fnc_dump;
     };
 } else {
-    diag_log format["--------------------------------- ERROR GETTING REAL WEATHER : %1", _newLoc];
+    ["--------------------------------- ERROR GETTING REAL WEATHER : %1", _newLoc] call ALiVE_fnc_dump;
 };
 
 _result

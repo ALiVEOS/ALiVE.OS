@@ -1,4 +1,4 @@
-#include <\x\alive\addons\x_lib\script_component.hpp>
+#include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(getObjectsByType);
 
 /* ----------------------------------------------------------------------------
@@ -46,7 +46,7 @@ if(isNil "wrp_objects") then {
     _worldName = toLower(worldName);
     _file = format["x\alive\addons\fnc_strategic\indexes\objects.%1.sqf", _worldName];
     call compile preprocessFileLineNumbers _file;
-    format["Reading raw object data from file - %1 objects", count wrp_objects] call ALIVE_fnc_logger;
+    ["Reading raw object data from file - %1 objects", count wrp_objects] call ALIVE_fnc_dump;
 
     /*
     Removed due to index parser

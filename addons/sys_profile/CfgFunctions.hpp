@@ -191,11 +191,6 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileSpawner.sqf";
                 RECOMPILE;
             };
-            class profileDespawner {
-                description = "profileDespawner";
-                file = "\x\alive\addons\sys_profile\fnc_profileDespawner.sqf";
-                RECOMPILE;
-            };
             class getNearProfiles {
                 description = "getNearProfiles";
                 file = "\x\alive\addons\sys_profile\fnc_getNearProfiles.sqf";
@@ -250,7 +245,7 @@ class cfgFunctions {
                 description = "profilesLoadDataPNS";
                 file = "\x\alive\addons\sys_profile\fnc_profilesLoadDataPNS.sqf";
                 RECOMPILE;
-            };            
+            };
             class profileAttack {
                 description = "profileAttack";
                 file = "\x\alive\addons\sys_profile\fnc_profileAttack.sqf";
@@ -264,6 +259,11 @@ class cfgFunctions {
             class profileGetDamageOutput {
                 description = "profileGetDamageOutput";
                 file = "\x\alive\addons\sys_profile\fnc_profileGetDamageOutput.sqf";
+                RECOMPILE;
+            };
+            class profileGetPathfindingProcedure {
+                description = "profileGetPathfindingProcedure";
+                file = "\x\alive\addons\sys_profile\fnc_profileGetPathfindingProcedure.sqf";
                 RECOMPILE;
             };
         };

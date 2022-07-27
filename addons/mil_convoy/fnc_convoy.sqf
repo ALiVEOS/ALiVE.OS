@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_convoy\script_component.hpp>
+#include "\x\alive\addons\mil_convoy\script_component.hpp"
 
 SCRIPT(convoy);
 
@@ -69,7 +69,7 @@ switch(_operation) do {
 
                         _logic setvariable ["conv_intensity_setting",(parsenumber (_logic getvariable["conv_intensity_setting","1"])),true];
                         _logic setvariable ["conv_safearea_setting",(parsenumber (_logic getvariable["conv_safearea_setting","2000"])),true];
-                        _logic setvariable ["conv_debug_setting",(call compile (_logic getvariable["conv_debug_setting","false"])),true];
+                        _logic setvariable ["conv_debug_setting",((_logic getvariable["conv_debug_setting","false"]) == "true"),true];
                         _logic getvariable ["conv_factions_setting","OPF_F"];
 
                         /*

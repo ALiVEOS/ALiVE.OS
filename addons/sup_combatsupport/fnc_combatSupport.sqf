@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sup_combatSupport\script_component.hpp>
+#include "\x\alive\addons\sup_combatSupport\script_component.hpp"
 SCRIPT(combatSupport);
 
 /* ----------------------------------------------------------------------------
@@ -59,7 +59,7 @@ switch(_operation) do {
                 };
 
                 //Only one init per instance is allowed
-                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SUP COMBATSUPPORT - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+                if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SUP COMBATSUPPORT - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
                 //Start init
                 _logic setVariable ["initGlobal", false];
@@ -95,6 +95,21 @@ switch(_operation) do {
                         _artyArrays = [];
                         _sides = [WEST,EAST,RESISTANCE,CIVILIAN];
 
+                        private _appendPylonLoadOutCode = {
+                            private _entry = param [0, objNull];
+                            private _code = param [1, ""];
+
+                            private _pylonMagazines = getPylonMagazines _entry;
+
+                            if (count _pylonMagazines > 0) then {
+                                private _codeArray = [_code, ";"] call CBA_fnc_split;
+                                _codeArray pushBack (format ["{(_this select 0) setPylonLoadOut [_forEachIndex + 1, _x]} forEach %1", _pylonMagazines]);
+                                _code = [_codeArray, ";"] call CBA_fnc_join;
+                            };
+
+                            _code;
+                        };
+
                         for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
 
                             _entry = vehicle ((synchronizedObjects _logic) select _i);
@@ -110,6 +125,7 @@ switch(_operation) do {
                                         _height = _entry getvariable ["CS_HEIGHT",0];
                                         _code = _entry getvariable ["CS_CODE",""];
                                         _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
+                                        _code = [_entry, _code] call _appendPylonLoadOutCode;
 
                                         _position = getposATL _entry;
                                         _id = [_position] call ALiVE_fnc_getNearestAirportID;
@@ -127,6 +143,7 @@ switch(_operation) do {
                                         _height = _entry getvariable ["CS_HEIGHT",0];
                                         _code = _entry getvariable ["CS_CODE",""];
                                         _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
+                                        _code = [_entry, _code] call _appendPylonLoadOutCode;
                                         _slingloading = _entry getvariable ["CS_SLINGLOADING",true];
                                         _containers = _entry getvariable ["CS_CONTAINERS",0];
 
@@ -153,6 +170,7 @@ switch(_operation) do {
                                         _height = _entry getvariable ["CS_HEIGHT",0];
                                         _code = _entry getvariable ["CS_CODE",""];
                                         _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
+                                        _code = [_entry, _code] call _appendPylonLoadOutCode;
                                         _slingloading = _entry getvariable ["CS_SLINGLOADING",true];
                                         _containers = _entry getvariable ["CS_CONTAINERS",0];
 
@@ -340,7 +358,7 @@ switch(_operation) do {
                                 default {_side = EAST};
                             };
 
-                            private ["_veh","_grp"];
+                            private ["_veh","_grp","_crew"];
 
                             _veh = nearestObjects [_pos, [_type], 5];
 
@@ -352,12 +370,19 @@ switch(_operation) do {
 
                                 If(_height > 0) then {_veh setposasl [getposASL _veh select 0, getposASL _veh select 1, _height]; _veh setVelocity [0,0,-1]} else {_veh setPosATL _pos};
 
-                                [_veh, _grp] call BIS_fnc_spawnCrew;
+                                createVehicleCrew _veh;
+                                _crew = crew _veh;
+                                _crew joinSilent _grp;
+                                _grp addVehicle _veh;
+
                              } else {
                                 _veh = _veh select 0;
                                 _grp = group (driver _veh);
                             };
 
+                            // Exclude CS from VCOM
+                            // CS only runs serverside so no PV is needed
+                            (driver _veh) setvariable ["VCOM_NOAI", true];
 
                             _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                             _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
@@ -437,10 +462,10 @@ switch(_operation) do {
                             _veh setVariable ["ALIVE_CombatSupport", true];
                             _veh setVariable ["NEO_transportAvailableTasks", _tasks, true];
 
-                            [_veh, _grp, _callsign, _pos, _dir, _height, _type, CS_RESPAWN,_code, _audio, _slingloading] execFSM _transportfsm;
+                            private _fsmHandle = [_veh, _grp, _callsign, _pos, _dir, _height, _type, CS_RESPAWN,_code, _audio, _slingloading] execFSM _transportfsm;
 
                             _t = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", _side];
-                            _t pushback ([_veh, _grp, _callsign]);
+                            _t pushback ([_veh, _grp, _callsign, _fsmHandle]);
 
                             NEO_radioLogic setVariable [format ["NEO_radioTrasportArray_%1", _side], _t,true];
 
@@ -471,7 +496,7 @@ switch(_operation) do {
                                 default {_side = EAST};
                             };
 
-                            private ["_veh","_grp"];
+                            private ["_veh","_grp","_crew"];
 
                             _veh = nearestObjects [_pos, [_type], 5];
 
@@ -486,12 +511,20 @@ switch(_operation) do {
                                 if (getNumber(configFile >> "CfgVehicles" >> _type >> "isUav") == 1) then {
                                     createVehicleCrew _veh;
                                 } else {
-                                    [_veh, _grp] call BIS_fnc_spawnCrew;
+                                    createVehicleCrew _veh;
+                                    _crew = crew _veh;
+                                    _crew joinSilent _grp;
+                                    _grp addVehicle _veh;
                                 };
                              } else {
                                 _veh = _veh select 0;
                                 _grp = group (driver _veh);
                             };
+
+                            // Exclude CS from VCOM
+                            // CS only runs serverside so no PV is needed
+                            (driver _veh) setvariable ["VCOM_NOAI", true];
+
                                 _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                                 _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                                 _ffvTurrets = _ffvTurrets - _gunnerTurrets;
@@ -530,10 +563,10 @@ switch(_operation) do {
                             _veh setVariable ["ALIVE_CombatSupport", true];
 
                             //FSM
-                            [_veh, _grp, _callsign, _pos, _airport, _dir, _height, _type, CS_RESPAWN, _code, _audio] execFSM _casfsm;
+                            private _fsmHandle = [_veh, _grp, _callsign, _pos, _airport, _dir, _height, _type, CS_RESPAWN, _code, _audio] execFSM _casfsm;
 
                             _c = NEO_radioLogic getVariable format ["NEO_radioCasArray_%1", _side];
-                            _c pushback ([_veh, _grp, _callsign]);
+                            _c pushback ([_veh, _grp, _callsign, _fsmHandle]);
 
                             NEO_radioLogic setVariable [format ["NEO_radioCasArray_%1", _side], _c,true];
 
@@ -588,7 +621,7 @@ switch(_operation) do {
                             _artyBatteries = [];
                             _vehDir = 0;
 
-                            private ["_veh","_grp"];
+                            private ["_veh","_grp","_crew"];
 
                             _veh = nearestObjects [_pos, [_class], 5];
 
@@ -613,10 +646,17 @@ switch(_operation) do {
                                     _veh lock true;
                                     _vehDir = _vehDir + 90;
 
+                                    createVehicleCrew _veh;
+                                    _crew = crew _veh;
+                                    _crew joinSilent _grp;
+                                    _grp addVehicle _veh;
+
                                     // set ownership flag for other modules
                                     _veh setVariable ["ALIVE_CombatSupport", true];
 
-                                    [_veh, _grp] call BIS_fnc_spawnCrew;
+                                    // Exclude CS from VCOM
+                                    // CS only runs serverside so no PV is needed
+                                    (driver _veh) setvariable ["VCOM_NOAI", true];
 
                                     if (_i == 1) then {leader _grp setRank "CAPTAIN"};
 
@@ -693,10 +733,10 @@ switch(_operation) do {
                             leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
 
                             //FSM
-                            [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
+                            private _fsmHandle = [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio, _side] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
 
                             _a = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];
-                            _a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable]);
+                            _a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable, _fsmHandle]);
 
                             NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
 
@@ -764,39 +804,67 @@ switch(_operation) do {
                    };
 
                 // and wait for game logic to initialise
-                // TODO merge into lazy evaluation
-                waitUntil {!isNil "NEO_radioLogic"};
-                waitUntil {NEO_radioLogic getVariable ["init", false]};
+                waitUntil {!isNil "NEO_radioLogic" && {NEO_radioLogic getVariable ["init", false]}};
 
                 /*
                 VIEW - purely visual
                 */
-                NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",
-                    [
-                        [
-                            ("<t color=""#700000"">" + ("Talk To Pilot") + "</t>"),
-                            {["talk"] call ALIVE_fnc_radioAction},
-                            "talk",
-                            -1,
-                            false,
-                            true,
-                            "",
-                            "
-                                ({(_x select 0) == vehicle _this} count (NEO_radioLogic getVariable format ['NEO_radioTrasportArray_%1', playerSide]) > 0)
-                                &&
-                                {alive (driver (vehicle _this))}
-                            "
-                        ]
-                    ]
-                ];
-
-                {player addAction _x} foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray");
-                player addEventHandler ["Respawn", { {(_this select 0) addAction _x } foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray") }];
-
-                //if there is a real screen it must be a player so hand out the menu item
-                if (hasInterface) then {
+                //if there is a real screen it must be a player so hand out the actions and menu items
+                if (hasInterface) then {    
                     //Initialise Functions and add respawn eventhandler
-                    waituntil {(!(isnull player) && !(isnil "NEO_radioLogic"))};
+                    waituntil {!isnull player};
+
+                    NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",
+                        [
+                            [
+                                ("<t color=""#700000"">" + ("Talk To Pilot") + "</t>"),
+                                {
+                                    private _caller = _this select 1;
+                                    private _vehicle = nil;
+
+                                    if (vehicle _caller != _caller) then {
+                                        _vehicle = vehicle _caller;
+                                    }
+                                    else {
+                                        _vehicle = cursorTarget;
+                                    };
+
+                                    ["talk"] call ALIVE_fnc_radioAction;
+                                    NEO_radioLogic setVariable ["NEO_radioTalkWithPilot", _vehicle];
+                                },
+                                "talk",
+                                -1,
+                                false,
+                                true,
+                                "",
+                                "
+                                    private _vehicle = nil;
+                                    private _vehicle_found = false;
+
+                                    {
+                                        if (_x select 0 == cursorTarget && {_this distance cursorTarget <= 50}) exitWith {
+                                            _vehicle = _x select 0;
+                                        };
+
+                                        if (_x select 0 == vehicle _this) exitWith {
+                                            _vehicle = _x select 0;
+                                        };
+
+                                    } forEach (NEO_radioLogic getVariable format [""NEO_radioTrasportArray_%1"", playerSide]);
+
+                                    if (!isNil ""_vehicle"" && {alive (driver _vehicle)}) then {
+                                        _vehicle_found = true;
+                                    };
+
+                                    _vehicle_found;
+                                "
+                            ]
+                        ]
+                    ];
+
+                    //Add Neo actions
+                    {player addAction _x} foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray");
+                    player addEventHandler ["Respawn", { {(_this select 0) addAction _x } foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray") }];
 
                     if (isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]]};
 
@@ -812,9 +880,9 @@ switch(_operation) do {
                             -9500,
                             [
                                     "call ALIVE_fnc_CombatSupportMenuDef",
-                                    "main"
+                                    ["main", "alive_flexiMenu_rscPopup"]
                             ]
-                    ] call ALIVE_fnc_flexiMenu_Add;
+                    ] call CBA_fnc_flexiMenu_Add;
                 };
             };
         case "destroy": {

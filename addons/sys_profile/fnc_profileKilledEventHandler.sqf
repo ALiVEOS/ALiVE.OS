@@ -1,4 +1,4 @@
-#include <\x\alive\addons\sys_profile\script_component.hpp>
+#include "\x\alive\addons\sys_profile\script_component.hpp"
 SCRIPT(profileKilledEventHandler);
 
 /* ----------------------------------------------------------------------------
@@ -29,7 +29,7 @@ _killer = _this select 1;
 _profileID = _unit getVariable "profileID";
 _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
 
-_killerSide = str(side _killer);
+_killerSide = str(side group _killer);
 
 if (isnil "_profile" || {!isServer}) exitwith {};
 

@@ -1,4 +1,4 @@
-#include <\x\alive\addons\mil_C2ISTAR\script_component.hpp>
+#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
 SCRIPT(taskMilDefence);
 
 /* ----------------------------------------------------------------------------
@@ -63,7 +63,8 @@ switch (_taskState) do {
         // establish the location for the task
         // get friendly occupied cluster position
 
-        _targetPosition = [_taskLocation,_taskLocationType,_taskSide,"MIL"] call ALIVE_fnc_taskGetSideCluster;
+        // true = ignore custom military objectives that do not allow player tasking
+        _targetPosition = [_taskLocation,_taskLocationType,_taskSide,"MIL",true] call ALIVE_fnc_taskGetSideCluster;
 
         if(count _targetPosition == 0 || {_taskLocationType == "Map" && {_targetPosition distance _taskLocation > 1000}}) then {
             private ["_category","_compType"];
@@ -88,7 +89,7 @@ switch (_taskState) do {
 
             // spawn a populated composition
             _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
-            
+
             _compType = "Military";
             If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
                 _compType = "Guerrilla";
@@ -163,16 +164,18 @@ switch (_taskState) do {
             _taskIDs pushback _newTaskID;
 
             // create the defend task
+            // IF ATO or OPCOM is calling to defned HQ/Objective, don't create a wave of attackers.
+            if (_requestPlayerID != "ATO" && _requestPlayerID != "OPCOM" ) then {
+                _dialog = [_dialogOption,"DefenceWave"] call ALIVE_fnc_hashGet;
+                _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
+                _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
+                _newTaskID = format["%1_c2",_taskID];
+                _taskSource = format["%1-MilDefence-DefenceWave",_taskID];
+                _newTask = [_newTaskID,_requestPlayerID,_taskSide,_targetPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
 
-            _dialog = [_dialogOption,"DefenceWave"] call ALIVE_fnc_hashGet;
-            _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
-            _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;
-            _newTaskID = format["%1_c2",_taskID];
-            _taskSource = format["%1-MilDefence-DefenceWave",_taskID];
-            _newTask = [_newTaskID,_requestPlayerID,_taskSide,_targetPosition,_taskFaction,_taskTitle,_taskDescription,_taskPlayers,"Created",_taskApplyType,"N",_taskID,_taskSource,true];
-
-            _tasks pushback _newTask;
-            _taskIDs pushback _newTaskID;
+                _tasks pushback _newTask;
+                _taskIDs pushback _newTaskID;
+            };
 
             // store task data in the params for this task set
 

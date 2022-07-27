@@ -1,4 +1,4 @@
-    #include <\x\alive\addons\mil_convoy\script_component.hpp>
+    #include "\x\alive\addons\mil_convoy\script_component.hpp"
 
     private ["_logic","_type","_startposi","_startroads","_dire","_grop","_veh","_pos","_facs","_type","_debug"];
 
@@ -18,7 +18,7 @@
     _type = (selectRandom _type);
 
     if (_debug) then {
-        ["ALiVE MIL CONVOY Spawning %1 at %2", _type,_pos] call ALiVE_fnc_DumpR;
+        ["MIL CONVOY Spawning %1 at %2", _type,_pos] call ALiVE_fnc_dumpR;
     };
 
     _veh = [_pos, _dire, _type, _grop] call BIS_fnc_spawnVehicle;

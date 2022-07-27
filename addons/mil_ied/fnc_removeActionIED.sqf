@@ -1,14 +1,18 @@
-#include <\x\alive\addons\mil_ied\script_component.hpp>
+#include "\x\alive\addons\mil_ied\script_component.hpp"
 SCRIPT(removeActionIED);
 
+params [
+	"_object",
+	"_actionID"
+];
+
+if (!(hasInterface)) exitWith {};
+
 // Add action to IED
-private ["_debug"];
+private _debug = (ADDON getVariable ["debug", 0]);
 
-_debug = ADDON getVariable ["debug", 0];
+if (_debug) then {diag_log "removeActionIED running.";};
 
-if (_debug) then {diag_log "RemoveActionIED running.";};
+_object removeAction _actionID;
 
-(_this select 0) removeAction (_this select 1);
-
-
-
+_object call ALiVE_fnc_aceMenu_removeActionIED;
