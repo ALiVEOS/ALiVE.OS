@@ -453,11 +453,11 @@ switch(_operation) do {
                         if (_startupIED) then {
                             _num = round ((_size / 50) * ( _iedThreat / 100));
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
-                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2',%3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
+                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,""%2"",%3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",text _twn]];
                             [_logic, "storeTrigger", [_size,text _twn,getPos _twn, false,"IED",_num]] call MAINCLASS;
                         } else {
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
-                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED", text _twn]];
+                            _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,""%2""] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED", text _twn]];
                             [_logic, "storeTrigger", [_size,text _twn,getPos _twn, false, "IED"]] call MAINCLASS;
                         };
 
@@ -707,9 +707,9 @@ switch(_operation) do {
                 };
 
                 if (_num > 0) then {
-                    _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2', %3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
+                    _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,""%2"", %3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",text _twn]];
                 } else {
-                    _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,'%2'] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,'%1'] call ALIVE_fnc_removeIED",text _twn]];
+                    _trg setTriggerStatements["this && ({(vehicle _x in thisList) && ((getposATL _x) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)", format ["null = [getpos thisTrigger,%1,""%2""] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",text _twn]];
                 };
 
                 if (_logic getVariable["debug",false]) then {
