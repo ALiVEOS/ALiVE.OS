@@ -1,0 +1,146 @@
+
+dev = $STR_VN_MISSIONS_AUTHOR_ALIVE_DH;
+author = $STR_VN_MISSIONS_AUTH_MISSION_ALIVE_DH;
+overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam\pics\scenario.paa";
+overviewText = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_DH;
+onLoadName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE_DH;
+onLoadMission = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_DH;
+loadScreen = "x\alive\addons\missions\mpscenarios\ALiVE_Diamond_Hands.Cam_Lao_Nam\pics\execution.paa";
+
+disabledAI = 0;
+aiKills = 0;
+
+joinUnassigned = 1;
+saving = 0;
+
+enableDebugConsole = 1;
+allowFunctionsLog = 1;
+allowFunctionsRecompile = 0;
+
+respawn = 3;
+respawnOnStart = -1;
+respawnTemplates[] = {"MenuPosition", "Spectator"};
+respawnDelay = 15;
+RespawnDialog = 0;
+respawnButton = 1;
+
+corpseManagerMode = 2;
+corpseLimit = 50;
+corpseRemovalMaxTime = 450;
+minPlayerDistance = 150;
+
+allowProfileGlasses = 0;
+
+briefing = 1;
+debriefing = 1;
+
+#include "CfgFunctions.inc"
+#include "arsenal.hpp"
+
+class header {
+    gametype = ALIVE;
+    minplayers = 1;
+    maxplayers = 9;
+    playerCountMultipleOf = 1;
+};
+
+class Params
+{
+	class EnvironmentSettings
+	{
+	    title = $STR_VN_PARAMS_ENVIRONMENT_SETTINGS;
+	    values[] = {""};
+	    texts[] = {""};
+	    default = "";
+	};
+
+	#include "params\paramRespawnTickets.hpp"
+
+	class vn_respawn_delay
+	{
+	    title = $STR_VN_PARAMS_RESPAWN_DELAY;
+	    isGlobal = 1;
+	    values[] = {10, 30, 60, 90, 120};
+	    texts[] = {"10", "30", "60", "90", "120"};
+	    default = 10;
+	    function = "vn_alivems_fnc_params_respawnDelay";
+	};
+	class Stamina
+	{
+	    title = $STR_VN_PARAMS_STAMINA;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_stamina";
+	};
+	class AimCoef
+	{
+	    title = $STR_VN_PARAMS_AIMCOEF;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 0;
+	    function = "vn_alivems_fnc_params_aimCoef";
+	};
+	class FailOnWipe
+	{
+	    title = $STR_VN_PARAMS_FAILONWIPE;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_failOnWipe";
+	};
+	class TeleportAction
+	{
+	    title = $STR_VN_PARAMS_TELEPORTACTION;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_teleportAction";
+	};
+	class MissionArsenal
+	{
+	    title = $STR_VN_PARAMS_ARSENAL;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_arsenal";
+	};
+	class Enablemapmarkers
+	{
+	    title = $STR_VN_COALIVE_PARAMS_MAPMARKERS_DH;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_mapMarkers";
+	};
+	class RotorLib
+	{
+	    title = $STR_VN_PARAMS_ROTORLIB_DH;
+	    isGlobal = 1;
+	    values[] = {2, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 2;
+	    function = "vn_alivems_fnc_params_rotorLib";
+	};
+};
+
+class CfgMusic
+{
+	class Fortunate_Son
+	{
+		name = "Fortunate Son";
+		duration = 141;
+		sound[] = {"music\fortunate.ogg", db + 10,1.0};
+	};
+	class Adagio
+	{
+		name = "Adagio for Strings";
+		duration = 420;
+		sound[] = {"music\adagio.ogg", db + 10,1.0};
+	};
+};

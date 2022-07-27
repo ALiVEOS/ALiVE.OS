@@ -38,8 +38,8 @@ class CfgMissions
     };
 };
 
+/*
 class CAWorld;
-
 class CfgWorlds
 {
     class Stratis: CAWorld
@@ -51,6 +51,7 @@ class CfgWorlds
             cutscenes[] = {"ALiVE_Intro_Altis","ALiVE_Intro_Altis_1"};
     };    
 };
+*/
 
 class CfgMusic
 {

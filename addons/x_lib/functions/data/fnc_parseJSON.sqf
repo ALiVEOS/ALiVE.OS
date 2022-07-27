@@ -64,7 +64,7 @@ JSON_fnc_parse = {
 
     _check = _charArray select _pos;
     if (isNil "_check") exitWith {
-        diag_log format["Error charArray too small: %1, %2", _pos, _charArray];
+        ["Error charArray too small: %1, %2", _pos, _charArray] call ALiVE_fnc_dump;
         _return;
     };
 
@@ -93,7 +93,7 @@ JSON_fnc_parse = {
                     private ["_char"];
                     _char = 0;
                     _char = _charArray select _pos;
-                    if (isNil "_char") exitWith {diag_log format["PARSE JSON: ERROR charArray = %1 and pos = %2",_charArray, _pos];_done = true; _return = true;};
+                    if (isNil "_char") exitWith {["PARSE JSON: ERROR charArray = %1 and pos = %2",_charArray, _pos] call ALiVE_fnc_dump;_done = true; _return = true;};
                     if (_char == ASCII_COLON) then {
                         // End of Key
                         //TRACE_1("Setting Key", toString _tmpKey);
@@ -115,7 +115,7 @@ JSON_fnc_parse = {
                 while {!_done} do {
                     private ["_char"];
                     _char = _charArray select _pos;
-                    if (isNil "_char") exitWith {diag_log format["PARSE JSON: ERROR charArray = %1 and pos = %2",_charArray, _pos];_done = true; _return = true;};
+                    if (isNil "_char") exitWith {["PARSE JSON: ERROR charArray = %1 and pos = %2",_charArray, _pos] call ALiVE_fnc_dump;_done = true; _return = true;};
                     switch (_char) do {
                         case JSON_OBJECT_START:{
                             private "_retval";

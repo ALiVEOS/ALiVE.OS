@@ -2669,19 +2669,19 @@ class CfgGroups
                 class B_T_sentryTeam_SpeedBoat
                 {
                     name = "$STR_A3_CfgGroups_East_OPF_F_Naval_OIA_sentryTeam_Boat0";
-                    side = 0;
+                    side = 1;
                     faction = "BLU_T_F";
                     icon = "\A3\ui_f\data\map\markers\nato\b_naval.paa";
                     class Unit0
                     {
-                        side = 0;
+                        side = 1;
                         vehicle = "B_T_soldier_TL_F";
                         rank = "SERGEANT";
                         position[] = {0,0,0};
                     };
                     class Unit1
                     {
-                        side = 0;
+                        side = 1;
                         vehicle = "B_T_Boat_Armed_01_minigun_F";
                         rank = "PRIVATE";
                         position[] = {-32,-57,0};
@@ -2827,19 +2827,19 @@ class CfgGroups
                 class HAF_sentryTeam_SpeedBoat
                 {
                     name = "$STR_A3_CfgGroups_East_OPF_F_Naval_OIA_sentryTeam_Boat0";
-                    side = 0;
+                    side = 2;
                     faction = "IND_F";
                     icon = "\A3\ui_f\data\map\markers\nato\n_naval.paa";
                     class Unit0
                     {
-                        side = 0;
+                        side = 2;
                         vehicle = "I_soldier_TL_F";
                         rank = "SERGEANT";
                         position[] = {0,0,0};
                     };
                     class Unit1
                     {
-                        side = 0;
+                        side = 2;
                         vehicle = "I_Boat_Armed_01_minigun_F";
                         rank = "PRIVATE";
                         position[] = {-32,-57,0};

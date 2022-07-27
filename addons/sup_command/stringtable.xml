@@ -3,18 +3,18 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_SCOM">
-    <Original>Player Command/Control (C2ISTAR)</Original>
+    <English>Player Command/Control (C2ISTAR)</English>
 </Key>
 <Key ID="STR_ALIVE_SCOM_MENU">
-    <Original>Player C2ISTAR</Original>
+    <English>Player C2ISTAR</English>
 </Key>
 <Key ID="STR_ALIVE_SCOM_COMMENT">
-    <Original>Group Management</Original>
+    <English>Group Management</English>
 </Key>
 <Key ID="STR_ALIVE_SCOM_INTEL_COMMENT">
-    <Original>Battlefield Intelligence</Original>
+    <English>Battlefield Intelligence</English>
 </Key>
 <Key ID="STR_ALIVE_SCOM_OPS_COMMENT">
-    <Original>Command/Control</Original>
+    <English>Command/Control</English>
 </Key>
 </Container></Package></Project>

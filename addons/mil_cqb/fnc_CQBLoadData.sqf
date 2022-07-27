@@ -73,7 +73,7 @@ _instances = (MOD(CQB) getVariable ["instances",[]]);
     if ((_logic getvariable ["CQB_persistent","false"]) == "true") then {
 
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-            ["ALiVE LOAD CQB DATA APPLYING STATE!"] call ALIVE_fnc_dump;
+            ["LOAD CQB DATA APPLYING STATE!"] call ALiVE_fnc_dump;
         };
 
         {[_logic,"state",_x] call ALiVE_fnc_CQB} foreach (_data select 2);

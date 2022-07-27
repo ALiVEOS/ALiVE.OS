@@ -184,7 +184,7 @@ switch(_operation) do {
                             GVAR(Loaded) = true;
                             [_logic, "restoreTriggers", [GVAR(STORE), "triggers"] call ALiVE_fnc_hashGet] call MAINCLASS;
                             // DEBUG -------------------------------------------------------------------------------------
-                            if(_debug) then { ["ALIVE IED - IEDs have been loaded from Database"] call ALIVE_fnc_dump; };
+                            if(_debug) then { ["IED - IEDs have been loaded from Database"] call ALiVE_fnc_dump; };
                             // DEBUG -------------------------------------------------------------------------------------
                         } else {
                             ["ALiVE IED - No data loaded.. restoring defaults"] call ALiVE_fnc_dump;
@@ -240,7 +240,7 @@ switch(_operation) do {
 
                 if(_debug) then {
                     ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                    ["ALIVE IED - Startup"] call ALIVE_fnc_dump;
+                    ["IED - Startup"] call ALiVE_fnc_dump;
                     [true] call ALIVE_fnc_timer;
                 };
 
@@ -322,6 +322,7 @@ switch(_operation) do {
             } else {
                 _noIED = false;
             };
+
 
             switch (_triggerType) do {
                 case "starting": {
@@ -464,6 +465,7 @@ switch(_operation) do {
                             diag_log format ["ALIVE-%1 IED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
                         };
                     };
+
                 };
             } foreach _locations;
         };

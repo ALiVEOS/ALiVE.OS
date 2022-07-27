@@ -56,11 +56,17 @@ switch(_taskSide) do {
 _markerDefinition = [];
 
 switch(_taskType) do {
+    case "Insertion":{
+        _markerDefinition = [_taskPosition,_taskID,_colour,"Start","mil_start",[1,1],1,"ICON"];
+    };
+    case "Extraction":{
+        _markerDefinition = [_taskPosition,_taskID,_colour,"Extraction","mil_end",[1,1],1,"ICON"];
+    };
     case "HVT":{
-        _markerDefinition = [_taskPosition,_taskID,_colour,"HVT","mil_objective",[1,1],1,"ICON"];
+        _markerDefinition = [_taskPosition,_taskID,_colour,"HVT","o_inf",[1,1],1,"ICON"];
     };
     case "hostage":{
-        _markerDefinition = [_taskPosition,_taskID,_colour,"Hostage","mil_objective",[1,1],1,"ICON"];
+        _markerDefinition = [_taskPosition,_taskID,_colour,"Hostage","b_inf",[1,1],1,"ICON"];
     };
     case "csar":{
         _markerDefinition = [_taskPosition,_taskID,_colour,"Beacon","mil_warning",[1,1],1,"ICON"];
@@ -105,13 +111,15 @@ switch(_taskType) do {
 
         _markerDefinition = [_taskPosition,_taskID,_colour,"Target Infantry",_icon,[1,1],1,"ICON"];
     };
-
     case "building":{
 
         _icon = format["%1_inf",_typePrefix];
         _type = format["Target %1",_type];
 
         _markerDefinition = [_taskPosition,_taskID,_colour,_type,_icon,[1,1],1,"ICON"];
+    };
+    default {
+        _markerDefinition = [_taskPosition,_taskID,_colour,".","mil_warning",[1,1],1,"ICON"];
     };
 };
 

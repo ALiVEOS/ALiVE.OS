@@ -43,7 +43,7 @@ if (GVAR(ENABLED)) then {
     _unit = _this select 0;
     _diveTime = _this select 1;
 
-    //diag_log format["Diving: %1", _this];
+    //["Diving: %1", _this] call ALiVE_fnc_dump;
 
     if (local _unit && isPlayer _unit) then {
 

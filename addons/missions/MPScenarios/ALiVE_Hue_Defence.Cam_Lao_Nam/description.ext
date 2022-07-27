@@ -1,0 +1,210 @@
+
+dev = $STR_VN_MISSIONS_AUTHOR_ALIVE_XRAY;
+author = $STR_VN_MISSIONS_AUTH_MISSION_ALIVE_XRAY;
+overviewPicture = "x\alive\addons\missions\MPScenarios\ALiVE_Hue_Defence.Cam_Lao_Nam\img\mission.paa";
+overviewText = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_XRAY;
+onLoadName = $STR_VN_MISSIONS_TITLE_MISSION_ALIVE_XRAY;
+onLoadMission = $STR_VN_MISSIONS_DESC_MISSION_ALIVE_XRAY;
+loadScreen = "x\alive\addons\missions\MPScenarios\ALiVE_Hue_Defence.Cam_Lao_Nam\img\mission.paa";
+
+disabledAI = 0;
+aiKills = 0;
+
+joinUnassigned = 1;
+saving = 0;
+
+enableDebugConsole = 1;
+allowFunctionsLog = 1;
+allowFunctionsRecompile = 0;
+
+respawn = 3;
+respawnOnStart = -1;
+respawnTemplates[] = {"MenuPosition", "Spectator"};
+respawnDelay = 15;
+RespawnDialog = 0;
+respawnButton = 1;
+
+corpseManagerMode = 2;
+corpseLimit = 50;
+corpseRemovalMaxTime = 450;
+minPlayerDistance = 150;
+
+allowProfileGlasses = 0;
+
+briefing = 1;
+debriefing = 1;
+
+
+#include "CfgFunctions.inc"
+#include "arsenal.hpp"
+
+class Header {
+    gametype = ALIVE;
+    minPlayers = 1;
+    maxPlayers = 21;
+    playerCountMultipleOf = 1;
+};
+
+class Params
+{
+	class EnvironmentSettings
+	{
+	    title = $STR_VN_PARAMS_ENVIRONMENT_SETTINGS;
+	    values[] = {""};
+	    texts[] = {""};
+	    default = "";
+	};
+	class alive_forcepool_pavn
+	{
+	    title = $STR_VN_COALIVE_PARAMS_FORCEPOOL_PAVN_XRAY;
+	    isGlobal = 1;
+	    values[] = {0, 10, 25, 50, 75, 100, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+	    texts[] = {"0", "10", "25", "50", "75", "100", "150", "200", "300", "400", "500", "600", "700", "800", "900", "1000"};
+	    default = 25;
+	    function = "vn_alivems_fnc_params_forcePoolPavn";
+	};
+	class alive_forcepool_vc
+	{
+	    title = $STR_VN_COALIVE_PARAMS_FORCEPOOL_VC_XRAY;
+	    isGlobal = 1;
+	    values[] = {0, 10, 25, 50, 75, 100, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+	    texts[] = {"0", "10", "25", "50", "75", "100", "150", "200", "300", "400", "500", "600", "700", "800", "900", "1000"};
+	    default = 25;
+	    function = "vn_alivems_fnc_params_forcePoolVc";
+	};
+	// #include "params\paramDaytimeHour.hpp"
+	#include "params\paramRespawnTickets.hpp"
+	class vn_respawn_delay
+	{
+	    title = $STR_VN_PARAMS_RESPAWN_DELAY;
+	    isGlobal = 1;
+	    values[] = {10, 30, 60, 90, 120};
+	    texts[] = {"10", "30", "60", "90", "120"};
+	    default = 10;
+	    function = "vn_alivems_fnc_params_respawnDelay";
+	};
+	class Stamina
+	{
+	    title = $STR_VN_PARAMS_STAMINA;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_stamina";
+	};
+	class AimCoef
+	{
+	    title = $STR_VN_PARAMS_AIMCOEF;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 0;
+	    function = "vn_alivems_fnc_params_aimCoef";
+	};
+	class FailOnWipe
+	{
+	    title = $STR_VN_PARAMS_FAILONWIPE;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 0;
+	    function = "vn_alivems_fnc_params_failOnWipe";
+	};
+	class TeleportAction
+	{
+	    title = $STR_VN_PARAMS_TELEPORTACTION;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_teleportAction";
+	};
+	class MissionArsenal
+	{
+	    title = $STR_VN_PARAMS_ARSENAL;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_arsenal";
+	};
+	class Enablemapmarkers
+	{
+	    title = $STR_VN_COALIVE_PARAMS_MAPMARKERS_XRAY;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 1;
+	    function = "vn_alivems_fnc_params_mapMarkers";
+	};
+	class RotorLib
+	{
+	    title = $STR_VN_PARAMS_ROTORLIB_XRAY;
+	    isGlobal = 1;
+	    values[] = {2, 1};
+	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
+	    default = 2;
+	    function = "vn_alivems_fnc_params_rotorLib";
+	};
+	
+};
+
+
+class CfgDebriefing
+{
+    class coalive_fail1
+    {
+        title =	$STR_VN_DEBRIEFING_FAILOBJECTIVE_TITLE;
+        subtitle = $STR_VN_DEBRIEFING_FAILOBJECTIVE_SUBTITLE;
+        description = $STR_VN_DEBRIEFING_CO01_FAILOBJECTIVE;
+        pictureBackground = "x\alive\addons\missions\MPScenarios\ALiVE_Hue_Defence.Cam_Lao_Nam\data\debrief_fail.jpg";
+        vn_debrief_mission_text = $STR_VN_DEBRIEFING_COALIVE_OVERVIEW_XRAY;
+        vn_debrief_notes_text = $STR_VN_DEBRIEFING_COALIVE_NOTES_XRAY;
+        vn_debrief_background = "x\alive\addons\missions\MPScenarios\ALiVE_Hue_Defence.Cam_Lao_Nam\data\debrief.paa";
+    };
+    class coalive_fail2: coalive_fail1
+    {
+        title =	$STR_VN_DEBRIEFING_FAILDEATH_TITLE_XRAY;
+        subtitle = $STR_VN_DEBRIEFING_FAILDEATH_SUBTITLE_XRAY;
+        description = $STR_VN_DEBRIEFING_COALIVE_FAILDEATH_XRAY;
+    };
+    class coalive_victory: coalive_fail1
+    {
+        title =	$STR_VN_DEBRIEFING_VICTORY_TITLE;
+        subtitle = $STR_VN_DEBRIEFING_VICTORY_SUBTITLE_XRAY;
+        description = $STR_VN_DEBRIEFING_COALIVE_VICTORY_XRAY;
+        pictureBackground = "x\alive\addons\missions\MPScenarios\ALiVE_Hue_Defence.Cam_Lao_Nam\data\debrief_success.jpg";
+    };
+};
+
+class CfgTaskDescriptions
+{
+	
+		// create equip task
+    class vn_tasks_coalive_a01_t01
+    {
+        title       = $STR_VN_TASKS_COALIVE_A01_T01_TITLE;
+        description = $STR_VN_TASKS_COALIVE_A01_T01_DESCR;
+    }; 
+    class vn_tasks_coalive_a01_t02
+    {
+        title       = $STR_VN_TASKS_COALIVE_A01_T02_TITLE;
+        description = $STR_VN_TASKS_COALIVE_A01_T02_DESCR;
+    };
+    class vn_tasks_coalive_a01_t03
+    {
+        title       = $STR_VN_TASKS_COALIVE_A01_T03_TITLE;
+        description = $STR_VN_TASKS_COALIVE_A01_T03_DESCR;
+    };
+    class vn_tasks_coalive_a01_t04
+    {
+        title       = $STR_VN_TASKS_COALIVE_A01_T04_TITLE;
+        description = $STR_VN_TASKS_COALIVE_A01_T04_DESCR;
+    };
+};
+
+
+
+
+
+
+

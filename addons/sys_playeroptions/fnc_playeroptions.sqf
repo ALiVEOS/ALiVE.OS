@@ -77,7 +77,7 @@ switch (_operation) do {
             ["%1 - Initialisation started...",_logic] call ALiVE_fnc_Dump;
 
             //Only one init per instance is allowed
-            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE Player Options - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["Player Options - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
             //Start init
             _logic setVariable ["initGlobal", false];

@@ -183,13 +183,17 @@ class AddonsMetaData
 randomSeed=12893134;
 class ScenarioData
 {
-	author="SpyderBlack723";
+	author="ALiVE Mod Team - Tupolov";
+	overviewText="Stratis is reeling from a brutal insurgency campaign. IED's litter the landscape, its your job to identify and disarm IEDs to ensure the safety of the civilian population. Beware of the local militia!";
+	overviewTextLocked="Stratis is reeling from a brutal insurgency campaign. IED's litter the landscape, its your job to identify and disarm IEDs to ensure the safety of the civilian population. Beware of the local militia!";
+	onLoadMission="Stratis is reeling from a brutal insurgency campaign. IED's litter the landscape, its your job to identify and disarm IEDs to ensure the safety of the civilian population. Beware of the local militia!";
+	
 };
 class Mission
 {
 	class Intel
 	{
-		briefingName="ALiVE | Hurt Locker";
+		briefingName="ALiVE | Hurt Locker (Stratis)";
 		resistanceWest=0;
 		startWeather=0.75999999;
 		startWind=0.099999994;

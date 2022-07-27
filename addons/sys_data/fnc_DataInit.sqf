@@ -17,7 +17,7 @@ PARAMS_2(_logic,_mode);
 ASSERT_DEFINED("ALIVE_fnc_Data","Main function missing");
 
 //Only one init per instance is allowed
-if (!isnil QUOTE(ADDON) && isDedicated) exitwith {["ALiVE SYS DATA - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+if (!isnil QUOTE(ADDON) && isDedicated) exitwith {["SYS DATA - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
 // Check to see if module was placed... (might be auto enabled)
 if (isnil "_logic") then {
@@ -91,11 +91,11 @@ if (isDedicated || (isServer && _pns)) then {
 
     if (isDedicated) then {
 
-        ["ALIVE_SYS_DATA START PLUGIN: %1", _initmsg] call ALIVE_fnc_dump;
+        ["SYS DATA START PLUGIN: %1", _initmsg] call ALIVE_fnc_dump;
         private _serverIP = [] call ALIVE_fnc_getServerIP;
         // If the host IP web service is down, just use the serverName
         if (_serverIP != "SYS_DATA_ERROR" && typeName _initmsg == "STRING" && {_initmsg == "YOU ARE NOT AUTHORIZED"}) then {
-            ["YOUR SERVER EXTERNAL IP ADDRESS AS SEEN BY WAR ROOM: %1 (Ensure it matches with your War Room server entry if you have any issues)",_serverIP] call ALiVE_fnc_dump;
+            ["SYS DATA - YOUR SERVER EXTERNAL IP ADDRESS AS SEEN BY WAR ROOM: %1 (Ensure it matches with your War Room server entry if you have any issues)",_serverIP] call ALiVE_fnc_dump;
         };
     };
 
@@ -105,7 +105,7 @@ if (isDedicated || (isServer && _pns)) then {
     };
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["ALiVE SYS_DATA - GROUP NAME: %1",GVAR(GROUP_ID)] call ALIVE_fnc_dump;
+        ["SYS DATA - GROUP NAME: %1",GVAR(GROUP_ID)] call ALiVE_fnc_dump;
     };
 
     // Setup data handler
@@ -127,13 +127,13 @@ if (isDedicated || (isServer && _pns)) then {
     };
 
     // Attempt to connect to web services
-    ["DATA: Attempting to load ALiVE web services config."] call ALIVE_fnc_dump;
+    ["SYS_DATA - Attempting to load web services config."] call ALiVE_fnc_dump;
 
     // Get global config information
     _config = [GVAR(datahandler), "read", ["sys_data", [], "config"], "CouchDB"] call ALIVE_fnc_Data;
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["ALiVE SYS_DATA - CONFIG: %1",_config] call ALIVE_fnc_dump;
+        ["SYS DATA - CONFIG: %1",_config] call ALiVE_fnc_dump;
     };
 
     // Exit if necessary
@@ -141,7 +141,7 @@ if (isDedicated || (isServer && _pns)) then {
 
     // Check that the config loaded ok, if not then stop the data module
     if (typeName _config == "STRING" || (typeName _initmsg == "STRING" && {_initmsg == "YOU ARE NOT AUTHORIZED"})) then {
-        ["CANNOT CONNECT TO CLOUD SERVICE, DISABLING WEB SERVICES"] call ALIVE_fnc_logger;
+        ["CANNOT CONNECT TO CLOUD SERVICE, DISABLING WEB SERVICES"] call ALIVE_fnc_dump;
 
         MOD(sys_data) setvariable ["disableStats", "true"];
         ALIVE_sys_statistics_ENABLED = false;
@@ -159,14 +159,14 @@ if (isDedicated || (isServer && _pns)) then {
     };
 
     if (!_pns && _exit) exitWith {
-        ["EXITING DATA INIT AS CANNOT CONNECT TO COUCHDB"] call ALIVE_fnc_logger;
+        ["SYS DATA - EXITING DATA INIT AS CANNOT CONNECT TO COUCHDB"] call ALIVE_fnc_dump;
         GVAR(DISABLED) = true;
         publicVariable QGVAR(DISABLED);
     };
 
     // Check to see if the service is off
     if (!_exit && {[_config, "On"] call ALIVE_fnc_hashGet == "false"}) then {
-        ["CONNECTED TO ALIVEMOD.COM, BUT CLOUD SERVICE HAS BEEN TURNED OFF"] call ALIVE_fnc_logger;
+        ["SYS DATA - CONNECTED TO ALIVEMOD.COM, BUT CLOUD SERVICE HAS BEEN TURNED OFF"] call ALIVE_fnc_dump;
 
         MOD(sys_data) setvariable ["disablePerf", "true"];
         ALIVE_sys_perf_ENABLED = false;
@@ -184,7 +184,7 @@ if (isDedicated || (isServer && _pns)) then {
     };
 
     if (!_pns && _exit) exitWith {
-        ["EXITING DATA INIT AS CANNOT CONNECT TO COUCHDB"] call ALIVE_fnc_logger;
+        ["SYS DATA - EXITING DATA INIT AS CANNOT CONNECT TO COUCHDB"] call ALiVE_fnc_dump;
         GVAR(DISABLED) = true;
         publicVariable QGVAR(DISABLED);
     };
@@ -193,11 +193,11 @@ if (isDedicated || (isServer && _pns)) then {
     if (!_exit) then {
         if ([_config, "PerfData","false"] call ALIVE_fnc_hashGet != "none") then {
             if ([_config, "PerfData","false"] call ALIVE_fnc_hashGet == "true") then {
-                ["CONNECTED TO CLOUD SERVICE AND PERFDATA IS ALLOWED"] call ALIVE_fnc_logger;
+                ["SYS DATA - CONNECTED TO CLOUD SERVICE AND PERFDATA IS ALLOWED"] call ALiVE_fnc_dump;
                 //            MOD(sys_data) setvariable ["disablePerf", "false"];
                 //            ALIVE_sys_perf_ENABLED = true;
             } else {
-                ["CONNECTED TO CLOUD SERVICE, BUT PERFDATA HAS BEEN TURNED OFF"] call ALIVE_fnc_logger;
+                ["SYS DATA - CONNECTED TO CLOUD SERVICE, BUT PERFDATA HAS BEEN TURNED OFF"] call ALiVE_fnc_dump;
                 MOD(sys_data) setvariable ["disablePerf", "true"];
                 ALIVE_sys_perf_ENABLED = false;
                 publicVariable "ALIVE_sys_perf_ENABLED";
@@ -205,7 +205,7 @@ if (isDedicated || (isServer && _pns)) then {
         };
 
         if ([_config, "EventData","false"] call ALIVE_fnc_hashGet == "false") then {
-            ["CONNECTED TO CLOUD SERVICE, BUT STAT DATA HAS BEEN TURNED OFF"] call ALIVE_fnc_logger;
+            ["SYS DATA - CONNECTED TO CLOUD SERVICE, BUT STAT DATA HAS BEEN TURNED OFF"] call ALiVE_fnc_dump;
             ALIVE_sys_statistics_ENABLED = false;
             publicVariable "ALIVE_sys_statistics_ENABLED";
         } else {
@@ -214,7 +214,7 @@ if (isDedicated || (isServer && _pns)) then {
         };
 
         if ([_config, "AAR","false"] call ALIVE_fnc_hashGet == "false") then {
-            ["CONNECTED TO CLOUD SERVICE, BUT AAR HAS BEEN TURNED OFF"] call ALIVE_fnc_logger;
+            ["SYS DATA - CONNECTED TO CLOUD SERVICE, BUT AAR HAS BEEN TURNED OFF"] call ALiVE_fnc_dump;
             ALIVE_sys_AAR_ENABLED = false;
         } else {
             ALIVE_sys_AAR_ENABLED = true;
@@ -236,7 +236,7 @@ if (isDedicated || (isServer && _pns)) then {
 
     if (!_pns) then {
         // Try loading dictionary from cloud db
-        ["DATA: Loading data dictionary %1.", _dictionaryName] call ALIVE_fnc_dump;
+        ["SYS_DATA - Loading data dictionary %1.", _dictionaryName] call ALIVE_fnc_dump;
 
         _response = [GVAR(datahandler), "read", ["sys_data", [], _dictionaryName]] call ALIVE_fnc_Data;
         if ( typeName _response != "STRING") then {
@@ -262,13 +262,13 @@ if (isDedicated || (isServer && _pns)) then {
             GVAR(dictionaryLoaded) = true;
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - DICTIONARY LOADED: %1",ALIVE_DataDictionary] call ALIVE_fnc_dump;
+                ["SYS DATA - DICTIONARY LOADED: %1",ALIVE_DataDictionary] call ALiVE_fnc_dump;
             };
 
         } else {
-            ["DATA: No data dictionary found, might be new mission"] call ALIVE_fnc_dump;
+            ["SYS_DATA - No data dictionary found, might be new mission"] call ALIVE_fnc_dump;
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - NO DICTIONARY AVAILABLE: %1",_response] call ALIVE_fnc_dump;
+                ["SYS DATA - NO DICTIONARY AVAILABLE: %1",_response] call ALiVE_fnc_dump;
             };
 
             // Need to cancel loading data if there is no dictionary
@@ -279,7 +279,7 @@ if (isDedicated || (isServer && _pns)) then {
     };
 
     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-        ["ALiVE SYS_DATA - MISSION: %1 %2 %3",_logic, MOD(sys_data), MOD(sys_data) getVariable "saveDateTime"] call ALIVE_fnc_dump;
+        ["SYS DATA - MISSION: %1 %2 %3",_logic, MOD(sys_data), MOD(sys_data) getVariable "saveDateTime"] call ALiVE_fnc_dump;
     };
 
     // Handle basic mission persistence - date/time and custom variables
@@ -287,28 +287,28 @@ if (isDedicated || (isServer && _pns)) then {
     if (GVAR(dictionaryLoaded) && (MOD(sys_data) getVariable ["saveDateTime","false"] == "true")) then {
         private ["_missionName","_response"];
         // Read in date/time for mission
-        ["DATA: Loading basic mission data."] call ALIVE_fnc_dump;
+        ["SYS_DATA - Loading basic mission data."] call ALIVE_fnc_dump;
         _missionName = format["%1_%2", GVAR(GROUP_ID), missionName];
         _response = [GVAR(datahandler), "read", ["sys_data", [], _missionName]] call ALIVE_fnc_Data;
         if ( typeName _response != "STRING") then {
             GVAR(mission_data) = _response;
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - MISSION DATA LOADED: %1",_response] call ALIVE_fnc_dump;
+                ["SYS DATA - MISSION DATA LOADED: %1",_response] call ALiVE_fnc_dump;
             };
 
             setdate ([GVAR(mission_data), "date", date] call CBA_fnc_hashGet);
         } else {
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - NO MISSION DATA AVAILABLE: %1",_response] call ALIVE_fnc_dump;
+                ["SYS DATA - NO MISSION DATA AVAILABLE: %1",_response] call ALiVE_fnc_dump;
             };
 
         };
     } else {
 
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-            ["ALiVE SYS_DATA - EITHER DATA LOAD FAILED OR MISSION DATA PERSISTENCE TURNED OFF: %1",GVAR(dictionaryLoaded)] call ALIVE_fnc_dump;
+            ["SYS DATA - EITHER DATA LOAD FAILED OR MISSION DATA PERSISTENCE TURNED OFF: %1",GVAR(dictionaryLoaded)] call ALiVE_fnc_dump;
         };
 
     };
@@ -318,14 +318,14 @@ if (isDedicated || (isServer && _pns)) then {
     if (GVAR(dictionaryLoaded) && (MOD(sys_data) getVariable ["saveCompositions","false"] == "true")) then {
         private ["_missionName","_response"];
         // Read in compositions for mission
-        ["DATA: Loading mission compositions data."] call ALIVE_fnc_dump;
+        ["SYS_DATA - Loading mission compositions data."] call ALIVE_fnc_dump;
         _missionName = format["%1_%2_COMPOSITIONS", GVAR(GROUP_ID), missionName];
         _response = [GVAR(datahandler), "read", ["sys_data", [], _missionName]] call ALIVE_fnc_Data;
         if ( typeName _response != "STRING") then {
             MOD(PCOMPOSITIONS) = _response;
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - MISSION COMPOSITION DATA LOADED: %1",_response] call ALIVE_fnc_dump;
+                ["SYS DATA - MISSION COMPOSITION DATA LOADED: %1",_response] call ALiVE_fnc_dump;
             };
 
             // Update CIV PLACEMENT Module so that roadblocks are not duplicated
@@ -345,7 +345,7 @@ if (isDedicated || (isServer && _pns)) then {
         } else {
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS_DATA - NO MISSION COMPOSITION DATA AVAILABLE: %1",_response] call ALIVE_fnc_dump;
+                ["SYS DATA - NO MISSION COMPOSITION DATA AVAILABLE: %1",_response] call ALiVE_fnc_dump;
             };
 
         };
@@ -362,11 +362,11 @@ if (isDedicated || (isServer && _pns)) then {
 
         // Need to optimise this with PFH
         [] spawn {
-            ["ALiVE SYS_DATA - ASYNC WRITE LOOP STARTING"] call ALIVE_fnc_dump;
+            ["SYS DATA - ASYNC WRITE LOOP STARTING"] call ALiVE_fnc_dump;
             while {true} do {
                 TRACE_1("ASYNC QUEUE COUNT", count GVAR(ASYNC_QUEUE));
             //    {
-            //        ["ALiVE SYS_DATA - ASYNC QUEUE %2: %1", _x, _forEachIndex] call ALIVE_fnc_dump;
+            //        ["SYS_DATA - ASYNC QUEUE %2: %1", _x, _forEachIndex] call ALiVE_fnc_dump;
             //    } foreach GVAR(ASYNC_QUEUE);
                 {
                     private ["_cmd","_response"];
@@ -382,7 +382,7 @@ if (isDedicated || (isServer && _pns)) then {
                     TRACE_3("ASYNC WRITE LOOP", _cmd, _response, count GVAR(ASYNC_QUEUE));
 
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE SYS_DATA - ASYNC WRITE LOOP: %1 : %2", _cmd, _response] call ALIVE_fnc_dump;
+                        ["SYS DATA - ASYNC WRITE LOOP: %1 : %2", _cmd, _response] call ALiVE_fnc_dump;
                     };
 
                     sleep 0.3;
@@ -406,7 +406,7 @@ if (isDedicated || (isServer && _pns)) then {
         // Start the AAR monitoring module
         if (MOD(sys_data) getvariable ["disableAAR", "false"] == "false" && ALIVE_sys_AAR_ENABLED) then {
 
-            ["DATA: Starting AAR system."] call ALIVE_fnc_dump;
+            ["SYS_DATA - Starting AAR system."] call ALIVE_fnc_dump;
 
             [] spawn {
                 // Thread running on server to report state/pos of every playable unit and group every x seconds
@@ -481,7 +481,7 @@ if (isDedicated || (isServer && _pns)) then {
                         TRACE_1("SYS_DATA AAR", allUnits);
                         {
                             private _unit = _x;
-                            if ((vehicle _unit == _unit) && alive _unit && (typeof _unit != "Logic") && (side _unit != civilian)) then {
+                            if ((vehicle _unit == _unit) && alive _unit && (typeof _unit != "Logic") && (side group _unit != civilian)) then {
                                 TRACE_1("SYS_DATA AAR", _unit);
                                 private _unitHash = [] call ALIVE_fnc_hashCreate;
 
@@ -637,7 +637,7 @@ if (isDedicated || (isServer && _pns)) then {
                                                 if (_this isKindOf "Helicopter_Base_F") exitWith { "iconHelicopter" };
                                                 if (_this isKindOf "Plane_Base_F" || _this isKindOf "Plane") exitWith { "iconPlane" };
 
-                                                //diag_log format["unknown vehicle type: %1", typeOf _this];
+                                                //["unknown vehicle type: %1", typeOf _this] call ALiVE_fnc_dump;
                                                 "iconUnknown";
                                             }
                                 );
@@ -674,14 +674,14 @@ if (isDedicated || (isServer && _pns)) then {
                     sleep AAR_DEFAULT_SAMPLE_RATE;
 
                 };
-                diag_log "AAR system stopped";
+                ["SYS DATA - AAR system stopped"] call ALiVE_fnc_dump;
             };
         };
     };
 } else {
     if (GVAR(SOURCE) == "CouchDB" && {isServer && {hasInterface}}) then {
-        ["DATA: Cloud access is not granted for SP/EDITOR/HOST and only dedicated servers! Disabling SYS DATA..."] call ALIVE_fnc_dump;
-        
+        ["SYS_DATA - Cloud access is not granted for SP/EDITOR/HOST and only dedicated servers! Disabling SYS DATA..."] call ALIVE_fnc_dump;
+
         GVAR(DISABLED) = true;
         PublicVariable QGVAR(DISABLED);
     };
@@ -689,11 +689,11 @@ if (isDedicated || (isServer && _pns)) then {
 
 
 waituntil {
-    ["DATA: Waiting for global DISABLED variable..."] call ALIVE_fnc_dump;
+    ["SYS_DATA - Waiting for global DISABLED variable..."] call ALIVE_fnc_dump;
     !isnil QGVAR(DISABLED)
 };
 
-["DATA: SYS DATA enabled: %1",!(GVAR(DISABLED))] call ALIVE_fnc_dump;
+["SYS DATA enabled: %1",!(GVAR(DISABLED))] call ALIVE_fnc_dump;
 
 // Init complete
 if (isServer && {!isnil QMOD(SYS_DATA)}) then {
@@ -703,7 +703,7 @@ if (isServer && {!isnil QMOD(SYS_DATA)}) then {
 TRACE_2("SYS_DATA STAT VAR", MOD(sys_data) getVariable "disableStats", ALIVE_sys_statistics_ENABLED);
 // Kickoff the stats module
 if (_logic getvariable ["disableStats","false"] == "false") then {
-    ["DATA: Starting stats system."] call ALIVE_fnc_dump;
+    ["SYS_DATA - Starting stats system."] call ALIVE_fnc_dump;
     [_logic] call ALIVE_fnc_statisticsInit;
 };
 

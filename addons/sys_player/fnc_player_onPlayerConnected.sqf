@@ -30,7 +30,7 @@ if (!isNil QMOD(sys_player) && isServer) then {
 
     if (_name == "__SERVER__" || _uid == "") exitWith {
 
-        ["ALiVE SYS_PLAYER - EXITING AS SERVER IS UNIT CONNECTING OR UID IS NIL", _name, _uid] call ALIVE_fnc_dump;
+        ["SYS_PLAYER - EXITING AS SERVER IS UNIT CONNECTING OR UID IS NIL", _name, _uid] call ALiVE_fnc_dump;
         // MOVED TO MODULE INIT
 
     };
@@ -77,7 +77,7 @@ if (!isNil QMOD(sys_player) && isServer) then {
 
         } else {
 
-            ["ALiVE SYS_PLAYER - PLAYER UNIT FOUND IN PLAYABLEUNITS (%1)",_unit] call ALIVE_fnc_dump;
+            ["SYS_PLAYER - PLAYER UNIT FOUND IN PLAYABLEUNITS (%1)",_unit] call ALiVE_fnc_dump;
             // Ask player if they want to be restored first?
 
             ["DATA: Restoring player data for %1", _unit] call ALIVE_fnc_dump;

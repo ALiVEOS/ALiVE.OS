@@ -77,7 +77,7 @@ switch(_operation) do {
 
         // only one init per instance is allowed
 
-        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS Orbat Creator - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SYS Orbat Creator - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
         // start init
 
@@ -135,7 +135,7 @@ switch(_operation) do {
                 private _factionIcon = getText (_factionClass >> "icon");
                 private _factionPriority = getNumber (_factionClass >> "priority");
 
-                private _factionAssetData = [_assetsByFaction, _faction] call ALiVE_fnc_hashGet;
+                private _factionAssetData = [_assetsByFaction, tolower _faction] call ALiVE_fnc_hashGet;
                 private _factionAssetCategories = _factionAssetData select 0;
                 private _factionAssets = _factionAssetData select 1;
 
@@ -6903,7 +6903,7 @@ switch(_operation) do {
 
                 sleep 1;
 
-                // diag_log format["%1 : %2", _unitclass, weapons _unit];
+                // ["%1 : %2", _unitclass, weapons _unit] call ALiVE_fnc_dump;
 
                 _weaponList pushBackUnique (primaryWeapon _unit);
                 {

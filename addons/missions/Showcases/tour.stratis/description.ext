@@ -4,6 +4,8 @@ onLoadIntroTime = 1;
 onLoadMissionTime = 1;
 onLoadName = ALiVE | Tour;
 loadScreen = "x\alive\addons\missions\logo_alive.paa";
+overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+
 aiKills = 0;
 briefing = 1;
 debriefing = 1;

@@ -72,7 +72,7 @@ if (isnil "_logic") then {
 _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
 
 //Only one init per instance is allowed
-if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE Require - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+if !(isnil {_logic getVariable "initGlobal"}) exitwith {["Require - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
 //Start init
 _logic setVariable ["initGlobal", false];
@@ -204,12 +204,12 @@ if (hasInterface) then {
                     _name = name player;
                     _uid = getPlayerUID player;
 
-                    ["ALiVE Exit - Exit Player id: %1 name: %2 uid: %3",_id,_name,_uid] call ALIVE_fnc_dump;
+                    ["Exit - Exit Player id: %1 name: %2 uid: %3",_id,_name,_uid] call ALiVE_fnc_dump;
 
-                    //diag_log format["STATS ENABLED: %1",MOD(sys_statistics_ENABLED)];
+                    //["STATS ENABLED: %1",MOD(sys_statistics_ENABLED)] call ALiVE_fnc_dump;
 
                     if (!isNil QMOD(sys_statistics) && (MOD(sys_statistics_ENABLED))) then {
-                        ["ALiVE Exit - Player Stats OPD"] call ALIVE_fnc_dump;
+                        ["Exit - Player Stats OPD"] call ALiVE_fnc_dump;
 
                         if (!isNil "ALIVE_sys_statistics_playerShotsFired") then {
 
@@ -227,14 +227,14 @@ if (hasInterface) then {
 
                     if (["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) then {
 
-                        ["ALiVE Exit - Player Profile Handler OPD"] call ALIVE_fnc_dump;
+                        ["Exit - Player Profile Handler OPD"] call ALiVE_fnc_dump;
                         // Profiles module onPlayerDisconnected call
                         [[_id, _name, _uid],"ALIVE_fnc_profile_onPlayerDisconnected", false, false] call BIS_fnc_MP;
 
                     };
-                    ["ALiVE Exit - [ABORT] Ending mission"] call ALIVE_fnc_dump;
+                    ["Exit - [ABORT] Ending mission"] call ALiVE_fnc_dump;
                 }];
-                ["ALiVE has hooked abort button: %1", player] call ALiVE_fnc_Dump;
+                ["has hooked abort button: %1", player] call ALiVE_fnc_dump;
             };
         }] call CBA_fnc_addKeyHandler;
     };
@@ -255,6 +255,6 @@ _logic setVariable ["bis_fnc_initModules_activate",true];
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
 
-["ALiVE Global INIT COMPLETE"] call ALIVE_fnc_dump;
+["Global INIT COMPLETE"] call ALiVE_fnc_dump;
 [false,"ALiVE Global Init Timer Complete","INIT"] call ALIVE_fnc_timer;
 [" "] call ALIVE_fnc_dump;

@@ -3,22 +3,22 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_STATISTICS">
-    <Original>Statistics</Original>
+    <English>Statistics</English>
 </Key>
 <Key ID="STR_ALIVE_DISABLE_STATISTICS">
-    <Original>Disable Statistics</Original>
+    <English>Disable Statistics</English>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_COMMENT">
-    <Original>Disable MP Statistics recorded to ALiVE web service</Original>
+    <English>Disable MP Statistics recorded to ALiVE web service</English>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_ENABLE">
-    <Original>Enable Statistics</Original>
+    <English>Enable Statistics</English>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_ENABLE_COMMENT">
-    <Original>Enable/Disable events/statistics recording to the ALiVE web service</Original>
+    <English>Enable/Disable events/statistics recording to the ALiVE web service</English>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_ERROR1">
-    <Original>Only one statistics module can be used</Original>
+    <English>Only one statistics module can be used</English>
 </Key>
 
 </Container></Package></Project>

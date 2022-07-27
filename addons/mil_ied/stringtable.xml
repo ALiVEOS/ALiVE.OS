@@ -3,16 +3,16 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_IED">
-    <Original>Military IED Threat</Original>
+    <English>Military IED Threat</English>
 </Key>
 <Key ID="STR_ALIVE_IED_COMMENT">
-    <Original>Ambient IEDs, VB-IEDs and Suicide Bombers</Original>
+    <English>Ambient IEDs, VB-IEDs and Suicide Bombers</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DEBUG">
-    <Original>Enable debug:</Original>
+    <English>Enable debug:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DEBUG_COMMENT">
-    <Original>Enables debug</Original>
+    <English>Enables debug</English>
 </Key>
 <Key ID="STR_ALIVE_IED_PERSISTENCE">
     <Original>Persist IEDs:</Original>
@@ -21,43 +21,43 @@
     <Original>Persist IED locations over mission loads</Original>
 </Key>
 <Key ID="STR_ALIVE_ied_IED_Detection">
-    <Original>IED Detection Alert:</Original>
+    <English>IED Detection Alert:</English>
 </Key>
 <Key ID="STR_ALIVE_ied_IED_Detection_COMMENT">
-    <Original>Choose the type of notification a player will recieve when detecting an IED</Original>
+    <English>Choose the type of notification a player will recieve when detecting an IED</English>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Detection_Device">
-    <Original>IED Detector Class:</Original>
+    <English>IED Detector Class:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Detection_Device_COMMENT">
-    <Original>Enter the class name of the device used to detect IEDs</Original>
+    <English>Enter the class name of the device used to detect IEDs</English>
 </Key>
 <Key ID="STR_ALIVE_IED_TAOR">
-    <Original>TAOR Marker:</Original>
+    <English>TAOR Marker:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_TAOR_COMMENT">
-    <Original>Tactical Area Operation Responsibility Marker</Original>
+    <English>Tactical Area Operation Responsibility Marker</English>
 </Key>
 <Key ID="STR_ALIVE_IED_BLACKLIST">
-    <Original>Blacklist Marker:</Original>
+    <English>Blacklist Marker:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_BLACKLIST_COMMENT">
-    <Original>Exclusion Marker</Original>
+    <English>Exclusion Marker</English>
 </Key>
 <Key ID="STR_ALIVE_IED_Roadblocks">
-    <Original>Roadblocks:</Original>
+    <English>Roadblocks:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_Roadblocks_COMMENT">
-    <Original>Define the probability of roadblocks within the AO</Original>
+    <English>Define the probability of roadblocks within the AO</English>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Threat">
-    <Original>IED Threat:</Original>
+    <English>IED Threat:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Threat_Level">
-    <Original>IED Threat Level</Original>
+    <English>IED Threat Level</English>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Threat_COMMENT">
-    <Original>Define the level of IED Threat within the AO</Original>
+    <English>Define the level of IED Threat within the AO</English>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Starting_Threat">
     <Original>Starting IED Threat:</Original>
@@ -66,69 +66,69 @@
     <Original>Define the initial starting threat of IED's on first Mission load when IED module is synced to the Military Commander</Original>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Threat">
-    <Original>Vehicle Borne IED Threat:</Original>
+    <English>Vehicle Borne IED Threat:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Threat_Level">
-    <Original>Vehicle Borne IED Threat Level</Original>
+    <English>Vehicle Borne IED Threat Level</English>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Threat_COMMENT">
-    <Original>Define the probability of VB-IED threat within the AO</Original>
+    <English>Define the probability of VB-IED threat within the AO</English>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Side">
-    <Original>Bomber/Vehicle IED Side:</Original>
+    <English>Bomber/Vehicle IED Side:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Side_COMMENT">
-    <Original>Define which sides bombers/vehicles will carry IEDs</Original>
+    <English>Define which sides bombers/vehicles will carry IEDs</English>
 </Key>
 <Key ID="STR_ALIVE_IED_Bomber_Threat">
-    <Original>Suicide Bomber Threat:</Original>
+    <English>Suicide Bomber Threat:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_Bomber_Threat_Level">
-    <Original>Suicide Bomber Threat Level</Original>
+    <English>Suicide Bomber Threat Level</English>
 </Key>
 <Key ID="STR_ALIVE_IED_Bomber_Threat_COMMENT">
-    <Original>Define the probability of suicide bomber threat within the AO</Original>
+    <English>Define the probability of suicide bomber threat within the AO</English>
 </Key>
 <Key ID="STR_ALIVE_IED_Bomber_Type">
-    <Original>(Optional) Bomber Classes:</Original>
+    <English>(Optional) Bomber Classes:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_Bomber_Type_COMMENT">
-    <Original>Optionally specify a list of bomber classes here i.e. ["C_Nikos","C_Nikos_aged"]</Original>
+    <English>Optionally specify a list of bomber classes here i.e. ["C_Nikos","C_Nikos_aged"]</English>
 </Key>
 <Key ID="STR_ALIVE_IED_Locs_IED">
-    <Original>IED/Bomber Locations:</Original>
+    <English>IED/Bomber Locations:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_Locs_IED_COMMENT">
-    <Original>Choose where IED, VB-IED or Suicide bombers may exist</Original>
+    <English>Choose where IED, VB-IED or Suicide bombers may exist</English>
 </Key>
 <Key ID="STR_ALIVE_IED_3RDPARTY">
-    <Original>3rd Party IED System:</Original>
+    <English>3rd Party IED System:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_3RDPARTY_COMMENT">
-    <Original>Select this if you are using 3rd party IED mods such as ACE, EOD etc.</Original>
+    <English>Select this if you are using 3rd party IED mods such as ACE, EOD etc.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_ERROR1">
-    <Original>Only one IED module can be used</Original>
+    <English>Only one IED module can be used</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DEBUG_ENABLE">
-    <Original>Activate IED Debug</Original>
+    <English>Activate IED Debug</English>
 </Key>
 <Key ID="STR_ALIVE_IED_DEBUG_DISABLE">
-    <Original>Deactivate IED Debug</Original>
+    <English>Deactivate IED Debug</English>
 </Key>
 <Key ID="STR_ALIVE_IED_USAGE">
-    <Original>IEDs are often triggered by proximity. Players who are Explosive Specialists or carry a Mine Detector can often get close enough to disarm, anyone else is taking an extreme risk.</Original>
+    <English>IEDs are often triggered by proximity. Players who are Explosive Specialists or carry a Mine Detector can often get close enough to disarm, anyone else is taking an extreme risk.</English>
 </Key>
 <Key ID="STR_ALIVE_IED_ROAD_IED_CLASSES">
-    <Original>Roadside IED Classes:</Original>
+    <English>Roadside IED Classes:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_URBAN_IED_CLASSES">
-    <Original>Urban IED Classes:</Original>
+    <English>Urban IED Classes:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_CLUTTER_CLASSES">
-    <Original>Clutter Object Classes:</Original>
+    <English>Clutter Object Classes:</English>
 </Key>
 <Key ID="STR_ALIVE_IED_Classes_COMMENT">
-    <Original>Define the classes used for IEDs and clutter objects</Original>
+    <English>Define the classes used for IEDs and clutter objects</English>
 </Key>
 </Container></Package></Project>

@@ -5,7 +5,7 @@ SCRIPT(test_CQB);
 
 if !(isnil QGVAR(TEST_CQB)) exitwith {};
 
-GVAR(TEST_CQB) = true; 
+GVAR(TEST_CQB) = true;
 
 #define MAINCLASS ALiVE_fnc_CQB
 
@@ -28,7 +28,7 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 

@@ -29,7 +29,7 @@ ARJay
 params ["_profileWaypoint","_group",["_setCurrent", false]];
 
 if (isnil "_profileWaypoint" || {!(_profileWaypoint isequaltype [])}) exitwith {
-    ["ALiVE - ALiVE_fnc_ProfileWaypointToWaypoint retrieved wrong input: %1!",_this] call ALiVE_fnc_Dump;
+    ["- ALiVE_fnc_ProfileWaypointToWaypoint retrieved wrong input: %1!",_this] call ALiVE_fnc_dump;
 };
 
 private _position = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;

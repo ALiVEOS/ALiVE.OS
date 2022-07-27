@@ -336,8 +336,29 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "scomOpsAllowImageIntelligence": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["scomOpsAllowImageIntelligence", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsAllowImageIntelligence", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["scomOpsAllowImageIntelligence", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
     case "scomIntelLimit": {
         _result = [_logic,_operation,_args,DEFAULT_SCOM_LIMIT,["SIDE","FACTION","ALL"]] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "opcomIntelSides": {
+        if (_args isequaltype []) then {
+            _logic setVariable ["opcomIntelSides", _args];
+        } else {
+            _result = _logic getVariable ["opcomIntelSides", []];
+        };
     };
     case "displayIntel": {
         if (typeName _args == "BOOL") then {
@@ -474,7 +495,7 @@ switch(_operation) do {
     case "init": {
 
         //Only one init per instance is allowed
-        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE MIL C2ISTAR - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+        if !(isnil {_logic getVariable "initGlobal"}) exitwith {["MIL C2ISTAR - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
         //Start init
         _logic setVariable ["initGlobal", false];
@@ -493,6 +514,9 @@ switch(_operation) do {
         // Call SITREP and PATROLREP
         [] spawn ALIVE_fnc_sitrepInit;
         [] spawn ALIVE_fnc_patrolrepInit;
+        
+        private _opcomIntelSides = ([_logic,"opcomIntelSides"] call MAINCLASS) call ALiVE_fnc_stringListToArray;
+        [_logic,"opcomIntelSides", _opcomIntelSides apply { toupper _x }] call MAINCLASS;
 
         private["_gmLimit","_gm"];
 
@@ -503,18 +527,20 @@ switch(_operation) do {
         [_gm, "debug", _debug] call ALIVE_fnc_GM;
         [_gm, "init",[]] call ALIVE_fnc_GM;
 
-        private["_scomOpsLimit","_scomIntelLimit","_scomOpsAllowSpectate","_scomOpsAllowJoin","_scom"];
+        private["_scomOpsLimit","_scomIntelLimit","_scomOpsAllowSpectate","_scomOpsAllowJoin","_scomOpsAllowImageIntelligence","_scom"];
 
         _scomOpsLimit = [_logic, "scomOpsLimit"] call MAINCLASS;
         _scomIntelLimit = [_logic, "scomIntelLimit"] call MAINCLASS;
         _scomOpsAllowSpectate = [_logic, "scomOpsAllowSpectate"] call MAINCLASS;
         _scomOpsAllowJoin = [_logic, "scomOpsAllowInstantJoin"] call MAINCLASS;
+        _scomOpsAllowImageIntelligence = [_logic, "scomOpsAllowImageIntelligence"] call MAINCLASS;
 
         _scom = [nil, "create"] call ALIVE_fnc_SCOM;
         [_scom, "opsLimit", _scomOpsLimit] call ALIVE_fnc_SCOM;
         [_scom, "intelLimit", _scomIntelLimit] call ALIVE_fnc_SCOM;
         [_scom, "scomOpsAllowSpectate", _scomOpsAllowSpectate] call ALIVE_fnc_SCOM;
         [_scom, "scomOpsAllowInstantJoin", _scomOpsAllowJoin] call ALIVE_fnc_SCOM;
+        [_scom, "scomOpsAllowImageIntelligence", _scomOpsAllowImageIntelligence] call ALIVE_fnc_SCOM;
         [_scom, "debug", _debug] call ALIVE_fnc_SCOM;
         [_scom, "init",[]] call ALIVE_fnc_SCOM;
 
@@ -655,7 +681,7 @@ switch(_operation) do {
             };
 
             if (_debug) then {
-                ["---------------------------- ALiVE C2ISTAR %1 - Initial Settings ---------------------------------", _logic] call ALiVE_fnc_dump;
+                ["---------------------------- C2ISTAR %1 - Initial Settings ---------------------------------", _logic] call ALiVE_fnc_dump;
                 private _settings = allVariables _logic;
                 _settings = _settings - ["super","class"];
                 {
@@ -687,10 +713,10 @@ switch(_operation) do {
 
             waitUntil {
                 sleep 1;
-                ((str side player) != "UNKNOWN")
+                ((str side group player) != "UNKNOWN")
             };
 
-            _playerSide = side player;
+            _playerSide = side group player;
             _sideNumber = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
             _sideText = [_sideNumber] call ALIVE_fnc_sideNumberToText;
 
@@ -794,7 +820,7 @@ switch(_operation) do {
             private _autoGenerate = [_logic, "autoGenerateBlufor"] call MAINCLASS;
             private _autoGenerateEnemyFaction = [_logic, "autoGenerateBluforEnemyFaction"] call MAINCLASS;
 
-            switch (side player) do {
+            switch (side group player) do {
                 case EAST: {
                     _autoGenerate = [_logic, "autoGenerateOpfor"] call MAINCLASS;
                     _autoGenerateEnemyFaction = [_logic, "autoGenerateOpforEnemyFaction"] call MAINCLASS;
@@ -1252,7 +1278,6 @@ switch(_operation) do {
 
                 case "TASK_ADD_MAP_CLICK_NULL": {
 
-
                 };
 
                 case "TASK_ADD_MANAGE_PLAYERS_BUTTON_CLICK": {
@@ -1485,9 +1510,17 @@ switch(_operation) do {
                     _taskCurrentEditButton ctrlShow true;
                     _taskCurrentEditButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_CURRENT_EDIT_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
 
+                    // Only allow parent tasks to be deleted
                     _taskCurrentDeleteButton = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskCurrentListDeleteButton);
-                    _taskCurrentDeleteButton ctrlShow true;
-                    _taskCurrentDeleteButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_CURRENT_DELETE_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+                    _taskCurrentDeleteButton ctrlShow false;
+
+                    private _currentTask = [_taskingState,"currentTaskListSelectedValue"] call ALIVE_fnc_hashGet;
+                    private _isParentTask = _currentTask select 11 == "None";
+
+                    if (_isParentTask) then {
+                        _taskCurrentDeleteButton ctrlShow true;
+                        _taskCurrentDeleteButton ctrlSetEventHandler ["MouseButtonClick", "['TASK_CURRENT_DELETE_BUTTON_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+                    };
 
                 };
 

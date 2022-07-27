@@ -1,1 +1,14 @@
+class header {
+    gametype = COOP;
+    minplayers = 1;
+    maxplayers = 12;
+    playerCountMultipleOf = 1;  //Coop type missions use 1, Team type missions use 2
+};
+
+author = ALiVE Mod Team || Mission by HeroesandvillaindOS;
+OnLoadName = ALiVE | Air Superiority;
+OnLoadMission = "Obtain Air Superiority over Altis and eliminate the given targets! AA positions have been confirmed all over the coastline - plan your mission waypoints carefully!";
+loadScreen = "x\alive\addons\missions\logo_alive.paa";
+overviewPicture = "x\alive\addons\missions\logo_alive.paa";
+
 enableDebugConsole = 1;

@@ -96,7 +96,7 @@ switch(_operation) do {
         case "init": {
 
             //Only one init per instance is allowed
-            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["ALiVE SYS PLAYER - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_Dump};
+            if !(isnil {_logic getVariable "initGlobal"}) exitwith {["SYS PLAYER - Only one init process per instance allowed! Exiting..."] call ALiVE_fnc_dump};
 
             //Start init
             _logic setVariable ["initGlobal", false];
@@ -135,7 +135,7 @@ switch(_operation) do {
                 MOD(sys_player) setVariable ["init", true, true];
                 MOD(sys_player) setVariable ["startupComplete", true, true];
 
-                ["ALiVE SYS PLAYER - Feature turned off! Exiting..."] call ALiVE_fnc_Dump;
+                ["SYS PLAYER - Feature turned off! Exiting..."] call ALiVE_fnc_dump;
             };
 
             // DEFINE PLAYER DATA

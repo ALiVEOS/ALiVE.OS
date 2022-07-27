@@ -5,7 +5,7 @@ SCRIPT(test_OPCOM);
 
 if !(isnil QGVAR(TEST_OPCOM)) exitwith {};
 
-GVAR(TEST_OPCOM) = true; 
+GVAR(TEST_OPCOM) = true;
 
 #define MAINCLASS ALiVE_fnc_OPCOM
 
@@ -28,7 +28,7 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 

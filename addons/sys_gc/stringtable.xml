@@ -3,33 +3,33 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_GC">
-    <Original>Garbage Collector</Original>
+    <English>Garbage Collector</English>
 </Key>
 <Key ID="STR_ALIVE_GC_COMMENT">
-    <Original>Cleans up dead objects and improves performance</Original>
+    <English>Cleans up dead objects and improves performance</English>
 </Key>
 <Key ID="STR_ALIVE_GC_DEBUG">
-    <Original>Enable Debug:</Original>
+    <English>Enable Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_GC_DEBUG_COMMENT">
-    <Original>Enables GC Module Debug</Original>
+    <English>Enables GC Module Debug</English>
 </Key>
 <Key ID="STR_ALIVE_GC_INDIVIDUALTYPES">
-    <Original>Garbage Collector Clutter Types</Original>
+    <English>Garbage Collector Clutter Types</English>
 </Key>
 <Key ID="STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT">
-    <Original>Include certain non-unit or non-vehicle objects in collection eg: ["Box_NATO_Wps_F","Box_NATO_AmmoOrd_F"]</Original>
+    <English>Include certain non-unit or non-vehicle objects in collection eg: ["Box_NATO_Wps_F","Box_NATO_AmmoOrd_F"]</English>
 </Key>
 <Key ID="STR_ALIVE_GC_INTERVAL">
-    <Original>Garbage Collector Interval:</Original>
+    <English>Garbage Collector Interval:</English>
 </Key>
 <Key ID="STR_ALIVE_GC_INTERVAL_COMMENT">
-    <Original>Interval in which to clean killed objects! Use 0 to turn off GC completely!</Original>
+    <English>Interval in which to clean killed objects! Use 0 to turn off GC completely!</English>
 </Key>
 <Key ID="STR_ALIVE_GC_THRESHHOLD">
-    <Original>Garbage Collector Limiter:</Original>
+    <English>Garbage Collector Limiter:</English>
 </Key>
 <Key ID="STR_ALIVE_GC_THRESHHOLD_COMMENT">
-    <Original>Will remove all dead objects and groups if this limit is met (count allDead)</Original>
+    <English>Will remove all dead objects and groups if this limit is met (count allDead)</English>
 </Key>
 </Container></Package></Project>

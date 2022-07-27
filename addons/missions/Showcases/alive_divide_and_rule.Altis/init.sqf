@@ -3,7 +3,7 @@
 #endif
 
 //Starting Init
-["ALiVE | Divide and Rule - Executing init.sqf..."] call ALiVE_fnc_Dump;
+["| Divide and Rule - Executing init.sqf..."] call ALiVE_fnc_dump;
 
 /////////////////////
 // Init server
@@ -20,7 +20,7 @@ if (isServer) then {
 
 if (hasInterface) then {
 
-    ["ALiVE | Divide and Rule - Running ClientInit..."] call ALiVE_fnc_Dump;
+    ["| Divide and Rule - Running ClientInit..."] call ALiVE_fnc_dump;
 
     player createDiaryRecord ["Diary", ["Dismantle the device",
         "INTEL has been received about a nuclear device beeing build in an hideout in Zaros, centre of terrorist activities on Lemnos! The contact is said to be a scientist named Ahelef Mahmoud, very likely to be located near the device! Objective is to question Mahmoud, disable the bomb, and return home safely!"

@@ -3,111 +3,117 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_PROFILE_SYSTEM">
-    <Original>ALiVE Virtual AI System</Original>
+    <English>ALiVE Virtual AI System</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_COMMENT">
-    <Original>Virtual AI System (Profiles)</Original>
+    <English>Virtual AI System (Profiles)</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG">
-    <Original>Enable Debug:</Original>
+    <English>Enable Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_COMMENT">
-    <Original>Enables Module Debug</Original>
+    <English>Enables Module Debug</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT">
-    <Original>Persistent:</Original>
+    <English>Persistent:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT_COMMENT">
-    <Original>Enables external Database persistence for Virtual AI</Original>
+    <English>Enables external Database persistence for Virtual AI</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLOT_SECTORS">
-    <Original>Sector Colouring:</Original>
+    <English>Sector Colouring:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLOT_SECTORS_COMMENT">
-    <Original>Enables sector colouring according to units presence</Original>
+    <English>Enables sector colouring according to units presence</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC">
-    <Original>Synchronisation Options:</Original>
+    <English>Synchronisation Options:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_COMMENT">
-    <Original>Modify synced units behaviour</Original>
+    <English>Modify synced units behaviour</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_ADD">
-    <Original>Only virtualize synced units</Original>
+    <English>Only virtualize synced units</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_IGNORE">
-    <Original>Virtualize all editor placed units except synced units</Original>
+    <English>Virtualize all editor placed units except synced units</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS">
-    <Original>Spawn Radius:</Original>
+    <English>Spawn Radius:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS_COMMENT">
-    <Original>Sets the distance from players to spawn AI units</Original>
+    <English>Sets the distance from players to spawn AI units</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER">
-    <Original>Active Limiter:</Original>
+    <English>Active Limiter:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER_COMMENT">
-    <Original>Sets the max number of virtualized AI *groups* to spawn at any one time</Original>
+    <English>Sets the max number of virtualized AI *groups* to spawn at any one time</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN">
+    <English>Zeus Spawn Virtual Groups:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN_COMMENT">
+    <English>If enabled, active zeus entities will spawn virtual groups when in range</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS">
-    <Original>Spawn planes radius:</Original>
+    <English>Spawn planes radius:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT">
-    <Original>The radius around player in planes to spawn AI. Set to 0 to disable spawning while in planes</Original>
+    <English>The radius around player in planes to spawn AI. Set to 0 to disable spawning while in planes</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS">
-    <Original>Spawn heli radius:</Original>
+    <English>Spawn heli radius:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS_COMMENT">
-    <Original>The radius around player in helicopters to spawn AI. Set to 0 to disable spawning while in helicopters</Original>
+    <English>The radius around player in helicopters to spawn AI. Set to 0 to disable spawning while in helicopters</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS">
-    <Original>Spawn UAV radius:</Original>
+    <English>Spawn UAV radius:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT">
-    <Original>The radius around player controlled UAV to spawn AI. Set to 0 to disable spawning while controlling UAVs. Set to -1 to default to (Infantry) Spawn Radius + 800.</Original>
+    <English>The radius around player controlled UAV to spawn AI. Set to 0 to disable spawning while controlling UAVs. Set to -1 to default to (Infantry) Spawn Radius + 800.</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER">
-    <Original>Virtual Unit Speed:</Original>
+    <English>Virtual Unit Speed:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT">
-    <Original>Alters how fast virtual AI move across the map. 25% means 25% of a unit's normal speed</Original>
+    <English>Alters how fast virtual AI move across the map. 25% means 25% of a unit's normal speed</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ERROR1">
-    <Original>Only one Virtual AI System module can be used</Original>
+    <English>Only one Virtual AI System module can be used</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_ENABLE">
-    <Original>Activate Profiles Debug</Original>
+    <English>Activate Profiles Debug</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_DISABLE">
-    <Original>Deactivate Profiles Debug</Original>
+    <English>Deactivate Profiles Debug</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG1_COMMENT">
-    <Original>Toggle debug mode on the profile system</Original>
+    <English>Toggle debug mode on the profile system</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER">
-    <Original>Virtual Combat Speed:</Original>
+    <English>Virtual Combat Speed:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT">
-    <Original>Sets the pace of virtual combat. Fastest combat resolves twice as quickly as regular.</Original>
+    <English>Sets the pace of virtual combat. Fastest combat resolves twice as quickly as regular.</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
-    <Original>Pathfinding:</Original>
+    <English>Experimental Pathfinding:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT">
-    <Original>Experimental!\nProfiles will use intelligent pathing to reach their destinations.\nThis feature is highly experimental and could break missions.</Original>
+    <English>Experimental!\nThis feature is highly experimental and could break missions.\n Please disable if you notice any issues.\nProfiles will use intelligent pathing to reach their destinations.</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
-    <Original>Infantry sea transport:</Original>
+    <English>Infantry sea transport:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT">
-    <Original>Experimental!\nAdds a boat to a virtual infantry entity that tries to cross water!</Original>
+    <English>Experimental!\nAdds a boat to a virtual infantry entity that tries to cross water!</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN">
-    <Original>Smooth Spawn:</Original>
+    <English>Smooth Spawn:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT">
-    <Original>Sleep values between spawning units to not overload engine</Original>
+    <English>Sleep values between spawning units to not overload engine</English>
 </Key>
 </Container></Package></Project>

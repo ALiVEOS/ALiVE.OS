@@ -53,7 +53,7 @@ if (GVAR(ENABLED)) then {
     _killed = _this select 0;
     _killer = _this select 1;
 
-    // diag_log format["KILLED: %1",_this];
+    // ["KILLED: %1",_this] call ALiVE_fnc_dump;
 
     _aceKilled = false;
 
@@ -63,7 +63,7 @@ if (GVAR(ENABLED)) then {
 
         if (_killer != _killed) then {
             _aceKilled = true;
-            // diag_log format["ACE KILLED: %1 - %2", _killer, _this];
+            // ["ACE KILLED: %1 - %2", _killer, _this] call ALiVE_fnc_dump;
         };
     };
 
@@ -73,10 +73,10 @@ if (GVAR(ENABLED)) then {
         private _killFeed = MOD(sys_data) getvariable ["killFeed","None"];
         private _message = "";
 
-        //diag_log format["Unit Killed: vehicle: %1, killed: %2, killer: %3, killerunit: %4 (%5)", typeof vehicle _killed, typeof _killed, typeof _killer, _killer, isPlayer _killer];
+        //["Unit Killed: vehicle: %1, killed: %2, killer: %3, killerunit: %4 (%5)", typeof vehicle _killed, typeof _killed, typeof _killer, _killer, isPlayer _killer] call ALiVE_fnc_dump;
 
         _sideKilled = side (group _killed); // group side is more reliable
-        _sideKiller = side _killer;
+        _sideKiller = side (group _killer);
 
         _factionKiller = getText (((faction _killer) call ALiVE_fnc_configGetFactionClass) >> "displayName");
         _factionKilled = getText (((faction _killed) call ALiVE_fnc_configGetFactionClass) >> "displayName");

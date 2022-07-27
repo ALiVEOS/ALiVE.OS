@@ -48,6 +48,20 @@ class arrayFrameSplitter
 	RECOMPILE;
 };
 
+class deleteAtMany
+{
+	file = "\x\alive\addons\x_lib\functions\arrays\fnc_deleteAtMany.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class deleteIf
+{
+	file = "\x\alive\addons\x_lib\functions\arrays\fnc_deleteIf.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class erase
 {
 	file = "\x\alive\addons\x_lib\functions\arrays\fnc_erase.sqf";
@@ -238,6 +252,13 @@ class createLiveFeedEffect
 class flyInShot
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_flyInShot.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class flyOverShot
+{
+	file = "\x\alive\addons\x_lib\functions\camera\fnc_flyOverShot.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
@@ -515,6 +536,13 @@ class getArtyRounds
 	RECOMPILE;
 };
 
+class isMagazineOfOrdnanceType
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_isMagazineOfOrdnanceType.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class getConfigValue
 {
 	file = "\x\alive\addons\x_lib\functions\config\fnc_getConfigValue.sqf";
@@ -634,9 +662,30 @@ class toString
 	RECOMPILE;
 };
 
+class doSegmentsIntersect
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_doSegmentsIntersect.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class encodeJSON
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_encodeJSON.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class findConvexHull
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_findConvexHull.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class findMidpoint
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_findMidpoint.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
@@ -1390,6 +1439,13 @@ class emptyInit
 	RECOMPILE;
 };
 
+class exportCfgComposition
+{
+	file = "\x\alive\addons\x_lib\functions\composition\fnc_exportCfgComposition.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class exportCfgVehicles
 {
 	file = "\x\alive\addons\x_lib\functions\misc\fnc_exportCfgVehicles.sqf";
@@ -1685,6 +1741,13 @@ class doMoveRemote
 	RECOMPILE;
 };
 
+class disguise
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_disguise.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class getNearUnits
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_getNearUnits.sqf";
@@ -1849,6 +1912,13 @@ class unitArraySortByRank
 class unitArraySortSide
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_unitArraySortSide.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class unitsInArea
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_unitsInArea.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };

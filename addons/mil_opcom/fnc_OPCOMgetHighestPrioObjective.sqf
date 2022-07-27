@@ -11,7 +11,7 @@ Parameters:
 Array - [_side (STRING), _states (ARRAY)]
 
 Returns:
-objective as string, if none is found for that states its "" 
+objective as string, if none is found for that states its ""
 
 Examples:
 (begin example)
@@ -40,7 +40,7 @@ _result = "";
 } foreach OPCOM_instances;
 
 if (isnil "_opcom") exitwith {
-    ["ALiVE MIL OPCOM - fnc_OPCOMgetHighestPrioObjective didn't find an OPCOM for side %1! Exiting...",_side] call ALiVE_fnc_Dump;
+    ["MIL OPCOM - fnc_OPCOMgetHighestPrioObjective didn't find an OPCOM for side %1! Exiting...",_side] call ALiVE_fnc_dump;
 };
 
 private _objectives = [_opcom,"objectives",[]] call ALiVE_fnc_HashGet;

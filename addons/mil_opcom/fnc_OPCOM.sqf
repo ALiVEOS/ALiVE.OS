@@ -193,6 +193,8 @@ switch(_operation) do {
                     //Create OPCOM ID
                     _opcomID = str(floor(_position select 0)) + str(floor(_position select 1));
 
+                    [_handler,"class", "ALiVE_fnc_OPCOM"] call ALiVE_fnc_hashSet;
+
                     [_handler, "side",_side] call ALiVE_fnc_HashSet;
                     [_handler, "factions",_factions] call ALiVE_fnc_HashSet;
                     [_handler, "sidesenemy",_sidesEnemy] call ALiVE_fnc_HashSet;
@@ -209,6 +211,19 @@ switch(_operation) do {
                     [_handler, "controltype",_type] call ALiVE_fnc_HashSet;
                     [_handler, "intelchance",_intelChance] call ALiVE_fnc_HashSet;
                     [_handler, "roadblocks",_roadblocks] call ALiVE_fnc_HashSet;
+
+                    [_handler,"pendingorders", []] call ALiVE_fnc_HashSet;
+
+                    if (["ALiVE_mil_C2ISTAR"] call ALIVE_fnc_isModuleAvailable) then {
+                        private _opcomIntelSides = [ALiVE_mil_C2ISTAR,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
+
+                        if (_side in _opcomIntelSides) then {
+                            private _G2 = [nil,"create", [_handler]] call ALiVE_fnc_G2;
+                            [_G2,"start"] call ALiVE_fnc_G2;
+
+                            [_handler,"G2", _G2] call ALiVE_fnc_hashSet;
+                        };
+                    };
 
                     //Spread Intel Information for this OPCOMs side
                     call compile (format["ALiVE_MIL_OPCOM_INTELCHANCE_%1 = _intelChance",[_side] call ALiVE_fnc_SideTextToObject]);
@@ -262,10 +277,10 @@ switch(_operation) do {
                     };
 
                     //Wait for virtual profiles ready, output debug for tracing mission makers errors (like forgetting Virtual AI System module)
-                    waituntil {["ALiVE OPCOM Waiting for Virtual AI System..."] call ALiVE_fnc_Dump; !(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
+                    waituntil {["OPCOM Waiting for Virtual AI System..."] call ALiVE_fnc_dump; !(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
 
                     //Wait for sector grid to be ready
-                    //waituntil {["ALiVE OPCOM Waiting for Sector Grid System..."] call ALiVE_fnc_Dump; count (([([ALIVE_sectorGrid, "positionToSector", [1,1,0]] call ALIVE_fnc_sectorGrid),"data"] call ALIVE_fnc_hashGet) select 1) > 0};
+                    //waituntil {["OPCOM Waiting for Sector Grid System..."] call ALiVE_fnc_dump; count (([([ALIVE_sectorGrid, "positionToSector", [1,1,0]] call ALIVE_fnc_sectorGrid),"data"] call ALIVE_fnc_hashGet) select 1) > 0};
 
                     //Load Data from DB
                     if ([_handler,"persistent",false] call ALIVE_fnc_HashGet) then {
@@ -285,7 +300,7 @@ switch(_operation) do {
                     };
 
                     if (!(isnil "_objectives") && {count _objectives > 0}) then {
-                        ["ALiVE OPCOM loaded %1 objectives from DB!",count _objectives] call ALiVE_fnc_Dump;
+                        ["OPCOM loaded %1 objectives from DB!",count _objectives] call ALiVE_fnc_dump;
                     } else {
                         //If no data was loaded from DB then get objectives data from other modules or placed Location logics!
                         _objectives = [];
@@ -337,7 +352,7 @@ switch(_operation) do {
                             };
                         };
 
-                        ["ALiVE OPCOM created %1 new objectives!",count _objectives] call ALiVE_fnc_Dump;
+                        ["OPCOM created %1 new objectives!",count _objectives] call ALiVE_fnc_dump;
                     };
 
 
@@ -428,7 +443,7 @@ switch(_operation) do {
                     //Perform initial cluster occupation and troops analysis as MP modules are finished
                     _clusterOccupationAnalysis = [_handler,_side,_sidesEnemy,_sidesFriendly] call {[_this select 0,"analyzeclusteroccupation",[_this select 3,_this select 2]] call ALiVE_fnc_OPCOM};
                     _forcesInit = [_handler,"scantroops"] call ALiVE_fnc_OPCOM;
-                    ["ALiVE OPCOM %1 Initial analysis done...",_side] call ALiVE_fnc_Dump;
+                    ["OPCOM %1 Initial analysis done...",_side] call ALiVE_fnc_dump;
 
                     //done this way to easily switch between spawn and call for testing purposes
                     ["OPCOM and TACOM %1 starting...",_side] call ALiVE_fnc_Dump;
@@ -466,9 +481,10 @@ switch(_operation) do {
 
                 //Set startup complete and end loading screen if init has passed or an error occurred
                 if (isServer) then {
+                    [_handler,"listen"] call MAINCLASS;
+
                     _logic setVariable ["startupComplete",true,true];
                     [_handler,"startupComplete",true] call ALiVE_fnc_HashSet;
-
                 };
 
 
@@ -477,45 +493,90 @@ switch(_operation) do {
                 */
         };
 
-        case "cleanupduplicatesections": {
-            private ["_objectives","_objective","_section","_proID","_state","_size_reserve","_pending_orders","_profile","_wayPoints","_orders","_profileIDs"];
+        case "listen": {
+            private _G2 = [_logic,"G2"] call ALiVE_fnc_hashGet;
+            if (isnil "_G2") exitwith {};
+        
+            private _listenerID = [ALiVE_eventLog, "addListener", [_logic, [
+                "PROFILE_ATTACK_START",
+                "PROFILE_ATTACK_END"
+            ]]] call ALiVE_fnc_eventLog;
+            [_logic,"listenerID", _listenerID] call ALiVE_fnc_hashSet;
+        };
 
-                _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
-                _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
-                _size_reserve = [_logic,"sectionsamount_reserve",1] call ALiVE_fnc_HashGet;
-                _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
-                //_profileIDs = [ALIVE_profileHandler, "getProfilesBySide",[_logic,"side"] call ALiVE_fnc_HashGet] call ALIVE_fnc_profileHandler;
+        case "handleEvent": {
+            private _event = _args;
 
-                _profileIDs = [];
-                {
-                    _profileIDs = _profileIDs + ([ALIVE_profileHandler, "getProfilesByFaction",_x] call ALIVE_fnc_profileHandler);
-                } foreach _factions;
+            private _eventData = [_event,"data"] call ALiVE_fnc_hashGet;
+            private _eventOpcomID = _eventData select 0;
+
+            private _opcomSide = [_logic, "side"] call ALiVE_fnc_HashGet;
+            private _type = [_event,"type"] call ALiVE_fnc_hashGet;
+
+            switch (_type) do {
+                case "PROFILE_ATTACK_START": {
+                    _eventData params ["_attackID","_attackerID","_targets","_attackPosition","_attackerSide","_maxRange","_cyclesLeft"];
+
+                    if (_opcomSide == _attackerSide) then {
+                        [_logic,"createSpotrepForProfiles", _targets] call MAINCLASS;
+                    };
+                };
+
+                case "PROFILE_ATTACK_END": {
+                    _eventData params ["_attackID","_attackerID","_targetsLeft","_targetsKilled","_attackPosition","_attackerSide","_timeStarted","_maxRange","_cyclesLeft"];
+
+                    if (_opcomSide == _attackerSide) then {
+                        private _G2 = [_logic,"G2"] call ALiVE_fnc_hashGet;
+                        if (!isnil "_G2") then {
+                            [_G2,"removeProfileSpotreps", _targetsKilled] call ALiVE_fnc_G2;
+                        };
+                    };
+                };
+            };
+        };
+
+        case "createSpotrepForProfiles": {
+            private _profiles = _args;
+
+            private _G2 = [_logic,"G2"] call ALiVE_fnc_hashGet;
+            if (isnil "_G2") exitwith {};
 
             {
-                private ["_objective","_section","_state","_idlestates","_wps"];
+                private _spotrepData = [_G2,"buildSpotrepForProfile", [_x,0]] call ALiVE_fnc_G2;
+                [_G2,"createSpotrep", _spotrepData] call ALiVE_fnc_G2;
+            } foreach _profiles;
+        };
 
-                _objective = _x;
-                _section = [_objective,"section",[]] call ALiVE_fnc_HashGet;
-                _state = [_objective,"opcom_state",[]] call ALiVE_fnc_HashGet;
-                _idlestates = ["unassigned","idle"];
+        // Find any active objectives where the assigned profiles have no waypoints
+        // and reset their state so it can be reconsidered for new orders
+        case "cleanupduplicatesections": {
+            private _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
+            private _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
+            private _size_reserve = [_logic,"sectionsamount_reserve",1] call ALiVE_fnc_HashGet;
+            private _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
 
-                _wps = 0;
+            private _idlestates = ["unassigned","idle"];
+
+            {
+                private _objective = _x;
+                private _section = [_objective,"section",[]] call ALiVE_fnc_HashGet;
+
+                private _sectionWaypoints = 0;
                 {
-                    private ["_profile"];
-
-                    _profile = [ALiVE_ProfileHandler,"getProfile",_x] call ALiVE_fnc_ProfileHandler;
+                    private _profile = [ALiVE_ProfileHandler,"getProfile", _x] call ALiVE_fnc_ProfileHandler;
 
                     if !(isnil "_profile") then {
-                        _wps = _wps + (count (_profile select 2 select 16));
+                        private _profileWaypoints = _profile select 2 select 16;
+                        _sectionWaypoints = _sectionWaypoints + (count _profileWaypoints);
                     } else {
-                        [_logic,"resetorders",_x] call ALiVE_fnc_OPCOM;
+                        [_logic,"resetorders", _x] call ALiVE_fnc_OPCOM;
                     };
                 } foreach _section;
 
-                _section = [_objective,"section",_section] call ALiVE_fnc_HashGet;
-                if (!(_state in _idlestates) && {count _section > 0} && {_wps == 0}) then {
-                    {[_logic,"resetorders",_x] call ALiVE_fnc_OPCOM} foreach _section;
-                    [_logic,"resetObjective",([_objective,"objectiveID"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_OPCOM;
+                private _state = [_objective,"opcom_state",[]] call ALiVE_fnc_HashGet;
+                if (!(_state in _idlestates) && {count _section > 0} && {_sectionWaypoints == 0}) then {
+                    {[_logic,"resetorders", _x] call ALiVE_fnc_OPCOM} foreach _section;
+                    [_logic,"resetObjective", ([_objective,"objectiveID"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_OPCOM;
                 };
             } foreach _objectives;
         };
@@ -828,143 +889,145 @@ switch(_operation) do {
             _result = _section;
         };
 
+        ///////////////////////////////////////////////////
+        // Creates a new waypoint for the profile to move to the passed position
+        // Sets var on TACOM to signal completion once WP is reached
+        ///////////////////////////////////////////////////
+
         case "setorders": {
-                ASSERT_TRUE(typeName _args == "ARRAY",str _args);
+            _args params ["_pos","_profileID","_objectiveID","_orders"];
 
-                private ["_section","_profile","_profileID","_objectiveID","_pos","_orders","_pending_orders","_objectives","_id"];
+            private _TACOM_FSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
+            private _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
 
-                _pos = _args select 0;
-                _profileID = _args select 1;
-                _objectiveID = _args select 2;
-                _orders = _args select 3;
-                _TACOM_FSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
-                _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
+            {
+                private _id = [_x,"objectiveID"] call ALiVE_fnc_HashGet;
+                private _section = [_x,"section",[]] call ALiVE_fnc_HashGet;
 
-                {
-                    _id = [_x,"objectiveID"] call ALiVE_fnc_HashGet;
-                    _section = [_x,"section",[]] call ALiVE_fnc_HashGet;
-
-                    if ((_profileID in _section) && {!(_objectiveID == _id)}) then {
-                        [_logic,"resetorders",_profileID] call ALiVE_fnc_OPCOM;
-                    };
-                } foreach _objectives;
-
-                _pending_orders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
-                _pending_orders_tmp = _pending_orders;
-
-                if (({(_x select 1) == _profileID} count _pending_orders_tmp) > 0) then {
-                    {
-                        if ((_x select 1) == _profileID) then {_pending_orders_tmp set [_foreachIndex,"x"]};
-                    } foreach _pending_orders_tmp;
-                    _pending_orders = _pending_orders_tmp - ["x"];
+                if ((_profileID in _section) && {!(_objectiveID == _id)}) then {
+                    [_logic,"resetorders",_profileID] call ALiVE_fnc_OPCOM;
                 };
+            } foreach _objectives;
 
-                _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+            private _pendingOrders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
 
-                [_profile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
-                [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
+            // remove any existing pending orders for this profile
 
-                _profileWaypoint = [_pos, 15] call ALIVE_fnc_createProfileWaypoint;
+            [_pendingOrders, { (_x select 1) == _profileID }] call ALiVE_fnc_deleteIf;
 
-                _var = ["_TACOM_DATA",["completed",[_ProfileID,_objectiveID,_orders]]];
-                _statements = format["[] spawn {sleep (random 10); %1 setfsmvariable %2}",_TACOM_FSM,_var];
-                [_profileWaypoint,"statements",["true",_statements]] call ALIVE_fnc_hashSet;
-                [_profileWaypoint,"behaviour","AWARE"] call ALIVE_fnc_hashSet;
-                [_profileWaypoint,"speed","NORMAL"] call ALIVE_fnc_hashSet;
+            // add new waypoint to profile
 
-                [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+            private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
 
-                _ordersFull = [_pos,_ProfileID,_objectiveID,time];
-                [_logic,"pendingorders",_pending_orders + [_ordersFull]] call ALiVE_fnc_HashSet;
+            [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+            [_profile,"clearActiveCommands"] call ALIVE_fnc_profileEntity;
 
-                _result = _profileWaypoint;
+            private _profileWaypoint = [_pos, 15] call ALIVE_fnc_createProfileWaypoint;
+
+            private _var = ["_TACOM_DATA", ["completed", [_ProfileID,_objectiveID,_orders]]];
+            private _statements = format ["[{%1 setFSMVariable %2}, [], 1 + (random 9)] call CBA_fnc_waitAndExecute", _TACOM_FSM, _var];
+            [_profileWaypoint,"statements", ["true",_statements]] call ALIVE_fnc_hashSet;
+            [_profileWaypoint,"behaviour", "AWARE"] call ALIVE_fnc_hashSet;
+            [_profileWaypoint,"speed", "NORMAL"] call ALIVE_fnc_hashSet;
+
+            [_profile,"addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+
+            _pendingOrders pushback [_pos,_ProfileID,_objectiveID,time];
+
+            _result = _profileWaypoint;
         };
 
+        ///////////////////////////////////////////////////
+        // Called when a profile has compeleted waypoint
+        // that was created for a TACOM order
+        // Returns whether or not any remaining waypoints
+        // for that order remain
+        ///////////////////////////////////////////////////
+
         case "synchronizeorders": {
-                ASSERT_TRUE(typeName _args == "STRING",str _args);
+            private _ProfileIDInput = _args;
+            private _pendingOrders = [_logic,"pendingorders", []] call ALiVE_fnc_HashGet;
+            private _synchronized = false;
 
-                private ["_ProfileIDInput","_profiles","_orders_pending","_synchronized","_item","_objectiveID","_profileID"];
+            // private _profilePendingOrderIndex = _pendingOrders findIf { (_x select 1) == _ProfileIDInput };
+            // if (_profilePendingOrderIndex == -1) exitwith {};
 
-                _ProfileIDInput = _args;
-                _profiles = ([ALIVE_profileHandler, "getProfiles","entity"] call ALIVE_fnc_profileHandler) select 1;
-                _orders_pending = ([_logic,"pendingorders",[]] call ALiVE_fnc_HashGet);
-                _synchronized = false;
+            // private _profilePendingOrder = _pendingOrders deleteat _profilePendingOrderIndex;
+            // private _objective = _profilePendingOrder select 2;
+            // private _remainingOrders = [];
 
-                for "_i" from 0 to ((count _orders_pending)-1) do {
-                    if (_i >= (count _orders_pending)) exitwith {};
+            // {
+            //     _x params ["_pos","_profileID","_objectiveID","_time"];
 
-                    _item = _orders_pending select _i;
+            //     if (_objectiveID == _objective) then {
+            //         private _dead = isnil { [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler };
+            //         private _timeout = (time - _time) > 3600;
+            //     };
+            // } foreach _pendingOrders;
 
-                    if (typeName _item == "ARRAY") then {
-                        _pos = _item select 0;
-                        _profileID = _item select 1;
-                        _objectiveID = _item select 2;
-                        _time = _item select 3;
-                        _dead = !(_ProfileID in _profiles);
-                        _timeout = (time - _time) > 3600;
+            private _ordersToRemove = [];
+            {
+                _x params ["_pos","_profileID","_objectiveID","_time"];
 
-                        if ((_dead) || {_timeout} || {_ProfileID == _ProfileIDInput}) then {
-                            _orders_pending set [_i,"x"]; _orders_pending = _orders_pending - ["x"];
-                            [_logic,"pendingorders",_orders_pending] call ALiVE_fnc_HashSet;
-                            if (({_objectiveID == (_x select 2)} count (_orders_pending)) == 0) then {_synchronized = true};
-                        };
+                private _dead = isnil { [ALiVE_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler };
+                private _timeout = (time - _time) > 3600;
+
+                if (_dead || { _timeout } || { _ProfileID == _ProfileIDInput }) then {
+                    _ordersToRemove pushback _foreachindex;
+                    private _objectiveFound = _pendingOrders findIf { _objectiveID == (_x select 2) };
+                    if (_objectiveFound == -1) then {
+                        _synchronized = true; 
                     };
                 };
-                _result = _synchronized;
+            } foreach _pendingOrders;
+
+            [_pendingOrders, _ordersToRemove] call ALiVE_fnc_deleteAtMany;
+            
+            _result = _synchronized;
         };
 
         case "resetorders": {
-            ASSERT_TRUE(typeName _args == "STRING",str _args);
-            private ["_active","_profileID","_profile","_ProfileIDsBusy","_profileIDx","_pendingOrders","_ProfileIDsReserve","_section","_objectives"];
+            private _profileID = _args;
 
-            _profileID = _args;
-
-            //Reset busy queue if there is an entry for the entitiy
-            [_logic,"ProfileIDsBusy",([_logic,"ProfileIDsBusy",[]] call ALiVE_fnc_HashGet) - [_profileID]] call ALiVE_fnc_HashSet;
+            //Reset busy queue if there is an entry for the entity
+            // this list appears to be unused, and never exists
+            private _profileIDsBusy = [_logic,"ProfileIDsBusy", []] call ALiVE_fnc_HashGet;
+            _profileIDsBusy deleteat (_profileIDsBusy find _profileID);
 
             //Reset reserve queue if there is an entry for the entitiy
-            [_logic,"ProfileIDsReserve",([_logic,"ProfileIDsReserve",[]] call ALiVE_fnc_HashGet) - [_profileID]] call ALiVE_fnc_HashSet;
+            private _profileIDsReserve = [_logic,"ProfileIDsReserve", []] call ALiVE_fnc_HashGet;
+            _profileIDsReserve deleteat (_profileIDsReserve find _profileID);
 
             //Reset pending orders if there is an entry for the entitiy
-            _pendingOrders = [_logic,"pendingorders",[]] call ALiVE_fnc_HashGet;
-            {
-                _profileIDx = _x select 1;
+            private _pendingOrders = [_logic,"pendingorders", []] call ALiVE_fnc_HashGet;
+            private _profilePendingOrders = _pendingOrders select { (_x select 1) == _profileID };
+            _pendingOrders = _pendingOrders - _profilePendingOrders;
 
-                if (_profileIDx == _profileID) then {
-                    _pendingOrders set [_foreachIndex,"x"];
-                };
-            } foreach _pendingOrders;
-            _pendingOrders = _pendingOrders - ["x"];
-            [_logic,"pendingorders",_pendingOrders] call ALiVE_fnc_HashSet;
+            [_logic,"pendingorders", _pendingOrders] call ALiVE_fnc_HashSet;
 
             //Reset section entry on objectives if the entitiy is still assigned to an objective
-            _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
+            private _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
             {
-                _section = [_x,"section",[]] call ALiVE_fnc_HashGet;
-                [_x,"sectionAssist",[]] call ALiVE_fnc_HashSet;
+                private _section = [_x,"section", []] call ALiVE_fnc_HashGet;
+                [_x,"sectionAssist", []] call ALiVE_fnc_HashSet;
 
-                if (count _section > 0) then {
-                    if (_profileID in _section) then {
-                        _section = _section - [_profileID];
+                if !(_section isequalto []) then {
+                    _section deleteat (_section find _profileID);
 
-                        [_x,"section",_section] call ALiVE_fnc_HashSet;
-                    };
-
-                    if (count _section == 0) then {
+                    if (_section isequalto []) then {
                         [_logic,"resetObjective",([_x,"objectiveID"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_OPCOM;
                     };
                 };
             } foreach _objectives;
 
-            _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
-
+            private _profile = [ALIVE_profileHandler,"getProfile", _profileID] call ALIVE_fnc_profileHandler;
             if !(isnil "_profile") then {
-               _active = [_profile, "active", false] call ALIVE_fnc_HashGet;
-               _activeCommands = [_profile, "activeCommands", []] call ALIVE_fnc_HashGet;
+               private _active = [_profile,"active", false] call ALIVE_fnc_HashGet;
+               private _activeCommands = [_profile,"activeCommands", []] call ALIVE_fnc_HashGet;
 
-               if (!_active && {count _activeCommands == 0}) then {
-                    [_profile, "clearActiveCommands"] call ALIVE_fnc_profileEntity;
-                    [_profile, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+               if (!_active && { _activeCommands isequalto [] }) then {
+                    [_profile,"clearActiveCommands"] call ALIVE_fnc_profileEntity;
+                    [_profile,"setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity;
                };
             };
 
@@ -985,30 +1048,27 @@ switch(_operation) do {
         };
 
         case "getobjectivebyid": {
-            ASSERT_TRUE(typeName _args == "STRING",str _args);
+            private _id = _args;
 
-            private ["_objective","_id"];
-
-            _id = _args;
-
-            if (!isnil "_logic" && {typeName _logic == "ARRAY"} && {count _logic > 0}) then {
+            if (!isnil "_logic" && {_logic isequaltype []} && {count _logic > 0}) then {
+                // find objective from passed opcom
                 {
-                    if (([_x,"objectiveID"] call ALiVE_fnc_hashGet) == _id) exitwith {_objective = _x};
+                    if (([_x,"objectiveID"] call ALiVE_fnc_hashGet) == _id) exitwith {
+                        _result = _x;
+                    };
                 } foreach ([_logic, "objectives"] call ALIVE_fnc_HashGet);
             } else {
+                // find objective from any opcom
                 {
-                    private ["_exit"];
+                    {
+                        if (([_x,"objectiveID"] call ALiVE_fnc_hashGet) == _id) exitwith {
+                            _result = _x;
+                        };
+                    } foreach ([_x, "objectives"] call ALIVE_fnc_HashGet);
 
-                    _exit = false;
-
-                    {_o = _x; if (([_o,"objectiveID"] call ALiVE_fnc_hashGet) == _id) exitwith {_objective = _o; _exit = true}} foreach ([_x, "objectives"] call ALIVE_fnc_HashGet);
-
-                    if (_exit) exitwith {};
-
+                    if (!isnil "_result") exitwith {};
                 } foreach OPCOM_INSTANCES;
             };
-
-            _result = _objective;
         };
 
         case "sortObjectives": {
@@ -1028,11 +1088,11 @@ switch(_operation) do {
                                 _objectives = [_objectives,[_logic],{
                                     _final = ([_Input0, "position"] call ALIVE_fnc_HashGet) distance (_x select 2 select 1);
 
-                                    //["ALiVE OPCOM Priority calculated %1",_final] call ALiVE_fnc_DumpR;
+                                    //["OPCOM Priority calculated %1",_final] call ALiVE_fnc_dumpR;
 
                                     _final = _final*(1-(random 0.33));
 
-                                    //["ALiVE OPCOM Priority randomized with a variety of one third in relation to distance %1 ",_final] call ALiVE_fnc_DumpR;
+                                    //["OPCOM Priority randomized with a variety of one third in relation to distance %1 ",_final] call ALiVE_fnc_dumpR;
 
                                     _final
                                 },"ASCEND"] call ALiVE_fnc_SortBy;
@@ -1049,11 +1109,11 @@ switch(_operation) do {
 
                                     _final = (_value1 + _value2 + _value3) - _value4;
 
-                                    //["ALiVE OPCOM Priority calculated %1",_final] call ALiVE_fnc_DumpR;
+                                    //["OPCOM Priority calculated %1",_final] call ALiVE_fnc_dumpR;
 
                                     _final = _final*(1-(random 0.33));
 
-                                    //["ALiVE OPCOM Priority randomized with a variety of one third in relation to size, height, distance, cluster priority %1",_final] call ALiVE_fnc_DumpR;
+                                    //["OPCOM Priority randomized with a variety of one third in relation to size, height, distance, cluster priority %1",_final] call ALiVE_fnc_dumpR;
 
                                     _final
                                 },"DESCEND"] call ALiVE_fnc_SortBy;
@@ -1068,7 +1128,7 @@ switch(_operation) do {
 
                                 _objectives = _objectivesFilteredCiv + _objectivesFilteredMil;
 
-                                //["ALiVE OPCOM Asymmetric Priority randomized with a variety of one fifth in relation to distance"] call ALiVE_fnc_DumpR;
+                                //["OPCOM Asymmetric Priority randomized with a variety of one fifth in relation to distance"] call ALiVE_fnc_dumpR;
 
                                 if (_asym_occupation <= 0) exitwith {};
 
@@ -1117,7 +1177,7 @@ switch(_operation) do {
 
 	                                        private ["_building","_road"];
 
-	                                        _buildings = [_center,_size] call ALIVE_fnc_getEnterableHouses;
+	                                        _buildings = [_center,_size] call ALiVE_fnc_INS_filterObjectiveBuildings;
 	                                        _roads = _center nearRoads _size;
 	                                        _faction = selectRandom _factions;
 	                                        _dominantFaction = [_center, _size] call ALiVE_fnc_getDominantFaction;
@@ -1198,29 +1258,32 @@ switch(_operation) do {
         };
 
         case "resetObjective": {
-            if(isnil "_args") then {
-                    _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
-            } else {
-                ASSERT_TRUE(typeName _args == "STRING",str _args);
-                private ["_objective"];
+            if (!isnil "_args") then {
+                private _objectiveID = _args;
+                private _objective = [_logic,"getobjectivebyid", _objectiveID] call ALiVE_fnc_OPCOM;
+                private _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
 
-                _objective = [_logic,"getobjectivebyid",_args] call ALiVE_fnc_OPCOM;
-                _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
+                private _previousTacomState = [_objective,"tacom_state"] call ALiVE_fnc_hashGet;
 
-                [_objective,"tacom_state","none"] call AliVE_fnc_HashSet;
-                [_objective,"opcom_state","unassigned"] call AliVE_fnc_HashSet;
-                [_objective,"danger",-1] call AliVE_fnc_HashSet;
-                [_objective,"section",[]] call AliVE_fnc_HashSet;
-                [_objective,"opcom_orders","none"] call AliVE_fnc_HashSet;
-                [_objective,"objectiveType",[_objective,"objectiveType","MIL"] call AliVE_fnc_HashGet] call AliVE_fnc_HashSet;
+                [_objective,"tacom_state", "none"] call AliVE_fnc_HashSet;
+                [_objective,"opcom_state", "unassigned"] call AliVE_fnc_HashSet;
+                [_objective,"danger", -1] call AliVE_fnc_HashSet;
+                [_objective,"section", []] call AliVE_fnc_HashSet;
+                [_objective,"opcom_orders", "none"] call AliVE_fnc_HashSet;
+                [_objective,"objectiveType", [_objective,"objectiveType","MIL"] call AliVE_fnc_HashGet] call AliVE_fnc_HashSet;
 
-                // debug ---------------------------------------
-                if (_debug) then {_args setMarkerColorLocal "ColorWhite"};
-                // debug ---------------------------------------
+                private _opcomID = [_logic,"opcomID"] call ALiVE_fnc_hashGet;
+                private _side = [_logic,"side"] call ALiVE_fnc_hashGet;
+                private _factions = [_logic,"factions"] call ALiVE_fnc_hashGet;
+                private _event = ['TACOM_ORDER_COMPLETE', [_opcomID,_objective,_previousTacomState,_side,_factions, false, []], "TACOM"] call ALIVE_fnc_event;
+                [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
+                if (_debug) then {
+                    _objectiveID setMarkerColorLocal "ColorWhite";
+                };
             };
-            _result = _args;
+
+            _result = [_logic,"objectives", []] call ALIVE_fnc_hashGet;
         };
 
         case "initObjective": {
@@ -1354,7 +1417,7 @@ switch(_operation) do {
 
                                             [getpos _charge,30] remoteExec  ["ALiVE_fnc_RemoveComposition",2];
 
-                                            ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side _caller];
+                                            ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
 
                                             deletevehicle _charge;
                                         },
@@ -1509,7 +1572,7 @@ switch(_operation) do {
                     _TACOM_FSM setFSMvariable ["_pause",_args];
                     _OPCOM_FSM setFSMvariable ["_pause",_args];
 
-                    ["ALiVE Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_Dump;
+                    ["Pausing state of %1 instance set to %2!",QMOD(ADDON),_args] call ALiVE_fnc_dump;
             };
             _result = _args;
         };
@@ -1532,7 +1595,7 @@ switch(_operation) do {
                 waituntil {sleep 1; isnil {[_this select 0, "OPCOM_FSM"] call ALiVE_fnc_HashGet}};
             };
 
-            ["ALiVE OPCOM stopped..."] call ALiVE_fnc_Dump;
+            ["OPCOM stopped..."] call ALiVE_fnc_dump;
 
             _result = true;
         };
@@ -1600,7 +1663,7 @@ switch(_operation) do {
                 private ["_exportProfiles","_async","_missionName"];
 
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["ALiVE OPCOM - SAVE DATA TRIGGERED"] call ALiVE_fnc_Dump;
+                    ["OPCOM - SAVE DATA TRIGGERED"] call ALiVE_fnc_dump;
                 };
 
                 _result = [false,[]];
@@ -1620,23 +1683,23 @@ switch(_operation) do {
                     GVAR(OBJECTIVES_DB_SAVE) = [_objectivesGlobal,time];
                     {
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - SAVE DATA Objective prepared for DB: %1",_x] call ALiVE_fnc_Dump;
+                            ["OPCOM - SAVE DATA Objective prepared for DB: %1",_x] call ALiVE_fnc_dump;
                         };
                     } foreach (GVAR(OBJECTIVES_DB_SAVE) select 0);
                     _save = true;
                 };
-                if (isnil "_save") exitwith {["ALiVE OPCOM - SAVE DATA Please wait at least 5 minutes before saving again!"] call ALiVE_fnc_Dump;};
-                if (count (GVAR(OBJECTIVES_DB_SAVE) select 0) == 0) exitwith {["ALiVE SAVE OPCOM DATA Dataset is empty, not saving...!"] call ALiVE_fnc_Dump;};
+                if (isnil "_save") exitwith {["OPCOM - SAVE DATA Please wait at least 5 minutes before saving again!"] call ALiVE_fnc_dump;};
+                if (count (GVAR(OBJECTIVES_DB_SAVE) select 0) == 0) exitwith {["SAVE OPCOM DATA Dataset is empty, not saving...!"] call ALiVE_fnc_dump;};
 
                 //If I didnt send you to hell - go and save, the feck!
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["ALiVE OPCOM - SAVE DATA - SYS DATA EXISTS"] call ALIVE_fnc_dump;
+                    ["OPCOM - SAVE DATA - SYS DATA EXISTS"] call ALiVE_fnc_dump;
                 };
 
                 if (isNil QGVAR(DATAHANDLER)) then {
 
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
+                        ["OPCOM - CREATE DATA HANDLER!"] call ALiVE_fnc_dump;
                     };
 
                     GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
@@ -1660,7 +1723,7 @@ switch(_operation) do {
                     [_exportObjectives, _objectiveID, _exportObjective] call ALIVE_fnc_hashSet;
 
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - EXPORT READY OBJECTIVE:"] call ALIVE_fnc_dump;
+                        ["OPCOM - EXPORT READY OBJECTIVE:"] call ALiVE_fnc_dump;
                         _exportObjective call ALIVE_fnc_inspectHash;
                     };
 
@@ -1678,7 +1741,7 @@ switch(_operation) do {
                 _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName]; // must include group_id to ensure mission reference is unique across groups
 
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["ALiVE OPCOM - SAVE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_Dump;
+                    ["OPCOM - SAVE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
                 };
 
                 _saveResult = [GVAR(DATAHANDLER), "bulkSave", ["mil_opcom", _exportObjectives, _missionName, _async]] call ALIVE_fnc_Data;
@@ -1708,8 +1771,8 @@ switch(_operation) do {
                 };
 
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["ALiVE OPCOM - SAVE DATA RESULT (maybe truncated in RPT, dont worry): %1",_saveResult] call ALIVE_fnc_dump;
-                    ["ALiVE OPCOM - SAVE DATA SAVING COMPLETE!"] call ALiVE_fnc_Dump;
+                    ["OPCOM - SAVE DATA RESULT (maybe truncated in RPT, dont worry): %1",_saveResult] call ALiVE_fnc_dump;
+                    ["OPCOM - SAVE DATA SAVING COMPLETE!"] call ALiVE_fnc_dump;
                 };
             };
         };
@@ -1717,7 +1780,7 @@ switch(_operation) do {
         case "loadData": {
             private ["_stopped","_result"];
 
-            if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {["ALiVE LOAD OPCOM DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE OR NOT DEDICATED!"] call ALIVE_fnc_dumpR};
+            if !(isServer && {!(isNil "ALIVE_sys_data")} && {!(ALIVE_sys_data_DISABLED)}) exitwith {["LOAD OPCOM DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE OR NOT DEDICATED!"] call ALiVE_fnc_dumpR};
 
             //Stop OPCOM
             _stopped = [_logic,"stop"] call ALiVE_fnc_OPCOM;
@@ -1761,7 +1824,7 @@ switch(_operation) do {
             };
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE OPCOM - LOAD DATA Imported %1 objectives from DB!",count ([_logic,"objectives",[]] call ALiVE_fnc_HashGet)] call ALiVE_fnc_Dump;
+                ["OPCOM - LOAD DATA Imported %1 objectives from DB!",count ([_logic,"objectives",[]] call ALiVE_fnc_HashGet)] call ALiVE_fnc_dump;
             };
 
             _result = _objectives;
@@ -1784,20 +1847,20 @@ switch(_operation) do {
                     _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName];
 
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - LOAD DATA  - MISSION: %1",_missionName] call ALiVE_fnc_Dump;
+                        ["OPCOM - LOAD DATA  - MISSION: %1",_missionName] call ALiVE_fnc_dump;
                     };
 
                     //Load only every 5 minutes
                     if (isnil QGVAR(OBJECTIVES_DB_LOAD) || {!(isnil QGVAR(OBJECTIVES_DB_LOAD)) && {time - (GVAR(OBJECTIVES_DB_LOAD) select 1) > 300}}) then {
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - LOAD DATA  FROM DB, PLEASE WAIT..."] call ALiVE_fnc_Dump;
+                            ["OPCOM - LOAD DATA  FROM DB, PLEASE WAIT..."] call ALiVE_fnc_dump;
                         };
 
                         if (isNil QGVAR(DATAHANDLER)) then {
 
                             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                                ["ALiVE OPCOM - CREATE DATA HANDLER!"] call ALIVE_fnc_dump;
+                                ["OPCOM - CREATE DATA HANDLER!"] call ALiVE_fnc_dump;
                             };
 
                             GVAR(DATAHANDLER) = [nil, "create"] call ALIVE_fnc_Data;
@@ -1812,12 +1875,12 @@ switch(_operation) do {
                         if (((typeName (GVAR(OBJECTIVES_DB_LOAD) select 0)) == "BOOL") && {!(GVAR(OBJECTIVES_DB_LOAD) select 0)}) exitwith {};
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - LOAD DATA %1 OBJECTIVES LOADED FROM DB!",count ((GVAR(OBJECTIVES_DB_LOAD) select 0) select 2)] call ALiVE_fnc_Dump;
+                            ["OPCOM - LOAD DATA %1 OBJECTIVES LOADED FROM DB!",count ((GVAR(OBJECTIVES_DB_LOAD) select 0) select 2)] call ALiVE_fnc_dump;
                         };
                     } else {
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - LOAD DATA FROM CACHE!"] call ALiVE_fnc_Dump;
+                            ["OPCOM - LOAD DATA FROM CACHE!"] call ALiVE_fnc_dump;
                         };
                     };
 
@@ -1831,7 +1894,7 @@ switch(_operation) do {
 
                             if (_id == _opcomID) then {
 
-                                //["ALiVE LOAD OPCOM DATA RESETTING RESULT %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_Dump;
+                                //["LOAD OPCOM DATA RESETTING RESULT %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_dump;
 
                                 _rev = [_x,"_rev",""] call ALiVE_fnc_HashGet;
 
@@ -1858,7 +1921,7 @@ switch(_operation) do {
                         {
                             private ["_entry","_target"];
 
-                            //["ALiVE LOAD OPCOM DATA CLEANING HASH %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_Dump;
+                            //["LOAD OPCOM DATA CLEANING HASH %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_dump;
 
                             _entry = _x;
 
@@ -1892,7 +1955,7 @@ switch(_operation) do {
                                 _i = 0;
 
                                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                                    ["ALiVE OPCOM - LOAD DATA REBUILDING OBJECTIVE %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_Dump;
+                                    ["OPCOM - LOAD DATA REBUILDING OBJECTIVE %1/%2!",_foreachIndex,(count _objectives)] call ALiVE_fnc_dump;
                                 };
                             };
 
@@ -1920,16 +1983,16 @@ switch(_operation) do {
                         _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
 
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - LOAD DATA IMPORTED %1 OBJECTIVES FROM DB!",count _objectives] call ALiVE_fnc_Dump;
+                            ["OPCOM - LOAD DATA IMPORTED %1 OBJECTIVES FROM DB!",count _objectives] call ALiVE_fnc_dump;
                         };
                     } else {
                         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                            ["ALiVE OPCOM - LOAD DATA LOADING FROM DB FAILED!"] call ALIVE_fnc_dump;
+                            ["OPCOM - LOAD DATA LOADING FROM DB FAILED!"] call ALiVE_fnc_dump;
                         };
                     };
                 } else {
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE OPCOM - LOAD DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE!"] call ALIVE_fnc_dumpR;
+                        ["OPCOM - LOAD DATA FROM DB NOT POSSIBLE! NO SYS DATA MODULE AVAILABLE!"] call ALiVE_fnc_dumpR;
                     };
                 };
             };
@@ -1967,7 +2030,7 @@ switch(_operation) do {
                     } foreach OPCOM_instances;
                 };
 
-                if (!isnil "_found" && {!_found}) exitwith {["ALiVE - vAI operation addObjective didn't find an OPCOM of faction or side %1!",_logic] call ALiVE_fnc_Dump};
+                if (!isnil "_found" && {!_found}) exitwith {["- vAI operation addObjective didn't find an OPCOM of faction or side %1!",_logic] call ALiVE_fnc_dump};
 
                 if(isnil "_args") then {
                     _args = [_logic,"objectives"] call ALIVE_fnc_hashGet;
@@ -2245,146 +2308,101 @@ switch(_operation) do {
             {{titleText ['Inserting...', 'BLACK IN',2]} remoteExec ["BIS_fnc_Spawn",owner _x]; sleep 0.2} foreach _players;
         };
 
+
+        ///////////////////////////////////////////////////
+        // Scan all objectives for nearby profiles
+        // Sort into owned / contested / enemy owned objectives
+        // Sets opcom_state for each objective based on occupation
+        ///////////////////////////////////////////////////
+
         case "analyzeclusteroccupation": {
-            ASSERT_TRUE(typeName _args == "ARRAY",str _args);
+            _args params ["_sidesFriendly","_sidesEnemy"];
 
-            private ["_pos","_item","_type","_prios","_side","_sides","_id","_entArr","_ent","_sectors","_entities","_state","_controltype"];
+            private _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
 
-            _sides = _args;
-            _sidesF = _sides select 0;
-            _sidesE = _sides select 1;
-            _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
-            _controltype = [_logic, "controltype","invasion"] call ALiVE_fnc_HashGet;
+            private _friendlyObjectives = [];
+            private _enemyObjectives = [];
+            private _contestedObjectives = [];
+            {
+                private _objective = _x;
 
-            //_distance = _args select 1;
-            _result_tmp = [];
-            for "_i" from 0 to ((count _sides)-1) do {
-                    _sideX = _sides select _i;
-                    _nearForces = [];
+                private _id = [_objective,"objectiveID"] call ALiVE_fnc_HashGet;
+                private _pos = [_objective,"center"] call ALiVE_fnc_HashGet;
 
-                    {
-                          for "_z" from 0 to ((count _objectives)-1) do {
-                        _item = _objectives select _z;
-                        _pos = [_item,"center"] call ALiVE_fnc_HashGet;
-                        _id = [_item,"objectiveID"] call ALiVE_fnc_HashGet;
-                        _state = [_item,"opcom_state","unassigned"] call ALiVE_fnc_HashGet;
-                        _size_reserve = [_logic,"sectionsamount_reserve",1] call ALiVE_fnc_HashGet;
-                        _section = [_item,"section",[]] call ALiVE_fnc_HashGet;
+                private _section = [_objective,"section", []] call ALiVE_fnc_HashGet;
+                if (_section isequalto []) then {
+                    [_objective,"opcom_state", "unassigned"] call ALiVE_fnc_HashSet;
+                    [_objective,"opcom_orders", "none"] call ALiVE_fnc_HashSet;
+                    [_objective,"danger", -1] call ALiVE_fnc_HashSet;
+                };
 
-                        _type = "surroundingsectors";
-                        _entArr = [];
-                        _entities = [];
+                // find nearby friendly/enemy entities
 
-                       if (count _section < 1) then {[_item,"opcom_state","unassigned"] call ALiVE_fnc_HashSet; [_item,"opcom_orders","none"] call ALiVE_fnc_HashSet; [_item,"danger",-1] call ALiVE_fnc_HashSet};
+                private _nearEntities = [_pos, 500, ["all","entity"]] call ALIVE_fnc_getNearProfiles;
 
-                       _profiles = [_pos, 500, [_x,"entity"]] call ALIVE_fnc_getNearProfiles;
-                        {
-                            if (typeName (_x select 2 select 4) == "STRING") then {
-                                _entities pushback (_x select 2 select 4);
-
-                                //player sidechat format["Entities: %1, count total %2 val %3",_entities,count _entities,(_x select 2 select 4)];
-                                   //diag_log format["Entities: %1, count total %2 val %3",_entities,count _entities,(_x select 2 select 4)];
-                            };
-                            //sleep 0.03;
-                        } foreach _profiles;
-
-
-                        if (count _entities > 0) then {_nearForces pushback [_id,_entities]};
+                private _nearFriendlies = [];
+                private _nearEnemies = [];
+                {
+                    private _side = _x select 2 select 3;
+                    if (_side in _sidesFriendly) then {
+                        _nearFriendlies pushback _x;
+                    } else {
+                        if (_side in _sidesEnemy) then {
+                            _nearEnemies pushback _x;
+                        };
                     };
-                } foreach _sideX;
+                } foreach _nearEntities;
 
-                _result_tmp pushback _nearForces;
-            };
+                // determine objective state from near entities
 
-            _targetsTaken1 =  _result_tmp select 0;
-            _targetsTaken2 =  _result_tmp select 1;
-
-            _targetsAttacked1 = [];
-            _remover1 = [];
-            {
-                _targetID = _x select 0;
-                _entities = _x select 1;
-
-                if (({(_x select 0) == _targetID} count _targetsTaken2 > 0) && {(typename _x == "ARRAY")}) then {
-                    _targetsAttacked1 pushback _x;
-                    _remover1 pushback _foreachIndex;
+                if (_nearFriendlies isnotequalto []) then {
+                    if (_nearEnemies isequalto []) then {
+                        _friendlyObjectives pushback [_id, _nearFriendlies, _nearEnemies];
+                    } else {
+                        _contestedObjectives pushback [_id, _nearFriendlies, _nearEnemies];
+                    };
+                } else {
+                    if (_nearEnemies isnotequalto []) then {
+                        _enemyObjectives pushback [_id, _nearFriendlies, _nearEnemies];
+                    };
                 };
-                //sleep 0.03;
-            } foreach _targetsTaken1;
+            } foreach _objectives;
 
-            _targetsAttacked2 = [];
-            _remover2 = [];
-            {
-                _targetID = _x select 0;
-                _entities = _x select 1;
+            private _clusterOccupation = [_friendlyObjectives, _enemyObjectives, _contestedObjectives, time];
+            [_logic,"clusteroccupation", _clusterOccupation] call AliVE_fnc_HashSet;
 
-                if (({(_x select 0) == _targetID} count _targetsTaken1 > 0) && {(typename _x == "ARRAY")}) then {
-                    _targetsAttacked2 pushback _x;
-                    _remover2 pushback _foreachIndex;
-                };
-                //sleep 0.03;
-            } foreach _targetsTaken2;
-
-
-            {
-                if !(_x > ((count _targetsTaken1)-1)) then {
-                       _targetsTaken1 set [_x,"x"];
-                       _targetsTaken1 = _targetsTaken1 - ["x"];
-                };
-                //sleep 0.03;
-            } foreach _remover1;
-
-            _targetsTaken1 = _targetsTaken1 - [objNull];
-
-            {
-                if !(_x > ((count _targetsTaken2)-1)) then {
-                       _targetsTaken2 set [_x,"x"];
-                       _targetsTaken2 = _targetsTaken2 - ["x"];
-                };
-                //sleep 0.03;
-            } foreach _remover2;
-
-            _targetsTaken2 = _targetsTaken2 - [objNull];
-
-            _result = [_targetsTaken1, _targetsAttacked1, _targetsTaken2, _targetsAttacked2,time];
-            [_logic,"clusteroccupation",_result] call AliVE_fnc_HashSet;
-
-            _targetsTaken = _result select 0;
-            _targetsAttacked = _result select 1;
-            _targetsTakenEnemy = _result select 2;
-            _targetsAttackedEnemy = _result select 3;
-
-            switch (_controltype) do {
+            private _controltype = [_logic,"controltype", "invasion"] call ALiVE_fnc_HashGet;
+            private _prios = switch (_controltype) do {
                 case ("invasion") : {
-                    _prios = [
-                        [_targetsTaken,"reserve"],
-                        [_targetsTakenEnemy,"attack"],
-                        [_targetsAttackedEnemy,"defend"]
-                    ];
+                    [
+                        [_friendlyObjectives,"reserve"],
+                        [_enemyObjectives,"attack"],
+                        [_contestedObjectives,"defend"]
+                    ]
                 };
 
                 case ("occupation") : {
-                    _prios = [
-                        [_targetsTaken,"reserve"],
-                        [_targetsTakenEnemy,"attack"],
-                        [_targetsAttackedEnemy,"defend"]
-                    ];
+                    [
+                        [_friendlyObjectives,"reserve"],
+                        [_enemyObjectives,"attack"],
+                        [_contestedObjectives,"defend"]
+                    ]
                 };
                 case ("asymmetric") : {
-                    _prios = [
-                        [_targetsTaken,"reserve"],
-                        [_targetsTakenEnemy,"attack"],
-                        [_targetsAttackedEnemy,"defend"]
-                    ];
+                    [
+                        [_friendlyObjectives,"reserve"],
+                        [_enemyObjectives,"attack"],
+                        [_contestedObjectives,"defend"]
+                    ]
                 };
             };
 
             {
-                [_logic,"setstatebyclusteroccupation",[(_x select 0),(_x select 1)]] call ALiVE_fnc_OPCOM;
+                _x params ["_objectives","_operation"];
+                [_logic,"setstatebyclusteroccupation", [_objectives,_operation]] call ALiVE_fnc_OPCOM;
             } foreach _prios;
 
-            //diag_log format ["%5: Taken %1 | Attacked %2 // %6: Taken %3 | Attacked %4",_targetsTaken, _targetsAttackedEnemy, _targetsTakenEnemy, _targetsAttackedEnemy,_sidesF,_sidesE];
-            //player sidechat format ["%5: Taken %1 | Attacked %2 // %6: Taken %3 | Attacked %4",_targetsTaken, _targetsAttackedEnemy, _targetsTakenEnemy, _targetsAttackedEnemy,_sidesF,_sidesE];
+            _result = _clusterOccupation;
         };
 
         ///////////////////////////////////////////////////
@@ -2414,7 +2432,7 @@ switch(_operation) do {
 
 			private _controlledProfileIDs = [];
 			{
-				_controlledProfileIDs = _controlledProfileIDs + ([ALiVE_ProfileHandler,"getProfilesByFaction",_x] call ALiVE_fnc_ProfileHandler);
+				_controlledProfileIDs append ([ALiVE_ProfileHandler,"getProfilesByFaction",_x] call ALiVE_fnc_ProfileHandler);
 			} foreach _factions;
 
             private _knownEntities = [];
@@ -2430,6 +2448,8 @@ switch(_operation) do {
                     } foreach _nearEnemies;
                 };
 			} foreach _controlledProfileIDs;
+
+            [_logic,"createSpotrepForProfiles", _knownEntities apply { _x select 0}] call MAINCLASS;
 
 			[_logic,"knownentities", _knownEntities] call ALiVE_fnc_HashSet;
 
@@ -2565,83 +2585,70 @@ switch(_operation) do {
             _result = [_inf,_mot,_mech,_arm,_air,_sea,_arty,_AAA];
         };
 
+        ///////////////////////////////////////////////////
+        // Sets the opcom_state of each passed objective to the passed state
+        // Prevents new state from being set if it violates the normal flow of states
+        ///////////////////////////////////////////////////
+
         case "setstatebyclusteroccupation": {
-                ASSERT_TRUE(typeName _args == "ARRAY",str _args);
+            _args params ["_objectives","_operation"];
 
-                private ["_objectives","_operation","_idleStates","_stateX","_target"];
-                _objectives = _args select 0;
-                _operation = _args select 1;
+            private _idleStates = switch (_operation) do {
+                case "unassigned":  { ["internal","unassigned"] };
+                case "attack" :     { ["internal","attack","attacking","defend","defending"] };
+                case "defend" :     { ["internal","defend","defending","attack","attacking"] };
+                case "reserve":     { ["internal","attack","attacking","defend","defending","reserve","reserving","idle"] };
+                default             { ["internal","reserve","reserving","idle"] };
+            };
 
-                switch (_operation) do {
-                    case ("unassigned") : {_idleStates = ["internal","unassigned"]};
-                    case ("attack") : {_idleStates = ["internal","attack","attacking","defend","defending"]};
-                    case ("defend") : {_idleStates = ["internal","defend","defending","attack","attacking"]};
-                    case ("reserve") : {_idleStates = ["internal","attack","attacking","defend","defending","reserve","reserving","idle"]};
-                    default {_idleStates = ["internal","reserve","reserving","idle"]};
+            {
+                private _objectiveID = _x select 0;
+
+                private _target = [_logic,"getobjectivebyid", _objectiveID] call ALiVE_fnc_OPCOM;
+                private _opcomState = [_target,"opcom_state"] call AliVE_fnc_HashGet;
+                if !(_opcomState in _idleStates) then {
+                    [_target,"opcom_state", _operation] call AliVE_fnc_HashSet;
                 };
-
-                {
-                    _id = _x; if (typeName _x == "ARRAY") then {_id = _x select 0};
-                    _target = [_logic,"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
-
-                    //player sidechat format["input: ID %1 | operation: %2",_id,_operation];
-
-                    _pos = [_target,"center"] call AliVE_fnc_HashGet;
-                    _stateX = [_target,"opcom_state"] call AliVE_fnc_HashGet;
-                    if !(_stateX in _idleStates) then {
-                        //player sidechat format["output: state %1 | operation: %2",_stateX,_operation];
-                        [_target,"opcom_state",_operation] call AliVE_fnc_HashSet;
-                    };
-                } foreach _objectives;
-
-                if !(isnil "_target") then {_result = [_target,_operation]} else {_result = nil};
+            } foreach _objectives;
         };
 
+        ///////////////////////////////////////////////////
+        // Finds the highest priority objective with the passed state
+        // and determines its next orders
+        ///////////////////////////////////////////////////
+
         case "selectordersbystate": {
-                ASSERT_TRUE(typeName _args == "STRING",str _args);
+            private _state = _args;
 
-                private _state = _args;
-                private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+            private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
+            private _objectives = [_logic, "objectives", []] call AliVE_fnc_HashGet;
+            private _OPCOM_FSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
+            private _OPCOM_SKIP_OBJECTIVES = _OPCOM_FSM getFSMvariable ["_OPCOM_SKIP_OBJECTIVES", []];
 
-                private _OPCOM_FSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
-                private _OPCOM_SKIP_OBJECTIVES = _OPCOM_FSM getFSMvariable ["_OPCOM_SKIP_OBJECTIVES", []];
+            private _allSyncedTriggersActivated = {((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0;
 
-                private _objectives = [_logic, "objectives", []] call AliVE_fnc_HashGet;
-                private _target = nil;
-                private _order = nil;
+            private _targetObjectiveIndex = _objectives findIf {
+                private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;
+                private _objectiveState = [_x, "opcom_state"] call AliVE_fnc_HashGet;
 
-                {
-                    private _objectiveID = [_x, "objectiveID"] call AliVE_fnc_HashGet;
+                !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) &&
+                _objectiveState == _state &&
+                { _allSyncedTriggersActivated || { !(_objectiveState in ["attack","unassigned"]) } }
+            };
 
-                    if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {
-                        private _objectiveState = [_x, "opcom_state"] call AliVE_fnc_HashGet;
+            if (_targetObjectiveIndex != -1) then {
+                private _targetObjective = _objectives select _targetObjectiveIndex;
 
-                        if (_objectiveState == _state) then {
-                            switch (true) do {
-                                case (_state == "attack" && {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0}); /* FALLTHROUGH */
-                                case (_state == "unassigned" && {{((typeof _x) == "EmptyDetector") && {!(triggerActivated _x)}} count (synchronizedObjects _module) == 0}): {
-                                    _target = _x;
-                                    _order = "attack";
-                                };
-                                case (_state == "defend"); /* FALLTHROUGH */
-                                case (_state == "reserve"): {
-                                    _target = _x;
-                                    _order = _state;
-                                };
-                            };
-                        };
-
-                        if !(isNil "_target") exitWith {};
-                    };
-                } forEach _objectives;
-
-                if !(isNil "_target") then {
-                    [_target, "opcom_orders", _order] call AliVE_fnc_HashSet;
-
-                    _result = ["execute", _target];
-                } else {
-                    _result = nil;
+                private _nextOrders = switch (_state) do {
+                    case "attack": { "attack" };
+                    case "unassigned": { "attack" };
+                    case "defend": { "defend" };
+                    case "reserve": { "reserve" };
                 };
+
+                [_targetObjective,"opcom_orders", _nextOrders] call AliVE_fnc_HashSet;
+                _result = ["execute", _targetObjective];
+            };
         };
 
         case "destroy": {

@@ -79,7 +79,12 @@ if (_spawnSources isEqualTo []) then {
 
         [MOD(profileSystem),"profilesInSpawnRange", []] call ALiVE_fnc_hashSet;
 
-        private _spawnSourcesUnfiltered = allPlayers + (allUnitsUAV select {isUavConnected _x}) + allCurators + ALiVE_SpawnSources;
+        private _spawnSourcesUnfiltered = allPlayers + (allUnitsUAV select {isUavConnected _x}) + ALiVE_SpawnSources;
+
+        private _zeusSpawn = [MOD(profileSystem),"zeusSpawn"] call ALiVE_fnc_hashGet;
+        if (_zeusSpawn) then {
+            _spawnSourcesUnfiltered append allCurators;
+        };
 
         // avoid unnecessary work
         // delete spawn sources that are in close proximity

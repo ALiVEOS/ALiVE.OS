@@ -38,7 +38,7 @@ private _killerSide = str(side (group _killer));
 if !(isNil "_unit") then {
 	private _position = getPosASL _unit;
 	private _faction = faction _unit;
-	private _side = side _unit;
+	private _side = side group _unit;
 
 	private _event = ['AGENT_KILLED', [_position,_faction,_side,_killerSide],"Agent"] call ALIVE_fnc_event;
 	private _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;

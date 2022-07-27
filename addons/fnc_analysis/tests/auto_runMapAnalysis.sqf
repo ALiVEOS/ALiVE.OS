@@ -40,19 +40,19 @@ diag_log "Timer Start";
 
 #define TIMEREND \
 _timeEnd = diag_tickTime - _timeStart; \
-diag_log format["Timer End %1",_timeEnd];
+["Timer End %1",_timeEnd] call ALiVE_fnc_dump;
 
 //========================================
 
 _filetest = format["@ALiVE\indexing\%1\x\alive\addons\main\static\%1_staticData.sqf", worldName];
 
-diag_log format["COMPILING STATIC DATA %1", _filetest];
+["COMPILING STATIC DATA %1", _filetest] call ALiVE_fnc_dump;
 
 call compile preprocessFileLineNumbers _filetest;
 
-diag_log format["COMPILED STATIC DATA - Civ Construction: %1", ALIVE_civilianConstructionBuildingTypes];
+["COMPILED STATIC DATA - Civ Construction: %1", ALIVE_civilianConstructionBuildingTypes] call ALiVE_fnc_dump;
 
-diag_log format["RUNNING AUTO GRID MAP ANALYSIS SQF NOW... %1", time];
+["RUNNING AUTO GRID MAP ANALYSIS SQF NOW... %1", time] call ALiVE_fnc_dump;
 
 _FSMtest = [] execFSM "\x\alive\addons\fnc_analysis\auto_gridMapAnalysis.fsm";
 

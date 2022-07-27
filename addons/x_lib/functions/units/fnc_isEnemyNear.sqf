@@ -57,7 +57,7 @@ _entities = _position nearEntities ["CAManBase", _radius];
 
 if(count _entities > 0) then {
     {
-        _entitySide = side _x;
+        _entitySide = side group _x;
         if(_entitySide in _enemySides) exitWith {
             _found = true;
         };

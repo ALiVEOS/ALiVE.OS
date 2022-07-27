@@ -37,7 +37,7 @@ private ["_m","_markers","_delay"];
         _m setMarkerSizeLocal [.6,.6];
         _markers pushback _m;
 
-        switch (side _x) do {
+        switch (side group _x) do {
             case west: {
                 _m setMarkerTypeLocal "b_unknown";
                 _m setMarkerColorLocal "ColorBLUFOR";

@@ -1,0 +1,45 @@
+[center][url=http://alivemod.com/][img=http://alivemod.com/img/alive_logo_bif.jpg][/url][/center]
+[center][b][url=http://alivemod.com/]ALiVEmod.com[/url]
+[size=4]The next generation dynamic persistent mission addon for ArmA3[/size][/b][/center]
+
+[center][b]Release 1.14[/b][/center]
+
+[b]Praire Fire Update[/b]
+To coincide with release of the exciting new Creator DLC: SOG Prairie Fire, this update provides full compatability for the new vietnam map, factions and units.  We've also included 4 new scenarios, which will be available to play on the official SOG Praire Fire ALiVE public server.  In the meantime we have also made over 300 bug fixes, feature enhancements and refinements.  Some of these changes could impact existing missions so as always we strongly recommend deleting and replacing ALiVE modules if you experience odd behaviour.
+
+In addition, we have added an optional extras mod for SOG Praire Fire, which includes several compositions built speficially for Vietnam-era scenarios.  This is a separate download from the main ALiVE mod.
+
+The full list of changes is on github but some highlights include:
+
+[LIST]
+[*]Maps: Cam Lao Nam (for SOG Prairie Fire); Anizay[/*]
+[*]Missions: Four new SOG Praire Fire scenarios[/*]
+[*]Factions: added full support for SOG Prairie Fire and Global Mobilisation[/*]
+[*]Military AI Commander:[/*] Improved OPCOM objective selection (effectively slowing down the initial rate of advance, which will likely have a big impact on invasion type scenarios)
+[*]Military AI Commander:[/*] Asymmetric mode updated to support era specific IEDs, vehicles and factories
+[*]Military Air Component Commander: major overhaul to improve Air Tasking Orders[/*]
+[*]MACC Player Tasks: Military Air Commander can now delegate SEAD and CSAR tasks to Players via the Strategic Player Tasks system (if enabled in C2ISTAR module)[/*]
+[*]C2ISTAR:[/*] Option added to disable Image Intelligence
+[*]Military Logistics: major overhaul to improve heli insertions in high density terrain such as jungle[/*]
+[*]Virtual AI System:[/*] Fixed profile speed limiter (slow is now properly slow); added option to disable Zeus spawning virtual groups
+[*]CQB:[/*] Support added for caves and tunnels
+[*]Player Combat Support:[/*] Improved artillery ordnance detection; added Attack Ground feature for untargetted air attack runs (such as napalm drops)
+[*]Civ Pop:[/*] Added support for SOG Prairie Fire including ambient sounds and VN_Rations for Humanitarian Aid in COIN scenarios (OPCOM Asymmetric)
+[/LIST]
+
+[center][b][url=http://alivemod.com/#Download]Download[/url][/b]
+Grab the latest version from [url=http://alivemod.com/#Download]ALiVEmod.com[/url]
+Also available on Steam Workshop (Usually within 24 hours of this post)
+
+Please note that as with all updates, if you have an issue loading a mission made with a previous version of ALiVE, delete and replace the modules in that mission.[/center]
+
+[b]Known Issues & Support[/b]
+Existing bugs are on Github [url=https://github.com/ALiVEOS/ALiVE.OS/issues]here[/url].  ALiVE is in maintenance only mode feature enhancements from the core team will be rare.  Feel free to Fork or submit PRs.  By far the best place to get support and feedback from the ALiVE community and dev team is on [url=https://discord.gg/KkacXFx]Discord[/url].
+
+[b]Manual[/b]
+All the info you need is on the [url=http://www.alivemod.com/wiki]ALiVE Wiki[/url].
+
+[b]Acknowledgements and Thanks[/b]
+Particular thanks to all those on our support forum who have worked closely with us to identify bugs, provide logs and generally help us improve ALiVE. Your assistance is valuable and your dedication to ALiVE makes it all worth the effort!
+
+Have fun!

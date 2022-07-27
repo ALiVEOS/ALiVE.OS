@@ -144,7 +144,7 @@ class FSM
        "" \n
        "_pos = getPosATL _leader;" \n
        "_posDespawn = _pos;" \n
-       "_bldgpos = [_pos,_radius,""building""] call ALiVE_fnc_findNearHousePositions;" \n
+       "_bldgpos = [_pos,_radius] call ALiVE_fnc_findNearHousePositions;" \n
        "_staticWeapons = nearestObjects [_pos, [""StaticWeapon""], 20];" \n
        "" \n
        "if ((count _bldgpos) < (count units _grp)*1.2) then {" \n
@@ -156,7 +156,7 @@ class FSM
        "//[""Buildingpos: %1 - units: %2 - patrol %3"",_posNo,_grpTH,_pat] call ALiVE_fnc_DumpR;" \n
        "" \n
        "if (count _bldgpos == 0) exitwith {" \n
-       "    diag_log format[""CQB error: Group %1 has no buildingpositions! Deleting..."",_grp];" \n
+       "    [""CQB error: Group %1 has no buildingpositions! Deleting..."",_grp] call ALiVE_fnc_dump;" \n
        "    [_logic, ""delGroup"", _grp] call ALiVE_fnc_CQB;" \n
        "    _abort = true;" \n
        "};"/*%FSM</STATEINIT""">*/;
@@ -300,7 +300,7 @@ class FSM
        "" \n
        "		_unit moveInGunner _staticWeapon;" \n
        "" \n
-       "		//[""ALiVE CQB Housepatrol assigned unit %1 as gunner of %2! Total static weapons %3"",_unit,_staticWeapon,_staticWeaponsCopy] call ALiVE_fnc_DumpR;" \n
+       "		//[""CQB Housepatrol assigned unit %1 as gunner of %2! Total static weapons %3"",_unit,_staticWeapon,_staticWeaponsCopy] call ALiVE_fnc_dumpR;" \n
        "		" \n
        "		_staticWeaponsCopy = _staticWeaponsCopy - [_staticWeapon];" \n
        "	} else {" \n
@@ -309,14 +309,14 @@ class FSM
        "			if (_pat) then {" \n
        "			    _pos = [_pos,100] call CBA_fnc_Randpos;" \n
        "" \n
-       "				//[""ALiVE CQB Housepatrol assigned unit %1 to patrol 100mtrs from %2!"",_unit,_pos] call ALiVE_fnc_DumpR;" \n
+       "				//[""CQB Housepatrol assigned unit %1 to patrol 100mtrs from %2!"",_unit,_pos] call ALiVE_fnc_dumpR;" \n
        "" \n
        "			} else {" \n
        "			    _pos = _bldgpos select 0;" \n
        "			" \n
        "			    _bldgpos pushback _pos;" \n
        "" \n
-       "				//[""ALiVE CQB Housepatrol assigned unit %1 to move to house position %2!"",_unit,_pos] call ALiVE_fnc_DumpR;" \n
+       "				//[""CQB Housepatrol assigned unit %1 to move to house position %2!"",_unit,_pos] call ALiVE_fnc_dumpR;" \n
        "" \n
        "				_bldgpos set [0,""x""];" \n
        "				_bldgpos = _bldgpos - [""x""];" \n
@@ -464,7 +464,7 @@ class FSM
       name = "End";
       init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal _mkr;" \n
        "if(_debug) then {" \n
-       "    format[""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "    [""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_dump;" \n
        "};" \n
        ""/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
@@ -484,11 +484,11 @@ class FSM
        "    _leader setVariable [""FSM"", [_hdl,_fsm], true];" \n
        "" \n
        "    if(_debug) then {" \n
-       "        format[""%1 killed - Passing Simple House Patrol FSM to %2"",  _leader,_leaderNew] call ALiVE_fnc_logger;" \n
+       "        [""%1 killed - Passing Simple House Patrol FSM to %2"",  _leader,_leaderNew] call ALiVE_fnc_dump;" \n
        "    };" \n
        "} else {" \n
        "    if(_debug) then {" \n
-       "        format[""%1 killed - Ending Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "        [""%1 killed - Ending Simple House Patrol FSM"",  _leader] call ALiVE_fnc_dump;" \n
        "    };" \n
        "};" \n
        "deleteMarkerLocal _mkr;" \n
@@ -506,7 +506,7 @@ class FSM
       name = "End_1";
       init = /*%FSM<STATEINIT""">*/"deleteMarkerLocal _mkr;" \n
        "if(_debug) then {" \n
-       "    format[""%1 patrol over -  Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "    [""%1 patrol over -  Simple House Patrol FSM"",  _leader] call ALiVE_fnc_dump;" \n
        "};"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
@@ -577,7 +577,7 @@ class FSM
        "[_logic, ""delGroup"", _grp] call ALiVE_fnc_CQB;" \n
        "" \n
        "if(_debug) then {" \n
-       "    format[""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_logger;" \n
+       "    [""%1 aborting Simple House Patrol FSM"",  _leader] call ALiVE_fnc_dump;" \n
        "};" \n
        "" \n
        "deleteMarkerLocal _mkr;" \n

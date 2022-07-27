@@ -37,7 +37,7 @@ _hash = [_input] call ALIVE_fnc_parseJSON;
 TRACE_1("RESTORE DATA", _hash);
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - RESTORE DATA BEGIN:"] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - RESTORE DATA BEGIN:"] call ALiVE_fnc_dump;
     _hash call ALIVE_fnc_inspectHash;
 };
 
@@ -157,7 +157,7 @@ if (typeName _hash == "ARRAY") then {
 };
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SYS_DATA_COUCHDB - RESTORE DATA END:"] call ALIVE_fnc_dump;
+    ["SYS_DATA_COUCHDB - RESTORE DATA END:"] call ALiVE_fnc_dump;
     _hash call ALIVE_fnc_inspectHash;
 };
 

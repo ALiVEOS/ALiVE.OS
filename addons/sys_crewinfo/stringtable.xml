@@ -3,21 +3,21 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CREWINFO">
-    <Original>Crew Info</Original>
+    <English>Crew Info</English>
 </Key>
 <Key ID="STR_ALIVE_CREWINFO_DEBUG">
-    <Original>Enable Debug:</Original>
+    <English>Enable Debug:</English>
 </Key>
 <Key ID="STR_ALIVE_CREWINFO_DEBUG_COMMENT">
-    <Original>Enables Crew Info Module Debug</Original>
+    <English>Enables Crew Info Module Debug</English>
 </Key>
 <Key ID="STR_ALIVE_CREWINFO_UI">
-    <Original>Crew Info (Position):</Original>
+    <English>Crew Info (Position):</English>
 </Key>
 <Key ID="STR_ALIVE_CREWINFO_UI_COMMENT">
-    <Original>Crew Info Interface Location - select none to turn off</Original>
+    <English>Crew Info Interface Location - select none to turn off</English>
 </Key>
 <Key ID="STR_ALIVE_CREWINFO_ERROR1">
-    <Original>Only one crew info module can be used</Original>
+    <English>Only one crew info module can be used</English>
 </Key>
 </Container></Package></Project>

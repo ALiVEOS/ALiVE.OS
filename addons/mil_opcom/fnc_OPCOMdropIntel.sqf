@@ -39,7 +39,7 @@ _globalChance = missionnamespace getvariable (format["ALiVE_MIL_OPCOM_INTELCHANC
 //Override from OPCOM module else use provided value (default off)
 _chance = if (!isnil "_globalChance") then {_globalChance} else {_chance};
 
-//["ALiVE OPCOM DropIntel TRACE side: %1 chance: %2 _globalChance active: %3",_side,_chance,!isnil "_globalChance"] call ALiVE_fnc_DumpR;
+//["OPCOM DropIntel TRACE side: %1 chance: %2 _globalChance active: %3",_side,_chance,!isnil "_globalChance"] call ALiVE_fnc_dumpR;
 
 if (random 1 > _chance || {isNull _unit}) exitwith {};
 
@@ -49,27 +49,28 @@ _position = getposATL _unit;
 _object = _type createVehicle _position;
 _object setposATL ([_position,1] call CBA_fnc_Randpos);
 
-//["ALiVE OPCOM DropIntel TRACE object %1 created at %2 (%3)",typeOf _object, getposATL _object, _object] call ALiVE_fnc_DumpR;
+//["OPCOM DropIntel TRACE object %1 created at %2 (%3)",typeOf _object, getposATL _object, _object] call ALiVE_fnc_dumpR;
 
 if (!isNull _object) then {
 
     //Add Action globally
     _args = [
         "Read Intel", //Action Text
-        {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [_params select 0, 1500, _params select 1] call ALiVE_fnc_OPCOMToggleInstallations}, //Action Code
+        {_object = _this select 0; _caller = _this select 1; _params = _this select 3; openmap true; [_params select 0, 1500, _params select 1] call ALiVE_fnc_OPCOMToggleInstallations; deleteVehicle _object}, //Action Code
         [_position,_side], //Params
         1, //Prio
         false, //showWindow
         true, //hideOnUse
         "", //showrtcut
-        "alive _target" //condition
+        "true", //condition
+        2
     ];
     [[_object, _args],"addAction",true,true] call BIS_fnc_MP;
 
     // Add ACE Interaction "Read Intel" to intel object //
     [_object, _position, _side] remoteExec ["ALiVE_fnc_aceMenu_readIntel", 0, true];
 
-    //["ALiVE OPCOM DropIntel TRACE action placed on object %1! All good!",_object] call ALiVE_fnc_DumpR;
+    //["OPCOM DropIntel TRACE action placed on object %1! All good!",_object] call ALiVE_fnc_dumpR;
     //_marker = [format["OPCOM_INTEL_%1", getposATL _object], getposATL _object,"ICON", [0.2,0.2],"ColorRed","INTEL", "n_installation", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
 
     //Do cleanup!
@@ -79,9 +80,9 @@ if (!isNull _object) then {
         _object = _this select 1;
         _marker = _this select 2;
 
-        waituntil {sleep 10; isNil "_unit" || {isNull _unit}};
+        waituntil {sleep 20; isNil "_unit" || {isNull _unit}};
 
-        //["ALiVE OPCOM DropIntel TRACE deleting object %1! DropIntel finishing!",_object] call ALiVE_fnc_DumpR;
+        //["OPCOM DropIntel TRACE deleting object %1! DropIntel finishing!",_object] call ALiVE_fnc_dumpR;
         //deleteMarker _marker;
 
         deleteVehicle _object;

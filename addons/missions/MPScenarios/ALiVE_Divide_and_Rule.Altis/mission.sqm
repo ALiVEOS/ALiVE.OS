@@ -248,7 +248,11 @@ class AddonsMetaData
 randomSeed=11964117;
 class ScenarioData
 {
-	author="SpyderBlack723";
+	author="ALiVE Mod Team - SpyderBlack723";
+	overviewText="INTEL has been received about a nuclear device beeing built by a scientist named Ahelef Mahmoud in an hideout in Zaros! Locate Mahmoud, disable the bomb, and return home safely!";
+	overviewTextLocked="INTEL has been received about a nuclear device beeing built by a scientist named Ahelef Mahmoud in an hideout in Zaros! Locate Mahmoud, disable the bomb, and return home safely!";
+	onLoadMission="INTEL has been received about a nuclear device beeing built by a scientist named Ahelef Mahmoud in an hideout in Zaros! Locate Mahmoud, disable the bomb, and return home safely!";
+	
 };
 class Mission
 {

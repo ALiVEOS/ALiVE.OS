@@ -62,6 +62,7 @@ switch (_operation) do {
                 ["timeStarted", time],              // select 2 select 6
                 ["attacker", _attacker],            // select 2 select 7
                 ["targets", _targets],              // select 2 select 8
+                ["targetsKilled", []],              // select 2 select 9
                 ["maxRange", [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet] // for arty set to max arty range, else leave default
             ]
         ] call ALiVE_fnc_hashCreate;

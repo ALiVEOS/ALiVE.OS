@@ -163,9 +163,9 @@ if(count (ALIVE_civCommands select 1) > 0) then {
     if(_debug) then {
         private _agentID = _agentData select 2 select 3;
         ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-        ["ALIVE Select Civilian Command [%1]", _agentID] call ALIVE_fnc_dump;
-        ["ALIVE Select Civilian Command - Time of day: %1", _dayState] call ALIVE_fnc_dump;
-        ["ALIVE Select Civilian Command - Dice roll: %1 Current Probability: %2 Command: %3", _diceRoll, _timeProbability, _command select 0] call ALIVE_fnc_dump;
+        ["Select Civilian Command [%1]", _agentID] call ALiVE_fnc_dump;
+        ["Select Civilian Command - Time of day: %1", _dayState] call ALiVE_fnc_dump;
+        ["Select Civilian Command - Dice roll: %1 Current Probability: %2 Command: %3", _diceRoll, _timeProbability, _command select 0] call ALiVE_fnc_dump;
     };
     // DEBUG -------------------------------------------------------------------------------------
 

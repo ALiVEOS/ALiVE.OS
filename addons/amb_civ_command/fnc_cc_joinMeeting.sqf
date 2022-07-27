@@ -36,7 +36,7 @@ private _nextStateArgs = [];
 
 // DEBUG -------------------------------------------------------------------------------------
 if(_debug) then {
-    ["ALiVE Managed Script Command - [%1] called args: %2",_agentID,_args] call ALIVE_fnc_dump;
+    ["Managed Script Command - [%1] called args: %2",_agentID,_args] call ALiVE_fnc_dump;
 };
 // DEBUG -------------------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -113,7 +113,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -142,7 +142,7 @@ switch (_state) do {
 
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
-            ["ALiVE Managed Script Command - [%1] state: %2",_agentID,_state] call ALIVE_fnc_dump;
+            ["Managed Script Command - [%1] state: %2",_agentID,_state] call ALiVE_fnc_dump;
         };
         // DEBUG -------------------------------------------------------------------------------------
 
@@ -152,7 +152,7 @@ switch (_state) do {
         _agent setVariable ["ALIVE_agentMeetingRequested", nil, false];
         _agent setVariable ["ALIVE_agentMeetingTarget", nil, false];
         _agent setVariable ["ALIVE_agentBusy", false, false];
-        
+
         _target setVariable ["ALIVE_agentMeetingComplete", true, false];
 
         _nextState = "complete";

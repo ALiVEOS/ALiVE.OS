@@ -37,7 +37,7 @@ _near = [];
 _result = [];
 
 {
-    if(_targetSide == side _x && {_position distance position _x < _distance}) then {
+    if(_targetSide == side group _x && {_position distance position _x < _distance}) then {
         _near pushback _x;
     }
 } forEach (_position nearObjects ["CAManBase",_distance]);

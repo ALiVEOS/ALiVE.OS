@@ -54,7 +54,7 @@ _messages = _result select 1;
 _messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-    ["ALiVE SAVE SYS LOGISTICS DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
+    ["SAVE SYS LOGISTICS DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
 };
 
 _data = [MOD(SYS_LOGISTICS),"convertData",_data] call ALiVE_fnc_logistics;
@@ -80,7 +80,7 @@ _messages pushback _message;
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     [false, "ALiVE SYS LOGISTICS - Save data complete","logisticsper"] call ALIVE_fnc_timer;
-    ["ALiVE SYS LOGISTICS SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_Dump;
+    ["SYS LOGISTICS SAVE DATA RESULT: %1",_saveResult] call ALiVE_fnc_dump;
 };
 
 _result

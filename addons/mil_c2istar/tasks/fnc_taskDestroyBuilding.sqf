@@ -5,7 +5,11 @@ SCRIPT(taskDestroyBuilding);
 Function: ALIVE_fnc_taskDestroyBuilding
 
 Description:
-ATO Task
+ATO Task - although this might be called by player or by auto tasking...
+
+ATO task will provide a building
+Player task will provide either a location type or location
+Auto task will provide a location type of Short
 
 Parameters:
 
@@ -49,16 +53,8 @@ switch (_taskState) do {
         private _targetBuildings = [_task, 11, [], [objnull,[]]] call BIS_fnc_param;
         private _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
 
-        private _targetBuilding = switch (typeName _targetBuildings) do {
-            case ("ARRAY") : {
-                if (count _targetBuildings > 0) then {
-                    _targetBuildings select 0
-                } else {
-                    nearestBuilding _taskLocation;
-                };
-            };
-        };
-        
+        private _targetBuilding = objNull;
+
         if (_debug) then {
             //Inputs
             ["ALIVE_fnc_taskDestroyBuilding Task inputs: %1 | %2 | %3 | %4 | %5 | %6 | %7 | %8 | %9 | %10 | %11 | %12",
@@ -73,7 +69,7 @@ switch (_taskState) do {
                 _taskCurrent,
                 _taskApplyType,
                 _taskType,
-                _targetBuilding
+                _targetBuildings
             ] call ALiVE_fnc_Dump;
         };
 
@@ -85,24 +81,21 @@ switch (_taskState) do {
         if (count _taskPlayers == 0) exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
         if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
         if (_taskApplyType == "") exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
-        if (!alive _targetBuilding) exitwith {["C2ISTAR - Task DestroyBuilding - Wrong input for _targetBuilding!"] call ALiVE_fnc_Dump};
 
         _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideNumberToText;
 
         // establish the location for the task
-        // get enemy location based on input
 
-        if (isnil "_taskLocation") exitwith {["C2ISTAR - Task DestroyBuilding - No location selected!"] call ALiVE_fnc_Dump};
+        // Check to see if targetbuildings is set
+        if (count _targetBuildings == 0) then {
+            // Find a building based on the location type
+            private _clusterPos = [_taskLocation, _taskLocationType, _taskEnemySide, "MIL"] call ALIVE_fnc_taskGetSideCluster;
+            _targetBuildings = nearestObjects [_clusterPos, ["House", "Building"], 300];
+        };
 
-        private["_targetPosition","_targetID","_targetDisplayType"];
-
-        _targetPosition = getposATL _targetBuilding;
-        _targetID = str(floor(_targetPosition select 0)) + str(floor(_targetPosition select 1));
-        _targetDisplayType = getText(configfile >> "CfgVehicles" >> (typeOf _targetBuilding) >> "displayName");
-
-        ["C2ISTAR - Task DestroyBuilding - Building: %1 | Type: %2 | Pos: %3!",_targetBuilding,_targetDisplayType,_targetPosition] call ALiVE_fnc_Dump;
+        if (count _targetBuildings == 0) exitwith {["C2ISTAR - Task DestroyBuilding - Could not find building!"] call ALiVE_fnc_Dump};
 
         private["_stagingPosition","_dialogOptions","_dialogOption","_buildingType","_reward"];
 
@@ -130,10 +123,12 @@ switch (_taskState) do {
                             {{([toLower (typeOf _object), toLower _x] call CBA_fnc_find) > -1} count _actType > 0} //Remove when all indexes have been rebuilt with CLIT
                         }
                     ) exitwith {
+                        _targetBuilding = _object;
                         _buildingType = _typeText;
                         _reward = _points;
                     };
 
+                    _targetBuilding = _object;
                     _buildingType = "location";
                     _reward = 10;
 
@@ -158,7 +153,15 @@ switch (_taskState) do {
                     ["ALIVE_civilianSettlementBuildingTypes","civilian settlement building",10]
                 ];
             };
-        } foreach [_targetBuilding];
+        } foreach _targetBuildings;
+
+        private["_targetPosition","_targetID","_targetDisplayType"];
+
+        _targetPosition = getposATL _targetBuilding;
+        _targetID = str(floor(_targetPosition select 0)) + str(floor(_targetPosition select 1));
+        _targetDisplayType = getText(configfile >> "CfgVehicles" >> (typeOf _targetBuilding) >> "displayName");
+
+        ["C2ISTAR - Task DestroyBuilding - Building: %1 | Type: %2 | Pos: %3!",_targetBuilding,_targetDisplayType,_targetPosition] call ALiVE_fnc_Dump;
 
         // select the random text
         _dialogOptions = [ALIVE_generatedTasks,"DestroyBuilding"] call ALIVE_fnc_hashGet;
@@ -208,6 +211,9 @@ switch (_taskState) do {
 
         // create the destroy task
         _dialog = [_dialogOption,"Destroy"] call ALIVE_fnc_hashGet;
+
+        // Set the reward
+        [_dialog,"reward",["forcePool",_reward]] call ALIVE_fnc_hashSet;
 
         _taskTitle = [_dialog,"title"] call ALIVE_fnc_hashGet;
         _taskDescription = [_dialog,"description"] call ALIVE_fnc_hashGet;

@@ -41,7 +41,7 @@ _adminUID = if(count _this > 1) then {_this select 1} else {""};
 TRACE_1("PLAYER CLICKING ON ABORT BUTTON",_this);
 
 ["--------------------------------------------------------------"] call ALIVE_fnc_dump;
-["ALiVE Exit - mode: %1",_mode] call ALIVE_fnc_dump;
+["Exit - mode: %1",_mode] call ALiVE_fnc_dump;
 
 // FUNCTION THAT SAVES PLAYER DATA
 _savePlayer = {
@@ -50,16 +50,16 @@ _savePlayer = {
     _name = name (_this select 0);
     _uid = getPlayerUID (_this select 0);
 
-    ["ALiVE Exit - Save Player Data id: %1 name: %2 uid: %3",_id,_name,_uid] call ALIVE_fnc_dump;
+    ["Exit - Save Player Data id: %1 name: %2 uid: %3",_id,_name,_uid] call ALiVE_fnc_dump;
 
     if (!isNil QMOD(sys_player) && {MOD(sys_player) getVariable ["enablePlayerPersistence",false]}) then {
-        ["ALiVE Exit - Player Data OPD"] call ALIVE_fnc_dump;
+        ["Exit - Player Data OPD"] call ALiVE_fnc_dump;
         // Update Gear
          if (MOD(sys_player) getvariable "saveLoadout") then {
                 private ["_gearHash","_unit"];
                 // Get player gear
                 _gearHash = [MOD(sys_player), "setGear", [player]] call ALIVE_fnc_player;
-                ["ALiVE Exit - Storing Player Gear"] call ALIVE_fnc_dump;
+                ["Exit - Storing Player Gear"] call ALiVE_fnc_dump;
                 [[MOD(sys_player), "updateGear", [player, _gearHash]], "ALiVE_fnc_player", false, false] call BIS_fnc_MP;
         };
         // sys_player module onPlayerDisconnected call
@@ -74,12 +74,12 @@ _exitPlayer = {
     _name = name (_this select 0);
     _uid = getPlayerUID (_this select 0);
 
-    ["ALiVE Exit - Exit Player id: %1 name: %2 uid: %3",_id,_name,_uid] call ALIVE_fnc_dump;
+    ["Exit - Exit Player id: %1 name: %2 uid: %3",_id,_name,_uid] call ALiVE_fnc_dump;
 
-    //diag_log format["STATS ENABLED: %1",MOD(sys_statistics_ENABLED)];
+    //["STATS ENABLED: %1",MOD(sys_statistics_ENABLED)] call ALiVE_fnc_dump;
 
     if (!isNil QMOD(sys_statistics) && (MOD(sys_statistics_ENABLED))) then {
-        ["ALiVE Exit - Player Stats OPD"] call ALIVE_fnc_dump;
+        ["Exit - Player Stats OPD"] call ALiVE_fnc_dump;
 
         if (!isNil "ALIVE_sys_statistics_playerShotsFired") then {
 
@@ -97,7 +97,7 @@ _exitPlayer = {
 
     if (["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) then {
 
-        ["ALiVE Exit - Player Profile Handler OPD"] call ALIVE_fnc_dump;
+        ["Exit - Player Profile Handler OPD"] call ALiVE_fnc_dump;
         // Profiles module onPlayerDisconnected call
         [[_id, _name, _uid],"ALIVE_fnc_profile_onPlayerDisconnected", false, false] call BIS_fnc_MP;
 
@@ -111,25 +111,25 @@ _exitServer = {
     _uid = "";
 
     ["--------------------------------------------------------------"] call ALIVE_fnc_dump;
-    ["ALiVE Exit - Exiting Server"] call ALIVE_fnc_dump;
+    ["Exit - Exiting Server"] call ALiVE_fnc_dump;
 
      if !(isNil QMOD(sys_statistics)) then {
-        ["ALiVE Exit - Server Stats OPD"] call ALIVE_fnc_dump;
+        ["Exit - Server Stats OPD"] call ALiVE_fnc_dump;
         // Stats module onPlayerDisconnected call
         [_id,"__SERVER__", _uid] call ALIVE_fnc_stats_onPlayerDisconnected;
     };
     if !(isNil QMOD(sys_perf)) then {
-        ["ALiVE Exit - Server Perf OPD"] call ALIVE_fnc_dump;
+        ["Exit - Server Perf OPD"] call ALiVE_fnc_dump;
         //["ABORT: S SYS_PERF OPD"] call ALIVE_fnc_dump;
         [_id, "__SERVER__", _uid] call ALIVE_fnc_perf_onPlayerDisconnected;
     };
     if !(isNil QMOD(sys_data)) then {
-        ["ALiVE Exit - Server Data OPD"] call ALIVE_fnc_dump;
+        ["Exit - Server Data OPD"] call ALiVE_fnc_dump;
         // Data module onPlayerDisconnected call
         _result = [_id, "__SERVER__", _uid] call ALIVE_fnc_data_onPlayerDisconnected;
     };
 
-    ["ALiVE Exit - Server Exited"] call ALIVE_fnc_dump;
+    ["Exit - Server Exited"] call ALiVE_fnc_dump;
     ["--------------------------------------------------------------"] call ALIVE_fnc_dump;
 
 };
@@ -141,7 +141,7 @@ _saveServer = {
     _uid = "";
 
     ["--------------------------------------------------------------"] call ALIVE_fnc_dump;
-    ["ALiVE Exit - Saving Server"] call ALIVE_fnc_dump;
+    ["Exit - Saving Server"] call ALiVE_fnc_dump;
 
     ["ADMIN UID: %1",_adminUID] call ALIVE_fnc_dump;
     _admin = [_adminUID] call ALIVE_fnc_getPlayerByUID;
@@ -160,7 +160,7 @@ _saveServer = {
     };
 
     if !(isNil QMOD(sys_player)) then {
-        ["ALiVE Exit - Server Player OPD"] call ALIVE_fnc_dump;
+        ["Exit - Server Player OPD"] call ALiVE_fnc_dump;
         [_id, "__SERVER__", _uid] call ALIVE_fnc_player_onPlayerDisconnected;
     };
 
@@ -172,7 +172,7 @@ _saveServer = {
             [["updateList","ALiVE Profile System - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save Profiles"] call ALIVE_fnc_dump;
+        ["Exit - Server Save Profiles"] call ALiVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_profilesSaveData;
 
@@ -195,7 +195,7 @@ _saveServer = {
             [["updateList","ALiVE OPCOM - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save OPCOM State"] call ALIVE_fnc_dump;
+        ["Exit - Server Save OPCOM State"] call ALiVE_fnc_dump;
 
         _results = [] call ALiVE_fnc_OPCOMSaveData;
 
@@ -246,7 +246,7 @@ _saveServer = {
             [["updateList","ALiVE CQB - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save CQB State"] call ALIVE_fnc_dump;
+        ["Exit - Server Save CQB State"] call ALiVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_CQBSaveData;
 
@@ -270,7 +270,7 @@ _saveServer = {
             [["updateList","ALiVE Player Logistics - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save Logistics State"] call ALIVE_fnc_dump;
+        ["Exit - Server Save Logistics State"] call ALiVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_logisticsSaveData;
 
@@ -294,7 +294,7 @@ _saveServer = {
             [["updateList","ALiVE Markers - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save Markers State"] call ALIVE_fnc_dump;
+        ["Exit - Server Save Markers State"] call ALiVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_markerSaveData;
 
@@ -317,7 +317,7 @@ _saveServer = {
             [["updateList","ALiVE SPOTREP - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save SPOTREP State"] call ALIVE_fnc_dump;
+        ["Exit - Server Save SPOTREP State"] call ALiVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_spotrepSaveData;
 
@@ -340,7 +340,7 @@ _saveServer = {
             [["updateList","ALiVE SITREP - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save SITREP State"] call ALIVE_fnc_dump;
+        ["Exit - Server Save SITREP State"] call ALiVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_sitrepSaveData;
 
@@ -363,7 +363,7 @@ _saveServer = {
             [["updateList","ALiVE PATROLREP - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save PATROLREP State"] call ALIVE_fnc_dump;
+        ["Exit - Server Save PATROLREP State"] call ALiVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_patrolrepSaveData;
 
@@ -386,7 +386,7 @@ _saveServer = {
             [["updateList","ALiVE Military Logistics - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save ML State"] call ALIVE_fnc_dump;
+        ["Exit - Server Save ML State"] call ALiVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_MLSaveData;
 
@@ -409,7 +409,7 @@ _saveServer = {
             [["updateList","ALiVE C2ISTAR - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save Task State"] call ALIVE_fnc_dump;
+        ["Exit - Server Save Task State"] call ALiVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_taskHandlerSaveData;
 
@@ -432,7 +432,7 @@ _saveServer = {
             [["updateList","ALiVE Military Air Component Commander - Saving Data"],"ALIVE_fnc_mainTablet",_admin,false,false] spawn BIS_fnc_MP;
         };
 
-        ["ALiVE Exit - Server Save ATO State"] call ALIVE_fnc_dump;
+        ["Exit - Server Save ATO State"] call ALiVE_fnc_dump;
 
         _result = [] call ALiVE_fnc_ATOSaveData;
 
@@ -450,7 +450,7 @@ _saveServer = {
     ["ALIVE_SYS_PROFILE","ALIVE_MIL_OPCOM","ALIVE_AMB_CIV_POPULATION","ALIVE_MIL_LOGISTICS","ALIVE_SYS_AISKILL"] call ALiVE_fnc_unPauseModule;
     //[["ALiVE_LOADINGSCREEN"],"BIS_fnc_endLoadingScreen",true,false] call BIS_fnc_MP;
 
-    ["ALiVE Exit - Server Saved"] call ALIVE_fnc_dump;
+    ["Exit - Server Saved"] call ALiVE_fnc_dump;
     ["--------------------------------------------------------------"] call ALIVE_fnc_dump;
 
     if!(isNull _admin) then {
@@ -462,7 +462,7 @@ _saveServer = {
 
 if (_mode == "SAVESERVERYO" && isServer && ALiVE_sys_data_DISABLED) then {
 
-    ["ALiVE Data is disabled, so server save will not occur, aborting..."] call ALIVE_fnc_dump;
+    ["Data is disabled, so server save will not occur, aborting..."] call ALiVE_fnc_dump;
     ["--------------------------------------------------------------"] call ALIVE_fnc_dump;
 
     _mode = "SERVERABORTYO";
@@ -510,7 +510,7 @@ if ((_mode == "SAVE" || _mode == "REMSAVE") && hasInterface) then {
     if (!ALiVE_sys_data_DISABLED) then {
         [player] call _savePlayer;
     } else {
-        ["ALiVE Data is disabled, so player save will not occur, aborting..."] call ALIVE_fnc_dump;
+        ["Data is disabled, so player save will not occur, aborting..."] call ALiVE_fnc_dump;
         ["--------------------------------------------------------------"] call ALIVE_fnc_dump;
         _mode = "ABORT";
     };
@@ -523,14 +523,14 @@ if (call ALiVE_fnc_isServerAdmin) then {
 
     if (_mode == "SERVERABORT") then {
 
-        ["ALiVE Exit - Abort by Admin"] call ALIVE_fnc_dump;
+        ["Exit - Abort by Admin"] call ALiVE_fnc_dump;
 
-        ["ALiVE Exit - Broadcasting abort call to all players"] call ALIVE_fnc_dump;
+        ["Exit - Broadcasting abort call to all players"] call ALiVE_fnc_dump;
 
         // abort all players
         [["ABORT"],"ALiVE_fnc_buttonAbort",true,false] call BIS_fnc_MP;
 
-        ["ALiVE Exit - Trigger Server abort call"] call ALIVE_fnc_dump;
+        ["Exit - Trigger Server abort call"] call ALiVE_fnc_dump;
 
         // exit server
         [["SERVERABORTYO"],"ALiVE_fnc_buttonAbort",false,false] call BIS_fnc_MP;
@@ -539,14 +539,14 @@ if (call ALiVE_fnc_isServerAdmin) then {
 
     if (_mode == "SERVERSAVE") then {
 
-        ["ALiVE Exit - Abort / Save by Admin"] call ALIVE_fnc_dump;
+        ["Exit - Abort / Save by Admin"] call ALiVE_fnc_dump;
 
-        ["ALiVE Exit - Broadcasting abort call to all players"] call ALIVE_fnc_dump;
+        ["Exit - Broadcasting abort call to all players"] call ALiVE_fnc_dump;
 
         // Save all players
         [["REMSAVE"],"ALiVE_fnc_buttonAbort",true,false] call BIS_fnc_MP;
 
-        ["ALiVE Exit - Trigger Server abort call"] call ALIVE_fnc_dump;
+        ["Exit - Trigger Server abort call"] call ALiVE_fnc_dump;
 
         // Save server data
         //[] call _saveServer;
@@ -558,33 +558,33 @@ if (call ALiVE_fnc_isServerAdmin) then {
 
 switch (_mode) do {
     case "SAVE": {
-        ["ALiVE Exit - [%1] Ending mission",_mode] call ALIVE_fnc_dump;
+        ["Exit - [%1] Ending mission",_mode] call ALiVE_fnc_dump;
         "saved" call BIS_fnc_endMission;
     };
     case "ABORT": {
-        ["ALiVE Exit - [%1] Ending mission",_mode] call ALIVE_fnc_dump;
+        ["Exit - [%1] Ending mission",_mode] call ALiVE_fnc_dump;
         "abort" call BIS_fnc_endMission;
     };
     case "REMSAVE" : {
         if !(call ALiVE_fnc_isServerAdmin) then {
-            ["ALiVE Exit - [%1] !(Admin) Ending mission",_mode] call ALIVE_fnc_dump;
+            ["Exit - [%1] !(Admin) Ending mission",_mode] call ALiVE_fnc_dump;
             "saved" call BIS_fnc_endMission;
         };
     };
     case "SERVERSAVE": {
         if (call ALiVE_fnc_isServerAdmin) then {
-            ["ALiVE Exit - [%1] (Admin) Ending mission",_mode] call ALIVE_fnc_dump;
+            ["Exit - [%1] (Admin) Ending mission",_mode] call ALiVE_fnc_dump;
             //"serversaved" call BIS_fnc_endMission;
         };
     };
     case "SERVERABORT": {
         if (call ALiVE_fnc_isServerAdmin) then {
-            ["ALiVE Exit - [%1] (Admin) Ending mission",_mode] call ALIVE_fnc_dump;
+            ["Exit - [%1] (Admin) Ending mission",_mode] call ALiVE_fnc_dump;
             "serverabort" call BIS_fnc_endMission;
         };
     };
     default {
-        ["ALiVE Exit - [%1] Unknown mode in switch Ending mission",_mode] call ALIVE_fnc_dump;
+        ["Exit - [%1] Unknown mode in switch Ending mission",_mode] call ALiVE_fnc_dump;
         "abort" call BIS_fnc_endMission;
     };
 };

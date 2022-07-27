@@ -280,7 +280,7 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 //["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                //["ALIVE Profile Handler State"] call ALIVE_fnc_dump;
+                //["Profile Handler State"] call ALiVE_fnc_dump;
                 //_state = [_logic, "state"] call MAINCLASS;
                 //_state call ALIVE_fnc_inspectHash;
                 // DEBUG -------------------------------------------------------------------------------------
@@ -336,7 +336,7 @@ switch(_operation) do {
 
             private _profilesCatagorisedSide = [_profilesCatagorised, _profileSide] call ALIVE_fnc_hashGet;
 
-            if (isnil "_profilesCatagorisedSide") exitwith {["ALIVE Error on detecting correct side #hash for profile %1",_profileID] call ALiVE_fnc_Dump};
+            if (isnil "_profilesCatagorisedSide") exitwith {["Error on detecting correct side #hash for profile %1",_profileID] call ALiVE_fnc_dump};
 
             // store on main profiles hash
             [_profiles, _profileID, _profile] call ALIVE_fnc_hashSet;
@@ -364,7 +364,7 @@ switch(_operation) do {
                         [_profile,"debug", true] call ALIVE_fnc_profileVehicle;
                     };
                 };
-                ["ALIVE Profile Handler - Register Profile [%1]",_profileID] call ALIVE_fnc_dump;
+                ["Profile Handler - Register Profile [%1]",_profileID] call ALiVE_fnc_dump;
                 //_profile call ALIVE_fnc_inspectHash;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -552,7 +552,7 @@ switch(_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if([_logic,"debug"] call ALIVE_fnc_hashGet) then {
-                ["ALIVE Profile Handler - Un-Register Profile [%1]",_profileID] call ALIVE_fnc_dump;
+                ["Profile Handler - Un-Register Profile [%1]",_profileID] call ALiVE_fnc_dump;
                 //_profile call ALIVE_fnc_inspectHash;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -1009,7 +1009,7 @@ switch(_operation) do {
         if(isNil"ALIVE_profileDatahandler") then {
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS PROFILE - SAVE PROFILE, CREATE DATA HANDLER - NO!"] call ALIVE_fnc_dump;
+                ["SYS PROFILE - SAVE PROFILE, CREATE DATA HANDLER - NO!"] call ALiVE_fnc_dump;
             };
 
             ALIVE_profileDatahandler = [nil, "create"] call ALIVE_fnc_Data;
@@ -1034,7 +1034,7 @@ switch(_operation) do {
         _messages pushback _message;
 
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-            ["ALiVE SYS PROFILE - SAVE PROFILE DATA RESULT: %1",_saveResult] call ALIVE_fnc_dump;
+            ["SYS PROFILE - SAVE PROFILE DATA RESULT: %1",_saveResult] call ALiVE_fnc_dump;
         };
 
     };
@@ -1058,13 +1058,13 @@ switch(_operation) do {
         _missionName = format["%1_%2", ALIVE_sys_data_GROUP_ID, _missionName]; // must include group_id to ensure mission reference is unique across groups
 
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-            ["ALiVE SYS PROFILE - LOAD PROFILE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALIVE_fnc_dump;
+            ["SYS PROFILE - LOAD PROFILE DATA NOW - MISSION NAME: %1! PLEASE WAIT...",_missionName] call ALiVE_fnc_dump;
         };
 
         _result = [ALIVE_profileDatahandler, "bulkLoad", ["sys_profile", _missionName, _async]] call ALIVE_fnc_Data;
 
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-            ["ALiVE SYS PROFILE - LOAD PROFILE DATA RESULT: %1",_result] call ALIVE_fnc_dump;
+            ["SYS PROFILE - LOAD PROFILE DATA RESULT: %1",_result] call ALiVE_fnc_dump;
         };
 
     };
@@ -1075,7 +1075,7 @@ switch(_operation) do {
         "_exportRanks","_classes","_exportClasses","_rankMap"];
 
         if(ALiVE_SYS_DATA_DEBUG_ON) then {
-            ["ALiVE SYS PROFILE - EXPORT PROFILE DATA..."] call ALIVE_fnc_dump;
+            ["SYS PROFILE - EXPORT PROFILE DATA..."] call ALiVE_fnc_dump;
         };
 
         _profiles = [_logic, "getProfiles"] call MAINCLASS;
@@ -1251,7 +1251,7 @@ switch(_operation) do {
                 [_exportProfiles, _profileID, _exportProfile] call ALIVE_fnc_hashSet;
 
                 if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                    ["ALiVE SYS PROFILE - EXPORT READY PROFILE:"] call ALIVE_fnc_dump;
+                    ["SYS PROFILE - EXPORT READY PROFILE:"] call ALiVE_fnc_dump;
                     _exportProfile call ALIVE_fnc_inspectHash;
                 };
 
@@ -1270,7 +1270,7 @@ switch(_operation) do {
         if(typeName _args == "ARRAY") then {
 
             if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                ["ALiVE SYS PROFILE - IMPORT PROFILE DATA..."] call ALIVE_fnc_dump;
+                ["SYS PROFILE - IMPORT PROFILE DATA..."] call ALiVE_fnc_dump;
             };
 
             _ranksMap = [] call ALIVE_fnc_hashCreate;
@@ -1388,7 +1388,7 @@ switch(_operation) do {
                     };
 
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE SYS PROFILE - RECREATED PROFILE ENTITY:"] call ALIVE_fnc_dump;
+                        ["SYS PROFILE - RECREATED PROFILE ENTITY:"] call ALiVE_fnc_dump;
                         _profileEntity call ALIVE_fnc_inspectHash;
                     };
 
@@ -1448,7 +1448,7 @@ switch(_operation) do {
                     [_profileVehicle, "side", _side] call ALIVE_fnc_profileVehicle;
 
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
-                        ["ALiVE SYS PROFILE - RECREATED PROFILE VEHICLE:"] call ALIVE_fnc_dump;
+                        ["SYS PROFILE - RECREATED PROFILE VEHICLE:"] call ALiVE_fnc_dump;
                         _profileVehicle call ALIVE_fnc_inspectHash;
                     };
 

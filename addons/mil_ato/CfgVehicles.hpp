@@ -194,6 +194,13 @@ class CfgVehicles
                                 };
                         };
                 };
+                class pilotbuilding
+                {
+                        displayName = "$STR_ALIVE_ATO_PILOTBUILDING";
+                        description = "$STR_ALIVE_ATO_PILOTBUILDING_COMMENT";
+                        defaultValue = "";
+                        typeName = "STRING";
+                };
         };
         class ModuleDescription
         {

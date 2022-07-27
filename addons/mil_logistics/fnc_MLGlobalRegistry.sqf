@@ -170,6 +170,8 @@ switch(_operation) do {
                 {
                     [ALIVE_globalForcePool,_x,_forcePool] call ALIVE_fnc_hashSet;
 
+                    private _event = ['FORCEPOOL_UPDATED', [_x,_forcePool],"Logistics"] call ALiVE_fnc_event;
+                    [ALiVE_eventLog,"addEvent", _event] call ALiVE_fnc_eventLog;
                 } forEach _factions;
             } forEach _moduleFactions;
 

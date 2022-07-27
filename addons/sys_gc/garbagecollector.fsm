@@ -36,7 +36,7 @@ class FSM
     class Start
     {
       name = "Start";
-      init = /*%FSM<STATEINIT""">*/"diag_log ""ALiVE - Starting Garbage Collector..."";" \n
+      init = /*%FSM<STATEINIT""">*/"[""ALiVE - Starting Garbage Collector...""] call ALiVE_fnc_dump;" \n
        "" \n
        "private [""_collector"", ""_timeNow"", ""_handle"", ""_path"", ""_autotime""];" \n
        "_collector = _this;" \n

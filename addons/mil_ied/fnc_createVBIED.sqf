@@ -56,9 +56,17 @@ if !(_t) exitWith {};
 //_IEDskins = ["Land_IED_v1_PMC","Land_IED_v2_PMC","Land_IED_v3_PMC","Land_IED_v4_PMC"];
 
 _IED = createVehicle ["ALIVE_DemoCharge_Remote_Ammo",getposATL _vehicle, [], 0, "CAN_COLLIDE"];
-_IED attachTo [_vehicle, [0,-1,-1.08]];
 _IED setDir 270;
+if (_vehicle isKindOf "vn_bicycle_base" || _vehicle isKindOf "Motorcycle") then {
+    _IED attachTo [_vehicle, [0,0,-1]];
+} else {
+
+    _IED attachTo [_vehicle, [0,-1,-1.08]];
+};
 _IED setVectorUp [0,0,-1];
+
+
+
 
 [_vehicle] spawn {
     _vehicle = _this select 0;

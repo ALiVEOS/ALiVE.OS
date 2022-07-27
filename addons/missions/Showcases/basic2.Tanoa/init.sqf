@@ -3,7 +3,7 @@
 #endif
 
 //Starting Init
-["ALiVE | Getting Started - Executing init.sqf..."] call ALiVE_fnc_Dump;
+["| Getting Started - Executing init.sqf..."] call ALiVE_fnc_dump;
 
 /////////////////////
 // Init server
@@ -20,7 +20,7 @@ if (isServer) then {
 
 if (hasInterface) then {
 
-    ["ALiVE | Quick Start APEX - Running ClientInit..."] call ALiVE_fnc_Dump;
+    ["| Quick Start APEX - Running ClientInit..."] call ALiVE_fnc_dump;
 
     player createDiaryRecord ["Diary", ["Mission",
 "<font size='18'>COMMANDER'S INTENT</font><br />Draxl Company, NRF16 are established at <marker name='respawn_west'>FOB JOHNSTON</marker>. Commander’s Intent is for the Company Force Recon Team, call sign RAIDER ONE, to destroy weapons and materiel throughout the Area of Operations in order to disrupt enemy operations.<br />
