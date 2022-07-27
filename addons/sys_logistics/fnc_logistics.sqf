@@ -805,12 +805,32 @@ switch (_operation) do {
             _result = call GVAR(ACTIONS);
         };
 
+        // Copy of removeActions with BIS_fnc_MP call removed
+        // Aim to avoid recurring call
+        case "removeActionsTerm": {
+            if (hasInterface) then {
+                _args = [_this, 2, player, [objNull]] call BIS_fnc_param;
+
+                [_logic,"removeAction",[_args,"carryObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"dropObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"stowObjects"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"unloadObjects"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"towObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"untowObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"liftObject"]] call ALiVE_fnc_logistics;
+                [_logic,"removeAction",[_args,"releaseObject"]] call ALiVE_fnc_logistics;
+
+                _args setvariable [QGVAR(ACTIONS),nil];
+            };
+            _result = false;
+        };
+
         case "removeActions": {
 
             _args = [_this, 2, player, [objNull]] call BIS_fnc_param;
 
             if !(hasInterface) exitwith {
-                [[_logic, _operation, _args],"ALIVE_fnc_logistics", owner _args, false] call BIS_fnc_MP;
+                [[_logic, "removeActionsTerm", _args],"ALIVE_fnc_logistics", owner _args, false] call BIS_fnc_MP;
             };
 
             [_logic,"removeAction",[_args,"carryObject"]] call ALiVE_fnc_logistics;
