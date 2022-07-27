@@ -39,8 +39,9 @@ _result = _obj_array;
         if(!(_marker call ALIVE_fnc_markerExists)) then {
             [format["Validate locations marker (""%1"") does not exist",_marker]] call BIS_fnc_errorMsg;
         } else {
-            _marker setMarkerAlpha 0;
-            if !(_foreachIndex > 0 && _insideOnly) then {_result = []};
+//            _marker setMarkerAlpha 0;
+            if (_foreachIndex == 0) then {_result = []};
+            if (!_insideOnly && _foreachIndex > 0) then {_obj_array = _result; _result = []};
 //            diag_log str(_marker);
             {
                 private["_in"];
