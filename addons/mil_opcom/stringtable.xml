@@ -20,6 +20,12 @@
 <Key ID="STR_ALIVE_OPCOM_PERSISTENT_COMMENT">
     <English>Enables external Database persistence for AI Commander</English>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_NAME">
+    <English>Custom Name:</English>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_NAME_COMMENT">
+    <English>Sets a custom name for AI Commander in C2ISTAR Module</English>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_CONTROLTYPE">
     <English>Control Type:</English>
 </Key>
