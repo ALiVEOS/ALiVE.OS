@@ -1271,7 +1271,7 @@ switch(_operation) do {
                 private _objective = [_logic,"getobjectivebyid", _objectiveID] call ALiVE_fnc_OPCOM;
                 private _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
 
-                private _previousTacomState = [_objective,"tacom_state"] call ALiVE_fnc_hashGet;
+                private _previousTacomState = [_objective,"tacom_state","none"] call ALiVE_fnc_hashGet;
 
                 [_objective,"tacom_state", "none"] call AliVE_fnc_HashSet;
                 [_objective,"opcom_state", "unassigned"] call AliVE_fnc_HashSet;
