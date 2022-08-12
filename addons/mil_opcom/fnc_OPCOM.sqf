@@ -1507,7 +1507,7 @@ switch(_operation) do {
                     _state = [_x,"opcom_state",""] call ALiVE_fnc_HashGet;
 
                     if (_orders in ["attack","defend"]) then {_AO pushback _x} else {
-                        if (_state in ["reserving","idle"]) then {
+                        if (_state in ["reserve","reserving","idle"]) then {
                             _FOB pushback _x;
                         };
                     };
