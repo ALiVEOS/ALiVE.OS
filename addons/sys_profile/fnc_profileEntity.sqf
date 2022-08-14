@@ -538,7 +538,7 @@ switch(_operation) do {
             private _pathfindingProcedure = [_logic] call ALiVE_fnc_profileGetPathfindingProcedure;
             private _profileID = [_logic,"profileID"] call ALiVE_fnc_hashGet;
 
-            [ALiVE_Pathfinder,"findPath",[_startPosition,_endPosition,_pathfindingProcedure,true,true,[_profileID,_pendingPath],{
+            [ALiVE_Pathfinder,"findPath",[_startPosition,_endPosition,_pathfindingProcedure,true,false,[_profileID,_pendingPath],{
                 params ["_callbackArgs","_path"];
 
                 _callbackArgs params ["_profileID","_pendingPath"];
@@ -594,7 +594,8 @@ switch(_operation) do {
 
                 _tempWP
             };
-            _path set [count _path - 1, _waypoint];
+
+            if (count _path > 0) then {_path set [count _path - 1, _waypoint]} else {_path set [0, _waypoint]};
 
             // if we are inserting into the front
             // need to reverse path so it's executed in the correct order
@@ -1362,7 +1363,7 @@ switch(_operation) do {
         private _label = [_profileID, "_"] call CBA_fnc_split;
         private _debugAlpha = 1;
 
-        if (!_profileActive) then {
+        //if (!_profileActive) then {
             _debugAlpha = 0.3;
 
             private _waypointCount = 0;
@@ -1384,7 +1385,7 @@ switch(_operation) do {
 
                 _waypointCount = _waypointCount + 1;
             } forEach _profileWaypoints;
-        };
+        //};
 
         if (count _position > 0) then {
             private _m = createMarker [format[MTEMPLATE, format["%1_debug",_profileID]], _position];
