@@ -537,8 +537,9 @@ switch(_operation) do {
             private _endPosition = [_waypoint,"position"] call ALiVE_fnc_hashGet;
             private _pathfindingProcedure = [_logic] call ALiVE_fnc_profileGetPathfindingProcedure;
             private _profileID = [_logic,"profileID"] call ALiVE_fnc_hashGet;
+            private _faction = [_logic,"faction"] call ALiVE_fnc_hashGet;
 
-            [ALiVE_Pathfinder,"findPath",[_startPosition,_endPosition,_pathfindingProcedure,true,false,[_profileID,_pendingPath],{
+            [ALiVE_Pathfinder,"findPath",[_startPosition,_endPosition,_pathfindingProcedure,_faction,true,false,[_profileID,_pendingPath],{
                 params ["_callbackArgs","_path"];
 
                 _callbackArgs params ["_profileID","_pendingPath"];

@@ -10,16 +10,17 @@ private _vehicleTypeToProcedure = {
 
     switch (_vehicleType) do {
         case "Car";
+        case "Truck": { "vehicleLandRoad" };
+
         case "Tank";
-        case "Armored";
-        case "Truck": { "vehicleLand" };
+        case "Armored" : { "vehicleLandOffRoad" };
 
         case "Ship": { "vehicleNaval" };
 
-        case "Helicopter";
+        case "Helicopter": { "vehicleHeli" };
         case "Plane": { "vehicleAir" };
 
-        default { "vehicleLand" };
+        default { "vehicleLandOffRoad" };
     };
 };
 

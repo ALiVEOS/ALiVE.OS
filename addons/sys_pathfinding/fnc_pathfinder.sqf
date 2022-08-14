@@ -24,10 +24,12 @@ switch (_operation) do {
             ["pathDebugMarkers", []]
         ]] call ALiVE_fnc_hashCreate;
 
-        [_logic,"addPathfindingProcedure", ["infantry", true, false, -0.1, 0.75, -3]] call MAINCLASS;
-        [_logic,"addPathfindingProcedure", ["vehicleLand", true, false, -0.65, 0, 0]] call MAINCLASS;
-        [_logic,"addPathfindingProcedure", ["vehicleWater", false, true, 0, 0, 0]] call MAINCLASS;
-        [_logic,"addPathfindingProcedure", ["vehicleAir", true, true, 0, 0, 0]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["default",["infantry", true, false, -0.01, 0.75, -0.5]]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["default",["vehicleLandRoad", true, false, -0.3, 0, -0.1]]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["default",["vehicleLandOffRoad", true, false, -0.1, 0, 0]]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["default",["vehicleNaval", false, true, 0, -1, 0]]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["default",["vehicleHeli", true, true, 0, 0, 0]]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["default",["vehicleAir", true, true, 0, 0, 0]]] call MAINCLASS;
 
         addMissionEventHandler ["EachFrame", {
             [ALiVE_pathfinder,"onFrame"] call ALiVE_fnc_pathfinder;
@@ -39,7 +41,9 @@ switch (_operation) do {
 
     case "addPathfindingProcedure": {
 
-        _args params [
+        _args params [["_faction", "default"],"_procedure"];
+        
+        _procedure params [
             "_name",
             ["_canUseLand", true],
             ["_canUseWater", true],
@@ -48,10 +52,24 @@ switch (_operation) do {
             ["_heightWeight", 0]
         ];
 
-        _procedures = [_logic,"pathfindingProcedures"] call ALiVE_fnc_hashGet;
+        _allProcedures = [_logic,"pathfindingProcedures"] call ALiVE_fnc_hashGet;
+        _factionProcedures = [_allProcedures ,_faction] call Alive_fnc_hashGet;
+        if (isNil {_factionProcedures}) then {_factionProcedures = [] call Alive_fnc_hashCreate;};
 
-        [_procedures,_name, _args] call ALiVE_fnc_hashSet;
+        [_factionProcedures, _name, _procedure] call ALiVE_fnc_hashSet;
+        [_allProcedures, _faction, _factionProcedures] call ALiVE_fnc_hashSet;
 
+    };
+
+    case "getPathfindingProcedure": {
+
+        _args params [["_procedureName","vehicleLandRoad"],["_faction","default"]];
+
+        private _allprocedures = [_logic,"pathfindingProcedures"] call ALiVE_fnc_hashGet;
+        private _factionProcedures = [_allProcedures , _faction] call Alive_fnc_hashGet;
+        if (isNil {_factionProcedures;}) then {_factionProcedures = [_allProcedures ,"default"] call Alive_fnc_hashGet;};
+
+        _result = [_factionProcedures,_procedureName] call ALiVE_fnc_hashGet;
     };
 
     case "heuristic": {
@@ -111,7 +129,7 @@ switch (_operation) do {
 
     case "reconstructPath": {
 
-        _args params ["_startSector","_goalSector","_cameFromMap","_searchRoads","_onlyWater"];
+        _args params ["_startSector","_goalSector","_cameFromMap","_searchRoads","_onlyWater","_heightWeight"];
 
         private _pathfindingTerrainGrid = [ALiVE_pathfinder,"terrainGrid"] call ALiVE_fnc_hashGet;
         private _pathfindingSectorSize = [_pathfindingTerrainGrid,"sectorSize"] call ALiVE_fnc_hashGet;
@@ -126,13 +144,13 @@ switch (_operation) do {
             private _varianceMin = _pathfindingSectorSize * 0.3;
             private _varianceMax = _varianceMin * 2;
 
-            if (_onlyWater) then {  //Find a point that ensures it's on water deep enough - just use center and hope for the best if none found within 200 tries
-                for "_iterations" from 1 to 200 do {
-                    _pos = [
+            if (_onlyWater) then {  //Find a point that ensures it's on water deep enough - just use center and hope for the best if none found within X tries
+                for "_iterations" from 1 to 100 do {
+                    _newPos = [
                                 ((_pos select 0) - _varianceMin) + (random _varianceMax),
                                 ((_pos select 1) - _varianceMin) + (random _varianceMax)
                             ]; 
-                    if ((getTerrainHeightASL _pos) > -0.5) then { break; };  
+                    if ((getTerrainHeightASL _newPos) < -0.5) then { _pos = _newPos; break; };  
                 };
             } else {
                 //Search for nearest road to center
@@ -140,10 +158,38 @@ switch (_operation) do {
                     _roads = nearestTerrainObjects [_pos, ["MAIN ROAD", "ROAD", "TRAIL"], _pathfindingSectorSize/2, true, true]; //We can find roads now in Arma 3 v2.00
                     if (count _roads > 0) then {_pos = getPos (_roads select 0) select [0,2];};
                 } else {  //Get a random land position
-                    _pos = [
-                                ((_pos select 0) - _varianceMin) + (random _varianceMax),
-                                ((_pos select 1) - _varianceMin) + (random _varianceMax)
-                            ]; 
+                    _currHeight = _currentSector select 7;
+                    _targetHeight = _currHeight + _currHeight * _heightWeight; 
+                    if (_heightWeight == 0) then { //Just get a random point
+                        _pos = [
+                                        ((_pos select 0) - _varianceMin) + (random _varianceMax),
+                                        ((_pos select 1) - _varianceMin) + (random _varianceMax)
+                                ]; 
+                        break;
+                    };
+                    if (_heightWeight < 0) then { //Find point below target - or lowest within X tries
+                        private _prevHeight = _currHeight;
+                        for "_iterations" from 1 to 20 do {
+                            private _newPos = [
+                                        ((_pos select 0) - _varianceMin) + (random _varianceMax),
+                                        ((_pos select 1) - _varianceMin) + (random _varianceMax)
+                                    ]; 
+                            private _newHeight = getTerrainHeightASL _newPos;
+                            if (_newHeight < _prevHeight) then {_pos = _newPos;};
+                            if ((_newHeight - _currHeight) < _targetHeight) then { _pos = _newPos; break; }; 
+                        };
+                    } else {  //Find point above target - or heighest within X tries
+                        private _prevHeight = _currHeight;
+                        for "_iterations" from 1 to 20 do {
+                            private _newPos = [
+                                        ((_pos select 0) - _varianceMin) + (random _varianceMax),
+                                        ((_pos select 1) - _varianceMin) + (random _varianceMax)
+                                    ]; 
+                            private _newHeight = getTerrainHeightASL _newPos;
+                            if (_newHeight > _prevHeight) then {_pos = _newPos;};
+                            if ((_newHeight - _currHeight) > _targetHeight) then { _pos = _newPos; break; }; 
+                        };
+                    };
                 };
             };
 
@@ -159,6 +205,7 @@ switch (_operation) do {
 
     };
 
+    ///////// Obsolete - Randomization now done in recconstructPath function
     // case "randomizePathPositions": {
 
     //     private _positions = _args;
@@ -194,7 +241,7 @@ switch (_operation) do {
             private _currSector = _path select _i;
             private _tempDir = (_path select (_i - 1)) getdir _currSector;
 
-            if ((abs (_tempDir - _currDir)) > 15 && _i > 1) then {
+            if ((abs (_tempDir - _currDir)) > 5 && _i > 1) then { //reduced from 15 to 5 so as to not negate any terrain following waypoints
                 _shortPath pushback (_path select (_i - 1));
                 _currDir = _tempDir;
             };
@@ -237,7 +284,7 @@ switch (_operation) do {
 
     case "findPath": {
 
-        _args params ["_startPos","_endPos","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
+        _args params ["_startPos","_endPos","_procedureName","_faction","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
 
         private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
         private _pathJobs = [_logic,"pathJobs"] call ALiVE_fnc_hashGet;
@@ -245,22 +292,22 @@ switch (_operation) do {
         private _startSector = [_terrainGrid,"positionToSector", _startPos] call ALiVE_fnc_pathfindingGrid;
         private _goalSector = [_terrainGrid,"positionToSector", _endPos] call ALiVE_fnc_pathfindingGrid;
 
-        private _newJob = [_startSector,_goalSector,_endPos,_procedureName,_shortenPath,_randomizeWaypointRadius,_callbackArgs,_callback];
+        private _newJob = [_startSector,_goalSector,_endPos,_procedureName,_faction,_shortenPath,_randomizeWaypointRadius,_callbackArgs,_callback];
         _pathJobs pushback _newJob;
         player sidechat format["New Job: %1",_startSector select 0];
 
-                private _sM = [(_startSector select 2) select 0,((_startSector select 2) select 1) - 1];
-                _m = createMarker [str str str str _sM, _sM];
-                _m setMarkerShape "ICON";
-                _m setMarkerType "hd_dot";
-                _m setMarkerSize [0.7,0.7];
-                _m setMarkerColor "ColorYellow";
-                private _gM = [(_goalSector select 2) select 0,((_goalSector select 2) select 1) - 1];
-                _m = createMarker [str str str str _gM, _gM];
-                _m setMarkerShape "ICON";
-                _m setMarkerType "hd_dot";
-                _m setMarkerSize [0.7,0.7];
-                _m setMarkerColor "ColorPink";
+                // private _sM = [(_startSector select 2) select 0,((_startSector select 2) select 1) - 1];
+                // _m = createMarker [str str str str _sM, _sM];
+                // _m setMarkerShape "ICON";
+                // _m setMarkerType "hd_dot";
+                // _m setMarkerSize [0.7,0.7];
+                // _m setMarkerColor "ColorYellow";
+                // private _gM = [(_goalSector select 2) select 0,((_goalSector select 2) select 1) - 1];
+                // _m = createMarker [str str str str _gM, _gM];
+                // _m setMarkerShape "ICON";
+                // _m setMarkerType "hd_dot";
+                // _m setMarkerSize [0.7,0.7];
+                // _m setMarkerColor "ColorPink";
 
         if (count _pathJobs == 1) then {
             [_logic,"loadCurrentJobData"] call MAINCLASS;
@@ -277,8 +324,7 @@ switch (_operation) do {
             private _nextJob = _pathJobs select 0;
             _nextJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
 
-            private _procedures = [_logic,"pathfindingProcedures"] call ALiVE_fnc_hashGet;
-            private _procedure = [_procedures,_procedureName, "landVehicle"] call ALiVE_fnc_hashGet;
+            private _procedure = [_logic,"getPathfindingProcedure",[_procedureName,_faction]] call MAINCLASS;
 
             private _cameFromMap = call CBA_fnc_createNamespace;
             private _costSoFarMap = call CBA_fnc_createNamespace;
@@ -302,7 +348,7 @@ switch (_operation) do {
         private _currentJob = _pathJobs select 0;
         private _currentJobData = [_logic,"currentJobData"] call ALiVE_fnc_hashGet;
 
-        _currentJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
+        _currentJob params ["_startSector","_goalSector","_goalPosition","_procedureName","_faction","_shortenPath","_randomizeWaypointRadius","_callbackArgs","_callback"];
         _currentJobData params ["_initComplete","_procedure", "_cameFromMap","_costSoFarMap","_frontier"];
         private _debugMarkers = _currentJobData select 5;////////////////////
         _procedure params ["_procName","_canUseLand","_canUseWater","_roadWeight","_waterWeight","_heightWeight"];
@@ -415,14 +461,14 @@ switch (_operation) do {
                             [nil,"priorityAdd", [_frontier,_priority,_currNeighbor]] call MAINCLASS;
                             _cameFromMap setvariable [str(_currNeighbor select 0),_currentSector];
                             
-                            private _sC = [(_currNeighbor select 2) select 0,((_currNeighbor select 2) select 1) - 10];
-                            _debugMarkers pushback  str str str str  _sC;
-                            private _m = createMarker [str str str str  _sC, _sC];
-                            _m setMarkerShape "ICON";
-                            _m setMarkerType "hd_dot";
-                            _m setMarkerSize [0.3,0.3];
-                            _m setMarkerColor "ColorRed";
-                            _m setMarkerText format ["%1  (%2)",_newCost,_priority];
+                            // private _sC = [(_currNeighbor select 2) select 0,((_currNeighbor select 2) select 1) - 10];
+                            // _debugMarkers pushback  str str str str  _sC;
+                            // private _m = createMarker [str str str str  _sC, _sC];
+                            // _m setMarkerShape "ICON";
+                            // _m setMarkerType "hd_dot";
+                            // _m setMarkerSize [0.3,0.3];
+                            // _m setMarkerColor "ColorRed";
+                            // _m setMarkerText format ["%1  (%2)",_newCost,_priority];
                         };
                     };
                 } foreach _neighbors;
