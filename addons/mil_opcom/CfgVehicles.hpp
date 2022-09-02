@@ -87,6 +87,12 @@ class CfgVehicles {
                                 };
                         };
 
+                        class customName
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_NAME";
+                                description = "$STR_ALIVE_OPCOM_NAME_COMMENT";                                
+                                defaultValue = "";
+                        };
 
                         class controltype
                         {

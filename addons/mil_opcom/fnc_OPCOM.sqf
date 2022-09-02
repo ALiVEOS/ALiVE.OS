@@ -128,6 +128,7 @@ switch(_operation) do {
                 if (isServer) then {
 
                     //Retrieve module-object variables
+                    _customName = _logic getvariable ["customName",""];
                     _type = _logic getvariable ["controltype","invasion"];
                     _occupation = (_logic getvariable ["asym_occupation",-100])/100;
                     _intelChance = (_logic getvariable ["intelchance",-100])/100;
@@ -214,6 +215,13 @@ switch(_operation) do {
 
                     [_handler,"pendingorders", []] call ALiVE_fnc_HashSet;
 
+                    if (isNil "_customName" || _customName == "") then {
+                        //set default Name as "[SIDE] Commander" if none provided	for backwords compatibility
+                        _defaultName = format["%1 Commander",[_side] call Alive_fnc_sideTextToLong];
+                        [_handler, "name",_defaultName] call ALiVE_fnc_HashSet;
+                    } else {
+                        [_handler, "name",_customName] call ALiVE_fnc_HashSet;
+					};
                     if (["ALiVE_mil_C2ISTAR"] call ALIVE_fnc_isModuleAvailable) then {
                         private _opcomIntelSides = [ALiVE_mil_C2ISTAR,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
 
@@ -1263,7 +1271,7 @@ switch(_operation) do {
                 private _objective = [_logic,"getobjectivebyid", _objectiveID] call ALiVE_fnc_OPCOM;
                 private _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
 
-                private _previousTacomState = [_objective,"tacom_state"] call ALiVE_fnc_hashGet;
+                private _previousTacomState = [_objective,"tacom_state","none"] call ALiVE_fnc_hashGet;
 
                 [_objective,"tacom_state", "none"] call AliVE_fnc_HashSet;
                 [_objective,"opcom_state", "unassigned"] call AliVE_fnc_HashSet;
@@ -1499,7 +1507,7 @@ switch(_operation) do {
                     _state = [_x,"opcom_state",""] call ALiVE_fnc_HashGet;
 
                     if (_orders in ["attack","defend"]) then {_AO pushback _x} else {
-                        if (_state in ["reserving","idle"]) then {
+                        if (_state in ["reserve","reserving","idle"]) then {
                             _FOB pushback _x;
                         };
                     };

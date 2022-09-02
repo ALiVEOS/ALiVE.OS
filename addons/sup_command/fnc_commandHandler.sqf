@@ -208,23 +208,27 @@ switch(_operation) do {
             if (!isnil "OPCOM_INSTANCES") then {
                 {
                     private _opcom = _x;
+                    private _opcomID = [_opcom,"opcomID"] call ALiVE_fnc_hashGet;
+                    private _opcomName = [_opcom,"name"] call ALiVE_fnc_hashGet;
                     private _opcomSide = [_opcom,"side"] call ALiVE_fnc_hashGet;
-
+					
                     switch(_limit) do {
                         case "SIDE": {
+							private _opcomSide = [_opcom,"side"] call ALiVE_fnc_hashGet;
+							
                             if (_side == _opcomSide) then {
-                                _opcomData pushBack _opcomSide;
+                                _opcomData pushBack [_opcomID,_opcomName,_opcomSide];
                             };
                         };
                         case "FACTION": {
                             private _opcomFactions = [_opcom,"factions"] call ALiVE_fnc_HashGet;
 
                             if (_faction in _opcomFactions) then {
-                                _opcomData pushBack _opcomSide;
+                                _opcomData pushBack [_opcomID,_opcomName,_opcomSide];
                             };
                         };
                         case "ALL": {
-                            _opcomData pushBack _opcomSide;
+                            _opcomData pushBack [_opcomID,_opcomName,_opcomSide];
                         };
                     };
                 } foreach OPCOM_INSTANCES;
@@ -243,40 +247,45 @@ switch(_operation) do {
 
         if (_args isEqualType []) then {
 
-            _args params ["_playerID","_side"];
-
+             _args params ["_playerID","_selOpcom"];
+	     private _selOpcomID = (_selOpcom select 0);
+	     private _side = (_selOpcom select 2);
+			
             // get groups state for the selected opcom
 
-            private _profileIDs = [MOD(profileHandler),"getProfilesBySide", _side] call ALiVE_fnc_profileHandler;
             private _groups = [];
-
             {
                 private _opcom = _x;
-                private _opcomSide = [_opcom,"side"] call ALiVE_fnc_hashGet;
+                private _opcomID = [_opcom,"opcomID"] call ALiVE_fnc_hashGet;
 
-                if (_side == _opcomSide) then {
+                if (_selOpcomID == _opcomID) then {
+		        private _opcomFactions = [_opcom,"factions"] call ALiVE_fnc_hashGet;
+			{
+				private _faction = _x;
+				private _profiles = [MOD(profileHandler),"getProfilesByFaction", _faction] call ALiVE_fnc_profileHandler;
 
-                    {
-                        private _data = [];
-                        private _typeUnits = [_opcom,_x, []] call ALiVE_fnc_HashGet;
+				{
+							
+					private _data = [];
+					private _typeUnits = [_opcom,_x, []] call ALiVE_fnc_HashGet;
 
-                        {
-                            if (_x in _profileIDs) then {
+					{
+						if (_x in _profiles) then {
 
-                                private _profile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
+							private _profile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
 
-                                if (!isnil "_profile") then {
-                                    private _position = _profile select 2 select 2;
+							if (!isnil "_profile") then {
+								private _position = _profile select 2 select 2;
+								_data pushBack [_x,_position];
+							};
+						};
 
-                                    _data pushBack [_x,_position];
-                                };
-                            };
+					} foreach _typeUnits;
 
-                        } foreach _typeUnits;
-
-                        _groups pushBack _data;
-                    } foreach ["infantry","motorized","mechanized","armored","air","sea","artillery","AAA"];
-
+					_groups pushBack _data;
+				} foreach ["infantry","motorized","mechanized","armored","air","sea","artillery","AAA"];
+			} foreach _opcomFactions;
+					
                 };
             } foreach OPCOM_INSTANCES;
 
@@ -665,25 +674,30 @@ switch(_operation) do {
                     if (!isnil "OPCOM_INSTANCES") then {
 
                         {
-                            _opcom = _x;
-                            _opcomFactions = [_opcom,"factions",""] call ALiVE_fnc_HashGet;
-                            _opcomSide = [_opcom,"side"] call ALiVE_fnc_hashGet;
+                            	private _opcom = _x;
+				private _opcomID = [_opcom,"opcomID"] call ALiVE_fnc_hashGet;
+				private _opcomName = [_opcom,"name"] call ALiVE_fnc_hashGet;
+				private _opcomSide = [_opcom,"side"] call ALiVE_fnc_hashGet;
+							
+				switch(_limit) do {
+					case "SIDE": {
+						private _opcomSide = [_opcom,"side"] call ALiVE_fnc_hashGet;
+									
+						if (_side == _opcomSide) then {
+							_opcomData pushBack [_opcomID,_opcomName,_opcomSide];
+						};
+					};
+					case "FACTION": {
+						private _opcomFactions = [_opcom,"factions"] call ALiVE_fnc_HashGet;
 
-                            switch(_limit) do {
-                                case "SIDE": {
-                                    if(_side == _opcomSide) then {
-                                        _opcomData pushBack (_opcomSide);
-                                    };
-                                };
-                                case "FACTION": {
-                                    if(_faction in _opcomFactions) then {
-                                        _opcomData pushBack (_opcomSide);
-                                    };
-                                };
-                                case "ALL": {
-                                    _opcomData pushBack (_opcomSide);
-                                };
-                            };
+						if (_faction in _opcomFactions) then {
+							_opcomData pushBack [_opcomID,_opcomName,_opcomSide];
+						};
+					};
+					case "ALL": {
+						_opcomData pushBack [_opcomID,_opcomName,_opcomSide];
+					};
+				};
 
                         } foreach OPCOM_INSTANCES;
 
@@ -867,8 +881,9 @@ switch(_operation) do {
 
         if (_args isEqualType []) then {
 
-            _args params ["_playerID","_side"];
-
+            _args params ["_playerID","_selOpcom"];
+			
+	    private _selOpcomID = (_selOpcom select 0);
             private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
 
             // get objective state by selected opcom
@@ -879,9 +894,9 @@ switch(_operation) do {
 
                 {
                     private _opcom = _x;
-                    private _opcomSide = [_opcom,"side"] call ALiVE_fnc_hashGet;
+                    private _opcomID = [_opcom,"opcomID"] call ALiVE_fnc_hashGet;
 
-                    if (_side == _opcomSide) then {
+                    if (_selOpcomID == _opcomID) then {
 
                         {
                             private _center = [_x,"center",[]] call ALiVE_fnc_hashGet;

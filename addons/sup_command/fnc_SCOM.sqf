@@ -2053,8 +2053,7 @@ switch (_operation) do {
                 _opcomOptions = [];
 
                 {
-                    _sideDisplay = [_x] call ALIVE_fnc_sideTextToLong;
-                    _opcomOptions pushBack format["%1 Commander",_sideDisplay];
+                    _opcomOptions pushBack (_x select 1);
                 } foreach _opcomData;
 
                 [_commandState,"intelOPCOMOptions",_opcomOptions] call ALIVE_fnc_hashSet;
@@ -2502,7 +2501,7 @@ switch (_operation) do {
 
                 [_logic,"setOpsStatus", ""] call MAINCLASS;
 
-                private _opcomSide = [_commandState,"intelOPCOMSelectedValue"] call ALIVE_fnc_hashGet;
+                private _opcomSide = ([_commandState,"intelOPCOMSelectedValue"] call ALIVE_fnc_hashGet) select 2;
 
                 private _color = "ColorYellow";
                 private _profileMarker = "b_unknown";
@@ -2931,8 +2930,7 @@ switch (_operation) do {
                 _opcomOptions = [];
 
                 {
-                    _sideDisplay = [_x] call ALIVE_fnc_sideTextToLong;
-                    _opcomOptions pushBack format["%1 Commander",_sideDisplay];
+                    _opcomOptions pushBack (_x select 1);
                 } foreach _opcomData;
 
                 [_commandState,"opsOPCOMOptions",_opcomOptions] call ALIVE_fnc_hashSet;
