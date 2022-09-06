@@ -1187,6 +1187,7 @@ switch(_operation) do {
             _blacklist = (_logic getvariable ["UnitsBlackList",GVAR(UNITBLACKLIST)]);
             _staticWeaponsIntensity = _logic getvariable ["StaticWeaponsIntensity",0];
             _debug = _logic getVariable ["debug",false];
+            _strategicPlatforms = GVAR(STRATEGICPLATFORMS);
 
             private ["_side","_units"];
 
@@ -1201,8 +1202,12 @@ switch(_operation) do {
             if ((count _units == 0) || {!(_houseFaction == _faction)}) then {
                 // Action: identify AI unit types
                 private ["_amount"];
-
-                _amount = ceil(random(_logic getVariable ["amount",2]));
+                
+               if (_strategicPlatforms find (typeof _house) != -1) then {  
+                  _amount = 1;
+               } else {
+              	  _amount = ceil(random(_logic getVariable ["amount",2]));
+               };
 
                 _units = [[_faction],_amount, _blacklist, true] call ALiVE_fnc_chooseRandomUnits;
 
@@ -1252,8 +1257,13 @@ switch(_operation) do {
 
                 {
                     private _pos = _x;
-
-                    _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
+                    if (_strategicPlatforms find (typeof _house) != -1) then {  
+                      if (_pos select 2 > 1) then {
+                       _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
+                      }
+                    } else {
+                      _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
+                    };    
                 } foreach _positions;
 
             } forEach (units _grp);
