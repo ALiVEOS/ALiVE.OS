@@ -1,6 +1,6 @@
 if (isnil "ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES") then {ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES = []};
 if (isnil "ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST") then {ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST = []};
-
+if (isnil "ALiVE_MIL_CQB_CUSTOM_STRATEGICPLATFORMS") then {ALiVE_MIL_CQB_CUSTOM_STRATEGICPLATFORMS = []};
 /*
  * CQB houses
  */
@@ -91,7 +91,14 @@ ALiVE_MIL_CQB_STRATEGICHOUSES = ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES +
     "Land_vn_cave_04_01",
     "Land_vn_cave_05",
     "Land_vn_cave_06",
-    "Land_vn_cave_07"
+    "Land_vn_cave_07",
+    "Land_vn_o_platform_01",
+    "Land_vn_o_platform_02",
+    "Land_vn_o_platform_03",
+    "Land_vn_o_snipertree_01",
+    "Land_vn_o_snipertree_04",
+    "Land_vn_o_snipertree_02",
+    "Land_vn_o_snipertree_03"
 ];
 
 /*
@@ -289,4 +296,28 @@ ALiVE_MIL_CQB_UNITBLACKLIST = ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST +
     "vn_o_men_pl_18",
     "vn_o_men_pl_20",
     "vn_o_men_pl_19"
+];
+
+
+ALiVE_MIL_CQB_STRATEGICPLATFORMS = ALiVE_MIL_CQB_CUSTOM_STRATEGICPLATFORMS +
+[
+    //VN
+    "Land_vn_b_tower_01",
+    "Land_vn_hut_tower_03",
+    "Land_vn_hut_tower_02",
+    "Land_vn_hut_tower_01",
+    "Land_vn_guardtower_01_f",
+    "Land_vn_guardtower_02_f",
+    "Land_vn_guardtower_04_f",
+    "Land_vn_o_tower_03",
+    "Land_vn_o_tower_02",
+    "Land_vn_o_tower_01",
+    "Land_vn_hut_tower_02",
+    "Land_vn_o_platform_01",
+    "Land_vn_o_platform_02",
+    "Land_vn_o_platform_03",
+    "Land_vn_o_snipertree_01",
+    "Land_vn_o_snipertree_04",
+    "Land_vn_o_snipertree_02",
+    "Land_vn_o_snipertree_03"
 ];
