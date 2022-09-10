@@ -3803,7 +3803,7 @@ switch(_operation) do {
                                     _eventPosition = position (_eventTargets select 0);
                                 } else {
                                     private _targetProfile = [ALiVE_profileHandler, "getProfile", (_eventTargets select 0)] call ALiVE_fnc_ProfileHandler;
-                                    _eventPosition = [_targetProfile,"position"] call ALiVE_fnc_hashGet;
+                                    if !(isNil "_targetProfile") then {_eventPosition = [_targetProfile,"position"] call ALiVE_fnc_hashGet;};
                                 };
                             };
 
