@@ -627,8 +627,13 @@ switch(_operation) do {
 	                    private _profileID = [_profile,"profileID",""] call ALiVE_fnc_HashGet;
 	                    private _commander = (count ([_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashGet) > 0);
 	                    private _busy = ([_profile,"busy",false] call ALiVE_fnc_HashGet);
-
-	                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!([[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos] call ALiVE_fnc_crossesSea)}}};
+                        private _pathfindingEnabled = [Alive_profileSystem,"pathfinding"] call ALiVE_fnc_hashGet;
+                        private _isSeaTravel = if (_pathfindingEnabled) then { //Use new pathfinding function instead of straight line check
+                            {[Alive_pathfinder,"layer1SeaTravelCheck",[[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos]] call Alive_fnc_pathfinder;}
+                        } else {
+                            {[[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos] call ALiVE_fnc_crossesSea}
+                        };
+	                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!(call _isSeaTravel)}}};
 
 	                    if (_valid) then {_troopsUnsorted pushBack _profile};
                     };

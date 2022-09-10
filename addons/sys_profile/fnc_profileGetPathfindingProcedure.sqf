@@ -2,30 +2,31 @@ params ["_profile"];
 
 // determine profile type
 
-private _pathfindingProcedure = "infantry";
+private _pathfindingProcedure = "Man";
 private _profileType = _profile select 2 select 5;
 
 private _vehicleTypeToProcedure = {
     private _vehicleType = _this;
 
     switch (_vehicleType) do {
-        case "Car";
-        case "Truck": { "vehicleLandRoad" };
+        case "Car": { "LandRoad" };
 
+        case "Truck";
         case "Tank";
-        case "Armored" : { "vehicleLandOffRoad" };
+        case "Armored" : { "LandOffRoad" };
 
-        case "Ship": { "vehicleNaval" };
+        case "Ship": { "Naval" };
 
-        case "Helicopter": { "vehicleHeli" };
-        case "Plane": { "vehicleAir" };
+        case "Helicopter": { "Heli" };
 
-        default { "vehicleLandOffRoad" };
+        case "Plane": { "Plane" };
+
+        default { "LandOffRoad" };
     };
 };
 
 if (_profileType == "entity") then {
-    _pathfindingProcedure = "infantry";
+    _pathfindingProcedure = "Man";
 
     // check if entity is using vehicles
 
@@ -54,4 +55,7 @@ if (_profileType == "entity") then {
     _pathfindingProcedure = _vehicleType call _vehicleTypeToProcedure;
 };
 
-_pathfindingProcedure
+private _faction = [_profile,"faction"] call ALiVE_fnc_profileEntity;
+_result = [Alive_pathfinder,"getPathfindingProcedure",[_pathfindingProcedure,_faction]] call Alive_fnc_pathfinder;
+
+_result;

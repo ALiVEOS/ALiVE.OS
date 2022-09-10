@@ -51,6 +51,7 @@ if(isServer) then {
     private _speedModifier = (_logic getVariable ["speedModifier","1"]) call BIS_fnc_parseNumber;
     private _virtualCombatSpeedModifier = parsenumber (_logic getVariable ["virtualcombat_speedmodifier", "1"]);
     private _pathfinding = (_logic getVariable ["pathfinding", "false"]) == "true";
+    private _pathfindingSize = parseSimpleArray (_logic getVariable ["pathfindingSize", "[1000.100]"]);
     private _seaTransport = (_logic getVariable ["seaTransport", "false"]) == "true";
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
 
@@ -76,6 +77,7 @@ if(isServer) then {
     [ALIVE_profileSystem, "speedModifier", _speedModifier] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "combatRate", _virtualCombatSpeedModifier] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "pathfinding", _pathfinding] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "pathfindingSize", _pathfindingSize] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "seaTransport", _seaTransport] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "smoothSpawn", _smoothSpawn] call ALIVE_fnc_profileSystem;
 

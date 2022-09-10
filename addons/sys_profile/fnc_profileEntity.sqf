@@ -533,13 +533,11 @@ switch(_operation) do {
             };
         } else {
             private _previousWaypoint = if (_countPendingWaypoints == 1) then {nil} else {(_pendingWaypoints select (_countPendingWaypoints - 2)) select 3};
-            private _startPosition = if (isnil "_previousWaypoint" || _insertionMethod == "insertWaypoint") then { [_logic,"position"] call ALiVE_fnc_hashGet } else { [_previousWaypoint,"position"] call ALiVE_fnc_hashGet };
-            private _endPosition = [_waypoint,"position"] call ALiVE_fnc_hashGet;
-            private _pathfindingProcedure = [_logic] call ALiVE_fnc_profileGetPathfindingProcedure;
+            private _startPosition = if (isnil "_previousWaypoint" || _insertionMethod == "insertWaypoint") then { [_logic,"position"] call ALiVE_fnc_hashGet } else {[_previousWaypoint,"position"] call Alive_fnc_hashGet;};
             private _profileID = [_logic,"profileID"] call ALiVE_fnc_hashGet;
-            private _faction = [_logic,"faction"] call ALiVE_fnc_hashGet;
+            private _pathfindingProcedure = [_logic] call ALiVE_fnc_profileGetPathfindingProcedure;
 
-            [ALiVE_Pathfinder,"findPath",[_startPosition,_endPosition,_pathfindingProcedure,_faction,true,false,[_profileID,_pendingPath],{
+            [ALiVE_Pathfinder,"findPath",[_startPosition, _pathFindingProcedure, _waypoint, _previousWaypoint, [_profileID,_pendingPath],{
                 params ["_callbackArgs","_path"];
 
                 _callbackArgs params ["_profileID","_pendingPath"];
@@ -555,17 +553,17 @@ switch(_operation) do {
             // if we're inserting into the front
             // we need to generate new paths for the existing waypoints
             if (_insertionMethod == "insertWaypoint") then {
-                private _newPendingWaypoins = [_pendingWaypoints select 0];
+                private _newPendingWaypoints = [_pendingWaypoints select 0];
 
                 private _existingWaypoints = [_logic,"waypoints"] call ALiVE_fnc_hashGet;
-                private _existingWaypointJobs = _existingWaypoints apply { [false,"addWaypoint",[],_x] };
+                private _existingWaypointJobs = _existingWaypoints apply { [false,"addWaypoint",[],_x] }; 
 
                 private _existingPendingWaypoints = _pendingWaypoints select [1, _countPendingWaypoints - 1];
 
-                _newPendingWaypoins append _existingWaypointJobs;
-                _newPendingWaypoins append _existingPendingWaypoints;
+                _newPendingWaypoints append _existingWaypointJobs;
+                _newPendingWaypoints append _existingPendingWaypoints;
 
-                [_logic,"pendingWaypointPaths", _newPendingWaypoins] call ALiVE_fnc_hashSet;
+                [_logic,"pendingWaypointPaths", _newPendingWaypoints] call ALiVE_fnc_hashSet;
             };
         };
 
@@ -575,48 +573,55 @@ switch(_operation) do {
     case "advancePendingWaypoints": {
         private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
 
-        private _firstPending = _pendingWaypoints select 0;
-        while {!isnil "_firstPending" && {_firstPending select 0}} do {
-            private _insertionMethod = if ((_firstPending select 1) == "addWaypoint") then {"addWaypointInternal"} else {"insertWaypointInternal"};
-            private _path = _firstPending select 2;
-            private _waypoint = _firstPending select 3;
-            [_waypoint,"name", "pathfound"] call ALiVE_fnc_hashSet;
+        //Since this gets called multiple times per "addWaypoint" lets try avoiding a race condition and only execute when all are Ready
+        if ((count _pendingWaypoints > 0) && (_pendingWaypoints select (count _pendingWaypoInts - 1)) select 0) then {
 
-            private _waypointTemplate = +_waypoint;
-            //[_waypointTemplate,"timeout", []] call ALiVE_fnc_hashSet;
-            [_waypointTemplate,"type", "MOVE"] call ALiVE_fnc_hashSet;
-            [_waypointTemplate,"description", ""] call ALiVE_fnc_hashSet;
-            [_waypointTemplate,"attachVehicle", ""] call ALiVE_fnc_hashSet;
-            [_waypointTemplate,"statements", ""] call ALiVE_fnc_hashSet;
+            private _firstPending = _pendingWaypoints select 0;
+            while {!isnil "_firstPending" && {_firstPending select 0}} do {
+                private _insertionMethod = if ((_firstPending select 1) == "addWaypoint") then {"addWaypointInternal"} else {"insertWaypointInternal"};
+                private _path = _firstPending select 2;
+                private _waypoint = _firstPending select 3;
+                [_waypoint,"name", "pathfound"] call ALiVE_fnc_hashSet;
 
-            _path = _path apply {
-                private _tempWP = +_waypointTemplate;
-                [_tempWP,"position", _x] call ALiVE_fnc_hashSet;
+                private _waypointTemplate = +_waypoint;
+                //[_waypointTemplate,"timeout", []] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"type", "MOVE"] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"description", ""] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"attachVehicle", ""] call ALiVE_fnc_hashSet;
+                [_waypointTemplate,"statements", ""] call ALiVE_fnc_hashSet;
 
-                _tempWP
-            };
 
-            if (count _path > 0) then {_path set [count _path - 1, _waypoint]} else {_path set [0, _waypoint]};
+                if (count _path > 0) then {
+                    _path = _path apply {
+                        private _tempWP = +_waypointTemplate;
+                        [_tempWP,"position", _x] call ALiVE_fnc_hashSet;
 
-            // if we are inserting into the front
-            // need to reverse path so it's executed in the correct order
-            if (_insertionMethod == "insertWaypointInternal") then { reverse _path };
+                        _tempWP
+                    };
+                    _path set [count _path - 1, _waypoint];
+                } else {
+                    _path set [0, _waypoint]
+                };
 
-            {
-                [_logic,_insertionMethod, _x] call MAINCLASS;
-            } foreach _path;
+                // if we are inserting into the front
+                // need to reverse path so it's executed in the correct order
+                if (_insertionMethod == "insertWaypointInternal") then { reverse _path };
 
-            _pendingWaypoints deleteat 0;
+                {
+                    [_logic,_insertionMethod, _x] call MAINCLASS;
+                } foreach _path;
 
-            // check next pending path
+                _pendingWaypoints deleteat 0;
 
-            if (count _firstPending > 0) then {
-                _firstPending = _pendingWaypoints select 0;
-            } else {
-                _firstPending = nil;
+                // check next pending path
+
+                if (count _firstPending > 0) then {
+                    _firstPending = _pendingWaypoints select 0;
+                } else {
+                    _firstPending = nil;
+                };
             };
         };
-
     };
 
     case "insertWaypointInternal": {

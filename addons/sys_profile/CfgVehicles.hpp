@@ -221,6 +221,75 @@ class CfgVehicles {
                             };
                         };
                     };
+                    class pathfindingSize
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID_COMMENT";
+                        class Values
+                        {
+                            class SmallHighRes
+                            {
+                                name = "10km - High - (200 x 40)";
+                                value = [200,40];
+                            };
+                            class SmallMedRes
+                            {
+                                name = "10km - Med - (250 x 50)";
+                                value = [250,50];
+                            };
+                            class SmallLowRes
+                            {
+                                name = "10km - Low - (300 x 60)";
+                                value = [300,60];
+                            };
+                            class MedHighRes
+                            {
+                                name = "20km - High - (400 x 50)";
+                                value = [400,50];
+                            };
+                            class MedMedRes
+                            {
+                                name = "20km - Med - (480 x 60)";
+                                value = [480,60];
+                            };
+                            class MedLowRes
+                            {
+                                name = "20km - Low - (600 x 75)";
+                                value = [600,75];
+                                default = 1;
+                            };
+                            class HighHighRes
+                            {
+                                name = "30km - High - (640 x 80)";
+                                value = [640,80];
+                            };
+                            class HighMedRes
+                            {
+                                name = "30km - Med - 720 x 90)";
+                                value = [720,90];
+                            };
+                            class HighLowRes
+                            {
+                                name = "30km - Low - (800 x 100)";
+                                value = [800,100];
+                            };
+                            class UltraHighHighRes
+                            {
+                                name = "40km - High - (800 x 100)";
+                                value = [800,100];
+                            };
+                            class UltraHighMedRes
+                            {
+                                name = "40km - Med - (1000 x 125)";
+                                value = [1000,125];
+                            };
+                            class UltraHighLowRes
+                            {
+                                name = "40km - Low - (1200 x 150)";
+                                value = [1200,150];
+                            };
+                        };
+                    };
                     class seaTransport
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT";
