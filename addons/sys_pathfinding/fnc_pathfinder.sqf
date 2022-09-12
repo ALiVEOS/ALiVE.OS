@@ -15,22 +15,28 @@ private _fnc_checkCoastTravelForWater = {
     private _waterTravel = false;
     private _dist = _sectorAPos distance _sectorBPos;
     private _inc = ceil(_dist / 15);
+    private _waterDistance = 0;
     _a = ((_sectorBPos select 0) - (_sectorAPos select 0))/_inc;
     _b = ((_sectorBPos select 1) - (_sectorAPos select 1))/_inc;
 
     for "_i" from 0 to _inc do {
         _heightASL = getTerrainHeightASL [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)];
-        if (_heightASL < -0.3) exitwith {_waterTravel = true;};
+        if (_heightASL < -0.3) then {
+            _waterTravel = true;
+            _waterDistance = _waterDistance + _inc;
+        };
 
+        // // _debugMarkers = [_logic , "pathDebugMarkers"] call Alive_fnc_hashGet;
         // _m = createMarker [str str str str str str str  [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)], [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)]];
-        // //_debugMarkers pushback  str str str str str str str [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)];
+        // // _debugMarkers pushback  str str str str str str str [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)];
         // _m setMarkerShape "ICON";
         // _m setMarkerType "hd_dot";
         // _m setMarkerSize [0.3,0.3];
         // _m setMarkerAlpha 0.5;
         // _m setMarkerColor "ColorBlue";
     };
-    _waterTravel;
+    
+    [_waterTravel,_waterDistance];
 };
 
 private _fnc_getDistanceFromLayer = {
@@ -119,7 +125,7 @@ switch (_operation) do {
 
     ////////// SECTOR ANALYSIS //////////
     case "heuristic": {
-        _args params ["_currentSector","_procedure","_basePriority","_sectorDistance",["_isWaterTravel",false]];
+        _args params ["_currentSector","_fromSector","_procedure","_basePriority","_sectorDistance",["_isWaterTravel",false]];
 
         _currentSector params ["_indx", "_pos", "_centerPos", "_type", "_modifiers"];
         _procedure params ["_name","_capabilities","_limits","_weights"];
@@ -139,6 +145,8 @@ switch (_operation) do {
         _water params ["_hasWater","_waterModifier"];
         private _height = _modifiers select 2;        
         private _densityModifier = _modifiers select 3;
+
+        private _prevHeight = (_fromSector select 4) select 2;
 
         switch (_type) do {
             case "WATER": {
@@ -222,12 +230,15 @@ switch (_operation) do {
 
             // First check if Land Unit is attempting to cross a Water Body or Naval unit on water
             private _isWaterCrossing = false;
+            private _waterDistance = 0;
             private _isCoastTravel = (_typeTo == "COAST" || _typeFrom == "COAST");
             private _isMovingToFromBridge = (_typeTo == "BRIDGE" || _typeFrom == "BRIDGE") && (_roadWeight < 0);
             private _hasDeepWater = (_waterModifier > 0.4) || (_prevWaterModifier > 0.4);
             // Land Unit Check
-            if (_isCoastTravel && !(_isMovingToFromBridge) && !(_canTraverseWater) && _hasDeepWater) then {
-                _isWaterCrossing = [_centerPosFrom,_centerPosTo] call _fnc_checkCoastTravelForWater;
+            if (_isCoastTravel && !(_isMovingToFromBridge) && _canTraverseLand && _hasDeepWater) then {
+                private _waterData = [_centerPosFrom,_centerPosTo] call _fnc_checkCoastTravelForWater;
+                _isWaterCrossing = _waterData select 0;
+                _waterDistance = _waterData select 1;
             };
             // Naval Unit check
             if (_canTraverseWater && !_canTraverseLand && _typeTo != "LAND") then {
@@ -256,7 +267,13 @@ switch (_operation) do {
                         };
                     };
                 };
-            } else {_canTraverse = [_canTraverseWater,_isWaterCrossing];};
+            } else {
+                if (_canTraverseLand) then {
+                    _canTraverse = [(_canTraverseWater && (_waterDistance < 100)),_isWaterCrossing];
+                } else {
+                    _canTraverse = [_canTraverseWater,_isWaterCrossing];
+                };
+            };
         } else {
             _canTraverse = true;
         };
@@ -309,14 +326,6 @@ switch (_operation) do {
                 private _currentSector = [nil,"priorityPullLowest", _frontierLayer1] call MAINCLASS;
                 _currentSector params ["_indxCS", "_posCS", "_centerPosCS", "_typeCS", "_modifiersCS"];
 
-                // ////////////////////////////////////////////////////
-                // _m = createMarker [str str str str _centerPosCS, _centerPosCS];
-                // _debugMarkers pushback str str str str _centerPosCS;
-                // _m setMarkerShape "RECTANGLE";
-                // _m setMarkerSize [_sectorSize/2,_sectorSize/2];
-                // _m setMarkerAlpha 0.3;
-                // _m setMarkerColor "ColorGreen";
-                // ////////////////////////////////////////////////////
                 if ((_currentSector select 0) isequalto (_goalSector select 0)) exitwith {
                     _layer1Complete = true;
                     breakto "main";
@@ -332,7 +341,7 @@ switch (_operation) do {
                     if (typeName _canTraverse == "ARRAY") then {_isWaterTravel = _canTraverse select 1; _canTraverse = _canTraverse select 0;};
                     if (_canTraverse) then {
                         private _distanceToGoal = _centerPos distance (_goalSector select 2);
-                        private _heuristicParams = [_neighSector,_procedure, _distanceToGoal,_sectorSize,_isWaterTravel];
+                        private _heuristicParams = [_neighSector,_currentSector,_procedure, _distanceToGoal,_sectorSize,_isWaterTravel];
                         [nil,"setNodeToFrontier",[_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams]] call MAINCLASS;
                     } else {
                         if (_neighSector isEqualTo _goalSector) exitwith {
@@ -425,7 +434,7 @@ switch (_operation) do {
             };
         };
 
-        // No need for start sector waypoint unless that is all we have because unit cannot traverse out of it's location
+        // No need for start sector waypoint unless: that is all we have because unit cannot traverse out of it's location
         // Goal Sector is never needed as that is addressed by the final waypoint that started this all
         if (_pathLayer isEqualTo []) then {
             _pathLayer pushback (_startSector select 2);
@@ -436,16 +445,16 @@ switch (_operation) do {
         //Shrink path for small sector layer
         if (_sectorSize < 200) then {[nil, "consolidatePath", _pathLayer] call MAINCLASS;};
 
-        // _debugMarkers = [_logic , "pathDebugMarkers"] call Alive_fnc_hashGet;
-        // {
-        //     _m = createMarker [str str str str str str str  _x, _x];
-        //     _debugMarkers pushback  str str str str str str str _x;
-        //     _m setMarkerShape "ICON";
-        //     _m setMarkerType "hd_dot";
-        //     _m setMarkerSize [0.6,0.6];
-        //     _m setMarkerAlpha 0.3;
-        //     _m setMarkerColor "ColorBlue";
-        // } foreach _pathLayer;
+        _debugMarkers = [_logic , "pathDebugMarkers"] call Alive_fnc_hashGet;
+        {
+            _m = createMarker [str str str str str str str  _x, _x];
+            _debugMarkers pushback  str str str str str str str _x;
+            _m setMarkerShape "ICON";
+            _m setMarkerType "hd_dot";
+            _m setMarkerSize [0.6,0.6];
+            _m setMarkerAlpha 0.3;
+            _m setMarkerColor "ColorBlue";
+        } foreach _pathLayer;
 
         _result = true;
     };
@@ -490,7 +499,7 @@ switch (_operation) do {
     case "setNodeToFrontier": {
         _args params ["_cameFromMap", "_costSoFarMap", "_frontier", "_sector", "_cameFromSector", "_distanceToGoal", "_heuristicParams"];
     
-        private _size = _heuristicParams select 3;
+        private _size = _heuristicParams select 4;
         private _moveCost = ([nil,"getMovementCost", [_cameFromSector,_sector,_size]] call MAINCLASS); 
         private _priority = ([nil,"heuristic", _heuristicParams] call MAINCLASS);
         private _newCostSoFar = _moveCost + (_costSoFarMap getvariable str(_cameFromSector select 0));
@@ -499,6 +508,7 @@ switch (_operation) do {
         if (isnil "_sectorCostSoFar" || { _newCostSoFar < _sectorCostSoFar }) then {
             _costSoFarMap setvariable [str (_sector select 0), _newCostSoFar]; 
             [nil,"priorityAdd", [_frontier, _distanceToGoal + _priority + _newCostSoFar, _sector]] call MAINCLASS;
+            ["[d:%1] [p:%2] [nc:%3] -- total[%4] ",_distanceToGoal , _priority , _newCostSoFar,_distanceToGoal + _priority + _newCostSoFar] call Alive_fnc_Dump;
             _cameFromMap setVariable [str(_sector select 0),_cameFromSector];            
         };       
     };
@@ -530,7 +540,7 @@ switch (_operation) do {
             // [": findPath nextJob %1 ",str _nextJob] call Alive_fnc_Dump;
 
             if !(isNil "_previousWaypoint") then { 
-                //update _startPos in the event the waypoint position changed during prev pathfinding job
+                //update _startPos in the event the waypoint position changed e.g. during prev pathfinding job
                 _startPos = [_previousWaypoint, "position"] call Alive_fnc_hashGet;
             };
 
@@ -580,7 +590,7 @@ switch (_operation) do {
         private _pathJobs = [_logic,"pathJobs"] call ALiVE_fnc_hashGet;
         if (count _pathJobs == 0) exitwith {};
 
-        // _debugMarkers = [_logic , "pathDebugMarkers"] call Alive_fnc_hashGet;
+        _debugMarkers = [_logic , "pathDebugMarkers"] call Alive_fnc_hashGet;
 
         private _currentJob = _pathJobs select 0;
         private _currentJobData = [_logic,"currentJobData"] call ALiVE_fnc_hashGet;
@@ -624,20 +634,20 @@ switch (_operation) do {
                 _jobDataFlags set [0,_initComplete];
 
                 // ////////////////////////////////////////////////////
-                // _m = createMarker ["startPos", _startSubSector select 2];
-                // _debugMarkers pushback "startPos";
-                // _m setMarkerShape "ICON";
-                // _m setMarkerType "hd_dot";
-                // _m setMarkerSize [0.9,0.9];
-                // _m setMarkerColor "ColorYellow";
+                _m = createMarker ["startPos", _startSubSector select 2];
+                _debugMarkers pushback "startPos";
+                _m setMarkerShape "ICON";
+                _m setMarkerType "hd_dot";
+                _m setMarkerSize [0.9,0.9];
+                _m setMarkerColor "ColorYellow";
                 // ////////////////////////////////////////////////////
                 // ////////////////////////////////////////////////////
-                // _m = createMarker ["endPos", _goalSubSector select 2];
-                // _debugMarkers pushback "endPos";
-                // _m setMarkerShape "ICON";
-                // _m setMarkerType "hd_dot";
-                // _m setMarkerSize [0.9,0.9];
-                // _m setMarkerColor "ColorCIV";
+                _m = createMarker ["endPos", _goalSubSector select 2];
+                _debugMarkers pushback "endPos";
+                _m setMarkerShape "ICON";
+                _m setMarkerType "hd_dot";
+                _m setMarkerSize [0.9,0.9];
+                _m setMarkerColor "ColorCIV";
                 // ////////////////////////////////////////////////////
             };
 
@@ -645,7 +655,7 @@ switch (_operation) do {
             // only check 1 sector per frame
             private _sectorIterations = 0;
 
-            while {!(_layer1Complete) && _sectorIterations < 2} do {
+            while {!(_layer1Complete) && _sectorIterations < 11} do {
                 _sectorIterations = _sectorIterations + 1;
                 _layer1 params ["_cameFromMapLayer1", "_costSoFarMapLayer1", "_frontierLayer1", "_pathLayer1", "_closestSector"];
 
@@ -653,12 +663,12 @@ switch (_operation) do {
                 _currentSector params ["_indxCS", "_posCS", "_centerPosCS", "_typeCS", "_modifiersCS"];
 
                 // ////////////////////////////////////////////////////
-                // _m = createMarker [str str str str _centerPosCS, _centerPosCS];
-                // _debugMarkers pushback str str str str _centerPosCS;
-                // _m setMarkerShape "RECTANGLE";
-                // _m setMarkerSize [_sectorSize/2,_sectorSize/2];
-                // _m setMarkerAlpha 0.3;
-                // _m setMarkerColor "ColorGreen";
+                _m = createMarker [str str str str _centerPosCS, _centerPosCS];
+                _debugMarkers pushback str str str str _centerPosCS;
+                _m setMarkerShape "RECTANGLE";
+                _m setMarkerSize [_sectorSize/2,_sectorSize/2];
+                _m setMarkerAlpha 0.3;
+                _m setMarkerColor "ColorGreen";
                 // ////////////////////////////////////////////////////
 
                 if ((_currentSector select 0) isequalto (_goalSector select 0)) exitwith {
@@ -683,7 +693,7 @@ switch (_operation) do {
                     if (typeName _canTraverse == "ARRAY") then {_isWaterTravel = _canTraverse select 1; _canTraverse = _canTraverse select 0;};
                     if (_canTraverse) then {
                         private _distanceToGoal = _centerPos distance (_goalSector select 2);
-                        private _heuristicParams = [_neighSector,_procedure, _distanceToGoal,_sectorSize,_isWaterTravel];
+                        private _heuristicParams = [_neighSector,_currentSector,_procedure, _distanceToGoal,_sectorSize,_isWaterTravel];
                         [_logic,"setNodeToFrontier",[_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams]] call MAINCLASS;
                         // if (_distanceToGoal > (_closestSector select 0)*5) exitwith {
                         //     // Unable to complete path to goal
@@ -709,7 +719,7 @@ switch (_operation) do {
                 };
             };
 
-            while {(_layer1Complete) && !(_layer2Complete)  && _sectorIterations < 2} do {
+            while {(_layer1Complete) && !(_layer2Complete)  && _sectorIterations < 11} do {
                 _sectorIterations = _sectorIterations + 1;
                 _layer2 params ["_cameFromMapLayer2", "_costSoFarMapLayer2", "_frontierLayer2", "_pathLayer2", "_closestSubSector", "_itersSinceClosest"];
                 _layer2 set [5, _itersSinceClosest + 1];
@@ -718,12 +728,12 @@ switch (_operation) do {
                 _currentSubSector params ["_indxCS", "_posCS", "_centerPosCS", "_typeCS", "_modifiersCS"];
 
                 ////////////////////////////////////////////////////
-                // _m = createMarker [str str str str _centerPosCS, _centerPosCS];
-                // _debugMarkers pushback str str str str _centerPosCS;
-                // _m setMarkerShape "ICON";
-                // _m setMarkerType "hd_dot";
-                // _m setMarkerSize [0.5,0.5];
-                // _m setMarkerColor "ColorGreen";
+                _m = createMarker [str str str str _centerPosCS, _centerPosCS];
+                _debugMarkers pushback str str str str _centerPosCS;
+                _m setMarkerShape "ICON";
+                _m setMarkerType "hd_dot";
+                _m setMarkerSize [0.5,0.5];
+                _m setMarkerColor "ColorGreen";
                 ////////////////////////////////////////////////////
 
                 if ((_currentSubSector select 0) isequalto (_goalSubSector select 0)) exitwith {
@@ -757,7 +767,7 @@ switch (_operation) do {
 
                     if (_canTraverse) then { 
                         if (count _pathLayer1 > 0) then {_distanceToGoal = [_pathLayer1,_centerPos] call _fnc_getDistanceFromLayer;};
-                        private _heuristicParams = [_neighSubSector,_procedure,_distanceToGoal,_subSectorSize,_isWaterTravel];
+                        private _heuristicParams = [_neighSubSector,_currentSubSector,_procedure,_distanceToGoal,_subSectorSize,_isWaterTravel];
                         [nil,"setNodeToFrontier",[_cameFromMapLayer2, _costSoFarMapLayer2, _frontierLayer2, _neighSubSector, _currentSubSector, _distanceToGoal, _heuristicParams]] call MAINCLASS;
                         if (/*(_distanceToGoal > (_closestSubSector select 0)*4) ||*/ (_itersSinceClosest > 500)) exitwith {
                             // Unable to complete path to goal - spent too much time looking
@@ -811,8 +821,8 @@ switch (_operation) do {
             _costSoFarMapLayer2 call CBA_fnc_deleteNamespace;
             _currentJobData resize 0;
             _currentJob resize 0;
-            // {deleteMarker _x} foreach _debugMarkers;
-            // _debugMarkers resize 0;
+            {deleteMarker _x} foreach _debugMarkers;
+            _debugMarkers resize 0;
             // load next job data
             [_logic,"loadCurrentJobData"] call MAINCLASS;
         };
