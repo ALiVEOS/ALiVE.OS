@@ -138,7 +138,9 @@ switch (_operation) do {
 
     case "getNeighborIndices": {   
 
-        private _sectorIndex = _args;  
+        private _sectorIndex = _args; 
+        if (isNil "_sectorIndex") exitwith {[];};
+         
         private _neighbors = [];
 
         { 

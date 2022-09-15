@@ -71,11 +71,11 @@ switch (_operation) do {
             ["pathDebugMarkers", []]
         ]] call ALiVE_fnc_hashCreate;
 
-        [_logic,"addPathfindingProcedure", ["default",["Man", [true, true, true, true, false], [0.7, 30], [-0.4, 0.6, -0.1, -0.1]]]] call MAINCLASS;
-        [_logic,"addPathfindingProcedure", ["default",["LandRoad", [true, false, true, false, false], [0.5, 3], [-0.5, 0, -0.1, 0.75]]]] call MAINCLASS;
-        [_logic,"addPathfindingProcedure", ["default",["LandOffRoad", [true, false, true, false, false], [0.5, 3], [-0.5, 0, 0.1, 0.75]]]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["default",["Man", [true, true, true, true, false], [0.7, 30], [-0.2, 0.6, -0.1, -0.1]]]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["default",["LandRoad", [true, false, true, false, false], [0.5, 2], [-0.5, 0, -0.1, 0.75]]]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["default",["LandOffRoad", [true, false, true, false, false], [0.5, 2], [-0.5, 0, 0.1, 0.75]]]] call MAINCLASS;
         [_logic,"addPathfindingProcedure", ["default",["Naval", [false, false, false, true, false], [0, 0], [0, 0, 0, 0]]]] call MAINCLASS;
-        [_logic,"addPathfindingProcedure", ["default",["Heli", [true, true, true, true, true], [0, 0], [0, 0, 0, 0]]]] call MAINCLASS;
+        [_logic,"addPathfindingProcedure", ["default",["Heli", [true, true, true, true, true], [0, 0], [0, 0, -0.1, 0]]]] call MAINCLASS;
         [_logic,"addPathfindingProcedure", ["default",["Plane", [true, true, true, true, true], [0, 0], [0, 0, 0, 0]]]] call MAINCLASS;
 
         addMissionEventHandler ["EachFrame", {
@@ -445,16 +445,16 @@ switch (_operation) do {
         //Shrink path for small sector layer
         if (_sectorSize < 200) then {[nil, "consolidatePath", _pathLayer] call MAINCLASS;};
 
-        _debugMarkers = [_logic , "pathDebugMarkers"] call Alive_fnc_hashGet;
-        {
-            _m = createMarker [str str str str str str str  _x, _x];
-            _debugMarkers pushback  str str str str str str str _x;
-            _m setMarkerShape "ICON";
-            _m setMarkerType "hd_dot";
-            _m setMarkerSize [0.6,0.6];
-            _m setMarkerAlpha 0.3;
-            _m setMarkerColor "ColorBlue";
-        } foreach _pathLayer;
+        // _debugMarkers = [_logic , "pathDebugMarkers"] call Alive_fnc_hashGet;
+        // {
+        //     _m = createMarker [str str str str str str str  _x, _x];
+        //     _debugMarkers pushback  str str str str str str str _x;
+        //     _m setMarkerShape "ICON";
+        //     _m setMarkerType "hd_dot";
+        //     _m setMarkerSize [0.6,0.6];
+        //     _m setMarkerAlpha 0.3;
+        //     _m setMarkerColor "ColorBlue";
+        // } foreach _pathLayer;
 
         _result = true;
     };
@@ -507,8 +507,8 @@ switch (_operation) do {
 
         if (isnil "_sectorCostSoFar" || { _newCostSoFar < _sectorCostSoFar }) then {
             _costSoFarMap setvariable [str (_sector select 0), _newCostSoFar]; 
-            [nil,"priorityAdd", [_frontier, _distanceToGoal + _priority + _newCostSoFar, _sector]] call MAINCLASS;
-            ["[d:%1] [p:%2] [nc:%3] -- total[%4] ",_distanceToGoal , _priority , _newCostSoFar,_distanceToGoal + _priority + _newCostSoFar] call Alive_fnc_Dump;
+            [nil,"priorityAdd", [_frontier, _distanceToGoal + _priority + _moveCost/*_newCostSoFar*/, _sector]] call MAINCLASS;
+            //["[d:%1] [p:%2] [nc:%3] -- total[%4] ",_distanceToGoal , _priority , _newCostSoFar,_distanceToGoal + _priority + _newCostSoFar] call Alive_fnc_Dump;
             _cameFromMap setVariable [str(_sector select 0),_cameFromSector];            
         };       
     };
@@ -634,20 +634,20 @@ switch (_operation) do {
                 _jobDataFlags set [0,_initComplete];
 
                 // ////////////////////////////////////////////////////
-                _m = createMarker ["startPos", _startSubSector select 2];
-                _debugMarkers pushback "startPos";
-                _m setMarkerShape "ICON";
-                _m setMarkerType "hd_dot";
-                _m setMarkerSize [0.9,0.9];
-                _m setMarkerColor "ColorYellow";
+                // _m = createMarker ["startPos", _startSubSector select 2];
+                // _debugMarkers pushback "startPos";
+                // _m setMarkerShape "ICON";
+                // _m setMarkerType "hd_dot";
+                // _m setMarkerSize [0.9,0.9];
+                // _m setMarkerColor "ColorYellow";
                 // ////////////////////////////////////////////////////
                 // ////////////////////////////////////////////////////
-                _m = createMarker ["endPos", _goalSubSector select 2];
-                _debugMarkers pushback "endPos";
-                _m setMarkerShape "ICON";
-                _m setMarkerType "hd_dot";
-                _m setMarkerSize [0.9,0.9];
-                _m setMarkerColor "ColorCIV";
+                // _m = createMarker ["endPos", _goalSubSector select 2];
+                // _debugMarkers pushback "endPos";
+                // _m setMarkerShape "ICON";
+                // _m setMarkerType "hd_dot";
+                // _m setMarkerSize [0.9,0.9];
+                // _m setMarkerColor "ColorCIV";
                 // ////////////////////////////////////////////////////
             };
 
@@ -663,12 +663,12 @@ switch (_operation) do {
                 _currentSector params ["_indxCS", "_posCS", "_centerPosCS", "_typeCS", "_modifiersCS"];
 
                 // ////////////////////////////////////////////////////
-                _m = createMarker [str str str str _centerPosCS, _centerPosCS];
-                _debugMarkers pushback str str str str _centerPosCS;
-                _m setMarkerShape "RECTANGLE";
-                _m setMarkerSize [_sectorSize/2,_sectorSize/2];
-                _m setMarkerAlpha 0.3;
-                _m setMarkerColor "ColorGreen";
+                // _m = createMarker [str str str str _centerPosCS, _centerPosCS];
+                // _debugMarkers pushback str str str str _centerPosCS;
+                // _m setMarkerShape "RECTANGLE";
+                // _m setMarkerSize [_sectorSize/2,_sectorSize/2];
+                // _m setMarkerAlpha 0.3;
+                // _m setMarkerColor "ColorGreen";
                 // ////////////////////////////////////////////////////
 
                 if ((_currentSector select 0) isequalto (_goalSector select 0)) exitwith {
@@ -695,12 +695,12 @@ switch (_operation) do {
                         private _distanceToGoal = _centerPos distance (_goalSector select 2);
                         private _heuristicParams = [_neighSector,_currentSector,_procedure, _distanceToGoal,_sectorSize,_isWaterTravel];
                         [_logic,"setNodeToFrontier",[_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams]] call MAINCLASS;
-                        // if (_distanceToGoal > (_closestSector select 0)*5) exitwith {
-                        //     // Unable to complete path to goal
-                        //     _layer1Complete = [_logic,"getLayerPath", [_procedure, _startSector, (_closestSector select 1),_cameFromMapLayer1, _pathLayer1, _sectorSize ]] call MAINCLASS;
-                        //     _jobDataFlags set [1,_layer1Complete];
-                        //     breakto "main";
-                        // };
+                        if (_distanceToGoal > (_closestSector select 0)*5) exitwith {
+                            // Unable to complete path to goal
+                            _layer1Complete = [_logic,"getLayerPath", [_procedure, _startSector, (_closestSector select 1),_cameFromMapLayer1, _pathLayer1, _sectorSize ]] call MAINCLASS;
+                            _jobDataFlags set [1,_layer1Complete];
+                            breakto "main";
+                        };
                      } else {
                         if (_neighSector isEqualTo _goalSector) exitwith {
                             // Unable to complete path to goal
@@ -719,7 +719,7 @@ switch (_operation) do {
                 };
             };
 
-            while {(_layer1Complete) && !(_layer2Complete)  && _sectorIterations < 11} do {
+            while {(_layer1Complete) && !(_layer2Complete)  && _sectorIterations < 6} do {
                 _sectorIterations = _sectorIterations + 1;
                 _layer2 params ["_cameFromMapLayer2", "_costSoFarMapLayer2", "_frontierLayer2", "_pathLayer2", "_closestSubSector", "_itersSinceClosest"];
                 _layer2 set [5, _itersSinceClosest + 1];
@@ -728,12 +728,12 @@ switch (_operation) do {
                 _currentSubSector params ["_indxCS", "_posCS", "_centerPosCS", "_typeCS", "_modifiersCS"];
 
                 ////////////////////////////////////////////////////
-                _m = createMarker [str str str str _centerPosCS, _centerPosCS];
-                _debugMarkers pushback str str str str _centerPosCS;
-                _m setMarkerShape "ICON";
-                _m setMarkerType "hd_dot";
-                _m setMarkerSize [0.5,0.5];
-                _m setMarkerColor "ColorGreen";
+                // _m = createMarker [str str str str _centerPosCS, _centerPosCS];
+                // _debugMarkers pushback str str str str _centerPosCS;
+                // _m setMarkerShape "ICON";
+                // _m setMarkerType "hd_dot";
+                // _m setMarkerSize [0.5,0.5];
+                // _m setMarkerColor "ColorGreen";
                 ////////////////////////////////////////////////////
 
                 if ((_currentSubSector select 0) isequalto (_goalSubSector select 0)) exitwith {
@@ -821,8 +821,8 @@ switch (_operation) do {
             _costSoFarMapLayer2 call CBA_fnc_deleteNamespace;
             _currentJobData resize 0;
             _currentJob resize 0;
-            {deleteMarker _x} foreach _debugMarkers;
-            _debugMarkers resize 0;
+            // {deleteMarker _x} foreach _debugMarkers;
+            // _debugMarkers resize 0;
             // load next job data
             [_logic,"loadCurrentJobData"] call MAINCLASS;
         };
