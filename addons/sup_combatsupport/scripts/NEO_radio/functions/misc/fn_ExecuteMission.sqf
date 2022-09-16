@@ -54,16 +54,30 @@ if(_missionRoundCount == 1) then {
     _battery DOArtilleryFire [_targetPos, _ordnance, _missionRoundCount];
 
 } else {
-    {
+    private _roundsOut = _missionRoundCount;
+    private _numUnits = (group _battery) getVariable ["supportWeaponCount",3];
+    private _roundsOutEach = [];
+    _roundsOutEach resize [_numUnits,0];
+    private _i = 0;
+    while {_roundsOut > 0} do {
+        _roundsOutEach set [_i,(_roundsOutEach select _i) + 1];
+        _roundsOut = _roundsOut - 1;
+        _i = _i + 1;
+        if (_i == _numUnits) then {_i = 0;};
+    };
+
+    for "_u" from 0 to (_numUnits -1) do { 
         private "_pos";
         if (_dispersion > 50) then {
             _pos = (_targetPos getPos [(_dispersion - 50), (round (random 360))]);
         } else {
             _pos = _targetPos;
         };
-        _x DOArtilleryFire [_pos, _ordnance, _missionRoundCount/((group _battery) getVariable ["supportWeaponCount",3])];
-        sleep _rateOfFire;
-    } foreach _units;
+        if (_roundsOutEach select _u > 0) then {
+            (_units select _u) DOArtilleryFire [_pos, _ordnance, _roundsOutEach select _u];
+            sleep _rateOfFire;
+        };
+    };
 };
 
 _battery setVariable ["ARTY_COMPLETE", true, true];

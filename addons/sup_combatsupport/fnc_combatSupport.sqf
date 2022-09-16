@@ -703,6 +703,7 @@ switch(_operation) do {
                                         _v setVariable ["ALIVE_CombatSupport", true];
                                     };
                                 } foreach units _grp;
+                                _grp setVariable ["supportWeaponCount",count _units];
                             };
 
                             { _x setVariable ["NEO_radioArtyModule", [leader _grp, _callsign], true] } forEach _units;
