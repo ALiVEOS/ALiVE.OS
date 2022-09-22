@@ -321,6 +321,8 @@ switch (_support) do
         private _roundsAvailable = _rounds select { (_x select 0) in _roundsUnit };
 
         leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
+        
+        private _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 
         //FSM
         private _fsmHandle = [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio, _side] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";

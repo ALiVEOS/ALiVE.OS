@@ -693,11 +693,17 @@ switch(_operation) do {
                                     };
                                 };
                             } else {
-                                _units pushback _veh;
-                                _veh lock true;
+                                {
+                                    private _v = vehicle _x;
+                                    if !(_v in _units) then {
+                                        _units pushback _v;
+                                        _v lock true;
 
-                                // set ownership flag for other modules
-                                _veh setVariable ["ALIVE_CombatSupport", true];
+                                        // set ownership flag for other modules
+                                        _v setVariable ["ALIVE_CombatSupport", true];
+                                    };
+                                } foreach units _grp;
+                                _grp setVariable ["supportWeaponCount",count _units];
                             };
 
                             { _x setVariable ["NEO_radioArtyModule", [leader _grp, _callsign], true] } forEach _units;
