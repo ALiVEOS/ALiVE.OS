@@ -751,7 +751,7 @@ switch(_operation) do {
 
             	private _infantry = [_logic,"infantry",[]] call ALiVE_fnc_HashGet;
             	private _motorized = [_logic,"motorized",[]] call ALiVE_fnc_HashGet;
-            	private _mechanized = [_logic,"mechandized",[]] call ALiVE_fnc_HashGet;
+            	private _mechanized = [_logic,"mechanized",[]] call ALiVE_fnc_HashGet;
             	private _armored = [_logic,"armored",[]] call ALiVE_fnc_HashGet;
             	private _artillery = [_logic,"artillery",[]] call ALiVE_fnc_HashGet;
             	private _AAA = [_logic,"AAA",[]] call ALiVE_fnc_HashGet;
@@ -766,7 +766,7 @@ switch(_operation) do {
                         _profiles = _motorized;
                         _dist = 3000;
                     };
-                    case ("mechandized") : {
+                    case ("mechanized") : {
                         _profiles = _mechanized;
                     };
                     case ("armored") : {
