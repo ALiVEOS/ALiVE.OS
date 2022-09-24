@@ -3045,7 +3045,7 @@ switch(_operation) do {
 
                         // Order 1 asset each go around, first in first out!
                         private _resupplyList = [_logic,"resupplyList"] call MAINCLASS;
-                        private _asset = _resupplyList select 0;
+                        private _asset = _resupplyList deleteAt 0;
 
                         private _implemented = false; // remove once LOGCOM integration done
 
