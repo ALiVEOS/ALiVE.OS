@@ -978,6 +978,7 @@ switch(_operation) do {
             // } foreach _pendingOrders;
 
             private _ordersToRemove = [];
+            private _objectiveIDsToCheck = [];
             {
                 _x params ["_pos","_profileID","_objectiveID","_time"];
 
@@ -986,14 +987,27 @@ switch(_operation) do {
 
                 if (_dead || { _timeout } || { _ProfileID == _ProfileIDInput }) then {
                     _ordersToRemove pushback _foreachindex;
-                    private _objectiveFound = _pendingOrders findIf { _objectiveID == (_x select 2) };
-                    if (_objectiveFound == -1) then {
-                        _synchronized = true; 
-                    };
+                    _objectiveIDsToCheck pushback _objectiveID;
                 };
             } foreach _pendingOrders;
 
             [_pendingOrders, _ordersToRemove] call ALiVE_fnc_deleteAtMany;
+
+            //We have to check for any additional orders for the given
+            // objectives *after deleting from the array*,
+            // otherwise findIf just finds the exact same order
+            // that we were already looking at above (in "_x")
+            // and _synchronized is never set to true.
+
+            //Get rid of any duplicate objective IDs in the array
+            _objectiveIDsToCheck = _objectiveIDsToCheck arrayIntersect _objectiveIDsToCheck;
+            {
+                private _objectiveId = _x;
+                private _objectiveFound = _pendingOrders findIf { _objectiveID == (_x select 2) };
+                if (_objectiveFound == -1) then {
+                    _synchronized = true; 
+                };
+            } forEach _objectiveIDsToCheck;
             
             _result = _synchronized;
         };
