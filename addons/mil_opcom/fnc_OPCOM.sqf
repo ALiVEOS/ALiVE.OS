@@ -791,11 +791,6 @@ switch(_operation) do {
                     };
                 };
 
-                if (count _profiles == 0) then {
-                	{
-                		if (count _x > 0) exitwith {_profiles = _x};
-                	} foreach [_armored,_mechanized,_motorized,_infantry];
-                };
 
                 if (!isnil "_rtb" && {["ALiVE_mil_ATO"] call ALiVE_fnc_IsModuleAvailable}) exitwith {
 
@@ -818,6 +813,15 @@ switch(_operation) do {
 
                     _attackedE pushback [_target,_pos,_section,time];
                     [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;
+                };
+
+                if (count _profiles == 0) then {
+                	{
+                		if (count _x > 0) exitwith {
+                            _profiles = _x;
+                            _rtb = nil;
+                        };
+                	} foreach [_armored,_mechanized,_motorized,_infantry];
                 };
 
                 if (count _profiles > 0) then {
