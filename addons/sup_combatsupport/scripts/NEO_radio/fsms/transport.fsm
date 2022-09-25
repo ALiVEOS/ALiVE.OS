@@ -2171,7 +2171,8 @@ class FSM
                                          "" \n
                                          "private ""_wp"";" \n
                                          "_wp = group _chopper addWaypoint [_pos, 0]; " \n
-                                         "_wp setWaypointType ""HOOK""; "/*%FSM</ACTION""">*/;
+                                         "_wp setWaypointType ""HOOK""; " \n
+                                         "_wp waypointAttachVehicle ((_pos nearObjects 0.5) select 0);"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
