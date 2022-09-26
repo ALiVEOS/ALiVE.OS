@@ -131,7 +131,7 @@ if (_type == "entity") then {
             //["Enabling bombs!"] call AliVE_fnc_DumpH;
             {_x enableSimulationGlobal true} foreach (_this select 0);
             
-            waituntil {sleep 10; time - _timeout > 1800};
+            waituntil {sleep 10; time - _time > _timeout};
 
             //["Cleaning up whats left"] call AliVE_fnc_DumpH;
             {deletevehicle _x} foreach (_this select 0);
