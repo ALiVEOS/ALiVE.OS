@@ -551,6 +551,8 @@ switch(_operation) do {
 
             {
                 private _spotrepData = [_G2,"buildSpotrepForProfile", [_x,0]] call ALiVE_fnc_G2;
+                //If the profile was dead when trying to process ALive_fnc_G2, spotrepdata would return null, skip this profile
+                if (isnil "_spotrepData") then { continue };
                 [_G2,"createSpotrep", _spotrepData] call ALiVE_fnc_G2;
             } foreach _profiles;
         };
@@ -705,26 +707,28 @@ switch(_operation) do {
             _size = _args select 1;
             _type = _args select 2;
 
+            _section = [];
+            _profileIDs = [];
+            _profiles = [];
+            _dist = 1000;
+            
+            _profile = [ALiVE_ProfileHandler,"getProfile",_target] call ALiVE_fnc_ProfileHandler;
+            //Attempt to solve the error resulting from the race condition between the profile death and this call
+            if (isnil "_profile") exitwith {_result = _section}; //Exit early
+            
             _side = [_logic,"side"] call ALiVE_fnc_HashGet;
             _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
             _sides = [_logic,"sidesenemy",["EAST"]] call ALiVE_fnc_HashGet;
             _knownE = [_logic,"knownentities",[]] call ALiVE_fnc_HashGet;
             _attackedE = [_logic,"attackedentities",[]] call ALiVE_fnc_HashGet;
             _reserved = [_logic,"ProfileIDsReserve",[]] call ALiVE_fnc_HashGet;
-            _profile = [ALiVE_ProfileHandler,"getProfile",_target] call ALiVE_fnc_ProfileHandler;
             _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
 
 	        _vehicles = ([_profile,"vehicleAssignments",[[],[]]] call ALIVE_fnc_hashGet) select 1;
 	        if (count _vehicles > 0) then {
 	        	_vehicleProfile = [ALiVE_ProfileHandler,"getProfile",_vehicles select 0] call ALiVE_fnc_ProfileHandler;
-	        };
+            };
 
-            _section = [];
-            _profileIDs = [];
-            _profiles = [];
-            _dist = 1000;
-
-            if (isnil "_profile") exitwith {_result = _section};
 
            {
                 _proIDs = [ALIVE_profileHandler, "getProfilesBySide",_x] call ALIVE_fnc_profileHandler;
@@ -2457,7 +2461,9 @@ switch(_operation) do {
                 };
 			} foreach _controlledProfileIDs;
 
-            [_logic,"createSpotrepForProfiles", _knownEntities apply { _x select 0}] call MAINCLASS;
+            _knownEntitiesIds = _knownEntities apply { _x select 0};
+
+            [_logic,"createSpotrepForProfiles", _knownEntitiesIds] call MAINCLASS;
 
 			[_logic,"knownentities", _knownEntities] call ALiVE_fnc_HashSet;
 

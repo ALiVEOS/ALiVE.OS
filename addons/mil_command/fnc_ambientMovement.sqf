@@ -31,6 +31,7 @@ if (isnil "_profile") exitWith {
 };
 
 // Get profile data 
+if (isnil "_profile") exitWith {};
 private _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
 private _waypoints = [_profile,"waypoints",[]] call ALiVE_fnc_HashGet;
 private _vehiclesInCommandOf = [_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_HashGet;
