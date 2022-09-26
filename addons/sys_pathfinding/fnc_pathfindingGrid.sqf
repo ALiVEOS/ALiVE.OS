@@ -8,32 +8,48 @@ params [
 
 private "_result";
 
+private _fns_decompressWaterSector = {
+    params ["_sectorCopy","_sectorIndex","_size","_radius"];
+    private _x = _sectorIndex select 0;
+    private _y = _sectorIndex select 1;
+    _sectorCopy set [0, _sectorIndex];
+    _sectorCopy set [1, [_size*_x,_size*_y]];
+    _sectorCopy set [2, [_size*_x + _radius , _size*_y + _radius]];
+    _sectorCopy;
+};
+
 switch (_operation) do {
 
     case "create": {
+        _start = diag_tickTime;
+        _args params ["_sectorSize","_subSectorSize"];
 
-        _args params ["_sectorSize"];
-
-        // create sector grid
+        // create sector grid - layer 1
 
         private _sectors = [];
+        private _subSectors = [];
         private _gridWidth = ceil(worldsize / _sectorSize) + 1;
 
         for "_i" from 0 to _gridWidth - 1 do {
             for "_j" from 0 to _gridWidth - 1 do {
-                private _newSector = [nil,"create", [[_j,_i],[_sectorSize * _j, _sectorSize * _i], _sectorSize]] call alive_fnc_pathfindingSector;
-                _sectors pushback _newSector;
+                private _newSectorData = [nil,"create", [[_j,_i],[_sectorSize * _j, _sectorSize * _i], _sectorSize, _subSectorSize, _gridWidth]] call alive_fnc_pathfindingSector;
+                _sectors pushback (_newSectorData select 0);
+                _subSectors append (_newSectorData select 1);
             };
         };
 
-        // create sector grid
-
         _logic = [[
-            ["sectors", _sectors],
+            ["sectors", createHashMapFromArray _sectors],
+            ["subSectors", createHashMapFromArray _subSectors],
             ["sectorSize", _sectorSize],
-            ["gridWidth", _gridWidth]
+            ["sectorRadius", _sectorSize/2],
+            ["subSectorSize", _subSectorSize],
+            ["subSectorRadius", _subSectorSize/2],
+            ["gridWidth", _gridWidth],
+            ["debugMarkers", []]
         ]] call ALiVE_fnc_hashCreate;
-
+        _stop = diag_tickTime;
+        ["Exp Pathfinding Grid Creation Time:%1",_stop-_start] call Alive_fnc_Dump;
         _result = _logic;
 
     };
@@ -43,12 +59,37 @@ switch (_operation) do {
         _args params ["_x","_y"];
 
         private _sectors = [_logic,"sectors"] call ALiVE_fnc_hashGet;
-        private _gridWidth = [_logic,"gridWidth"] call ALiVE_fnc_hashGet;
 
-        private _index = (_y * _gridWidth) + _x;
+        _result = _sectors get [_x,_y];
 
-        _result = _sectors select _index;
+        if (_result select 0 isEqualTo [-1,-1]) then { //Compressed water sector - must build position info on the fly
+            private _sectorSize = [_logic,"sectorSize"] call ALiVE_fnc_hashGet;
+            private _sectorRadius = [_logic,"sectorRadius"] call ALiVE_fnc_hashGet;
 
+            _result = +_result;
+            [_result, [_x,_y] ,_sectorSize, _sectorRadius ] call _fns_decompressWaterSector;
+        };
+
+        _result;
+    };
+
+    case "getSubSector": {
+
+        _args params ["_x","_y"];
+
+        private _subSectors = [_logic,"subSectors"] call ALiVE_fnc_hashGet;
+
+        _result = _subSectors get [_x,_y];
+
+        if (_result select 0 isEqualTo [-1,-1]) then { //Compressed water sector - must build position info on the fly
+            private _subSectorSize = [_logic,"subSectorSize"] call ALiVE_fnc_hashGet;
+            private _subSectorRadius = [_logic,"subSectorRadius"] call ALiVE_fnc_hashGet;
+
+            _result = +_result;
+            [_result, [_x,_y] ,_subSectorSize, _subSectorRadius ] call _fns_decompressWaterSector;
+        };
+
+        _result;
     };
 
     case "positionToIndex": {
@@ -64,6 +105,19 @@ switch (_operation) do {
 
     };
 
+    case "positionToSubIndex": {
+
+        private _pos = _args;
+
+        private _subSectorSize = [_logic,"subSectorSize"] call ALiVE_fnc_hashGet;
+
+        private _x = (floor ((_pos select 0) / _subSectorSize));
+        private _y = (floor ((_pos select 1) / _subSectorSize));
+
+        _result = [_x,_y];
+
+    };
+
     case "positionToSector": {
 
         private _pos = _args;
@@ -73,64 +127,66 @@ switch (_operation) do {
 
     };
 
-    case "getNeighbors": {
+    case "positionToSubSector": {
 
-        _args params [
-            "_sector",
-            ["_returnIndices", false, [false]]
-        ];
+        private _pos = _args;
 
-        if (count _sector != 2) then {
-            _sector = _sector select 0;
+        private _subSectorIndex = [_logic,"positionToSubIndex", _pos] call ALiVE_fnc_pathfindingGrid;
+        _result = [_logic,"getSubSector", _subSectorIndex] call ALiVE_fnc_pathfindingGrid;
+
+    };
+
+    case "getNeighborIndices": {   
+
+        private _sectorIndex = _args; 
+        if (isNil "_sectorIndex") exitwith {[];};
+         
+        private _neighbors = [];
+
+        { 
+            private _a = (_sectorIndex select 0) + (_x select 0);
+            private _b = (_sectorIndex select 1) + (_x select 1);
+            private _neighIndex = [_a,_b];
+            _neighbors pushback _neighIndex;
+        } foreach [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+
+        _result = _neighbors;
+    };
+
+    case "getNeighborSectors": {
+        private _sectorIndex = _args;
+        private _indices = [_logic, "getNeighborIndices", _sectorIndex] call Alive_fnc_pathfindingGrid;
+        private _neighbors = [];
+        {_sector = [_logic,"getSector", _x] call ALiVE_fnc_pathfindingGrid; _neighbors pushback _sector;} foreach _indices;
+        _result = _neighbors;
+    };
+
+    case "getNeighborSubSectors": {
+        private _sectorIndex = _args;
+        private _indices = [_logic, "getNeighborIndices", _sectorIndex] call Alive_fnc_pathfindingGrid;
+        private _neighbors = [];
+        {_subSector = [_logic,"getSubSector", _x] call ALiVE_fnc_pathfindingGrid; _neighbors pushback _subSector;} foreach _indices;
+        _result = _neighbors;
+    };
+
+    case "enableDebugMarkers": {
+        _args params ["_enable"];
+        _debugMarkers = [_logic,"debugMarkers"] call ALiVE_fnc_hashGet;
+
+        if ((count _debugMarkers > 0) && _enable) exitwith {_result = _enable;};
+        if ((count _debugMarkers > 0) && !_enable) exitwith {
+            {deleteMarker _x} foreach _debugMarkers;
+            _result = _enable;
+        };
+        if (_enable) exitwith {
+            private _sectors = [_logic, "sectors"] call Alive_fnc_hashGet;
+            //_sectors = [_sectors] call CBA_fnc_hashValues;
+            private _size = [_logic,"sectorSize"] call Alive_fnc_hashGet;
+            {_debugMarkers append ([nil, "createSectorDebugMarker", [_y,_size]] call Alive_fnc_pathfindingSector);} foreach _sectors;
+            _result = _enable;
         };
 
-        private _gridWidth = [_logic,"gridWidth"] call ALiVE_fnc_hashGet;
-        private _gridHeight = _gridWidth;
-
-        _sector params ["_sectorX","_sectorY"];
-
-        private _indices = [];
-
-        if (_sectorX > 0) then {
-            _indices pushback [_sectorX - 1, _sectorY]; // left
-
-            if (_sectorY > 0) then {
-                _indices pushback [_sectorX - 1, _sectorY - 1]; // bot left corner
-            };
-
-            if (_sectorY < _gridHeight - 1) then {
-                _indices pushback [_sectorX - 1, _sectorY + 1]; // top left corner
-            };
-        };
-
-        if (_sectorX < _gridWidth - 1) then {
-            _indices pushback [_sectorX + 1, _sector select 1]; // right
-
-            if (_sectorY > 0) then {
-                _indices pushback [_sectorX + 1, _sectorY - 1]; // bot right corner
-            };
-
-            if (_sectorY < _gridHeight - 1) then {
-                _indices pushback [_sectorX + 1, _sectorY + 1]; // top right corner
-            };
-        };
-
-        if (_sectorY > 0) then {
-            _indices pushback [_sectorX, _sectorY - 1]; // bot
-        };
-
-        if (_sectorY < _gridHeight - 1) then {
-            _indices pushback [_sectorX, _sectorY + 1]; // top
-        };
-
-        if (!_returnIndices) then {
-            _indices = _indices apply {
-                [_logic,"getSector", _x] call MAINCLASS;
-            };
-        };
-
-        _result = _indices;
-
+        _result = _enable;
     };
 
 };

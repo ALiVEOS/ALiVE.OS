@@ -343,6 +343,12 @@ switch(_operation) do {
 
             _result = _args;
     };
+    case "pathfindingSize": {
+            if(typeName _args == "ARRAY") then {
+                   [_logic,"pathfindingSize",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"pathfindingSize"] call ALIVE_fnc_hashGet;
+    };
     case "seaTransport": {
             if(typeName _args != "BOOL") then {
                     _args = [_logic,"seaTransport"] call ALIVE_fnc_hashGet;

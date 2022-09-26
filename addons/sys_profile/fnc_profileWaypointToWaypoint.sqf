@@ -28,6 +28,8 @@ ARJay
 
 params ["_profileWaypoint","_group",["_setCurrent", false]];
 
+private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
+
 if (isnil "_profileWaypoint" || {!(_profileWaypoint isequaltype [])}) exitwith {
     ["- ALiVE_fnc_ProfileWaypointToWaypoint retrieved wrong input: %1!",_this] call ALiVE_fnc_dump;
 };
@@ -46,8 +48,8 @@ private _attachVehicle = [_profileWaypoint,"attachVehicle"] call ALIVE_fnc_hashG
 private _waypointStatements = [_profileWaypoint,"statements"] call ALIVE_fnc_hashGet;
 private _waypointName = [_profileWaypoint,"name"] call ALiVE_fnc_hashGet;
 
-// If the leader is in a land vehicle, snap waypoints to nearest road within 200m
-if (
+// If the leader is in a land vehicle, snap waypoints to nearest road within 200m - do not do this if pathfinding enabled
+if (!_pathfindingEnabled &&
     !isNull (assignedVehicle leader _group) &&
     (assignedVehicle leader _group) isKindOf "LandVehicle"
 ) then {

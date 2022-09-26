@@ -104,6 +104,12 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT">
     <English>Experimental!\nThis feature is highly experimental and could break missions.\n Please disable if you notice any issues.\nProfiles will use intelligent pathing to reach their destinations.</English>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID">
+    <English>EP : Grid Size:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID_COMMENT">
+    <English>Experimental!\nThis feature is highly experimental and could break missions. \nSetting a value of too low numbers may impact performance and mission load time.</English>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
     <English>Infantry sea transport:</English>
 </Key>

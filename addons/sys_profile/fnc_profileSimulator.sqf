@@ -67,6 +67,7 @@ if (!_simAttacks) then {
 
     private _speedModifier = [MOD(profileSystem),"speedModifier", 1] call ALiVE_fnc_HashGet;
     private _boatsEnabled = [MOD(profileSystem),"seaTransport", false] call ALiVE_fnc_HashGet;
+    private _pathfindingEnabled = [MOD(profileSystem),"pathfinding", false] call ALiVE_fnc_hashGet;
 
     // find profile to sim
     // sim up to 4 profiles per frame
@@ -257,7 +258,7 @@ if (!_simAttacks) then {
                                             _waypoints deleteat 0;
 
                                             call _handleWPcomplete;
-                                            _executeStatements = true;
+                                            if (count _statements > 0) then {_executeStatements = true;}; // Fix for "empty string" error below - only works if _statements was set to "" or []
                                         };
                                     };
 
@@ -310,7 +311,12 @@ if (!_simAttacks) then {
                                     } else {
                                         // assign a boat to entities if on water
 
-                                        if (_boatsEnabled && {surfaceIsWater _profilePosition} && {surfaceIsWater _newPosition}) then {
+                                        private _isSeaTravel = if (_pathfindingEnabled) then {
+                                            {[Alive_pathfinder,"layer1SeaTravelCheck",[_position,_destination]] call Alive_fnc_pathfinder;}
+                                        } else {
+                                            {[_position,_destination] call ALiVE_fnc_crossesSea;}
+                                        };
+                                        if (_boatsEnabled && {surfaceIsWater _profilePosition} && {surfaceIsWater _newPosition} && {call _isSeaTravel}) then {
                                             if (isnil {[_profile,"boat"] call ALiVE_fnc_hashGet}) then {
                                                 if (_debug) then {["Profile Simulator is adding a boat to entity profile %1",_profileID] call ALiVE_fnc_dump};
 
@@ -372,7 +378,7 @@ if (!_simAttacks) then {
                                             private _onCompletion = _statements select 1;
                                             call compile _onCompletion;
                                         } else {
-                                            ["FIXME: Possible empty string. Content: %1",_statements] call ALiVE_fnc_dump;
+                                            ["FIXME: Possible empty string. Content: %1",_statements] call ALiVE_fnc_dump; //Fixed above by setting _executeStatements to true only if non-empty string
                                         };
                                     };
                                 } else {
@@ -450,9 +456,14 @@ if (!_simAttacks) then {
                                         } else {
 
                                             private _deepEnough = ((ATLtoASL _newPosition) select 2) < 1 && {(_newPosition select 2) > 4};
+                                            private _isSeaTravel = if (_pathfindingEnabled) then {
+                                                {[Alive_pathfinder,"layer1SeaTravelCheck",[_position,_destination]] call Alive_fnc_pathfinder;}
+                                            } else {
+                                                {[_position,_destination] call ALiVE_fnc_crossesSea;}
+                                            };
 
                                             // Assign a boat to entities if on water
-                                            if (_boatsEnabled && {surfaceIsWater _profilePosition} && {surfaceIsWater _newPosition} && {_deepEnough} && {[_position,_destination] call ALiVE_fnc_crossesSea}) then {
+                                            if (_boatsEnabled && {surfaceIsWater _profilePosition} && {surfaceIsWater _newPosition} && {_deepEnough} && {call _isSeaTravel}) then {
                                                 if (isnil {[_profile,"boat"] call ALiVE_fnc_hashGet}) then {
 
                                                     if (_debug) then {["Profile Simulator is adding a boat to entity profile (LIVE) %1",_profileID] call ALiVE_fnc_dump};
