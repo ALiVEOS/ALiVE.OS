@@ -57,8 +57,9 @@ if (
         private _road = [_position, 200] call BIS_fnc_nearestRoad;
         if !(isNull _road) then {
             _position = (getPos _road) select [0, 2];
+        };
     };
-    _radius = -1;
+    _radius = 0;
 };
 
 _position set [2,0];
