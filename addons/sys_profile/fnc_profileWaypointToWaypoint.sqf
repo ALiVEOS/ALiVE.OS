@@ -49,15 +49,17 @@ private _waypointStatements = [_profileWaypoint,"statements"] call ALIVE_fnc_has
 private _waypointName = [_profileWaypoint,"name"] call ALiVE_fnc_hashGet;
 
 // If the leader is in a land vehicle, snap waypoints to nearest road within 200m - do not do this if pathfinding enabled
-if (!_pathfindingEnabled &&
+if (
     !isNull (assignedVehicle leader _group) &&
     (assignedVehicle leader _group) isKindOf "LandVehicle"
 ) then {
-    private _road = [_position, 200] call BIS_fnc_nearestRoad;
-    if !(isNull _road) then {
-        _position = (getPos _road) select [0, 2];
-	_radius = -1;
+    if (!_pathfindingEnabled) then {
+        private _road = [_position, 200] call BIS_fnc_nearestRoad;
+        if !(isNull _road) then {
+            _position = (getPos _road) select [0, 2];
+        };
     };
+    _radius = 0;
 };
 
 _position set [2,0];
