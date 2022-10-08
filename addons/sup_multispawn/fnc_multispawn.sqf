@@ -351,7 +351,7 @@ switch(_operation) do {
                             _respawnBuilding = nearestObject [getmarkerpos format["ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1",faction player], "Building"];
 
                             if !(_respawn call ALiVE_fnc_markerExists) then {createMarkerLocal [_respawn, getposATL _logic]};
-                            if !(!isnil "_respawnBuilding" && {_respawnBuilding}) exitwith {["ALiVE_SUP_MULTISPAWN - Please place a ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1 marker near a building... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_dumpR};
+                            if (isnil "_respawnBuilding") exitwith {["ALiVE_SUP_MULTISPAWN - Please place a ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%1 marker near a building... Defaulting to regular respawn point!",faction player] call ALiVE_fnc_dumpR};
 
                             ["SUP MULTISPAWN - Building EH placed at %1...", getposATL _respawnBuilding] call ALiVE_fnc_dump;
 
