@@ -13,13 +13,16 @@
             <Portuguese>Combat Support Tablet</Portuguese>
             <Russian>Combat Support Tablet</Russian>
             <Spanish>Combat Support Tablet</Spanish>
+            <Chinesesimp>战斗支援平板</Chinesesimp>
     </Key>
     <Key
             ID="STR_ALIVE_tablet1">
             <English>Enables the user to call in available Combat Support units.&lt;br/&gt;Unlimited number of uses&lt;br /&gt;Used by: Anyone</English>
+            <Chinesesimp>允许用户调用可用的作战支持单位。&lt;br/&gt;无限使用次数&lt;br /&gt;使用者：任何人</Chinesesimp>
     </Key>
     <Key
             ID="STR_ALIVE_use_tablet0">
             <English>&lt;t color='#9cf953'&gt;Use: &lt;/t&gt;Access Combat Support Tablet</English>
+            <Chinesesimp>&lt;t color='#9cf953'&gt;使用：&lt;/t&gt;访问战斗支援平板</Chinesesimp>
     </Key>      
 </Container></Package></Project>
