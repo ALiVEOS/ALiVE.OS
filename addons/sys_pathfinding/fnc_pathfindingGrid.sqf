@@ -159,7 +159,7 @@ switch (_operation) do {
         private _neighbors = [];
         {
             _sector = [_logic,"getSector", _x] call ALiVE_fnc_pathfindingGrid; 
-            if !(isnill "_sector") then {_neighbors pushback _sector;};
+            if !(isnil "_sector") then {_neighbors pushback _sector;};
         } foreach _indices;
         _result = _neighbors;
     };
@@ -170,7 +170,7 @@ switch (_operation) do {
         private _neighbors = [];
         {
             _subSector = [_logic,"getSubSector", _x] call ALiVE_fnc_pathfindingGrid; 
-            if !(isnill "_subSector") then { _neighbors pushback _subSector;};
+            if !(isnil "_subSector") then { _neighbors pushback _subSector;};
         } foreach _indices;
         _result = _neighbors;
     };
