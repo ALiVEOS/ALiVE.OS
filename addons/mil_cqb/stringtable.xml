@@ -4,153 +4,203 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CQB">
     <English>Military Close Quarters Battle</English>
+    <Chinesesimp>军事近距离作战</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_COMMENT">
     <English>ALiVE Military Close Quarters Battle</English>
+    <Chinesesimp>ALiVE军事近距离作战</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_COMMENT">
     <English>Enables CQB Module Debug</English>
+    <Chinesesimp>启用CQB模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_PERSISTENT">
     <English>Persistent:</English>
+    <Chinesesimp>持久性:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_PERSISTENT_COMMENT">
     <English>Enables CQB persistence (requires ALiVE Data Module)</English>
+    <Chinesesimp>启用CQB持久性(需要ALiVE数据模块)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCALITY">
     <English>Locality:</English>
+    <Chinesesimp>地点:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCALITY_COMMENT">
     <English>Selects locality of hosted AI</English>
+    <Chinesesimp>选择托管AI的位置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_AMOUNT">
     <English>AI Amount:</English>
+    <Chinesesimp>AI 数量:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_AMOUNT_COMMENT">
     <English>Max group size spawned per CQB location</English>
+    <Chinesesimp>每个CQB位置生成的最大组大小</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_ENABLE">
     <English>Enable CQB</English>
+    <Chinesesimp>启用CQB</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_ENABLE_COMMENT">
     <English>Enables CQB module</English>
+    <Chinesesimp>启用CQB模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_FACTIONS">
     <English>Factions:</English>
+    <Chinesesimp>派系:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_FACTIONS_COMMENT">
     <English>Chooses the factions of CQB units</English>
+    <Chinesesimp>选择CQB单位的派系</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_TYPE">
     <English>Type:</English>
+    <Chinesesimp>类型:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_TYPE_COMMENT">
     <English>Chooses the type of buildings in which CQB will be present</English>
+    <Chinesesimp>选择CQB将出现的建筑类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWN">
     <English>Probability:</English>
+    <Chinesesimp>概率:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWN_COMMENT">
     <English>Probability in % that a house will be occupied</English>
+    <Chinesesimp>房屋被占用的概率(%)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_DISABLE">
     <English>Disable CQB:</English>
+    <Chinesesimp>禁用CQB:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_DISABLE_COMMENT">
     <English>Disables CQB module</English>
+    <Chinesesimp>禁用CQB模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_ERROR1">
     <English>Only one CQB module can be used</English>
+    <Chinesesimp>只能使用一个CQB模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_USAGE">
     <English>Place the CQB module and select the preferred intensity. Optionally, CQB can be synced to a Mil/Civ Placement module.</English>
+    <Chinesesimp>放置CQB模块并选择首选强度。或者,CQB可以同步到Mil/Civ Placement模块。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCATIONTYPE">
     <English>CQB locations:</English>
+    <Chinesesimp>CQB 位置:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_LOCATIONTYPE_COMMENT">
     <English>Selects the type of area in which CQB will be available. If synced to a Mil/Civ Placement module this setting will be overwritten</English>
+    <Chinesesimp>选择CQB可用的区域类型。如果同步到Mil/Civ Placement模块,此设置将被覆盖</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_BLACKLIST">
     <English>Blacklist Marker:</English>
+    <Chinesesimp>黑名单标记:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_BLACKLIST_COMMENT">
     <English>Markers where no CQB will be present (optional)</English>
+    <Chinesesimp>不存在CQB的标记(可选)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_WHITELIST">
     <English>TAOR Marker:</English>
+    <Chinesesimp>TAOR标记:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_WHITELIST_COMMENT">
     <English>Markers where CQB will be present (optional, opposite to Blacklist)</English>
+    <Chinesesimp>CQB将出现的标记(可选,与黑名单相对)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_USEDOMINANTFACTION">
     <English>Placement:</English>
+    <Chinesesimp>安置:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_USEDOMINANTFACTION_COMMENT">
     <English>CQB will determine the dominant faction or use static factions from the faction param fields</English>
+    <Chinesesimp>CQB将确定主导势力或使用势力参数字段中的静态势力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_DENSITY">
     <English>Density:</English>
+    <Chinesesimp>密度:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_DENSITY_COMMENT">
     <English>Density of additional CQB placements</English>
+    <Chinesesimp>额外CQB放置密度</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE">
     <English>Spawn Ground:</English>
+    <Chinesesimp>生成地面:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT">
     <English>Spawn distance for ground units.  Note that spawn distance for strategic placements is a factor 1.4 of this value</English>
+    <Chinesesimp>地面单位的生成距离。请注意,战略部署的生成距离是该值的系数1.4</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCESTATIC">
     <English>Spawn Static Weapon:</English>
+    <Chinesesimp>生成静态武器:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCESTATIC_COMMENT">
     <English>Spawn distance for static weapons.  Note that spawn distance for strategic placements is a factor 1.4 of this value</English>
+    <Chinesesimp>静态武器的生成距离。请注意,战略部署的生成距离是该值的系数1.4</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI">
     <English>Spawn Heli:</English>
+    <Chinesesimp>生成声音:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI_COMMENT">
     <English>Spawn distance for helicopters (0 to disable spawning). Note that spawn distance for strategic placements is a factor 1.4 of this value</English>
+    <Chinesesimp>直升机的兵距离(0表示禁用生成)。请注意,战略部署的产卵距离是该值的系数1.4</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET">
     <English>Spawn Jet:</English>
+    <Chinesesimp>生成喷气机:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET_COMMENT">
     <English>Spawn distance for aircraft (0 to disable spawning). Note that spawn distance for strategic placements is a factor 1.4 of this value</English>
+    <Chinesesimp>飞机生成距离(0表示生成禁用)。请注意,战略部署生成的距离是该值的系数1.4</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_ENABLE">
     <English>Activate CQB Debug</English>
+    <Chinesesimp>激活CQB调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_ENABLE_COMMENT">
     <English>Activates CQB Debug</English>
+    <Chinesesimp>激活CQB调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_DISABLE">
     <English>Deactivate CQB Debug</English>
+    <Chinesesimp>停用CQB调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_DISABLE_COMMENT">
     <English>Deactivates CQB Debug</English>
+    <Chinesesimp>停用CQB调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS">
     <English>Static weapons:</English>
+    <Chinesesimp>静态武器:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS_COMMENT">
     <English>Density of static weapon emplacements in CQB areas, such as mortars and machine guns</English>
+    <Chinesesimp>CQB区域的静态武器安放密度,如迫击炮和机枪</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES">
     <English>Static weapon Classnames:</English>
+    <Chinesesimp>静态武器类别名称:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES_COMMENT">
     <English>Static weapons that can spawn</English>
+    <Chinesesimp>可以生成的静态武器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_UNIT_BLACKLIST">
     <English>Blacklist Units:</English>
+    <Chinesesimp>黑名单单位:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_UNIT_BLACKLIST_COMMENT">
     <English>Blacklist Units from this CQB module (optional)</English>
+    <Chinesesimp>本CQB模块的黑名单单位(可选)</Chinesesimp>
 </Key>
 
 </Container></Package></Project>

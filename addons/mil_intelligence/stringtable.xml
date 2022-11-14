@@ -4,59 +4,78 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_MI">
     <English>Military Intelligence - DEPRECIATED! REMOVE FROM YOUR MISSIONS</English>
+    <Chinesesimp>军事情报 - 已弃用! 从任务中移除</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_COMMENT">
     <English>Strategic Military Intelligence - DEPRECIATED! REMOVE FROM YOUR MISSIONS</English>
+    <Chinesesimp>战略军事情报 - 已弃用！从任务中移除</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_DEBUG_COMMENT">
     <English>Enables MI Module Debug</English>
+    <Chinesesimp>启用MI模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE">
     <English>Intel Coverage:</English>
+    <Chinesesimp>情报覆盖范围:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_COMMENT">
     <English>Amount of intel reports generated</English>
+    <Chinesesimp>生成的情报报告数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_LOW">
     <English>Low coverage of intel</English>
+    <Chinesesimp>低情报覆盖率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_MEDIUM">
     <English>Medium coverage of intel</English>
+    <Chinesesimp>中情报覆盖率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_HIGH">
     <English>High coverage of intel</English>
+    <Chinesesimp>高情报覆盖率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_INTEL_CHANCE_TOTAL">
     <English>Total coverage of intel</English>
+    <Chinesesimp>情报总覆盖范围</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL">
     <English>Friendly Coverage:</English>
+    <Chinesesimp>友方覆盖范围:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL_COMMENT">
     <English>Display nearby friendly units</English>
+    <Chinesesimp>显示附近的友军单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL_RADIUS">
     <English>Friendly Radius:</English>
+    <Chinesesimp>友方半径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_FRIENDLY_INTEL_RADIUS_COMMENT">
     <English>Display friendly units within this radius around players</English>
+    <Chinesesimp>显示此玩家周围半径内的友军单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MI_USAGE">
     <English>place 1 Mil_Int module only per mission. Select the level of detail and frequency of intel received in the options. It is also possible to show Friendly Intel to track units friendly to players.</English>
+    <Chinesesimp>每个任务只放置1个Mil_Int模块. 在选项中选择接收情报的详细级别和频率. 也可以显示友军情报来追踪友军单位.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SD">
     <English>Military Sector Display - DEPRECIATED! REMOVE FROM YOUR MISSIONS</English>
+    <Chinesesimp>军事部门显示 - 已弃用！ 从任务中移除</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SD_RUN_EVERY">
     <English>Update time</English>
+    <Chinesesimp>更新时间</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SD_RUN_EVERY_COMMENT">
     <English>Update sector markings every number of minutes entered</English>
+    <Chinesesimp>每隔数分钟更新区域标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PSD">
     <English>Player Sector Display - DEPRECIATED! REMOVE FROM YOUR MISSIONS</English>
+    <Chinesesimp>玩家区域显示 - 已弃用! 从任务中移除</Chinesesimp>
 </Key>
 </Container></Package></Project>
