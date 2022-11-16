@@ -4,51 +4,67 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_VDIST">
     <English>View Settings</English>
+    <Chinesesimp>视野设置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_VDIST_COMMENT">
     <English>View Distance Settings in Game</English>
+    <Chinesesimp>在游戏中修改视距设置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_VDIST_USAGE">
     <English>View Settings module allows you to dynamically change the appropriate view and terrain grid distance in game. You can also force a fixed View Distance by setting max and min values the same!</English>
+    <Chinesesimp>视图设置模块允许您在游戏中动态更改适当的视图和地形网格距离。您还可以通过将最大值和最小值设置为相同来强制设置固定的“视距”！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_VDIST_MAX">
     <English>Max View Distance:</English>
+    <Chinesesimp>最大视距：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_VDIST_MAX_COMMENT">
     <English>Maximum view distance allowed in Game</English>
+    <Chinesesimp>在游戏中允许的视距最大值</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_VDIST_ENABLED">
     <English>Set View Settings</English>
+    <Chinesesimp>修改视图设置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_VDIST_ENABLED_COMMENT">
     <English>Set you View distance in Game</English>
+    <Chinesesimp>在游戏中修改视距</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_VDIST_MIN">
     <English>Min View Distance:</English>
+    <Chinesesimp>最小视距：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_VDIST_MIN_COMMENT">
     <English>Minimum view distance allowed in Game</English>
+    <Chinesesimp>在游戏中允许的视距最小值</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TGRID">
     <English>Terrain Grid</English>
+    <Chinesesimp>地形网格</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TGRID_COMMENT">
     <English>Terrain Grid Settings in Game</English>
+    <Chinesesimp>在游戏中修改地形网格</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TGRID_MAX">
     <English>Max Terrain Grid:</English>
+    <Chinesesimp>最大地形网格：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TGRID_MAX_COMMENT">
     <English>Maximum Terrain Grid allowed in Game 1 Low -> 5 High</English>
+    <Chinesesimp>游戏中允许的最大地形网格 1低 -> 5高</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TGRID_MIN">
     <English>Min Terrain Grid:</English>
+    <Chinesesimp>最小地形网格：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TGRID_MIN_COMMENT">
     <English>Minimum Terrain Grid allowed in Game 1 Low -> 5 High</English>
+    <Chinesesimp>游戏中允许的最小地形网格 1低 -> 5高</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_VDIST_ERROR1">
     <English>Only one View Distance module can be used</English>
+    <Chinesesimp>只能使用一个视距模块</Chinesesimp>
 </Key>
 
 </Container></Package></Project>

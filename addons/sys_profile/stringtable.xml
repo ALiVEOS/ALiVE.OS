@@ -4,122 +4,154 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_PROFILE_SYSTEM">
     <English>ALiVE Virtual AI System</English>
+    <Chinesesimp>ALiVE虚拟人工智能系统</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_COMMENT">
     <English>Virtual AI System (Profiles)</English>
+    <Chinesesimp>虚拟人工智能系统（配置文件）</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_COMMENT">
     <English>Enables Module Debug</English>
+    <Chinesesimp>启用模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT">
     <English>Persistent:</English>
+    <Chinesesimp>持久性:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT_COMMENT">
     <English>Enables external Database persistence for Virtual AI</English>
+    <Chinesesimp>为虚拟AI启用外部数据库持久化</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLOT_SECTORS">
     <English>Sector Colouring:</English>
+    <Chinesesimp>扇区着色：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLOT_SECTORS_COMMENT">
     <English>Enables sector colouring according to units presence</English>
+    <Chinesesimp>根据单位存在启用扇区着色</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC">
     <English>Synchronisation Options:</English>
+    <Chinesesimp>同步选项：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_COMMENT">
     <English>Modify synced units behaviour</English>
+    <Chinesesimp>修改同步单位行为</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_ADD">
     <English>Only virtualize synced units</English>
+    <Chinesesimp>仅虚拟化同步单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SYNC_IGNORE">
     <English>Virtualize all editor placed units except synced units</English>
+    <Chinesesimp>虚拟化除同步单位外的所有编辑器放置单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS">
     <English>Spawn Radius:</English>
+    <Chinesesimp>生成半径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS_COMMENT">
     <English>Sets the distance from players to spawn AI units</English>
+    <Chinesesimp>设置玩家与AI单位生成的距离</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER">
     <English>Active Limiter:</English>
+    <Chinesesimp>活动限制:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER_COMMENT">
     <English>Sets the max number of virtualized AI *groups* to spawn at any one time</English>
+    <Chinesesimp>设置任何时候要生成的虚拟化AI*组*的最大数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN">
     <English>Zeus Spawn Virtual Groups:</English>
+    <Chinesesimp>宙斯生成虚拟组：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN_COMMENT">
     <English>If enabled, active zeus entities will spawn virtual groups when in range</English>
+    <Chinesesimp>如果启用,活动的宙斯实体将在范围内生成虚拟组</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS">
     <English>Spawn planes radius:</English>
+    <Chinesesimp>平面生成半径</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT">
     <English>The radius around player in planes to spawn AI. Set to 0 to disable spawning while in planes</English>
+    <Chinesesimp>玩家在平面上生成AI的半径。设置为0可禁用在平面中生成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS">
     <English>Spawn heli radius:</English>
+    <Chinesesimp>直升机生成半径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS_COMMENT">
     <English>The radius around player in helicopters to spawn AI. Set to 0 to disable spawning while in helicopters</English>
+    <Chinesesimp>玩家在直升机上生成人工智能的半径。设置为0可在直升机中禁用生成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS">
     <English>Spawn UAV radius:</English>
+    <Chinesesimp>无人机生成半径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT">
     <English>The radius around player controlled UAV to spawn AI. Set to 0 to disable spawning while controlling UAVs. Set to -1 to default to (Infantry) Spawn Radius + 800.</English>
+    <Chinesesimp>玩家控制的无人机周围的半径生产出AI。设置为0禁用生成时控制无人机。设置为-1默认为(步兵)生成半径 + 800.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER">
     <English>Virtual Unit Speed:</English>
+    <Chinesesimp>虚拟单位速度:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT">
     <English>Alters how fast virtual AI move across the map. 25% means 25% of a unit's normal speed</English>
+    <Chinesesimp>改变虚拟AI在地图上移动的速度。25%是指单位正常速度的25%</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ERROR1">
     <English>Only one Virtual AI System module can be used</English>
+    <Chinesesimp>只能使用一个虚拟AI系统模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_ENABLE">
     <English>Activate Profiles Debug</English>
+    <Chinesesimp>激活配置文件调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_DISABLE">
     <English>Deactivate Profiles Debug</English>
+    <Chinesesimp>关闭配置文件调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG1_COMMENT">
     <English>Toggle debug mode on the profile system</English>
+    <Chinesesimp>切换配置文件系统上的调试模式</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER">
     <English>Virtual Combat Speed:</English>
+    <Chinesesimp>虚拟作战速度：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT">
     <English>Sets the pace of virtual combat. Fastest combat resolves twice as quickly as regular.</English>
+    <Chinesesimp>设置虚拟战斗的节奏.最快的战斗解决速度是普通战斗的两倍.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
     <English>Experimental Pathfinding:</English>
+    <Chinesesimp>实验路径查找：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT">
     <English>Experimental!\nThis feature is highly experimental and could break missions.\n Please disable if you notice any issues.\nProfiles will use intelligent pathing to reach their destinations.</English>
-</Key>
-<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID">
-    <English>EP : Grid Size:</English>
-</Key>
-<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID_COMMENT">
-    <English>Experimental!\nThis feature is highly experimental and could break missions. \nSetting a value of too low numbers may impact performance and mission load time.</English>
+    <Chinesesimp>实验的!\n这项功能是高度实验性的,可能会破坏任务.\n如果发现任何问题,请禁用.\n配置文件将使用智能路径到达目的地.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
     <English>Infantry sea transport:</English>
+    <Chinesesimp>步兵海上运输：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT">
     <English>Experimental!\nAdds a boat to a virtual infantry entity that tries to cross water!</English>
+    <Chinesesimp>实验的!\n将一艘船添加到一个试图穿越水面的虚拟步兵实体!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN">
     <English>Smooth Spawn:</English>
+    <Chinesesimp>丝滑生成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT">
     <English>Sleep values between spawning units to not overload engine</English>
+    <Chinesesimp>生成单位之间的睡眠值不会使引擎过载</Chinesesimp>
 </Key>
 </Container></Package></Project>

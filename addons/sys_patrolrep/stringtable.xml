@@ -4,32 +4,42 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_patrolrep">
     <English>patrolrep Module</English>
+    <Chinesesimp>巡逻模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_COMMENT">
     <English>Send a PATROLREP to be stored in game and on War Room</English>
+    <Chinesesimp>派遣一个巡逻人员藏在游戏和作战室里</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_patrolrepPARAMS">
     <English>Template Parameters</English>
+    <Chinesesimp>模板参数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_ERROR1">
     <English>Only one module template allowed</English>
+    <Chinesesimp>只允许一个模块模板</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_patrolrepPARAMS_COMMENT">
     <English>Over-ride default parameters for the Module Template</English>
+    <Chinesesimp>超越模块模板的默认参数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_patrolrepPARAMS_USAGE">
     <English>Place the module and configure the over-rides</English>
+    <Chinesesimp>放置模块并设定超越值</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_DEBUG">
     <English>Debug:</English>
+    <Chinesesimp>调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_DEBUG_COMMENT">
     <English>Enable Debug</English>
+    <Chinesesimp>启用调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_DIALOG_TITLE">
     <English>ADVANCED patrolrep</English>
+    <Chinesesimp>高级巡逻人员</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_patrolrep_DIALOG_patrolrep">
     <English>patrolrep</English>
+    <Chinesesimp>巡逻人员</Chinesesimp>
 </Key>
 </Container></Package></Project>

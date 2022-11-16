@@ -4,75 +4,89 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_WEATHER">
     <English>Ambient Dynamic Weather</English>
+    <Chinesesimp>动态天气环境</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_WEATHER_COMMENT">
     <English>Dynamic Weather module</English>
+    <Chinesesimp>动态天气模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_WEATHER_USAGE">
     <English>Place the Dynamic Weather module and choose between different climates! Find a high detailed set of adjustment options on the module to refine your mission!</English>
+    <Chinesesimp>放置动态天气模块和选择不同的气候,在模块上找到一组高度详细的调整选项来完善你的任务！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_WEATHER_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试:</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_COMMENT">
     <English>Enables dynamic weather module debug mode</English>
+    <Chinesesimp>启用动态天气模块调试模式</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_CYCLE">
     <English>Debug Output Delay:</English>
+    <Chinesesimp>调试输出延迟:</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_CYCLE_COMMENT">
     <English>Delay in seconds between each rpt output (Enable Debug must be enabled)</English>
+    <Chinesesimp>每个rpt输出之间的延迟(以秒为单位)(必须启用“启用调试”)</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_ERROR1">
     <English>Only one dynamic weather module can be used</English>
+    <Chinesesimp>只能使用一个动态天气模块</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_INITIAL">
     <English>Weather Climate:</English>
+    <Chinesesimp>天气气候:</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_INITIAL_COMMENT">
-    <English>For a complete local explanation please refer to ALiVE wiki
-    </English>
+    <English>For a complete local explanation please refer to ALiVE wiki</English>
+    <Chinesesimp>有关完整的本地解释,请参考ALiVE wiki</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_OVERRIDE">
     <English>Weather Override:</English>
+    <Chinesesimp>天气覆盖:</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_OVERRIDE_COMMENT">
-    <English>Set initial weather to one of the override settings
-    </English>
+    <English>Set initial weather to one of the override settings</English>
+    <Chinesesimp>将初始天气设置为覆盖设置之一</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_VARIANCE">
     <English>Cycle Variance:</English>
+    <Chinesesimp>周期方差:</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_VARIANCE_COMMENT">
     <English>Amount of variance to weather between weather cycles</English>
+    <Chinesesimp>不同天气周期之间的天气变化量</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY">
     <English>Cycle Delay:</English>
+    <Chinesesimp>周期延迟:</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT">
     <English>Time in seconds between each weather cycle (minimum 1800 set by game engine)</English>
+    <Chinesesimp>每个天气周期之间的时间(以秒为单位)(游戏引擎设置的最低1800秒)</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_REAL_LOCATION">
     <English>Real Weather Loc:</English>
+    <Chinesesimp>真实地点天气(同步真实地点的天气情况?):</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_REAL_LOCATION_COMMENT">
     <English>For a complete list of valid Locales please refer to ALiVE wiki</English>
+    <Chinesesimp>有关有效区域设置的完整列表,请参阅ALiVE wiki</Chinesesimp>
 </Key>
 
 </Container></Package></Project>
-
-

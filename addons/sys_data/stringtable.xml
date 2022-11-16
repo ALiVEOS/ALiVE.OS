@@ -4,90 +4,119 @@
         <Container name="STR_DN">
             <Key ID="STR_ALIVE_Data">
                 <English>ALiVE Data</English>
+                <Chinesesimp>Alive数据</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_COMMENT">
                 <English>Data module for perf monitoring, stats and persistence</English>
+                <Chinesesimp>用于性能监视、统计和持久性的数据模块</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_DEBUG">
                 <English>Enable Debug:</English>
+                <Chinesesimp>启用调试DEBUG:</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_DEBUG_COMMENT">
                 <English>Enables Data Module Debug</English>
+                <Chinesesimp>启用数据模块调试</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_ENABLE">
                 <English>Enable Database</English>
+                <Chinesesimp>启用数据库</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_ENABLE_COMMENT">
                 <English>Enables Database module</English>
+                <Chinesesimp>启用数据库</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_DISABLE">
                 <English>Disable Database</English>
+                <Chinesesimp>禁用数据库</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_DISABLE_COMMENT">
                 <English>Disables Database module</English>
+                <Chinesesimp>禁用数据库</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_Source">
                 <English>Database Source</English>
+                <Chinesesimp>数据库源</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_Source_COMMENT">
                 <English>Choose an available Database Source</English>
+                <Chinesesimp>选择一个可用的数据库源</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_DATABASENAME">
                 <English>Database Name</English>
+                <Chinesesimp>数据库名称</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_DATABASENAME_COMMENT">
                 <English>Enter the name of the database</English>
+                <Chinesesimp>输入数据库的名称</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_ERROR1">
                 <English>Only one Data module can be used</English>
+                <Chinesesimp>只能使用一个数据模块</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_SAVEDATETIME">
                 <English>Save Mission Time:</English>
+                <Chinesesimp>保存任务时间:</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_SAVEDATETIME_COMMENT">
                 <English>Enable/disable saving date and time of the mission</English>
+                <Chinesesimp>启用/禁用保存任务的日期和时间 </Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_SAVECOMPOSITIONS">
                 <English>Save Roadblocks/Outposts:</English>
+                <Chinesesimp>保存路障/前哨:</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_SAVECOMPOSITIONS_COMMENT">
                 <English>Enable/disable saving any compositions that are spawned for camps, checkpoints etc</English>
+                <Chinesesimp>启用/禁用保存为营地、检查点等生成的任何合成</Chinesesimp>
             </Key>    
             <Key ID="STR_ALIVE_Data_killFeed">
                 <English>Enable Chat Kill Feed:</English>
+                <Chinesesimp>启用击杀消息:</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_killFeed_COMMENT">
                 <English>Enable kill feed in players group or side chat.</English>
+                <Chinesesimp>在玩家群组或阵营频道中启用击杀消息。</Chinesesimp>
             </Key>                    
             <Key ID="STR_ALIVE_Data_disableStats">
                 <English>Disable Stats:</English>
+                <Chinesesimp>禁用统计:</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_disableStats_COMMENT">
                 <English>Disable the recording of player/operation stats to the War Room</English>
+                <Chinesesimp>禁止记录作战室的玩家/操作数据</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_disableAAR">
                 <English>Disable AAR:</English>
+                <Chinesesimp>禁用AAR:</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_disableAAR_COMMENT">
                 <English>Disable player tracking for AAR on War Room</English>
+                <Chinesesimp>在作战室中禁用AAR的玩家追踪功能</Chinesesimp>
             </Key>            
             <Key ID="STR_ALIVE_Data_disablePerf">
                 <English>Disable PerfMon:</English>
+                <Chinesesimp>禁用性能数据</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_disablePerf_COMMENT">
                 <English>Disable the recording of server performance data to War Room </English>
+                <Chinesesimp>禁止向作战室记录服务器性能数据</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_disablePerfMon">
                 <English>Disable OS PerfMon:</English>
+                <Chinesesimp>禁用OS性能数据</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_disablePerfMon_COMMENT">
                 <English>Disable OS Performance Statistics such as %CPU, Threads, Memory Usage etc</English>
+                <Chinesesimp>禁用操作系统性能统计,如%CPU,线程,内存使用率等</Chinesesimp>
             </Key>    
             <Key ID="STR_ALIVE_Data_customPerfMonCode">
                 <English>Custom Perf Monitors:</English>
+                <Chinesesimp>自定义性能监控:</Chinesesimp>
             </Key>
             <Key ID="STR_ALIVE_Data_customPerfMonCode_COMMENT">
                 <English>Customize objects counted and intervals. Ensure interval values are in ascending order. 'triggers' will count allMissionObjects "EmptyDetector", 'entities' will count entities "All", 'objects' will count allMissionObjects "All", 'activeScripts' will count all active scripts. Any thing else will be count YOURPARAM i.e. count allDead.</English>
+                <Chinesesimp>自定义对象计数和间隔。确保间隔值按升序排列。'triggers'将计算所有的missionobjects "EmptyDetector", 'entities'将计算实体"All", 'objects'将计算所有的missionobjects "All", 'activeScripts'将计算所有的活动脚本。其他的将被计算为YOURPARAM,也就是计算allDead。</Chinesesimp>
             </Key>                        
         </Container>
     </Package>

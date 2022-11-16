@@ -4,21 +4,27 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_STATISTICS">
     <English>Statistics</English>
+    <Chinesesimp>统计数据</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_DISABLE_STATISTICS">
     <English>Disable Statistics</English>
+    <Chinesesimp>禁用统计数据</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_COMMENT">
     <English>Disable MP Statistics recorded to ALiVE web service</English>
+    <Chinesesimp>禁用记录到ALiVE web服务的MP统计信息</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_ENABLE">
     <English>Enable Statistics</English>
+    <Chinesesimp>启用统计数据</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_ENABLE_COMMENT">
     <English>Enable/Disable events/statistics recording to the ALiVE web service</English>
+    <Chinesesimp>启用/禁用ALiVE web服务的事件/统计记录</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_STATISTICS_ERROR1">
     <English>Only one statistics module can be used</English>
+    <Chinesesimp>只能使用一个统计模块</Chinesesimp>
 </Key>
 
 </Container></Package></Project>

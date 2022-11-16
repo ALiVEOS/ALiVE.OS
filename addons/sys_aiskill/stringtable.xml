@@ -4,126 +4,167 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_AISKILL">
     <English>Military AI Skill</English>
+	<Chinesesimp>军事人工智能技能</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_COMMENT">
     <English>Set AI Skill levels per faction by presets or custom settings</English>
+	<Chinesesimp>通过预设或自定义设置设置每个派系的人工智能技能等级</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_ERROR1">
     <English>Only one AI SKILL module allowed</English>
+	<Chinesesimp>只允许一个人工智能技能模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_DEBUG">
     <English>Enable Debug:</English>
+	<Chinesesimp>启用调试：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_DEBUG_COMMENT">
     <English>Enables AI Skill Module Debug</English>
+	<Chinesesimp>启用人工智能技能模组调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_RECRUIT">
     <English>Recruit Factions:</English>
+	<Chinesesimp>招募派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_RECRUIT_COMMENT">
     <English>Faction units will be given recruit skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
+	<Chinesesimp>派系单位将获得招募技能等级,用逗号分隔多个派系(BLU_F,OPF_F,IND_F,BLU_G_F)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_REGULAR">
     <English>Regular Factions:</English>
+	<Chinesesimp>常规派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_REGULAR_COMMENT">
     <English>Faction units will be given regular skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
+	<Chinesesimp>派系单位将获得常规技能等级,用逗号分隔多个派系(BLU_F,OPF_F,IND_F,BLU_G_F)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_VETERAN">
     <English>Veteran Factions:</English>
+	<Chinesesimp>资深派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_VETERAN_COMMENT">
     <English>Faction units will be given veteran skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
+	<Chinesesimp>派系单位将获得资深技能等级,用逗号分隔多个派系(BLU_F,OPF_F,IND_F,BLU_G_F)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_EXPERT">
     <English>Expert Factions:</English>
+	<Chinesesimp>专家派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_EXPERT_COMMENT">
     <English>Faction units will be given expert skill level, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
+	<Chinesesimp>派系单位将获得专家技能等级,用逗号分隔多个派系(BLU_F,OPF_F,IND_F,BLU_G_F)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM">
     <English>Custom Skill:</English>
+	<Chinesesimp>自定义技能：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMENT">
     <English>Factions that will have the following custom skill settings, seperate multiple factions with commas (BLU_F,OPF_F,IND_F,BLU_G_F)</English>
+	<Chinesesimp>将具有以下自定义技能设置的派系,用逗号分隔多个派系(BLU_F,OPF_F,IND_F,BLU_G_F)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN">
     <English>Minimum Ability:</English>
+	<Chinesesimp>最低能力：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN_COMMENT">
     <English>Minimum Ability</English>
+	<Chinesesimp>最低能力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX">
     <English>Maximum Ability:</English>
+	<Chinesesimp>最大能力：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX_COMMENT">
     <English>Maximum Ability</English>
+	<Chinesesimp>最大能力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY">
     <English>Aim Accuracy:</English>
+	<Chinesesimp>瞄准精度：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY_COMMENT">
     <English>Aim Accuracy</English>
+	<Chinesesimp>瞄准精度</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SHAKE">
     <English>Aim Shake:</English>
+	<Chinesesimp>瞄准摇晃：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SHAKE_COMMENT">
     <English>Aim Shake</English>
+	<Chinesesimp>瞄准摇晃</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED">
     <English>Aim Speed</English>
+	<Chinesesimp>瞄准速度</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED_COMMENT">
     <English>Aim Speed</English>
+	<Chinesesimp>瞄准速度</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE">
     <English>Endurance:</English>
+	<Chinesesimp>耐力：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE_COMMENT">
     <English>Endurance</English>
+	<Chinesesimp>耐力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE">
     <English>Spot Distance:</English>
+	<Chinesesimp>发现距离：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE_COMMENT">
     <English>Spot Distance</English>
+	<Chinesesimp>发现距离</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_TIME">
     <English>Spot Time:</English>
+	<Chinesesimp>发现时间：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_TIME_COMMENT">
     <English>Spot Time</English>
+	<Chinesesimp>发现时间</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COURAGE">
     <English>Courage:</English>
+	<Chinesesimp>勇气：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COURAGE_COMMENT">
     <English>Courage</English>
+	<Chinesesimp>勇气</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_FLEEING">
     <English>Cowardice:</English>
+	<Chinesesimp>怯懦：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_FLEEING_COMMENT">
     <English>How easily the unit will flee</English>
+	<Chinesesimp>单位会逃跑的难易程度</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_RELOAD">
     <English>Reload:</English>
+	<Chinesesimp>装填：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_RELOAD_COMMENT">
     <English>Reload</English>
+	<Chinesesimp>装填</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMANDING">
     <English>Commanding:</English>
+	<Chinesesimp>指挥：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMANDING_COMMENT">
     <English>Commanding</English>
+	<Chinesesimp>指挥</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_GENERAL">
     <English>General:</English>
+	<Chinesesimp>将军：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_GENERAL_COMMENT">
     <English>General</English>
+	<Chinesesimp>将军</Chinesesimp>
 </Key>
 </Container></Package></Project>

@@ -4,32 +4,42 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_GC">
     <English>Garbage Collector</English>
+    <Chinesesimp>垃圾回收(GC)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GC_COMMENT">
     <English>Cleans up dead objects and improves performance</English>
+    <Chinesesimp>清除死亡对象并提高性能</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GC_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试DEBUG:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GC_DEBUG_COMMENT">
     <English>Enables GC Module Debug</English>
+    <Chinesesimp>开启GC模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GC_INDIVIDUALTYPES">
     <English>Garbage Collector Clutter Types</English>
+    <Chinesesimp>垃圾收集器杂波类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GC_INDIVIDUALTYPES_COMMENT">
     <English>Include certain non-unit or non-vehicle objects in collection eg: ["Box_NATO_Wps_F","Box_NATO_AmmoOrd_F"]</English>
+    <Chinesesimp>在集合中包含某些非单位或非车辆对象,例如:["Box_NATO_Wps_F","Box_NATO_AmmoOrd_F"]</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GC_INTERVAL">
     <English>Garbage Collector Interval:</English>
+    <Chinesesimp>垃圾回收间隔:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GC_INTERVAL_COMMENT">
     <English>Interval in which to clean killed objects! Use 0 to turn off GC completely!</English>
+    <Chinesesimp>清理已杀死对象的时间间隔!使用0完全关闭GC!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GC_THRESHHOLD">
     <English>Garbage Collector Limiter:</English>
+    <Chinesesimp>垃圾收集器限制器:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GC_THRESHHOLD_COMMENT">
     <English>Will remove all dead objects and groups if this limit is met (count allDead)</English>
+    <Chinesesimp>如果满足此限制，将删除所有死亡的对象和组(计数allDead)</Chinesesimp>
 </Key>
 </Container></Package></Project>

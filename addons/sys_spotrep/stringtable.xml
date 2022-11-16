@@ -4,32 +4,42 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_spotrep">
     <English>spotrep Module</English>
+    <Chinesesimp>更新日志模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_spotrep_COMMENT">
     <English>Autostarting ALiVE Module template (uses additional module to configure parameters)</English>
+    <Chinesesimp>自动启动ALiVE模块模板(使用额外的模块来配置参数)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_spotrepPARAMS">
     <English>Template Parameters</English>
+    <Chinesesimp>模板参数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_spotrep_ERROR1">
     <English>Only one module template allowed</English>
+    <Chinesesimp>Only one module template allowed</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_spotrepPARAMS_COMMENT">
     <English>Over-ride default parameters for the Module Template</English>
+    <Chinesesimp>覆盖模块模板的默认参数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_spotrepPARAMS_USAGE">
     <English>Place the module and configure the over-rides</English>
+    <Chinesesimp>放置模块并设定覆盖</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_spotrep_DEBUG">
     <English>Debug:</English>
+    <Chinesesimp>调试：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_spotrep_DEBUG_COMMENT">
     <English>Enable Debug</English>
+    <Chinesesimp>启用调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_spotrep_DIALOG_TITLE">
     <English>ADVANCED spotrep</English>
+    <Chinesesimp>高级日志更新</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_spotrep_DIALOG_spotrep">
     <English>spotrep</English>
+    <Chinesesimp>更新日志</Chinesesimp>
 </Key>
 </Container></Package></Project>

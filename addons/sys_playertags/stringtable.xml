@@ -4,116 +4,154 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_PLAYERTAGS">
     <English>Player Tags</English>
+    <Chinesesimp>玩家标签</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_COMMENT">
     <English>Player tag functions</English>
+    <Chinesesimp>玩家标签功能</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISPLAY_COMMENT">   
     <English>Allow player to see player's names</English>
+    <Chinesesimp>允许玩家看到玩家的名字</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISPLAY_ENABLE">
     <English>Enable Player Tags</English>
+    <Chinesesimp>启用玩家标签</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISPLAY_DISABLE">  
     <English>Disable Player Tags</English>
+    <Chinesesimp>禁用玩家标签</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_ERROR1">
     <English>Only one Player Tags module can be used</English>
+    <Chinesesimp>只能使用一个玩家标签模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试DEBUG:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DEBUG_COMMENT">
     <English>Enables Player Tags Module Debug</English>
+    <Chinesesimp>启用调试DEBUG</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_STYLE">
     <English>Player Tags:</English>
+    <Chinesesimp>玩家标签:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_STYLE_COMMENT">
     <English>Switches style and method of player detection</English>
+    <Chinesesimp>切换玩家检测的风格和方法</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_ONVIEW">
     <English>Player Tags On View Only:</English>
+    <Chinesesimp>只在直视时显示玩家标签:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_ONVIEW_COMMENT">
     <English>Only show tags if player is looked at directly</English>
+    <Chinesesimp>只在直视时显示玩家标签</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_GROUP">
     <English>Player Tags Display Group:</English>
+    <Chinesesimp>玩家标签显示组:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_GROUP_COMMENT">
     <English>Enables Player Group Indicator</English>
+    <Chinesesimp>启用玩家群体指示器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_RANK">
     <English>Player Tags Display Rank:</English>
+    <Chinesesimp>玩家标签显示排名:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_RANK_COMMENT">
     <English>Enables Player Rank Indicator</English>
+    <Chinesesimp>启用玩家排名指示器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_INVEHICLE">
     <English>Player Tags In Vehicle:</English>
+    <Chinesesimp>车辆上的玩家标签:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_INVEHICLE_COMMENT">
     <English>Enables Player Tags whilst in Vehicles (disable if using crewinfo module)</English>
+    <Chinesesimp>在车辆中启用玩家标签(如果使用crewinfo模块则禁用)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_FRIENDLYUNITSONLY">
     <English>Restrict To Friendly Units:</English>
+    <Chinesesimp>仅限友军单位:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_FRIENDLYUNITSONLY_COMMENT">
     <English>Only show player tags for units that are friendly to the player</English>
+    <Chinesesimp>只显示对玩家友好的单位的玩家标签</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_TARGETS">
     <English>Player Tag Targets:</English>
+    <Chinesesimp>玩家标签目标:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_TARGETS_COMMENT">
     <English>Sets Tag Target Types</English>
+    <Chinesesimp>设置标签目标类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISTANCE">
     <English>Player Tag Distance:</English>
+    <Chinesesimp>玩家标签距离:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_DISTANCE_COMMENT">
     <English>Sets Name Tag Distance</English>
+    <Chinesesimp>设置姓名标签距离</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_SCALE">
     <English>Player Tag Scale:</English>
+    <Chinesesimp>玩家标签大小:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_SCALE_COMMENT">
     <English>Sets Name Tag Scale</English>
+    <Chinesesimp>设置玩家标签大小</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_HEIGHT">
     <English>Player Tag Height:</English>
+    <Chinesesimp>玩家标签高度:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_HEIGHT_COMMENT">
     <English>Sets Name Tag Height</English>
+    <Chinesesimp>设置玩家标签高度</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_TOLERANCE">
     <English>Player Tag Tolerance:</English>
+    <Chinesesimp>玩家标签宽度:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_TOLERANCE_COMMENT">
     <English>Sets Name Tag Tolerance</English>
+    <Chinesesimp>设置姓名标签宽度</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_NAMECOLOUR">
     <English>Player Tag Name Colour:</English>
+    <Chinesesimp>玩家标签姓名颜色:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_NAMECOLOUR_COMMENT">
     <English>Sets Name Colour</English>
+    <Chinesesimp>设置名字颜色</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_GROUPCOLOUR">
     <English>Player Tag Group Colour:</English>
+    <Chinesesimp>球员标签组颜色:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_GROUPCOLOUR_COMMENT">
     <English>Sets Group Colour</English>
+    <Chinesesimp>设置组色</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_THISGROUPLEADERNAMECOLOUR">
     <English>Player Tag GL Colour:</English>
+    <Chinesesimp>玩家标签组长颜色:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_THISGROUPLEADERNAMECOLOUR_COMMENT">
     <English>Sets Your Group Leader's Colour</English>
+    <Chinesesimp>设置你的组长的颜色</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_THISGROUPCOLOUR">
     <English>Player Tag Group Colour:</English>
+    <Chinesesimp>玩家标签组颜色:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYERTAGS_THISGROUPCOLOUR_COMMENT">
     <English>Sets Your Group's Colour</English>
+    <Chinesesimp>设置群组的颜色</Chinesesimp>
 </Key>
 </Container></Package></Project>

@@ -6,95 +6,126 @@
     <English>Admin Actions</English>
     <German>Admin Aktionen</German>
     <Italian>Azioni Admin</Italian>
+    <Chinesesimp>管理行为</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_COMMENT">
     <English>Server admin functions</English>
+	<Chinesesimp>服务器管理功能</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPTIONS">
     <English>Module Settings</English>
+	<Chinesesimp>模块设置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPTIONS_COMMENT">
     <English>Adjust ALiVE module settings, i.e. debug, as necessary</English>
+	<Chinesesimp>当必要时,调整ALIVE模快设置,即调试排错(debug)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_GHOST">
     <English>Allow Ghosting:</English>
+	<Chinesesimp>允许备份还原(GHOST):</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_GHOST_ENABLE">
     <English>Enable Ghosting</English>
+	<Chinesesimp>启用备份还原(GHOST)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_GHOST_DISABLE">
     <English>Disable Ghosting</English>
+	<Chinesesimp>禁用备份还原(GHOST)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_GHOST_COMMENT">
     <English>Allow server admins to be ignored by AI</English>
+	<Chinesesimp>允许服务器管理员被AI忽略</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT">
     <English>Allow Teleport:</English>
+	<Chinesesimp>允许传送：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT_ENABLE">
     <English>Enable Teleporting</English>
+	<Chinesesimp>启用传送：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORTUNITS">
     <English>Teleport Units</English>
+	<Chinesesimp>传送单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORTUNITS_COMMENT">
     <English>Teleports the given units to the desired position</English>
+	<Chinesesimp>传送给定的单位到所需的位置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT_DISABLE">
     <English>Disable Teleporting</English>
+	<Chinesesimp>禁用传送</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_TELEPORT_COMMENT">
     <English>Allow server admins to teleport anywhere on the map</English>
+	<Chinesesimp>允许服务器管理员传送到地图上任意位置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS">
     <English>Mark Units:</English>
+	<Chinesesimp>标记单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS_ENABLE">
     <English>Activate Marking Units</English>
+	<Chinesesimp>激活标记单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_MARK_UNITS_COMMENT">
     <English>Allow server admins to mark units positions for 15 seconds</English>
+	<Chinesesimp>允许服务器管理员标记单位位置15秒</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_PROFILES_DEBUG">
     <English>Debug Profile System:</English>
+	<Chinesesimp>调试(debug)配置系统：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_PROFILES_DEBUG_COMMENT">
     <English>Toggle debug mode on the profile system</English>
+	<Chinesesimp>切换配置系统调试模式</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_AGENT_DEBUG">
     <English>Debug Agent System:</English>
+	<Chinesesimp>调试代理系统：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_AGENT_DEBUG_COMMENT">
     <English>Toggle debug mode on the agent system</English>
+	<Chinesesimp>切换代理系统调试模式</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CREATE_PROFILES">
     <English>Profile non profiled units:</English>
+	<Chinesesimp>编辑非配置单位：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CREATE_PROFILES_ENABLE">
     <English>Profile non profiled units</English>
+	<Chinesesimp>编辑非配置单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CREATE_PROFILES_COMMENT">
     <English>Create profiles from non profiles units and vehicles.</English>
+	<Chinesesimp>从非配置单位和载具创建配置文件。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE">
     <English>Allow Debug:</English>
+	<Chinesesimp>允许调试排错(debug)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE_ENABLE">
     <English>Debug Console</English>
+	<Chinesesimp>调试控制台</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CONSOLE_COMMENT">
     <English>Open the debug console</English>
+	<Chinesesimp>打开调试控制台</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_ERROR1">
     <English>Only one Admin Actions module can be used</English>
+	<Chinesesimp>仅使用一个管理员操作模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_USAGE">
     <English>Place an admin actions module to give the server admin or single player admin functions like teleport, ghost and run scripts.</English>
+	<Chinesesimp>放置一个管理动作模块,以提供服务器管理或单人玩家管理功能,如传送,备份还原(GHOST)和运行脚本。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS">
     <English>Toggle OPCOM installations</English>
+	<Chinesesimp>切换作战指挥设施</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS_COMMENT">
     <English>Displays markers at installations</English>
+	<Chinesesimp>在设施处显示标记</Chinesesimp>
 </Key>
 </Container></Package></Project>
