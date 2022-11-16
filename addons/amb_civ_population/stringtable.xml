@@ -230,6 +230,7 @@
 <Key ID="STR_ALIVE_CIV_POP_ACEX_COMPAT_COMMENT">
     <English>Enable the use of ACEX Humanitarian items instead of the default ALiVE ones</English>
     <Chinesesimp>启用ACEX人道物品的使用，而不是默认的生命物品</Chinesesimp>
+</Key>  
 <Key ID="STR_ALIVE_CIV_POP_TOOMUCHAID">
     <English>This civilian does not require any more humanitarian aid.</English>
     <Chinesesimp>这名平民不需要更多的人道主义援助。</Chinesesimp>
