@@ -253,34 +253,43 @@ private _gradientRadius = 1 max _objectProximity * 0.1;
 
 
 
-private _spawnPosition = [_position] call ALIVE_fnc_getClosestRoad;
+private _spawnPosition = [_checkPos] call ALIVE_fnc_getClosestRoad;
 
-/*
-30 is the number of segments returned from the function, can reduce this number,
-but it also represents the number of vehicles that can be stacked like a convoy
-when they attempt to spawn at the exact same position
-*/
 
-private _sortedPositionSeries = [_spawnPosition, _maxDistance, 30] call ALIVE_fnc_getSortedSeriesRoadPositions;
+//limit road finder to the maxdistance radius so stuff doesn't teleport far away
+//maxdistance should be 100m unless its omitted from the function params
 
-private _positionsPossible = count _sortedPositionSeries;
-private _found = false;
+private _foundRoadSegment = false;
+if ( (_checkPos distance _spawnPosition) <= _maxDistance) then { 
+	/*
+	30 is the number of segments returned from the function, can reduce this number,
+	but it also represents the number of vehicles that can be stacked like a convoy
+	when they attempt to spawn at the exact same position
+	*/
 
-//if there are one or more canditates for spawn
-if (_positionsPossible > 0) then {
-	for "_i" from 0 to _positionsPossible-1 do
-	{
-		//When the perfect road candidate is found, break out of this loop and return _spawnPosition 
-		if (_found) exitWith {_spawnPosition};
-		_spawnPosition = _sortedPositionSeries select _i;
-		if ([_spawnPosition, _objectProximity] call _fn_checkForOtherVehiclesNear) then {["[Road finder] There's another vehicle in this road", 0] call _fn_debugMessage; continue;};
-		if ([_spawnPosition, 2, ["BUSH", "HIDE"]] call _fn_checkForStatic) then {["[Road finder] There's a small obstacle in this road", 0] call _fn_debugMessage; continue;};
-		if ([_spawnPosition] call _fn_checkIfIsBridge) then {["[Road finder] Spawn on bridge not implemented, skip "+str(_spawnPosition), 1] call _fn_debugMessage; continue;};
-		_found = true;
+	//Note maxDistance here is the radius from the first road segment found
+	private _sortedPositionSeries = [_spawnPosition, _maxDistance, 30] call ALIVE_fnc_getSortedSeriesRoadPositions;
+
+	private _positionsPossible = count _sortedPositionSeries;
+
+
+	//if there are one or more canditates for spawn
+	if (_positionsPossible > 0) then {
+		for "_i" from 0 to _positionsPossible-1 do
+		{
+			//When the perfect road candidate is found, break out of this loop and return _spawnPosition 
+			if (_foundRoadSegment) exitWith {_spawnPosition};
+			_spawnPosition = _sortedPositionSeries select _i;
+			if ([_spawnPosition, _objectProximity] call _fn_checkForOtherVehiclesNear) then {["[Road finder] There's another vehicle in this road", 0] call _fn_debugMessage; continue;};
+			if ([_spawnPosition, 2, ["BUSH", "HIDE"]] call _fn_checkForStatic) then {["[Road finder] There's a small obstacle in this road", 0] call _fn_debugMessage; continue;};
+			if ([_spawnPosition] call _fn_checkIfIsBridge) then {["[Road finder] Spawn on bridge not implemented, skip "+str(_spawnPosition), 1] call _fn_debugMessage; continue;};
+			_foundRoadSegment = true;
+		};
+		if (_foundRoadSegment) exitWith {_spawnPosition};
 	};
-	if (_found) exitWith {_spawnPosition};
+	if (_foundRoadSegment) exitWith {_spawnPosition};
 };
-if (_found) exitWith {_spawnPosition};
+if (_foundRoadSegment) exitWith {_spawnPosition};
 
 //Tried every road near and they either doesn't exist or are too busy
 ["[Road finder] Exhausted tries! going for heuristic search", 2] call _fn_debugMessage;
