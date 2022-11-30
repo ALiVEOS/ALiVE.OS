@@ -266,6 +266,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileGetPathfindingProcedure.sqf";
                 RECOMPILE;
             };
+           class findFilteredSafePos {
+                description = "findFilteredSafePos";
+                file = "\x\alive\addons\sys_profile\fnc_findFilteredSafePos.sqf";
+                RECOMPILE;
+            };
         };
     };
 };

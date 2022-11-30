@@ -1264,6 +1264,13 @@ class getSeriesRoadPositions
 	RECOMPILE;
 };
 
+class getSortedSeriesRoadPositions
+{
+	file = "\x\alive\addons\x_lib\functions\map\fnc_getSortedSeriesRoadPositions.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class gridPos
 {
 	file = "\x\alive\addons\x_lib\functions\map\fnc_gridPos.sqf";

@@ -497,10 +497,24 @@ switch (_operation) do {
                     if (tolower _vehicleType == "ship") then {
                         _position = [_position, 0, 50, 10, 2, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
                     } else {
-                        //_position = [_position, 0, 50, 5, 0, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
+                        _position = [_position,0,100,10,0,0.5,0,[],[_position], _vehicleType] call ALIVE_fnc_findFilteredSafePos;
+                        //Check direction of street
+                        _roads = _position nearRoads 25;
+                        _roadsConnected = roadsConnectedTo (_roads select 0);
+
+                        //TODO: Do not update the direction of static weapons?
+                        if (!isnil "_roadsConnected" && {count _roadsConnected > 1}) then {
+                            _roads = _roadsConnected;
+                            _direction = (_roads select 0) getDir (_roads select 1);
+                        } else {
+                            if (count _roads > 1) then {
+                                _direction = (_roads select 0) getDir (_roads select 1);
+                            };
+                        };
+
                     };
                     
-                    _position set [2,0.5];
+                    //_position set [2,0.5];
                     _special = "CAN_COLLIDE";
                 };
             };
