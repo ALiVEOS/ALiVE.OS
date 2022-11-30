@@ -4,104 +4,138 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_XSTREAM">
     <English>xStream</English>
+    <Chinesesimp>xStream</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_COMMENT">
     <English>ALiVE xStream service for streaming live operations to the ALiVE War Room</English>
+    <Chinesesimp>ALiVE xStream服务 用于向ALiVE作战室传输实时操作</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_DEBUG_COMMENT">
     <English>Enables xStream Module Debug</English>
+    <Chinesesimp>启用xStream模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableTwitch">
     <English>Enable Twitch:</English>
+    <Chinesesimp>启用Twitch:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableTwitch_COMMENT">
     <English>Allow twitch streams for this operation in the ALiVE War Room</English>
+    <Chinesesimp>允许在ALiVE 作战指挥室中执行此操作</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableTwitch_ENABLE">
     <English>Enable Twitch Steaming</English>
+    <Chinesesimp>启用Twitch steaming</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableTwitch_DISABLE">
     <English>Disable Twitch Steaming</English>
+    <Chinesesimp>禁用Twitch Steaming</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableLiveMap">
     <English>Enable Live Map:</English>
+    <Chinesesimp>启用实时地图：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableLiveMap_COMMENT">
     <English>Stream live in-game BLUFOR data to the ALiVE War Room Map</English>
+    <Chinesesimp>将游戏中BLUFOR实时数据流传输到ALiVE 作战指挥室地图</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableLiveMap_ENABLE">
     <English>Enable Live Map</English>
+    <Chinesesimp>启用实时地图</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableLiveMap_DISABLE">
     <English>Disable Live Map</English>
+    <Chinesesimp>禁用实时地图</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableCamera">
     <English>Enable xStream Camera:</English>
+    <Chinesesimp>启用xStream摄像机:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableCamera_COMMENT">
     <English>Enable xStream camera system for streaming purposes</English>
+    <Chinesesimp>为流媒体目的启用xStream相机系统</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableCamera_ENABLE">
     <English>Enable xStream Camera</English>
+    <Chinesesimp>启用xStream摄像机</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_enableCamera_DISABLE">
     <English>Disable xStream Camera</English>
+    <Chinesesimp>禁用xStream摄像机</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_startCamera">
     <English>Start xStream Camera</English>
+    <Chinesesimp>开始xStream摄像机</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_stopCamera">
     <English>Stop xStream Camera</English>
+    <Chinesesimp>停止xStream摄像机</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_acreChannel">
     <English>ACRE Channel:</English>
+    <Chinesesimp>ACRE频道:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_acreChannel_COMMENT">
     <English>(Optional) Select an ACRE channel for the camera system to listen in on (recommend an HQ net)</English>
+    <Chinesesimp>(可选)为摄像机系统选择一个ACRE频道进行监听(建议使用HQ频道)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_cameraShake">
     <English>Camera Shake:</English>
+    <Chinesesimp>摄像机抖动:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_cameraShake_COMMENT">
     <English>Enable camera shake for the ALiVE xStream camera</English>
+    <Chinesesimp>为ALiVE xStream摄像机启用摄像机抖动</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_satellite">
     <English>Satellite Camera:</English>
+    <Chinesesimp>卫星摄像机:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_satellite_COMMENT">
     <English>Enable satellite camera views for the ALiVE xStream camera system</English>
+    <Chinesesimp>启用AliVE xStream摄像机系统的卫星摄像机视图</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_aerial">
     <English>Aerial Camera:</English>
+    <Chinesesimp>航空摄像机:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_aerial_COMMENT">
     <English>Enable satellite camera views for the ALiVE xStream camera system</English>
+    <Chinesesimp></Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_vehicle">
     <English>Vehicle Camera:</English>
+    <Chinesesimp></Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_vehicle_COMMENT">
     <English>Enable external vehicle camera views for the ALiVE xStream camera system</English>
+    <Chinesesimp>启用ALiVE xStream摄像机系统的卫星摄像机视图</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_thirdPerson">
     <English>3rd Person Camera:</English>
+    <Chinesesimp>第三人称摄像头:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_thirdPerson_COMMENT">
     <English>Enable third person camera views for the ALiVE xStream camera system</English>
+    <Chinesesimp>启用ALiVE xStream摄像机系统的第三人称摄像机视图</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_cameraManOnly">
     <English>Cameraman View Only:</English>
+    <Chinesesimp>仅限摄像师查看：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_cameraManOnly_COMMENT">
     <English>Only allow a cameraman view for the ALiVE xStream camera</English>
+    <Chinesesimp>仅允许摄影师查看ALiVE xStream摄像机</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_clientID">
     <English>Client IDs</English>
+    <Chinesesimp>客户端ID</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_XSTREAM_clientID_COMMENT">
     <English>Specify a list of usernames that are allowed to act as camera clients, separated by commas (Tupolov,Wolffy,Highhead etc)</English>
+    <Chinesesimp>指定允许充当摄像机客户端的用户名列表,用逗号分隔(Tupolov、Wolffy、Highhead等)</Chinesesimp>
 </Key>
 </Container></Package></Project>

@@ -4,9 +4,11 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_multispawn">
     <English>Player Multispawn</English>
+    <Chinesesimp>玩家大量生成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_COMMENT">
     <English>ALiVE Multispawn enables some handy Respawn functionalities! Please see our WiKi for more information!</English>
+    <Chinesesimp>ALiVE Multispawn支持一些方便的重生功能!请访问我们的维基获取更多信息!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_USAGE">
     <English>
@@ -30,50 +32,86 @@ Spawn in building: ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%FACTION%&lt;br /&gt;
 &lt;br /&gt;
 You can sync your custom vehicles of choice to the module! Keep in mind only vehicles of the same faction are used!
     </English>
+    <Chinesesimp>
+描述&lt;br /&gt;
+&lt;br /&gt;
+小队重生: BF style 重生(集体)!&lt;br /&gt;
+插入:模拟恒定的空气插入(按顺序)!&lt;br /&gt;
+车内生成: 在同步的总部车辆中生成玩家 (阵营)!&lt;br /&gt;
+在建筑中生成:在选择的建筑中生成玩家(阵营)!&lt;br /&gt;
+&lt;br /&gt;
+标记&lt;br /&gt;
+&lt;br /&gt;
+插入:&lt;br /&gt;
+ALiVE_SUP_MULTISPAWN_INSERTION_%FACTION%&lt;br /&gt;
+ALiVE_SUP_MULTISPAWN_DESTINATION_%FACTION%&lt;br /&gt;
+&lt;br /&gt;
+基于阵营: ALiVE_SUP_MULTISPAWN_RESPAWN_%FACTION%&lt;br /&gt;
+基于小组(设置小组名称): ALiVE_SUP_MULTISPAWN_RESPAWNGROUP_%GROUPID%&lt;br /&gt;
+在车辆中生成 (命名车辆): ALiVE_SUP_MULTISPAWN_RESPAWNVEHICLE_%FACTION%&lt;br /&gt;
+在建筑中生成: ALiVE_SUP_MULTISPAWN_RESPAWNBUILDING_%FACTION%&lt;br /&gt;
+&lt;br /&gt;
+你可以将你选择的自定义车辆同步到模块中!记住，只使用同一阵营的车辆!
+    </Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_DEBUG">
     <English>Enable debug:</English>
+    <Chinesesimp>启用调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_DEBUG_COMMENT">
     <English>Enables debug</English>
+    <Chinesesimp>启用调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_TYPE">
     <English>Respawn Type:</English>
+    <Chinesesimp>重生类型:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_TYPE_COMMENT">
     <English>Select where players will be respawned</English>
+    <Chinesesimp>选择玩家重生的位置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_TIMEOUT">
     <English>Respawn Timeout:</English>
+    <Chinesesimp>重生超时:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_TIMEOUT_COMMENT">
     <English>Add a wait time to respawn</English>
+    <Chinesesimp>增加重生的等待时间</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_VEHICLETYPES">
     <English>Vehicletypes:</English>
+    <Chinesesimp>车辆类型:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MULTISPAWN_VEHICLETYPES_COMMENT">
     <English>Respawn vehicle classes for some dynamic respawn types (like "Insertion",...)!</English>
+    <Chinesesimp>一些动态重生类型的重生车辆类别 (像 "插入",...)!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_DISABLED">
     <English>Disable multispawn:</English>
+    <Chinesesimp>禁用多生成:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_DISABLED_COMMENT">
     <English>XXXX</English>
+    <Chinesesimp>XXXX</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_ERROR1">
     <English>Only one multispawn module can be used</English>
+    <Chinesesimp>只能使用一个多生成模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_SPAWNINGNEARENEMIESALLOWED">
     <English>Respawn Enemy Check:</English>
+    <Chinesesimp>检查敌军重生</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_SPAWNINGNEARENEMIESALLOWED_COMMENT">
     <English>Allowed to spawn on squadmates even if enemies are near!</English>
+    <Chinesesimp>允许在队友身上生成 即使敌军在附近!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_RESPAWNWITHGEAR">
     <English>Respawn with Gear:</English>
+    <Chinesesimp>保存装备重生：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_multispawn_RESPAWNWITHGEAR_COMMENT">
     <English>Respawn with the same gear that the player carried when he was killed</English>
+    <Chinesesimp>使用与玩家被杀时相同的装备重生</Chinesesimp>
 </Key>
 </Container></Package></Project>

@@ -4,8 +4,10 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_UI_TOOLTIP_LOGO_ABOUT">
     <English>ALiVE is an Arma 3 Mod that enhances MP play with a more strategic enemy, enhanced combat ambience, combat support, logistics and revolutionary mission persistence and online statistics. Please Donate at http://alivemod.com/#Donate</English>
+    <Chinesesimp>ALiVE是Arma3的一个Mod 增强了MP玩法 一个更具战略意义的敌人，增强了战斗氛围 战斗支持 后勤和革命任务的持久性和在线统计。请在http://alivemod.com/#Donate上捐款</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_UI_TOOLTIP_JOHARI_ABOUT">
     <English>A massive thank you to Johari, the band that created two incredible and exclusive tracks for ALiVE - This is War and Everest. Go to www.johariofficial.com for more!</English>
+    <Chinesesimp>非常感谢Johari乐队 他们为《ALiVE》创作了两首不可思议的独家曲目——《This is War》和《Everest》。登录www.johariofficial.com了解更多信息!</Chinesesimp>
 </Key>
 </Container></Package></Project>

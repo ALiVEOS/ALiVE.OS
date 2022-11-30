@@ -4,23 +4,30 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_QUICKSTART">
     <English>Quick Start Module</English>
+    <Chinesesimp>快速启动模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_COMMENT">
     <English>Autostarting ALiVE Module template (uses additional module to configure parameters)</English>
+    <Chinesesimp>自动启动ALiVE模块模板(使用其他模块配置参数)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_DATABASE">
     <English>Database:</English>
+    <Chinesesimp>数据库：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_DATABASE_COMMENT">
     <English>Enable the external database to persist your mission</English>
+    <Chinesesimp>启用外部数据库来持久化您的任务</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_ERROR1">
     <English>Only one Quick Start Module allowed</English>
+    <Chinesesimp>只允许一个快速启动模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_DEBUG">
     <English>Debug:</English>
+    <Chinesesimp>调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_QUICKSTART_DEBUG_COMMENT">
     <English>Enable Debug</English>
+    <Chinesesimp>启用调试</Chinesesimp>
 </Key>
 </Container></Package></Project>

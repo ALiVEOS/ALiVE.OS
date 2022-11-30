@@ -4,89 +4,118 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_OPCOM">
     <English>Military AI Commander</English>
+    <Chinesesimp>军事人工智能指挥官</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_COMMENT">
     <English>Virtual AI High Command</English>
+    <Chinesesimp>虚拟AI最高指令</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_DEBUG_COMMENT">
     <English>Enables Module Debug</English>
+    <Chinesesimp>启用模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PERSISTENT">
     <English>Persistent:</English>
+    <Chinesesimp>持久的</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_PERSISTENT_COMMENT">
     <English>Enables external Database persistence for AI Commander</English>
+    <Chinesesimp>为AI指挥官启用外部数据库持久性</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_NAME">
     <English>Custom Name:</English>
+    <Chinesesimp>自定义名称</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_NAME_COMMENT">
     <English>Sets a custom name for AI Commander in C2ISTAR Module</English>
+    <Chinesesimp>为C2ISTAR模块中的AI指挥官设置自定义名称</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_CONTROLTYPE">
     <English>Control Type:</English>
+    <Chinesesimp>控件类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_CONTROLTYPE_COMMENT">
     <English>Type of AI Commander control</English>
+    <Chinesesimp>AI指挥官控制类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OCCUPATION">
     <English>Installations (asymm.):</English>
+    <Chinesesimp>设施(不对称)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_OCCUPATION_COMMENT">
     <English>Amount of pre-placed installations like IED factories, HQ (asymmetric mode only)</English>
+    <Chinesesimp>IED工厂、总部(仅限非对称模式)等预设设施的数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SIDE">
     <English>Side:</English>
+    <Chinesesimp>大小</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SIDE_COMMENT">
     <English>AI Commanders side</English>
+    <Chinesesimp>AI指挥官大小</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_REINFORCEMENTS">
     <English>Reinforcements:</English>
+    <Chinesesimp>增援部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_REINFORCEMENTS_COMMENT">
     <English>Requires Military Logistics Module! Selects the threshold of the AI Commanders reinforcement requests (90% / 75% / 50% of English forces)</English>
+    <Chinesesimp>需要军事后勤模块!选择AI指挥官增援请求的阈值(英军的90%/75%/50%)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FACTIONS">
     <English>Override Factions:</English>
+    <Chinesesimp>覆盖势力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FACTIONS_COMMENT">
     <English>Override AI Commander drop downs with f.e. ["BLU_F","BLU_G_F"]. Only use factions of one side!</English>
+    <Chinesesimp>用 f.e. ["BLU_F","BLU_G_F"]. 覆盖AI指挥官下拉列表。只使用一方的势力!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FACTION">
     <English>Faction:</English>
+    <Chinesesimp>阵营</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_FACTION_COMMENT">
     <English>AI Commander will control this faction. Multiselection is possible!</English>
+    <Chinesesimp>AI指挥官将控制这个派别。可以多选!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_USAGE">
     <English>Place a Military AI Commander module in the editor and select a faction from the dropdown. Custom factions can be entered in the “override default faction” box. Choose the Control Type in the drop down menu. By default, the AI Commander will take command of all available virtual units (profiles) for its faction. Therefore, it requires a minimum of one synced Placement Module and the Virtual AI module.</English>
+    <Chinesesimp>在编辑器中放置一个军事AI指挥官模块,并从下拉列表中选择一个势力。可以在“覆盖默认势力”框中输入自定义势力。在下拉菜单中选择控制类型。默认情况下,AI指挥官将指挥其势力的所有可用虚拟单位(配置文件)。因此,它至少需要一个同步的放置模块和虚拟AI模块。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_INTELCHANCE">
     <English>INTEL:</English>
+    <Chinesesimp>情报</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_INTELCHANCE_COMMENT">
     <English>Some soldiers can carry viable information about nearby installations</English>
+    <Chinesesimp>一些士兵可以携带附近设施的可用信息</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_ROADBLOCKS">
     <English>Roadblocks (Asymmetric):</English>
+    <Chinesesimp>路障(不对称)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_ROADBLOCKS_COMMENT">
     <English>Option to enable or disable roadblocks as an option for asymmetric commanders</English>
+    <Chinesesimp>非对称指挥官可选择启用或禁用路障</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SIMULTAN">
     <English>Max. simultan attacks:</English>
+    <Chinesesimp>最大同时攻击数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_SIMULTAN_COMMENT">
     <English>Maximum of objectives engaged at the same time! Reduces speed of progression!</English>
+    <Chinesesimp>同时参与最多个目标!降低进程速度!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_MINAGENTS">
     <English>Min. recruitment size:</English>
+    <Chinesesimp>最小招聘规模</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_OPCOM_MINAGENTS_COMMENT">
     <English>Minimum of ALiVE civilians needed per objective for a recruitment center to be set up (Asymmetric Warfare only)!</English>
+    <Chinesesimp>每个目标需要最少ALiVE平民才能建立招募中心(仅限于非对称战争)!</Chinesesimp>
 </Key>
 </Container></Package></Project>

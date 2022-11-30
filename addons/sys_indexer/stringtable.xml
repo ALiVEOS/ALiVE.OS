@@ -4,36 +4,47 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_INDEXER">
     <English>Map Indexer</English>
+    <Chinesesimp>地图索引器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_COMMENT">
     <English>Index the current map</English>
+    <Chinesesimp>为当前映射建立索引</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_STATICDATA">
     <English>Object Categorization:</English>
+    <Chinesesimp>对象分类:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_STATICDATA_COMMENT">
     <English>If enabled, each unique object on the map will need to be categorised</English>
+    <Chinesesimp>如果启用，地图上的每个唯一对象都需要分类</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_MAPPATH">
     <English>Map PBO file path:</English>
+    <Chinesesimp>地图PBO文件路径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_MAPPATH_COMMENT">
     <English>Enter the path and filename of the map pbo relative to Arma 3 root directory.</English>
+    <Chinesesimp>输入映射pbo相对于Arma 3根目录的路径和文件名。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_MAPBOUND">
     <English>Custom MapBound:</English>
+    <Chinesesimp>自定义MapBound:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_MAPBOUND_COMMENT">
     <English>Map bound value must cover the entire map and be rounded up to nearest 1000. By default uses worldSize/mapSize</English>
+    <Chinesesimp>地图绑定值必须覆盖整个地图,并四舍五入到最接近1000。默认使用worldSize/mapSize</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_ERROR1">
     <English>Only one Map Indexer module can be used</English>
+    <Chinesesimp>只能使用一个地图索引器模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_OS">
     <English>Operating System:</English>
+    <Chinesesimp>操作系统:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_INDEXER_OS_COMMENT">
     <English>If map indexer crashes, try changing the operating system selection here.</English>
+    <Chinesesimp>如果映射索引器崩溃，请尝试在这里更改操作系统选择。</Chinesesimp>
 </Key>
 
 </Container></Package></Project>

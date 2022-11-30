@@ -4,224 +4,299 @@
 <Container name="STR_DN">
 <Key ID="str_a3_cfggroups_east_opf_f_infantry_oia_infwepteam0">
     <English>Weapons Team</English>
+    <Chinesesimp>武器小组</Chinesesimp>
 </Key>
 <Key ID="str_a3_cfggroups_east_opf_f_infantry_oia_infsupteam0">
     <English>Support Team</English>
+    <Chinesesimp>支援小组</Chinesesimp>
 </Key>
 <Key ID="str_a3_cfggroups_east_opf_f_infantry_oia_infhq0">
     <English>Infantry HQ</English>
+    <Chinesesimp>步兵师指挥部</Chinesesimp>
 </Key>
 <Key ID="str_a3_cfggroups_east_opf_f_infantry_oia_infsniper0">
     <English>Sniper Team</English>
+    <Chinesesimp>狙击小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_OIA_MotInfSection0">
     <English>Motorized Section</English>
+    <Chinesesimp>机动部队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_OIA_MotInf_ATV0">
     <English>Motorized ATV Team</English>
+    <Chinesesimp>全地形机动小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_OIA_MotInf_HQ0">
     <English>Motorized HQ</English>
+    <Chinesesimp>机动指挥部</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_OIA_MotInf_Transport0">
     <English>Motorized Transport</English>
+    <Chinesesimp>机动运输</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_Section10">
     <English>Mechanized 1st Rifle Section</English>
+    <Chinesesimp>机械化第一步枪队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_Section20">
     <English>Mechanized 2nd Rifle Section</English>
+    <Chinesesimp>机械化第二步枪队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_Section30">
     <English>Mechanized 3rd Rifle Section</English>
+    <Chinesesimp>机械化第三步枪队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_CoyHQ0">
     <English>Mechanized Company HQ</English>
+    <Chinesesimp>机械化指挥连队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_SectionAT0">
     <English>Mechanized Anti-Tank Section</English>
+    <Chinesesimp>机械化反坦克部队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Mechanize_OIA_MechInf_SectionMG0">
     <English>Mechanized Weapons Section</English>
+    <Chinesesimp>机械化步兵部队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Air_OIA_PO30_Squadron0">
     <English>PO-30 Squadron</English>
+    <Chinesesimp>PO-30中队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Air_OIA_PO30_Transport0">
     <English>PO-30 Transport</English>
+    <Chinesesimp>PO-30运输队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Mech0">
     <English>Mechanized Infantry</English>
+    <Chinesesimp>机械化步兵</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Air0">
     <English>Air</English>
+    <Chinesesimp>空军</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgVehicles_Quadbike_Light_F0">
     <English>Quadbike (Light)</English>
+    <Chinesesimp>四轮摩托车(Light)</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfSentry0">
     <English>Sentry</English>
+    <Chinesesimp>岗哨</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfSquad0">
     <English>Rifle Squad</English>
+    <Chinesesimp>步兵班</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfSquad_Weapons0">
     <English>Weapons Squad</English>
+    <Chinesesimp>武器班</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfTeam0">
     <English>Fire Team</English>
+    <Chinesesimp>火力小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfTeam_AA0">
     <English>Air-defense Team</English>
+    <Chinesesimp>防空小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfTeam_AT0">
     <English>Anti-armor Team</English>
+    <Chinesesimp>反装甲小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfWepTeam0">
     <English>Weapons Team</English>
+    <Chinesesimp>武器小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfSupTeam0">
     <English>Support Team</English>
+    <Chinesesimp>支援小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_InfHQ0">
     <English>Infantry HQ</English>
+    <Chinesesimp>步兵师指挥部</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_ReconSentry0">
     <English>Recon Sentry</English>
+    <Chinesesimp>侦察哨兵</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_ORG_MotInf_Team0">
     <English>Motorized Patrol</English>
+    <Chinesesimp>机动巡逻</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Motorized_MTP_ORG_Technicals0">
     <English>Technicals</English>
+    <Chinesesimp>非标准战术车辆</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_Support_CLS0">
     <English>Support Team (CLS)</English>
+    <Chinesesimp>支援小组(CLS)</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_Support_ENG0">
     <English>Support Team (Engineer)</English>
+    <Chinesesimp>支援小组(工程维护)</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_G_F_Infantry_ORG_Support_EOD0">
     <English>Support Team (EOD)</English>
+    <Chinesesimp>支援小组(爆炸物处理)</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Naval">
     <English>Naval</English>
+    <Chinesesimp>海军</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_West_BLU_F_Naval">
     <English>Naval</English>
+    <Chinesesimp>海军</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_F_Naval_OIA_sentryTeam_Boat0">
     <English>Sentry Team (Speed Boat)</English>
+    <Chinesesimp>巡逻队(快艇)</Chinesesimp>
 </Key>
 
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSentry0">
 	<English>Sentry</English>
+    <Chinesesimp>岗哨</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSquad0">
 	<English>Rifle Squad</English>
+    <Chinesesimp>步兵班</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSquad_Weapons0">
 	<English>Weapons Squad</English>
+    <Chinesesimp>武器班</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfTeam0">
 	<English>Fire Team</English>
+    <Chinesesimp>火力小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfTeam_AA0">
 	<English>Air-defense Team</English>
+    <Chinesesimp>防空小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfTeam_AT0">
 	<English>Anti-armor Team</English>
+    <Chinesesimp>反装甲小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfWepTeam0">
 	<English>Weapons Team</English>
+    <Chinesesimp>武器小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfSupTeam0">
 	<English>Support Team</English>
+    <Chinesesimp>支援小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_InfHQ0">
 	<English>Infantry HQ</English>
+    <Chinesesimp>步兵师指挥部</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_ReconSentry0">
 	<English>Recon Sentry</English>
+    <Chinesesimp>侦察哨兵</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_Support_CLS0">
 	<English>Support Team (CLS)</English>
+    <Chinesesimp>支援小组(外包?)</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_Support_ENG0">
 	<English>Support Team (Engineer)</English>
+    <Chinesesimp>支援小组(工程维护)</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Infantry_HRG_Support_EOD0">
 	<English>Support Team (EOD)</English>
+    <Chinesesimp>支援小组(爆炸物处理)</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Motorized_MTP_HRG_MotInf_Team0">
     <English>Motorized Patrol</English>
+    <Chinesesimp>机动巡逻</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_Independant_IND_G_F_Motorized_MTP_HRG_Technicals0">
     <English>Technicals</English>
+    <Chinesesimp>主要参数</Chinesesimp>
 </Key>
 
 // APEX
 <Key ID="str_a3_cfggroups_east_OPF_T_F_infantry_O_T_infwepteam0">
     <English>Weapons Team</English>
+    <Chinesesimp>武器小组</Chinesesimp>
 </Key>
 <Key ID="str_a3_cfggroups_east_OPF_T_F_infantry_O_T_infsupteam0">
     <English>Support Team</English>
+    <Chinesesimp>支援小组</Chinesesimp>
 </Key>
 <Key ID="str_a3_cfggroups_east_OPF_T_F_infantry_O_T_infhq0">
     <English>Infantry HQ</English>
+    <Chinesesimp>步兵师指挥部</Chinesesimp>
 </Key>
 <Key ID="str_a3_cfggroups_east_OPF_T_F_infantry_O_T_infsniper0">
     <English>Sniper Team</English>
+    <Chinesesimp>狙击小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInfSection0">
     <English>Motorized Section</English>
+    <Chinesesimp>机动部队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInf_ATV0">
     <English>Motorized ATV Team</English>
+    <Chinesesimp>全地形机动小组</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInf_HQ0">
     <English>Motorized HQ</English>
+    <Chinesesimp>机动指挥部</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Motorized_MTP_O_T_MotInf_Transport0">
     <English>Motorized Transport</English>
+    <Chinesesimp>机动运输</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_Section10">
     <English>Mechanized 1st Rifle Section</English>
+    <Chinesesimp>机械化第一步枪队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_Section20">
     <English>Mechanized 2nd Rifle Section</English>
+    <Chinesesimp>机械化第二步枪队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_Section30">
     <English>Mechanized 3rd Rifle Section</English>
+    <Chinesesimp>机械化第三步枪队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_CoyHQ0">
     <English>Mechanized Company HQ</English>
+    <Chinesesimp>机械化指挥连队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_SectionAT0">
     <English>Mechanized Anti-Tank Section</English>
+    <Chinesesimp>机械化反坦克部队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mechanize_O_T_MechInf_SectionMG0">
     <English>Mechanized Weapons Section</English>
+    <Chinesesimp>机械化步兵部队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Air_O_T_PO30_Squadron0">
     <English>PO-30 Squadron</English>
+    <Chinesesimp>PO-30中队</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Air_O_T_VTOL_Transport0">
     <English>Y-32 (VTOL) Transport</English>
+    <Chinesesimp>Y-32 (垂直起降) 运输</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Mech0">
     <English>Mechanized Infantry</English>
+    <Chinesesimp>机械化运输</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Air0">
     <English>Air</English>
+    <Chinesesimp>空军</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Naval">
     <English>Naval (Pacific)</English>
+    <Chinesesimp>海军(太平洋)</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_West_BLU_T_F_Naval">
     <English>Naval (Pacific)</English>
+    <Chinesesimp>海军(太平洋)</Chinesesimp>
 </Key>
 <Key ID="STR_A3_CfgGroups_East_OPF_T_F_Naval_O_T_sentryTeam_Boat0">
     <English>Sentry Team (Speed Boat)</English>
+    <Chinesesimp>巡逻队(快艇)</Chinesesimp>
 </Key>
-</Container></Package></Project>
+        </Container>
+    </Package>
+</Project>

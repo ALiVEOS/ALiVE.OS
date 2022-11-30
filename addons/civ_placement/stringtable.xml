@@ -4,236 +4,314 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CP">
     <English>Military Placement (Civ. Obj.)</English>
+    <Chinesesimp>军事部署(Civ. Obj.)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_COMMENT">
     <English>Strategic Military Placement at Civilian Objectives</English>
+    <Chinesesimp>在民用目标的战略军事部署</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_DEBUG_COMMENT">
     <English>Enables CP Module Debug</English>
+    <Chinesesimp>启用CP模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TAOR">
     <English>TAOR Marker:</English>
+    <Chinesesimp>战术作战责任区标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TAOR_COMMENT">
     <English>Tactical Area Operation Responsibility Marker</English>
+    <Chinesesimp>战术作战责任区标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_BLACKLIST">
     <English>Blacklist Marker:</English>
+    <Chinesesimp>黑名单标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_BLACKLIST_COMMENT">
     <English>Exclusion Marker</English>
+    <Chinesesimp>排除标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE">
     <English>Objective Type Filter:</English>
+    <Chinesesimp>目标类型筛选器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE_COMMENT">
     <English>The type of objective</English>
+    <Chinesesimp>目标类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE_ALL">
     <English>All</English>
+    <Chinesesimp>全部</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE_HQ">
     <English>HQ</English>
+    <Chinesesimp>指挥部</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE_POWER">
     <English>Power Infrastructure</English>
+    <Chinesesimp>电力基础设施</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE_COMMS">
     <English>Communications Infrastructure</English>
+    <Chinesesimp>通讯基础设施</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE_FUEL">
     <English>Fuel Infrastructure</English>
+    <Chinesesimp>燃料基础设施</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE_MARINE">
     <English>Marine Infrastructure</English>
+    <Chinesesimp>海洋基础设施</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE_CONSTRUCTION">
     <English>Construction Infrastructure</English>
+    <Chinesesimp>建设基础设施</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CLUSTER_TYPE_SETTLEMENT">
     <English>Settlement</English>
+    <Chinesesimp>乡镇</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER">
     <English>Objective Size Filter:</English>
+    <Chinesesimp>目标大小筛选器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_COMMENT">
     <English>Filter objectives less than selected size. Danger! Not filtering may melt your computer.</English>
+    <Chinesesimp>筛选目标小于选定大小.危险!不筛选可能会融化你的电脑.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_NONE">
     <English>Do not filter</English>
+    <Chinesesimp>不筛选</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_VERYSMALL">
     <English>Ignore tiny objectives</English>
+    <Chinesesimp>忽略微小目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_SMALL">
     <English>Ignore small objectives</English>
+    <Chinesesimp>忽略小目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_MEDIUM">
     <English>Ignore small + medium objectives</English>
+    <Chinesesimp>忽略中小型目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_LARGE">
     <English>Only huge objectives</English>
+    <Chinesesimp>只有大型目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_VERYSMALL_INVERSE">
     <English>Only tiny objectives</English>
+    <Chinesesimp>只有微小目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_SMALL_INVERSE">
     <English>Only tiny + small objectives</English>
+    <Chinesesimp>只有微小和小型目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_MEDIUM_INVERSE">
     <English>Only medium and smaller objectives</English>
+    <Chinesesimp>只有中型和较小目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_LARGE_INVERSE">
     <English>Only huge and smaller objectives</English>
+    <Chinesesimp>只有大型和较小目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER">
     <English>Objective Priority Filter:</English>
+    <Chinesesimp>目标优先级筛选器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_COMMENT">
     <English>Filter objectives less than selected priority</English>
+    <Chinesesimp>筛选低于选定优先级的目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_NONE">
     <English>Do not filter</English>
+    <Chinesesimp>不筛选</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_LOW">
     <English>Ignore low priority objectives</English>
+    <Chinesesimp>忽略低优先级目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_MEDIUM">
     <English>Ignore low + medium priority objectives</English>
+    <Chinesesimp>忽略低优先级和中等优先级的目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_HIGH">
     <English>Only high priority objectives</English>
+    <Chinesesimp>仅高优先级目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACEMENT">
     <English>Place units:</English>
+    <Chinesesimp>放置单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACEMENT_COMMENT">
     <English>Place units or objectives only</English>
+    <Chinesesimp>只放置单位或目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACEMENT_YES">
     <English>Place Units</English>
+    <Chinesesimp>放置单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACEMENT_NO">
     <English>Objectives Only</English>
+    <Chinesesimp>仅目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE">
     <English>Force Size:</English>
+    <Chinesesimp>武装力量大小</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_COMMENT">
     <English>Number of units to be placed</English>
+    <Chinesesimp>要放置的单位数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_BNx3">
     <English>Battalion (1200)</English>
+    <Chinesesimp>营 (1200)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_BNx2">
     <English>Battalion (800)</English>
+    <Chinesesimp>营 (800)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_BN">
     <English>Battalion (400)</English>
+    <Chinesesimp>营 (400)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_CYx2">
     <English>Company (200)</English>
+    <Chinesesimp>连(200)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_CY">
     <English>Company (100)</English>
+    <Chinesesimp>连(100)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_PLx2">
     <English>Platoon (60)</English>
+    <Chinesesimp>排(60)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_PL">
     <English>Platoon (30)</English>
+    <Chinesesimp>排(30)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE">
     <English>Force Weighting:</English>
+    <Chinesesimp>武装力量权重</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_COMMENT">
     <English>The preferred type of force deployed</English>
+    <Chinesesimp>部署的部队首选类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_RANDOM">
     <English>Random</English>
+    <Chinesesimp>随机</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_ARMOR">
     <English>Armoured</English>
+    <Chinesesimp>装甲</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_MECH">
     <English>Mechanised</English>
+    <Chinesesimp>机械化</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_MOTOR">
     <English>Motorised</English>
+    <Chinesesimp>摩托化</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_LIGHT">
     <English>Light Infantry</English>
+    <Chinesesimp>轻步兵</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_AIRBORNE">
     <English>Airborne</English>
+    <Chinesesimp>空降兵</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_SPECOPS">
     <English>Spec Ops</English>
+    <Chinesesimp>特种部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_INFANTRY_COUNT">
     <English>Override Infantry:</English>
+    <Chinesesimp>重新设置步兵</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_INFANTRY_COUNT_COMMENT">
     <English>Set a custom count of Infantry groups to be spawned, leave blank for no change, set to 0 for none</English>
+    <Chinesesimp>设置一个自定义的步兵组数量生成,留空表示不更改,没有设置为0</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_MOTORISED_COUNT">
     <English>Override Motorised:</English>
+    <Chinesesimp>重新设置摩托化部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_MOTORISED_COUNT_COMMENT">
     <English>Set a custom count of Motorised groups to be spawned, leave blank for no change, set to 0 for none</English>
+    <Chinesesimp>设置一个自定义的摩托化部队数量生成,留空表示不更改,没有设置为0</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_MECHANISED_COUNT">
     <English>Override Mechanised:</English>
+    <Chinesesimp>重新设置机械化部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_MECHANISED_COUNT_COMMENT">
     <English>Set a custom count of Mechanised groups to be spawned, leave blank for no change, set to 0 for none</English>
+    <Chinesesimp>设置一个自定义的机械化部队数量生成,留空表示不更改,没有设置为0</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT">
     <English>Override Armour:</English>
+    <Chinesesimp>重新设置装甲部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT_COMMENT">
     <English>Set a custom count of Armour groups to be spawned, leave blank for no change, set to 0 for none</English>
+    <Chinesesimp>设置一个自定义的装甲部队数量生成,留空表示不更改,没有设置为0</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT">
     <English>Override SpecOps:</English>
+    <Chinesesimp>重新设置特种部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT_COMMENT">
     <English>Set a custom count of SpecOps groups to be spawned, leave blank for no change, set to 0 for none</English>
+    <Chinesesimp>设置一个自定义的特种部队数量生成,留空表示不更改,没有设置为0</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_FACTION">
     <English>Force Faction:</English>
+    <Chinesesimp>武装力量阵营</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_FACTION_COMMENT">
     <English>Faction of the units to be placed (BLU_F, OPF_F, IND_F, BLU_G_F)</English>
+    <Chinesesimp>放置单位的阵营(BLU_F, OPF_F, IND_F, BLU_G_F)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_USAGE">
     <English>Define the settings on the module, place optional TAOR / Blacklist markers! This module has to be synced to an Military AI Commander module, if you want to use an AI Commander to control that faction.</English>
+    <Chinesesimp>定义模块上的设置,放置可选的战术作战责任区/黑名单标记!如果你想使用AI指挥官来控制该势力,这个模块必须与军事AI指挥官模块同步。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_READINESS_LEVEL">
     <English>Readiness:</English>
+    <Chinesesimp>准备就绪</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_READINESS_LEVEL_COMMENT">
     <English>The amount of troops that will be on duty and patrolling</English>
+    <Chinesesimp>执勤和巡逻的部队数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_ROADBLOCKS">
     <English>Roadblocks:</English>
+    <Chinesesimp>路障</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_ROADBLOCKS_COMMENT">
     <English>The chance of roadblocks being created at the objectives</English>
+    <Chinesesimp>在目标处设置路障的几率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACE_SEAPATROLS">
     <English>Sea Patrols:</English>
+    <Chinesesimp>海上巡逻队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACE_SEAPATROLS_COMMENT">
     <English>The chance of naval units patrolling near marine objectives</English>
+    <Chinesesimp>海军部队在海上目标附近巡逻的几率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_AMBIENT_GUARD_AMOUNT">
     <English>Place ambient guards</English>
+    <Chinesesimp>放置环境守卫</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_AMBIENT_GUARD_AMOUNT_COMMENT">
     <English>Place ambient guards at objectives (default is high)</English>
+    <Chinesesimp>在目标处放置环境</Chinesesimp>
 </Key>
 </Container></Package></Project>

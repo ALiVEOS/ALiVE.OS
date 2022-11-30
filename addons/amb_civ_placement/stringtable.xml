@@ -4,145 +4,192 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_AMBCP">
     <English>Civilian Placement</English>
+    <Chinesesimp>平民放置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_COMMENT">
     <English>Ambient Civilian Placement</English>
+    <Chinesesimp>平民环境放置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_DEBUG_COMMENT">
     <English>Enables CP Module Debug</English>
+    <Chinesesimp>启用cp模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_TAOR">
     <English>TAOR Marker:</English>
+    <Chinesesimp>TAOR标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_TAOR_COMMENT">
     <English>Tactical Area Operation Responsibility Marker</English>
+    <Chinesesimp>战术区作战责任标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_BLACKLIST">
     <English>Blacklist Marker:</English>
+    <Chinesesimp>黑名单标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_BLACKLIST_COMMENT">
     <English>Exclusion Marker</English>
+    <Chinesesimp>清除标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER">
     <English>Objective Size Filter:</English>
+    <Chinesesimp>目标大小筛选器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_COMMENT">
     <English>Filter objectives less than selected size</English>
+    <Chinesesimp>筛选小于选定大小的目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_NONE">
     <English>Do not filter</English>
+    <Chinesesimp>不过滤</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_VERYSMALL">
     <English>Ignore tiny objectives</English>
+    <Chinesesimp>忽略微小目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_SMALL">
     <English>Ignore small objectives</English>
+    <Chinesesimp>忽略小目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_MEDIUM">
     <English>Ignore small + medium objectives</English>
+    <Chinesesimp>忽略中小型目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_LARGE">
     <English>Only huge objectives</English>
+    <Chinesesimp>只有巨大的目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_VERYSMALL_INVERSE">
     <English>Only tiny objectives</English>
+    <Chinesesimp>只有微小的目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_SMALL_INVERSE">
     <English>Only tiny + small objectives</English>
+    <Chinesesimp>只有微小和小型目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_MEDIUM_INVERSE">
     <English>Only medium and smaller objectives</English>
+    <Chinesesimp>只有中小型目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_SIZE_FILTER_LARGE_INVERSE">
     <English>Only huge and smaller objectives</English>
+    <Chinesesimp>只有大型和小型目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER">
     <English>Objective Priority Filter:</English>
+    <Chinesesimp>目标优先级筛选器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_COMMENT">
     <English>Filter objectives less than selected priority</English>
+    <Chinesesimp>筛选低于选定优先级的目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_NONE">
     <English>Do not filter</English>
+    <Chinesesimp>不过滤</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_LOW">
     <English>Ignore low priority objectives</English>
+    <Chinesesimp>忽略低优先级目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_MEDIUM">
     <English>Ignore low + medium priority objectives</English>
+    <Chinesesimp>忽略低+中优先级目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PRIORITY_FILTER_HIGH">
     <English>Only high priority objectives</English>
+    <Chinesesimp>仅高优先级目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_FACTION">
     <English>Force Faction:</English>
+    <Chinesesimp>武力势力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_FACTION_COMMENT">
     <English>Faction of the units to be placed (CIV_F,mod_faction_name)</English>
+    <Chinesesimp>要放置的单元的势力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER">
     <English>Placement Level</English>
+    <Chinesesimp>放置级别</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_COMMENT">
     <English>Amount of civilian agents to place in locations</English>
+    <Chinesesimp>部署在各个地点的平民人员数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_LOW">
     <English>Low</English>
+    <Chinesesimp>较少</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_MEDIUM">
     <English>Medium</English>
+    <Chinesesimp>普通</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_HIGH">
     <English>High</English>
+    <Chinesesimp>较多</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_PLACEMENT_MULTIPLIER_EXTREME">
     <English>Extreme</English>
+    <Chinesesimp>极多</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT">
     <English>Place ambient vehicles</English>
+    <Chinesesimp>放置周围的环境车辆</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_COMMENT">
     <English>Place ambeint vehicles in locations</English>
+    <Chinesesimp>将周围的环境车辆放置在适当位置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_NONE">
     <English>No ambient vehicles</English>
+    <Chinesesimp>无周围的环境车辆</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_LOW">
     <English>Low ambient vehicles</English>
+    <Chinesesimp>较少周围的环境车辆</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_MEDIUM">
     <English>Medium ambient vehicles</English>
+    <Chinesesimp>一般周围的环境车辆</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_AMOUNT_HIGH">
     <English>High ambient vehicles</English>
+    <Chinesesimp>较多周围的环境车辆</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION">
     <English>Ambient vehicle faction</English>
+    <Chinesesimp>周围的环境车辆势力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION_COMMENT">
     <English>Ambient vehicles pulled from this faction (CIV_F,mod_faction_name)</English>
+    <Chinesesimp>将该势力周围的环境车辆清除</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_USAGE">
     <English>Define the settings on the module, place optional TAOR / Blacklist markers!</English>
+    <Chinesesimp>定义模块上的设置,放置可选的TAOR/黑名单标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES">
     <English>Civilian roles:</English>
+    <Chinesesimp>平民人员角色</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES_COMMENT">
     <English>Selects the possible civilian roles like major, priest, townelder etc.</English>
+    <Chinesesimp>选择可能的平民角色,如牧师、镇民等</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES_NONE">
     <English>None</English>
+    <Chinesesimp>无</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES_WEST">
     <English>Western</English>
+    <Chinesesimp>西部</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_CIVILIAN_ROLES_EAST">
     <English>Eastern</English>
+    <Chinesesimp>东部</Chinesesimp>
 </Key>
 
 

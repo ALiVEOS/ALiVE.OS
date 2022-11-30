@@ -4,32 +4,42 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ORBATCREATOR">
     <English>ALiVE ORBAT Creator</English>
+    <Chinesesimp>ALiVE战斗序列(ORBAT)创造者</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_COMMENT">
     <English>Open the ORBAT Creator</English>
+    <Chinesesimp>开启战斗序列(ORBAT)创造者</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_DEBUG_COMMENT">
     <English>Enables Module Debug</English>
+    <Chinesesimp>启用模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_BACKGROUND">
     <English>Enable Background:</English>
+    <Chinesesimp>启用背景：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_BACKGROUND_COMMENT">
     <English>Creates a grey background for editing purposes. Alternatively, the editor will use the current map and position of the module.</English>
+    <Chinesesimp>为编辑目的创建灰色背景.或者,编辑器将使用模块的当前地图和位置.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_PREFIX">
     <English>Addon Prefix:</English>
+    <Chinesesimp>附加前缀:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_PREFIX_COMMENT">
     <English>Enter an addon prefix here if applicable i.e. CUP</English>
+    <Chinesesimp>在此处输入一个附加前缀,如适用,例如CUP</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_COPY">
     <English>Copy Parent Classes:</English>
+    <Chinesesimp>复制父本:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_COPY_COMMENT">
     <English>Advanced usage - if you wish to copy the parent class of existing units, rather than existing class, select Yes. No by default.</English>
+    <Chinesesimp>高级用法-如果要复制现有单位的父本,而不是现有类,请选择是.默认情况下为否.</Chinesesimp>
 </Key>
 </Container></Package></Project>

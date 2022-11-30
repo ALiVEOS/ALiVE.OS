@@ -4,107 +4,142 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CMP">
     <English>Military Placement (Cust. Obj.)</English>
+    <Chinesesimp>军事布局</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMMENT">
     <English>Custom Military Objective</English>
+    <Chinesesimp>自定义军事目标</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用测试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_DEBUG_COMMENT">
     <English>Enables CMP Module Debug</English>
+    <Chinesesimp>启用CMP模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_FACTION">
     <English>Force Faction:</English>
+    <Chinesesimp>武力势力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_FACTION_COMMENT">
     <English>Faction of the units to be placed (BLU_F, OPF_F, IND_F, BLU_G_F)</English>
+    <Chinesesimp>待放置单元的系数(BLU_F、OPF_F、IND_F、BLU_G_F)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_PRIORITY">
     <English>Objective priority:</English>
+    <Chinesesimp>目标优先级</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_PRIORITY_COMMENT">
     <English>Priority of the custom objective. Used by OPCOM and others for target evaluation</English>
+    <Chinesesimp>自定义目标的优先级,用于OPCOM和其他目标评估</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_SIZE">
     <English>Objective size:</English>
+    <Chinesesimp>目标大小</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_SIZE_COMMENT">
     <English>Size of the custom objective. Used by OPCOM and others for target evaluation</English>
+    <Chinesesimp>自定义目标的大小。用于OPCOM和其他目标评估</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT">
     <English>Infantry Count:</English>
+    <Chinesesimp>步兵计数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT_COMMENT">
     <English>Set count of Infantry groups to be spawned, set to 0 for none</English>
+    <Chinesesimp>设置要生成的步兵组计数,如果没有则设置为0</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT">
     <English>Motorised Count:</English>
+    <Chinesesimp>摩托化小组计数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT_COMMENT">
     <English>Set count of Motorised groups to be spawned, set to 0 for none</English>
+    <Chinesesimp>设置要生成的摩托化小组的计数,如果没有,则设置为0</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT">
     <English>Mechanised Count:</English>
+    <Chinesesimp>机械化小组计数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT_COMMENT">
     <English>Set count of Mechanised groups to be spawned, set to 0 for none</English>
+    <Chinesesimp>设置要生成的机械化小组的计数,如果没有,则设置为0</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT">
     <English>Armour Count:</English>
+    <Chinesesimp>装甲小组计数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT_COMMENT">
     <English>Set count of Armour groups to be spawned, set to 0 for none</English>
+    <Chinesesimp>设置要生成的装甲小组计数,如果没有则设置为0</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT">
     <English>SpecOps Count:</English>
+    <Chinesesimp>特战小组计数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT_COMMENT">
     <English>Set count of SpecOps groups to be spawned, set to 0 for none</English>
+    <Chinesesimp>设置要生成的特战小组计数,如果没有则设置为0</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION">
     <English>Spawn Composition:</English>
+    <Chinesesimp>平民放置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_COMMENT">
     <English>Enter in the type (HQ, Fort, Heliport etc.) or classname of a composition (Go to Config Viewer, CfgGroups > Empty and copy the classname)</English>
+    <Chinesesimp>输入组合的类型(总部,要塞,直升机机场等)或者组合类名</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_A">
     <English>BIS - Camp Audacity</English>
+    <Chinesesimp>BIS-Audacity营地</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_B">
     <English>BIS - Camp Bravery</English>
+    <Chinesesimp>BIS-Bravery营地</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_C">
     <English>BIS - Camp Courage</English>
+    <Chinesesimp>BIS-Courage营地</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_D">
     <English>BIS - Camp Defiance</English>
+    <Chinesesimp>BIS-Defiance营地</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_E">
     <English>BIS - Camp Endurance</English>
+    <Chinesesimp>BIS-Endurance营地</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_F">
     <English>BIS - Camp Fortitude</English>
+    <Chinesesimp>BIS-Fortitude营地</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CREATE_HQ">
     <English>Create as HQ:</English>
+    <Chinesesimp>创建为总部</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CREATE_HQ_COMMENT">
     <English>Selects HQ objective close to the module or if unavailable spawns an HQ composition at the module position</English>
+    <Chinesesimp>选择模块附近的总部目标,或者如果不可用,则在模块位置生成总部合成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_USAGE">
     <English>Place the Custom Military Objective module in the editor, select the desired Size, Priority and force composition. Custom factions can be entered in the text box (separated by a comma).</English>
+    <Chinesesimp>将“自定义军事目标”模块放入编辑器中,选择所需的大小、优先级和部队组成。可以在文本框中输入自定义派别(用逗号分隔)。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL">
     <English>Readiness:</English>
+    <Chinesesimp>准备就绪:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL_COMMENT">
     <English>The amount of troops that will be on duty and patrolling</English>
+    <Chinesesimp>即将执勤和巡逻的部队数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_ALLOW_PLAYER_TASK">
     <English>Allow player tasking:</English>
+    <Chinesesimp>允许玩家任务:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_ALLOW_PLAYER_TASK_COMMENT">
     <English>MilAssault/MilDefend C2ISTAR tasks</English>
+    <Chinesesimp>C2ISTAR军事进攻/军事防御任务</Chinesesimp>
 </Key>
 </Container></Package></Project>

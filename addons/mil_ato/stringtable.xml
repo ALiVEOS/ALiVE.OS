@@ -4,128 +4,170 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ATO">
     <English>Military Air Component Commander</English>
+    <Chinesesimp>军事空军部队指挥官</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_COMMENT">
     <English>Joint Forces Air Component Commander</English>
+    <Chinesesimp>联合部队空中部队指挥官</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_DEBUG_COMMENT">
     <English>Enables Module Debug</English>
+    <Chinesesimp>启用模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PERSISTENT">
     <English>Persistent:</English>
+    <Chinesesimp>持久的</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PERSISTENT_COMMENT">
     <English>Enables external Database persistence</English>
+    <Chinesesimp>启用外部数据库持久性</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO">
     <English>Radio Messages:</English>
+    <Chinesesimp>无线电信息</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO_COMMENT">
     <English>Broadcast radio messages on ATO activity</English>
+    <Chinesesimp>广播ATO活动的无线电信息</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PILOTBUILDING">
     <English>Pilot Ready Room:</English>
+    <Chinesesimp>飞行员准备室</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PILOTBUILDING_COMMENT">
     <English>Pilots will spawn in this building classname</English>
+    <Chinesesimp>飞行员将在此建筑类名中生成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION">
     <English>Faction:</English>
+    <Chinesesimp>阵营</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION_COMMENT">
     <English>Select the faction for air taskings.</English>
+    <Chinesesimp>选择空中任务的势力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_TYPES">
     <English>Available ATOs:</English>
+    <Chinesesimp>可用的ATO</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_TYPES_COMMENT">
     <English>Select the type of air tasking orders, in order of priority. Choices are SEAD, DCA, CAP, CAS, Strike, Recce</English>
+    <Chinesesimp>按优先级顺序选择空中任务指令的类型。选择有SEAD、DCA、CAP、CAS、Strike、Recce</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE">
     <English>Airspace Markers:</English>
+    <Chinesesimp>空域标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE_COMMENT">
     <English>Enter the marker names representing the airspace managed by this module</English>
+    <Chinesesimp>输入表示此模块管理的空域的标记名称</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_USAGE">
     <English>Place a MACC module to provide Combat Air Patrol and Suppresion of Enemy Air Defenses over your airspace. Sync to an AI Commander module to enable Recce, Strike or Close Air Support requests</English>
+    <Chinesesimp>放置一个MACC模块,在你的领空上空提供战斗空中巡逻和压制敌人防空。与AI指挥官模块同步,以启用侦察、打击或近距离空中支援请求</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_CREATE_HQ">
     <English>Create HQ:</English>
+    <Chinesesimp>创建总部</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_CREATE_HQ_COMMENT">
     <English>Selects HQ objective close to the module or spawns an appropriate composition</English>
+    <Chinesesimp>选择模块附近的总部目标或生成适当的组成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AA">
     <English>Place Anti-Air:</English>
+    <Chinesesimp>放置防空</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AA_COMMENT">
     <English>Places Ground Based Air Defenses around the existing MACC HQ</English>
+    <Chinesesimp>在现有MACC总部周围部署地面防空</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AIR">
     <English>Place Air Assets:</English>
+    <Chinesesimp>放置飞行载具</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AIR_COMMENT">
     <English>If there are no available air assets, then place additional assets at the nearest airbase or helipad</English>
+    <Chinesesimp>如果没有可用的飞行载具,则将额外载具放置在最近的空军基地或直升机停机坪</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_TASKS">
     <English>Generate Player Tasks:</English>
+    <Chinesesimp>生成玩家任务</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_TASKS_COMMENT">
     <English>Automatically generate player Air Tasking Orders (CSAR, CAS, Strike)</English>
+    <Chinesesimp>自动生成玩家空中任务指令(CSAR、CAS、Strike)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RESUPPLY">
     <English>Resupply:</English>
+    <Chinesesimp>重新补给</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RESUPPLY_COMMENT">
     <English>Enables resupply of air assets. If LOGCOM is available to AI OPCOM then air assets will be ordered from LOGCOM.</English>
+    <Chinesesimp>实现飞行载具的再补给。如果AI OPCOM可以使用后勤司令部,则将从后勤司令部订购航空资产</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_NOT_ESTABLISHED">
     <English>All callsigns, this is %1, %2 forward airbase has not been established. No air assets available for tasking. Out.</English>
+    <Chinesesimp>所有呼号,这是%1,%2前方空军基地尚未建立。没有可用于任务的飞行载具。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_ESTABLISHED">
     <English>All callsigns, this is %1, %2 forward airbase established at grid %3, Air Tasking Orders to follow. Out.</English>
+    <Chinesesimp>所有呼号,这是%1,%2前方空军基地,在网格%3建立,空中任务命令如下。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_UNDER_ATTACK">
     <English>All callsigns, this is %1, %2 forward airbase at grid %3 is under attack by enemy forces, request immediate support. Out.</English>
+    <Chinesesimp>所有呼号,这里是%1,位于网格%3的%2前方空军基地正受到敌军的攻击,请求立即支援。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_OVERRUN">
     <English>All callsigns, this is %1, %2 forward airbase at grid %3 is compromised. Relocating to alternate. Air combat operations unavailable until further notice. Out.</English>
+    <Chinesesimp>所有呼号,这是%1,位于网格%3的%2前方空军基地已被攻破。重新定位到备用位置。空战行动在另行通知前不可用。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_REQUEST_ACKNOWLEDGED">
     <English>All callsigns, this is %1, %2 has requested %3 at grid %4. Air Tasking Order to follow. Out.</English>
+    <Chinesesimp>所有呼号，这是%1, %2 已在网格 %4 请求 %3。执行空中任务命令。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_UNAVAILABLE">
     <English>All callsigns, this is %1, aircraft unavailable, air combat operations suspended. Requesting replen. Out.</English>
+    <Chinesesimp>所有呼号，这里是 %1 ,飞机无法使用,空战行动暂停。请求重新规划。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_REQUEST_DENIED">
     <English>All callsigns, this is %1, request for %2 at grid %3 denied. Aircraft not available. Out.</English>
+    <Chinesesimp>所有呼号,这是%1,对网格%3上的%2的请求被拒绝。飞机不可用。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_START">
     <English>All callsigns, this is %1, scrambling %2 on ATO %3 at grid %4. Out.</English>
+    <Chinesesimp>所有呼号,这是 %1 ,正在对网格 %4 处的ATO %3 上的 %2 进行抢夺。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRCRAFT_LOST">
     <English>All callsigns, this is %1, we've lost radar contact with a %2 on %3. Out.</English>
+    <Chinesesimp>所有呼号，这里是%1,我们与 %3 上的 %2 失去雷达联系。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_ON_STATION">
     <English>All callsigns, this is %1, %2 on station at grid %3. Commencing %4 now. Out.</English>
+    <Chinesesimp>所有呼号,我是%1,%2,位于网格%3上的电台。现在开始%4。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN">
     <English>on %1. Air tasking complete, I am RTB. Out.</English>
+    <Chinesesimp>%1。空中任务完成,这里是RTB。完毕</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_FUEL">
     <English>Bingo fuel, I am RTB. Out.</English>
+    <Chinesesimp>油量已达最低限度,这里RTB。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_AMMO">
     <English>Winchester, I am RTB. Out.</English>
+    <Chinesesimp>温彻斯特,这里是RTB,完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RETURN_DAMAGE">
     <English>We've been hit, critical damage sustained, I am RTB. Out.</English>
+    <Chinesesimp>我们被击中了,受到严重伤害,我是RTB。完毕。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_MISSION_COMPLETE">
     <English>All callsigns, this is %1, %2 is back at base, %3 mission complete. Out.</English>
+    <Chinesesimp>所有呼号,这是 %1 , %2 已返回基地, %3 任务完成。完毕。</Chinesesimp>
 </Key>
 </Container></Package></Project>

@@ -4,11 +4,14 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_GM">
     <English>Player Command/Control (C2ISTAR)</English>
+    <Chinesesimp>玩家命令/控制(C2ISTAR)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GM_MENU">
     <English>Player C2ISTAR</English>
+    <Chinesesimp>玩家(C2ISTAR)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_GM_COMMENT">
     <English>Group Management</English>
+    <Chinesesimp>团队管理</Chinesesimp>
 </Key>
 </Container></Package></Project>

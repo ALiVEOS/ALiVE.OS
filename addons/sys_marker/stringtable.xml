@@ -4,32 +4,42 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_marker">
     <English>Advanced Markers</English>
+    <Chinesesimp>高级标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_marker_COMMENT">
     <English>Autostarting ALiVE Module template (uses additional module to configure parameters)</English>
+    <Chinesesimp>自动启动激活模块模板(使用额外的模块来配置参数)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_markerPARAMS">
     <English>Template Parameters</English>
+    <Chinesesimp>模板参数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_marker_ERROR1">
     <English>Only one module template allowed</English>
+    <Chinesesimp>只允许一个模块模板</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_markerPARAMS_COMMENT">
     <English>Over-ride default parameters for the Module Template</English>
+    <Chinesesimp>覆盖模块模板的默认参数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_markerPARAMS_USAGE">
     <English>Place the module and configure the over-rides</English>
+    <Chinesesimp>放置模块并配置覆盖</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_marker_DEBUG">
     <English>Debug:</English>
+    <Chinesesimp>调试DEBUG:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_marker_DEBUG_COMMENT">
     <English>Enable Debug</English>
+    <Chinesesimp>启用调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_marker_DIALOG_TITLE">
     <English>ADVANCED MARKER</English>
+    <Chinesesimp>高级标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_marker_DIALOG_spotrep">
     <English>spotrep</English>
+    <Chinesesimp>spotrep</Chinesesimp>
 </Key>
 </Container></Package></Project>

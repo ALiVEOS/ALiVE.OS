@@ -4,1400 +4,1763 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CIV_POP">
     <English>Civilian Population</English>
+    <Chinesesimp>平民人口</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_COMMENT">
     <English>Civilian Population System</English>
+    <Chinesesimp>平民系统</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_DEBUG">
     <English>Enable Debug:</English>
+    <Chinesesimp>启用调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_DEBUG_COMMENT">
     <English>Enables Module Debug</English>
+    <Chinesesimp>启用模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_RADIUS">
     <English>Spawn Radius:</English>
+    <Chinesesimp>生成半径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_RADIUS_COMMENT">
     <English>Sets the distance from players to spawn civilian units</English>
+    <Chinesesimp>设置与玩家产生平民单位的距离</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_ACTIVE_LIMITER">
     <English>Active Limiter:</English>
+    <Chinesesimp>活动限制:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_ACTIVE_LIMITER_COMMENT">
     <English>Sets the max number of civilians to spawn at any one time</English>
+    <Chinesesimp>设置在任何时间产生的平民的最大数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_JET_RADIUS">
     <English>Spawn planes radius:</English>
+    <Chinesesimp>生成飞机半径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_JET_RADIUS_COMMENT">
     <English>The radius around player in planes to spawn civilians. Set to 0 to disable spawning while in planes</English>
+    <Chinesesimp>在飞机上，玩家周围的半径可以产生平民。设置为0将禁用在平面内生成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_HELI_RADIUS">
     <English>Spawn heli radius:</English>
+    <Chinesesimp>生成直升机半径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_HELI_RADIUS_COMMENT">
     <English>The radius around player in helicopters to spawn civilians. Set to 0 to disable spawning while in helicopters</English>
+    <Chinesesimp>玩家在直升机周围生成平民的半径。设置为0将禁用在直升机中生成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST">
     <English>BLUFOR Hostility</English>
+    <Chinesesimp>BLUFOR敌意</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST_COMMENT">
     <English>How hostile are civilians initially to BLUFOR side</English>
+    <Chinesesimp>平民最初对BLUFOR的敌意有多大</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST_LOW">
     <English>Low</English>
+    <Chinesesimp>低</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST_MEDIUM">
     <English>Medium</English>
+    <Chinesesimp>中</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST_HIGH">
     <English>High</English>
+    <Chinesesimp>高</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST_EXTREME">
     <English>Extreme</English>
+    <Chinesesimp>极大</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_EAST">
     <English>OPFOR Hostility</English>
+    <Chinesesimp>OPFOR敌意</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_EAST_COMMENT">
     <English>How hostile are civilians initially to OPFOR side</English>
+    <Chinesesimp>平民最初对OPFOR一方的敌意有多大</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_EAST_LOW">
     <English>Low</English>
+    <Chinesesimp>低</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_EAST_MEDIUM">
     <English>Medium</English>
+    <Chinesesimp>中</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_EAST_HIGH">
     <English>High</English>
+    <Chinesesimp>高</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_EAST_EXTREME">
     <English>Extreme</English>
+    <Chinesesimp>极大</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDEP">
     <English>Independent Hostility</English>
+    <Chinesesimp>Independent敌意</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDEP_COMMENT">
     <English>How hostile are civilians initially to Independent side</English>
+    <Chinesesimp>平民最初对Independent一方的敌意有多大</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDEP_LOW">
     <English>Low</English>
+    <Chinesesimp>低</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDEP_MEDIUM">
     <English>Medium</English>
+    <Chinesesimp>中</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDEP_HIGH">
     <English>High</English>
+    <Chinesesimp>高</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDEP_EXTREME">
     <English>Extreme</English>
+    <Chinesesimp>极大</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_ERROR1">
     <English>Only one Civilian Population System module can be used</English>
+    <Chinesesimp>只能使用一个平民人口系统模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CIVILIAN_ROLES">
     <English>Civilian roles:</English>
+    <Chinesesimp>平民角色:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CIVILIAN_ROLES_COMMENT">
     <English>Adds civilian roles of either Eastern (muezzins, town elders) or Western type (priests, politicians)</English>
+    <Chinesesimp>增加了东方(宣礼员，城镇长老)或西方类型(牧师，政治家)的平民角色</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_CIV_POP_CIVILIAN_ROLES_NONE">
     <English>None</English>
+    <Chinesesimp>没有</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CIVILIAN_ROLES_WEST">
     <English>Western</English>
+    <Chinesesimp>西方</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CIVILIAN_ROLES_EAST">
     <English>Eastern</English>
+    <Chinesesimp>东部</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_DEBUG_ENABLE">
     <English>Activate Civilian Debug</English>
+    <Chinesesimp>激活平民调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_DEBUG_DISABLE">
     <English>Deactivate Civilian Debug</English>
+    <Chinesesimp>禁用平民调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_DEBUG1_COMMENT">
     <English>Toggle debug mode on the civilian system</English>
+    <Chinesesimp>切换民用系统的调试模式</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CROWD_SPAWN_RADIUS">
     <English>Crowd Spawn Radius</English>
+    <Chinesesimp>人群生成半径</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CROWD_SPAWN_RADIUS_COMMENT">
     <English>The radius at which houses are activated to spawn civilians for crowds. Set to 0 to disable crowds.</English>
+    <Chinesesimp>房屋被激活为人群生成平民的半径。设置为0以禁用人群。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CROWD_DENSITY">
     <English>Crowd Civs per House</English>
+    <Chinesesimp>房子里挤满了平民</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CROWD_DENSITY_COMMENT">
     <English>The number of civilians spawned per house for crowds</English>
+    <Chinesesimp>每户人家为人群所产生的平民人数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER">
     <English>Crowd Limit</English>
+    <Chinesesimp>人群限制</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER_COMMENT">
     <English>Maximum number of civilians that can be active for all crowds</English>
+    <Chinesesimp>可以为所有人群活动的最大平民数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CROWD_FACTION">
     <English>Crowd Faction</English>
+    <Chinesesimp>人群派系</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_CROWD_FACTION_COMMENT">
     <English>Optional: Will improve performance if single default faction is specified. Otherwise faction will be chosen based on civilian clusster faction.</English>
+    <Chinesesimp>可选:将提高性能，如果单个默认派别指定。否则将根据平民集群阵营选择阵营。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE">
     <English>Humanitarian Hostility Decrease</English>
+    <Chinesesimp>人道主义的敌意降低</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT">
     <English>Chance that providing Humanitarian Rations and Water to Civilians will decrease sector hostility</English>
+    <Chinesesimp>向平民提供人道主义口粮和水将减少隔离区敌意的机会</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_MAX_ALLOWED_AID">
     <English>Civilian Humanitarian Aid Limit</English>
+    <Chinesesimp>民用人道主义援助限额</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT">
     <English>Maximum number of Humanitarian Rations/Water Bottles a Civilian is allowed to receive</English>
+    <Chinesesimp>一个平民最多可以得到多少人道主义口粮/水瓶</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_WATER_ITEMS">
     <English>Custom Water Classes</English>
+    <Chinesesimp>定制水类</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_WATER_ITEMS_COMMENT">
     <English>Enter a list of classnames (comma separated) for any custom water items you want used for humanitarian purposes</English>
+    <Chinesesimp>输入您希望用于人道主义目的的任何自定义水项目的类名列表(逗号分隔)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HUMRAT_ITEMS">
     <English>Custom Ration Classes</English>
+    <Chinesesimp>定制定量类</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_HUMRAT_ITEMS_COMMENT">
     <English>Enter a list of classnames (comma separated) for any custom ration items you want used for humanitarian purposes</English>
+    <Chinesesimp>输入您想用于人道主义目的的任何定制配给项目的类名列表(逗号分隔)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_ACEX_COMPAT">
     <English>Use ACEX Humanitarian Items</English>
+    <Chinesesimp>使用ACEX人道主义物品</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_ACEX_COMPAT_COMMENT">
     <English>Enable the use of ACEX Humanitarian items instead of the default ALiVE ones</English>
-</Key>
+    <Chinesesimp>启用ACEX人道物品的使用，而不是默认的生命物品</Chinesesimp>
+</Key>  
 <Key ID="STR_ALIVE_CIV_POP_TOOMUCHAID">
     <English>This civilian does not require any more humanitarian aid.</English>
+    <Chinesesimp>这名平民不需要更多的人道主义援助。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_NOAID">
     <English>You have no humanitarian aid to give to this civilian!</English>
+    <Chinesesimp>你没有人道主义援助给这个平民!</Chinesesimp>
 </Key>
 </Container>
 <Container name="CIV_INTERACTION">
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_TOWNELDER">
     <English>townelder.</English>
     <Spanish>Jeque</Spanish>
+    <Chinesesimp>拖车司机。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_MAJOR">
     <English>major</English>
     <Spanish>alcalde</Spanish>
+    <Chinesesimp>专业</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_PRIEST">
     <English>priest</English>
     <Spanish>sacerdote</Spanish>
+    <Chinesesimp>牧师</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_MUEZZIN">
     <English>muezzin</English>
     <Spanish>almuédano</Spanish>
+    <Chinesesimp>穆兹津</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_POLITICIAN">
     <English>politician</English>
     <Spanish>político</Spanish>
+    <Chinesesimp>政治家</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_TALKTO">
     <English>Talk to %1</English>
     <Spanish>Hablar con %1</Spanish>
+    <Chinesesimp>与%1交谈</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_DETAIN">
     <English>Detain</English>
     <Spanish>Detener</Spanish>
+    <Chinesesimp>扣留</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ARREST">
     <English>Arrest</English>
     <Spanish>Arrestar</Spanish>
+    <Chinesesimp>逮捕</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_RELEASE">
     <English>Release</English>
     <Spanish>Liberar</Spanish>
+    <Chinesesimp>释放</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_SEARCH">
     <English>Search</English>
     <Spanish>Registrar</Spanish>
+    <Chinesesimp>搜索</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_GATHERINTEL">
     <English>Gather Intel</English>
     <Spanish>Obtener inteligencia</Spanish>
+    <Chinesesimp>搜集情报</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_HOME">
     <English>Where do you live?</English>
     <Spanish>¿Dónde vives?</Spanish>
+    <Chinesesimp>你住在哪里？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_TOWN">
     <English>What town do you live in?</English>
     <Spanish>¿En qué pueblo vives?</Spanish>
+    <Chinesesimp>你住在哪个城镇？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IEDS">
     <English>Have you seen any IED's lately?</English>
     <Spanish>¿Has visto algún IED recientemente?</Spanish>
+    <Chinesesimp>你最近见过IED吗？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_INSURGENTS">
     <English>Have you seen any insurgent activity lately?</English>
     <Spanish>¿Has visto actividad insurgente últimamente?</Spanish>
+    <Chinesesimp>你最近看到叛乱活动了吗？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_HIDEOUTS">
     <English>Do you know the location of any insurgent hideouts?</English>
     <Spanish>¿Conoces la ubicación de algún escondite insurgente?</Spanish>
+    <Chinesesimp>你知道叛乱分子藏身处的位置吗？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_STRANGEBEHAVIOR">
     <English>Have you seen any strange behavior lately?</English>
     <Spanish>¿Has visto algún comportamientoe extraño recientemente?</Spanish>
+    <Chinesesimp>你最近有没有看到什么奇怪的行为？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_OPINION">
     <English>Do you support us?</English>
     <Spanish>¿Nos apoyas?</Spanish>
+    <Chinesesimp>你支持我们吗？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_TOWNOPINION">
     <English>What is the opinion of our forces in this area?</English>
     <Spanish>¿Cuál es la opinión de nuestras fuerzas en esta área?</Spanish>
+    <Chinesesimp>我们在这个地区的部队有什么看法？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_1">
     <English> *%1 grows visibly annoyed*</English>
     <Spanish> *%1 comienza a molestarse*</Spanish>
+    <Chinesesimp>*%1变得明显恼火*</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_2">
     <English> *%1 appears uninterested in the conversation*</English>
     <Spanish> *%1 parece no tener interés en la conversación*</Spanish>
+    <Chinesesimp>*%1似乎对对话不感兴趣*</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_3">
     <English> Please leave me alone now.</English>
     <Spanish> Déjame tranquilo, por favor.</Spanish>
+    <Chinesesimp>现在请不要打扰我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_4">
     <English> I do not want to talk to you anymore.</English>
     <Spanish> Ya no quiero seguir hablando contigo.</Spanish>
+    <Chinesesimp>我不想再和你说话了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_5">
     <English> Can I go now?</English>
     <Spanish> ¿Ya me puedo ir?</Spanish>
+    <Chinesesimp>我现在可以走了吗？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_NOTHOSTILE_1">
     <English> *%1 looks anxious*</English>
     <Spanish> *%1 se ve ansioso*</Spanish>
+    <Chinesesimp>*%1看起来很焦虑*</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_NOTHOSTILE_2">
     <English> *%1 looks distracted*</English>
     <Spanish> *%1 se ve distraído*</Spanish>
+    <Chinesesimp>*%1人看起来心烦意乱*</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_NOTHOSTILE_3">
     <English> Are you done yet?</English>
     <Spanish> ¿Aún no has terminado?</Spanish>
+    <Chinesesimp>你做完了吗？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_NOTHOSTILE_4">
     <English> You ask too many questions.</English>
     <Spanish> Haces demasiadas preguntas.</Spanish>
+    <Chinesesimp>你问了太多问题。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_NOTHOSTILE_5">
     <English> You need to leave now.</English>
     <Spanish> Ya deberías irte.</Spanish>
+    <Chinesesimp>你现在得走了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDE_1">
     <English>carrying out a suicide bombing</English>
     <Spanish>llevando un chaleco suicida.</Spanish>
+    <Chinesesimp>进行自杀式爆炸</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDE_2">
     <English>strapping himself with explosives</English>
     <Spanish>atándose explosivos</Spanish>
+    <Chinesesimp>用炸药绑住自己</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDE_3">
     <English>planning a bombing</English>
     <Spanish>planeando un atentado</Spanish>
+    <Chinesesimp>计划轰炸</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDE_4">
     <English>getting ready to bomb your forces</English>
     <Spanish>alistándose para explotar encima de tus fuerzas</Spanish>
+    <Chinesesimp>准备轰炸你的部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDE_5">
     <English>about to bomb your forces</English>
     <Spanish>apunto de hacer un atentado explosivo contra tus fuerzas</Spanish>
+    <Chinesesimp>关于轰炸你的部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDETARGET_1">
     <English>planning on carrying out a suicide bombing</English>
     <Spanish>planeando en llevar a cabo un atentado explosivo suicida</Spanish>
+    <Chinesesimp>计划进行自杀式爆炸</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDETARGET_2">
     <English>strapping himself with explosives</English>
     <Spanish>atándose explosivos al cuerpo</Spanish>
+    <Chinesesimp>用炸药绑住自己</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDETARGET_3">
     <English>planning a bombing</English>
     <Spanish>planeando un atentado explosivo</Spanish>
+    <Chinesesimp>计划轰炸</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDETARGET_4">
     <English>getting ready to bomb your forces</English>
     <Spanish>preparándose para explotar encima de tus fuerzas</Spanish>
+    <Chinesesimp>准备轰炸你的部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SUICIDETARGET_5">
     <English>about to bomb your forces</English>
     <Spanish>apunto de hacer un atentado explosivo contra tus fuerzas</Spanish>
+    <Chinesesimp>准备轰炸你的部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUE_1">
     <English>storing a weapon in his house</English>
     <Spanish>manteniendo un arma en su casa</Spanish>
+    <Chinesesimp>在他家里存放武器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUE_2">
     <English>stockpiling weapons</English>
     <Spanish>almacenando armamento</Spanish>
+    <Chinesesimp>储存武器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUE_3">
     <English>planning on shooting a patrol</English>
     <Spanish>planeando en disparar a una patrulla</Spanish>
+    <Chinesesimp>计划射击巡逻队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUE_4">
     <English>looking for patrols to shoot at</English>
     <Spanish>buscando patrullas a quién disparar</Spanish>
+    <Chinesesimp>寻找可以射击的巡逻队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUE_5">
     <English>paid to shoot at your forces</English>
     <Spanish>recibiendo dinero para disparar a tus fuerzas</Spanish>
+    <Chinesesimp>付钱向你的部队射击</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUETARGET_1">
     <English>storing a weapon in his house</English>
     <Spanish>manteniendo un arma en su casa</Spanish>
+    <Chinesesimp>在他家里存放武器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUETARGET_2">
     <English>stockpiling weapons</English>
     <Spanish>almacenando armamento</Spanish>
+    <Chinesesimp>大量储备武器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUETARGET_3">
     <English>planning on shooting a patrol</English>
     <Spanish>planeando en disparar a una patrulla</Spanish>
+    <Chinesesimp>计划射击巡逻队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUETARGET_4">
     <English>looking for patrols to shoot at</English>
     <Spanish>buscando patrullas a quién disparar</Spanish>
+    <Chinesesimp>寻找可以射击的巡逻队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_ROGUETARGET_5">
     <English>paid to shoot at your forces</English>
     <Spanish>recibiendo dinero para disparar a tus fuerzas</Spanish>
+    <Chinesesimp>付钱向你的部队开枪</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SABOTAGE_1">
     <English>planning on sabotaging a building</English>
     <Spanish>planeando sabotear un edificio</Spanish>
+    <Chinesesimp>计划破坏个建筑</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SABOTAGE_2">
     <English>blowing up a building</English>
     <Spanish>haciendo explotar un edificio</Spanish>
+    <Chinesesimp>周围放置爆炸物</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SABOTAGE_3">
     <English>planting explosives nearby</English>
     <Spanish>plantando explosivos en los al rededores</Spanish>
+    <Chinesesimp>炸毁建筑物</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SABOTAGE_4">
     <English>getting ready to plant explosives</English>
     <Spanish>preparándose para plantar explosivos</Spanish>
+    <Chinesesimp>准备安放炸药</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_SABOTAGE_5">
     <English>paid to shoot at your forces</English>
     <Spanish>recibiendo dinero para disparar a tus fuerzas</Spanish>
+    <Chinesesimp>付钱向你的部队射击</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_1">
     <English>retrieving weapons from a nearby weapons depot</English>
     <Spanish>consiguiendo armas desde un depósito de armamento cercano</Spanish>
+    <Chinesesimp>从附近的武器库取回武器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_2">
     <English>planning on joining the insurgents</English>
     <Spanish>planeando en unirse a los insurgentes</Spanish>
+    <Chinesesimp>计划加入叛乱分子</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_3">
     <English>getting ready to go to a nearby insurgent recruitment center</English>
     <Spanish>preparándose para ir a un centro de reclutamiento insurgente cercano</Spanish>
+    <Chinesesimp>准备前往附近的叛乱分子招募中心</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_4">
     <English>getting ready to retrieve weapons from a cache</English>
     <Spanish>preparándose para conseguir armas desde un depósito</Spanish>
+    <Chinesesimp>准备从藏匿处取回武器</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_5">
     <English>paid to attack your forces</English>
     <Spanish>recibiendo dinero para atacar a tus fuerzas</Spanish>
+    <Chinesesimp>付钱攻击你的部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_6">
     <English>forced to join the insurgents</English>
     <Spanish>forzado a unirse a los insurgentes</Spanish>
+    <Chinesesimp>被迫加入叛乱分子</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIVEPLAN_GETWEAPONS_7">
     <English>preparing to attack your forces</English>
     <Spanish>preparándose para atacar a tus fuerzas</Spanish>
+    <Chinesesimp>准备攻击你的部队</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_1">
     <English>I'm not telling you again.</English>
     <Spanish>No te lo voy a decir de nuevo.</Spanish>
+    <Chinesesimp>我不会再告诉你了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_2">
     <English>Haven't we already discussed this?</English>
     <Spanish>¿No que ya discutimos este tema?</Spanish>
+    <Chinesesimp>我们不是已经讨论过了吗？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_3">
     <English>I have already answered that.</English>
     <Spanish>Ya te he respondido eso.</Spanish>
+    <Chinesesimp>我已经回答了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_4">
     <English>Why are you asking me again.</English>
     <Spanish>Y... ¿Por qué me preguntas lo mismo?</Spanish>
+    <Chinesesimp>你为什么又问我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_5">
     <English>You already asked me that.</English>
     <Spanish>Ya me has preguntado eso.</Spanish>
+    <Chinesesimp>你已经问过我了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_6">
     <English>You are beginning to annoy me with that question.</English>
     <Spanish>Estás comenzando a aburrirme con esa pregunta</Spanish>
+    <Chinesesimp>你开始用那个问题来烦我了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_7">
     <English>I cannot talk about this anymore.</English>
     <Spanish>Ya no puedo seguir hablando de eso.</Spanish>
+    <Chinesesimp>我不能再谈这个了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_ANSWERGIVEN_8">
     <English>You have gotten your answers already.</English>
     <Spanish>Ya tienes tu respuesta sobre eso.</Spanish>
+    <Chinesesimp>你已经得到答案了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_1">
     <English>I live over there, I'll show you (%1's house has been marked on the map).</English>
     <Spanish>Vivo por allá, te mostraré. (La casa de %1 se ha marcado en el mapa)</Spanish>
+    <Chinesesimp>我住在那边，我带你去看看（地图上已经标出了%1的房子）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_2">
     <English>I live nearby (%1's house has been marked on the map).</English>
     <Spanish>Vivo por aquí (La casa de %1 se ha marcado en el mapa)</Spanish>
+    <Chinesesimp>我住在附近（地图上已标记%1的房子）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_3">
     <English>I will point it out for you (%1's house has been marked on the map).</English>
     <Spanish>Deja, te lo apunto. (La casa de %1 se ha marcado en el mapa).</Spanish>
+    <Chinesesimp>我会为你指出（%1的房子已经在地图上标出）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_4">
     <English>I live right over there (%1's house has been marked on the map).</English>
     <Spanish>Vivo justo por allá. (La casa de %1 se ha marcado en el mapa).</Spanish>
+    <Chinesesimp>我就住在那里（%1的房子已在地图上标出）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_NOTHOSTILE_5">
     <English>Just over there. (The house is marked on the map).</English>
     <Spanish>Allí nada más. (La casa de %1 se ha marcado en el mapa).</Spanish>
+    <Chinesesimp>就在那边。（房子在地图上有标记）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_1">
     <English>I am sorry, but I don't feel comfortable giving that information out.</English>
     <Spanish>Lo siento mucho, pero no me siento cómodo dando esa información.</Spanish>
+    <Chinesesimp>很抱歉，但我不太愿意透露这些信息。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_2">
     <English>I do not want to share that with you.</English>
     <Spanish>No quiero compartir eso contigo.</Spanish>
+    <Chinesesimp>我不想和你分享。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_3">
     <English>I do not owe you anything.</English>
     <Spanish>No tengo por qué contestar.</Spanish>
+    <Chinesesimp>我不欠你任何东西。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_4">
     <English>Please leave me alone.</English>
     <Spanish>Por favor déjame tranquilo.</Spanish>
+    <Chinesesimp>请不要打扰我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_5">
     <English>Please leave.</English>
     <Spanish>Vete por favor.</Spanish>
+    <Chinesesimp>请离开。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HOME_HOSTILE_6">
     <English>Get out of here!</English>
     <Spanish>¡Váyanse de aquí!</Spanish>
+    <Chinesesimp>离开这里！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_1">
     <English>I live by %1.</English>
     <Spanish>Vivo por %1</Spanish>
+    <Chinesesimp>我住在%1</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_2">
     <English>I live in %1.</English>
     <Spanish>Vivo en %1</Spanish>
+    <Chinesesimp>我住在%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_3">
     <English>I live in the village of %1.</English>
     <Spanish>Vivo en la aldea de %1</Spanish>
+    <Chinesesimp>我住在%1村。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_4">
     <English>My home town is %1.</English>
     <Spanish>Mi pueblo natal es %1</Spanish>
+    <Chinesesimp>我的家乡是%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_5">
     <English>You should not be here.</English>
     <Spanish>Ustedes no deberían estar aquí.</Spanish>
+    <Chinesesimp>你不应该在这里。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_NOTHOSTILE_6">
     <English>They would not like me talking to you.</English>
     <Spanish>A ellos no les gustaría que hable con ustedes.</Spanish>
+    <Chinesesimp>他们不想我和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_BADLUCK_1">
     <English>I am sorry, but I do not feel comfortable giving that information out.</English>
     <Spanish>Lo siento, pero no me siento cómodo entregando esa información.</Spanish>
+    <Chinesesimp>很抱歉，但我不太愿意透露这些信息。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_BADLUCK_2">
     <English>Sorry, I do not want to answer that.</English>
     <Spanish>Lo siento, pero no quiero contestar eso.</Spanish>
+    <Chinesesimp>对不起，我不想回答这个问题。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_BADLUCK_3">
     <English>I should not share that with you</English>
     <Spanish>No debería compartir eso contigo.</Spanish>
+    <Chinesesimp>我不应该和你分享</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_BADLUCK_4">
     <English>I just want to be left alone.</English>
     <Spanish>Sólo quiero que me dejen tranquilo.</Spanish>
+    <Chinesesimp>我只想一个人呆着。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_BADLUCK_5">
     <English>Please leave my community alone.</English>
     <Spanish>Por favor, deja a mi gente tranquila.</Spanish>
+    <Chinesesimp>请不要打扰我的社区。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_1">
     <English>I am sorry, but I do not feel comfortable giving that information out.</English>
     <Spanish>Lo siento, pero no me siento cómodo entregando esa información.</Spanish>
+    <Chinesesimp>很抱歉，但我不太愿意透露这些信息。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_2">
     <English>I should not share that with you.</English>
     <Spanish>No debería compartir esa información contigo.</Spanish>
+    <Chinesesimp>我不应该和你分享。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_3">
     <English>I do not owe you anything.</English>
     <Spanish>No tengo por qué contestar eso.</Spanish>
+    <Chinesesimp>我不欠你任何东西。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_4">
     <English>You should not be here.</English>
     <Spanish>Ustedes no deberían estar aquí.</Spanish>
+    <Chinesesimp>你不应该在这里。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_5">
     <English>Please leave me alone.</English>
     <Spanish>Por favor, déjenme tranquilo.</Spanish>
+    <Chinesesimp>请不要打扰我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_6">
     <English>I will not tell you where I live!</English>
     <Spanish>¡No pienso decirles donde vivo!</Spanish>
+    <Chinesesimp>我不会告诉你我住在哪里！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWN_HOSTILE_7">
     <English>You will not terrorize my town!</English>
     <Spanish>¡No dejaré que aterroricen a mi pueblo!</Spanish>
+    <Chinesesimp>你不会恐吓我的城镇！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_NOPRESENCE_NOTHOSTILE_1">
     <English>There are no IEDs nearby.</English>
     <Spanish>No hay IEDs por aquí.</Spanish>
+    <Chinesesimp>附近没有IED。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_NOPRESENCE_NOTHOSTILE_2">
     <English>Sorry, I haven't seen any.</English>
     <Spanish>Lo siento, no he visto ninguno.</Spanish>
+    <Chinesesimp>对不起，我没有看到。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_NOPRESENCE_NOTHOSTILE_3">
     <English>Not that I know of, sorry.</English>
     <Spanish>No que yo sepa, lo siento.</Spanish>
+    <Chinesesimp>我不知道，对不起。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_NOPRESENCE_NOTHOSTILE_4">
     <English>No IEDs have been set near here.</English>
     <Spanish>No se han puesto IED's por esta zona.</Spanish>
+    <Chinesesimp>这里附近没有设置IED。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_1">
     <English>Like I would tell you.</English>
     <Spanish>No te lo diría ni muerto.</Spanish>
+    <Chinesesimp>就像我会告诉你的。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_2">
     <English>Just leave me alone already.</English>
     <Spanish>Ya déjenme en paz, ¿Quieren?.</Spanish>
+    <Chinesesimp>别烦我了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_3">
     <English>You will have to find that out for yourself.</English>
     <Spanish>Tendrán que descubrirlo ustedes mismos.</Spanish>
+    <Chinesesimp>你必须自己找到答案。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_4">
     <English>Watch your step.</English>
     <Spanish>Yo que tú, camino con cuidado.</Spanish>
+    <Chinesesimp>小心脚下。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_5">
     <English>Maybe I should have planted a few.</English>
     <Spanish>Y quizás debería salir a plantar un par.</Spanish>
+    <Chinesesimp>也许我应该种一些。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_1">
     <English>Yes I saw one earlier (Location marked on map).</English>
     <Spanish>Sí, vi uno temprano hoy (Ubicación marcada en el mapa).</Spanish>
+    <Chinesesimp>是的，我之前看到过一个（地图上标明了位置）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_2">
     <English>Let me show you one (Location marked on map).</English>
     <Spanish>Deja que te muestre donde vi uno (Ubicación marcada en el mapa).</Spanish>
+    <Chinesesimp>让我给你看一个（地图上标明的位置）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_3">
     <English>I think I know a spot (Location marked on map).</English>
     <Spanish>Creo recordar un punto (Ubicación marcada en el mapa).</Spanish>
+    <Chinesesimp>我想我知道一个地点（地图上标明的位置）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_4">
     <English>I saw an insurgent plant one (Location marked on map).</English>
     <Spanish>Vi a un insurgente plantando uno aquí (Ubicación marcada en el mapa).</Spanish>
+    <Chinesesimp>我看到一个叛乱工厂（地图上标明了位置）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_BADLUCK_1">
     <English>Sorry, I do not know.</English>
     <Spanish>Lo siento, pero no tengo idea.</Spanish>
+    <Chinesesimp>对不起，我不知道。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_BADLUCK_2">
     <English>I cannot give that type of information out.</English>
     <Spanish>No puedo entregar ese tipo de información.</Spanish>
+    <Chinesesimp>我不能提供那种信息。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_BADLUCK_3">
     <English>I would be killed if I told you.</English>
     <Spanish>Me matarían si te lo dijera.</Spanish>
+    <Chinesesimp>如果我告诉你我会被杀的。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_IEDS_BADLUCK_4">
     <English>Please leave, they can't see me talking to you.</English>
     <Spanish>Por favor váyanse, no quiero que me vean hablando con ustedes.</Spanish>
+    <Chinesesimp>请离开，他们看不到我在和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_NOTHOSTILE_1">
     <English>Sorry I have not seen any.</English>
     <Spanish>Lo siento, no he visto a ninguno.</Spanish>
+    <Chinesesimp>对不起，我没有看到。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_NOTHOSTILE_2">
     <English>No, there are none nearby.</English>
     <Spanish>No, no hay ninguno por estos lados.</Spanish>
+    <Chinesesimp>不，附近没有。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_NOTHOSTILE_3">
     <English>Not recently, sorry.</English>
     <Spanish>No he visto ninguno estos días.</Spanish>
+    <Chinesesimp>最近没有，对不起。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_NOTHOSTILE_4">
     <English>Thankfully no.</English>
     <Spanish>Gracias a Dios, no.</Spanish>
+    <Chinesesimp>谢天谢地，没有。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_NOTHOSTILE_5">
     <English>I haven't seen any.</English>
     <Spanish>No he visto a ninguno.</Spanish>
+    <Chinesesimp>我什么都没看到。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_1">
     <English>Some insurgents are near %1.</English>
     <Spanish>Hay algunos insurgentes cerca de %1.</Spanish>
+    <Chinesesimp>一些叛乱分子在%1附近。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_2">
     <English>Don't snitch on me (Insurgents marked on map).</English>
     <Spanish>No le digas a nadie que te he dicho (Insurgentes marcados en el mapa)</Spanish>
+    <Chinesesimp>别向我告密（地图上标明叛乱分子）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_3">
     <English>Yes, let me show you where I saw them (Insurgents marked on map).</English>
     <Spanish>Sí, déjame que te muestre dónde los vi (Insurgentes marcados en el mapa)</Spanish>
+    <Chinesesimp>是的，让我告诉你们我在哪里看到他们（在地图上标出叛乱分子）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_4">
     <English>Yes, but you must keep this secret (Insurgents marked on map).</English>
     <Spanish>Sí, pero debes mantener en secreto quién te dijo (Insurgentes marcados en el mapa)</Spanish>
+    <Chinesesimp>是的，但你们必须保守这个秘密。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_BADLUCK_1">
     <English>Please, just leave me alone.</English>
     <Spanish>Por favor, déjenme en paz.</Spanish>
+    <Chinesesimp>求你了，别烦我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_BADLUCK_2">
     <English>I don't want to talk about this.</English>
     <Spanish>No quiero hablar sobre eso.</Spanish>
+    <Chinesesimp>我不想谈这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_BADLUCK_3">
     <English>I don't want to talk to you.</English>
     <Spanish>No quiero hablar con ustedes.</Spanish>
+    <Chinesesimp>我不想和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_BADLUCK_4">
     <English>I can't tell you.</English>
     <Spanish>No puedo decírtelo.</Spanish>
+    <Chinesesimp>我不能告诉你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_BADLUCK_5">
     <English>They wouldn't like me talking to you.</English>
     <Spanish>A ellos no les gustaría que hable con ustedes.</Spanish>
+    <Chinesesimp>他们不喜欢我和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_HOSTILE_1">
     <English>As if I would tell you.</English>
     <Spanish>Como si te lo fuese a decir.</Spanish>
+    <Chinesesimp>就像我会告诉你一样。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_HOSTILE_2">
     <English>Get away from me.</English>
     <Spanish>Aléjate de mí.</Spanish>
+    <Chinesesimp>离我远点。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_HOSTILE_3">
     <English>Please, just leave me alone.</English>
     <Spanish>Por favor, sólo déjenme tranquilo.</Spanish>
+    <Chinesesimp>求你了，别烦我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_HOSTILE_4">
     <English>I don't want to talk about this.</English>
     <Spanish>No quiero hablar sobre eso.</Spanish>
+    <Chinesesimp>我不想谈这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_NOPRESENCE_HOSTILE_5">
     <English>I don't want to talk to you.</English>
     <Spanish>No quiero hablar con ustedes.</Spanish>
+    <Chinesesimp>我不想和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_1">
     <English>They wouldn't want me talking to you.</English>
     <Spanish>Ellos no querrían verme hablando con ustedes.</Spanish>
+    <Chinesesimp>他们不想让我和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_2">
     <English>You can't ask questions like that.</English>
     <Spanish>No puedes preguntar ese tipo de cosas.</Spanish>
+    <Chinesesimp>你不能问那样的问题。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_3">
     <English>Are you crazy?</English>
     <Spanish>¿Estás loco?</Spanish>
+    <Chinesesimp>你疯了吗？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_4">
     <English>Please, just leave me alone.</English>
     <Spanish>Por favor, déjenme en paz.</Spanish>
+    <Chinesesimp>求你了，别烦我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_5">
     <English>I don't want to talk about this.</English>
     <Spanish>No quiero hablar con ustedes sobre eso.</Spanish>
+    <Chinesesimp>我不想谈这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_6">
     <English>I don't want to talk to you.</English>
     <Spanish>No quiero hablar con ustedes.</Spanish>
+    <Chinesesimp>我不想和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_1">
     <English>As if I would tell you.</English>
     <Spanish>Como si te lo fuese a decir.</Spanish>
+    <Chinesesimp>就像我会告诉你一样。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_2">
     <English>Get away from me.</English>
     <Spanish>¡Aléjense de mí!</Spanish>
+    <Chinesesimp>离我远点。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_3">
     <English>Please, just leave me alone.</English>
     <Spanish>Por favor, déjenme en paz.</Spanish>
+    <Chinesesimp></Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_4">
     <English>I don't want to talk about this.</English>
     <Spanish>No quiero hablar sobre eso.</Spanish>
+    <Chinesesimp>求你了，别烦我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_5">
     <English>I don't want to talk to you.</English>
     <Spanish>No quiero hablar con ustedes.</Spanish>
+    <Chinesesimp>我不想和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_1">
     <English>Insurgents have not established any installations here.</English>
     <Spanish>Los insurgentes no tienen ninguna instalación aquí.</Spanish>
+    <Chinesesimp>叛乱分子没有在这里建立任何设施。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_2">
     <English>Luckily, no.</English>
     <Spanish>Afortunadamente, no.</Spanish>
+    <Chinesesimp>幸运的是，没有。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_3">
     <English>No, I have not.</English>
     <Spanish>No, no he visto.</Spanish>
+    <Chinesesimp>不，我没有。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_4">
     <English>There are no insurgent bases here.</English>
     <Spanish>No hay bases insurgentes por aquí.</Spanish>
+    <Chinesesimp>这里没有叛乱基地。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_5">
     <English>There are no insurgent hideouts here.</English>
     <Spanish>No hay escondites insurgentes por aquí.</Spanish>
+    <Chinesesimp>这里没有叛乱分子的藏身之处。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_6">
     <English>Insurgents have not taken over this area yet.</English>
     <Spanish>Los insurgentes no se han tomado esta área aún.</Spanish>
+    <Chinesesimp>叛乱分子尚未占领这一地区。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_7">
     <English>There are no hideouts here.</English>
     <Spanish>No hay escondites aquí.</Spanish>
+    <Chinesesimp>这里没有藏身之处。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_8">
     <English>There are no installations here.</English>
     <Spanish>No hay instalaciones aquí.</Spanish>
+    <Chinesesimp>此处没有安装。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_NOTHOSTILE_9">
     <English>We are still free from their reign.</English>
     <Spanish>Aún no han llegado a mandar aquí.</Spanish>
+    <Chinesesimp>我们仍然摆脱了他们的统治。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_BADLUCK_1">
     <English>Are you crazy.</English>
     <Spanish>¿Estás loco?</Spanish>
+    <Chinesesimp>你疯了吗。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_BADLUCK_2">
     <English>I cannot talk about this.</English>
     <Spanish>No puedo hablar sobre eso.</Spanish>
+    <Chinesesimp>我不能谈论这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_BADLUCK_3">
     <English>Do you want to get me killed?</English>
     <Spanish>¿Acaso quieres que me maten?</Spanish>
+    <Chinesesimp>你想杀了我吗？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_BADLUCK_4">
     <English>I will not put myself in danger.</English>
     <Spanish>No me voy a poner en peligro a mí mismo.</Spanish>
+    <Chinesesimp>我不会把自己置于危险之中。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_BADLUCK_5">
     <English>I cannot put my family at risk by answering that.</English>
     <Spanish>No puedo arriesgar a mi familiar respondiendo eso.</Spanish>
+    <Chinesesimp>我不能通过回答这个问题来让我的家人处于危险之中</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_1">
     <English>I don't have time for this.</English>
     <Spanish>No tengo tiempo para esto.</Spanish>
+    <Chinesesimp>我没有时间做这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_2">
     <English>I cannot talk about this right now.</English>
     <Spanish>No puedo hablar sobre eso ahora mismo.</Spanish>
+    <Chinesesimp>我现在不能谈这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_3">
     <English>Are you crazy.</English>
     <Spanish>Estás loco.</Spanish>
+    <Chinesesimp>你疯了吗。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_4">
     <English>Why would you ask me such question.</English>
     <Spanish>¿Por qué me haces estas preguntas?</Spanish>
+    <Chinesesimp>你为什么要问我这样的问题。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_5">
     <English>That is a crazy question to ask.</English>
     <Spanish>Esa es una pregunta muy idiota.</Spanish>
+    <Chinesesimp>这个问题问起来很疯狂。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_6">
     <English>Do you want to get me killed?</English>
     <Spanish>¿Acaso quieres que me maten?</Spanish>
+    <Chinesesimp>你想杀了我吗？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_7">
     <English>I will not put myself in danger.</English>
     <Spanish>No me voy a poner en peligro a mí mismo.</Spanish>
+    <Chinesesimp>我不会把自己置于危险之中。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_8">
     <English>Why would you ask that?</English>
     <Spanish>¿Por qué haces esa pregunta?</Spanish>
+    <Chinesesimp>你为什么这么问？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_NOPRESENCE_HOSTILE_9">
     <English>I cannot help you with that.</English>
     <Spanish>No te puedo ayudar con eso.</Spanish>
+    <Chinesesimp>我帮不了你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_IEDFACTORY">
     <English>IED Factory</English>
     <Spanish>Fábrica de IEDs</Spanish>
+    <Chinesesimp>IED工厂</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_RECRUITMENTHQ">
     <English>Recruitment HQ</English>
     <Spanish>Cantón de reclutamiento</Spanish>
+    <Chinesesimp>招聘总部</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_MUNITIONSDEPOT">
     <English>Munitions Depot</English>
     <Spanish>Depósito de municiones</Spanish>
+    <Chinesesimp>弹药库</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPENAME_ROADBLOCK">
     <English>Roadblocks</English>
     <Spanish>Bloqueo de carretera</Spanish>
+    <Chinesesimp>路障</Chinesesimp>
 </Key>
 
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_IEDFACTORY">
     <English>IED factory</English>
     <Spanish>fábrica de IEDs</Spanish>
+    <Chinesesimp>IED工厂</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_RECRUITMENTHQ">
     <English>recruitment HQ</English>
     <Spanish>cantón de reclutamiento</Spanish>
+    <Chinesesimp>招聘总部</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_MUNITIONSDEPOT">
     <English>munitions depot</English>
     <Spanish>depósito de municiones</Spanish>
+    <Chinesesimp>弹药库</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_TYPE_ROADBLOCK">
     <English>roadblocks</English>
     <Spanish>bloqueo de carretera</Spanish>
+    <Chinesesimp>路障</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_1">
     <English>I noticed a %1 nearby (%2 marked on map).</English>
     <Spanish>Noté que hay un %1 cerca (%2 marcado en el mapa).</Spanish>
+    <Chinesesimp>我注意到附近有一个%1（地图上标记了%2）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_2">
     <English>Someone told me there was a %1 close by (%2 marked on map).</English>
     <Spanish>Alguien me dijo que hay un %1 por acá cerca (%2 marcado en el mapa).</Spanish>
+    <Chinesesimp>有人告诉我附近有一个%1（地图上标记了%2）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_3">
     <English>I observed insurgents setting up a %1 (%2 marked on map).</English>
     <Spanish>Vi insurgentes instalando un %1 (%2 marcado en el mapa).</Spanish>
+    <Chinesesimp>我观察到叛乱分子设置了一个%1（地图上标记了%2）</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_4">
     <English>I know the location of a %1 (%2 marked on map).</English>
     <Spanish>Conozco la ubicación de un %1 (%2 marcado en el mapa).</Spanish>
+    <Chinesesimp>我知道%1的位置（地图上标记了%2）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_5">
     <English>Insurgents established a %1 (%2 marked on map).</English>
     <Spanish>Insurgentes establecieron un %1 (%2 marcado en el mapa).</Spanish>
+    <Chinesesimp>叛乱分子建立了一个%1（地图上标记了%2）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_6">
     <English>I can show you the location of a %1 (%2 marked on map).</English>
     <Spanish>Puedo mostrarte la ubicación de un %1 (%2 marcado en el mapa).</Spanish>
+    <Chinesesimp>我可以向您显示%1的位置（地图上标记了%2）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_7">
     <English>You must keep this a secret (%2 marked on map).</English>
     <Spanish>Tienes que mantener el secreto, si (%2 marcado en el mapa).</Spanish>
+    <Chinesesimp>您必须对此保密（地图上标记了%2）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_8">
     <English>You must promise to protect me (%2 marked on map).</English>
     <Spanish>Tienen que prometer que me protegerán (%2 marcado en el mapa).</Spanish>
+    <Chinesesimp>你必须保证保护我（地图上标记了%2）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_MAP_9">
     <English>Please remove the %1 from the area and restore peace (%2 marked on map).</English>
     <Spanish>Por favor eliminen el %1 del área y devuélvannos la paz (%2 marcado en el mapa).</Spanish>
+    <Chinesesimp>请从区域中删除%1并恢复和平（地图上标记了%2）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_1">
     <English>I noticed a %1 nearby.</English>
     <Spanish>Noté que hay un %1 cerca.</Spanish>
+    <Chinesesimp>我注意到附近有一个%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_2">
     <English>Someone told me there was a %1 close by.</English>
     <Spanish>Alguien me dijo que hay un %1 cerca.</Spanish>
+    <Chinesesimp>有人告诉我附近有一个%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_3">
     <English>I observed insurgents setting up a %1.</English>
     <Spanish>Vi insurgentes instalando un %1.</Spanish>
+    <Chinesesimp>我注意到叛乱分子在设置%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_4">
     <English>Insurgents have prepared a %1 nearby.</English>
     <Spanish>Los insurgentes han preparado un %1 cerca.</Spanish>
+    <Chinesesimp>叛乱分子在附近准备了%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_5">
     <English>Insurgents established a %1 close by here.</English>
     <Spanish>Insurgentes establecieron un %1 por aquí.</Spanish>
+    <Chinesesimp>叛乱分子在附近建立了%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_6">
     <English>Others have mentioned a %1 close by.</English>
     <Spanish>Hay rumores de un %1 por aquí.</Spanish>
+    <Chinesesimp>其他人在附近提到了一个%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_7">
     <English>Insurgents have setup a %1 nearby.</English>
     <Spanish>Los insurgentes instalaron un %1 cerca de aquí.</Spanish>
+    <Chinesesimp>叛乱分子在附近设置了一个%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_8">
     <English>Restore peace to this area, there is a %1 around here.</English>
     <Spanish>Traigan paz a esta área. Hay un %1 en alguna parte.</Spanish>
+    <Chinesesimp>恢复此区域的和平，这附近有一个%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_9">
     <English>I do not know where it is, but insurgents are operating a %1 somewhere around here.</English>
     <Spanish>No estoy seguro dónde, pero los insurgentes tienen un %1 por aquí en algún lugar.</Spanish>
+    <Chinesesimp>我不知道它在哪里，但叛乱分子正在附近某处操作一个%1。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_1">
     <English>I can't talk about that.</English>
     <Spanish>No puedo hablar sobre eso.</Spanish>
+    <Chinesesimp>我不能谈这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_2">
     <English>They would kill me.</English>
     <Spanish>Me matarían si dijera algo.</Spanish>
+    <Chinesesimp>他们会杀了我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_3">
     <English>Are you crazy.</English>
     <Spanish>Estás loco.</Spanish>
+    <Chinesesimp>你疯了吗</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_4">
     <English>Do you want to get me killed.</English>
     <Spanish>Tú me quieres ver muerto.</Spanish>
+    <Chinesesimp>你想杀了我吗。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_5">
     <English>I cannot put my family at risk by answering that.</English>
     <Spanish>No puedo poner a mi familia en riesgo contestando eso.</Spanish>
+    <Chinesesimp>我不能通过回答这个问题来让我的家人处于危险之中。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_6">
     <English>Get out of here!</English>
     <Spanish>¡Fuera de aquí!</Spanish>
+    <Chinesesimp>离开这里！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_7">
     <English>Get away from me!</English>
     <Spanish>¡Aléjate de mí!</Spanish>
+    <Chinesesimp>离我远点！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_8">
     <English>You disgust me!</English>
     <Spanish>¡Ustedes me dan asco!</Spanish>
+    <Chinesesimp>你让我恶心！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_1">
     <English>I have not seen anything.</English>
     <Spanish>No he visto nada.</Spanish>
+    <Chinesesimp>我什么也没看到。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_2">
     <English>Sorry, I haven't.</English>
     <Spanish>Lo siento, pero no.</Spanish>
+    <Chinesesimp>对不起，我没有。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_3">
     <English>No, I have not.</English>
     <Spanish>No, no he visto nada.</Spanish>
+    <Chinesesimp>对不起，我没有。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_4">
     <English>There has been no suspicious behavior lately.</English>
     <Spanish>No ha habido ningún comportamiento sospechoso últimamente.</Spanish>
+    <Chinesesimp>最近没有可疑行为。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_5">
     <English>Everything is peaceful here.</English>
     <Spanish>Todo anda tranquilo por aquí.</Spanish>
+    <Chinesesimp>这里一切都很平静。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_NOTHOSTILE_6">
     <English>We are a peaceful community.</English>
     <Spanish>Somos una comunidad tranquila.</Spanish>
+    <Chinesesimp>我们是一个和平的社区。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_1">
     <English>I will not put myself at risk.</English>
     <Spanish>No me voy a arriesgar por ustedes.</Spanish>
+    <Chinesesimp>我不会让自己处于危险之中。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_2">
     <English>They would kill me if I told you.</English>
     <Spanish>Me matarían si te dijera algo.</Spanish>
+    <Chinesesimp>如果我告诉你，他们会杀了我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_3">
     <English>I cannot talk about that.</English>
     <Spanish>No puedo hablar sobre eso.</Spanish>
+    <Chinesesimp>我不能谈这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_4">
     <English>There has been no suspicious behavior lately.</English>
     <Spanish>No ha habido ningún comportamiento sospechoso últimamente.</Spanish>
+    <Chinesesimp>最近没有可疑行为。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_5">
     <English>They wouldn't want me talking to you.</English>
     <Spanish>Ellos no querrían que yo hable con ustedes.</Spanish>
+    <Chinesesimp>他们不想让我和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_NOPRESENCE_BADLUCK_6">
     <English>I shouldn't be talking about this.</English>
     <Spanish>No debería hablar de eso con ustedes.</Spanish>
+    <Chinesesimp>我不应该谈论这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_1">
     <English>I cannot talk about that.</English>
     <Spanish>No puedo hablar sobre eso.</Spanish>
+    <Chinesesimp>我不能谈这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_2">
     <English>They wouldn't want me talking to you.</English>
     <Spanish>Ellos no querrían que yo hable con ustedes.</Spanish>
+    <Chinesesimp>他们不想让我和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_3">
     <English>I cannot help you.</English>
     <Spanish>No puedo ayudarles.</Spanish>
+    <Chinesesimp>我帮不了你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_4">
     <English>No, I have not.</English>
     <Spanish>No, no he visto nada.</Spanish>
+    <Chinesesimp>不，我没有。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_5">
     <English>I have not seen anything lately.</English>
     <Spanish>No he visto nada reciente.</Spanish>
+    <Chinesesimp>我最近什么也没看到。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_6">
     <English>There is no danger here.</English>
     <Spanish>No hay ningún peligro aquí.</Spanish>
+    <Chinesesimp>这里没有危险。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_7">
     <English>I don't have time for this.</English>
     <Spanish>No tengo tiempo para ustedes.</Spanish>
+    <Chinesesimp>我没有时间做这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_1">
     <English>I heard %1 was %2.</English>
     <Spanish>Oí que %1 estaba %2.</Spanish>
+    <Chinesesimp>我听说%1是%2。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_2">
     <English>Someone told me that %1 was %2.</English>
     <Spanish>Alguien me dijo que %1 estaba %2.</Spanish>
+    <Chinesesimp>有人告诉我%1是%2。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_3">
     <English>I saw that %1 was %2.</English>
     <Spanish>Vi que %1 estaba %2.</Spanish>
+    <Chinesesimp>我看到%1是%2</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_4">
     <English>I think %1 was %2.</English>
     <Spanish>Creo que %1 estaba %2.</Spanish>
+    <Chinesesimp>我认为%1是%2。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_5">
     <English>I was informed that %1 was %2.</English>
     <Spanish>Me informaron que %1 estaba %2.</Spanish>
+    <Chinesesimp>我被告知%1是%2。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_6">
     <English>I was told %1 was %2.</English>
     <Spanish>Me dijeron que %1 estaba %2.</Spanish>
+    <Chinesesimp>我被告知%1是%2。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_1">
     <English> I overheard where he was (Position marked on map).</English>
     <Spanish> Escuche dónde andaba (Posición marcada en el mapa).</Spanish>
+    <Chinesesimp>我无意中听到他在哪里（地图上标明的位置）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_2">
     <English> Someone told me where he was (Position marked on map).</English>
     <Spanish> Alguien me dijo dónde andaba (Posición marcada en el mapa).</Spanish>
+    <Chinesesimp>有人告诉我他在哪里（地图上标明的位置）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_3">
     <English> I saw him earlier (Position marked on map).</English>
     <Spanish> Lo ví hoy temprano (Posición marcada en el mapa).</Spanish>
+    <Chinesesimp>我早些时候见过他（地图上标明的位置）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_4">
     <English> I I think I know where you can find him (Position marked on map).</English>
     <Spanish> Creo que sé dónde le pueden encontrar (Posición marcada en el mapa).</Spanish>
+    <Chinesesimp>我想我知道你在哪里可以找到他（地图上标明的位置）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_1">
     <English> I'll show you where he lives (Home marked on map).</English>
     <Spanish> Te mostraré dónde vive (Casa marcada en el mapa).</Spanish>
+    <Chinesesimp>我会告诉你他住在哪里（地图上标明了家）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_2">
     <English> I know where he lives (Home marked on map).</English>
     <Spanish> Sé dónde vive (Casa marcada en el mapa).</Spanish>
+    <Chinesesimp>我知道他住在哪里（地图上标明了家</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_3">
     <English> Someone told me where he lives (Home marked on map).</English>
     <Spanish> Alguien me dijo dónde vive (Casa marcada en el mapa).</Spanish>
+    <Chinesesimp>有人告诉我他住在哪里（地图上标明了家）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_4">
     <English> I will show you where you can find him (Home marked on map).</English>
     <Spanish> Te mostraré dónde lo pueden encontrar (Casa marcada en el mapa).</Spanish>
+    <Chinesesimp>我会告诉你在哪里可以找到他（地图上标明了家）。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_1">
     <English>They wouldn't like me talking to you.</English>
     <Spanish>Ellos no querrían que hable con ustedes.</Spanish>
+    <Chinesesimp>他们不喜欢我和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_2">
     <English>I can't talk about this.</English>
     <Spanish>No puedo hablar sobre eso.</Spanish>
+    <Chinesesimp>我不能谈这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_3">
     <English>Please... just leave me alone.</English>
     <Spanish>Por favor... Déjenme tranquilo.</Spanish>
+    <Chinesesimp>求你了……别烦我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_4">
     <English>I can't help you.</English>
     <Spanish>No puedo ayudarles.</Spanish>
+    <Chinesesimp>我帮不了你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_5">
     <English>Please leave before they see you.</English>
     <Spanish>Por favor, váyanse antes de que los vean.</Spanish>
+    <Chinesesimp>请在他们见到你之前离开。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_6">
     <English>You must leave immediately.</English>
     <Spanish>Deben irse de inmediato.</Spanish>
+    <Chinesesimp>你必须马上离开。/Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_7">
     <English>They must not see me talking to you.</English>
     <Spanish>No puedo dejar que me vean hablando con ustedes.</Spanish>
+    <Chinesesimp>他们一定不要看到我和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_STRONG_1">
     <English>I support you.</English>
     <Spanish>les apoyo.</Spanish>
+    <Chinesesimp>我支持你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_STRONG_2">
     <English>You will have no problems with me.</English>
     <Spanish>Por mi parte, no tendrán problemas.</Spanish>
+    <Chinesesimp>你和我没有问题。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_STRONG_3">
     <English>I support your cause.</English>
     <Spanish>Apoyo su causa.</Spanish>
+    <Chinesesimp>我支持你的事业。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_STRONG_4">
     <English>You do not have to worry about me.</English>
     <Spanish>No hay por qué preocuparse por mí.</Spanish>
+    <Chinesesimp>你不用担心我。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_STRONG_5">
     <English>I fully support your forces.</English>
     <Spanish>Doy todo mi apoyo a sus fuerzas.</Spanish>
+    <Chinesesimp>我完全支持你们的部队。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_MEDIUM_1">
     <English>I mostly support you.</English>
     <Spanish>Les apoyo, la mayoría del tiempo.</Spanish>
+    <Chinesesimp>我基本上支持你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_MEDIUM_2">
     <English>I support you. Do not mess it up.</English>
     <Spanish>Les apoyo, nada más no la caguen.</Spanish>
+    <Chinesesimp>我支持你。不要把它搞砸了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_MEDIUM_3">
     <English>I have mixed feelings about your forces.</English>
     <Spanish>Tengo sentimientos encontrados sobre ustedes.</Spanish>
+    <Chinesesimp>我对你们的部队有复杂的感觉。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_MEDIUM_4">
     <English>You have keep my trust.</English>
     <Spanish>Tienen que mantener mi confianza.</Spanish>
+    <Chinesesimp>你一直保持着我的信任。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_MEDIUM_5">
     <English>I have supported you for awhile.</English>
     <Spanish>Les vengo apoyando hace un tiempo.</Spanish>
+    <Chinesesimp>我支持你已经有一段时间了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_WEAK_1">
     <English>Your forces have made bad decisions lately.</English>
     <Spanish>Sus fuerzas han tomado algunas malas decisiones últimamente.</Spanish>
+    <Chinesesimp>你的部队最近做出了错误的决定。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_WEAK_2">
     <English>I am beginning to dislike you.</English>
     <Spanish>Estoy comenzando a perder simpatía por ustedes.</Spanish>
+    <Chinesesimp>我开始讨厌你了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_WEAK_3">
     <English>You must regain my trust.</English>
     <Spanish>Tendrían que reganar mi confianza.</Spanish>
+    <Chinesesimp>你必须重新获得我的信任。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_WEAK_4">
     <English>You better not stay long.</English>
     <Spanish>Preferiría que no se queden por mucho tiempo aquí.</Spanish>
+    <Chinesesimp>你最好不要待太久。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_SUPPORT_WEAK_5">
     <English>I do not support you.</English>
     <Spanish>No los apoyo.</Spanish>
+    <Chinesesimp>我不支持你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_STRONG_1">
     <English>I strongly oppose of your presence here.</English>
     <Spanish>Me opongo rotundamente a su presencia aquí.</Spanish>
+    <Chinesesimp>我强烈反对你来这里</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_STRONG_2">
     <English>You better leave.</English>
     <Spanish>Sería mejor que se vayan.</Spanish>
+    <Chinesesimp>你最好离开。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_STRONG_3">
     <English>I do not support you.</English>
     <Spanish>No los apoyo.</Spanish>
+    <Chinesesimp>我不支持你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_STRONG_4">
     <English>I hate your forces.</English>
     <Spanish>Odio a sus fuerzas.</Spanish>
+    <Chinesesimp>我讨厌你的部队。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_STRONG_5">
     <English>You need to leave immediately.</English>
     <Spanish>Deberían irse, ¡Ya!.</Spanish>
+    <Chinesesimp>你需要马上离开。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_EXTREME_1">
     <English>I am extremely opposed to you.</English>
     <Spanish>Estoy absolutamente en contra de ustedes.</Spanish>
+    <Chinesesimp>我非常反对你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_EXTREME_2">
     <English>You do not here.</English>
     <Spanish>Ustedes, fuera de aquí.</Spanish>
+    <Chinesesimp>你不在这里。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_EXTREME_3">
     <English>You need to leave now.</English>
     <Spanish>No veo la hora de que se vayan.</Spanish>
+    <Chinesesimp>你现在得走了。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_EXTREME_4">
     <English>Get out of here!</English>
     <Spanish>¡Fuera de aquí!</Spanish>
+    <Chinesesimp>离开这里！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_OPPOSE_EXTREME_5">
     <English>Who would support people like you?</English>
     <Spanish>¿Quién podría darle apoyo a tipos como ustedes?</Spanish>
+    <Chinesesimp>谁会支持像你这样的人？</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_1">
     <English>I don't want to talk right now.</English>
     <Spanish>No quiero hablar ahora mismo.</Spanish>
+    <Chinesesimp>我现在不想说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_2">
     <English>I don't think I should be talking to you.</English>
     <Spanish>Creo que no debería estar hablando con ustedes.</Spanish>
+    <Chinesesimp>我想我不应该和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_3">
     <English>I shouldn't be talking to you.</English>
     <Spanish>No debería hablar con ustedes.</Spanish>
+    <Chinesesimp>我不应该和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_4">
     <English>You should move on.</English>
     <Spanish>No tiene importancia.</Spanish>
+    <Chinesesimp>你应该继续前进。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_5">
     <English>I can't answer that.</English>
     <Spanish>No puedo contestar eso.</Spanish>
+    <Chinesesimp>我无法回答</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_NOANSWER_6">
     <English>Get out of here!</English>
     <Spanish>¡Fuera de aquí!</Spanish>
+    <Chinesesimp>离开这里！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_1">
     <English>They wouldn't like me talking to you.</English>
     <Spanish>Ellos no querrían que esté hablando con ustedes</Spanish>
+    <Chinesesimp>他们不喜欢我和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_2">
     <English>I can't talk about this.</English>
     <Spanish>No puedo hablar sobre eso.</Spanish>
+    <Chinesesimp>我不能谈这个。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_3">
     <English>You must leave this place immediately.</English>
     <Spanish>Deberían irse de aquí, inmediatamente.</Spanish>
+    <Chinesesimp>你必须立即离开这个地方。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_4">
     <English>You are in severe danger here.</English>
     <Spanish>Están en grave peligro aquí.</Spanish>
+    <Chinesesimp>你在这里处境危险。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_5">
     <English>Please leave before they see you.</English>
     <Spanish>Por favor, váyanse antes de que los vean.</Spanish>
+    <Chinesesimp>请在他们见到你之前离开。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_6">
     <English>You must leave immediately.</English>
     <Spanish>Deberían irse inmediatamente.</Spanish>
+    <Chinesesimp>你必须马上离开。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_DANGER_7">
     <English>They must not see me talking to you.</English>
     <Spanish>No puedo dejar que me vean hablando con ustedes.</Spanish>
+    <Chinesesimp>他们一定不要看到我和你说话。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_STRONG_1">
     <English>You are well respected around here.</English>
     <Spanish>Ustedes son respetados por aquí.</Spanish>
+    <Chinesesimp>你在这里很受尊重。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_STRONG_2">
     <English>I don't think you need to worry about our hostility here.</English>
     <Spanish>No creo que tengan nada de qué preocuparse en este pueblo.</Spanish>
+    <Chinesesimp>我认为你不必担心我们在这里的敌意。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_STRONG_3">
     <English>We support you.</English>
     <Spanish>Les brindamos nuestro apoyo.</Spanish>
+    <Chinesesimp>我们支持你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_STRONG_4">
     <English>We will help you if we can.</English>
     <Spanish>Les ayudaremos en lo que podamos.</Spanish>
+    <Chinesesimp>如果可以的话，我们会帮助你的。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_STRONG_5">
     <English>You are supported here.</English>
     <Spanish>Aquí los apoyamos.</Spanish>
+    <Chinesesimp>这里支持您。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_MEDIUM_1">
     <English>Tensions have been rising lately.</English>
     <Spanish>La tensión está al alza últimamente.</Spanish>
+    <Chinesesimp>最近紧张局势不断加剧。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_MEDIUM_2">
     <English>The people around here are undecided.</English>
     <Spanish>La gente aquí está indecisa.</Spanish>
+    <Chinesesimp>这附近的人还没有决定。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_MEDIUM_3">
     <English>There are mixed feelings about you.</English>
     <Spanish>Hay opiniones mixtas sobre ustedes.</Spanish>
+    <Chinesesimp>对你有复杂的感觉。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_MEDIUM_4">
     <English>You might want to try and lower hostility around here.</English>
     <Spanish>Puede que quieran bajar la hostilidad en esta zona.</Spanish>
+    <Chinesesimp>你可能想尝试降低这里的敌意。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_SUPPORT_MEDIUM_5">
     <English>Most of us support you.</English>
     <Spanish>La mayoría de nosotros les apoyamos.</Spanish>
+    <Chinesesimp>我们大多数人都支持你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_MEDIUM_1">
     <English>Tensions have risen greatly.</English>
     <Spanish>La tensión aquí ha aumentado bastante.</Spanish>
+    <Chinesesimp>紧张局势大大加剧。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_MEDIUM_2">
     <English>The people around here do not like you.</English>
     <Spanish>No les agradan a la gente de aquí.</Spanish>
+    <Chinesesimp>这里的人不喜欢你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_MEDIUM_3">
     <English>You are not liked around here.</English>
     <Spanish>No son del agrado de la gente de por acá.</Spanish>
+    <Chinesesimp>这里不喜欢你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_MEDIUM_4">
     <English>You shouldn't stay long.</English>
     <Spanish>No deberían quedarse mucho tiempo.</Spanish>
+    <Chinesesimp>你不应该待太久。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_MEDIUM_5">
     <English>Most people do not support you.</English>
     <Spanish>La mayoría de la gente no les da apoyo.</Spanish>
+    <Chinesesimp>大多数人不支持你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_STRONG_1">
     <English>Tensions are very high.</English>
     <Spanish>La tensión aquí es muy alta.</Spanish>
+    <Chinesesimp>局势非常紧张。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_STRONG_2">
     <English>Be very careful of people around here.</English>
     <Spanish>Sean muy cuidadosos con la gente de por aquí.</Spanish>
+    <Chinesesimp>小心周围的人。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_STRONG_3">
     <English>You are strongly opposed here.</English>
     <Spanish>Hay una oposición férrea a ustedes aquí.</Spanish>
+    <Chinesesimp>你在这里强烈反对。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_STRONG_4">
     <English>You shouldn't stay long</English>
     <Spanish>No deberían quedarse mucho tiempo.</Spanish>
+    <Chinesesimp>你不应该待太久</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_STRONG_5">
     <English>Very few of us support you.</English>
     <Spanish>Muy pocos de nosotros les apoyamos.</Spanish>
+    <Chinesesimp>我们很少支持你。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_EXTREME_1">
     <English>Tensions are extremely high.</English>
     <Spanish>La tensión aquí es extremadamente alta.</Spanish>
+    <Chinesesimp>局势极其紧张。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_EXTREME_2">
     <English>You might get followed if you stick around.</English>
     <Spanish>Puede que los sigan si se quedan mucho tiempo aquí.</Spanish>
+    <Chinesesimp>如果你留下来，可能会被跟踪。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_EXTREME_3">
     <English>You are hated around here.</English>
     <Spanish>La gente de aquí los odia.</Spanish>
+    <Chinesesimp>你在这里很讨厌。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_TOWNOPINION_OPPOSE_EXTREME_4">
     <English>Barely anybody here supports you.</English>
     <Spanish>Prácticamente nadie aquí los apoya.</Spanish>
+    <Chinesesimp>这里几乎没有人支持你。</Chinesesimp>
 </Key>
 </Container>
 

@@ -4,17 +4,22 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_SCOM">
     <English>Player Command/Control (C2ISTAR)</English>
+    <Chinesesimp>玩家命令/控制(C2ISTAR)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SCOM_MENU">
     <English>Player C2ISTAR</English>
+    <Chinesesimp>玩家C2ISTAR</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SCOM_COMMENT">
     <English>Group Management</English>
+    <Chinesesimp>小组管理</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SCOM_INTEL_COMMENT">
     <English>Battlefield Intelligence</English>
+    <Chinesesimp>战场情报</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SCOM_OPS_COMMENT">
     <English>Command/Control</English>
+    <Chinesesimp>命令/控制</Chinesesimp>
 </Key>
 </Container></Package></Project>

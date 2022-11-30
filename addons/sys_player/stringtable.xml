@@ -6,116 +6,154 @@
     <English>Player Persistence</English>
     <German>Player Persistence</German>
     <Italian>Player Persistence</Italian>
+	<Chinesesimp>玩家持续性</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_COMMENT">
     <English>Player Persistence Module</English>
+	<Chinesesimp>玩家持续性模组</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_ENABLE">
     <English>Persist Player State</English>
+	<Chinesesimp>保持玩家状态</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_ENABLE_COMMENT">
     <English>Persist Player State between server disconnects and/or server restarts</English>
+	<Chinesesimp>在服务器断开连接和/或服务器重新启动之间保持玩家状态</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowReset">
     <English>Allow Player State Reset:</English>
+	<Chinesesimp>允许玩家状态重置：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowReset_ENABLE">
     <English>Enable Player Reset</English>
+	<Chinesesimp>启用玩家重置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowReset_DISABLE">
     <English>Disable Player Reset</English>
+	<Chinesesimp>禁用玩家重置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowReset_COMMENT">
     <English>Allow players to reset themselves to their current session starting state or manual save point</English>
+	<Chinesesimp>允许玩家将自己重置为当前会话开始状态或手动保存点</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowReset_ACTION">
     <English>Reset to Previous Session State</English>
+	<Chinesesimp>重置为上一个会话状态</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowManualSave">
     <English>Allow Player Manual Save:</English>
+	<Chinesesimp>允许玩家手动保存：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowReset_ACTION_COMMENT">
     <English>Reset yourself to the last current session starting state or manual save point</English>
+	<Chinesesimp>将自己重置为上一个当前会话开始状态或手动保存点</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowManualSave_ENABLE">
     <English>Enable Player Manual Save</English>
+	<Chinesesimp>启用玩家手动保存</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowManualSave_DISABLE">
     <English>Disable Player Manual Save</English>
+	<Chinesesimp>禁用玩家手动保存</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowManualSave_COMMENT">
     <English>Allow players to manually save their current state</English>
+	<Chinesesimp>允许玩家手动保存当前状态</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowManualSave_ACTION">
     <English>Save Player Data</English>
+	<Chinesesimp>保存玩家数据</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowManualSave_ACTION_COMMENT">
     <English>Save your player data between disconnect and reconnect. If DB is enabled, will store player state between server restarts.</English>
+	<Chinesesimp>在断开连接和重新连接之间保存您的播放器数据。 如果启用 DB,将在服务器重新启动之间存储玩家状态。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowDiffClass">
     <English>Allow Different Class Rejoin:</English>
+	<Chinesesimp>允许不同的兵种重新加入：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowDiffClass_ENABLE">
     <English>Enable Different Class Rejoin</English>
+	<Chinesesimp>启用不同的兵种重新加入</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowDiffClass_DISABLE">
     <English>Disable Different Class Rejoin</English>
+	<Chinesesimp>停用不同的兵种重新加入</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_allowDiffClass_COMMENT">
     <English>Allow players to rejoin the mission as a different class</English>
+	<Chinesesimp>允许玩家以不同的兵种重新加入任务</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_storeToDB">
     <English>Save to Database:</English>
+	<Chinesesimp>保存到数据库：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_storeToDB_ENABLE">
     <English>Enable external database</English>
+	<Chinesesimp>启用外部数据库</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_storeToDB_DISABLE">
     <English>Disable External Database</English>
+	<Chinesesimp>禁用外部数据库</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_storeToDB_COMMENT">
     <English>Enable/disable saving player data</English>
+	<Chinesesimp>启用/禁用保存玩家数据</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_SAVELOADOUT">
     <English>Store Loadout:</English>
+	<Chinesesimp>储存装备：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_SAVELOADOUT_COMMENT">
     <English>Enable/disable saving player load-out data</English>
+	<Chinesesimp>启用/停用保存玩家装备数据</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_SAVEAMMO">
     <English>Store Ammo Count:</English>
+	<Chinesesimp>储存弹药数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_SAVEAMMO_COMMENT">
     <English>Enable/disable saving player ammo count</English>
+	<Chinesesimp>启用/停用储存玩家弹药数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_SAVEHEALTH">
     <English>Store Health:</English>
+	<Chinesesimp>储存健康：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_SAVEHEALTH_COMMENT">
     <English>Enable/disable saving player health data</English>
+	<Chinesesimp>启用/停用储存玩家健康数据</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_SAVEPOSITION">
     <English>Store Position:</English>
+	<Chinesesimp>储存位置：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_SAVEPOSITION_COMMENT">
     <English>Enable/disable saving player position data</English>
+	<Chinesesimp>启用/停用保存玩家位置数据</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_SAVESCORES">
     <English>Store Scores:</English>
+	<Chinesesimp>储存积分：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_SAVESCORES_COMMENT">
     <English>Enable/disable saving player score for the current mission</English>
+	<Chinesesimp>启用/停用保存玩家当前任务的积分</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_autoSaveTime">
     <English>Auto Save Interval:</English>
+	<Chinesesimp>自动保存间隔</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_autoSaveTime_SET">
     <English>Set Auto Save Interval</English>
+	<Chinesesimp>设定自动保存间隔</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_autoSaveTime_COMMENT">
     <English>Set the interval between auto saves of player data (in seconds) to external database. This may impact server performance. 0 means save only at mission exit or player disconnection.</English>
+	<Chinesesimp>设定为玩家数据自动保存到外部数据库的间隔(以秒计)。这可能会影响服务器性能。0意为仅在任务退出或玩家断开连接时保存。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_ERROR1">
     <English>Only one Player Persistence module can be used</English>
+	<Chinesesimp>只有一个玩家持续性模组可以被使用</Chinesesimp>
 </Key>
 </Container></Package></Project>

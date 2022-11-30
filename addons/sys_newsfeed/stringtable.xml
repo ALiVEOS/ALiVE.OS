@@ -4,30 +4,39 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_NEWSFEED">
     <English>Newsfeed</English>
+    <Chinesesimp>新闻源</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_COMMENT">
     <English>ALiVE Newsfeed direct to in Game</English>
+    <Chinesesimp>将ALiVE新闻源接入到游戏中</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_ALLOW">
     <English>Enable Newsfeed:</English>
+    <Chinesesimp>启用新闻源：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_ALLOW_COMMENT">
     <English>Allow the option to get the latest ALiVE News in Game</English>
+    <Chinesesimp>允许选择在游戏中获取最新的ALiVE新闻</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_ENABLE">
     <English>Enable Newsfeed</English>
+    <Chinesesimp>启用新闻源</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_ENABLE_COMMENT">
     <English>Enable the dispaly of the ALiVE Newsfeed in game</English>
+    <Chinesesimp>在游戏中启用ALiVE新闻源的显示</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_DISABLE">
     <English>Disable Newsfeed</English>
+    <Chinesesimp>禁用新闻源</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_DISABLE_COMMENT">
     <English>Disable the dispaly of the ALiVE Newsfeed in game</English>
+    <Chinesesimp>在游戏中禁用ALiVE新闻源的显示</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_NEWSFEED_ERROR1">
     <English>Only one newsfeed module can be used</English>
+    <Chinesesimp>只能使用一个新闻源模块</Chinesesimp>
 </Key>
 
 </Container></Package></Project>

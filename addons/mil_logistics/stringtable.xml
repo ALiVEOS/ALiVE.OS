@@ -4,122 +4,162 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ML">
     <English>Military Logistics</English>
+	<Chinesesimp>军事后勤</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_COMMENT">
     <English>Strategic Military Logistics</English>
+	<Chinesesimp>战略军事后勤</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_DEBUG">
     <English>Enable Debug:</English>
+	<Chinesesimp>启用调试：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_DEBUG_COMMENT">
     <English>Enables ML Module Debug</English>
+	<Chinesesimp>启用军事后勤模组调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_PERSISTENT">
     <English>Persistent:</English>
+	<Chinesesimp>持久变量：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_PERSISTENT_COMMENT">
     <English>Enables external Database persistence for military logistics</English>
+	<Chinesesimp>为军事后勤启用外部数据库持久性</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_TYPE">
     <English>Reinforcement Type:</English>
+	<Chinesesimp>增援类型：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_TYPE_COMMENT">
     <English>Select the type of logistics. Dynamic, will fall back to lower priority objectives if lost. Static will only select the closest objective to use as insertion point</English>
+	<Chinesesimp>选择后勤类型。动态的，如果丢失，将退回到较低优先级的目标。静态的，只会选择最近的目标作为插入点。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_TYPE_DYNAMIC">
     <English>Dynamic</English>
+	<Chinesesimp>动态的</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_TYPE_STATIC">
     <English>Static</English>
+	<Chinesesimp>静态的</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL">
     <English>Force Pool:</English>
+	<Chinesesimp>力量池：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_COMMENT">
     <English>The number of groups that can be called upon for reinforcements</English>
+	<Chinesesimp>呼叫增援时能呼叫的组的数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_DYNAMIC">
     <English>Dynamic</English>
+	<Chinesesimp>动态的</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_INFINITE">
     <English>Infinite</English>
+	<Chinesesimp>无限的</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_20000">
     <English>20000</English>
+	<Chinesesimp>20000</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_10000">
     <English>10000</English>
+	<Chinesesimp>10000</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_5000">
     <English>5000</English>
+	<Chinesesimp>5000</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_2500">
     <English>2500</English>
+	<Chinesesimp>2500</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_1000">
     <English>1000</English>
+	<Chinesesimp>1000</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_500">
     <English>500</English>
+	<Chinesesimp>500</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_200">
     <English>200</English>
+	<Chinesesimp>200</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_100">
     <English>100</English>
+	<Chinesesimp>100</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_FORCE_POOL_50">
     <English>50</English>
+	<Chinesesimp>50</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_INF">
     <English>Allow Infantry:</English>
+	<Chinesesimp>允许步兵</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_INF_COMMENT">
     <English>Allow infantry reinforcements</English>
+	<Chinesesimp>允许步兵增援</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_MECH">
     <English>Allow Mechanised:</English>
+	<Chinesesimp>允许机械化</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_MECH_COMMENT">
     <English>Allow mechanised reinforcements</English>
+	<Chinesesimp>允许机械化增援</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_MOT">
     <English>Allow Motorised:</English>
+	<Chinesesimp>允许摩托化</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_MOT_COMMENT">
     <English>Allow motorised reinforcements</English>
+	<Chinesesimp>允许摩托化增援</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_ARM">
     <English>Allow Armour:</English>
+	<Chinesesimp>允许装甲</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_ARM_COMMENT">
     <English>Allow armour reinforcements</English>
+	<Chinesesimp>允许装甲增援</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_HELI">
     <English>Allow Helicopters:</English>
+	<Chinesesimp>允许直升机</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_HELI_COMMENT">
     <English>Allow helicopters reinforcements</English>
+	<Chinesesimp>允许直升机增援</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_PLANE">
     <English>Allow Planes:</English>
+	<Chinesesimp>允许飞机</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_PLANE_COMMENT">
     <English>Allow planes reinforcements</English>
+	<Chinesesimp>允许飞机增援</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ENABLE_AIR_TRANSPORT">
     <English>Enable Air Transport:</English>
+	<Chinesesimp>允许空中运输</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_ENABLE_AIR_TRANSPORT_COMMENT">
     <English>Allow reinforcements to be flown in by air transport</English>
+	<Chinesesimp>允许增援被空中运输飞行</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_LIMIT">
     <English>Air Transport Assets:</English>
+	<Chinesesimp>空中运输资产：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_LIMIT_COMMENT">
     <English>Limit available air transport assets to faction only or faction and side</English>
+	<Chinesesimp>限制空中运输资产于仅派系，或派系和阵营</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_USAGE">
     <English>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</English>
+	<Chinesesimp>放置一个军事后勤模块，以在同步的军事人工智能指挥官模块的控制下增援和补给派系。</Chinesesimp>
 </Key>
 </Container></Package></Project>

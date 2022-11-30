@@ -4,80 +4,106 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_LOGISTICS">
     <English>Player Logistics</English>
+    <Chinesesimp>玩家后勤</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_COMMENT">
     <English>Enables the possibility to use the ALiVE Logistics system</English>
+    <Chinesesimp>允许使用ALiVE后勤系统</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELOG">
     <English>Disable Logistics:</English>
+    <Chinesesimp>禁用后勤：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELOG_COMMENT">
     <English>Kills Player Logistics completely!</English>
+    <Chinesesimp>完全消灭玩家后勤</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICSDISABLE">
     <English>Player Logistics (Disable)</English>
+    <Chinesesimp>玩家后勤(禁用)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICSDISABLE_COMMENT">
     <English>Disables the possibility to move, load, unload and tow on all or specific objects ()!</English>
+    <Chinesesimp>禁止在所有或特定对象上移动、装载、卸载和牵引()!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICSDISABLE_USAGE">
     <English>Place 'Disable Player Logistics'-module in your mission and set the appropriate settings and if you want to disable certain player logistics features or sync objects that you want to exclude completely!</English>
+    <Chinesesimp>将“禁用玩家后勤”模块放置在您的任务中，并设置适当的设置，如果您想禁用某些玩家后勤功能或同步您想完全排除的对象！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DEBUG">
     <English>Debug:</English>
+    <Chinesesimp>调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DEBUG_COMMENT">
     <English>Enable Debug</English>
+    <Chinesesimp>启动调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLEACTIONS_COMMENT">
     <English>Deactivate Logistics Actions</English>
+    <Chinesesimp>停用后勤操作</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_ENABLEACTIONS_COMMENT">
     <English>Activate Logistics Actions</English>
+    <Chinesesimp>激活后勤操作</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_ERROR1">
     <English>Only one player logistics module allowed</English>
+    <Chinesesimp>仅允许一个玩家后勤模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE">
     <English>Disable Persistence:</English>
+    <Chinesesimp>禁止持续存在:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE_COMMENT">
     <English>Disables the possibility to save to DB!</English>
+    <Chinesesimp>禁止保存到数据库！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELOAD">
     <English>Disable Load/Unload:</English>
+    <Chinesesimp>禁用加载/卸载：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELOAD_COMMENT">
     <English>Disables the possibility to load / unload!</English>
+    <Chinesesimp>禁用加载/卸载！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLECARRY">
     <English>Disable Carry:</English>
+    <Chinesesimp>禁止携带:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLECARRY_COMMENT">
     <English>Disables the possibility to carry objects!</English>
+    <Chinesesimp>禁止携带物品！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLETOW">
     <English>Disable Towing:</English>
+    <Chinesesimp>禁用牵引：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLETOW_COMMENT">
     <English>Disables the possibility to tow vehicles!</English>
+    <Chinesesimp>禁止牵引车辆！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELIFT">
     <English>Disable Lifting:</English>
+    <Chinesesimp>禁止吊运</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELIFT_COMMENT">
     <English>Disables lifting objects/vehicles!</English>
+    <Chinesesimp>禁止吊运物体/车辆！</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLE3D">
     <English>Disable 3D:</English>
+    <Chinesesimp>禁用3D:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLE3D_COMMENT">
     <English>Disables 3D Editor (WIP)</English>
+    <Chinesesimp>禁用3D编辑器(WIP)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_BLACKLIST">
     <English>Blacklist:</English>
+    <Chinesesimp>黑名单:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_BLACKLIST_COMMENT">
     <English>Excludes given class from any ALiVE Logistics feature (f.e. "B_Soldier_F","Land")</English>
+    <Chinesesimp>从任何ALiVE后勤功能中排除给定的类(例如“B_Sdidir_f”、“Land”)</Chinesesimp>
 </Key>
 </Container></Package></Project>

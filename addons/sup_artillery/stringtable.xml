@@ -4,83 +4,110 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_ARTILLERY">
     <English>Player Combat Support (Artillery)</English>
+    <Chinesesimp>玩家战斗支援(火炮)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_COMMENT">
     <English>Artillery Module for ALiVE Combat Support</English>
+    <Chinesesimp>用于ALiVE作战支持的火炮模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_USAGE">
     <English>Place Module and set the settings accordingly! Sync to a Combat Support Module!</English>
+    <Chinesesimp>放置模块并设置相应的设置!同步到战斗支援模块!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CALLSIGN">
     <English>Callsign</English>
+    <Chinesesimp>呼号</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CALLSIGN_DESC">
     <English>Enter the Callsign, ensure that it is unique</English>
+    <Chinesesimp>输入呼号，确保它是唯一的</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_TYPE">
     <English>Arty\Mortar Type</English>
+    <Chinesesimp>火炮\迫击炮类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_TYPE_DESC">
     <English>Type of Arty or Mortar e.g. BUS_MotInf_MortTeam</English>
+    <Chinesesimp>火炮或迫击炮类型 例如  BUS_MotInf_MortTeam</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_HE">
     <English>Number of HE Rounds </English>
+    <Chinesesimp>高爆弹数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_HE_DESC">
     <English>Set the number of rounds of HE available for the asset - Used by all Arty\Mortar Assets</English>
+    <Chinesesimp>设置物资可用的高爆弹数量 - 由所有火炮\迫击炮使用</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ILLUM">
     <English>Number of ILLUM Rounds </English>
+    <Chinesesimp>照明弹数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ILLUM_DESC">
     <English>Set the number of rounds of ILLUM available for the asset - Used by all Arty\Mortar Assets</English>
+    <Chinesesimp>设置物资可用的照明弹数量 - 由所有火炮\迫击炮使用</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_SMOKE">
     <English>Number of SMOKE Rounds </English>
+    <Chinesesimp>烟雾弹数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_SMOKE_DESC">
     <English>Set the number of rounds of SMOKE available for the asset - Used by all Arty\Mortar Assets</English>
+    <Chinesesimp>设置物资可用的烟雾弹数量 - 由所有火炮\迫击炮使用</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_GUIDED">
     <English>Number of GUIDED Rounds </English>
+    <Chinesesimp>制导导弹数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_GUIDED_DESC">
     <English>Set the number of rounds of ROCKET available for the asset - Only used by MBT</English>
+    <Chinesesimp>设置物资可用的火箭弹数量 - 仅主战坦克使用</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CLUSTER">
     <English>Number of CLUSTER Rounds </English>
+    <Chinesesimp>子母弹数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CLUSTER_DESC">
     <English>Set the number of rounds of CLUSTERS available for the asset - Only used by MBT</English>
+    <Chinesesimp>设置物资可用的子母弹数量 - 仅主战坦克使用</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_LG">
     <English>Number of Laser Guided Rounds </English>
+    <Chinesesimp>激光制导导弹数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_LG_DESC">
     <English>Set the number of rounds of LG available for the asset - Only used by MBT</English>
+    <Chinesesimp>设置物资可用的激光制导导弹数量 - 仅主战坦克使用</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_MINE">
     <English>Number of MINE Rounds </English>
+    <Chinesesimp>布雷弹数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_MINE_DESC">
     <English>Set the number of rounds of MINE available for the asset - Only used by MBT</English>
+    <Chinesesimp>设置物资可用的布雷弹数量 - 仅主战坦克使用</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ATMINE">
     <English>Number of AT MINES Rounds </English>
+    <Chinesesimp>反坦克布雷弹数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ATMINE_DESC">
     <English>Set the number of rounds of AT MINES available for the asset - Only used by MBT</English>
+    <Chinesesimp>设置物资可用的反坦克布雷弹数量 - 仅主战坦克使用</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ROCKETS">
     <English>Number of ROCKET Rounds </English>
+    <Chinesesimp>火箭弹数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ROCKETS_DESC">
     <English>Set the number of rounds of 230mm Titan Missile available for the asset - Only used by MLRS</English>
+    <Chinesesimp>设置物资可用的230毫米泰坦导弹数量 - 仅多管火箭发射系统使用</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CODE">
     <English>Code</English>
+    <Chinesesimp>代码</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CODE_DESC">
     <English>Code that will be ran on each artillery piece</English>
+    <Chinesesimp>将在每门火炮上运行的代码</Chinesesimp>
 </Key>
 </Container></Package></Project>

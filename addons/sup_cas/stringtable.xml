@@ -4,36 +4,47 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_CAS">
     <English>Player Combat Support (CAS)</English>
+    <Chinesesimp>玩家战斗支援 (CAS)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CAS_COMMENT">
     <English>CAS Module for ALiVE Combat Support</English>
+    <Chinesesimp>CAS模块用于实时战斗支援</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CAS_USAGE">
     <English>Place Module and set the settings accordingly! Sync to a Combat Support Module!</English>
+    <Chinesesimp>放置模块并设置相应的设置!同步到战斗支援模块!</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CAS_CALLSIGN">
     <English>Callsign</English>
+    <Chinesesimp>呼号</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CAS_CALLSIGN_DESC">
     <English>Enter the Callsign, ensure that it is unique</English>
+    <Chinesesimp>输入呼号，确保它是唯一的</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CAS_TYPE">
     <English>CAS Vehicle Type</English>
+    <Chinesesimp>CAS 载具类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CAS_TYPE_DESC">
     <English>Type of CAS i.e B_Heli_Attack_01_F or I_Plane_Fighter_03_CAS_F</English>
+    <Chinesesimp>CAS类型 例如 B_Heli_Attack_01_F or I_Plane_Fighter_03_CAS_F</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CAS_HEIGHT">
     <English>Spawn Height</English>
+    <Chinesesimp>生成高度</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CAS_HEIGHT_DESC">
     <English>Sets Assets Spawn Height ASL, for use with Nimitz Addon</English>
+    <Chinesesimp>设置资源生成高度, 用于Nimitz插件</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CAS_CODE">
     <English>Code</English>
+    <Chinesesimp>代码</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CAS_CODE_DESC">
     <English>Code that will be ran on this unit</English>
+    <Chinesesimp>将在此单元上运行的代码</Chinesesimp>
 </Key>
 
 </Container></Package></Project>

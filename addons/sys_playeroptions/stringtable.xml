@@ -4,35 +4,46 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_playeroptions">
     <English>ALiVE Player Options</English>
+    <Chinesesimp>ALiVE玩家选项</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PLAYEROPTIONS_SHORT">
     <English>Player Options</English>
+    <Chinesesimp>玩家选项</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_COMMENT">
     <English>Set in game player options such as view distance, respawn, player persistence, crew info, player tags and more</English>
+    <Chinesesimp>设置游戏玩家选项,如视野距离,重生,玩家持久性,乘员信息,玩家标签等</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_playeroptionsPARAMS">
     <English>Template Parameters</English>
+    <Chinesesimp>模板参数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_ERROR1">
     <English>Only one module template allowed</English>
+    <Chinesesimp>只允许一个模块模板</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_playeroptionsPARAMS_COMMENT">
     <English>Over-ride default parameters for the Module Template</English>
+    <Chinesesimp>覆盖模块模板的默认参数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_DEBUG">
     <English>Debug:</English>
+    <Chinesesimp>调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_DEBUG_COMMENT">
     <English>Enable Debug</English>
+    <Chinesesimp>启用调试DEBUG:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_playeroptions_USAGE">
     <English>Simply place the ALiVE Player Options module and set the appropriate parameters. You do not need to sync, position or orientate this module.</English>
+    <Chinesesimp>简单地放置ALIVE玩家选项模块,并设置适当的参数。你不需要同步,或定位这个模块。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_RESTORE_MARKERS">
     <English>Restore ALiVE Markers</English>
+    <Chinesesimp>恢复ALIVE标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_player_RESTORE_MARKERS_COMMENT">
     <English>Reinitialise the ALiVE SYS Marker Store locally</English>
+    <Chinesesimp>在本地重新初始化ALIVE SYS标记存储</Chinesesimp>
 </Key>
 </Container></Package></Project>

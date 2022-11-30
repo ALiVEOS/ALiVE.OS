@@ -4,131 +4,174 @@
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_IED">
     <English>Military IED Threat</English>
+	<Chinesesimp>军事简易爆炸装置威胁</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_COMMENT">
     <English>Ambient IEDs, VB-IEDs and Suicide Bombers</English>
+	<Chinesesimp>环境简易爆炸装置、车载简易爆炸装置和自杀式炸弹袭击者</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_DEBUG">
     <English>Enable debug:</English>
+	<Chinesesimp>启用调试：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_DEBUG_COMMENT">
     <English>Enables debug</English>
+	<Chinesesimp>启用调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_PERSISTENCE">
     <Original>Persist IEDs:</Original>
+	<Chinesesimp>持久型简易爆炸装置:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_PERSISTENCE_COMMENT">
     <Original>Persist IED locations over mission loads</Original>
+	<Chinesesimp>在任务负载上保持简易爆炸装置位置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ied_IED_Detection">
     <English>IED Detection Alert:</English>
+	<Chinesesimp>简易爆炸装置检测警报：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ied_IED_Detection_COMMENT">
     <English>Choose the type of notification a player will recieve when detecting an IED</English>
+	<Chinesesimp>选择玩家在检测到简易爆炸装置时将收到的通知类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Detection_Device">
     <English>IED Detector Class:</English>
+	<Chinesesimp>简易爆炸装置探测器类别：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Detection_Device_COMMENT">
     <English>Enter the class name of the device used to detect IEDs</English>
+	<Chinesesimp>输入用于检测简易爆炸装置的设备的类名</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_TAOR">
     <English>TAOR Marker:</English>
+	<Chinesesimp>TAOR 标记：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_TAOR_COMMENT">
     <English>Tactical Area Operation Responsibility Marker</English>
+	<Chinesesimp>战术区作战责任标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_BLACKLIST">
     <English>Blacklist Marker:</English>
+	<Chinesesimp>黑名单标记：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_BLACKLIST_COMMENT">
     <English>Exclusion Marker</English>
+	<Chinesesimp>排除标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_Roadblocks">
     <English>Roadblocks:</English>
+	<Chinesesimp>路障：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_Roadblocks_COMMENT">
     <English>Define the probability of roadblocks within the AO</English>
+	<Chinesesimp>定义行动区域内出现路障的概率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Threat">
     <English>IED Threat:</English>
+	<Chinesesimp>简易爆炸装置威胁：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Threat_Level">
     <English>IED Threat Level</English>
+	<Chinesesimp>简易爆炸装置威胁等级</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Threat_COMMENT">
     <English>Define the level of IED Threat within the AO</English>
+	<Chinesesimp>定义行动区域内的简易爆炸装置威胁级别</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Starting_Threat">
     <Original>Starting IED Threat:</Original>
+	<Chinesesimp>初始简易爆炸装置威胁级别</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Starting_Threat_COMMENT">
     <Original>Define the initial starting threat of IED's on first Mission load when IED module is synced to the Military Commander</Original>
+	<Chinesesimp>当简易爆炸装置模块同步到军事指挥官时,定义简易爆炸装置在第一次任务加载时的初始启动威胁</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Threat">
     <English>Vehicle Borne IED Threat:</English>
+	<Chinesesimp>车载简易爆炸装置威胁：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Threat_Level">
     <English>Vehicle Borne IED Threat Level</English>
+	<Chinesesimp>车载简易爆炸装置威胁等级</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Threat_COMMENT">
     <English>Define the probability of VB-IED threat within the AO</English>
+	<Chinesesimp>定义行动区域内车载简易爆炸装置威胁的概率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Side">
     <English>Bomber/Vehicle IED Side:</English>
+	<Chinesesimp>自杀式炸弹袭击者/车载简易爆炸装置阵营</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Side_COMMENT">
     <English>Define which sides bombers/vehicles will carry IEDs</English>
+	<Chinesesimp>定义哪些阵营的自杀式炸弹袭击者/车辆会携带简易爆炸装置阵营</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_Bomber_Threat">
     <English>Suicide Bomber Threat:</English>
+	<Chinesesimp>自杀式炸弹袭击者威胁：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_Bomber_Threat_Level">
     <English>Suicide Bomber Threat Level</English>
+	<Chinesesimp>自杀式炸弹袭击者威胁等级</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_Bomber_Threat_COMMENT">
     <English>Define the probability of suicide bomber threat within the AO</English>
+	<Chinesesimp>定义行动区域内自杀式炸弹袭击者威胁的概率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_Bomber_Type">
     <English>(Optional) Bomber Classes:</English>
+	<Chinesesimp>（可选）自杀式炸弹袭击者种类</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_Bomber_Type_COMMENT">
     <English>Optionally specify a list of bomber classes here i.e. ["C_Nikos","C_Nikos_aged"]</English>
+	<Chinesesimp>在此选择性地指定一个自杀式炸弹袭击者种类列表</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_Locs_IED">
     <English>IED/Bomber Locations:</English>
+	<Chinesesimp>简易爆炸装置/自杀式炸弹袭击者位置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_Locs_IED_COMMENT">
     <English>Choose where IED, VB-IED or Suicide bombers may exist</English>
+	<Chinesesimp>选择在何处简易爆炸装置/车载简易爆炸装置或自杀式炸弹袭击者可以存在</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_3RDPARTY">
     <English>3rd Party IED System:</English>
+	<Chinesesimp>第三方简易爆炸装置系统</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_3RDPARTY_COMMENT">
     <English>Select this if you are using 3rd party IED mods such as ACE, EOD etc.</English>
+	<Chinesesimp>如果你在使用第三方简易爆炸装置模组如ACE,EOD等,选择此选项</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_ERROR1">
     <English>Only one IED module can be used</English>
+	<Chinesesimp>只有一个简易爆炸装置模组可以被使用</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_DEBUG_ENABLE">
     <English>Activate IED Debug</English>
+	<Chinesesimp>启用简易爆炸装置调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_DEBUG_DISABLE">
     <English>Deactivate IED Debug</English>
+	<Chinesesimp>停用简易爆炸装置调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_USAGE">
     <English>IEDs are often triggered by proximity. Players who are Explosive Specialists or carry a Mine Detector can often get close enough to disarm, anyone else is taking an extreme risk.</English>
+	<Chinesesimp>简易爆炸装置调试通常因接近触发。是爆裂物专家或携带探雷器的玩家通常能足够接近去解除武装,任何其他人将承担极端风险</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_ROAD_IED_CLASSES">
     <English>Roadside IED Classes:</English>
+	<Chinesesimp>路边简易爆炸装置种类</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_URBAN_IED_CLASSES">
     <English>Urban IED Classes:</English>
+	<Chinesesimp>城市简易爆炸装置种类</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_CLUTTER_CLASSES">
     <English>Clutter Object Classes:</English>
+	<Chinesesimp>杂物对象种类</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_Classes_COMMENT">
     <English>Define the classes used for IEDs and clutter objects</English>
+	<Chinesesimp>定义用于简易爆炸装置和杂物对象的种类</Chinesesimp>
 </Key>
 </Container></Package></Project>
