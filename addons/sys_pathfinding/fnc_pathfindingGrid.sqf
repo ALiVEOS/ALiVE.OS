@@ -157,7 +157,10 @@ switch (_operation) do {
         private _sectorIndex = _args;
         private _indices = [_logic, "getNeighborIndices", _sectorIndex] call Alive_fnc_pathfindingGrid;
         private _neighbors = [];
-        {_sector = [_logic,"getSector", _x] call ALiVE_fnc_pathfindingGrid; _neighbors pushback _sector;} foreach _indices;
+        {
+            _sector = [_logic,"getSector", _x] call ALiVE_fnc_pathfindingGrid; 
+            if !(isnil "_sector") then {_neighbors pushback _sector;};
+        } foreach _indices;
         _result = _neighbors;
     };
 
@@ -165,7 +168,10 @@ switch (_operation) do {
         private _sectorIndex = _args;
         private _indices = [_logic, "getNeighborIndices", _sectorIndex] call Alive_fnc_pathfindingGrid;
         private _neighbors = [];
-        {_subSector = [_logic,"getSubSector", _x] call ALiVE_fnc_pathfindingGrid; _neighbors pushback _subSector;} foreach _indices;
+        {
+            _subSector = [_logic,"getSubSector", _x] call ALiVE_fnc_pathfindingGrid; 
+            if !(isnil "_subSector") then { _neighbors pushback _subSector;};
+        } foreach _indices;
         _result = _neighbors;
     };
 
