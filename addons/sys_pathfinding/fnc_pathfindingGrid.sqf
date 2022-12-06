@@ -18,6 +18,15 @@ private _fns_decompressWaterSector = {
     _sectorCopy;
 };
 
+private _fnc_mapBoundsOuterLimit = {
+    params ["_value"];
+    
+    if (_value <= 0) then {_value = 1;};
+    if (_value >= worldSize) then {_value = worldSize - 1;};
+
+    _value
+};
+
 switch (_operation) do {
 
     case "create": {
@@ -122,6 +131,11 @@ switch (_operation) do {
 
         private _pos = _args;
 
+        if (isnil "_pos") exitwith {};
+
+        _pos set [0, [_pos select 0] call _fnc_mapBoundsOuterLimit];
+        _pos set [1, [_pos select 1] call _fnc_mapBoundsOuterLimit];
+
         private _sectorIndex = [_logic,"positionToIndex", _pos] call ALiVE_fnc_pathfindingGrid;
         _result = [_logic,"getSector", _sectorIndex] call ALiVE_fnc_pathfindingGrid;
 
@@ -130,6 +144,11 @@ switch (_operation) do {
     case "positionToSubSector": {
 
         private _pos = _args;
+
+        if (isnil "_pos") exitwith {};
+
+        _pos set [0, [_pos select 0] call _fnc_mapBoundsOuterLimit];
+        _pos set [1, [_pos select 1] call _fnc_mapBoundsOuterLimit];
 
         private _subSectorIndex = [_logic,"positionToSubIndex", _pos] call ALiVE_fnc_pathfindingGrid;
         _result = [_logic,"getSubSector", _subSectorIndex] call ALiVE_fnc_pathfindingGrid;
