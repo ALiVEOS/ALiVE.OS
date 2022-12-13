@@ -71,6 +71,8 @@ switch (_operation) do {
 
         _result = _sectors get [_x,_y];
 
+        if (isnil "_result") exitwith {};
+
         if (_result select 0 isEqualTo [-1,-1]) then { //Compressed water sector - must build position info on the fly
             private _sectorSize = [_logic,"sectorSize"] call ALiVE_fnc_hashGet;
             private _sectorRadius = [_logic,"sectorRadius"] call ALiVE_fnc_hashGet;
@@ -89,6 +91,8 @@ switch (_operation) do {
         private _subSectors = [_logic,"subSectors"] call ALiVE_fnc_hashGet;
 
         _result = _subSectors get [_x,_y];
+
+        if (isnil "_result") exitwith {};
 
         if (_result select 0 isEqualTo [-1,-1]) then { //Compressed water sector - must build position info on the fly
             private _subSectorSize = [_logic,"subSectorSize"] call ALiVE_fnc_hashGet;
