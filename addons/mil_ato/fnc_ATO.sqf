@@ -496,6 +496,24 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "generateSEADTasks": {
+        if (_args isEqualType true) then {
+            _logic setVariable ["generateSEADTasks", _args];
+        } else {
+            _args = _logic getVariable ["generateSEADTasks", false];
+        };
+        if (_args isEqualType "") then {
+            if (_args == "true") then {
+                _args = true;
+            } else {
+                _args = false;
+            };
+            _logic setVariable ["generateSEADTasks", _args];
+        };
+        ASSERT_TRUE(_args isEqualType true,str _args);
+
+        _result = _args;
+    };
     case "resupply": {
         if (_args isEqualType true) then {
             _logic setVariable [_operation, _args];
@@ -892,7 +910,7 @@ switch(_operation) do {
                                 // Get nearest building position
                                 if !(_isOnCarrier) then {
                                  // Select indoor building position
-                                 
+
                                  // if pilotbuilding is defined
                                  private _pilotbuilding = [_logic, "pilotbuilding"] call MAINCLASS;
                                  if (count _pilotbuilding >0) then {
@@ -905,11 +923,11 @@ switch(_operation) do {
                                  } else {
                                  	 _crewpos = selectRandom([_position, 100] call ALIVE_fnc_findIndoorHousePositions);
                                  };
-                                 
+
                                  if (isNil "_crewPos") then {
                                      _crewPos = _position getpos [10 + (random 15), random 360];
                                  };
-                               
+
                                 } else {
                                     private _bridge = (_position nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
                                     _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]); // entities are saved as ATL positions
@@ -1209,6 +1227,7 @@ switch(_operation) do {
             private _airspace = [_logic, "airspace", _logic getVariable ["airspace", DEFAULT_AIRSPACE]] call MAINCLASS;
 
             [_logic,"generateTasks", _logic getVariable ["generateTasks", false]] call MAINCLASS;
+            [_logic,"generateSEADTasks", _logic getVariable ["generateSEADTasks", false]] call MAINCLASS;
 
             [_logic, "assets",[] call ALiVE_fnc_hashCreate] call MAINCLASS;
             [_logic,"airspaceAssets",[] call ALiVE_fnc_hashCreate] call MAINCLASS;
@@ -1259,6 +1278,7 @@ switch(_operation) do {
                 ["ATO - Place Anti-Air: %1",[_logic, "placeAA"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Place Air Assets: %1",[_logic, "placeAir"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Generate Tasks: %1",[_logic, "generateTasks"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ATO - Generate SEAD Tasks: %1",[_logic, "generateSEADTasks"] call MAINCLASS] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -3257,6 +3277,7 @@ switch(_operation) do {
                 private _faction = [_logic,"faction"] call MAINCLASS;
                 // Check to see if generateTasks
                 private _generateTasks = [_logic,"generateTasks"] call MAINCLASS;
+                private _generateSEADTasks = [_logic,"generateSEADTasks"] call MAINCLASS;
                 // Check to see if C2ISTAR is available
                 private _C2ISTARisAvailable = ["ALiVE_mil_C2ISTAR"] call ALiVE_fnc_isModuleAvailable;
 
@@ -3414,12 +3435,12 @@ switch(_operation) do {
                                             // Request that players handle SEAD
                                             // DEBUG -------------------------------------------------------------------------------------
                                             if(_debug) then {
-                                                ["ATO %1 - Request Player help %2 %3", _logic, _generateTasks, _C2ISTARisAvailable] call ALiVE_fnc_dump;
+                                                ["ATO %1 - Request Player help %2 %3", _logic, _generateSEADTasks, _C2ISTARisAvailable] call ALiVE_fnc_dump;
                                             };
                                             // DEBUG -------------------------------------------------------------------------------------
 
-                                            // Send this task regardless of generate tasks, if taskings are on for C2ISTAR it will process the request.
-                                            if (_C2ISTARisAvailable) then {
+                                            // Send this task if SEAD taskings are on, if taskings are on for C2ISTAR it will process the request.
+                                            if (_C2ISTARisAvailable && _generateSEADTasks) then {
 
                                                 [_logic, "requestPlayerTask", ["SEAD",_targets]] call MAINCLASS;
 
@@ -5177,7 +5198,7 @@ switch(_operation) do {
                         // Crew should be unassigned from aircraft
                         _grp leaveVehicle _vehicle;
 
-                    
+
                         				 private _crewpos = +_startPosition;
                                  // if pilotbuilding is defined
                                  private _pilotbuilding = [_logic, "pilotbuilding"] call MAINCLASS;
@@ -5191,8 +5212,8 @@ switch(_operation) do {
                                  } else {
                                  	_crewpos = selectRandom([_startPosition, 100] call ALIVE_fnc_findIndoorHousePositions);
                                  };
-                        
-                        
+
+
 
                         if (isNil "_crewPos") then {
                             _crewPos = _startPosition getpos [10 + (random 15), random 360];

@@ -156,6 +156,25 @@ class CfgVehicles
                                 };
                         };
                 };
+                class generateSEADTasks
+                {
+                        displayName = "$STR_ALIVE_ATO_GENERATE_SEADTASKS";
+                        description = "$STR_ALIVE_ATO_GENERATE_SEADTASKS_COMMENT";
+                        class Values
+                        {
+                                class No
+                                {
+                                        name = "No";
+                                        value = false;
+                                        default = 1;
+                                };
+                                class Yes
+                                {
+                                        name = "Yes";
+                                        value = true;
+                                };
+                        };
+                };
                 class Resupply
                 {
                         displayName = "$STR_ALIVE_ATO_RESUPPLY";

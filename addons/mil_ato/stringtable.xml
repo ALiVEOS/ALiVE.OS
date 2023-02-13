@@ -102,6 +102,14 @@
     <English>Automatically generate player Air Tasking Orders (CSAR, CAS, Strike)</English>
     <Chinesesimp>自动生成玩家空中任务指令(CSAR、CAS、Strike)</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_ATO_GENERATE_SEADTASKS">
+    <English>Generate SEAD Tasks:</English>
+    <Chinesesimp>生成玩家任务</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ATO_GENERATE_SEADTASKS_COMMENT">
+    <English>Automatically generate player tasks for ground/air attacks on anti-air systems. This option is useful if you want player infantry units tasked with taking out anti-air on behalf of MACC. </English>
+    <Chinesesimp>自动生成玩家空中任务指令(CSAR、CAS、Strike)</Chinesesimp>
+</Key>
 <Key ID="STR_ALIVE_ATO_RESUPPLY">
     <English>Resupply:</English>
     <Chinesesimp>重新补给</Chinesesimp>
