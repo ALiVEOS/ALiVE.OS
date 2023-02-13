@@ -1,6 +1,6 @@
 private["_worldName"];
  _worldName = tolower(worldName);
- ["SETTING UP MAP: fallujah"] call ALiVE_fnc_dump;
+ ["ALiVE SETTING UP MAP: fallujah"] call ALIVE_fnc_dump;
  ALIVE_Indexing_Blacklist = [];
  ALIVE_airBuildingTypes = [];
  ALIVE_militaryParkingBuildingTypes = [];
@@ -22,6 +22,7 @@ private["_worldName"];
  ALIVE_civilianConstructionBuildingTypes = [];
  ALIVE_civilianSettlementBuildingTypes = [];
  if(tolower(_worldName) == "fallujah") then {
+[ALIVE_mapBounds, worldName, 11000] call ALIVE_fnc_hashSet;
 ALIVE_militaryBuildingTypes = ALIVE_militaryBuildingTypes + ["airport_tower","radar","bunker","cargo_house_v","cargo_patrol_","research","mil_wall","fortification","razorwire","dome","deerstand","vez"];
 ALIVE_militaryParkingBuildingTypes = ALIVE_militaryParkingBuildingTypes + ["bunker","cargo_house_v","cargo_patrol_","research","bunker"];
 ALIVE_militarySupplyBuildingTypes = ALIVE_militarySupplyBuildingTypes + ["barrack","cargo_hq_","miloffices","cargo_house_v","cargo_patrol_","research","barrack","mil_house","mil_controltower"];
