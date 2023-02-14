@@ -19,11 +19,11 @@
 	<Chinesesimp>启用调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_PERSISTENCE">
-    <Original>Persist IEDs:</Original>
+    <English>Persist IEDs:</English>
 	<Chinesesimp>持久型简易爆炸装置:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_PERSISTENCE_COMMENT">
-    <Original>Persist IED locations over mission loads</Original>
+    <English>Persist IED locations over mission loads</English>
 	<Chinesesimp>在任务负载上保持简易爆炸装置位置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ied_IED_Detection">
@@ -79,11 +79,11 @@
 	<Chinesesimp>定义行动区域内的简易爆炸装置威胁级别</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Starting_Threat">
-    <Original>Starting IED Threat:</Original>
+    <English>Starting IED Threat:</English>
 	<Chinesesimp>初始简易爆炸装置威胁级别</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_IED_Starting_Threat_COMMENT">
-    <Original>Define the initial starting threat of IED's on first Mission load when IED module is synced to the Military Commander</Original>
+    <English>Define the initial starting threat of IED's on first Mission load when IED module is synced to the Military Commander</English>
 	<Chinesesimp>当简易爆炸装置模块同步到军事指挥官时,定义简易爆炸装置在第一次任务加载时的初始启动威胁</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_IED_VB_IED_Threat">

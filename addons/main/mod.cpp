@@ -1,7 +1,7 @@
 dir = "@ALIVE";
 name = "Arma 3 ALiVE";
 picture = "x\alive\addons\main\logo_alive.paa";
-actionName = "$STR_MOD_LAUNCHER_ACTION";
+actionName = "$STR_ALIVE_MOD_LAUNCHER_ACTION";
 action = "http://alivemod.com";
 description = "Bugtracker: https://github.com/ALiVEOS/ALiVE.OS/issues<br/>Documentation: http://alivemod.com/wiki";
 hideName = 1;

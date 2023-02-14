@@ -1445,7 +1445,7 @@
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_6">
     <English>You must leave immediately.</English>
     <Spanish>Deben irse de inmediato.</Spanish>
-    <Chinesesimp>你必须马上离开。/Chinesesimp>
+    <Chinesesimp>你必须马上离开。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CIV_INTERACT_OPINION_TOWN_7">
     <English>They must not see me talking to you.</English>

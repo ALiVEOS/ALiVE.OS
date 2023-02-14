@@ -98,4 +98,7 @@
     <English>Simply place ALiVE (Required) in the editor and choose the settings as desired. Do not sync it to anything.</English>
     <Chinesesimp>只需在编辑器中放置ALiVE (必需)并根据需要选择设置。不要将它同步到任何东西。</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_MOD_LAUNCHER_ACTION">
+    <English>ALiVE Mod Website</English>
+</Key>
 </Container></Package></Project>
