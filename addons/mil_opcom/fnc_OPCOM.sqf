@@ -2688,6 +2688,40 @@ switch(_operation) do {
             };
         };
 
+        case "sectionsamount_attack": {
+            if !(_args isequaltype 0) then {
+                _result = [_logic, "sectionsamount_attack"] call ALiVE_fnc_HashGet;
+            } else {
+                [_logic,"sectionsamount_attack", _args] call ALiVE_fnc_HashSet;
+
+                private _tacom = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
+                _tacom setFSMVariable ["_sectionsamount_attack", _args];
+            };
+        };
+
+        case "sectionsamount_reserve": {
+            if !(_args isequaltype 0) then {
+                _result = [_logic,"sectionsamount_reserve"] call ALiVE_fnc_HashGet;
+            } else {
+                [_logic,"sectionsamount_reserve", _args] call ALiVE_fnc_HashSet;
+
+                private _tacom = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
+                _tacom setFSMVariable ["_sectionsamount_reserve", _args];
+            };
+        };
+
+        case "sectionsamount_defend": {
+            if !(_args isequaltype 0) then {
+                _result = [_logic,"sectionsamount_defend"] call ALiVE_fnc_HashGet;
+            } else {
+                [_logic,"sectionsamount_defend", _args] call ALiVE_fnc_HashSet;
+
+                private _tacom = [_logic, "TACOM_FSM"] call ALiVE_fnc_HashGet;
+                _tacom setFSMVariable ["_sectionsamount_defend", _args];
+            };
+        };
+
+
         case "destroy": {
 
                 switch (typeName _logic) do {
