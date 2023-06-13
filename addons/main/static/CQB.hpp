@@ -52,7 +52,7 @@ ALiVE_MIL_CQB_STRATEGICHOUSES = ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES +
     "Land_Ind_PowerStation_EP1",
     "Land_Ind_PowerStation",
 
-    //VN
+    // VN - CDLC S.O.G Prairie Fire 1.3
     "Land_vn_b_tower_01",
     "Land_vn_pillboxbunker_01_big_f",
     "Land_vn_hut_tower_03",
@@ -98,7 +98,26 @@ ALiVE_MIL_CQB_STRATEGICHOUSES = ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES +
     "Land_vn_o_snipertree_01",
     "Land_vn_o_snipertree_04",
     "Land_vn_o_snipertree_02",
-    "Land_vn_o_snipertree_03"
+    "Land_vn_o_snipertree_03",
+    
+    // SPE
+    "Land_SPE_US_Tent",
+    "Land_SPE_Guardbox",
+    "Land_SPE_Tent_01",
+    "Land_SPE_Tent_02",
+    "Land_SPE_Tent_03",
+    "Land_SPE_German_Tent",
+    "Land_SPE_German_Tent_Oak",
+    "Land_SPE_Barn_01",
+    "Land_SPE_Barn_Thatch_01",
+    "Land_SPE_Barn_Thatch_02",
+    "Land_SPE_A3_barn_01_brown",
+    "Land_SPE_A3_barn_01_grey",
+    "land_SPE_Dugout_Decal_01",
+    "land_SPE_Dugout_Decal_02",
+    "land_SPE_Dugout_Decal_03"
+		
+    
 ];
 
 /*
@@ -181,127 +200,264 @@ ALiVE_MIL_CQB_UNITBLACKLIST = ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST +
     // JETS
     "B_Deck_Crew_F",
 
-    //VN
-    "vn_b_men_jetpilot_07",
-    "vn_b_men_aircrew_13",
-    "vn_b_men_aircrew_09",
-    "vn_b_men_aircrew_16",
-    "vn_b_men_aircrew_12",
-    "vn_b_men_aircrew_15",
-    "vn_b_men_aircrew_11",
-    "vn_b_men_jetpilot_08",
-    "vn_b_men_aircrew_14",
-    "vn_b_men_aircrew_10",
-    "vn_b_men_jetpilot_01",
-    "vn_b_men_jetpilot_09",
+    // VN - CDLC S.O.G Prairie Fire 1.3
     "vn_b_men_aircrew_01",
-    "vn_b_men_aircrew_04",
-    "vn_b_men_aircrew_03",
-    "vn_b_men_jetpilot_02",
-    "vn_b_men_jetpilot_10",
     "vn_b_men_aircrew_02",
-    "vn_b_men_aircrew_01",
-    "vn_b_men_jetpilot_05",
-    "vn_b_men_jetpilot_03",
+    "vn_b_men_aircrew_03",
+    "vn_b_men_aircrew_04",
+    "vn_b_men_aircrew_05",
+    "vn_b_men_aircrew_06",
+    "vn_b_men_aircrew_07",
+    "vn_b_men_aircrew_08",
+    "vn_b_men_aircrew_09",
+    "vn_b_men_aircrew_10",
+    "vn_b_men_aircrew_11",
+    "vn_b_men_aircrew_12",
+    "vn_b_men_aircrew_13",
+    "vn_b_men_aircrew_14",
+    "vn_b_men_aircrew_15",
+    "vn_b_men_aircrew_16",
+    "vn_b_men_aircrew_17",
+    "vn_b_men_aircrew_18",
+    "vn_b_men_aircrew_19",
+    "vn_b_men_aircrew_20",
     "vn_b_men_aircrew_21",
-    "vn_b_men_navy_06",
-    "vn_b_men_navy_05",
-    "vn_b_men_aircrew_24",
-    "vn_b_men_aircrew_23",
-    "vn_b_men_navy_03",
-    "vn_b_men_jetpilot_06",
-    "vn_b_men_jetpilot_04",
     "vn_b_men_aircrew_22",
-    "vn_b_men_navy_02",
-    "vn_b_men_navy_01",
-    "vn_b_men_army_30",
-    "vn_b_men_army_31",
+    "vn_b_men_aircrew_23",
+    "vn_b_men_aircrew_24",
     "vn_b_men_aircrew_25",
     "vn_b_men_aircrew_26",
-    "vn_b_men_army_25",
-    "vn_b_men_army_24",
-    "vn_b_men_army_23",
-    "vn_b_men_aircrew_07",
-    "vn_b_men_army_13",
-    "vn_b_men_army_26",
-    "vn_b_men_army_14",
-    "vn_b_men_aircrew_06",
-    "vn_b_men_aircrew_17",
-    "vn_b_men_aircrew_20",
-    "vn_b_men_aircrew_19",
-    "vn_b_men_aircrew_18",
-    "vn_o_men_aircrew_06",
-    "vn_o_men_aircrew_05",
-    "vn_o_men_aircrew_08",
-    "vn_o_men_aircrew_07",
-    "vn_o_men_aircrew_01",
-    "vn_o_men_aircrew_04",
-    "vn_o_men_aircrew_03",
-    "vn_o_men_aircrew_02",
-    "vn_b_men_aircrew_38",
-    "vn_b_men_aircrew_39",
-    "vn_b_men_aircrew_40",
-    "vn_b_men_aircrew_37",
-    "vn_b_men_aircrew_32",
-    "vn_b_men_aircrew_33",
-    "vn_b_men_aircrew_34",
-    "vn_b_men_aircrew_31",
+    "vn_b_men_aircrew_27",
     "vn_b_men_aircrew_28",
     "vn_b_men_aircrew_29",
     "vn_b_men_aircrew_30",
-    "vn_b_men_aircrew_27",
-    "vn_b_men_aus_army_66_14",
-    "vn_b_men_aus_army_66_13",
-    "vn_b_men_aus_army_66_23",
-    "vn_b_men_aus_army_66_24",
-    "vn_b_men_aus_army_66_25",
-    "vn_b_men_aus_army_68_14",
-    "vn_b_men_aus_army_68_13",
-    "vn_b_men_aus_army_70_14",
-    "vn_b_men_aus_army_70_13",
-    "vn_b_men_aus_army_70_23",
-    "vn_b_men_aus_army_70_24",
-    "vn_b_men_aus_army_70_25",
-    "vn_b_men_nz_army_66_21",
-    "vn_b_men_nz_army_66_22",
-    "vn_b_men_rok_army_65_29",
-    "vn_b_men_rok_army_65_31",
-    "vn_b_men_rok_army_65_30",
-    "vn_b_men_rok_army_65_26",
-    "vn_b_men_rok_army_65_14",
-    "vn_b_men_rok_army_65_13",
-    "vn_b_men_rok_army_68_14",
-    "vn_b_men_rok_army_68_13",
-    "vn_b_men_rok_army_68_23",
-    "vn_b_men_rok_army_68_24",
-    "vn_b_men_rok_army_68_25",
-    "vn_b_men_rok_army_68_29",
-    "vn_b_men_rok_army_68_30",
-    "vn_b_men_rok_army_68_26",
-    "vn_b_men_rok_marine_65_14",
-    "vn_b_men_rok_marine_65_13",
-    "vn_b_men_rok_marine_65_29",
-    "vn_b_men_rok_marine_65_31",
-    "vn_b_men_rok_marine_65_30",
-    "vn_b_men_rok_marine_68_14",
-    "vn_b_men_rok_marine_68_13",
-    "vn_b_men_rok_marine_68_29",
-    "vn_b_men_rok_marine_68_31",
-    "vn_b_men_rok_marine_68_30",
-    "vn_i_men_rla_14",
-    "vn_i_men_rla_13",
-    "vn_i_men_rla_25",
-    "vn_i_men_rla_24",
-    "vn_i_men_rla_23",
-    "vn_o_men_pl_18",
-    "vn_o_men_pl_20",
-    "vn_o_men_pl_19"
+    "vn_b_men_aircrew_31",
+    "vn_b_men_aircrew_32",
+    "vn_b_men_aircrew_33",
+    "vn_b_men_aircrew_34",
+    "vn_b_men_aircrew_35",
+    "vn_b_men_aircrew_36",
+    "vn_b_men_aircrew_37",
+    "vn_b_men_aircrew_38",
+    "vn_b_men_aircrew_39",
+    "vn_b_men_aircrew_40",
+    "vn_b_men_aircrew_41",
+    "vn_b_men_aircrew_42",
+    "vn_b_men_aircrew_43",
+    "vn_b_men_aircrew_44",
+    "vn_b_men_aircrew_45",
+    "vn_b_men_aircrew_46",
+    "vn_b_men_aircrew_47",
+    "vn_b_men_aircrew_48",
+    "vn_b_men_aircrew_49",
+    "vn_b_men_aircrew_50",
+    "vn_b_men_army_13", // Crew (Driver)
+    "vn_b_men_army_14", // Crew (Commander)
+    "vn_b_men_army_22", // Military Policeman
+    "vn_b_men_army_23", // Crewman (Commander)
+    "vn_b_men_army_24", // Crewman (Driver)
+    "vn_b_men_army_25", // Crewman (Gunner)
+    "vn_b_men_army_26", // Tunnel Rat
+    "vn_b_men_army_29", // Gun crew (Chief of Smoke)
+    "vn_b_men_army_30", // Gun crew (Swabber)
+    "vn_b_men_army_31", // Gun crew (Rammer)
+    "vn_b_men_aus_army_66_13", // Crewman (APC Driver)
+    "vn_b_men_aus_army_66_14", // Crewman (APC Commander)
+    "vn_b_men_aus_army_66_23", // Crewman (Tank Commander)
+    "vn_b_men_aus_army_66_24", // Crewman (Tank Driver)
+    "vn_b_men_aus_army_66_25", // Crewman (Tank Gunner)
+    "vn_b_men_aus_army_66_26", // Gun Crew (Bombardier)
+    "vn_b_men_aus_army_66_27", // Gun Crew (Gunner)
+    "vn_b_men_aus_army_68_13", // Crewman (APC Driver)
+    "vn_b_men_aus_army_68_14", // Crewman (APC Commander)
+    "vn_b_men_aus_army_70_13", // Crewman (APC Driver)
+    "vn_b_men_aus_army_70_14", // Crewman (APC Commander)
+    "vn_b_men_aus_army_70_23", // Crewman (Tank Commander)
+    "vn_b_men_aus_army_70_24", // Crewman (Tank Driver)
+    "vn_b_men_aus_army_70_25", // Crewman (Tank Gunner)
+    "vn_b_men_aus_army_70_26", // Gun Crew (Bombardier)
+    "vn_b_men_aus_army_70_27", // Gun Crew (Gunner)
+    "vn_b_men_jetpilot_01", // Pilot (Wolfpack)
+    "vn_b_men_jetpilot_02", // Copilot (Wolfpack)
+    "vn_b_men_jetpilot_03", // Pilot (Sundowners)
+    "vn_b_men_jetpilot_04", // Copilot (Sundowners)
+    "vn_b_men_jetpilot_05", // Pilot (VA196)
+    "vn_b_men_jetpilot_06", // Copilot (VA196)
+    "vn_b_men_jetpilot_07", // Pilot (VM121)
+    "vn_b_men_jetpilot_08", // Copilot (VM121)
+    "vn_b_men_jetpilot_09", // Pilot (Hobo)
+    "vn_b_men_jetpilot_10", // Copilot (Hobo)
+    "vn_b_men_jetpilot_11", // Pilot (Tiger)
+    "vn_b_men_jetpilot_12", // Pilot (Khaki)
+    "vn_b_men_navy_01", // Captain
+    "vn_b_men_navy_02", // Bosun
+    "vn_b_men_navy_03", // Corpsman
+    "vn_b_men_navy_04", // Stoker
+    "vn_b_men_navy_05", // Gunner
+    "vn_b_men_navy_06", // Gunner 2
+    "vn_b_men_navy_07", // Mate
+    "vn_b_men_navy_08", // RTO
+    "vn_b_men_navy_09", // Lookout
+    "vn_b_men_nz_army_66_21", // Gun Crew (Bombardier)
+    "vn_b_men_nz_army_66_22", // Gun Crew (Gunner)
+    "vn_b_men_rok_army_65_13", // Crew (Driver)
+    "vn_b_men_rok_army_65_14", // Crew (Commander)
+    "vn_b_men_rok_army_65_26", // Tunnel Rat
+    "vn_b_men_rok_army_65_29", // Gun crew (Chief of Smoke)
+    "vn_b_men_rok_army_65_30", // Gun crew (Swabber)
+    "vn_b_men_rok_army_65_31", // Gun crew (Rammer)
+    "vn_b_men_rok_army_68_13", // Crew (Driver)
+    "vn_b_men_rok_army_68_14", // Crew (Commander)
+    "vn_b_men_rok_army_68_23", // Crewman (Commander)
+    "vn_b_men_rok_army_68_24", // Crewman (Driver)
+    "vn_b_men_rok_army_68_25", // Crewman (Gunner)
+    "vn_b_men_rok_army_68_26", // Tunnel Rat
+    "vn_b_men_rok_army_68_29", // Gun crew (Chief of Smoke)
+    "vn_b_men_rok_army_68_30", // Gun crew (Swabber)
+    "vn_b_men_rok_army_68_31", // Gun crew (Rammer)
+    "vn_b_men_rok_marine_65_13", // Crew (Driver)
+    "vn_b_men_rok_marine_65_14", // Crew (Commander)
+    "vn_b_men_rok_marine_65_29", // Gun crew (Chief of Smoke)
+    "vn_b_men_rok_marine_65_30", // Gun crew (Swabber)
+    "vn_b_men_rok_marine_65_31", // Gun crew (Rammer)
+    "vn_b_men_rok_marine_68_13", // Crew (Driver)
+    "vn_b_men_rok_marine_68_14", // Crew (Commander)
+    "vn_b_men_rok_marine_68_29", // Gun crew (Chief of Smoke)
+    "vn_b_men_rok_marine_68_30", // Gun crew (Swabber)
+    "vn_b_men_rok_marine_68_31", // Gun crew (Rammer)
+    "vn_b_men_seal_28", // Diver 1
+    "vn_b_men_seal_29", // Diver 2
+    "vn_b_men_seal_30", // Diver 3
+    "vn_b_men_seal_31", // Diver 4
+    "vn_b_men_seal_32", // Diver 5
+    "vn_b_men_seal_33", // Diver 6
+    "vn_b_men_seal_34", // Diver 7
+    "vn_b_men_seal_35", // Diver 8
+    "vn_b_men_seal_36", // Diver 9
+    "vn_b_men_usmc_66_13", // Crew (Driver)
+    "vn_b_men_usmc_66_23", // Crewman (Commander)
+    "vn_b_men_usmc_66_24", // Crewman (Driver)
+    "vn_b_men_usmc_66_25", // Crewman (Gunner)
+    "vn_b_men_usmc_66_26", // Gun crew (Chief of Smoke)
+		"vn_b_men_usmc_66_27", // Gun crew (Swabber)
+		"vn_b_men_usmc_66_28", // Gun crew (Rammer)
+		"vn_b_men_usmc_68_13", // Crew (Driver)
+		"vn_b_men_usmc_68_23", // Crewman (Commander)
+		"vn_b_men_usmc_68_24", // Crewman (Driver)
+		"vn_b_men_usmc_68_25", // Crewman (Gunner)
+		"vn_b_men_usmc_68_26", // Gun crew (Chief of Smoke)
+		"vn_b_men_usmc_68_27", // Gun crew (Swabber)
+		"vn_b_men_usmc_68_28", // Gun crew (Rammer)
+		"vn_b_men_usmc_70_13", // Crew (Driver)
+		"vn_b_men_usmc_70_23", // Crewman (Commander)
+		"vn_b_men_usmc_70_24", // Crewman (Driver)
+		"vn_b_men_usmc_70_25", // Crewman (Gunner)
+		"vn_b_men_usmc_70_26", // Gun crew (Chief of Smoke)
+		"vn_b_men_usmc_70_27", // Gun crew (Swabber)
+		"vn_b_men_usmc_70_28", // Gun crew (Rammer)
+		"vn_i_men_aircrew_01",
+		"vn_i_men_aircrew_02",
+		"vn_i_men_aircrew_03",
+		"vn_i_men_aircrew_04",
+		"vn_i_men_aircrew_05",
+		"vn_i_men_aircrew_06",
+		"vn_i_men_aircrew_07",
+		"vn_i_men_aircrew_08",
+		"vn_i_men_aircrew_09",
+		"vn_i_men_aircrew_10",
+		"vn_i_men_aircrew_11",
+		"vn_i_men_aircrew_12",
+		"vn_i_men_army_13", // Crewman (Driver)
+		"vn_i_men_army_14", // Crewman (Commander)
+		"vn_i_men_army_22", // Quan Canh Policeman
+		"vn_i_men_army_23", // Crewman (Commander)
+		"vn_i_men_army_24", // Crewman (Driver)
+		"vn_i_men_army_25", // Crewman (Gunner)
+		"vn_i_men_fank_70_13", // Crew (Driver)
+		"vn_i_men_fank_70_14", // Crew (Commander)
+		"vn_i_men_fank_70_23", // Crewman (Commander)
+		"vn_i_men_fank_70_24", // Crewman (Driver)
+		"vn_i_men_fank_70_25", // Crewman (Gunner)
+		"vn_i_men_fank_71_13", // Crew (Driver)
+		"vn_i_men_fank_71_14", // Crew (Commander)
+		"vn_i_men_fank_71_23", // Crewman (Commander)
+		"vn_i_men_fank_71_24", // Crewman (Driver)
+		"vn_i_men_fank_71_25", // Crewman (Gunner)
+		"vn_i_men_jetpilot_01", // Jet Pilot
+		"vn_i_men_jetpilot_02", // Jet Copilot
+		"vn_i_men_marine_13", // Crew (Driver)
+		"vn_i_men_marine_14", // Crew (Commander)
+		"vn_i_men_marine_23", // Gun crew (Chief of Smoke)
+		"vn_i_men_marine_24", // Gun crew (Swabber)
+		"vn_i_men_marine_25", // Gun crew (Rammer)
+		"vn_i_men_ranger_13", // Crew (Driver)
+		"vn_i_men_ranger_14", // Crew (Commander)
+		"vn_i_men_rla_13", // Crew (Driver)
+		"vn_i_men_rla_14", // Crew (Commander)
+		"vn_i_men_rla_23", // Gun crew (Chief of Smoke)
+		"vn_i_men_rla_24", // Gun crew (Swabber)
+		"vn_i_men_rla_25", // Gun crew (Rammer)
+		"vn_o_men_aircrew_01", // Heli Pilot (PM)
+		"vn_o_men_aircrew_02", // Heli Co-Pilot (TT-33)
+		"vn_o_men_aircrew_03", // Heli Crew Chief (PM)
+		"vn_o_men_aircrew_04", // Heli Gunner (TT-33)
+		"vn_o_men_aircrew_05", // Pilot (PM)
+		"vn_o_men_aircrew_06", // Pilot (TT-33)
+		"vn_o_men_aircrew_07", // Jet Pilot (PM)
+		"vn_o_men_aircrew_08", // Jet Pilot (TT-33)
+		"vn_o_men_kr_70_18", // Crewman (Commander)
+		"vn_o_men_kr_70_19", // Crewman (Driver)
+		"vn_o_men_kr_70_20", // Crewman (Gunner)
+		"vn_o_men_kr_75_18", // Crewman (Commander)
+		"vn_o_men_kr_75_19", // Crewman (Driver)
+		"vn_o_men_kr_75_20", // Crewman (Gunner)
+		"vn_o_men_nva_37", // Crewman (Commander)
+		"vn_o_men_nva_38", // Crewman (Driver)
+		"vn_o_men_nva_39", // Crewman (Gunner)
+		"vn_o_men_nva_40", // Crewman (Commander)
+		"vn_o_men_nva_41", // Crewman (Driver)
+		"vn_o_men_nva_42", // Crewman (Gunner)
+		"vn_o_men_nva_65_35", // Crewman (Commander)
+		"vn_o_men_nva_65_36", // Crewman (Driver)
+		"vn_o_men_nva_65_37", // Crewman (Gunner)
+		"vn_o_men_nva_65_38", // Crewman (Commander)
+		"vn_o_men_nva_65_39", // Crewman (Driver)
+		"vn_o_men_nva_65_40", // Crewman (Gunner)
+		"vn_o_men_pl_18", // Crewman (Commander)
+		"vn_o_men_pl_19", // Crewman (Driver)
+		"vn_o_men_pl_20", // Crewman (Gunner)
+		
+		// SPE
+		"SPE_sturmtrooper_tank_crew",
+		"SPE_sturmtrooper_tank_unterofficer",
+		"SPE_sturmtrooper_tank_lieutenant",
+		"SPE_GER_pilot",
+		"SPE_GER_gun_crew",
+		"SPE_GER_gun_SquadLead",
+		"SPE_GER_gun_lieutenant",
+		"SPE_GER_spg_crew",
+		"SPE_GER_spg_unterofficer",
+		"SPE_GER_spg_lieutenant",
+		"SPE_GER_tank_crew",
+		"SPE_GER_tank_unterofficer",
+		"SPE_GER_tank_lieutenant",
+		"SPE_FR_Tank_Crew",
+		"SPE_FR_Tank_Second_Lieutenant",
+		"SPE_FR_Tank_Sergeant",
+		"SPE_US_Pilot_2",
+		"SPE_US_Pilot",
+		"SPE_US_Pilot_Unequipped",
+		"SPE_US_Guncrew",
+		"SPE_US_Guncrew_Sergeant",
+		"SPE_US_Tank_Crew",
+		"SPE_US_Tank_Second_Lieutenant",
+		"SPE_US_Tank_Sergeant"
 ];
 
 
 ALiVE_MIL_CQB_STRATEGICPLATFORMS = ALiVE_MIL_CQB_CUSTOM_STRATEGICPLATFORMS +
 [
-    //VN
+    // VN - CDLC S.O.G Prairie Fire 1.3
     "Land_vn_b_tower_01",
     "Land_vn_hut_tower_03",
     "Land_vn_hut_tower_02",

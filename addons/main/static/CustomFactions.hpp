@@ -55,9 +55,9 @@ BLU_GEN_F_typeMappings = [] call ALIVE_fnc_hashCreate;
 // ---------------------------------------------------------------------------------------------------------------------
 
 
-// VN CDLC ---------------------------------------------------------------------------------------------------------------------
+// // VN - CDLC S.O.G Prairie Fire 1.3 ---------------------------------------------------------------------------------
 
-// PAVN
+// PAVN (O_PAVN) - People's Army of Vietnam
 O_PAVN_mappings = [] call ALIVE_fnc_hashCreate;
 [O_PAVN_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
 [O_PAVN_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
@@ -69,6 +69,7 @@ O_PAVN_typeMappings = [] call ALIVE_fnc_hashCreate;
 [O_PAVN_typeMappings, "Armored", "vn_o_group_armor_nva"] call ALIVE_fnc_hashSet;
 [O_PAVN_typeMappings, "Infantry", "vn_o_group_men_nva"] call ALIVE_fnc_hashSet;
 [O_PAVN_typeMappings, "Mechanized", "vn_o_group_mech_nva"] call ALIVE_fnc_hashSet;
+[O_PAVN_typeMappings, "Mechanized_MTP", "vn_o_group_mech_nvam"] call ALIVE_fnc_hashSet;
 [O_PAVN_typeMappings, "Motorized", "vn_o_group_motor_nva"] call ALIVE_fnc_hashSet;
 [O_PAVN_typeMappings, "Motorized_MTP", "vn_o_group_motor_nvam"] call ALIVE_fnc_hashSet;
 [O_PAVN_typeMappings, "SpecOps", "vn_o_group_men_nva_dc"] call ALIVE_fnc_hashSet;
@@ -78,7 +79,7 @@ O_PAVN_typeMappings = [] call ALIVE_fnc_hashCreate;
 [O_PAVN_Mappings, "GroupFactionTypes", O_PAVN_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "O_PAVN", O_PAVN_Mappings] call ALIVE_fnc_hashSet;
 
-// VC
+// VC (O_VC) - Viet Cong
 O_VC_mappings = [] call ALIVE_fnc_hashCreate;
 [O_VC_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
 [O_VC_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
@@ -97,7 +98,7 @@ O_VC_typeMappings = [] call ALIVE_fnc_hashCreate;
 [O_VC_Mappings, "GroupFactionTypes", O_VC_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "O_VC", O_VC_Mappings] call ALIVE_fnc_hashSet;
 
-// Pathet Lao
+// PL (O_PL) - Pathet lao
 O_PL_mappings = [] call ALIVE_fnc_hashCreate;
 [O_PL_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
 [O_PL_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
@@ -115,7 +116,51 @@ O_PL_typeMappings = [] call ALIVE_fnc_hashCreate;
 [O_PL_Mappings, "GroupFactionTypes", O_PL_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "O_PL", O_PL_Mappings] call ALIVE_fnc_hashSet;
 
-// Royal Laotian Army
+
+
+
+// KR (O_CAM) - Khmer Rouge
+O_CAM_mappings = [] call ALIVE_fnc_hashCreate;
+[O_CAM_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
+[O_CAM_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
+[O_CAM_mappings, "FactionName", "O_CAM"] call ALIVE_fnc_hashSet;
+[O_CAM_mappings, "GroupFactionName", "VN_KR"] call ALIVE_fnc_hashSet;
+
+O_CAM_typeMappings = [] call ALIVE_fnc_hashCreate;
+[O_CAM_typeMappings, "Infantry", "vn_o_group_men_kr_70"] call ALIVE_fnc_hashSet;
+[O_CAM_typeMappings, "Mechanized", "vn_o_group_mech_kr_75"] call ALIVE_fnc_hashSet;
+[O_CAM_typeMappings, "Motorized", "vn_o_group_motor_kr_75"] call ALIVE_fnc_hashSet;
+[O_CAM_typeMappings, "Naval", "vn_o_group_boats_kr_70"] call ALIVE_fnc_hashSet;
+
+
+[O_CAM_Mappings, "GroupFactionTypes", O_CAM_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "O_CAM", O_CAM_Mappings] call ALIVE_fnc_hashSet;
+
+
+
+
+// FANK (I_CAM) - Forces Armee National Khmer
+I_CAM_mappings = [] call ALIVE_fnc_hashCreate;
+[I_CAM_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
+[I_CAM_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
+[I_CAM_mappings, "FactionName", "I_CAM"] call ALIVE_fnc_hashSet;
+[I_CAM_mappings, "GroupFactionName", "VN_FANK"] call ALIVE_fnc_hashSet;
+
+I_CAM_typeMappings = [] call ALIVE_fnc_hashCreate;
+[I_CAM_typeMappings, "Air", "vn_i_group_air_fank_71"] call ALIVE_fnc_hashSet;
+[I_CAM_typeMappings, "Infantry", "vn_i_group_men_fank_70"] call ALIVE_fnc_hashSet;
+[I_CAM_typeMappings, "Mechanized", "vn_i_group_mech_fank_70"] call ALIVE_fnc_hashSet;
+[I_CAM_typeMappings, "Motorized", "vn_i_group_motor_fank_70"] call ALIVE_fnc_hashSet;
+[I_CAM_typeMappings, "Naval", "vn_i_group_boats_fank_71"] call ALIVE_fnc_hashSet;
+
+
+[I_CAM_Mappings, "GroupFactionTypes", I_CAM_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "I_CAM", I_CAM_Mappings] call ALIVE_fnc_hashSet;
+
+
+
+
+// LA (I_LAO) - Royal Lao Army
 I_LAO_mappings = [] call ALIVE_fnc_hashCreate;
 [I_LAO_mappings, "Side", "INDEP"] call ALIVE_fnc_hashSet;
 [I_LAO_mappings, "GroupSideName", "INDEP"] call ALIVE_fnc_hashSet;
@@ -131,7 +176,10 @@ I_LAO_typeMappings = [] call ALIVE_fnc_hashCreate;
 [I_LAO_Mappings, "GroupFactionTypes", I_LAO_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "I_LAO", I_LAO_Mappings] call ALIVE_fnc_hashSet;
 
-// ARVN
+
+
+
+// ARVN (I_ARVN) - Army of the Republic of Vietnam
 I_ARVN_mappings = [] call ALIVE_fnc_hashCreate;
 [I_ARVN_mappings, "Side", "INDEP"] call ALIVE_fnc_hashSet;
 [I_ARVN_mappings, "GroupSideName", "INDEP"] call ALIVE_fnc_hashSet;
@@ -143,14 +191,19 @@ I_ARVN_typeMappings = [] call ALIVE_fnc_hashCreate;
 [I_ARVN_typeMappings, "Armored", "vn_i_group_armor_army"] call ALIVE_fnc_hashSet;
 [I_ARVN_typeMappings, "Infantry", "vn_i_group_men_army"] call ALIVE_fnc_hashSet;
 [I_ARVN_typeMappings, "Mechanized", "vn_i_group_mech_army"] call ALIVE_fnc_hashSet;
+[I_ARVN_typeMappings, "Mechanized_MTP", "vn_i_group_mech_marines"] call ALIVE_fnc_hashSet;
 [I_ARVN_typeMappings, "Motorized", "vn_i_group_motor_army"] call ALIVE_fnc_hashSet;
+[I_ARVN_typeMappings, "Motorized_MTP", "vn_i_group_motor_marines"] call ALIVE_fnc_hashSet;
 [I_ARVN_typeMappings, "SpecOps", "vn_i_group_men_sf"] call ALIVE_fnc_hashSet;
 
 
 [I_ARVN_Mappings, "GroupFactionTypes", I_ARVN_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "I_ARVN", I_ARVN_Mappings] call ALIVE_fnc_hashSet;
 
-// MACV
+
+
+
+// MACV (B_MACV) - Military Assistance Command, Vietnam
 B_MACV_mappings = [] call ALIVE_fnc_hashCreate;
 [B_MACV_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
 [B_MACV_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
@@ -162,7 +215,9 @@ B_MACV_typeMappings = [] call ALIVE_fnc_hashCreate;
 [B_MACV_typeMappings, "Armored", "vn_b_group_armor_army"] call ALIVE_fnc_hashSet;
 [B_MACV_typeMappings, "Infantry", "vn_b_group_men_army"] call ALIVE_fnc_hashSet;
 [B_MACV_typeMappings, "Mechanized", "vn_b_group_mech_army"] call ALIVE_fnc_hashSet;
+[B_MACV_typeMappings, "Mechanized_MTP", "vn_b_group_mech_usmc"] call ALIVE_fnc_hashSet;
 [B_MACV_typeMappings, "Motorized", "vn_b_group_motor_army"] call ALIVE_fnc_hashSet;
+[B_MACV_typeMappings, "Motorized_MTP", "vn_b_group_motor_usmc"] call ALIVE_fnc_hashSet;
 [B_MACV_typeMappings, "SpecOps", "vn_b_group_men_sog"] call ALIVE_fnc_hashSet;
 [B_MACV_typeMappings, "Support", "vn_b_group_men_lrrp"] call ALIVE_fnc_hashSet;
 [B_MACV_typeMappings, "Naval", "vn_b_group_boats"] call ALIVE_fnc_hashSet;
@@ -171,7 +226,10 @@ B_MACV_typeMappings = [] call ALIVE_fnc_hashCreate;
 [B_MACV_Mappings, "GroupFactionTypes", B_MACV_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "B_MACV", B_MACV_Mappings] call ALIVE_fnc_hashSet;
 
-// Australian
+
+
+
+// AUS (B_AUS) - Australian Army, Vietnam
 B_AUS_mappings = [] call ALIVE_fnc_hashCreate;
 [B_AUS_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
 [B_AUS_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
@@ -189,7 +247,10 @@ B_AUS_typeMappings = [] call ALIVE_fnc_hashCreate;
 [B_AUS_Mappings, "GroupFactionTypes", B_AUS_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "B_AUS", B_AUS_Mappings] call ALIVE_fnc_hashSet;
 
-// New Zealand
+
+
+
+// NZ (B_NZ) - New Zealand Army, Vietnam
 B_NZ_mappings = [] call ALIVE_fnc_hashCreate;
 [B_NZ_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
 [B_NZ_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
@@ -206,7 +267,10 @@ B_NZ_typeMappings = [] call ALIVE_fnc_hashCreate;
 [B_NZ_Mappings, "GroupFactionTypes", B_NZ_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "B_NZ", B_NZ_Mappings] call ALIVE_fnc_hashSet;
 
-// Republic Of Korea
+
+
+
+// ROK (B_ROK) - Republic of Korea
 B_ROK_mappings = [] call ALIVE_fnc_hashCreate;
 [B_ROK_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
 [B_ROK_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
@@ -216,14 +280,19 @@ B_ROK_mappings = [] call ALIVE_fnc_hashCreate;
 B_ROK_typeMappings = [] call ALIVE_fnc_hashCreate;
 [B_ROK_typeMappings, "Infantry", "vn_b_group_men_rok_army_68"] call ALIVE_fnc_hashSet;
 [B_ROK_typeMappings, "Mechanized", "vn_b_group_mech_rok_army"] call ALIVE_fnc_hashSet;
+[B_ROK_typeMappings, "Mechanized_MTP", "vn_b_group_mech_rok_marines"] call ALIVE_fnc_hashSet;
 [B_ROK_typeMappings, "Motorized", "vn_b_group_motor_rok_army"] call ALIVE_fnc_hashSet;
+[B_ROK_typeMappings, "Motorized", "vn_b_group_motor_rok_marines"] call ALIVE_fnc_hashSet;
 [B_ROK_typeMappings, "SpecOps", "vn_b_group_men_rok_marines_68"] call ALIVE_fnc_hashSet;
 
 
 [B_ROK_Mappings, "GroupFactionTypes", B_ROK_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "B_ROK", B_ROK_Mappings] call ALIVE_fnc_hashSet;
 
-// US CIA
+
+
+
+// CIA (B_CIA) - United States Central Intelligence Agency
 B_CIA_mappings = [] call ALIVE_fnc_hashCreate;
 [B_CIA_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
 [B_CIA_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
@@ -241,6 +310,96 @@ B_CIA_typeMappings = [] call ALIVE_fnc_hashCreate;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+// SPE
+
+// [SPE] Sturmtroopers
+SPE_STURM_mappings = [] call ALIVE_fnc_hashCreate;
+[SPE_STURM_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[SPE_STURM_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[SPE_STURM_mappings, "FactionName", "SPE_STURM"] call ALIVE_fnc_hashSet;
+[SPE_STURM_mappings, "GroupFactionName", "SPE_STURM"] call ALIVE_fnc_hashSet;
+
+SPE_STURM_typeMappings = [] call ALIVE_fnc_hashCreate;
+[SPE_STURM_typeMappings, "Armored", ["SPE_GER_PzKpfwIV_G_Platoon","SPE_GER_PzKpfwIII_M_Platoon","SPE_GER_PzKpfwIII_L_Platoon","SPE_GER_PzKpfwIII_J_Platoon"]] call ALiVE_fnc_hashSet;
+[SPE_STURM_typeMappings, "Infantry", ["SPE_sturmtrooper_MG_team","SPE_sturmtrooper_sniper_team","SPE_sturmtrooper_sentry_team_2","SPE_sturmtrooper_sentry_team_3","SPE_sturmtrooper_Flamethrower_Team","SPE_sturmtrooper_command_section","SPE_sturmtrooper_infantry_squad","SPE_sturmtrooper_AT_squad","SPE_sturmtrooper_Assault_Engineer_Squad"]] call ALiVE_fnc_hashSet;
+[SPE_STURM_typeMappings, "Mechanized", "SPE_Sturm_Scout_250_Recon_Team"] call ALIVE_fnc_hashSet;
+[SPE_STURM_typeMappings, "Motorized", "SPE_Motorized_Infantry_Squad"] call ALiVE_fnc_hashSet;
+[SPE_STURM_typeMappings, "SpecOps", "SPE_sturmtrooper_sniper_team"] call ALIVE_fnc_hashSet;
+[SPE_STURM_typeMappings, "Support", ["SPE_sturmtrooper_HMG_team","SPE_sturmtrooper_81_Mortar_Team"]] call ALiVE_fnc_hashSet;
+
+[SPE_STURM_mappings, "GroupFactionTypes", SPE_STURM_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "SPE_STURM", SPE_STURM_mappings] call ALIVE_fnc_hashSet;
+
+
+// [SPE] Wehrmacht
+SPE_WEHRMACHT_mappings = [] call ALIVE_fnc_hashCreate;
+[SPE_WEHRMACHT_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[SPE_WEHRMACHT_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[SPE_WEHRMACHT_mappings, "FactionName", "SPE_WEHRMACHT"] call ALIVE_fnc_hashSet;
+[SPE_WEHRMACHT_mappings, "GroupFactionName", "SPE_WEHRMACHT"] call ALIVE_fnc_hashSet;
+
+SPE_WEHRMACHT_typeMappings = [] call ALIVE_fnc_hashCreate;
+[SPE_WEHRMACHT_typeMappings, "Air", "SPE_GER_fw190f8_Group"] call ALiVE_fnc_hashSet;
+[SPE_WEHRMACHT_typeMappings, "Armored", ["SPE_GER_PzKpfwIV_G_Platoon","SPE_GER_PzKpfwIII_M_Platoon","SPE_GER_PzKpfwIII_L_Platoon","SPE_GER_PzKpfwIII_J_Platoon","SPE_GER_Nashorn_TD_Platoon"]] call ALiVE_fnc_hashSet;
+[SPE_WEHRMACHT_typeMappings, "Infantry", ["SPE_GER_Lehr_Panzergrenadier_Squad","SPE_GER_Lehr_Panzergrenadier_MG_Team","SPE_GER_Platoon_Troop","SPE_GER_infantry_squad","SPE_GER_AT_squad","SPE_GER_scout_squad","SPE_GER_sentry_squad_2","SPE_GER_sentry_squad_3","SPE_GER_sniper_team","SPE_GER_Flamethrower_Team","SPE_GER_Assault_Engineer_Squad","SPE_GER_MG_team"]] call ALiVE_fnc_hashSet;
+[SPE_WEHRMACHT_typeMappings, "Mechanized", "SPE_GER_Scout_250_Recon_Team"] call ALiVE_fnc_hashSet;
+[SPE_WEHRMACHT_typeMappings, "Motorized", "SPE_Motorized_Infantry_Squad"] call ALiVE_fnc_hashSet;
+[SPE_WEHRMACHT_typeMappings, "SpecOps", "SPE_GER_sniper_team"] call ALIVE_fnc_hashSet;
+[SPE_WEHRMACHT_typeMappings, "Support", ["SPE_GER_HMG_team","SPE_GER_81_Mortar_Team"]] call ALiVE_fnc_hashSet;
+
+[SPE_WEHRMACHT_mappings, "GroupFactionTypes", SPE_WEHRMACHT_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "SPE_WEHRMACHT", SPE_WEHRMACHT_mappings] call ALIVE_fnc_hashSet;
+
+
+// [SPE] US Army
+SPE_US_ARMY_mappings = [] call ALIVE_fnc_hashCreate;
+[SPE_US_ARMY_mappings, "Side", "INDEP"] call ALIVE_fnc_hashSet;
+[SPE_US_ARMY_mappings, "GroupSideName", "INDEP"] call ALIVE_fnc_hashSet;
+[SPE_US_ARMY_mappings, "FactionName", "SPE_US_ARMY"] call ALIVE_fnc_hashSet;
+[SPE_US_ARMY_mappings, "GroupFactionName", "SPE_US_ARMY"] call ALIVE_fnc_hashSet;
+
+SPE_US_ARMY_typeMappings = [] call ALIVE_fnc_hashCreate;
+[SPE_US_ARMY_typeMappings, "Air", "SPE_US_P47_Group"] call ALIVE_fnc_hashSet;
+[SPE_US_ARMY_typeMappings, "Armored", ["SPE_M4A1_75_Platoon","SPE_M4A1_76_Platoon","SPE_M10_TD_Platoon","SPE_M4A1_Calliope_Section"]] call ALiVE_fnc_hashSet;
+[SPE_US_ARMY_typeMappings, "Infantry", ["SPE_US_Command_Section","SPE_US_Command_Squad","SPE_US_Infantry_Squad","SPE_US_AT_Squad","SPE_US_Scout_Squad","SPE_US_Flamethrower_Team","SPE_US_Sentry_Squad_2","SPE_US_Sentry_Squad_3","SPE_US_Sniper_Team","SPE_US_Rifle_Team","SPE_US_BAR_Team","SPE_US_2AD_Dismounted_Platoon_HQ","SPE_US_2AD_Dismounted_RifleSquad","SPE_US_2AD_Dismounted_MGSquad","SPE_US_2AD_Dismounted_AssaultEngineer_Squad"]] call ALiVE_fnc_hashSet;
+[SPE_US_ARMY_typeMappings, "Mechanized", ["SPE_US_2AD_Mechanized_Platoon_HQ","SPE_US_2AD_Mechanized_Infantry_Squad","SPE_US_2AD_Mechanized_MG_Squad","SPE_US_2AD_Mechanized_Engineer_Squad"]] call ALiVE_fnc_hashSet;
+[SPE_US_ARMY_typeMappings, "SpecOps", ["SPE_US_Rangers_Assault_Section","SPE_US_Rangers_Assault_Section_BAR","SPE_US_Rangers_AT_squad","SPE_US_Rangers_MG_Squad","SPE_US_Rangers_Rifle_Squad","SPE_US_Ranger_scout_squad","SPE_US_Ranger_Assault_Engineer_Squad"]] call ALiVE_fnc_hashSet;
+[SPE_US_ARMY_typeMappings, "Support", ["SPE_US_Heavy_Machine_Gun_Team","SPE_US_81_Mortar_Team"]] call ALiVE_fnc_hashSet;
+
+[SPE_US_ARMY_mappings, "GroupFactionTypes", SPE_US_ARMY_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "SPE_US_ARMY", SPE_US_ARMY_mappings] call ALIVE_fnc_hashSet;
+
+
+// [SPE] French Liberation Army
+SPE_FR_ARMY_mappings = [] call ALIVE_fnc_hashCreate;
+[SPE_FR_ARMY_mappings, "Side", "INDEP"] call ALIVE_fnc_hashSet;
+[SPE_FR_ARMY_mappings, "GroupSideName", "INDEP"] call ALIVE_fnc_hashSet;
+[SPE_FR_ARMY_mappings, "FactionName", "SPE_FR_ARMY"] call ALIVE_fnc_hashSet;
+[SPE_FR_ARMY_mappings, "GroupFactionName", "SPE_FR_ARMY"] call ALIVE_fnc_hashSet;
+
+SPE_FR_ARMY_typeMappings = [] call ALIVE_fnc_hashCreate;
+[SPE_FR_ARMY_typeMappings, "Armored", ["SPE_FR_M4A1_75_Platoon","SPE_FR_M4A1_76_Platoon","SPE_FR_M10_TD_Platoon"]] call ALiVE_fnc_hashSet;
+[SPE_FR_ARMY_typeMappings, "Infantry", ["SPE_US_2AD_Dismounted_Platoon_HQ","SPE_FR_2AD_Dismounted_RifleSquad","SPE_FR_2AD_Dismounted_MGSquad","SPE_FR_2AD_Dismounted_AssaultEngineer_Squad","SPE_FR_Sentry_Squad_2","SPE_FR_Sentry_Squad_3","SPE_FR_Sniper_Team"]] call ALiVE_fnc_hashSet;
+[SPE_FR_ARMY_typeMappings, "Mechanized", ["SPE_FR_Mechanized_Platoon_HQ","SPE_FR_Mechanized_Infantry_Squad","SPE_FR_Mechanized_MG_Squad","SPE_FR_Mechanized_Engineer_Squad"]] call ALiVE_fnc_hashSet;
+
+[SPE_FR_ARMY_mappings, "GroupFactionTypes", SPE_FR_ARMY_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "SPE_FR_ARMY", SPE_FR_ARMY_mappings] call ALIVE_fnc_hashSet;
+
+
+// [SPE] French Interior Forces
+SPE_FFI_mappings = [] call ALIVE_fnc_hashCreate;
+[SPE_FFI_mappings, "Side", "INDEP"] call ALIVE_fnc_hashSet;
+[SPE_FFI_mappings, "GroupSideName", "INDEP"] call ALIVE_fnc_hashSet;
+[SPE_FFI_mappings, "FactionName", "SPE_FFI"] call ALIVE_fnc_hashSet;
+[SPE_FFI_mappings, "GroupFactionName", "SPE_FFI"] call ALIVE_fnc_hashSet;
+
+SPE_FFI_typeMappings = [] call ALIVE_fnc_hashCreate;
+[SPE_FFI_typeMappings, "Infantry", ["SPE_FFI_Command_Circle","SPE_FFI_FighterCell","SPE_FFI_Tankhunter_team","SPE_FFI_Sentry_Squad_2","SPE_FFI_Sentry_Squad_3","SPE_FFI_Sniper_Team","SPE_FFI_Assault_Team","SPE_FFI_Machinegun_team","SPE_FFI_Sapper_Team","SPE_FFI_Saboteur_Team","SPE_FFI_Militia_Group"]] call ALiVE_fnc_hashSet;
+[SPE_FFI_mappings, "GroupFactionTypes", SPE_FFI_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "SPE_FFI", SPE_FFI_mappings] call ALIVE_fnc_hashSet;
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // African
 // ---------------------------------------------------------------------------------------------------------------------
 mas_afr_rebl_o_mappings = [] call ALIVE_fnc_hashCreate;
@@ -628,9 +787,6 @@ ALIVE_RHSResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
     "Armored",
     "Mechanized",
     "Motorized",
-    "Motorized_MTP",
-    "SpecOps",
-    "Support",
     "Motorized_MTP",
     "SpecOps",
     "Support",

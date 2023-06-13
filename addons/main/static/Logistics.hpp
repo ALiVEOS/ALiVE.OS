@@ -27,16 +27,26 @@ ALIVE_factionDefaultTransport = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultTransport, "BLU_CTRG_F", ["B_T_Truck_01_transport_F","B_T_Truck_01_covered_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "Gendarmerie", ["C_Truck_02_covered_F","C_Truck_02_transport_F"]] call ALIVE_fnc_hashSet;
 
-// VN
+// VN - CDLC S.O.G Prairie Fire 1.3
 [ALIVE_factionDefaultTransport, "O_PAVN", ["vn_o_wheeled_z157_02_nva65","vn_o_wheeled_z157_01_nva65","vn_o_wheeled_z157_01","vn_o_wheeled_z157_02"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "O_VC", ["vn_o_wheeled_z157_01_vcmf","vn_o_wheeled_z157_02_vcmf"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "O_PL", ["vn_o_wheeled_z157_01_pl","vn_o_wheeled_z157_02_pl"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "O_CAM", ["vn_o_wheeled_z157_01_kr","vn_o_wheeled_z157_02_kr"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "I_ARVN", ["vn_i_wheeled_m54_01","vn_i_wheeled_m54_02"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "I_LAO", ["vn_i_wheeled_m54_01_rla","vn_i_wheeled_m54_02_rla"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "I_CAM", ["vn_i_wheeled_z157_01_fank_70","vn_i_wheeled_z157_02_fank_70"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "B_MACV", ["vn_b_wheeled_m54_01","vn_b_wheeled_m54_02"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "B_AUS", ["vn_b_wheeled_m54_01_aus_army","vn_b_wheeled_m54_02_aus_army"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "B_NZ", ["vn_b_wheeled_m54_01_nz_army","vn_b_wheeled_m54_02_nz_army"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "B_ROK", ["vn_b_wheeled_m54_01_rok_army","vn_b_wheeled_m54_02_rok_army"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "B_CIA", ["vn_b_wheeled_m54_01","vn_b_wheeled_m54_02"]] call ALIVE_fnc_hashSet;
+
+// SPE
+[ALIVE_factionDefaultTransport, "SPE_STURM", ["SPE_ST_OpelBlitz","SPE_ST_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "SPE_WEHRMACHT", ["SPE_OpelBlitz","SPE_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "SPE_US_ARMY", ["SPE_US_M3_Halftrack_Unarmed","SPE_US_M3_Halftrack_Unarmed_Open"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "SPE_FR_ARMY", ["SPE_FR_M3_Halftrack_Unarmed","SPE_FR_M3_Halftrack_Unarmed_Open"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "SPE_FFI", ["SPE_FFI_OpelBlitz","SPE_FFI_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
 
 /*
  * Mil logistics air transport vehicles fallback for sides
@@ -67,14 +77,28 @@ ALIVE_factionDefaultAirTransport = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultAirTransport, "BLU_CTRG_F", ["B_Heli_Transport_03_F","B_Heli_Transport_01_F","B_Heli_Transport_01_camo_F","B_T_VTOL_01_armed_F","B_T_VTOL_01_infantry_F","B_T_VTOL_01_vehicle_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultAirTransport, "Gendarmerie", ["C_Heli_Light_01_civil_F"]] call ALIVE_fnc_hashSet;
 
-// VN
+// VN - CDLC S.O.G Prairie Fire 1.3
 [ALIVE_factionDefaultAirTransport, "O_PAVN", ["vn_o_air_mi2_01_01","vn_o_air_mi2_01_03","vn_o_air_mi2_01_02"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultAirTransport, "O_VC", ["vn_o_air_mi2_01_03"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "I_ARVN", ["vn_i_air_uh1d_02_01","vn_i_air_ch34_02_01","vn_i_air_ch34_01_02","vn_i_air_ch34_02_02"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "B_MACV", ["vn_b_air_ch34_03_01","vn_b_air_ch34_01_01","vn_b_air_uh1d_02_05","vn_b_air_uh1d_02_07","vn_b_air_uh1d_02_06","vn_b_air_uh1d_02_01"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "B_AUS", ["vn_b_air_uh1b_01_06","vn_b_air_uh1c_07_06","vn_b_air_uh1d_01_06","vn_b_air_uh1d_02_06"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "O_PL", ["vn_o_air_mi2_01_03"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "O_CAM", ["vn_o_air_mi2_01_03"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "I_ARVN", ["vn_i_air_uh1d_02_01","vn_i_air_ch34_02_01","vn_i_air_ch34_01_02","vn_i_air_ch34_02_02","vn_b_air_ch47_04_01","vn_b_air_ch47_03_01"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "I_LAO", ["vn_i_air_uh1d_02_01","vn_i_air_ch34_02_01","vn_i_air_ch34_01_02","vn_i_air_ch34_02_02","vn_b_air_ch47_04_01","vn_b_air_ch47_03_01"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "I_CAM", ["vn_i_air_uh1d_02_01","vn_i_air_ch34_02_01","vn_i_air_ch34_01_02","vn_i_air_ch34_02_02","vn_b_air_ch47_04_01","vn_b_air_ch47_03_01"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "B_MACV", ["vn_b_air_ch34_03_01","vn_b_air_ch34_01_01","vn_b_air_uh1d_02_05","vn_b_air_uh1d_02_07","vn_b_air_uh1d_02_06","vn_b_air_uh1d_02_01","vn_b_air_ch47_04_01","vn_b_air_ch47_03_01"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "B_AUS", ["vn_b_air_uh1b_01_06","vn_b_air_uh1c_07_06","vn_b_air_uh1d_01_06","vn_b_air_uh1d_02_06","vn_b_air_ch47_04_01","vn_b_air_ch47_03_01"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "B_NZ", ["vn_b_air_uh1b_01_06","vn_b_air_uh1c_07_06","vn_b_air_uh1d_01_06","vn_b_air_uh1d_02_06","vn_b_air_ch47_04_01","vn_b_air_ch47_03_01"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultAirTransport, "B_CIA", ["vn_b_air_uh1d_04_09","vn_b_air_uh1b_01_09"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "B_ROK", ["vn_b_air_uh1d_02_01","vn_b_air_ch34_01_01","vn_b_air_ch47_04_01","vn_b_air_ch47_03_01"]] call ALIVE_fnc_hashSet;
 
+// SPE - Currently none available
+/*
+[ALIVE_factionDefaultAirTransport, "SPE_STURM", []] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "SPE_WEHRMACHT", []] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "SPE_US_ARMY", []] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "SPE_FR_ARMY", []] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "SPE_FFI", []] call ALIVE_fnc_hashSet;
+*/
 
 /*
  * Mil logistics airdrop containers fallback for sides
@@ -104,17 +128,26 @@ ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultContainers, "BLU_CTRG_F", ["ALIVE_B_supplyCrate_F","B_CargoNet_01_ammo_F","CargoNet_01_box_F","B_Slingload_01_Cargo_F","C_T_supplyCrate_F"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "Gendarmerie", ["CargoNet_01_box_F"]] call ALIVE_fnc_hashSet;
 
-// VN
+// VN - CDLC S.O.G Prairie Fire 1.3
 [ALIVE_factionDefaultContainers, "O_PAVN", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "O_PVC", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "I_ARVN", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "B_MACV", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "O_PL", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "O_CAM", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "I_ARVN", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "I_LAO", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "I_CAM", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "B_MACV", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "B_AUS", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "B_NZ", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "B_CIA", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "B_ROK", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
+
+// SPE
+[ALIVE_factionDefaultContainers, "SPE_STURM", ["Land_SPE_Ammobox_German_01","Land_SPE_Ammobox_German_02","Land_SPE_Ammobox_German_03","Land_SPE_Ammobox_German_04","Land_SPE_Ammobox_German_05"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "SPE_WEHRMACHT", ["Land_SPE_Ammobox_German_01","Land_SPE_Ammobox_German_02","Land_SPE_Ammobox_German_03","Land_SPE_Ammobox_German_04","Land_SPE_Ammobox_German_05"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "SPE_US_ARMY", ["SPE_BasicAmmunitionBox_US","SPE_BasicWeaponsBox_US","Land_SPE_Ammocrate_US_01","Land_SPE_Ammocrate_US_02","Land_SPE_Ammocrate_US_03"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "SPE_FR_ARMY", ["SPE_BasicAmmunitionBox_US","SPE_BasicWeaponsBox_US"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "SPE_FFI", ["SPE_Hay_WeaponCache_FFI"]] call ALIVE_fnc_hashSet;
 
 #include "logistics\3CB.hpp"
 #include "logistics\RHS_AFRF.hpp"
