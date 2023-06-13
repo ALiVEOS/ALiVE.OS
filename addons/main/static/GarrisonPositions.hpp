@@ -63,3 +63,15 @@ ALIVE_garrisonPositions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_garrisonPositions,"Land_vn_cave_05", [0,45,1,44,38,31,24,18,15,10]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_vn_cave_06", [0,2,14,18]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_vn_cave_07", [0,7,3]] call ALIVE_fnc_hashSet;
+
+// SPE
+/*
+[ALIVE_garrisonPositions,"Land_SPE_Barn_01", [0,1,2,3,4,5,6,7,8]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Manor_House_ruins", [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Corner_house_02_ruins", [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Corner_house_05_ruins", [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_House_Arch_01_ruins", [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_House_Big_04_ruins", [0,1,2,3,4,5,6,7,8,9,10]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_House_Small_01_ruins", [0,1,2,3,4,5]] call ALIVE_fnc_hashSet;
+*/
+

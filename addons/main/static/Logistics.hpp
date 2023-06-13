@@ -41,12 +41,6 @@ ALIVE_factionDefaultTransport = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultTransport, "B_ROK", ["vn_b_wheeled_m54_01_rok_army","vn_b_wheeled_m54_02_rok_army"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "B_CIA", ["vn_b_wheeled_m54_01","vn_b_wheeled_m54_02"]] call ALIVE_fnc_hashSet;
 
-// SPE
-[ALIVE_factionDefaultTransport, "SPE_STURM", ["SPE_ST_OpelBlitz","SPE_ST_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultTransport, "SPE_WEHRMACHT", ["SPE_OpelBlitz","SPE_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultTransport, "SPE_US_ARMY", ["SPE_US_M3_Halftrack_Unarmed","SPE_US_M3_Halftrack_Unarmed_Open"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultTransport, "SPE_FR_ARMY", ["SPE_FR_M3_Halftrack_Unarmed","SPE_FR_M3_Halftrack_Unarmed_Open"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultTransport, "SPE_FFI", ["SPE_FFI_OpelBlitz","SPE_FFI_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
 
 /*
  * Mil logistics air transport vehicles fallback for sides
@@ -91,14 +85,6 @@ ALIVE_factionDefaultAirTransport = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultAirTransport, "B_CIA", ["vn_b_air_uh1d_04_09","vn_b_air_uh1b_01_09"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultAirTransport, "B_ROK", ["vn_b_air_uh1d_02_01","vn_b_air_ch34_01_01","vn_b_air_ch47_04_01","vn_b_air_ch47_03_01"]] call ALIVE_fnc_hashSet;
 
-// SPE - Currently none available
-/*
-[ALIVE_factionDefaultAirTransport, "SPE_STURM", []] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "SPE_WEHRMACHT", []] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "SPE_US_ARMY", []] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "SPE_FR_ARMY", []] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultAirTransport, "SPE_FFI", []] call ALIVE_fnc_hashSet;
-*/
 
 /*
  * Mil logistics airdrop containers fallback for sides
@@ -142,12 +128,6 @@ ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultContainers, "B_CIA", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "B_ROK", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 
-// SPE
-[ALIVE_factionDefaultContainers, "SPE_STURM", ["Land_SPE_Ammobox_German_01","Land_SPE_Ammobox_German_02","Land_SPE_Ammobox_German_03","Land_SPE_Ammobox_German_04","Land_SPE_Ammobox_German_05"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "SPE_WEHRMACHT", ["Land_SPE_Ammobox_German_01","Land_SPE_Ammobox_German_02","Land_SPE_Ammobox_German_03","Land_SPE_Ammobox_German_04","Land_SPE_Ammobox_German_05"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "SPE_US_ARMY", ["SPE_BasicAmmunitionBox_US","SPE_BasicWeaponsBox_US","Land_SPE_Ammocrate_US_01","Land_SPE_Ammocrate_US_02","Land_SPE_Ammocrate_US_03"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "SPE_FR_ARMY", ["SPE_BasicAmmunitionBox_US","SPE_BasicWeaponsBox_US"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultContainers, "SPE_FFI", ["SPE_Hay_WeaponCache_FFI"]] call ALIVE_fnc_hashSet;
 
 #include "logistics\3CB.hpp"
 #include "logistics\RHS_AFRF.hpp"
