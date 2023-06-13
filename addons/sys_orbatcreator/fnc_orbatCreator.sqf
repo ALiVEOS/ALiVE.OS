@@ -2621,8 +2621,7 @@ switch(_operation) do {
         _args params ["_group","_unit"];
 
         // verify unit is non static item
-
-        if (_unit isKindOf "StaticWeapon" || {_unit isKindOf "Static"}) exitWith {systemChat "Cannot add noh human/vehicle units to groups"};
+        if (_unit isKindOf "StaticWeapon" || {_unit isKindOf "Static"}) exitWith {systemChat "Cannot add non human/vehicle units to groups"};
 
         private _factionData = [_logic,"getFactionData", _faction] call MAINCLASS;
         private _factionSide = [_factionData,"side"] call ALiVE_fnc_hashGet;
