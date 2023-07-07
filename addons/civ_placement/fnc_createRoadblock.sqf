@@ -140,9 +140,9 @@ for "_j" from 1 to (count _roadpoints) do {
     _vehtype = selectRandom _vehicleTypes;
     if (!isNil "_vehtype") then {
         if !(isnil "ALiVE_ProfileHandler") then {
-            _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, [position _roadpos, 10,30,2,0,5,0] call BIS_fnc_findsafepos, _direction, true, _fac] call ALiVE_fnc_createProfileVehicle;
+            _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, [position _roadpos, 10,50,10,0,5,0] call BIS_fnc_findsafepos, _direction, true, _fac] call ALiVE_fnc_createProfileVehicle;
         } else {
-            _vehicle = createVehicle [_vehtype, [position _roadpos, 10,30,2,0,5,0] call BIS_fnc_findsafepos, [], 0, "NONE"];
+            _vehicle = createVehicle [_vehtype, [position _roadpos, 10,50,10,0,5,0] call BIS_fnc_findsafepos, [], 0, "NONE"];
             _vehicle setDir _direction;
             _vehicle setposATL (getposATL _vehicle);
         };
