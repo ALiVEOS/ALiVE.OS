@@ -145,7 +145,7 @@ ALiVE_fnc_catapultLaunch = {
 ALiVE_fnc_getAirportTaxiPos = {
     params [
         ["_airportID", 0, [0]],
-        ["_taxiPos", "ilsTaxiIn", [""]], // ilsTaxiIn or ilsTaxisOff
+        ["_taxiPos", "ilsTaxiIn", [""]], // ilsTaxiIn  ilsTaxisOff  ilsPosition
         ["_scope", 0, [0]]
     ];
 
@@ -326,11 +326,90 @@ ALiVE_fnc_isAntiAir = {
     private _threats = getArray(configFile >> "CfgVehicles" >> _class >> "threat");
 
     private _cost = getNumber(configFile >> "CfgVehicles" >> _class >> "cost");
-
-    _result = (( _threats select 2 ) > 0.4) && ( _class iskindOf "LandVehicle" ) && ( _cost > 20000 );
+    
+    if (typeName _threats == "ARRAY") then {
+      if (typeName (_threats select 2) == "SCALAR") then {
+       _result = (( _threats select 2 ) > 0.4) && ( _class iskindOf "LandVehicle" ) && ( _cost > 20000 );
+      };
+    };
 
     _result
 };
+
+ALiVE_fnc_DrawRunwayBlacklistMarkers = {
+    params [
+    	  ["_pos", [0,0,0], [[]]],
+    	  ["_height", 0, [0]],
+    	  ["_color", "COLORRED", [""]]
+    ];
+
+	  private ["_markerExists","_markerList","_alpha","_primary","_airportID","_taxiPositions","_runwayStartPos","_runwayEndPos","_mkrname","_marker","_secondaries","_ILS","_secondaryAirportID","_secondarytaxiPositions"];
+
+    _markerList = []; 
+    if(_debug) then {_alpha = 0.5;} else {_alpha = 0;};
+		_airportID = [_pos] call ALiVE_fnc_getNearestAirportID; 
+		_mkrname = "runway_"+(str _airportID); 
+		_markerExists = [_mkrname] call ALIVE_fnc_markerExists;
+		if (_markerExists) then {
+			_marker = _mkrname;
+		} else {
+		  _taxiPositions = [_airportID, "ilsTaxiOff",4] call ALiVE_fnc_getAirportTaxiPos;
+		  _runwayStartPos = [_airportID, "ilsPosition"] call ALiVE_fnc_getAirportTaxiPos;
+		  _runwayStartPos set [2, 0];
+		  _runwayEndPos = [_taxiPositions select 2, _taxiPositions select 3];  
+		  _runwayEndPos set [2, 0];
+		  _marker = [_mkrname, _runwayStartPos, _runwayEndPos, _height, _color, _alpha] call ALIVE_fnc_createLineMarker;
+		};
+		_markerList pushback _marker;
+	  // DEBUG -------------------------------------------------------------------------------------
+	  if(_debug) then {
+	  	["ATO - Runway ID: %1, Marker Exists?: %2, Marker Name: %3",_airportID,_markerExists,_mkrname] call ALiVE_fnc_dump;
+	  	if (!_markerExists) then { ["ATO - Runway Start Position: %1, Runway End Position: %2", _runwayStartPos, _runwayEndPos] call ALiVE_fnc_dump; };
+	  	["ATO - Runway Marker: %1", _marker] call ALiVE_fnc_dump;
+	  	["ATO - Runway Marker List: %1", _markerList] call ALiVE_fnc_dump;
+	  };
+	  // DEBUG ------------------------------------------------------------------------------------- 
+		_markerList
+};
+
+ALiVE_fnc_CheckSpawnInMarkerArea = {
+    params [
+    	  ["_markers", [], [[]]],
+    	  ["_pos", [0,0,0], [[]]],
+        ["_size", 0, [0]]
+    ];
+    
+     private ["_flatPos","_inArea"];
+     
+     _inArea = false;      
+     _flatPos = [_pos,(_size*4),70] call ALiVE_fnc_findFlatArea;
+      
+        if (count (_markers) > 0) then {
+	       // DEBUG -------------------------------------------------------------------------------------
+	       if(_debug) then {
+	  	    ["ATO - ALiVE_fnc_CheckSpawnInMarkerArea() -> _markers: %1, _pos: %2, _size: %3", _markers, _pos, _size] call ALiVE_fnc_dump;
+	  	    ["ATO - ALiVE_fnc_CheckSpawnInMarkerArea() -> _flatPos: %1", _flatPos] call ALiVE_fnc_dump;
+	       };
+	       // DEBUG ------------------------------------------------------------------------------------- 
+         {
+         	if ([_flatPos, _x] call ALiVE_fnc_inArea) exitWith {
+         		_inArea = true;
+	             // DEBUG -------------------------------------------------------------------------------------
+	             if(_debug) then {
+	             	["ATO - ALiVE_fnc_CheckSpawnInMarkerArea() -> _flatPos is _inArea (%1)", _inArea] call ALiVE_fnc_dump;
+	             	["ATO - ALiVE_fnc_CheckSpawnInMarkerArea() -> Retrying Position generation..."] call ALiVE_fnc_dump;
+	             };
+	             // DEBUG ------------------------------------------------------------------------------------- 
+	           _flatPos = [_markers,_pos,_size] call ALiVE_fnc_CheckSpawnInMarkerArea;
+          };
+         } forEach _markers;
+        };
+        
+       _flatPos
+};
+
+
+
 
 private _result = true;
 
@@ -905,27 +984,69 @@ switch(_operation) do {
 
                                 private _side = [_profile,"side"] call ALiVE_fnc_hashGet;
                                 private _faction = [_profile,"faction"] call ALiVE_fnc_hashGet;
-                                private _crewpos = +_position;
+                                
+                                
+                                
+                                private ["_crewPos","_thispos"];
+                                private _atoPosition = position _logic;
+                                _crewPos = + _atoPosition;
 
-                                // Get nearest building position
+
                                 if !(_isOnCarrier) then {
-                                 // Select indoor building position
-
+                                
                                  // if pilotbuilding is defined
                                  private _pilotbuilding = [_logic, "pilotbuilding"] call MAINCLASS;
+                                 
+
                                  if (count _pilotbuilding >0) then {
-                                    private _vnbuildings = nearestObjects [_position, [_pilotbuilding],200];
+                                 	
+	                                  // DEBUG -------------------------------------------------------------------------------------
+												            if(_debug) then {
+											                  ["ATO - Pilot Building Class: %1",_pilotbuilding] call ALiVE_fnc_dump;
+											                  ["ATO - ATO Module Position: %1", _atoPosition] call ALiVE_fnc_dump;
+											              };
+	                                  // DEBUG ------------------------------------------------------------------------------------- 
+                                  
+                                    private _vnbuildings = nearestObjects [_atoPosition, [_pilotbuilding], 50];
+                                    
+	                                    // DEBUG -------------------------------------------------------------------------------------
+														          if(_debug) then {
+												                ["ATO - Count Nearby Buildings: %1", count _vnbuildings] call ALiVE_fnc_dump;
+												              };
+		                                  // DEBUG ------------------------------------------------------------------------------------- 
+
                                     if (count _vnbuildings > 0) then {
-                                     private _thisbuilding = selectRandom _vnbuildings;
-                                     private _thispos = [_thisbuilding,1] call ALIVE_fnc_findIndoorHousePositions;
-                                     _crewPos = selectRandom _thispos;
+                                    	
+	                                    // DEBUG -------------------------------------------------------------------------------------
+														          if(_debug) then {
+												                ["ATO - Nearby Buildings: %1", _vnbuildings] call ALiVE_fnc_dump;
+												              };
+		                                  // DEBUG ------------------------------------------------------------------------------------- 
+                                    	
+	                                     private _thisbuilding = selectRandom _vnbuildings;
+	                                     _thispos = [_thisbuilding,1] call ALIVE_fnc_findIndoorHousePositions;
+	                                     if (count _thispos > 0) then {
+	                                      _crewPos = selectRandom _thispos;
+			                                    // DEBUG -------------------------------------------------------------------------------------
+														              if(_debug) then {
+			                                      	["ATO - Building Selected: %1", _thispos] call ALiVE_fnc_dump;
+			                                    }; 
+			                                    // DEBUG ------------------------------------------------------------------------------------- 
+		                                   };   
                                     };
+
+
                                  } else {
-                                 	 _crewpos = selectRandom([_position, 100] call ALIVE_fnc_findIndoorHousePositions);
+                                 	 _crewPos = selectRandom([_atoPosition, 100] call ALIVE_fnc_findIndoorHousePositions);
                                  };
 
-                                 if (isNil "_crewPos") then {
-                                     _crewPos = _position getpos [10 + (random 15), random 360];
+                                 if (count _crewPos == 0) then {
+                                     _crewPos = _atoPosition getpos [10 + (random 15), random 360];
+										  	            // DEBUG -------------------------------------------------------------------------------------
+											            	if(_debug) then {
+											             		["ATO - No Buildings Nearby With House Positions. Set Random Crew Position: %1", _crewPos] call ALiVE_fnc_dump;
+											            	};
+											              // DEBUG -------------------------------------------------------------------------------------
                                  };
 
                                 } else {
@@ -945,7 +1066,6 @@ switch(_operation) do {
                                 [_profileEntity, "faction", _faction] call ALIVE_fnc_profileEntity;
                                 [_profileEntity, "busy", true] call ALIVE_fnc_profileEntity;
                                 [_profileEntity, "ignore_HC", true] call ALIVE_fnc_profileEntity;
-
                                 [_profileEntity, "despawnPosition", _crewPos] call ALIVE_fnc_profileEntity;
 
                                 [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
@@ -1446,7 +1566,10 @@ switch(_operation) do {
                     private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
                     private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
                     private _HQ = nil;
-                    private _flatPos = [_pos,_size,45] call ALiVE_fnc_findFlatArea;
+                    // private _flatPos = [_pos,_size,45] call ALiVE_fnc_findFlatArea;
+                    private _runwayMarkers = [_pos,30,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
+                    private _flatPos = [_runwayMarkers,_pos,_size] call ALiVE_fnc_CheckSpawnInMarkerArea;
+                    
 
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
 
@@ -1561,7 +1684,10 @@ switch(_operation) do {
                     // Spawn a AA composition
                     private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
                     private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
-                    private _flatPos = [_pos,(_size*4),70] call ALiVE_fnc_findFlatArea;
+                    // private _flatPos = [_pos,(_size*4),70] call ALiVE_fnc_findFlatArea;
+                    private _runwayMarkers = [_pos,30,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
+                    private _flatPos = [_runwayMarkers,_pos,_size] call ALiVE_fnc_CheckSpawnInMarkerArea;
+        
                     private _AA = nil;
 
                     private _searchString = ["AA_Bunker","SAM_Site","SAM_Bunker","AA_Site"];
@@ -5199,32 +5325,71 @@ switch(_operation) do {
                         _grp leaveVehicle _vehicle;
 
 
-                        				 private _crewpos = +_startPosition;
+                        				private ["_crewPos","_thispos"];
+                                private _atoPosition = position _logic;
+                                _crewPos = + _atoPosition;
+                        				 
                                  // if pilotbuilding is defined
                                  private _pilotbuilding = [_logic, "pilotbuilding"] call MAINCLASS;
+                                 
+
                                  if (count _pilotbuilding >0) then {
-                                    private _vnbuildings = nearestObjects [_startPosition, [_pilotbuilding],200];
+                                 	
+	                                  // DEBUG -------------------------------------------------------------------------------------
+												            if(_debug) then {
+											                  ["ATO - Pilot Building Class: %1",_pilotbuilding] call ALiVE_fnc_dump;
+											                  ["ATO - ATO Module Position: %1", _atoPosition] call ALiVE_fnc_dump;
+											              };
+	                                  // DEBUG ------------------------------------------------------------------------------------- 
+                                  
+                                    private _vnbuildings = nearestObjects [_atoPosition, [_pilotbuilding], 50];
+                                    
+	                                    // DEBUG -------------------------------------------------------------------------------------
+														          if(_debug) then {
+												                ["ATO - Count Nearby Buildings: %1", count _vnbuildings] call ALiVE_fnc_dump;
+												              };
+		                                  // DEBUG ------------------------------------------------------------------------------------- 
+
                                     if (count _vnbuildings > 0) then {
-                                     private _thisbuilding = selectRandom _vnbuildings;
-                                     private _thispos = [_thisbuilding,1] call ALIVE_fnc_findIndoorHousePositions;
-                                     _crewPos = selectRandom _thispos;
+                                    	
+	                                    // DEBUG -------------------------------------------------------------------------------------
+														          if(_debug) then {
+												                ["ATO - Nearby Buildings: %1", _vnbuildings] call ALiVE_fnc_dump;
+												              };
+		                                  // DEBUG ------------------------------------------------------------------------------------- 
+                                    	
+	                                     private _thisbuilding = selectRandom _vnbuildings;
+	                                     _thispos = [_thisbuilding,1] call ALIVE_fnc_findIndoorHousePositions;
+	                                     if (count _thispos > 0) then {
+	                                      _crewPos = selectRandom _thispos;
+			                                    // DEBUG -------------------------------------------------------------------------------------
+														              if(_debug) then {
+			                                      	["ATO - Building Selected: %1", _thispos] call ALiVE_fnc_dump;
+			                                    }; 
+			                                    // DEBUG ------------------------------------------------------------------------------------- 
+		                                   };   
                                     };
+
+
                                  } else {
-                                 	_crewpos = selectRandom([_startPosition, 100] call ALIVE_fnc_findIndoorHousePositions);
+                                 	 _crewPos = selectRandom([_atoPosition, 100] call ALIVE_fnc_findIndoorHousePositions);
                                  };
 
-
-
-                        if (isNil "_crewPos") then {
-                            _crewPos = _startPosition getpos [10 + (random 15), random 360];
-                        };
+                                 if (count _crewPos == 0) then {
+                                     _crewPos = _atoPosition getpos [10 + (random 15), random 360];
+										  	            // DEBUG -------------------------------------------------------------------------------------
+											            	if(_debug) then {
+											             		["ATO - No Buildings Nearby With House Positions. Set Random Crew Position: %1", _crewPos] call ALiVE_fnc_dump;
+											            	};
+											              // DEBUG -------------------------------------------------------------------------------------
+                                 };
 
                         // tell crew to move to nearest building
                         if (_isOnCarrier) then {
                                 private _bridge = (_startPosition nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
                                 _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]);
                                 {
-                                    _x setposATL _crewpos;
+                                    _x setposATL _crewPos;
                                 } foreach units _grp;
                         } else {
 
