@@ -65,7 +65,6 @@ ALIVE_garrisonPositions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_garrisonPositions,"Land_vn_cave_07", [0,7,3]] call ALIVE_fnc_hashSet;
 
 // SPE
-/*
 [ALIVE_garrisonPositions,"Land_SPE_Barn_01", [0,1,2,3,4,5,6,7,8]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_SPE_Manor_House_ruins", [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_SPE_Corner_house_02_ruins", [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]] call ALIVE_fnc_hashSet;
@@ -73,5 +72,10 @@ ALIVE_garrisonPositions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_garrisonPositions,"Land_SPE_House_Arch_01_ruins", [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_SPE_House_Big_04_ruins", [0,1,2,3,4,5,6,7,8,9,10]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_SPE_House_Small_01_ruins", [0,1,2,3,4,5]] call ALIVE_fnc_hashSet;
-*/
+[ALIVE_garrisonPositions,"Land_SPE_Church_BellTower_01", [0,1,2,3,4,5]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Church_BellTower_02", [0,1,2,3,4,5,6,7]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Church_BellTower_03", [0,1,2,3,4]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Tent_01", [0,1,2,3,4]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Tent_02", [0,1,2,3,4]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Tent_03", [0,1,2,3,4]] call ALIVE_fnc_hashSet;
 

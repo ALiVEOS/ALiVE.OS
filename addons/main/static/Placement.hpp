@@ -261,7 +261,33 @@ ALiVE_PLACEMENT_UNITBLACKLIST = ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST +
 		"vn_o_men_nva_65_40", // Crewman (Gunner)
 		"vn_o_men_pl_18", // Crewman (Commander)
 		"vn_o_men_pl_19", // Crewman (Driver)
-		"vn_o_men_pl_20" // Crewman (Gunner)
+		"vn_o_men_pl_20", // Crewman (Gunner)
+		
+		// SPE
+		"SPE_sturmtrooper_tank_crew",
+		"SPE_sturmtrooper_tank_unterofficer",
+		"SPE_sturmtrooper_tank_lieutenant",
+		"SPE_GER_pilot",
+		"SPE_GER_gun_crew",
+		"SPE_GER_gun_SquadLead",
+		"SPE_GER_gun_lieutenant",
+		"SPE_GER_spg_crew",
+		"SPE_GER_spg_unterofficer",
+		"SPE_GER_spg_lieutenant",
+		"SPE_GER_tank_crew",
+		"SPE_GER_tank_unterofficer",
+		"SPE_GER_tank_lieutenant",
+		"SPE_FR_Tank_Crew",
+		"SPE_FR_Tank_Second_Lieutenant",
+		"SPE_FR_Tank_Sergeant",
+		"SPE_US_Pilot_2",
+		"SPE_US_Pilot",
+		"SPE_US_Pilot_Unequipped",
+		"SPE_US_Guncrew",
+		"SPE_US_Guncrew_Sergeant",
+		"SPE_US_Tank_Crew",
+		"SPE_US_Tank_Second_Lieutenant",
+		"SPE_US_Tank_Sergeant"
 ];
 
 /*
@@ -975,6 +1001,14 @@ ALIVE_factionDefaultSupports = [] call ALIVE_fnc_hashCreate;
 ]] call ALIVE_fnc_hashSet;
 
 
+// SPE
+[ALIVE_factionDefaultSupports, "SPE_STURM", ["SPE_ST_OpelBlitz","SPE_ST_OpelBlitz_Open","SPE_ST_OpelBlitz_Fuel","SPE_ST_OpelBlitz_Ambulance","SPE_ST_OpelBlitz_Repair","SPE_ST_OpelBlitz_Ammo","SPE_ST_OpelBlitz_Flak38"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupports, "SPE_WEHRMACHT", ["SPE_OpelBlitz","SPE_OpelBlitz_Open","SPE_OpelBlitz_Fuel","SPE_OpelBlitz_Repair","SPE_OpelBlitz_Ammo","SPE_OpelBlitz_Ambulance","SPE_OpelBlitz_Flak38"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupports, "SPE_US_ARMY", ["SPE_US_M3_Halftrack_Unarmed","SPE_US_M3_Halftrack_Unarmed_Open","SPE_US_M3_Halftrack_Ammo","SPE_US_M3_Halftrack_Fuel","SPE_US_M3_Halftrack_Repair","SPE_US_M3_Halftrack_Ambulance","SPE_US_M16_Halftrack"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupports, "SPE_FR_ARMY", ["SPE_FR_M3_Halftrack_Unarmed","SPE_FR_M3_Halftrack_Unarmed_Open","SPE_FR_M3_Halftrack_Ammo","SPE_FR_M3_Halftrack_Fuel","SPE_FR_M3_Halftrack_Repair","SPE_FR_M3_Halftrack_Ambulance","SPE_FR_M16_Halftrack"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupports, "SPE_FFI", ["SPE_FFI_OpelBlitz","SPE_FFI_OpelBlitz_Open","SPE_FFI_OpelBlitz_Fuel","SPE_FFI_OpelBlitz_Ambulance","SPE_FFI_OpelBlitz_Repair","SPE_FFI_OpelBlitz_Ammo"]] call ALIVE_fnc_hashSet;
+
+
 
 /*
  * Mil placement random supply boxes for sides
@@ -1138,6 +1172,92 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
     "vn_b_ammobox_full_24",
     "vn_b_ammobox_full_19"
 ]] call ALIVE_fnc_hashSet;
+
+
+
+// SPE
+[ALIVE_factionDefaultSupplies, "SPE_STURM", [
+    "Land_SPE_Ammobox_German_01",
+    "Land_SPE_Ammobox_German_02",
+    "Land_SPE_Ammobox_German_03",
+    "Land_SPE_Ammobox_German_04",
+    "Land_SPE_Ammobox_German_05",
+    "SPE_4Rnd_Panzerfaust30",
+    "SPE_4Rnd_Panzerfaust60",
+    "SPE_BasicAmmunitionBox_GER",
+    "SPE_BasicWeaponsBox_GER",
+    "SPE_WeaponsBox_Big_GER",
+    "SPE_AmmoCrate_Arty_GER",
+    "SPE_AmmoCrate_VehicleAmmo_GER",
+    "SPE_AmmoCrate_Mortar_GER",
+    "SPE_AmmoCrate_Mortar_SMOKE_GER",
+    "SPE_AmmoCrate_Mortar_FLARE_GER",
+    "SPE_Ammocrate_Grenades_Frag_GER",
+    "SPE_Weaponcrate_MP40_GER",
+    "SPE_Weaponcrate_MG34_GER",
+    "SPE_Weaponcrate_K98_GER",
+    "SPE_Mine_Ammo_Box_Ger"
+]] call ALIVE_fnc_hashSet;
+
+
+[ALIVE_factionDefaultSupplies, "SPE_WEHRMACHT", [
+    "Land_SPE_Ammobox_German_01",
+    "Land_SPE_Ammobox_German_02",
+    "Land_SPE_Ammobox_German_03",
+    "Land_SPE_Ammobox_German_04",
+    "Land_SPE_Ammobox_German_05",
+    "SPE_4Rnd_Panzerfaust30",
+    "SPE_4Rnd_Panzerfaust60",
+    "SPE_BasicAmmunitionBox_GER",
+    "SPE_BasicWeaponsBox_GER",
+    "SPE_WeaponsBox_Big_GER",
+    "SPE_AmmoCrate_Arty_GER",
+    "SPE_AmmoCrate_VehicleAmmo_GER",
+    "SPE_AmmoCrate_Mortar_GER",
+    "SPE_AmmoCrate_Mortar_SMOKE_GER",
+    "SPE_AmmoCrate_Mortar_FLARE_GER",
+    "SPE_Ammocrate_Grenades_Frag_GER",
+    "SPE_Weaponcrate_MP40_GER",
+    "SPE_Weaponcrate_MG34_GER",
+    "SPE_Weaponcrate_K98_GER",
+    "SPE_Mine_Ammo_Box_Ger"
+]] call ALIVE_fnc_hashSet;
+
+
+[ALIVE_factionDefaultSupplies, "SPE_US_ARMY", [
+    "SPE_BasicAmmunitionBox_US",
+    "SPE_BasicWeaponsBox_US",
+    "Land_SPE_Ammocrate_US_01",
+    "Land_SPE_Ammocrate_US_02",
+    "Land_SPE_Ammocrate_US_03",
+    "SPE_US_Ammocrate_Rifle_Ball",
+    "SPE_US_Open_Ammocrate_Rifle_Ball",
+    "SPE_US_2x_Open_Ammocrate_Rifle_Ball",
+    "SPE_US_2x_Open_Ammocrate_alt_Rifle_Ball",
+    "SPE_US_Ammocrate_Grenades_Frag",
+    "SPE_US_Open_Ammocrate_Grenades_Frag",
+    "SPE_BasicAmmunitionBox_US",
+    "SPE_BasicWeaponsBox_US",
+    "SPE_Mine_AmmoBox_US"
+]] call ALIVE_fnc_hashSet;
+
+
+[ALIVE_factionDefaultSupplies, "SPE_FR_ARMY", [
+    "SPE_BasicAmmunitionBox_US",
+    "SPE_BasicWeaponsBox_US",
+    "SPE_US_Ammocrate_Rifle_Ball",
+    "SPE_US_Open_Ammocrate_Rifle_Ball",
+    "SPE_US_2x_Open_Ammocrate_Rifle_Ball",
+    "SPE_US_2x_Open_Ammocrate_alt_Rifle_Ball",
+    "SPE_US_Ammocrate_Grenades_Frag",
+    "SPE_US_Open_Ammocrate_Grenades_Frag",
+    "SPE_BasicAmmunitionBox_US",
+    "SPE_BasicWeaponsBox_US",
+    "SPE_Mine_AmmoBox_US"
+]] call ALIVE_fnc_hashSet;
+
+
+[ALIVE_factionDefaultSupplies, "SPE_FFI", ["SPE_Hay_WeaponCache_FFI"]] call ALIVE_fnc_hashSet;
 
 
 

@@ -34,6 +34,7 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 
 // CDLC
 [ALIVE_civilianWeapons, "C_VIET", [["vn_p38s","vn_m10_mag"],["vn_hp","vn_hp_mag"],["vm_m1895","vm_m1895_mag"],["vn_tt33","vn_tt33_mag"],["vn_m1911","vn_m1911_mag"],["vn_m10","vn_m10_mag"]]] call ALIVE_fnc_hashSet;
+[ALIVE_civilianWeapons, "SPE_CIV", [["SPE_P08","SPE_8Rnd_9x19_P08"],["SPE_M1911","SPE_7Rnd_45ACP_1911"],["SPE_Sten_Mk2","SPE_32Rnd_9x19_Sten"],["SPE_K98","SPE_5Rnd_792x57"],["SPE_MP40","SPE_32rnd_9x19"],["SPE_M3_GreaseGun","SPE_30Rnd_M3_GreaseGun_45ACP"]]] call ALIVE_fnc_hashSet;
 
 // Civ Pop Interaction
 ALiVE_CivPop_Interaction_WaterItems = [
@@ -443,3 +444,24 @@ VN_C_VIET_ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
 [VN_C_VIET_ALIVE_civilianHouseTracks, "vn_ambient_village_sound_2", 180] call ALIVE_fnc_hashSet;
 
 [ALIVE_civilianFactionHouseTracks, "C_VIET", VN_C_VIET_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
+
+
+// SPE
+SPE_CIV_ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
+
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_18", 32] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_21", 35] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_22", 38] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_23", 32] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_26", 60] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_27", 35] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_28", 31] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_VN_29", 30] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_6", 134] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_7", 97] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_8", 35] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_9", 24] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_10", 33] call ALIVE_fnc_hashSet;
+[SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_11", 24] call ALIVE_fnc_hashSet;
+
+[ALIVE_civilianFactionHouseTracks, "SPE_CIV", SPE_CIV_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;

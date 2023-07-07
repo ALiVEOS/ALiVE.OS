@@ -572,7 +572,7 @@ class FSM
                          "if (_faction != """") then {" \n
                          "" \n
                          "  private _minScope = 1;" \n
-                         "  if (_faction == ""CIV_F"" || _faction == ""C_VIET"" ) then {_minScope = 2};" \n
+                         "  if (_faction == ""CIV_F"" || _faction == ""C_VIET"" || _faction == ""SPE_CIV"") then {_minScope = 2};" \n
                          "  _civClasses = [0,_faction,""Man"",false,_minScope] call ALiVE_fnc_findVehicleType;" \n
                          "  _civCLasses = _civCLasses - ALIVE_PLACEMENT_UNITBLACKLIST;" \n
                          "" \n
@@ -586,7 +586,7 @@ class FSM
                          "       if (_factionSide == 3) then {" \n
                          "            _factionConfigName = configName _factionConfig;" \n
                          "            private _minScope = 1;" \n
-                         "            if (_factionConfigName == ""CIV_F"" || _factionConfigName == ""C_VIET"") then {_minScope = 2};" \n
+                         "            if (_factionConfigName == ""CIV_F"" || _factionConfigName == ""C_VIET"" || _factionConfigName == ""SPE_CIV"") then {_minScope = 2};" \n
                          "            _classes = [0,_factionConfigName,""Man"",false,_minScope] call ALiVE_fnc_findVehicleType;" \n
                          "            _classes = _classes - ALIVE_PLACEMENT_UNITBLACKLIST;" \n
                          "             [_civilianCLasses, _factionConfigName, _classes] call ALiVE_fnc_hashSet;" \n
@@ -1014,7 +1014,7 @@ class FSM
                          "                      		private _fac = faction (_nearCivs select 0);" \n
                          "                          	private _minScope = 1;" \n
                          "                     		" \n
-                         "							if (_fac == ""CIV_F"" || _fac == ""C_VIET"") then {_minScope = 2};" \n
+                         "							if (_fac == ""CIV_F"" || _fac == ""C_VIET"" || _fac == ""SPE_CIV"") then {_minScope = 2};" \n
                          "" \n
                          "                     		_houseCivClasses = [_civilianClasses, _fac,[]] call ALiVE_fnc_hashGet;" \n
                          "" \n

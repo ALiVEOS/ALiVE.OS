@@ -172,6 +172,15 @@ ALIVE_factionDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyIndividualOptions, "B_CIA", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "C_VIET", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
+// SPE
+[ALIVE_factionDefaultResupplyIndividualOptions, "SPE_STURM", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "SPE_WEHRMACHT", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "SPE_US_ARMY", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "SPE_FR_ARMY", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "SPE_FFI", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+
+
+
 
 // THE FOLLOWING IS A BLACKLIST
 
@@ -358,6 +367,17 @@ ALIVE_VNDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyGroupOptions, "B_ROK", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "B_CIA", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "C_VIET", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+
+// SPE
+
+ALIVE_SPEDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
+[ALIVE_SPEDefaultResupplyGroupOptions, "PR_STANDARD", []] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultResupplyGroupOptions, "SPE_STURM", ALIVE_SPEDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "SPE_WEHRMACHT", ALIVE_SPEDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "SPE_US_ARMY", ALIVE_SPEDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "SPE_FR_ARMY", ALIVE_SPEDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "SPE_FFI", ALIVE_SPEDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 
 // OVER
 

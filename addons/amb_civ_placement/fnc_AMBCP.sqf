@@ -797,7 +797,7 @@ switch(_operation) do {
             // avoid error that stems from BIS population module CIV_F unit classes
             // https://github.com/ALiVEOS/ALiVE.OS/issues/522
             private _minScope = 1;
-            if (_faction == "CIV_F" || _faction == "C_VIET") then {_minScope = 2};
+            if (_faction == "CIV_F" || _faction == "C_VIET" || _faction == "SPE_CIV") then {_minScope = 2};
 
             private _civClasses = [0,_faction,"Man",false,_minScope] call ALiVE_fnc_findVehicleType;
 

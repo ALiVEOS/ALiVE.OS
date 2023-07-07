@@ -98,7 +98,25 @@ ALiVE_MIL_CQB_STRATEGICHOUSES = ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES +
     "Land_vn_o_snipertree_01",
     "Land_vn_o_snipertree_04",
     "Land_vn_o_snipertree_02",
-    "Land_vn_o_snipertree_03"
+    "Land_vn_o_snipertree_03",
+    
+    // SPE
+    "Land_SPE_US_Tent",
+    "Land_SPE_Guardbox",
+    "Land_SPE_Tent_01",
+    "Land_SPE_Tent_02",
+    "Land_SPE_Tent_03",
+    "Land_SPE_German_Tent",
+    "Land_SPE_German_Tent_Oak",
+    "Land_SPE_Barn_01",
+    "Land_SPE_Barn_Thatch_01",
+    "Land_SPE_Barn_Thatch_02",
+    "Land_SPE_A3_barn_01_brown",
+    "Land_SPE_A3_barn_01_grey",
+    "Land_SPE_Church_BellTower_01",
+    "Land_SPE_Church_BellTower_02",
+    "Land_SPE_Church_BellTower_03",
+    "Land_SPE_Windmill" 
 ];
 
 /*
@@ -406,9 +424,33 @@ ALiVE_MIL_CQB_UNITBLACKLIST = ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST +
 		"vn_o_men_nva_65_40", // Crewman (Gunner)
 		"vn_o_men_pl_18", // Crewman (Commander)
 		"vn_o_men_pl_19", // Crewman (Driver)
-		"vn_o_men_pl_20" // Crewman (Gunner)
+		"vn_o_men_pl_20", // Crewman (Gunner)
 		
-
+		// SPE
+		"SPE_sturmtrooper_tank_crew",
+		"SPE_sturmtrooper_tank_unterofficer",
+		"SPE_sturmtrooper_tank_lieutenant",
+		"SPE_GER_pilot",
+		"SPE_GER_gun_crew",
+		"SPE_GER_gun_SquadLead",
+		"SPE_GER_gun_lieutenant",
+		"SPE_GER_spg_crew",
+		"SPE_GER_spg_unterofficer",
+		"SPE_GER_spg_lieutenant",
+		"SPE_GER_tank_crew",
+		"SPE_GER_tank_unterofficer",
+		"SPE_GER_tank_lieutenant",
+		"SPE_FR_Tank_Crew",
+		"SPE_FR_Tank_Second_Lieutenant",
+		"SPE_FR_Tank_Sergeant",
+		"SPE_US_Pilot_2",
+		"SPE_US_Pilot",
+		"SPE_US_Pilot_Unequipped",
+		"SPE_US_Guncrew",
+		"SPE_US_Guncrew_Sergeant",
+		"SPE_US_Tank_Crew",
+		"SPE_US_Tank_Second_Lieutenant",
+		"SPE_US_Tank_Sergeant"
 ];
 
 
