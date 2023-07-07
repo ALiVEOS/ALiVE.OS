@@ -166,11 +166,14 @@ if (isServer) then {
             QMOD(mil_placement),
             QMOD(civ_placement),
             QMOD(mil_placement_custom),
+            QMOD(mil_placement_spe),
             QMOD(mil_cqb),
             QMOD(mil_OPCOM),
             QMOD(SYS_playeroptions)
         ] call ALiVE_fnc_isModuleInitialised;
     };
+    
+    
     //This is the last module init to be run, therefore indicates that init of the defined modules above has passed on server
     MOD(REQUIRE_INITIALISED) = true;
     Publicvariable QMOD(REQUIRE_INITIALISED);

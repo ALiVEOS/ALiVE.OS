@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALiVE">
+<Container name="STR_DN">
+<Key ID="STR_ALIVE_SPEMP">
+    <English>Military Placement (Spearhead Obj.)</English>
+    <Chinesesimp>军事布局</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_COMMENT">
+    <English>Custom Military Objective</English>
+    <Chinesesimp>自定义军事目标</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_DEBUG">
+    <English>Enable Debug:</English>
+    <Chinesesimp>启用测试</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_DEBUG_COMMENT">
+    <English>Enables SPEMP Module Debug</English>
+    <Chinesesimp>启用CMP模块调试</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_FACTION">
+    <English>Force Faction:</English>
+    <Chinesesimp>武力势力</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_FACTION_COMMENT">
+    <English>Faction of the units to be placed (SPE_US_ARMY, SPE_FR_ARMY, SPE_STURM, SPE_WEHRMACHT)</English>
+    <Chinesesimp>待放置单元的系数(SPE_US_ARMY、SPE_FR_ARMY、SPE_STURM、SPE_WEHRMACHT)</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_PRIORITY">
+    <English>Objective priority:</English>
+    <Chinesesimp>目标优先级</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_PRIORITY_COMMENT">
+    <English>Priority of the custom objective. Used by OPCOM and others for target evaluation</English>
+    <Chinesesimp>自定义目标的优先级,用于OPCOM和其他目标评估</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_SIZE">
+    <English>Objective size:</English>
+    <Chinesesimp>目标大小</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_SIZE_COMMENT">
+    <English>Size of the custom objective. Used by OPCOM and others for target evaluation</English>
+    <Chinesesimp>自定义目标的大小。用于OPCOM和其他目标评估</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS">
+    <English>Infantry Group Classname:</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS_COMMENT">
+    <English>Set classname of Infantry group to be spawned, set to empty for random. If vehicle classname is set, this will be ignored.</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS">
+    <English>Vehicle Classname:</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS_COMMENT">
+    <English>Set classname of Vehicle to be spawned. If empty, Infantry group will be spawned.</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_USAGE">
+    <English>Place the Spearhead Custom Military Objective module in the editor, select the desired Size, Priority and force. Custom factions can be entered in the text box (separated by a comma).</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_ALLOW_PLAYER_TASK">
+    <English>Allow player tasking:</English>
+    <Chinesesimp>允许玩家任务:</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_ALLOW_PLAYER_TASK_COMMENT">
+    <English>MilAssault/MilDefend C2ISTAR tasks</English>
+    <Chinesesimp>C2ISTAR军事进攻/军事防御任务</Chinesesimp>
+</Key>
+</Container></Package></Project>
