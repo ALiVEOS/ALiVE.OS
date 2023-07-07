@@ -222,15 +222,19 @@ switch(_operation) do {
                     } else {
                         [_handler, "name",_customName] call ALiVE_fnc_HashSet;
 					};
-                    if (["ALiVE_mil_C2ISTAR"] call ALIVE_fnc_isModuleAvailable) then {
-                        private _opcomIntelSides = [ALiVE_mil_C2ISTAR,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
+                    if (["ALiVE_mil_C2ISTAR"] call ALIVE_fnc_isModuleAvailable) then {	
+                    	  {
+                    	  	if (typeof _x == "ALiVE_mil_C2ISTAR") then {
+	                          waituntil {_x getVariable ["startupComplete",false]};
+	                        	private _opcomIntelSides = [ALiVE_mil_C2ISTAR,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
+		                        if (_side in _opcomIntelSides) then {
+		                            private _G2 = [nil,"create", [_handler]] call ALiVE_fnc_G2;
+		                            [_G2,"start"] call ALiVE_fnc_G2;
 
-                        if (_side in _opcomIntelSides) then {
-                            private _G2 = [nil,"create", [_handler]] call ALiVE_fnc_G2;
-                            [_G2,"start"] call ALiVE_fnc_G2;
-
-                            [_handler,"G2", _G2] call ALiVE_fnc_hashSet;
-                        };
+		                            [_handler,"G2", _G2] call ALiVE_fnc_hashSet;
+		                        }; 
+												  };
+												} foreach (synchronizedObjects _logic);
                     };
 
                     //Spread Intel Information for this OPCOMs side
@@ -319,7 +323,7 @@ switch(_operation) do {
 
                             _mod = (synchronizedObjects _logic) select _i;
 
-                            if ((typeof _mod) in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_mil_placement_custom"]) then {
+                            if ((typeof _mod) in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_mil_placement_custom","ALiVE_mil_placement_spe"]) then {
                                 while {_startupComplete = _mod getVariable ["startupComplete", false]; !(_startupComplete)} do {};
 
                                 _obj = [_mod,"objectives",objNull,[]] call ALIVE_fnc_OOsimpleOperation;
