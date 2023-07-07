@@ -39,8 +39,32 @@
     <Chinesesimp>飞行员准备室</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PILOTBUILDING_COMMENT">
-    <English>Pilots will spawn in this building classname</English>
+    <English>Pilots will spawn in this building classname. Place building on map.</English>
     <Chinesesimp>飞行员将在此建筑类名中生成</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS">
+    <English>Runway start position:</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS_COMMENT">
+    <English>Defines blacklist marker start position coords for runway. Format: [x,y,z]</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ATO_RUNWAYENDPOS">
+    <English>Runway end position:</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ATO_RUNWAYENDPOS_COMMENT">
+    <English>Defines blacklist marker end position coords for runway. Format: [x,y,z]</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ATO_RUNWAYWIDTH">
+    <English>Runway width:</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ATO_RUNWAYWIDTH_COMMENT">
+    <English>Number in metres</English>
+    <Chinesesimp></Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION">
     <English>Faction:</English>

@@ -339,13 +339,24 @@ ALiVE_fnc_isAntiAir = {
 ALiVE_fnc_DrawRunwayBlacklistMarkers = {
     params [
     	  ["_pos", [0,0,0], [[]]],
-    	  ["_height", 0, [0]],
     	  ["_color", "COLORRED", [""]]
     ];
 
-	  private ["_markerExists","_markerList","_alpha","_primary","_airportID","_taxiPositions","_runwayStartPos","_runwayEndPos","_mkrname","_marker","_secondaries","_ILS","_secondaryAirportID","_secondarytaxiPositions"];
+	  private ["_airportID","_markerExists","_markerList","_alpha","_height","_runwayStartPos","_runwayEndPos","_mkrname","_marker"];
 
+    _runwayStartPos = [_logic, "runwaystartpos"] call MAINCLASS;
+    _runwayEndPos = [_logic, "runwayendpos"] call MAINCLASS;
+    _height = [_logic, "runwaywidth"] call MAINCLASS;
+    _runwayStartPos = call compile _runwayStartPos;
+    _runwayEndPos = call compile _runwayEndPos;
+    _height = parseNumber _height;
+	  // DEBUG -------------------------------------------------------------------------------------
+	  if(_debug) then {
+    ["ATO - Runway Start Position: %1(%4), Runway End Position: %2(%5), Runway Width: %3(%6)", _runwayStartPos, _runwayEndPos, _height, typeName _runwayStartPos, typeName _runwayEndPos, typeName _height] call ALiVE_fnc_dump;
+	  };
+	  // DEBUG ------------------------------------------------------------------------------------- 
     _markerList = []; 
+    
     if(_debug) then {_alpha = 0.5;} else {_alpha = 0;};
 		_airportID = [_pos] call ALiVE_fnc_getNearestAirportID; 
 		_mkrname = "runway_"+(str _airportID); 
@@ -353,12 +364,9 @@ ALiVE_fnc_DrawRunwayBlacklistMarkers = {
 		if (_markerExists) then {
 			_marker = _mkrname;
 		} else {
-		  _taxiPositions = [_airportID, "ilsTaxiOff",4] call ALiVE_fnc_getAirportTaxiPos;
-		  _runwayStartPos = [_airportID, "ilsPosition"] call ALiVE_fnc_getAirportTaxiPos;
-		  _runwayStartPos set [2, 0];
-		  _runwayEndPos = [_taxiPositions select 2, _taxiPositions select 3];  
-		  _runwayEndPos set [2, 0];
-		  _marker = [_mkrname, _runwayStartPos, _runwayEndPos, _height, _color, _alpha] call ALIVE_fnc_createLineMarker;
+		  if ((count _runwayStartPos) > 0 && (count _runwayEndPos) > 0 && _height != 0) then {
+		   _marker = [_mkrname, _runwayStartPos, _runwayEndPos, _height, _color, _alpha] call ALIVE_fnc_createLineMarker;
+		  };
 		};
 		_markerList pushback _marker;
 	  // DEBUG -------------------------------------------------------------------------------------
@@ -688,6 +696,15 @@ switch(_operation) do {
     case "pilotbuilding": {
         _result = [_logic,_operation,_args,DEFAULT_PILOTBUILDING] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "runwaystartpos": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "runwayendpos": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "runwaywidth": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -984,7 +1001,7 @@ switch(_operation) do {
 
                                 private _side = [_profile,"side"] call ALiVE_fnc_hashGet;
                                 private _faction = [_profile,"faction"] call ALiVE_fnc_hashGet;
-                                
+                                private _crewpos = +_position;
                                 
                                 
                                 private ["_crewPos","_thispos"];
@@ -1037,10 +1054,10 @@ switch(_operation) do {
 
 
                                  } else {
-                                 	 _crewPos = selectRandom([_atoPosition, 100] call ALIVE_fnc_findIndoorHousePositions);
+                                 	 _crewpos = selectRandom([_position, 100] call ALIVE_fnc_findIndoorHousePositions);
                                  };
 
-                                 if (count _crewPos == 0) then {
+                                 if (isNil "_crewPos") then {
                                      _crewPos = _atoPosition getpos [10 + (random 15), random 360];
 										  	            // DEBUG -------------------------------------------------------------------------------------
 											            	if(_debug) then {
@@ -1567,7 +1584,7 @@ switch(_operation) do {
                     private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
                     private _HQ = nil;
                     // private _flatPos = [_pos,_size,45] call ALiVE_fnc_findFlatArea;
-                    private _runwayMarkers = [_pos,30,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
+                    private _runwayMarkers = [_pos,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
                     private _flatPos = [_runwayMarkers,_pos,_size] call ALiVE_fnc_CheckSpawnInMarkerArea;
                     
 
@@ -1685,7 +1702,7 @@ switch(_operation) do {
                     private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
                     private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
                     // private _flatPos = [_pos,(_size*4),70] call ALiVE_fnc_findFlatArea;
-                    private _runwayMarkers = [_pos,30,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
+                    private _runwayMarkers = [_pos,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
                     private _flatPos = [_runwayMarkers,_pos,_size] call ALiVE_fnc_CheckSpawnInMarkerArea;
         
                     private _AA = nil;
@@ -5327,8 +5344,10 @@ switch(_operation) do {
 
                         				private ["_crewPos","_thispos"];
                                 private _atoPosition = position _logic;
+                                private _crewpos = +_startPosition;
                                 _crewPos = + _atoPosition;
-                        				 
+                        				
+                        				
                                  // if pilotbuilding is defined
                                  private _pilotbuilding = [_logic, "pilotbuilding"] call MAINCLASS;
                                  
@@ -5372,10 +5391,10 @@ switch(_operation) do {
 
 
                                  } else {
-                                 	 _crewPos = selectRandom([_atoPosition, 100] call ALIVE_fnc_findIndoorHousePositions);
+                                 	 _crewpos = selectRandom([_startPosition, 100] call ALIVE_fnc_findIndoorHousePositions);
                                  };
 
-                                 if (count _crewPos == 0) then {
+                                 if (isNil "_crewPos") then {
                                      _crewPos = _atoPosition getpos [10 + (random 15), random 360];
 										  	            // DEBUG -------------------------------------------------------------------------------------
 											            	if(_debug) then {
@@ -5389,7 +5408,7 @@ switch(_operation) do {
                                 private _bridge = (_startPosition nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
                                 _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]);
                                 {
-                                    _x setposATL _crewPos;
+                                    _x setposATL _crewpos;
                                 } foreach units _grp;
                         } else {
 

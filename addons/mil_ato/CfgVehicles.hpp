@@ -220,6 +220,24 @@ class CfgVehicles
                         defaultValue = "";
                         typeName = "STRING";
                 };
+                class runwaystartpos
+                {
+                        displayName = "$STR_ALIVE_ATO_RUNWAYSTARTPOS";
+                        description = "$STR_ALIVE_ATO_RUNWAYSTARTPOS_COMMENT";
+                        defaultValue = "";
+                };
+                class runwayendpos
+                {
+                        displayName = "$STR_ALIVE_ATO_RUNWAYENDPOS";
+                        description = "$STR_ALIVE_ATO_RUNWAYENDPOS_COMMENT";
+                        defaultValue = "";
+                };
+                class runwaywidth
+                {
+                        displayName = "$STR_ALIVE_ATO_RUNWAYWIDTH";
+                        description = "$STR_ALIVE_ATO_RUNWAYWIDTH_COMMENT";
+                        defaultValue = "";
+                };    
         };
         class ModuleDescription
         {
