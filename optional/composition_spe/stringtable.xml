@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project name="Arma3">
+<Package name="ALIVE_COMP_SPE">
+<Container name="STR_DN">
+	
+	
+<Key ID="STR_ALIVE_COMP_SPE_MilitaryBocage">
+    <English>Military (Bocage)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_GuerrillaBocage">
+    <English>Guerrilla (Bocage)</English>
+</Key>
+
+
+<Key ID="STR_ALIVE_COMP_SPE_CheckpointsBarricadesSmall">
+    <English>Checkpoints &amp; Barricades (Small)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_CheckpointsBarricadesMedium">
+    <English>Checkpoints &amp; Barricades (Medium)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_CheckpointsBarricadesLarge">
+    <English>Checkpoints &amp; Barricades (Large)</English>
+</Key>
+
+<Key ID="STR_ALIVE_COMP_SPE_HqSmall">
+    <English>HeadQuarters (Small)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_HqMedium">
+    <English>HeadQuarters (Medium)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_HqLarge">
+    <English>HeadQuarters (Large)</English>
+</Key>
+
+<Key ID="STR_ALIVE_COMP_SPE_SupportsSmall">
+    <English>Support (Small)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_SupportsMedium">
+    <English>Support (Medium)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_SupportsLarge">
+    <English>Support (Large)</English>
+</Key>
+
+<Key ID="STR_ALIVE_COMP_SPE_CrashsitesSmall">
+    <English>Crashsites (Small)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_CrashsitesMedium">
+    <English>Crashsites (Medium)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_CrashsitesLarge">
+    <English>Crashsites (Large)</English>
+</Key>
+
+<Key ID="STR_ALIVE_COMP_SPE_FortSmall">
+    <English>Fortifications (Small)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_FortMedium">
+    <English>Fortifications (Medium)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_FortLarge">
+    <English>Fortifications (Large)</English>
+</Key>
+
+
+</Container></Package></Project>
