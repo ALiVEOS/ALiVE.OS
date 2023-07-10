@@ -13,6 +13,7 @@ private _roundsAvail = [];
  {
      private _he      = ["HE",      _x] call ALIVE_fnc_isMagazineOfOrdnanceType;
      private _smoke   = ["SMOKE",   _x] call ALIVE_fnc_isMagazineOfOrdnanceType;
+     private _wp      = ["WP",      _x] call ALIVE_fnc_isMagazineOfOrdnanceType;
      private _guided  = ["SADARM",  _x] call ALIVE_fnc_isMagazineOfOrdnanceType;
      private _cluster = ["CLUSTER", _x] call ALIVE_fnc_isMagazineOfOrdnanceType;
      private _lg      = ["LASER",   _x] call ALIVE_fnc_isMagazineOfOrdnanceType;
@@ -26,6 +27,9 @@ private _roundsAvail = [];
      };
      if (_smoke) then {
          _roundsAvail =  _roundsAvail + ["SMOKE"];
+     };
+     if (_wp) then {
+         _roundsAvail =  _roundsAvail + ["WP"];
      };
      if (_guided) then {
          _roundsAvail =  _roundsAvail + ["SADARM"];

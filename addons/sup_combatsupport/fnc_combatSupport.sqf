@@ -110,11 +110,15 @@ switch(_operation) do {
                             _code;
                         };
 
+                        ["CS - synchronizedObjects: %1, _count: %2",synchronizedObjects _logic, count synchronizedObjects _logic] call ALiVE_fnc_dump;
+
                         for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
 
                             _entry = vehicle ((synchronizedObjects _logic) select _i);
                             _type = _entry getvariable ["CS_TYPE","CAS"];
                             _cargoCount = getNumber(configFile >> "cfgVehicles" >> typeOf _entry >> "transportSoldier");
+                            
+                        ["CS - _entry: %1, _type: %2, _cargoCount: %3",_entry,_type,_cargoCount] call ALiVE_fnc_dump;
 
                             if (_entry isKindOf "Air") then {
                                 switch (toLower(_type)) do {
@@ -208,6 +212,7 @@ switch(_operation) do {
                                         _he = ["HE",parsenumber(_entry getvariable ["CS_artillery_he","30"])];
                                         _illum = ["ILLUM",parsenumber(_entry getvariable ["CS_artillery_illum","30"])];
                                         _smoke = ["SMOKE",parsenumber(_entry getvariable ["CS_artillery_smoke","30"])];
+                                        _wp = ["WP",parsenumber(_entry getvariable ["CS_artillery_wp","30"])];
                                         _guided = ["SADARM",parsenumber(_entry getvariable ["CS_artillery_guided","30"])];
                                         _cluster = ["CLUSTER",parsenumber(_entry getvariable ["CS_artillery_cluster","30"])];
                                         _lg = ["LASER",parsenumber(_entry getvariable ["CS_artillery_lg","30"])];
@@ -215,7 +220,7 @@ switch(_operation) do {
                                         _atmine = ["AT MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
                                         _rockets = ["ROCKETS",parsenumber(_entry getvariable ["CS_artillery_rockets","16"])];
 
-                                        _ordnance = [_he,_illum,_smoke,_guided,_cluster,_lg,_mine,_atmine, _rockets];
+                                        _ordnance = [_he,_illum,_smoke,_wp,_guided,_cluster,_lg,_mine,_atmine, _rockets];
                                         _code = _entry getvariable ["CS_CODE",""];
                                         _code = [_code,"this","(_this select 0)"] call CBA_fnc_replace;
                                         _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
@@ -278,6 +283,7 @@ switch(_operation) do {
                                     _setherounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_he","30"];
                                     _setillumrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_illum","30"];
                                     _setsmokerounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_smoke","30"];
+                                    _setwprounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_wp","30"];
                                     _setguidedrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_guided","30"];
                                     _setclusterrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_cluster","30"];
                                     _setlgrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_lg","30"];
@@ -292,6 +298,7 @@ switch(_operation) do {
                                     _herounds = parsenumber(_setherounds);
                                     _illumrounds = parsenumber(_setillumrounds);
                                     _smokerounds = parsenumber(_setsmokerounds);
+                                    _wprounds = parsenumber(_setwprounds);
                                     _guidedrounds = parsenumber(_setguidedrounds);
                                     _clusterrounds = parsenumber(_setclusterrounds);
                                     _lgrounds = parsenumber(_setlgrounds);
@@ -302,6 +309,7 @@ switch(_operation) do {
                                     _he = ["HE",_herounds];
                                     _illum = ["ILLUM",_illumrounds];
                                     _smoke = ["SMOKE",_smokerounds];
+                                    _wp = ["WP",_wprounds];
                                     _guided = ["SADARM",_guidedrounds];
                                     _cluster = ["CLUSTER",_clusterrounds];
                                     _lg = ["LASER",_lgrounds];
@@ -309,7 +317,7 @@ switch(_operation) do {
                                     _atmine = ["AT MINE",_atminerounds];
                                     _rockets = ["ROCKETS", _rocketrounds];
 
-                                   _ordnance = [_he,_illum,_smoke,_guided,_cluster,_lg,_mine,_atmine, _rockets];
+                                   _ordnance = [_he,_illum,_smoke,_wp,_guided,_cluster,_lg,_mine,_atmine, _rockets];
 
                                     _artyArray = [_position,_class, _callsign,3,_ordnance,_code];
                                     _artyArrays pushback _artyArray;
@@ -584,6 +592,9 @@ switch(_operation) do {
                             _unitCount = round (_x select 3); if (_unitCount > 4) then { _unitCount = 4 }; if (_unitCount < 1) then { _unitCount = 1 };
                             _rounds = _x select 4;
                             _code = _x select 5;
+                            
+                        ["CS - _class: %1, _callsign: %2, _unitCount: %3, _rounds: %4",_class, _callsign, _unitCount, _rounds] call ALiVE_fnc_dump;             
+                            
 
                             if (_class in ["BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then {
                                 // Force _unitCount to 1 to prevent spawning 3x3 units when _class is from CfgGroups
@@ -614,6 +625,9 @@ switch(_operation) do {
                             } else {
                                 _roundsUnit = _class call ALiVE_fnc_GetArtyRounds;
                             };
+
+                            ["CS - _roundsUnit: %1",_roundsUnit] call ALiVE_fnc_dump;
+
 
                             _roundsAvailable = [];
                             _canMove = if (_class in ["B_MBT_01_arty_F", "O_MBT_02_arty_F", "B_MBT_01_mlrs_F","O_Mortar_01_F", "B_Mortar_01_F","I_Mortar_01_F","BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then { true } else { false };
@@ -735,6 +749,7 @@ switch(_operation) do {
                                 };
                             } forEach _rounds;
 
+                            ["CS - _roundsAvailable: %1",_roundsAvailable] call ALiVE_fnc_dump;
 
                             leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];
 

@@ -24,8 +24,9 @@ Author:
 marceldev89
 ---------------------------------------------------------------------------- */
 
-#define HE_SUBSTRINGS      ["Mo_shells", "he"];
-#define SMOKE_SUBSTRINGS   ["Mo_smoke", "wp"];
+#define HE_SUBSTRINGS      ["Mo_shells", "he", "HE"];
+#define SMOKE_SUBSTRINGS   ["Mo_smoke", "smoke", "Smoke","smokeshell","SmokeShell"];
+#define PHOS_SUBSTRINGS    ["wp", "WP"];
 #define GUIDED_SUBSTRINGS  ["Mo_guided"];
 #define CLUSTER_SUBSTRINGS ["Mo_Cluster"];
 #define LASER_SUBSTRINGS   ["Mo_LG", "laser"];
@@ -47,6 +48,7 @@ private _magazineClassName = param [1];
 private _substrings = switch (_ordnanceType) do {
     case "HE":      { HE_SUBSTRINGS };
     case "SMOKE":   { SMOKE_SUBSTRINGS };
+    case "WP":      { PHOS_SUBSTRINGS };
     case "SADARM":  { GUIDED_SUBSTRINGS };
     case "CLUSTER": { CLUSTER_SUBSTRINGS };
     case "LASER":   { LASER_SUBSTRINGS };

@@ -43,6 +43,12 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_ARTILLERY_SMOKE_DESC";
                                 defaultValue= 30;
                         };
+                         class artillery_wp
+                        {
+                                displayName = "$STR_ALIVE_ARTILLERY_WP";
+                                description = "$STR_ALIVE_ARTILLERY_WP_DESC";
+                                defaultValue= 0;
+                        };
                         class artillery_guided
                         {
                                 displayName = "$STR_ALIVE_ARTILLERY_GUIDED";
