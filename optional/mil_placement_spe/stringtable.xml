@@ -3,7 +3,7 @@
 <Package name="ALiVE">
 <Container name="STR_DN">
 <Key ID="STR_ALIVE_SPEMP">
-    <English>Military Placement (Spearhead Obj.)</English>
+    <English>Military Placement (Garrision Obj.)</English>
     <Chinesesimp>军事布局</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_COMMENT">
