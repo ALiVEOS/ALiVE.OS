@@ -328,8 +328,10 @@ ALiVE_fnc_isAntiAir = {
     private _cost = getNumber(configFile >> "CfgVehicles" >> _class >> "cost");
     
     if (typeName _threats == "ARRAY") then {
-      if (typeName (_threats select 2) == "SCALAR") then {
-       _result = (( _threats select 2 ) > 0.4) && ( _class iskindOf "LandVehicle" ) && ( _cost > 20000 );
+    	if ((count _threats) > 0) then {
+        if (typeName (_threats select 2) == "SCALAR") then {
+         _result = (( _threats select 2 ) > 0.4) && ( _class iskindOf "LandVehicle" ) && ( _cost > 20000 );
+        };
       };
     };
 
