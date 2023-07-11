@@ -502,7 +502,7 @@ switch (_operation) do {
                         _roads = _position nearRoads 25;
                         _roadsConnected = roadsConnectedTo (_roads select 0);
 
-                        //TODO: Do not update the direction of static weapons?
+                        
                         if (!isnil "_roadsConnected" && {count _roadsConnected > 1}) then {
                             _roads = _roadsConnected;
                             _direction = (_roads select 0) getDir (_roads select 1);
@@ -511,6 +511,11 @@ switch (_operation) do {
                                 _direction = (_roads select 0) getDir (_roads select 1);
                             };
                         };
+                       // Update the direction of static weapons!
+                        if (_vehicleType == "StaticWeapon") then {
+                       	  _direction = _logic select 2 select 12;
+                        };
+                       
 
                     };
                     
