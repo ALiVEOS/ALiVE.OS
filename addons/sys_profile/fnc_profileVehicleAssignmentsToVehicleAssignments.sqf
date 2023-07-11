@@ -36,6 +36,6 @@ _orderGetIn = if (count _this > 2) then {_this select 2} else {false};
 if(count (_vehicleAssignments select 1) > 0) then {
     {
         [_x, _profile,_orderGetIn] call ALIVE_fnc_profileVehicleAssignmentToVehicleAssignment;
-         uiSleep 0.5;
+        // uiSleep 0.5;
     } forEach (_vehicleAssignments select 2);
 };
