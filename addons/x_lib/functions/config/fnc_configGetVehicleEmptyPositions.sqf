@@ -26,7 +26,7 @@ Author:
 Wolffy.au
 ---------------------------------------------------------------------------- */
 
-private ["_vehicle","_positions","_class","_turretEmptyCount","_playerTurretEmptyCount","_findRecurse","_turrets"];
+private ["_vehicle","_positions","_class","_turretEmptyCount","_playerTurretEmptyCount","_findRecurse","_turrets","_vehicleKind","_showAsCargoStatus"];
 
 _vehicle = _this select 0;
 
@@ -38,11 +38,15 @@ _positions set [0, getNumber(_class >> "hasDriver")];
 // get turrets for this class ignoring gunner and commander turrets
 _turretEmptyCount = 0;
 _playerTurretEmptyCount = 0;
+_showAsCargoStatus = [];
+
+_vehicleKind = _vehicle call ALIVE_fnc_vehicleGetKindOf;
 
 _findRecurse = {
     {
         if (getNumber (_x >> "dontCreateAi") != 1) then {
             if (getNumber (_x >> "showAsCargo") == 0) then {
+            	  _showAsCargoStatus pushback 0;
                 if(getNumber(_x >> "primaryGunner") == 1) then {
                     _positions set [1, 1];
                 } else {
@@ -53,6 +57,11 @@ _findRecurse = {
                     };
                 };
             } else {
+            	
+            		 if (getNumber (_x >> "showAsCargo") == 1) then {
+            		 	_showAsCargoStatus pushback 1;
+            		 };
+            		 
                 _playerTurretEmptyCount = _playerTurretEmptyCount + 1;
             };
 
@@ -66,6 +75,16 @@ _findRecurse = {
 _class call _findRecurse;
 
 
+if (_vehicleKind == "StaticWeapon") then {
+	_turretEmptyCount = 0;
+  _playerTurretEmptyCount = 0;
+  for "_i" from 0 to ((count _showAsCargoStatus)-1) do {
+		if (_showAsCargoStatus select _i == 1) then {
+			_turretEmptyCount = _turretEmptyCount +1
+		};
+  };
+};
+ 
 _positions set [3, _turretEmptyCount];
 _positions set [4, getNumber(_class >> "transportSoldier")];
 _positions set [5, _playerTurretEmptyCount];

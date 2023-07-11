@@ -76,7 +76,7 @@ if!(_spawnGoodPosition) then {
 _groupProfiles pushback _profileEntity;
 [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 
-private ["_vehicleKind","_vehicleID","_vehicleClass","_crew","_profileVehicle","_vehiclePositions","_countCrewPositions"];
+private ["_vehicleKind","_vehicleID","_vehicleClass","_crew","_profileVehicle","_vehiclePositions","_countCrewPositions","_crewCountPositions"];
 
 _vehicleKind = _vehicleClass call ALIVE_fnc_vehicleGetKindOf;
 
@@ -124,8 +124,14 @@ _crew = _vehicleClass call ALIVE_fnc_configGetVehicleCrew;
 _vehiclePositions = [_vehicleClass] call ALIVE_fnc_configGetVehicleEmptyPositions;
 _countCrewPositions = 0;
 
-// count all non cargo positions
-for "_i" from 0 to count _vehiclePositions -3 do {
+
+// count all non cargo positions except "StaticWeapon"
+_crewCountPositions = count _vehiclePositions;
+ if (_vehicleKind != "StaticWeapon") then {
+ 	_crewCountPositions = count _vehiclePositions -3;
+ };
+
+for "_i" from 0 to _crewCountPositions -1  do {
     _countCrewPositions = _countCrewPositions + (_vehiclePositions select _i);
 };
 
