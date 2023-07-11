@@ -307,11 +307,12 @@ switch(_operation) do {
 	            if(_debug) then {
 	            	  ["SPEMP [%1] - Force creation ",_faction] call ALiVE_fnc_dump;
                   ["SPEMP Vehicle Class: %1", _vehicleClass] call ALiVE_fnc_dump;
-	            	  ["SPEMP - Module Position: %1", _position] call ALiVE_fnc_dump;
+	            	  ["SPEMP - Module Position: %1, Module Direction: %2", _position, _direction] call ALiVE_fnc_dump;
 	            };
 	            // DEBUG -------------------------------------------------------------------------------------
 	            
  								private _countCrewed = 0;
+ 								_position set [2, _direction];
 	     					_profiledCrewed = [_vehicleClass, _side, _faction, "CAPTAIN", _position, _direction] call ALIVE_fnc_createProfilesCrewedVehicle;
 	              _countCrewed = _countCrewed +1; 
                 _countProfiles = _countCrewed;
