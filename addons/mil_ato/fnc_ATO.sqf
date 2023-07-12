@@ -4429,6 +4429,7 @@ switch(_operation) do {
 
                                     // unlock runway
                                     if (_isPlane) then {
+                                        private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                                         [_logic, "unlockRunway", _airportID] call MAINCLASS;
                                     };
 
