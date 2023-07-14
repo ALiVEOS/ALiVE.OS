@@ -72,6 +72,8 @@ if(count _sideClusters > 0) then {
 
     _targetPosition = [_targetCluster, "position"] call ALIVE_fnc_hashGet;
 
+} else {
+	_targetPosition = [99999,99999,99999];
 };
 
 _targetPosition
