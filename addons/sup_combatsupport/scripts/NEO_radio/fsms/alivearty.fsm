@@ -4,7 +4,7 @@
 item0[] = {"Start",0,250,-41.455616,-237.568573,48.544384,-187.568573,0.000000,"Start"};
 item1[] = {"True",4,218,-42.781796,-125.724930,47.218204,-75.724922,0.000000,"True"};
 item2[] = {"main_loop",2,250,-43.161469,-20.598993,46.838547,29.401003,0.000000,"main loop"};
-item3[] = {"new_task",4,218,-38.938957,58.070740,51.061043,108.070747,0.000000,"new task"};
+item3[] = {"new_task",4,4314,-38.938957,58.070740,51.061043,108.070747,0.000000,"new task"};
 item4[] = {"_",2,250,-39.730919,130.312286,50.269096,180.312286,0.000000,""};
 item5[] = {"proceed",4,218,-38.146973,229.671280,51.853027,279.671356,0.000000,"proceed"};
 item6[] = {"__1",2,250,-40.522888,304.116425,49.477127,354.116425,0.000000,""};
@@ -21,7 +21,7 @@ item16[] = {"dead",4,218,-480.812317,-21.425758,-390.812347,28.574249,100.000000
 item17[] = {"not_viable_",4,218,-182.663177,129.460892,-92.663177,179.460892,3.000000,"not viable" \n ""};
 item18[] = {"",7,210,-433.508423,322.146332,-425.508423,330.146332,0.000000,""};
 item19[] = {"",7,210,-409.517120,630.532776,-401.517120,638.532776,0.000000,""};
-item20[] = {"__6",1,4346,-656.779907,-21.765007,-566.779907,28.234982,0.000000,""};
+item20[] = {"__6",1,250,-656.779907,-21.765007,-566.779907,28.234982,0.000000,""};
 item21[] = {"",7,210,-405.973358,779.044312,-397.973358,787.044312,0.000000,""};
 item22[] = {"",7,210,460.316040,-0.979358,468.316040,7.020648,0.000000,""};
 item23[] = {"",7,210,-420.700317,513.539978,-412.700317,521.539978,0.000000,""};
@@ -161,8 +161,8 @@ link78[] = {61,64};
 link79[] = {62,63};
 link80[] = {63,48};
 link81[] = {64,49};
-globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-758.543396,562.698181,535.687744,-431.743317,1161,844,1};
-window[] = {2,-1,-1,-1,-1,1110,224,1916,224,3,1183};
+globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-730.424255,836.463684,837.353271,-340.838837,1165,876,1};
+window[] = {2,-1,-1,-1,-1,964,78,1770,78,3,1183};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -324,6 +324,8 @@ class FSM
                                          "_player = _newTaskArray select 9;" \n
                                          "_battery setVariable [""NEO_radioArtyNewTask"", nil, true];" \n
                                          "" \n
+                                         "[""ARTY FSM (NEW TASK): _newTaskArray: %1"",_newTaskArray] call ALiVE_fnc_dump;" \n
+                                         "" \n
                                          "//Get ASL position" \n
                                          "_dummy = ""Land_HelipadEmpty_F"" createVehicleLocal _target;" \n
                                          "_dummy setPosATL [getPosATL _dummy select 0, getPosATL _dummy select 1, 0];" \n
@@ -341,18 +343,23 @@ class FSM
                                          "    if (_testPosInRange) exitWith {" \n
                                          "        _minRange = (position (leader _grp)) distance2D _testPos;" \n
                                          "        _minRange = _minRange + 50;" \n
+                                         "        [""ARTY FSM (NEW TASK): _testPosInRange: %1, _minRange: %2"",_testPosInRange,_minRange] call ALiVE_fnc_dump;" \n
                                          "    };" \n
                                          "" \n
                                          "    _testPos = [_testPos, 1, 0] call BIS_fnc_relPos;" \n
                                          "};" \n
                                          "" \n
+                                         "[""ARTY FSM (NEW TASK) (inRangeOfArtillery) _testPosInRange: %1, _testPos: %2, units _grp: %3, _ordnance: %4"", _testPosInRange, _testPos, units _grp, _ordnance] call ALiVE_fnc_dump;" \n
+                                         "" \n
                                          "_inRange = false;" \n
                                          "if (_target distance2D (position (leader _grp)) > _minRange) then {" \n
                                          "    _inRange = _target inRangeOfArtillery [units _grp, _ordnance];" \n
+                                         "    [""ARTY FSM (NEW TASK): (inRangeOfArtillery) _inRange: %1, _target: %2, units _grp: %3, _ordnance: %4"", _inRange, _target, units _grp, _ordnance] call ALiVE_fnc_dump;" \n
                                          "};" \n
                                          "_available = true;" \n
                                          "_viable = true;" \n
                                          "" \n
+                                         "[""ARTY FSM (NEW TASK): inRange: %1, _available: %2, _viable: %3"",_inRange,_available,_viable] call ALiVE_fnc_dump;" \n
                                          "//Spawn Mode" \n
                                          "/*[_battery, false] call BIS_ARTY_F_SetShellSpawn;*/" \n
                                          "" \n
@@ -382,7 +389,7 @@ class FSM
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"!_viable" \n
                                          ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                        action=/*%FSM<ACTION""">*/"[""ARTY FSM (NOT VIABLE): _viable: %1"",_viable] call ALiVE_fnc_dump;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                                 /*%FSM<LINK "not_in_range">*/
@@ -394,7 +401,7 @@ class FSM
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"!_inRange" \n
                                          ""/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                        action=/*%FSM<ACTION""">*/"[""ARTY FSM (NOT IN RANGE): _inRange: %1"",_inRange] call ALiVE_fnc_dump;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                                 /*%FSM<LINK "proceed">*/
