@@ -5033,6 +5033,9 @@ switch(_operation) do {
             case "aircraftReturn": {
                 private _aircraftID = _eventFriendlyProfiles select 0;
                 private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
+                if (isNil "_aircraft") exitWith {
+                	 ["ATO - aircraftReturn has no valid _aircraft, _assets: %1, _aircraftID: %2", _assets, _aircraftID] call ALiVE_fnc_dump;
+                };
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
