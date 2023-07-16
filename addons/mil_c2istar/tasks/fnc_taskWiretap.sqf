@@ -45,7 +45,7 @@ switch (_taskState) do {
 				"_taskEnemyFaction",
 				"_taskCurrent",
 				"_taskApplyType",
-                "_targetBuilding"
+				"_targetBuilding"
 			];
 
         private _tasksCurrent = ([ALiVE_TaskHandler, "tasks", ["", [], [], nil]] call ALiVE_fnc_HashGet) select 2;
@@ -190,7 +190,7 @@ switch (_taskState) do {
             [_taskLocation, _compType, "Communications", _taskEnemyFaction, ["Small","Medium"], 1] call ALIVE_fnc_spawnRandomPopulatedComposition;
 
             // Add Tower just in case
-            private _transmitter = createVehicle ["Land_TTowerSmall_2_F" , _taskLocation, [], 5, "NONE"];
+            private _transmitter = createVehicle ["Land_TBox_F" , _taskLocation, [], 5, "NONE"];
 
             // Get buildings from comp (or nearest)
             _targetBuildings = [_transmitter];
@@ -223,7 +223,7 @@ switch (_taskState) do {
 
         private _points = 0;
         private _list = [];
-		private ["_buildingType", "_reward"];
+        private ["_buildingType", "_reward"];
         {
             private _object = _x;
             private _model = getText(configfile >> "CfgVehicles" >> typeOf _object >> "model");
@@ -273,7 +273,7 @@ switch (_taskState) do {
             "Setup Wiretap",
             "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
             "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-            "_this distance2D _target < 3 && !(_target getvariable ['ALiVE_Task_Wiretapped',false]) && ('Item_Toolkit' in (items _this + assignedItems _this + backpackItems _this) || 'vn_b_item_wiretap' in (items _this + assignedItems _this + backpackItems _this))",
+            "_this distance2D _target < 3 && !(_target getvariable ['ALiVE_Task_Wiretapped',false]) && ('Item_Toolkit' in (items _this + assignedItems _this + backpackItems _this) || 'vn_b_item_wiretap' in (items _this + assignedItems _this + backpackItems _this) || 'SPE_ToolKit' in (items _this + assignedItems _this + backpackItems _this) || 'ToolKit' in (items _this + assignedItems _this + backpackItems _this))",
             "_caller distance2D _target < 3",
             {},
             {},
@@ -289,7 +289,7 @@ switch (_taskState) do {
             {},
             [],
             ((sizeOf (typeOf _targetBuilding)) max 15) min 30
-        ] remoteExec ["BIS_fnc_holdActionAdd", 0, true];
+        ] remoteExec ["BIS_fnc_holdActionAdd", 0, _targetBuilding];
 
         // select the random text
         private _dialogOptions = [ALIVE_generatedTasks, "Wiretap"] call ALIVE_fnc_hashGet;
