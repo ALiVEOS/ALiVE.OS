@@ -2,16 +2,21 @@
 <Project name="Arma3">
 <Package name="ALIVE_COMP_SPE">
 <Container name="STR_DN">
-	
-	
 <Key ID="STR_ALIVE_COMP_SPE_MilitaryBocage">
     <English>Military (Bocage)</English>
 </Key>
 <Key ID="STR_ALIVE_COMP_SPE_GuerrillaBocage">
     <English>Guerrilla (Bocage)</English>
 </Key>
-
-
+<Key ID="STR_ALIVE_COMP_SPE_AirportsSmall">
+    <English>Airports (Small)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_AirportsMedium">
+    <English>Airports (Medium)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_AirportsLarge">
+    <English>Airports (Large)</English>
+</Key>
 <Key ID="STR_ALIVE_COMP_SPE_CheckpointsBarricadesSmall">
     <English>Checkpoints &amp; Barricades (Small)</English>
 </Key>
@@ -21,7 +26,6 @@
 <Key ID="STR_ALIVE_COMP_SPE_CheckpointsBarricadesLarge">
     <English>Checkpoints &amp; Barricades (Large)</English>
 </Key>
-
 <Key ID="STR_ALIVE_COMP_SPE_HqSmall">
     <English>HeadQuarters (Small)</English>
 </Key>
@@ -31,7 +35,6 @@
 <Key ID="STR_ALIVE_COMP_SPE_HqLarge">
     <English>HeadQuarters (Large)</English>
 </Key>
-
 <Key ID="STR_ALIVE_COMP_SPE_SupportsSmall">
     <English>Support (Small)</English>
 </Key>
@@ -41,7 +44,6 @@
 <Key ID="STR_ALIVE_COMP_SPE_SupportsLarge">
     <English>Support (Large)</English>
 </Key>
-
 <Key ID="STR_ALIVE_COMP_SPE_CrashsitesSmall">
     <English>Crashsites (Small)</English>
 </Key>
@@ -51,7 +53,6 @@
 <Key ID="STR_ALIVE_COMP_SPE_CrashsitesLarge">
     <English>Crashsites (Large)</English>
 </Key>
-
 <Key ID="STR_ALIVE_COMP_SPE_FortSmall">
     <English>Fortifications (Small)</English>
 </Key>
@@ -61,6 +62,40 @@
 <Key ID="STR_ALIVE_COMP_SPE_FortLarge">
     <English>Fortifications (Large)</English>
 </Key>
-
-
+<Key ID="STR_ALIVE_COMP_SPE_CampsLarge">
+    <English>Camps (Large)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_CampsMedium">
+    <English>Camps (Medium)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_CampsSmall">
+    <English>Camps (Small)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_CommunicationsLarge">
+    <English>Communications (Large)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_CommunicationsMedium">
+    <English>Communications (Medium)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_CommunicationsSmall">
+    <English>Communications (Small)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_FuelLarge">
+    <English>Fuel (Large)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_FuelMedium">
+    <English>Fuel (Medium)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_FuelSmall">
+    <English>Fuel (Small)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_FieldHQLarge">
+    <English>Field HQ (Large)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_FieldHQMedium">
+    <English>Field HQ (Medium)</English>
+</Key>
+<Key ID="STR_ALIVE_COMP_SPE_FieldHQSmall">
+    <English>Field HQ (Small)</English>
+</Key>
 </Container></Package></Project>
