@@ -4166,7 +4166,7 @@ switch(_operation) do {
 
                 private _aircraftID = _eventFriendlyProfiles select 0;
                 private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
-                if (isNil "aircraftStart") exitWith {
+                if (isNil "_aircraft") exitWith {
                   ["ATO - aircraftTravel has no valid _aircraft, _assets: %1, _aircraftID: %2", _assets, _aircraftID] call ALiVE_fnc_dump;
                 }; 
                 private _profileID = [_aircraft,"profileID"] call ALiVE_fnc_hashGet;
