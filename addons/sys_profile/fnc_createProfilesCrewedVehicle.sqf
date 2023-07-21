@@ -34,7 +34,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_vehicleClass","_side","_faction","_rank","_direction","_spawnGoodPosition","_prefix","_engineOn","_busy","_cargo","_position",
-"_groupProfiles","_groupUnits","_groupVehicles","_class","_rank","_vehicle","_vehicleType","_vehicleID","_entityID"];
+"_groupProfiles","_groupUnits","_groupVehicles","_class","_rank","_vehicle","_vehicleType","_vehicleID","_entityID","_isSPE"];
 
 _vehicleClass = _this select 0;
 _side = _this select 1;
@@ -48,6 +48,7 @@ _engineOn = if(count _this > 8) then {_this select 8} else {false};
 _busy = if(count _this > 9) then {_this select 9} else {false};
 _cargo = if(count _this > 10) then {_this select 10} else {[]};
 _slingload = if(count _this > 11) then {_this select 11} else {[]};
+_isSPE = if(count _this > 12) then {_this select 12} else {false};
 
 // get counts of current profiles
 
@@ -100,6 +101,10 @@ if(count _cargo > 0) then {
 
 if(count _slingload > 0) then {
     [_profileVehicle, "slingload", _slingload] call ALIVE_fnc_profileVehicle;
+};
+
+if(_isSPE) then {
+    [_profileVehicle, "isSPE", _isSPE] call ALIVE_fnc_profileVehicle;
 };
 
 /*
