@@ -510,7 +510,7 @@ switch (_operation) do {
                     if (tolower _vehicleType == "ship") then {
                         _position = [_position, 0, 50, 10, 2, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
                     } else {
-                        _position = [_position,0,100,10,0,0.5,0,[],[_position], _vehicleType] call ALIVE_fnc_findFilteredSafePos;
+                        if !(_isSPE) then { _position = [_position,0,100,10,0,0.5,0,[],[_position], _vehicleType] call ALIVE_fnc_findFilteredSafePos; };
                         //Check direction of street
                         _roads = _position nearRoads 25;
                         _roadsConnected = roadsConnectedTo (_roads select 0);
@@ -528,8 +528,6 @@ switch (_operation) do {
                         if (_vehicleType == "StaticWeapon" || _isSPE) then {
                        	  _direction = _logic select 2 select 12;
                         };
-                       
-
                     };
                     
                     //_position set [2,0.5];
