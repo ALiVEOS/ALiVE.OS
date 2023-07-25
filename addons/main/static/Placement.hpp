@@ -1177,50 +1177,24 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
 
 // SPE
 [ALIVE_factionDefaultSupplies, "SPE_STURM", [
+    "SPE_BasicAmmunitionBox_GER",
+    "SPE_BasicWeaponsBox_GER",
     "Land_SPE_Ammobox_German_01",
     "Land_SPE_Ammobox_German_02",
     "Land_SPE_Ammobox_German_03",
     "Land_SPE_Ammobox_German_04",
-    "Land_SPE_Ammobox_German_05",
-    "SPE_4Rnd_Panzerfaust30",
-    "SPE_4Rnd_Panzerfaust60",
-    "SPE_BasicAmmunitionBox_GER",
-    "SPE_BasicWeaponsBox_GER",
-    "SPE_WeaponsBox_Big_GER",
-    "SPE_AmmoCrate_Arty_GER",
-    "SPE_AmmoCrate_VehicleAmmo_GER",
-    "SPE_AmmoCrate_Mortar_GER",
-    "SPE_AmmoCrate_Mortar_SMOKE_GER",
-    "SPE_AmmoCrate_Mortar_FLARE_GER",
-    "SPE_Ammocrate_Grenades_Frag_GER",
-    "SPE_Weaponcrate_MP40_GER",
-    "SPE_Weaponcrate_MG34_GER",
-    "SPE_Weaponcrate_K98_GER",
-    "SPE_Mine_Ammo_Box_Ger"
+    "Land_SPE_Ammobox_German_05"
 ]] call ALIVE_fnc_hashSet;
 
 
 [ALIVE_factionDefaultSupplies, "SPE_WEHRMACHT", [
+    "SPE_BasicAmmunitionBox_GER",
+    "SPE_BasicWeaponsBox_GER",
     "Land_SPE_Ammobox_German_01",
     "Land_SPE_Ammobox_German_02",
     "Land_SPE_Ammobox_German_03",
     "Land_SPE_Ammobox_German_04",
-    "Land_SPE_Ammobox_German_05",
-    "SPE_4Rnd_Panzerfaust30",
-    "SPE_4Rnd_Panzerfaust60",
-    "SPE_BasicAmmunitionBox_GER",
-    "SPE_BasicWeaponsBox_GER",
-    "SPE_WeaponsBox_Big_GER",
-    "SPE_AmmoCrate_Arty_GER",
-    "SPE_AmmoCrate_VehicleAmmo_GER",
-    "SPE_AmmoCrate_Mortar_GER",
-    "SPE_AmmoCrate_Mortar_SMOKE_GER",
-    "SPE_AmmoCrate_Mortar_FLARE_GER",
-    "SPE_Ammocrate_Grenades_Frag_GER",
-    "SPE_Weaponcrate_MP40_GER",
-    "SPE_Weaponcrate_MG34_GER",
-    "SPE_Weaponcrate_K98_GER",
-    "SPE_Mine_Ammo_Box_Ger"
+    "Land_SPE_Ammobox_German_05"
 ]] call ALIVE_fnc_hashSet;
 
 
@@ -1229,31 +1203,17 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
     "SPE_BasicWeaponsBox_US",
     "Land_SPE_Ammocrate_US_01",
     "Land_SPE_Ammocrate_US_02",
-    "Land_SPE_Ammocrate_US_03",
-    "SPE_US_Ammocrate_Rifle_Ball",
-    "SPE_US_Open_Ammocrate_Rifle_Ball",
-    "SPE_US_2x_Open_Ammocrate_Rifle_Ball",
-    "SPE_US_2x_Open_Ammocrate_alt_Rifle_Ball",
-    "SPE_US_Ammocrate_Grenades_Frag",
-    "SPE_US_Open_Ammocrate_Grenades_Frag",
-    "SPE_BasicAmmunitionBox_US",
-    "SPE_BasicWeaponsBox_US",
-    "SPE_Mine_AmmoBox_US"
+    "Land_SPE_Ammocrate_US_03"
 ]] call ALIVE_fnc_hashSet;
 
 
 [ALIVE_factionDefaultSupplies, "SPE_FR_ARMY", [
     "SPE_BasicAmmunitionBox_US",
     "SPE_BasicWeaponsBox_US",
-    "SPE_US_Ammocrate_Rifle_Ball",
-    "SPE_US_Open_Ammocrate_Rifle_Ball",
-    "SPE_US_2x_Open_Ammocrate_Rifle_Ball",
-    "SPE_US_2x_Open_Ammocrate_alt_Rifle_Ball",
-    "SPE_US_Ammocrate_Grenades_Frag",
-    "SPE_US_Open_Ammocrate_Grenades_Frag",
-    "SPE_BasicAmmunitionBox_US",
-    "SPE_BasicWeaponsBox_US",
-    "SPE_Mine_AmmoBox_US"
+    "Land_SPE_Ammocrate_US_01",
+    "Land_SPE_Ammocrate_US_02",
+    "Land_SPE_Ammocrate_US_03"
+
 ]] call ALIVE_fnc_hashSet;
 
 
