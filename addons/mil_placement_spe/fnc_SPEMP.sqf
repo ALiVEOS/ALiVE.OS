@@ -312,7 +312,7 @@ switch(_operation) do {
 	            // DEBUG -------------------------------------------------------------------------------------
 	            
  								private _countCrewed = 0;
- 								_position set [2, _direction];
+ 								// _position set [2, _direction];
 	     					_profiledCrewed = [_vehicleClass, _side, _faction, "CAPTAIN", _position, _direction,true,"",false,false,[],[],true] call ALIVE_fnc_createProfilesCrewedVehicle;
 	              _countCrewed = _countCrewed +1; 
                 _countProfiles = _countCrewed;
