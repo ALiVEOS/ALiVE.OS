@@ -4167,7 +4167,7 @@ switch(_operation) do {
                 private _aircraftID = _eventFriendlyProfiles select 0;
                 private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
                 if (isNil "_aircraft") exitWith {
-                  ["ATO - aircraftTravel has no valid _aircraft, _assets: %1, _aircraftID: %2", _assets, _aircraftID] call ALiVE_fnc_dump;
+                  ["ATO - aircraftTravel has no valid _aircraft"] call ALiVE_fnc_dump;
                 }; 
                 private _profileID = [_aircraft,"profileID"] call ALiVE_fnc_hashGet;
                 private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
@@ -4816,7 +4816,7 @@ switch(_operation) do {
                 private _aircraftID = _eventFriendlyProfiles select 0;
                 private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
                 if (isNil "_aircraft") exitWith {
-                  ["ATO - aircraftTravel has no valid _aircraft, _assets: %1, _aircraftID: %2", _assets, _aircraftID] call ALiVE_fnc_dump;
+                  ["ATO - aircraftTravel has no valid _aircraft"] call ALiVE_fnc_dump;
                 }; 
                 private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
@@ -4921,7 +4921,7 @@ switch(_operation) do {
                 private _aircraftID = _eventFriendlyProfiles select 0;
                 private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
                 if (isNil "_aircraft") exitWith {
-                	 ["ATO - aircraftExecuteWait has no valid _aircraft, _assets: %1, _aircraftID: %2", _assets, _aircraftID] call ALiVE_fnc_dump;
+                	 ["ATO - aircraftExecuteWait has no valid _aircraft"] call ALiVE_fnc_dump;
                 };
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
 
@@ -5042,7 +5042,7 @@ switch(_operation) do {
                 private _aircraftID = _eventFriendlyProfiles select 0;
                 private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
                 if (isNil "_aircraft") exitWith {
-                	 ["ATO - aircraftReturn has no valid _aircraft, _assets: %1, _aircraftID: %2", _assets, _aircraftID] call ALiVE_fnc_dump;
+                	 ["ATO - aircraftReturn has no valid _aircraft"] call ALiVE_fnc_dump;
                 };
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
@@ -5114,7 +5114,7 @@ switch(_operation) do {
                 private _aircraftID = _eventFriendlyProfiles select 0;
                 private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
                 if (isNil "_aircraft") exitWith {
-                	 ["ATO - aircraftReturnWait has no valid _aircraft, _assets: %1, _aircraftID: %2", _assets, _aircraftID] call ALiVE_fnc_dump;
+                	 ["ATO - aircraftReturnWait has no valid _aircraft"] call ALiVE_fnc_dump;
                 }; 
                 private _eventPosition = _eventData select 5;
                 private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
@@ -5255,7 +5255,7 @@ switch(_operation) do {
                 private _aircraftID = _eventFriendlyProfiles select 0;
                 private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
                 if (isNil "_aircraft") exitWith {
-                	 ["ATO - aircraftReturnWait has no valid _aircraft, _assets: %1, _aircraftID: %2", _assets, _aircraftID] call ALiVE_fnc_dump;
+                	 ["ATO - aircraftReturnWait has no valid _aircraft"] call ALiVE_fnc_dump;
                 }; 
                 private _isOnCarrier = [_aircraft,"isOnCarrier"] call ALiVE_fnc_hashGet;
                 private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
@@ -5495,7 +5495,7 @@ switch(_operation) do {
                     private _aircraftID = _eventFriendlyProfiles select 0;
                     private _aircraft = [_assets,_aircraftID] call ALiVE_fnc_hashGet;
                     if (isNil "_aircraft") exitWith {
-                	    ["ATO - eventComplete has no valid _aircraft, _assets: %1, _aircraftID: %2", _assets, _aircraftID] call ALiVE_fnc_dump;
+                	    ["ATO - eventComplete has no valid _aircraft"] call ALiVE_fnc_dump;
                     }; 
                     //reset if rerouted
                     [_aircraft,"reroute",false] call ALiVE_fnc_hashSet;
