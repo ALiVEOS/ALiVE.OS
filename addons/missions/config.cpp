@@ -38,6 +38,14 @@ class CfgMissions
             overviewText = "Stratis is reeling from a brutal insurgency campaign. IED's litter the landscape, its your job to identify and disarm IEDs to ensure the safety of the civilian population. Beware of the local militia!";
             author = "ALiVE Mod Team";   
         };
+        class Showcase_Operation_Cobra
+        {
+            briefingName = "ALiVE | Operation Cobra (Normandy)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Operation_Cobra.SPE_Normandy";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Operation_Cobra.SPE_Normandy\img\splash.paa";
+            overviewText = "Having been delayed several times by poor weather, Operation Cobra commences on 25 July 1944, with a concentrated aerial bombardment from thousands of Allied aircraft.";
+            author = "ALiVE Mod Team";
+        }; 
         class Showcase_Khe_Sanh_Valley
         {
             briefingName = "ALiVE | Khe Sanh Valley (Khe Sanh)";
@@ -169,6 +177,16 @@ class CfgMissions
             overviewText = "Lead an insurgency on Altis, use sabotage and subterfuge to capture weapons and establish safe houses across the island.";
             author = "ALiVE Mod Team";   
         };
+        
+        class MP_COOP_Operation_Cobra
+        {
+            briefingName = "ALiVE | Operation Cobra (COOP 28)";
+            directory = "x\alive\addons\missions\mpscenarios\ALiVE_Operation_Cobra.SPE_Normandy";
+            overviewPicture = "x\alive\addons\missions\mpscenarios\ALiVE_Operation_Cobra.SPE_Normandy\pics\splash.paa";
+            overviewText = "Having been delayed several times by poor weather, Operation Cobra commences on 25 July 1944, with a concentrated aerial bombardment from thousands of Allied aircraft.";
+            author = "ALiVE Mod Team";
+        };    
+        
         class MP_COOP_Khe_Sanh_Valley
         {
             briefingName = "ALiVE | Khe Sanh Valley (COOP 12)";
