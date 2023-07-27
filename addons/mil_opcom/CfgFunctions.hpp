@@ -60,7 +60,13 @@ class cfgFunctions {
                                 description = "Drops Intel by chance";
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMgetHighestPrioObjective.sqf";
                                 RECOMPILE;
-                        };                        
+                        };  
+                        class OPCOMIncrementStartForceStrength {
+                                description = "Increment StartForceStrength of targeted side of OPCOM_INSTANCES";
+                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMIncrementStartForceStrength.sqf";
+                                RECOMPILE;
+                        };     
+                                              
                 };
         };
 };
