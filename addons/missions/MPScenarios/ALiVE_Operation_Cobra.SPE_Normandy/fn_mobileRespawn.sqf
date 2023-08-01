@@ -73,10 +73,10 @@ if (USMHQ getVariable ["Respawned", false]) then {
      
     USMHQ setVariable ['QS_ST_drawEmptyVehicle',true,true];
 
-   // ["fn_mobileRespawn -> Respawned, Adding actions back, HMHQ_Deployed: %1", USMHQ getVariable ["HMHQ_Deployed", false]] call ALIVE_fnc_dump;
+    ["fn_mobileRespawn -> Respawned, Adding actions back, HMHQ_Deployed: %1", USMHQ getVariable ["HMHQ_Deployed", false]] call ALIVE_fnc_dump;
 
-   // [USMHQ, ["<t color='#ffff00'>Deploy HQ</t>", {[_this,"HZE_fnc_deployHQ", false] call BIS_fnc_MP;},[],0,true,true,"","(!(_target getVariable ['HMHQ_Deployed', true])) && ((_this distance _target) < 4)"]] remoteExec ["addAction"]; 	
-   // [USMHQ, ["<t color='#ffff00'>Pack HQ</t>", {[_this,"HZE_fnc_packHQ", false] call BIS_fnc_MP;},[],0,true,true,"","(_target getVariable ['HMHQ_Deployed', false]) && ((_this distance _target) < 4)"]] remoteExec ["addAction"]; 	
+    [USMHQ, ["<t color='#ffff00'>Deploy HQ</t>", {[_this,"HZE_fnc_deployHQ", false] call BIS_fnc_MP;},[],0,true,true,"","(!(_target getVariable ['HMHQ_Deployed', true])) && ((_this distance _target) < 4)"]] remoteExec ["addAction"]; 	
+    [USMHQ, ["<t color='#ffff00'>Pack HQ</t>", {[_this,"HZE_fnc_packHQ", false] call BIS_fnc_MP;},[],0,true,true,"","(_target getVariable ['HMHQ_Deployed', false]) && ((_this distance _target) < 4)"]] remoteExec ["addAction"]; 	
 
 
 };
