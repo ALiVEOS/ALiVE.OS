@@ -25,15 +25,12 @@ if (!isMultiplayer) then {
 // ====================================================================================	
 
 
-if (viewDistance > 1000) then {
-	setViewDistance 1000;
+if (viewDistance > 650) then {
+	setViewDistance 650;
 };
-if ((getObjectViewDistance # 0) > 1000) then {
-	setObjectViewDistance 1000;
+if ((getObjectViewDistance # 0) > 650) then {
+	setObjectViewDistance 650;
 };
-
-
-
 
 waitUntil { !(isNull player) };
 
@@ -41,7 +38,8 @@ if (side player == RESISTANCE) then {
 	BIS_fnc_arsenal_factions = [faction player,"SPE_US_ARMY"]; 
 };
 	
-	
+
+
 // if (side player == WEST) then {};
 
 // if (isServer) then {};
@@ -106,6 +104,9 @@ if (hasInterface) then {
         ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;
     };
 };
+
+
+
 
 
 

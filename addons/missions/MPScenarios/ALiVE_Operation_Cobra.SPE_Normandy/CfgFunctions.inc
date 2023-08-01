@@ -16,10 +16,6 @@ class CfgFunctions
             {
                 postInit = 1;
             };
-            class coalive_mobilerespawn
-            {
-                postInit = 0;
-            };
         };
 				class params
 				{

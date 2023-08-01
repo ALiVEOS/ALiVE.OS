@@ -16,12 +16,14 @@ params [
     ["_paramValue", 1, [0]]
 ];
 
-if (hasInterface && {_paramValue == 0}) then {
+if (hasInterface && {_paramValue == 1}) then {
     // Disable stamina, if selected in parameter
+    player setFatigue 0;
     player enableStamina false;
+    
 
     // Add respawn event handler to reapply disabled stamina
-    player addEventHandler ["Respawn", {player enableStamina false;}];
+    player addEventHandler ["Respawn", {player setFatigue 0; player enableStamina false;}];
 };
 
 true
