@@ -49,6 +49,7 @@ if(!isNil "ALIVE_factionCustomMappings") then {
         _groupFactionTypes = [_customMappings, "GroupFactionTypes"] call ALIVE_fnc_hashGet;
         _mappedType = [_groupFactionTypes, _type] call ALIVE_fnc_hashGet;
 
+
         if!(isNil "_mappedType") then {
             _type = _mappedType;
         };
@@ -140,13 +141,36 @@ if!(_customGroup) then {
         };
     };
 
-    if(count _groups > 0) then {
-        _group = _groups select floor(random count _groups);
-        _groupName = configName _group;
-    }else{
-        _groupName = "FALSE";
-    };
+
+		_groupName = "";
+		
+		if(count _groups > 0) then {  
+		 _group = _groups select floor(random count _groups);  
+		 _groupName = configName _group;  
+		};
+
+	  if (isNil "_mappedType") then { 
+	  	_mappedType = [];
+	  };
+	  
+	  if ((typeName _mappedType) == "STRING") then {
+			 _groupName = _mappedType; 
+		};
+		
+		if (count _groups == 0 && count _mappedType == 1) then {
+			_groupName = [_mappedType] call ALiVE_fnc_toString; 
+		};
+
+		if (_groupName == "") then { 
+		_groupName = "FALSE";  
+		};  
+		    
+   ["ALIVE_fnc_configGetRandomGroup -> count _groups: %1, _groupName: %2, typeName _mappedType: %3, _mappedType: %4", count _groups, _groupName, typeName _mappedType, _mappedType] call ALIVE_fnc_dump;
+
 
 };
 
+
 _groupName
+
+
