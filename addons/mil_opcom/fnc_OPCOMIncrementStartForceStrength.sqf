@@ -79,8 +79,8 @@ switch _type do {
 		_instance =  [_x,"startForceStrength"] call ALiVE_fnc_HashGet;
 		_currentVal = _instance select _typeNum;
 		_instance = _instance set [_typeNum, (_instance select _typeNum) +_incrementAmount];
-		_newVal = _instance select _typeNum;
 		_result = _instance;
+		_newVal = _result select _typeNum;
 	}; 
 } forEach OPCOM_INSTANCES;
 
