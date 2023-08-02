@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=513;
+	toggles=641;
 	mods[]=
 	{
 		"3denEnhanced"
@@ -20,14 +20,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=7191;
+		nextID=7399;
 	};
 	class Camera
 	{
 		pos[]={10350.464,52.503822,10340.309};
-		dir[]={0,-0.70710677,0.70710683};
-		up[]={0,0.70710677,0.70710671};
-		aside[]={0.99999994,0,0};
+		dir[]={0,-0.70710665,0.70710689};
+		up[]={0,0.70710689,0.70710659};
+		aside[]={0.99999994,0,-0};
 	};
 };
 binarizationWanted=0;
@@ -73463,6 +73463,7 @@ class Mission
 			flags=4;
 			class Attributes
 			{
+				init="this addAction [""Arsenal"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
 				name="US_AMMOBOX";
 			};
 			id=7392;
@@ -74020,6 +74021,7 @@ class Mission
 			flags=4;
 			class Attributes
 			{
+				init="this addAction [""Arsenal"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
 				name="US_AMMOBOX_1";
 			};
 			id=7405;
@@ -80100,6 +80102,7 @@ class Mission
 			flags=5;
 			class Attributes
 			{
+				init="this addAction[""Recruit Infantry"", ""bon_recruit_units\open_dialog.sqf""];";
 				name="USBASE";
 				dynamicSimulation=1;
 			};
@@ -81034,6 +81037,7 @@ class Mission
 			flags=4;
 			class Attributes
 			{
+				init="this addAction [""Arsenal"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
 				name="US_AMMOBOX_2";
 				dynamicSimulation=1;
 			};
