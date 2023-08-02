@@ -55,6 +55,41 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS_COMMENT";
                                 defaultValue = "";
                         };
+                        class speInfantryBehaviour
+                        {
+                                displayName = "$STR_ALIVE_SPEMP_CUSTOM_INFANTRY_BEHAVIOUR";
+                                description = "$STR_ALIVE_SPEMP_CUSTOM_INFANTRY_BEHAVIOUR_COMMENT";
+                                class Values
+                                {
+                                        class AWARE
+                                        {
+                                                name = "Aware";
+                                                value = "AWARE";
+                                        };
+                                        class COMBAT
+                                        {
+                                                name = "Combat";
+                                                value = "COMBAT";
+                                        };
+                                        class STEALTH
+                                        {
+                                                name = "Stealth";
+                                                value = "STEALTH";
+                                                default = 1;
+                                        };
+                                        class SAFE
+                                        {
+                                                name = "Safe";
+                                                value = "SAFE";
+                                        };
+                                        class CARELESS
+                                        {
+                                                name = "Careless";
+                                                value = "CARELESS";
+                                        };
+      
+                                };
+                        };
                         class speVehicleClass
                         {
                                 displayName = "$STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS";

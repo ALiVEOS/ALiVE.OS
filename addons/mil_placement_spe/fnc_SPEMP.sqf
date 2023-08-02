@@ -40,6 +40,7 @@ ARJay
 #define DEFAULT_PRIORITY                "50"
 #define DEFAULT_NO_TEXT                 "0"
 #define DEFAULT_OBJECTIVES              []
+#define DEFAULT_BEHAVIOUR_TYPE          QUOTE(STEALTH)
 
 TRACE_1("SPEMP - input",_this);
 
@@ -117,10 +118,13 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
     
+    case "speInfantryBehaviour": {
+        _result = [_logic,_operation,_args,DEFAULT_BEHAVIOUR_TYPE,["AWARE","COMBAT","STEALTH","SAFE","CARELESS"]] call ALIVE_fnc_OOsimpleOperation;
+    };
+        
     case "speVehicleClass": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
-
 
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
@@ -235,6 +239,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
 
             private _infantryClass = [_logic, "speInfantryClass"] call MAINCLASS;
+            private _aiBehaviour = [_logic, "speInfantryBehaviour"] call MAINCLASS;
             private _vehicleClass = [_logic, "speVehicleClass"] call MAINCLASS;
             private _faction = [_logic, "faction"] call MAINCLASS;
             private _size = [_logic, "size"] call MAINCLASS;
@@ -393,7 +398,7 @@ switch(_operation) do {
                     if (_i == 0 && {count _infantryGroups > 0}) then {
 
 	                    private _group = _groups select _i;
-	                    private _guards = [_group, _position, _direction, true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+	                    private _guards = [_group, _position, _direction, true, _faction, false, true, _aiBehaviour] call ALIVE_fnc_createProfilesFromGroupConfig;
 
 	                   // Spawn static virtual group and get them to defend
 	                    {
@@ -401,10 +406,10 @@ switch(_operation) do {
 	                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[10,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
 	                            [_x,"busy",true] call ALIVE_fnc_hashSet;
 	                        };
-	                    } foreach _guards;
+	                    } forEach _guards;
 	                    
                         _countProfiles = _countProfiles + count _guards;
-                        _totalCount = _totalCount + 1;
+                        _totalCount = _totalCount + 1; 
                     };
                 };
             };

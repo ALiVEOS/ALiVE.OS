@@ -46,6 +46,14 @@
     <English>Infantry Group Classname:</English>
     <Chinesesimp></Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_BEHAVIOUR">
+    <English>Infantry Group AI Behaviour:</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_BEHAVIOUR_COMMENT">
+    <English>A group's behaviour determines how it is units move from one point to another, behave when idle, and how they engage an enemy.</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS_COMMENT">
     <English>Set classname of Infantry group to be spawned, set to empty for random. If vehicle classname is set, this will be ignored.</English>
     <Chinesesimp></Chinesesimp>
