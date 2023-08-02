@@ -29,7 +29,7 @@ ARJay
 
 private [
     "_groupName","_groupSide","_groupFaction","_groupUnits",
-    "_groupVehicles","_class","_rank","_vehicle","_vehicleType"
+    "_groupVehicles","_class","_rank","_vehicle","_vehicleType","_isSPE","_aiBehaviour"
 ];
 
 params [
@@ -38,7 +38,9 @@ params [
     ["_direction", 0],
     ["_spawnGoodPosition", true],
     ["_prefix", ""],
-    ["_busy", false]
+    ["_busy", false],
+    ["_isSPE", false],
+    ["_aiBehaviour", "STEALTH"]
 ];
 
 private _groupProfiles = [];
@@ -145,7 +147,11 @@ if(count _config > 0) then {
     if!(_spawnGoodPosition) then {
         [_profileEntity, "despawnPosition", _position] call ALIVE_fnc_profileEntity;
     };
-
+    
+    
+    [_profileEntity, "isSPE", _isSPE] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "_aiBehaviour", _aiBehaviour] call ALIVE_fnc_profileEntity;
+	
     _groupProfiles pushback _profileEntity;
     [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 

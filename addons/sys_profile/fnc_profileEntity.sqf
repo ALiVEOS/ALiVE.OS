@@ -199,7 +199,9 @@ switch(_operation) do {
             [_logic,"_rev",""] call ALIVE_fnc_hashSet;                  // select 2 select 31
             [_logic,"_id",""] call ALIVE_fnc_hashSet;                   // select 2 select 32
             [_logic,"busy",false] call ALIVE_fnc_hashSet;               // select 2 select 33
-            [_logic,"pendingWaypointPaths", []] call ALiVE_fnc_hashSet;; // select 2 select 34;
+            [_logic,"pendingWaypointPaths", []] call ALiVE_fnc_hashSet; // select 2 select 34
+            [_logic,"isSPE",false] call ALIVE_fnc_hashSet;              // select 2 select 35
+            [_logic,"_aiBehaviour",false] call ALIVE_fnc_hashSet;       // select 2 select 36 
         };
 
         /*
@@ -389,7 +391,23 @@ switch(_operation) do {
             _result = [_logic,"busy"] call ALIVE_fnc_hashGet;
         };
     };
-
+    
+    case "isSPE": {
+        if (_args isEqualType true) then {
+            [_logic,"isSPE",_args] call ALIVE_fnc_hashSet;
+        } else {
+            _result = [_logic,"isSPE"] call ALIVE_fnc_hashGet;
+        };
+    };
+    
+    case "_aiBehaviour": {
+        if (_args isEqualType "") then {
+            [_logic,"_aiBehaviour", _args] call ALIVE_fnc_hashSet;
+        } else {
+            _result = [_logic,"_aiBehaviour"] call ALIVE_fnc_hashGet;
+        };
+    };
+    
     case "ignore_HC": {
         if (_args isEqualType true) then {
             [_logic,"ignore_HC", _args] call ALIVE_fnc_hashSet;
@@ -487,20 +505,22 @@ switch(_operation) do {
 
     case "insertWaypoint": {
         private _waypoint = _args;
-
+      _isSPE = _logic select 2 select 35;  
+      if !(_isSPE) then {
         private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
         if (!_pathfindingEnabled) then {
             [{ [_logic,"insertWaypointInternal", _waypoint] call MAINCLASS }, []] call CBA_fnc_directCall;
         } else {
             [{ [_logic,"addPendingWaypoint", ["insertWaypoint",_waypoint]] call MAINCLASS }, []] call CBA_fnc_directCall;
         };
-
+      };
         _result = _waypoint;
     };
 
     case "addWaypoint": {
-        private _waypoint = _args;
-
+      private _waypoint = _args;
+      _isSPE = _logic select 2 select 35;
+      if !(_isSPE) then {
         //private _compRad = [_waypoint,"completionRadius"] call ALiVE_fnc_hashGet;
         //systemchat format ["adding waypoint with radius: %1 ||| From - %2", _compRad,_fnc_scriptnameparent];
 
@@ -510,7 +530,7 @@ switch(_operation) do {
         } else {
             [{ [_logic,"addPendingWaypoint", ["addWaypoint",_waypoint]] call MAINCLASS }, []] call CBA_fnc_directCall;
         };
-
+			};
         _result = _waypoint;
     };
 
@@ -520,6 +540,7 @@ switch(_operation) do {
         private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
 
         private _pendingPath = [_ready,_insertionMethod,[],_waypoint];
+      if !(_isSPE) then {
         _pendingWaypoints pushback _pendingPath;
 
         private _countPendingWaypoints = count _pendingWaypoints;
@@ -566,7 +587,7 @@ switch(_operation) do {
                 [_logic,"pendingWaypointPaths", _newPendingWaypoints] call ALiVE_fnc_hashSet;
             };
         };
-
+      };
         _result = _pendingPath;
     };
 
@@ -625,6 +646,8 @@ switch(_operation) do {
     };
 
     case "insertWaypointInternal": {
+    	_isSPE = _logic select 2 select 35;
+      if !(_isSPE) then {
         private _waypoint = _args;
 
         private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
@@ -635,9 +658,12 @@ switch(_operation) do {
         if (_active) then {
             [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
         };
+      };
     };
 
     case "addWaypointInternal": {
+    	_isSPE = _logic select 2 select 35;
+      if !(_isSPE) then {
         private _waypoint = _args;
 
         private _waypoints = _logic select 2 select 16; //[_logic,"waypoints"] call ALIVE_fnc_hashGet;
@@ -651,6 +677,7 @@ switch(_operation) do {
         if (_active) then {
             [_logic,"profileWaypointToWaypoint", _waypoint] call MAINCLASS;
         };
+     };
     };
 
     case "clearWaypoints": {
@@ -943,7 +970,11 @@ switch(_operation) do {
         private _vehiclesInCargoOf = _logic select 2 select 9; //[_profile,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;
         private _locked = [_logic, "locked",false] call ALIVE_fnc_hashGet;
         private _ignore_HC = [_logic, "ignore_HC",false] call ALIVE_fnc_hashGet;
-
+        
+        private _isSPE = _logic select 2 select 35; // [_logic "isSPE"] call ALIVE_fnc_hashGet;
+        private _aiBehaviour = _logic select 2 select 36; // [_logic "_aiBehaviour"] call ALIVE_fnc_hashGet;
+        
+        
         private _formation = selectRandom ["COLUMN","STAG COLUMN","WEDGE","ECH LEFT","ECH RIGHT","VEE","LINE"];
         private _unitCount = 0;
         private _units = [];
@@ -1076,6 +1107,31 @@ switch(_operation) do {
                 sleep ALiVE_smoothSpawn;
             } forEach _unitClasses;
             //[] call ALIVE_fnc_timer;
+            
+            
+						if (_isSPE) then {
+              [_logic,"clearWaypoints"] call MAINCLASS;
+              [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
+              // DEBUG -------------------------------------------------------------------------------------
+              if(_debug) then {
+							  ["fnc_profileEntity -> _isSPE: %1, _group: %2,_aiBehaviour: %3", _isSPE, _group, _aiBehaviour] call ALIVE_fnc_dump;
+						  };
+							_group setBehaviourStrong _aiBehaviour;
+							for "_i" from (count waypoints _group - 1) to 0 step -1 do
+							{
+							 deleteWaypoint [_group, _i];
+							};
+							// DEBUG -------------------------------------------------------------------------------------
+              /*if(_debug) then {				
+							{
+								["fnc_profileEntity -> _isSPE: %1, _unit: %2, behaviour unit: %3, (Deleted group waypoints) count waypoints: %4", _isSPE, _x, (behaviour _x), count (waypoints _group)] call ALIVE_fnc_dump;
+							} forEach _units;
+						  };	
+						  */	
+						};
+            
+            
+            
 
             // set group profile as active and store references to units on the profile
             [_logic,"leader", leader _group] call ALIVE_fnc_hashSet;
@@ -1091,9 +1147,15 @@ switch(_operation) do {
 			
 			//["Profile [%1] Spawn - Create Waypoints",_profileID] call ALIVE_fnc_dump;
             //[true] call ALIVE_fnc_timer;
-            // create waypoints from profile waypoints
-            _waypoints append _waypointsCompleted;
-            [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
+            
+            
+							// create waypoints from profile waypoints
+					 if !(_isSPE) then {
+	             _waypoints append _waypointsCompleted;
+	            [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
+					 };
+	         
+         
             //[] call ALIVE_fnc_timer;
 
             //["Profile [%1] Spawn - Process Commands",_profileID] call ALIVE_fnc_dump;
@@ -1149,7 +1211,8 @@ switch(_operation) do {
             // profile is fully spawned and cannot be corrupted
             // allow damage again
             {_x allowDamage true} foreach _units;
-
+            
+            
             //[] call ALIVE_fnc_timer;
 
             //["Profile [%1] Spawn - Debug",_profileID] call ALIVE_fnc_dump;
