@@ -72,9 +72,9 @@ fnc_fullMoonDates =
 //set random full moon date in year 1970
 setDate selectRandom (1944 call fnc_fullMoonDates); 
 skipTime 8;
-0 setOvercast 0.1;  
+0 setOvercast 0;  
 0 setRain 0;  
-0 setfog 0.01; 
+0 setfog 0; 
 forceWeatherChange;
 
 

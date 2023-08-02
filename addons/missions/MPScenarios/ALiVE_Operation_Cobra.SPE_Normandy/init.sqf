@@ -36,6 +36,9 @@ waitUntil { !(isNull player) };
 
 if (side player == RESISTANCE) then {
 	BIS_fnc_arsenal_factions = [faction player,"SPE_US_ARMY"]; 
+	US_AMMOBOX addAction ["Arsenal", {["Open",true] spawn SPE_Arsenal_fnc_arsenal; }];
+	US_AMMOBOX_1 addAction ["Arsenal", {["Open",true] spawn SPE_Arsenal_fnc_arsenal; }];
+	US_AMMOBOX_2 addAction ["Arsenal", {["Open",true] spawn SPE_Arsenal_fnc_arsenal; }];
 };
 	
 

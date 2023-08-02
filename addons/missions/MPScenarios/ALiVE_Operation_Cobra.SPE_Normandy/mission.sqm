@@ -20,14 +20,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=7087;
+		nextID=7191;
 	};
 	class Camera
 	{
-		pos[]={10250.958,40.034107,10294.556};
-		dir[]={-0.74733257,-0.39598465,-0.53367043};
-		up[]={-0.32230386,0.91822541,-0.23015642};
-		aside[]={-0.58116996,6.777118e-007,0.81384802};
+		pos[]={10350.464,52.503822,10340.309};
+		dir[]={0,-0.70710677,0.70710683};
+		up[]={0,0.70710677,0.70710671};
+		aside[]={0.99999994,0,0};
 	};
 };
 binarizationWanted=0;
@@ -779,19 +779,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -800,6 +787,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -1023,19 +1023,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -1044,6 +1031,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -1071,19 +1071,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -1092,6 +1079,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -2101,19 +2101,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -2122,6 +2109,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -2258,19 +2258,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -2279,6 +2266,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -2554,19 +2554,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -2575,6 +2562,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -2881,19 +2881,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -2902,6 +2889,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -3144,19 +3144,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -3165,6 +3152,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -3209,19 +3209,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -3230,6 +3217,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -3629,19 +3629,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -3650,6 +3637,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -4142,19 +4142,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -4163,6 +4150,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -4189,19 +4189,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -4210,6 +4197,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -5041,19 +5041,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -5062,6 +5049,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -5266,19 +5266,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -5287,6 +5274,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -5589,19 +5589,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -5610,6 +5597,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -5716,19 +5716,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -5737,6 +5724,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -6044,19 +6044,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -6065,6 +6052,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -6172,19 +6172,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -6193,6 +6180,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -6522,19 +6522,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -6543,6 +6530,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -6649,19 +6649,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -6670,6 +6657,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -6794,19 +6794,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -6815,6 +6802,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -7042,19 +7042,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -7063,6 +7050,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -7090,19 +7090,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -7111,6 +7098,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -7451,19 +7451,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -7472,6 +7459,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -7551,19 +7551,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -7572,6 +7559,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -7635,19 +7635,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -7656,6 +7643,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -7970,19 +7970,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -7991,6 +7978,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -8098,19 +8098,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -8119,6 +8106,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -8386,19 +8386,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -8407,6 +8394,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -8433,19 +8433,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -8454,6 +8441,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -8552,19 +8552,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -8573,6 +8560,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -8672,19 +8672,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -8693,6 +8680,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -8943,19 +8943,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -8964,6 +8951,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -9212,19 +9212,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -9233,6 +9220,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -9912,19 +9912,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -9933,6 +9920,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -10301,19 +10301,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -10322,6 +10309,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -10429,19 +10429,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -10450,6 +10437,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -11321,19 +11321,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -11342,6 +11329,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -11449,19 +11449,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -11470,6 +11457,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -11769,19 +11769,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -11790,6 +11777,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -11816,19 +11816,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -11837,6 +11824,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -12574,19 +12574,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -12595,6 +12582,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -13107,19 +13107,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -13128,6 +13115,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -13604,19 +13604,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -13625,6 +13612,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -13949,19 +13949,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -13970,6 +13957,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -14078,19 +14078,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -14099,6 +14086,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -14428,19 +14428,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -14449,6 +14436,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -14554,19 +14554,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -14575,6 +14562,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -14606,6 +14606,19 @@ class Mission
 			class CustomAttributes
 			{
 				class Attribute0
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
+						};
+					};
+				};
+				class Attribute1
 				{
 					property="VehicleCustomization";
 					expression="if (local _this) then {([_this] + _value + [true]) call (uinamespace getvariable 'BIS_fnc_initVehicle')};";
@@ -14688,19 +14701,6 @@ class Mission
 									};
 								};
 							};
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
 						};
 					};
 				};
@@ -15115,19 +15115,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -15136,6 +15123,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -15164,19 +15164,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -15185,6 +15172,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -16149,19 +16149,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -16170,6 +16157,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -16278,19 +16278,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -16299,6 +16286,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -16545,19 +16545,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -16566,6 +16553,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -17899,19 +17899,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -17920,6 +17907,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -17964,19 +17964,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -17985,6 +17972,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -18031,19 +18031,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -18052,6 +18039,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -18390,19 +18390,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -18411,6 +18398,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -18518,19 +18518,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -18539,6 +18526,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -18719,19 +18719,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -18740,6 +18727,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -18766,19 +18766,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -18787,6 +18774,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -18830,19 +18830,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -18851,6 +18838,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -19183,19 +19183,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -19204,6 +19191,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -19311,19 +19311,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -19332,6 +19319,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -19725,19 +19725,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -19746,6 +19733,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -19853,19 +19853,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -19874,6 +19861,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -20263,19 +20263,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -20284,6 +20271,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -20391,19 +20391,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -20412,6 +20399,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -20824,19 +20824,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -20845,6 +20832,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -20952,19 +20952,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -20973,6 +20960,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -21323,19 +21323,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -21344,6 +21331,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -21450,19 +21450,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -21471,6 +21458,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -21843,19 +21843,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -21864,6 +21851,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -21971,19 +21971,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -21992,6 +21979,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -22280,19 +22280,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -22301,6 +22288,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -22328,19 +22328,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -22349,6 +22336,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -22375,19 +22375,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -22396,6 +22383,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -22725,19 +22725,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -22746,6 +22733,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -22853,19 +22853,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -22874,6 +22861,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -23026,19 +23026,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -23047,6 +23034,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -23332,19 +23332,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -23353,6 +23340,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -23778,19 +23778,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -23799,6 +23786,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -23906,19 +23906,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -23927,6 +23914,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -24233,19 +24233,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -24254,6 +24241,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -24358,19 +24358,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -24379,6 +24366,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -24445,19 +24445,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -24466,6 +24453,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -25113,19 +25113,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -25134,6 +25121,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -25161,19 +25161,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -25182,6 +25169,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -25262,19 +25262,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -25283,6 +25270,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -26441,19 +26441,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -26462,6 +26449,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -26566,19 +26566,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -26587,6 +26574,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -26770,19 +26770,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -26791,6 +26778,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -26817,19 +26817,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -26838,6 +26825,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -27091,19 +27091,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -27112,6 +27099,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -27296,19 +27296,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -27317,6 +27304,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -27648,19 +27648,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -27669,6 +27656,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -27775,19 +27775,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -27796,6 +27783,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -28277,19 +28277,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -28298,6 +28285,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -28405,19 +28405,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -28426,6 +28413,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -28701,19 +28701,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -28722,6 +28709,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -29200,19 +29200,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -29221,6 +29208,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -29328,19 +29328,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -29349,6 +29336,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -29875,19 +29875,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -29896,6 +29883,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -29922,19 +29922,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -29943,6 +29930,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -30245,19 +30245,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -30266,6 +30253,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -30370,19 +30370,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -30391,6 +30378,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -30673,19 +30673,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -30694,6 +30681,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -30774,19 +30774,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -30795,6 +30782,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -30821,19 +30821,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -30842,6 +30829,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -30973,19 +30973,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -30994,6 +30981,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -31111,19 +31111,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -31132,6 +31119,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -31196,19 +31196,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -31217,6 +31204,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -31315,19 +31315,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -31336,6 +31323,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -31756,19 +31756,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -31777,6 +31764,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -31883,19 +31883,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -31904,6 +31891,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -32009,19 +32009,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -32030,6 +32017,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -32441,19 +32441,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -32462,6 +32449,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -32488,19 +32488,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -32509,6 +32496,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -33487,19 +33487,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -33508,6 +33495,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -33616,19 +33616,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -33637,6 +33624,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -34469,19 +34469,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -34490,6 +34477,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -34516,19 +34516,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -34537,6 +34524,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -34725,19 +34725,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -34746,6 +34733,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -34772,19 +34772,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -34793,6 +34780,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -34941,19 +34941,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -34962,6 +34949,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -35171,19 +35171,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -35192,6 +35179,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -36365,19 +36365,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -36386,6 +36373,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -36483,19 +36483,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -36504,6 +36491,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -36633,19 +36633,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -36654,6 +36641,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -36906,19 +36906,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -36927,6 +36914,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -37033,19 +37033,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -37054,6 +37041,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -37122,19 +37122,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -37143,6 +37130,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -37186,19 +37186,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -37207,6 +37194,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -37528,19 +37528,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -37549,6 +37536,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -37654,19 +37654,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -37675,6 +37662,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -37831,19 +37831,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -37852,6 +37839,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -38037,19 +38037,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -38058,6 +38045,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -38313,19 +38313,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -38334,6 +38321,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -38360,19 +38360,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -38381,6 +38368,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -38633,19 +38633,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -38654,6 +38641,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -38681,19 +38681,6 @@ class Mission
 			class CustomAttributes
 			{
 				class Attribute0
-				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
 				{
 					property="VehicleCustomization";
 					expression="if (local _this) then {([_this] + _value + [true]) call (uinamespace getvariable 'BIS_fnc_initVehicle')};";
@@ -38792,6 +38779,19 @@ class Mission
 									};
 								};
 							};
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -39195,19 +39195,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -39216,6 +39203,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -39363,19 +39363,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -39384,6 +39371,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -39550,19 +39550,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -39571,6 +39558,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -40856,19 +40856,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -40877,6 +40864,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -55547,19 +55547,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -55568,6 +55555,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -56233,19 +56233,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -56254,6 +56241,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -56359,19 +56359,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -56380,6 +56367,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -63940,19 +63940,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -63961,6 +63948,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -64392,19 +64392,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -64413,6 +64400,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -64520,19 +64520,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -64541,6 +64528,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -68210,19 +68210,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -68231,6 +68218,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -68259,19 +68259,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -68280,6 +68267,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -68986,19 +68986,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -69007,6 +68994,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -69212,19 +69212,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -69233,6 +69220,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -73463,7 +73463,6 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				init="_this addAction [""Arsenal"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
 				name="US_AMMOBOX";
 			};
 			id=7392;
@@ -74021,7 +74020,6 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				init="_this addAction [""Arsenal"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
 				name="US_AMMOBOX_1";
 			};
 			id=7405;
@@ -81036,7 +81034,6 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				init="_this addAction [""Arsenal"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
 				name="US_AMMOBOX_2";
 				dynamicSimulation=1;
 			};
@@ -105659,19 +105656,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -105680,6 +105664,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -105791,19 +105788,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_DismountWhenEmpty";
-							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_gunTurning";
 							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 							class Value
@@ -105812,6 +105796,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=1;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_DismountWhenEmpty";
+							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
 								};
 							};
 						};
@@ -106011,19 +106008,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -106032,6 +106016,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -106213,19 +106210,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -106234,6 +106218,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -106260,19 +106257,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -106281,6 +106265,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -106641,19 +106638,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_gunTurning";
 					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
 					class Value
@@ -106662,6 +106646,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=1;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
 						};
 					};
 				};
@@ -106861,19 +106858,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_gunTurning";
-					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=1;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_DismountWhenEmpty";
 					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 					class Value
@@ -106882,6 +106866,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=0;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_gunTurning";
+					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
 						};
 					};
 				};
@@ -107285,19 +107282,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_gunTurning";
-					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=1;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_DismountWhenEmpty";
 					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 					class Value
@@ -107306,6 +107290,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=0;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_gunTurning";
+					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
 						};
 					};
 				};
@@ -107545,19 +107542,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -107566,6 +107550,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -107689,19 +107686,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -107710,6 +107694,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -107835,19 +107832,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_gunTurning";
-					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=1;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_DismountWhenEmpty";
 					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 					class Value
@@ -107856,6 +107840,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=0;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_gunTurning";
+					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
 						};
 					};
 				};
@@ -107882,19 +107879,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_gunTurning";
-					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=1;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_DismountWhenEmpty";
 					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 					class Value
@@ -107903,6 +107887,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=0;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_gunTurning";
+					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
 						};
 					};
 				};
@@ -108036,19 +108033,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_gunTurning";
-					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=1;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_DismountWhenEmpty";
 					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 					class Value
@@ -108057,6 +108041,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=0;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_gunTurning";
+					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
 						};
 					};
 				};
@@ -108649,19 +108646,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -108670,6 +108654,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -108718,19 +108715,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -108739,6 +108723,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -109576,19 +109573,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -109597,6 +109581,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -109702,19 +109699,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -109723,6 +109707,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -110347,19 +110344,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_gunTurning";
-					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=1;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_DismountWhenEmpty";
 					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 					class Value
@@ -110368,6 +110352,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=0;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_gunTurning";
+					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
 						};
 					};
 				};
@@ -110413,6 +110410,19 @@ class Mission
 			class CustomAttributes
 			{
 				class Attribute0
+				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
+						};
+					};
+				};
+				class Attribute1
 				{
 					property="VehicleCustomization";
 					expression="if (local _this) then {([_this] + _value + [true]) call (uinamespace getvariable 'BIS_fnc_initVehicle')};";
@@ -110511,19 +110521,6 @@ class Mission
 									};
 								};
 							};
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
 						};
 					};
 				};
@@ -110808,19 +110805,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_gunTurning";
-					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=1;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_DismountWhenEmpty";
 					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 					class Value
@@ -110829,6 +110813,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=0;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_gunTurning";
+					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
 						};
 					};
 				};
@@ -111097,19 +111094,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -111118,6 +111102,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -111539,19 +111536,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -111560,6 +111544,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -111667,19 +111664,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -111688,6 +111672,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -111895,19 +111892,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -111916,6 +111900,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -112136,19 +112133,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -112157,6 +112141,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -112515,6 +112512,19 @@ class Mission
 			{
 				class Attribute0
 				{
+					property="SPE_DismountWhenEmpty";
+					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=0;
+						};
+					};
+				};
+				class Attribute1
+				{
 					property="VehicleCustomization";
 					expression="if (local _this) then {([_this] + _value + [true]) call (uinamespace getvariable 'BIS_fnc_initVehicle')};";
 					class Value
@@ -112596,19 +112606,6 @@ class Mission
 									};
 								};
 							};
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="SPE_DismountWhenEmpty";
-					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=0;
 						};
 					};
 				};
@@ -112726,19 +112723,6 @@ class Mission
 			{
 				class Attribute0
 				{
-					property="SPE_gunTurning";
-					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-					class Value
-					{
-						class data
-						{
-							singleType="BOOL";
-							value=1;
-						};
-					};
-				};
-				class Attribute1
-				{
 					property="SPE_DismountWhenEmpty";
 					expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 					class Value
@@ -112747,6 +112731,19 @@ class Mission
 						{
 							singleType="BOOL";
 							value=0;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="SPE_gunTurning";
+					expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+					class Value
+					{
+						class data
+						{
+							singleType="BOOL";
+							value=1;
 						};
 					};
 				};
@@ -113587,19 +113584,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -113608,6 +113592,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -113714,19 +113711,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -113735,6 +113719,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -114089,19 +114086,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -114110,6 +114094,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -114217,19 +114214,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -114238,6 +114222,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -114583,19 +114580,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -114604,6 +114588,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
@@ -114709,19 +114706,6 @@ class Mission
 					{
 						class Attribute0
 						{
-							property="SPE_gunTurning";
-							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
-							class Value
-							{
-								class data
-								{
-									singleType="BOOL";
-									value=1;
-								};
-							};
-						};
-						class Attribute1
-						{
 							property="SPE_DismountWhenEmpty";
 							expression="_this setVariable ['SPE_Static_CloseCombat_NoAmmo_Dismount',_value,true];";
 							class Value
@@ -114730,6 +114714,19 @@ class Mission
 								{
 									singleType="BOOL";
 									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="SPE_gunTurning";
+							expression="_this setVariable ['SPE_ARTY_AI_DIR',_value,true]; (_this setVariable ['Enable_Dir',_value,true])";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=1;
 								};
 							};
 						};
