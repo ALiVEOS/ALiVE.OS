@@ -1,0 +1,102 @@
+/*%FSM<COMPILE "C:\Games\Steam\steamapps\common\arma 2\Tools\FSM Editor Personal Edition\scriptedFSM.cfg, unit_lifecycle">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"init",0,250,-190.484970,-249.414719,-151.321075,-222.826096,0.000000,"init"};
+item1[] = {"alive_AI__player",2,250,-50.501659,-162.876266,39.498356,-112.876259,0.000000,"alive AI," \n "player exists"};
+item2[] = {"_",8,218,-18.394661,-244.481613,14.749162,-223.244141,0.000000,""};
+item3[] = {"AI_dead___dismis",4,218,83.946503,-122.073662,155.217407,-70.066902,1.000000,"AI dead /" \n "dismissed"};
+item4[] = {"no_player__AI_de",4,218,79.933113,-200.334457,153.879608,-153.010040,0.000000,"no player;" \n "AI dead"};
+item5[] = {"exit",1,4346,213.043457,-142.809418,246.187393,-113.545189,0.000000,"exit"};
+link0[] = {0,2};
+link1[] = {1,3};
+link2[] = {1,4};
+link3[] = {2,1};
+link4[] = {3,5};
+link5[] = {4,5};
+globals[] = {0.000000,0,0,0,0,640,480,1,8,6316128,1,-300.000000,300.000000,300.000000,-300.000000,897,592,1};
+window[] = {0,-1,-1,-1,-1,762,25,1285,25,1,915};
+*//*%FSM</HEAD>*/
+class FSM
+{
+  fsmName = "unit_lifecycle";
+  class States
+  {
+    /*%FSM<STATE "init">*/
+    class init
+    {
+      name = "init";
+      init = /*%FSM<STATEINIT""">*/"_unit = _this select 0;"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "_">*/
+        class _
+        {
+          priority = 0.000000;
+          to="alive_AI__player";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "alive_AI__player">*/
+    class alive_AI__player
+    {
+      name = "alive_AI__player";
+      init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+        /*%FSM<LINK "AI_dead___dismis">*/
+        class AI_dead___dismis
+        {
+          priority = 1.000000;
+          to="exit";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"not alive _unit"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+        /*%FSM<LINK "no_player__AI_de">*/
+        class no_player__AI_de
+        {
+          priority = 0.000000;
+          to="exit";
+          precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+          condition=/*%FSM<CONDITION""">*/"{isPlayer _x} count (units group _unit) == 0"/*%FSM</CONDITION""">*/;
+          action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+        };
+        /*%FSM</LINK>*/
+      };
+    };
+    /*%FSM</STATE>*/
+    /*%FSM<STATE "exit">*/
+    class exit
+    {
+      name = "exit";
+      init = /*%FSM<STATEINIT""">*/"if(not isNull _unit) then {" \n
+       "	_unit spawn {" \n
+       "		_this setDamage 1;" \n
+       "		sleep 120;" \n
+       "		hideBody _this;" \n
+       "		sleep 5;" \n
+       "		deleteVehicle _this;" \n
+       "	};" \n
+       "};"/*%FSM</STATEINIT""">*/;
+      precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+      class Links
+      {
+      };
+    };
+    /*%FSM</STATE>*/
+  };
+  initState="init";
+  finalStates[] =
+  {
+    "exit",
+  };
+};
+/*%FSM</COMPILE>*/

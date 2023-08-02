@@ -130,6 +130,7 @@ if (isServer) then {
         // Create the MHQ USBASE Flag
         _flag = createVehicle [INS_MHQ_FLAGCLASS,[ (getPos USMHQ select 0)-2, (getPos USMHQ select 1)-10, (getPos USMHQ select 2)+0], [], 0, "CAN_COLLIDE"];
         USMHQ setVariable ["FLAG", _flag];
+        [_flag, ["Recruit Infantry", {[] execVM "bon_recruit_units\open_dialog.sqf"}]] remoteExec ["addAction"];
 
         // Create a new respawn position for the respawn menu
         _side = resistance;
