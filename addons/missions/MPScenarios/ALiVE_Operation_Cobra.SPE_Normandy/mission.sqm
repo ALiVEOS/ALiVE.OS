@@ -12,7 +12,7 @@ class EditorData
 	};
 	class ItemIDProvider
 	{
-		nextID=8647;
+		nextID=8648;
 	};
 	class MarkerIDProvider
 	{
@@ -20,14 +20,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=5111;
+		nextID=6983;
 	};
 	class Camera
 	{
-		pos[]={7416.9185,80.021004,6196.7617};
-		dir[]={-0.18873878,-0.21937744,0.95721227};
-		up[]={-0.042438917,0.97564012,0.21523426};
-		aside[]={0.98111176,1.1001248e-008,0.19345146};
+		pos[]={10286.188,33.434189,9557.001};
+		dir[]={-0.055344529,-0.85115105,-0.52202117};
+		up[]={-0.08973603,0.52491957,-0.84640557};
+		aside[]={-0.99443781,-7.4738637e-008,0.10543038};
 	};
 };
 binarizationWanted=0;
@@ -633,7 +633,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=1666;
+		items=1667;
 		class Item0
 		{
 			dataType="Object";
@@ -5005,7 +5005,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item170
@@ -32934,7 +32947,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item680
@@ -44639,7 +44665,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item902
@@ -44746,7 +44785,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item903
@@ -44853,7 +44905,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item904
@@ -45999,7 +46064,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item918
@@ -46106,7 +46184,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item919
@@ -46213,7 +46304,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item920
@@ -46319,7 +46423,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item921
@@ -46426,7 +46543,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item922
@@ -48635,7 +48765,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item929
@@ -48741,7 +48884,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item930
@@ -48847,7 +49003,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item931
@@ -48953,7 +49122,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item932
@@ -49059,7 +49241,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item933
@@ -49165,7 +49360,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item934
@@ -49271,7 +49479,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item935
@@ -49377,7 +49598,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item936
@@ -49758,7 +49992,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item938
@@ -51524,7 +51771,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={10257.86,30.188786,10230.882};
-				angles[]={0.053282689,0,0.02999169};
+				angles[]={0.053284902,0,0.029984757};
 			};
 			id=6752;
 			type="ALiVE_mil_placement_spe";
@@ -51621,7 +51868,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="SAFE";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item940
@@ -52044,12 +52304,12 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={10259.079,28.49898,10253.959};
-				angles[]={0.079830162,0,6.2698536};
+				position[]={10259.079,28.498554,10253.959};
+				angles[]={0.079831354,0,6.2698507};
 			};
 			id=6773;
 			type="ALiVE_mil_placement_spe";
-			atlOffset=0.0034236908;
+			atlOffset=0.0029983521;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -52143,7 +52403,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="SAFE";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item942
@@ -53623,7 +53896,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={11132.976,36.68,10037.604};
-				angles[]={0,5.3893247,0};
+				angles[]={0,5.3893323,0};
 			};
 			id=6782;
 			type="ALiVE_mil_placement_spe";
@@ -53720,7 +53993,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="SAFE";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item951
@@ -53729,7 +54015,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={11114.651,36.957474,10132.33};
-				angles[]={0.046633169,2.8271599,0.02999169};
+				angles[]={0.046635196,2.8271539,0.029984757};
 			};
 			id=6783;
 			type="ALiVE_mil_placement_spe";
@@ -53827,7 +54113,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="SAFE";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item952
@@ -53836,7 +54135,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={11114.802,36.681118,10044.068};
-				angles[]={6.2800779,2.8271599,6.2824135};
+				angles[]={6.2800784,2.8271539,6.2824173};
 			};
 			id=6784;
 			type="ALiVE_mil_placement_spe";
@@ -53933,7 +54232,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="SAFE";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item953
@@ -54039,7 +54351,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item954
@@ -54146,7 +54471,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item955
@@ -54253,7 +54591,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item956
@@ -54360,7 +54711,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item957
@@ -54466,7 +54830,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item958
@@ -54573,7 +54950,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item959
@@ -54679,7 +55069,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item960
@@ -54785,7 +55188,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item961
@@ -54891,7 +55307,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item962
@@ -54998,7 +55427,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item963
@@ -55354,7 +55796,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item965
@@ -55461,7 +55916,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item966
@@ -56025,7 +56493,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item968
@@ -56132,7 +56613,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item969
@@ -56238,7 +56732,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item970
@@ -56870,7 +57377,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item976
@@ -57383,7 +57903,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item978
@@ -57489,7 +58022,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item979
@@ -57595,7 +58141,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item980
@@ -57708,7 +58267,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item982
@@ -57821,7 +58393,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item984
@@ -57927,7 +58512,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item985
@@ -58034,7 +58632,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item986
@@ -58043,7 +58654,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={10283.791,19.356215,9550.0771};
-				angles[]={6.2332273,5.9665666,0.036649179};
+				angles[]={6.2332339,5.9665651,0.036651913};
 			};
 			id=6911;
 			type="ALiVE_mil_placement_spe";
@@ -58140,7 +58751,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item987
@@ -61068,7 +61692,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item993
@@ -61077,7 +61714,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={10189.261,9.3640356,9640.7275};
-				angles[]={0.036650803,0.243072,6.2731848};
+				angles[]={0.036651913,0.243072,6.2731848};
 			};
 			id=7035;
 			type="ALiVE_mil_placement_spe";
@@ -61174,7 +61811,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item994
@@ -61288,7 +61938,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item996
@@ -61395,7 +62058,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item997
@@ -61515,7 +62191,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1000
@@ -61622,7 +62311,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1001
@@ -61729,7 +62431,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1002
@@ -61835,7 +62550,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1003
@@ -61941,7 +62669,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1004
@@ -62048,7 +62789,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1005
@@ -62154,7 +62908,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1006
@@ -62897,7 +63664,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="SAFE";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1024
@@ -62905,12 +63685,12 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={10331.25,27.515566,10358.583};
-				angles[]={0.043305151,3.1384029,0.02999169};
+				position[]={10331.25,27.515562,10358.583};
+				angles[]={0.043301616,3.1383986,0.029984757};
 			};
 			id=7066;
 			type="ALiVE_mil_placement_spe";
-			atlOffset=7.6293945e-006;
+			atlOffset=3.8146973e-006;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -63004,7 +63784,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="SAFE";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1025
@@ -64322,7 +65115,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={10238.844,7.5166974,9738.3301};
-				angles[]={0.0099949092,0.243072,0};
+				angles[]={0.010000736,0.243072,0};
 			};
 			id=7138;
 			type="ALiVE_mil_placement_spe";
@@ -64420,7 +65213,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1029
@@ -64527,7 +65333,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1030
@@ -64862,7 +65681,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1032
@@ -64969,7 +65801,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1033
@@ -65076,7 +65921,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1034
@@ -65084,12 +65942,12 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={10261.953,21.941919,9529.7979};
-				angles[]={0,6.1745276,0};
+				position[]={10261.953,21.941986,9529.7979};
+				angles[]={0,6.174521,0};
 			};
 			id=7156;
 			type="ALiVE_mil_placement_spe";
-			atlOffset=0.71993256;
+			atlOffset=0.71999931;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -65183,7 +66041,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1035
@@ -65574,7 +66445,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1037
@@ -65681,7 +66565,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1038
@@ -65788,7 +66685,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1039
@@ -65895,7 +66805,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1040
@@ -66001,7 +66924,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1041
@@ -73630,11 +74566,12 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={10268.99,19.672157,9550.4424};
-				angles[]={0.033319358,6.0161457,6.256525};
+				position[]={10268.99,19.672155,9550.4424};
+				angles[]={0.033318337,6.01615,6.2565165};
 			};
 			id=7437;
 			type="ALiVE_mil_placement_spe";
+			atlOffset=-1.9073486e-006;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -73728,7 +74665,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1120
@@ -73834,7 +74784,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1121
@@ -76616,7 +77579,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1151
@@ -80598,7 +81574,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1184
@@ -81939,7 +82928,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1197
@@ -82045,7 +83047,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1198
@@ -82053,12 +83068,12 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={11273.724,30.89889,9571.4248};
-				angles[]={0,3.7840748,0};
+				position[]={11273.724,30.89872,9571.4248};
+				angles[]={0,3.7840831,0};
 			};
 			id=7608;
 			type="ALiVE_mil_placement_spe";
-			atlOffset=0.68516731;
+			atlOffset=0.68499756;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -82152,7 +83167,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1199
@@ -83692,7 +84720,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1212
@@ -83798,7 +84839,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1213
@@ -83904,7 +84958,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1214
@@ -84010,7 +85077,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1215
@@ -84116,7 +85196,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1216
@@ -84222,7 +85315,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1217
@@ -84328,7 +85434,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1218
@@ -84434,7 +85553,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1219
@@ -84540,7 +85672,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1220
@@ -84646,7 +85791,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1221
@@ -84795,7 +85953,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1223
@@ -84902,7 +86073,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1224
@@ -85009,7 +86193,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1225
@@ -85115,7 +86312,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1226
@@ -85221,7 +86431,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1227
@@ -85328,7 +86551,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1228
@@ -85434,7 +86670,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1229
@@ -85540,7 +86789,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1230
@@ -85646,7 +86908,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1231
@@ -85752,7 +87027,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1232
@@ -85859,7 +87147,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1233
@@ -85965,7 +87266,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1234
@@ -86071,7 +87385,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1235
@@ -86177,7 +87504,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1236
@@ -86283,7 +87623,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1237
@@ -86389,7 +87742,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1238
@@ -86496,7 +87862,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1239
@@ -86602,7 +87981,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1240
@@ -86708,7 +88100,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1241
@@ -86814,7 +88219,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1242
@@ -86920,7 +88338,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1243
@@ -87026,7 +88457,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1244
@@ -87132,7 +88576,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1245
@@ -87238,7 +88695,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1246
@@ -87344,7 +88814,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1247
@@ -87450,7 +88933,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1248
@@ -87556,7 +89052,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1249
@@ -87662,7 +89171,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1250
@@ -87768,7 +89290,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1251
@@ -87874,7 +89409,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1252
@@ -87980,7 +89528,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1253
@@ -88086,7 +89647,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1254
@@ -88192,7 +89766,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1255
@@ -88298,7 +89885,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1256
@@ -88404,7 +90004,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1257
@@ -88510,7 +90123,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1258
@@ -88616,7 +90242,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1259
@@ -88722,7 +90361,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1260
@@ -88828,7 +90480,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1261
@@ -88934,7 +90599,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1262
@@ -89040,7 +90718,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1263
@@ -89146,7 +90837,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1264
@@ -89253,7 +90957,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1265
@@ -89359,7 +91076,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1266
@@ -89465,7 +91195,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1267
@@ -89571,7 +91314,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1268
@@ -89677,7 +91433,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1269
@@ -89783,7 +91552,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1270
@@ -89889,7 +91671,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1271
@@ -89995,7 +91790,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1272
@@ -90101,7 +91909,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1273
@@ -90207,7 +92028,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1274
@@ -90313,7 +92147,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1275
@@ -90419,7 +92266,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1276
@@ -90525,7 +92385,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1277
@@ -90650,7 +92523,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1279
@@ -90756,7 +92642,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1280
@@ -90862,7 +92761,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1281
@@ -90968,7 +92880,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1282
@@ -91075,7 +93000,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1283
@@ -91199,7 +93137,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1285
@@ -91305,7 +93256,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1286
@@ -91412,7 +93376,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1287
@@ -91519,7 +93496,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1288
@@ -91625,7 +93615,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1289
@@ -91731,7 +93734,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1290
@@ -91838,7 +93854,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1291
@@ -91944,7 +93973,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1292
@@ -92050,7 +94092,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1293
@@ -92156,7 +94211,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1294
@@ -92262,7 +94330,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1295
@@ -92368,7 +94449,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1296
@@ -92475,7 +94569,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1297
@@ -92581,7 +94688,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1298
@@ -92688,7 +94808,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1299
@@ -92794,7 +94927,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1300
@@ -92900,7 +95046,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1301
@@ -93006,7 +95165,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1302
@@ -93112,7 +95284,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1303
@@ -93218,7 +95403,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1304
@@ -93324,7 +95522,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1305
@@ -93430,7 +95641,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1306
@@ -93536,7 +95760,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1307
@@ -93642,7 +95879,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1308
@@ -93748,7 +95998,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1309
@@ -93854,7 +96117,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1310
@@ -93960,7 +96236,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1311
@@ -94066,7 +96355,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1312
@@ -94172,7 +96474,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1313
@@ -94278,7 +96593,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1314
@@ -94384,7 +96712,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1315
@@ -94490,7 +96831,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1316
@@ -94596,7 +96950,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1317
@@ -94703,7 +97070,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1318
@@ -94810,7 +97190,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1319
@@ -94916,7 +97309,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1320
@@ -95023,7 +97429,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1321
@@ -95130,7 +97549,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1322
@@ -95237,7 +97669,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1323
@@ -95343,7 +97788,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1324
@@ -95449,7 +97907,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1325
@@ -95555,7 +98026,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1326
@@ -95661,7 +98145,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1327
@@ -95767,7 +98264,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1328
@@ -95873,7 +98383,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1329
@@ -95979,7 +98502,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1330
@@ -96085,7 +98621,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1331
@@ -96192,7 +98741,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1332
@@ -96298,7 +98860,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1333
@@ -96404,7 +98979,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1334
@@ -96511,7 +99099,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1335
@@ -96617,7 +99218,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1336
@@ -96723,7 +99337,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1337
@@ -96829,7 +99456,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1338
@@ -96935,7 +99575,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1339
@@ -97041,7 +99694,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1340
@@ -97166,7 +99832,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1342
@@ -97272,7 +99951,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1343
@@ -97378,7 +100070,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1344
@@ -97484,7 +100189,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1345
@@ -97590,7 +100308,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1346
@@ -97696,7 +100427,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1347
@@ -97802,7 +100546,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1348
@@ -97908,7 +100665,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1349
@@ -98014,7 +100784,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1350
@@ -98120,7 +100903,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1351
@@ -98226,7 +101022,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1352
@@ -98332,7 +101141,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1353
@@ -98438,7 +101260,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1354
@@ -98544,7 +101379,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1355
@@ -98650,7 +101498,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1356
@@ -98756,7 +101617,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1357
@@ -98862,7 +101736,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1358
@@ -98968,7 +101855,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1359
@@ -99074,7 +101974,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1360
@@ -99180,7 +102093,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1361
@@ -99286,7 +102212,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1362
@@ -99392,7 +102331,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1363
@@ -99498,7 +102450,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1364
@@ -99604,7 +102569,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1365
@@ -99710,7 +102688,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1366
@@ -99816,7 +102807,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1367
@@ -100436,7 +103440,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1369
@@ -100543,7 +103560,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1370
@@ -100650,7 +103680,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1371
@@ -100757,7 +103800,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1372
@@ -100863,7 +103919,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1373
@@ -100969,7 +104038,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1374
@@ -103056,7 +106138,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1386
@@ -103293,7 +106388,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1391
@@ -106003,7 +109111,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1473
@@ -109732,7 +112853,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1564
@@ -112585,7 +115719,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1592
@@ -112710,7 +115857,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1594
@@ -112976,7 +116136,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1603
@@ -113100,7 +116273,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1605
@@ -113206,7 +116392,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1606
@@ -113312,7 +116511,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1607
@@ -113487,7 +116699,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1612
@@ -113593,7 +116818,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1613
@@ -113699,7 +116937,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1614
@@ -113805,7 +117056,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1615
@@ -113937,7 +117201,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1618
@@ -114043,7 +117320,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1619
@@ -114149,7 +117439,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1620
@@ -114255,7 +117558,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1621
@@ -114361,7 +117677,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1622
@@ -114467,7 +117796,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1623
@@ -114573,7 +117915,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1624
@@ -114679,7 +118034,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1625
@@ -114785,7 +118153,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1626
@@ -114891,7 +118272,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1627
@@ -114997,7 +118391,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1628
@@ -115103,7 +118510,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1629
@@ -115209,7 +118629,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1630
@@ -115315,7 +118748,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1631
@@ -115421,7 +118867,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1632
@@ -115527,7 +118986,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1633
@@ -115633,7 +119105,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1634
@@ -115739,7 +119224,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1635
@@ -115845,7 +119343,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1636
@@ -115951,7 +119462,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1637
@@ -116057,7 +119581,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1638
@@ -116163,7 +119700,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1639
@@ -116269,7 +119819,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1640
@@ -116375,7 +119938,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1641
@@ -116481,7 +120057,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1642
@@ -116588,7 +120177,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1643
@@ -116694,7 +120296,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1644
@@ -116800,7 +120415,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1645
@@ -116906,7 +120534,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1646
@@ -117013,7 +120654,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1647
@@ -117119,7 +120773,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1648
@@ -117225,7 +120892,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1649
@@ -117331,7 +121011,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1650
@@ -117340,7 +121033,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={2871.842,55.632805,1908.134};
-				angles[]={6.2531939,1.5364482,6.223258};
+				angles[]={6.2532005,1.5364482,6.2232509};
 			};
 			id=8631;
 			type="ALiVE_mil_placement_spe";
@@ -117437,7 +121130,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1651
@@ -117543,7 +121249,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1652
@@ -117649,7 +121368,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1653
@@ -117755,7 +121487,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1654
@@ -117861,7 +121606,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1655
@@ -117967,7 +121725,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1656
@@ -118074,7 +121845,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1657
@@ -118181,7 +121965,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1658
@@ -118288,7 +122085,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1659
@@ -118395,7 +122205,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1660
@@ -118501,7 +122324,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1661
@@ -118607,7 +122443,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1662
@@ -118713,7 +122562,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1663
@@ -118819,7 +122681,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1664
@@ -118925,7 +122800,20 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 		class Item1665
@@ -119031,7 +122919,139 @@ class Mission
 						};
 					};
 				};
-				nAttributes=7;
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="STEALTH";
+						};
+					};
+				};
+				nAttributes=8;
+			};
+		};
+		class Item1666
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={10359.379,27.896454,10351.622};
+				angles[]={0.059934605,3.6680539,0.010000736};
+			};
+			id=8647;
+			type="ALiVE_mil_placement_spe";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ALiVE_mil_placement_spe_priority";
+					expression="_this setVariable ['priority',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="50";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="ALiVE_mil_placement_spe_debug";
+					expression="_this setVariable ['debug',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="false";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="ALiVE_mil_placement_spe_speVehicleClass";
+					expression="_this setVariable ['speVehicleClass',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="";
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="ALiVE_mil_placement_spe_allowPlayerTasking";
+					expression="_this setVariable ['allowPlayerTasking',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="false";
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="ALiVE_mil_placement_spe_size";
+					expression="_this setVariable ['size',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="50";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="ALiVE_mil_placement_spe_speInfantryClass";
+					expression="_this setVariable ['speInfantryClass',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="SPE_US_Command_Section";
+						};
+					};
+				};
+				class Attribute6
+				{
+					property="ALiVE_mil_placement_spe_faction";
+					expression="_this setVariable ['faction',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="SPE_US_ARMY";
+						};
+					};
+				};
+				class Attribute7
+				{
+					property="ALiVE_mil_placement_spe_speInfantryBehaviour";
+					expression="_this setVariable ['speInfantryBehaviour',_value,true];";
+					class Value
+					{
+						class data
+						{
+							singleType="STRING";
+							value="SAFE";
+						};
+					};
+				};
+				nAttributes=8;
 			};
 		};
 	};
