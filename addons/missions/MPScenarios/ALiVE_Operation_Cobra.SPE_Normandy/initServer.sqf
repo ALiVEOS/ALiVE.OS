@@ -28,10 +28,6 @@ if (isDedicated) then  {
 
 Jersey setGroupId ["Jersey Squad"];
 
-[US_AMMOBOX,["Arsenal", {["Open",true] spawn SPE_Arsenal_fnc_arsenal; }]] remoteExec ["addAction"];
-[US_AMMOBOX_1,["Arsenal", {["Open",true] spawn SPE_Arsenal_fnc_arsenal; }]] remoteExec ["addAction"];
-[US_AMMOBOX_2,["Arsenal", {["Open",true] spawn SPE_Arsenal_fnc_arsenal; }]] remoteExec ["addAction"];
-
 
 SPE_CadetMode = false;
 SPE_HardcoreMode = true;
