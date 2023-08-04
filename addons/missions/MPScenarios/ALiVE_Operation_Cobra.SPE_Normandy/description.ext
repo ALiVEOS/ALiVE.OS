@@ -37,7 +37,7 @@ debriefing = 1;
 class Header {
     gametype = ALIVE;
     minPlayers = 1;
-    maxPlayers = 28;
+    maxPlayers = 32;
     playerCountMultipleOf = 1;
 };
 
@@ -50,15 +50,6 @@ class Params
 {
 	#include "params\paramDaytimeHour.hpp"
 	// #include "params\paramRespawnTickets.hpp"
-	class Enablemapmarkers
-	{
-	    title = $STR_SPE_COALIVE_PARAMS_MAPMARKERS_OPCOBRA;
-	    isGlobal = 1;
-	    values[] = {0, 1};
-	    texts[] = {$STR_DISP_OPT_DISABLED, $STR_DISP_OPT_ENABLED};
-	    default = 1;
-	    function = "spe_alivems_fnc_params_mapMarkers";
-	};
 
 	class Disablestamina {
 	    title = $STR_SPE_COALIVE_PARAMS_STAMINA_OPCOBRA;

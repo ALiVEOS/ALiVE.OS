@@ -59,16 +59,3 @@ SPE_fnc_IFS_hasRadio =
 	player setVariable ['SPE_IFS_showCall_EM',false];  // does not work!
 	[player,SPE_IFS_EM_ID] call BIS_fnc_holdActionRemove; // works!
 };
-
-
-
-
-
-
-
-
-
-
-
-
-

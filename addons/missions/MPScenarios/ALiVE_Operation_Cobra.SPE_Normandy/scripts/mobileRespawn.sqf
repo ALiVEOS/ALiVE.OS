@@ -116,13 +116,14 @@ if (isServer) then {
         // Create Supply Crate
         _supply = createVehicle [INS_MHQ_SUPPLYCRATE,[ (getPos USMHQ select 0)-2, (getPos USMHQ select 1)-6,(getPos USMHQ select 2)+0.1], [], 0, "CAN_COLLIDE"];
         USMHQ setVariable ["SUPPLY", _supply];
-        [_supply, ["Arsenal", {["Open",true] spawn SPE_Arsenal_fnc_arsenal; }]] remoteExec ["addAction"];
+        [_supply, ["<t color='#0099FF'>Arsenal</t>", {["Open",true] spawn SPE_Arsenal_fnc_arsenal; }]] remoteExec ["addAction"];
         
         // Create the Awesome Marker so people know yo!
         _mkr_MHQ = createMarker [format ["box%1",random 1000],getposATL USMHQ];
         _mkr_MHQ setMarkerShape "ICON";
         _mkr_MHQ setMarkerText format["Deployed US MHQ"];
         _mkr_MHQ setMarkerType "SPE_n_Icon_Insignia_Generic_US";
+        _mkr_MHQ setMarkerShadow true;
        //  _mkr_MHQ setMarkerColor "ColorBlack";
         MHQ_marker_array set [count MHQ_marker_array, _mkr_MHQ];
         publicVariable "MHQ_marker_array";
@@ -130,8 +131,9 @@ if (isServer) then {
         // Create the MHQ USBASE Flag
         _flag = createVehicle [INS_MHQ_FLAGCLASS,[ (getPos USMHQ select 0)-2, (getPos USMHQ select 1)-10, (getPos USMHQ select 2)+0], [], 0, "CAN_COLLIDE"];
         USMHQ setVariable ["FLAG", _flag];
-        [_flag, ["Recruit Infantry", {[] execVM "bon_recruit_units\open_dialog.sqf"}]] remoteExec ["addAction"];
-
+        // [(USMHQ getVariable "FLAG"), ["<t color='#FF8C00'>Recruit Infantry</t>", {[] execVM "bon_recruit_units\open_dialog.sqf"}]] remoteExec ["addAction"];
+        (USMHQ getVariable "FLAG") addAction["<t color='#ff9900'>Recruit Infantry</t>", "bon_recruit_units\open_dialog.sqf"];
+        
         // Create a new respawn position for the respawn menu
         _side = resistance;
         _newspawnpos = [_side,getposATL _flag] call BIS_fnc_addRespawnPosition;

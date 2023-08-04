@@ -20,11 +20,7 @@ class CfgFunctions
 				class params
 				{
 						file = "fnc";
-
-						class params_mapMarkers
-						{
-							recompile = 0;
-						};
+						
 						class params_stamina
 						{
 							recompile = 0;

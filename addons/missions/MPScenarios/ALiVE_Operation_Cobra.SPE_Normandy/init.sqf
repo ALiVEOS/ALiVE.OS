@@ -32,18 +32,15 @@ if ((getObjectViewDistance # 0) > 650) then {
 	setObjectViewDistance 650;
 };
 
+setTerrainGrid 3.125;
+
 waitUntil { !(isNull player) };
 
 if (side player == RESISTANCE) then {
 	BIS_fnc_arsenal_factions = [faction player,"SPE_US_ARMY"]; 
 };
 	
-
 [] execVM "bon_recruit_units\init.sqf";
-// if (side player == WEST) then {};
-
-// if (isServer) then {};
-
 
 if (hasInterface) then {
 
@@ -97,20 +94,10 @@ if (hasInterface) then {
 
         sleep 15;
 
-        _title = "<t size='1.5' color='#68a7b7' shadow='1'OPERATION COBRA</t><br/>";
+        _title = "<t size='1.5' color='#68a7b7' shadow='1'>OPERATION COBRA</t><br/>";
         _text = format["%1<t>You can use ALiVE Logistics to move supplies by vehicle to other locations.</t>",_title];
 
         ["openSideSmall",0.4] call ALIVE_fnc_displayMenu;
         ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;
     };
 };
-
-
-
-
-
-
-
-
-
-

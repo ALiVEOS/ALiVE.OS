@@ -9,7 +9,6 @@
 * 
 * */
 // ====================================================================================
-private ["_isMHQDeployed"];
 
 if (isDedicated) then  { 
 	disableRemoteSensors true; 
@@ -28,12 +27,27 @@ if (isDedicated) then  {
 
 Jersey setGroupId ["Jersey Squad"];
 
+SPE_IFS_CASAvailability_Side = [east, west, independent];
+publicVariable "SPE_IFS_CASAvailability_Side";
 
 SPE_CadetMode = false;
 SPE_HardcoreMode = true;
 
+call (compile preprocessFileLineNumbers "mapmarker\scripts\fn_init.sqf");
+call MM_fnc_startMapMarkerServer;
 
+if !isMultiplayer then {
+	addMissionEventHandler ["Loaded", {
+		call MM_fnc_stopMapMarkerClient;
 
+		[] spawn {
+			waitUntil {!MM_var_clientRunning};
+			call MM_fnc_startMapMarkerClient;
+		};
+	}];
+};
+
+["Initialize", [true]] call BIS_fnc_dynamicGroups;
 
 // Returns array of dates for given year when moon is at its fullest
 fnc_fullMoonDates =

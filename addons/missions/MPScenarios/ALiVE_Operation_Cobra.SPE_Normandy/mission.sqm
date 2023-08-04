@@ -20,14 +20,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=7503;
+		nextID=8751;
 	};
 	class Camera
 	{
-		pos[]={10350.464,52.503822,10340.309};
-		dir[]={0,-0.70710665,0.70710689};
-		up[]={0,0.70710689,0.70710659};
-		aside[]={0.99999994,0,0};
+		pos[]={10304.021,88.126503,10319.478};
+		dir[]={-0.49119246,-0.48996502,-0.72021705};
+		up[]={-0.27607754,0.87173212,-0.40480152};
+		aside[]={-0.8261764,9.3947165e-008,0.56345665};
 	};
 };
 binarizationWanted=0;
@@ -9849,7 +9849,8 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				createAsSimpleObject=1;
+				init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+				disableSimulation=1;
 				dynamicSimulation=1;
 			};
 			id=4492;
@@ -10996,7 +10997,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=4631;
@@ -11016,7 +11018,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=4632;
@@ -11036,7 +11039,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=4633;
@@ -11056,7 +11060,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=4634;
@@ -11076,7 +11081,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=4635;
@@ -11489,7 +11495,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=4654;
@@ -12189,7 +12196,8 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				createAsSimpleObject=1;
+				init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+				disableSimulation=1;
 				dynamicSimulation=1;
 			};
 			id=4803;
@@ -12208,7 +12216,8 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				createAsSimpleObject=1;
+				init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+				disableSimulation=1;
 				dynamicSimulation=1;
 			};
 			id=4804;
@@ -15602,7 +15611,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=5070;
@@ -15621,7 +15631,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=5071;
@@ -15823,7 +15834,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=5085;
@@ -15843,7 +15855,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=5086;
@@ -15863,7 +15876,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=5087;
@@ -15883,7 +15897,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=5088;
@@ -15902,7 +15917,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=5089;
@@ -16318,7 +16334,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=5108;
@@ -25895,7 +25912,8 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				createAsSimpleObject=1;
+				init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+				disableSimulation=1;
 				dynamicSimulation=1;
 			};
 			id=5623;
@@ -39096,7 +39114,8 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				createAsSimpleObject=1;
+				init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+				disableSimulation=1;
 				dynamicSimulation=1;
 			};
 			id=6418;
@@ -47416,7 +47435,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=6574;
@@ -48013,7 +48033,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=6605;
@@ -50227,19 +50248,21 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={10260.436,30.314667,10230.092};
-						angles[]={0.06988623,3.0934992,0.049959254};
+						position[]={10260.353,30.336075,10229.754};
+						angles[]={0.079831354,2.4957511,0.049951322};
 					};
 					side="Empty";
 					flags=4;
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=6676;
 					type="Land_ChairWood_F";
+					atlOffset=-0.00050544739;
 				};
 				class Item12
 				{
@@ -50723,7 +50746,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=6700;
@@ -51105,7 +51129,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=6719;
@@ -51586,7 +51611,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=6743;
@@ -52509,13 +52535,13 @@ class Mission
 				angles[]={6.2736483,0,0.008372304};
 			};
 			id=6777;
-			type="SPE_Module_AI_Systems";
+			type="SPE_Module_AI_Systems_HOTFIX";
 			class CustomAttributes
 			{
 				class Attribute0
 				{
 					property="SPE_Active_TweakAI";
-					expression="missionNamespace setVariable ['SPE_Active_TweakAI', _value]";
+					expression="missionNamespace setVariable ['SPE_Active_TweakAI', _value, true]";
 					class Value
 					{
 						class data
@@ -52528,7 +52554,7 @@ class Mission
 				class Attribute1
 				{
 					property="SPE_AffectOurSide";
-					expression="missionNamespace setVariable ['SPE_AffectOurSide', _value]";
+					expression="missionNamespace setVariable ['SPE_AffectOurSide', _value, true]";
 					class Value
 					{
 						class data
@@ -52541,7 +52567,7 @@ class Mission
 				class Attribute2
 				{
 					property="SPE_DoReliableEmbarking";
-					expression="missionNamespace setVariable ['SPE_DoReliableEmbarking', _value]";
+					expression="missionNamespace setVariable ['SPE_DoReliableEmbarking', _value, true]";
 					class Value
 					{
 						class data
@@ -52554,7 +52580,7 @@ class Mission
 				class Attribute3
 				{
 					property="SPE_DoManTurrets";
-					expression="missionNamespace setVariable ['SPE_DoManTurrets', _value]";
+					expression="missionNamespace setVariable ['SPE_DoManTurrets', _value, true]";
 					class Value
 					{
 						class data
@@ -52580,7 +52606,7 @@ class Mission
 				class Attribute5
 				{
 					property="SPE_DoTweakDisembarkInCombat";
-					expression="missionNamespace setVariable ['SPE_DoTweakDisembarkInCombat', _value]";
+					expression="missionNamespace setVariable ['SPE_DoTweakDisembarkInCombat', _value, true]";
 					class Value
 					{
 						class data
@@ -52593,7 +52619,7 @@ class Mission
 				class Attribute6
 				{
 					property="SPE_OurSide";
-					expression="missionNamespace setVariable ['SPE_OurSide', [east, west, independent, civilian] select _value]";
+					expression="missionNamespace setVariable ['SPE_OurSide', [east, west, independent, civilian] select _value, true]";
 					class Value
 					{
 						class data
@@ -52606,7 +52632,7 @@ class Mission
 				class Attribute7
 				{
 					property="SPE_PermanentShockProb";
-					expression="missionNamespace setVariable ['SPE_PermanentShockProb', _value]";
+					expression="missionNamespace setVariable ['SPE_PermanentShockProb', _value, true]";
 					class Value
 					{
 						class data
@@ -52619,7 +52645,7 @@ class Mission
 				class Attribute8
 				{
 					property="SPE_DoHandleBlockingStuff";
-					expression="missionNamespace setVariable ['SPE_DoHandleBlockingStuff', _value]";
+					expression="missionNamespace setVariable ['SPE_DoHandleBlockingStuff', _value, true]";
 					class Value
 					{
 						class data
@@ -52671,7 +52697,7 @@ class Mission
 				class Attribute12
 				{
 					property="SPE_DoDiamondInCombat";
-					expression="missionNamespace setVariable ['SPE_DoDiamondInCombat', _value]";
+					expression="missionNamespace setVariable ['SPE_DoDiamondInCombat', _value, true]";
 					class Value
 					{
 						class data
@@ -52697,7 +52723,7 @@ class Mission
 				class Attribute14
 				{
 					property="SPE_Unstuck_HiddenOnly";
-					expression="missionNamespace setVariable ['SPE_Unstuck_HiddenOnly', _value]";
+					expression="missionNamespace setVariable ['SPE_Unstuck_HiddenOnly', _value, true]";
 					class Value
 					{
 						class data
@@ -52710,7 +52736,7 @@ class Mission
 				class Attribute15
 				{
 					property="SPE_NonCombatantKillsAllowed";
-					expression="missionNamespace setVariable ['SPE_NonCombatantKillsAllowed', _value]";
+					expression="missionNamespace setVariable ['SPE_NonCombatantKillsAllowed', _value, true]";
 					class Value
 					{
 						class data
@@ -52723,7 +52749,7 @@ class Mission
 				class Attribute16
 				{
 					property="SPE_RFS_POWWalkTimer";
-					expression="missionNamespace setVariable ['SPE_RFS_POWWalkTimer', _value]";
+					expression="missionNamespace setVariable ['SPE_RFS_POWWalkTimer', _value, true]";
 					class Value
 					{
 						class data
@@ -52736,7 +52762,7 @@ class Mission
 				class Attribute17
 				{
 					property="SPE_Active_Unstuck";
-					expression="missionNamespace setVariable ['SPE_Active_Unstuck', _value]";
+					expression="missionNamespace setVariable ['SPE_Active_Unstuck', _value, true]";
 					class Value
 					{
 						class data
@@ -52749,7 +52775,7 @@ class Mission
 				class Attribute18
 				{
 					property="SPE_DoLeaveFootmobilesBehind";
-					expression="missionNamespace setVariable ['SPE_DoLeaveFootmobilesBehind', _value]";
+					expression="missionNamespace setVariable ['SPE_DoLeaveFootmobilesBehind', _value, true]";
 					class Value
 					{
 						class data
@@ -52762,7 +52788,7 @@ class Mission
 				class Attribute19
 				{
 					property="SPE_DoCatchUp";
-					expression="missionNamespace setVariable ['SPE_DoCatchUp', _value]";
+					expression="missionNamespace setVariable ['SPE_DoCatchUp', _value, true]";
 					class Value
 					{
 						class data
@@ -52775,7 +52801,7 @@ class Mission
 				class Attribute20
 				{
 					property="SPE_Active_Flee";
-					expression="missionNamespace setVariable ['SPE_Active_Flee', _value]";
+					expression="missionNamespace setVariable ['SPE_Active_Flee', _value, true]";
 					class Value
 					{
 						class data
@@ -52788,7 +52814,7 @@ class Mission
 				class Attribute21
 				{
 					property="SPE_Active_TweakAI_Rearm";
-					expression="missionNamespace setVariable ['SPE_Active_TweakAI_Rearm', _value]";
+					expression="missionNamespace setVariable ['SPE_Active_TweakAI_Rearm', _value, true]";
 					class Value
 					{
 						class data
@@ -52849,7 +52875,7 @@ class Mission
 				class Attribute23
 				{
 					property="SPE_Active_InfoSharing";
-					expression="missionNamespace setVariable ['SPE_Active_InfoSharing', _value]";
+					expression="missionNamespace setVariable ['SPE_Active_InfoSharing', _value, true]";
 					class Value
 					{
 						class data
@@ -52862,7 +52888,7 @@ class Mission
 				class Attribute24
 				{
 					property="SPE_DoHideBlockingFoliage";
-					expression="missionNamespace setVariable ['SPE_DoHideBlockingFoliage', _value]";
+					expression="missionNamespace setVariable ['SPE_DoHideBlockingFoliage', _value, true]";
 					class Value
 					{
 						class data
@@ -52875,7 +52901,7 @@ class Mission
 				class Attribute25
 				{
 					property="SPE_AddSpawnedGroups";
-					expression="missionNamespace setVariable ['SPE_AddSpawnedGroups', _value]";
+					expression="missionNamespace setVariable ['SPE_AddSpawnedGroups', _value, true]";
 					class Value
 					{
 						class data
@@ -52888,7 +52914,7 @@ class Mission
 				class Attribute26
 				{
 					property="SPE_Active_Surrender";
-					expression="missionNamespace setVariable ['SPE_Active_Surrender', _value]";
+					expression="missionNamespace setVariable ['SPE_Active_Surrender', _value, true]";
 					class Value
 					{
 						class data
@@ -52901,7 +52927,7 @@ class Mission
 				class Attribute27
 				{
 					property="SPE_CrowdPsyche";
-					expression="missionNamespace setVariable ['SPE_CrowdPsyche', _value]";
+					expression="missionNamespace setVariable ['SPE_CrowdPsyche', _value, true]";
 					class Value
 					{
 						class data
@@ -52949,13 +52975,13 @@ class Mission
 				angles[]={0.0021293017,0,6.2453113};
 			};
 			id=6778;
-			type="SPE_Module_Indirect_Fire_Support";
+			type="SPE_Module_Indirect_Fire_Support_HOTFIX";
 			class CustomAttributes
 			{
 				class Attribute0
 				{
 					property="SPE_IFS_CASAvailability_Side";
-					expression="if (isNil '') then {SPE_IFS_CASAvailability_Side = []}; 		if (_value param [0, -1] > -1) then {SPE_IFS_CASAvailability_Side append [west]}; 		if (_value param [1, -1] > -1) then {SPE_IFS_CASAvailability_Side append [east]}; 		if (_value param [2, -1] > -1) then {SPE_IFS_CASAvailability_Side append [independent]};";
+					expression="SPE_IFS_CASAvailability_Side = []; 		if (_value param [0, -1] > -1) then {SPE_IFS_DSAvailability_Side append [west]}; 		if (_value param [1, -1] > -1) then {SPE_IFS_DSAvailability_Side append [east]}; 		if (_value param [2, -1] > -1) then {SPE_IFS_DSAvailability_Side append [independent]}; 		publicVariable 'SPE_IFS_CASAvailability_Side';";
 					class Value
 					{
 						class data
@@ -53003,7 +53029,7 @@ class Mission
 				class Attribute1
 				{
 					property="SPE_IFS_CounterBatteryFireIsPriority";
-					expression="missionNamespace setVariable ['SPE_IFS_CounterBatteryFireIsPriority', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_CounterBatteryFireIsPriority', _value, true]";
 					class Value
 					{
 						class data
@@ -53016,7 +53042,7 @@ class Mission
 				class Attribute2
 				{
 					property="SPE_IFS_AllowAdvancedHints";
-					expression="missionNamespace setVariable ['SPE_IFS_AllowAdvancedHints', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_AllowAdvancedHints', _value, true]";
 					class Value
 					{
 						class data
@@ -53029,7 +53055,7 @@ class Mission
 				class Attribute3
 				{
 					property="SPE_IFS_RequestedMortarAmount";
-					expression="missionNamespace setVariable ['SPE_IFS_RequestedMortarAmount', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_RequestedMortarAmount', _value, true]";
 					class Value
 					{
 						class data
@@ -53042,7 +53068,7 @@ class Mission
 				class Attribute4
 				{
 					property="SPE_IFS_DSAvailability_Side";
-					expression="if (isNil '') then {SPE_IFS_DSAvailability_Side = []}; 		if (_value param [0, -1] > -1) then {SPE_IFS_DSAvailability_Side append [west]}; 		if (_value param [1, -1] > -1) then {SPE_IFS_DSAvailability_Side append [east]}; 		if (_value param [2, -1] > -1) then {SPE_IFS_DSAvailability_Side append [independent]};";
+					expression="SPE_IFS_DSAvailability_Side = []; 		if (_value param [0, -1] > -1) then {SPE_IFS_DSAvailability_Side append [west]}; 		if (_value param [1, -1] > -1) then {SPE_IFS_DSAvailability_Side append [east]}; 		if (_value param [2, -1] > -1) then {SPE_IFS_DSAvailability_Side append [independent]}; 		publicVariable 'SPE_IFS_DSAvailability_Side';";
 					class Value
 					{
 						class data
@@ -53090,7 +53116,7 @@ class Mission
 				class Attribute5
 				{
 					property="SPE_IFS_FOClass";
-					expression="missionNamespace setVariable ['SPE_IFS_FOClass', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_FOClass', _value, true]";
 					class Value
 					{
 						class data
@@ -53250,7 +53276,7 @@ class Mission
 				class Attribute6
 				{
 					property="SPE_IFS_RequestedMortarETA";
-					expression="missionNamespace setVariable ['SPE_IFS_RequestedMortarETA', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_RequestedMortarETA', _value, true]";
 					class Value
 					{
 						class data
@@ -53263,7 +53289,7 @@ class Mission
 				class Attribute7
 				{
 					property="SPE_IFS_RequestedHeavyArtyAmount";
-					expression="missionNamespace setVariable ['SPE_IFS_RequestedHeavyArtyAmount', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_RequestedHeavyArtyAmount', _value, true]";
 					class Value
 					{
 						class data
@@ -53276,7 +53302,7 @@ class Mission
 				class Attribute8
 				{
 					property="SPE_IFS_AllowMortarsAgainstTanks";
-					expression="missionNamespace setVariable ['SPE_IFS_AllowMortarsAgainstTanks', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_AllowMortarsAgainstTanks', _value, true]";
 					class Value
 					{
 						class data
@@ -53288,21 +53314,21 @@ class Mission
 				};
 				class Attribute9
 				{
-					property="SPE_IFS_AmountMultiplier_Hard";
-					expression="if (isNil 'SPE_IFS_AmountMultiplier') then {SPE_IFS_AmountMultiplier = [0, 0, 0]}; SPE_IFS_AmountMultiplier set [2, _value]";
+					property="SPE_IFS_RequestedMortarSpread";
+					expression="missionNamespace setVariable ['SPE_IFS_RequestedMortarSpread', _value, true]";
 					class Value
 					{
 						class data
 						{
 							singleType="SCALAR";
-							value=1.5;
+							value=100;
 						};
 					};
 				};
 				class Attribute10
 				{
 					property="SPE_IFS_RequestedHeavyArtyETA";
-					expression="missionNamespace setVariable ['SPE_IFS_RequestedHeavyArtyETA', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_RequestedHeavyArtyETA', _value, true]";
 					class Value
 					{
 						class data
@@ -53314,34 +53340,8 @@ class Mission
 				};
 				class Attribute11
 				{
-					property="SPE_IFS_RequestedMortarSpread";
-					expression="missionNamespace setVariable ['SPE_IFS_RequestedMortarSpread', _value]";
-					class Value
-					{
-						class data
-						{
-							singleType="SCALAR";
-							value=100;
-						};
-					};
-				};
-				class Attribute12
-				{
-					property="SPE_IFS_AmountMultiplier_Infantry";
-					expression="if (isNil 'SPE_IFS_AmountMultiplier') then {SPE_IFS_AmountMultiplier = [0, 0, 0]}; SPE_IFS_AmountMultiplier set [0, _value]";
-					class Value
-					{
-						class data
-						{
-							singleType="SCALAR";
-							value=1;
-						};
-					};
-				};
-				class Attribute13
-				{
 					property="SPE_IFS_DS_CheckFriendlyFire";
-					expression="missionNamespace setVariable ['SPE_IFS_DS_CheckFriendlyFire', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_DS_CheckFriendlyFire', _value, true]";
 					class Value
 					{
 						class data
@@ -53351,10 +53351,10 @@ class Mission
 						};
 					};
 				};
-				class Attribute14
+				class Attribute12
 				{
 					property="SPE_IFS_AcceptedRadioBackpacks";
-					expression="missionNamespace setVariable ['SPE_IFS_AcceptedRadioBackpacks', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_AcceptedRadioBackpacks', _value, true]";
 					class Value
 					{
 						class data
@@ -53407,10 +53407,10 @@ class Mission
 						};
 					};
 				};
-				class Attribute15
+				class Attribute13
 				{
 					property="SPE_IFS_Amount";
-					expression="missionNamespace setVariable ['SPE_IFS_Amount', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_Amount', _value, true]";
 					class Value
 					{
 						class data
@@ -53420,23 +53420,10 @@ class Mission
 						};
 					};
 				};
-				class Attribute16
-				{
-					property="SPE_IFS_AmountMultiplier_Soft";
-					expression="if (isNil 'SPE_IFS_AmountMultiplier') then {SPE_IFS_AmountMultiplier = [0, 0, 0]}; SPE_IFS_AmountMultiplier set [1, _value]";
-					class Value
-					{
-						class data
-						{
-							singleType="SCALAR";
-							value=1.1999999;
-						};
-					};
-				};
-				class Attribute17
+				class Attribute14
 				{
 					property="SPE_IFS_ArtyActive";
-					expression="missionNamespace setVariable ['SPE_IFS_ArtyActive', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_ArtyActive', _value, true]";
 					class Value
 					{
 						class data
@@ -53446,10 +53433,10 @@ class Mission
 						};
 					};
 				};
-				class Attribute18
+				class Attribute15
 				{
 					property="SPE_IFS_RequestedHeavyArtySpread";
-					expression="missionNamespace setVariable ['SPE_IFS_RequestedHeavyArtySpread', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_RequestedHeavyArtySpread', _value, true]";
 					class Value
 					{
 						class data
@@ -53459,10 +53446,96 @@ class Mission
 						};
 					};
 				};
-				class Attribute19
+				class Attribute16
+				{
+					property="SPE_IFS_AmountMultiplier";
+					expression="missionNamespace setVariable ['SPE_IFS_AmountMultiplier', _value, true]";
+					class Value
+					{
+						class data
+						{
+							singleType="ARRAY";
+							class value
+							{
+								items=2;
+								class Item0
+								{
+									class data
+									{
+										singleType="ARRAY";
+										class value
+										{
+											items=3;
+											class Item0
+											{
+												class data
+												{
+													singleType="SCALAR";
+													value=1;
+												};
+											};
+											class Item1
+											{
+												class data
+												{
+													singleType="SCALAR";
+													value=1;
+												};
+											};
+											class Item2
+											{
+												class data
+												{
+													singleType="SCALAR";
+													value=1;
+												};
+											};
+										};
+									};
+								};
+								class Item1
+								{
+									class data
+									{
+										singleType="ARRAY";
+										class value
+										{
+											items=3;
+											class Item0
+											{
+												class data
+												{
+													singleType="SCALAR";
+													value=0.33000001;
+												};
+											};
+											class Item1
+											{
+												class data
+												{
+													singleType="SCALAR";
+													value=0.5;
+												};
+											};
+											class Item2
+											{
+												class data
+												{
+													singleType="SCALAR";
+													value=1;
+												};
+											};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+				class Attribute17
 				{
 					property="SPE_IFS_AvailableCalls";
-					expression="missionNamespace setVariable ['SPE_IFS_AvailableCalls', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_AvailableCalls', _value, true]";
 					class Value
 					{
 						class data
@@ -53615,10 +53688,10 @@ class Mission
 						};
 					};
 				};
-				class Attribute20
+				class Attribute18
 				{
 					property="SPE_IFS_IncomingMarkRange";
-					expression="missionNamespace setVariable ['SPE_IFS_IncomingMarkRange', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_IncomingMarkRange', _value, true]";
 					class Value
 					{
 						class data
@@ -53628,10 +53701,10 @@ class Mission
 						};
 					};
 				};
-				class Attribute21
+				class Attribute19
 				{
 					property="SPE_IFS_CASActive";
-					expression="missionNamespace setVariable ['SPE_IFS_CASActive', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_CASActive', _value, true]";
 					class Value
 					{
 						class data
@@ -53641,10 +53714,10 @@ class Mission
 						};
 					};
 				};
-				class Attribute22
+				class Attribute20
 				{
 					property="SPE_IFS_Acc";
-					expression="missionNamespace setVariable ['SPE_IFS_Acc', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_Acc', _value, true]";
 					class Value
 					{
 						class data
@@ -53654,10 +53727,10 @@ class Mission
 						};
 					};
 				};
-				class Attribute23
+				class Attribute21
 				{
 					property="SPE_IFS_ArtyAvailability_Side";
-					expression="if (isNil '') then {SPE_IFS_ArtyAvailability_Side = []}; 		if (_value param [0, -1] > -1) then {SPE_IFS_ArtyAvailability_Side append [west]}; 		if (_value param [1, -1] > -1) then {SPE_IFS_ArtyAvailability_Side append [east]}; 		if (_value param [2, -1] > -1) then {SPE_IFS_ArtyAvailability_Side append [independent]};";
+					expression="SPE_IFS_ArtyAvailability_Side = [];		if (_value param [0, -1] > -1) then {SPE_IFS_ArtyAvailability_Side append [west]}; 		if (_value param [1, -1] > -1) then {SPE_IFS_ArtyAvailability_Side append [east]}; 		if (_value param [2, -1] > -1) then {SPE_IFS_ArtyAvailability_Side append [independent]}; 		publicVariable 'SPE_IFS_ArtyAvailability_Side';";
 					class Value
 					{
 						class data
@@ -53702,10 +53775,10 @@ class Mission
 						};
 					};
 				};
-				class Attribute24
+				class Attribute22
 				{
 					property="SPE_IFS_IncomingNotificationRange";
-					expression="missionNamespace setVariable ['SPE_IFS_IncomingNotificationRange', _value]";
+					expression="missionNamespace setVariable ['SPE_IFS_IncomingNotificationRange', _value, true]";
 					class Value
 					{
 						class data
@@ -53715,7 +53788,7 @@ class Mission
 						};
 					};
 				};
-				nAttributes=25;
+				nAttributes=23;
 			};
 		};
 		class Item947
@@ -59301,79 +59374,82 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={10346.81,27.215906,10375.125};
-						angles[]={0.010000871,0.28118891,0.023328418};
+						position[]={10347.042,27.212614,10375.781};
+						angles[]={0.010000736,0.28119001,0.026668631};
 					};
 					side="Empty";
 					flags=4;
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=6939;
 					type="Land_ChairWood_F";
-					atlOffset=0.0022659302;
+					atlOffset=-2.0980835e-005;
 				};
 				class Item24
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={10346.547,27.236135,10373.219};
-						angles[]={0.019999012,3.8484738,0.023330973};
+						position[]={10346.771,27.248108,10372.794};
+						angles[]={0.020001473,5.8454914,0.023335053};
 					};
 					side="Empty";
 					flags=4;
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=6940;
 					type="Land_ChairWood_F";
-					atlOffset=0.0017547607;
+					atlOffset=-1.7166138e-005;
 				};
 				class Item25
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={10347.427,28.093325,10374.166};
-						angles[]={0.010000871,0.74908876,0.023328418};
-					};
-					side="Empty";
-					class Attributes
-					{
-						skill=0.2;
-						createAsSimpleObject=1;
-						dynamicSimulation=1;
-					};
-					id=6941;
-					type="Land_ChairWood_F";
-					atlOffset=0.8542614;
-				};
-				class Item26
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={10345.717,27.191374,10375.028};
-						angles[]={0.010000871,5.5629392,0.023328418};
+						position[]={10348.297,27.24926,10375.467};
+						angles[]={0.010000736,0.37414622,0.026668631};
 					};
 					side="Empty";
 					flags=4;
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
+						dynamicSimulation=1;
+					};
+					id=6941;
+					type="Land_ChairWood_F";
+				};
+				class Item26
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={10344.807,27.167215,10375.094};
+						angles[]={0.010000736,5.6609058,0.023335053};
+					};
+					side="Empty";
+					flags=4;
+					class Attributes
+					{
+						skill=0.2;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=6942;
 					type="Land_ChairWood_F";
-					atlOffset=0.0022621155;
 				};
 				class Item27
 				{
@@ -68696,7 +68772,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7252;
@@ -68715,7 +68792,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7253;
@@ -69026,7 +69104,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7277;
@@ -69046,7 +69125,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7278;
@@ -69252,7 +69332,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7288;
@@ -69272,7 +69353,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7289;
@@ -73463,7 +73545,7 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				init="this addAction [""Arsenal"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
+				init="this addAction [""<t color='#0099FF'>Arsenal</t>"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
 				name="US_AMMOBOX";
 			};
 			id=7392;
@@ -74021,7 +74103,7 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				init="this addAction [""Arsenal"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
+				init="this addAction [""<t color='#0099FF'>Arsenal</t>"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
 				name="US_AMMOBOX_1";
 			};
 			id=7405;
@@ -74814,20 +74896,20 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={10253.035,26.705189,10306.653};
-						angles[]={0.0066682254,4.7348132,0.0033296358};
+						position[]={10253.035,26.705105,10306.653};
+						angles[]={0.0066671576,4.7348166,0.0033335788};
 					};
 					side="Empty";
 					flags=4;
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7440;
 					type="Land_ChairWood_F";
-					atlOffset=8.392334e-005;
 				};
 				class Item1
 				{
@@ -74892,19 +74974,37 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={10254.319,26.757071,10299.759};
-						angles[]={0.0066682254,2.8416579,0.0066682254};
+						position[]={10254.118,26.758375,10299.362};
+						angles[]={0.0066671576,4.0539112,0.0066671576};
 					};
 					side="Empty";
 					flags=4;
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7444;
 					type="SPE_DiningChair";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="allowDamage";
+							expression="_this allowdamage _value;";
+							class Value
+							{
+								class data
+								{
+									singleType="BOOL";
+									value=0;
+								};
+							};
+						};
+						nAttributes=1;
+					};
 				};
 				class Item5
 				{
@@ -75008,84 +75108,85 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={10253.104,26.729559,10303.512};
-						angles[]={0.0066592805,3.8062143,0};
+						position[]={10252.82,26.731197,10303.222};
+						angles[]={0.0066592805,5.1162214,0};
 					};
 					side="Empty";
 					flags=4;
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7450;
 					type="Land_ChairWood_F";
-					atlOffset=0.00029563904;
 				};
 				class Item11
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={10253.583,26.740923,10301.912};
-						angles[]={0.0066592805,5.1973553,0};
+						position[]={10253.265,26.739595,10301.962};
+						angles[]={0.0066671576,4.5427604,0};
 					};
 					side="Empty";
 					flags=4;
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7451;
 					type="Land_ChairWood_F";
-					atlOffset=0.00099563599;
 				};
 				class Item12
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={10253.811,26.722647,10304.552};
-						angles[]={0.0066592805,1.6201892,0};
+						position[]={10254.332,26.723047,10304.444};
+						angles[]={0.0066671576,4.803844,0};
 					};
 					side="Empty";
 					flags=4;
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7452;
 					type="Land_ChairWood_F";
-					atlOffset=0.00031661987;
 				};
 				class Item13
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={10253.796,26.712471,10305.944};
-						angles[]={0.0066682254,0.62685597,0.0033296358};
+						position[]={10254.636,26.709543,10305.844};
+						angles[]={0.0066671576,5.9578733,6.2765183};
 					};
 					side="Empty";
 					flags=4;
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7453;
 					type="Land_ChairWood_F";
-					atlOffset=0.00010681152;
+					atlOffset=6.2942505e-005;
 				};
 			};
 			id=7439;
-			atlOffset=0.003408432;
+			atlOffset=0.0019931793;
 		};
 		class Item1122
 		{
@@ -80102,7 +80203,7 @@ class Mission
 			flags=5;
 			class Attributes
 			{
-				init="this addAction[""Recruit Infantry"", ""bon_recruit_units\open_dialog.sqf""];";
+				init="this addAction[""<t color='#FF8C00'>Recruit Infantry</t>"", ""bon_recruit_units\open_dialog.sqf""];";
 				name="USBASE";
 				dynamicSimulation=1;
 			};
@@ -80122,7 +80223,7 @@ class Mission
 			class Attributes
 			{
 				lock="UNLOCKED";
-				init="[this] call (compile preprocessFileLineNumbers ""fn_mobileRespawn.sqf"");";
+				init="[this] call (compile preprocessFileLineNumbers ""scripts\mobileRespawn.sqf"");";
 				name="USMHQ";
 				textures="camo1_2AD";
 			};
@@ -80312,7 +80413,7 @@ class Mission
 						class data
 						{
 							singleType="STRING";
-							value="USMHQ setVariable [""Respawned"", true,true]; [_this] call (compile preprocessFileLineNumbers ""fn_mobileRespawn.sqf""); ";
+							value="USMHQ setVariable [""Respawned"", true,true]; [_this] call (compile preprocessFileLineNumbers ""scripts\mobileRespawn.sqf""); ";
 						};
 					};
 				};
@@ -81037,7 +81138,7 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				init="this addAction [""Arsenal"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
+				init="this addAction [""<t color='#0099FF'>Arsenal</t>"", {[""Open"",true] spawn SPE_Arsenal_fnc_arsenal; }];";
 				name="US_AMMOBOX_2";
 				dynamicSimulation=1;
 			};
@@ -104330,7 +104431,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=7838;
@@ -108394,7 +108496,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=8147;
@@ -108413,7 +108516,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=8148;
@@ -108433,7 +108537,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=8149;
@@ -108452,7 +108557,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=8150;
@@ -108471,7 +108577,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=8151;
@@ -108759,7 +108866,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=8170;
@@ -114954,7 +115062,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=8538;
@@ -115454,7 +115563,8 @@ class Mission
 					class Attributes
 					{
 						skill=0.2;
-						createAsSimpleObject=1;
+						init="this allowDamage false;this addAction [""<t color='#0099FF'>Sit Down</t>"",""scripts\sitdown.sqf""];";
+						disableSimulation=1;
 						dynamicSimulation=1;
 					};
 					id=8562;
