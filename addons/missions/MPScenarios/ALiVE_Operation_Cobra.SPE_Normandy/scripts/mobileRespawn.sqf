@@ -139,6 +139,7 @@ if (isServer) then {
         Deployed_Flag = _flag;
         publicVariable "Deployed_Flag";
         [Deployed_Flag, ["<t color='#ffff00'>Recruit Infantry</t>", {[Deployed_Flag] execVM "bon_recruit_units\open_dialog.sqf";},[],0,true,true,"",""]] remoteExec ["addAction"]; 	
+        [Deployed_Flag, ["<t color='#00FF37'>Return to Base</t>", {[] execVM "scripts\teleport_base.sqf";},[],0,true,true,"",""]] remoteExec ["addAction"]; 	
           
         // Create a new respawn position for the respawn menu
         _side = resistance;
