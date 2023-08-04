@@ -18,3 +18,4 @@ if(isServer) then{
 	Client Stuff
 ******************************************************************/
 _unit addAction ["<t color='#949494'>Dismiss</t>",BON_RECRUIT_PATH+"dismiss.sqf",[],-10,false,true,""];
+_unit setSkill 1;

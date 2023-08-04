@@ -1,5 +1,6 @@
 class CfgFunctions
 {
+#include "ETHICSMinefields\THY_ETH_functions.hpp"
     class SPEALIVE_Missions
     {
         tag = "spe_alivems";

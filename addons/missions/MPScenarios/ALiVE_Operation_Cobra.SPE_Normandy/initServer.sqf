@@ -9,7 +9,6 @@
 * 
 * */
 // ====================================================================================
-
 if (isDedicated) then  { 
 	disableRemoteSensors true; 
 };
@@ -24,11 +23,6 @@ if (isDedicated) then  {
           sleep 10;
      };
 };
-
-Jersey setGroupId ["Jersey Squad"];
-
-SPE_IFS_CASAvailability_Side = [east, west, independent];
-publicVariable "SPE_IFS_CASAvailability_Side";
 
 SPE_CadetMode = false;
 SPE_HardcoreMode = true;
@@ -46,8 +40,6 @@ if !isMultiplayer then {
 		};
 	}];
 };
-
-["Initialize", [true]] call BIS_fnc_dynamicGroups;
 
 // Returns array of dates for given year when moon is at its fullest
 fnc_fullMoonDates =
@@ -81,22 +73,25 @@ fnc_fullMoonDates =
 	};
 
 	_fullMoonDates;
-};
+}; 	
 
-//set random full moon date in year 1970
+//set random full moon date in year 1944
 setDate selectRandom (1944 call fnc_fullMoonDates); 
 skipTime 8;
-0 setOvercast 0;  
+0 setOvercast 0.1;  
 0 setRain 0;  
-0 setfog 0; 
+0 setfog 0.01; 
 forceWeatherChange;
 
+["Initialize", [true]] call BIS_fnc_dynamicGroups;	
 
+SPE_IFS_CASAvailability_Side = [east, west, independent];
+publicVariable "SPE_IFS_CASAvailability_Side";
 
+// Revive System By Toksa
+if isServer then
+{
+	waitUntil {time > 0};
 
-
-    
-
-
-
-
+	[] call SPE_MissionUtilityFunctions_fnc_ReviveToksaServer;
+};

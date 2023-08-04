@@ -88,3 +88,12 @@ if (_didJIP) then {
     };
    };
 };
+[] execVM "ETHICSMinefields\fn_ETH_playerLocal.sqf";
+
+["InitializePlayer", [player, true]] call BIS_fnc_dynamicGroups;
+
+(group player) addEventHandler ["UnitJoined", {
+    params ["_group", "_newUnit"];
+
+    [_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaInit;
+}];

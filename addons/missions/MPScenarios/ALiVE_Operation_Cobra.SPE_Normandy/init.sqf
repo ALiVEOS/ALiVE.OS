@@ -10,11 +10,12 @@
 * 
 // ====================================================================================
 */
+[
+  call compile preprocessFileLineNumbers "scripts\frontline_data.sqf"
+] call SPE_MISSIONUTILITYFUNCTIONS_fnc_generateFrontline;
 
 //Starting Init
 ["| Operation Cobra - Executing init.sqf..."] call ALiVE_fnc_dump;
-
-
 
 // ====================================================================================	
 // Disable AI simuation in single player & editor preview
@@ -41,6 +42,7 @@ if (side player == RESISTANCE) then {
 };
 	
 [] execVM "bon_recruit_units\init.sqf";
+[] execVM "Scripts\Earplugs.sqf";
 
 if (hasInterface) then {
 
@@ -101,3 +103,4 @@ if (hasInterface) then {
         ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;
     };
 };
+

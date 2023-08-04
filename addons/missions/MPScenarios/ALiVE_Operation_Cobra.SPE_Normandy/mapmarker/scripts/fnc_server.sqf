@@ -7,7 +7,7 @@ MM_var_mapScaleFactor = sqrt ((_centerPos select 0) * (_centerPos select 1)) * 1
 publicVariable "MM_var_mapScaleFactor";
 
 MM_var_ShowAllSides = false;
-MM_var_ShowAllSidesOnSpectator = false;
+MM_var_ShowAllSidesOnSpectator = true;
 MM_var_showUnitNames = true;
 MM_var_showUnitNamesOnlyOnHover = false;
 MM_var_showGroupUnits = true;

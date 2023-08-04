@@ -241,6 +241,7 @@ class HW_RscShortcutButton {
 		font = "PuristaMedium";
 		color = "#E5E5E5";
 		align = "left";
+		shadow = "true";
 	};
 	
 	class AttributesImage {
@@ -294,5 +295,6 @@ class HW_RscGUIShortcutButton : HW_RscShortcutButton {
 		font = "PuristaMedium";
 		color = "#E5E5E5";
 		align = "center";
+		shadow = "true";
 	};
 };

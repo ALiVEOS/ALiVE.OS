@@ -1,3 +1,5 @@
+#include "bon_recruit_units\dialog\common.hpp"
+#include "bon_recruit_units\dialog\recruitment.hpp"
 dev = $STR_SPE_MISSIONS_AUTHOR_ALIVE_OPCOBRA;
 author = $STR_SPE_MISSIONS_AUTH_MISSION_ALIVE_OPCOBRA;
 overviewPicture = "x\alive\addons\missions\MPScenarios\ALiVE_Operation_Cobra.SPE_Normandy\pics\splash.paa";
@@ -37,14 +39,13 @@ debriefing = 1;
 class Header {
     gametype = ALIVE;
     minPlayers = 1;
-    maxPlayers = 32;
+    maxPlayers = 16;
     playerCountMultipleOf = 1;
 };
 
 
 #include "CfgFunctions.inc"
-#include "bon_recruit_units\dialog\common.hpp"
-#include "bon_recruit_units\dialog\recruitment.hpp"
+
 
 class Params
 {
@@ -74,7 +75,3 @@ class Extended_Init_EventHandlers {
   init = "_this call (compile preprocessFileLineNumbers 'Scripts\VRandomize.sqf')";
  };
 };
-
-
-
-
