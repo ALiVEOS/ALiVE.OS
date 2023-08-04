@@ -59,3 +59,30 @@ SPE_fnc_IFS_hasRadio =
 	player setVariable ['SPE_IFS_showCall_EM',false];  // does not work!
 	[player,SPE_IFS_EM_ID] call BIS_fnc_holdActionRemove; // works!
 };
+
+
+// JIP stuff!
+if (_didJIP) then {
+	 diag_log format["%1: initPlayerLocal.sqf -> JIP: %2, Running jip stuff", missionName, _didJIP]; 
+   if !(isNil "Deployed_Flag") then {
+     if !(isNull Deployed_Flag) then {
+     	 Deployed_Flag addAction ["<t color='#FF8C00'>Recruit Infantry</t>", "bon_recruit_units\open_dialog.sqf"];	
+       diag_log format["%1: initPlayerLocal.sqf -> JIP -> Recruit Infantry -> Deployed_Flag: %2", missionName, Deployed_Flag]; 
+     };
+   };
+
+   if !(isNil "Deployed_Supply") then {
+     if !(isNull Deployed_Supply) then {
+     	Deployed_Supply addAction ["<t color='#0099FF'>Arsenal</t>", {["Open",true] spawn SPE_Arsenal_fnc_arsenal; }];
+     	diag_log format["%1: initPlayerLocal.sqf -> JIP -> Arsenal -> Deployed_Supply: %2", missionName, Deployed_Supply]; 
+     	};
+   };
+
+   if !(isNil "MHQ_marker_array") then {
+    if (count MHQ_marker_array > 0) then {
+    	(MHQ_marker_array select 0) setMarkerShadow true; 
+    	(MHQ_marker_array select 0) setMarkerShadowLocal true;
+    	diag_log format["%1: initPlayerLocal.sqf -> JIP -> MHQ Marker Shadow -> MHQ_marker: %2", missionName, (MHQ_marker_array select 0)]; 
+    };
+   };
+};
