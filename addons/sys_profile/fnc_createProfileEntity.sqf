@@ -71,6 +71,8 @@ _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
 [_profileEntity, "faction", _faction] call ALIVE_fnc_profileEntity;
 [_profileEntity, "isPlayer", false] call ALIVE_fnc_profileEntity;
 [_profileEntity, "busy", _busy] call ALIVE_fnc_profileEntity;
+[_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
+[_profileEntity, "_aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
 
 [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 

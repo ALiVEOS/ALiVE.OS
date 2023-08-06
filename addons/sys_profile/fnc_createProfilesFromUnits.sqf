@@ -161,6 +161,8 @@ if(_debug) then {
             [_profileEntity, "side", str(side group _leader)] call ALIVE_fnc_profileEntity;
             [_profileEntity, "faction", faction _leader] call ALIVE_fnc_profileEntity;
             [_profileEntity, "isPlayer", false] call ALIVE_fnc_profileEntity;
+            [_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
+            [_profileEntity, "_aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
 
             _initCommand = _leader getVariable ["addCommand",[]];
             if(count _initCommand > 0) then {

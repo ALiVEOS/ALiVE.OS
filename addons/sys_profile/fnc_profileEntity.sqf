@@ -504,8 +504,9 @@ switch(_operation) do {
     };
 
     case "insertWaypoint": {
-        private _waypoint = _args;
-      _isSPE = _logic select 2 select 35;  
+      private _waypoint = _args;
+      private _isSPE = _logic select 2 select 35;  
+      
       if !(_isSPE) then {
         private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
         if (!_pathfindingEnabled) then {
@@ -519,7 +520,8 @@ switch(_operation) do {
 
     case "addWaypoint": {
       private _waypoint = _args;
-      _isSPE = _logic select 2 select 35;
+      private _isSPE = _logic select 2 select 35;
+      
       if !(_isSPE) then {
         //private _compRad = [_waypoint,"completionRadius"] call ALiVE_fnc_hashGet;
         //systemchat format ["adding waypoint with radius: %1 ||| From - %2", _compRad,_fnc_scriptnameparent];
@@ -535,11 +537,12 @@ switch(_operation) do {
     };
 
     case "addPendingWaypoint": {
-        _args params ["_insertionMethod","_waypoint", ["_ready", false]];
+      _args params ["_insertionMethod","_waypoint", ["_ready", false]];
 
-        private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
-
-        private _pendingPath = [_ready,_insertionMethod,[],_waypoint];
+      private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
+      private _pendingPath = [_ready,_insertionMethod,[],_waypoint];
+      private _isSPE = _logic select 2 select 35;  
+      
       if !(_isSPE) then {
         _pendingWaypoints pushback _pendingPath;
 
@@ -646,7 +649,8 @@ switch(_operation) do {
     };
 
     case "insertWaypointInternal": {
-    	_isSPE = _logic select 2 select 35;
+    	private _isSPE = _logic select 2 select 35;
+    	
       if !(_isSPE) then {
         private _waypoint = _args;
 
@@ -662,7 +666,8 @@ switch(_operation) do {
     };
 
     case "addWaypointInternal": {
-    	_isSPE = _logic select 2 select 35;
+    	private _isSPE = _logic select 2 select 35;
+    	
       if !(_isSPE) then {
         private _waypoint = _args;
 

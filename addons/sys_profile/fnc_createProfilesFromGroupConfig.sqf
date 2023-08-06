@@ -143,15 +143,13 @@ if(count _config > 0) then {
     [_profileEntity, "faction", _groupFaction] call ALIVE_fnc_profileEntity;
     [_profileEntity, "objectType", _groupClass] call ALIVE_fnc_profileEntity;
     [_profileEntity, "busy", _busy] call ALIVE_fnc_profileEntity;
-
+    [_profileEntity, "isSPE", _isSPE] call ALIVE_fnc_profileEntity;
+    [_profileEntity, "_aiBehaviour", _aiBehaviour] call ALIVE_fnc_profileEntity;
+    
     if!(_spawnGoodPosition) then {
         [_profileEntity, "despawnPosition", _position] call ALIVE_fnc_profileEntity;
     };
-    
-    
-    [_profileEntity, "isSPE", _isSPE] call ALIVE_fnc_profileEntity;
-    [_profileEntity, "_aiBehaviour", _aiBehaviour] call ALIVE_fnc_profileEntity;
-	
+
     _groupProfiles pushback _profileEntity;
     [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 

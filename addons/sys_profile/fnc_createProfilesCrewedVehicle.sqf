@@ -69,6 +69,8 @@ _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
 [_profileEntity, "side", _side] call ALIVE_fnc_profileEntity;
 [_profileEntity, "faction", _faction] call ALIVE_fnc_profileEntity;
 [_profileEntity, "busy", _busy] call ALIVE_fnc_profileEntity;
+[_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
+[_profileEntity, "_aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
 
 if!(_spawnGoodPosition) then {
     [_profileEntity, "despawnPosition", _position] call ALIVE_fnc_profileEntity;

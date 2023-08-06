@@ -1086,7 +1086,10 @@ switch(_operation) do {
                                 [_profileEntity, "busy", true] call ALIVE_fnc_profileEntity;
                                 [_profileEntity, "ignore_HC", true] call ALIVE_fnc_profileEntity;
                                 [_profileEntity, "despawnPosition", _crewPos] call ALIVE_fnc_profileEntity;
-
+                                [_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
+                                [_profileEntity, "_aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
+                                
+                                
                                 [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 
                                 // Create the vehicle's crew
