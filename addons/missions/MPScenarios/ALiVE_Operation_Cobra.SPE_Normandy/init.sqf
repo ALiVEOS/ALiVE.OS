@@ -10,6 +10,8 @@
 * 
 // ====================================================================================
 */
+
+// Initialize SPE Function to draw frontline on map
 [
   call compile preprocessFileLineNumbers "scripts\frontline_data.sqf"
 ] call SPE_MISSIONUTILITYFUNCTIONS_fnc_generateFrontline;
@@ -24,7 +26,7 @@ if (!isMultiplayer) then {
 	{if (_x != player) then {_x enableSimulation false}} forEach switchableUnits;
 };
 // ====================================================================================	
-
+//Set default view distance for players
 
 if (viewDistance > 650) then {
 	setViewDistance 650;
@@ -36,13 +38,15 @@ if ((getObjectViewDistance # 0) > 650) then {
 setTerrainGrid 3.125;
 
 waitUntil { !(isNull player) };
-
+//Restrict Arsenal to US equipement only
 if (side player == RESISTANCE) then {
 	BIS_fnc_arsenal_factions = [faction player,"SPE_US_ARMY"]; 
 };
-	
+
+//Initialize various scripts
 [] execVM "bon_recruit_units\init.sqf";
 [] execVM "Scripts\Earplugs.sqf";
+[] execVM "Scripts\SquadResetInit.sqf";
 
 if (hasInterface) then {
 

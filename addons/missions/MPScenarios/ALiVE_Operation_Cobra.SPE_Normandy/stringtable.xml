@@ -27,7 +27,7 @@
 <Package name="General">
 <Key ID="STR_SPE_MISSIONS_AUTH_MISSION_ALIVE_OPCOBRA">
 <Chinese></Chinese>
-<English>ALiVE Mod Team || Mission by Jman & Atlas</English>
+<English>ALiVE Mod Team || Mission by Jman and Atlas</English>
 <French></French>
 <German></German>
 <Italian></Italian>
@@ -136,6 +136,36 @@
 <Key ID="STR_SPE_COALIVE_PARAMS_AIMCOEF_OPCOBRA">
 <Chinese></Chinese>
 <English>Disable Weapon Sway</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_SPE_DIFF_DISABLED">
+<Chinese></Chinese>
+<English>Cadet Mode</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_SPE_DIFF_ENABLED">
+<Chinese></Chinese>
+<English>Hardcore Mode</English>
+<French></French>
+<German></German>
+<Italian></Italian>
+<Portuguese></Portuguese>
+<Russian></Russian>
+<Spanish></Spanish>
+</Key>
+<Key ID="STR_SPE_COALIVE_PARAMS_DIFFLVL_OPCOBRA">
+<Chinese></Chinese>
+<English>Spearhead Difficulty Mode</English>
 <French></French>
 <German></German>
 <Italian></Italian>

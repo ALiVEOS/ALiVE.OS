@@ -1,7 +1,7 @@
 private ["_HMHQ","_mkr_MHQ","_thisaction","_oldMHQ"];
 
 
- ["fn_mobileRespawn -> this: %1", _this] call ALIVE_fnc_dump;
+ ["mobileRespawn.sqf -> this: %1", _this] call ALIVE_fnc_dump;
  
  
 //--- MHQ Defines
@@ -40,12 +40,12 @@ _HMHQ = (HMHQ_Teleport_Veh select 0);
 
 if (USMHQ getVariable ["Respawned", false]) then {
 	
-	 ["fn_mobileRespawn -> Respawned: %1", USMHQ getVariable ["Respawned", false]] call ALIVE_fnc_dump;
+	 ["mobileRespawn.sqf -> Respawned: %1", USMHQ getVariable ["Respawned", false]] call ALIVE_fnc_dump;
 	 [nil,"respawnedText", nil, false] spawn BIS_fnc_MP;
 	 
 	   if (HMHQ_Deployed_Var == 1) then {
 	   	
-	   		["fn_mobileRespawn -> Removing old MHQ"] call ALIVE_fnc_dump;
+	   		["mobileRespawn.sqf -> Removing old MHQ"] call ALIVE_fnc_dump;
 	         // Remove MHQ USBASE Objects
         deleteVehicle (USMHQ getVariable "CAMO");
         deleteVehicle (USMHQ getVariable "SUPPLY");
@@ -66,7 +66,7 @@ if (USMHQ getVariable ["Respawned", false]) then {
         _newspawnpos = USMHQ getVariable "alive_respawnpos";
         _newspawnpos call BIS_fnc_removeRespawnPosition;
         
-        ["fn_mobileRespawn -> Old MHQ Removed"] call ALIVE_fnc_dump;
+        ["mobileRespawn.sqf -> Old MHQ Removed"] call ALIVE_fnc_dump;
         
          USMHQ setVariable ["Respawed",false,true];  
      };
@@ -74,7 +74,7 @@ if (USMHQ getVariable ["Respawned", false]) then {
      
     USMHQ setVariable ['QS_ST_drawEmptyVehicle',true,true];
 
-    ["fn_mobileRespawn -> Respawned, Adding actions back, HMHQ_Deployed: %1", USMHQ getVariable ["HMHQ_Deployed", false]] call ALIVE_fnc_dump;
+    ["mobileRespawn.sqf -> Respawned, Adding actions back, HMHQ_Deployed: %1", USMHQ getVariable ["HMHQ_Deployed", false]] call ALIVE_fnc_dump;
 
     [USMHQ, ["<t color='#ffff00'>Deploy HQ</t>", {[_this,"HZE_fnc_deployHQ", false] call BIS_fnc_MP;},[],0,true,true,"","(!(_target getVariable ['HMHQ_Deployed', true])) && ((_this distance _target) < 4)"]] remoteExec ["addAction"]; 	
     [USMHQ, ["<t color='#ffff00'>Pack HQ</t>", {[_this,"HZE_fnc_packHQ", false] call BIS_fnc_MP;},[],0,true,true,"","(_target getVariable ['HMHQ_Deployed', false]) && ((_this distance _target) < 4)"]] remoteExec ["addAction"]; 	
@@ -82,10 +82,6 @@ if (USMHQ getVariable ["Respawned", false]) then {
 
 };
 
-
-
-
-USMHQ setVariable ['QS_ST_drawEmptyVehicle',true,true];
 
 
 if (isServer) then {
@@ -153,9 +149,6 @@ if (isServer) then {
         HMHQ_Deployed_Var = 1;
         publicVariable "HMHQ_Deployed_Var";
         [nil,"deployedText", true, false] spawn BIS_fnc_MP;
-
-
- 		//		[[(USMHQ getVariable "SUPPLY")],"FNC_addASORGStocrate",true,true] spawn BIS_fnc_MP;
     };
 
     HZE_fnc_packHQ = {
@@ -194,7 +187,7 @@ if (isServer) then {
 
 if (!isDedicated) then {
 
- ["fn_mobileRespawn -> !isDedicated, Adding actions, HMHQ_Deployed: %1", USMHQ getVariable ["HMHQ_Deployed", false]] call ALIVE_fnc_dump;
+ ["mobileRespawn.sqf -> !isDedicated, Adding actions, HMHQ_Deployed: %1", USMHQ getVariable ["HMHQ_Deployed", false]] call ALIVE_fnc_dump;
 
     USMHQ addAction ["<t color='#ffff00'>Deploy HQ</t>",{
             [_this,"HZE_fnc_deployHQ", false] call BIS_fnc_MP;
@@ -208,7 +201,7 @@ if (!isDedicated) then {
 
 		[] spawn {
 			
-	   ["fn_mobileRespawn -> USBASE Teleport: %1", USBASE getVariable ["Pole", false]] call ALIVE_fnc_dump;
+	   ["mobileRespawn.sqf -> USBASE Teleport: %1", USBASE getVariable ["Pole", false]] call ALIVE_fnc_dump;
 	   
 			if !(USBASE getVariable ["Pole", false]) then {
 			  private ["_veh_name", "_spawn"];

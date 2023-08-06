@@ -30,7 +30,10 @@ class CfgFunctions
 						{
 							recompile = 0;
 						};
-						
+						class params_difflvl
+						{
+							recompile = 0;
+						};
 						
 				};
     };

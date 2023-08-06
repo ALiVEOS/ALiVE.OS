@@ -6,14 +6,14 @@
         Fetches and handles VN stamina parameter.
 
     Parameter(s):
-        _paramValue - Value of the parameter [NUMBER, defaults to 0]
+        _paramValue - Value of the parameter [NUMBER, defaults to 1]
 
     Returns:
         Function reached the end [BOOL]
 */
 
 params [
-    ["_paramValue", 1, [0]]
+    ["_paramValue", 1, [1]]
 ];
 
 if (hasInterface && {_paramValue == 1}) then {

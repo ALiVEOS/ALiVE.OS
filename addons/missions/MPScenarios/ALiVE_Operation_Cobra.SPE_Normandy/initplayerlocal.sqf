@@ -88,12 +88,23 @@ if (_didJIP) then {
     };
    };
 };
+
+//Initialize Random Minefield Script
 [] execVM "ETHICSMinefields\fn_ETH_playerLocal.sqf";
 
+//Initialize BIS group menu
 ["InitializePlayer", [player, true]] call BIS_fnc_dynamicGroups;
 
+// Initialize SPE Revive for units recruited in a player group
 (group player) addEventHandler ["UnitJoined", {
     params ["_group", "_newUnit"];
 
     [_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaInit;
+    [_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaActionsInit;
 }];
+
+// Add Earplus addaction on mission start
+PX_earPlugAction = player addAction [("<t color='#00FF00'>Insert Ear Plugs</t>"), {call PX_fnc_earPlugsInsert}, [], 1, false, true];
+
+//Initialize Soldier Tracker Script
+[] execVM "scripts\QS_icons.sqf";

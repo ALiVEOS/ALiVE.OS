@@ -39,7 +39,7 @@ debriefing = 1;
 class Header {
     gametype = ALIVE;
     minPlayers = 1;
-    maxPlayers = 16;
+    maxPlayers = 20;
     playerCountMultipleOf = 1;
 };
 
@@ -69,9 +69,20 @@ class Params
 	    default = 1;
 	    function = "spe_alivems_fnc_params_aimCoef";
 	};
+	
+	class Difficultylevel {
+	    title = $STR_SPE_COALIVE_PARAMS_DIFFLVL_OPCOBRA;
+	    isGlobal = 1;
+	    values[] = {0, 1};
+	    texts[] = {$STR_SPE_DIFF_DISABLED, $STR_SPE_DIFF_ENABLED};
+	    default = 1;
+	    function = "spe_alivems_fnc_params_difflvl";
+	};
+	
 };
+
 class Extended_Init_EventHandlers {
  class LandVehicle {
-  init = "_this call (compile preprocessFileLineNumbers 'Scripts\VRandomize.sqf')";
+  init = "_this call (compile preprocessFileLineNumbers 'Scripts\vehicleInit.sqf')";
  };
 };
