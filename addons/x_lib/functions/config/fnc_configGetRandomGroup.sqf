@@ -167,12 +167,8 @@ if!(_customGroup) then {
 		_groupName = "FALSE";  
 		};  
         
-   ["ALIVE_fnc_configGetRandomGroup -> count _groups: %1, _groupName: %2, typeName _mappedType: %3, _mappedType: %4", count _groups, _groupName, typeName _mappedType, _mappedType] call ALIVE_fnc_dump;
-
+    ["ALIVE_fnc_configGetRandomGroup -  _groupName: %1", _groupName] call ALIVE_fnc_dump;
 
 };
 
-
 _groupName
-
-
