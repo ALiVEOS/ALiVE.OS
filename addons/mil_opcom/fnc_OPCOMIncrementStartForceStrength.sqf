@@ -32,7 +32,7 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_sideTarget","_typeNum","_currentVal","_newVal","_result;"];
+private ["_sideTarget","_typeNum","_currentVal","_newVal","_result","_instance"];
 
 params ["_side","_type","_incrementAmount"];
 
@@ -78,12 +78,14 @@ switch _type do {
 	if (_sideTarget == _side) then { 
 		_instance =  [_x,"startForceStrength"] call ALiVE_fnc_HashGet;
 		_currentVal = _instance select _typeNum;
-		_instance = _instance set [_typeNum, (_instance select _typeNum) +_incrementAmount];
-		_result = _instance;
-		_newVal = _result select _typeNum;
+		_instance set [_typeNum, (_instance select _typeNum) + _incrementAmount];
+    _result = [_x,"startForceStrength"] call ALiVE_fnc_HashGet;  
+    _newVal = _result select _typeNum;  
+		["OPCOM %1 incremented %2 StartForceStrength from: %3 to: %4, increment amount: %5, startForceStrength: %6", _side, _type, _currentVal, _newVal, _incrementAmount, _result] call ALIVE_fnc_dump;
+		break;
 	}; 
 } forEach OPCOM_INSTANCES;
 
-["OPCOM %1 incremented %2 StartForceStrength from: %3 to: %4, increment amount: %5", _side, _type, _currentVal, _newVal, _incrementAmount] call ALIVE_fnc_dump;
-  
 _result
+
+
