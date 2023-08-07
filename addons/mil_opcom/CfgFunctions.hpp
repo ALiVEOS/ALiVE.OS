@@ -65,6 +65,11 @@ class cfgFunctions {
                                 description = "Increment StartForceStrength of targeted side of OPCOM_INSTANCES";
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMIncrementStartForceStrength.sqf";
                                 RECOMPILE;
+                        };
+                        class OPCOMdecrementStartForceStrength {
+                                description = "decrement StartForceStrength of targeted side of OPCOM_INSTANCES";
+                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMdecrementStartForceStrength.sqf";
+                                RECOMPILE;
                         };     
                                               
                 };
