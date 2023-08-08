@@ -306,7 +306,7 @@ if!(isNil "_registeredProfile") then {
                         [_profileEntity, "units", _units] call ALIVE_fnc_hashSet;
                         [_profileEntity, "active", true] call ALIVE_fnc_hashSet;
                         [_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
-                        [_profileEntity, "_aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
+                        [_profileEntity, "aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
 
                         [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 
@@ -474,7 +474,7 @@ if!(isNil "_registeredProfile") then {
                 [_profileEntity, "units", _units] call ALIVE_fnc_hashSet;
                 [_profileEntity, "active", true] call ALIVE_fnc_hashSet;
                 [_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
-                [_profileEntity, "_aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
+                [_profileEntity, "aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
 
                 [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 
@@ -655,7 +655,7 @@ if!(isNil "_registeredProfile") then {
                 [_profileEntity, "units", _units] call ALIVE_fnc_hashSet;
                 [_profileEntity, "active", true] call ALIVE_fnc_hashSet;
                 [_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
-                [_profileEntity, "_aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
+                [_profileEntity, "aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
 
                 [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 

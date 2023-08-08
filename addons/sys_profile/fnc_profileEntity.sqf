@@ -201,7 +201,7 @@ switch(_operation) do {
             [_logic,"busy",false] call ALIVE_fnc_hashSet;               // select 2 select 33
             [_logic,"pendingWaypointPaths", []] call ALiVE_fnc_hashSet; // select 2 select 34
             [_logic,"isSPE",false] call ALIVE_fnc_hashSet;              // select 2 select 35
-            [_logic,"_aiBehaviour",false] call ALIVE_fnc_hashSet;       // select 2 select 36 
+            [_logic,"aiBehaviour","SAFE"] call ALIVE_fnc_hashSet;       // select 2 select 36 
         };
 
         /*
@@ -400,11 +400,11 @@ switch(_operation) do {
         };
     };
     
-    case "_aiBehaviour": {
+    case "aiBehaviour": {
         if (_args isEqualType "") then {
-            [_logic,"_aiBehaviour", _args] call ALIVE_fnc_hashSet;
+            [_logic,"aiBehaviour", _args] call ALIVE_fnc_hashSet;
         } else {
-            _result = [_logic,"_aiBehaviour"] call ALIVE_fnc_hashGet;
+            _result = [_logic,"aiBehaviour"] call ALIVE_fnc_hashGet;
         };
     };
     
@@ -506,7 +506,8 @@ switch(_operation) do {
     case "insertWaypoint": {
       private _waypoint = _args;
       private _isSPE = _logic select 2 select 35;  
-      
+      if (isNil "_isSPE") then { _isSPE = false; };
+      if (typeName _isSPE != "BOOL") then { _isSPE = false; };
       if !(_isSPE) then {
         private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
         if (!_pathfindingEnabled) then {
@@ -521,7 +522,8 @@ switch(_operation) do {
     case "addWaypoint": {
       private _waypoint = _args;
       private _isSPE = _logic select 2 select 35;
-      
+      if (isNil "_isSPE") then { _isSPE = false; };
+      if (typeName _isSPE != "BOOL") then { _isSPE = false; };
       if !(_isSPE) then {
         //private _compRad = [_waypoint,"completionRadius"] call ALiVE_fnc_hashGet;
         //systemchat format ["adding waypoint with radius: %1 ||| From - %2", _compRad,_fnc_scriptnameparent];
@@ -542,7 +544,8 @@ switch(_operation) do {
       private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
       private _pendingPath = [_ready,_insertionMethod,[],_waypoint];
       private _isSPE = _logic select 2 select 35;  
-      
+      if (isNil "_isSPE") then { _isSPE = false; };
+      if (typeName _isSPE != "BOOL") then { _isSPE = false; };
       if !(_isSPE) then {
         _pendingWaypoints pushback _pendingPath;
 
@@ -650,7 +653,8 @@ switch(_operation) do {
 
     case "insertWaypointInternal": {
     	private _isSPE = _logic select 2 select 35;
-    	
+    	if (isNil "_isSPE") then { _isSPE = false; };
+    	if (typeName _isSPE != "BOOL") then { _isSPE = false; };
       if !(_isSPE) then {
         private _waypoint = _args;
 
@@ -667,7 +671,8 @@ switch(_operation) do {
 
     case "addWaypointInternal": {
     	private _isSPE = _logic select 2 select 35;
-    	
+    	if (isNil "_isSPE") then { _isSPE = false; };
+      if (typeName _isSPE != "BOOL") then { _isSPE = false; };
       if !(_isSPE) then {
         private _waypoint = _args;
 
@@ -1113,7 +1118,8 @@ switch(_operation) do {
             } forEach _unitClasses;
             //[] call ALIVE_fnc_timer;
             
-            
+            if (isNil "_isSPE") then { _isSPE = false; };
+            if (typeName _isSPE != "BOOL") then { _isSPE = false; };
 						if (_isSPE) then {
               [_logic,"clearWaypoints"] call MAINCLASS;
               [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
@@ -1155,6 +1161,8 @@ switch(_operation) do {
             
             
 							// create waypoints from profile waypoints
+					 if (isNil "_isSPE") then { _isSPE = false; };
+					 if (typeName _isSPE != "BOOL") then { _isSPE = false; };
 					 if !(_isSPE) then {
 	             _waypoints append _waypointsCompleted;
 	            [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
@@ -1185,7 +1193,7 @@ switch(_operation) do {
             private _attackID = [_logic,"attackID"] call ALiVE_fnc_hashGet;
             if (!isnil "_attackID") then {
                 private _attack = [MOD(profileCombatHandler),"getAttack", _attackID] call ALiVE_fnc_profileCombatHandler;
-                
+              if (!isnil "_attack") then {
                 // if targets are active
                 // reveal them to use so we can keep the party going
                 private _targets = _attack select 2 select 8;
@@ -1205,6 +1213,7 @@ switch(_operation) do {
                 } foreach _targets;
 
                 [MOD(profileCombatHandler),"removeAttacks", [_attack]] call ALiVE_fnc_profileCombatHandler;
+              };
             };
 
             [_logic,"combat", false] call ALIVE_fnc_HashSet;
