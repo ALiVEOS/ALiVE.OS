@@ -826,8 +826,9 @@ switch(_operation) do {
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
                         [_flatPos, 4] call ALIVE_fnc_placeDebugMarker;
-
-                        ["MP - Field HQ created: %1 - %2", configName _HQ, [_logic, "FieldHQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
+                        if !(isNil "_HQ") then {
+                          ["MP - Field HQ created: %1 - %2", configName _HQ, [_logic, "FieldHQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
+                        };
                     };
                     // DEBUG -------------------------------------------------------------------------------------
                 } else {
