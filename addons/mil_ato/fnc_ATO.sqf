@@ -39,6 +39,9 @@ Tupolov
 #define DEFAULT_FACTION "OPF_F"
 #define DEFAULT_AIRSPACE []
 #define DEFAULT_PILOTBUILDING ""
+#define DEFAULT_RUNWAYSTARTPOS ""
+#define DEFAULT_RUNWAYENDPOS ""
+#define DEFAULT_RUNWAYWIDTH ""
 #define DEFAULT_EVENT_QUEUE []
 #define DEFAULT_ANALYSIS []
 #define DEFAULT_SIDE "EAST"
@@ -218,7 +221,7 @@ ALiVE_fnc_getNearestCatapult = {
             [_tmp, _addHash] call CBA_fnc_hashEachPair;
 
         };
-    } foreach _parts;
+    } forEach _parts;
 
     if (count _catapultsPos == 0) exitWith {_result};
 
@@ -280,7 +283,7 @@ ALiVE_fnc_getAircraftRoles = {
         if (_x iskindof ["Laserdesignator_mounted", configFile >> "CfgWeapons"]) then {
             _recce = true;
         };
-    } foreach _weapons;
+    } forEach _weapons;
 
     // Go through magazines and ammo and check capability for attack (AGM) and fighter (AAM)
     private _magazines = _class call BIS_fnc_magazinesEntityType;
@@ -304,7 +307,7 @@ ALiVE_fnc_getAircraftRoles = {
             };
         };
 
-    } foreach _magazines;
+    } forEach _magazines;
 
     if (_cas) then {_result pushback "CAS"};
     if (_recce) then {_result pushback "Recon"};
@@ -345,40 +348,58 @@ ALiVE_fnc_DrawRunwayBlacklistMarkers = {
     ];
 
 	  private ["_airportID","_markerExists","_markerList","_alpha","_height","_runwayStartPos","_runwayEndPos","_mkrname","_marker"];
-
+    _markerList = []; 
+    
     _runwayStartPos = [_logic, "runwaystartpos"] call MAINCLASS;
     _runwayEndPos = [_logic, "runwayendpos"] call MAINCLASS;
     _height = [_logic, "runwaywidth"] call MAINCLASS;
-    _runwayStartPos = call compile _runwayStartPos;
-    _runwayEndPos = call compile _runwayEndPos;
-    _height = parseNumber _height;
-	  // DEBUG -------------------------------------------------------------------------------------
-	  if(_debug) then {
-    ["ATO - Runway Start Position: %1(%4), Runway End Position: %2(%5), Runway Width: %3(%6)", _runwayStartPos, _runwayEndPos, _height, typeName _runwayStartPos, typeName _runwayEndPos, typeName _height] call ALiVE_fnc_dump;
-	  };
-	  // DEBUG ------------------------------------------------------------------------------------- 
-    _markerList = []; 
     
-    if(_debug) then {_alpha = 0.5;} else {_alpha = 0;};
-		_airportID = [_pos] call ALiVE_fnc_getNearestAirportID; 
-		_mkrname = "runway_"+(str _airportID); 
-		_markerExists = [_mkrname] call ALIVE_fnc_markerExists;
-		if (_markerExists) then {
-			_marker = _mkrname;
-		} else {
-		  if ((count _runwayStartPos) > 0 && (count _runwayEndPos) > 0 && _height != 0) then {
-		   _marker = [_mkrname, _runwayStartPos, _runwayEndPos, _height, _color, _alpha] call ALIVE_fnc_createLineMarker;
+    if (isNil "_runwayStartPos") then {
+	     // DEBUG -------------------------------------------------------------------------------------
+	     if(_debug) then {
+	  	   ["ATO - _runwayStartPos is empty!"] call ALiVE_fnc_dump;
+	     };
+	     // DEBUG ------------------------------------------------------------------------------------- 
+    } else {
+	    _runwayStartPos = call compile _runwayStartPos;
+	    _runwayEndPos = call compile _runwayEndPos;
+	    _height = parseNumber _height;
+	    if !(isNil "_runwayStartPos") then {
+			    if ((count _runwayStartPos > 0) && (count _runwayEndPos > 0) && (_height > 0)) then {
+			       // DEBUG -------------------------------------------------------------------------------------
+			       if(_debug) then {
+			         ["ATO - Runway Start Position: %1(%4), Runway End Position: %2(%5), Runway Width: %3(%6)", _runwayStartPos, _runwayEndPos, _height, typeName _runwayStartPos, typeName _runwayEndPos, typeName _height] call ALiVE_fnc_dump;
+			       };
+			       // DEBUG ------------------------------------------------------------------------------------- 
+			       if(_debug) then {_alpha = 0.5;} else {_alpha = 0;};
+			        _airportID = [_pos] call ALiVE_fnc_getNearestAirportID; 
+			        _mkrname = "runway_"+(str _airportID); 
+			        _markerExists = [_mkrname] call ALIVE_fnc_markerExists;
+			       if (_markerExists) then {
+			        _marker = _mkrname;
+			       } else {
+			        _marker = [_mkrname, _runwayStartPos, _runwayEndPos, _height, _color, _alpha] call ALIVE_fnc_createLineMarker;
+					   };
+					   _markerList pushback _marker;
+				     // DEBUG -------------------------------------------------------------------------------------
+				     if(_debug) then {
+				  	   ["ATO - Runway ID: %1, Marker Exists?: %2, Marker Name: %3",_airportID,_markerExists,_mkrname] call ALiVE_fnc_dump;
+				  	   if (!_markerExists) then { ["ATO - Runway Start Position: %1, Runway End Position: %2", _runwayStartPos, _runwayEndPos] call ALiVE_fnc_dump; };
+				  	   ["ATO - Runway Marker: %1", _marker] call ALiVE_fnc_dump;
+				  	   ["ATO - Runway Marker List: %1", _markerList] call ALiVE_fnc_dump;
+				     };
+				     // DEBUG ------------------------------------------------------------------------------------- 
+				  } else {
+				  	 if(_debug) then {
+				  		 ["ATO - No runway blacklist marker positions defined"] call ALiVE_fnc_dump;
+				     };
+				  };
+		  } else {
+		  	 if(_debug) then {
+		  	   ["ATO - No runway blacklist marker positions defined"] call ALiVE_fnc_dump;
+		  	 };
 		  };
-		};
-		_markerList pushback _marker;
-	  // DEBUG -------------------------------------------------------------------------------------
-	  if(_debug) then {
-	  	["ATO - Runway ID: %1, Marker Exists?: %2, Marker Name: %3",_airportID,_markerExists,_mkrname] call ALiVE_fnc_dump;
-	  	if (!_markerExists) then { ["ATO - Runway Start Position: %1, Runway End Position: %2", _runwayStartPos, _runwayEndPos] call ALiVE_fnc_dump; };
-	  	["ATO - Runway Marker: %1", _marker] call ALiVE_fnc_dump;
-	  	["ATO - Runway Marker List: %1", _markerList] call ALiVE_fnc_dump;
 	  };
-	  // DEBUG ------------------------------------------------------------------------------------- 
 		_markerList
 };
 
@@ -699,13 +720,13 @@ switch(_operation) do {
         _result = [_logic,_operation,_args,DEFAULT_PILOTBUILDING] call ALIVE_fnc_OOsimpleOperation;
     };
     case "runwaystartpos": {
-        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,DEFAULT_RUNWAYSTARTPOS] call ALIVE_fnc_OOsimpleOperation;
     };
     case "runwayendpos": {
-        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,DEFAULT_RUNWAYENDPOS] call ALIVE_fnc_OOsimpleOperation;
     };
     case "runwaywidth": {
-        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic,_operation,_args,DEFAULT_RUNWAYWIDTH] call ALIVE_fnc_OOsimpleOperation;
     };
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
@@ -755,7 +776,7 @@ switch(_operation) do {
                 if ((_eventData select 3) == _args) then {
                     _result pushback _eventData;
                 };
-            } foreach (_eventQueue select 2);
+            } forEach (_eventQueue select 2);
         };
     };
     case "airspaceLastCAP": {
@@ -812,9 +833,9 @@ switch(_operation) do {
                         _tmp pushback _bogey;
                         [_intruders, _x, _tmp] call ALiVE_fnc_hashSet;
                     };
-                } foreach _airspace;
+                } forEach _airspace;
             };
-        } foreach vehicles;
+        } forEach vehicles;
 
         _result = _intruders;
     };
@@ -842,7 +863,7 @@ switch(_operation) do {
                 };
                 */
             };
-        } foreach vehicles;
+        } forEach vehicles;
 
         private _threats = [GVAR(threats),str(_logic),[]] call ALiVE_fnc_hashGet;
         // Check for known AA units
@@ -865,7 +886,7 @@ switch(_operation) do {
             _tmp pushback _x;
             [_airDefenses, (_tmpAS select 0), _tmp] call ALiVE_fnc_hashSet;
 
-        } foreach _threats;
+        } forEach _threats;
 
         _result = _airDefenses;
     };
@@ -1087,7 +1108,7 @@ switch(_operation) do {
                                 [_profileEntity, "ignore_HC", true] call ALIVE_fnc_profileEntity;
                                 [_profileEntity, "despawnPosition", _crewPos] call ALIVE_fnc_profileEntity;
                                 [_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "_aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
+                                [_profileEntity, "aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
                                 
                                 
                                 [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
@@ -1129,7 +1150,7 @@ switch(_operation) do {
                     ["ATO %1 not registering %2 (%3) as it is unarmed.", _logic, _x, _vehicleClass] call ALiVE_fnc_dump;
                 };
             };
-        } foreach _vehicleProfileIDs;
+        } forEach _vehicleProfileIDs;
 
         // Set assets
         [_logic, "assets", _assets] call MAINCLASS;
@@ -1167,7 +1188,7 @@ switch(_operation) do {
             if !(alive _x) then {
                 _crashsites pushback _x;
             };
-        } foreach (entities _target);
+        } forEach (entities _target);
         if (count _crashsites > 0) then {
             _crashsites = [_crashsites,[_destination],{_Input0 distance _x},"ASCEND"] call ALiVE_fnc_SortBy;
             _destination = if !(surfaceIsWater (position (_crashsites select 0))) then {position (_crashsites select 0)} else {_destination};
@@ -1255,7 +1276,7 @@ switch(_operation) do {
             if !(_x in _currentTargets) exitWith {
                 _target = _x;
             };
-        } foreach _targets;
+        } forEach _targets;
 
         // ["PLAYER ATO TASK %1 %2", _args, _target] call ALiVE_fnc_dump;
 
@@ -1374,7 +1395,7 @@ switch(_operation) do {
             [_logic, "assets",[] call ALiVE_fnc_hashCreate] call MAINCLASS;
             [_logic,"airspaceAssets",[] call ALiVE_fnc_hashCreate] call MAINCLASS;
             [_logic,"runways",[] call ALiVE_fnc_hashCreate] call MAINCLASS;
-
+            
             // Define enemy factions by getting enemy sides
             private _enemyFactions = [];
             private _sides = ["EAST","WEST","GUER"];
@@ -1384,15 +1405,15 @@ switch(_operation) do {
                 if ((_side getfriend ([_x] call ALIVE_fnc_sideTextToObject)) < 0.6) then {
                     _sidesEnemy pushBack _x
                 };
-            } foreach (_sides - [_side]);
+            } forEach (_sides - [_side]);
 
             //Thank you again, BIS...
-            {if (_x == "RESISTANCE") then {_sidesEnemy set [_foreachIndex,"GUER"]}} foreach _sidesEnemy;
+            {if (_x == "RESISTANCE") then {_sidesEnemy set [_forEachIndex,"GUER"]}} forEach _sidesEnemy;
 
             {
                 // Get side factions
                 _enemyFactions append (_x call ALiVE_fnc_getSideFactions);
-            } foreach _sidesEnemy;
+            } forEach _sidesEnemy;
 
             [_logic,"enemyFactions",_enemyFactions] call MAINCLASS;
             [_logic,"enemySides",_sidesEnemy] call MAINCLASS;
@@ -1421,6 +1442,9 @@ switch(_operation) do {
                 ["ATO - Place Air Assets: %1",[_logic, "placeAir"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Generate Tasks: %1",[_logic, "generateTasks"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Generate SEAD Tasks: %1",[_logic, "generateSEADTasks"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ATO - Runway Start Position: %1",[_logic, "runwaystartpos"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ATO - Runway End Position: %1",[_logic, "runwayendpos"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ATO - Runway Width: %1",[_logic, "runwaywidth"] call MAINCLASS] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1437,7 +1461,7 @@ switch(_operation) do {
         } else {
             // Make any markers invisible
             [_logic, "airspace", _logic getVariable ["airspace", DEFAULT_AIRSPACE]] call MAINCLASS;
-            {_x setMarkerAlpha 0} foreach (_logic getVariable ["airspace", DEFAULT_AIRSPACE]);
+            {_x setMarkerAlpha 0} forEach (_logic getVariable ["airspace", DEFAULT_AIRSPACE]);
         };
     };
 
@@ -1551,7 +1575,7 @@ switch(_operation) do {
                     if !([_x] call ALIVE_fnc_isHouseEnterable) then {
                         _buildings set [_forEachIndex, -1];
                     };
-                } foreach _buildings;
+                } forEach _buildings;
                 _buildings = _buildings - [-1];
 
                 // ["ATO %1 - Buildings: %2", _logic, _buildings] call ALiVE_fnc_dump;
@@ -1573,7 +1597,7 @@ switch(_operation) do {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
                                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
                             };
-                        } foreach _profiles;
+                        } forEach _profiles;
                     };
 
                     [_logic, "HQBuilding", _hqBuilding] call MAINCLASS;
@@ -1636,7 +1660,7 @@ switch(_operation) do {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
                                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
                             };
-                        } foreach _profiles;
+                        } forEach _profiles;
                     };
 
                     // DEBUG -------------------------------------------------------------------------------------
@@ -1665,7 +1689,7 @@ switch(_operation) do {
                     if !([_x] call ALIVE_fnc_isHouseEnterable) then {
                         _buildings set [_forEachIndex, -1];
                     };
-                } foreach _buildings;
+                } forEach _buildings;
                 _buildings = _buildings - [-1];
 
                 // ["ATO %1 - Buildings: %2", _logic, _buildings] call ALiVE_fnc_dump;
@@ -1765,7 +1789,7 @@ switch(_operation) do {
                                 [_x, "Green", [], false] call BIS_fnc_initVehicle;
                             };
 
-                        } foreach _vehicles;
+                        } forEach _vehicles;
                     } else {
                         // Man Statics
                     };
@@ -1855,7 +1879,7 @@ switch(_operation) do {
                     if !(_x in _modulesfactions) then {
                         _modulesFactions pushback _x;
                     };
-                } foreach _moduleFactions;
+                } forEach _moduleFactions;
 
                 // Get objectives
                 private _objectives = [_module,"objectives"] call ALiVE_fnc_hashGet;
@@ -1878,7 +1902,7 @@ switch(_operation) do {
                 private _profileIDs = [];
                 {
                     _profileIDs = _profileIDs + ([ALIVE_profileHandler, "getProfilesByFaction",_x] call ALIVE_fnc_profileHandler);
-                } foreach _modulesFactions;
+                } forEach _modulesFactions;
 
                 // Grab vehicle profiles information only
                 {
@@ -1902,7 +1926,7 @@ switch(_operation) do {
                             };
                         };
                     };
-                } foreach _profileIDs;
+                } forEach _profileIDs;
 
                 if (_debug) then {
                         ["ATO %1 OPCOM has %3 air assets: %2", _logic, _modulesAir, count _modulesAir] call ALiVE_fnc_dump;
@@ -1922,13 +1946,13 @@ switch(_operation) do {
                             if (_position inArea _x) exitWith {
                                 _assetAirspace = _x;
                             };
-                        } foreach _airspace;
+                        } forEach _airspace;
 
                         if !(isNil "_assetAirspace") then {
                             [_logic,"registerProfile",[_profileID, _assetAirspace]] call MAINCLASS;
                         };
                     };
-                } foreach _modulesAir;
+                } forEach _modulesAir;
 
                 // If there are no armed air assets and place Air is true then place at least one armed plane or heli ------------------------------------
                 private _placeAir = [_logic, "placeAir"] call MAINCLASS;
@@ -1953,7 +1977,7 @@ switch(_operation) do {
                         if (_center inArea _x) exitWith {
                             _baseAirspace = _x;
                         };
-                    } foreach _airspace;
+                    } forEach _airspace;
 
                     private _side = [_logic, "side"] call MAINCLASS;
                     private _faction = [_logic, "faction"] call MAINCLASS;
@@ -1968,7 +1992,7 @@ switch(_operation) do {
                         if !([_x] call ALiVE_fnc_isArmed) then {
                             _heliClasses set [_forEachIndex, -1];
                         };
-                    } foreach _heliClasses;
+                    } forEach _heliClasses;
 
                     _heliClasses = _heliClasses - [-1];
 
@@ -2014,7 +2038,7 @@ switch(_operation) do {
                                         if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
                                             _aprofiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
                                         };
-                                    } foreach _tmp;
+                                    } forEach _tmp;
                                 };
                             };
                         } forEach _nodes;
@@ -2076,7 +2100,7 @@ switch(_operation) do {
                                         if (count _nearbyObj > 0) then {
                                             {
                                                 deleteVehicle _x;
-                                            }foreach _nearbyObj;
+                                            }forEach _nearbyObj;
                                         };
 
                                     } else {
@@ -2096,7 +2120,7 @@ switch(_operation) do {
                                         if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
                                             _aprofiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
                                         };
-                                    } foreach _tmp;
+                                    } forEach _tmp;
 
                                 };
                             };
@@ -2115,7 +2139,7 @@ switch(_operation) do {
                         if !([_x] call ALiVE_fnc_isArmed) then {
                             _airClasses set [_forEachIndex, -1];
                         };
-                    } foreach _airClasses;
+                    } forEach _airClasses;
 
                     _airClasses = _airClasses - [-1];
 
@@ -2175,7 +2199,7 @@ switch(_operation) do {
                                             if ( (str(_x) find "taxiway" != -1 && typeof _x == "") || str(_x) find "invisible" != -1 ) then {
                                                 _runway pushback _x;
                                             };
-                                        } foreach (nearestObjects [position _x, [], 400]);
+                                        } forEach (nearestObjects [position _x, [], 400]);
 
                                         if (count _runway > 0) then {
                                             // ["Cannot find hangar, choosing safe taxiway from: %1", _runway] call ALiVE_fnc_dump;
@@ -2195,7 +2219,7 @@ switch(_operation) do {
                                                         _vehiclesClass = _x;
                                                         _availablePlane = true;
                                                     };
-                                                } foreach _airClasses;
+                                                } forEach _airClasses;
                                             };
 
                                             _posi = [position _x, 5, 200, 30, 0, 0.2, 0] call BIS_fnc_findSafePos;
@@ -2249,7 +2273,7 @@ switch(_operation) do {
                         if !(isnil "_profile") then {
                             [_logic,"registerProfile",[_profileID,_baseAirspace]] call MAINCLASS;
                         };
-                    } foreach _aprofiles;
+                    } forEach _aprofiles;
                 };
 
                 // Register new assets
@@ -2318,9 +2342,9 @@ switch(_operation) do {
                                 [_as, _assetAirspace, _airspaceAssets] call ALiVE_fnc_hashSet;
                             };
 
-                        } foreach (_aircraft select 1);
+                        } forEach (_aircraft select 1);
                     }
-                } foreach _factions;
+                } forEach _factions;
 
                 [_logic, "assets" ,_assets] call ALiVE_fnc_ATO;
                 [_logic,"airspaceAssets",_as] call ALiVE_fnc_ATO;
@@ -2943,7 +2967,7 @@ switch(_operation) do {
                         if (_airspace inArea _x) exitWith {
                             _tmpAirspace = _x;
                         };
-                    } foreach (([_logic, "airspaceAssets"] call MAINCLASS) select 1);
+                    } forEach (([_logic, "airspaceAssets"] call MAINCLASS) select 1);
                     _airspace = _tmpAirspace;
                     _eventData set [3,_airspace];
                     [_event,"data",_eventData] call ALiVE_fnc_hashSet;
@@ -3284,7 +3308,7 @@ switch(_operation) do {
 
                                 // Check to see if there is a wreck around, causing explosions
                                 private _nearbyObj = nearestObjects [_position, ["Helicopter"], 5];
-                                {if (!alive _x) then {deleteVehicle _x}} foreach _nearbyObj;
+                                {if (!alive _x) then {deleteVehicle _x}} forEach _nearbyObj;
 
                                 private _createdProfiles = [_vehicleClass,_side,_faction,"CAPTAIN",_position,_dir,false,_faction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
                                 _tmp = _createdProfiles select (_createdProfiles findIf { ([_x,"type"] call ALiVE_fnc_hashGet) == "vehicle" });
@@ -3293,7 +3317,7 @@ switch(_operation) do {
                             if (_plane == 1) then {
                                 // Check to see if there is a wreck around, causing explosions
                                 private _nearbyObj = nearestObjects [_position, ["Plane"], 5];
-                                {if (!alive _x) then {deleteVehicle _x}} foreach _nearbyObj;
+                                {if (!alive _x) then {deleteVehicle _x}} forEach _nearbyObj;
 
                                 _tmp = [_vehicleClass,_side,_faction,_position,_dir,false,_faction] call ALIVE_fnc_createProfileVehicle;
                             };
@@ -3463,7 +3487,7 @@ switch(_operation) do {
                                             // check all intruders are being intercepted?
                                             _DCA = true;
                                         };
-                                    } foreach _currentOps;
+                                    } forEach _currentOps;
 
                                     if !(_DCA) then {
                                         private _type = "DCA";
@@ -3494,7 +3518,7 @@ switch(_operation) do {
                                     };
 
                                 };
-                            } foreach _airspaceIntruders
+                            } forEach _airspaceIntruders
                         };
 
                         // Check to see if there is a CAP
@@ -3509,7 +3533,7 @@ switch(_operation) do {
                                     if ((_x select 0) == "CAP") exitWith {
                                         _CAP = true;
                                     };
-                                } foreach _currentOps;
+                                } forEach _currentOps;
 
                                 private _lastCAPTime = [_logic, "airspaceLastCAP", _x] call MAINCLASS;
                                 private _CAPTime = time > _lastCAPTime + (300 + random 600);
@@ -3533,7 +3557,7 @@ switch(_operation) do {
                                 };
                             };
 
-                        } foreach _airspace;
+                        } forEach _airspace;
 
                         // Check to see if there are any air defences
                         if ("SEAD" in ([_logic,"types"] call MAINCLASS)) then {
@@ -3557,7 +3581,7 @@ switch(_operation) do {
                                             // check all intruders are being intercepted?
                                             _SEAD = true;
                                         };
-                                    } foreach _currentOps;
+                                    } forEach _currentOps;
 
                                     if !(_SEAD) then {
                                         private _type = "SEAD";
@@ -3597,7 +3621,7 @@ switch(_operation) do {
 
                                     };
                                 };
-                            } foreach _airDefenseTargets;
+                            } forEach _airDefenseTargets;
                         };
                     };
 
@@ -3680,7 +3704,7 @@ switch(_operation) do {
                 if (_eventAirspace inArea _x) exitWith {
                     _tmpAirspace = _x;
                 };
-            } foreach (_airspaceAssets select 1);
+            } forEach (_airspaceAssets select 1);
             _eventAirspace = _tmpAirspace;
             _eventData set [3,_eventAirspace];
             [_event,"data",_eventData] call ALiVE_fnc_hashSet;
@@ -3790,7 +3814,7 @@ switch(_operation) do {
                         if ( {_tmpType iskindof _x} count _aircraftType > 0) then {
                             _opAssets pushback _x;
                         };
-                    } foreach _airspaceAssets;
+                    } forEach _airspaceAssets;
 
                     if (_debug) then {
                         ["ATO %1 OP ASSETS: %2", _logic, _opAssets] call ALiVE_fnc_dump;
@@ -3806,9 +3830,9 @@ switch(_operation) do {
                                     if ( {_tmpType iskindof _x} count _aircraftType > 0) then {
                                         _opAssets pushback _x;
                                     };
-                                } foreach ([[_logic,"airspaceAssets"] call MAINCLASS, _x] call ALiVE_fnc_hashGet);
+                                } forEach ([[_logic,"airspaceAssets"] call MAINCLASS, _x] call ALiVE_fnc_hashGet);
                             };
-                        } foreach ([_logic,"airspaceAssets"] call MAINCLASS select 1);
+                        } forEach ([_logic,"airspaceAssets"] call MAINCLASS select 1);
                     };
 
                     // Check to see if they are available - check damage, fuel, ammo, parked or on CAP
@@ -3849,7 +3873,7 @@ switch(_operation) do {
                                         private _curDamage = 0;
                                         {
                                             _curDamage = _curDamage + (_x select 1);
-                                        } foreach _damage;
+                                        } forEach _damage;
                                         if (_curDamage == 0) then {
                                             _damage = 0;
                                         } else {
@@ -3868,7 +3892,7 @@ switch(_operation) do {
                                         private _avail = 0;
                                         {
                                             _avail = _avail + ((_x select 1)/(_x select 2));
-                                        } foreach _ammo;
+                                        } forEach _ammo;
                                         _ammo = _avail / count _ammo;
                                     };
 
@@ -3939,7 +3963,7 @@ switch(_operation) do {
                                 };
                             };
                             if (_exit) exitWith {};
-                        } foreach _opAssets;
+                        } forEach _opAssets;
 
                         if (count _selectedAsset > 0) then {
 
@@ -3965,7 +3989,7 @@ switch(_operation) do {
                                             };
                                         };
                                     };
-                                } foreach _eventTargets;
+                                } forEach _eventTargets;
 
                                 // Work out distance to first target
                                 if ((_eventTargets select 0) isEqualType objNull) then {
@@ -4097,10 +4121,10 @@ switch(_operation) do {
                                     } else {
                                         _vehicle = [_targetProfile,"vehicle"] call ALiVE_fnc_hashGet;
                                     };
-                                    _eventTargets set [_foreachIndex, _vehicle];
+                                    _eventTargets set [_forEachIndex, _vehicle];
                                 };
                             };
-                        } foreach _eventTargets;
+                        } forEach _eventTargets;
 
                         [_event, "enemyProfiles", _eventEnemyProfiles] call ALIVE_fnc_hashSet;
 
@@ -4127,8 +4151,8 @@ switch(_operation) do {
                                 if ((vehicle _player) iskindof _x && (driver (vehicle _player) == _player)) exitWith {
                                     _playersInAircraft pushback _x;
                                 };
-                            } foreach _aircraftType;
-                        } foreach allPlayers;
+                            } forEach _aircraftType;
+                        } forEach allPlayers;
 
                         if (count _playersInAircraft > 0 && _generateTasks && _C2ISTARisAvailable) then {
 
@@ -4372,7 +4396,7 @@ switch(_operation) do {
                                         if (_isOnCarrier) then { // AI can't run to plane on carrier deck
                                             {
                                                 _x moveInAny _vehicleObj;
-                                            } foreach (units _group);
+                                            } forEach (units _group);
 
                                         } else {
                                             (units _group) orderGetIn true;
@@ -4542,7 +4566,7 @@ switch(_operation) do {
                             };
                             {
                                 _x moveInAny _vehicle;
-                            } foreach (units _grp);
+                            } forEach (units _grp);
                             if (_vehicle isKindOf "UAV") then {
                                 createVehicleCrew _vehicle;
                             };
@@ -4576,12 +4600,15 @@ switch(_operation) do {
                                 _x enableAI "TARGET";
                                 _x enableAI "AUTOTARGET";
                                 _x setCombatMode _eventROE;
-                            } foreach units _grp;
+                            } forEach units _grp;
 
                             // Make sure targets are spawned
+                            if (_debug) then {
+                               ["ATO EVENT TARGETS: %1 (%2)", _eventTargets, typeName _eventTargets] call ALiVE_fnc_dump;
+                            };
                             {
                                 if (isNull _x) then {
-                                    private _profileID = _eventEnemyProfiles select _foreachIndex;
+                                    private _profileID = _eventEnemyProfiles select _forEachIndex;
                                     private _targetProfile = [ALiVE_profileHandler, "getProfile", _profileID] call ALiVE_fnc_ProfileHandler;
                                     if !(isNil "_targetProfile") then {
                                         private _type = [_targetProfile,"type"] call ALiVE_fnc_hashGet;
@@ -4591,10 +4618,10 @@ switch(_operation) do {
                                         } else {
                                             _vehicle = [_targetProfile,"vehicle"] call ALiVE_fnc_hashGet;
                                         };
-                                        _eventTargets set [_foreachIndex, _vehicle];
+                                        _eventTargets set [_forEachIndex, _vehicle];
                                     };
                                 };
-                            } foreach _eventTargets;
+                            } forEach _eventTargets;
 
                             private _wpPosition = _eventPosition;
 
@@ -4652,7 +4679,7 @@ switch(_operation) do {
                                         _wp setWaypointType "SAD";
 
                                         {
-                                            if (_foreachIndex < 3) then {
+                                            if (_forEachIndex < 3) then {
 
                                                 private _dummyGrp = createGroup SideLogic;
                                                 private _dummy = _dummyGrp createUnit ["Logic", getPos _x, [], 0, "NONE"];
@@ -4690,7 +4717,7 @@ switch(_operation) do {
 
                                                 //_wp setWaypointStatements ["true", "diag_log ['GroupLeader: ', this]; diag_log ['Units: ', thislist]"];
                                             };
-                                        } foreach _eventTargets;
+                                        } forEach _eventTargets;
                                     } else {
                                         _wp waypointAttachVehicle _targetObject;
                                         _wp setWaypointType "DESTROY";
@@ -5002,7 +5029,7 @@ switch(_operation) do {
                     private _avail = 0;
                     {
                         _avail = _avail + ((_x select 1)/(_x select 2));
-                    } foreach _ammoArray;
+                    } forEach _ammoArray;
                     _ammo = _avail / count _ammoArray;
                 };
                 if (_ammo < 0.1) then {
@@ -5095,7 +5122,7 @@ switch(_operation) do {
                     _x disableAI "TARGET";
                     _x disableAI "AUTOTARGET";
                     _x setCombatMode "BLUE";
-                } foreach units _grp;
+                } forEach units _grp;
 
                 // dispatch event
                 _logEvent = ['ATO_RETURN', [_startPosition,_eventFaction,_side,_eventID],"air tasking orders"] call ALIVE_fnc_event;
@@ -5432,7 +5459,7 @@ switch(_operation) do {
                                 _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]);
                                 {
                                     _x setposATL _crewpos;
-                                } foreach units _grp;
+                                } forEach units _grp;
                         } else {
 
                             (group _leader) move _crewPos;
@@ -5449,7 +5476,7 @@ switch(_operation) do {
                     } else {
                         {
                             _vehicle deleteVehicleCrew _x;
-                        } foreach (crew _vehicle);
+                        } forEach (crew _vehicle);
                     };
 
                     // Turn off engine
@@ -5512,7 +5539,7 @@ switch(_operation) do {
                         if !(isNil "_targetProfile") then {
                             [_targetProfile,"spawnType",[]] call ALiVE_fnc_hashSet;
                         };
-                    } foreach _eventEnemyProfiles;
+                    } forEach _eventEnemyProfiles;
                 };
 
                 // Register finish time of last CAP
