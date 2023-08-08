@@ -164,10 +164,12 @@ if!(_customGroup) then {
 		};
 
 		if (_groupName == "") then { 
-		_groupName = "FALSE";  
+		 _groupName = "FALSE";  
 		};  
-        
-    ["ALIVE_fnc_configGetRandomGroup -  _groupName: %1", _groupName] call ALIVE_fnc_dump;
+     
+    if (_groupName != "FALSE") then {   
+     ["ALIVE_fnc_configGetRandomGroup -  _groupName: %1", _groupName] call ALIVE_fnc_dump;
+    };
 
 };
 
