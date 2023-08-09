@@ -349,7 +349,7 @@ class FSM
                                          "    _testPos = [_testPos, 1, 0] call BIS_fnc_relPos;" \n
                                          "};" \n
                                          "" \n
-                                         "[""ARTY FSM (NEW TASK) (inRangeOfArtillery) _testPosInRange: %1, _testPos: %2, units _grp: %3, _ordnance: %4"", _testPosInRange, _testPos, units _grp, _ordnance] call ALiVE_fnc_dump;" \n
+                                         "[""ARTY FSM (NEW TASK) (inRangeOfArtillery) _testPos: %1, units _grp: %2, _ordnance: %3"", _testPos, units _grp, _ordnance] call ALiVE_fnc_dump;" \n
                                          "" \n
                                          "_inRange = false;" \n
                                          "if (_target distance2D (position (leader _grp)) > _minRange) then {" \n
