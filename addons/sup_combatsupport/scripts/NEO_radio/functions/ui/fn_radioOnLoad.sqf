@@ -45,7 +45,17 @@ if (isnil "playerSide") then {
 _available = [];
 _transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", playerSide];
 _casArray = NEO_radioLogic getVariable format ["NEO_radioCasArray_%1", playerSide];
-_artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", playerSide];
+
+_thisPlayerSide = playerSide;
+{
+	if (_x find "SPE_leFH18" != -1) then { 
+		if (playerSide != WEST) then {
+			_thisPlayerSide = WEST; 
+			break;
+		};
+	};
+} forEach SUP_ARTYARRAYS;
+_artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _thisPlayerSide];
 
 //Available Supports
 if (count _transportArray > 0) then { _available pushback (["TRANSPORT", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\transport_ca.paa"]) };

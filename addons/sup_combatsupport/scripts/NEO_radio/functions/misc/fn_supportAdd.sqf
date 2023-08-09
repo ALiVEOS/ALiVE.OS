@@ -325,6 +325,7 @@ switch (_support) do
         private _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 
         //FSM
+        ["fn_supportAdd.sqf - _units: %1, _grp: %2, _callsign: %3, _pos: %4, _roundsAvailable: %5, _canMove: %6, _class: %7, leader _grp: %8, _code: %9, _audio: %10, _side: %11", _units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio, _side] call ALiVE_fnc_dump;
         private _fsmHandle = [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio, _side] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
 
         private _artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _side];

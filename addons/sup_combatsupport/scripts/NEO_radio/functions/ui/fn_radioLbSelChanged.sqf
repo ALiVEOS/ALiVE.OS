@@ -172,7 +172,17 @@ switch (toUpper (_lb lbText _index)) do
     case "ARTY" :
     {
         private ["_artyArray"];
-        _artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", playerSide];
+        
+_thisPlayerSide = playerSide;
+{
+	if (_x find "SPE_leFH18" != -1) then { 
+		if (playerSide != WEST) then {
+			_thisPlayerSide = WEST; 
+			break;
+		};
+	};
+} forEach SUP_ARTYARRAYS;
+_artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _thisPlayerSide];
 
         if ((count _artyArray > 0) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" })) then
         {

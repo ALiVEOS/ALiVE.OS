@@ -4,7 +4,18 @@ private
     "_artyRoundCountLb", "_artyDispersionText", "_artyDispersionSlider", "_artyUnitLb", "_artyRateDelayText", "_artyRateDelaySlider",
     "_battery", "_ord", "_count", "_countArray"
 ];
-_artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", playerSide];
+
+_thisPlayerSide = playerSide;
+{
+	if (_x find "SPE_leFH18" != -1) then { 
+		if (playerSide != WEST) then {
+			_thisPlayerSide = WEST; 
+			break;
+		};
+	};
+} forEach SUP_ARTYARRAYS;
+_artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _thisPlayerSide];
+
 _display = findDisplay 655555;
 _artyOrdnanceTypeLb = _this select 0;
 _artyRateOfFireText = _display displayCtrl 655602;
