@@ -39,6 +39,8 @@ params [
 ];
 
 private _nearbldgs = nearestObjects [_pos, _types, _radius];
+// filter out SPE bocage objects 
+_nearbldgs = _nearbldgs select {!(_x isKindOf "spe_bocage_base")};
 
 private _positions = [];
 {

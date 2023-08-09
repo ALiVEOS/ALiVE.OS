@@ -44,4 +44,9 @@ if (_enterable && !(isNil "ALIVE_Building_Blacklist")) then {
         _enterable = false;
     };
 };
+// filter out SPE bocage objects 
+if (_house isKindOf "spe_bocage_base") then {
+	_enterable = false;
+};
+
 _enterable
