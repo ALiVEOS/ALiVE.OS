@@ -38,7 +38,7 @@ _HMHQ = (HMHQ_Teleport_Veh select 0);
 
 
 
-if (USMHQ getVariable ["Respawned", false]) then {
+if (USMHQ getVariable ["Respawned", false] || USMHQ_Respawned == 1) then {
 	
 	 ["mobileRespawn.sqf -> Respawned: %1", USMHQ getVariable ["Respawned", false]] call ALIVE_fnc_dump;
 	 [nil,"respawnedText", nil, false] spawn BIS_fnc_MP;
@@ -69,12 +69,14 @@ if (USMHQ getVariable ["Respawned", false]) then {
         ["mobileRespawn.sqf -> Old MHQ Removed"] call ALIVE_fnc_dump;
         
          USMHQ setVariable ["Respawed",false,true];  
+         USMHQ_Respawned = 0;
+         publicVariable "USMHQ_Respawned";
      };
      
      
     USMHQ setVariable ['QS_ST_drawEmptyVehicle',true,true];
 
-    ["mobileRespawn.sqf -> Respawned, Adding actions back, HMHQ_Deployed: %1", USMHQ getVariable ["HMHQ_Deployed", false]] call ALIVE_fnc_dump;
+    ["mobileRespawn.sqf -> Respawned, Adding actions back, HMHQ_Deployed_Var: %1", HMHQ_Deployed_Var] call ALIVE_fnc_dump;
 
     [USMHQ, ["<t color='#ffff00'>Deploy HQ</t>", {[_this,"HZE_fnc_deployHQ", false] call BIS_fnc_MP;},[],0,true,true,"","(!(_target getVariable ['HMHQ_Deployed', true])) && ((_this distance _target) < 4)"]] remoteExec ["addAction"]; 	
     [USMHQ, ["<t color='#ffff00'>Pack HQ</t>", {[_this,"HZE_fnc_packHQ", false] call BIS_fnc_MP;},[],0,true,true,"","(_target getVariable ['HMHQ_Deployed', false]) && ((_this distance _target) < 4)"]] remoteExec ["addAction"]; 	
@@ -87,6 +89,8 @@ if (USMHQ getVariable ["Respawned", false]) then {
 if (isServer) then {
     USMHQ setVariable ["HMHQ_Deployed", false, true];
 
+    USMHQ_Respawned = 0;
+    publicVariable "USMHQ_Respawned";
     HMHQ_Deployed_Var = 0;
     publicVariable "HMHQ_Deployed_Var";
     MHQ_marker_array = [];
@@ -113,6 +117,7 @@ if (isServer) then {
         // Create Supply Crate
         _supply = createVehicle [INS_MHQ_SUPPLYCRATE,[ (getPos USMHQ select 0)-2, (getPos USMHQ select 1)-6,(getPos USMHQ select 2)+0.1], [], 0, "CAN_COLLIDE"];
         USMHQ setVariable ["SUPPLY", _supply];
+        _supply allowDamage false;
         Deployed_Supply = _supply;
         publicVariable "Deployed_Supply";
         [Deployed_Supply, ["<t color='#0099FF'>Arsenal</t>", {["Open",true] spawn SPE_Arsenal_fnc_arsenal; }]] remoteExec ["addAction"];
@@ -132,6 +137,7 @@ if (isServer) then {
         // Create the MHQ USBASE Flag
         _flag = createVehicle [INS_MHQ_FLAGCLASS,[ (getPos USMHQ select 0)-2, (getPos USMHQ select 1)-10, (getPos USMHQ select 2)+0], [], 0, "CAN_COLLIDE"];
         USMHQ setVariable ["FLAG", _flag];
+        _flag allowDamage false;
         Deployed_Flag = _flag;
         publicVariable "Deployed_Flag";
         [Deployed_Flag, ["<t color='#ffff00'>Recruit Infantry</t>", {[Deployed_Flag] execVM "bon_recruit_units\open_dialog.sqf";},[],0,true,true,"",""]] remoteExec ["addAction"]; 	
@@ -187,7 +193,7 @@ if (isServer) then {
 
 if (!isDedicated) then {
 
- ["mobileRespawn.sqf -> !isDedicated, Adding actions, HMHQ_Deployed: %1", USMHQ getVariable ["HMHQ_Deployed", false]] call ALIVE_fnc_dump;
+ ["mobileRespawn.sqf -> !isDedicated, Adding actions"] call ALIVE_fnc_dump;
 
     USMHQ addAction ["<t color='#ffff00'>Deploy HQ</t>",{
             [_this,"HZE_fnc_deployHQ", false] call BIS_fnc_MP;
@@ -201,7 +207,7 @@ if (!isDedicated) then {
 
 		[] spawn {
 			
-	   ["mobileRespawn.sqf -> USBASE Teleport: %1", USBASE getVariable ["Pole", false]] call ALIVE_fnc_dump;
+	   ["mobileRespawn.sqf -> USBASE Teleport Action Status: %1", USBASE getVariable ["Pole", false]] call ALIVE_fnc_dump;
 	   
 			if !(USBASE getVariable ["Pole", false]) then {
 			  private ["_veh_name", "_spawn"];
@@ -209,6 +215,7 @@ if (!isDedicated) then {
        _thisaction = USBASE addAction [("<t color=""#ffff00"">") + ("Teleport to Mobile Respawn Vehicle") + "</t>", {[_this select 1, _this select 3] call HZE_fnc_teleport}, _veh_name];
        USBASE setVariable ["Teleport", _thisaction, true];
        USBASE setVariable ["Pole", true,false];
+       ["mobileRespawn.sqf -> USBASE Teleport Action Status: %1", USBASE getVariable ["Pole", false]] call ALIVE_fnc_dump;
       };
     };
 };

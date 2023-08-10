@@ -16,6 +16,17 @@
   call compile preprocessFileLineNumbers "scripts\frontline_data.sqf"
 ] call SPE_MISSIONUTILITYFUNCTIONS_fnc_generateFrontline;
 
+if (hasInterface) then  {
+
+(group player) addEventHandler ["UnitJoined",
+{
+    params ["_group", "_newUnit"];
+
+    [_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaInit;
+    [_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaActionsInit;
+}]};
+
+
 //Starting Init
 ["| Operation Cobra - Executing init.sqf..."] call ALiVE_fnc_dump;
 
@@ -48,6 +59,37 @@ if (side player == RESISTANCE) then {
 [] execVM "Scripts\Earplugs.sqf";
 [] execVM "Scripts\SquadResetInit.sqf";
 
+//Fixes for IFS
+[] spawn
+{
+  // Wait for other initializations
+  sleep 15;
+
+  // Fix for clients not initializing scripts
+  if (!isServer) then {[] call SPE_MissionUtilityFunctions_fnc_IFS_Init};
+
+  // Fix for null variable on clients
+  if (isServer) then {publicVariable "SPE_IFS_availableCalls"};
+
+  // Fix for AI not utilizing supports
+  if (isServer) then
+  {
+    if (isNil "SPE_IFS_AmountMultiplier") then
+    {
+      SPE_IFS_AmountMultiplier = [[0.33,0.5,1],[0.33,0.5,1]];
+    };
+
+    publicVariable "SPE_IFS_AmountMultiplier";
+  };
+
+  // Fix for player respawn
+  if (hasInterface) then
+  {
+    player addEventHandler ["Respawn",{_this spawn SPE_MissionUtilityFunctions_fnc_IFS_onPlayerRespawn}];
+  };
+};
+
+/////////////////////////// T H I S  H A S  T O  G O  L A S T  ////////////////////////////////////////////////
 if (hasInterface) then {
 
     ["| Operation Cobra - Running ClientInit..."] call ALiVE_fnc_dump;
@@ -107,4 +149,3 @@ if (hasInterface) then {
         ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;
     };
 };
-

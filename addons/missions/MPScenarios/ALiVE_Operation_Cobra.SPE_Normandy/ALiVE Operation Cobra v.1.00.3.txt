@@ -1,0 +1,21 @@
+Changelog
+
+ALiVE Operation Cobra v.1.00.3
+
+- Updated dominant faction in CQB module
+- Fixed issue where client's were running ALIVE_fnc_getNearProfiles from global trigger. ALIVE_fnc_getNearProfiles should only be called serverside since ALiVE_profileSystem is not PV'd to clients.
+- Fixed locality issues when players JIP'd and interacted with MHQ
+- Updated wording of Intel displayMenu's
+- Added attack intel script
+- Update initServer.sqf
+- Update initServer.sqf
+- Update initplayerlocal.sqf
+- Update init.sqf
+- Added empty vehicle markers
+- Performance pass on mission.sqm
+- Added Main base blacklist for IFS
+- Fix for IFS dissapearing on respawn
+- Update README.md
+
+
+

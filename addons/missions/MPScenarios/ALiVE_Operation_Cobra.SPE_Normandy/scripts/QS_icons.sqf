@@ -189,7 +189,7 @@ _QS_ST_GRPrequireGPSItem = FALSE;								// BOOL. TRUE to require player have GP
 //============================= CONFIGURE BONUS FEATURES ===========================//
 //==================================================================================//
 
-_QS_ST_showEmptyVehicles = FALSE;								// BOOL. TRUE to mark certain unoccupied vehicles on the map. The vehicle must be assigned this variable:    <vehicle> setVariable ['QS_ST_drawEmptyVehicle',TRUE,TRUE];    Default FALSE.   Only works if  _QS_ST_map_enableUnitIcons = TRUE;
+_QS_ST_showEmptyVehicles = TRUE;								// BOOL. TRUE to mark certain unoccupied vehicles on the map. The vehicle must be assigned this variable:    <vehicle> setVariable ['QS_ST_drawEmptyVehicle',TRUE,TRUE];    Default FALSE.   Only works if  _QS_ST_map_enableUnitIcons = TRUE;
 _QS_ST_iconColor_empty = [0.7,0.6,0,0.5];						// ARRAY (NUMBERS). Color of unoccupied vehicles, in RGBA. Default = [0.7,0.6,0,0.5];
 _QS_ST_iconSize_empty = 20;										// NUMBER. Icon size of unoccupied vehicles, if shown.
 

@@ -16,7 +16,6 @@
 _player = _this select 0;
 _didJIP = _this select 1;
 
-
 // --- Enable full spectator in respawn screen
 {
 	missionNamespace setVariable [_x,true];
@@ -46,7 +45,12 @@ SPE_fnc_IFS_hasRadio =
     _hasRadioItem 
 };
 
+SPE_IFS_requestedsupportavailabilitydelay = [[210,210,210],[275,275,275],[200,480,300],[420,420,420]];
 
+SPE_IFS_areablacklist = ["mainblacklist"];
+
+SPE_IFS_shouldBlacklistBlockRequestedSupport = true;
+	
 // save loadout
 [missionnamespace,"arsenalClosed", {[player, [missionNamespace, "inventory_var"]] call BIS_fnc_saveInventory;
 	diag_log format["%1: initPlayerLocal.sqf -> %2 inventory_var saved", missionName, missionNamespace]; 
@@ -95,16 +99,8 @@ if (_didJIP) then {
 //Initialize BIS group menu
 ["InitializePlayer", [player, true]] call BIS_fnc_dynamicGroups;
 
-// Initialize SPE Revive for units recruited in a player group
-(group player) addEventHandler ["UnitJoined", {
-    params ["_group", "_newUnit"];
-
-    [_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaInit;
-    [_newUnit] call SPE_MissionUtilityFunctions_fnc_ReviveToksaActionsInit;
-}];
-
 // Add Earplus addaction on mission start
 PX_earPlugAction = player addAction [("<t color='#00FF00'>Insert Ear Plugs</t>"), {call PX_fnc_earPlugsInsert}, [], 1, false, true];
 
 //Initialize Soldier Tracker Script
-[] execVM "scripts\QS_icons.sqf";
+[] execVM "scripts\QS_icons.sqf"; 		
