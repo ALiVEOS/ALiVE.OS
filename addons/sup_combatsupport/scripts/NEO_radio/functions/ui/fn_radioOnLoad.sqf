@@ -46,22 +46,21 @@ _available = [];
 _transportArray = NEO_radioLogic getVariable format ["NEO_radioTrasportArray_%1", playerSide];
 _casArray = NEO_radioLogic getVariable format ["NEO_radioCasArray_%1", playerSide];
 
-        private ["_artyArray","_count"];
-        _newArtyArray = [];
+  	    _has_SPE_leFH18 = false;
+  	    {
+  	    	if(_x select 1 == "SPE_leFH18") then {
+  	    		_has_SPE_leFH18 = true;
+  	    	}
+  	    } forEach SUP_ARTYARRAYS;
+  
         _artyArray = []; 
-        _count = 0;       
-        {
-         _thisPlayerSide = playerSide;
-         if (_x find "SPE_leFH18" != -1) then { 
-         	if (playerSide != WEST) then {
-         		_thisPlayerSide = WEST; 
-         		};
-         };
-        _artyArray append (NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _thisPlayerSide]);
-        _newArtyArray append ([_artyArray select _count]);
-         _count = _count +1;
-        } forEach SUP_ARTYARRAYS;
-				_artyArray = _newArtyArray;
+        _artyArray append (NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", playerSide]);
+ 
+	      if (_has_SPE_leFH18) then { 
+	      	if (playerSide != WEST) then {
+	        _artyArray append (NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", WEST]);
+	        };
+	      };
 
 //Available Supports
 if (count _transportArray > 0) then { _available pushback (["TRANSPORT", "\a3\Ui_f\data\GUI\Cfg\CommunicationMenu\transport_ca.paa"]) };
