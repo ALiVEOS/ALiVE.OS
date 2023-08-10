@@ -25,7 +25,7 @@ marceldev89
 ---------------------------------------------------------------------------- */
 
 #define HE_SUBSTRINGS      ["Mo_shells", "he", "HE"];
-#define SMOKE_SUBSTRINGS   ["Mo_smoke", "smoke", "Smoke","smokeshell","SmokeShell"];
+#define SMOKE_SUBSTRINGS   ["Mo_smoke", "smoke", "Smoke","smokeshell","SmokeShell","NB","nb"];
 #define PHOS_SUBSTRINGS    ["wp", "WP"];
 #define GUIDED_SUBSTRINGS  ["Mo_guided"];
 #define CLUSTER_SUBSTRINGS ["Mo_Cluster"];
