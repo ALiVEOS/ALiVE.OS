@@ -52,13 +52,12 @@ Peer Reviewed:
 #define MTEMPLATE "ALiVE_XSTREAM_%1"
 
 
-private ["_logic","_operation","_args","_result","_debug","_enableTwitch","_enableCamera","_enableLiveMap"];
+private ["_result","_debug","_enableTwitch","_enableCamera","_enableLiveMap"];
 
 TRACE_1("XSTREAM - input",_this);
 
-_logic = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_operation = [_this, 1, "", [""]] call BIS_fnc_param;
-_args = [_this, 2, objNull, [objNull,[],"",0,true,false]] call BIS_fnc_param;
+params [["_logic", objNull, [objNull]], ["_operation", "", [""]], ["_args", objNull, [objNull,[],"",0,true,false]]];
+
 _result = true;
 
 switch(_operation) do {

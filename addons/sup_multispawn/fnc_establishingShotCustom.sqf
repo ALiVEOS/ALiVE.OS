@@ -37,19 +37,11 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_tgt", "_txt", "_alt", "_rad", "_ang", "_dir"];
+params [["_tgt", objNull, [objNull, []]], ["_txt", "", [""]], ["_alt", 500, [500]], ["_rad", 200, [200]], ["_ang", random 360, [0]], ["_dir", round random 1, [0]], ["_condition", [[],{true}], [[]]]];
 
 if !(hasInterface) exitwith {};
 
-_tgt = [_this, 0, objNull, [objNull, []]] call BIS_fnc_param;
-_txt = [_this, 1, "", [""]] call BIS_fnc_param;
-_alt = [_this, 2, 500, [500]] call BIS_fnc_param;
-_rad = [_this, 3, 200, [200]] call BIS_fnc_param;
-_ang = [_this, 4, random 360, [0]] call BIS_fnc_param;
-_dir = [_this, 5, round random 1, [0]] call BIS_fnc_param;
-_condition = [_this, 8, [[],{true}], [[]]] call BIS_fnc_param;
-
-ALiVE_fnc_establishingShot_icons = [_this, 6, [], [[]]] call BIS_fnc_param;
+ALiVE_fnc_establishingShot_icons = _this param [6, [], [[]]];
 
 private ["_mode"];
 

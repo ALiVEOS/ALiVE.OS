@@ -24,10 +24,10 @@ Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_object","_container","_containerCanCarry","_objectCanCarry","_canCarry","_blacklist"];
+params[["_object", objNull, [objNull]], ["_container", objNull, [objNull]]];
 
-_object = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_container = [_this, 1, objNull, [objNull]] call BIS_fnc_param;
+private ["_containerCanCarry","_objectCanCarry","_canCarry","_blacklist"];
+
 _allowedContainers = GVAR(CARRYABLE) select 0;
 _allowedObjects = GVAR(CARRYABLE) select 1;
 _blackList = GVAR(CARRYABLE) select 2;

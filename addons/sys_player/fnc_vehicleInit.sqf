@@ -28,9 +28,9 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_vehicle","_vehicleID"];
+private ["_vehicleID"];
 
-_vehicle = [_this, 0, objNull, [objNull,[]]] call BIS_fnc_param;
+params [["_vehicle", objNull, [objNull,[]]]];
 
 if (isServer && !isHC) then {
     if (isNil QGVAR(VEHICLEID)) then {

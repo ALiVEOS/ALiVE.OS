@@ -37,21 +37,11 @@ _result = [];
 switch (_taskState) do {
     case "init":{
 
-        private ["_startTime","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetTypes","_blacklist"];
+        private ["_startTime","_taskEnemySide","_targetSector","_targetEntity","_taskPlayers","_targetTypes","_blacklist", "_taskCurrent"];
 
-        private _taskID = [_task, 0, "", [""]] call BIS_fnc_param;
-        private _requestPlayerID = [_task, 1, "", [""]] call BIS_fnc_param;
-        private _taskSide = [_task, 2, "", [""]] call BIS_fnc_param;
-        private _taskFaction = [_task, 3, "", [""]] call BIS_fnc_param;
-        private _taskType = [_task, 4, "", [""]] call BIS_fnc_param;
-        private _taskLocationType = [_task, 5, "", [""]] call BIS_fnc_param;
-        private _taskLocation = [_task, 6, [], [[]]] call BIS_fnc_param;
-        private _taskPlayers = [_task, 7, [], [[]]] call BIS_fnc_param;
-        private _taskEnemyFaction = [_task, 8, "", [""]] call BIS_fnc_param;
-        private _taskCurrent = [_task, 9, "", [""]] call BIS_fnc_param;
-        private _taskApplyType = [_task, 10, "", [""]] call BIS_fnc_param;
-        private _targetBuildings = [_task, 11, [], [objnull,[]]] call BIS_fnc_param;
-        private _tasksCurrent = ([ALiVE_TaskHandler,"tasks",["",[],[],nil]] call ALiVE_fnc_HashGet) select 2;
+        _task params [["_taskID", "", [""]], ["_requestPlayerID", "", [""]], ["_taskSide", "", [""]], ["_taskFaction", "", [""]], ["_taskType", "", [""]], ["_taskLocationType", "", [""]],
+            ["_taskLocation", [], [[]]], ["_taskPlayers", [], [[]]], ["_taskEnemyFaction", "", [""]], ["_taskCurrent", "", [""]], ["_taskApplyType", "", [""]], ["_targetBuildings", [], [objNull,[]]]
+        ];
 
         private _targetBuilding = objNull;
 

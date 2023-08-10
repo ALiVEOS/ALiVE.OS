@@ -29,9 +29,7 @@ params [
     ["_params", [], [[]]]
 ];
 
-//["Params %1",_params] call AliVE_fnc_DumpH; getRelDir
-
-private _destination = [_params, 2, [0,0,0], [[]]] call BIS_fnc_param;
+private _destination = _params param [2, [0,0,0], [[]]];
 
 if (isnil "_profile") exitwith {};
 

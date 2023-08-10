@@ -2,10 +2,10 @@
 SCRIPT(getObjectFuel);
 
 /* ----------------------------------------------------------------------------
-Function: ALIVE_fnc_getObjectFuel
+Function: ALIVE_fnc_setObjectFuel
 Description:
 
-Gets fuel state of the given object.
+Sets fuel state of the given object.
 
 Parameters:
 _this: ARRAY of OBJECTs
@@ -22,11 +22,7 @@ Highhead
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
-
-private ["_object","_fuel"];
-
-_object = [_this, 0, objNull, [objNull]] call BIS_fnc_param;
-_fuel = [_this, 1, -1, [-1]] call BIS_fnc_param;
+params[["_object", objNull, [objNull]], ["_fuel", -1, [-1]]];
 
 if (isNull _object) exitwith {};
 

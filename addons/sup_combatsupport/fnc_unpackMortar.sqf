@@ -15,15 +15,13 @@ SCRIPT(unpackMortar);
     _this select 1: location to place gun (position)
     _this select 2: location of target (position)
 */
-private ["_group","_position","_targetPos","_leader","_units","_gunner","_assistant","_weapon"];
+private ["_leader","_units","_gunner","_assistant"];
 
 //diag_log str(_this);
 
-_group =         [_this, 0, grpNull] call bis_fnc_param;
-_position =        [_this, 1, grpNull] call bis_fnc_param;
-_targetPos =     [_this, 2, grpNull] call bis_fnc_param;
-_weapon =         [_this, 3, grpNull] call bis_fnc_param;
-_units =         (units _group);
+params [["_group", grpNull], ["_position", grpNull], ["_targetPos", grpNull], ["_weapon", grpNull]];
+
+_units = (units _group);
 
 {
     if (vehicle _x != _x) then {

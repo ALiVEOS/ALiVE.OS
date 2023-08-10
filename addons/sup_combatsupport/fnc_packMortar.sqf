@@ -14,16 +14,16 @@ SCRIPT(packMortar);
     _this select 0: the support team group (group)
     _this select 1: the weapon (option if weapon registered as "supportWeaponSetup" variable)
 */
-private["_group","_weapon","_position","_leader","_units","_gunner","_assistant","_type","_wait"];
+private["_position","_leader","_units","_gunner","_assistant","_type","_wait"];
 
-_group =     [_this, 0, grpNull] call bis_fnc_param;
-_weapon =     [_this, 1, grpNull] call bis_fnc_param;
-_type =     typeOf _weapon;
+params [["_group", grpNull], ["_weapon", grpNull]];
+
+_type = typeOf _weapon;
 _position = position _weapon;
-_leader =     leader _group;
-_gunner =     gunner _weapon;
-_units =     (units _group) - [_leader];
-_units =    _units - [_gunner];
+_leader = leader _group;
+_gunner = gunner _weapon;
+_units = (units _group) - [_leader];
+_units = _units - [_gunner];
 
 if (_weapon == objNull || isNil "_weapon" || _group == grpNull || _leader == objNull) exitWith {};
 

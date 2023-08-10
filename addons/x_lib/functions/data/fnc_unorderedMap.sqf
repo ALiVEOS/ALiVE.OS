@@ -89,7 +89,7 @@ switch (_func) do
     case "at": // _args = "key" or ["key", default]
     {
         private ["_index"];
-        _index = (_data select 1) find ([_args, 0, ""] call BIS_fnc_param);
+        _index = (_data select 1) find (_args param [0, ""]);
 
         if (_index >= 0) then
         {
@@ -97,7 +97,7 @@ switch (_func) do
         }
         else
         {
-            [_args, 1, nil] call BIS_fnc_param; // Return default or nil on failure
+            _args param [1, nil]; // Return default or nil on failure
         };
     };
 
