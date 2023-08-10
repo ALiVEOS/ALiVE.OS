@@ -6,16 +6,22 @@ private
 ];
 _display = findDisplay 655555;
 
-_thisPlayerSide = playerSide;
-{
-	if (_x find "SPE_leFH18" != -1) then { 
-		if (playerSide != WEST) then {
-			_thisPlayerSide = WEST; 
-			break;
-		};
-	};
-} forEach SUP_ARTYARRAYS;
-_artyArray = NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _thisPlayerSide];
+        private ["_artyArray","_count"];
+        _newArtyArray = [];
+        _artyArray = []; 
+        _count = 0;       
+        {
+         _thisPlayerSide = playerSide;
+         if (_x find "SPE_leFH18" != -1) then { 
+         	if (playerSide != WEST) then {
+         		_thisPlayerSide = WEST; 
+         		};
+         };
+        _artyArray append (NEO_radioLogic getVariable format ["NEO_radioArtyArray_%1", _thisPlayerSide]);
+        _newArtyArray append ([_artyArray select _count]);
+         _count = _count +1;
+        } forEach SUP_ARTYARRAYS;
+				_artyArray = _newArtyArray;
 
 _audio = NEO_radioLogic getVariable format ["combatsupport_audio", true];
 _artyConfirmButton = _display displayCtrl 655597;

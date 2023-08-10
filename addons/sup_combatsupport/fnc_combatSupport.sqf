@@ -638,8 +638,14 @@ switch(_operation) do {
                             private ["_veh","_grp","_crew"];
 
                             _veh = nearestObjects [_pos, [_class], 5];
-
-                            if (count _veh > 0) then {_veh = _veh select 0; _grp = group _veh} else {_veh = nil; _grp = createGroup _side};
+                            
+    
+                             if (_class == "SPE_leFH18" && _side != playerSide) then {
+                             	 if (count _veh > 0) then {_veh = _veh select 0; _grp = group _veh} else {_veh = nil; _grp = createGroup playerSide};
+                             } else {
+                               if (count _veh > 0) then {_veh = _veh select 0; _grp = group _veh} else {_veh = nil; _grp = createGroup _side};
+                             };
+                             
 
                             if (isnil "_veh") then {
                                 private ["_vehPos","_i"];
@@ -660,7 +666,62 @@ switch(_operation) do {
                                     _veh lock true;
                                     _vehDir = _vehDir + 90;
 
-                                    createVehicleCrew _veh;
+
+                                   // ["fnc_combatsupport.sqf - playerSide: %1, _side: %2", playerSide, _side] call ALiVE_fnc_dump;
+                                    if (_class == "SPE_leFH18" && _side != playerSide) then {
+                                    	
+																				// create crew members for the vehicle
+																				_vehicleKind = _class call ALIVE_fnc_vehicleGetKindOf;
+																				_crew = "SPE_57mm_M1" call ALIVE_fnc_configGetVehicleCrew;
+																				_vehiclePositions = [_class] call ALIVE_fnc_configGetVehicleEmptyPositions;
+																			//	["fnc_combatsupport.sqf - _vehiclePositions: %1", _vehiclePositions] call ALiVE_fnc_dump; 
+																				_countCrewPositions = 0;
+
+																				// count all non cargo positions except "StaticWeapon"
+																				_crewCountPositions = count _vehiclePositions;
+																				 if (_vehicleKind != "StaticWeapon") then {
+																				 	_crewCountPositions = count _vehiclePositions -3;
+																				 };
+																				
+																			//	 ["fnc_combatsupport.sqf - _crewCountPositions: %1, _vehiclePositions: %2", _crewCountPositions, _vehiclePositions] call ALiVE_fnc_dump; 
+																				 
+																				for "_i" from 0 to _crewCountPositions -1  do {
+																				    _countCrewPositions = _countCrewPositions + (_vehiclePositions select _i);
+																				};
+																				
+																		//	 ["fnc_combatsupport.sqf - _countCrewPositions: %1", _countCrewPositions] call ALiVE_fnc_dump; 	
+	
+																			_vehicleUnits = [];          
+                                    	for "_i" from 0 to _countCrewPositions -1 do {
+                                    	   _vehicleCrewUnit = _grp createUnit [_crew, getPosATL _veh, [], 0, "FORM"];
+                                    	//   ["fnc_combatsupport.sqf - _vehicleCrewUnit: %1, typeName _vehicleCrewUnit", _vehicleCrewUnit, typeName _vehicleCrewUnit] call ALiVE_fnc_dump; 
+                                    	   _vehicleUnits pushback _vehicleCrewUnit;
+                                    	}; 
+                                    	
+                                    	//	["fnc_combatsupport.sqf - _vehicleUnits: %1", _vehicleUnits] call ALiVE_fnc_dump; 
+  
+																					_assignments = [[],[],[],[],[],[]];
+																					for "_i" from 0 to (count _vehiclePositions)-1 do {   
+																					  if (_vehiclePositions select _i >0) then {
+																					  	for "_z" from 0 to (_vehiclePositions select _i) -1 do {
+																					  		 (_assignments select _i) append [(_vehicleUnits select 0)];
+																					  	   _vehicleUnits deleteAt 0;
+																					  	};
+																					  	_vehicleUnits sort true; 
+																					  };  
+																					};   
+																		/*		 	
+																		["fnc_combatsupport.sqf - _assignments: %1", _assignments] call ALiVE_fnc_dump; 	    
+																	  ["fnc_combatsupport.sqf - _vehicleUnits: %1", _vehicleUnits] call ALiVE_fnc_dump; 	           	
+																		*/
+                                    _result = [_assignments, _veh] call ALIVE_fnc_vehicleMoveIn;
+                                    	 
+                                    	
+                                    } else {
+                                      createVehicleCrew _veh;
+                                    };
+																		  
+                                    
                                     _crew = crew _veh;
                                     _crew joinSilent _grp;
                                     _grp addVehicle _veh;
