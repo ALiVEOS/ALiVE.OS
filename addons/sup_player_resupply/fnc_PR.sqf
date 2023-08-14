@@ -2082,7 +2082,7 @@ switch(_operation) do {
                                 if(_selectedReinforceListParents select 0 == "Groups") then {
 
                                     // selected a group category
-                                    // display groups                                 
+                                    // display groups
 
                                     _updateList = true;
 
@@ -2102,7 +2102,7 @@ switch(_operation) do {
                                     private ["_payloadListOptions","_payloadListValues","_payloadList","_selectedParents"];
 
                                     // selected something from the third level
-                                    // a vehicle has been selected..                              
+                                    // a vehicle has been selected..          
 
                                     _payloadListOptions = [_logic,"payloadListOptions"] call MAINCLASS;
                                     _payloadListValues = [_logic,"payloadListValues"] call MAINCLASS;
@@ -2189,10 +2189,7 @@ switch(_operation) do {
                             lbClear _reinforceList;
 
                             {
-
                                 private _index = _reinforceList lbAdd format["%1", _x];
-
-
 
                                 if (_index > 0) then {
                                     private _tooltip = "";
@@ -2243,9 +2240,6 @@ switch(_operation) do {
                     [_logic,"payloadListIndex",_selectedIndex] call MAINCLASS;
                     [_logic,"payloadListValue",_selectedValue] call MAINCLASS;
 
-
-
- ["HERE - PAYLOAD_LIST_SELECT -> _payloadList: %1", _payloadList] call ALiVE_fnc_dump;
 
                     // enable delete button
 
