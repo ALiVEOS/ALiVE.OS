@@ -981,7 +981,7 @@ switch(_operation) do {
         private _locked = [_logic, "locked",false] call ALIVE_fnc_hashGet;
         private _ignore_HC = [_logic, "ignore_HC",false] call ALIVE_fnc_hashGet;
         private _isSPE = _logic select 2 select 35; // [_logic "isSPE"] call ALIVE_fnc_hashGet;
-        private _aiBehaviour = _logic select 2 select 36; // [_logic "aiBehaviour"] call ALIVE_fnc_hashGet;
+        private _aiBehaviour = [_logic, "aiBehaviour","AWARE"] call ALIVE_fnc_hashGet;
 
         private _formation = selectRandom ["COLUMN","STAG COLUMN","WEDGE","ECH LEFT","ECH RIGHT","VEE","LINE"];
         private _unitCount = 0;
