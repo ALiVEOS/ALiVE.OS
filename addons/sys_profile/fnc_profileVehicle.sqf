@@ -145,6 +145,7 @@ switch (_operation) do {
             [_logic,"slingload",[]] call ALIVE_fnc_hashSet;             // select 2 select 28
             [_logic,"slung",[]] call ALIVE_fnc_hashSet;                 // select 2 select 29
             [_logic,"isSPE",false] call ALIVE_fnc_hashSet;              // select 2 select 30
+            [_logic,"aiBehaviour","AWARE"] call ALIVE_fnc_hashSet;      // select 2 select 31
         };
 
         /*
@@ -380,6 +381,15 @@ switch (_operation) do {
         };
     };
     
+    
+    case "aiBehaviour": {
+        if (_args isEqualType "") then {
+            [_logic,"aiBehaviour", _args] call ALIVE_fnc_hashSet;
+        } else {
+            _result = [_logic,"aiBehaviour"] call ALIVE_fnc_hashGet;
+        };
+    };  
+    
 
     case "addVehicleAssignment": {
         if (_args isEqualType []) then {
@@ -454,6 +464,8 @@ switch (_operation) do {
         _slingload = [_logic, "slingload", []] call ALIVE_fnc_HashGet; //unindexed: _slingload = _logic select 2 select 28;
         _slung = [_logic, "slung", []] call ALIVE_fnc_HashGet; //unindexed: _slung = _logic select 2 select 29;
         _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_HashGet; //unindexed: _isSPE = _logic select 2 select 30;
+        _aiBehaviour = [_logic, "aiBehaviour", false] call ALIVE_fnc_HashGet; //unindexed: _aiBehaviour = _logic select 2 select 31;
+        
         
         
         _paraDrop = false;
