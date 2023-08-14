@@ -65,6 +65,7 @@ class CfgVehicles {
                                         {
                                                 name = "Aware";
                                                 value = "AWARE";
+                                                default = 1;
                                         };
                                         class COMBAT
                                         {
@@ -75,7 +76,6 @@ class CfgVehicles {
                                         {
                                                 name = "Stealth";
                                                 value = "STEALTH";
-                                                default = 1;
                                         };
                                         class SAFE
                                         {
