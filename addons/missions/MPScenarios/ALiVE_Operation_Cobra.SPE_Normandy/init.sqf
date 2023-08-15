@@ -146,6 +146,14 @@ if (hasInterface) then {
         _text = format["%1<t>You can use ALiVE Logistics to move supplies by vehicle to other locations.</t>",_title];
 
         ["openSideSmall",0.4] call ALIVE_fnc_displayMenu;
+        ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;       
+	
+	    sleep 15;
+
+        _title = "<t size='1.5' color='#68a7b7' shadow='1'>OPERATION COBRA</t><br/>";
+        _text = format["%1<t>You can use skip time by using the flagpole.</t>",_title];
+
+        ["openSideSmall",0.4] call ALIVE_fnc_displayMenu;
         ["setSideSmallText",_text] call ALIVE_fnc_displayMenu;
     };
 };

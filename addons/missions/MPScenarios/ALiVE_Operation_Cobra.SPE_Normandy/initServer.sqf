@@ -76,3 +76,11 @@ publicVariable "SPE_IFS_CASAvailability_Side";
     ALiVE_Helper_opcomEventListener = compile preprocessFileLineNumbers "Scripts\opcomEventListener.sqf";
     opcomEventListener = [nil,"create", ["ALiVE_Helper_opcomEventListener"]] call ALiVE_Helper_opcomEventListener;
 };
+
+["someId", "onPlayerConnected", {
+	if (({isPlayer _x} count playableUnits) > 0 || OPCOM_TOGGLE) then { ["ALIVE_MIL_OPCOM"] call ALiVE_fnc_unPauseModule; OPCOM_TOGGLE = false; };
+}] call BIS_fnc_addStackedEventHandler;
+ 
+["someId", "onPlayerDisconnected", {
+	if ( ({isPlayer _x} count playableUnits) == 0 ) then { ["ALIVE_MIL_OPCOM"] call ALiVE_fnc_pauseModule; OPCOM_TOGGLE = true; };
+}] call BIS_fnc_addStackedEventHandler;
