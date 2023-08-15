@@ -1135,7 +1135,9 @@ switch(_operation) do {
                         "objectType",
                         "unitCount",
                         "ranks",
-                        "side"
+                        "side",
+                        "isSPE",
+                        "aiBehaviour"
                     ]] call ALIVE_fnc_hashCopy;
 
                     [_exportProfile, "type", 1] call ALIVE_fnc_hashSet;
@@ -1189,6 +1191,12 @@ switch(_operation) do {
                     if(count _vehiclesInCargoOf == 0) then {
                         [_exportProfile, "vehiclesInCargoOf"] call ALIVE_fnc_hashRem;
                     };
+                    
+                    _isSPE = [_profile, "isSPE", false] call ALIVE_fnc_hashGet;
+                    [_exportProfile, "isSPE", _isSPE] call ALIVE_fnc_hashSet;
+
+                    _aiBehaviour = [_profile, "aiBehaviour", "AWARE"] call ALIVE_fnc_hashGet;
+                    [_exportProfile, "aiBehaviour", _aiBehaviour] call ALIVE_fnc_hashSet;
 
                 }else{
 
@@ -1207,7 +1215,9 @@ switch(_operation) do {
                         "needReload",
                         "fuel",
                         "damage",
-                        "side"
+                        "side",
+                        "isSPE",
+                        "aiBehaviour"
                     ]] call ALIVE_fnc_hashCopy;
 
                     [_exportProfile, "type", 2] call ALIVE_fnc_hashSet;
@@ -1247,6 +1257,12 @@ switch(_operation) do {
                 if(count _assignmentValues > 0) then {
                     [_exportProfile, "vehicleAssignmentValues", _assignmentValues] call ALIVE_fnc_hashSet;
                 };
+                
+                _isSPE = [_profile, "isSPE", false] call ALIVE_fnc_hashGet;
+                [_exportProfile, "isSPE", _isSPE] call ALIVE_fnc_hashSet;
+
+                _aiBehaviour = [_profile, "aiBehaviour", "AWARE"] call ALIVE_fnc_hashGet;
+                [_exportProfile, "aiBehaviour", _aiBehaviour] call ALIVE_fnc_hashSet;
 
                 [_exportProfiles, _profileID, _exportProfile] call ALIVE_fnc_hashSet;
 
@@ -1331,6 +1347,9 @@ switch(_operation) do {
                     [_profileEntity, "hasSimulated", [_profile,"hasSimulated"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                     [_profileEntity, "despawnPosition", [_profile,"despawnPosition"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
 
+                    [_profileEntity, "isSPE", [_profile,"isSPE"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                    [_profileEntity, "aiBehaviour", [_profile,"aiBehaviour"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+
                     /*
                     [_profileEntity, "objectType", [_profile,"objectType"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
                     [_profileEntity, "unitCount", [_profile,"unitCount"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
@@ -1402,7 +1421,7 @@ switch(_operation) do {
 
                         _entities pushback _index;
                     };
-                }else{
+                } else {
 
                     _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
                     [_profileVehicle, "init"] call ALIVE_fnc_profileVehicle;
@@ -1418,6 +1437,9 @@ switch(_operation) do {
 
                     [_profileVehicle, "hasSimulated", [_profile,"hasSimulated"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                     [_profileVehicle, "despawnPosition", [_profile,"despawnPosition"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+
+                    [_profileVehicle, "isSPE", [_profile,"isSPE"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                    [_profileVehicle, "aiBehaviour", [_profile,"aiBehaviour"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
 
                     /*
                     [_profileVehicle, "damage", [_profile,"damage"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileVehicle;

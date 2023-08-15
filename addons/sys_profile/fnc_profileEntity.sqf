@@ -505,7 +505,7 @@ switch(_operation) do {
 
     case "insertWaypoint": {
       private _waypoint = _args;
-      private _isSPE = _logic select 2 select 35;  
+      private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
       if (isNil "_isSPE") then { _isSPE = false; };
       if (typeName _isSPE != "BOOL") then { _isSPE = false; };
       if !(_isSPE) then {
@@ -521,7 +521,7 @@ switch(_operation) do {
 
     case "addWaypoint": {
       private _waypoint = _args;
-      private _isSPE = _logic select 2 select 35;
+      private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
       if (isNil "_isSPE") then { _isSPE = false; };
       if (typeName _isSPE != "BOOL") then { _isSPE = false; };
       if !(_isSPE) then {
@@ -543,7 +543,7 @@ switch(_operation) do {
 
       private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
       private _pendingPath = [_ready,_insertionMethod,[],_waypoint];
-      private _isSPE = _logic select 2 select 35;  
+      private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet; 
       if (isNil "_isSPE") then { _isSPE = false; };
       if (typeName _isSPE != "BOOL") then { _isSPE = false; };
       if !(_isSPE) then {
@@ -652,7 +652,7 @@ switch(_operation) do {
     };
 
     case "insertWaypointInternal": {
-    	private _isSPE = _logic select 2 select 35;
+      private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
     	if (isNil "_isSPE") then { _isSPE = false; };
     	if (typeName _isSPE != "BOOL") then { _isSPE = false; };
       if !(_isSPE) then {
@@ -670,7 +670,7 @@ switch(_operation) do {
     };
 
     case "addWaypointInternal": {
-    	private _isSPE = _logic select 2 select 35;
+      private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
     	if (isNil "_isSPE") then { _isSPE = false; };
       if (typeName _isSPE != "BOOL") then { _isSPE = false; };
       if !(_isSPE) then {
@@ -980,9 +980,17 @@ switch(_operation) do {
         private _vehiclesInCargoOf = _logic select 2 select 9; //[_profile,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;
         private _locked = [_logic, "locked",false] call ALIVE_fnc_hashGet;
         private _ignore_HC = [_logic, "ignore_HC",false] call ALIVE_fnc_hashGet;
-        private _isSPE = _logic select 2 select 35; // [_logic "isSPE"] call ALIVE_fnc_hashGet;
-        private _aiBehaviour = [_logic, "aiBehaviour","AWARE"] call ALIVE_fnc_hashGet;
-
+        private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
+        private _aiBehaviour = [_logic, "aiBehaviour", "AWARE"] call ALIVE_fnc_hashGet;
+        private _objectType = [_logic, "objectType", ""] call ALIVE_fnc_hashGet;
+        private _debugMarkers = [_logic, "debugMarkers", ""] call ALIVE_fnc_hashGet;
+        /*
+        if(_debug) then {
+        	 ["Profile [%1] Spawn - _logic select 1: %2", _profileID, _logic select 1] call ALIVE_fnc_dump;
+        	["Profile [%1] Spawn - _logic select 2: %2", _profileID, _logic select 2] call ALIVE_fnc_dump;
+					["Profile [%1] Spawn - _isSPE: %2, _aiBehaviour: %3, _objectType: %4, _debugMarkers: %5",_profileID, _isSPE, _aiBehaviour, _objectType, _debugMarkers] call ALIVE_fnc_dump;
+				};
+        */
         private _formation = selectRandom ["COLUMN","STAG COLUMN","WEDGE","ECH LEFT","ECH RIGHT","VEE","LINE"];
         private _unitCount = 0;
         private _units = [];
@@ -1123,7 +1131,7 @@ switch(_operation) do {
               [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
               // DEBUG -------------------------------------------------------------------------------------
               if(_debug) then {
-							  ["fnc_profileEntity -> _isSPE: %1, _group: %2,_aiBehaviour: %3", _isSPE, _group, _aiBehaviour] call ALIVE_fnc_dump;
+							  ["Profile [%1] Spawn - _isSPE: %2, _group: %3,_aiBehaviour: %4",_profileID, _isSPE, _group, _aiBehaviour] call ALIVE_fnc_dump;
 						  };
 							_group setBehaviourStrong _aiBehaviour;
 							for "_i" from (count waypoints _group - 1) to 0 step -1 do
