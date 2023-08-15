@@ -755,6 +755,9 @@ switch (_operation) do {
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
+            	if (_isSPE) then {
+            		["Profile [%1] Spawn - group: %6, _isSPE: %2, _aiBehaviour: %3, _vehicleClass: %4, _vehicleType: %5",_profileID, _isSPE, _aiBehaviour, _vehicleClass, _vehicleType, group _vehicle] call ALIVE_fnc_dump;
+            	};
                 //["Profile [%1] Spawn - class: %2 type: %3 pos: %4",_profileID,_vehicleClass,_vehicleType,_position] call ALIVE_fnc_dump;
                 [_logic,"debug",true] call MAINCLASS;
             };
