@@ -35,6 +35,9 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 // CDLC
 [ALIVE_civilianWeapons, "C_VIET", [["vn_p38s","vn_m10_mag"],["vn_hp","vn_hp_mag"],["vm_m1895","vm_m1895_mag"],["vn_tt33","vn_tt33_mag"],["vn_m1911","vn_m1911_mag"],["vn_m10","vn_m10_mag"]]] call ALIVE_fnc_hashSet;
 [ALIVE_civilianWeapons, "SPE_CIV", [["SPE_P08","SPE_8Rnd_9x19_P08"],["SPE_M1911","SPE_7Rnd_45ACP_1911"],["SPE_Sten_Mk2","SPE_32Rnd_9x19_Sten"],["SPE_K98","SPE_5Rnd_792x57"],["SPE_MP40","SPE_32rnd_9x19"],["SPE_M3_GreaseGun","SPE_30Rnd_M3_GreaseGun_45ACP"]]] call ALIVE_fnc_hashSet;
+[ALIVE_civilianWeapons, "gm_fc_gc_civ", [["gm_p210_blk","gm_magazineWell_9x19mm_p210"],["gm_p1_blk","gm_magazineWell_9x19mm_p1"],["gm_pm63_blk","gm_magazineWell_9x18mm_pm63"],["gm_hk512_ris_wud","gm_magazineWell_12ga_7rnd"],["gm_mp5a2_blk","gm_magazineWell_9x19mm_mp5"],["gm_mp2a1_blk","gm_magazineWell_9x19mm_mp2"]]] call ALIVE_fnc_hashSet;
+[ALIVE_civilianWeapons, "gm_fc_ge_civ", [["gm_p210_blk","gm_magazineWell_9x19mm_p210"],["gm_p1_blk","gm_magazineWell_9x19mm_p1"],["gm_pm63_blk","gm_magazineWell_9x18mm_pm63"],["gm_hk512_ris_wud","gm_magazineWell_12ga_7rnd"],["gm_mp5a2_blk","gm_magazineWell_9x19mm_mp5"],["gm_mp2a1_blk","gm_magazineWell_9x19mm_mp2"]]] call ALIVE_fnc_hashSet;
+
 
 // Civ Pop Interaction
 ALiVE_CivPop_Interaction_WaterItems = [
@@ -465,3 +468,8 @@ SPE_CIV_ALIVE_civilianHouseTracks = [] call ALIVE_fnc_hashCreate;
 [SPE_CIV_ALIVE_civilianHouseTracks, "ALiVE_Civpop_Audio_PAC_11", 24] call ALIVE_fnc_hashSet;
 
 [ALIVE_civilianFactionHouseTracks, "SPE_CIV", SPE_CIV_ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
+
+// GM
+[ALIVE_civilianFactionHouseTracks, "gm_fc_gc_civ", ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
+[ALIVE_civilianFactionHouseTracks, "gm_fc_ge_civ", ALIVE_civilianHouseTracks] call ALIVE_fnc_hashSet;
+

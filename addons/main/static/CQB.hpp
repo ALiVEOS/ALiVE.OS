@@ -100,7 +100,7 @@ ALiVE_MIL_CQB_STRATEGICHOUSES = ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES +
     "Land_vn_o_snipertree_02",
     "Land_vn_o_snipertree_03",
     
-    // SPE
+    // SPE - CDLC Spearhead 1944 1.1
     "Land_SPE_US_Tent",
     "Land_SPE_Guardbox",
     "Land_SPE_Tent_01",
@@ -116,7 +116,33 @@ ALiVE_MIL_CQB_STRATEGICHOUSES = ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES +
     "Land_SPE_Church_BellTower_01",
     "Land_SPE_Church_BellTower_02",
     "Land_SPE_Church_BellTower_03",
-    "Land_SPE_Windmill" 
+    "Land_SPE_Windmill",
+    
+    // GM - CDLC Global Mobilization 1.5
+    "land_gm_euro_church_01",
+    "land_gm_euro_church_02",
+    "land_gm_euro_gardenshed_01",
+    "land_gm_euro_gardenshed_02",
+    "land_gm_euro_shed_03",
+    "land_gm_euro_pub_01",
+    "land_gm_euro_pub_02",
+    "land_gm_euro_barracks_01",
+    "land_gm_euro_barracks_02",
+    "land_gm_euro_fuelstation_01_w",
+    "land_gm_euro_fuelstation_02",
+    "land_gm_euro_factory_02",
+    "land_gm_euro_shed_02",
+    "land_gm_euro_misc_transformer_01",
+    "land_gm_euro_deerstand_01",
+    "land_gm_euro_pub_01_win",
+    "land_gm_euro_pub_02_win",
+    "land_gm_euro_church_01_win",
+    "land_gm_euro_church_02_win",
+    "land_gm_euro_fuelstation_01_w_win",
+    "land_gm_euro_fuelstation_02_win",
+    "land_gm_euro_factory_02_win",
+    "land_gm_euro_barracks_01_win",
+    "land_gm_euro_barracks_02_win"
 ];
 
 /*
@@ -426,7 +452,7 @@ ALiVE_MIL_CQB_UNITBLACKLIST = ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST +
 		"vn_o_men_pl_19", // Crewman (Driver)
 		"vn_o_men_pl_20", // Crewman (Gunner)
 		
-		// SPE
+		// SPE - CDLC Spearhead 1944 1.1
 		"SPE_sturmtrooper_tank_crew",
 		"SPE_sturmtrooper_tank_unterofficer",
 		"SPE_sturmtrooper_tank_lieutenant",
@@ -450,9 +476,18 @@ ALiVE_MIL_CQB_UNITBLACKLIST = ALiVE_MIL_CQB_CUSTOM_UNITBLACKLIST +
 		"SPE_US_Guncrew_Sergeant",
 		"SPE_US_Tank_Crew",
 		"SPE_US_Tank_Second_Lieutenant",
-		"SPE_US_Tank_Sergeant"
+		"SPE_US_Tank_Sergeant",
+		
+		// GM - CDLC Global Mobilization 1.5
+		"gm_gc_army_ammobox_smallarms_80", 
+		"gm_dk_army_ammobox_smallarms_80", 
+		"gm_ge_bgs_bicycle_01_grn",
+		"gm_ge_army_bicycle_01_oli", 
+		"gm_ge_bgs_bicycle_01_grn", 
+		"gm_gc_army_bicycle_01_oli", 
+    "gm_ge_army_general_p1_80_oli",
+    "gm_gc_army_rifleman_80_blk"
 ];
-
 
 ALiVE_MIL_CQB_STRATEGICPLATFORMS = ALiVE_MIL_CQB_CUSTOM_STRATEGICPLATFORMS +
 [

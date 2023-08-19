@@ -55,7 +55,7 @@ BLU_GEN_F_typeMappings = [] call ALIVE_fnc_hashCreate;
 // ---------------------------------------------------------------------------------------------------------------------
 
 
-// // VN - CDLC S.O.G Prairie Fire 1.3 ---------------------------------------------------------------------------------
+// VN - CDLC S.O.G Prairie Fire 1.3 ------------------------------------------------------------------------------------
 
 // PAVN (O_PAVN) - People's Army of Vietnam
 O_PAVN_mappings = [] call ALIVE_fnc_hashCreate;
@@ -310,7 +310,8 @@ B_CIA_typeMappings = [] call ALIVE_fnc_hashCreate;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-// SPE
+
+// SPE - CDLC Spearhead 1944 1.1  --------------------------------------------------------------------------------------
 
 // [SPE] Sturmtroopers
 SPE_STURM_mappings = [] call ALIVE_fnc_hashCreate;
@@ -1506,61 +1507,128 @@ unsung_w_typeMappings = [] call ALIVE_fnc_hashCreate;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-// Global Mobilization
-// gm_dk_army_m84 / gm_dk_army_win
 
-gm_dk_army_m84_mappings = [] call ALIVE_fnc_hashCreate;
-[gm_dk_army_m84_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
-[gm_dk_army_m84_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
-[gm_dk_army_m84_mappings, "FactionName", "gm_fc_DK"] call ALIVE_fnc_hashSet;
-[gm_dk_army_m84_mappings, "GroupFactionName", "gm_fc_DK"] call ALIVE_fnc_hashSet;
+// GM - CDLC Global Mobilization 1.5 -----------------------------------------------------------------------------------
 
-gm_dk_army_m84_typeMappings = [] call ALIVE_fnc_hashCreate;
-[gm_dk_army_m84_typeMappings, "Infantry", "gm_infantry"] call ALIVE_fnc_hashSet;
-[gm_dk_army_m84_mappings, "GroupFactionTypes", gm_dk_army_m84_typeMappings] call ALIVE_fnc_hashSet;
-[ALIVE_factionCustomMappings, "gm_fc_DK", gm_dk_army_m84_mappings] call ALIVE_fnc_hashSet;
+// East Germany
+gm_gc_army_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_gc_army_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
+[gm_gc_army_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
+[gm_gc_army_mappings, "FactionName", "gm_gc_army"] call ALIVE_fnc_hashSet;
+[gm_gc_army_mappings, "GroupFactionName", "gm_gc_army"] call ALIVE_fnc_hashSet;
 
-gm_dk_army_win_mappings = [] call ALIVE_fnc_hashCreate;
-[gm_dk_army_win_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
-[gm_dk_army_win_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
-[gm_dk_army_win_mappings, "FactionName", "gm_dk_army_win"] call ALIVE_fnc_hashSet;
-[gm_dk_army_win_mappings, "GroupFactionName", "gm_dk_army_win"] call ALIVE_fnc_hashSet;
+gm_gc_army_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_gc_army_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
+[gm_gc_army_typeMappings, "Armored", "Armored"] call ALIVE_fnc_hashSet;
+[gm_gc_army_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+[gm_gc_army_typeMappings, "Mechanized", "Mechanized"] call ALIVE_fnc_hashSet;
+[gm_gc_army_typeMappings, "Motorized", "Motorized"] call ALIVE_fnc_hashSet;
+[gm_gc_army_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+[gm_gc_army_typeMappings, "Support", "Support"] call ALIVE_fnc_hashSet;
 
-gm_dk_army_win_typeMappings = [] call ALIVE_fnc_hashCreate;
-[gm_dk_army_win_typeMappings, "Infantry", "gm_infantry"] call ALIVE_fnc_hashSet;
-[gm_dk_army_win_mappings, "GroupFactionTypes", gm_dk_army_win_typeMappings] call ALIVE_fnc_hashSet;
-[ALIVE_factionCustomMappings, "gm_dk_army_win", gm_dk_army_win_mappings] call ALIVE_fnc_hashSet;
+[gm_gc_army_mappings, "GroupFactionTypes", gm_gc_army_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_gc_army", gm_gc_army_mappings] call ALIVE_fnc_hashSet;
 
-// gm_ge_army / gm_ge_army_win
 
+// East Germany (Winter)
+gm_gc_army_win_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_gc_army_win_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
+[gm_gc_army_win_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
+[gm_gc_army_win_mappings, "FactionName", "gm_gc_army_win"] call ALIVE_fnc_hashSet;
+[gm_gc_army_win_mappings, "GroupFactionName", "gm_gc_army_win"] call ALIVE_fnc_hashSet;
+
+gm_gc_army_win_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_gc_army_win_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
+[gm_gc_army_win_typeMappings, "Armored", "Armored"] call ALIVE_fnc_hashSet;
+[gm_gc_army_win_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+[gm_gc_army_win_typeMappings, "Mechanized", "Mechanized"] call ALIVE_fnc_hashSet;
+[gm_gc_army_win_typeMappings, "Motorized", "Motorized"] call ALIVE_fnc_hashSet;
+[gm_gc_army_win_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+[gm_gc_army_win_typeMappings, "Support", "Support"] call ALIVE_fnc_hashSet;
+
+[gm_gc_army_win_mappings, "GroupFactionTypes", gm_gc_army_win_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_gc_army_win", gm_gc_army_win_mappings] call ALIVE_fnc_hashSet;
+
+
+// East Germany (Borderguards)
+gm_gc_army_bgs_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_gc_army_bgs_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
+[gm_gc_army_bgs_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
+[gm_gc_army_bgs_mappings, "FactionName", "gm_gc_army_bgs"] call ALIVE_fnc_hashSet;
+[gm_gc_army_bgs_mappings, "GroupFactionName", "gm_gc_army_bgs"] call ALIVE_fnc_hashSet;
+
+gm_gc_army_bgs_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_gc_army_bgs_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
+[gm_gc_army_bgs_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+[gm_gc_army_bgs_typeMappings, "Motorized", "Motorized"] call ALIVE_fnc_hashSet;
+[gm_gc_army_bgs_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+[gm_gc_army_bgs_typeMappings, "Support", "Support"] call ALIVE_fnc_hashSet;
+
+[gm_gc_army_bgs_mappings, "GroupFactionTypes", gm_gc_army_bgs_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_gc_army_bgs", gm_gc_army_bgs_mappings] call ALIVE_fnc_hashSet;
+
+
+// Poland
+gm_pl_army_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_pl_army_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
+[gm_pl_army_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
+[gm_pl_army_mappings, "FactionName", "gm_pl_army"] call ALIVE_fnc_hashSet;
+[gm_pl_army_mappings, "GroupFactionName", "gm_pl_army"] call ALIVE_fnc_hashSet;
+
+gm_pl_army_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_pl_army_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
+[gm_pl_army_typeMappings, "Armored", "Armored"] call ALIVE_fnc_hashSet;
+[gm_pl_army_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+[gm_pl_army_typeMappings, "Mechanized", "Mechanized"] call ALIVE_fnc_hashSet;
+[gm_pl_army_typeMappings, "Motorized", "Motorized"] call ALIVE_fnc_hashSet;
+[gm_pl_army_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+[gm_pl_army_typeMappings, "Support", "Support"] call ALIVE_fnc_hashSet;
+
+[gm_pl_army_mappings, "GroupFactionTypes", gm_pl_army_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_pl_army", gm_pl_army_mappings] call ALIVE_fnc_hashSet;
+
+
+// Poland (Winter)
+gm_pl_army_win_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_pl_army_win_mappings, "Side", "EAST"] call ALIVE_fnc_hashSet;
+[gm_pl_army_win_mappings, "GroupSideName", "EAST"] call ALIVE_fnc_hashSet;
+[gm_pl_army_win_mappings, "FactionName", "gm_pl_army_win"] call ALIVE_fnc_hashSet;
+[gm_pl_army_win_mappings, "GroupFactionName", "gm_pl_army_win"] call ALIVE_fnc_hashSet;
+
+gm_pl_army_win_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_pl_army_win_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
+[gm_pl_army_win_typeMappings, "Armored", "Armored"] call ALIVE_fnc_hashSet;
+[gm_pl_army_win_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+[gm_pl_army_win_typeMappings, "Mechanized", "Mechanized"] call ALIVE_fnc_hashSet;
+[gm_pl_army_win_typeMappings, "Motorized", "Motorized"] call ALIVE_fnc_hashSet;
+[gm_pl_army_win_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+[gm_pl_army_win_typeMappings, "Support", "Support"] call ALIVE_fnc_hashSet;
+
+[gm_pl_army_win_mappings, "GroupFactionTypes", gm_pl_army_win_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_pl_army_win", gm_pl_army_win_mappings] call ALIVE_fnc_hashSet;
+
+
+// West Germany
 gm_ge_army_mappings = [] call ALIVE_fnc_hashCreate;
 [gm_ge_army_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
 [gm_ge_army_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
-[gm_ge_army_mappings, "FactionName", "gm_fc_GE"] call ALIVE_fnc_hashSet;
-[gm_ge_army_mappings, "GroupFactionName", "gm_fc_GE"] call ALIVE_fnc_hashSet;
+[gm_ge_army_mappings, "FactionName", "gm_ge_army"] call ALIVE_fnc_hashSet;
+[gm_ge_army_mappings, "GroupFactionName", "gm_ge_army"] call ALIVE_fnc_hashSet;
 
 gm_ge_army_typeMappings = [] call ALIVE_fnc_hashCreate;
-[gm_ge_army_typeMappings, "Air", "gm_air"] call ALIVE_fnc_hashSet;
-[gm_ge_army_typeMappings, "Armored", "gm_armored"] call ALIVE_fnc_hashSet;
-[gm_ge_army_typeMappings, "Infantry", "gm_infantry"] call ALIVE_fnc_hashSet;
-[gm_ge_army_typeMappings, "Mechanized", "gm_mechanizedInfantry"] call ALIVE_fnc_hashSet;
-[gm_ge_army_typeMappings, "Motorized", "gm_motorizedinfantry"] call ALIVE_fnc_hashSet;
-[gm_ge_army_typeMappings, "Support", "gm_support"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Armored", "Armored"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Mechanized", "Mechanized"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Motorized", "Motorized"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+[gm_ge_army_typeMappings, "Support", "Support"] call ALIVE_fnc_hashSet;
+
 [gm_ge_army_mappings, "GroupFactionTypes", gm_ge_army_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_ge_army", gm_ge_army_mappings] call ALIVE_fnc_hashSet;
 
-gm_ge_army_factionCustomGroups = [] call ALIVE_fnc_hashCreate;
-[gm_ge_army_factionCustomGroups, "gm_motorizedinfantry", ["gm_ge_army_mechanizedInfantry_squad_m113a1g","gm_ge_army_motorizedInfantry_squad_u1300l","gm_ge_army_mechanizedInfantry_squad_fuchs1a0_milan"]] call ALIVE_fnc_hashSet;
-[gm_ge_army_factionCustomGroups, "gm_supply", ["gm_ge_army_supply_team_01"]] call ALIVE_fnc_hashSet;
-[gm_ge_army_factionCustomGroups, "gm_armored", ["gm_platoon_gm_ge_army_Leopard1a1a1_wdl","gm_platoon_gm_ge_army_Leopard1a3_wdl"]] call ALIVE_fnc_hashSet;
-[gm_ge_army_factionCustomGroups, "gm_mechanizedInfantry", ["gm_ge_army_mechanizedInfantry_squad_m113a1g"]] call ALIVE_fnc_hashSet;
-[gm_ge_army_factionCustomGroups, "gm_recon", ["gm_platoon_gm_ge_army_iltis_cargo_wdl"]] call ALIVE_fnc_hashSet;
-[gm_ge_army_factionCustomGroups, "gm_AntiTank", ["gm_platoon_gm_ge_army_iltis_milan_wdl"]] call ALIVE_fnc_hashSet;
-[gm_ge_army_factionCustomGroups, "gm_infantry", ["gm_ge_army_infantry_squad_80_ols","gm_ge_army_infantry_mggroup_80_ols","gm_ge_army_infantry_atgroup_80_ols","gm_ge_army_infantry_atgmgroup_80_ols"]] call ALIVE_fnc_hashSet;
-[gm_ge_army_factionCustomGroups, "gm_antiair", ["gm_platoon_gm_ge_army_fuchsa0_command_wdl_gm_ge_army_gepard1a1_wdl","gm_platoon_gm_ge_army_gepard1a1_wdl"]] call ALIVE_fnc_hashSet;
-[gm_ge_army_mappings, "Groups", gm_ge_army_factionCustomGroups] call ALIVE_fnc_hashSet;
 
-[ALIVE_factionCustomMappings, "gm_fc_GE", gm_ge_army_mappings] call ALIVE_fnc_hashSet;
-
+// West Germany  (Winter)
 gm_ge_army_win_mappings = [] call ALIVE_fnc_hashCreate;
 [gm_ge_army_win_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
 [gm_ge_army_win_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
@@ -1568,16 +1636,83 @@ gm_ge_army_win_mappings = [] call ALIVE_fnc_hashCreate;
 [gm_ge_army_win_mappings, "GroupFactionName", "gm_ge_army_win"] call ALIVE_fnc_hashSet;
 
 gm_ge_army_win_typeMappings = [] call ALIVE_fnc_hashCreate;
-[gm_ge_army_win_typeMappings, "Air", "gm_air"] call ALIVE_fnc_hashSet;
-[gm_ge_army_win_typeMappings, "Armored", "gm_armored"] call ALIVE_fnc_hashSet;
-[gm_ge_army_win_typeMappings, "Infantry", "gm_infantry"] call ALIVE_fnc_hashSet;
-[gm_ge_army_win_typeMappings, "Mechanized", "gm_mechanizedInfantry"] call ALIVE_fnc_hashSet;
-[gm_ge_army_win_typeMappings, "Motorized", "gm_motorizedinfantry"] call ALIVE_fnc_hashSet;
-[gm_ge_army_win_typeMappings, "Support", "gm_support"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Armored", "Armored"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Mechanized", "Mechanized"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Motorized", "Motorized"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+[gm_ge_army_win_typeMappings, "Support", "Support"] call ALIVE_fnc_hashSet;
 
 [gm_ge_army_win_mappings, "GroupFactionTypes", gm_ge_army_win_typeMappings] call ALIVE_fnc_hashSet;
 [ALIVE_factionCustomMappings, "gm_ge_army_win", gm_ge_army_win_mappings] call ALIVE_fnc_hashSet;
 
-// gm_gc_army / gm_gc_army_win
 
-// ----------------------------------------------------------------------------------------------------------------------
+// West Germany (Borderguards)
+gm_ge_army_bgs_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_ge_army_bgs_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[gm_ge_army_bgs_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[gm_ge_army_bgs_mappings, "FactionName", "gm_ge_army_bgs"] call ALIVE_fnc_hashSet;
+[gm_ge_army_bgs_mappings, "GroupFactionName", "gm_ge_army_bgs"] call ALIVE_fnc_hashSet;
+
+gm_ge_army_bgs_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_ge_army_bgs_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
+[gm_ge_army_bgs_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+[gm_ge_army_bgs_typeMappings, "Motorized", "Motorized"] call ALIVE_fnc_hashSet;
+[gm_ge_army_bgs_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+[gm_ge_army_bgs_typeMappings, "Support", "Support"] call ALIVE_fnc_hashSet;
+
+[gm_ge_army_bgs_mappings, "GroupFactionTypes", gm_ge_army_bgs_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_ge_army_bgs", gm_ge_army_bgs_mappings] call ALIVE_fnc_hashSet;
+
+
+// Denmark
+gm_dk_army_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_dk_army_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[gm_dk_army_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[gm_dk_army_mappings, "FactionName", "gm_dk_army"] call ALIVE_fnc_hashSet;
+[gm_dk_army_mappings, "GroupFactionName", "gm_dk_army"] call ALIVE_fnc_hashSet;
+
+gm_dk_army_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_dk_army_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
+[gm_dk_army_typeMappings, "Armored", "Armored"] call ALIVE_fnc_hashSet;
+[gm_dk_army_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+[gm_dk_army_typeMappings, "Mechanized", "Mechanized"] call ALIVE_fnc_hashSet;
+[gm_dk_army_typeMappings, "Motorized", "Motorized"] call ALIVE_fnc_hashSet;
+[gm_dk_army_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+
+[gm_dk_army_mappings, "GroupFactionTypes", gm_dk_army_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_dk_army", gm_dk_army_mappings] call ALIVE_fnc_hashSet;
+
+
+// Denmark (Winter)
+gm_dk_army_win_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_dk_army_win_mappings, "Side", "WEST"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_mappings, "GroupSideName", "WEST"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_mappings, "FactionName", "gm_dk_army_win"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_mappings, "GroupFactionName", "gm_dk_army_win"] call ALIVE_fnc_hashSet;
+
+gm_dk_army_win_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_dk_army_win_typeMappings, "Air", "Air"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_typeMappings, "Armored", "Armored"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_typeMappings, "Mechanized", "Mechanized"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_typeMappings, "Motorized", "Motorized"] call ALIVE_fnc_hashSet;
+[gm_dk_army_win_typeMappings, "SpecOps", "SpecOps"] call ALIVE_fnc_hashSet;
+
+[gm_dk_army_win_mappings, "GroupFactionTypes", gm_dk_army_win_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_dk_army_win", gm_dk_army_win_mappings] call ALIVE_fnc_hashSet;
+
+
+// Revolutionaries
+gm_xx_army_mappings = [] call ALIVE_fnc_hashCreate;
+[gm_xx_army_mappings, "Side", "INDEP"] call ALIVE_fnc_hashSet;
+[gm_xx_army_mappings, "GroupSideName", "INDEP"] call ALIVE_fnc_hashSet;
+[gm_xx_army_mappings, "FactionName", "gm_xx_army"] call ALIVE_fnc_hashSet;
+[gm_xx_army_mappings, "GroupFactionName", "gm_xx_army"] call ALIVE_fnc_hashSet;
+
+gm_xx_army_typeMappings = [] call ALIVE_fnc_hashCreate;
+[gm_xx_army_typeMappings, "Infantry", "Infantry"] call ALIVE_fnc_hashSet;
+
+[gm_xx_army_mappings, "GroupFactionTypes", gm_xx_army_typeMappings] call ALIVE_fnc_hashSet;
+[ALIVE_factionCustomMappings, "gm_xx_army", gm_xx_army_mappings] call ALIVE_fnc_hashSet;

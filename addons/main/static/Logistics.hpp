@@ -41,12 +41,25 @@ ALIVE_factionDefaultTransport = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultTransport, "B_ROK", ["vn_b_wheeled_m54_01_rok_army","vn_b_wheeled_m54_02_rok_army"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "B_CIA", ["vn_b_wheeled_m54_01","vn_b_wheeled_m54_02"]] call ALIVE_fnc_hashSet;
 
-// SPE
+// SPE - CDLC Spearhead 1944 1.1
 [ALIVE_factionDefaultTransport, "SPE_STURM", ["SPE_ST_OpelBlitz","SPE_ST_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "SPE_WEHRMACHT", ["SPE_OpelBlitz","SPE_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "SPE_US_ARMY", ["SPE_US_M3_Halftrack_Unarmed","SPE_US_M3_Halftrack_Unarmed_Open"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "SPE_FR_ARMY", ["SPE_FR_M3_Halftrack_Unarmed","SPE_FR_M3_Halftrack_Unarmed_Open"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "SPE_FFI", ["SPE_FFI_OpelBlitz","SPE_FFI_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
+
+// GM - CDLC Global Mobilization 1.5
+[ALIVE_factionDefaultTransport, "gm_gc_army", ["gm_gc_army_ural4320_cargo","gm_gc_army_ural375d_cargo","gm_gc_army_uaz469_cargo","gm_gc_army_p601"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "gm_gc_army_win", ["gm_gc_army_ural375d_cargo_win","gm_gc_army_uaz469_cargo_win","gm_gc_army_p601"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "gm_gc_army_bgs", ["gm_gc_bgs_ural4320_cargo","gm_gc_bgs_uaz469_cargo"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "gm_pl_army", ["gm_pl_army_ural4320_cargo","gm_pl_army_uaz469_cargo"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "gm_pl_army_win", ["gm_gc_army_ural375d_cargo_win","gm_gc_army_uaz469_cargo_win","gm_gc_army_p601"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "gm_ge_army", ["gm_ge_army_typ1200_cargo","gm_ge_army_typ247_cargo","gm_ge_army_typ253_cargo","gm_ge_army_iltis_cargo","gm_ge_army_u1300l_cargo"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "gm_ge_army_win", ["gm_ge_army_typ1200_cargo_win","gm_ge_army_typ247_cargo_win","gm_ge_army_typ253_cargo_win","gm_ge_army_iltis_cargo_win","gm_ge_army_u1300l_cargo_win"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "gm_ge_army_bgs", ["gm_ge_bgs_k125","gm_ge_bgs_typ253_cargo","gm_ge_bgs_w123_cargo"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "gm_dk_army", ["gm_dk_army_typ1200_cargo","gm_dk_army_typ247_cargo","gm_dk_army_typ253_cargo","gm_dk_army_u1300l_container"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "gm_dk_army_win", ["gm_dk_army_typ1200_cargo_win","gm_dk_army_typ247_cargo_win","gm_dk_army_typ253_cargo_win","gm_dk_army_u1300l_container_win"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "gm_xx_army", ["gm_ge_civ_typ253","gm_ge_civ_typ1200"]] call ALIVE_fnc_hashSet;
 
 /*
  * Mil logistics air transport vehicles fallback for sides
@@ -100,6 +113,19 @@ ALIVE_factionDefaultAirTransport = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultAirTransport, "SPE_FFI", []] call ALIVE_fnc_hashSet;
 */
 
+// GM - CDLC Global Mobilization 1.5
+[ALIVE_factionDefaultAirTransport, "gm_gc_army", ["gm_gc_airforce_l410s_salon","gm_gc_airforce_l410t"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "gm_gc_army_win", ["gm_gc_airforce_mi2p_un"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "gm_gc_army_bgs", ["gm_gc_bgs_mi2p"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "gm_pl_army", ["gm_pl_airforce_mi2ch"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "gm_pl_army_win", ["gm_pl_airforce_mi2ch_un"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "gm_ge_army", ["gm_ge_army_ch53g_oli","gm_ge_army_ch53gs_oli","gm_ge_army_pilot_p1_80_oli","gm_ge_airforce_do28d2","gm_ge_army_pilot_p1_80_oli"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "gm_ge_army_win", ["gm_ge_army_ch53g_un","gm_ge_army_ch53gs_un","gm_ge_airforce_do28d2_medevac_un","gm_ge_airforce_do28d2_un","gm_ge_army_bo105m_vbh_un"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "gm_ge_army_bgs", ["gm_gc_bgs_mi2p","gm_ge_bgs_bo105m_vbh"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "gm_dk_army", ["gm_ge_bgs_bo105m_vbh"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "gm_dk_army_win", ["gm_ge_army_bo105m_vbh_un"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "gm_xx_army", ["gm_ge_army_bo105m_vbh_un"]] call ALIVE_fnc_hashSet;
+
 /*
  * Mil logistics airdrop containers fallback for sides
  */
@@ -142,12 +168,25 @@ ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultContainers, "B_CIA", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "B_ROK", ["vn_b_ammobox_supply_05"]] call ALIVE_fnc_hashSet;
 
-// SPE
+// SPE - CDLC Spearhead 1944 1.1
 [ALIVE_factionDefaultContainers, "SPE_STURM", ["Land_SPE_Ammobox_German_01","Land_SPE_Ammobox_German_02","Land_SPE_Ammobox_German_03","Land_SPE_Ammobox_German_04","Land_SPE_Ammobox_German_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "SPE_WEHRMACHT", ["Land_SPE_Ammobox_German_01","Land_SPE_Ammobox_German_02","Land_SPE_Ammobox_German_03","Land_SPE_Ammobox_German_04","Land_SPE_Ammobox_German_05"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "SPE_US_ARMY", ["SPE_BasicAmmunitionBox_US","SPE_BasicWeaponsBox_US","Land_SPE_Ammocrate_US_01","Land_SPE_Ammocrate_US_02","Land_SPE_Ammocrate_US_03"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "SPE_FR_ARMY", ["SPE_BasicAmmunitionBox_US","SPE_BasicWeaponsBox_US"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "SPE_FFI", ["SPE_Hay_WeaponCache_FFI"]] call ALIVE_fnc_hashSet;
+
+// GM - CDLC Global Mobilization 1.5
+[ALIVE_factionDefaultContainers, "gm_gc_army", ["gm_gc_army_ammobox_smallarms_80","gm_gc_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "gm_gc_army_win", ["gm_gc_army_ammobox_smallarms_80","gm_gc_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "gm_gc_army_bgs", ["gm_gc_army_ammobox_smallarms_80","gm_gc_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "gm_pl_army", ["gm_pl_army_ammobox_smallarms_80","gm_pl_army_ammobox_everything_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "gm_pl_army_win", ["gm_pl_army_ammobox_smallarms_80","gm_pl_army_ammobox_everything_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "gm_ge_army", ["gm_ge_army_ammobox_everything_80","gm_ge_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "gm_ge_army_win", ["gm_ge_army_ammobox_everything_80","gm_ge_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "gm_ge_army_bgs", ["gm_ge_army_ammobox_everything_80","gm_ge_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "gm_dk_army", ["gm_dk_army_ammobox_everything_80","gm_dk_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "gm_dk_army_win", ["gm_dk_army_ammobox_everything_80","gm_dk_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "gm_xx_army", ["gm_gc_army_ammobox_smallarms_80","gm_ge_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
 
 #include "logistics\3CB.hpp"
 #include "logistics\RHS_AFRF.hpp"

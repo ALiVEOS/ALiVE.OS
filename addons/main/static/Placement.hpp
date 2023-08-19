@@ -263,7 +263,7 @@ ALiVE_PLACEMENT_UNITBLACKLIST = ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST +
 		"vn_o_men_pl_19", // Crewman (Driver)
 		"vn_o_men_pl_20", // Crewman (Gunner)
 		
-		// SPE
+		// SPE - CDLC Spearhead 1944 1.1
 		"SPE_sturmtrooper_tank_crew",
 		"SPE_sturmtrooper_tank_unterofficer",
 		"SPE_sturmtrooper_tank_lieutenant",
@@ -287,7 +287,23 @@ ALiVE_PLACEMENT_UNITBLACKLIST = ALiVE_PLACEMENT_CUSTOM_UNITBLACKLIST +
 		"SPE_US_Guncrew_Sergeant",
 		"SPE_US_Tank_Crew",
 		"SPE_US_Tank_Second_Lieutenant",
-		"SPE_US_Tank_Sergeant"
+		"SPE_US_Tank_Sergeant",
+		
+     // GM - CDLC Global Mobilization 1.5
+		"gm_gc_army_ammobox_smallarms_80", 
+		"gm_dk_army_ammobox_smallarms_80", 
+		"gm_ge_bgs_bicycle_01_grn",
+		"gm_ge_army_bicycle_01_oli", 
+		"gm_ge_bgs_bicycle_01_grn", 
+		"gm_gc_army_bicycle_01_oli", 
+    "gm_ge_army_general_p1_80_oli",
+    "gm_gc_army_rifleman_80_blk",
+    "gm_ge_pol_pilot_p1_80_grn", 
+    "gm_ge_adak_pilot_80_sar", 
+    "gm_ge_pol_bicycle_01_grn", 
+    "gm_xx_civ_bicycle_01", 
+    "gm_gc_civ_pilot_80_blk", 
+    "gm_ge_dbp_bicycle_01_ylw"
 ];
 
 /*
@@ -789,8 +805,8 @@ ALIVE_factionDefaultSupports = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultSupports, "BLU_CTRG_F", ["B_T_Truck_01_ammo_F","B_T_Truck_01_fuel_F","B_T_Truck_01_medical_F","B_T_Truck_01_Repair_F","B_T_Truck_01_transport_F","B_T_Truck_01_covered_F","B_T_APC_Tracked_01_CRV_F","B_T_Truck_01_mover_F","B_CTRG_LSV_01_light_F"]] call ALIVE_fnc_hashSet;
 
 
-// VN CDLC Default Supports
 
+// VN - CDLC S.O.G Prairie Fire 1.3
 
 // Army of the Republic of Vietnam
 [ALIVE_factionDefaultSupports, "I_ARVN", [
@@ -1001,13 +1017,132 @@ ALIVE_factionDefaultSupports = [] call ALIVE_fnc_hashCreate;
 ]] call ALIVE_fnc_hashSet;
 
 
-// SPE
+// SPE - CDLC Spearhead 1944 1.1
 [ALIVE_factionDefaultSupports, "SPE_STURM", ["SPE_ST_OpelBlitz","SPE_ST_OpelBlitz_Open","SPE_ST_OpelBlitz_Fuel","SPE_ST_OpelBlitz_Ambulance","SPE_ST_OpelBlitz_Repair","SPE_ST_OpelBlitz_Ammo","SPE_ST_OpelBlitz_Flak38"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultSupports, "SPE_WEHRMACHT", ["SPE_OpelBlitz","SPE_OpelBlitz_Open","SPE_OpelBlitz_Fuel","SPE_OpelBlitz_Repair","SPE_OpelBlitz_Ammo","SPE_OpelBlitz_Ambulance","SPE_OpelBlitz_Flak38"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultSupports, "SPE_US_ARMY", ["SPE_US_M3_Halftrack_Unarmed","SPE_US_M3_Halftrack_Unarmed_Open","SPE_US_M3_Halftrack_Ammo","SPE_US_M3_Halftrack_Fuel","SPE_US_M3_Halftrack_Repair","SPE_US_M3_Halftrack_Ambulance","SPE_US_M16_Halftrack"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultSupports, "SPE_FR_ARMY", ["SPE_FR_M3_Halftrack_Unarmed","SPE_FR_M3_Halftrack_Unarmed_Open","SPE_FR_M3_Halftrack_Ammo","SPE_FR_M3_Halftrack_Fuel","SPE_FR_M3_Halftrack_Repair","SPE_FR_M3_Halftrack_Ambulance","SPE_FR_M16_Halftrack"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultSupports, "SPE_FFI", ["SPE_FFI_OpelBlitz","SPE_FFI_OpelBlitz_Open","SPE_FFI_OpelBlitz_Fuel","SPE_FFI_OpelBlitz_Ambulance","SPE_FFI_OpelBlitz_Repair","SPE_FFI_OpelBlitz_Ammo"]] call ALIVE_fnc_hashSet;
 
+
+// GM - CDLC Global Mobilization 1.5
+[ALIVE_factionDefaultSupports, "gm_gc_army", [
+		"gm_gc_army_ural4320_cargo",
+		"gm_gc_army_ural375d_cargo",
+		"gm_gc_army_uaz469_cargo",
+		"gm_gc_army_p601",
+		"gm_gc_army_ural4320_repair", 
+		"gm_gc_army_ural4320_reammo", 
+		"gm_gc_army_ural375d_refuel", 
+		"gm_gc_army_ural375d_medic", 
+		"gm_gc_army_ural44202", 
+		"gm_gc_army_uaz469_dshkm", 
+		"gm_gc_army_uaz469_spg9"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "gm_gc_army_win", [
+		"gm_gc_army_ural375d_cargo_win",
+		"gm_gc_army_uaz469_cargo_win",
+		"gm_gc_army_p601",
+		"gm_gc_army_ural4320_repair_olw", 
+		"gm_gc_army_ural375d_refuel_olw", 
+		"gm_gc_army_ural4320_reammo_olw", 
+		"gm_gc_army_ural44202_olw", 
+		"gm_gc_army_brdm2_olw"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "gm_gc_army_bgs", [
+		"gm_gc_bgs_ural4320_cargo",
+		"gm_gc_bgs_uaz469_cargo",
+		"gm_gc_bgs_ural4320_repair", 
+		"gm_gc_bgs_ural4320_reammo", 
+		"gm_gc_bgs_ural375d_refuel", 
+		"gm_gc_bgs_ural375d_medic", 
+		"gm_gc_bgs_ural4320_cargo"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "gm_pl_army", [
+		"gm_pl_army_ural4320_cargo",
+		"gm_pl_army_uaz469_cargo",
+		"gm_pl_army_ural4320_repair", 
+		"gm_pl_army_ural4320_reammo", 
+		"gm_pl_army_ural375d_refuel", 
+		"gm_pl_army_ural375d_medic", 
+		"gm_pl_army_uaz469_cargo", 
+		"gm_pl_army_uaz469_dshkm"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "gm_pl_army_win", [
+		"gm_gc_army_ural375d_cargo_win",
+		"gm_gc_army_uaz469_cargo_win",
+		"gm_gc_army_p601",
+		"gm_pl_army_ural4320_repair_olw", 
+		"gm_pl_army_ural4320_reammo_olw", 
+		"gm_pl_army_ural375d_refuel_olw", 
+		"gm_pl_army_uaz469_cargo_olw", 
+		"gm_pl_army_uaz469_dshkm_olw"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "gm_ge_army", [
+		"gm_ge_army_typ1200_cargo",
+		"gm_ge_army_typ247_cargo",
+		"gm_ge_army_typ253_cargo",
+		"gm_ge_army_iltis_cargo",
+		"gm_ge_army_u1300l_cargo",
+		"gm_ge_army_u1300l_repair", 
+		"gm_ge_army_kat1_451_reammo", 
+		"gm_ge_army_kat1_451_refuel", 
+		"gm_ge_army_u1300l_medic", 
+		"gm_ge_army_kat1_451_cargo", 
+		"gm_ge_army_iltis_milan", 
+		"gm_ge_army_iltis_mg3", 
+		"gm_ge_army_fuchsa0_engineer"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "gm_ge_army_win", [
+		"gm_ge_army_typ1200_cargo_win",
+		"gm_ge_army_typ247_cargo_win",
+		"gm_ge_army_typ253_cargo_win",
+		"gm_ge_army_iltis_cargo_win",
+		"gm_ge_army_u1300l_cargo_win",
+		"gm_ge_army_u1300l_repair_win", 
+		"gm_ge_army_kat1_451_reammo_win", 
+		"gm_ge_army_kat1_451_refuel_win", 
+		"gm_ge_army_kat1_451_cargo_win", 
+		"gm_ge_army_iltis_milan_win", 
+		"gm_ge_army_iltis_mg3_win", 
+		"gm_ge_army_fuchsa0_engineer_win"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "gm_ge_army_bgs", [
+		"gm_ge_bgs_k125",
+		"gm_ge_bgs_typ253_cargo",
+		"gm_ge_bgs_w123_cargo",
+		"gm_ge_army_typ247_cargo", 
+		"gm_ge_army_u1300l_firefighter", 
+		"gm_ge_army_typ253_mp", 
+		"gm_ge_army_iltis_cargo", 
+		"gm_ge_army_u1300l_cargo"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "gm_dk_army", [
+		"gm_dk_army_typ1200_cargo",
+		"gm_dk_army_typ247_cargo",
+		"gm_dk_army_typ253_cargo",
+		"gm_dk_army_u1300l_container"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "gm_dk_army_win", [
+		"gm_dk_army_typ1200_cargo_win",
+		"gm_dk_army_typ247_cargo_win",
+		"gm_dk_army_typ253_cargo_win",
+		"gm_dk_army_u1300l_container_win"
+]] call ALIVE_fnc_hashSet;
+
+[ALIVE_factionDefaultSupports, "gm_xx_army", [
+		"gm_ge_civ_typ253",
+		"gm_ge_civ_typ1200"
+]] call ALIVE_fnc_hashSet;
 
 
 /*
@@ -1175,7 +1310,8 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
 
 
 
-// SPE
+// SPE - CDLC Spearhead 1944 1.1
+
 [ALIVE_factionDefaultSupplies, "SPE_STURM", [
     "SPE_BasicAmmunitionBox_GER",
     "SPE_BasicWeaponsBox_GER",
@@ -1215,6 +1351,21 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
     "Land_SPE_Ammocrate_US_03"
 
 ]] call ALIVE_fnc_hashSet;
+
+
+// GM - CDLC Global Mobilization 1.5
+
+[ALIVE_factionDefaultSupplies, "gm_gc_army", ["gm_gc_army_ammobox_smallarms_80","gm_gc_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "gm_gc_army_win", ["gm_gc_army_ammobox_smallarms_80","gm_gc_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "gm_gc_army_bgs", ["gm_gc_army_ammobox_smallarms_80","gm_gc_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "gm_pl_army", ["gm_pl_army_ammobox_smallarms_80","gm_pl_army_ammobox_everything_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "gm_pl_army_win", ["gm_pl_army_ammobox_smallarms_80","gm_pl_army_ammobox_everything_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "gm_ge_army", ["gm_ge_army_ammobox_everything_80","gm_ge_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "gm_ge_army_win", ["gm_ge_army_ammobox_everything_80","gm_ge_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "gm_ge_army_bgs", ["gm_ge_army_ammobox_everything_80","gm_ge_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "gm_dk_army", ["gm_dk_army_ammobox_everything_80","gm_dk_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "gm_dk_army_win", ["gm_dk_army_ammobox_everything_80","gm_dk_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupplies, "gm_xx_army", ["gm_gc_army_ammobox_smallarms_80","gm_ge_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
 
 
 [ALIVE_factionDefaultSupplies, "SPE_FFI", ["SPE_Hay_WeaponCache_FFI"]] call ALIVE_fnc_hashSet;

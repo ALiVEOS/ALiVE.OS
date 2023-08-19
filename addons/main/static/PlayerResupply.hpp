@@ -47,10 +47,24 @@ ALIVE_globalDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyDefenceStoreOptions, "PR_HELI_INSERT", [["<< Back","Static","Fortifications","Tents","Military"],["<< Back","Static","Fortifications","Tents","Structures_Military"]]] call ALIVE_fnc_hashSet;
 [ALIVE_globalDefaultResupplyDefenceStoreOptions, "PR_STANDARD", [["<< Back","Static","Fortifications","Tents","Military"],["<< Back","Static","Fortifications","Tents","Structures_Military"]]] call ALIVE_fnc_hashSet;
 
+
+// VN - CDLC S.O.G Prairie Fire 1.3
 ALIVE_VNDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_VNDefaultResupplyDefenceStoreOptions, "PR_AIRDROP", [["<< Back","Static","Fortifications"],["<< Back","Static","Fortifications"]]] call ALIVE_fnc_hashSet;
 [ALIVE_VNDefaultResupplyDefenceStoreOptions, "PR_HELI_INSERT", [["<< Back","Static","Fortifications"],["<< Back","Static","Fortifications"]]] call ALIVE_fnc_hashSet;
 [ALIVE_VNDefaultResupplyDefenceStoreOptions, "PR_STANDARD", [["<< Back","Static","Fortifications"],["<< Back","Static","Fortifications"]]] call ALIVE_fnc_hashSet;
+
+// SPE - CDLC Spearhead 1944 1.1
+ALIVE_SPEDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
+[ALIVE_SPEDefaultResupplyDefenceStoreOptions, "PR_STANDARD", [["<< Back","Static","Fortifications"],["<< Back","Static","Fortifications"]]] call ALIVE_fnc_hashSet;
+
+// GM - CDLC Global Mobilization 1.5
+ALIVE_GMDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
+[ALIVE_GMDefaultResupplyDefenceStoreOptions, "PR_AIRDROP", [["<< Back","Static","Fortifications"],["<< Back","Static","Fortifications"]]] call ALIVE_fnc_hashSet;
+[ALIVE_GMDefaultResupplyDefenceStoreOptions, "PR_HELI_INSERT", [["<< Back","Static","Fortifications"],["<< Back","Static","Fortifications"]]] call ALIVE_fnc_hashSet;
+[ALIVE_GMDefaultResupplyDefenceStoreOptions, "PR_STANDARD", [["<< Back","Static","Fortifications"],["<< Back","Static","Fortifications"]]] call ALIVE_fnc_hashSet;
+
+
 
 ALIVE_sideDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 
@@ -90,6 +104,27 @@ ALIVE_factionDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "B_CIA", ALIVE_VNDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "C_VIET", ALIVE_VNDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 
+// SPE - CDLC Spearhead 1944 1.1
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "SPE_STURM", ALIVE_SPEDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "SPE_WEHRMACHT", ALIVE_SPEDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "SPE_US_ARMY", ALIVE_SPEDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "SPE_FR_ARMY", ALIVE_SPEDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "SPE_FFI", ALIVE_SPEDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+
+// GM - CDLC Global Mobilization 1.5
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_gc_army", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_gc_army_win", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_gc_army_bgs", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_pl_army", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_pl_army_win", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_ge_army", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_ge_army_win", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_ge_army_bgs", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_dk_army", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_dk_army_win", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_xx_army", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+
+
 ALIVE_globalDefaultResupplyCombatSuppliesOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyCombatSuppliesOptions, "PR_AIRDROP", [["<< Back","Ammo"],["<< Back","Ammo"]]] call ALIVE_fnc_hashSet;
 [ALIVE_globalDefaultResupplyCombatSuppliesOptions, "PR_HELI_INSERT", [["<< Back","Ammo"],["<< Back","Ammo"]]] call ALIVE_fnc_hashSet;
@@ -123,15 +158,22 @@ ALIVE_globalDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalDefaultResupplyIndividualOptions, "PR_HELI_INSERT", [["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"],["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"]]] call ALIVE_fnc_hashSet;
 [ALIVE_globalDefaultResupplyIndividualOptions, "PR_STANDARD", [["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"],["<< Back","Men","MenDiver","MenRecon","MenSniper","MenSupport"]]] call ALIVE_fnc_hashSet;
 
-//VN
+// VN - CDLC S.O.G Prairie Fire 1.3
 ALIVE_globalVNResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalVNResupplyIndividualOptions, "PR_AIRDROP", [["<< Back","Men"],["<< Back","Men"]]] call ALIVE_fnc_hashSet;
 [ALIVE_globalVNResupplyIndividualOptions, "PR_HELI_INSERT", [["<< Back","Men"],["<< Back","Men"]]] call ALIVE_fnc_hashSet;
 [ALIVE_globalVNResupplyIndividualOptions, "PR_STANDARD", [["<< Back","Men"],["<< Back","Men"]]] call ALIVE_fnc_hashSet;
 
-//SPE
+// SPE - CDLC Spearhead 1944 1.1
 ALIVE_globalSPEResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_globalSPEResupplyIndividualOptions, "PR_STANDARD", [["<< Back","Men"],["<< Back","Men"]]] call ALIVE_fnc_hashSet;
+
+// GM - CDLC Global Mobilization 1.5
+ALIVE_globalGMResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
+[ALIVE_globalGMResupplyIndividualOptions, "PR_AIRDROP", [["<< Back","Men"],["<< Back","Men"]]] call ALIVE_fnc_hashSet;
+[ALIVE_globalGMResupplyIndividualOptions, "PR_HELI_INSERT", [["<< Back","Men"],["<< Back","Men"]]] call ALIVE_fnc_hashSet;
+[ALIVE_globalGMResupplyIndividualOptions, "PR_STANDARD", [["<< Back","Men"],["<< Back","Men"]]] call ALIVE_fnc_hashSet;
+
 
 
 ALIVE_sideDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
@@ -172,14 +214,25 @@ ALIVE_factionDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyIndividualOptions, "B_CIA", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "C_VIET", ALIVE_globalVNResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
-// SPE
+// SPE - CDLC Spearhead 1944 1.1
 [ALIVE_factionDefaultResupplyIndividualOptions, "SPE_STURM", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "SPE_WEHRMACHT", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "SPE_US_ARMY", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "SPE_FR_ARMY", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "SPE_FFI", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
-
+// GM - CDLC Global Mobilization 1.5
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_gc_army", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_gc_army_win", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_gc_army_bgs", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_pl_army", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_pl_army_win", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_ge_army", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_ge_army_win", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_ge_army_bgs", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_dk_army", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_dk_army_win", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "gm_xx_army", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
 
 // THE FOLLOWING IS A BLACKLIST
@@ -368,8 +421,8 @@ ALIVE_VNDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyGroupOptions, "B_CIA", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "C_VIET", ALIVE_VNDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 
-// SPE
 
+// SPE - CDLC Spearhead 1944 1.1
 ALIVE_SPEDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_SPEDefaultResupplyGroupOptions, "PR_STANDARD", []] call ALIVE_fnc_hashSet;
 
