@@ -17,7 +17,7 @@ the object has no positions, an empty array is returned.
 Examples:
 (begin example)
 // get number of building positions for an object
-_maxpos = [_house] call ALIVE_fnc_getMaxBuildingPositions;
+_maxpos = [_house] call ALIVE_fnc_getBuildingPositions;
 (end)
 
 See Also:
