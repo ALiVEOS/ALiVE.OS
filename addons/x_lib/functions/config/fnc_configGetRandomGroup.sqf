@@ -167,7 +167,7 @@ if!(_customGroup) then {
 		 _groupName = "FALSE";  
 		};  
      
-    if (_groupName != "FALSE") then {   
+    if (_groupName != "FALSE" && ALiVE_SYS_PROFILE_DEBUG_ON) then {
      ["ALIVE_fnc_configGetRandomGroup -  _groupName: %1", _groupName] call ALIVE_fnc_dump;
     };
 
