@@ -33,7 +33,8 @@ _moduleID = if(count _this > 2) then {_this select 2} else {""};
 if(isNil "ALIVE_firstModuleInit") then {
 
     ALiVE_SYS_DATA_DEBUG_ON = false;
-
+    ALiVE_SYS_PROFILE_DEBUG_ON = false;
+    
     ALIVE_firstModuleInit = true;
     ALIVE_moduleCount = 0;
     [] call ALIVE_fnc_dumpLogo;
