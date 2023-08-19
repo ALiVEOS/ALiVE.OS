@@ -1,0 +1,8 @@
+x\alive\addons\compatibility_gm
+======<HEADER>=======
+prefix=x\alive\addons\compatibility_gm
+product=Arma 3
+version=1
+Pbo Type is: Arma Addon
+======</HEADER>============
+

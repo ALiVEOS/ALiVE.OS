@@ -1,0 +1,62 @@
+- This ALiVE addon component requires Global Mobilization CDLC Global Mobilization v1.5
+
+- This ALiVE compatibility addon corrects the faction classes for Global Mobilization groups in cfgGroups.
+
+- For the ALiVE CQB & Civilian Placement modules please use the default GM faction class outlined below.
+
+
+ALiVE Military Close Quarters Battle (CQB) & Civilian Placement Modules
+
+-------------------------------------------------------------
+WEST (CQB)
+-------------------------------------------------------------
+West Germany                                  gm_fc_ge
+West Germany (Borderguards)                   gm_fc_ge_bgs
+Denmark                                       gm_fc_dk
+
+-------------------------------------------------------------
+EAST (CQB)
+-------------------------------------------------------------
+East Germany                                  gm_fc_gc
+East Germany (Borderguards)                   gm_fc_gc_bgs
+Poland                                        gm_fc_pl
+
+-------------------------------------------------------------
+INDEP (CQB)
+-------------------------------------------------------------
+Revolutionaries                               gm_fc_xx
+
+-------------------------------------------------------------
+CIV (CiV population)
+-------------------------------------------------------------
+West Germany Civilians                        gm_fc_ge_civ
+East Germany Civilians                        gm_fc_gc_civ
+
+- Please note: The respective winter CQB variants will automatically spawn on any terrain with the phrase 'winter' in it's title (worldName)
+
+
+
+ALiVE Military Placement (Mil Obj) & Military Placement (Civ Obj) Modules
+
+-------------------------------------------------------------
+WEST (Military Placement)
+-------------------------------------------------------------
+West Germany                                  gm_ge_army
+West Germany (Winter)                         gm_ge_army_win
+West Germany (Borderguards)                   gm_ge_army_bgs
+Denmark                                       gm_dk_army
+Denmark (Winter)                              gm_dk_army_win
+
+-------------------------------------------------------------
+EAST (Military Placement)
+-------------------------------------------------------------
+East Germany                                  gm_gc_army
+East Germany (Winter)                         gm_gc_army_win
+East Germany (Borderguards)                   gm_pl_army
+Poland                                        gm_pl_army
+Poland (Winter)                               gm_pl_army_win
+
+-------------------------------------------------------------
+INDEP (Military Placement)
+-------------------------------------------------------------
+Revolutionaries                               gm_xx_army
