@@ -87,6 +87,15 @@ if(isServer) then {
     PublicVariable QMOD(SYS_PROFILE);
 
     [ALIVE_profileSystem,"start"] call ALIVE_fnc_profileSystem;
+    
+};
+
+if (isDedicated || (isServer)) then {
+    if (MOD(SYS_PROFILE) getvariable ["debug", "false"] == "true") then {
+	    ALiVE_SYS_PROFILE_DEBUG_ON = true;
+	} else {
+	    ALiVE_SYS_PROFILE_DEBUG_ON = false;
+	};
 };
 
 if(hasInterface) then {
