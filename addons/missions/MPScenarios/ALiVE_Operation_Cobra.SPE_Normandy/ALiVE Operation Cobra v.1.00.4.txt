@@ -1,0 +1,8 @@
+Changelog
+
+ALiVE Operation Cobra v.1.00.4
+
+- Update mission.sqm
+- Reinstated persistence.
+- Doubled the max amount of AI profiles so that the US can push more than half the map.
+- Removed Experimental ''Select Assault Position" script.
