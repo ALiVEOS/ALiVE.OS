@@ -45,6 +45,9 @@ ARJay
 #define DEFAULT_AMBIENT_VEHICLE_AMOUNT  "0.2"
 #define DEFAULT_HQ_BUILDING             objNull
 #define DEFAULT_HQ_CLUSTER              []
+#define DEFAULT_AMBIENT_GUARD_AMOUNT "0.2"
+#define DEFAULT_AMBIENT_GUARD_RADIUS "200"
+#define DEFAULT_AMBIENT_GUARD_PATROL_PERCENT "50"
 
 TRACE_1("CMP - input",_this);
 
@@ -140,6 +143,18 @@ switch(_operation) do {
 
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
+    };
+    
+    case "guardProbability": {
+        _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
+    };
+    
+    case "guardRadius": {
+        _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_RADIUS] call ALIVE_fnc_OOsimpleOperation;
+    };
+    
+    case "guardPatrolPercentage": {
+        _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_PATROL_PERCENT] call ALIVE_fnc_OOsimpleOperation;
     };
 
     case "size": {
@@ -329,9 +344,11 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
+            private _guardProbability = parseNumber([_logic, "guardProbability"] call MAINCLASS);
+
             private _countInfantry = [_logic, "customInfantryCount"] call MAINCLASS;
             _countInfantry = parseNumber _countInfantry;
-
+            
             private _countMotorized = [_logic, "customMotorisedCount"] call MAINCLASS;
             _countMotorized = parseNumber _countMotorized;
 
@@ -346,6 +363,19 @@ switch(_operation) do {
 
             private _faction = [_logic, "faction"] call MAINCLASS;
             private _size = [_logic, "size"] call MAINCLASS;
+            
+            
+            private _guardProbabilityCount = [_countInfantry,[_logic, "guardProbability"] call MAINCLASS] call ALIVE_fnc_infantryGuardProbabilityCount;
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+	            ["CMP [%1] - Garrison _guardProbabilityCount: %2", _faction, _guardProbabilityCount] call ALIVE_fnc_dump;
+            };
+            // DEBUG -------------------------------------------------------------------------------------
+            
+            if (_guardProbabilityCount > 0) then {
+              _countInfantry = _countInfantry - _guardProbabilityCount;
+            };  
+            
 
             if(typeName _size == "STRING") then {
                 _size = parseNumber _size;
@@ -461,6 +491,7 @@ switch(_operation) do {
                 ["CMP Count Mech: %1",_countMechanized] call ALiVE_fnc_dump;
                 ["CMP Count Motor: %1",_countMotorized] call ALiVE_fnc_dump;
                 ["CMP Count Infantry: %1",_countInfantry] call ALiVE_fnc_dump;
+                ["CMP Count Garrison Infantry: %1",_guardProbabilityCount] call ALIVE_fnc_dump;
                 ["CMP Count Spec Ops: %1",_countSpecOps] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -530,6 +561,15 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
 
 
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+              ["CMP [%1] - Garrison _guardProbabilityCount: %2", _faction, _guardProbabilityCount] call ALiVE_fnc_dump;           
+            };
+            // DEBUG -------------------------------------------------------------------------------------
+                    
+            private _guardRadius = parseNumber([_logic, "guardRadius"] call MAINCLASS);
+            private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS);
+
             // Position and create groups
             private _groupCount = count _groups;
             private _totalCount = 0;
@@ -543,37 +583,48 @@ switch(_operation) do {
 
                     private ["_command","_radius"];
 
-                    //Guards
-                    if (_i == 0 && {count _infantryGroups > 0}) then {
-
-	                    private _group = _groups select _i;
-	                    private _guards = [_group, _position, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-
-	                    //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
-	                    {
-	                        if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-	                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[200,"true",[0,0,0]]]] call ALIVE_fnc_profileEntity;
-	                        };
-	                    } foreach _guards;
-
+                    // Guards
+                    if (_i == 0 && {count _infantryGroups > 0} && _guardProbabilityCount > 0) then {
+                    	
+                        _guardGroup = (selectRandom _infantryGroups);
+                        _guards = [_guardGroup, _position, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+                        
+                        // DEBUG -------------------------------------------------------------------------------------
+                        if(_debug) then {
+                          ["CMP [%1] - Placing Garrison Guards - %1", _faction, _guardGroup] call ALiVE_fnc_dump;
+                        };
+                        // DEBUG -------------------------------------------------------------------------------------
+                    
+                        // Garrison & Patrols instead of the static garrison.
+                        {
+                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage]]] call ALIVE_fnc_profileEntity;
+                            };
+                        } forEach _guards;
                         _countProfiles = _countProfiles + count _guards;
                         _totalCount = _totalCount + 1;
 
-                	//Main Force
+                	  // Main Force
                     } else {
 
                         private _group = _groups select _i;
 
 	                    if (_totalCount < _readiness) then {
 	                        _command = "ALIVE_fnc_garrison";
-	                        _radius = [200,"true",[0,0,0]];
-
-                            _position = [position _logic, 30] call CBA_fnc_RandPos;
+	                        // _radius = [200,"true",[0,0,0]];
+                          _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage];
+                          _position = [position _logic, 30] call CBA_fnc_RandPos;
 	                    } else {
 	                        _command = "ALIVE_fnc_ambientMovement";
-	                        _radius = [200,"SAFE",[0,0,0]];
-
-                            _position = [position _logic, random((_radius select 0) + ((_radius select 0)/0.25)), random(360)] call BIS_fnc_relPos;
+	                        // _radius = [200,"SAFE",[0,0,0]];
+	                        _radius = [_guardRadius,"SAFE",[0,0,0]];
+                          _position = [position _logic, random((_radius select 0) + ((_radius select 0)/0.25)), random(360)] call BIS_fnc_relPos;
+                          
+                          // DEBUG -------------------------------------------------------------------------------------
+                          if(_debug) then {
+                            ["CMP %2 - No more empty buildings (CMP-01), lets patrol! calling ALIVE_fnc_ambientMovement, _guardRadius: %1", _guardRadius, _faction] call ALiVE_fnc_dump;
+                          };
+                          // DEBUG -------------------------------------------------------------------------------------
 	                    };
 
 	                    if !(surfaceIsWater _position) then {
