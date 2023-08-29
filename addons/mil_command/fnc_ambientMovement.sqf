@@ -36,6 +36,7 @@ private _pos = [_profile,"position"] call ALiVE_fnc_HashGet;
 private _waypoints = [_profile,"waypoints",[]] call ALiVE_fnc_HashGet;
 private _vehiclesInCommandOf = [_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_HashGet;
 private _profileID = [_profile,"profileID"] call ALiVE_fnc_HashGet;
+private _group = [_profile,"group"] call ALiVE_fnc_HashGet;
 
 // Handle inputs types
 private ["_radius","_behaviour"];
@@ -58,6 +59,10 @@ private _parkedAir = false;
 private _useLocations = false;
 private _locations = [];
 private _vehicleObjectType = "none";
+
+if (_debug) then {
+ ["ALIVE_fnc_ambientMovement - _radius: %1", _radius] call ALiVE_fnc_Dump;
+};
 
 // change radius and primary waypoints if not an infantry group
 if (count _vehiclesInCommandOf > 0) then {
@@ -98,13 +103,14 @@ if (count _vehiclesInCommandOf > 0) then {
 };
 
 if (_debug) then {
-    ["ALIVE_fnc_ambientMovement prepared data for %1: _radius %2 | _useLocations %3 | _parkedAir %4 | _roads %5 | _vehicleObjectType %6",
+    ["ALIVE_fnc_ambientMovement prepared data for %1: _group: %7, _radius %2 | _useLocations %3 | _parkedAir %4 | _roads %5 | _vehicleObjectType %6",
         _profileID,
         _radius,
         _useLocations,
         _parkedAir,
         _roads,
-        _vehicleObjectType
+        _vehicleObjectType,
+        _group
     ] call ALiVE_fnc_Dump;
 };
 

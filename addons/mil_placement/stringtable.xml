@@ -303,12 +303,64 @@
     <Chinesesimp>较多</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT">
-    <English>Place ambient guards</English>
-    <Chinesesimp>放置环境防护装置</Chinesesimp>
+    <English>Garrisoned Infantry Groups</English>
+    <Chinesesimp></Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_COMMENT">
-    <English>Place ambient guards in locations (default is high)</English>
-    <Chinesesimp>将环境防护装置放置在适当位置（默认值为高）</Chinesesimp>
+    <English>Infantry groups to guard locations(None if no infantry groups)</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_NONE">
+    <English>None</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_LOW">
+    <English>Low (1-2 Groups)</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUM">
+    <English>Medium (3-4 Groups)</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_HIGH">
+    <English>High (5-6 Groups)</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_RADIUS">
+    <English>Garrisoned Infantry Radius</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_RADIUS_COMMENT">
+    <English>Radial range (metres) to search for enterable buildings</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT">
+    <English>Garrisoned Infantry Building Patrol</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT_COMMENT">
+    <English>Percentage of units to patrol buildings within guard radius</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_NONE">
+    <English>None</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_LOW">
+    <English>25%</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_MEDIUM">
+    <English>50%</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_HIGH">
+    <English>75%</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_ALL">
+    <English>100%</English>
+    <Chinesesimp></Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_MP_USAGE">
     <English>Place the Military Placement module in the editor, select the desired Size, Weighting and Faction from the drop down. Custom factions can be entered in the text box (separated by a comma). These will overwrite the default factions in the drop down.</English>

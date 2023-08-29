@@ -31,6 +31,7 @@ See Also:
 Author:
 Wolffy
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS ALIVE_fnc_baseClass
@@ -51,7 +52,9 @@ ARJay
 #define DEFAULT_SIZE_FILTER "0"
 #define DEFAULT_PRIORITY_FILTER "0"
 #define DEFAULT_AMBIENT_VEHICLE_AMOUNT "0.2"
-#define DEFAULT_AMBIENT_GUARD_AMOUNT "1"
+#define DEFAULT_AMBIENT_GUARD_AMOUNT "0.2"
+#define DEFAULT_AMBIENT_GUARD_RADIUS "200"
+#define DEFAULT_AMBIENT_GUARD_PATROL_PERCENT "50"
 #define DEFAULT_HQ_BUILDING objNull
 #define DEFAULT_HQ_CLUSTER []
 #define DEFAULT_NO_TEXT ""
@@ -159,6 +162,15 @@ switch(_operation) do {
     case "guardProbability": {
         _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "guardRadius": {
+        _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_RADIUS] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "guardPatrolPercentage": {
+        _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_PATROL_PERCENT] call ALIVE_fnc_OOsimpleOperation;
+    };
+
+    
+
     case "createHQ": {
             if (typeName _args == "BOOL") then {
                 _logic setVariable ["createHQ", _args];
@@ -634,7 +646,7 @@ switch(_operation) do {
             _heliClusters = [_logic, "objectivesHeli"] call MAINCLASS;
             _vehicleClusters = [_logic, "objectivesVehicle"] call MAINCLASS;
 
-            private _guardProbability = parseNumber([_logic, "guardProbability"] call MAINCLASS);
+
 
             _customInfantryCount = [_logic, "customInfantryCount"] call MAINCLASS;
 
@@ -643,7 +655,7 @@ switch(_operation) do {
             }else{
                 _customInfantryCount = parseNumber _customInfantryCount;
             };
-
+            
             _customMotorisedCount = [_logic, "customMotorisedCount"] call MAINCLASS;
 
             if(_customMotorisedCount == "") then {
@@ -757,7 +769,7 @@ switch(_operation) do {
 
 	                        {
 	                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-	                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+	                               [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
 	                            };
 	                        } foreach _profiles;
                          };
@@ -818,7 +830,7 @@ switch(_operation) do {
 
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[50,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
                             };
                         } foreach _profiles;
                     };
@@ -1350,7 +1362,7 @@ switch(_operation) do {
             };
 
             if!(_customInfantryCount == 666) then {
-                _countInfantry = _customInfantryCount;
+                _countInfantry = _customInfantryCount; 
             };
 
             if!(_customMotorisedCount == 666) then {
@@ -1370,6 +1382,19 @@ switch(_operation) do {
             };
 
 
+
+          
+            private _guardProbabilityCount = [_countInfantry,[_logic, "guardProbability"] call MAINCLASS] call ALIVE_fnc_infantryGuardProbabilityCount;
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+	            ["MP [%1] - Garrison _guardProbabilityCount: %2", _faction, _guardProbabilityCount] call ALIVE_fnc_dump;
+            };
+            // DEBUG -------------------------------------------------------------------------------------
+            
+            if (_guardProbabilityCount > 0) then {
+              _countInfantry = _countInfantry - _guardProbabilityCount;
+            };
+
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Main force creation ",_faction] call ALiVE_fnc_dump;
@@ -1378,6 +1403,7 @@ switch(_operation) do {
                 ["Count Motor: %1",_countMotorized] call ALIVE_fnc_dump;
                 ["Count Air: %1",_countAir] call ALIVE_fnc_dump;
                 ["Count Infantry: %1",_countInfantry] call ALIVE_fnc_dump;
+                ["Count Garrison Infantry: %1",_guardProbabilityCount] call ALIVE_fnc_dump;
                 ["Count Spec Ops: %1",_countSpecOps] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -1474,25 +1500,43 @@ switch(_operation) do {
 
                     _center = [_x, "center"] call ALIVE_fnc_hashGet;
                     _size = [_x, "size"] call ALIVE_fnc_hashGet;
+                    
 
-                    //Default guards (place always)
-                    if(count _infantryGroups > 0 && random(1) < _guardProbability) then {
-
+                    // DEBUG -------------------------------------------------------------------------------------
+                    if(_debug) then {
+                      ["MP [%1] - Garrison _guardProbabilityCount: %2", _faction, _guardProbabilityCount] call ALiVE_fnc_dump;           
+                    };
+                    // DEBUG -------------------------------------------------------------------------------------
+            
+                    private _guardRadius = parseNumber([_logic, "guardRadius"] call MAINCLASS);
+                    private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS);
+                    
+                    if(count _infantryGroups > 0 && _guardProbabilityCount > 0) then {
+                     for "_i" from 0 to _guardProbabilityCount -1 do {
+                     	
                         _guardGroup = (selectRandom _infantryGroups);
                         _guards = [_guardGroup, _center, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-                        // ["MP [%2] - Placing Guards - %1",_guardGroup, _guardProbability] call ALiVE_fnc_dump;
-                        //ARJay, here we could place the default patrols/garrisons instead of the static garrisson if you like to (same is in CIV MP)
+                        
+                        // DEBUG -------------------------------------------------------------------------------------
+                        if(_debug) then {
+                          ["MP [%1] - Placing Garrison Guards - %1", _faction, _guardGroup] call ALiVE_fnc_dump;
+                        };
+                        // DEBUG -------------------------------------------------------------------------------------
+                    
+                        // Garrison & Patrols instead of the static garrison.
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[200,"true",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage]]] call ALIVE_fnc_profileEntity;
                             };
-                        } foreach _guards;
+                        } forEach _guards;
+                        _countProfiles = _countProfiles + count _guards;
+                     };
                     };
 
-                    //Add profiles
+                    // Add profiles
                     if(_totalCount < _groupCount) then {
 
-                        //If there are several profiles per cluster place several profiles
+                        // If there are several profiles per cluster place several profiles
                         if(_groupPerCluster > 0) then {
 
                             for "_i" from 0 to _groupPerCluster -1 do {
@@ -1503,10 +1547,17 @@ switch(_operation) do {
                                 if (_totalCount < _readiness ) then {
                                     _command = "ALIVE_fnc_garrison";
                                     _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                    _radius = [200,"true",[0,0,0]];
+                                    _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage];
                                 } else {
                                     _command = "ALIVE_fnc_ambientMovement";
-                                    _radius = [200,"SAFE",[0,0,0]];
+                                    _radius = [_guardRadius,"SAFE",[0,0,0]];
+                                    
+                                // DEBUG -------------------------------------------------------------------------------------
+                                if(_debug) then {
+                                 ["MP %2 - No more empty buildings (MP-01), lets patrol! calling ALIVE_fnc_ambientMovement, _guardRadius: %1", _guardRadius, _faction] call ALiVE_fnc_dump;
+                                };
+                                // DEBUG -------------------------------------------------------------------------------------   
+                                    
                                 };
 
                                 if (isnil "_garrisonPos") then {
@@ -1518,7 +1569,7 @@ switch(_operation) do {
                                 if!(surfaceIsWater _position) then {
                                     _profiles = [_group, _position, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 
-                                    //ARJay, here we could place the default "Chill around campfire situation" instead of the static garrisson if you like to
+                                    // Garrison & Patrols instead of the static garrison.
                                     {
                                         if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
                                             [_x, "setActiveCommand", [_command,"spawn",_radius]] call ALIVE_fnc_profileEntity;
@@ -1530,8 +1581,8 @@ switch(_operation) do {
                                 };
                             };
 
-                        //If there is only one to be placed, then place only one
-                        }else{
+                        // If there is only one to be placed, then place only one
+                        } else {
                             private ["_command","_radius","_position","_garrisonPos"];
 
                             _group = _groups select _totalCount;
@@ -1539,10 +1590,17 @@ switch(_operation) do {
                             if (_totalCount < _readiness ) then {
                                 _command = "ALIVE_fnc_garrison";
                                 _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                _radius = [200,"true",[0,0,0]];
+                                _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage];
                             } else {
                                 _command = "ALIVE_fnc_ambientMovement";
-                                _radius = [200,"SAFE",[0,0,0]];
+                                _radius = [_guardRadius,"SAFE",[0,0,0]];
+                                
+                                // DEBUG -------------------------------------------------------------------------------------
+                                if(_debug) then {
+                                 ["MP %2 - No more empty buildings (MP-02), lets patrol! calling ALIVE_fnc_ambientMovement, _guardRadius: %1", _guardRadius, _faction] call ALiVE_fnc_dump;
+                                };
+                                // DEBUG -------------------------------------------------------------------------------------   
+                                
                             };
 
                             if (isnil "_garrisonPos") then {
@@ -1554,7 +1612,7 @@ switch(_operation) do {
                             if!(surfaceIsWater _position) then {
                                 _profiles = [_group, _position, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 
-                                //ARJay, here we could place the default "Chill around campfire situation" instead of the static garrisson if you like to
+                                // Garrison & Patrols instead of the static garrison.
                                 {
                                     if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
                                         [_x, "setActiveCommand", [_command,"spawn",_radius]] call ALIVE_fnc_profileEntity;
@@ -1568,7 +1626,7 @@ switch(_operation) do {
                     };
                 } forEach _clusters;
 
-            }else{
+            } else {
                 ["MP - Warning no usable groups found to use, the faction (%1) may be faulty.", _faction] call ALiVE_fnc_dumpR;
             };
 

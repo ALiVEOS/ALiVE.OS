@@ -25,7 +25,7 @@ ARJay
 ---------------------------------------------------------------------------- */
 
 private ["_profile","_commandState","_commandName","_args","_state","_debug","_profileID","_leader","_group",
-"_units","_nextState","_nextStateArgs","_garrisonPosition","_garrisonRadius"];
+"_units","_nextState","_nextStateArgs","_garrisonPosition","_garrisonRadius","_profileCount"];
 
 _profile = _this select 0;
 _commandState = _this select 1;
@@ -44,6 +44,9 @@ _nextStateArgs = [];
 
 _garrisonRadius = _args select 0;
 _garrisonPosition = _args select 2;
+_profileCount = _args select 3;
+
+
 
 switch (_state) do {
     case "init":{
@@ -90,7 +93,8 @@ switch (_state) do {
 
         // garrison units
 
-        [_group,_garrisonPosition,_garrisonRadius,false] call ALIVE_fnc_groupGarrison;
+        // [_group,_garrisonPosition,_garrisonRadius,false] call ALIVE_fnc_groupGarrison;
+        [_group,_garrisonPosition,_garrisonRadius,false, false,_profileCount,_profileID] call ALIVE_fnc_groupGarrison;
 
         _nextState = "complete";
         _nextStateArgs = [];
