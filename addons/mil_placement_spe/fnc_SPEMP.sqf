@@ -403,7 +403,7 @@ switch(_operation) do {
 	                   // Spawn static virtual group and get them to defend
 	                    {
 	                        if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-	                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[10,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+	                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[10,"false",[0,0,0],"SPE"]]] call ALIVE_fnc_profileEntity;
 	                            [_x,"busy",true] call ALIVE_fnc_hashSet;
 	                        };
 	                    } forEach _guards;
