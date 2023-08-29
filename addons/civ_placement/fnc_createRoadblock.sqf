@@ -115,11 +115,11 @@ for "_j" from 1 to (count _roadpoints) do {
     // Get a composition
     private _compType = "Military";
 
-    If (_fac call ALiVE_fnc_factionSide == RESISTANCE) then {
+    if (_fac call ALiVE_fnc_factionSide == RESISTANCE) then {
         _compType = "Guerrilla";
     };
 
-    If (!isNil "ALiVE_compositions_roadblocks") then {
+    if (!isNil "ALiVE_compositions_roadblocks") then {
         _checkpoint = [(selectRandom ALiVE_compositions_roadblocks), _CompType] call ALiVE_fnc_findComposition;
     } else {
         private ["_cat","_size"];
@@ -140,9 +140,9 @@ for "_j" from 1 to (count _roadpoints) do {
     _vehtype = selectRandom _vehicleTypes;
     if (!isNil "_vehtype") then {
         if !(isnil "ALiVE_ProfileHandler") then {
-            _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, [position _roadpos, 10,50,10,0,5,0] call BIS_fnc_findsafepos, _direction, true, _fac] call ALiVE_fnc_createProfileVehicle;
+            _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, [position _roadpos, 15,50,10,0,0.5,0] call BIS_fnc_findsafepos, _direction, true, _fac] call ALiVE_fnc_createProfileVehicle;
         } else {
-            _vehicle = createVehicle [_vehtype, [position _roadpos, 10,50,10,0,5,0] call BIS_fnc_findsafepos, [], 0, "NONE"];
+            _vehicle = createVehicle [_vehtype, [position _roadpos, 15,50,10,0,0.5,0] call BIS_fnc_findsafepos, [], 0, "NONE"];
             _vehicle setDir _direction;
             _vehicle setposATL (getposATL _vehicle);
         };
@@ -153,9 +153,16 @@ for "_j" from 1 to (count _roadpoints) do {
         private _group = ["Infantry",_fac] call ALIVE_fnc_configGetRandomGroup;
         private _guards = [_group, position _roadpos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
 
+           // DEBUG -------------------------------------------------------------------------------------
+           // if(_debug) then {
+                ["ALIVE_fnc_createRoadBlock [%1] - Calling ALIVE_fnc_configGetRandomGroup", _fac] call ALiVE_fnc_dump;
+           // };        
+           // DEBUG -------------------------------------------------------------------------------------
+
         {
             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+                //[_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
+                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
                 [_x,"busy",true] call ALIVE_fnc_hashSet;
             };
         } foreach _guards;
@@ -177,8 +184,15 @@ for "_j" from 1 to (count _roadpoints) do {
             };
 
             sleep 1;
-
-            [_blockers, getpos _roadpos, 100, true] call ALiVE_fnc_groupGarrison;
+            
+           // DEBUG -------------------------------------------------------------------------------------
+           // if(_debug) then {
+                ["ALIVE_fnc_createRoadBlock [%1] - Calling ALIVE_fnc_groupGarrison", _fac] call ALiVE_fnc_dump;    
+           // };        
+           // DEBUG -------------------------------------------------------------------------------------
+                  
+           // [_blockers, getpos _roadpos, 100, true] call ALiVE_fnc_groupGarrison;
+            [_blockers, getpos _roadpos, 100, true, false, 1, nil, 50] call ALIVE_fnc_groupGarrison;
         };
     };
 

@@ -43,6 +43,12 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_CP_BLACKLIST_COMMENT";
                                 defaultValue = "";
                         };
+                        class faction
+                        {
+                                displayName = "$STR_ALIVE_CP_FACTION";
+                                description = "$STR_ALIVE_CP_FACTION_COMMENT";
+                                defaultValue = "OPF_F";
+                        };
                         class clusterType
                         {
                                 displayName = "$STR_ALIVE_CP_CLUSTER_TYPE";
@@ -313,7 +319,7 @@ class CfgVehicles {
                                         };
                                 };
                         };
-                           class roadblocks
+                        class roadblocks
                         {
                                 displayName = "$STR_ALIVE_CP_ROADBLOCKS";
                                 description = "$STR_ALIVE_CP_ROADBLOCKS_COMMENT";
@@ -392,35 +398,6 @@ class CfgVehicles {
                                         };
                                 };
                         };
-                        class guardProbability
-                        {
-                                displayName = "$STR_ALIVE_CP_AMBIENT_GUARD_AMOUNT";
-                                description = "$STR_ALIVE_CP_AMBIENT_GUARD_AMOUNT_COMMENT";
-                                class Values
-                                {
-                                        class NONE
-                                        {
-                                                name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_NONE";
-                                                value = "0";
-                                        };
-                                        class LOW
-                                        {
-                                                name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_LOW";
-                                                value = "0.2";
-                                        };
-                                        class MEDIUM
-                                        {
-                                                name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_MEDIUM";
-                                                value = "0.6";
-                                        };
-                                        class HIGH
-                                        {
-                                                name = "$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_HIGH";
-                                                value = "1";
-                                                default = 1;
-                                        };
-                                };
-                        };
                         class customInfantryCount
                         {
                                 displayName = "$STR_ALIVE_CP_CUSTOM_INFANTRY_COUNT";
@@ -451,11 +428,75 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT_COMMENT";
                                 defaultValue = "";
                         };
-                        class faction
+                        class guardProbability
                         {
-                                displayName = "$STR_ALIVE_CP_FACTION";
-                                description = "$STR_ALIVE_CP_FACTION_COMMENT";
-                                defaultValue = "OPF_F";
+                                displayName = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT";
+                                description = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_COMMENT";
+                                class Values
+                                {
+                            						class NONE
+                                        {
+                                                name = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_NONE";
+                                                value = "0";
+                                        };
+                                        class LOW
+                                        {
+                                                name = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_LOW";
+                                                value = "0.2";
+                                                default = 1;
+                                        };
+                                        class MEDIUM
+                                        {
+                                                name = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_MEDIUM";
+                                                value = "0.6";
+                                        };
+                                        class HIGH
+                                        {
+                                                name = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_HIGH";
+                                                value = "1";
+                                        };
+                                };
+                        };
+                        class guardRadius
+                        {
+                                displayName = "$STR_ALIVE_CP_CUSTOM_GUARD_RADIUS";
+                                description = "$STR_ALIVE_CP_CUSTOM_GUARD_RADIUS_COMMENT";
+                                defaultValue = "200";
+                        };
+                        class guardPatrolPercentage
+                        {
+                                displayName = "$STR_ALIVE_CP_CUSTOM_GUARD_PATROL_PERCENT";
+                                description = "$STR_ALIVE_CP_CUSTOM_GUARD_PATROL_PERCENT_COMMENT";
+     
+                                class Values
+                                {
+                            						class NONE
+                                        {
+                                                name = "$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_NONE";
+                                                value = "0";
+                                        };
+                                        class LOW
+                                        {
+                                                name = "$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_LOW";
+                                                value = "25";
+                                        };
+                                        class MEDIUM
+                                        {
+                                                name = "$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_MEDIUM";
+                                                value = "50";
+                                                default = 1;
+                                        };
+                                        class HIGH
+                                        {
+                                                name = "$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_HIGH";
+                                                value = "75";
+                                        };
+                                        class ALL
+                                        {
+                                                name = "$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_ALL";
+                                                value = "100";
+                                        };
+                                };
                         };
                 };
                 class ModuleDescription
