@@ -146,6 +146,20 @@ class groupGarrison
 	RECOMPILE;
 };
 
+class groupGarrisonSPE
+{
+	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_groupGarrisonSPE.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class infantryGuardProbabilityCount
+{
+	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_infantryGuardProbabilityCount.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class addCamera
 {
 	file = "\x\alive\addons\x_lib\functions\camera\fnc_addCamera.sqf";
