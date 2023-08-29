@@ -5849,8 +5849,8 @@ switch(_operation) do {
                             if(_type == "entity") then {
 
                                 if(_active) then {
-
-                                    [_profile, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_eventPosition]]] call ALIVE_fnc_profileEntity;
+                                    // [_profile, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_eventPosition]]] call ALIVE_fnc_profileEntity;
+                                    [_profile, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_eventPosition, (count _staticIndividualProfiles)]]] call ALIVE_fnc_profileEntity;
 
                                 }else{
 
@@ -5886,7 +5886,8 @@ switch(_operation) do {
 
                                 if(_active) then {
 
-                                    [_profile, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_eventPosition]]] call ALIVE_fnc_profileEntity;
+                                    // [_profile, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_eventPosition]]] call ALIVE_fnc_profileEntity;
+                                    [_profile, "setActiveCommand", ["ALIVE_fnc_managedGarrison","managed",[200,"false",_eventPosition, (count _staticGroupProfiles)]]] call ALIVE_fnc_profileEntity;
 
                                 }else{
 
