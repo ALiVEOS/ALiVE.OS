@@ -124,10 +124,39 @@ if (_spawnSources isEqualTo []) then {
 
         // don't spawn or despawn player profiles
         if (!([_x,"isPlayer", false] call ALiVE_fnc_hashGet)) then {
-            if (!(_x select 2 select 1)) then {
-                if ((_x select 2 select 2) distance _center <= _radius) then {
-                    _profilesToSpawnQueue pushbackunique (_x select 2 select 4);
+            if (!(_x select 2 select 1)) then {  // if profile active
+                if ((_x select 2 select 2) distance _center <= _radius) then {  // if profile within spawn distance radius
+                  private _isShip = false;
+                	private _isWater = false;
+                	private _position = [_x, "position"] call ALiVE_fnc_hashGet;
+									private _faction = [_x, "faction"] call ALiVE_fnc_hashGet;
+									private _id = [_x, "_id"] call ALiVE_fnc_hashGet;
+									private _profileID = [_x, "profileID"] call ALiVE_fnc_hashGet;
+									private _vehicle = [_x, "vehicle"] call ALiVE_fnc_hashGet;
+									private _vehicleClass = [_x, "vehicleClass"] call ALiVE_fnc_hashGet;
+									private _objectType = toLower ([_x, "objectType"] call ALiVE_fnc_hashGet);
+									private _type = [_x, "type"] call ALiVE_fnc_hashGet;
+									private _vehicleAssignments = [_x, "vehicleAssignments"] call ALiVE_fnc_hashGet;
+                  private _entitiesInCommandOf = [_x, "entitiesInCommandOf"] call ALiVE_fnc_hashGet;
+                  private _entitiesInCargoOf = [_x, "entitiesInCargoOf"] call ALiVE_fnc_hashGet;
+									// if profile is in water
+                	if (surfaceIsWater (_position)) then { _isWater = true; };
+                	// if ship
+                	if (_objectType == "ship") then {_isShip = true; };
+                	// if _objectType contains boat or ship
+                  if (!_isShip && {!((_vehicleAssignments select 1) isEqualTo [])}) then {
+                       if (["boat", _objectType] call BIS_fnc_inString || ["ship", _objectType] call BIS_fnc_inString) then {
+                        	_isWater = false;
+                       };
+                  };		 
+                	if (_isWater && !_isShip) exitWith { 
+                		// ["Profile Spawner - Profile in Water & Not a Ship : Don't Spawn!. _type: %4, _isWater: %5, _faction %1, _profileID: %2, _objectType: %3", _faction, _profileID, _objectType, _type, _isWater] call ALiVE_fnc_dump;   
+                	};
+
+                  _profilesToSpawnQueue pushbackunique (_x select 2 select 4);
+  
                 };
+                
             } else {
                 // if leader is null
                 // find new leader
