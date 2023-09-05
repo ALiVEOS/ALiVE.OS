@@ -286,6 +286,112 @@ class CfgVehicles
                                         };
                                 };
                         };
+                        class startForceStrengthInc
+                        {
+                                displayName = "$STR_ALIVE_ML_START_FORCE_STRENGTH_INC";
+                                description = "$STR_ALIVE_ML_START_FORCE_STRENGTH_INC_COMMENT";
+                                class Values
+                                {
+                                	class No
+                                	{
+                                		name = "No";
+                                		value = false;
+                                		default = 1;
+                                	};
+                                	class Yes
+                                	{
+                                		name = "Yes";
+                                		value = true;
+                                	};
+                                };
+                        };
+                        class startForceStrengthIncFactor
+                        {
+                                displayName = "$STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR";
+                                description = "$STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR_COMMENT";
+                                class Values
+                                {
+                                        class LOWEST
+                                        {
+                                                name = "1%";
+                                                value = "1";
+                                                default = 1;
+                                        };
+                                        class LOW
+                                        {
+                                                name = "4%";
+                                                value = "4";
+                                        };
+                                        class MEDIUM
+                                        {
+                                                name = "6%";
+                                                value = "6";
+                                        };
+                                        class HIGH
+                                        {
+                                                name = "8%";
+                                                value = "8";
+                                        };
+                                        class VHIGH
+                                        {
+                                                name = "10%";
+                                                value = "10";
+                                        };
+                                };
+                        };
+                        class startForceStrengthDec
+                        {
+                                displayName = "$STR_ALIVE_ML_START_FORCE_STRENGTH_DEC";
+                                description = "$STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_COMMENT";
+                                class Values
+                                {
+                                	class No
+                                	{
+                                		name = "No";
+                                		value = false;
+                                		default = 1;
+                                	};
+                                	class Yes
+                                	{
+                                		name = "Yes";
+                                		value = true;
+                                	};
+                                };
+                        };
+                        class startForceStrengthDecFactor
+                        {
+                                displayName = "$STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR";
+                                description = "$STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR_COMMENT";
+                                class Values
+                                {
+                                        class LOWEST
+                                        {
+                                                name = "1%";
+                                                value = "1";
+                                                default = 1;
+                                        };
+                                        class LOW
+                                        {
+                                                name = "4%";
+                                                value = "4";
+                                        };
+                                        class MEDIUM
+                                        {
+                                                name = "6%";
+                                                value = "6";
+                                        };
+                                        class HIGH
+                                        {
+                                                name = "8%";
+                                                value = "8";
+                                        };
+                                        class VHIGH
+                                        {
+                                                name = "10%";
+                                                value = "10";
+                                        };
+                                };
+                        }; 
                 };
                 class ModuleDescription
                 {

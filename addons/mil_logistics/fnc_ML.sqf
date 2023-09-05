@@ -52,6 +52,10 @@ ARJay
 #define WAIT_TIME_HELI 20
 #define WAIT_TIME_MARINE 30
 #define WAIT_TIME_DROP 40
+#define START_FORCE_STRENGTH_INC false
+#define START_FORCE_STRENGTH_INC_FACTOR "1"
+#define START_FORCE_STRENGTH_DEC false
+#define START_FORCE_STRENGTH_DEC_FACTOR "1"
 
 private ["_result"];
 
@@ -327,6 +331,42 @@ switch(_operation) do {
 
         _result = _logic getVariable [_operation, DEFAULT_FORCE_POOL];
     };
+    case "startForceStrengthInc": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["startForceStrengthInc", _args];
+        } else {
+            _args = _logic getVariable ["startForceStrengthInc", START_FORCE_STRENGTH_INC];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = START_FORCE_STRENGTH_INC;};
+            _logic setVariable ["startForceStrengthInc", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    case "startForceStrengthIncFactor": {
+        _result = [_logic,_operation,_args,START_FORCE_STRENGTH_INC_FACTOR] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "startForceStrengthDec": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["startForceStrengthDec", _args];
+        } else {
+            _args = _logic getVariable ["startForceStrengthDec", START_FORCE_STRENGTH_DEC];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = START_FORCE_STRENGTH_DEC;};
+            _logic setVariable ["startForceStrengthDec", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    case "startForceStrengthDecFactor": {
+        _result = [_logic,_operation,_args,START_FORCE_STRENGTH_DEC_FACTOR] call ALIVE_fnc_OOsimpleOperation;
+    };    
+    
+
 
     // Main process
     case "init": {
@@ -368,6 +408,11 @@ switch(_operation) do {
             _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
 
+            _startForceStrengthIncrement = [_logic, "startForceStrengthInc"] call MAINCLASS;
+            _startForceStrengthIncrementFactor = parseNumber([_logic, "startForceStrengthIncFactor"] call MAINCLASS);
+            _startForceStrengthDecrement = [_logic, "startForceStrengthDec"] call MAINCLASS;
+            _startForceStrengthDecrementFactor = parseNumber([_logic, "startForceStrengthDecFactor"] call MAINCLASS);
+
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
@@ -382,6 +427,10 @@ switch(_operation) do {
                 ["ML - Allow plane requests: %1",_allowPlane] call ALiVE_fnc_dump;
                 ["ML - Enable air transport: %1",_enableAirTransport] call ALiVE_fnc_dump;
                 ["ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALiVE_fnc_dump;
+                ["ML - Enable incremental force strength on objective capture: %1",_startForceStrengthIncrement] call ALiVE_fnc_dump;
+                ["ML - Incremental force strength factor: %1",_startForceStrengthIncrementFactor] call ALiVE_fnc_dump;
+                ["ML - Enable decremental force strength on objective loss: %1",_startForceStrengthDecrement] call ALiVE_fnc_dump;
+                ["ML - Decremental force strength factor: %1",_startForceStrengthDecrementFactor] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -449,7 +498,6 @@ switch(_operation) do {
                 _module = _moduleObject getVariable "handler";
                 _modules pushback _module;
             };
-
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -538,7 +586,7 @@ switch(_operation) do {
     case "listen": {
         private["_listenerID"];
 
-        _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["LOGCOM_REQUEST","LOGCOM_STATUS_REQUEST","LOGCOM_CANCEL_REQUEST"]]] call ALIVE_fnc_eventLog;
+        _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["LOGCOM_REQUEST","LOGCOM_STATUS_REQUEST","LOGCOM_CANCEL_REQUEST","OPCOM_CAPTURE"]]] call ALIVE_fnc_eventLog;
         _logic setVariable ["listenerID", _listenerID];
     };
 
@@ -553,6 +601,85 @@ switch(_operation) do {
             [_logic, _type, _event] call MAINCLASS;
 
         };
+    };
+    
+    case "OPCOM_CAPTURE": {
+
+        private["_debug","_event","_eventData","_eventQueue","_side","_factions","_eventFaction","_eventSide","_factionFound","_data","_id","_startForceStrengthIncrement","_startForceStrengthDecrement","_startForceStrengthIncrementFactor","_startForceStrengthDecrementFactor",
+        "_moduleFactions","_eventPlayerID","_eventRequestID","_countToAdd","_countToRemove", "_instanceProfilesCount","_thisInstanceSFS","_thissideTarget","_objectiveID","_objectivePos","_randomWeightedElement"];
+        
+        if(typeName _args == "ARRAY") then {
+
+		        _event = _args;
+		        _debug = [_logic, "debug"] call MAINCLASS;
+		        _id = [_event, "id"] call ALIVE_fnc_hashGet;
+		        _data = [_event, "data"] call ALIVE_fnc_hashGet;
+		        _factions = [_logic, "factions"] call MAINCLASS;
+		        _eventFaction = _data select 0;
+		        _eventSide = _data select 1;
+		        _startForceStrengthIncrement = [_logic, "startForceStrengthInc"] call MAINCLASS;
+		        _startForceStrengthDecrement = [_logic, "startForceStrengthDec"] call MAINCLASS;
+		        _startForceStrengthIncrementFactor = parseNumber([_logic, "startForceStrengthIncFactor"] call MAINCLASS);
+		        _startForceStrengthDecrementFactor = parseNumber([_logic, "startForceStrengthDecFactor"] call MAINCLASS);
+		           
+		        _data params ["_side","_objective"]; 
+		         // ["ML - Force Strength 'OPCOM_CAPTURE' -> _side (event): %1, _eventFaction: %2, _faction: %3", _side, _eventFaction, (_factions select 0 select 0)] call ALiVE_fnc_dump;
+		        
+		        // the side that captured && startForceStrengthInc is true...
+		        if (_eventFaction == _side && _startForceStrengthIncrement) then {
+		        	if (_side == (_factions select 0 select 0)) then {
+		        		// DEBUG -------------------------------------------------------------------------------------
+                if (_debug) then {
+		        	   ["ML - Force Strength 'OPCOM_CAPTURE' (Increment) -> _faction: %1, _side (event): %2, _eventFaction: %3, _objective: %4, _startForceStrengthIncrementFactor: %5", (_factions select 0 select 0), _side, _eventFaction, _objective, _startForceStrengthIncrementFactor] call ALiVE_fnc_dump;
+		        	  };
+		        	  // DEBUG -------------------------------------------------------------------------------------
+		             _objectiveID = [_objective,"id"] call ALiVE_fnc_hashGet;
+		             _objectivePos = [_objective,"center"] call ALiVE_fnc_hashGet;
+		            {
+		            	 _thissideTarget = [_x, "side", ""] call ALIVE_fnc_hashGet;  
+		            	if (_thissideTarget == _side) then {   
+		            	 _thisInstanceSFS =  [_x,"startForceStrength"] call ALiVE_fnc_HashGet;  
+		              };
+		            } forEach OPCOM_INSTANCES; 
+		            _instanceProfilesCount = 0; 
+		            { 
+		            	_instanceProfilesCount = _instanceProfilesCount + _x
+		            } forEach _thisInstanceSFS;
+		             _countToAdd = ceil((_instanceProfilesCount * _startForceStrengthIncrementFactor)/100);
+		            for "_i" from 0 to (_countToAdd -1) do {
+		            	_randomWeightedElement = [["Infantry","Motorized","Mechanized","Armored","Artillery","AAA","Air","Sea"], _thisInstanceSFS] call BIS_fnc_selectRandomWeighted;
+                  [_side, _randomWeightedElement, 1] call ALIVE_fnc_OPCOMIncrementStartForceStrength;    
+		            };
+		          };
+		        }; 
+		        // the side that lost && startForceStrengthDec is true...
+		        if (_eventFaction == _side && _startForceStrengthDecrement) then {
+		        	if (_side != (_factions select 0 select 0)) then {
+		        		// DEBUG -------------------------------------------------------------------------------------
+                if (_debug) then {
+		        	   ["ML - Force Strength 'OPCOM_CAPTURE' (Decrement) -> _faction: %1, _side (event): %2, _eventFaction: %3, _objective: %4, _startForceStrengthDecrementFactor: %5", (_factions select 0 select 0), _side, _eventFaction, _objective, _startForceStrengthDecrementFactor] call ALiVE_fnc_dump;
+		        	  };
+		        	  // DEBUG -------------------------------------------------------------------------------------
+		             _objectiveID = [_objective,"id"] call ALiVE_fnc_hashGet;
+		             _objectivePos = [_objective,"center"] call ALiVE_fnc_hashGet;
+		            {
+		            	 _thissideTarget = [_x, "side", ""] call ALIVE_fnc_hashGet;  
+		            	if (_thissideTarget == (_factions select 0 select 0)) then {   
+		            	 _thisInstanceSFS =  [_x,"startForceStrength"] call ALiVE_fnc_HashGet;  
+		              };
+		            } forEach OPCOM_INSTANCES; 
+		            _instanceProfilesCount = 0; 
+		            { 
+		            	_instanceProfilesCount = _instanceProfilesCount + _x
+		            } forEach _thisInstanceSFS;
+		             _countToRemove = ceil((_instanceProfilesCount * _startForceStrengthDecrementFactor)/100);
+		            for "_i" from 0 to (_countToRemove -1) do {
+		            	_randomWeightedElement = [["Infantry","Motorized","Mechanized","Armored","Artillery","AAA","Air","Sea"], _thisInstanceSFS] call BIS_fnc_selectRandomWeighted;
+                  [(_factions select 0 select 0), _randomWeightedElement, 1] call ALIVE_fnc_OPCOMdecrementStartForceStrength;    
+		            };
+		        	};
+		        };
+        }; 
     };
 
     case "LOGCOM_STATUS_REQUEST": {

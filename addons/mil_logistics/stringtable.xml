@@ -162,4 +162,36 @@
     <English>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</English>
 	<Chinesesimp>放置一个军事后勤模块，以在同步的军事人工智能指挥官模块的控制下增援和补给派系。</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC">
+  <English>Inc. Force Strength (Obj. Capture)</English>
+	<Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC_COMMENT">
+  <English>When an objective is captured OPCOM will increase the force cap used to bring in 'replacements' to get up to strength</English>
+	<Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR">
+  <English>Inc. Force Strength Factor</English>
+	<Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR_COMMENT">
+  <English>Factor amount to increase startForceStrength on objective capture. Will only increase where value > 0</English>
+	<Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC">
+  <English>Dec. Force Strength (Obj. Loss)</English>
+	<Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_COMMENT">
+  <English>When an objective is captured OPCOM will decrease the force cap used to bring in 'replacements' to get up to strength</English>
+	<Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR">
+  <English>Dec. Force Strength Factor</English>
+	<Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR_COMMENT">
+  <English>Factor amount to decrement startForceStrength on objective loss. Will only decrease where value > 0</English>
+	<Chinesesimp></Chinesesimp>
+</Key>
 </Container></Package></Project>
