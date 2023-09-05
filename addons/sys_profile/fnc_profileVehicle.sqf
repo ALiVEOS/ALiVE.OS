@@ -656,7 +656,7 @@ switch (_operation) do {
             if(count _slung > 0) then {
                 private ["_slingloadClass","_slungActive"];
 
-                If (_debug) then {
+                if (_debug) then {
                     ["SPAWNING SLINGLOADED VEHICLE %1 - to be slung by %2", _profileID, _slung] call ALiVE_fnc_dump;
                 };
 
@@ -665,13 +665,19 @@ switch (_operation) do {
 
                 if (typeName _slingLoadClass == "ARRAY") then {
 
-                    _slingloadClass = [ALIVE_profileHandler, "getProfile", _slingloadClass select 0] call ALIVE_fnc_profileHandler;
+                 _slingloadClass = [ALIVE_profileHandler, "getProfile", _slingloadClass select 0] call ALIVE_fnc_profileHandler;
+
+                 if (isNil "_slingloadClass") then {
+                   if (_debug) then {
+                   	["_slingloadClass trap!"] call ALiVE_fnc_dump;
+                   };	 
+                 } else {
                     private "_slActive";
                     _slActive = _slingLoadClass select 2 select 1;
                     _slingloading = [_slingLoadClass,"slinging",false] call ALIVE_fnc_hashGet;
 
                     if (typeName _slActive == "BOOL" && _slActive && !_slingloading) then {
-                        If (_debug) then {
+                        if (_debug) then {
                             ["ATTEMPTING TO ATTACH VEHICLE %1 (%3) to %2", _profileID, _slingloadClass select 2 select 4, _vehicle] call ALiVE_fnc_dump;
                         };
                         _slungActive = (_slingloadClass select 2 select 10) setSlingLoad _vehicle; // if profile is active, then slingload vehicle
@@ -688,15 +694,18 @@ switch (_operation) do {
                     };
                     If (_debug) then {
                         ["SLINGLOADED VEHICLE %1 is being slung %2 : %3", _profileID, _slungActive, getSlingLoad (_slingloadClass select 2 select 10)] call ALiVE_fnc_dump;
-                    };
+                    };                
+                 };
                 };
 
+             if !(isNil "_slingloadClass") then {
                 if (_slungActive) then {
                     [_slingloadClass, "slingloading", true] call ALIVE_fnc_hashSet;
                     [_logic,"spawnType",["preventDespawn"]] call ALIVE_fnc_profileVehicle;
                 } else {
                     [_slingloadClass, "slingloading", false] call ALIVE_fnc_hashSet;
                 };
+             };
             };
 
             if(_paraDrop) then {
