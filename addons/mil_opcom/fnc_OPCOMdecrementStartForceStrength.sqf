@@ -38,7 +38,11 @@ params ["_side","_type","_decrementAmount"];
 
 _result = [];
 
-["OPCOM Call ALIVE_fnc_OPCOMdecrementStartForceStrength: _side: %1 _type %2 _decrementAmount: %3", _side, _type, _decrementAmount] call ALIVE_fnc_dump;
+// DEBUG -------------------------------------------------------------------------------------
+if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+ ["OPCOM Call ALIVE_fnc_OPCOMdecrementStartForceStrength: _side: %1 _type %2 _decrementAmount: %3", _side, _type, _decrementAmount] call ALIVE_fnc_dump;
+};
+// DEBUG -------------------------------------------------------------------------------------
 
 // Execute on Server only
 if !(isServer) exitwith {
@@ -85,7 +89,11 @@ switch _type do {
 		  ["OPCOM %1 decremented %2 StartForceStrength from: %3 to: %4, decrement amount: %5, startForceStrength: %6", _side, _type, _currentVal, _newVal, _decrementAmount, _result] call ALIVE_fnc_dump;
 	  } else {
 	  	_result = [_x,"startForceStrength"] call ALiVE_fnc_HashGet;  
-	  	["OPCOM %1 cannot decrement %2 StartForceStrength; already zero!, startForceStrength: %3", _side, _type, _result] call ALIVE_fnc_dump;
+	  	// DEBUG -------------------------------------------------------------------------------------
+      if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+	  	  ["OPCOM %1 cannot decrement %2 StartForceStrength; already zero!, startForceStrength: %3", _side, _type, _result] call ALIVE_fnc_dump;
+		  };
+		  // DEBUG -------------------------------------------------------------------------------------
 	  };
 		break;
 	}; 

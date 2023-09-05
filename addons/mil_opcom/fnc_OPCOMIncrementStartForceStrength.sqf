@@ -38,7 +38,11 @@ params ["_side","_type","_incrementAmount"];
 
 _result = [];
 
-["OPCOM Call ALIVE_fnc_OPCOMIncrementStartForceStrength: _side: %1 _type %2 _incrementAmount: %3", _side, _type, _incrementAmount] call ALIVE_fnc_dump;
+// DEBUG -------------------------------------------------------------------------------------
+if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+ ["OPCOM Call ALIVE_fnc_OPCOMIncrementStartForceStrength: _side: %1 _type %2 _incrementAmount: %3", _side, _type, _incrementAmount] call ALIVE_fnc_dump;
+};
+// DEBUG -------------------------------------------------------------------------------------
 
 // Execute on Server only
 if !(isServer) exitwith {
@@ -81,7 +85,11 @@ switch _type do {
 		_instance set [_typeNum, (_instance select _typeNum) + _incrementAmount];
     _result = [_x,"startForceStrength"] call ALiVE_fnc_HashGet;  
     _newVal = _result select _typeNum;  
-		["OPCOM %1 incremented %2 StartForceStrength from: %3 to: %4, increment amount: %5, startForceStrength: %6", _side, _type, _currentVal, _newVal, _incrementAmount, _result] call ALIVE_fnc_dump;
+    // DEBUG -------------------------------------------------------------------------------------
+     if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+		   ["OPCOM %1 incremented %2 StartForceStrength from: %3 to: %4, increment amount: %5, startForceStrength: %6", _side, _type, _currentVal, _newVal, _incrementAmount, _result] call ALIVE_fnc_dump;
+		 };
+		// DEBUG -------------------------------------------------------------------------------------
 		break;
 	}; 
 } forEach OPCOM_INSTANCES;
