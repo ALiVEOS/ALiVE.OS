@@ -86,7 +86,11 @@ switch _type do {
 		  _instance set [_typeNum, (_instance select _typeNum) - _decrementAmount];
       _result = [_x,"startForceStrength"] call ALiVE_fnc_HashGet;  
       _newVal = _result select _typeNum;  
-		  ["OPCOM %1 decremented %2 StartForceStrength from: %3 to: %4, decrement amount: %5, startForceStrength: %6", _side, _type, _currentVal, _newVal, _decrementAmount, _result] call ALIVE_fnc_dump;
+	  	// DEBUG -------------------------------------------------------------------------------------
+      if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+		   ["OPCOM %1 decremented %2 StartForceStrength from: %3 to: %4, decrement amount: %5, startForceStrength: %6", _side, _type, _currentVal, _newVal, _decrementAmount, _result] call ALIVE_fnc_dump;
+		  };
+	  	// DEBUG -------------------------------------------------------------------------------------
 	  } else {
 	  	_result = [_x,"startForceStrength"] call ALiVE_fnc_HashGet;  
 	  	// DEBUG -------------------------------------------------------------------------------------
