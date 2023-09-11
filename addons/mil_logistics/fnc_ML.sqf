@@ -623,8 +623,11 @@ switch(_operation) do {
 		        _startForceStrengthDecrementFactor = parseNumber([_logic, "startForceStrengthDecFactor"] call MAINCLASS);
 		           
 		        _data params ["_side","_objective"]; 
-		         // ["ML - Force Strength 'OPCOM_CAPTURE' -> _side (event): %1, _eventFaction: %2, _faction: %3", _side, _eventFaction, (_factions select 0 select 0)] call ALiVE_fnc_dump;
-		        
+		         // DEBUG -------------------------------------------------------------------------------------
+             if (_debug) then {
+              ["ML - Force Strength 'OPCOM_CAPTURE' -> _side (event): %1, _eventFaction: %2, _faction: %3, _factions: %4", _side, _eventFaction, (_factions select 0 select 0), _factions] call ALiVE_fnc_dump;
+		         };
+		        // DEBUG -------------------------------------------------------------------------------------
 		        // the side that captured && startForceStrengthInc is true...
 		        if (_eventFaction == _side && _startForceStrengthIncrement) then {
 		        	if (_side == (_factions select 0 select 0)) then {
@@ -638,12 +641,17 @@ switch(_operation) do {
 		            {
 		            	 _thissideTarget = [_x, "side", ""] call ALIVE_fnc_hashGet;  
 		            	if (_thissideTarget == _side) then {   
-		            	 _thisInstanceSFS =  [_x,"startForceStrength"] call ALiVE_fnc_HashGet;  
+		            	 _thisInstanceSFS =  [_x,"startForceStrength"] call ALiVE_fnc_HashGet;
+		        		// DEBUG -------------------------------------------------------------------------------------
+                if (_debug) then {
+                 ["ML - Force Strength 'OPCOM_CAPTURE' -> _thisInstanceSFS: %1", _thisInstanceSFS] call ALiVE_fnc_dump;
+		        	  };
+		        	  // DEBUG -------------------------------------------------------------------------------------
 		              };
 		            } forEach OPCOM_INSTANCES; 
 		            _instanceProfilesCount = 0; 
 		            { 
-		            	_instanceProfilesCount = _instanceProfilesCount + _x
+		            	_instanceProfilesCount = _instanceProfilesCount + _x;
 		            } forEach _thisInstanceSFS;
 		             _countToAdd = ceil((_instanceProfilesCount * _startForceStrengthIncrementFactor)/100);
 		            for "_i" from 0 to (_countToAdd -1) do {
@@ -670,7 +678,7 @@ switch(_operation) do {
 		            } forEach OPCOM_INSTANCES; 
 		            _instanceProfilesCount = 0; 
 		            { 
-		            	_instanceProfilesCount = _instanceProfilesCount + _x
+		            	_instanceProfilesCount = _instanceProfilesCount + _x;
 		            } forEach _thisInstanceSFS;
 		             _countToRemove = ceil((_instanceProfilesCount * _startForceStrengthDecrementFactor)/100);
 		            for "_i" from 0 to (_countToRemove -1) do {
