@@ -673,7 +673,12 @@ switch(_operation) do {
 		            {
 		            	 _thissideTarget = [_x, "side", ""] call ALIVE_fnc_hashGet;  
 		            	if (_thissideTarget == (_factions select 0 select 0)) then {   
-		            	 _thisInstanceSFS =  [_x,"startForceStrength"] call ALiVE_fnc_HashGet;  
+		            	 _thisInstanceSFS =  [_x,"startForceStrength"] call ALiVE_fnc_HashGet;
+		        		// DEBUG -------------------------------------------------------------------------------------
+                if (_debug) then {
+                 ["ML - Force Strength 'OPCOM_CAPTURE' -> _thisInstanceSFS: %1", _thisInstanceSFS] call ALiVE_fnc_dump;
+		        	  };
+		        	  // DEBUG -------------------------------------------------------------------------------------
 		              };
 		            } forEach OPCOM_INSTANCES; 
 		            _instanceProfilesCount = 0; 
