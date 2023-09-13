@@ -2,13 +2,13 @@
 #define PREFIX ALiVE
 
 // TODO: Consider Mod-wide or Component-narrow versions (or both, depending on wishes!)
-#define MAJOR 1
-#define MINOR 21
-#define PATCHLVL 6
+#define MAJOR 2
+#define MINOR 1
+#define PATCHLVL 1
 // BUILD should be YYMMDDR eg 1311211
-#define BUILD 2308202
+#define BUILD 2309131
 
-#define CLUSTERBUILD "Arma 3","Arma3",212,150779,"Stable"
+#define CLUSTERBUILD "Arma 3","Arma3",214,150957,"Stable"
 
 #define VERSION MAJOR.MINOR.PATCHLVL.BUILD
 #define VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD
