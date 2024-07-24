@@ -110,6 +110,9 @@ ALIVE_factionDefaultResupplyDefenceStoreOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "SPE_US_ARMY", ALIVE_SPEDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "SPE_FR_ARMY", ALIVE_SPEDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "SPE_FFI", ALIVE_SPEDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyDefenceStoreOptions, "SPE_MILICE", ALIVE_SPEDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
+
+
 
 // GM - CDLC Global Mobilization 1.5
 [ALIVE_factionDefaultResupplyDefenceStoreOptions, "gm_gc_army", ALIVE_GMDefaultResupplyDefenceStoreOptions] call ALIVE_fnc_hashSet;
@@ -220,6 +223,7 @@ ALIVE_factionDefaultResupplyIndividualOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyIndividualOptions, "SPE_US_ARMY", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "SPE_FR_ARMY", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyIndividualOptions, "SPE_FFI", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyIndividualOptions, "SPE_MILICE", ALIVE_globalSPEResupplyIndividualOptions] call ALIVE_fnc_hashSet;
 
 // GM - CDLC Global Mobilization 1.5
 [ALIVE_factionDefaultResupplyIndividualOptions, "gm_gc_army", ALIVE_globalGMResupplyIndividualOptions] call ALIVE_fnc_hashSet;
@@ -431,9 +435,6 @@ ALIVE_SPEDefaultResupplyGroupOptions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultResupplyGroupOptions, "SPE_US_ARMY", ALIVE_SPEDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "SPE_FR_ARMY", ALIVE_SPEDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultResupplyGroupOptions, "SPE_FFI", ALIVE_SPEDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultResupplyGroupOptions, "SPE_MILICE", ALIVE_SPEDefaultResupplyGroupOptions] call ALIVE_fnc_hashSet;
 
 // OVER
-
-
-
-

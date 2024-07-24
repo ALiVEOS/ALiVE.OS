@@ -78,4 +78,7 @@ ALIVE_garrisonPositions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_garrisonPositions,"Land_SPE_Tent_01", [0,1,2,3,4]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_SPE_Tent_02", [0,1,2,3,4]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_SPE_Tent_03", [0,1,2,3,4]] call ALIVE_fnc_hashSet;
-
+[ALIVE_garrisonPositions,"Land_SPE_Abbaye_R_Tower", [0,1,2,3,4,5,6,7]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Abbaye_R_Tower_Corner", [0,1,2,3,4,5,6,7]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Abbaye_R_Tower_End", [0,1,2,3,4,5,6,7]] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_SPE_Church_Evroult_TallTower", [0,1,2,3,4,5]] call ALIVE_fnc_hashSet;

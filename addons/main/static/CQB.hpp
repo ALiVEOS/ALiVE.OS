@@ -117,6 +117,10 @@ ALiVE_MIL_CQB_STRATEGICHOUSES = ALiVE_MIL_CQB_CUSTOM_STRATEGICHOUSES +
     "Land_SPE_Church_BellTower_02",
     "Land_SPE_Church_BellTower_03",
     "Land_SPE_Windmill",
+    "Land_SPE_Church_Evroult_TallTower",
+    "Land_SPE_Abbaye_R_Tower",
+    "Land_SPE_Abbaye_R_Tower_Corner",
+    "Land_SPE_Abbaye_R_Tower_End",
     
     // GM - CDLC Global Mobilization 1.5
     "land_gm_euro_church_01",

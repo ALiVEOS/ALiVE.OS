@@ -1018,12 +1018,12 @@ ALIVE_factionDefaultSupports = [] call ALIVE_fnc_hashCreate;
 
 
 // SPE - CDLC Spearhead 1944 1.1
-[ALIVE_factionDefaultSupports, "SPE_STURM", ["SPE_ST_OpelBlitz","SPE_ST_OpelBlitz_Open","SPE_ST_OpelBlitz_Fuel","SPE_ST_OpelBlitz_Ambulance","SPE_ST_OpelBlitz_Repair","SPE_ST_OpelBlitz_Ammo","SPE_ST_OpelBlitz_Flak38"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultSupports, "SPE_WEHRMACHT", ["SPE_OpelBlitz","SPE_OpelBlitz_Open","SPE_OpelBlitz_Fuel","SPE_OpelBlitz_Repair","SPE_OpelBlitz_Ammo","SPE_OpelBlitz_Ambulance","SPE_OpelBlitz_Flak38"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultSupports, "SPE_US_ARMY", ["SPE_US_M3_Halftrack_Unarmed","SPE_US_M3_Halftrack_Unarmed_Open","SPE_US_M3_Halftrack_Ammo","SPE_US_M3_Halftrack_Fuel","SPE_US_M3_Halftrack_Repair","SPE_US_M3_Halftrack_Ambulance","SPE_US_M16_Halftrack"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultSupports, "SPE_FR_ARMY", ["SPE_FR_M3_Halftrack_Unarmed","SPE_FR_M3_Halftrack_Unarmed_Open","SPE_FR_M3_Halftrack_Ammo","SPE_FR_M3_Halftrack_Fuel","SPE_FR_M3_Halftrack_Repair","SPE_FR_M3_Halftrack_Ambulance","SPE_FR_M16_Halftrack"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultSupports, "SPE_FFI", ["SPE_FFI_OpelBlitz","SPE_FFI_OpelBlitz_Open","SPE_FFI_OpelBlitz_Fuel","SPE_FFI_OpelBlitz_Ambulance","SPE_FFI_OpelBlitz_Repair","SPE_FFI_OpelBlitz_Ammo"]] call ALIVE_fnc_hashSet;
-
+[ALIVE_factionDefaultSupports, "SPE_STURM", ["SPE_ST_R200_Unarmed","SPE_ST_R200_Hood","SPE_ST_R200_MG34","SPE_ST_OpelBlitz","SPE_ST_OpelBlitz_Open","SPE_ST_OpelBlitz_Fuel","SPE_ST_OpelBlitz_Ambulance","SPE_ST_OpelBlitz_Repair","SPE_ST_OpelBlitz_Ammo","SPE_ST_OpelBlitz_Flak38","SPE_ST_SdKfz250_1"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupports, "SPE_WEHRMACHT", ["SPE_GER_R200_Unarmed","SPE_GER_R200_Hood","SPE_GER_R200_MG34","SPE_OpelBlitz","SPE_OpelBlitz_Open","SPE_OpelBlitz_Fuel","SPE_OpelBlitz_Repair","SPE_OpelBlitz_Ammo","SPE_OpelBlitz_Ambulance","SPE_OpelBlitz_Flak38","SPE_SdKfz250_1"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupports, "SPE_US_ARMY", ["SPE_CCKW_353_Repair","SPE_US_M3_Halftrack_Unarmed","SPE_CCKW_353_Open","SPE_US_M3_Halftrack_Unarmed_Open","SPE_CCKW_353_Ambulance","SPE_US_G503_MB_M2","SPE_US_M3_Halftrack_Ammo","SPE_CCKW_353_Ammo","SPE_US_M3_Halftrack_Fuel","SPE_M8_LAC_ringMount","SPE_M20_AUC","SPE_CCKW_353_Fuel","SPE_US_G503_MB","SPE_US_M3_Halftrack_Repair","SPE_US_M3_Halftrack_Ambulance","SPE_US_M16_Halftrack","SPE_US_G503_MB_Ambulance"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupports, "SPE_FR_ARMY", ["SPE_FR_M3_Halftrack_Unarmed","SPE_FR_M3_Halftrack_Unarmed_Open","SPE_FR_M3_Halftrack_Ammo","SPE_FR_M3_Halftrack_Fuel","SPE_FR_M3_Halftrack_Repair","SPE_FR_M3_Halftrack_Ambulance","SPE_FR_M16_Halftrack","SPE_FR_M20_AUC"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupports, "SPE_FFI", ["SPE_FFI_SdKfz250_1","SPE_FFI_R200_Unarmed","SPE_FFI_R200_Hood","SPE_FFI_OpelBlitz","SPE_FFI_OpelBlitz_Open","SPE_FFI_OpelBlitz_Fuel","SPE_FFI_OpelBlitz_Ambulance","SPE_FFI_OpelBlitz_Repair","SPE_FFI_OpelBlitz_Ammo"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultSupports, "SPE_MILICE", ["SPE_GER_R200_Unarmed","SPE_GER_R200_Hood","SPE_Milice_R200_MG34","SPE_OpelBlitz","SPE_OpelBlitz_Open","SPE_OpelBlitz_Fuel","SPE_OpelBlitz_Repair","SPE_OpelBlitz_Ammo","SPE_OpelBlitz_Ambulance","SPE_OpelBlitz_Flak38"]] call ALIVE_fnc_hashSet;
 
 // GM - CDLC Global Mobilization 1.5
 [ALIVE_factionDefaultSupports, "gm_gc_army", [
@@ -1350,6 +1350,17 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
     "Land_SPE_Ammocrate_US_02",
     "Land_SPE_Ammocrate_US_03"
 
+]] call ALIVE_fnc_hashSet;
+
+
+[ALIVE_factionDefaultSupplies, "SPE_MILICE", [
+    "SPE_BasicAmmunitionBox_GER",
+    "SPE_BasicWeaponsBox_GER",
+    "Land_SPE_Ammobox_German_01",
+    "Land_SPE_Ammobox_German_02",
+    "Land_SPE_Ammobox_German_03",
+    "Land_SPE_Ammobox_German_04",
+    "Land_SPE_Ammobox_German_05"
 ]] call ALIVE_fnc_hashSet;
 
 

@@ -2815,8 +2815,143 @@ class CfgGroups
                 };
             };
         };
+        
+        class SPE_STURM
+        {
+            class Mechanized
+            {
+                name = "Mechanized";
+                class SPE_ST_Mechanized_Stug_Plat
+                {
+                    name = "Mechanized Stug Platoon";
+                    side = 1;
+                    faction = "SPE_STURM";
+                    icon = "\A3\ui_f\data\map\markers\nato\b_mech_inf.paa";
+                    class Unit0 {
+                        position[] = {0,0,0};
+                        rank = "SERGEANT";
+                        side = 1;
+                        vehicle = "SPE_ST_StuG_III_G_SKB";
+                    };
+                    class Unit1 {
+                        position[] = {8,-14,0};
+                        rank = "PRIVATE";
+                        side = 1;
+                        vehicle = "SPE_ST_Jagdpanther_G1";
+                    };
+                    class Unit2 {
+                        position[] = {-8,-14,0};
+                        rank = "PRIVATE";
+                        side = 1;
+                        vehicle = "SPE_ST_StuG_III_G_SKB";
+                    };
+                };
+            };
+            class Armored
+            {
+                name = "Armored";
+            	  class SPE_ST_Armored_Panther_Plat
+            	  {
+                    name = "Armored Panther Platoon";
+                    side = 1;
+                    faction = "SPE_STURM";
+                    icon = "\A3\ui_f\data\map\markers\nato\b_armor.paa";
+                    class Unit0 {
+                        position[] = {0,0,0};
+                        rank = "SERGEANT";
+                        side = 1;
+                        vehicle = "SPE_ST_PzKpfwV_G";
+                    };
+                    class Unit1 {
+                        position[] = {8,-13,0};
+                        rank = "PRIVATE";
+                        side = 1;
+                        vehicle = "SPE_ST_PzKpfwV_G";
+                    };
+                    class Unit2 {
+                        position[] = {-8,-13,0};
+                        rank = "PRIVATE";
+                        side = 1;
+                        vehicle = "SPE_ST_PzKpfwV_G";
+                    };
+                    class Unit3 {
+                        position[] = {16,-21,0};
+                        rank = "PRIVATE";
+                        side = 1;
+                        vehicle = "SPE_ST_PzKpfwV_G";
+                    };
+                };
+            };
+        };
+        class SPE_WEHRMACHT
+        {
+            class Mechanized
+            {
+                name = "Mechanized";
+                class SPE_GER_Mechanized_Stug_Plat
+                {
+                    name = "Mechanized Stug Platoon";
+                    side = 1;
+                    faction = "SPE_WEHRMACHT";
+                    icon = "\A3\ui_f\data\map\markers\nato\b_mech_inf.paa";
+                    class Unit0 {
+                        position[] = {0,0,0};
+                        rank = "SERGEANT";
+                        side = 1;
+                        vehicle = "SPE_StuG_III_G_SKB";
+                    };
+                    class Unit1 {
+                        position[] = {8,-14,0};
+                        rank = "PRIVATE";
+                        side = 1;
+                        vehicle = "SPE_Jagdpanther_G1";
+                    };
+                    class Unit2 {
+                        position[] = {-8,-14,0};
+                        rank = "PRIVATE";
+                        side = 1;
+                        vehicle = "SPE_StuG_III_G_SKB";
+                    };
+                };
+            };
+            class Armored
+            {
+                name = "Armored";
+            	  class SPE_GER_Armored_Panther_Plat 
+            	  {
+                    name = "Armored Panther Platoon";
+                    side = 1;
+                    faction = "SPE_WEHRMACHT";
+                    icon = "\A3\ui_f\data\map\markers\nato\b_armor.paa";
+                    class Unit0 {
+                        position[] = {0,0,0};
+                        rank = "SERGEANT";
+                        side = 1;
+                        vehicle = "SPE_PzKpfwV_G";
+                    };
+                    class Unit1 {
+                        position[] = {8,-13,0};
+                        rank = "PRIVATE";
+                        side = 1;
+                        vehicle = "SPE_PzKpfwV_G";
+                    };
+                    class Unit2 {
+                        position[] = {-8,-13,0};
+                        rank = "PRIVATE";
+                        side = 1;
+                        vehicle = "SPE_PzKpfwV_G";
+                    };
+                    class Unit3 {
+                        position[] = {16,-21,0};
+                        rank = "PRIVATE";
+                        side = 1;
+                        vehicle = "SPE_PzKpfwV_G";
+                    };
+                };
+            };
+        };
     };
-
+    
     class Indep
     {
         class IND_F

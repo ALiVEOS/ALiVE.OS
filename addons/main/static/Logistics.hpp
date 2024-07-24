@@ -42,11 +42,14 @@ ALIVE_factionDefaultTransport = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultTransport, "B_CIA", ["vn_b_wheeled_m54_01","vn_b_wheeled_m54_02"]] call ALIVE_fnc_hashSet;
 
 // SPE - CDLC Spearhead 1944 1.1
-[ALIVE_factionDefaultTransport, "SPE_STURM", ["SPE_ST_OpelBlitz","SPE_ST_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultTransport, "SPE_WEHRMACHT", ["SPE_OpelBlitz","SPE_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "SPE_STURM", ["SPE_ST_R200_Unarmed","SPE_ST_R200_Hood","SPE_ST_OpelBlitz","SPE_ST_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "SPE_WEHRMACHT", ["SPE_GER_R200_Unarmed","SPE_GER_R200_Hood","SPE_OpelBlitz","SPE_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "SPE_US_ARMY", ["SPE_US_M3_Halftrack_Unarmed","SPE_US_M3_Halftrack_Unarmed_Open"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultTransport, "SPE_FR_ARMY", ["SPE_FR_M3_Halftrack_Unarmed","SPE_FR_M3_Halftrack_Unarmed_Open"]] call ALIVE_fnc_hashSet;
-[ALIVE_factionDefaultTransport, "SPE_FFI", ["SPE_FFI_OpelBlitz","SPE_FFI_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "SPE_FFI", ["SPE_FFI_R200_Unarmed","SPE_FFI_R200_Hood","SPE_FFI_OpelBlitz","SPE_FFI_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultTransport, "SPE_MILICE", ["SPE_Milice_R200_Unarmed","SPE_Milice_R200_Hood","SPE_OpelBlitz","SPE_OpelBlitz_Open"]] call ALIVE_fnc_hashSet;
+
+
 
 // GM - CDLC Global Mobilization 1.5
 [ALIVE_factionDefaultTransport, "gm_gc_army", ["gm_gc_army_ural4320_cargo","gm_gc_army_ural375d_cargo","gm_gc_army_uaz469_cargo","gm_gc_army_p601"]] call ALIVE_fnc_hashSet;
@@ -111,6 +114,7 @@ ALIVE_factionDefaultAirTransport = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultAirTransport, "SPE_US_ARMY", []] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultAirTransport, "SPE_FR_ARMY", []] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultAirTransport, "SPE_FFI", []] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAirTransport, "SPE_MILICE", []] call ALIVE_fnc_hashSet;
 */
 
 // GM - CDLC Global Mobilization 1.5
@@ -174,6 +178,8 @@ ALIVE_factionDefaultContainers = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultContainers, "SPE_US_ARMY", ["SPE_BasicAmmunitionBox_US","SPE_BasicWeaponsBox_US","Land_SPE_Ammocrate_US_01","Land_SPE_Ammocrate_US_02","Land_SPE_Ammocrate_US_03"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "SPE_FR_ARMY", ["SPE_BasicAmmunitionBox_US","SPE_BasicWeaponsBox_US"]] call ALIVE_fnc_hashSet;
 [ALIVE_factionDefaultContainers, "SPE_FFI", ["SPE_Hay_WeaponCache_FFI"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultContainers, "SPE_MILICE", ["Land_SPE_Ammobox_German_01","Land_SPE_Ammobox_German_02","Land_SPE_Ammobox_German_03","Land_SPE_Ammobox_German_04","Land_SPE_Ammobox_German_05"]] call ALIVE_fnc_hashSet;
+
 
 // GM - CDLC Global Mobilization 1.5
 [ALIVE_factionDefaultContainers, "gm_gc_army", ["gm_gc_army_ammobox_smallarms_80","gm_gc_army_ammobox_smallarms_80"]] call ALIVE_fnc_hashSet;
