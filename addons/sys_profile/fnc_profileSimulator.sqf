@@ -678,7 +678,8 @@ if (!_simAttacks) then {
                                 private _attackerPos = _attacker select 2 select 2;                     // [_attacker,"position"] call ALiVE_fnc_hashGet;
                                 private _targetPos = _target select 2 select 2;                         // [_target,"position"] call ALiVE_fnc_hashGet;
 
-                                private _maxEngagementRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
+                              //  private _maxEngagementRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
+                                private _maxEngagementRange = [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet;
 
                                 if (_attackerPos distance2D _targetPos <= _maxEngagementRange) then {
                                     // get profiles to attack with

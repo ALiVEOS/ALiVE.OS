@@ -125,83 +125,105 @@ class CfgVehicles {
                         typeName = "STRING";
                         class Values
                         {
-                            class Low
+
+                            class Insane
                             {
-                                name = "25%";
-                                value = "0.25";
-                            };
-                            class Medium
-                            {
-                                name = "50%";
-                                value = "0.50";
-                            };
-                            class High
-                            {
-                                name = "75%";
-                                value = "0.75";
-                            };
-                            class None
-                            {
-                                name = "100%";
-                                value = "1.00";
-                                default = 1;
-                            };
-                            class Extreme
-                            {
-                                name = "125%";
-                                value = "1.25";
-                            };
-                            class Extremer
-                            {
-                                name = "150%";
-                                value = "1.50";
+                                name = "Fastest (2.00)";
+                                value = "2.00";
                             };
                             class Crazy
                             {
-                                name = "175%";
+                                name = "Faster (1.75)";
                                 value = "1.75";
                             };
-                            class Insane
+                            class Extremer
                             {
-                                name = "200%";
-                                value = "2.00";
+                                name = "Fast (1.50)";
+                                value = "1.75";
+                            };
+                            class Extreme
+                            {
+                                name = "Quick (1.25)";
+                                value = "1.25";
+                            };
+                            class None
+                            {
+                                name = "Regular (1.00)";
+                                value = "1.00";
+                                default = 1;
+                            };
+                            class High
+                            {
+                                name = "Slow (0.75)";
+                                value = "0.75";
+                            };
+                            class Medium
+                            {
+                                name = "Slower (0.50)";
+                                value = "0.50";
+                            };
+                            class Low
+                            {
+                                name = "Slowest (0.25)";
+                                value = "0.25";
                             };
                         };
                     };
-					class virtualcombat_speedmodifier
+					 					class virtualcombat_speedmodifier
                     {
-                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER";
-                        description = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT";
-						class Values
-						{
-							class Regular
-							{
-								name = "Regular";
-								Value = 0.75;
-								default = 1;
-							};
-							class Fastest
-							{
-								name = "Fastest";
-								Value = 1.75;
-							};
-							class Faster
-							{
-								name = "Faster";
-								Value = 1.25;
-							};
-							class Slower
-							{
-								name = "Slower";
-								Value = 0.35;
-							};
-							class Slowest
-							{
-								name = "Slowest";
-								Value = 0.1;
-							};
-						};
-					};
+                      displayName = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER";
+                      description = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT";
+											class Values
+											{
+												class Fastest
+												{
+													name = "Fastest (1.75)";
+													Value = 1.75;
+												};
+												class Faster
+												{
+													name = "Faster (1.50)";
+													Value = 1.50;
+												};
+												class Fast
+												{
+													name = "Fast (1.25)";
+													Value = 1.25;
+												};
+												class Quick
+												{
+													name = "Quick (1.00)";
+													Value = 1.00;
+												};
+												class Regular
+												{
+													name = "Regular (0.75)";
+													Value = 0.75;
+													default = 1;
+												};
+												class Slow
+												{
+													name = "Slow (0.50)";
+													Value = 0.50;
+												};
+												class Slower
+												{
+													name = "Slower (0.35)";
+													Value = 0.35;
+												};
+												class Slowest
+												{
+													name = "Slowest (0.10)";
+													Value = 0.10;
+												};
+											};
+										};
+                    class virtualcombat_rangemodifier
+                    {
+                        displayName = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER";
+                        description = "$STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER_COMMENT";
+                        defaultvalue = "255";
+                    };
                     class pathfinding
                     {
                         displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING";

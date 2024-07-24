@@ -85,10 +85,6 @@ switch (_operation) do {
         if (typename _args == "SCALAR") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
             _result = _args;
-
-            {
-                [_x,"maxRange", _args] call ALiVE_fnc_hashSet;
-            } foreach (_attacksByID select 2);
         } else {
             _result = [_logic,_operation] call ALiVE_fnc_hashGet;
         };

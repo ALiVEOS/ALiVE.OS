@@ -99,7 +99,7 @@ switch(_operation) do {
     case "start": {
 
         private["_debug","_persistent","_plotSectors","_syncMode","_syncedUnits","_spawnRadius","_spawnTypeJetRadius","_spawnTypeHeliRadius",
-        "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate","_profileSimulatorFSM",
+        "_activeLimiter","_spawnCycleTime","_despawnCycleTime","_combatRate","_combatRange","_profileSimulatorFSM",
         "_sectors","_persistent","_file","_pathfinding"];
 
         if (isServer) then {
@@ -112,11 +112,12 @@ switch(_operation) do {
             _spawnRadius = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
             _spawnTypeJetRadius = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
             _spawnTypeHeliRadius = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
-			_spawnTypeUAVRadius = [_logic,"spawnRadiusUAV"] call ALiVE_fnc_hashGet;
+            _spawnTypeUAVRadius = [_logic,"spawnRadiusUAV"] call ALiVE_fnc_hashGet;
             _activeLimiter = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
             _spawnCycleTime = [_logic,"spawnCycleTime"] call ALIVE_fnc_hashGet;
             _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
             _combatRate = [_logic,"combatRate"] call ALIVE_fnc_hashGet;
+            _combatRange = [_logic,"combatRange"] call ALIVE_fnc_hashGet;
             _smoothSpawn = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
             _pathfinding = [_logic,"pathfinding"] call ALiVE_fnc_hashGet;
 
@@ -157,7 +158,7 @@ switch(_operation) do {
             [ALIVE_profileCombatHandler,"init"] call ALIVE_fnc_profileCombatHandler;
             [ALIVE_profileCombatHandler,"debug", _debug] call ALIVE_fnc_profileCombatHandler;
             [ALIVE_profileCombatHandler,"combatRate", _combatRate] call ALIVE_fnc_profileCombatHandler;
-
+            [ALIVE_profileCombatHandler,"combatRange", _combatRange] call ALIVE_fnc_profileCombatHandler;
             // create sector grid
             ALIVE_sectorGrid = [nil, "create"] call ALIVE_fnc_sectorGrid;
             [ALIVE_sectorGrid, "init"] call ALIVE_fnc_sectorGrid;
@@ -210,7 +211,7 @@ switch(_operation) do {
                 ["Spawn Radius: %1", _spawnRadius] call ALiVE_fnc_dump;
                 ["Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALiVE_fnc_dump;
                 ["Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALiVE_fnc_dump;
-				["Spawn in UAV Radius: %1",_spawnTypeUAVRadius] call ALiVE_fnc_dump;
+                ["Spawn in UAV Radius: %1",_spawnTypeUAVRadius] call ALiVE_fnc_dump;
                 ["Spawn Cycle Time: %1", _spawnCycleTime] call ALiVE_fnc_dump;
                 ["Persistent: %1",_persistent] call ALiVE_fnc_dump;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
@@ -453,6 +454,16 @@ switch(_operation) do {
                 [ALIVE_profileCombatHandler,_operation, _args] call ALIVE_fnc_profileCombatHandler;
             };
 
+            [_logic,_operation, _args] call ALiVE_fnc_hashSet;
+        } else {
+            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+        };
+    };
+    case "combatRange": {
+        if (typename _args == "SCALAR") then {
+            if (!isnil "ALIVE_profileCombatHandler") then {
+                [ALIVE_profileCombatHandler,_operation, _args] call ALIVE_fnc_profileCombatHandler;
+            };
             [_logic,_operation, _args] call ALiVE_fnc_hashSet;
         } else {
             _result = [_logic,_operation] call ALiVE_fnc_hashGet;

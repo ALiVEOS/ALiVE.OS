@@ -103,7 +103,7 @@
     <Chinesesimp>虚拟单位速度:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPEED_MODIFIER_COMMENT">
-    <English>Alters how fast virtual AI move across the map. 25% means 25% of a unit's normal speed</English>
+    <English>Alters how fast virtual AI move across the map. 0.25 means 25% of a unit's normal speed</English>
     <Chinesesimp>改变虚拟AI在地图上移动的速度。25%是指单位正常速度的25%</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_ERROR1">
@@ -129,6 +129,14 @@
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_SPEED_MODIFIER_COMMENT">
     <English>Sets the pace of virtual combat. Fastest combat resolves twice as quickly as regular.</English>
     <Chinesesimp>设置虚拟战斗的节奏.最快的战斗解决速度是普通战斗的两倍.</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER">
+    <English>Virtual Combat Range:</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER_COMMENT">
+    <English>Sets the range of virtual combat in metres.</English>
+    <Chinesesimp></Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
     <English>Experimental Pathfinding:</English>
