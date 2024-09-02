@@ -321,10 +321,10 @@ SPE_STURM_mappings = [] call ALIVE_fnc_hashCreate;
 [SPE_STURM_mappings, "GroupFactionName", "SPE_STURM"] call ALIVE_fnc_hashSet;
 
 SPE_STURM_typeMappings = [] call ALIVE_fnc_hashCreate;
-[SPE_STURM_typeMappings, "Armored", ["SPE_ST_Armored_Panther_Plat","SPE_STUR_PzKpfwVI_H1_Platoon","SPE_STUR_PzKpfwIII_N_Platoon","SPE_GER_PzKpfwIV_G_Platoon","SPE_GER_PzKpfwIII_M_Platoon","SPE_GER_PzKpfwIII_L_Platoon","SPE_GER_PzKpfwIII_J_Platoon"]] call ALiVE_fnc_hashSet;
+[SPE_STURM_typeMappings, "Armored", ["SPE_ST_PzKpfwV_G_Platoon","SPE_ST_Jagdpanther_Section","SPE_ST_STUG_G_Late_Section","SPE_ST_STUH_42_Section","SPE_ST_STUG_G_Early_Section","SPE_STUR_PzKpfwVI_H1_Platoon","SPE_STUR_PzKpfwIII_N_Platoon","SPE_GER_PzKpfwIV_G_Platoon","SPE_GER_PzKpfwIII_M_Platoon","SPE_GER_PzKpfwIII_L_Platoon","SPE_GER_PzKpfwIII_J_Platoon"]] call ALiVE_fnc_hashSet;
 [SPE_STURM_typeMappings, "Infantry", ["SPE_sturmtrooper_MG_team","SPE_sturmtrooper_sniper_team","SPE_sturmtrooper_sniper_team","SPE_sturmtrooper_sentry_team_2","SPE_sturmtrooper_sentry_team_3","SPE_sturmtrooper_Flamethrower_Team","SPE_sturmtrooper_command_section","SPE_sturmtrooper_infantry_squad","SPE_sturmtrooper_AT_squad","SPE_sturmtrooper_Assault_Engineer_Squad"]] call ALiVE_fnc_hashSet;
-[SPE_STURM_typeMappings, "Mechanized", ["SPE_ST_Mechanized_Stug_Plat","SPE_Sturm_Scout_250_Recon_Team"]] call ALIVE_fnc_hashSet;
-[SPE_STURM_typeMappings, "Motorized", ["SPE_Motorized_Infantry_Squad"]] call ALiVE_fnc_hashSet;
+[SPE_STURM_typeMappings, "Mechanized", ["SPE_Sturm_Scout_250_Recon_Team"]] call ALIVE_fnc_hashSet;
+[SPE_STURM_typeMappings, "Motorized", ["SPE_Command_Section","SPE_Motorized_Infantry_Squad"]] call ALiVE_fnc_hashSet;
 [SPE_STURM_typeMappings, "SpecOps", ["SPE_ST_Panzerjaeger_squad"]] call ALIVE_fnc_hashSet;
 [SPE_STURM_typeMappings, "Support", ["SPE_sturmtrooper_HMG_team","SPE_sturmtrooper_81_Mortar_Team"]] call ALiVE_fnc_hashSet;
 
@@ -341,10 +341,10 @@ SPE_WEHRMACHT_mappings = [] call ALIVE_fnc_hashCreate;
 
 SPE_WEHRMACHT_typeMappings = [] call ALIVE_fnc_hashCreate;
 [SPE_WEHRMACHT_typeMappings, "Air", ["SPE_GER_fw190f8_Group"]] call ALiVE_fnc_hashSet;
-[SPE_WEHRMACHT_typeMappings, "Armored", ["SPE_GER_Armored_Panther_Plat","SPE_GER_PzKpfwVI_H1_Platoon","SPE_GER_PzKpfwIV_G_Platoon","SPE_GER_PzKpfwIII_N_Platoon","SPE_GER_PzKpfwIII_M_Platoon","SPE_GER_PzKpfwIII_L_Platoon","SPE_GER_PzKpfwIII_J_Platoon","SPE_GER_Nashorn_TD_Platoon"]] call ALiVE_fnc_hashSet;
+[SPE_WEHRMACHT_typeMappings, "Armored", ["SPE_GER_PzKpfwV_G_Platoon","SPE_GER_STUG_G_Early_Section","SPE_GER_STUH_42_Section","SPE_GER_STUG_G_Late_Section","SPE_GER_Jagdpanther_Section","SPE_GER_PzKpfwVI_H1_Platoon","SPE_GER_PzKpfwIV_G_Platoon","SPE_GER_PzKpfwIII_N_Platoon","SPE_GER_PzKpfwIII_M_Platoon","SPE_GER_PzKpfwIII_L_Platoon","SPE_GER_PzKpfwIII_J_Platoon","SPE_GER_Nashorn_TD_Platoon"]] call ALiVE_fnc_hashSet;
 [SPE_WEHRMACHT_typeMappings, "Infantry", ["SPE_GER_Lehr_Panzergrenadier_Squad","SPE_GER_Lehr_Panzergrenadier_MG_Team","SPE_GER_sniper_team","SPE_GER_Platoon_Troop","SPE_GER_infantry_squad","SPE_GER_AT_squad","SPE_GER_scout_squad","SPE_GER_sentry_squad_2","SPE_GER_sentry_squad_3","SPE_GER_sniper_team","SPE_GER_Flamethrower_Team","SPE_GER_Assault_Engineer_Squad","SPE_GER_MG_team"]] call ALiVE_fnc_hashSet;
-[SPE_WEHRMACHT_typeMappings, "Mechanized", ["SPE_GER_Mechanized_Stug_Plat","SPE_GER_Scout_250_Recon_Team"]] call ALiVE_fnc_hashSet;
-[SPE_WEHRMACHT_typeMappings, "Motorized", ["SPE_Motorized_Infantry_Squad"]] call ALiVE_fnc_hashSet;
+[SPE_WEHRMACHT_typeMappings, "Mechanized", ["SPE_GER_Scout_250_Recon_Team"]] call ALiVE_fnc_hashSet;
+[SPE_WEHRMACHT_typeMappings, "Motorized", ["SPE_Command_Section","SPE_Motorized_Infantry_Squad"]] call ALiVE_fnc_hashSet;
 [SPE_WEHRMACHT_typeMappings, "SpecOps", ["SPE_FSJ_Infantry_Assault_squad","SPE_FSJ_Infantry_HQ","SPE_FSJ_Infantry_MG_Team","PE_FSJ_Infantry_Panzerjaeger","PE_FSJ_Infantry_Patrol","SPE_FSJ_Infantry_squad","SPE_FSJ_Infantry_Team"]] call ALIVE_fnc_hashSet;
 [SPE_WEHRMACHT_typeMappings, "Support", ["SPE_GER_HMG_team","SPE_GER_81_Mortar_Team","SPE_FSJ_HMG_team","SPE_FSJ_81mm_Mortar_Team"]] call ALiVE_fnc_hashSet;
 
