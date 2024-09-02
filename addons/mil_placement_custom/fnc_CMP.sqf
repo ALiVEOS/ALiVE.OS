@@ -587,7 +587,7 @@ switch(_operation) do {
                     if (_i == 0 && {count _infantryGroups > 0} && _guardProbabilityCount > 0) then {
                     	
                         _guardGroup = (selectRandom _infantryGroups);
-                        _guards = [_guardGroup, _position, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+                        _guards = [_guardGroup, [_position, 50] call CBA_fnc_RandPos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
                         
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
