@@ -1058,19 +1058,18 @@ switch(_operation) do {
                 // DEBUG -------------------------------------------------------------------------------------
                     
                 private _guardRadius = parseNumber([_logic, "guardRadius"] call MAINCLASS);
-                private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS);
-                    
-                       
-
+                private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS); 
+                private _guardDistance = _size; 
+  
                     if(count _infantryGroups > 0 && _guardProbabilityCount > 0) then {
                      for "_i" from 0 to _guardProbabilityCount -1 do {
                      	
                         _guardGroup = (selectRandom _infantryGroups);
-                        _guards = [_guardGroup, [_center, 50] call CBA_fnc_RandPos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+                        _guards = [_guardGroup, [_center, _guardDistance] call CBA_fnc_RandPos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
                         
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                          ["CP [%1] - Placing Garrison Guards - %1", _faction, _guardGroup] call ALiVE_fnc_dump;
+                          ["CP [%1] - Placing Garrison Guards - %2", _faction, _guardGroup] call ALiVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
                     

@@ -569,7 +569,8 @@ switch(_operation) do {
                     
             private _guardRadius = parseNumber([_logic, "guardRadius"] call MAINCLASS);
             private _guardPatrolPercentage = parseNumber([_logic, "guardPatrolPercentage"] call MAINCLASS);
-
+            private _guardDistance = parseNumber([_logic, "size"] call MAINCLASS);
+                
             // Position and create groups
             private _groupCount = count _groups;
             private _totalCount = 0;
@@ -587,11 +588,11 @@ switch(_operation) do {
                     if (_i == 0 && {count _infantryGroups > 0} && _guardProbabilityCount > 0) then {
                     	
                         _guardGroup = (selectRandom _infantryGroups);
-                        _guards = [_guardGroup, [_position, 50] call CBA_fnc_RandPos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+                        _guards = [_guardGroup, [_position, _guardDistance] call CBA_fnc_RandPos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
                         
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                          ["CMP [%1] - Placing Garrison Guards - %1", _faction, _guardGroup] call ALiVE_fnc_dump;
+                          ["CMP [%1] - Placing Garrison Guards - %2", _faction, _guardGroup] call ALiVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
                     
