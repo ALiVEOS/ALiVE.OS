@@ -21,44 +21,42 @@ See Also:
 Author:
 ARJay
 ---------------------------------------------------------------------------- */
-private ["_unit","_killer","_profileID","_profile","_killerSide","_profileType","_position","_faction","_side","_event","_eventID","_result"];
+if (!isserver) exitwith {};
 
-_unit = _this select 0;
-_killer = _this select 1;
+params ["_unit","_killer"];
 
-_profileID = _unit getVariable "profileID";
-_profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+private _profileID = _unit getvariable "profileID";
+private _profile = [ALIVE_profileHandler,"getProfile", _profileID] call ALIVE_fnc_profileHandler;
 
-_killerSide = str(side group _killer);
+if (isnil "_profile") exitwith {};
 
-if (isnil "_profile" || {!isServer}) exitwith {};
-
-_profileType = _profile select 2 select 5; // [_profile, "type"] call ALIVE_fnc_hashGet;
+private _profileType = _profile select 2 select 5; // [_profile, "type"] call ALIVE_fnc_hashGet;
 
 switch(_profileType) do {
-        case "entity": {
-            _result = [_profile,"handleDeath",_unit] call ALIVE_fnc_profileEntity;
-            // all units in profile are killed
-            if!(_result) then {
+    case "entity": {
+        private _allProfileUnitsDead = [_profile,"handleDeath", _unit] call ALIVE_fnc_profileEntity;
 
-                _position = _profile select 2 select 2;
-                _faction = _profile select 2 select 29;
-                _side = _profile select 2 select 3;
+        if !(_allProfileUnitsDead) then {
+            [ALIVE_profileHandler,"unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
 
-                // not sure about this, it will remove the profile and the bodies will remain
-                // will need to have dead unit cleanup scripts
-                [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
+            // log event
 
-                // log event
+            private _position = _profile select 2 select 2;
+            private _faction = _profile select 2 select 29;
+            private _side = _profile select 2 select 3;
 
-                _event = ['PROFILE_KILLED', [_position,_faction,_side,_killerSide],"Profile"] call ALIVE_fnc_event;
-                _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
-            };
+            private _killerSide = str(side group _killer);
+            private _killerProfileID = _killer getvariable "profileID";
+            private _killerProfile = [ALIVE_profileHandler,"getProfile", _killerProfileID] call ALIVE_fnc_profileHandler;
+
+            private _event = ['PROFILE_KILLED', [_position,_faction,_side,_killerSide,_profile,_killerProfile], "Profile"] call ALIVE_fnc_event;
+            private _eventID = [ALIVE_eventLog,"addEvent", _event] call ALIVE_fnc_eventLog;
         };
-        case "vehicle": {
-            [_profile, "handleDeath"] call ALIVE_fnc_profileVehicle;
-            // not sure about this, it will remove the profile and the vehicle wreck will remain
-            // will need to have dead vehicle cleanup scripts
-            [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
-        };
+    };
+    case "vehicle": {
+        [_profile, "handleDeath"] call ALIVE_fnc_profileVehicle;
+        // not sure about this, it will remove the profile and the vehicle wreck will remain
+        // will need to have dead vehicle cleanup scripts
+        [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
+    };
 };
