@@ -967,7 +967,7 @@ if (!_simAttacks) then {
 
                 // log event
 
-                private _event = ['PROFILE_KILLED', [_victimPos,_victimFaction,_victimSide,_killerSide],"Profile"] call ALiVE_fnc_event;
+                private _event = ['PROFILE_KILLED', [_victimPos,_victimFaction,_victimSide,_killerSide,_victim,_killer], "ProfileSimulator"] call ALiVE_fnc_event;
                [MOD(eventLog),"addEvent",_event] call ALiVE_fnc_eventLog;
             };
 
