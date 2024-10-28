@@ -31,6 +31,8 @@ arrays
 behaviour
 
 	ALiVE_fnc_groupGarrison
+	ALiVE_fnc_groupGarrisonSPE
+	ALIVE_fnc_infantryGuardProbabilityCount
 
 camera
 
@@ -266,6 +268,7 @@ misc
 	ALiVE_fnc_sortBy
 	ALiVE_fnc_unitReadyRemote
 	ALiVE_fnc_wait
+	ALIVE_fnc_detectDLC
 
 network
 
