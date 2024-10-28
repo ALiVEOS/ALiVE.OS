@@ -220,10 +220,10 @@ switch(_operation) do {
             _result = [_logic,"debug"] call ALIVE_fnc_hashGet;
         };
 
-        [_logic,"deleteMarkers"] call MAINCLASS;
+        [_logic,"deleteDebugMarkers"] call MAINCLASS;
 
         if (_args) then {
-            [_logic,"createMarkers"] call MAINCLASS;
+            [_logic,"createDebugMarkers"] call MAINCLASS;
         };
     };
 
@@ -297,18 +297,16 @@ switch(_operation) do {
 
                 [_logic,"position", _args] call ALIVE_fnc_hashSet;
 
-                if([_logic,"debug"] call ALIVE_fnc_hashGet) then {
-                    [_logic,"debug",true] call MAINCLASS;
+                if ([_logic,"debug"] call ALIVE_fnc_hashGet) then {
+                    [_logic,"debug", true] call MAINCLASS;
                 };
-
-                //["ENTITY %1 position: %2",_logic select 2 select 4,_args] call ALIVE_fnc_dump;
 
                 // store position on handler position index
                 private _profileID = [_logic,"profileID"] call ALIVE_fnc_hashGet;
                 [ALIVE_profileHandler,"setPosition", [_profileID, _args]] call ALIVE_fnc_profileHandler;
             };
         } else {
-            _result = _logic select 2 select 2; //[_logic,"position"] call ALIVE_fnc_hashGet;
+            _result = _logic select 2 select 2;
         };
     };
 
@@ -680,7 +678,7 @@ switch(_operation) do {
         _waypoints pushback _waypoint;
 
         if (([_waypoint,"type"] call ALIVE_fnc_hashGet) == 'CYCLE') then {
-            [_logic,"isCycling",true] call ALIVE_fnc_hashSet;
+            [_logic,"isCycling", true] call ALIVE_fnc_hashSet;
         };
 
         private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
@@ -691,8 +689,8 @@ switch(_operation) do {
     };
 
     case "clearWaypoints": {
-        [_logic,"waypoints",[]] call ALIVE_fnc_hashSet;
-        [_logic,"waypointsCompleted",[]] call ALIVE_fnc_hashSet;
+        [_logic,"waypoints", []] call ALIVE_fnc_hashSet;
+        [_logic,"waypointsCompleted", []] call ALIVE_fnc_hashSet;
 
         private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet
         if (_active) then {
@@ -712,14 +710,14 @@ switch(_operation) do {
     case "setActiveCommand": {
         if (_args isEqualType []) then {
 
-            [_logic, "clearActiveCommands"] call MAINCLASS;
+            [_logic,"clearActiveCommands"] call MAINCLASS;
 
-            [_logic, "addActiveCommand", _args] call MAINCLASS;
+            [_logic,"addActiveCommand", _args] call MAINCLASS;
 
             private _active = _logic select 2 select 1; //[_profile, "active"] call ALIVE_fnc_hashGet;
             if (_active) then {
                 private _activeCommands = _logic select 2 select 26; //[_logic,"commands"] call ALIVE_fnc_hashGet;
-                [ALIVE_commandRouter, "activate", [_logic, _activeCommands]] call ALIVE_fnc_commandRouter;
+                [ALIVE_commandRouter,"activate", [_logic, _activeCommands]] call ALIVE_fnc_commandRouter;
             };
         };
     };
@@ -984,13 +982,6 @@ switch(_operation) do {
         private _aiBehaviour = [_logic, "aiBehaviour", "AWARE"] call ALIVE_fnc_hashGet;
         private _objectType = [_logic, "objectType", ""] call ALIVE_fnc_hashGet;
         private _debugMarkers = [_logic, "debugMarkers", ""] call ALIVE_fnc_hashGet;
-        /*
-        if(_debug) then {
-        	 ["Profile [%1] Spawn - _logic select 1: %2", _profileID, _logic select 1] call ALIVE_fnc_dump;
-        	["Profile [%1] Spawn - _logic select 2: %2", _profileID, _logic select 2] call ALIVE_fnc_dump;
-					["Profile [%1] Spawn - _isSPE: %2, _aiBehaviour: %3, _objectType: %4, _debugMarkers: %5",_profileID, _isSPE, _aiBehaviour, _objectType, _debugMarkers] call ALIVE_fnc_dump;
-				};
-        */
         private _formation = selectRandom ["COLUMN","STAG COLUMN","WEDGE","ECH LEFT","ECH RIGHT","VEE","LINE"];
         private _unitCount = 0;
         private _units = [];
@@ -1006,14 +997,9 @@ switch(_operation) do {
             private _group = createGroup _sideObject;
 
             // determine a suitable spawn position
-            //["Profile [%1] Spawn - Get good spawn position",_profileID] call ALIVE_fnc_dump;
-            //[true] call ALIVE_fnc_timer;
             [_logic] call ALIVE_fnc_profileGetGoodSpawnPosition;
-            //[] call ALIVE_fnc_timer;
 
-            _position = _logic select 2 select 2; //[_entityProfile,"position"] call ALIVE_fnc_hashGet;
-
-            //["SPAWN ENTITY [%1] pos: %2 command: %3 cargo: %4",_profileID,_position,_vehiclesInCommandOf,_vehiclesInCargoOf] call ALIVE_fnc_dump;
+            _position = _logic select 2 select 2;
 
             if (((count _vehiclesInCommandOf) == 0) && {(count _vehiclesInCargoOf) == 0}) then {
 
@@ -1033,8 +1019,6 @@ switch(_operation) do {
                 _spawnOnGround = true;
             };
 
-            // ["Profile [%1] Spawn - Spawn Units",_profileID] call ALIVE_fnc_dump;
-            //[true] call ALIVE_fnc_timer;
             {
                 if !(isnil "_x") then {
 
@@ -1122,75 +1106,55 @@ switch(_operation) do {
                 };
                 sleep ALiVE_smoothSpawn;
             } forEach _unitClasses;
-            //[] call ALIVE_fnc_timer;
             
             if (isNil "_isSPE") then { _isSPE = false; };
             if (typeName _isSPE != "BOOL") then { _isSPE = false; };
-						if (_isSPE) then {
-              [_logic,"clearWaypoints"] call MAINCLASS;
-              [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
-              // DEBUG -------------------------------------------------------------------------------------
-              if(_debug) then {
-							  ["Profile [%1] Spawn - _isSPE: %2, _group: %3,_aiBehaviour: %4",_profileID, _isSPE, _group, _aiBehaviour] call ALIVE_fnc_dump;
-						  };
-							_group setBehaviourStrong _aiBehaviour;
-							for "_i" from (count waypoints _group - 1) to 0 step -1 do
-							{
-							 deleteWaypoint [_group, _i];
-							};
-							// DEBUG -------------------------------------------------------------------------------------
-              /*if(_debug) then {				
-							{
-								["fnc_profileEntity -> _isSPE: %1, _unit: %2, behaviour unit: %3, (Deleted group waypoints) count waypoints: %4", _isSPE, _x, (behaviour _x), count (waypoints _group)] call ALIVE_fnc_dump;
-							} forEach _units;
-						  };	
-						  */	
-						};
-            
-            
-            
+            if (_isSPE) then {
+                [_logic,"clearWaypoints"] call MAINCLASS;
+                [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
+
+                if (_debug) then {
+                    ["Profile [%1] Spawn - _isSPE: %2, _group: %3,_aiBehaviour: %4",_profileID, _isSPE, _group, _aiBehaviour] call ALIVE_fnc_dump;
+                };
+
+                _group setBehaviourStrong _aiBehaviour;
+
+                for "_i" from (count waypoints _group - 1) to 0 step - 1 do {
+                    deleteWaypoint [_group, _i];
+                };
+            };
 
             // set group profile as active and store references to units on the profile
+
             [_logic,"leader", leader _group] call ALIVE_fnc_hashSet;
             [_logic,"group", _group] call ALIVE_fnc_hashSet;
             [_logic,"units", _units] call ALIVE_fnc_hashSet;
             [_logic,"active", true] call ALIVE_fnc_hashSet;
 
-            //["Profile [%1] Spawn - Create Vehicle Assignments",_profileID] call ALIVE_fnc_dump;
-            //[true] call ALIVE_fnc_timer;
             // create vehicle assignments from profile vehicle assignments
-            [_vehicleAssignments, _logic] call ALIVE_fnc_profileVehicleAssignmentsToVehicleAssignments;
-            //[] call ALIVE_fnc_timer;
-			
-			//["Profile [%1] Spawn - Create Waypoints",_profileID] call ALIVE_fnc_dump;
-            //[true] call ALIVE_fnc_timer;
-            
-            
-							// create waypoints from profile waypoints
-					 if (isNil "_isSPE") then { _isSPE = false; };
-					 if (typeName _isSPE != "BOOL") then { _isSPE = false; };
-					 if !(_isSPE) then {
-	             _waypoints append _waypointsCompleted;
-	            [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
-					 };
-	         
-         
-            //[] call ALIVE_fnc_timer;
 
-            //["Profile [%1] Spawn - Process Commands",_profileID] call ALIVE_fnc_dump;
-            //[true] call ALIVE_fnc_timer;
+            [_vehicleAssignments, _logic] call ALIVE_fnc_profileVehicleAssignmentsToVehicleAssignments;
+            
+            // create waypoints from profile waypoints
+
+            if (isNil "_isSPE") then { _isSPE = false; };
+            if (typeName _isSPE != "BOOL") then { _isSPE = false; };
+            if !(_isSPE) then {
+                _waypoints append _waypointsCompleted;
+                [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
+            };
+	         
             // process commands
+
             if(count _inactiveCommands > 0) then {
-                [ALIVE_commandRouter, "deactivate", _logic] call ALIVE_fnc_commandRouter;
+                [ALIVE_commandRouter,"deactivate", _logic] call ALIVE_fnc_commandRouter;
             };
             if(count _activeCommands > 0) then {
-                [ALIVE_commandRouter, "activate", [_logic, _activeCommands]] call ALIVE_fnc_commandRouter;
+                [ALIVE_commandRouter,"activate", [_logic, _activeCommands]] call ALIVE_fnc_commandRouter;
             };
-            //[] call ALIVE_fnc_timer;
-
-            //["Profile [%1] Spawn - Set Active",_profileID] call ALIVE_fnc_dump;
-            //[true] call ALIVE_fnc_timer;
+            
             // store the profile id on the active profiles index
+
             [ALIVE_profileHandler,"setActive",[_profileID,_side,_logic]] call ALIVE_fnc_profileHandler;
             [ALIVE_profileHandler,"setEntityActive",_profileID] call ALIVE_fnc_profileHandler;
 
@@ -1224,28 +1188,15 @@ switch(_operation) do {
 
             [_logic,"combat", false] call ALIVE_fnc_HashSet;
 
-
-            // Indicate profile has been spawned and unlock for asynchronous waits
+            // indicate profile has been spawned and unlock for asynchronous waits
             [_logic,"locked", false] call ALIVE_fnc_HashSet;
 
-            // profile is fully spawned and cannot be corrupted
-            // allow damage again
+            // profile is fully spawned and cannot be corrupted -> allow damage again
             {_x allowDamage true} foreach _units;
-            
-            
-            //[] call ALIVE_fnc_timer;
 
-            //["Profile [%1] Spawn - Debug",_profileID] call ALIVE_fnc_dump;
-            //[true] call ALIVE_fnc_timer;
-
-            // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                //["Profile [%1] Spawn - pos: %2",_profileID,_position] call ALIVE_fnc_dump;
-                [_logic,"debug",true] call MAINCLASS;
+                [_logic,"debug", true] call MAINCLASS;
             };
-            // DEBUG -------------------------------------------------------------------------------------
-
-            //[] call ALIVE_fnc_timer;
 
         };
     };
@@ -1409,7 +1360,7 @@ switch(_operation) do {
         [_logic, "destroy"] call SUPERCLASS;
     };
 
-    case "createMarkers": {
+    case "createDebugMarkers": {
         private _markers = [];
 
         private _position = [_logic,"position"] call ALIVE_fnc_hashGet;
@@ -1441,40 +1392,29 @@ switch(_operation) do {
         };
 
         private _debugIcon = format["%1_inf",_typePrefix];
-        /*
-        switch(_profileType) do {
-            default {
-                _debugIcon = format["%1_inf",_typePrefix];
-            };
-        };
-        */
 
         private _label = [_profileID, "_"] call CBA_fnc_split;
-        private _debugAlpha = 1;
+        private _debugAlpha = if (_profileActive) then { 1 } else { 0.3 };
 
-        //if (!_profileActive) then {
-            _debugAlpha = 0.3;
+        private _waypointCount = 0;
+        {
+            private _waypointPosition = [_x,"position"] call ALIVE_fnc_hashGet;
 
-            private _waypointCount = 0;
-            {
-                private _waypointPosition = [_x,"position"] call ALIVE_fnc_hashGet;
+            private _m = createMarker [format["SIM_MARKER_%1_%2",_profileID,_waypointCount], _waypointPosition];
+            _m setMarkerShape "ICON";
+            _m setMarkerSize [.6, .6];
+            _m setMarkerType "waypoint";
+            _m setMarkerColor _debugColor;
+            _m setMarkerAlpha 0.6;
 
-                private _m = createMarker [format["SIM_MARKER_%1_%2",_profileID,_waypointCount], _waypointPosition];
-                _m setMarkerShape "ICON";
-                _m setMarkerSize [.6, .6];
-                _m setMarkerType "waypoint";
-                _m setMarkerColor _debugColor;
-                _m setMarkerAlpha 0.6;
+            _m setMarkerText format["%1", _label select ((count _label) - 1), _waypointCount];
 
-                _m setMarkerText format["%1",_label select ((count _label) - 1),_waypointCount];
+            _markers pushback _m;
 
-                _markers pushback _m;
+            [_logic,"debugMarkers", _markers] call ALIVE_fnc_hashSet;
 
-                [_logic,"debugMarkers", _markers] call ALIVE_fnc_hashSet;
-
-                _waypointCount = _waypointCount + 1;
-            } forEach _profileWaypoints;
-        //};
+            _waypointCount = _waypointCount + 1;
+        } forEach _profileWaypoints;
 
         if (count _position > 0) then {
             private _m = createMarker [format[MTEMPLATE, format["%1_debug",_profileID]], _position];
@@ -1494,10 +1434,11 @@ switch(_operation) do {
         _result = _markers;
     };
 
-    case "deleteMarkers": {
+    case "deleteDebugMarkers": {
+        private _debugMarkers = [_logic,"debugMarkers", []] call ALIVE_fnc_hashGet;
         {
             deleteMarker _x;
-        } forEach ([_logic,"debugMarkers", []] call ALIVE_fnc_hashGet);
+        } forEach _debugMarkers;
     };
 
     default {

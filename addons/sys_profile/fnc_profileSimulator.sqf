@@ -132,7 +132,6 @@ if (!_simAttacks) then {
                         _vehicleCargo = true;
                     };
 
-
                     // check for combat opportunities
                     if (!_vehicleCargo && !_isPlayer && !_isAir && !_combat) then {
                         // get enemy sides
@@ -273,8 +272,6 @@ if (!_simAttacks) then {
                                                 // turn engineOn virtually
                                                 // move all entities within the vehicle
                                                 // set the vehicle position and merge all assigned entities positions
-
-                                                //["PROFILE SIM SIMMED ENTITY %1 IN COMMAND OF %2 SET VEHICLE POS: %3",_profile select 2 select 4,_vehicleProfile select 2 select 4,_newPosition] call ALiVE_fnc_dump;
 
                                                 [_vehicleProfile,"hasSimulated", true] call ALiVE_fnc_hashSet;
                                                 [_vehicleProfile,"engineOn", true] call ALiVE_fnc_profileVehicle;
