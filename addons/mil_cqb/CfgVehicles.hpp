@@ -122,54 +122,82 @@ class CfgVehicles {
                                         };
                                 };
                         };
-                        class CQB_spawn_setting
+                        class CQB_spawn_setting 
                         {
                                 displayName = "$STR_ALIVE_CQB_SPAWN";
                                 description = "$STR_ALIVE_CQB_SPAWN_COMMENT";
-                                class Values
+                                class Values 
                                 {
-                                        class CQB_spawn_2
+                                        class CQB_spawn_1 
+                                        {
+                                                name = "1%";
+                                                value = 0.01;
+                                                default = 1;
+                                        };
+                                        class CQB_spawn_2 
                                         {
                                                 name = "2%";
                                                 value = 0.02;
-                                                default = 1;
-
                                         };
-                                        class CQB_spawn_5
+                                        class CQB_spawn_5 
                                         {
                                                 name = "5%";
                                                 value = 0.05;
-
                                         };
-                                        class CQB_spawn_10
+                                        class CQB_spawn_10 
                                         {
                                                 name = "10%";
-                                                value = 0.10;
-
+                                                value = 0.1;
                                         };
                                         class CQB_spawn_20
                                         {
                                                 name = "20%";
-                                                value = 0.20;
-
+                                                value = 0.2;
                                         };
                                         class CQB_spawn_30
                                         {
                                                 name = "30%";
-                                                value = 0.30;
-
+                                                value = 0.3;
                                         };
                                         class CQB_spawn_40
                                         {
                                                 name = "40%";
-                                                value = 0.40;
-
+                                                value = 0.4;
                                         };
                                         class CQB_spawn_50
                                         {
                                                 name = "50%";
-                                                value = 0.50;
-
+                                                value = 0.5;
+                                        };
+                                        class CQB_spawn_60
+                                        {
+                                                name = "60%";
+                                                value = 0.6;
+                                        };
+                                        class CQB_spawn_70
+                                        {
+                                                name = "70%";
+                                                value = 0.7;
+                                        };
+                                        class CQB_spawn_80
+                                        {
+                                                name = "80%";
+                                                value = 0.8;
+                                        };
+                                        class CQB_spawn_90
+                                        {
+                                                name = "90%";
+                                                value = 0.9;
+                                        };
+                                        class CQB_spawn_99
+                                        {
+                                                name = "99%";
+                                                value = 0.99;
+                                        };
+                                        class CQB_spawn_100
+                                        {
+                                                name = "100%";
+                                                value = 1;
                                         };
                                 };
                         };
@@ -208,6 +236,194 @@ class CfgVehicles {
 
                                         };
                                 };
+                        };
+                        class CQB_patrol_chance 
+                        {
+                                displayName = "$STR_ALIVE_CQB_PATROLCHANCE";
+                                description = "$STR_ALIVE_CQB_PATROLCHANCE_COMMENT";			
+                                class Values
+                                {
+                                        class CQB_patrol_chance_1
+                                        {
+                                                name = "1%";
+                                                value = 0.01;
+                                        };
+                                        class CQB_patrol_chance_2
+                                        {
+                                                name = "2%";
+                                                value = 0.02;
+                                        };
+                                        class CQB_patrol_chance_5 
+                                        {
+                                                name = "5%";
+                                                value = 0.05;
+                                        };
+                                        class CQB_patrol_chance_10
+                                        {
+                                                name = "10%";
+                                                value = 0.1;
+                                        };
+                                        class CQB_patrol_chance_20 
+                                        {
+                                                name = "20%";
+                                                value = 0.2;
+                                        };
+                                        class CQB_patrol_chance_30 
+                                        {
+                                                name = "30%";
+                                                value = 0.3;
+                                                default = 1;
+                                        };
+                                        class CQB_patrol_chance_40
+                                        {
+                                                name = "40%";
+                                                value = 0.4;
+                                        };
+                                        class CQB_patrol_chance_50
+                                        {
+                                                name = "50%";
+                                                value = 0.5;
+                                        };
+                                        class CQB_patrol_chance_60
+                                        {
+                                                name = "60%";
+                                                value = 0.6;
+                                        };
+                                        class CQB_patrol_chance_70
+                                        {
+                                                name = "70%";
+                                                value = 0.7;
+                                        };	
+                                        class CQB_patrol_chance_80
+                                        {
+                                                name = "80%";
+                                                value = 0.8;
+                                        };
+                                        class CQB_patrol_chance_90
+                                        {
+                                                name = "90%";
+                                                value = 0.9;
+                                        };
+                                        class CQB_patrol_chance_99
+                                        {
+                                                name = "99%";
+                                                value = 0.99;
+                                        };
+                                        class CQB_patrol_chance_100
+                                        {
+                                                name = "100%";
+                                                value = 1;
+                                        };
+                                };
+                        };
+                        class CQB_patrol_searchchance
+									      {
+                                displayName = "$STR_ALIVE_CQB_PATROLSEARCHCHANCE";
+                                description = "$STR_ALIVE_CQB_PATROLSEARCHCHANCE_COMMENT";			
+                                class Values
+                                {
+                                        class CQB_patrol_searchchance_1 
+                                        {
+                                                name = "1%";
+                                                value = 0.01;
+                                        };
+                                        class CQB_patrol_searchchance_2
+                                        {
+                                                name = "2%";
+                                                value = 0.02;
+                                        };
+                                        class CQB_patrol_searchchance_5
+                                        {
+                                                name = "5%";
+                                                value = 0.05;
+                                        };
+                                        class CQB_patrol_searchchance_10
+                                        {
+                                                name = "10%";
+                                                value = 0.1;
+                                        };
+                                        class CQB_patrol_searchchance_20
+                                        {
+                                                name = "20%";
+                                                value = 0.2;
+                                        };
+                                        class CQB_patrol_searchchance_30
+                                        {
+                                                name = "30%";
+                                                value = 0.3;
+                                                default = 1;
+                                        };
+                                        class CQB_patrol_searchchance_40 
+                                        {
+                                                name = "40%";
+                                                value = 0.4;
+                                        };
+                                        class CQB_patrol_searchchance_50
+                                        {
+                                                name = "50%";
+                                                value = 0.5;
+                                        };
+                                        class CQB_patrol_searchchance_60
+                                        {
+                                                name = "60%";
+                                                value = 0.6;
+                                        };
+                                        class CQB_patrol_searchchance_70
+                                        {
+                                                name = "70%";
+                                                value = 0.7;
+                                        };
+                                        class CQB_patrol_searchchance_80
+                                        {
+                                                name = "80%";
+                                                value = 0.8;
+                                        };
+                                        class CQB_patrol_searchchance_90
+                                        {
+                                                name = "90%";
+                                                value = 0.9;
+                                        };
+                                        class CQB_patrol_searchchance_99
+                                        {
+                                                name = "99%";
+                                                value = 0.99;
+                                        };
+                                        class CQB_patrol_searchchance_100
+                                        {
+                                                name = "100%";
+                                                value = 1;
+                                        };
+                                };
+                        };                
+                        class CQB_patrol_minwaittime 
+                        {
+                                displayName = "$STR_ALIVE_CQB_MINWAITTIME";
+                                description = "$STR_ALIVE_CQB_MINWAITTIME_COMMENT";			
+                                defaultValue = 0;
+                        };
+                        class CQB_patrol_midwaittime
+									      {
+                                displayName = "$STR_ALIVE_CQB_MIDWAITTIME";
+                                description = "$STR_ALIVE_CQB_MIDWAITTIME_COMMENT";
+                                defaultValue = 15;
+                        };
+                        class CQB_patrol_maxwaittime
+                        {
+                                displayName = "$STR_ALIVE_CQB_MAXWAITTIME";
+                                description = "$STR_ALIVE_CQB_MAXWAITTIME_COMMENT";
+                                defaultValue = 30;
+									      };
+                        class CQB_patrol_mindist
+                        {
+                                displayName = "$STR_ALIVE_CQB_MINDIST";
+                                description = "$STR_ALIVE_CQB_MINDIST_COMMENT";
+                                defaultValue = 50;
+                        };
+                        class CQB_patrol_maxist
+                        {
+                                displayName = "$STR_ALIVE_CQB_MAXDIST";
+                                description = "$STR_ALIVE_CQB_MAXDIST_COMMENT";
+                                defaultValue = 100;
                         };
                         class CQB_amount
                         {

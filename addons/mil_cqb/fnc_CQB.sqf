@@ -140,15 +140,43 @@ switch(_operation) do {
             private _CQB_spawn = _logic getvariable ["CQB_spawn_setting", "0.01"];
             if (_CQB_spawn isequaltype "") then {_CQB_spawn = call compile _CQB_spawn};
             //// For backward compatibility, remove after some months ////
-			//// Please update the list when this code is read, but not changed
-			////	- 6/2/2019
+            //// Please update the list when this code is read, but not changed
+            ////	- 6/2/2019
             if (_CQB_spawn >= 1) then {_CQB_spawn = _CQB_spawn / 100};
             /////////////////////////////////////////////////////////////
             _logic setVariable ["CQB_spawn", _CQB_spawn];
 
-            private _CQB_density = _logic getvariable ["CQB_DENSITY","1000"];
+            private _CQB_density = _logic getvariable ["CQB_DENSITY","99999"];
             if (_CQB_density isequaltype "") then {_CQB_density = call compile _CQB_density};
             _logic setVariable ["CQB_DENSITY", _CQB_density];
+
+            private _CQB_patrolChance = _logic getvariable ["CQB_patrol_chance","0.30"];
+            if (_CQB_patrolChance isequaltype "") then {_CQB_patrolChance = call compile _CQB_patrolChance};
+            _logic setVariable ["CQB_patrol_chance", _CQB_patrolChance];
+
+            private _CQB_patrolMinDist = _logic getvariable ["CQB_patrol_mindist","50"];
+            if (_CQB_patrolMinDist isequaltype "") then {_CQB_patrolMinDist = call compile _CQB_patrolMinDist};
+            _logic setVariable ["CQB_patrol_mindist", _CQB_patrolMinDist];
+
+            private _CQB_patrolMaxDist = _logic getvariable ["CQB_patrol_maxist","100"];
+            if (_CQB_patrolMaxDist isequaltype "") then {_CQB_patrolMaxDist = call compile _CQB_patrolMaxDist};
+            _logic setVariable ["CQB_patrol_maxist", _CQB_patrolMaxDist];
+
+            private _CQB_patrolSearchChance = _logic getvariable ["CQB_patrol_searchchance","0.30"];
+            if (_CQB_patrolSearchChance isequaltype "") then {_CQB_patrolSearchChance = call compile _CQB_patrolSearchChance};
+            _logic setVariable ["CQB_patrol_searchchance", _CQB_patrolSearchChance];
+
+            private _CQB_patrolMinWaitTime = _logic getvariable ["CQB_patrol_minwaittime","0"];
+            if (_CQB_patrolMinWaitTime isequaltype "") then {_CQB_patrolMinWaitTime = call compile _CQB_patrolMinWaitTime};
+            _logic setVariable ["CQB_patrol_minwaittime", _CQB_patrolMinWaitTime];
+
+            private _CQB_patrolMidWaitTime = _logic getvariable ["CQB_patrol_midwaittime","15"];
+            if (_CQB_patrolMidWaitTime isequaltype "") then {_CQB_patrolMidWaitTime = call compile _CQB_patrolMidWaitTime};
+            _logic setVariable ["CQB_patrol_midwaittime", _CQB_patrolMidWaitTime];
+
+            private _CQB_patrolMaxWaitTime = _logic getvariable ["CQB_patrol_maxwaittime","30"];
+            if (_CQB_patrolMaxWaitTime isequaltype "") then {_CQB_patrolMaxWaitTime = call compile _CQB_patrolMaxWaitTime};
+            _logic setVariable ["CQB_patrol_maxwaittime", _CQB_patrolMaxWaitTime];
 
             private _spawn = _logic getvariable ["CQB_spawndistance","700"];
             if (_spawn isequaltype "") then {_spawn = call compile _spawn};
@@ -1268,40 +1296,56 @@ switch(_operation) do {
 
             } forEach (units _grp);
 
+
             // TODO Notify controller to start directing
-            // TODO this needs to be refactored
-            _fsm = "\x\alive\addons\mil_cqb\HousePatrol.fsm";
-            _hdl = [_logic,(leader _grp), 50, true, 60] execFSM _fsm;
-            (leader _grp) setVariable ["FSM", [_hdl,_fsm], true];
-            _args = _grp;
+
+            private _CQB_patrolChance = _logic getvariable ["CQB_patrol_chance","0.30"];
+            private _CQB_patrolMinDist = _logic getvariable ["CQB_patrol_mindist","50"];
+            private _CQB_patrolMaxDist = _logic getvariable ["CQB_patrol_maxist","100"];
+            private _CQB_patrolMinWaitTime = _logic getvariable ["CQB_patrol_minwaittime","0"];
+            private _CQB_patrolMidWaitTime = _logic getvariable ["CQB_patrol_midwaittime","15"];
+            private _CQB_patrolMaxWaitTime = _logic getvariable ["CQB_patrol_maxwaittime","30"];
+            {
+             private _unit = _x;
+             _unit setVariable ["ALIVE_cqb_instance", _logic, true];
+            } forEach (units _grp);
+            if (random 1 <= _CQB_patrolChance) then {
+                [_grp, getpos (leader _grp), _CQB_patrolMinDist + random (_CQB_patrolMaxDist - _CQB_patrolMinDist), [3,7] call BIS_fnc_randomInt, "MOVE", "SAFE", "YELLOW", "LIMITED", "STAG COLUMN", 
+                "
+                _module = this getVariable ['ALIVE_cqb_instance', objNull];
+                _CQB_patrolSearchChance = 0.3;
+                if !(isNull _module) then {
+                 _CQB_patrolSearchChance = (_module getVariable ['CQB_patrol_searchchance', 0.3]);
+                };
+                if (random 1 <= _CQB_patrolSearchChance) then {this call CBA_fnc_searchNearby};
+                "
+                , [_CQB_patrolMinWaitTime, _CQB_patrolMidWaitTime, _CQB_patrolMaxWaitTime]] call CBA_fnc_taskPatrol;
+            } else { 
+                _fsm = "\x\alive\addons\mil_cqb\HousePatrol.fsm";
+                _hdl = [_logic,(leader _grp), 50, true, 60] execFSM _fsm;
+                (leader _grp) setVariable ["FSM", [_hdl,_fsm], true];
+                _args = _grp;
+            };
         };
         _args;
     };
 
     case "addStaticWeapons": {
 
-	    if (isNil "_args" || {count _args < 2} || {isNull (_args select 0)} || {_args select 1 <= 0}) exitWith {
+	     if (isNil "_args" || {count _args < 2} || {isNull (_args select 0)} || {_args select 1 <= 0}) exitWith {
+         //["CQB Input does not allow for creation of static weapons: %1!",_args] call ALiVE_fnc_dump;
+	    	 _args = [];
+         _args;
+	     };
 
-            //["CQB Input does not allow for creation of static weapons: %1!",_args] call ALiVE_fnc_dump;
-
-	    	_args = [];
-
-            _args;
-	    };
-
-		private _building = _args select 0;
+        private _building = _args select 0;
         private _count = _args select 1;
-
         private _buildingPosition = getposATL _building;
-
         private _staticWeapons = _building getvariable ["staticWeapons",[]];
 
         if ({alive _x} count _staticWeapons > 0) exitwith {
-
-            //["CQB Static weapons exisiting: %1! Not creating new ones...",_staticWeapons] call ALiVE_fnc_dumpR;
-
+           //["CQB Static weapons exisiting: %1! Not creating new ones...",_staticWeapons] call ALiVE_fnc_dumpR;
         	_args = _staticWeapons;
-
         	_args;
         };
 
