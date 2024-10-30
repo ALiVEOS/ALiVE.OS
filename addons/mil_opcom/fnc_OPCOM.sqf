@@ -2663,6 +2663,7 @@ switch(_operation) do {
 
             private _module = [_logic,"module"] call ALiVE_fnc_HashGet;
             private _objectives = [_logic, "objectives", []] call AliVE_fnc_HashGet;
+            private _frozenObjs = [_logic, "frozenObjs", []] call AliVE_fnc_HashGet;
             private _OPCOM_FSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
             private _OPCOM_SKIP_OBJECTIVES = _OPCOM_FSM getFSMvariable ["_OPCOM_SKIP_OBJECTIVES", []];
 
@@ -2673,6 +2674,7 @@ switch(_operation) do {
                 private _objectiveState = [_x, "opcom_state"] call AliVE_fnc_HashGet;
 
                 !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) &&
+		!(_objectiveID in _frozenObjs) &&
                 _objectiveState == _state &&
                 { _allSyncedTriggersActivated || { !(_objectiveState in ["attack","unassigned"]) } }
             };
@@ -2690,6 +2692,25 @@ switch(_operation) do {
                 [_targetObjective,"opcom_orders", _nextOrders] call AliVE_fnc_HashSet;
                 _result = ["execute", _targetObjective];
             };
+        };
+
+        case "FreezeObjective": {
+            ["Freeze Objective Called"] call ALiVE_fnc_DumpR;
+            _frozenObjs = [_logic, "frozenObjs",[]] call ALiVE_fnc_hashGet;
+            _frozenObjs pushBackUnique _args;
+            [_logic, "frozenObjs",_frozenObjs] call ALiVE_fnc_hashSet;
+        };
+
+        case "UnfreezeObjective": {
+            ["Unfreeze Objective Called"] call ALiVE_fnc_DumpR;
+            _frozenObjs = [_logic, "frozenObjs",[]] call ALiVE_fnc_hashGet;
+            _frozenObjs = _frozenObjs - _args;
+            [_logic, "frozenObjs",_frozenObjs] call ALiVE_fnc_hashSet;
+        };
+
+        case "UnfreezeAllObjectives": {
+            ["Unfreeze All Objectives Called"] call ALiVE_fnc_DumpR;
+            [_logic, "frozenObjs",[]] call ALiVE_fnc_hashSet;
         };
 
         case "sectionsamount_attack": {
