@@ -164,34 +164,34 @@
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC">
   <English>Inc. Force Strength (Obj. Capture)</English>
-	<Chinesesimp></Chinesesimp>
+	<Chinesesimp>目标占领增强</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC_COMMENT">
   <English>When an objective is captured OPCOM will increase the force cap used to bring in 'replacements' to get up to strength</English>
-	<Chinesesimp></Chinesesimp>
+	<Chinesesimp>当占领一个目标时，OPCOM将增加兵力上限，用于引入“增援”以增加兵力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR">
   <English>Inc. Force Strength Factor</English>
-	<Chinesesimp></Chinesesimp>
+	<Chinesesimp>增加系数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_INC_FACTOR_COMMENT">
   <English>Factor amount to increase startForceStrength on objective capture. Will only increase where value > 0</English>
-	<Chinesesimp></Chinesesimp>
+	<Chinesesimp>在目标占领时增加初始部队的数量。只在值> 0的地方增加</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC">
   <English>Dec. Force Strength (Obj. Loss)</English>
-	<Chinesesimp></Chinesesimp>
+	<Chinesesimp>目标丢失减少</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_COMMENT">
   <English>When an objective is captured OPCOM will decrease the force cap used to bring in 'replacements' to get up to strength</English>
-	<Chinesesimp></Chinesesimp>
+	<Chinesesimp>当一个目标被占领时，OPCOM 将减少用于引入‘增援’以降低部队上限</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR">
   <English>Dec. Force Strength Factor</English>
-	<Chinesesimp></Chinesesimp>
+	<Chinesesimp>减少系数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_FACTOR_COMMENT">
   <English>Factor amount to decrement startForceStrength on objective loss. Will only decrease where value > 0</English>
-	<Chinesesimp></Chinesesimp>
+	<Chinesesimp>在目标被占领时减少初始部队的数量。只在值> 0的地方减少</Chinesesimp>
 </Key>
 </Container></Package></Project>
