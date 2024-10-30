@@ -44,27 +44,27 @@
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS">
     <English>Runway start position:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>跑道起始位置:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS_COMMENT">
     <English>Defines blacklist marker start position coords for runway. Format: [x,y,z]</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>定义跑道的黑名单标记起始位置线,格式:[x, y, z]</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYENDPOS">
     <English>Runway end position:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>跑道终点位置:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYENDPOS_COMMENT">
     <English>Defines blacklist marker end position coords for runway. Format: [x,y,z]</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>定义跑道的黑名单标记终点位置线,格式:[x, y, z]</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYWIDTH">
     <English>Runway width:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>跑道宽度:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYWIDTH_COMMENT">
     <English>Number in metres</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>米数</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION">
     <English>Faction:</English>
