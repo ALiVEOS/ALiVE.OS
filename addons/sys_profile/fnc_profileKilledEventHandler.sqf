@@ -49,7 +49,10 @@ switch(_profileType) do {
             private _killerProfileID = _killer getvariable "profileID";
             private _killerProfile = [ALIVE_profileHandler,"getProfile", _killerProfileID] call ALIVE_fnc_profileHandler;
 
-            private _event = ['PROFILE_KILLED', [_position,_faction,_side,_killerSide,_profile,_killerProfile], "Profile"] call ALIVE_fnc_event;
+            private _victimProfileID = _profile select 2 select 4;
+            private _victimObjectType = _profile select 2 select 6;
+
+            private _event = ['PROFILE_KILLED', [_position,_faction,_side,_killerSide,_profile,_killerProfile,_victimProfileID,_victimObjectType], "Profile"] call ALIVE_fnc_event;
             private _eventID = [ALIVE_eventLog,"addEvent", _event] call ALIVE_fnc_eventLog;
         };
     };

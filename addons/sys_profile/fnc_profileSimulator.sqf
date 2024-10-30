@@ -959,12 +959,12 @@ if (!_simAttacks) then {
                 private _victimPos = _victim select 2 select 2;
                 private _victimFaction = _victim select 2 select 29;
                 private _victimSide = _victim select 2 select 3;
-
                 private _killerSide = _killer select 2 select 3;
-
+                private _victimProfileID = _victim select 2 select 4;
+                private _victimObjectType = _victim select 2 select 6;
+								
                 // log event
-
-                private _event = ['PROFILE_KILLED', [_victimPos,_victimFaction,_victimSide,_killerSide,_victim,_killer], "ProfileSimulator"] call ALiVE_fnc_event;
+                private _event = ['PROFILE_KILLED', [_victimPos,_victimFaction,_victimSide,_killerSide,_victim,_killer,_victimProfileID,_victimObjectType], "ProfileSimulator"] call ALiVE_fnc_event;
                [MOD(eventLog),"addEvent",_event] call ALiVE_fnc_eventLog;
             };
 
