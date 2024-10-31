@@ -330,9 +330,10 @@ class FSM
                          "            _active = 0;" \n
                          "" \n
                          "            {" \n
+                         "		  private _frozenObjs = [_OPCOM_HANDLER, ""frozenObjs"", []] call AliVE_fnc_HashGet;" \n
                          "                private _objectiveID = [_x, ""objectiveID""] call AliVE_fnc_HashGet;" \n
                          "" \n
-                         "                if !(_objectiveID in _OPCOM_SKIP_OBJECTIVES) then {" \n
+                         "                if (!(_objectiveID in _OPCOM_SKIP_OBJECTIVES) && !(_objectiveID in _frozenObjs)) then {" \n
                          "                    private [""_state""];" \n
                          "" \n
                          "                    _state = _x select 2 select 5;" \n
