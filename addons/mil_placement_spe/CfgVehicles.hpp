@@ -35,7 +35,7 @@ class CfgVehicles {
                         {
                                 displayName = "$STR_ALIVE_SPEMP_FACTION";
                                 description = "$STR_ALIVE_SPEMP_FACTION_COMMENT";
-                                defaultValue = "SPE_US_ARMY";
+                                defaultValue = "BLU_F";
                         };
                         class priority
                         {
@@ -95,6 +95,25 @@ class CfgVehicles {
                                 displayName = "$STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS";
                                 description = "$STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS_COMMENT";
                                 defaultValue = "";
+                        };
+                        class speVehicleEmpty
+                        {
+                                displayName = "$STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY";
+                                description = "$STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY_COMMENT";
+                                class Values
+                                {
+                                        class Yes
+                                        {
+                                                name = "Yes";
+                                                value = true;
+                                        };
+                                        class No
+                                        {
+                                                name = "No";
+                                                value = false;
+                                                default = 1;
+                                        };
+                                };
                         };
                         class allowPlayerTasking
                         {
