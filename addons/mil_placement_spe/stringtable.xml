@@ -68,11 +68,11 @@
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY">
     <English>Spawn Vehicle Uncrewed:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>生成无人载具</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY_COMMENT">
     <English>If set to no, vehicle will be spawned with AI crew.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>如果设置为否，载具将拥有AI成员</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_USAGE">
     <English>Place the Spearhead Custom Military Objective module in the editor, select the desired Size, Priority and force. Custom factions can be entered in the text box (separated by a comma).</English>
