@@ -46,6 +46,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_createProfilesCrewedVehicle.sqf";
                 RECOMPILE;
             };
+            class createProfilesUnCrewedVehicle {
+                description = "createProfilesUnCrewedVehicle";
+                file = "\x\alive\addons\sys_profile\fnc_createProfilesUnCrewedVehicle.sqf";
+                RECOMPILE;
+            };
             class createProfileVehicle {
                 description = "createProfileVehicle";
                 file = "\x\alive\addons\sys_profile\fnc_createProfileVehicle.sqf";

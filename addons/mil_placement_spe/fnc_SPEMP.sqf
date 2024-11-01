@@ -125,6 +125,29 @@ switch(_operation) do {
     case "speVehicleClass": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
+    
+    case "speVehicleEmpty": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["speVehicleEmpty", _args];
+        } else {
+            _args = _logic getVariable ["speVehicleEmpty", true];
+        };
+
+        if (typeName _args == "STRING") then {
+            if (_args == "true") then {
+                _args = true;
+            }
+            else {
+                _args = false;
+            };
+
+            _logic setVariable ["speVehicleEmpty", _args];
+        };
+
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
 
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
@@ -262,6 +285,7 @@ switch(_operation) do {
             private _position = position _logic;
             private _direction =  getDir _logic;
             private _allowPlayerTasking = [_logic, "allowPlayerTasking"] call MAINCLASS;
+            private _speVehicleEmpty = [_logic, "speVehicleEmpty"] call MAINCLASS; 
 
             // Load static data
             call ALiVE_fnc_staticDataHandler;
@@ -274,23 +298,27 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-
-            // assign the objective to OPCOMS
-            private _objectiveName = format["CUSTOM_%1",floor((_position select 0) + (_position select 1))];
-
-            private _cluster = [nil, "create"] call ALIVE_fnc_cluster;
-            [_cluster,"nodes", (nearestObjects [_position,["static"],_size])] call ALIVE_fnc_hashSet;
-            [_cluster,"clusterID", _objectiveName] call ALIVE_fnc_hashSet;
-            [_cluster,"center", _position] call ALIVE_fnc_hashSet;
-            [_cluster,"size", _size] call ALIVE_fnc_hashSet;
-            [_cluster,"type", "MIL"] call ALIVE_fnc_hashSet;
-            [_cluster,"priority", _priority] call ALIVE_fnc_hashSet;
-            [_cluster,"allowPlayerTasking", _allowPlayerTasking] call ALIVE_fnc_hashSet;
-            [_cluster,"debug", _debug] call ALIVE_fnc_cluster;
-
-            [_logic, "objectives", [_cluster]] call MAINCLASS;
-
-            [ALIVE_clustersMilCustom, _objectiveName, _cluster] call ALIVE_fnc_hashSet;
+            if (_allowPlayerTasking) then {
+	            // assign the objective to OPCOMS
+	            private _objectiveName = format["CUSTOM_%1",floor((_position select 0) + (_position select 1))];
+	            private _cluster = [nil, "create"] call ALIVE_fnc_cluster;
+	            [_cluster,"nodes", (nearestObjects [_position,["static"],_size])] call ALIVE_fnc_hashSet;
+	            [_cluster,"clusterID", _objectiveName] call ALIVE_fnc_hashSet;
+	            [_cluster,"center", _position] call ALIVE_fnc_hashSet;
+	            [_cluster,"size", _size] call ALIVE_fnc_hashSet;
+	            [_cluster,"type", "MIL"] call ALIVE_fnc_hashSet;
+	            [_cluster,"priority", _priority] call ALIVE_fnc_hashSet;
+	            [_cluster,"allowPlayerTasking", _allowPlayerTasking] call ALIVE_fnc_hashSet;
+	            [_cluster,"debug", _debug] call ALIVE_fnc_cluster;
+	            [_logic, "objectives", [_cluster]] call MAINCLASS;
+	            [ALIVE_clustersMilCustom, _objectiveName, _cluster] call ALIVE_fnc_hashSet;
+	            
+            // DEBUG -------------------------------------------------------------------------------------
+            if(_debug) then {
+                ["SPEMP Added objective %1 to player tasking!", _objectiveName] call ALiVE_fnc_dump;
+            };
+            // DEBUG -------------------------------------------------------------------------------------  
+            };
 
             if(ALIVE_loadProfilesPersistent) exitWith {
 
@@ -315,7 +343,7 @@ switch(_operation) do {
 	            	  ["SPEMP - Module Position: %1, Module Direction: %2", _position, _direction] call ALiVE_fnc_dump;
 	            };
 	            // DEBUG -------------------------------------------------------------------------------------
-	            
+	            if (!_speVehicleEmpty) then {
  								private _countCrewed = 0;
  								// _position set [2, _direction];
 	     					_profiledCrewed = [_vehicleClass, _side, _faction, "CAPTAIN", _position, _direction, true, _faction, false, false, [], [], true] call ALIVE_fnc_createProfilesCrewedVehicle;
@@ -328,6 +356,20 @@ switch(_operation) do {
 					       ["SPEMP - Total Crewed Profiles Created: %1", _countCrewed] call ALiVE_fnc_dump;
 					     };
 					     // DEBUG -------------------------------------------------------------------------------------
+					    } else {
+ 								private _countUnCrewed = 0;
+ 								// _position set [2, _direction];
+	     					_profiledUnCrewed = [_vehicleClass, _side, _faction, _position, _direction, true, _faction, false, false, [], [], true] call ALIVE_fnc_createProfilesUnCrewedVehicle;
+	              _countUnCrewed = _countUnCrewed +1; 
+                _countProfiles = _countUnCrewed;
+                       
+					     // DEBUG -------------------------------------------------------------------------------------
+					     if(_debug) then {
+					       ["SPEMP - Vehicle %1 created without crew at position: %2",  _vehicleClass, _position] call ALiVE_fnc_dump;
+					       ["SPEMP - Total Uncrewed Profiles Created: %1", _countUnCrewed] call ALiVE_fnc_dump;
+					     };
+					     // DEBUG -------------------------------------------------------------------------------------
+					    };
 	         };
 					// Spawn vehicle END
 								
@@ -417,7 +459,7 @@ switch(_operation) do {
           
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
-                ["SPEMP - Total Infantry Profiles Created: %1",_countProfiles] call ALiVE_fnc_dump;
+                ["SPEMP - Total Profiles Created: %1",_countProfiles] call ALiVE_fnc_dump;
                 ["SPEMP - Placement Completed"] call ALiVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;

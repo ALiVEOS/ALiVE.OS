@@ -23,8 +23,8 @@
     <Chinesesimp>武力势力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_FACTION_COMMENT">
-    <English>Faction of the units to be placed (SPE_US_ARMY, SPE_FR_ARMY, SPE_STURM, SPE_WEHRMACHT)</English>
-    <Chinesesimp>待放置单元的系数(SPE_US_ARMY、SPE_FR_ARMY、SPE_STURM、SPE_WEHRMACHT)</Chinesesimp>
+    <English>Faction of the units to be placed (BLU_F,OPF_F)</English>
+    <Chinesesimp>待放置单元的系数(BLU_F,OPF_F)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_PRIORITY">
     <English>Objective priority:</English>
@@ -65,6 +65,14 @@
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS_COMMENT">
     <English>Set classname of Vehicle to be spawned. If empty, Infantry group will be spawned.</English>
     <Chinesesimp>设置要生成的载具的类名。如果是空的，则会生成步兵组。</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY">
+    <English>Spawn Vehicle Uncrewed:</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY_COMMENT">
+    <English>If set to no, vehicle will be spawned with AI crew.</English>
+    <Chinesesimp></Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_USAGE">
     <English>Place the Spearhead Custom Military Objective module in the editor, select the desired Size, Priority and force. Custom factions can be entered in the text box (separated by a comma).</English>
