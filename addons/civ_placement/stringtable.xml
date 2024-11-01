@@ -308,62 +308,62 @@
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT">
     <English>Garrisoned Infantry Groups</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>驻防步兵组</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_COMMENT">
     <English>Infantry groups to guard locations(None if no infantry groups)</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>步兵小组守卫地点（如果没有步兵小组则无）</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_NONE">
     <English>None</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>无</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_LOW">
     <English>Low (1-2 Groups)</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>少量(1-2组)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_MEDIUM">
     <English>Medium (3-4 Groups)</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>中等(3-4组)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_HIGH">
     <English>High (5-6 Groups)</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>大量(5-6组)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_RADIUS">
     <English>Garrisoned Infantry Radius</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>驻防步兵半径</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_RADIUS_COMMENT">
     <English>Radial range (metres) to search for enterable buildings</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>搜索可进入建筑物的径向范围(米)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_PATROL_PERCENT">
     <English>Garrisoned Infantry Building Patrol</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>驻防步兵建筑巡逻</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_PATROL_PERCENT_COMMENT">
     <English>Percentage of units to patrol buildings within guard radius</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>在警戒半径内巡逻建筑物的单位百分比</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_NONE">
     <English>None</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>无</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_LOW">
     <English>25%</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>25%</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_MEDIUM">
     <English>50%</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>50%</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_HIGH">
     <English>75%</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>75%</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_ALL">
     <English>100%</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>100%</Chinesesimp>
 </Key>
 </Container></Package></Project>

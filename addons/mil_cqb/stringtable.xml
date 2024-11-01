@@ -132,59 +132,59 @@
 </Key>
 <Key ID="STR_ALIVE_CQB_PATROLCHANCE">
     <English>Patrol chance:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>巡逻几率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_PATROLCHANCE_COMMENT">
     <English>Percentage chance units might patrol around their spawn point.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>单位可能在刷新点附近巡逻</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_PATROLSEARCHCHANCE">
     <English>Patrol search chance:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>巡逻搜查几率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_PATROLSEARCHCHANCE_COMMENT">
     <English>Percentage chance units will search nearby houses at a patrol waypoint.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>单位在巡逻航路点搜索附近房屋的几率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MINWAITTIME">
     <English>Patrol min WP wait:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>巡逻最小等待时间</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MINWAITTIME_COMMENT">
     <English>Seconds. Minimum threshold time the group will stop and wait at each waypoint.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>秒.小组将在每个航路点停止并等待的最小阈值时间.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MIDWAITTIME">
     <English>Patrol mid WP wait:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>巡逻中等等待时间</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MIDWAITTIME_COMMENT">
     <English>Seconds. Median threshold time the group will stop and wait at each waypoint.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>秒.小组将在每个航路点停止并等待的中间阈值时间.</Chinesesimp>
 </Key>    
 <Key ID="STR_ALIVE_CQB_MAXWAITTIME">
     <English>Patrol max WP wait:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>巡逻最大等待时间</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MAXWAITTIME_COMMENT">
     <English>Seconds. Maximum threshold time the group will stop and wait at each waypoint.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>秒.小组将在每个航路点停止并等待的最大阈值时间.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MINDIST">
     <English>Minimum patrol radius:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>最小巡逻半径</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MINDIST_COMMENT">
     <English>If group is patrolling, then the patrol radius will be no smaller than this value. The radius will be randomly calculated for each group between minimum and maximum patrol radius.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>如果小组正在巡逻,则巡逻半径将不小于此值.每组的半径将在最小和最大巡逻半径之间随机计算.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MAXDIST">
     <English>Maximum patrol radius:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>最大巡逻半径</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MAXDIST_COMMENT">
     <English>If group is patrolling, then the group radius will be no bigger than this value. The radius will be randomly calculated for each group between minimum and maximum patrol radius.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>如果小组正在巡逻,则巡逻半径将不大于此值.每组的半径将在最小和最大巡逻半径之间随机计算.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE">
     <English>Spawn Ground:</English>
