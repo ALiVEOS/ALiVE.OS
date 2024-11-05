@@ -103,6 +103,8 @@ switch(_operation) do {
             [_logic,"direction",""] call ALIVE_fnc_hashSet; // select 2 select 11
             [_logic,"fuel",1] call ALIVE_fnc_hashSet; // select 2 select 12
             [_logic,"damage",[]] call ALIVE_fnc_hashSet; // select 2 select 13
+            [_logic,"initialdamage",false] call ALIVE_fnc_hashSet; // select 2 select 14
+            
         };
 
     };
@@ -278,6 +280,17 @@ switch(_operation) do {
         _result = [_logic,"damage"] call ALIVE_fnc_hashGet;
 
     };
+    
+    
+    case "initialdamage": {
+
+        if(_args isEqualType true) then {
+            [_logic,"initialdamage",_args] call ALIVE_fnc_hashSet;
+        };
+
+        _result = [_logic,"initialdamage"] call ALIVE_fnc_hashGet;
+
+    };
 
     case "fuel": {
 
@@ -300,6 +313,8 @@ switch(_operation) do {
         private _direction = _logic select 2 select 11;     //[_logic,"direction"] call ALIVE_fnc_hashGet;
         private _fuel = _logic select 2 select 12;          //[_logic,"fuel"] call ALIVE_fnc_hashGet;
         private _damage = _logic select 2 select 13;        //[_logic,"damage"] call ALIVE_fnc_hashGet;
+        private _initialdamage = _logic select 2 select 14;        //[_logic,"initialdamage"] call ALIVE_fnc_hashGet;
+
 
         private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
 
@@ -315,11 +330,15 @@ switch(_operation) do {
             [_unit,+_position] call ALiVE_fnc_setPosAGLS;
             
             _unit setFuel _fuel;
-
-            if(count _damage > 0) then {
-                [_unit, _damage] call ALIVE_fnc_vehicleSetDamage;
-            };
             
+	           if(count _damage > 0) then {
+	               [_unit, _damage] call ALIVE_fnc_vehicleSetDamage;
+	           } else {
+               if(_initialdamage) then {
+       				  _unit setDamage (random [0.3, 0.55, 0.89]);
+               };
+             };
+
             // set profile id on the unit
             _unit setVariable ["agentID", _agentID];
 

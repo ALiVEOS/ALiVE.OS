@@ -188,6 +188,24 @@ switch(_operation) do {
     case "ambientVehicleFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
     };
+    
+    
+    // Ambient vehicle Initial Damage
+    case "initialdamage": {
+        if (_args isEqualType true) then {
+            _logic setVariable ["initialdamage", _args];
+        } else {
+            _args = _logic getVariable ["initialdamage", false];
+        };
+        if (_args isEqualType "") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["initialdamage", _args];
+        };
+        ASSERT_TRUE(_args isEqualType true,str _args);
+
+        _result = _args;
+    };
+
 
     // Return the objectives as an array of clusters
     case "objectives": {
@@ -643,12 +661,13 @@ switch(_operation) do {
             private _placementMultiplier = parseNumber([_logic, "placementMultiplier"] call MAINCLASS);
             private _ambientVehicleAmount = parseNumber([_logic, "ambientVehicleAmount"] call MAINCLASS);
             private _ambientVehicleFaction = [_logic, "ambientVehicleFaction"] call MAINCLASS;
-
             private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             private _factionSideNumber = getNumber(_factionConfig >> "side");
             private _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
 
+            private _initialdamage = [_logic, "initialdamage"] call MAINCLASS;
+            
             // get current environment settings
             private _env = call ALIVE_fnc_getEnvironment;
 
@@ -678,6 +697,7 @@ switch(_operation) do {
                 private _landClasses = _carClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
                 private _supportClasses = [ALIVE_factionDefaultSupports,_ambientVehicleFaction,[]] call ALIVE_fnc_hashGet;
+                
 
                 //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
 
@@ -774,7 +794,7 @@ switch(_operation) do {
 
                                 if (!isnil "_parkingPosition" && {count _parkingPosition == 2} && {{(_parkingPosition select 0) distance (_x select 0) < 10} count _usedPositions == 0}) then {
 
-                                    [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction,_clusterID,_parkingPosition select 0] call ALIVE_fnc_createCivilianVehicle;
+                                    [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction,_clusterID,_parkingPosition select 0,_initialdamage] call ALIVE_fnc_createCivilianVehicle;
 
                                     _countLandUnits = _countLandUnits + 1;
 

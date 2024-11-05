@@ -159,12 +159,20 @@
     <Chinesesimp>较多周围的环境车辆</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION">
-    <English>Ambient vehicle faction</English>
+    <English>Ambient Vehicle Faction</English>
     <Chinesesimp>周围的环境车辆势力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION_COMMENT">
     <English>Ambient vehicles pulled from this faction (CIV_F,mod_faction_name)</English>
     <Chinesesimp>将该势力周围的环境车辆清除</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_DAM">
+    <English>Random Vehicle Damage</English>
+    <Chinesesimp></Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_DAM_COMMENT">
+    <English>Random damage to some vehicles</English>
+    <Chinesesimp></Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_USAGE">
     <English>Define the settings on the module, place optional TAOR / Blacklist markers!</English>
@@ -191,14 +199,4 @@
     <English>Eastern</English>
     <Chinesesimp>东部</Chinesesimp>
 </Key>
-
-
-
-
-
-
-
-
-
-
 </Container></Package></Project>

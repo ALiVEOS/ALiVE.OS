@@ -196,6 +196,25 @@ class CfgVehicles {
                                 description = "$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_FACTION_COMMENT";
                                 defaultValue = "CIV_F";
                         };
+                        class initialdamage
+                        {
+                                displayName = "$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_DAM";
+                                description = "$STR_ALIVE_AMBCP_AMBIENT_VEHICLE_DAM_COMMENT";
+                                class Values
+                                {
+                                        class No
+                                        {
+                                                name = "No";
+                                                value = false;
+                                                default = 1;
+                                        };
+                                        class Yes
+                                        {
+                                                name = "Yes";
+                                                value = true;
+                                        };
+                                };
+                        };
                 };
                 /*
                 class ModuleDescription
