@@ -384,7 +384,7 @@ class CfgVehicles {
                                         class HIGH
                                         {
                                                 name = "High";
-                                                value = 0.5;
+                                                value = 0.55;
                                         };
                                         class MEDIUM
                                         {

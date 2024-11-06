@@ -29,7 +29,7 @@ nil
 ---------------------------------------------------------------------------- */
 
 
-private ["_vehicleClass","_building","_debug","_direction","_bbr","_bboxA","_p1","_p2","_maxWidth","_maxLength","_longest","_buildingPosition","_position","_safePos","_center","_vehicleMapSize","_excludedObject","_nearbyObjects","_blacklistBuildings","_road_seg_list_raw","_road_seg_list_filtered","_road_seg_list","_P1","_P2","_x0","_x1","_x2","_y0","_y1","_y2","_distanceFromCenterLineOfRoad","_minDistanceFromCenterLineOfRoad","_maxDistanceFromCenterLineOfRoad","_connected_road","_current_road","_veh_type","_pos_flat_empty","_pos_flat_empty_attempts","_road_seg_width","_road_seg_length","_min_distance_nearby_objects","_tmp_pos","_car_length_allowed","_car_extra_space","_num_cars_in_road_segment","_distance_between_cars","_pos_middle_right","_pos_back_right","_last_pos","_pos_veh","_dir_slightly_randomized","_pos_veh_slightly_randomized","_nearbyObjectdistance"];
+private ["_vehicleClass","_building","_debug","_direction","_bbr","_bboxA","_p1","_p2","_maxWidth","_maxLength","_longest","_buildingPosition","_position","_safePos","_center","_vehicleMapSize","_excludedObject","_nearbyObjects","_blacklist","_road_seg_list_raw","_road_seg_list_filtered","_road_seg_list","_P1","_P2","_x0","_x1","_x2","_y0","_y1","_y2","_distanceFromCenterLineOfRoad","_minDistanceFromCenterLineOfRoad","_maxDistanceFromCenterLineOfRoad","_connected_road","_current_road","_veh_type","_pos_flat_empty","_pos_flat_empty_attempts","_road_seg_width","_road_seg_length","_min_distance_nearby_objects","_tmp_pos","_car_length_allowed","_car_extra_space","_num_cars_in_road_segment","_distance_between_cars","_pos_middle_right","_pos_back_right","_last_pos","_pos_veh","_dir_slightly_randomized","_pos_veh_slightly_randomized","_nearbyObjectdistance"];
 
 _vehicleClass = _this select 0;
 _building = _this select 1;
@@ -102,9 +102,9 @@ for "_i" from 1 to 4 do {
    _y0 = (_position) select 1;
    _distanceFromCenterLineOfRoad = abs((_y2 - _y1) * _x0 - (_x2 - _x1) * _y0 + (_x2 * _y1) - (_y2 * _x1)) / (_P1 distance2D _P2);
 	 _nearbyObjects = (nearestObjects [_position, ["House", "Building","Wall"], _nearbyObjectdistance]) + (nearestTerrainObjects [_position, ["RUIN","TREE","SMALL TREE","ROCK","ROCKS","BUSH","FENCE","WALL","HIDE","CHURCH","CHAPEL","BUNKER"],_vehicleMapSize + _nearbyObjectdistance]);
-	 _blacklistBuildings = [];
+	 _blacklist = ["Land_BarGate_F"];
 	 { 
-		 _excludedObject = (typeOf _x) in _blacklistBuildings;
+		 _excludedObject = (typeOf _x) in _blacklist;
 		 if (_excludedObject) then {
 			 if(_debug) then {
 				 ["_excludedObject: %1, %2", _excludedObject, _x] call ALiVE_fnc_dump;

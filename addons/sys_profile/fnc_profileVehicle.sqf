@@ -268,8 +268,8 @@ switch (_operation) do {
             _result = [_logic,"direction"] call ALIVE_fnc_hashGet;
         };
     };
-    case
-    "damage": {
+    
+    case "damage": {
         if (_args isEqualType []) then {
             [_logic,"damage", _args] call ALIVE_fnc_hashSet;
         } else {

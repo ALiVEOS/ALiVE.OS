@@ -629,6 +629,8 @@ switch(_operation) do {
                             _roadBlocks = parsenumber([_logic, "roadBlocks"] call MAINCLASS);
                             _debug = [_logic, "debug"] call MAINCLASS;
 
+                            if (_debug) then { ["TOTAL VAR(ROADBLOCK_LOCATIONS): %1, count: %2", GVAR(ROADBLOCK_LOCATIONS), count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump }; 
+														  
                             while {count GVAR(ROADBLOCK_LOCATIONS) > 0} do {
                                 private ["_timer"];
 
@@ -653,9 +655,12 @@ switch(_operation) do {
                                             };
 
                                             if (_spawn) then {
-                                                [_position, _size + 150, ceil(_roadblocks / 30), _debug] call ALiVE_fnc_createRoadblock;
-
-                                                GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
+                                                _thisroadblockResult = [_position, _size + 150, ceil(_roadblocks / 30), _debug] call ALiVE_fnc_createRoadblock;
+                                                if (_debug) then { ["_thisroadblockResult: %1, count: %2", _thisroadblockResult, count _thisroadblockResult] call ALiVE_fnc_dump }; 
+                                                 if (count _thisroadblockResult > 0)  then {
+                                                   GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
+                                                 };
+                                                if (_debug) then { ["VAR(ROADBLOCK_LOCATIONS): %1, count: %2", GVAR(ROADBLOCK_LOCATIONS), count GVAR(ROADBLOCK_LOCATIONS)] call ALiVE_fnc_dump }; 
                                             };
                                         };
                                     };
