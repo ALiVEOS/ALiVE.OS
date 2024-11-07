@@ -790,7 +790,7 @@ switch(_operation) do {
                                 //["SUPPORT PLACEMENT: %1",_supportPlacement] call ALIVE_fnc_dump;
                                 //["VEHICLE CLASS: %1",_vehicleClass] call ALIVE_fnc_dump;
 
-                                private _parkingPosition = [_vehicleClass,_building,false] call ALIVE_fnc_getParkingPosition;
+                                private _parkingPosition = [_vehicleClass,_building,[],false] call ALIVE_fnc_getParkingPosition;
 
                                 if (!isnil "_parkingPosition" && {count _parkingPosition == 2} && {{(_parkingPosition select 0) distance (_x select 0) < 10} count _usedPositions == 0}) then {
 

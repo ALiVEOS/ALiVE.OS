@@ -144,6 +144,33 @@ for "_j" from 1 to (count _roadpoints) do {
         _checkpoint = (selectRandom ([_compType, _cat, _size] call ALiVE_fnc_getCompositions));
     };
 
+      
+      private _config = _checkpoint;
+      if (typename _checkpoint == "ARRAY") then {
+     	 _config = [_checkpoint, configFile] call BIS_fnc_configPath;
+      };
+      private _compClassnames = [];
+      private _objects = [];
+      for "_i" from 0 to ((count _config) - 1) do {
+     	 private _item = _config select _i;
+     	 if (isClass _item) then {
+     	  	_objects pushback (getText(_item >> "vehicle"));
+     	 };
+      };
+      for "_i" from 0 to ((count _objects) - 1) do {
+     	 private _object = _objects select _i;
+     	
+     	 if !(_object in _compClassnames) then {
+     		 _compClassnames pushback _object;
+     	 };
+      };
+         // DEBUG -------------------------------------------------------------------------------------
+         if(_debug) then {
+           ["*********** _compClassnames: %1", _compClassnames] call ALiVE_fnc_dump;
+         };        
+         // DEBUG -------------------------------------------------------------------------------------
+
+
     // Spawn compositions
     [_checkpoint,_roadpos,_direction,_fac] spawn {[_this select 0, position (_this select 1), _this select 2, _this select 3] call ALiVE_fnc_spawnComposition};
 
@@ -159,7 +186,7 @@ for "_j" from 1 to (count _roadpoints) do {
     private _randomVehicleDice = round(random 99);
     if (_randomVehicleDice % 2 == 0) then {   
       if (!isNil "_vehtype") then {
-     	 private _parkingPosition = [_vehtype, _roadpos, false] call ALIVE_fnc_getParkingPosition; 	   
+     	 private _parkingPosition = [_vehtype, _roadpos, _compClassnames, false] call ALIVE_fnc_getParkingPosition; 	   
      	 if (count _parkingPosition > 0) then {
      	  	private _parkPosition = _parkingPosition select 0;
      	  	private _parkDirection = _parkingPosition select 1; 

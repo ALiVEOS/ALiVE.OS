@@ -10,13 +10,14 @@ Get a parking position for a parsed vehicle class and building object
 Parameters:
 String - Vehicle class name
 Object - Building object
+Array - Blacklist object classes
 
 Returns:
 Array - array containing parking position and direction or [] if no parking position was found
 
 Examples:
 (begin example)
-_result = ["B_Heli_Light_01_F", _building] call ALIVE_fnc_getParkingPosition;
+_result = ["B_Heli_Light_01_F", _building, ["Land_BarGate_F","Land_CncBarrier_F"]] call ALIVE_fnc_getParkingPosition;
 (end)
 
 See Also:
@@ -33,7 +34,9 @@ private ["_vehicleClass","_building","_debug","_direction","_bbr","_bboxA","_p1"
 
 _vehicleClass = _this select 0;
 _building = _this select 1;
-_debug = if(count _this > 2) then {_this select 2} else {false};
+_blacklist = _this select 2;
+_debug = if(count _this > 3) then {_this select 3} else {false};
+
 
 _nearbyObjectdistance = 15;
 _minDistanceFromCenterLineOfRoad = 0.75;
@@ -102,16 +105,19 @@ for "_i" from 1 to 4 do {
    _y0 = (_position) select 1;
    _distanceFromCenterLineOfRoad = abs((_y2 - _y1) * _x0 - (_x2 - _x1) * _y0 + (_x2 * _y1) - (_y2 * _x1)) / (_P1 distance2D _P2);
 	 _nearbyObjects = (nearestObjects [_position, ["House", "Building","Wall"], _nearbyObjectdistance]) + (nearestTerrainObjects [_position, ["RUIN","TREE","SMALL TREE","ROCK","ROCKS","BUSH","FENCE","WALL","HIDE","CHURCH","CHAPEL","BUNKER"],_vehicleMapSize + _nearbyObjectdistance]);
-	 _blacklist = ["Land_BarGate_F"];
+	 ["_nearbyObjects: %1", _nearbyObjects] call ALiVE_fnc_dump;
+	 if (count _blacklist == 0) then {_blacklist = ["Land_BarGate_F"];};
+	 ["count _blacklist: %1", count _blacklist] call ALiVE_fnc_dump; 
 	 { 
 		 _excludedObject = (typeOf _x) in _blacklist;
-		 if (_excludedObject) then {
+		 if (_excludedObject) exitWith {
 			 if(_debug) then {
-				 ["_excludedObject: %1, %2", _excludedObject, _x] call ALiVE_fnc_dump;
+				 ["Too close to a blacklist object, exiting _excludedObject: %1, %2", _excludedObject, _x] call ALiVE_fnc_dump;
 			 };
+			 [];
 		 };
 	 } forEach _nearbyObjects;
-	
+	 
 	 if (count _nearbyObjects > 0 || _excludedObject) exitWith {
 		 if(_debug) then {
 			 ["Too close to an object, exiting. _excludedObject: %1, count _nearbyObjects: %2", _excludedObject, count _nearbyObjects] call ALiVE_fnc_dump;

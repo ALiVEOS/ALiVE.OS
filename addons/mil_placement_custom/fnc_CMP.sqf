@@ -905,7 +905,7 @@ switch(_operation) do {
                             //["SUPPORT PLACEMENT: %1",_supportPlacement] call ALIVE_fnc_dump;
                             //["VEHICLE CLASS: %1",_vehicleClass] call ALIVE_fnc_dump;
 
-                            private _parkingPosition = [_vehicleClass,_building] call ALIVE_fnc_getParkingPosition;
+                            private _parkingPosition = [_vehicleClass,_building,[]] call ALIVE_fnc_getParkingPosition;
 
                             if (count _parkingPosition == 2) then {
 
