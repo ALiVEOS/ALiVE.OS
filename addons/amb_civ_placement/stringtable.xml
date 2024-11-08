@@ -168,11 +168,11 @@
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_DAM">
     <English>Random Vehicle Damage</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>随机平民载具伤害</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_VEHICLE_DAM_COMMENT">
     <English>Random damage to some vehicles</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>一些平民载具会随机受到些伤害</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AMBCP_USAGE">
     <English>Define the settings on the module, place optional TAOR / Blacklist markers!</English>
