@@ -921,7 +921,7 @@ switch(_operation) do {
                                 //["POS OK: %1",_positionOK] call ALIVE_fnc_dump;
 
                                 if(_positionOK) then {
-                                    [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction] call ALIVE_fnc_createProfileVehicle;
+                                    [_vehicleClass,_side,_faction,_parkingPosition select 0,_parkingPosition select 1,false,_faction,[],true] call ALIVE_fnc_createProfileVehicle;
 
                                     _countLandUnits = _countLandUnits + 1;
 
