@@ -38,7 +38,8 @@ params [
     ["_spawnGoodPosition", true],
     ["_prefix", ""],
     ["_clusterID", ""],
-    ["_buildingPosition", [0,0,0]]
+    ["_buildingPosition", [0,0,0]],
+    ["_initialdamage", false]
 ];
 
 // get counts of current profiles
@@ -61,6 +62,8 @@ private _civilianVehicle = [nil, "create"] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "fuel", 1] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "homeCluster", _clusterID] call ALIVE_fnc_civilianVehicle;
 [_civilianVehicle, "homePosition", _buildingPosition] call ALIVE_fnc_civilianVehicle;
+[_civilianVehicle, "initialdamage", _initialdamage] call ALIVE_fnc_civilianVehicle;
+
 
 [ALIVE_agentHandler, "registerAgent", _civilianVehicle] call ALIVE_fnc_agentHandler;
 

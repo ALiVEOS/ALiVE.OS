@@ -37,7 +37,8 @@ params [
     ["_direction", 0],
     ["_spawnGoodPosition", true],
     ["_prefix", ""],
-    ["_cargo", []]
+    ["_cargo", []],
+    ["_isSPE", false]
 ];
 
 // get counts of current profiles
@@ -57,6 +58,7 @@ private _profileVehicle = [nil, "create"] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "faction", _faction] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "damage", 0] call ALIVE_fnc_profileVehicle;
 [_profileVehicle, "fuel", 1] call ALIVE_fnc_profileVehicle;
+[_profileVehicle, "isSPE", _isSPE] call ALIVE_fnc_profileVehicle;
 
 if (count _cargo > 0) then {
     [_profileVehicle, "cargo", _cargo] call ALIVE_fnc_profileVehicle;

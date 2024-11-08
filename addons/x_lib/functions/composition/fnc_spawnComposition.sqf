@@ -1,9 +1,9 @@
 #include "\x\alive\addons\x_lib\script_component.hpp"
 SCRIPT(spawnComposition);
 
-#define MAP_TYPES_BUILDING          []
+#define MAP_TYPES_BUILDING          ["BUILDING","HOUSE","RUIN","BUNKER","BUSSTOP","CHAPEL","CHURCH","CROSS","FOUNTAIN","POWER LINES"]
 #define MAP_TYPES_VEGETATION        ["TREE","SMALL TREE","BUSH"]
-#define MAP_TYPES_WALL              []
+#define MAP_TYPES_WALL              ["FENCE","WALL"]
 #define MAP_TYPES_MISC              ["ROCK","ROCKS"]
 
 #define CATEGORY_COMP               [MAP_TYPES_BUILDING,MAP_TYPES_WALL,MAP_TYPES_VEGETATION,MAP_TYPES_MISC]
