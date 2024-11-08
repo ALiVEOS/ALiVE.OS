@@ -164,11 +164,11 @@ for "_j" from 1 to (count _roadpoints) do {
      		 _compClassnames pushback _object;
      	 };
       };
-         // DEBUG -------------------------------------------------------------------------------------
-         if(_debug) then {
-           ["*********** _compClassnames: %1", _compClassnames] call ALiVE_fnc_dump;
-         };        
-         // DEBUG -------------------------------------------------------------------------------------
+      // DEBUG -------------------------------------------------------------------------------------
+      if(_debug) then {
+        ["ALIVE_fnc_createRoadBlock  _compClassnames: %1", _compClassnames] call ALiVE_fnc_dump;
+      };        
+      // DEBUG -------------------------------------------------------------------------------------
 
 
     // Spawn compositions
