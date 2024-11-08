@@ -104,10 +104,8 @@ for "_i" from 1 to 4 do {
    _x0 = (_position) select 0;
    _y0 = (_position) select 1;
    _distanceFromCenterLineOfRoad = abs((_y2 - _y1) * _x0 - (_x2 - _x1) * _y0 + (_x2 * _y1) - (_y2 * _x1)) / (_P1 distance2D _P2);
-	 _nearbyObjects = (nearestObjects [_position, ["House", "Building","Wall"], _nearbyObjectdistance]) + (nearestTerrainObjects [_position, ["RUIN","TREE","SMALL TREE","ROCK","ROCKS","BUSH","FENCE","WALL","HIDE","CHURCH","CHAPEL","BUNKER"],_vehicleMapSize + _nearbyObjectdistance]);
-	 ["_nearbyObjects: %1", _nearbyObjects] call ALiVE_fnc_dump;
+	 _nearbyObjects = (nearestObjects [_position, ["house","Wreck_Base","Ruins","Building","land_vn_cave_base","Car", "Truck", "Tank", "Plane", "Helicopter"], _nearbyObjectdistance]) + (nearestTerrainObjects [_position, ["BUILDING","BUNKER", "BUSH","BUSSTOP","CHAPEL","CHURCH","CROSS","FENCE","FOREST BORDER","FOREST SQUARE","FOREST TRIANGLE","FOREST","FORTRESS","FOUNTAIN","FUELSTATION","HIDE","HOSPITAL","HOUSE","LIGHTHOUSE","POWER LINES","POWERSOLAR","POWERWAVE","POWERWIND","QUAY","RAILWAY","ROCK","ROCKS","RUIN","SHIPWRECK","SMALL TREE","STACK", "TOURISM", "TRANSMITTER", "TREE","VIEW-TOWER", "WALL", "WATERTOWER","Wreck_Base"],_vehicleMapSize + _nearbyObjectdistance]);
 	 if (count _blacklist == 0) then {_blacklist = ["Land_BarGate_F"];};
-	 ["count _blacklist: %1", count _blacklist] call ALiVE_fnc_dump; 
 	 { 
 		 _excludedObject = (typeOf _x) in _blacklist;
 		 if (_excludedObject) exitWith {
