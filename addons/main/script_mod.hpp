@@ -4,11 +4,11 @@
 // TODO: Consider Mod-wide or Component-narrow versions (or both, depending on wishes!)
 #define MAJOR 2
 #define MINOR 1
-#define PATCHLVL 6
+#define PATCHLVL 7
 // BUILD should be YYMMDDR eg 1311211
-#define BUILD 2410071
+#define BUILD 2412121
 
-#define CLUSTERBUILD "Arma 3","Arma3",216,151618,"Stable"
+#define CLUSTERBUILD "Arma 3","Arma3",218,152405,"Stable"
 
 #define VERSION MAJOR.MINOR.PATCHLVL.BUILD
 #define VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD
