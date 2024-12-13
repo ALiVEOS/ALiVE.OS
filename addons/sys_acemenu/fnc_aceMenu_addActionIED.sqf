@@ -56,7 +56,7 @@ private _actCode = {
         };
     } forEach _actionIDs;
 
-    [_target, _player, _actionID] call ALiVE_fnc_disarmIED;
+    [_target, _player, _actionID] spawn ALiVE_fnc_disarmIED;
 };
 
 // Add "Disarm IED" item to object //
