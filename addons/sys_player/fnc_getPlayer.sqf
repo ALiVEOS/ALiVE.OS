@@ -85,7 +85,7 @@ if (local _player) then {
         _value = [_playerHash, _key] call CBA_fnc_hashGet;
         _cmd = _x select 2;
 
-        if (typeName _cmd != "STRING") then {
+        if (typeName _cmd != "STRING" && !(isNil "_value")) then {
             // Execute
             [_player,_value] call _cmd;
 
