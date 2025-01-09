@@ -471,7 +471,7 @@ switch(_operation) do {
                             _position = _profile select 2 select 2;
 
                             if!(surfaceIsWater _position) then {
-                                private _marker = [_profile, "createMarkers", [_alpha]] call ALIVE_fnc_profileEntity;
+                                private _marker = [_profile, "createDebugMarkers", [_alpha]] call ALIVE_fnc_profileEntity;
                                 _markers = _markers + _marker;
                                 _profiles pushback _profileID;
                             };
@@ -640,7 +640,7 @@ switch(_operation) do {
                     _profileID = _x;
                     _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
                     if !(isnil "_profile") then {
-                        [_profile, "deleteMarkers"] call ALIVE_fnc_profileEntity;
+                        [_profile, "deleteDebugMarkers"] call ALIVE_fnc_profileEntity;
                     };
                 } forEach _profiles;
 
@@ -1174,7 +1174,7 @@ switch(_operation) do {
                         {
                             _profile = _x;
                             if !(isnil "_profile") then {
-                                [_profile, "deleteMarkers"] call ALIVE_fnc_profileEntity;
+                                [_profile, "deleteDebugMarkers"] call ALIVE_fnc_profileEntity;
                             };
                         } forEach _profiles;
 
@@ -1216,7 +1216,7 @@ switch(_operation) do {
                                         _position = _profile select 2 select 2;
 
                                         if!(surfaceIsWater _position) then {
-                                            _marker = [_profile, "createMarkers", [1]] call ALIVE_fnc_profileEntity;
+                                            _marker = [_profile, "createDebugMarkers", [1]] call ALIVE_fnc_profileEntity;
                                             _markers = _markers + _marker;
                                             _profiles pushback _profile;
                                         };
@@ -1268,7 +1268,7 @@ switch(_operation) do {
                     _profileID = _x;
                     _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
                     if !(isnil "_profile") then {
-                        [_profile, "deleteMarkers"] call ALIVE_fnc_profileEntity;
+                        [_profile, "deleteDebugMarkers"] call ALIVE_fnc_profileEntity;
                     };
                 } forEach _profiles;
 
