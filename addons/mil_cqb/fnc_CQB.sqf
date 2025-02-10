@@ -1273,7 +1273,7 @@ switch(_operation) do {
             };
 
             // position AI
-            _positions = [_house] call ALiVE_fnc_getBuildingPositions;
+            _positions = [[_house] call ALiVE_fnc_getBuildingPositions, 2] call CBA_fnc_shuffle;
 
             if (count _positions == 0) exitwith {_args = _grp};
 
