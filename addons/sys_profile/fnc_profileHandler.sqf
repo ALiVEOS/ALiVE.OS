@@ -1350,6 +1350,8 @@ switch(_operation) do {
                     [_profileEntity, "isSPE", [_profile,"isSPE"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                     [_profileEntity, "aiBehaviour", [_profile,"aiBehaviour"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
 
+                    [_profileEntity, "objectType", [_profile,"objectType"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
+
                     /*
                     [_profileEntity, "objectType", [_profile,"objectType"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileEntity;
                     [_profileEntity, "unitCount", [_profile,"unitCount"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
