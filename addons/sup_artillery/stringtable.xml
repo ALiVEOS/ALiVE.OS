@@ -56,11 +56,11 @@
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_WP">
     <English>Number of WP Rounds</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>白磷弹数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_WP_DESC">
     <English>Set the number of rounds of White Phospherous available for the asset - Used by all Arty\Mortar Assets</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>设置所有火炮/迫击炮装备可用白磷弹的数量</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_GUIDED">
     <English>Number of GUIDED Rounds </English>

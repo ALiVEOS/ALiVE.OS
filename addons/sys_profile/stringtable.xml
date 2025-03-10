@@ -132,11 +132,11 @@
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER">
     <English>Virtual Combat Range:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>虚拟单位战斗距离</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VIRTUAL_COMBAT_RANGE_MODIFIER_COMMENT">
     <English>Sets the range of virtual combat in metres.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>以米为单位设置虚拟战斗的范围</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
     <English>Experimental Pathfinding:</English>

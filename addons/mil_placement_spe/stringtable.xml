@@ -44,39 +44,39 @@
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS">
     <English>Infantry Group Classname:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>小组类名</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_BEHAVIOUR">
     <English>Infantry Group AI Behaviour:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>小组AI行为</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_BEHAVIOUR_COMMENT">
     <English>A group's behaviour determines how it is units move from one point to another, behave when idle, and how they engage an enemy.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>一个团队的行为决定了它的单位如何从一个点移动到另一个点，空闲时的行为，以及他们如何与敌人交战</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS_COMMENT">
     <English>Set classname of Infantry group to be spawned, set to empty for random. If vehicle classname is set, this will be ignored.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>设置要生成的步兵组的类名，随机设置为空。如果设置了车辆类名，这个将被忽略。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS">
     <English>Vehicle Classname:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>载具类名</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS_COMMENT">
     <English>Set classname of Vehicle to be spawned. If empty, Infantry group will be spawned.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>设置要生成的载具的类名。如果是空的，则会生成步兵组。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY">
     <English>Spawn Vehicle Uncrewed:</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>生成无人载具</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY_COMMENT">
     <English>If set to no, vehicle will be spawned with AI crew.</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>如果设置为否，载具将拥有AI成员</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_USAGE">
     <English>Place the Spearhead Custom Military Objective module in the editor, select the desired Size, Priority and force. Custom factions can be entered in the text box (separated by a comma).</English>
-    <Chinesesimp></Chinesesimp>
+    <Chinesesimp>在编辑器中放置Spearhead自定义军事目标模块，选择所需的大小，优先级和力量。可以在文本框中输入自定义派系(以逗号分隔)</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_ALLOW_PLAYER_TASK">
     <English>Allow player tasking:</English>
