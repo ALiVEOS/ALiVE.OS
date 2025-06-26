@@ -576,7 +576,29 @@ switch(_operation) do {
             private _totalCount = 0;
 
             if(_groupCount > 0) then {
+                // Guards
+                if (count _infantryGroups > 0 && _guardProbabilityCount > 0) then {
+                    for "_i" from 0 to _guardProbabilityCount -1 do {
+                        _guardGroup = (selectRandom _infantryGroups);
+                        _guards = [_guardGroup, [_position, _guardDistance] call CBA_fnc_RandPos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 
+                        // DEBUG -------------------------------------------------------------------------------------
+                        if(_debug) then {
+                            ["CMP [%1] - Placing Garrison Guards - %2", _faction, _guardGroup] call ALiVE_fnc_dump;
+                        };
+                        // DEBUG -------------------------------------------------------------------------------------
+
+                        // Garrison & Patrols instead of the static garrison.
+                        {
+                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage]]] call ALIVE_fnc_profileEntity;
+                            };
+                        } forEach _guards;
+                        _countProfiles = _countProfiles + count _guards;
+                    };
+                };
+
+                // Main Force
                 private _readiness = parseNumber([_logic, "readinessLevel"] call MAINCLASS);
                 _readiness = (1 - _readiness) * _groupCount;
 
@@ -584,66 +606,40 @@ switch(_operation) do {
 
                     private ["_command","_radius"];
 
-                    // Guards
-                    if (_i == 0 && {count _infantryGroups > 0} && _guardProbabilityCount > 0) then {
-                    	
-                        _guardGroup = (selectRandom _infantryGroups);
-                        _guards = [_guardGroup, [_position, _guardDistance] call CBA_fnc_RandPos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-                        
-                        // DEBUG -------------------------------------------------------------------------------------
-                        if(_debug) then {
-                          ["CMP [%1] - Placing Garrison Guards - %2", _faction, _guardGroup] call ALiVE_fnc_dump;
-                        };
-                        // DEBUG -------------------------------------------------------------------------------------
-                    
-                        // Garrison & Patrols instead of the static garrison.
-                        {
-                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage]]] call ALIVE_fnc_profileEntity;
-                            };
-                        } forEach _guards;
-                        _countProfiles = _countProfiles + count _guards;
-                        _totalCount = _totalCount + 1;
+                    private _group = _groups select _i;
 
-                	  // Main Force
+                    if (_totalCount < _readiness) then {
+                        _command = "ALIVE_fnc_garrison";
+                        // _radius = [200,"true",[0,0,0]];
+                      _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage];
+                      _position = [position _logic, 30] call CBA_fnc_RandPos;
                     } else {
-
-                        private _group = _groups select _i;
-
-	                    if (_totalCount < _readiness) then {
-	                        _command = "ALIVE_fnc_garrison";
-	                        // _radius = [200,"true",[0,0,0]];
-                          _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage];
-                          _position = [position _logic, 30] call CBA_fnc_RandPos;
-	                    } else {
-	                        _command = "ALIVE_fnc_ambientMovement";
-	                        // _radius = [200,"SAFE",[0,0,0]];
-	                        _radius = [_guardRadius,"SAFE",[0,0,0]];
-                          _position = [position _logic, random((_radius select 0) + ((_radius select 0)/0.25)), random(360)] call BIS_fnc_relPos;
-                          
-                          // DEBUG -------------------------------------------------------------------------------------
-                          if(_debug) then {
-                            ["CMP %2 - No more empty buildings (CMP-01), lets patrol! calling ALIVE_fnc_ambientMovement, _guardRadius: %1", _guardRadius, _faction] call ALiVE_fnc_dump;
-                          };
-                          // DEBUG -------------------------------------------------------------------------------------
-	                    };
-
-	                    if !(surfaceIsWater _position) then {
-
-	                        private _profiles = [_group, _position, random(360), false, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-
-	                        {
-	                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-	                                [_x, "setActiveCommand", [_command,"spawn",_radius]] call ALIVE_fnc_profileEntity;
-	                            };
-	                        } foreach _profiles;
-
-	                        _countProfiles = _countProfiles + count _profiles;
-	                        _totalCount = _totalCount + 1;
-
-	                    };
+                        _command = "ALIVE_fnc_ambientMovement";
+                        // _radius = [200,"SAFE",[0,0,0]];
+                        _radius = [_guardRadius,"SAFE",[0,0,0]];
+                      _position = [position _logic, random((_radius select 0) + ((_radius select 0)/0.25)), random(360)] call BIS_fnc_relPos;
+                      
+                      // DEBUG -------------------------------------------------------------------------------------
+                      if(_debug) then {
+                        ["CMP %2 - No more empty buildings (CMP-01), lets patrol! calling ALIVE_fnc_ambientMovement, _guardRadius: %1", _guardRadius, _faction] call ALiVE_fnc_dump;
+                      };
+                      // DEBUG -------------------------------------------------------------------------------------
                     };
 
+                    if !(surfaceIsWater _position) then {
+
+                        private _profiles = [_group, _position, random(360), false, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+
+                        {
+                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                                [_x, "setActiveCommand", [_command,"spawn",_radius]] call ALIVE_fnc_profileEntity;
+                            };
+                        } foreach _profiles;
+
+                        _countProfiles = _countProfiles + count _profiles;
+                        _totalCount = _totalCount + 1;
+
+                    };
                 };
             };
 
