@@ -659,9 +659,9 @@ ALiVE_fnc_INS_recruit = {
                 // Add CQB
                 [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
-                // Recruit 5 times
+                // Run recruitment attempts while the HQ survives.
                 [_pos,_size,_id,_faction,_HQ,_sides,_agents,_forceLimit,_recruitCycleMin,_recruitCycleMax,_opcomFactions] spawn {
-                    private ["_pos","_size","_id","_faction","_targetBuilding","_sides","_agents","_created","_forceLimit","_recruitCycleMin","_recruitCycleMax","_opcomFactions","_currentForce"];
+                    private ["_pos","_size","_id","_faction","_targetBuilding","_sides","_agents","_forceLimit","_recruitCycleMin","_recruitCycleMax","_opcomFactions","_currentForce"];
 
                     _pos = _this select 0;
                     _size = _this select 1;
@@ -676,15 +676,13 @@ ALiVE_fnc_INS_recruit = {
                     _opcomFactions = _this select 10;
                     _allSides = ["EAST","WEST","GUER"];
 
-                    _created = 0;
-
                     for "_i" from 1 to (count _agents) do {
 
                         // Delay between recruitment attempts.
                         sleep (_recruitCycleMin + random (_recruitCycleMax - _recruitCycleMin));
 
-                        // Only recruit if there is an HQ existing and up to 5 groups at max to not spam the map
-                        if (!alive _HQ || {_created >= 5}) exitwith {};
+                        // Only recruit while the HQ still exists.
+                        if (!alive _HQ) exitwith {};
 
                         _currentForce = -1;
                         if (_forceLimit > -1 && {!isnil "ALIVE_profileHandler"}) then {
@@ -704,7 +702,6 @@ ALiVE_fnc_INS_recruit = {
 	                            [_pos,_sides, 10] call ALiVE_fnc_updateSectorHostility;
 	                            [_pos,_allSides - _sides, -10] call ALiVE_fnc_updateSectorHostility;
 
-	                            _created = _created + 1;
                             };
                         };
                     };
