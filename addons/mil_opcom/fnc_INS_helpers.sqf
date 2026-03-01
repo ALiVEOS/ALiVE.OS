@@ -581,7 +581,7 @@ ALiVE_fnc_INS_depot = {
 };
 
 ALiVE_fnc_INS_recruit = {
-                private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_HQ","_CQB","_objective"];
+                private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_HQ","_CQB","_objective","_center","_opcomID","_opcom","_forceLimit","_recruitCycleMin","_recruitCycleMax","_recruitAttemptLimit","_recruitSuccessChance","_opcomFactions"];
 
                 _timeTaken = _this select 0;
                 _pos = _this select 1;
@@ -595,6 +595,32 @@ ALiVE_fnc_INS_recruit = {
                 _side = _faction call ALiVE_fnc_factionSide;
                 _allSides = ["EAST","WEST","GUER"];
                 _objective = [[],"getobjectivebyid",_id] call ALiVE_fnc_OPCOM;
+                _opcomID = [_objective,"opcomID",""] call ALiVE_fnc_HashGet;
+                _opcom = nil;
+                _forceLimit = -1;
+                _recruitCycleMin = 1800;
+                _recruitCycleMax = 3600;
+                _recruitAttemptLimit = 0;
+                _recruitSuccessChance = 0.5;
+                _opcomFactions = [_faction];
+
+                {
+                    if (([_x,"opcomID",""] call ALiVE_fnc_HashGet) == _opcomID) exitwith {
+                        _opcom = _x;
+                    };
+                } foreach (missionNameSpace getVariable ["OPCOM_instances",[]]);
+
+                if !(isnil "_opcom") then {
+                    _forceLimit = floor ([_opcom,"asymForceLimit",-1] call ALiVE_fnc_HashGet);
+                    _recruitCycleMin = (([_opcom,"recruitCycleMin",30] call ALiVE_fnc_HashGet) max 0) * 60;
+                    _recruitCycleMax = (([_opcom,"recruitCycleMax",60] call ALiVE_fnc_HashGet) max 0) * 60;
+                    _recruitAttemptLimit = floor ([_opcom,"recruitAttemptLimit",0] call ALiVE_fnc_HashGet);
+                    _recruitAttemptLimit = _recruitAttemptLimit max -1;
+                    _recruitSuccessChance = ((([_opcom,"recruitSuccessChance",50] call ALiVE_fnc_HashGet) max 0) min 100) / 100;
+                    _opcomFactions = [_opcom,"factions",[_faction]] call ALiVE_fnc_HashGet;
+                };
+
+                if (_recruitCycleMax < _recruitCycleMin) then {_recruitCycleMax = _recruitCycleMin};
 
                 // Store center position
                 _center = _pos;
@@ -638,9 +664,9 @@ ALiVE_fnc_INS_recruit = {
                 // Add CQB
                 [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
-                // Recruit 5 times
-                [_pos,_size,_id,_faction,_HQ,_sides,_agents] spawn {
-                    private ["_pos","_size","_id","_faction","_targetBuilding","_sides","_agents","_created"];
+                // Run recruitment attempts while the HQ survives.
+                [_pos,_size,_id,_faction,_HQ,_sides,_agents,_forceLimit,_recruitCycleMin,_recruitCycleMax,_recruitAttemptLimit,_recruitSuccessChance,_opcomFactions] spawn {
+                    private ["_pos","_size","_id","_faction","_targetBuilding","_sides","_agents","_forceLimit","_recruitCycleMin","_recruitCycleMax","_recruitAttemptLimit","_recruitSuccessChance","_opcomFactions","_currentForce","_attemptsRemaining"];
 
                     _pos = _this select 0;
                     _size = _this select 1;
@@ -649,29 +675,49 @@ ALiVE_fnc_INS_recruit = {
                     _HQ = _this select 4;
                     _sides = _this select 5;
                     _agents = _this select 6;
+                    _forceLimit = _this select 7;
+                    _recruitCycleMin = _this select 8;
+                    _recruitCycleMax = _this select 9;
+                    _recruitAttemptLimit = _this select 10;
+                    _recruitSuccessChance = _this select 11;
+                    _opcomFactions = _this select 12;
                     _allSides = ["EAST","WEST","GUER"];
 
-                    _created = 0;
+                    _attemptsRemaining = if (_recruitAttemptLimit == 0) then {count _agents} else {_recruitAttemptLimit};
 
-                    for "_i" from 1 to (count _agents) do {
+                    while {alive _HQ && {_attemptsRemaining != 0}} do {
 
-                        // Delay 30-60 mins before a recruitment takes place.
-                        sleep (1800 + random 1800);
+                        // Delay between recruitment attempts.
+                        sleep (_recruitCycleMin + random (_recruitCycleMax - _recruitCycleMin));
 
-                        // Only recruit if there is an HQ existing and up to 5 groups at max to not spam the map
-                        if (!alive _HQ || {_created >= 5}) exitwith {};
+                        // Only recruit while the HQ still exists.
+                        if (!alive _HQ) exitwith {};
 
-                        // 50/50 chance the agent turns into insurgents
-                        if (random 1 < 0.5) then {
-	                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
-	                        _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
-	                        {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
+                        // Positive values are finite attempt counts, negative values are unlimited.
+                        if (_attemptsRemaining > 0) then {
+                            _attemptsRemaining = _attemptsRemaining - 1;
+                        };
 
-	                        [_pos,_sides, 10] call ALiVE_fnc_updateSectorHostility;
-	                        [_pos,_allSides - _sides, -10] call ALiVE_fnc_updateSectorHostility;
+                        _currentForce = -1;
+                        if (_forceLimit > -1 && {!isnil "ALIVE_profileHandler"}) then {
+                            _currentForce = 0;
+                            {
+                                _currentForce = _currentForce + count ([ALIVE_profileHandler, "getProfilesByFaction",_x] call ALIVE_fnc_profileHandler);
+                            } foreach _opcomFactions;
+                        };
 
-	                        _created = _created + 1;
-                         };
+                        if !(_forceLimit > -1 && {_currentForce >= _forceLimit}) then {
+                            // Use the configured chance for a successful recruitment spawn.
+                            if (random 1 < _recruitSuccessChance) then {
+	                            _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
+	                            _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+	                            {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
+
+	                            [_pos,_sides, 10] call ALiVE_fnc_updateSectorHostility;
+	                            [_pos,_allSides - _sides, -10] call ALiVE_fnc_updateSectorHostility;
+
+                            };
+                        };
                     };
                 };
 
