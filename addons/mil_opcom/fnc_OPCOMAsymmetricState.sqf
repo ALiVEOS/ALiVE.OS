@@ -174,10 +174,6 @@ if (_targetString != "" && {_targetSide == ""}) then {
     } forEach ([_x,"factions",[]] call ALIVE_fnc_hashGet);
 } forEach _handlers;
 
-if (count _factions == 0 && {_targetFaction != ""}) then {
-    _factions pushBackUnique _targetFaction;
-};
-
 [_state,"factions",_factions] call ALIVE_fnc_hashSet;
 [_state,"handlers",_handlers] call ALIVE_fnc_hashSet;
 
