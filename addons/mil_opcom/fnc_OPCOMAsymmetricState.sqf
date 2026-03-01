@@ -5,6 +5,7 @@ SCRIPT(OPCOMAsymmetricState);
 Function: ALiVE_fnc_OPCOMAsymmetricState
 Description:
 Returns installation and profiled force counts for asymmetric OPCOM instances.
+Needs to run serverside.
 
 Parameters:
 Any - Optional selector. Supports:
@@ -34,6 +35,7 @@ Hash - State hash with:
     allProfiles
     factions
     handlers
+Nil - On non-server machines
 
 Examples:
 (begin example)
@@ -67,6 +69,11 @@ private [
 _target = objNull;
 if (count _this > 0 && {!isNil {_this select 0}}) then {
     _target = _this select 0;
+};
+
+if !(isServer) exitWith {
+    ["ALiVE_fnc_OPCOMAsymmetricState needs to run serverside"] call ALIVE_fnc_dump;
+    nil
 };
 
 _state = [] call ALIVE_fnc_hashCreate;
