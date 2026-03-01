@@ -142,4 +142,20 @@
     <English>Maximum delay in minutes between asymmetric recruitment attempts.</English>
     <Chinesesimp>非对称招募尝试之间的最大延迟(分钟)。</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUIT_ATTEMPT_LIMIT">
+    <English>Recruit attempt limit:</English>
+    <Chinesesimp>招募尝试上限:</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUIT_ATTEMPT_LIMIT_COMMENT">
+    <English>Number of timed recruitment attempts each HQ gets after setup. Set to 0 for one attempt per attached civilian (default behavior), or -1 for unlimited attempts while the HQ survives.</English>
+    <Chinesesimp>每个招募总部建立后可进行的定时招募尝试次数。设为 0 表示每个关联平民进行一次尝试（默认行为），设为 -1 表示总部存活期间无限尝试。</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUIT_SUCCESS_CHANCE">
+    <English>Recruit success chance (%):</English>
+    <Chinesesimp>招募成功率(%):</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUIT_SUCCESS_CHANCE_COMMENT">
+    <English>Chance per recruitment attempt that a new insurgent group is successfully created. Use 0 to disable recruitment spawns or 100 to make every attempt succeed.</English>
+    <Chinesesimp>每次招募尝试成功创建一个新 insurgent 小组的概率。设为 0 可禁用招募生成，设为 100 则每次尝试都成功。</Chinesesimp>
+</Key>
 </Container></Package></Project>

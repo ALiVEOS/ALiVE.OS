@@ -500,6 +500,20 @@ class CfgVehicles {
                                 typeName = "NUMBER";
                                 defaultValue = 60;
                         };
+                        class recruitAttemptLimit
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_RECRUIT_ATTEMPT_LIMIT";
+                                description = "$STR_ALIVE_OPCOM_RECRUIT_ATTEMPT_LIMIT_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = 0;
+                        };
+                        class recruitSuccessChance
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_RECRUIT_SUCCESS_CHANCE";
+                                description = "$STR_ALIVE_OPCOM_RECRUIT_SUCCESS_CHANCE_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = 50;
+                        };
                 };
                 class ModuleDescription
                 {

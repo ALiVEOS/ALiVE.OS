@@ -142,6 +142,9 @@ switch(_operation) do {
                     _asymForceLimit = floor (_logic getvariable ["asymForceLimit",-1]);
                     _recruitCycleMin = (_logic getvariable ["recruitCycleMin",30]) max 0;
                     _recruitCycleMax = (_logic getvariable ["recruitCycleMax",60]) max _recruitCycleMin;
+                    _recruitAttemptLimit = floor (_logic getvariable ["recruitAttemptLimit",0]);
+                    _recruitAttemptLimit = _recruitAttemptLimit max -1;
+                    _recruitSuccessChance = ((_logic getvariable ["recruitSuccessChance",50]) max 0) min 100;
 
                     _debug = ((_logic getvariable ["debug","false"]) == "true");
                     _persistent = ((_logic getvariable ["persistent","false"]) == "true");
@@ -209,6 +212,8 @@ switch(_operation) do {
                     [_handler, "asymForceLimit",_asymForceLimit] call ALiVE_fnc_HashSet;
                     [_handler, "recruitCycleMin",_recruitCycleMin] call ALiVE_fnc_HashSet;
                     [_handler, "recruitCycleMax",_recruitCycleMax] call ALiVE_fnc_HashSet;
+                    [_handler, "recruitAttemptLimit",_recruitAttemptLimit] call ALiVE_fnc_HashSet;
+                    [_handler, "recruitSuccessChance",_recruitSuccessChance] call ALiVE_fnc_HashSet;
                     [_handler, "opcomID",_opcomID] call ALiVE_fnc_HashSet;
                     [_handler, "debug",_debug] call ALiVE_fnc_HashSet;
                     [_handler, "persistent",_persistent] call ALiVE_fnc_HashSet;
