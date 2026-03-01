@@ -118,4 +118,28 @@
     <English>Minimum of ALiVE civilians needed per objective for a recruitment center to be set up (Asymmetric Warfare only)!</English>
     <Chinesesimp>每个目标需要最少ALiVE平民才能建立招募中心(仅限于非对称战争)!</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_ASYM_FORCE_LIMIT">
+    <English>Asymmetric force cap:</English>
+    <Chinesesimp>非对称部队上限:</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_ASYM_FORCE_LIMIT_COMMENT">
+    <English>Maximum number of insurgent profiles allowed for this asymmetric commander. Set to -1 for no cap.</English>
+    <Chinesesimp>此非对称指挥官允许的 insurgent profile 最大数量。设为 -1 表示不限制。</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUIT_CYCLE_MIN">
+    <English>Recruit cycle min (mins):</English>
+    <Chinesesimp>招募周期最小值(分钟):</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUIT_CYCLE_MIN_COMMENT">
+    <English>Minimum delay in minutes between asymmetric recruitment attempts.</English>
+    <Chinesesimp>非对称招募尝试之间的最小延迟(分钟)。</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUIT_CYCLE_MAX">
+    <English>Recruit cycle max (mins):</English>
+    <Chinesesimp>招募周期最大值(分钟):</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_RECRUIT_CYCLE_MAX_COMMENT">
+    <English>Maximum delay in minutes between asymmetric recruitment attempts.</English>
+    <Chinesesimp>非对称招募尝试之间的最大延迟(分钟)。</Chinesesimp>
+</Key>
 </Container></Package></Project>

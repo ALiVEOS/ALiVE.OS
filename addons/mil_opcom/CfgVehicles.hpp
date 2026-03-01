@@ -479,6 +479,27 @@ class CfgVehicles {
                                 typeName = "NUMBER";
                                 defaultValue = 2;
                         };
+                        class asymForceLimit
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_ASYM_FORCE_LIMIT";
+                                description = "$STR_ALIVE_OPCOM_ASYM_FORCE_LIMIT_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = -1;
+                        };
+                        class recruitCycleMin
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_RECRUIT_CYCLE_MIN";
+                                description = "$STR_ALIVE_OPCOM_RECRUIT_CYCLE_MIN_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = 30;
+                        };
+                        class recruitCycleMax
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_RECRUIT_CYCLE_MAX";
+                                description = "$STR_ALIVE_OPCOM_RECRUIT_CYCLE_MAX_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = 60;
+                        };
                 };
                 class ModuleDescription
                 {
