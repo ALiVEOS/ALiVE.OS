@@ -41,6 +41,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMToggleInstallations.sqf";
                                 RECOMPILE;
                         };
+                        class OPCOMAsymmetricState {
+                                description = "Returns installation and profiled force counts for asymmetric OPCOM instances";
+                                file = "\x\alive\addons\mil_opcom\fnc_OPCOMAsymmetricState.sqf";
+                                RECOMPILE;
+                        };
                         class updateSectorHostility {
                                 description = "Updates the current sector of position with given value";
                                 file = "\x\alive\addons\mil_opcom\fnc_updateSectorHostility.sqf";
