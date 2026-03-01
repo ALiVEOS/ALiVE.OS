@@ -64,7 +64,10 @@ private [
     "_allProfiles"
 ];
 
-_target = if (count _this > 0) then {_this select 0} else {objNull};
+_target = objNull;
+if (count _this > 0 && {!isNil {_this select 0}}) then {
+    _target = _this select 0;
+};
 
 _state = [] call ALIVE_fnc_hashCreate;
 {
