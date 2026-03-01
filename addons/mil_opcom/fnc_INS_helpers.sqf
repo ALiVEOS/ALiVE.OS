@@ -667,22 +667,23 @@ ALiVE_fnc_INS_recruit = {
                 [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
                 // Run recruitment attempts while the HQ survives.
-                [_pos,_size,_id,_faction,_HQ,_sides,_agents,_forceLimit,_recruitCycleMin,_recruitCycleMax,_recruitAttemptLimit,_recruitSuccessChance,_opcomFactions] spawn {
-                    private ["_pos","_size","_id","_faction","_targetBuilding","_sides","_agents","_forceLimit","_recruitCycleMin","_recruitCycleMax","_recruitAttemptLimit","_recruitSuccessChance","_opcomFactions","_currentForce","_attemptsRemaining"];
+                [_timeTaken,_pos,_size,_id,_faction,_HQ,_sides,_agents,_forceLimit,_recruitCycleMin,_recruitCycleMax,_recruitAttemptLimit,_recruitSuccessChance,_opcomFactions] spawn {
+                    private ["_timeTaken","_pos","_size","_id","_faction","_targetBuilding","_sides","_agents","_forceLimit","_recruitCycleMin","_recruitCycleMax","_recruitAttemptLimit","_recruitSuccessChance","_opcomFactions","_currentForce","_attemptsRemaining"];
 
-                    _pos = _this select 0;
-                    _size = _this select 1;
-                    _id = _this select 2;
-                    _faction = _this select 3;
-                    _HQ = _this select 4;
-                    _sides = _this select 5;
-                    _agents = _this select 6;
-                    _forceLimit = _this select 7;
-                    _recruitCycleMin = _this select 8;
-                    _recruitCycleMax = _this select 9;
-                    _recruitAttemptLimit = _this select 10;
-                    _recruitSuccessChance = _this select 11;
-                    _opcomFactions = _this select 12;
+                    _timeTaken = _this select 0;
+                    _pos = _this select 1;
+                    _size = _this select 2;
+                    _id = _this select 3;
+                    _faction = _this select 4;
+                    _HQ = _this select 5;
+                    _sides = _this select 6;
+                    _agents = _this select 7;
+                    _forceLimit = _this select 8;
+                    _recruitCycleMin = _this select 9;
+                    _recruitCycleMax = _this select 10;
+                    _recruitAttemptLimit = _this select 11;
+                    _recruitSuccessChance = _this select 12;
+                    _opcomFactions = _this select 13;
                     _allSides = ["EAST","WEST","GUER"];
 
                     _attemptsRemaining = if (_recruitAttemptLimit == 0) then {count _agents} else {_recruitAttemptLimit};
@@ -1086,4 +1087,3 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
 
     _buildings;
 };
-
