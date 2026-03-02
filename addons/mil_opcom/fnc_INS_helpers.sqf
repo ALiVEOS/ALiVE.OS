@@ -44,6 +44,11 @@ nil
 ALiVE_fnc_INS_updateHostilityByPresence = {
                 params ["_timeTaken","_pos","_insurgentSides",["_baseShift",20],["_allSides",["EAST","WEST","GUER"]]];
 
+                _allSides = [_allSides] call ALiVE_fnc_INS_normalizeHostilitySides;
+                _insurgentSides = [_insurgentSides] call ALiVE_fnc_INS_normalizeHostilitySides;
+
+                if (count _insurgentSides == 0) exitwith {};
+
                 private _elapsed = (time - _timeTaken) max 0;
                 private _durationMultiplier = ((floor (_elapsed / 120)) max 1) min 4;
                 private _shift = _baseShift * _durationMultiplier;
@@ -52,6 +57,35 @@ ALiVE_fnc_INS_updateHostilityByPresence = {
                 // and makes the remaining combatant sides less welcome in the same area.
                 [_pos,_insurgentSides,-_shift] call ALiVE_fnc_updateSectorHostility;
                 [_pos,_allSides - _insurgentSides,_shift] call ALiVE_fnc_updateSectorHostility;
+};
+
+ALiVE_fnc_INS_normalizeHostilitySides = {
+                params [["_sides",[]],["_validSides",["EAST","WEST","GUER"]]];
+
+                if !(_sides isEqualType []) then {
+                    _sides = [_sides];
+                };
+
+                private _normalized = [];
+
+                {
+                    private _sideText = "";
+
+                    if (_x isEqualType east) then {
+                        _sideText = ([[_x] call ALiVE_fnc_sideObjectToNumber] call ALiVE_fnc_sideNumberToText);
+                    } else {
+                        if (_x isEqualType "") then {
+                            _sideText = toUpper _x;
+                            if (_sideText == "RESISTANCE") then {_sideText = "GUER"};
+                        };
+                    };
+
+                    if (_sideText in _validSides) then {
+                        _normalized pushBackUnique _sideText;
+                    };
+                } forEach _sides;
+
+                _normalized
 };
 
 ALiVE_fnc_INS_updateHostilityByInstallations = {
@@ -64,6 +98,11 @@ ALiVE_fnc_INS_updateHostilityByInstallations = {
                     ["_interval",600],
                     ["_allSides",["EAST","WEST","GUER"]]
                 ];
+
+                _allSides = [_allSides] call ALiVE_fnc_INS_normalizeHostilitySides;
+                _insurgentSides = [_insurgentSides] call ALiVE_fnc_INS_normalizeHostilitySides;
+
+                if (count _insurgentSides == 0) exitwith {0};
 
                 private _covertWeight = 0;
                 private _overtWeight = 0;
