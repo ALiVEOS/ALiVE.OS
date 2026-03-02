@@ -226,6 +226,16 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateReward.sqf";
                 RECOMPILE;
             };
+            class taskApplyPopulationEffect {
+                description = "Utility apply civilian hostility changes for Hearts and Minds tasks";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskApplyPopulationEffect.sqf";
+                RECOMPILE;
+            };
+            class taskGetCivilianCluster {
+                description = "Utility get a civilian settlement cluster for Hearts and Minds tasking";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetCivilianCluster.sqf";
+                RECOMPILE;
+            };
             class taskGetInsurgencyLocation {
                 description = "Utility to find insurgency location from asymetrical opcoms";
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetInsurgencyLocation.sqf";
@@ -324,6 +334,21 @@ class CfgFunctions {
             class taskWiretap {
                 description = "Task Wiretap";
                 file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskWiretap.sqf";
+                RECOMPILE;
+            };
+            class taskAidDelivery {
+                description = "Task Aid Delivery";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskAidDelivery.sqf";
+                RECOMPILE;
+            };
+            class taskMeetLocalLeader {
+                description = "Task Meet Local Leader";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskMeetLocalLeader.sqf";
+                RECOMPILE;
+            };
+            class taskRepairCriticalService {
+                description = "Task Repair Critical Service";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskRepairCriticalService.sqf";
                 RECOMPILE;
             };
             class taskDisable {
