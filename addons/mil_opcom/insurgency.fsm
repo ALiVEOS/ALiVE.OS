@@ -322,6 +322,7 @@ class FSM
                          "    [_objective,""agents"",_agents] call ALiVE_fnc_HashSet;" \n
                          "};" \n
                          "" \n
+                         "[_objective,_center,[_side],[[""factory"",_factory],[""HQ"",_HQ],[""depot"",_depot],[""roadblocks"",_roadblocks]]] call ALiVE_fnc_INS_updateHostilityByInstallations;" \n
                          "" \n
                          "// Determine hostility" \n
                          "_enemies = []; {_enemies = _enemies + ([_entitiesBySide,_x,[]] call ALiVE_fnc_HashGet)} foreach _sidesEnemy;" \n
@@ -339,8 +340,8 @@ class FSM
                          "    deletemarker format[""Depot_%1"",getposATL _depot];" \n
                          "    deletemarker format[""HQ_%1"",getposATL _HQ];" \n
                          "" \n
-                         "    [_center,_sidesFriendly, 50] call ALiVE_fnc_updateSectorHostility;" \n
-                         "    [_center,_sidesEnemy, -50] call ALiVE_fnc_updateSectorHostility;" \n
+                         "    [_center,[_side], 50] call ALiVE_fnc_updateSectorHostility;" \n
+                         "    [_center,[""EAST"",""WEST"",""GUER""] - [_side], -50] call ALiVE_fnc_updateSectorHostility;" \n
                          "" \n
                          "    _guards = [_objective,""guards""] call ALiVE_fnc_HashRem;" \n
                          "};" \n

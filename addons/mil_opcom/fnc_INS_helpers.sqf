@@ -42,14 +42,61 @@ nil
 ---------------------------------------------------------------------------- */
 
 ALiVE_fnc_INS_updateHostilityByPresence = {
-                params ["_timeTaken","_pos","_sides",["_baseShift",20],["_allSides",["EAST","WEST","GUER"]]];
+                params ["_timeTaken","_pos","_insurgentSides",["_baseShift",20],["_allSides",["EAST","WEST","GUER"]]];
 
                 private _elapsed = (time - _timeTaken) max 0;
                 private _durationMultiplier = ((floor (_elapsed / 120)) max 1) min 4;
                 private _shift = _baseShift * _durationMultiplier;
 
-                [_pos,_sides,_shift] call ALiVE_fnc_updateSectorHostility;
-                [_pos,_allSides - _sides,-_shift] call ALiVE_fnc_updateSectorHostility;
+                // Sustained insurgent activity slowly normalizes support for the insurgency
+                // and makes the remaining combatant sides less welcome in the same area.
+                [_pos,_insurgentSides,-_shift] call ALiVE_fnc_updateSectorHostility;
+                [_pos,_allSides - _insurgentSides,_shift] call ALiVE_fnc_updateSectorHostility;
+};
+
+ALiVE_fnc_INS_updateHostilityByInstallations = {
+                params [
+                    "_objective",
+                    "_pos",
+                    "_insurgentSides",
+                    ["_installations",[]],
+                    ["_interval",600],
+                    ["_allSides",["EAST","WEST","GUER"]]
+                ];
+
+                private _supportWeight = 0;
+
+                {
+                    _x params [["_type",""],["_installation",objNull]];
+
+                    if (alive _installation) then {
+                        switch (toLower _type) do {
+                            case "hq": {_supportWeight = _supportWeight + 2;};
+                            case "depot";
+                            case "roadblocks";
+                            case "factory": {_supportWeight = _supportWeight + 1;};
+                        };
+                    };
+                } forEach _installations;
+
+                if (_supportWeight <= 0) exitwith {
+                    [_objective,"presenceHostilityTick"] call ALiVE_fnc_HashRem;
+                };
+
+                private _lastUpdate = [_objective,"presenceHostilityTick",-1] call ALiVE_fnc_HashGet;
+                if (_lastUpdate < 0) exitwith {
+                    [_objective,"presenceHostilityTick",time] call ALiVE_fnc_HashSet;
+                };
+
+                if (time - _lastUpdate < _interval) exitwith {};
+
+                [_objective,"presenceHostilityTick",time] call ALiVE_fnc_HashSet;
+
+                private _insurgentShift = -(_supportWeight min 4);
+                private _otherShift = (ceil (_supportWeight / 2)) min 2;
+
+                [_pos,_insurgentSides,_insurgentShift] call ALiVE_fnc_updateSectorHostility;
+                [_pos,_allSides - _insurgentSides,_otherShift] call ALiVE_fnc_updateSectorHostility;
 };
 
 ALiVE_fnc_INS_assault = {
@@ -82,7 +129,7 @@ ALiVE_fnc_INS_assault = {
                 _event = ['OPCOM_CAPTURE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                [_timeTaken,_pos,_sides,20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
+                [_timeTaken,_pos,[_side],20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
 };
 
 ALiVE_fnc_INS_ambush = {
@@ -131,7 +178,7 @@ ALiVE_fnc_INS_ambush = {
                 _event = ['OPCOM_RECON',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                [_timeTaken,_pos,_sides,20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
+                [_timeTaken,_pos,[_side],20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
 
                 // Wait 15 minutes for any enemy vehicles to pass before reassigning
                 _timeTaken = time; waituntil {time - _timeTaken > 900};
@@ -181,7 +228,7 @@ ALiVE_fnc_INS_retreat = {
                 [_objective,"actionsFulfilled",[]] call ALiVE_fnc_HashSet;
 
                 // Reduce hostility level after retreat
-                [_timeTaken,_pos,_sides,20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
+                [_timeTaken,_pos,[_side],20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
 
                 _event = ['OPCOM_DEFEND',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
@@ -248,7 +295,7 @@ ALiVE_fnc_INS_factory = {
                 _event = ['OPCOM_TERRORIZE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                [_timeTaken,_pos,_sides,20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
+                [_timeTaken,_pos,[_side],20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
 };
 
 ALiVE_fnc_INS_ied = {
@@ -307,7 +354,7 @@ ALiVE_fnc_INS_ied = {
                 _event = ['OPCOM_TERRORIZE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                [_timeTaken,_pos,_sides,20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
+                [_timeTaken,_pos,[_side],20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
 };
 
 ALiVE_fnc_INS_suicide = {
@@ -362,7 +409,7 @@ ALiVE_fnc_INS_suicide = {
                 _event = ['OPCOM_TERRORIZE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                [_timeTaken,_pos,_sides,20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
+                [_timeTaken,_pos,[_side],20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
 };
 
 ALiVE_fnc_INS_sabotage = {
@@ -404,7 +451,7 @@ ALiVE_fnc_INS_sabotage = {
                 _event = ['OPCOM_TERRORIZE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                [_timeTaken,_pos,_sides,20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
+                [_timeTaken,_pos,[_side],20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
 
                 // Wait 15 minutes for Sabotage to happen
                 _timeTaken = time; waituntil {time - _timeTaken > 900};
@@ -521,7 +568,7 @@ ALiVE_fnc_INS_roadblocks = {
                 _event = ['OPCOM_RESERVE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                [_timeTaken,_pos,_sides,20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
+                [_timeTaken,_pos,[_side],20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
 };
 
 ALiVE_fnc_INS_depot = {
@@ -579,7 +626,7 @@ ALiVE_fnc_INS_depot = {
                 _event = ['OPCOM_RESERVE',[_side,_objective],"OPCOM"] call ALIVE_fnc_event;
                 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
-                [_timeTaken,_pos,_sides,20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
+                [_timeTaken,_pos,[_side],20,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
 };
 
 ALiVE_fnc_INS_recruit = {
@@ -716,7 +763,7 @@ ALiVE_fnc_INS_recruit = {
 	                            _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 	                            {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
 
-	                            [_timeTaken,_pos,_sides,10,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
+	                            [_timeTaken,_pos,[_side],10,_allSides] call ALiVE_fnc_INS_updateHostilityByPresence;
 
                             };
                         };
@@ -1018,11 +1065,11 @@ ALIVE_fnc_INS_buildingKilledEH = {
     } foreach OPCOM_instances;
 
     if !(isnil "_opcom") then {
-        _enemy = [_opcom,"sidesenemy",[]] call ALiVE_fnc_HashGet;
-        _friendly = [_opcom,"sidesfriendly",[]] call ALiVE_fnc_HashGet;
+        private _opcomSide = [_opcom,"side",""] call ALiVE_fnc_HashGet;
+        private _allSides = ["EAST","WEST","GUER"];
 
-        [_pos,_friendly, 50] call ALiVE_fnc_updateSectorHostility;
-        [_pos,_enemy, -50] call ALiVE_fnc_updateSectorHostility;
+        [_pos,[_opcomSide], 50] call ALiVE_fnc_updateSectorHostility;
+        [_pos,_allSides - [_opcomSide], -50] call ALiVE_fnc_updateSectorHostility;
     };
 };
 
