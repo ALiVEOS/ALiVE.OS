@@ -10,7 +10,7 @@ Select a civilian settlement cluster for Hearts and Minds tasking.
 Parameters:
 
 Returns:
-Array - [cluster, hostility]
+Array - [cluster, hostility, supportState, isOnCooldown]
 
 Examples:
 (begin example)
@@ -26,7 +26,7 @@ OpenAI
 params [
     ["_taskLocation", [], [[]]],
     ["_taskLocationType", "Short", [""]],
-    ["_taskSide", "", [""]],
+    ["_taskSide", ""],
     ["_minHostility", -100000, [0]],
     ["_maxHostility", 100000, [0]],
     ["_taskFaction", "", [""]],
@@ -75,7 +75,14 @@ private _clusterIDs = ALIVE_clustersCivSettlement select 1;
             if (!_isDuplicate) then {
                 private _hostilityHash = [_cluster, "hostility", []] call ALIVE_fnc_hashGet;
                 private _hostility = [_hostilityHash, _sideText, 0] call ALIVE_fnc_hashGet;
-                private _entry = [_cluster, _hostility];
+                private _supportState = [_cluster, _sideText] call ALIVE_fnc_taskGetCivilianSupportState;
+                private _isOnCooldown = false;
+
+                if !(_supportState isEqualTo []) then {
+                    _isOnCooldown = [_supportState, "cooldownUntil", 0] call ALIVE_fnc_hashGet > serverTime;
+                };
+
+                private _entry = [_cluster, _hostility, _supportState, _isOnCooldown];
 
                 _eligibleClusters pushBack _entry;
 
@@ -87,7 +94,14 @@ private _clusterIDs = ALIVE_clustersCivSettlement select 1;
     };
 } forEach _clusterIDs;
 
-private _candidates = if (count _preferredClusters > 0) then {_preferredClusters} else {_eligibleClusters};
+private _preferredClustersAvailable = _preferredClusters select {!(_x select 3)};
+private _eligibleClustersAvailable = _eligibleClusters select {!(_x select 3)};
+private _candidates = switch (true) do {
+    case (count _preferredClustersAvailable > 0): {_preferredClustersAvailable};
+    case (count _preferredClusters > 0): {_preferredClusters};
+    case (count _eligibleClustersAvailable > 0): {_eligibleClustersAvailable};
+    default {_eligibleClusters};
+};
 if (_candidates isEqualTo []) exitWith {[]};
 
 private _sortedClusters = [_candidates, [_taskLocation], {

@@ -231,9 +231,19 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskApplyPopulationEffect.sqf";
                 RECOMPILE;
             };
+            class taskGetCivilianSupportState {
+                description = "Utility get or create persistent civilian support state for a settlement";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetCivilianSupportState.sqf";
+                RECOMPILE;
+            };
             class taskGetCivilianCluster {
                 description = "Utility get a civilian settlement cluster for Hearts and Minds tasking";
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetCivilianCluster.sqf";
+                RECOMPILE;
+            };
+            class taskUpdateCivilianSupportState {
+                description = "Utility update persistent civilian support state for Hearts and Minds tasks";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskUpdateCivilianSupportState.sqf";
                 RECOMPILE;
             };
             class taskGetInsurgencyLocation {

@@ -61,7 +61,13 @@ switch (_taskState) do {
         if (_clusterData isEqualTo []) exitWith {["C2ISTAR - Task AidDelivery - No civilian settlement found!"] call ALiVE_fnc_Dump};
 
         private _cluster = _clusterData select 0;
+        private _supportState = [_clusterData, 2, []] call BIS_fnc_param;
         private _clusterCenter = [_cluster, "center", []] call ALIVE_fnc_hashGet;
+        private _clusterID = [_cluster, "clusterID", ""] call ALIVE_fnc_hashGet;
+        private _supportPhase = "Stabilize";
+        if !(_supportState isEqualTo []) then {
+            _supportPhase = [_supportState, "phase", "Stabilize"] call ALIVE_fnc_hashGet;
+        };
         if (_clusterCenter isEqualTo []) exitWith {["C2ISTAR - Task AidDelivery - Invalid civilian cluster center!"] call ALiVE_fnc_Dump};
 
         private _contactPosition = [_clusterCenter, 5, 30, 3, 0, 0.25, 0] call BIS_fnc_findSafePos;
@@ -184,6 +190,10 @@ switch (_taskState) do {
         [_taskParams, "cleanup", [_contact, _aidCrate]] call ALIVE_fnc_hashSet;
         [_taskParams, "completionVar", _completionVar] call ALIVE_fnc_hashSet;
         [_taskParams, "supportValue", 8] call ALIVE_fnc_hashSet;
+        [_taskParams, "clusterID", _clusterID] call ALIVE_fnc_hashSet;
+        [_taskParams, "supportPhase", _supportPhase] call ALIVE_fnc_hashSet;
+        [_taskParams, "taskType", "AidDelivery"] call ALIVE_fnc_hashSet;
+        [_taskParams, "cooldownDuration", 1800] call ALIVE_fnc_hashSet;
         [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
 
         _result = [_tasks, _taskParams];
@@ -276,7 +286,16 @@ switch (_taskState) do {
                 ["chat_success", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
                 [_currentTaskDialog, _taskSide, _taskFaction] call ALIVE_fnc_taskCreateReward;
 
-                [_taskPosition, _taskSide, [_params, "supportValue", 8] call ALIVE_fnc_hashGet] call ALIVE_fnc_taskApplyPopulationEffect;
+                [
+                    _taskPosition,
+                    _taskSide,
+                    [_params, "supportValue", 8] call ALIVE_fnc_hashGet,
+                    [
+                        [_params, "clusterID", ""] call ALIVE_fnc_hashGet,
+                        [_params, "taskType", "AidDelivery"] call ALIVE_fnc_hashGet,
+                        [_params, "cooldownDuration", 1800] call ALIVE_fnc_hashGet
+                    ]
+                ] call ALIVE_fnc_taskApplyPopulationEffect;
 
                 [_params] call _cleanupObjects;
             };
