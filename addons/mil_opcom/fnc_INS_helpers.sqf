@@ -60,43 +60,60 @@ ALiVE_fnc_INS_updateHostilityByInstallations = {
                     "_pos",
                     "_insurgentSides",
                     ["_installations",[]],
+                    ["_currentHostility",0],
                     ["_interval",600],
                     ["_allSides",["EAST","WEST","GUER"]]
                 ];
 
-                private _supportWeight = 0;
+                private _covertWeight = 0;
+                private _overtWeight = 0;
 
                 {
                     _x params [["_type",""],["_installation",objNull]];
 
                     if (alive _installation) then {
                         switch (toLower _type) do {
-                            case "hq": {_supportWeight = _supportWeight + 2;};
+                            case "factory": {_covertWeight = _covertWeight + 2;};
+                            case "ied";
+                            case "sabotage": {_covertWeight = _covertWeight + 1;};
+                            case "hq": {_overtWeight = _overtWeight + 2;};
                             case "depot";
-                            case "roadblocks";
-                            case "factory": {_supportWeight = _supportWeight + 1;};
+                            case "roadblocks": {_overtWeight = _overtWeight + 1;};
                         };
                     };
                 } forEach _installations;
 
-                if (_supportWeight <= 0) exitwith {
+                if ((_covertWeight + _overtWeight) <= 0) exitwith {
                     [_objective,"presenceHostilityTick"] call ALiVE_fnc_HashRem;
+                    0
                 };
 
                 private _lastUpdate = [_objective,"presenceHostilityTick",-1] call ALiVE_fnc_HashGet;
                 if (_lastUpdate < 0) exitwith {
                     [_objective,"presenceHostilityTick",time] call ALiVE_fnc_HashSet;
+                    0
                 };
 
-                if (time - _lastUpdate < _interval) exitwith {};
+                if (time - _lastUpdate < _interval) exitwith {0};
 
                 [_objective,"presenceHostilityTick",time] call ALiVE_fnc_HashSet;
 
-                private _insurgentShift = -(_supportWeight min 4);
+                private _supportWeight = if (_currentHostility > 0) then {
+                    // Hostile populations only soften through lower-signature insurgent activity.
+                    (_covertWeight * 2) min 4
+                } else {
+                    (_covertWeight + _overtWeight) min 4
+                };
+
+                if (_supportWeight <= 0) exitwith {0};
+
+                private _insurgentShift = -_supportWeight;
                 private _otherShift = (ceil (_supportWeight / 2)) min 2;
 
                 [_pos,_insurgentSides,_insurgentShift] call ALiVE_fnc_updateSectorHostility;
                 [_pos,_allSides - _insurgentSides,_otherShift] call ALiVE_fnc_updateSectorHostility;
+
+                _insurgentShift
 };
 
 ALiVE_fnc_INS_assault = {

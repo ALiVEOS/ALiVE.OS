@@ -322,14 +322,14 @@ class FSM
                          "    [_objective,""agents"",_agents] call ALiVE_fnc_HashSet;" \n
                          "};" \n
                          "" \n
-                         "[_objective,_center,[_side],[[""factory"",_factory],[""HQ"",_HQ],[""depot"",_depot],[""roadblocks"",_roadblocks]]] call ALiVE_fnc_INS_updateHostilityByInstallations;" \n
+                         "_objectiveHostility = [_clusterHostility,_side,0] call ALiVE_fnc_HashGet;" \n
+                         "_objectiveHostility = _objectiveHostility + ([_objective,_center,[_side],[[""factory"",_factory],[""sabotage"",_sabotage],[""ied"",_ied],[""HQ"",_HQ],[""depot"",_depot],[""roadblocks"",_roadblocks]],_objectiveHostility] call ALiVE_fnc_INS_updateHostilityByInstallations);" \n
                          "" \n
                          "// Determine hostility" \n
                          "_enemies = []; {_enemies = _enemies + ([_entitiesBySide,_x,[]] call ALiVE_fnc_HashGet)} foreach _sidesEnemy;" \n
                          "_friendlies = []; {_friendlies = _friendlies + ([_entitiesBySide,_x,[]] call ALiVE_fnc_HashGet)} foreach _sidesFriendly;" \n
                          "" \n
                          "_troopsHostility = if (count _enemies <= 0) then {-100} else {((count _enemies)*10) - ((count _friendlies)*10)};" \n
-                         "_objectiveHostility = [_clusterHostility,_side,0] call ALiVE_fnc_HashGet;" \n
                          "" \n
                          "_hostility = _troopsHostility + _objectiveHostility;" \n
                          "" \n
@@ -410,7 +410,7 @@ class FSM
                          "    if (_hostility >= 100 && {count _actionsFulfilled > 0}) then {_orders = ""defend""}  else {_orders = ""terrorize""};" \n
                          "    if (_hostility >= 20 && {_hostility < 100}) then {_orders = ""terrorize""};" \n
                          "    if (_hostility >= -50 && {_hostility < 20}) then {_orders = ""attack""};" \n
-                         "    if (_hostility < -50) then {_orders = ""reserve""};" \n
+                         "    if (_hostility < -50) then {if (_objectiveHostility < 0) then {_orders = ""reserve""} else {_orders = ""terrorize""}};" \n
                          "" \n
                          "    if !(isnil ""_orders"") then {[_objective,""opcom_orders"",_orders] call ALiVE_fnc_HashSet};" \n
                          "};" \n
@@ -752,7 +752,7 @@ class FSM
                 {
                         name = "ACTIONS___IEDS_SUICIDERS";
                         itemno = 13;
-                        init = /*%FSM<STATEINIT""">*/"private [""_actions"",""_actionsFulfilled"",""_possibleTypes"",""_type"",""_types"",""_agents"",""_state""];" \n
+                        init = /*%FSM<STATEINIT""">*/"private [""_actions"",""_actionsFulfilled"",""_possibleTypes"",""_type"",""_types"",""_agents"",""_state"",""_factory""];" \n
                          "" \n
                          "_actions = [_objective,""actions""] call ALiVE_fnc_HashGet;" \n
                          "_actionsFulfilled = [_objective,""actionsFulfilled"",[]] call ALiVE_fnc_HashGet;" \n
@@ -772,8 +772,9 @@ class FSM
                          "" \n
                          "_type = if (count _unusedActions > 0) then {(selectRandom _unusedActions)} else {""idle""};" \n
                          "" \n
-                         "// Overwrite type with factory if fitting" \n
-                         "// if (!alive ([[],""convertObject"",[_objective,""factory"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM) && {_size >= 200}) then {_type = ""factory""};" \n
+                         "// Force a covert foothold first when civilians still oppose the insurgents" \n
+                         "_factory = [[],""convertObject"",[_objective,""factory"",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;" \n
+                         "if (_objectiveHostility > 0 && {!alive _factory}) then {_type = ""factory""};" \n
                          "" \n
                          "" \n
                          "" \n
@@ -1006,7 +1007,8 @@ class FSM
                          "_type = if (count _unusedActions > 0) then {(selectRandom _unusedActions)} else {""idle""};" \n
                          "" \n
                          "// Overwrite type with Recruitment HQ if fitting" \n
-                         "if (count _agents >= _minAgents && {!(""recruit"" in _actionsFulfilled)}) then {_type = ""recruit""};" \n
+                         "if (_objectiveHostility >= 0) then {_type = ""idle""};" \n
+                         "if (_objectiveHostility < 0 && {count _agents >= _minAgents && {!(""recruit"" in _actionsFulfilled)}}) then {_type = ""recruit""};" \n
                          "" \n
                          "" \n
                          "if (isnil ""_actions"")  then {" \n
