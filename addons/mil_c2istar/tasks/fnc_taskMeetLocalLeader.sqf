@@ -57,7 +57,7 @@ switch (_taskState) do {
         if (count _taskPlayers == 0) exitWith {["C2ISTAR - Task MeetLocalLeader - Wrong input for _taskPlayers!"] call ALiVE_fnc_Dump};
         if (_taskApplyType == "") exitWith {["C2ISTAR - Task MeetLocalLeader - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
 
-        private _clusterData = [_taskLocation, _taskLocationType, _taskSide, 5, 65, _taskFaction, _tasksCurrent] call ALIVE_fnc_taskGetCivilianCluster;
+        private _clusterData = [_taskLocation, _taskLocationType, _taskSide, 5, 65, _taskFaction, _tasksCurrent, false] call ALIVE_fnc_taskGetCivilianCluster;
         if (_clusterData isEqualTo []) exitWith {["C2ISTAR - Task MeetLocalLeader - No civilian settlement found!"] call ALiVE_fnc_Dump};
 
         private _cluster = _clusterData select 0;
@@ -213,6 +213,18 @@ switch (_taskState) do {
             [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
+            [
+                _taskPosition,
+                _taskSide,
+                [_params, "supportValue", 10] call ALIVE_fnc_hashGet,
+                [
+                    [_params, "clusterID", ""] call ALIVE_fnc_hashGet,
+                    [_params, "taskType", "MeetLocalLeader"] call ALIVE_fnc_hashGet,
+                    [_params, "cooldownDuration", 2700] call ALIVE_fnc_hashGet,
+                    "failure"
+                ]
+            ] call ALIVE_fnc_taskApplyPopulationEffect;
+
             [_params] call _cleanupObjects;
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "entity"] call ALIVE_fnc_taskCreateMarkersForPlayers;
@@ -236,7 +248,8 @@ switch (_taskState) do {
                     [
                         [_params, "clusterID", ""] call ALIVE_fnc_hashGet,
                         [_params, "taskType", "MeetLocalLeader"] call ALIVE_fnc_hashGet,
-                        [_params, "cooldownDuration", 2700] call ALIVE_fnc_hashGet
+                        [_params, "cooldownDuration", 2700] call ALIVE_fnc_hashGet,
+                        "success"
                     ]
                 ] call ALIVE_fnc_taskApplyPopulationEffect;
 

@@ -30,7 +30,8 @@ params [
     ["_minHostility", -100000, [0]],
     ["_maxHostility", 100000, [0]],
     ["_taskFaction", "", [""]],
-    ["_tasksCurrent", [], [[]]]
+    ["_tasksCurrent", [], [[]]],
+    ["_allowCooldownFallback", false, [true]]
 ];
 
 if (_taskLocation isEqualTo []) exitWith {[]};
@@ -54,6 +55,7 @@ if !(_sideText in ["EAST", "WEST", "GUER"]) exitWith {[]};
 private _eligibleClusters = [];
 private _preferredClusters = [];
 private _clusterIDs = ALIVE_clustersCivSettlement select 1;
+private _heartsAndMindsTaskTypes = ["AidDelivery", "MeetLocalLeader", "RepairCriticalService"];
 
 {
     private _cluster = [ALIVE_clusterHandler, "getCluster", _x] call ALIVE_fnc_clusterHandler;
@@ -64,10 +66,15 @@ private _clusterIDs = ALIVE_clustersCivSettlement select 1;
         if !(_center isEqualTo []) then {
             private _isDuplicate = false;
 
-            if !(_taskFaction isEqualTo "" || {_tasksCurrent isEqualTo []}) then {
+            if !(_tasksCurrent isEqualTo []) then {
                 _isDuplicate = {
-                    (_x select 4) == _taskFaction &&
+                    private _taskSource = [_x, 12, "", [""]] call BIS_fnc_param;
+                    private _taskSourceParts = [_taskSource, "-"] call CBA_fnc_split;
+
+                    (_x select 2) == _sideText &&
                     {(_x select 8) in ["Created", "Assigned"]} &&
+                    {count _taskSourceParts > 1} &&
+                    {(_taskSourceParts select 1) in _heartsAndMindsTaskTypes} &&
                     {(_x select 3) distance2D _center < 600}
                 } count _tasksCurrent > 0;
             };
@@ -98,9 +105,10 @@ private _preferredClustersAvailable = _preferredClusters select {!(_x select 3)}
 private _eligibleClustersAvailable = _eligibleClusters select {!(_x select 3)};
 private _candidates = switch (true) do {
     case (count _preferredClustersAvailable > 0): {_preferredClustersAvailable};
-    case (count _preferredClusters > 0): {_preferredClusters};
+    case (_allowCooldownFallback && {count _preferredClusters > 0}): {_preferredClusters};
     case (count _eligibleClustersAvailable > 0): {_eligibleClustersAvailable};
-    default {_eligibleClusters};
+    case (_allowCooldownFallback): {_eligibleClusters};
+    default {[]};
 };
 if (_candidates isEqualTo []) exitWith {[]};
 

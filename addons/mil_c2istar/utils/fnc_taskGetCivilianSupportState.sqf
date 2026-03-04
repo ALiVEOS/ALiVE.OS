@@ -72,11 +72,15 @@ private _hostilityHash = [_cluster, "hostility", []] call ALIVE_fnc_hashGet;
 private _hostility = [_hostilityHash, _sideText, 0] call ALIVE_fnc_hashGet;
 private _phase = "Stabilize";
 
-if (_hostility <= 25) then {
-    _phase = "Build";
+if (_hostility <= 0) then {
+    _phase = "Consolidate";
 } else {
-    if (_hostility <= 65) then {
-        _phase = "Engage";
+    if (_hostility <= 25) then {
+        _phase = "Build";
+    } else {
+        if (_hostility <= 65) then {
+            _phase = "Engage";
+        };
     };
 };
 

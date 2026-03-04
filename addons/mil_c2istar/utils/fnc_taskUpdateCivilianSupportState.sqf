@@ -28,7 +28,8 @@ params [
     ["_taskSide", ""],
     ["_taskType", "", [""]],
     ["_supportValue", 0, [0]],
-    ["_cooldownDuration", 0, [0]]
+    ["_cooldownDuration", 0, [0]],
+    ["_outcome", "success", [""]]
 ];
 
 if (_cluster isEqualTo []) exitWith {false};
@@ -36,6 +37,8 @@ if (_cluster isEqualTo []) exitWith {false};
 private _supportState = [_cluster, _taskSide] call ALIVE_fnc_taskGetCivilianSupportState;
 if (_supportState isEqualTo []) exitWith {false};
 
+private _previousTaskType = [_supportState, "lastTaskType", ""] call ALIVE_fnc_hashGet;
+private _sameTaskType = _previousTaskType == _taskType;
 private _support = [_supportState, "support", 0] call ALIVE_fnc_hashGet;
 _support = ((_support + _supportValue) max 0) min 100;
 
@@ -43,7 +46,19 @@ _support = ((_support + _supportValue) max 0) min 100;
 [_supportState, "lastTaskType", _taskType] call ALIVE_fnc_hashSet;
 [_supportState, "lastTaskAt", serverTime] call ALIVE_fnc_hashSet;
 [_supportState, "cooldownUntil", serverTime + (_cooldownDuration max 0)] call ALIVE_fnc_hashSet;
-[_supportState, "successStreak", ([_supportState, "successStreak", 0] call ALIVE_fnc_hashGet) + 1] call ALIVE_fnc_hashSet;
-[_supportState, "failureStreak", 0] call ALIVE_fnc_hashSet;
+
+private _successStreak = [_supportState, "successStreak", 0] call ALIVE_fnc_hashGet;
+private _failureStreak = [_supportState, "failureStreak", 0] call ALIVE_fnc_hashGet;
+
+switch (toLower _outcome) do {
+    case "failure": {
+        [_supportState, "successStreak", 0] call ALIVE_fnc_hashSet;
+        [_supportState, "failureStreak", if (_sameTaskType) then {_failureStreak + 1} else {1}] call ALIVE_fnc_hashSet;
+    };
+    default {
+        [_supportState, "successStreak", if (_sameTaskType) then {_successStreak + 1} else {1}] call ALIVE_fnc_hashSet;
+        [_supportState, "failureStreak", 0] call ALIVE_fnc_hashSet;
+    };
+};
 
 true
