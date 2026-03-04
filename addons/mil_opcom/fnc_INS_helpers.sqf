@@ -88,6 +88,121 @@ ALiVE_fnc_INS_normalizeHostilitySides = {
                 _normalized
 };
 
+ALiVE_fnc_INS_getHostilityPhase = {
+                params [["_hostility",0,[0]]];
+
+                private _phase = "Stabilize";
+
+                if (_hostility <= 0) then {
+                    _phase = "Consolidate";
+                } else {
+                    if (_hostility <= 25) then {
+                        _phase = "Build";
+                    } else {
+                        if (_hostility <= 65) then {
+                            _phase = "Engage";
+                        };
+                    };
+                };
+
+                _phase
+};
+
+ALiVE_fnc_INS_getHeartsAndMindsPressure = {
+                params [
+                    ["_pos", [], [[]]],
+                    ["_insurgentSide", "", ["", east]],
+                    ["_radius", 1200, [0]]
+                ];
+
+                if (
+                    _pos isEqualTo [] ||
+                    {isNil "ALIVE_clusterHandler"} ||
+                    {isNil "ALIVE_clustersCivSettlement"}
+                ) exitwith {[0, "Stabilize", ""]};
+
+                private _insurgentSideText = "";
+                if (_insurgentSide isEqualType east) then {
+                    _insurgentSideText = [[_insurgentSide] call ALiVE_fnc_sideObjectToNumber] call ALiVE_fnc_sideNumberToText;
+                } else {
+                    if (_insurgentSide isEqualType "") then {
+                        _insurgentSideText = toUpper _insurgentSide;
+                        if (_insurgentSideText == "RESISTANCE") then {_insurgentSideText = "GUER"};
+                    };
+                };
+
+                if !(_insurgentSideText in ["EAST","WEST","GUER"]) then {
+                    _insurgentSideText = "EAST";
+                };
+
+                private _cluster = nil;
+                private _closestDistance = _radius max 0;
+
+                {
+                    private _candidateCluster = [ALIVE_clusterHandler, "getCluster", _x] call ALIVE_fnc_clusterHandler;
+
+                    if !(isNil "_candidateCluster") then {
+                        private _center = [_candidateCluster, "center", []] call ALIVE_fnc_hashGet;
+
+                        if !(_center isEqualTo []) then {
+                            private _distance = _pos distance2D _center;
+
+                            if (_distance <= _closestDistance) then {
+                                _closestDistance = _distance;
+                                _cluster = _candidateCluster;
+                            };
+                        };
+                    };
+                } foreach (ALIVE_clustersCivSettlement select 1);
+
+                if (isNil "_cluster") exitwith {[0, "Stabilize", ""]};
+
+                private _heartsAndMinds = if ("heartsAndMinds" in (_cluster select 1)) then {
+                    [_cluster, "heartsAndMinds", []] call ALIVE_fnc_hashGet
+                } else {
+                    []
+                };
+
+                private _hostilityHash = [_cluster, "hostility", []] call ALIVE_fnc_hashGet;
+                private _bestPressure = 0;
+                private _bestPhase = "Stabilize";
+
+                {
+                    if (_x != _insurgentSideText) then {
+                        private _hostility = [_hostilityHash, _x, 0] call ALIVE_fnc_hashGet;
+                        private _phase = [_hostility] call ALiVE_fnc_INS_getHostilityPhase;
+                        private _support = 0;
+
+                        if !(_heartsAndMinds isEqualTo []) then {
+                            if (_x in (_heartsAndMinds select 1)) then {
+                                private _supportState = [_heartsAndMinds, _x, []] call ALIVE_fnc_hashGet;
+                                if !(_supportState isEqualTo []) then {
+                                    _support = [_supportState, "support", 0] call ALIVE_fnc_hashGet;
+                                    _phase = [_supportState, "phase", _phase] call ALIVE_fnc_hashGet;
+                                };
+                            };
+                        };
+
+                        _support = (_support max 0) min 100;
+
+                        private _phaseWeight = switch (_phase) do {
+                            case "Consolidate": {40};
+                            case "Build": {28};
+                            case "Engage": {14};
+                            default {0};
+                        };
+
+                        private _pressure = ((_support * 0.6) + _phaseWeight) min 100;
+
+                        if (_pressure > _bestPressure) then {
+                            _bestPressure = _pressure;
+                            _bestPhase = _phase;
+                        };
+                    };
+                } foreach ["EAST","WEST","GUER"];
+
+                [round _bestPressure, _bestPhase, [_cluster, "clusterID", ""] call ALIVE_fnc_hashGet]
+};
 ALiVE_fnc_INS_updateHostilityByInstallations = {
                 params [
                     "_objective",
@@ -770,8 +885,8 @@ ALiVE_fnc_INS_recruit = {
                 [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
                 // Run recruitment attempts while the HQ survives.
-                [_timeTaken,_pos,_size,_id,_faction,_HQ,_sides,_agents,_forceLimit,_recruitCycleMin,_recruitCycleMax,_recruitAttemptLimit,_recruitSuccessChance,_opcomFactions] spawn {
-                    private ["_timeTaken","_pos","_size","_id","_faction","_targetBuilding","_sides","_agents","_forceLimit","_recruitCycleMin","_recruitCycleMax","_recruitAttemptLimit","_recruitSuccessChance","_opcomFactions","_currentForce","_attemptsRemaining"];
+                [_timeTaken,_pos,_size,_id,_faction,_HQ,_sides,_agents,_forceLimit,_recruitCycleMin,_recruitCycleMax,_recruitAttemptLimit,_recruitSuccessChance,_opcomFactions,_side] spawn {
+                    private ["_timeTaken","_pos","_size","_id","_faction","_targetBuilding","_sides","_agents","_forceLimit","_recruitCycleMin","_recruitCycleMax","_recruitAttemptLimit","_recruitSuccessChance","_opcomFactions","_currentForce","_attemptsRemaining","_side"];
 
                     _timeTaken = _this select 0;
                     _pos = _this select 1;
@@ -787,14 +902,22 @@ ALiVE_fnc_INS_recruit = {
                     _recruitAttemptLimit = _this select 11;
                     _recruitSuccessChance = _this select 12;
                     _opcomFactions = _this select 13;
+                    _side = _this select 14;
                     _allSides = ["EAST","WEST","GUER"];
 
                     _attemptsRemaining = if (_recruitAttemptLimit == 0) then {count _agents} else {_recruitAttemptLimit};
 
                     while {alive _HQ && {_attemptsRemaining != 0}} do {
 
+                        private _hmPressureData = [_pos,_side,(_size + 600) max 900] call ALiVE_fnc_INS_getHeartsAndMindsPressure;
+                        _hmPressureData params [["_hmPressure",0],["_hmPhase","Stabilize"]];
+
+                        private _delayMultiplier = 1 + (0.01 * _hmPressure);
+                        private _adjustedCycleMin = _recruitCycleMin * _delayMultiplier;
+                        private _adjustedCycleMax = _recruitCycleMax * _delayMultiplier;
+
                         // Delay between recruitment attempts.
-                        sleep (_recruitCycleMin + random (_recruitCycleMax - _recruitCycleMin));
+                        sleep (_adjustedCycleMin + random ((_adjustedCycleMax - _adjustedCycleMin) max 0));
 
                         // Only recruit while the HQ still exists.
                         if (!alive _HQ) exitwith {};
@@ -813,8 +936,17 @@ ALiVE_fnc_INS_recruit = {
                         };
 
                         if !(_forceLimit > -1 && {_currentForce >= _forceLimit}) then {
+                            private _phaseChanceMultiplier = switch (_hmPhase) do {
+                                case "Consolidate": {0.35};
+                                case "Build": {0.5};
+                                case "Engage": {0.75};
+                                default {1};
+                            };
+                            private _pressureChanceMultiplier = (1 - (0.007 * _hmPressure)) max 0.2;
+                            private _effectiveRecruitChance = (_recruitSuccessChance * _phaseChanceMultiplier * _pressureChanceMultiplier) min 1;
+
                             // Use the configured chance for a successful recruitment spawn.
-                            if (random 1 < _recruitSuccessChance) then {
+                            if (random 1 < _effectiveRecruitChance) then {
 	                            _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
 	                            _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 	                            {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
@@ -1190,3 +1322,4 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
 
     _buildings;
 };
+
