@@ -51,8 +51,9 @@ private _clusterID = "";
 private _taskType = "";
 private _cooldownDuration = 0;
 private _outcome = "success";
+private _hasSupportData = !(_supportData isEqualTo []);
 
-if !(_supportData isEqualTo []) then {
+if (_hasSupportData) then {
     _supportData params [
         ["_clusterID", "", [""]],
         ["_taskType", "", [""]],
@@ -63,12 +64,13 @@ if !(_supportData isEqualTo []) then {
 
 private _cluster = nil;
 
-if (!isNil "ALIVE_clusterHandler" && {!(_clusterID isEqualTo "")}) then {
+if (_hasSupportData && {!isNil "ALIVE_clusterHandler"} && {!(_clusterID isEqualTo "")}) then {
     _cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
 };
 
 if (
-    isNil "_cluster" &&
+    _hasSupportData &&
+    {isNil "_cluster"} &&
     {!isNil "ALIVE_clustersCivSettlement"} &&
     {!isNil "ALIVE_clusterHandler"}
 ) then {
@@ -97,7 +99,7 @@ if (
 };
 
 private _supportState = [];
-if !(isNil "_cluster") then {
+if (_hasSupportData && {!isNil "_cluster"}) then {
     _supportState = [_cluster, _sideText] call ALIVE_fnc_taskGetCivilianSupportState;
 };
 
@@ -143,7 +145,7 @@ if (_outcomeText == "failure") then {
     [_position, _otherSides, _effectValue] call ALIVE_fnc_updateSectorHostility;
 };
 
-if !(isNil "_cluster") then {
+if (_hasSupportData && {!isNil "_cluster"}) then {
     private _supportDelta = if (_outcomeText == "failure") then {_effectValue * -1} else {_effectValue};
     [_cluster, _sideText, _taskType, _supportDelta, _cooldownDuration, _outcomeText] call ALIVE_fnc_taskUpdateCivilianSupportState;
 };

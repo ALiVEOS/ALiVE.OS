@@ -78,10 +78,6 @@ if (_heartsAndMindsWeight > 0) then {
     };
 };
 
-if (_candidatePool isEqualTo [] && {!(_availableHeartsAndMindsTasks isEqualTo [])}) then {
-    // Keep auto-generation progressing when no phase-eligible cluster is found.
-    _candidatePool = +_availableHeartsAndMindsTasks;
-};
 
 if (_candidatePool isEqualTo []) exitWith {""};
 
