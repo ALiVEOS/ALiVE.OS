@@ -32,6 +32,23 @@ private _cleanupObjects = {
     [_taskParams, "cleanup", []] call ALIVE_fnc_hashSet;
 };
 
+private _applyFailurePopulationEffect = {
+    params ["_taskParams", "_taskPosition", "_taskSide"];
+
+    [
+        [_taskParams, "supportEffectPosition", _taskPosition] call ALIVE_fnc_hashGet,
+        _taskSide,
+        [_taskParams, "supportValue", 12] call ALIVE_fnc_hashGet,
+        [
+            [_taskParams, "clusterID", ""] call ALIVE_fnc_hashGet,
+            [_taskParams, "taskType", "SupplyConvoy"] call ALIVE_fnc_hashGet,
+            [_taskParams, "cooldownDuration", 3000] call ALIVE_fnc_hashGet,
+            "failure"
+        ]
+    ] call ALIVE_fnc_taskApplyPopulationEffect;
+};
+
+
 private _updateConvoyAbandonment = {
     params ["_taskParams", "_vehicle", "_taskPlayers"];
 
@@ -288,6 +305,7 @@ switch (_taskState) do {
         [_taskParams, "sourceClusterID", _sourceClusterID] call ALIVE_fnc_hashSet;
         [_taskParams, "taskType", "SupplyConvoy"] call ALIVE_fnc_hashSet;
         [_taskParams, "cooldownDuration", 3000] call ALIVE_fnc_hashSet;
+        [_taskParams, "supportEffectPosition", _destinationCenter] call ALIVE_fnc_hashSet;
         [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
         [_taskParams, "abandonTimeout", 300] call ALIVE_fnc_hashSet;
         [_taskParams, "contactRadius", 250] call ALIVE_fnc_hashSet;
@@ -331,6 +349,7 @@ switch (_taskState) do {
 
             [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
             [_params] call _cleanupObjects;
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "convoy departure"] call ALIVE_fnc_taskCreateMarkersForPlayers;
@@ -380,6 +399,7 @@ switch (_taskState) do {
 
             [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
             [_params] call _cleanupObjects;
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "vehicle", "convoy destination"] call ALIVE_fnc_taskCreateMarkersForPlayers;
@@ -392,6 +412,7 @@ switch (_taskState) do {
 
                 [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
                 ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
                 [_params] call _cleanupObjects;
             } else {
                 if (_convoyVehicle distance2D _taskPosition <= 60) then {
@@ -440,6 +461,7 @@ switch (_taskState) do {
 
             [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
             [_params] call _cleanupObjects;
         } else {
             _convoyVehicle setVariable ["ALIVE_Task_ConvoyDeliveryEnabled", true, true];
@@ -453,6 +475,7 @@ switch (_taskState) do {
 
                 [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
                 ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
                 [_params] call _cleanupObjects;
             } else {
                 if (_convoyVehicle getVariable [_completionVar, false]) then {

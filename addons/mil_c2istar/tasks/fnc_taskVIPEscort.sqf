@@ -32,6 +32,23 @@ private _cleanupObjects = {
     [_taskParams, "cleanup", []] call ALIVE_fnc_hashSet;
 };
 
+private _applyFailurePopulationEffect = {
+    params ["_taskParams", "_taskPosition", "_taskSide"];
+
+    [
+        [_taskParams, "supportEffectPosition", _taskPosition] call ALIVE_fnc_hashGet,
+        _taskSide,
+        [_taskParams, "supportValue", 12] call ALIVE_fnc_hashGet,
+        [
+            [_taskParams, "clusterID", ""] call ALIVE_fnc_hashGet,
+            [_taskParams, "taskType", "VIPEscort"] call ALIVE_fnc_hashGet,
+            [_taskParams, "cooldownDuration", 3600] call ALIVE_fnc_hashGet,
+            "failure"
+        ]
+    ] call ALIVE_fnc_taskApplyPopulationEffect;
+};
+
+
 private _updateVipPanicState = {
     params ["_vip", "_taskPlayers"];
 
@@ -285,6 +302,7 @@ switch (_taskState) do {
         [_taskParams, "supportPhase", _supportPhase] call ALIVE_fnc_hashSet;
         [_taskParams, "taskType", "VIPEscort"] call ALIVE_fnc_hashSet;
         [_taskParams, "cooldownDuration", 3600] call ALIVE_fnc_hashSet;
+        [_taskParams, "supportEffectPosition", _sourceCenter] call ALIVE_fnc_hashSet;
         [_taskParams, "panicTimeout", (_panicTimeout max 30)] call ALIVE_fnc_hashSet;
         [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
 
@@ -326,6 +344,7 @@ switch (_taskState) do {
 
             [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
             [_params] call _cleanupObjects;
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "entity"] call ALIVE_fnc_taskCreateMarkersForPlayers;
@@ -395,6 +414,7 @@ switch (_taskState) do {
 
             [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
             [_params] call _cleanupObjects;
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "VIP destination"] call ALIVE_fnc_taskCreateMarkersForPlayers;
@@ -408,6 +428,7 @@ switch (_taskState) do {
 
                 [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
                 ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
                 [_params] call _cleanupObjects;
             } else {
                 if (_vip distance2D _taskPosition <= 30) then {
@@ -455,6 +476,7 @@ switch (_taskState) do {
 
             [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
             [_params] call _cleanupObjects;
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "return point"] call ALIVE_fnc_taskCreateMarkersForPlayers;
@@ -468,6 +490,7 @@ switch (_taskState) do {
 
                 [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
                 ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
                 [_params] call _cleanupObjects;
             } else {
                 if (_vip distance2D _taskPosition <= 30) then {
