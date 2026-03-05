@@ -64,6 +64,8 @@ Peer Reviewed:
 #define DEFAULT_DISPLAY_MIL_SECTORS false
 #define DEFAULT_TRACEFILL "None"
 #define DEFAULT_RUN_EVERY 120
+#define DEFAULT_TASK_MIN_DISTANCE 4000
+#define DEFAULT_VIP_PANIC_TIMEOUT 180
 
 // Display components
 #define C2Tablet_CTRL_MainDisplay 70001
@@ -461,6 +463,28 @@ switch(_operation) do {
             _result = floor(_result * 60);
         };
     };
+    case "taskMinDistance": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["taskMinDistance", _args];
+        };
+
+        _result = _logic getVariable ["taskMinDistance", DEFAULT_TASK_MIN_DISTANCE];
+    };
+    case "vipPanicTimeout": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 30);
+            _logic setVariable ["vipPanicTimeout", _args];
+        };
+
+        _result = _logic getVariable ["vipPanicTimeout", DEFAULT_VIP_PANIC_TIMEOUT];
+    };
     case "state": {
         _result = [_logic,_operation,_args,DEFAULT_STATE] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -510,6 +534,11 @@ switch(_operation) do {
         _debug = [_logic, "debug"] call MAINCLASS;
 
         ALIVE_MIL_C2ISTAR = _logic;
+
+        private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;
+        private _vipPanicTimeout = [_logic, "vipPanicTimeout"] call MAINCLASS;
+        missionNamespace setVariable ["ALIVE_taskMinDistance", (_taskMinDistance max 0), true];
+        missionNamespace setVariable ["ALIVE_taskVipPanicTimeout", (_vipPanicTimeout max 30), true];
 
         // Call SITREP and PATROLREP
         [] spawn ALIVE_fnc_sitrepInit;

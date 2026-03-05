@@ -38,20 +38,38 @@ if(count _sideSectors > 0) then {
 
     _sortedSectors = [_sideSectors, _taskLocation] call ALIVE_fnc_sectorSortDistance;
 
-    _countSectors = count _sortedSectors;
+    private _candidateSectors = +_sortedSectors;
+    private _minDistance = missionNamespace getVariable ["ALIVE_taskMinDistance", 0];
+    if (_taskLocationType in ["Short", "Medium", "Long"] && {_minDistance > 0}) then {
+        private _filteredSectors = [];
+        {
+            private _sectorPos = [_x, "position", []] call ALIVE_fnc_hashGet;
+            if !(_sectorPos isEqualTo []) then {
+                if (_taskLocation distance2D _sectorPos >= _minDistance) then {
+                    _filteredSectors pushBack _x;
+                };
+            };
+        } forEach _sortedSectors;
+
+        if (count _filteredSectors > 0) then {
+            _candidateSectors = _filteredSectors;
+        };
+    };
+
+    _countSectors = count _candidateSectors;
 
     if(_countSectors > 0) then {
 
         if(_taskLocationType == "Map" || _taskLocationType == "Short") then {
-            _targetSector = _sortedSectors select 0;
+            _targetSector = _candidateSectors select 0;
         };
 
         if(_taskLocationType == "Medium") then {
-            _targetSector = _sortedSectors select (floor(_countSectors/2));
+            _targetSector = _candidateSectors select (floor(_countSectors/2));
         };
 
         if(_taskLocationType == "Long") then {
-            _targetSector = _sortedSectors select (_countSectors-1);
+            _targetSector = _candidateSectors select (_countSectors-1);
         };
 
     };

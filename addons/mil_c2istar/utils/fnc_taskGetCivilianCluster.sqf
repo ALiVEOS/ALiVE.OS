@@ -116,6 +116,23 @@ private _sortedClusters = [_candidates, [_taskLocation], {
     _Input0 distance2D ([_x select 0, "center", []] call ALIVE_fnc_hashGet)
 }, "ASCEND"] call ALIVE_fnc_SortBy;
 
+private _minDistance = missionNamespace getVariable ["ALIVE_taskMinDistance", 0];
+if (_taskLocationType in ["Short", "Medium", "Long"] && {_minDistance > 0}) then {
+    private _filteredClusters = [];
+    {
+        private _center = [_x select 0, "center", []] call ALIVE_fnc_hashGet;
+        if !(_center isEqualTo []) then {
+            if (_taskLocation distance2D _center >= _minDistance) then {
+                _filteredClusters pushBack _x;
+            };
+        };
+    } forEach _sortedClusters;
+
+    if (count _filteredClusters > 0) then {
+        _sortedClusters = _filteredClusters;
+    };
+};
+
 private _selectedIndex = 0;
 private _maxIndex = (count _sortedClusters) - 1;
 

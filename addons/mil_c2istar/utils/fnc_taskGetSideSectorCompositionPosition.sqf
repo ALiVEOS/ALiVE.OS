@@ -47,6 +47,23 @@ if(count _sideSectors > 0) then {
         };
     } forEach _sortedSectors;
 
+    private _minDistance = missionNamespace getVariable ["ALIVE_taskMinDistance", 0];
+    if (_taskLocationType in ["Short", "Medium", "Long"] && {_minDistance > 0}) then {
+        private _filteredSectors = [];
+        {
+            private _sectorPos = [_x, "position", []] call ALIVE_fnc_hashGet;
+            if !(_sectorPos isEqualTo []) then {
+                if (_taskLocation distance2D _sectorPos >= _minDistance) then {
+                    _filteredSectors pushBack _x;
+                };
+            };
+        } forEach _spawnSectors;
+
+        if (count _filteredSectors > 0) then {
+            _spawnSectors = _filteredSectors;
+        };
+    };
+
     _countSectors = count _spawnSectors;
 
     if(_countSectors > 0) then {

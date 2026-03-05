@@ -205,6 +205,22 @@ class CfgVehicles {
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_ENEMY_FACTION_COMMENT";
                             defaultValue = """OPF_F""";
                     };
+                    class taskMinDistance : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_taskMinDistance";
+                            displayName = "Minimum Task Distance (m)";
+                            tooltip = "Minimum travel distance used when auto-picking Short/Medium/Long generated task locations.";
+                            defaultValue = """4000""";
+                            typeName = "NUMBER";
+                    };
+                    class vipPanicTimeout : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_vipPanicTimeout";
+                            displayName = "VIP Panic Timeout (s)";
+                            tooltip = "How long a panicked VIP can stay uncontrolled before the escort task fails.";
+                            defaultValue = """180""";
+                            typeName = "NUMBER";
+                    };
                     // GROUP MANAGEMENT
                     class GROUP_MANAGEMENT: ALiVE_ModuleSubTitle
                     {

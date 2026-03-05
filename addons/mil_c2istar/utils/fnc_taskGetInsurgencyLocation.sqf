@@ -80,6 +80,23 @@ if(count _objectives > 0) then {
 
     _sortedObjectives = [_objectives,[],{_taskLocation distance (_x select 1)},"ASCEND"] call ALiVE_fnc_SortBy;
 
+    private _minDistance = missionNamespace getVariable ["ALIVE_taskMinDistance", 0];
+    if (_taskLocationType in ["Short", "Medium", "Long"] && {_minDistance > 0}) then {
+        private _filteredObjectives = [];
+        {
+            private _centerPos = _x select 1;
+            if !(_centerPos isEqualTo []) then {
+                if (_taskLocation distance2D _centerPos >= _minDistance) then {
+                    _filteredObjectives pushBack _x;
+                };
+            };
+        } forEach _sortedObjectives;
+
+        if (count _filteredObjectives > 0) then {
+            _sortedObjectives = _filteredObjectives;
+        };
+    };
+
     // _sortedObjectives call ALIVE_fnc_inspectArray;
 
     private _countObjectives = count _sortedObjectives;
