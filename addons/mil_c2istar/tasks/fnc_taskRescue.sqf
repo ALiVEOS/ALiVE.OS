@@ -559,39 +559,39 @@ switch (_taskState) do {
                         // _distance = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination;
 
                         if (_hostage getVariable ["rescued",false]) then {
+                            private _closestPlayer = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
 
-							// Get closest player
-							private _saverGroup = group ([_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition);
+                            if !(isNull _closestPlayer) then {
+                                private _saverGroup = group _closestPlayer;
 
-                            // End Hostage Anim
-                            _anims = ([_hostageAnims, "unboundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
-                            _hostage playMove (selectRandom _anims);
-                            sleep 5;
+                                // End Hostage Anim
+                                _anims = ([_hostageAnims, "unboundAnims"] call ALIVE_fnc_hashGet) select ([_hostageAnims, "index"] call ALiVE_fnc_hashGet);
+                                _hostage playMove (selectRandom _anims);
+                                sleep 5;
 
-							// Reset
-                            _hostage enableAI "MOVE";
-                            _hostage setCaptive false;
-                            _hostage switchmove "";
+                                // Reset
+                                _hostage enableAI "MOVE";
+                                _hostage setCaptive false;
+                                _hostage switchmove "";
 
-                            sleep 1;
+                                sleep 1;
 
-                            // Join player group
-							private _prevLeader = leader _saverGroup;
-                            [_hostage] joinSilent _saverGroup;
-							[_saverGroup, _prevLeader] remoteExecCall ["selectLeader", groupOwner _saverGroup];
+                                // Join player group
+                                private _prevLeader = leader _saverGroup;
+                                [_hostage] joinSilent _saverGroup;
+                                [_saverGroup, _prevLeader] remoteExecCall ["selectLeader", groupOwner _saverGroup];
 
-                            _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
-                            [_params,"nextTask",_taskIDs select 2] call ALIVE_fnc_hashSet;
+                                _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
+                                [_params,"nextTask",_taskIDs select 2] call ALIVE_fnc_hashSet;
 
-                            _task set [8,"Succeeded"];
-                            _task set [10, "N"];
-                            _result = _task;
+                                _task set [8,"Succeeded"];
+                                _task set [10, "N"];
+                                _result = _task;
 
-                            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
-                            ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-
-
+                                ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                            };
                         };
                     };
 

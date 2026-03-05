@@ -543,36 +543,37 @@ switch (_taskState) do {
                         };
 
                         if (_crew getVariable ["rescued",false]) then {
-
                             private _player = [_position,_taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
 
-                            {
-                                if (!isNil "_irstrobe") then {
-                                    detach _irstrobe;
-                                    deleteVehicle _irstrobe;
-                                };
+                            if !(isNull _player) then {
+                                {
+                                    if (!isNil "_irstrobe") then {
+                                        detach _irstrobe;
+                                        deleteVehicle _irstrobe;
+                                    };
 
-                                _x setCaptive false;
-                                [_x] joinSilent (group _player);
-                            } foreach units _group;
+                                    _x setCaptive false;
+                                    [_x] joinSilent (group _player);
+                                } foreach units _group;
 
-                            (group _player) selectLeader _player;
+                                (group _player) selectLeader _player;
 
-                            _task set [8,"Succeeded"];
-                            _task set [10, "N"];
-                            _task set [3, _position];
+                                _task set [8,"Succeeded"];
+                                _task set [10, "N"];
+                                _task set [3, _position];
 
-                            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                                [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
-                            ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                                ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-                            [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
+                                [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
 
-                            // Next Task
-                            _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
-                            [_params,"nextTask",_taskIDs select 2] call ALIVE_fnc_hashSet;
+                                // Next Task
+                                _taskIDs = [_params,"taskIDs"] call ALIVE_fnc_hashGet;
+                                [_params,"nextTask",_taskIDs select 2] call ALIVE_fnc_hashSet;
 
-                            _result = _task;
+                                _result = _task;
+                            };
                         };
                     };
 

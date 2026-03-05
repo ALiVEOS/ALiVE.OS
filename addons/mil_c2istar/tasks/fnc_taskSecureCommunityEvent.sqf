@@ -434,10 +434,20 @@ switch (_taskState) do {
         } else {
             if (_currentWave <= _totalWaves && {serverTime >= _nextWaveAt} && {_entityProfileIDs isEqualTo []}) then {
                 private _waveProfileIDs = [_taskPosition, _enemyFaction, _currentWave] call _spawnWaveProfiles;
-                [_params, "entityProfileIDs", _waveProfileIDs] call ALIVE_fnc_hashSet;
-                [_params, "lastWave", _currentWave] call ALIVE_fnc_hashSet;
-                _entityProfileIDs = _waveProfileIDs;
-                _lastWave = _currentWave;
+                if (_waveProfileIDs isEqualTo []) then {
+                    if (_currentWave < _totalWaves) then {
+                        [_params, "currentWave", _currentWave + 1] call ALIVE_fnc_hashSet;
+                        [_params, "nextWaveAt", serverTime + 1] call ALIVE_fnc_hashSet;
+                    } else {
+                        [_params, "currentWave", _totalWaves + 1] call ALIVE_fnc_hashSet;
+                        [_params, "nextWaveAt", 0] call ALIVE_fnc_hashSet;
+                    };
+                } else {
+                    [_params, "entityProfileIDs", _waveProfileIDs] call ALIVE_fnc_hashSet;
+                    [_params, "lastWave", _currentWave] call ALIVE_fnc_hashSet;
+                    _entityProfileIDs = _waveProfileIDs;
+                    _lastWave = _currentWave;
+                };
             };
 
             if !(_entityProfileIDs isEqualTo []) then {
@@ -489,3 +499,4 @@ switch (_taskState) do {
 };
 
 _result
+
