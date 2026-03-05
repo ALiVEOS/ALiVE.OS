@@ -55,7 +55,7 @@ if !(_sideText in ["EAST", "WEST", "GUER"]) exitWith {[]};
 private _eligibleClusters = [];
 private _preferredClusters = [];
 private _clusterIDs = ALIVE_clustersCivSettlement select 1;
-private _heartsAndMindsTaskTypes = ["AidDelivery", "MeetLocalLeader", "RepairCriticalService"];
+private _heartsAndMindsTaskTypes = ["AidDelivery", "SupplyConvoy", "MeetLocalLeader", "VIPEscort", "SecureCommunityEvent", "RepairCriticalService"];
 
 {
     private _cluster = [ALIVE_clusterHandler, "getCluster", _x] call ALIVE_fnc_clusterHandler;
