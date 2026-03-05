@@ -110,7 +110,10 @@ switch (_taskState) do {
             _destinationClusterID = [_destinationCluster, "clusterID", ""] call ALIVE_fnc_hashGet;
         };
 
-        private _minDistance = missionNamespace getVariable ["ALIVE_taskMinDistance", 4000];
+        private _minDistance = missionNamespace getVariable ["ALIVE_taskMinDistance", 0];
+        if (_minDistance <= 0) then {
+            _minDistance = 4000;
+        };
         if (_destinationCenter isEqualTo [] || {_destinationCenter distance2D _sourceCenter < (_minDistance max 1200)} || {_destinationClusterID == _sourceClusterID}) then {
             _destinationCenter = [_sourceCenter, (_minDistance max 2000), (_minDistance max 2000) + 5000, 2, 0, 0.25, 0, [], [_sourceCenter]] call BIS_fnc_findSafePos;
             if (_destinationCenter isEqualTo []) then {
@@ -337,7 +340,10 @@ switch (_taskState) do {
 
                     private _closestPlayer = [position _vip, _taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
                     if !(isNull _closestPlayer) then {
-                        [_vip] joinSilent (group _closestPlayer);
+                        private _closestPlayerGroup = group _closestPlayer;
+                        private _previousLeader = leader _closestPlayerGroup;
+                        [_vip] joinSilent _closestPlayerGroup;
+                        [_closestPlayerGroup, _previousLeader] remoteExecCall ["selectLeader", groupOwner _closestPlayerGroup];
                         if (vehicle _vip == _vip) then {
                             [_vip, position _closestPlayer] call ALiVE_fnc_doMoveRemote;
                         };
@@ -495,3 +501,5 @@ switch (_taskState) do {
 };
 
 _result
+
+

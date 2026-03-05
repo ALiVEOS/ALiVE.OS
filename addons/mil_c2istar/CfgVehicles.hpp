@@ -209,8 +209,8 @@ class CfgVehicles {
                     {
                             property = "ALiVE_MIL_C2ISTAR_taskMinDistance";
                             displayName = "Minimum Task Distance (m)";
-                            tooltip = "Minimum travel distance used when auto-picking Short/Medium/Long generated task locations.";
-                            defaultValue = """4000""";
+                            tooltip = "Optional mission-wide minimum travel distance for auto-picked Short/Medium/Long generated task locations. Set to 0 to disable.";
+                            defaultValue = """0""";
                             typeName = "NUMBER";
                     };
                     class vipPanicTimeout : Edit
