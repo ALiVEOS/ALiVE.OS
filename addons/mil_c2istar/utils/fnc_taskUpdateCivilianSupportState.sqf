@@ -29,10 +29,11 @@ params [
     ["_taskType", "", [""]],
     ["_supportValue", 0, [0]],
     ["_cooldownDuration", 0, [0]],
-    ["_outcome", "success", [""]]
+    ["_outcome", "", [""]]
 ];
 
 if (_cluster isEqualTo []) exitWith {false};
+if (_supportValue == 0) exitWith {false};
 
 private _supportState = [_cluster, _taskSide] call ALIVE_fnc_taskGetCivilianSupportState;
 if (_supportState isEqualTo []) exitWith {false};
@@ -47,10 +48,15 @@ _support = ((_support + _supportValue) max 0) min 100;
 [_supportState, "lastTaskAt", serverTime] call ALIVE_fnc_hashSet;
 [_supportState, "cooldownUntil", serverTime + (_cooldownDuration max 0)] call ALIVE_fnc_hashSet;
 
+private _outcomeText = toLower _outcome;
+if (_outcomeText isEqualTo "") then {
+    _outcomeText = if (_supportValue < 0) then {"failure"} else {"success"};
+};
+
 private _successStreak = [_supportState, "successStreak", 0] call ALIVE_fnc_hashGet;
 private _failureStreak = [_supportState, "failureStreak", 0] call ALIVE_fnc_hashGet;
 
-switch (toLower _outcome) do {
+switch (_outcomeText) do {
     case "failure": {
         [_supportState, "successStreak", 0] call ALIVE_fnc_hashSet;
         [_supportState, "failureStreak", if (_sameTaskType) then {_failureStreak + 1} else {1}] call ALIVE_fnc_hashSet;

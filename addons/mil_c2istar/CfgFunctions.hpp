@@ -356,6 +356,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskAidDelivery.sqf";
                 RECOMPILE;
             };
+            class taskSupplyConvoy {
+                description = "Task Supply Convoy";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskSupplyConvoy.sqf";
+                RECOMPILE;
+            };
             class taskMeetLocalLeader {
                 description = "Task Meet Local Leader";
                 file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskMeetLocalLeader.sqf";
@@ -369,6 +374,11 @@ class CfgFunctions {
             class taskVIPEscort {
                 description = "Task VIP Escort";
                 file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskVIPEscort.sqf";
+                RECOMPILE;
+            };
+            class taskSecureCommunityEvent {
+                description = "Task Secure Community Event";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskSecureCommunityEvent.sqf";
                 RECOMPILE;
             };
             class taskDisable {

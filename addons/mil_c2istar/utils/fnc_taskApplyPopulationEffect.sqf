@@ -50,7 +50,7 @@ private _otherSides = ["EAST", "WEST", "GUER"] - [_sideText];
 private _clusterID = "";
 private _taskType = "";
 private _cooldownDuration = 0;
-private _outcome = "success";
+private _outcome = "";
 private _hasSupportData = !(_supportData isEqualTo []);
 
 if (_hasSupportData) then {
@@ -58,7 +58,7 @@ if (_hasSupportData) then {
         ["_clusterID", "", [""]],
         ["_taskType", "", [""]],
         ["_cooldownDuration", 0, [0]],
-        ["_outcome", "success", [""]]
+        ["_outcome", "", [""]]
     ];
 };
 
@@ -106,6 +106,10 @@ if (_hasSupportData && {!isNil "_cluster"}) then {
 private _baseValue = (abs _value) max 1;
 private _effectValue = _baseValue;
 private _outcomeText = toLower _outcome;
+
+if (_outcomeText isEqualTo "") then {
+    _outcomeText = if (_value < 0) then {"failure"} else {"success"};
+};
 
 if (_outcomeText == "failure") then {
     private _multiplier = 0.75;
