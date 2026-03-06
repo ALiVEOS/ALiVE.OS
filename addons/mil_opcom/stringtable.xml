@@ -158,4 +158,28 @@
     <English>Chance per recruitment attempt that a new insurgent group is successfully created. Use 0 to disable recruitment spawns or 100 to make every attempt succeed.</English>
     <Chinesesimp>每次招募尝试成功创建一个新 insurgent 小组的概率。设为 0 可禁用招募生成，设为 100 则每次尝试都成功。</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER">
+    <English>Hostility presence multiplier:</English>
+    <Chinesesimp>Hostility presence multiplier:</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER_COMMENT">
+    <English>Multiplier applied to asymmetric hostility shifts caused by insurgent presence and actions. Use 1 for default behavior or 0 to disable these shifts.</English>
+    <Chinesesimp>Multiplier applied to asymmetric hostility shifts caused by insurgent presence and actions. Use 1 for default behavior or 0 to disable these shifts.</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_MULTIPLIER">
+    <English>Hostility install multiplier:</English>
+    <Chinesesimp>Hostility install multiplier:</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_MULTIPLIER_COMMENT">
+    <English>Multiplier applied to periodic asymmetric hostility shifts caused by active insurgent installations. Use 1 for default behavior.</English>
+    <Chinesesimp>Multiplier applied to periodic asymmetric hostility shifts caused by active insurgent installations. Use 1 for default behavior.</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_INTERVAL">
+    <English>Hostility install tick (mins):</English>
+    <Chinesesimp>Hostility install tick (mins):</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_INTERVAL_COMMENT">
+    <English>Minutes between periodic asymmetric hostility shifts from active insurgent installations. Lower values speed up hostility drift.</English>
+    <Chinesesimp>Minutes between periodic asymmetric hostility shifts from active insurgent installations. Lower values speed up hostility drift.</Chinesesimp>
+</Key>
 </Container></Package></Project>

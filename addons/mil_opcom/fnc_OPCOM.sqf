@@ -145,7 +145,9 @@ switch(_operation) do {
                     _recruitAttemptLimit = floor (_logic getvariable ["recruitAttemptLimit",0]);
                     _recruitAttemptLimit = _recruitAttemptLimit max -1;
                     _recruitSuccessChance = ((_logic getvariable ["recruitSuccessChance",50]) max 0) min 100;
-
+                    _hostilityPresenceMultiplier = (_logic getvariable ["hostilityPresenceMultiplier",1]) max 0;
+                    _hostilityInstallationMultiplier = (_logic getvariable ["hostilityInstallationMultiplier",1]) max 0;
+                    _hostilityInstallationInterval = ((_logic getvariable ["hostilityInstallationInterval",10]) max 0) * 60;
                     _debug = ((_logic getvariable ["debug","false"]) == "true");
                     _persistent = ((_logic getvariable ["persistent","false"]) == "true");
                     _reinforcements = call compile (_logic getvariable ["reinforcements","0.9"]);
@@ -214,6 +216,9 @@ switch(_operation) do {
                     [_handler, "recruitCycleMax",_recruitCycleMax] call ALiVE_fnc_HashSet;
                     [_handler, "recruitAttemptLimit",_recruitAttemptLimit] call ALiVE_fnc_HashSet;
                     [_handler, "recruitSuccessChance",_recruitSuccessChance] call ALiVE_fnc_HashSet;
+                    [_handler, "hostilityPresenceMultiplier",_hostilityPresenceMultiplier] call ALiVE_fnc_HashSet;
+                    [_handler, "hostilityInstallationMultiplier",_hostilityInstallationMultiplier] call ALiVE_fnc_HashSet;
+                    [_handler, "hostilityInstallationInterval",_hostilityInstallationInterval] call ALiVE_fnc_HashSet;
                     [_handler, "opcomID",_opcomID] call ALiVE_fnc_HashSet;
                     [_handler, "debug",_debug] call ALiVE_fnc_HashSet;
                     [_handler, "persistent",_persistent] call ALiVE_fnc_HashSet;

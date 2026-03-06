@@ -514,6 +514,27 @@ class CfgVehicles {
                                 typeName = "NUMBER";
                                 defaultValue = 50;
                         };
+                        class hostilityPresenceMultiplier
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER";
+                                description = "$STR_ALIVE_OPCOM_HOSTILITY_PRESENCE_MULTIPLIER_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = 1;
+                        };
+                        class hostilityInstallationMultiplier
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_MULTIPLIER";
+                                description = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_MULTIPLIER_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = 1;
+                        };
+                        class hostilityInstallationInterval
+                        {
+                                displayName = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_INTERVAL";
+                                description = "$STR_ALIVE_OPCOM_HOSTILITY_INSTALLATION_INTERVAL_COMMENT";
+                                typeName = "NUMBER";
+                                defaultValue = 10;
+                        };
                 };
                 class ModuleDescription
                 {
