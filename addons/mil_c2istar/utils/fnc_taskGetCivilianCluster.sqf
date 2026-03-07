@@ -69,12 +69,16 @@ private _heartsAndMindsTaskTypes = ["AidDelivery", "SupplyConvoy", "MeetLocalLea
             if !(_tasksCurrent isEqualTo []) then {
                 _isDuplicate = {
                     private _taskSource = [_x, 12, "", [""]] call BIS_fnc_param;
-                    private _taskSourceParts = [_taskSource, "-"] call CBA_fnc_split;
+                    private _taskType = "";
+
+                    if (!isNil "ALIVE_taskHandler") then {
+                        private _parsedTaskSource = [ALIVE_taskHandler, "parseTaskSource", _taskSource] call ALiVE_fnc_taskHandler;
+                        _taskType = _parsedTaskSource param [1, "", [""]];
+                    };
 
                     (_x select 2) == _sideText &&
                     {(_x select 8) in ["Created", "Assigned"]} &&
-                    {count _taskSourceParts > 1} &&
-                    {(_taskSourceParts select 1) in _heartsAndMindsTaskTypes} &&
+                    {_taskType in _heartsAndMindsTaskTypes} &&
                     {(_x select 3) distance2D _center < 600}
                 } count _tasksCurrent > 0;
             };
