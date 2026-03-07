@@ -1317,6 +1317,65 @@ switch (_operation) do {
             [_sideTasks, _taskID, _taskID] call ALIVE_fnc_hashSet;
         };
     };
+    case "releaseTaskReservation": {
+        if (_args isEqualType []) then {
+            private _task = _args;
+
+            _task params [
+                "_taskID",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "_parent",
+                "_taskSource"
+            ];
+
+            if (_parent == "None") then {
+                private _taskSourceParts = [_taskSource, "-"] call CBA_fnc_split;
+
+                if (count _taskSourceParts > 1) then {
+                    private _rootTaskID = _taskSourceParts select 0;
+
+                    if (_rootTaskID == _taskID) then {
+                        private _managedTaskParams = [_logic, "managedTaskParams"] call ALIVE_fnc_hashSet;
+
+                        if (_rootTaskID in (_managedTaskParams select 1)) then {
+                            private _taskParams = [_managedTaskParams, _rootTaskID] call ALiVE_fnc_hashGet;
+                            private _reservationKey = [_taskParams, "strategicReservationKey", []] call ALiVE_fnc_hashGet;
+
+                            if (!isNil QGVAR(playerRequests)) then {
+                                private _hasReservationKey = switch (typeName _reservationKey) do {
+                                    case "STRING": {_reservationKey != ""};
+                                    default {!(_reservationKey isEqualTo [])};
+                                };
+
+                                if (_hasReservationKey) then {
+                                    private _taskType = _taskSourceParts select 1;
+                                    private _currentTargets = [GVAR(playerRequests), _taskType, []] call ALiVE_fnc_hashGet;
+                                    private _reservationIndex = _currentTargets find _reservationKey;
+
+                                    if (_reservationIndex > -1) then {
+                                        _currentTargets deleteAt _reservationIndex;
+                                        [GVAR(playerRequests), _taskType, _currentTargets] call ALiVE_fnc_hashSet;
+                                    };
+                                };
+                            };
+
+                            [_managedTaskParams, _rootTaskID] call ALIVE_fnc_hashRem;
+                            [_logic, "managedTaskParams", _managedTaskParams] call ALIVE_fnc_hashSet;
+                        };
+                    };
+                };
+            };
+        };
+    };
     case "unregisterTask": {
         if (_args isEqualType "") then {
             private _taskID = _args;
@@ -1325,6 +1384,8 @@ switch (_operation) do {
             if (!isNil "_task") then {
                 private _taskSide = _task select 2;
                 private _taskPlayers = _task select 7 select 0;
+
+                [_logic, "releaseTaskReservation", _task] call MAINCLASS;
 
                 // Remove any markers
                 [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
