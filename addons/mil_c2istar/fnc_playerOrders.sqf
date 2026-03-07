@@ -257,7 +257,8 @@ switch (_operation) do {
     case "createStrategicTaskForGroup": {
         _args params [
             ["_groupData", [], [[]]],
-            ["_enemyFaction", "OPF_F", [""]]
+            ["_enemyFaction", "OPF_F", [""]],
+            ["_excludedPosition", [], [[]]]
         ];
 
         if !(isServer) exitWith {false};
@@ -286,9 +287,21 @@ switch (_operation) do {
 
         if (isNull _opcom) exitWith {false};
 
+        private _filterObjectives = {
+            params ["_objectives", "_fallbackPos", "_excludedPosition"];
+
+            if (_excludedPosition isEqualTo []) exitWith {_objectives};
+
+            _objectives select {
+                private _objectiveCenter = [_x, "center", _fallbackPos] call ALiVE_fnc_hashGet;
+                _objectiveCenter isEqualTo [] || {_objectiveCenter distance2D _excludedPosition > 10}
+            }
+        };
+
         private _taskType = "";
         private _taskLocation = [];
         private _objectives = +([_opcom, "nearestObjectives", [_groupPos, "attacking"]] call ALiVE_fnc_OPCOM);
+        _objectives = [_objectives, _groupPos, _excludedPosition] call _filterObjectives;
 
         if !(_objectives isEqualTo []) then {
             private _objective = _objectives select 0;
@@ -296,6 +309,7 @@ switch (_operation) do {
             _taskLocation = [_objective, "center", _groupPos] call ALiVE_fnc_hashGet;
         } else {
             _objectives = +([_opcom, "nearestObjectives", [_groupPos, "defending"]] call ALiVE_fnc_OPCOM);
+            _objectives = [_objectives, _groupPos, _excludedPosition] call _filterObjectives;
             if !(_objectives isEqualTo []) then {
                 private _objective = _objectives select 0;
                 _taskType = "MilDefence";
@@ -380,10 +394,12 @@ switch (_operation) do {
         ];
 
         private _currentTask = ["getGroupCurrentParentTask", [_groupID]] call MAINCLASS;
+        private _excludedPosition = [];
 
         if !(_currentTask isEqualTo []) then {
             private _taskID = _currentTask select 0;
             private _isPlayerOrderTask = _taskID find "OPORD_" == 0;
+            _excludedPosition = _currentTask param [3, [], [[]]];
 
             if !(_replaceCurrent) exitWith {
                 ["notify", [_player, "Your group already has an active task."]] call MAINCLASS;
@@ -399,7 +415,7 @@ switch (_operation) do {
 
         private _sideSettings = ["getSideSettings", [_side]] call MAINCLASS;
         private _enemyFaction = _sideSettings param [1, "OPF_F"];
-        private _created = ["createStrategicTaskForGroup", [_groupData, _enemyFaction]] call MAINCLASS;
+        private _created = ["createStrategicTaskForGroup", [_groupData, _enemyFaction, _excludedPosition]] call MAINCLASS;
 
         if !(_created) then {
             _created = ["createGeneratedTaskForGroup", [_groupData, _enemyFaction]] call MAINCLASS;
