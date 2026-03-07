@@ -1,0 +1,17 @@
+ALiVE Javen Fork
+Branch Notes - add-hostility-tweak-parameters
+
+Summary
+This branch adds mission-maker tuning for asymmetric hostility progression without changing default behavior for existing missions.
+
+Changes
+- Added OPCOM module setting `hostilityPresenceMultiplier` to scale hostility shifts caused by insurgent presence, actions, and successful recruitment.
+- Added OPCOM module setting `hostilityInstallationMultiplier` to scale periodic hostility changes caused by active insurgent installations.
+- Added OPCOM module setting `hostilityInstallationInterval` (minutes) to control how often installation-driven hostility drift is applied.
+- Wired the settings through the asymmetric OPCOM handler so each insurgent commander can be tuned independently.
+- Added module UI strings and descriptions for the new hostility tuning settings.
+- Preserved existing behavior by default with values of `1`, `1`, and `10`.
+
+Impact
+- Mission makers can slow down or accelerate insurgent hostility drift without editing SQF.
+- Existing missions keep their current hostility behavior unless the new settings are changed.

@@ -178,6 +178,15 @@ if (_menuName == "C2ISTAR") then {
                      true,
                      _result
                 ],
+                ["OPCOM Orders >",
+                    "",
+                    "",
+                    "Manage automatic OPCOM tasking for your player group.",
+                    ["call ALiVE_fnc_C2MenuDef", "C2_PLAYER_ORDERS", 1],
+                     -1,
+                     true,
+                     _result
+                ],
                 ["Operations",
                     {["OPEN_OPS",[]] call ALIVE_fnc_SCOMTabletOnAction},
                     "",
@@ -267,6 +276,46 @@ if (_menuName == "C2ISTAR") then {
     ];
 };
 
+if (_menuName == "C2_PLAYER_ORDERS") then {
+        private _optedOut = group player getVariable [QGVAR(playerOrdersOptOut), false];
+        private _toggleLabel = if (_optedOut) then {"Opt In to OPCOM Orders"} else {"Opt Out of OPCOM Orders"};
+
+        _menus set [count _menus,
+        [
+            ["C2_PLAYER_ORDERS", "OPCOM Orders", "popup"],
+            [
+                ["Request Order",
+                    {["requestOrder", [player, false]] call ALiVE_fnc_playerOrders},
+                    "",
+                    "Ask OPCOM for a new task for your player group.",
+                    "",
+                    -1,
+                    true,
+                    _result
+                ],
+                ["Request Different Order",
+                    {["requestOrder", [player, true]] call ALiVE_fnc_playerOrders},
+                    "",
+                    "Cancel the current group order and ask OPCOM for a different one.",
+                    "",
+                    -1,
+                    true,
+                    _result
+                ],
+                [_toggleLabel,
+                    {["toggleOptOut", [player]] call ALiVE_fnc_playerOrders},
+                    "",
+                    "Toggle whether your group receives automatic OPCOM orders.",
+                    "",
+                    -1,
+                    true,
+                    _result
+                ]
+            ]
+        ]
+    ];
+};
+
 //-----------------------------------------------------------------------------
 _menuDef = [];
 {
@@ -279,3 +328,4 @@ if (count _menuDef == 0) then {
 };
 
 _menuDef // return value
+

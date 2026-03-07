@@ -120,21 +120,45 @@ if (_autoGenerateStrategicTasks) then {
         };
 
         private _requestID = format["%1_%2",_faction,floor(time)];
+        private _requestPlayerID = _playerID;
 
         // All players in side
         private _sidePlayers = [_side] call ALiVE_fnc_getPlayersDataSource;
         _sidePlayers = [_sidePlayers select 1, _sidePlayers select 0];
 
+        private _taskPlayers = _sidePlayers;
         private _current = "Y";
         private _apply = "Side";
 
+        // Prefer assigning a strategic task directly to an eligible player group.
+        if (_playerID == "OPCOM") then {
+            private _selectedGroup = ["selectEligibleGroup", [_side, _faction, _destination]] call ALiVE_fnc_playerOrders;
+
+            if !(_selectedGroup isEqualTo []) then {
+                _selectedGroup params [
+                    "",
+                    "_groupID",
+                    "",
+                    "_groupPlayerIDs",
+                    "_groupPlayerNames",
+                    "",
+                    "_groupRequestPlayerID"
+                ];
+
+                _requestID = format["OPORD_%1_%2", _groupID, floor (diag_tickTime * 10)];
+                _requestPlayerID = _groupRequestPlayerID;
+                _taskPlayers = [_groupPlayerIDs, _groupPlayerNames];
+                _apply = "Group";
+            };
+        };
+
         if ([_logic,"debug"] call ALiVE_fnc_C2ISTAR) then {
-            ["CREATING PLAYER TASK %1 %2", _args, [_requestID,_playerID,_side,_faction,_type,"Map",_destination,_sidePlayers,_enemyFaction,_current,_apply,[_target]]] call ALIVE_fnc_dump;
+            ["CREATING PLAYER TASK %1 %2", _args, [_requestID,_requestPlayerID,_side,_faction,_type,"Map",_destination,_taskPlayers,_enemyFaction,_current,_apply,[_target]]] call ALIVE_fnc_dump;
         };
 
         private _targetArray = [_target];
 
-        private _taskData = [_requestID,_playerID,_side,_faction,_type,"Map",_destination,_sidePlayers,_enemyFaction,_current,_apply,_targetArray];
+        private _taskData = [_requestID,_requestPlayerID,_side,_faction,_type,"Map",_destination,_taskPlayers,_enemyFaction,_current,_apply,_targetArray];
 
         [GVAR(playerRequests), _type, _currentTargets] call ALiVE_fnc_hashSet;
 
@@ -147,3 +171,4 @@ if (_autoGenerateStrategicTasks) then {
 };
 
 _autoGenerateStrategicTasks
+
