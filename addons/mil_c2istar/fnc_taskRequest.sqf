@@ -143,14 +143,13 @@ if (_autoGenerateStrategicTasks) then {
                     "_groupPlayerIDs",
                     "_groupPlayerNames",
                     "",
-                    "_groupRequestPlayerID",
+                    "",
                     "",
                     "",
                     "_groupFaction"
                 ];
 
                 _requestID = format["OPORD_%1_%2", _groupID, floor (diag_tickTime * 10)];
-                _requestPlayerID = _groupRequestPlayerID;
                 _taskFaction = _groupFaction;
                 _taskPlayers = [_groupPlayerIDs, _groupPlayerNames];
                 _apply = "Group";
