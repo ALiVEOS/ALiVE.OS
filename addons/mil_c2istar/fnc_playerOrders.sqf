@@ -287,6 +287,40 @@ switch (_operation) do {
 
         if (isNull _opcom) exitWith {false};
 
+        if (isNil QGVAR(playerRequests)) then {
+            GVAR(playerRequests) = [] call ALiVE_fnc_hashCreate;
+        };
+
+        private _getObjectiveReservationKey = {
+            params ["_objective", "_fallbackPos"];
+
+            private _objectiveID = [_objective, "objectiveID", ""] call ALiVE_fnc_hashGet;
+            if !(_objectiveID isEqualTo "") exitWith {_objectiveID};
+
+            private _clusterID = [_objective, "clusterID", ""] call ALiVE_fnc_hashGet;
+            if !(_clusterID isEqualTo "") exitWith {_clusterID};
+
+            [_objective, "center", _fallbackPos] call ALiVE_fnc_hashGet;
+        };
+
+        private _getUnreservedObjective = {
+            params ["_objectives", "_taskType", "_fallbackPos"];
+
+            private _currentTargets = [GVAR(playerRequests), _taskType, []] call ALiVE_fnc_hashGet;
+            private _selectedObjective = [];
+            private _selectedReservationKey = [];
+
+            {
+                private _reservationKey = [_x, _fallbackPos] call _getObjectiveReservationKey;
+                if !(_reservationKey in _currentTargets) exitWith {
+                    _selectedObjective = _x;
+                    _selectedReservationKey = _reservationKey;
+                };
+            } forEach _objectives;
+
+            [_selectedObjective, _selectedReservationKey]
+        };
+
         private _filterObjectives = {
             params ["_objectives", "_fallbackPos", "_excludedPosition"];
 
@@ -300,24 +334,43 @@ switch (_operation) do {
 
         private _taskType = "";
         private _taskLocation = [];
+        private _reservationKey = [];
         private _objectives = +([_opcom, "nearestObjectives", [_groupPos, "attacking"]] call ALiVE_fnc_OPCOM);
         _objectives = [_objectives, _groupPos, _excludedPosition] call _filterObjectives;
 
         if !(_objectives isEqualTo []) then {
-            private _objective = _objectives select 0;
-            _taskType = "CaptureObjective";
-            _taskLocation = [_objective, "center", _groupPos] call ALiVE_fnc_hashGet;
-        } else {
+            private _objectiveSelection = [_objectives, "CaptureObjective", _groupPos] call _getUnreservedObjective;
+            private _objective = _objectiveSelection select 0;
+
+            if !(_objective isEqualTo []) then {
+                _taskType = "CaptureObjective";
+                _taskLocation = [_objective, "center", _groupPos] call ALiVE_fnc_hashGet;
+                _reservationKey = _objectiveSelection select 1;
+            };
+        };
+
+        if (_taskType == "") then {
             _objectives = +([_opcom, "nearestObjectives", [_groupPos, "defending"]] call ALiVE_fnc_OPCOM);
             _objectives = [_objectives, _groupPos, _excludedPosition] call _filterObjectives;
             if !(_objectives isEqualTo []) then {
-                private _objective = _objectives select 0;
-                _taskType = "MilDefence";
-                _taskLocation = [_objective, "center", _groupPos] call ALiVE_fnc_hashGet;
+                private _objectiveSelection = [_objectives, "MilDefence", _groupPos] call _getUnreservedObjective;
+                private _objective = _objectiveSelection select 0;
+
+                if !(_objective isEqualTo []) then {
+                    _taskType = "MilDefence";
+                    _taskLocation = [_objective, "center", _groupPos] call ALiVE_fnc_hashGet;
+                    _reservationKey = _objectiveSelection select 1;
+                };
             };
         };
 
         if (_taskType == "" || {_taskLocation isEqualTo []}) exitWith {false};
+
+        private _currentTargets = [GVAR(playerRequests), _taskType, []] call ALiVE_fnc_hashGet;
+        if !(_reservationKey in _currentTargets) then {
+            _currentTargets pushBack _reservationKey;
+            [GVAR(playerRequests), _taskType, _currentTargets] call ALiVE_fnc_hashSet;
+        };
 
         private _taskID = format ["OPORD_%1_%2", _groupID, floor (diag_tickTime * 10)];
         private _taskPlayers = [_playerIDs, _playerNames];
