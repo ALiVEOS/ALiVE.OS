@@ -154,21 +154,34 @@ if (_autoGenerateStrategicTasks) then {
                 _taskFaction = _groupFaction;
                 _taskPlayers = [_groupPlayerIDs, _groupPlayerNames];
                 _apply = "Group";
+            } else {
+                private _autoOrderPlayers = ["getAutoOrderSidePlayers", [_side]] call ALiVE_fnc_playerOrders;
+
+                if ((_autoOrderPlayers select 0) isEqualTo []) then {
+                    _autoGenerateStrategicTasks = false;
+                } else {
+                    if (count (_autoOrderPlayers select 0) != count (_sidePlayers select 0)) then {
+                        _taskPlayers = _autoOrderPlayers;
+                        _apply = "Individual";
+                    };
+                };
             };
         };
 
-        if ([_logic,"debug"] call ALiVE_fnc_C2ISTAR) then {
-            ["CREATING PLAYER TASK %1 %2", _args, [_requestID,_requestPlayerID,_side,_taskFaction,_type,"Map",_destination,_taskPlayers,_enemyFaction,_current,_apply,[_target]]] call ALIVE_fnc_dump;
+        if (_autoGenerateStrategicTasks) then {
+            if ([_logic,"debug"] call ALiVE_fnc_C2ISTAR) then {
+                ["CREATING PLAYER TASK %1 %2", _args, [_requestID,_requestPlayerID,_side,_taskFaction,_type,"Map",_destination,_taskPlayers,_enemyFaction,_current,_apply,[_target]]] call ALIVE_fnc_dump;
+            };
+
+            private _targetArray = [_target];
+
+            private _taskData = [_requestID,_requestPlayerID,_side,_taskFaction,_type,"Map",_destination,_taskPlayers,_enemyFaction,_current,_apply,_targetArray];
+
+            [GVAR(playerRequests), _type, _currentTargets] call ALiVE_fnc_hashSet;
+
+            private _event = ["TASK_GENERATE", _taskData, "C2ISTAR"] call ALIVE_fnc_event;
+            [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
         };
-
-        private _targetArray = [_target];
-
-        private _taskData = [_requestID,_requestPlayerID,_side,_taskFaction,_type,"Map",_destination,_taskPlayers,_enemyFaction,_current,_apply,_targetArray];
-
-        [GVAR(playerRequests), _type, _currentTargets] call ALiVE_fnc_hashSet;
-
-        private _event = ["TASK_GENERATE", _taskData, "C2ISTAR"] call ALIVE_fnc_event;
-        [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
     } else {
         _autoGenerateStrategicTasks = false;
