@@ -30,7 +30,8 @@ params [
     ["_taskLocationType", "Short", [""]],
     ["_taskSide", ""],
     ["_taskFaction", "", [""]],
-    ["_tasksCurrent", [], [[]]]
+    ["_tasksCurrent", [], [[]]],
+    ["_excludedTaskTypes", [], [[]]]
 ];
 
 if (_taskPool isEqualTo []) exitWith {""};
@@ -44,6 +45,12 @@ private _heartsAndMindsTasks = [
     "RepairCriticalService"
 ];
 private _candidatePool = +_taskPool;
+if !(_excludedTaskTypes isEqualTo []) then {
+    _candidatePool = _candidatePool select {!(_x in _excludedTaskTypes)};
+};
+
+if (_candidatePool isEqualTo []) exitWith {""};
+
 private _availableHeartsAndMindsTasks = _candidatePool select {_x in _heartsAndMindsTasks};
 
 if (_taskLocation isEqualTo []) exitWith {selectRandom _candidatePool};
