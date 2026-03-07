@@ -177,8 +177,9 @@ switch (_operation) do {
         private _playerNames = [];
 
         {
-            if (alive _x) then {
-                private _playerSide = [side group _x] call ALIVE_fnc_sideObjectToNumber;
+            if !(isNull _x) then {
+                private _playerSide = (faction _x) call ALiVE_fnc_FactionSide;
+                _playerSide = [_playerSide] call ALIVE_fnc_sideObjectToNumber;
                 _playerSide = [_playerSide] call ALIVE_fnc_sideNumberToText;
 
                 if (_playerSide == _side && {!(group _x getVariable [QGVAR(playerOrdersOptOut), false])}) then {
@@ -186,7 +187,7 @@ switch (_operation) do {
 
                     if !(_playerID in _playerIDs) then {
                         _playerIDs pushBack _playerID;
-                        _playerNames pushBack (name _x);
+                        _playerNames pushBack (format["%1 - %2", name _x, group _x]);
                     };
                 };
             };
