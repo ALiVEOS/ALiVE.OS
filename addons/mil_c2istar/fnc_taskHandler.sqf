@@ -528,6 +528,59 @@ switch (_operation) do {
                 _taskData set [6, position _player];
             };
 
+            private _strategicObjectivePosition = [];
+            private _hasStrategicObjectivePosition = false;
+            private _strategicReservationKey = [];
+            private _hasStrategicReservationKey = false;
+
+            if (_taskType in ["CaptureObjective", "MilDefence"]) then {
+                private _taskTargets = _taskData param [11, []];
+
+                if (_taskTargets isEqualType [] && {!(_taskTargets isEqualTo [])}) then {
+                    private _taskObjective = _taskTargets select 0;
+                    private _reservationKey = [];
+                    private _objectivePosition = [];
+
+                    switch (typeName _taskObjective) do {
+                        case "ARRAY": {
+                            _objectivePosition = [_taskObjective, "center", _taskLocation] call ALiVE_fnc_hashGet;
+                            _reservationKey = [_taskObjective, "objectiveID", ""] call ALiVE_fnc_hashGet;
+
+                            if (_reservationKey isEqualTo "") then {
+                                _reservationKey = [_taskObjective, "clusterID", ""] call ALiVE_fnc_hashGet;
+                            };
+
+                            if (_reservationKey isEqualTo "") then {
+                                _reservationKey = _objectivePosition;
+                            };
+                        };
+                        case "OBJECT": {
+                            _objectivePosition = position _taskObjective;
+                            _reservationKey = _objectivePosition;
+                        };
+                        case "STRING": {
+                            _objectivePosition = _taskLocation;
+                            _reservationKey = _taskObjective;
+                        };
+                    };
+
+                    if !(_objectivePosition isEqualTo []) then {
+                        _strategicObjectivePosition = _objectivePosition;
+                        _hasStrategicObjectivePosition = true;
+                    };
+
+                    private _hasReservationKey = switch (typeName _reservationKey) do {
+                        case "STRING": {_reservationKey != ""};
+                        default {!(_reservationKey isEqualTo [])};
+                    };
+
+                    if (_hasReservationKey) then {
+                        _strategicReservationKey = _reservationKey;
+                        _hasStrategicReservationKey = true;
+                    };
+                };
+            };
+
             private _taskSet = ["init", _taskID, _taskData, [], _debug] call (missionNamespace getVariable [format["ALIVE_fnc_task%1", _taskType],{}]);
 
 
@@ -537,6 +590,20 @@ switch (_operation) do {
 				if !(_taskID in (_managedTaskParams select 1)) then {
 					[_managedTaskParams, _taskID, _taskSet select 1] call ALIVE_fnc_hashSet;
 				};
+
+                if (_taskID in (_managedTaskParams select 1)) then {
+                    private _taskParams = [_managedTaskParams, _taskID] call ALiVE_fnc_hashGet;
+
+                    if (_hasStrategicObjectivePosition) then {
+                        [_taskParams, "strategicObjectivePosition", _strategicObjectivePosition] call ALiVE_fnc_hashSet;
+                    };
+
+                    if (_hasStrategicReservationKey) then {
+                        [_taskParams, "strategicReservationKey", _strategicReservationKey] call ALiVE_fnc_hashSet;
+                    };
+
+                    [_managedTaskParams, _taskID, _taskParams] call ALiVE_fnc_hashSet;
+                };
 
 				{
 					[_logic, "registerTask", _x] call MAINCLASS;

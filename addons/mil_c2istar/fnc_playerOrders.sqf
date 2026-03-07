@@ -146,6 +146,20 @@ switch (_operation) do {
 
         _result = _currentTask;
     };
+    case "getTaskManagedParams": {
+        _args params [
+            ["_taskID", "", [""]]
+        ];
+
+        if (_taskID == "" || {isNil "ALIVE_taskHandler"}) exitWith {[]};
+
+        private _managedTaskParams = [ALIVE_taskHandler, "managedTaskParams"] call ALiVE_fnc_hashGet;
+        if (!isNil "_managedTaskParams" && {_taskID in (_managedTaskParams select 1)}) then {
+            _result = [_managedTaskParams, _taskID] call ALiVE_fnc_hashGet;
+        } else {
+            _result = [];
+        };
+    };
     case "getSideSettings": {
         _args params [
             ["_side", "", [""]]
@@ -258,7 +272,8 @@ switch (_operation) do {
         _args params [
             ["_groupData", [], [[]]],
             ["_enemyFaction", "OPF_F", [""]],
-            ["_excludedPosition", [], [[]]]
+            ["_excludedPosition", [], [[]]],
+            ["_excludedReservationKey", []]
         ];
 
         if !(isServer) exitWith {false};
@@ -304,7 +319,7 @@ switch (_operation) do {
         };
 
         private _getUnreservedObjective = {
-            params ["_objectives", "_taskType", "_fallbackPos"];
+            params ["_objectives", "_taskType", "_fallbackPos", "_excludedReservationKey"];
 
             private _currentTargets = [GVAR(playerRequests), _taskType, []] call ALiVE_fnc_hashGet;
             private _selectedObjective = [];
@@ -312,9 +327,13 @@ switch (_operation) do {
 
             {
                 private _reservationKey = [_x, _fallbackPos] call _getObjectiveReservationKey;
-                if !(_reservationKey in _currentTargets) exitWith {
-                    _selectedObjective = _x;
-                    _selectedReservationKey = _reservationKey;
+                private _isExcludedReservation = !(_excludedReservationKey isEqualTo []) && {_reservationKey isEqualTo _excludedReservationKey};
+
+                if !(_reservationKey in _currentTargets) then {
+                    if !(_isExcludedReservation) exitWith {
+                        _selectedObjective = _x;
+                        _selectedReservationKey = _reservationKey;
+                    };
                 };
             } forEach _objectives;
 
@@ -339,7 +358,7 @@ switch (_operation) do {
         _objectives = [_objectives, _groupPos, _excludedPosition] call _filterObjectives;
 
         if !(_objectives isEqualTo []) then {
-            private _objectiveSelection = [_objectives, "CaptureObjective", _groupPos] call _getUnreservedObjective;
+            private _objectiveSelection = [_objectives, "CaptureObjective", _groupPos, _excludedReservationKey] call _getUnreservedObjective;
             private _objective = _objectiveSelection select 0;
 
             if !(_objective isEqualTo []) then {
@@ -353,7 +372,7 @@ switch (_operation) do {
             _objectives = +([_opcom, "nearestObjectives", [_groupPos, "defending"]] call ALiVE_fnc_OPCOM);
             _objectives = [_objectives, _groupPos, _excludedPosition] call _filterObjectives;
             if !(_objectives isEqualTo []) then {
-                private _objectiveSelection = [_objectives, "MilDefence", _groupPos] call _getUnreservedObjective;
+                private _objectiveSelection = [_objectives, "MilDefence", _groupPos, _excludedReservationKey] call _getUnreservedObjective;
                 private _objective = _objectiveSelection select 0;
 
                 if !(_objective isEqualTo []) then {
@@ -377,6 +396,14 @@ switch (_operation) do {
         private _task = [_taskID, _requestPlayerID, _side, _faction, _taskType, "Map", _taskLocation, _taskPlayers, _enemyFaction, "Y", "Group"];
 
         [ALIVE_taskHandler, "generateTask", _task] call ALiVE_fnc_taskHandler;
+
+        private _managedTaskParams = [ALIVE_taskHandler, "managedTaskParams"] call ALiVE_fnc_hashGet;
+        if (!isNil "_managedTaskParams" && {_taskID in (_managedTaskParams select 1)}) then {
+            private _taskParams = [_managedTaskParams, _taskID] call ALiVE_fnc_hashGet;
+            [_taskParams, "strategicObjectivePosition", _taskLocation] call ALiVE_fnc_hashSet;
+            [_taskParams, "strategicReservationKey", _reservationKey] call ALiVE_fnc_hashSet;
+            [_managedTaskParams, _taskID, _taskParams] call ALiVE_fnc_hashSet;
+        };
 
         _result = true;
     };
@@ -448,11 +475,21 @@ switch (_operation) do {
 
         private _currentTask = ["getGroupCurrentParentTask", [_groupID]] call MAINCLASS;
         private _excludedPosition = [];
+        private _excludedReservationKey = [];
 
         if !(_currentTask isEqualTo []) then {
             private _taskID = _currentTask select 0;
             private _isPlayerOrderTask = _taskID find "OPORD_" == 0;
-            _excludedPosition = _currentTask param [3, [], [[]]];
+            private _currentTaskParams = ["getTaskManagedParams", [_taskID]] call MAINCLASS;
+
+            if !(_currentTaskParams isEqualTo []) then {
+                _excludedPosition = [_currentTaskParams, "strategicObjectivePosition", []] call ALiVE_fnc_hashGet;
+                _excludedReservationKey = [_currentTaskParams, "strategicReservationKey", []] call ALiVE_fnc_hashGet;
+            };
+
+            if (_excludedPosition isEqualTo []) then {
+                _excludedPosition = _currentTask param [3, [], [[]]];
+            };
 
             if !(_replaceCurrent) exitWith {
                 ["notify", [_player, "Your group already has an active task."]] call MAINCLASS;
@@ -468,7 +505,7 @@ switch (_operation) do {
 
         private _sideSettings = ["getSideSettings", [_side]] call MAINCLASS;
         private _enemyFaction = _sideSettings param [1, "OPF_F"];
-        private _created = ["createStrategicTaskForGroup", [_groupData, _enemyFaction, _excludedPosition]] call MAINCLASS;
+        private _created = ["createStrategicTaskForGroup", [_groupData, _enemyFaction, _excludedPosition, _excludedReservationKey]] call MAINCLASS;
 
         if !(_created) then {
             _created = ["createGeneratedTaskForGroup", [_groupData, _enemyFaction]] call MAINCLASS;
