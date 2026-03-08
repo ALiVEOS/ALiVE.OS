@@ -96,10 +96,12 @@ if (missionNamespace getVariable ["ALIVE_civicStateEnabled", false]) then {
         };
     };
 
-    private _primaryDelta = round (_baseDelta * _primaryWeight * ([_primaryAxis, _isFailure] call _getAxisMultiplier));
-    private _secondaryDelta = round (_baseDelta * _secondaryWeight * ([_secondaryAxis, _isFailure] call _getAxisMultiplier));
-    if (_primaryDelta <= 0) then {_primaryDelta = 1};
-    if (_secondaryDelta <= 0) then {_secondaryDelta = 1};
+    private _primaryDeltaRaw = _baseDelta * _primaryWeight * ([_primaryAxis, _isFailure] call _getAxisMultiplier);
+    private _secondaryDeltaRaw = _baseDelta * _secondaryWeight * ([_secondaryAxis, _isFailure] call _getAxisMultiplier);
+    private _primaryDelta = round _primaryDeltaRaw;
+    private _secondaryDelta = round _secondaryDeltaRaw;
+    if (_primaryDeltaRaw > 0 && {_primaryDelta <= 0}) then {_primaryDelta = 1};
+    if (_secondaryDeltaRaw > 0 && {_secondaryDelta <= 0}) then {_secondaryDelta = 1};
     if (_isFailure) then {
         _primaryDelta = _primaryDelta * -1;
         _secondaryDelta = _secondaryDelta * -1;
