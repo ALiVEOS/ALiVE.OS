@@ -151,7 +151,7 @@ switch(_operation) do {
                     _civicRecruitmentMultiplier = (_logic getvariable ["civicRecruitmentMultiplier",1]) max 0;
                     _civicInstallationMultiplier = (_logic getvariable ["civicInstallationMultiplier",1]) max 0;
                     private _civicRetaliationChanceRaw = (_logic getvariable ["civicRetaliationChance",0]) max 0;
-                    _civicRetaliationChance = if (_civicRetaliationChanceRaw > 1) then {
+                    _civicRetaliationChance = if (_civicRetaliationChanceRaw >= 1) then {
                         (_civicRetaliationChanceRaw min 100) / 100
                     } else {
                         _civicRetaliationChanceRaw min 1
@@ -2918,3 +2918,4 @@ switch(_operation) do {
 };
 TRACE_1("OPCOM - output",_result);
 if !(isnil "_result") then {_result} else {nil};
+
