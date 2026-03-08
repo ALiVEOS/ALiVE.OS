@@ -150,7 +150,12 @@ switch(_operation) do {
                     _hostilityInstallationInterval = ((_logic getvariable ["hostilityInstallationInterval",10]) max 0) * 60;
                     _civicRecruitmentMultiplier = (_logic getvariable ["civicRecruitmentMultiplier",1]) max 0;
                     _civicInstallationMultiplier = (_logic getvariable ["civicInstallationMultiplier",1]) max 0;
-                    _civicRetaliationChance = ((_logic getvariable ["civicRetaliationChance",0]) max 0) min 1;
+                    private _civicRetaliationChanceRaw = (_logic getvariable ["civicRetaliationChance",0]) max 0;
+                    _civicRetaliationChance = if (_civicRetaliationChanceRaw > 1) then {
+                        (_civicRetaliationChanceRaw min 100) / 100
+                    } else {
+                        _civicRetaliationChanceRaw min 1
+                    };
                     _civicRetaliationIntensity = (_logic getvariable ["civicRetaliationIntensity",1]) max 0;
                     _debug = ((_logic getvariable ["debug","false"]) == "true");
                     _persistent = ((_logic getvariable ["persistent","false"]) == "true");

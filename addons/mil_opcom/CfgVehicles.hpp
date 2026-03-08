@@ -552,7 +552,7 @@ class CfgVehicles {
                         class civicRetaliationChance
                         {
                                 displayName = "Civic Retaliation Chance";
-                                description = "Base chance for insurgent retaliation after Hearts and Minds success in improving settlements. Use 0 to disable.";
+                                description = "Base percent chance for insurgent retaliation after Hearts and Minds success in improving settlements. Use 0 to disable.";
                                 typeName = "NUMBER";
                                 defaultValue = 0;
                         };
