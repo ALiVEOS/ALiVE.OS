@@ -81,8 +81,19 @@ private _heartsAndMindsTaskTypes = [
             if !(_tasksCurrent isEqualTo []) then {
                 _isDuplicate = {
                     private _taskSource = [_x, 12, "", [""]] call BIS_fnc_param;
-                    private _taskSourceParts = [_taskSource, "-"] call CBA_fnc_split;
-                    private _taskType = [_taskSourceParts, 1, "", [""]] call BIS_fnc_param;
+                    private _taskType = "";
+
+                    if (_taskSource != "") then {
+                        if !(isNil "ALIVE_taskHandler") then {
+                            private _parsedTaskSource = [ALIVE_taskHandler, "parseTaskSource", _taskSource] call ALiVE_fnc_taskHandler;
+                            _taskType = [_parsedTaskSource, 1, "", [""]] call BIS_fnc_param;
+                        } else {
+                            private _taskSourceParts = [_taskSource, "-"] call CBA_fnc_split;
+                            if (count _taskSourceParts >= 2) then {
+                                _taskType = _taskSourceParts select ((count _taskSourceParts) - 2);
+                            };
+                        };
+                    };
 
                     (_x select 2) == _sideText &&
                     {(_x select 8) in ["Created", "Assigned"]} &&
