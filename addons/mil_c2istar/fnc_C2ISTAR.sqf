@@ -66,6 +66,12 @@ Peer Reviewed:
 #define DEFAULT_RUN_EVERY 120
 #define DEFAULT_TASK_MIN_DISTANCE 0
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
+#define DEFAULT_CIVIC_STATE_ENABLED false
+#define DEFAULT_CIVIC_MULTIPLIER 1
+#define DEFAULT_CIVIC_DUPLICATE_TASK_PENALTY 0.15
+#define DEFAULT_CIVIC_ENABLED_TASK_FAMILIES "AidDelivery,SupplyConvoy,MeetLocalLeader,VIPEscort,SecureCommunityEvent,RepairCriticalService,MedicalOutreach,CheckpointPartnership,InformantExfiltration,MarketReopening"
+#define DEFAULT_CIVIC_TASK_WEIGHTS "AidDelivery=1,SupplyConvoy=1,MeetLocalLeader=1,VIPEscort=1,SecureCommunityEvent=1,RepairCriticalService=1,MedicalOutreach=1,CheckpointPartnership=1,InformantExfiltration=1,MarketReopening=1"
+#define DEFAULT_CIVIC_DEBUG_INTEL false
 
 // Display components
 #define C2Tablet_CTRL_MainDisplay 70001
@@ -485,6 +491,120 @@ switch(_operation) do {
 
         _result = _logic getVariable ["vipPanicTimeout", DEFAULT_VIP_PANIC_TIMEOUT];
     };
+    case "civicStateEnabled": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["civicStateEnabled", _args];
+        } else {
+            _args = _logic getVariable ["civicStateEnabled", DEFAULT_CIVIC_STATE_ENABLED];
+        };
+        if (typeName _args == "STRING") then {
+            if (_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["civicStateEnabled", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL", str _args);
+
+        _result = _args;
+    };
+    case "civicTrustSuccessMultiplier": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["civicTrustSuccessMultiplier", _args];
+        };
+        _result = _logic getVariable ["civicTrustSuccessMultiplier", DEFAULT_CIVIC_MULTIPLIER];
+    };
+    case "civicTrustFailureMultiplier": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["civicTrustFailureMultiplier", _args];
+        };
+        _result = _logic getVariable ["civicTrustFailureMultiplier", DEFAULT_CIVIC_MULTIPLIER];
+    };
+    case "civicSecuritySuccessMultiplier": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["civicSecuritySuccessMultiplier", _args];
+        };
+        _result = _logic getVariable ["civicSecuritySuccessMultiplier", DEFAULT_CIVIC_MULTIPLIER];
+    };
+    case "civicSecurityFailureMultiplier": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["civicSecurityFailureMultiplier", _args];
+        };
+        _result = _logic getVariable ["civicSecurityFailureMultiplier", DEFAULT_CIVIC_MULTIPLIER];
+    };
+    case "civicServicesSuccessMultiplier": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["civicServicesSuccessMultiplier", _args];
+        };
+        _result = _logic getVariable ["civicServicesSuccessMultiplier", DEFAULT_CIVIC_MULTIPLIER];
+    };
+    case "civicServicesFailureMultiplier": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["civicServicesFailureMultiplier", _args];
+        };
+        _result = _logic getVariable ["civicServicesFailureMultiplier", DEFAULT_CIVIC_MULTIPLIER];
+    };
+    case "civicCooldownMultiplier": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0.1);
+            _logic setVariable ["civicCooldownMultiplier", _args];
+        };
+        _result = _logic getVariable ["civicCooldownMultiplier", DEFAULT_CIVIC_MULTIPLIER];
+    };
+    case "civicDuplicateTaskPenalty": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["civicDuplicateTaskPenalty", _args];
+        };
+        _result = _logic getVariable ["civicDuplicateTaskPenalty", DEFAULT_CIVIC_DUPLICATE_TASK_PENALTY];
+    };
+    case "civicEnabledTaskFamilies": {
+        _result = [_logic,_operation,_args,DEFAULT_CIVIC_ENABLED_TASK_FAMILIES] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "civicTaskWeights": {
+        _result = [_logic,_operation,_args,DEFAULT_CIVIC_TASK_WEIGHTS] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "civicDebugIntel": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["civicDebugIntel", _args];
+        } else {
+            _args = _logic getVariable ["civicDebugIntel", DEFAULT_CIVIC_DEBUG_INTEL];
+        };
+        if (typeName _args == "STRING") then {
+            if (_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["civicDebugIntel", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL", str _args);
+
+        _result = _args;
+    };
     case "state": {
         _result = [_logic,_operation,_args,DEFAULT_STATE] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -537,8 +657,74 @@ switch(_operation) do {
 
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;
         private _vipPanicTimeout = [_logic, "vipPanicTimeout"] call MAINCLASS;
+        private _civicStateEnabled = [_logic, "civicStateEnabled"] call MAINCLASS;
+        private _civicTrustSuccessMultiplier = [_logic, "civicTrustSuccessMultiplier"] call MAINCLASS;
+        private _civicTrustFailureMultiplier = [_logic, "civicTrustFailureMultiplier"] call MAINCLASS;
+        private _civicSecuritySuccessMultiplier = [_logic, "civicSecuritySuccessMultiplier"] call MAINCLASS;
+        private _civicSecurityFailureMultiplier = [_logic, "civicSecurityFailureMultiplier"] call MAINCLASS;
+        private _civicServicesSuccessMultiplier = [_logic, "civicServicesSuccessMultiplier"] call MAINCLASS;
+        private _civicServicesFailureMultiplier = [_logic, "civicServicesFailureMultiplier"] call MAINCLASS;
+        private _civicCooldownMultiplier = [_logic, "civicCooldownMultiplier"] call MAINCLASS;
+        private _civicDuplicateTaskPenalty = [_logic, "civicDuplicateTaskPenalty"] call MAINCLASS;
+        private _civicEnabledTaskFamiliesRaw = [_logic, "civicEnabledTaskFamilies"] call MAINCLASS;
+        private _civicTaskWeightsRaw = [_logic, "civicTaskWeights"] call MAINCLASS;
+        private _civicDebugIntel = [_logic, "civicDebugIntel"] call MAINCLASS;
+        private _normalizeTaskFamilyList = {
+            params [["_raw", "", [""]]];
+            private _result = [];
+            {
+                private _entry = toUpper _x;
+                if !(_entry isEqualTo "") then {
+                    _result pushBackUnique _entry;
+                };
+            } forEach (_raw splitString ",; ");
+            _result
+        };
+        private _parseTaskWeights = {
+            params [["_raw", "", [""]]];
+            private _weights = [] call ALIVE_fnc_hashCreate;
+            {
+                if !(_x isEqualTo "") then {
+                    private _parts = _x splitString "=";
+                    if (count _parts > 0) then {
+                        private _taskName = toUpper (_parts select 0);
+                        private _taskWeight = 1;
+                        if (count _parts > 1) then {
+                            _taskWeight = parseNumber (_parts select 1);
+                        };
+                        [_weights, _taskName, _taskWeight max 0] call ALIVE_fnc_hashSet;
+                    };
+                };
+            } forEach (_raw splitString ",;");
+            _weights
+        };
+        private _civicEnabledTaskFamilies = [_civicEnabledTaskFamiliesRaw] call _normalizeTaskFamilyList;
+        private _civicTaskWeights = [_civicTaskWeightsRaw] call _parseTaskWeights;
+        private _allCivicTasks = ["AidDelivery", "SupplyConvoy", "MeetLocalLeader", "VIPEscort", "SecureCommunityEvent", "RepairCriticalService", "MedicalOutreach", "CheckpointPartnership", "InformantExfiltration", "MarketReopening"];
+
+        if (_civicEnabledTaskFamilies isEqualTo []) then {
+            _civicEnabledTaskFamilies = _allCivicTasks apply {toUpper _x};
+        };
+        {
+            if !((toUpper _x) in (_civicTaskWeights select 1)) then {
+                [_civicTaskWeights, toUpper _x, 1] call ALIVE_fnc_hashSet;
+            };
+        } forEach _allCivicTasks;
+
         missionNamespace setVariable ["ALIVE_taskMinDistance", (_taskMinDistance max 0), true];
         missionNamespace setVariable ["ALIVE_taskVipPanicTimeout", (_vipPanicTimeout max 30), true];
+        missionNamespace setVariable ["ALIVE_civicStateEnabled", _civicStateEnabled, true];
+        missionNamespace setVariable ["ALIVE_civicTrustSuccessMultiplier", (_civicTrustSuccessMultiplier max 0), true];
+        missionNamespace setVariable ["ALIVE_civicTrustFailureMultiplier", (_civicTrustFailureMultiplier max 0), true];
+        missionNamespace setVariable ["ALIVE_civicSecuritySuccessMultiplier", (_civicSecuritySuccessMultiplier max 0), true];
+        missionNamespace setVariable ["ALIVE_civicSecurityFailureMultiplier", (_civicSecurityFailureMultiplier max 0), true];
+        missionNamespace setVariable ["ALIVE_civicServicesSuccessMultiplier", (_civicServicesSuccessMultiplier max 0), true];
+        missionNamespace setVariable ["ALIVE_civicServicesFailureMultiplier", (_civicServicesFailureMultiplier max 0), true];
+        missionNamespace setVariable ["ALIVE_civicCooldownMultiplier", (_civicCooldownMultiplier max 0.1), true];
+        missionNamespace setVariable ["ALIVE_civicDuplicateTaskPenalty", (_civicDuplicateTaskPenalty max 0), true];
+        missionNamespace setVariable ["ALIVE_civicDebugIntel", _civicDebugIntel, true];
+        missionNamespace setVariable ["ALIVE_civicEnabledTaskFamilies", _civicEnabledTaskFamilies];
+        missionNamespace setVariable ["ALIVE_civicTaskWeights", _civicTaskWeights];
 
         // Call SITREP and PATROLREP
         [] spawn ALIVE_fnc_sitrepInit;

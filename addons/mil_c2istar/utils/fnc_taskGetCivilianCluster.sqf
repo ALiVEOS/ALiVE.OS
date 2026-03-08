@@ -8,16 +8,17 @@ Description:
 Select a civilian settlement cluster for Hearts and Minds tasking.
 
 Parameters:
+Array - Task location
+String - Task location type
+String|Side - Task side
+Number - Minimum hostility
+Number - Maximum hostility
+String - Task faction
+Array - Current tasks
+Bool - Allow cooldown fallback
 
 Returns:
 Array - [cluster, hostility, supportState, isOnCooldown]
-
-Examples:
-(begin example)
-private _clusterData = [_position, "Short", "WEST", 25, 1000, "BLU_F", []] call ALIVE_fnc_taskGetCivilianCluster;
-(end)
-
-See Also:
 
 Author:
 OpenAI
@@ -55,7 +56,18 @@ if !(_sideText in ["EAST", "WEST", "GUER"]) exitWith {[]};
 private _eligibleClusters = [];
 private _preferredClusters = [];
 private _clusterIDs = ALIVE_clustersCivSettlement select 1;
-private _heartsAndMindsTaskTypes = ["AidDelivery", "SupplyConvoy", "MeetLocalLeader", "VIPEscort", "SecureCommunityEvent", "RepairCriticalService"];
+private _heartsAndMindsTaskTypes = [
+    "AidDelivery",
+    "SupplyConvoy",
+    "MeetLocalLeader",
+    "VIPEscort",
+    "SecureCommunityEvent",
+    "RepairCriticalService",
+    "MedicalOutreach",
+    "CheckpointPartnership",
+    "InformantExfiltration",
+    "MarketReopening"
+];
 
 {
     private _cluster = [ALIVE_clusterHandler, "getCluster", _x] call ALIVE_fnc_clusterHandler;
@@ -69,12 +81,8 @@ private _heartsAndMindsTaskTypes = ["AidDelivery", "SupplyConvoy", "MeetLocalLea
             if !(_tasksCurrent isEqualTo []) then {
                 _isDuplicate = {
                     private _taskSource = [_x, 12, "", [""]] call BIS_fnc_param;
-                    private _taskType = "";
-
-                    if (!isNil "ALIVE_taskHandler") then {
-                        private _parsedTaskSource = [ALIVE_taskHandler, "parseTaskSource", _taskSource] call ALiVE_fnc_taskHandler;
-                        _taskType = _parsedTaskSource param [1, "", [""]];
-                    };
+                    private _taskSourceParts = [_taskSource, "-"] call CBA_fnc_split;
+                    private _taskType = [_taskSourceParts, 1, "", [""]] call BIS_fnc_param;
 
                     (_x select 2) == _sideText &&
                     {(_x select 8) in ["Created", "Assigned"]} &&
@@ -94,7 +102,6 @@ private _heartsAndMindsTaskTypes = ["AidDelivery", "SupplyConvoy", "MeetLocalLea
                 };
 
                 private _entry = [_cluster, _hostility, _supportState, _isOnCooldown];
-
                 _eligibleClusters pushBack _entry;
 
                 if (_hostility >= _minHostility && {_hostility <= _maxHostility}) then {
@@ -116,9 +123,25 @@ private _candidates = switch (true) do {
 };
 if (_candidates isEqualTo []) exitWith {[]};
 
-private _sortedClusters = [_candidates, [_taskLocation], {
-    _Input0 distance2D ([_x select 0, "center", []] call ALIVE_fnc_hashGet)
-}, "ASCEND"] call ALIVE_fnc_SortBy;
+private _civicStateEnabled = missionNamespace getVariable ["ALIVE_civicStateEnabled", false];
+private _sortedClusters = if (_civicStateEnabled) then {
+    [_candidates, [_taskLocation], {
+        private _center = [_x select 0, "center", []] call ALIVE_fnc_hashGet;
+        private _distance = _Input0 distance2D _center;
+        private _supportState = _x select 2;
+        private _pressureBias = 0;
+
+        if !(_supportState isEqualTo []) then {
+            _pressureBias = [_supportState, "insurgentPressure", 0] call ALIVE_fnc_hashGet;
+        };
+
+        _distance - (_pressureBias * 5)
+    }, "ASCEND"] call ALIVE_fnc_SortBy
+} else {
+    [_candidates, [_taskLocation], {
+        _Input0 distance2D ([_x select 0, "center", []] call ALIVE_fnc_hashGet)
+    }, "ASCEND"] call ALIVE_fnc_SortBy
+};
 
 private _minDistance = missionNamespace getVariable ["ALIVE_taskMinDistance", 0];
 if (_taskLocationType in ["Short", "Medium", "Long"] && {_minDistance > 0}) then {

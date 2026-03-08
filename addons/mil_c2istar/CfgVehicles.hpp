@@ -221,6 +221,129 @@ class CfgVehicles {
                             defaultValue = """180""";
                             typeName = "NUMBER";
                     };
+                    class CIVIC_STATE: ALiVE_ModuleSubTitle
+                    {
+                            property = QGVAR(__LINE__);
+                            displayName = " CIVIC STATE PARAMETERS";
+                    };
+                    class civicStateEnabled : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicStateEnabled";
+                            displayName = "Enable Civic-State COIN Model";
+                            tooltip = "Enable the multi-axis trust/security/services settlement model used by the fork's Hearts and Minds features.";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No
+                                    {
+                                            name = "No";
+                                            value = "false";
+                                    };
+                                    class Yes
+                                    {
+                                            name = "Yes";
+                                            value = "true";
+                                    };
+                            };
+                    };
+                    class civicTrustSuccessMultiplier : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicTrustSuccessMultiplier";
+                            displayName = "Trust Success Multiplier";
+                            tooltip = "Multiplier applied to trust gains from successful Hearts and Minds tasks.";
+                            defaultValue = """1""";
+                            typeName = "NUMBER";
+                    };
+                    class civicTrustFailureMultiplier : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicTrustFailureMultiplier";
+                            displayName = "Trust Failure Multiplier";
+                            tooltip = "Multiplier applied to trust losses from failed Hearts and Minds tasks or backlash.";
+                            defaultValue = """1""";
+                            typeName = "NUMBER";
+                    };
+                    class civicSecuritySuccessMultiplier : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicSecuritySuccessMultiplier";
+                            displayName = "Security Success Multiplier";
+                            tooltip = "Multiplier applied to security gains from successful Hearts and Minds tasks.";
+                            defaultValue = """1""";
+                            typeName = "NUMBER";
+                    };
+                    class civicSecurityFailureMultiplier : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicSecurityFailureMultiplier";
+                            displayName = "Security Failure Multiplier";
+                            tooltip = "Multiplier applied to security losses from failed Hearts and Minds tasks or backlash.";
+                            defaultValue = """1""";
+                            typeName = "NUMBER";
+                    };
+                    class civicServicesSuccessMultiplier : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicServicesSuccessMultiplier";
+                            displayName = "Services Success Multiplier";
+                            tooltip = "Multiplier applied to services gains from successful Hearts and Minds tasks.";
+                            defaultValue = """1""";
+                            typeName = "NUMBER";
+                    };
+                    class civicServicesFailureMultiplier : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicServicesFailureMultiplier";
+                            displayName = "Services Failure Multiplier";
+                            tooltip = "Multiplier applied to services losses from failed Hearts and Minds tasks or backlash.";
+                            defaultValue = """1""";
+                            typeName = "NUMBER";
+                    };
+                    class civicCooldownMultiplier : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicCooldownMultiplier";
+                            displayName = "Civic Cooldown Multiplier";
+                            tooltip = "Multiplier applied to Hearts and Minds task cooldowns for the civic-state model.";
+                            defaultValue = """1""";
+                            typeName = "NUMBER";
+                    };
+                    class civicDuplicateTaskPenalty : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicDuplicateTaskPenalty";
+                            displayName = "Duplicate Task Penalty";
+                            tooltip = "Penalty strength applied when the same Hearts and Minds task repeats in a settlement.";
+                            defaultValue = """0.15""";
+                            typeName = "NUMBER";
+                    };
+                    class civicEnabledTaskFamilies : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicEnabledTaskFamilies";
+                            displayName = "Enabled Civic Task Families";
+                            tooltip = "Comma-separated list of Hearts and Minds task types allowed for civic-state generation. Use task type ids with no spaces.";
+                            defaultValue = """AidDelivery,SupplyConvoy,MeetLocalLeader,VIPEscort,SecureCommunityEvent,RepairCriticalService,MedicalOutreach,CheckpointPartnership,InformantExfiltration,MarketReopening""";
+                    };
+                    class civicTaskWeights : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicTaskWeights";
+                            displayName = "Civic Task Weights";
+                            tooltip = "Comma-separated TaskType=Weight pairs used by civic-state task selection. Use no spaces.";
+                            defaultValue = """AidDelivery=1,SupplyConvoy=1,MeetLocalLeader=1,VIPEscort=1,SecureCommunityEvent=1,RepairCriticalService=1,MedicalOutreach=1,CheckpointPartnership=1,InformantExfiltration=1,MarketReopening=1""";
+                    };
+                    class civicDebugIntel : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_civicDebugIntel";
+                            displayName = "Show Civic Debug Intel";
+                            tooltip = "Append civic-state trust/security/services summaries to generated Hearts and Minds task descriptions.";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No
+                                    {
+                                            name = "No";
+                                            value = "false";
+                                    };
+                                    class Yes
+                                    {
+                                            name = "Yes";
+                                            value = "true";
+                                    };
+                            };
+                    };
                     // GROUP MANAGEMENT
                     class GROUP_MANAGEMENT: ALiVE_ModuleSubTitle
                     {

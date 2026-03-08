@@ -69,6 +69,29 @@ ALiVE_fnc_INS_getHostilitySetting = {
                 [_opcom,_key,_default] call ALiVE_fnc_HashGet
 };
 
+ALiVE_fnc_INS_getNearestObjectiveByPosition = {
+                params [["_pos",[],[[]]],["_radius",2500,[0]]];
+
+                if (_pos isEqualTo []) exitwith {[]};
+
+                private _nearestObjective = [];
+                private _closestDistance = _radius max 0;
+
+                {
+                    {
+                        private _center = [_x,"center",[]] call ALiVE_fnc_HashGet;
+                        if !(_center isEqualTo []) then {
+                            private _distance = _pos distance2D _center;
+                            if (_distance <= _closestDistance) then {
+                                _closestDistance = _distance;
+                                _nearestObjective = _x;
+                            };
+                        };
+                    } foreach ([_x, "objectives", []] call ALIVE_fnc_HashGet);
+                } foreach (missionNameSpace getVariable ["OPCOM_instances",[]]);
+
+                _nearestObjective
+};
 ALiVE_fnc_INS_updateHostilityByPresence = {
                 params ["_timeTaken","_pos","_insurgentSides",["_baseShift",20],["_allSides",["EAST","WEST","GUER"]],["_objective",[]]];
 
@@ -199,15 +222,21 @@ ALiVE_fnc_INS_getHeartsAndMindsPressure = {
                 {
                     if (_x != _insurgentSideText) then {
                         private _hostility = [_hostilityHash, _x, 0] call ALIVE_fnc_hashGet;
-                        private _phase = [_hostility] call ALiVE_fnc_INS_getHostilityPhase;
+                                                private _phase = [_hostility] call ALiVE_fnc_INS_getHostilityPhase;
                         private _support = 0;
+                        private _supportState = [];
 
                         if !(_heartsAndMinds isEqualTo []) then {
                             if (_x in (_heartsAndMinds select 1)) then {
-                                private _supportState = [_heartsAndMinds, _x, []] call ALIVE_fnc_hashGet;
+                                _supportState = [_heartsAndMinds, _x, []] call ALIVE_fnc_hashGet;
                                 if !(_supportState isEqualTo []) then {
-                                    _support = [_supportState, "support", 0] call ALIVE_fnc_hashGet;
                                     _phase = [_supportState, "phase", _phase] call ALIVE_fnc_hashGet;
+                                    if (missionNamespace getVariable ["ALIVE_civicStateEnabled", false]) then {
+                                        private _insurgentPressure = [_supportState, "insurgentPressure", 100] call ALIVE_fnc_hashGet;
+                                        _support = 100 - ((_insurgentPressure max 0) min 100);
+                                    } else {
+                                        _support = [_supportState, "support", 0] call ALIVE_fnc_hashGet;
+                                    };
                                 };
                             };
                         };
@@ -284,11 +313,20 @@ ALiVE_fnc_INS_updateHostilityByInstallations = {
 
                 [_objective,"presenceHostilityTick",time] call ALiVE_fnc_HashSet;
 
-                private _supportWeight = if (_currentHostility > 0) then {
+                                private _supportWeight = if (_currentHostility > 0) then {
                     // Hostile populations only soften through lower-signature insurgent activity.
                     (_covertWeight * 2) min 4
                 } else {
                     (_covertWeight + _overtWeight) min 4
+                };
+
+                private _civicInstallationMultiplier = ([_objective,"civicInstallationMultiplier",1] call ALiVE_fnc_INS_getHostilitySetting) max 0;
+                if (_civicInstallationMultiplier > 0) then {
+                    private _pressureSide = if (count _insurgentSides > 0) then {_insurgentSides select 0} else {"EAST"};
+                    private _hmPressureData = [_pos,_pressureSide,1200] call ALiVE_fnc_INS_getHeartsAndMindsPressure;
+                    _hmPressureData params [["_hmPressure",0]];
+                    private _civicDampening = ((_hmPressure / 100) * (0.8 * _civicInstallationMultiplier)) min 0.95;
+                    _supportWeight = round (_supportWeight * ((1 - _civicDampening) max 0));
                 };
 
                 if (_supportWeight <= 0) exitwith {0};
@@ -833,7 +871,7 @@ ALiVE_fnc_INS_depot = {
 };
 
 ALiVE_fnc_INS_recruit = {
-                private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_HQ","_CQB","_objective","_center","_opcom","_forceLimit","_recruitCycleMin","_recruitCycleMax","_recruitAttemptLimit","_recruitSuccessChance","_opcomFactions"];
+                private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_HQ","_CQB","_objective","_center","_opcom","_forceLimit","_recruitCycleMin","_recruitCycleMax","_recruitAttemptLimit","_recruitSuccessChance","_opcomFactions","_civicRecruitmentMultiplier"];
 
                 _timeTaken = _this select 0;
                 _pos = _this select 1;
@@ -854,6 +892,7 @@ ALiVE_fnc_INS_recruit = {
                 _recruitAttemptLimit = 0;
                 _recruitSuccessChance = 0.5;
                 _opcomFactions = [_faction];
+                _civicRecruitmentMultiplier = 1;
 
                 if !(isnil "_opcom") then {
                     _forceLimit = floor ([_opcom,"asymForceLimit",-1] call ALiVE_fnc_HashGet);
@@ -863,6 +902,7 @@ ALiVE_fnc_INS_recruit = {
                     _recruitAttemptLimit = _recruitAttemptLimit max -1;
                     _recruitSuccessChance = ((([_opcom,"recruitSuccessChance",50] call ALiVE_fnc_HashGet) max 0) min 100) / 100;
                     _opcomFactions = [_opcom,"factions",[_faction]] call ALiVE_fnc_HashGet;
+                    _civicRecruitmentMultiplier = ([_opcom,"civicRecruitmentMultiplier",1] call ALiVE_fnc_HashGet) max 0;
                 };
 
                 if (_recruitCycleMax < _recruitCycleMin) then {_recruitCycleMax = _recruitCycleMin};
@@ -910,8 +950,8 @@ ALiVE_fnc_INS_recruit = {
                 [_pos,_size,_CQB] call ALiVE_fnc_addCQBpositions;
 
                 // Run recruitment attempts while the HQ survives.
-                [_timeTaken,_pos,_size,_id,_faction,_HQ,_sides,_agents,_forceLimit,_recruitCycleMin,_recruitCycleMax,_recruitAttemptLimit,_recruitSuccessChance,_opcomFactions,_side,_objective] spawn {
-                    private ["_timeTaken","_pos","_size","_id","_faction","_targetBuilding","_sides","_agents","_forceLimit","_recruitCycleMin","_recruitCycleMax","_recruitAttemptLimit","_recruitSuccessChance","_opcomFactions","_currentForce","_attemptsRemaining","_side","_objective"];
+                [_timeTaken,_pos,_size,_id,_faction,_HQ,_sides,_agents,_forceLimit,_recruitCycleMin,_recruitCycleMax,_recruitAttemptLimit,_recruitSuccessChance,_opcomFactions,_civicRecruitmentMultiplier,_side,_objective] spawn {
+                    private ["_timeTaken","_pos","_size","_id","_faction","_targetBuilding","_sides","_agents","_forceLimit","_recruitCycleMin","_recruitCycleMax","_recruitAttemptLimit","_recruitSuccessChance","_opcomFactions","_civicRecruitmentMultiplier","_currentForce","_attemptsRemaining","_side","_objective"];
 
                     _timeTaken = _this select 0;
                     _pos = _this select 1;
@@ -927,8 +967,9 @@ ALiVE_fnc_INS_recruit = {
                     _recruitAttemptLimit = _this select 11;
                     _recruitSuccessChance = _this select 12;
                     _opcomFactions = _this select 13;
-                    _side = _this select 14;
-                    _objective = _this select 15;
+                    _civicRecruitmentMultiplier = _this select 14;
+                    _side = _this select 15;
+                    _objective = _this select 16;
                     _allSides = ["EAST","WEST","GUER"];
 
                     _attemptsRemaining = if (_recruitAttemptLimit == 0) then {count _agents} else {_recruitAttemptLimit};
@@ -938,7 +979,8 @@ ALiVE_fnc_INS_recruit = {
                         private _hmPressureData = [_pos,_side,(_size + 600) max 900] call ALiVE_fnc_INS_getHeartsAndMindsPressure;
                         _hmPressureData params [["_hmPressure",0],["_hmPhase","Stabilize"]];
 
-                        private _delayMultiplier = 1 + (0.01 * _hmPressure);
+                        private _effectivePressure = ((_hmPressure * _civicRecruitmentMultiplier) max 0) min 100;
+                        private _delayMultiplier = 1 + (0.01 * _effectivePressure);
                         private _adjustedCycleMin = _recruitCycleMin * _delayMultiplier;
                         private _adjustedCycleMax = _recruitCycleMax * _delayMultiplier;
 
@@ -968,7 +1010,7 @@ ALiVE_fnc_INS_recruit = {
                                 case "Engage": {0.75};
                                 default {1};
                             };
-                            private _pressureChanceMultiplier = (1 - (0.007 * _hmPressure)) max 0.2;
+                            private _pressureChanceMultiplier = (1 - (0.007 * _effectivePressure)) max 0.2;
                             private _effectiveRecruitChance = (_recruitSuccessChance * _phaseChanceMultiplier * _pressureChanceMultiplier) min 1;
 
                             // Use the configured chance for a successful recruitment spawn.

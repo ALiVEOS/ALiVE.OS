@@ -603,6 +603,28 @@ switch (_operation) do {
                     };
 
                     [_managedTaskParams, _taskID, _taskParams] call ALiVE_fnc_hashSet;
+
+                    if (missionNamespace getVariable ["ALIVE_civicDebugIntel", false]) then {
+                        private _taskTypeKey = [_taskParams, "taskType", _taskType] call ALiVE_fnc_hashGet;
+                        private _heartsAndMindsTasks = ["AidDelivery", "SupplyConvoy", "MeetLocalLeader", "VIPEscort", "SecureCommunityEvent", "RepairCriticalService", "MedicalOutreach", "CheckpointPartnership", "InformantExfiltration", "MarketReopening"];
+
+                        if (_taskTypeKey in _heartsAndMindsTasks) then {
+                            private _debugPosition = _taskLocation;
+                            if (count (_taskSet select 0) > 0) then {
+                                _debugPosition = [(_taskSet select 0) select 0, 3, _taskLocation, [[]]] call BIS_fnc_param;
+                            };
+
+                            private _clusterID = [_taskParams, "clusterID", ""] call ALiVE_fnc_hashGet;
+                            private _taskPositionForDebug = [_taskParams, "supportEffectPosition", _debugPosition] call ALiVE_fnc_hashGet;
+                            private _debugDescription = [_clusterID, _taskSide, _taskPositionForDebug] call ALIVE_fnc_taskGetCivicDebugDescription;
+
+                            if !(_debugDescription isEqualTo "") then {
+                                {
+                                    _x set [6, format ["%1\n\n%2", _x select 6, _debugDescription]];
+                                } forEach (_taskSet select 0);
+                            };
+                        };
+                    };
                 };
 
 				{

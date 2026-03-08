@@ -251,6 +251,26 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskUpdateCivilianSupportState.sqf";
                 RECOMPILE;
             };
+            class taskGetCivicTaskProfile {
+                description = "Utility get civic-state metadata for Hearts and Minds tasks";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetCivicTaskProfile.sqf";
+                RECOMPILE;
+            };
+            class taskRefreshCivilianSupportState {
+                description = "Utility derive compatibility support fields from the civic-state model";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskRefreshCivilianSupportState.sqf";
+                RECOMPILE;
+            };
+            class taskGetCivicDebugDescription {
+                description = "Utility build a civic-state debug summary for task descriptions";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetCivicDebugDescription.sqf";
+                RECOMPILE;
+            };
+            class taskMaybeTriggerRetaliation {
+                description = "Utility apply insurgent backlash against improving settlements";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskMaybeTriggerRetaliation.sqf";
+                RECOMPILE;
+            };
             class taskGetInsurgencyLocation {
                 description = "Utility to find insurgency location from asymetrical opcoms";
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetInsurgencyLocation.sqf";
@@ -369,6 +389,26 @@ class CfgFunctions {
             class taskRepairCriticalService {
                 description = "Task Repair Critical Service";
                 file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskRepairCriticalService.sqf";
+                RECOMPILE;
+            };
+            class taskMedicalOutreach {
+                description = "Task Medical Outreach";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskMedicalOutreach.sqf";
+                RECOMPILE;
+            };
+            class taskCheckpointPartnership {
+                description = "Task Checkpoint Partnership";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskCheckpointPartnership.sqf";
+                RECOMPILE;
+            };
+            class taskInformantExfiltration {
+                description = "Task Informant Exfiltration";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskInformantExfiltration.sqf";
+                RECOMPILE;
+            };
+            class taskMarketReopening {
+                description = "Task Market Reopening";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskMarketReopening.sqf";
                 RECOMPILE;
             };
             class taskVIPEscort {
