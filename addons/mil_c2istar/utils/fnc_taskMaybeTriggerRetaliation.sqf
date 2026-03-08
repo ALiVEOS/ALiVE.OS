@@ -40,7 +40,7 @@ if !(_statusBand in ["Recovering", "Stable"]) exitWith {false};
 
 private _nearestObjective = [];
 if !(isNil "ALiVE_fnc_INS_getNearestObjectiveByPosition") then {
-    _nearestObjective = [_position, 2500] call ALiVE_fnc_INS_getNearestObjectiveByPosition;
+    _nearestObjective = [_position, 2500, _taskSide, "asymmetric"] call ALiVE_fnc_INS_getNearestObjectiveByPosition;
 };
 
 private _retaliationChance = 0;

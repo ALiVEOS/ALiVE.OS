@@ -70,24 +70,49 @@ ALiVE_fnc_INS_getHostilitySetting = {
 };
 
 ALiVE_fnc_INS_getNearestObjectiveByPosition = {
-                params [["_pos",[],[[]]],["_radius",2500,[0]]];
+                params [
+                    ["_pos",[],[[]]],
+                    ["_radius",2500,[0]],
+                    ["_friendlySide","",["", east]],
+                    ["_requiredControlType","",[""]]
+                ];
 
                 if (_pos isEqualTo []) exitwith {[]};
 
+                private _friendlySideText = "";
+                if (_friendlySide isEqualType east) then {
+                    _friendlySideText = [[_friendlySide] call ALiVE_fnc_sideObjectToNumber] call ALiVE_fnc_sideNumberToText;
+                } else {
+                    if (_friendlySide isEqualType "") then {
+                        _friendlySideText = toUpper _friendlySide;
+                        if (_friendlySideText == "RESISTANCE") then {_friendlySideText = "GUER"};
+                    };
+                };
+
+                private _requiredControlTypeText = toLower _requiredControlType;
                 private _nearestObjective = [];
                 private _closestDistance = _radius max 0;
 
                 {
-                    {
-                        private _center = [_x,"center",[]] call ALiVE_fnc_HashGet;
-                        if !(_center isEqualTo []) then {
-                            private _distance = _pos distance2D _center;
-                            if (_distance <= _closestDistance) then {
-                                _closestDistance = _distance;
-                                _nearestObjective = _x;
+                    private _opcom = _x;
+                    private _controlType = toLower ([_opcom, "controltype", ""] call ALiVE_fnc_HashGet);
+                    private _sidesEnemy = [[_opcom, "sidesenemy", []] call ALiVE_fnc_HashGet] call ALiVE_fnc_INS_normalizeHostilitySides;
+
+                    if (
+                        (_requiredControlTypeText == "" || {_controlType == _requiredControlTypeText})
+                        && {(_friendlySideText == "") || {_friendlySideText in _sidesEnemy}}
+                    ) then {
+                        {
+                            private _center = [_x,"center",[]] call ALiVE_fnc_HashGet;
+                            if !(_center isEqualTo []) then {
+                                private _distance = _pos distance2D _center;
+                                if (_distance <= _closestDistance) then {
+                                    _closestDistance = _distance;
+                                    _nearestObjective = _x;
+                                };
                             };
-                        };
-                    } foreach ([_x, "objectives", []] call ALIVE_fnc_HashGet);
+                        } foreach ([_opcom, "objectives", []] call ALIVE_fnc_HashGet);
+                    };
                 } foreach (missionNameSpace getVariable ["OPCOM_instances",[]]);
 
                 _nearestObjective
