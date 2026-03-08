@@ -29,10 +29,15 @@ params [
     ["_taskLocationType", "Short", [""]],
     ["_taskSide", ""],
     ["_taskFaction", "", [""]],
-    ["_tasksCurrent", [], [[]]]
+    ["_tasksCurrent", [], [[]]],
+    ["_excludedTaskTypes", [], [[]]]
 ];
 
 if (_taskPool isEqualTo []) exitWith {""};
+
+private _excludedTaskTypeLookup = _excludedTaskTypes apply {toUpper _x};
+private _filteredTaskPool = _taskPool select {!((toUpper _x) in _excludedTaskTypeLookup)};
+if (_filteredTaskPool isEqualTo []) exitWith {""};
 
 private _allHeartsAndMindsTasks = [
     "AidDelivery",
@@ -54,7 +59,7 @@ private _legacyHeartsAndMindsTasks = [
     "SecureCommunityEvent",
     "RepairCriticalService"
 ];
-private _candidatePool = +_taskPool;
+private _candidatePool = +_filteredTaskPool;
 private _availableHeartsAndMindsTasks = _candidatePool select {_x in _allHeartsAndMindsTasks};
 private _civicStateEnabled = missionNamespace getVariable ["ALIVE_civicStateEnabled", false];
 private _enabledTasks = missionNamespace getVariable ["ALIVE_civicEnabledTaskFamilies", _allHeartsAndMindsTasks apply {toUpper _x}];
