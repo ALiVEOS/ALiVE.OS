@@ -52,7 +52,7 @@ private _applyFailurePopulationEffect = {
 private _updateVipPanicState = {
     params ["_vip", "_taskPlayers"];
 
-    if !(_vip getVariable ["ALIVE_Task_VIPPanicked", false]) exitWith {false};
+    if !(_vip getVariable ["ALIVE_Task_VIPPanicked", false]) exitWith {"ready"};
 
     private _closestPlayer = [position _vip, _taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
     if !(isNull _closestPlayer) then {
@@ -65,12 +65,12 @@ private _updateVipPanicState = {
             if (vehicle _vip == _vip) then {
                 [_vip, position _closestPlayer] call ALiVE_fnc_doMoveRemote;
             };
-            false
+            "ready"
         } else {
-            serverTime > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])
+            if (serverTime > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])) then {"failed"} else {"active"};
         };
     } else {
-        serverTime > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])
+        if (serverTime > (_vip getVariable ["ALIVE_Task_VIPPanicUntil", 0])) then {"failed"} else {"active"};
     };
 };
 
@@ -456,8 +456,8 @@ switch (_taskState) do {
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "safe site"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
-            private _panicFailed = [_vip, _taskPlayers] call _updateVipPanicState;
-            if (_panicFailed) then {
+            private _panicState = [_vip, _taskPlayers] call _updateVipPanicState;
+            if (_panicState == "failed") then {
                 [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
                 _task set [8, "Failed"];
                 _task set [10, "N"];
@@ -468,9 +468,10 @@ switch (_taskState) do {
             [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
                 [_params] call _cleanupObjects;
             } else {
-                [_vip, _taskPlayers] call _syncVipEscortState;
+                if (_panicState == "ready") then {
+                    [_vip, _taskPlayers] call _syncVipEscortState;
 
-                if (_vip distance2D _taskPosition <= 30) then {
+                    if (_vip distance2D _taskPosition <= 30) then {
                     [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 3] call ALIVE_fnc_hashSet;
 
                     _task set [8, "Succeeded"];
@@ -478,6 +479,7 @@ switch (_taskState) do {
                     _result = _task;
 
                     [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                    };
                 };
             };
         };
@@ -520,8 +522,8 @@ switch (_taskState) do {
         } else {
             [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "handover point"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
-            private _panicFailed = [_vip, _taskPlayers] call _updateVipPanicState;
-            if (_panicFailed) then {
+            private _panicState = [_vip, _taskPlayers] call _updateVipPanicState;
+            if (_panicState == "failed") then {
                 [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
                 _task set [8, "Failed"];
                 _task set [10, "N"];
@@ -532,9 +534,10 @@ switch (_taskState) do {
             [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
                 [_params] call _cleanupObjects;
             } else {
-                [_vip, _taskPlayers] call _syncVipEscortState;
+                if (_panicState == "ready") then {
+                    [_vip, _taskPlayers] call _syncVipEscortState;
 
-                if (_vip distance2D _taskPosition <= 30) then {
+                    if (_vip distance2D _taskPosition <= 30) then {
                     [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
 
                     _task set [8, "Succeeded"];
