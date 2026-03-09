@@ -564,6 +564,7 @@ switch (_taskState) do {
                 };
             };
         };
+        };
     };
 };
 
