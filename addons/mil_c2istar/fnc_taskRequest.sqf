@@ -148,14 +148,16 @@ if (_autoGenerateStrategicTasks) then {
             default {"attacking"};
         };
 
-        private _opcom = objNull;
+        private _opcom = [];
         {
-            if (_taskFaction in ([_x, "factions", []] call ALiVE_fnc_hashGet)) exitWith {
-                _opcom = _x;
+            if (_x isEqualType []) then {
+                if (_taskFaction in ([_x, "factions", []] call ALiVE_fnc_hashGet)) exitWith {
+                    _opcom = _x;
+                };
             };
         } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
 
-        if (isNull _opcom) exitWith {_reservationKey};
+        if (_opcom isEqualTo []) exitWith {_reservationKey};
 
         private _objectives = +([_opcom, "nearestObjectives", [_destination, _objectiveState]] call ALiVE_fnc_OPCOM);
         if (_objectives isEqualTo []) exitWith {_reservationKey};

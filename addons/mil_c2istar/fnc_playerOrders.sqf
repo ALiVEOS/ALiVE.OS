@@ -293,14 +293,16 @@ switch (_operation) do {
             "_faction"
         ];
 
-        private _opcom = objNull;
+        private _opcom = [];
         {
-            if (_faction in ([_x, "factions", []] call ALiVE_fnc_hashGet)) exitWith {
-                _opcom = _x;
+            if (_x isEqualType []) then {
+                if (_faction in ([_x, "factions", []] call ALiVE_fnc_hashGet)) exitWith {
+                    _opcom = _x;
+                };
             };
         } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
 
-        if (isNull _opcom) exitWith {false};
+        if (_opcom isEqualTo []) exitWith {false};
 
         if (isNil QGVAR(playerRequests)) then {
             GVAR(playerRequests) = [] call ALiVE_fnc_hashCreate;
