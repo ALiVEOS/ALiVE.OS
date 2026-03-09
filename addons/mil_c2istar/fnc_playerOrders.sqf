@@ -449,7 +449,7 @@ switch (_operation) do {
         private _attempt = 0;
         private _created = false;
 
-        while {true} do {
+        while {!_created} do {
             private _tasksCurrent = ([ALIVE_taskHandler, "getTasks"] call ALiVE_fnc_taskHandler) select 2;
             if (_excludedRootTaskID != "") then {
                 private _filteredTasksCurrent = [];
@@ -488,7 +488,6 @@ switch (_operation) do {
                 };
             } else {
                 _created = true;
-                exitWith {};
             };
         };
 
