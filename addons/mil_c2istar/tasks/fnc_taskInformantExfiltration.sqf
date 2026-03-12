@@ -49,12 +49,26 @@ private _applyFailurePopulationEffect = {
 };
 
 
+private _getVipEscortPlayers = {
+    params ["_vip", "_taskPlayers"];
+
+    private _escortPlayers = _vip getVariable ["ALIVE_Task_VIPEscortPlayers", []];
+    private _resolvedEscortPlayers = _escortPlayers select {
+        _x != "" && {!(isNull ([_x] call ALIVE_fnc_getPlayerByUID))}
+    };
+
+    if !(_resolvedEscortPlayers isEqualTo []) exitWith {_resolvedEscortPlayers};
+
+    _taskPlayers
+};
+
 private _updateVipPanicState = {
     params ["_vip", "_taskPlayers"];
 
     if !(_vip getVariable ["ALIVE_Task_VIPPanicked", false]) exitWith {"ready"};
 
-    private _closestPlayer = [position _vip, _taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
+    private _escortPlayers = [_vip, _taskPlayers] call _getVipEscortPlayers;
+    private _closestPlayer = [position _vip, _escortPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
     if !(isNull _closestPlayer) then {
         if (_closestPlayer distance2D _vip < 30) then {
             _vip setVariable ["ALIVE_Task_VIPPanicked", false, true];
@@ -88,7 +102,8 @@ private _syncVipEscortState = {
     _vip setBehaviour "AWARE";
     _vip setSpeedMode "FULL";
 
-    private _closestPlayer = [position _vip, _taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
+    private _escortPlayers = [_vip, _taskPlayers] call _getVipEscortPlayers;
+    private _closestPlayer = [position _vip, _escortPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
     if (isNull _closestPlayer) exitWith {objNull};
 
     private _closestPlayerGroup = group _closestPlayer;
@@ -207,6 +222,7 @@ switch (_taskState) do {
         _vip setVariable ["ALIVE_Task_VIPPanicked", false, true];
         _vip setVariable ["ALIVE_Task_VIPPanicUntil", 0, true];
         _vip setVariable ["ALIVE_Task_VIPActivated", false, true];
+        _vip setVariable ["ALIVE_Task_VIPEscortPlayers", [], true];
         private _panicTimeout = missionNamespace getVariable ["ALIVE_taskVipPanicTimeout", 180];
         _vip setVariable ["ALIVE_Task_VIPPanicTimeout", (_panicTimeout max 30), false];
 
@@ -256,6 +272,18 @@ switch (_taskState) do {
                 _target setVariable ["ALIVE_Task_VIPPanicked", false, true];
                 _target setVariable ["ALIVE_Task_VIPPanicUntil", 0, true];
                 _target setVariable ["ALIVE_Task_VIPActivated", false, true];
+
+                private _escortPlayers = [];
+                if !(isNull _caller) then {
+                    _escortPlayers = ([(getPlayerUID _caller)] call ALIVE_fnc_getPlayersInGroupDataSource) param [1, []];
+                    if (_escortPlayers isEqualTo []) then {
+                        private _callerUID = getPlayerUID _caller;
+                        if !(_callerUID isEqualTo "") then {
+                            _escortPlayers pushBack _callerUID;
+                        };
+                    };
+                };
+                _target setVariable ["ALIVE_Task_VIPEscortPlayers", _escortPlayers, true];
 
                 ["Task Update", format ["%1 secured the informant in %2.", name _caller, _target getVariable ["ALIVE_Task_VIPSourceTown", "the area"]]] remoteExec ["BIS_fnc_showSubtitle", side (group _caller)];
             },
