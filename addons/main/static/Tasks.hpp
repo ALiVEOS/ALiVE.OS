@@ -668,23 +668,31 @@
 	_tasksData = [] call ALIVE_fnc_hashCreate;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Deliver Relief to %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Move humanitarian supplies into %1 and supervise distribution."] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Deliver Relief from %1 to %2"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Collect humanitarian supplies at %1, move them into %2 and supervise distribution."] call ALIVE_fnc_hashSet;
 	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Move to %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Proceed to the aid distribution point near %1 and prepare to support the local contact."] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","Move to %1 and establish security for an aid delivery, Over."],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
-	[_tasksData,"Travel",_taskData] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Collect supplies at %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Move to %1, secure the aid vehicle and prepare the relief load for departure."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Move to %1 and collect the aid vehicle before departure, Over."],["PLAYERS","Roger, moving to the pickup."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["HQ","Aid pickup at %1 has failed. Abort and await further tasking, Over."],["PLAYERS","Roger, pickup compromised."]]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Rally",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Distribute Aid"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Coordinate distribution of relief supplies in %1 and remain on station until the handover is complete."] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","The local contact is ready at %1. Supervise the aid handover and reassure the population, Over."],["PLAYERS","Roger, moving to the drop now."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Move aid convoy to %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Drive the loaded aid vehicle from %1 to %2 and keep the supplies intact along the route."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Move the aid vehicle from %1 to %2. Keep it moving and protect the load, Over."],["PLAYERS","Roger, aid convoy departing."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["HQ","Aid convoy movement to %1 has failed. Break contact and report, Over."],["PLAYERS","Roger, convoy halted."]]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Move",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Distribute aid in %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Park at the local contact in %1 and supervise final distribution of the supplies."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","The local contact is waiting in %1. Park the vehicle and distribute the supplies, Over."],["PLAYERS","Roger, preparing the handover."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","Relief supplies have been distributed in %1, Over."],["HQ","Roger. Civilian sentiment should improve in that area. Out."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_failed",[["HQ","The aid handover at %1 has failed. Abort and await further tasking, Over."],["PLAYERS","Roger, breaking contact."]]] call ALIVE_fnc_hashSet;
-	[_taskData,"reward",["forcePool",5]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",8]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Deliver",_taskData] call ALIVE_fnc_hashSet;
 
 	_options set [count _options,_tasksData];
@@ -972,3 +980,4 @@
 	_options set [count _options,_tasksData];
 
 	[ALIVE_generatedTasks, "MarketReopening", ["Market Reopening",_options]] call ALIVE_fnc_hashSet;
+

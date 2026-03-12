@@ -5,7 +5,8 @@ SCRIPT(taskAidDelivery);
 Function: ALIVE_fnc_taskAidDelivery
 
 Description:
-Hearts and Minds aid delivery task.
+Transport humanitarian supplies from a friendly source to a civilian settlement
+and supervise final distribution.
 
 Author:
 OpenAI
@@ -20,6 +21,7 @@ params [
 ];
 
 private _result = [];
+
 private _cleanupObjects = {
     params ["_taskParams"];
     {
@@ -29,6 +31,37 @@ private _cleanupObjects = {
     } forEach ([_taskParams, "cleanup", []] call ALIVE_fnc_hashGet);
 
     [_taskParams, "cleanup", []] call ALIVE_fnc_hashSet;
+};
+
+private _applyFailurePopulationEffect = {
+    params ["_taskParams", "_taskPosition", "_taskSide"];
+
+    [
+        [_taskParams, "supportEffectPosition", _taskPosition] call ALIVE_fnc_hashGet,
+        _taskSide,
+        [_taskParams, "supportValue", 8] call ALIVE_fnc_hashGet,
+        [
+            [_taskParams, "clusterID", ""] call ALIVE_fnc_hashGet,
+            [_taskParams, "taskType", "AidDelivery"] call ALIVE_fnc_hashGet,
+            [_taskParams, "cooldownDuration", 1800] call ALIVE_fnc_hashGet,
+            "failure"
+        ]
+    ] call ALIVE_fnc_taskApplyPopulationEffect;
+};
+
+private _updateAidVehicleAbandonment = {
+    params ["_taskParams", "_vehicle", "_taskPlayers"];
+
+    private _contactRadius = [_taskParams, "contactRadius", 250] call ALIVE_fnc_hashGet;
+    private _closestPlayer = [position _vehicle, _taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
+
+    if !(isNull _closestPlayer) then {
+        if (_closestPlayer distance2D _vehicle <= _contactRadius) then {
+            [_taskParams, "lastVehicleContact", serverTime] call ALIVE_fnc_hashSet;
+        };
+    };
+
+    (serverTime - ([_taskParams, "lastVehicleContact", serverTime] call ALIVE_fnc_hashGet)) > ([_taskParams, "abandonTimeout", 300] call ALIVE_fnc_hashGet)
 };
 
 switch (_taskState) do {
@@ -70,43 +103,88 @@ switch (_taskState) do {
         };
         if (_clusterCenter isEqualTo []) exitWith {["C2ISTAR - Task AidDelivery - Invalid civilian cluster center!"] call ALiVE_fnc_Dump};
 
-        private _contactPosition = [_clusterCenter, 5, 30, 3, 0, 0.25, 0] call BIS_fnc_findSafePos;
-        if (_contactPosition isEqualTo []) then {
-            _contactPosition = +_clusterCenter;
+        private _sourceCenter = [_taskLocation, _taskLocationType, _taskSide, "MIL", true] call ALIVE_fnc_taskGetSideCluster;
+        if (_sourceCenter isEqualTo [] || {(count _sourceCenter > 1) && {(_sourceCenter select 0) > 90000 || {(_sourceCenter select 1) > 90000}}}) then {
+            _sourceCenter = [_taskLocation, 50, 1500, 1, 0, 0.25, 0, [], [_taskLocation]] call BIS_fnc_findSafePos;
+            if (_sourceCenter isEqualTo []) then {
+                _sourceCenter = +_taskLocation;
+            };
+        };
+        _sourceCenter set [2, 0];
+
+        private _sourceContactPosition = [_sourceCenter, 5, 25, 2, 0, 0.25, 0] call BIS_fnc_findSafePos;
+        if (_sourceContactPosition isEqualTo []) then {
+            _sourceContactPosition = +_sourceCenter;
         };
 
-        private _cratePosition = [_contactPosition, 4 + random 2, random 360] call BIS_fnc_relPos;
-        _cratePosition set [2, 0];
+        private _destinationContactPosition = [_clusterCenter, 5, 25, 2, 0, 0.25, 0] call BIS_fnc_findSafePos;
+        if (_destinationContactPosition isEqualTo []) then {
+            _destinationContactPosition = +_clusterCenter;
+        };
 
-        private _contact = createAgent [selectRandom ["C_man_1", "C_man_polo_1_F", "C_man_polo_2_F", "C_man_shorts_1_F"], _contactPosition, [], 0, "NONE"];
-        removeAllWeapons _contact;
-        _contact disableAI "AUTOTARGET";
-        _contact disableAI "TARGET";
-        _contact disableAI "FSM";
-        _contact disableAI "MOVE";
-        _contact allowDamage false;
-        _contact setCaptive true;
-        _contact setBehaviour "CARELESS";
-        _contact setDir random 360;
+        private _aidVehiclePosition = [_sourceContactPosition, 8, 20, 0, 0, 0.4, 0] call BIS_fnc_findSafePos;
+        if (_aidVehiclePosition isEqualTo []) then {
+            _aidVehiclePosition = [_sourceContactPosition, 10, random 360] call BIS_fnc_relPos;
+        };
+        _aidVehiclePosition set [2, 0];
 
-        private _aidCrate = createVehicle ["Land_WoodenCrate_01_F", _cratePosition, [], 0, "NONE"];
-        _aidCrate setPosATL _cratePosition;
+        private _sourceContact = createAgent [selectRandom ["C_man_1", "C_man_polo_1_F", "C_man_polo_2_F", "C_man_w_worker_F"], _sourceContactPosition, [], 0, "NONE"];
+        removeAllWeapons _sourceContact;
+        _sourceContact disableAI "AUTOTARGET";
+        _sourceContact disableAI "TARGET";
+        _sourceContact disableAI "FSM";
+        _sourceContact disableAI "MOVE";
+        _sourceContact allowDamage false;
+        _sourceContact setCaptive true;
+        _sourceContact setBehaviour "CARELESS";
+        _sourceContact setDir random 360;
+
+        private _destinationContact = createAgent [selectRandom ["C_man_1", "C_man_polo_4_F", "C_man_polo_5_F", "C_man_w_worker_F"], _destinationContactPosition, [], 0, "NONE"];
+        removeAllWeapons _destinationContact;
+        _destinationContact disableAI "AUTOTARGET";
+        _destinationContact disableAI "TARGET";
+        _destinationContact disableAI "FSM";
+        _destinationContact disableAI "MOVE";
+        _destinationContact allowDamage false;
+        _destinationContact setCaptive true;
+        _destinationContact setBehaviour "CARELESS";
+        _destinationContact setDir random 360;
+
+        private _aidVehicle = createVehicle ["C_Van_01_box_F", _aidVehiclePosition, [], 0, "NONE"];
+        _aidVehicle setPosATL _aidVehiclePosition;
+        _aidVehicle setDir random 360;
+        _aidVehicle setFuel 1;
+        _aidVehicle setDamage 0;
+        _aidVehicle setVehicleLock "UNLOCKED";
+        clearWeaponCargoGlobal _aidVehicle;
+        clearMagazineCargoGlobal _aidVehicle;
+        clearItemCargoGlobal _aidVehicle;
+        clearBackpackCargoGlobal _aidVehicle;
+
         private _completionVar = format ["ALIVE_Task_%1_AidDelivered", _taskID];
 
-        private _nearestTown = [_clusterCenter] call ALIVE_fnc_taskGetNearestLocationName;
-        if (_nearestTown == "") then {
-            _nearestTown = "the settlement";
+        private _sourceTown = [_sourceCenter] call ALIVE_fnc_taskGetNearestLocationName;
+        if (_sourceTown == "") then {
+            _sourceTown = "the friendly depot";
         };
 
-        _aidCrate setVariable ["ALIVE_Task_AidTown", _nearestTown, false];
-        _aidCrate setVariable [_completionVar, false, true];
+        private _destinationTown = [_clusterCenter] call ALIVE_fnc_taskGetNearestLocationName;
+        if (_destinationTown == "") then {
+            _destinationTown = "the settlement";
+        };
+
+        _aidVehicle setVariable [_completionVar, false, true];
+        _aidVehicle setVariable ["ALIVE_Task_AidDeliveryEnabled", false, true];
+        _aidVehicle setVariable ["ALIVE_Task_AidSourceTown", _sourceTown, false];
+        _aidVehicle setVariable ["ALIVE_Task_AidTown", _destinationTown, false];
+        _aidVehicle setVariable ["ALIVE_Task_AidDestination", _destinationContactPosition, false];
 
         [
-            _aidCrate,
+            _aidVehicle,
             "Distribute Aid",
-            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_connect_ca.paa",
-            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_connect_ca.paa",
-            format ["_this distance2D _target < 4 && !(_target getVariable ['%1', false])", _completionVar],
+            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unloadVehicle_ca.paa",
+            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unloadVehicle_ca.paa",
+            format ["_this distance2D _target < 4 && (_target getVariable ['ALIVE_Task_AidDeliveryEnabled', false]) && !(_target getVariable ['%1', false]) && {_target distance2D (_target getVariable ['ALIVE_Task_AidDestination', [0,0,0]]) < 35}", _completionVar],
             "_caller distance2D _target < 4",
             {},
             {},
@@ -115,21 +193,20 @@ switch (_taskState) do {
                 _arguments params ["_completionVar"];
 
                 _target setVariable [_completionVar, true, true];
-
                 ["Task Accomplished", format ["%1 distributed relief supplies in %2.", name _caller, _target getVariable ["ALIVE_Task_AidTown", "the area"]]] remoteExec ["BIS_fnc_showSubtitle", side (group _caller)];
             },
             {},
             [_completionVar],
-            8
-        ] remoteExec ["BIS_fnc_holdActionAdd", 0, _aidCrate];
+            10
+        ] remoteExec ["BIS_fnc_holdActionAdd", 0, _aidVehicle];
 
         private _dialogOptions = [ALIVE_generatedTasks, "AidDelivery"] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;
         private _dialogOption = +(selectRandom _dialogOptions);
 
         private _dialog = [_dialogOption, "Parent"] call ALIVE_fnc_hashGet;
-        private _taskTitle = format [[_dialog, "title"] call ALIVE_fnc_hashGet, _nearestTown];
-        private _taskDescription = format [[_dialog, "description"] call ALIVE_fnc_hashGet, _nearestTown];
+        private _taskTitle = format [[_dialog, "title"] call ALIVE_fnc_hashGet, _sourceTown, _destinationTown];
+        private _taskDescription = format [[_dialog, "description"] call ALIVE_fnc_hashGet, _sourceTown, _destinationTown];
 
         private _state = if (_taskCurrent == "Y") then {"Assigned"} else {"Created"};
         private _tasks = [];
@@ -139,69 +216,100 @@ switch (_taskState) do {
         _tasks pushBack [_taskID, _requestPlayerID, _taskSide, _clusterCenter, _taskFaction, _taskTitle, _taskDescription, _taskPlayers, _state, _taskApplyType, "N", "None", _taskSource, false];
         _taskIDs pushBack _taskID;
 
-        _dialog = [_dialogOption, "Travel"] call ALIVE_fnc_hashGet;
-        _taskTitle = format [[_dialog, "title"] call ALIVE_fnc_hashGet, _nearestTown];
-        _taskDescription = format [[_dialog, "description"] call ALIVE_fnc_hashGet, _nearestTown];
-        private _travelTaskID = format ["%1_c1", _taskID];
-        _taskSource = format ["%1-AidDelivery-Travel", _taskID];
-        _tasks pushBack [_travelTaskID, _requestPlayerID, _taskSide, _contactPosition, _taskFaction, _taskTitle, _taskDescription, _taskPlayers, _state, _taskApplyType, _taskCurrent, _taskID, _taskSource, false];
-        _taskIDs pushBack _travelTaskID;
+        _dialog = [_dialogOption, "Rally"] call ALIVE_fnc_hashGet;
+        _taskTitle = format [[_dialog, "title"] call ALIVE_fnc_hashGet, _sourceTown];
+        _taskDescription = format [[_dialog, "description"] call ALIVE_fnc_hashGet, _sourceTown];
+        private _rallyTaskID = format ["%1_c1", _taskID];
+        _taskSource = format ["%1-AidDelivery-Rally", _taskID];
+        _tasks pushBack [_rallyTaskID, _requestPlayerID, _taskSide, _sourceContactPosition, _taskFaction, _taskTitle, _taskDescription, _taskPlayers, _state, _taskApplyType, _taskCurrent, _taskID, _taskSource, false];
+        _taskIDs pushBack _rallyTaskID;
+
+        _dialog = [_dialogOption, "Move"] call ALIVE_fnc_hashGet;
+        _taskTitle = format [[_dialog, "title"] call ALIVE_fnc_hashGet, _destinationTown];
+        _taskDescription = format [[_dialog, "description"] call ALIVE_fnc_hashGet, _sourceTown, _destinationTown];
+        private _moveTaskID = format ["%1_c2", _taskID];
+        _taskSource = format ["%1-AidDelivery-Move", _taskID];
+        _tasks pushBack [_moveTaskID, _requestPlayerID, _taskSide, _clusterCenter, _taskFaction, _taskTitle, _taskDescription, _taskPlayers, "Created", _taskApplyType, "N", _taskID, _taskSource, false];
+        _taskIDs pushBack _moveTaskID;
 
         _dialog = [_dialogOption, "Deliver"] call ALIVE_fnc_hashGet;
-        _taskTitle = [_dialog, "title"] call ALIVE_fnc_hashGet;
-        _taskDescription = format [[_dialog, "description"] call ALIVE_fnc_hashGet, _nearestTown];
-        private _deliverTaskID = format ["%1_c2", _taskID];
+        _taskTitle = format [[_dialog, "title"] call ALIVE_fnc_hashGet, _destinationTown];
+        _taskDescription = format [[_dialog, "description"] call ALIVE_fnc_hashGet, _destinationTown];
+        private _deliverTaskID = format ["%1_c3", _taskID];
         _taskSource = format ["%1-AidDelivery-Deliver", _taskID];
-        _tasks pushBack [_deliverTaskID, _requestPlayerID, _taskSide, _cratePosition, _taskFaction, _taskTitle, _taskDescription, _taskPlayers, "Created", _taskApplyType, "N", _taskID, _taskSource, true];
+        _tasks pushBack [_deliverTaskID, _requestPlayerID, _taskSide, _destinationContactPosition, _taskFaction, _taskTitle, _taskDescription, _taskPlayers, "Created", _taskApplyType, "N", _taskID, _taskSource, true];
         _taskIDs pushBack _deliverTaskID;
 
-        _dialog = [_dialogOption, "Travel"] call ALIVE_fnc_hashGet;
-        private _travelChat = +([_dialog, "chat_start"] call ALIVE_fnc_hashGet);
-        private _travelMessage = +(_travelChat select 0);
-        _travelMessage set [1, format [_travelMessage select 1, _nearestTown]];
-        _travelChat set [0, _travelMessage];
-        [_dialog, "chat_start", _travelChat] call ALIVE_fnc_hashSet;
+        _dialog = [_dialogOption, "Rally"] call ALIVE_fnc_hashGet;
+        private _rallyChat = +([_dialog, "chat_start"] call ALIVE_fnc_hashGet);
+        private _rallyMessage = +(_rallyChat select 0);
+        _rallyMessage set [1, format [_rallyMessage select 1, _sourceTown]];
+        _rallyChat set [0, _rallyMessage];
+        [_dialog, "chat_start", _rallyChat] call ALIVE_fnc_hashSet;
+
+        private _rallyFailedChat = +([_dialog, "chat_failed"] call ALIVE_fnc_hashGet);
+        private _rallyFailedMessage = +(_rallyFailedChat select 0);
+        _rallyFailedMessage set [1, format [_rallyFailedMessage select 1, _sourceTown]];
+        _rallyFailedChat set [0, _rallyFailedMessage];
+        [_dialog, "chat_failed", _rallyFailedChat] call ALIVE_fnc_hashSet;
+
+        _dialog = [_dialogOption, "Move"] call ALIVE_fnc_hashGet;
+        private _moveChat = +([_dialog, "chat_start"] call ALIVE_fnc_hashGet);
+        private _moveMessage = +(_moveChat select 0);
+        _moveMessage set [1, format [_moveMessage select 1, _sourceTown, _destinationTown]];
+        _moveChat set [0, _moveMessage];
+        [_dialog, "chat_start", _moveChat] call ALIVE_fnc_hashSet;
+
+        private _moveFailedChat = +([_dialog, "chat_failed"] call ALIVE_fnc_hashGet);
+        private _moveFailedMessage = +(_moveFailedChat select 0);
+        _moveFailedMessage set [1, format [_moveFailedMessage select 1, _destinationTown]];
+        _moveFailedChat set [0, _moveFailedMessage];
+        [_dialog, "chat_failed", _moveFailedChat] call ALIVE_fnc_hashSet;
 
         _dialog = [_dialogOption, "Deliver"] call ALIVE_fnc_hashGet;
         private _deliverChat = +([_dialog, "chat_start"] call ALIVE_fnc_hashGet);
         private _deliverMessage = +(_deliverChat select 0);
-        _deliverMessage set [1, format [_deliverMessage select 1, _nearestTown]];
+        _deliverMessage set [1, format [_deliverMessage select 1, _destinationTown]];
         _deliverChat set [0, _deliverMessage];
         [_dialog, "chat_start", _deliverChat] call ALIVE_fnc_hashSet;
 
-        private _successChat = +([_dialog, "chat_success"] call ALIVE_fnc_hashGet);
-        private _successMessage = +(_successChat select 0);
-        _successMessage set [1, format [_successMessage select 1, _nearestTown]];
-        _successChat set [0, _successMessage];
-        [_dialog, "chat_success", _successChat] call ALIVE_fnc_hashSet;
+        private _deliverSuccessChat = +([_dialog, "chat_success"] call ALIVE_fnc_hashGet);
+        private _deliverSuccessMessage = +(_deliverSuccessChat select 0);
+        _deliverSuccessMessage set [1, format [_deliverSuccessMessage select 1, _destinationTown]];
+        _deliverSuccessChat set [0, _deliverSuccessMessage];
+        [_dialog, "chat_success", _deliverSuccessChat] call ALIVE_fnc_hashSet;
 
-        private _failedChat = +([_dialog, "chat_failed"] call ALIVE_fnc_hashGet);
-        private _failedMessage = +(_failedChat select 0);
-        _failedMessage set [1, format [_failedMessage select 1, _nearestTown]];
-        _failedChat set [0, _failedMessage];
-        [_dialog, "chat_failed", _failedChat] call ALIVE_fnc_hashSet;
+        private _deliverFailedChat = +([_dialog, "chat_failed"] call ALIVE_fnc_hashGet);
+        private _deliverFailedMessage = +(_deliverFailedChat select 0);
+        _deliverFailedMessage set [1, format [_deliverFailedMessage select 1, _destinationTown]];
+        _deliverFailedChat set [0, _deliverFailedMessage];
+        [_dialog, "chat_failed", _deliverFailedChat] call ALIVE_fnc_hashSet;
 
         private _taskParams = [] call ALIVE_fnc_hashCreate;
         [_taskParams, "nextTask", _taskIDs select 1] call ALIVE_fnc_hashSet;
         [_taskParams, "taskIDs", _taskIDs] call ALIVE_fnc_hashSet;
         [_taskParams, "dialog", _dialogOption] call ALIVE_fnc_hashSet;
         [_taskParams, "enemyFaction", _taskEnemyFaction] call ALIVE_fnc_hashSet;
-        [_taskParams, "targets", [_aidCrate]] call ALIVE_fnc_hashSet;
-        [_taskParams, "cleanup", [_contact, _aidCrate]] call ALIVE_fnc_hashSet;
+        [_taskParams, "targets", [_aidVehicle]] call ALIVE_fnc_hashSet;
+        [_taskParams, "cleanup", [_sourceContact, _destinationContact, _aidVehicle]] call ALIVE_fnc_hashSet;
         [_taskParams, "completionVar", _completionVar] call ALIVE_fnc_hashSet;
         [_taskParams, "supportValue", 8] call ALIVE_fnc_hashSet;
         [_taskParams, "clusterID", _clusterID] call ALIVE_fnc_hashSet;
         [_taskParams, "supportPhase", _supportPhase] call ALIVE_fnc_hashSet;
         [_taskParams, "taskType", "AidDelivery"] call ALIVE_fnc_hashSet;
         [_taskParams, "cooldownDuration", 1800] call ALIVE_fnc_hashSet;
+        [_taskParams, "supportEffectPosition", _clusterCenter] call ALIVE_fnc_hashSet;
         [_taskParams, "lastState", ""] call ALIVE_fnc_hashSet;
+        [_taskParams, "abandonTimeout", 300] call ALIVE_fnc_hashSet;
+        [_taskParams, "contactRadius", 250] call ALIVE_fnc_hashSet;
+        [_taskParams, "lastVehicleContact", serverTime] call ALIVE_fnc_hashSet;
 
         _result = [_tasks, _taskParams];
     };
     case "Parent": {
 
     };
-    case "Travel": {
+    case "Rally": {
         _task params [
             "_taskID",
             "",
@@ -217,23 +325,99 @@ switch (_taskState) do {
 
         private _lastState = [_params, "lastState"] call ALIVE_fnc_hashGet;
         private _taskDialog = [_params, "dialog"] call ALIVE_fnc_hashGet;
-        private _currentTaskDialog = [_taskDialog, "Travel"] call ALIVE_fnc_hashGet;
+        private _currentTaskDialog = [_taskDialog, "Rally"] call ALIVE_fnc_hashGet;
+        private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
+        private _aidVehicle = [_targets, 0, objNull, [objNull]] call BIS_fnc_param;
 
-        if (_lastState != "Travel") then {
+        if (_lastState != "Rally") then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Travel"] call ALIVE_fnc_hashSet;
+            [_params, "lastState", "Rally"] call ALIVE_fnc_hashSet;
         };
 
-        [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "aid distribution point"] call ALIVE_fnc_taskCreateMarkersForPlayers;
-
-        if ([_taskPosition, _taskPlayers, 150] call ALIVE_fnc_taskHavePlayersReachedDestination) then {
-            [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
-
-            [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 2] call ALIVE_fnc_hashSet;
-
-            _task set [8, "Succeeded"];
+        if (isNull _aidVehicle || {!alive _aidVehicle}) then {
+            [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
+            _task set [8, "Failed"];
             _task set [10, "N"];
             _result = _task;
+
+            [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+            ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
+            [_params] call _cleanupObjects;
+        } else {
+            [_taskPosition, _taskSide, _taskPlayers, _taskID, "vehicle", "aid vehicle"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+
+            if ([_taskPosition, _taskPlayers, 100] call ALIVE_fnc_taskHavePlayersReachedDestination) then {
+                [_params, "lastVehicleContact", serverTime] call ALIVE_fnc_hashSet;
+                [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 2] call ALIVE_fnc_hashSet;
+
+                _task set [8, "Succeeded"];
+                _task set [10, "N"];
+                _result = _task;
+
+                [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+            };
+        };
+    };
+    case "Move": {
+        _task params [
+            "_taskID",
+            "",
+            "_taskSide",
+            "_taskPosition",
+            "",
+            "",
+            "",
+            "_taskPlayers"
+        ];
+
+        _taskPlayers = _taskPlayers select 0;
+
+        private _lastState = [_params, "lastState"] call ALIVE_fnc_hashGet;
+        private _taskDialog = [_params, "dialog"] call ALIVE_fnc_hashGet;
+        private _currentTaskDialog = [_taskDialog, "Move"] call ALIVE_fnc_hashGet;
+        private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
+        private _aidVehicle = [_targets, 0, objNull, [objNull]] call BIS_fnc_param;
+
+        if (_lastState != "Move") then {
+            ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, "lastState", "Move"] call ALIVE_fnc_hashSet;
+        };
+
+        if (isNull _aidVehicle || {!alive _aidVehicle}) then {
+            [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
+            _task set [8, "Failed"];
+            _task set [10, "N"];
+            _result = _task;
+
+            [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+            ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
+            [_params] call _cleanupObjects;
+        } else {
+            [_taskPosition, _taskSide, _taskPlayers, _taskID, "vehicle", "aid destination"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+
+            if ([_params, _aidVehicle, _taskPlayers] call _updateAidVehicleAbandonment) then {
+                [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
+                _task set [8, "Failed"];
+                _task set [10, "N"];
+                _result = _task;
+
+                [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
+                [_params] call _cleanupObjects;
+            } else {
+                if (_aidVehicle distance2D _taskPosition <= 60) then {
+                    [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 3] call ALIVE_fnc_hashSet;
+
+                    _task set [8, "Succeeded"];
+                    _task set [10, "N"];
+                    _result = _task;
+
+                    [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                };
+            };
         };
     };
     case "Deliver": {
@@ -254,14 +438,15 @@ switch (_taskState) do {
         private _taskDialog = [_params, "dialog"] call ALIVE_fnc_hashGet;
         private _currentTaskDialog = [_taskDialog, "Deliver"] call ALIVE_fnc_hashGet;
         private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
-        private _target = [_targets, 0, objNull, [objNull]] call BIS_fnc_param;
+        private _aidVehicle = [_targets, 0, objNull, [objNull]] call BIS_fnc_param;
+        private _completionVar = [_params, "completionVar", ""] call ALIVE_fnc_hashGet;
 
         if (_lastState != "Deliver") then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
             [_params, "lastState", "Deliver"] call ALIVE_fnc_hashSet;
         };
 
-        if (isNull _target || {!alive _target}) then {
+        if (isNull _aidVehicle || {!alive _aidVehicle}) then {
             [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
             _task set [8, "Failed"];
             _task set [10, "N"];
@@ -269,48 +454,49 @@ switch (_taskState) do {
 
             [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
             ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-
-            [
-                _taskPosition,
-                _taskSide,
-                [_params, "supportValue", 8] call ALIVE_fnc_hashGet,
-                [
-                    [_params, "clusterID", ""] call ALIVE_fnc_hashGet,
-                    [_params, "taskType", "AidDelivery"] call ALIVE_fnc_hashGet,
-                    [_params, "cooldownDuration", 1800] call ALIVE_fnc_hashGet,
-                    "failure"
-                ]
-            ] call ALIVE_fnc_taskApplyPopulationEffect;
-
+            [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
             [_params] call _cleanupObjects;
         } else {
-            [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "aid supplies"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            _aidVehicle setVariable ["ALIVE_Task_AidDeliveryEnabled", true, true];
+            [_taskPosition, _taskSide, _taskPlayers, _taskID, "vehicle", "distribution point"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
-            if (_target getVariable [([_params, "completionVar", ""] call ALIVE_fnc_hashGet), false]) then {
+            if ([_params, _aidVehicle, _taskPlayers] call _updateAidVehicleAbandonment) then {
                 [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
-
-                _task set [8, "Succeeded"];
+                _task set [8, "Failed"];
                 _task set [10, "N"];
                 _result = _task;
 
                 [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
-
-                ["chat_success", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-                [_currentTaskDialog, _taskSide, _taskFaction] call ALIVE_fnc_taskCreateReward;
-
-                [
-                    _taskPosition,
-                    _taskSide,
-                    [_params, "supportValue", 8] call ALIVE_fnc_hashGet,
-                    [
-                        [_params, "clusterID", ""] call ALIVE_fnc_hashGet,
-                        [_params, "taskType", "AidDelivery"] call ALIVE_fnc_hashGet,
-                        [_params, "cooldownDuration", 1800] call ALIVE_fnc_hashGet,
-                        "success"
-                    ]
-                ] call ALIVE_fnc_taskApplyPopulationEffect;
-
+                ["chat_failed", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
                 [_params] call _cleanupObjects;
+            } else {
+                if (_aidVehicle getVariable [_completionVar, false]) then {
+                    [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
+
+                    _task set [8, "Succeeded"];
+                    _task set [10, "N"];
+                    _result = _task;
+
+                    [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+
+                    ["chat_success", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                    [_currentTaskDialog, _taskSide, _taskFaction] call ALIVE_fnc_taskCreateReward;
+
+                    [
+                        _taskPosition,
+                        _taskSide,
+                        [_params, "supportValue", 8] call ALIVE_fnc_hashGet,
+                        [
+                            [_params, "clusterID", ""] call ALIVE_fnc_hashGet,
+                            [_params, "taskType", "AidDelivery"] call ALIVE_fnc_hashGet,
+                            [_params, "cooldownDuration", 1800] call ALIVE_fnc_hashGet,
+                            "success"
+                        ]
+                    ] call ALIVE_fnc_taskApplyPopulationEffect;
+
+                    [_params] call _cleanupObjects;
+                };
             };
         };
     };
