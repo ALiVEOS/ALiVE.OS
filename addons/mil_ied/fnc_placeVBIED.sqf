@@ -62,8 +62,15 @@ if (count _veh > 0) then {
 
     _num = _num / 10;
 
+    if (_carClasses isEqualTo [] || {_roads isEqualTo []}) exitWith {
+        if (_debug) then {
+            ["placeVBIED could not find spawn data at %1. Car classes: %2, roads: %3", _location, count _carClasses, count _roads] call ALiVE_fnc_dump;
+        };
+        _vblist
+    };
+
     for "_i" from 0 to (_num-1) do {
-        private ["_vb","_select","_carType","_position","_road"];
+        private ["_vb","_select","_carType","_position","_road","_roadConnectedTo","_roadDirection"];
 
         // create a random vehicle
         _select = (floor(random (count _carClasses)));
@@ -71,7 +78,13 @@ if (count _veh > 0) then {
         _road = _roads select (floor(random (count _roads)));
         _position = [position _road, 0, 4, 1, 0, 4, 0] call bis_fnc_findSafePos;
         _vb = createVehicle [_carType, _position, [], 0, "NONE"];
-        _vb setdir (direction _road);
+        _roadConnectedTo = roadsConnectedTo _road;
+        _roadDirection = if (_roadConnectedTo isEqualTo []) then {
+            getDir _road
+        } else {
+            _road getDir (_roadConnectedTo select 0)
+        };
+        _vb setDir _roadDirection;
 
         // Create VBIED
         [_vb,_threat] call ALiVE_fnc_createVBIED;

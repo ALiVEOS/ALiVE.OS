@@ -86,9 +86,9 @@ for "_i" from 1 to 4 do {
  	
    _road = _road_seg_list select 0;
    _roadConnectedTo = roadsConnectedTo _road;
-   _connectedRoad = _roadConnectedTo select 0;
+   _connectedRoad = if (count _roadConnectedTo > 0) then {_roadConnectedTo select 0} else {objNull};
   
-   if !(isNil "_connectedRoad") then {
+   if !(isNull _connectedRoad) then {
  	  _direction = _road getDir _connectedRoad;
    } else {
  	  _direction = (getDir _road)-90;
@@ -140,7 +140,11 @@ for "_i" from 1 to 4 do {
 	 _connected_road = _connectedRoad;
 	 _current_road = _road;
 	 _veh_type = _vehicleClass;
-	 _direction = ([_current_road, _connected_road] call BIS_fnc_DirTo) + random [-7, 0, 7];
+     if !(isNull _connected_road) then {
+         _direction = ([_current_road, _connected_road] call BIS_fnc_DirTo) + random [-7, 0, 7];
+     } else {
+         _direction = _direction + random [-7, 0, 7];
+     };
 	 _pos_flat_empty = [];
 	 _pos_flat_empty_attempts = 0;
 	 _road_seg_width = ((getRoadInfo _current_road) select 1);
@@ -185,9 +189,9 @@ for "_i" from 1 to 4 do {
 		 };
 		
 	  _num_cars_in_road_segment = (floor ((_road_seg_length * 0.75) / _car_length_allowed)) min 5;
-	  _distance_between_cars = (_road_seg_length / _num_cars_in_road_segment) + _car_extra_space;
 	
 	  if (_num_cars_in_road_segment > 0) then {
+          _distance_between_cars = (_road_seg_length / _num_cars_in_road_segment) + _car_extra_space;
 		  _pos_middle_right = [(_pos_flat_empty # 0), (_pos_flat_empty # 1), (_pos_flat_empty # 2 - getTerrainHeightASL _pos_flat_empty)] getPos [_road_seg_width * 1.35, (_direction + 90)];
 		  _pos_back_right = _pos_middle_right getPos [(_road_seg_length / 2), (_direction - 180)];
 		  _last_pos = _pos_back_right;

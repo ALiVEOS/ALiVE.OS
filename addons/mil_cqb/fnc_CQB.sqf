@@ -1317,7 +1317,12 @@ switch(_operation) do {
                 if !(isNull _module) then {
                  _CQB_patrolSearchChance = (_module getVariable ['CQB_patrol_searchchance', 0.3]);
                 };
-                if (random 1 <= _CQB_patrolSearchChance) then {this call CBA_fnc_searchNearby};
+                if (random 1 <= _CQB_patrolSearchChance) then {
+                    private _group = group this;
+                    if (!isNull this && {alive this} && {_group != grpNull} && {count (units _group) > 0}) then {
+                        [this] call CBA_fnc_searchNearby;
+                    };
+                };
                 "
                 , [_CQB_patrolMinWaitTime, _CQB_patrolMidWaitTime, _CQB_patrolMaxWaitTime]] call CBA_fnc_taskPatrol;
             } else { 

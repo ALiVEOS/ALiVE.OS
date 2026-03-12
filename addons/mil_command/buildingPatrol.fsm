@@ -159,7 +159,8 @@ class FSM
                          "if(_debug) then { [""Executed FSM Command - [buildingPatrol.fsm] CBA_fnc_searchNearby called _unit: %1"",_unit] call ALiVE_fnc_dump; };" \n
                          "// debug ---------------------------------------" \n
                          "dostop _unit;" \n
-                         "[_unit] call CBA_fnc_searchNearby;" \n
+                         "private _searchGroup = group _unit;" \n
+                         "if (!isNull _unit && {alive _unit} && {_searchGroup != grpNull} && {count (units _searchGroup) > 0}) then { [_unit] call CBA_fnc_searchNearby; };" \n
                          "_startWait = time;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links

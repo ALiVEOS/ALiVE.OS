@@ -27,15 +27,40 @@ Author:
     Olsen, Highhead
 ---------------------------------------------------------------------------- */
 
-private["_object", "_objectPosition", "_marker"];
+private ["_object", "_objectPosition", "_marker"];
 
 _object = _this select 0;
 _marker = _this select 1;
+_objectPosition = [];
 
 switch (typeName _object) do {
-    case "ARRAY" : {_objectPosition = _object};
-    case "LOCATION" : {_objectPosition = getpos _object};
-    default {_objectPosition = getpos _object};
+    case "ARRAY": {
+        _objectPosition = +_object;
+    };
+    case "LOCATION": {
+        _objectPosition = getPos _object;
+    };
+    case "OBJECT": {
+        if !(isNull _object) then {
+            _objectPosition = getPos _object;
+        };
+    };
 };
 
-_objectPosition inArea _marker;
+if !(_objectPosition isEqualType [] && {count _objectPosition >= 2}) exitWith {false};
+
+if (count _objectPosition == 2) then {
+    _objectPosition pushBack 0;
+};
+
+if (_marker isEqualType "") exitWith {
+    if !(_marker call ALIVE_fnc_markerExists) exitWith {false};
+    _objectPosition inArea _marker;
+};
+
+if (_marker isEqualType objNull) exitWith {
+    if (isNull _marker) exitWith {false};
+    _objectPosition inArea _marker;
+};
+
+false;
