@@ -175,9 +175,9 @@ switch (_taskState) do {
 
         _aidVehicle setVariable [_completionVar, false, true];
         _aidVehicle setVariable ["ALIVE_Task_AidDeliveryEnabled", false, true];
-        _aidVehicle setVariable ["ALIVE_Task_AidSourceTown", _sourceTown, false];
-        _aidVehicle setVariable ["ALIVE_Task_AidTown", _destinationTown, false];
-        _aidVehicle setVariable ["ALIVE_Task_AidDestination", _destinationContactPosition, false];
+        _aidVehicle setVariable ["ALIVE_Task_AidSourceTown", _sourceTown, true];
+        _aidVehicle setVariable ["ALIVE_Task_AidTown", _destinationTown, true];
+        _aidVehicle setVariable ["ALIVE_Task_AidDestination", _destinationContactPosition, true];
 
         [
             _aidVehicle,
@@ -345,9 +345,16 @@ switch (_taskState) do {
             [_params, _taskPosition, _taskSide] call _applyFailurePopulationEffect;
             [_params] call _cleanupObjects;
         } else {
-            [_taskPosition, _taskSide, _taskPlayers, _taskID, "vehicle", "aid vehicle"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            private _vehiclePosition = getPosATL _aidVehicle;
+            [_vehiclePosition, _taskSide, _taskPlayers, _taskID, "vehicle", "aid vehicle"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
-            if ([_taskPosition, _taskPlayers, 100] call ALIVE_fnc_taskHavePlayersReachedDestination) then {
+            private _closestPlayer = [position _aidVehicle, _taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
+            private _vehicleSecured = false;
+            if !(isNull _closestPlayer) then {
+                _vehicleSecured = (vehicle _closestPlayer == _aidVehicle) || {_closestPlayer distance2D _aidVehicle <= 12};
+            };
+
+            if (_vehicleSecured) then {
                 [_params, "lastVehicleContact", serverTime] call ALIVE_fnc_hashSet;
                 [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 2] call ALIVE_fnc_hashSet;
 
