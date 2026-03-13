@@ -146,6 +146,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\fnc_analysis\fnc_sectorDataSort.sqf";
                 RECOMPILE;
             };
+            class sectorDataDummy {
+                description = "sectorDataDummy";
+                file = "\x\alive\addons\fnc_analysis\fnc_sectorDataDummy.sqf";
+                RECOMPILE;
+            };
             class sectorDataMerge {
                 description = "sectorDataMerge";
                 file = "\x\alive\addons\fnc_analysis\fnc_sectorDataMerge.sqf";
