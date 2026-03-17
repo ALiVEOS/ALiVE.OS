@@ -723,6 +723,106 @@ ALiVE_fnc_INS_sabotage = {
                 _timeTaken = time; waituntil {time - _timeTaken > 900};
 };
 
+ALiVE_fnc_INS_getRoadblockActionObject = {
+                params [["_roadblockSource", objNull, [objNull, []]]];
+
+                private _roadblockPos = if (_roadblockSource isEqualType objNull) then {
+                    getPosATL _roadblockSource
+                } else {
+                    _roadblockSource
+                };
+
+                private _actionObject = objNull;
+                private _barGates = nearestObjects [_roadblockPos, ["Land_BarGate_F"], 10];
+
+                if !(_barGates isEqualTo []) then {
+                    _actionObject = _barGates select 0;
+                } else {
+                    private _helpers = (nearestObjects [_roadblockPos, ["Box_FIA_Wps_F"], 12]) select {
+                        _x getVariable [QGVAR(ROADBLOCK_HELPER), false]
+                    };
+
+                    if !(_helpers isEqualTo []) then {
+                        _actionObject = _helpers select 0;
+                    } else {
+                        private _nearRoads = _roadblockPos nearRoads 10;
+                        private _anchorPos = +_roadblockPos;
+                        private _direction = 0;
+
+                        if !(_nearRoads isEqualTo []) then {
+                            private _road = _nearRoads select 0;
+                            private _connectedRoads = roadsConnectedTo _road;
+
+                            if !(_connectedRoads isEqualTo []) then {
+                                _direction = _road getDir (_connectedRoads select 0);
+                            };
+
+                            _anchorPos = getPosATL _road;
+                        };
+
+                        _actionObject = createVehicle ["Box_FIA_Wps_F", _anchorPos, [], 0, "CAN_COLLIDE"];
+                        _actionObject allowDamage false;
+                        _actionObject setDir _direction;
+                        _actionObject setPosATL (_anchorPos getPos [6, _direction + 90]);
+                        _actionObject setVectorUp (surfaceNormal (getPosWorld _actionObject));
+                        _actionObject setVariable [QGVAR(ROADBLOCK_HELPER), true, true];
+                    };
+                };
+
+                _actionObject
+};
+
+ALiVE_fnc_INS_addRoadblockHoldAction = {
+                params [["_roadblockSource", objNull, [objNull, []]]];
+
+                private _actionObject = [_roadblockSource] call ALiVE_fnc_INS_getRoadblockActionObject;
+                if (isNull _actionObject) exitwith {};
+
+                if (_actionObject getVariable [QGVAR(ROADBLOCK_DISABLED), false]) exitwith {};
+
+                private _chargePos = if (_roadblockSource isEqualType objNull) then {
+                    getPosATL _roadblockSource
+                } else {
+                    _roadblockSource
+                };
+
+                private _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", _chargePos, [], 0, "CAN_COLLIDE"];
+                _charge hideObjectGlobal true;
+                _charge allowDamage false;
+
+                [
+                    _actionObject,
+                    "disable the roadblock!",
+                    "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+                    "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
+                    "_this distance2D _target < 3 && {!(_target getVariable ['ALiVE_MIL_OPCOM_ROADBLOCK_DISABLED', false])}",
+                    "_caller distance2D _target < 3 && {!(_target getVariable ['ALiVE_MIL_OPCOM_ROADBLOCK_DISABLED', false])}",
+                    {},
+                    {},
+                    {
+                        params ["_target", "_caller", "_ID", "_arguments"];
+
+                        private _charge = _arguments select 0;
+
+                        _target setVariable [QGVAR(ROADBLOCK_DISABLED), true, true];
+                        [_target, _ID] remoteExec ["BIS_fnc_holdActionRemove", 0, _target];
+
+                        [getPosATL _charge, 30] remoteExec ["ALiVE_fnc_RemoveComposition", 2];
+
+                        ["Nice Job", format ["%1 disabled the roadblock at grid %2!", name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle", side (group _caller)];
+
+                        if (_target getVariable [QGVAR(ROADBLOCK_HELPER), false]) then {
+                            deleteVehicle _target;
+                        };
+
+                        deleteVehicle _charge;
+                    },
+                    {},
+                    [_charge],
+                    15
+                ] remoteExec ["BIS_fnc_holdActionAdd", 0, _actionObject];
+};
+
 ALiVE_fnc_INS_roadblocks = {
                 private ["_timeTaken","_pos","_id","_size","_faction","_sides","_agents","_building","_CQB","_objective"];
 
@@ -764,67 +864,7 @@ ALiVE_fnc_INS_roadblocks = {
 
                     // Create disable action on newly created roadblocks
                     {
-                        private ["_charge","_actionObjects","_actionObject","_nearRoads","_road","_roadConnectedTo","_connectedRoad","_direction","_roadSidePos"];
-                        _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", position _x, [], 0, "CAN_COLLIDE"];
-                        _charge hideObjectGlobal true;
-                        _charge allowDamage false;
-
-                        // Check if bargate is withing spawned composition
-                        _actionObjects = nearestObjects [_x, ["Land_BarGate_F"], 10];
-
-                        // Check if bargate was found. If not we'll spawn a crate.
-                        if (count _actionObjects > 0) then {
-                            
-                            // Select the bargate.
-                            _actionObject = _actionObjects select 0;
-                        } else {
-                            // Check for roads near composition creation position
-                           _nearRoads = position _x nearRoads 10;
-
-                            // Check if near roads were found. If they were, we get direction.
-                            if(count _nearRoads > 0) then {
-                                _road = _nearRoads select 0;
-                                _roadConnectedTo = roadsConnectedTo _road;
-                                _connectedRoad = _roadConnectedTo select 0;
-                                if!(isNil '_connectedRoad') then {
-                                    _direction = _road getRelDir _connectedRoad;
-                                };
-                            };
-
-                            // Create the crate and set its position and move it sideways to be on the roadside. (Works Okay for now)
-                            _actionObject = createVehicle ["Box_FIA_Wps_F", position _road, [], 0, "CAN_COLLIDE"];
-                            _actionObject allowDamage false;
-                            _actionObject setDir _direction;
-                            _objectLocation = getPos _actionObject;
-                            _roadSidePos = [(_objectLocation select 0) - 6, (_objectLocation select 1) + 6];
-                            _actionObject setPos _roadSidePos;
-                            _actionObject setVectorUp [0,0,1];
-                        };
-
-                        [
-                            _actionObject,
-                            "disable the roadblock!",
-                            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-                            "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-                            "_this distance2D _target < 3",
-                            "_caller distance2D _target < 3",
-                            {},
-                            {},
-                            {
-                                params ["_target", "_caller", "_ID", "_arguments"];
-
-                                private _charge = _arguments select 0;
-
-                                [getpos _charge,30] remoteExec  ["ALiVE_fnc_RemoveComposition",2];
-
-                                ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
-
-                                deletevehicle _charge;
-                            },
-                            {},
-                            [_charge],
-                            15
-                        ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
+                        [_x] call ALiVE_fnc_INS_addRoadblockHoldAction;
                     } foreach _roads;
                 };
 
@@ -1178,14 +1218,15 @@ ALiVE_fnc_INS_spawnIEDfactory = {
         "disable the IED factory!",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-        "_this distance2D _target < 3 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_FACTORY_DISABLED'}}",
-        "_caller distance2D _target < 3",
+        "_this distance2D _target < 3 && {!(_target getVariable ['ALiVE_MIL_OPCOM_FACTORY_DISABLED', false])}",
+        "_caller distance2D _target < 3 && {!(_target getVariable ['ALiVE_MIL_OPCOM_FACTORY_DISABLED', false])}",
         {},
         {},
         {
             params ["_target", "_caller", "_ID", "_arguments"];
 
             _target setVariable [QGVAR(FACTORY_DISABLED),true,true];
+            [_target, _ID] remoteExec ["BIS_fnc_holdActionRemove", 0, _target];
 
             [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
 
@@ -1194,7 +1235,7 @@ ALiVE_fnc_INS_spawnIEDfactory = {
         {},
         [],
         10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
-    ] remoteExec ["BIS_fnc_holdActionAdd", 0, true];
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0, _building];
 
     [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
 };
@@ -1215,14 +1256,15 @@ ALiVE_fnc_INS_spawnHQ = {
         "disable the Recruitment HQ!",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-        "_this distance2D _target < 3 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_HQ_DISABLED'}}",
-        "_caller distance2D _target < 3",
+        "_this distance2D _target < 3 && {!(_target getVariable ['ALiVE_MIL_OPCOM_HQ_DISABLED', false])}",
+        "_caller distance2D _target < 3 && {!(_target getVariable ['ALiVE_MIL_OPCOM_HQ_DISABLED', false])}",
         {},
         {},
         {
             params ["_target", "_caller", "_ID", "_arguments"];
 
             _target setVariable [QGVAR(HQ_DISABLED),true,true];
+            [_target, _ID] remoteExec ["BIS_fnc_holdActionRemove", 0, _target];
             [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
 
             ["Congratulations", format ["%1 disabled the Recruitment HQ at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
@@ -1230,7 +1272,7 @@ ALiVE_fnc_INS_spawnHQ = {
         {},
         [],
         10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
-    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0, _building];
 
     [_building,true,false,false] call ALiVE_fnc_spawnFurniture;
     [_building,true,true,false] call ALiVE_fnc_spawnFurniture;
@@ -1252,14 +1294,15 @@ ALiVE_fnc_INS_spawnDepot = {
         "disable the weapons depot!",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
         "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-        "_this distance2D _target < 3 && {isnil {_this getvariable 'ALiVE_MIL_OPCOM_DEPOT_DISABLED'}}",
-        "_caller distance2D _target < 3",
+        "_this distance2D _target < 3 && {!(_target getVariable ['ALiVE_MIL_OPCOM_DEPOT_DISABLED', false])}",
+        "_caller distance2D _target < 3 && {!(_target getVariable ['ALiVE_MIL_OPCOM_DEPOT_DISABLED', false])}",
         {},
         {},
         {
             params ["_target", "_caller", "_ID", "_arguments"];
 
             _target setVariable [QGVAR(DEPOT_DISABLED),true,true];
+            [_target, _ID] remoteExec ["BIS_fnc_holdActionRemove", 0, _target];
             [_target, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH",2];
 
             ["Good work", format ["%1 disabled the weapons depot at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
@@ -1267,7 +1310,7 @@ ALiVE_fnc_INS_spawnDepot = {
         {},
         [],
         10 + ((count (_building getvariable [QGVAR(furnitured),[]]))*4)
-    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
+    ] remoteExec ["BIS_fnc_holdActionAdd", 0, _building];
 
     [_building,true,false,true] call ALiVE_fnc_spawnFurniture;
 };
@@ -1415,4 +1458,3 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
 
     _buildings;
 };
-

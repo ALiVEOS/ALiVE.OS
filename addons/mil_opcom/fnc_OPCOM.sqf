@@ -1466,33 +1466,7 @@ switch(_operation) do {
                             {
                                 // Reset "disable"-action on exisiting roadblocks at the objective once at mission start
                                 if (_center distance _x < (_size + 50) && {count (nearestObjects [_x, ["ALIVE_DemoCharge_Remote_Ammo"],2]) < 2}) then {
-
-                                    private _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo", _x, [], 0, "CAN_COLLIDE"];
-
-                                    [
-                                        _charge,
-                                        "disable the roadblock!",
-                                        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-                                        "\a3\ui_f\data\IGUI\Cfg\holdactions\holdAction_unbind_ca.paa",
-                                        "_this distance2D _target < 2.5",
-                                        "_caller distance2D _target < 2.5",
-                                        {},
-                                        {},
-                                        {
-                                            params ["_target", "_caller", "_ID", "_arguments"];
-
-                                            private _charge = _arguments select 0;
-
-                                            [getpos _charge,30] remoteExec  ["ALiVE_fnc_RemoveComposition",2];
-
-                                            ["Nice Job", format ["%1 disabled the roadblock at grid %2!",name _caller, mapGridPosition _target]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
-
-                                            deletevehicle _charge;
-                                        },
-                                        {},
-                                        [_charge],
-                                        15
-                                    ] remoteExec ["BIS_fnc_holdActionAdd", 0,true];
+                                    [_x] call ALiVE_fnc_INS_addRoadblockHoldAction;
                                 };
                             } foreach ALiVE_CIV_PLACEMENT_ROADBLOCKS;
                         };
@@ -2918,4 +2892,3 @@ switch(_operation) do {
 };
 TRACE_1("OPCOM - output",_result);
 if !(isnil "_result") then {_result} else {nil};
-
