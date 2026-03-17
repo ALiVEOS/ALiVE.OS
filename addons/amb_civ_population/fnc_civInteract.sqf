@@ -146,7 +146,7 @@ switch (_operation) do {
 		//-- Exit if the menu has been closed
 		if (isNull findDisplay 923) exitWith {};
 
-		_arguments params ["_objectiveInstallations","_objectiveActions","_civInfo","_hostileCivInfo",["_intelQuality", [0,1,0,"Stabilize"], [[]]]];
+		_arguments params ["_objectiveInstallations","_objectiveActions","_civInfo","_hostileCivInfo",["_intelQuality", [0,1,0,"Stabilize",10,0], [[]]]];
 
 		_logic = MOD(civInteractHandler);
 
@@ -160,7 +160,7 @@ switch (_operation) do {
 		[_civData, "Actions", _objectiveActions] call ALiVE_fnc_hashSet;			//-- [_ambush,_sabotage,_ied,_suicide]
 		[_civData, "CivInfo", _civInfo] call ALiVE_fnc_hashSet;				//-- [_homePos, _individualHostility, _townHostility]
 		[_civData, "HostileCivInfo", _hostileCivInfo] call ALiVE_fnc_hashSet;			//-- [_civ,_homePos,_activeCommands]
-		[_civData, "IntelQuality", _intelQuality] call ALiVE_fnc_hashSet;				//-- [chanceBonus, radiusMultiplier, markerDurationBonus, phase]
+		[_civData, "IntelQuality", _intelQuality] call ALiVE_fnc_hashSet;				//-- [chanceBonus, radiusMultiplier, markerDurationBonus, phase, exactMarkerChance, deceptionChance]
 		[_civData, "AnswersGiven", _answersGiven] call ALiVE_fnc_hashSet;			//-- Default []
 		[_civData, "Asked", 0] call ALiVE_fnc_hashSet;					//-- Default - 0
 		[_logic, "CivData", _civData] call ALiVE_fnc_hashSet;
@@ -354,7 +354,7 @@ switch (_operation) do {
 
 		private _supportPhase = "Stabilize";
 		private _supportValue = 0;
-		private _intelQuality = [0,1,0,_supportPhase];
+		private _intelQuality = [0,1,0,_supportPhase,10,0];
 
 		if !(isNil "_cluster") then {
 			private _hostilityHash = [_cluster, "hostility", []] call ALIVE_fnc_hashGet;
@@ -405,8 +405,23 @@ switch (_operation) do {
 				case "Engage": {10};
 				default {0};
 			};
+			private _exactMarkerChance = switch (_supportPhase) do {
+				case "Consolidate": {55};
+				case "Build": {35};
+				case "Engage": {20};
+				default {8};
+			};
+			_exactMarkerChance = (_exactMarkerChance + round (_supportValue * 0.2)) min 85;
 
-			_intelQuality = [_chanceBonus, _precisionMultiplier, _durationBonus, _supportPhase];
+			private _deceptionChance = switch (_supportPhase) do {
+				case "Consolidate": {0};
+				case "Build": {5};
+				case "Engage": {12};
+				default {20};
+			};
+			_deceptionChance = (_deceptionChance + round ((100 - _supportValue) * 0.1)) min 35;
+
+			_intelQuality = [_chanceBonus, _precisionMultiplier, _durationBonus, _supportPhase, _exactMarkerChance, _deceptionChance];
 		};
 
 		_civData = [_objectiveInstallations, _objectiveActions, _civInfo,_hostileCivInfo,_intelQuality];

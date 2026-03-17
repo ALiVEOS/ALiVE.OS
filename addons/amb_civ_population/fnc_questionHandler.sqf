@@ -49,16 +49,28 @@ _civInfo = [_civData, "CivInfo"] call ALiVE_fnc_hashGet;
 _civ = [_logic, "Civ"] call ALiVE_fnc_hashGet;
 _civName = name _civ;
 
-private _intelQuality = [_civData, "IntelQuality", [0,1,0,"Stabilize"]] call ALiVE_fnc_hashGet;
+private _intelQuality = [_civData, "IntelQuality", [0,1,0,"Stabilize",10,0]] call ALiVE_fnc_hashGet;
 private _intelChanceBonus = 0;
 private _intelRadiusMultiplier = 1;
 private _intelMarkerDuration = 30;
+private _exactIntelChance = 10;
+private _baseDeceptionChance = 0;
+private _personalHostility = ((_civInfo select 1) max 0) min 100;
+private _hostileDeceptionChance = 0;
 
 if (_intelQuality isEqualType [] && {count _intelQuality >= 3}) then {
     _intelChanceBonus = ((_intelQuality select 0) max 0) min 40;
     _intelRadiusMultiplier = ((_intelQuality select 1) max 0.35) min 1;
     _intelMarkerDuration = 30 + (((_intelQuality select 2) max 0) min 45);
+    if (count _intelQuality >= 5) then {
+        _exactIntelChance = ((_intelQuality select 4) max 5) min 85;
+    };
+    if (count _intelQuality >= 6) then {
+        _baseDeceptionChance = ((_intelQuality select 5) max 0) min 40;
+    };
 };
+
+_hostileDeceptionChance = (_baseDeceptionChance + round (((_personalHostility - 40) max 0) * 0.45)) min 85;
 
 private _passesIntelRoll = {
     params [["_threshold", 50, [0]], ["_bonus", 0, [0]]];
@@ -66,10 +78,69 @@ private _passesIntelRoll = {
     floor random 100 > ((_threshold - _bonus) max 5)
 };
 
+private _passesHostileIntelRoll = {
+    params [["_bonus", 0, [0]], ["_minimumThreshold", 25, [0]]];
+
+    floor random 100 > ((_personalHostility - _bonus) max _minimumThreshold)
+};
+
 private _scaledIntelRadius = {
     params [["_baseRadius", 50, [0]], ["_multiplier", 1, [0]], ["_minimumRadius", 10, [0]]];
 
     ((_baseRadius * _multiplier) max _minimumRadius)
+};
+
+private _selectFalseIntelPosition = {
+    params [["_originPos", [0,0,0], [[]]], ["_actualPos", [0,0,0], [[]]], ["_preferTrap", false, [false]]];
+
+    private _nearbyMines = allMines select {_x distance2D _originPos < 1200};
+
+    if (_preferTrap && {count _nearbyMines > 0} && {floor random 100 < 65}) exitWith {
+        getPos (_nearbyMines call BIS_fnc_selectRandom)
+    };
+
+    private _falsePos = [_originPos, 250 + ceil random 350] call CBA_fnc_randPos;
+    if (_falsePos distance2D _actualPos < 150) then {
+        _falsePos = [_falsePos, 175 + ceil random 175] call CBA_fnc_randPos;
+    };
+
+    _falsePos
+};
+
+private _placeThreatIntelMarker = {
+    params [
+        ["_actualPos", [0,0,0], [[]]],
+        ["_markerName", "Intel", [""]],
+        ["_markerColor", "ColorRed", [""]],
+        ["_baseRadius", 75, [0]],
+        ["_minimumRadius", 18, [0]],
+        ["_iconType", "mil_dot", [""]],
+        ["_originPos", [0,0,0], [[]]],
+        ["_preferTrap", false, [false]]
+    ];
+
+    private _searchRadius = [_baseRadius, _intelRadiusMultiplier, _minimumRadius] call _scaledIntelRadius;
+    private _markerPos = +_actualPos;
+    private _isDeceptive = _hostile && {floor random 100 < _hostileDeceptionChance};
+
+    if (_isDeceptive) then {
+        _markerPos = [_originPos, _actualPos, _preferTrap] call _selectFalseIntelPosition;
+    };
+
+    if (!_isDeceptive && {floor random 100 < _exactIntelChance}) then {
+        private _marker = [str _markerPos, _markerPos, "ICON", [1,1], _markerColor, _markerName, _iconType, "Solid", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
+        [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker};
+
+        "exact"
+    } else {
+        private _markerCenter = [_markerPos, _searchRadius] call CBA_fnc_randPos;
+        private _markerSize = [(_searchRadius max 35), (_searchRadius max 35)];
+        private _marker = [str _markerCenter, _markerCenter, "ELLIPSE", _markerSize, _markerColor, _markerName, "n_installation", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
+        private _text = [str (str _markerCenter),_markerCenter,"ICON", [0.1,0.1],_markerColor,_markerName, "mil_dot", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
+        [_marker,_text,_intelMarkerDuration] spawn {params ["_marker","_text","_duration"]; sleep _duration; deleteMarker _marker; deleteMarker _text};
+
+        if (_isDeceptive) then {"deceptive"} else {"approximate"};
+    };
 };
 
 //-- Set questions asked
@@ -232,12 +303,7 @@ switch (_question) do {
                     CIVINTERACT_RESPONSELIST ctrlSetText _response;
                     _answersGiven pushBack "IEDs";_answerGiven = true;
 
-                    //-- Create marker on IED
-                    _iedPos = getPos (_IEDs call BIS_fnc_selectRandom);
-                    _iedPos = [_iedPos, (25 + ceil random 15)] call CBA_fnc_randPos;
-                    _marker = [str _iedPos, _iedPos, "ELLIPSE", [40, 40], "ColorRed", "IED", "n_installation", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
-                    _text = [str (str _iedPos),_iedPos,"ICON", [0.1,0.1],"ColorRed","IED", "mil_dot", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
-                    [_marker,_text,_intelMarkerDuration] spawn {params ["_marker","_text","_duration"]; sleep _duration; deleteMarker _marker; deleteMarker _text};
+                    [_iedLocation, "IED", "ColorRed", 45, 12, "mil_dot", getPos _civ, false] call _placeThreatIntelMarker;
                 } else {
                     _response1 = localize "STR_ALIVE_CIV_INTERACT_IEDS_BADLUCK_1";
                     _response2 = localize "STR_ALIVE_CIV_INTERACT_IEDS_BADLUCK_2";
@@ -247,13 +313,25 @@ switch (_question) do {
                     CIVINTERACT_RESPONSELIST ctrlSetText _response;
                 };
             } else {
-                _response1 = localize "STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_1";
-                _response2 = localize "STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_2";
-                _response3 = localize "STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_3";
-                _response4 = localize "STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_4";
-                _response5 = localize "STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_5";
-                _response = [_response1, _response2, _response3, _response4, _response5] call BIS_fnc_selectRandom;
-                CIVINTERACT_RESPONSELIST ctrlSetText _response;
+                if ([_intelChanceBonus, 35] call _passesHostileIntelRoll) then {
+                    _response1 = localize "STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE3_NOTHOSTILE_1";
+                    _response2 = localize "STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_2";
+                    _response3 = localize "STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_3";
+                    _response4 = localize "STR_ALIVE_CIV_INTERACT_IEDS_PRESENCE_NOTHOSTILE_4";
+                    _response = [_response1, _response2, _response3, _response4] call BIS_fnc_selectRandom;
+                    CIVINTERACT_RESPONSELIST ctrlSetText _response;
+                    _answersGiven pushBack "IEDs";_answerGiven = true;
+
+                    [_iedLocation, "IED", "ColorRed", 60, 15, "mil_dot", getPos _civ, false] call _placeThreatIntelMarker;
+                } else {
+                    _response1 = localize "STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_1";
+                    _response2 = localize "STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_2";
+                    _response3 = localize "STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_3";
+                    _response4 = localize "STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_4";
+                    _response5 = localize "STR_ALIVE_CIV_INTERACT_IEDS_HOSTILE_5";
+                    _response = [_response1, _response2, _response3, _response4, _response5] call BIS_fnc_selectRandom;
+                    CIVINTERACT_RESPONSELIST ctrlSetText _response;
+                };
             };
 
         };
@@ -323,10 +401,7 @@ switch (_question) do {
                     //-- Create marker on insurgent group
                     _insurgentLeaders = [_insurgents,[getPos player],{_Input0 distance2D getPos _x},"ASCEND"] call BIS_fnc_sortBy;
                     _insurgentPos = getPos (_insurgentLeaders select 0);
-                    _insurgentPos = [_insurgentPos, [75 + ceil random 25, _intelRadiusMultiplier, 18] call _scaledIntelRadius] call CBA_fnc_randPos;
-                    _marker = [str _insurgentPos, _insurgentPos, "ELLIPSE", [100, 100], "ColorEAST", "Insurgents", "n_installation", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
-                    _text = [str (str _insurgentPos),_insurgentPos,"ICON", [0.1,0.1],"ColorRed","Insurgents", "mil_dot", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
-                    [_marker,_text,_intelMarkerDuration] spawn {params ["_marker","_text","_duration"]; sleep _duration; deleteMarker _marker; deleteMarker _text};
+                    [_insurgentPos, "Insurgents", "ColorEAST", 100, 18, "mil_dot", _pos, false] call _placeThreatIntelMarker;
                 } else {
                     //-- Don't reveal location
                     _response1 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_BADLUCK_1";
@@ -339,13 +414,27 @@ switch (_question) do {
                     CIVINTERACT_RESPONSELIST ctrlSetText _response;
                 };
             } else {
-                _response1 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_1";
-                _response2 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_2";
-                _response3 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_3";
-                _response4 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_4";
-                _response5 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_5";
-                _response = [_response1, _response2, _response3, _response4, _response5] call BIS_fnc_selectRandom;
-                CIVINTERACT_RESPONSELIST ctrlSetText _response;
+                if ([_intelChanceBonus, 30] call _passesHostileIntelRoll) then {
+                    _response1 = format [localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_1", _town];
+                    _response2 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_2";
+                    _response3 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_3";
+                    _response4 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_NOTHOSTILE_4";
+                    _response = [_response1, _response2, _response3, _response4] call BIS_fnc_selectRandom;
+                    CIVINTERACT_RESPONSELIST ctrlSetText _response;
+                    _answersGiven pushBack "Insurgents";_answerGiven = true;
+
+                    _insurgentLeaders = [_insurgents,[getPos player],{_Input0 distance2D getPos _x},"ASCEND"] call BIS_fnc_sortBy;
+                    _insurgentPos = getPos (_insurgentLeaders select 0);
+                    [_insurgentPos, "Insurgents", "ColorEAST", 125, 20, "mil_dot", _pos, true] call _placeThreatIntelMarker;
+                } else {
+                    _response1 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_1";
+                    _response2 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_2";
+                    _response3 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_3";
+                    _response4 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_4";
+                    _response5 = localize "STR_ALIVE_CIV_INTERACT_INSURGENTS_PRESENCE_HOSTILE_5";
+                    _response = [_response1, _response2, _response3, _response4, _response5] call BIS_fnc_selectRandom;
+                    CIVINTERACT_RESPONSELIST ctrlSetText _response;
+                };
             };
         };
 
@@ -442,19 +531,8 @@ switch (_question) do {
                         CIVINTERACT_RESPONSELIST ctrlSetText _response;
                         _answersGiven pushBack "Hideouts";_answerGiven = true;
 
-                        if ([30, _intelChanceBonus] call _passesIntelRoll) then {
-                            //-- Create marker on general installation location
-                            _installationPos = getPos _installation;
-                            _installationPos = [_installationPos, [75 + ceil random 25, _intelRadiusMultiplier, 18] call _scaledIntelRadius] call CBA_fnc_randPos;
-                            _marker = [str _installationPos, _installationPos, "ELLIPSE", [100,100], "ColorEAST", _typeName, "n_installation", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
-                            _text = [str (str _installationPos),_installationPos,"ICON", [0.1,0.1],"ColorRed",_typeName, "mil_dot", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
-                            [_marker,_text,_intelMarkerDuration] spawn {params ["_marker","_text","_duration"]; sleep _duration; deleteMarker _marker; deleteMarker _text};
-                        } else {
-                            //-- Create marker on installation location
-                            _installationPos = getPos _installation;
-                            _marker = [str _installationPos, _installationPos, "ICON", [1,1], "ColorRed", _type, "n_installation", "Solid", 0, .5] call ALIVE_fnc_createMarkerGlobal;
-                            [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker};
-                        };
+                        _installationPos = getPos _installation;
+                        [_installationPos, _typeName, "ColorEAST", 100, 18, "n_installation", getPos _civ, false] call _placeThreatIntelMarker;
                     } else {
                         _response1 = format [localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_1", _type];
                         _response2 = format [localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_2", _type];
@@ -480,7 +558,7 @@ switch (_question) do {
                     _answersGiven pushBack "Hideouts";_answerGiven = true;
                 };
             } else {
-                if (floor random 100 > _hostility) then {
+                if ([_intelChanceBonus, 30] call _passesHostileIntelRoll) then {
                     _response1 = format [localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_1", _type];
                     _response2 = format [localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_2", _type];
                     _response3 = format [localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_NOTHOSTILE_3", _type];
@@ -493,6 +571,9 @@ switch (_question) do {
                     _response = [_response1,_response2,_response3,_response4,_response5,_response6,_response7,_response8,_response9] call BIS_fnc_selectRandom;
                     CIVINTERACT_RESPONSELIST ctrlSetText _response;
                     _answersGiven pushBack "Hideouts";_answerGiven = true;
+
+                    _installationPos = getPos _installation;
+                    [_installationPos, _typeName, "ColorEAST", 125, 20, "n_installation", getPos _civ, true] call _placeThreatIntelMarker;
                 } else {
                     _response1 = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_1";
                     _response2 = localize "STR_ALIVE_CIV_INTERACT_HIDEOUTS_PRESENCE_HOSTILE_2";
@@ -577,12 +658,8 @@ switch (_question) do {
                             _response = [_response1, _response2, _response3,_response4] call BIS_fnc_selectRandom;
                             CIVINTERACT_RESPONSELIST ctrlSetText ((ctrlText CIVINTERACT_RESPONSELIST) + _response);
 
-                            //-- Create marker on hostile civ location
-                            _civPos = [getPos _hostileCiv, [10 + ceil random 8, _intelRadiusMultiplier, 6] call _scaledIntelRadius] call CBA_fnc_randPos;
                             _markerName = format ["%1's location", name _hostileCiv];
-                            _marker = [str _civPos, _civPos, "ELLIPSE", [40, 40], "ColorRed", _markerName, "n_installation", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;
-                            _text = [str (str _civPos),_civPos,"ICON", [0.1,0.1],"ColorRed",_markerName, "mil_dot", "FDiagonal",0,0.5] call ALIVE_fnc_createMarkerGlobal;
-                            [_marker,_text,_intelMarkerDuration] spawn {params ["_marker","_text","_duration"]; sleep _duration; deleteMarker _marker; deleteMarker _text};
+                            [getPos _hostileCiv, _markerName, "ColorRed", 25, 6, "mil_dot", getPos _civ, false] call _placeThreatIntelMarker;
                         };
                         case "1": {
                             _response1 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_1";
@@ -592,15 +669,13 @@ switch (_question) do {
                             _response = [_response1, _response2, _response3,_response4] call BIS_fnc_selectRandom;
                             CIVINTERACT_RESPONSELIST ctrlSetText ((ctrlText CIVINTERACT_RESPONSELIST) + _response);
 
-                            //-- Create marker on hostile civ location
                             _markerName = format ["%1's home", name _hostileCiv];
-                            _marker = [str _homePos, _homePos, "ICON", [.35, .35], "ColorRed", _markerName, "mil_circle", "Solid", 0, .5] call ALIVE_fnc_createMarkerGlobal;
-                            [_marker,_intelMarkerDuration] spawn {params ["_marker","_duration"]; sleep _duration; deleteMarker _marker};
+                            [_homePos, _markerName, "ColorRed", 35, 10, "mil_circle", getPos _civ, false] call _placeThreatIntelMarker;
                         };
                     };
                 };
             } else {
-                if (floor random 100 > ((_hostility - _intelChanceBonus) max 5)) then {
+                if ([_intelChanceBonus, 25] call _passesHostileIntelRoll) then {
                     _response1 = format [localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_1", name _hostileCiv, _activePlan];
                     _response2 = format [localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_2", name _hostileCiv, _activePlan];
                     _response3 = format [localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_3", name _hostileCiv, _activePlan];
@@ -610,6 +685,33 @@ switch (_question) do {
                     _response = [_response1, _response2, _response3, _response4, _response5, _response6] call BIS_fnc_selectRandom;
                     CIVINTERACT_RESPONSELIST ctrlSetText _response;
                     _answersGiven pushBack "StrangeBehavior";_answerGiven = true;
+
+                    if (floor random 100 <= ((25 + (_intelChanceBonus * 0.5)) min 70)) then {
+                        switch (str floor random 2) do {
+                            case "0": {
+                                _response1 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_1";
+                                _response2 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_2";
+                                _response3 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_3";
+                                _response4 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_MAP_4";
+                                _response = [_response1, _response2, _response3,_response4] call BIS_fnc_selectRandom;
+                                CIVINTERACT_RESPONSELIST ctrlSetText ((ctrlText CIVINTERACT_RESPONSELIST) + _response);
+
+                                _markerName = format ["%1's location", name _hostileCiv];
+                                [getPos _hostileCiv, _markerName, "ColorRed", 40, 10, "mil_dot", getPos _civ, true] call _placeThreatIntelMarker;
+                            };
+                            case "1": {
+                                _response1 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_1";
+                                _response2 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_2";
+                                _response3 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_3";
+                                _response4 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_PRESENCE_NOTHOSTILE_HOME_4";
+                                _response = [_response1, _response2, _response3,_response4] call BIS_fnc_selectRandom;
+                                CIVINTERACT_RESPONSELIST ctrlSetText ((ctrlText CIVINTERACT_RESPONSELIST) + _response);
+
+                                _markerName = format ["%1's home", name _hostileCiv];
+                                [_homePos, _markerName, "ColorRed", 50, 12, "mil_circle", getPos _civ, true] call _placeThreatIntelMarker;
+                            };
+                        };
+                    };
                 } else {
                     _response1 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_1";
                     _response2 = localize "STR_ALIVE_CIV_INTERACT_STRANGEBEHAVIOR_HOSTILE_2";
