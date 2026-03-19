@@ -738,13 +738,20 @@ ALiVE_fnc_INS_getRoadblockActionObject = {
                 if !(_barGates isEqualTo []) then {
                     _actionObject = _barGates select 0;
                 } else {
-                    private _helpers = (nearestObjects [_roadblockPos, ["Box_FIA_Wps_F"], 12]) select {
+                    private _helpers = (nearestObjects [_roadblockPos, ["RoadCone_L_F", "Box_FIA_Wps_F"], 12]) select {
                         _x getVariable [QGVAR(ROADBLOCK_HELPER), false]
                     };
+                    private _coneHelpers = _helpers select {typeOf _x == "RoadCone_L_F"};
 
-                    if !(_helpers isEqualTo []) then {
-                        _actionObject = _helpers select 0;
-                    } else {
+                    if !(_coneHelpers isEqualTo []) then {
+                        _actionObject = _coneHelpers deleteAt 0;
+                    };
+
+                    {
+                        deleteVehicle _x;
+                    } forEach (_helpers - [_actionObject]);
+
+                    if (isNull _actionObject) then {
                         private _nearRoads = _roadblockPos nearRoads 10;
                         private _anchorPos = +_roadblockPos;
                         private _direction = 0;
@@ -760,8 +767,9 @@ ALiVE_fnc_INS_getRoadblockActionObject = {
                             _anchorPos = getPosATL _road;
                         };
 
-                        _actionObject = createVehicle ["Box_FIA_Wps_F", _anchorPos, [], 0, "CAN_COLLIDE"];
+                        _actionObject = createVehicle ["RoadCone_L_F", _anchorPos, [], 0, "CAN_COLLIDE"];
                         _actionObject allowDamage false;
+                        _actionObject enableSimulationGlobal false;
                         _actionObject setDir _direction;
                         _actionObject setPosATL (_anchorPos getPos [6, _direction + 90]);
                         _actionObject setVectorUp (surfaceNormal (getPosWorld _actionObject));
