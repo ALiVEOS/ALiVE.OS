@@ -189,6 +189,13 @@ class CfgVehicles
                                     class Yes { name = "Faction Only"; value = true; };
                                 };
                         };
+                        class fixedWingClass : Edit
+                        {
+                                property = "ALiVE_mil_logistics_fixedWingClass";
+                                displayName = "$STR_ALIVE_ML_FIXEDWING_CLASS";
+                                tooltip = "$STR_ALIVE_ML_FIXEDWING_CLASS_DESC";
+                                defaultValue = """""";
+                        };
                         // ---- Starting Force Strength ----------------------------------------
                         class HDR_STRENGTH : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_STRENGTH"; displayName = "STARTING FORCE STRENGTH"; };
                         class startForceStrengthInc : Combo

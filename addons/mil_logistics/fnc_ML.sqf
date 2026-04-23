@@ -335,6 +335,19 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "fixedWingClass": {
+        // Optional classname for a fixed-wing or VTOL transport used by the
+        // OPCOM strategic AIRDROP delivery path. Empty string disables AIRDROP
+        // and falls back to the existing heli/ground delivery logic.
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["fixedWingClass", _args];
+        } else {
+            _args = _logic getVariable ["fixedWingClass", ""];
+        };
+        ASSERT_TRUE(typeName _args == "STRING",str _args);
+
+        _result = _args;
+    };
     case "type": {
         if(typeName _args == "STRING") then {
             _logic setVariable [_operation, parseNumber _args];
@@ -2181,6 +2194,7 @@ switch(_operation) do {
 
             _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
+            _fixedWingClass = [_logic, "fixedWingClass"] call MAINCLASS;
 
             _startForceStrengthIncrement = [_logic, "startForceStrengthInc"] call MAINCLASS;
             _startForceStrengthIncrementFactor = parseNumber([_logic, "startForceStrengthIncFactor"] call MAINCLASS);
@@ -2201,6 +2215,19 @@ switch(_operation) do {
                 ["ML - Allow plane requests: %1",_allowPlane] call ALiVE_fnc_dump;
                 ["ML - Enable air transport: %1",_enableAirTransport] call ALiVE_fnc_dump;
                 ["ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALiVE_fnc_dump;
+                if (_fixedWingClass != "") then {
+                    private _ts = getNumber(configFile >> "CfgVehicles" >> _fixedWingClass >> "transportSoldier");
+                    private _vtol = getNumber(configFile >> "CfgVehicles" >> _fixedWingClass >> "vtol");
+                    private _isPlane = _fixedWingClass isKindOf "Plane";
+                    ["ML - AIRDROP fixedWingClass: %1 (isKindOf Plane: %2, vtol: %3, transportSoldier: %4)",
+                        _fixedWingClass, _isPlane, _vtol, _ts] call ALiVE_fnc_dump;
+                    if (!_isPlane || _ts == 0) then {
+                        ["ML - WARNING: fixedWingClass %1 is not a valid cargo plane (isKindOf Plane=%2, transportSoldier=%3). AIRDROP rule will not fire for this module.",
+                            _fixedWingClass, _isPlane, _ts] call ALiVE_fnc_dump;
+                    };
+                } else {
+                    ["ML - AIRDROP fixedWingClass: <not set> (AIRDROP delivery disabled)"] call ALiVE_fnc_dump;
+                };
                 ["ML - Enable incremental force strength on objective capture: %1",_startForceStrengthIncrement] call ALiVE_fnc_dump;
                 ["ML - Incremental force strength factor: %1",_startForceStrengthIncrementFactor] call ALiVE_fnc_dump;
                 ["ML - Enable decremental force strength on objective loss: %1",_startForceStrengthDecrement] call ALiVE_fnc_dump;
