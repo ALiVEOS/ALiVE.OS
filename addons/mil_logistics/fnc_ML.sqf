@@ -6917,18 +6917,35 @@ switch(_operation) do {
                                             _spawnDir = _spawnPos getDir _destAirportPos;
                                         } else {
                                             private _taxiPositions = [_sourceAirportID, "ilsTaxiIn", 4] call ALIVE_fnc_getAirportTaxiPos;
-                                            _spawnPos = if (count _taxiPositions >= 2) then {
-                                                [_taxiPositions select 0, _taxiPositions select 1, 0]
+
+                                            // getAirportTaxiPos resizes to 4 unconditionally, so count is
+                                            // always 4 -- but the elements may be nil when the airport's
+                                            // ilsTaxiIn config is missing or partial. Validate each element
+                                            // is a SCALAR before using; fall back to ILS position otherwise.
+                                            private _taxiX = _taxiPositions param [0, nil];
+                                            private _taxiY = _taxiPositions param [1, nil];
+                                            private _taxiEndX = _taxiPositions param [2, nil];
+                                            private _taxiEndY = _taxiPositions param [3, nil];
+                                            private _taxiStartValid = (!isNil "_taxiX" && {_taxiX isEqualType 0} && {!isNil "_taxiY"} && {_taxiY isEqualType 0});
+                                            private _taxiEndValid   = (!isNil "_taxiEndX" && {_taxiEndX isEqualType 0} && {!isNil "_taxiEndY"} && {_taxiEndY isEqualType 0});
+
+                                            _spawnPos = if (_taxiStartValid) then {
+                                                [_taxiX, _taxiY, 0]
                                             } else {
-                                                // Fallback: ILS position (no taxi config on this map's airport).
+                                                // Fallback: ILS position (airport config missing ilsTaxiIn).
                                                 private _ilsPos = +_sourceAirportPos;
                                                 _ilsPos set [2, 0];
                                                 _ilsPos
                                             };
-                                            _spawnDir = if (count _taxiPositions >= 4) then {
-                                                _spawnPos getDir [_taxiPositions select 2, _taxiPositions select 3]
+                                            _spawnDir = if (_taxiStartValid && _taxiEndValid) then {
+                                                _spawnPos getDir [_taxiEndX, _taxiEndY]
                                             } else {
                                                 _spawnPos getDir _destAirportPos
+                                            };
+
+                                            if (_debug && !_taxiStartValid) then {
+                                                ["ML - AIRDROP: airport %1 has no ilsTaxiIn config, spawning at ILS position instead",
+                                                    _sourceAirportID] call ALiVE_fnc_dump;
                                             };
                                         };
 
@@ -7665,11 +7682,28 @@ switch(_operation) do {
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
 
-                private _planeVehicle = _planeProfile select 2 select 10;
                 private _destAirportID = _airdropDstEv select 0;
-
-                // First entry into this state -- issue landAt + register EH.
                 private _landIssued = [_event, "airdropLandIssued", false] call ALIVE_fnc_hashGet;
+
+                // First entry: force-spawn the profile so the plane becomes a
+                // physical vehicle. During the fly state the profile is virtual
+                // (no vehicle object) -- landAt needs a real plane. preventDespawn
+                // is already set on the profile so it stays physical after spawn.
+                if (!_landIssued) then {
+                    private _profActive = [_planeProfile, "active"] call ALIVE_fnc_hashGet;
+                    if (!_profActive) then {
+                        [_planeProfile, "spawn"] call ALIVE_fnc_profileVehicle;
+                        if (_debug) then {
+                            ["ML - opcomAirdropLand: force-spawning virtual profile %1 so landAt has a real vehicle",
+                                _planeProfID] call ALiVE_fnc_dump;
+                        };
+                    };
+                };
+
+                // Re-fetch vehicle reference AFTER the forced spawn above.
+                private _planeVehicle = _planeProfile select 2 select 10;
+
+                // Issue landAt + register EH on first entry with a valid vehicle.
                 if (!_landIssued && !isNull _planeVehicle && {alive _planeVehicle}) then {
                     [_logic, "lockAirdropRunway", _destAirportID] call MAINCLASS;
 
@@ -7698,9 +7732,19 @@ switch(_operation) do {
                 };
 
                 // Wait for LANDED variable to flip true.
+                // Semantics for null vehicle:
+                //   - If landAt was already issued, vehicle going null means the
+                //     plane was destroyed post-issue -- treat as "done" so we
+                //     proceed to unload + cleanup (cargo still delivered).
+                //   - If landAt was NOT yet issued (plane still virtual on first
+                //     tick, not yet physical after force-spawn), treat as NOT
+                //     landed -- wait another tick so the next call picks up the
+                //     spawned vehicle.
                 private _landed = if (!isNull _planeVehicle) then {
                     _planeVehicle getVariable ["ALIVE_AIRDROP_LANDED", false]
-                } else { true };  // vehicle gone -- treat as landed so we proceed to unload/cleanup
+                } else {
+                    _landIssued
+                };
 
                 private _landTimer = [_event, "airdropLandTimer", 0] call ALIVE_fnc_hashGet;
                 _landTimer = _landTimer + 1;
@@ -8011,9 +8055,14 @@ switch(_operation) do {
                     };
                 } else {
                     // Subsequent ticks: wait for LANDED or timeout.
+                    // Null vehicle: if landAt was already issued, plane was
+                    // destroyed post-issue -- treat as done. If not issued yet,
+                    // don't transition, wait next tick.
                     private _landed = if (!isNull _planeVehicle) then {
                         _planeVehicle getVariable ["ALIVE_AIRDROP_LANDED", false]
-                    } else { true };
+                    } else {
+                        _returnLandIssued
+                    };
 
                     private _rlTimer = [_event, "airdropReturnLandTimer", 0] call ALIVE_fnc_hashGet;
                     _rlTimer = _rlTimer + 1;
