@@ -7767,11 +7767,27 @@ switch(_operation) do {
 
             case "opcomAirdropUnload": {
                 // Plane is on the destination runway. Reposition cargo profiles
-                // to the airport (infantry on the runway, vehicles offset 50m so
-                // they look like they rolled off the cargo ramp). Clear busy
-                // flag so OPCOM can pick the units up for follow-on missions.
-                // Transition to eventComplete (Checkpoint 3c will add airdropTakeoff2
-                // -> airdropRTB -> airdropReturnLand -> airdropDespawn instead).
+                // to the airport (infantry on the runway, vehicles offset 30-80m
+                // so they read as "rolled off the cargo ramp"), then hand off
+                // to setEventProfilesAvailable which is the canonical ALiVE
+                // delivery-complete routine used by STANDARD / HELI flows.
+                //
+                // setEventProfilesAvailable handles:
+                //   - Clearing busy=false so OPCOM can claim the profiles
+                //   - Clearing stale vehicle assignments (defensive)
+                //   - setActiveCommand managedGarrison on infantry so they
+                //     actively hold the drop zone instead of standing idle
+                //   - Spawning stalledUnitWatchdog so cargo moves toward the
+                //     requested destination if OPCOM is slow to pick up
+                //   - Registering the delivery position as a supply network
+                //     node for future logistics events
+                //   - Emitting LOGISTICS_COMPLETE for sitrep + war room
+                //
+                // The event's "finalDestination" is set to the destination
+                // airport -- that's where the cargo physically arrives and
+                // where infantry garrison. OPCOM's subsequent orders will
+                // direct them to the original _eventPosition (the requested
+                // reinforcement point) via normal group-assignment paths.
 
                 private _airdropDstEv = [_event, "airdropDestAirport", []] call ALIVE_fnc_hashGet;
                 private _destAirportPos = if (count _airdropDstEv > 1) then { _airdropDstEv select 1 } else { _eventPosition };
@@ -7779,25 +7795,27 @@ switch(_operation) do {
                 private _unloadCount = 0;
 
                 // Cargo profile categories live on _eventCargoProfiles hash by key.
-                private _infantryProfiles = [_eventCargoProfiles, "infantry", []] call ALIVE_fnc_hashGet;
-                private _motorisedProfiles = [_eventCargoProfiles, "motorised", []] call ALIVE_fnc_hashGet;
+                private _infantryProfiles   = [_eventCargoProfiles, "infantry",   []] call ALIVE_fnc_hashGet;
+                private _motorisedProfiles  = [_eventCargoProfiles, "motorised",  []] call ALIVE_fnc_hashGet;
                 private _mechanisedProfiles = [_eventCargoProfiles, "mechanised", []] call ALIVE_fnc_hashGet;
-                private _armourProfiles = [_eventCargoProfiles, "armour", []] call ALIVE_fnc_hashGet;
+                private _armourProfiles     = [_eventCargoProfiles, "armour",     []] call ALIVE_fnc_hashGet;
 
-                // Infantry: drop on the runway centre.
+                // Infantry: position at runway centre. busy flag gets cleared
+                // by setEventProfilesAvailable below -- don't clear here or we
+                // race with its garrison-command assignment.
                 {
                     {
                         private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                         if (!isNil "_p") then {
-                            [_p, "position", _destAirportPos]   call ALIVE_fnc_profileEntity;
-                            [_p, "busy", false]                 call ALIVE_fnc_hashSet;
+                            [_p, "position", _destAirportPos] call ALIVE_fnc_profileEntity;
                             _unloadCount = _unloadCount + 1;
                         };
                     } forEach _x;
                 } forEach _infantryProfiles;
 
-                // Vehicles: spawn slightly offset from the runway so they look like
-                // they rolled off the cargo ramp. Random offset within 30-80m.
+                // Vehicles: spawn slightly offset from the runway so they look
+                // like they rolled off the cargo ramp. Random offset within 30-80m
+                // with a random bearing so multiple deliveries don't stack.
                 {
                     {
                         private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
@@ -7805,8 +7823,7 @@ switch(_operation) do {
                             private _offset = 30 + random 50;
                             private _bearing = random 360;
                             private _vehPos = _destAirportPos getPos [_offset, _bearing];
-                            [_p, "position", _vehPos]   call ALIVE_fnc_profileVehicle;
-                            [_p, "busy", false]         call ALIVE_fnc_hashSet;
+                            [_p, "position", _vehPos] call ALIVE_fnc_profileVehicle;
                             _unloadCount = _unloadCount + 1;
                         };
                     } forEach _x;
@@ -7817,9 +7834,25 @@ switch(_operation) do {
                         _unloadCount, _destAirportPos, _eventID] call ALiVE_fnc_dump;
                 };
 
-                // Cargo is on the ground. Now wake the plane up for RTB.
-                // Source runway stays locked through the RTB cycle so a
-                // second AIRDROP can't try to spawn from the same airport
+                // Stash delivery position on the event hash BEFORE calling
+                // setEventProfilesAvailable -- the helper uses finalDestination
+                // for garrison placement, supply node registration, and the
+                // LOGISTICS_COMPLETE event payload.
+                [_event, "finalDestination", _destAirportPos] call ALIVE_fnc_hashSet;
+
+                // Canonical handoff to the profile system. Clears busy flags,
+                // assigns garrison command to infantry, kicks off stalled-unit
+                // watchdog, registers supply node, emits LOGISTICS_COMPLETE.
+                [_logic, "setEventProfilesAvailable", _event] call MAINCLASS;
+
+                if (_debug) then {
+                    ["ML - opcomAirdropUnload: handoff complete via setEventProfilesAvailable for event %1",
+                        _eventID] call ALiVE_fnc_dump;
+                };
+
+                // Cargo is on the ground and handed off. Now wake the plane
+                // up for RTB. Source runway stays locked through the RTB cycle
+                // so a second AIRDROP can't try to spawn from the same airport
                 // while our plane is taxiing back.
                 [_event, "state", "opcomAirdropTakeoff2"] call ALIVE_fnc_hashSet;
                 [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
