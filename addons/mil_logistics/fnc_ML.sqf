@@ -7700,18 +7700,290 @@ switch(_operation) do {
                 } forEach (_motorisedProfiles + _mechanisedProfiles + _armourProfiles);
 
                 if (_debug) then {
-                    ["ML - airdropUnload: %1 cargo profiles repositioned to dest airport %2. Event %3",
+                    ["ML - opcomAirdropUnload: %1 cargo profiles repositioned to dest airport %2. Event %3",
                         _unloadCount, _destAirportPos, _eventID] call ALiVE_fnc_dump;
                 };
 
-                // Release destination runway (RTB happens in Checkpoint 3c).
-                if (count _airdropDstEv > 0) then {
-                    [_logic, "unlockAirdropRunway", _airdropDstEv select 0] call MAINCLASS;
+                // Cargo is on the ground. Now wake the plane up for RTB.
+                // Source runway stays locked through the RTB cycle so a
+                // second AIRDROP can't try to spawn from the same airport
+                // while our plane is taxiing back.
+                [_event, "state", "opcomAirdropTakeoff2"] call ALIVE_fnc_hashSet;
+                [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+            };
+
+            case "opcomAirdropTakeoff2": {
+                // Wake the plane up after unload: clear its waypoints, force
+                // engine on, set careless behaviour for cleaner takeoff, and
+                // give it a high-altitude waypoint pointing at the source
+                // airport. The destination runway gets released here -- once
+                // the plane has waypoint-departed, the runway is free for
+                // other flights or ATO assets.
+                #define AIRDROP_TAKEOFF_LIFTOFF_AGL 30
+                #define AIRDROP_TAKEOFF_TIMEOUT_TICKS 60
+
+                private _planeProfID  = [_event, "airdropPlaneVehicleProfileID", ""] call ALIVE_fnc_hashGet;
+                private _crewProfID   = [_event, "airdropPlanePilotProfileID",   ""] call ALIVE_fnc_hashGet;
+                private _airdropSrcEv = [_event, "airdropSourceAirport",         []] call ALIVE_fnc_hashGet;
+                private _airdropDstEv = [_event, "airdropDestAirport",           []] call ALIVE_fnc_hashGet;
+
+                if (_planeProfID == "" || count _airdropSrcEv < 2) exitWith {
+                    ["ML - opcomAirdropTakeoff2: missing plane profile or source airport on event %1, completing",
+                        _eventID] call ALiVE_fnc_dump;
+                    if (count _airdropSrcEv > 0) then {
+                        [_logic, "unlockAirdropRunway", _airdropSrcEv select 0] call MAINCLASS;
+                    };
+                    if (count _airdropDstEv > 0) then {
+                        [_logic, "unlockAirdropRunway", _airdropDstEv select 0] call MAINCLASS;
+                    };
+                    [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
-                // Release source runway too (3c will keep it locked through RTB landing).
-                private _airdropSrcEvC = [_event, "airdropSourceAirport", []] call ALIVE_fnc_hashGet;
-                if (count _airdropSrcEvC > 0) then {
-                    [_logic, "unlockAirdropRunway", _airdropSrcEvC select 0] call MAINCLASS;
+
+                private _planeProfile = [ALIVE_profileHandler, "getProfile", _planeProfID] call ALIVE_fnc_profileHandler;
+                if (isNil "_planeProfile") exitWith {
+                    ["ML - opcomAirdropTakeoff2: plane profile %1 lost after unload (destroyed during taxi?). Releasing runways and completing event %2",
+                        _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "unlockAirdropRunway", _airdropSrcEv select 0] call MAINCLASS;
+                    if (count _airdropDstEv > 0) then {
+                        [_logic, "unlockAirdropRunway", _airdropDstEv select 0] call MAINCLASS;
+                    };
+                    [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                };
+
+                private _planeVehicle = _planeProfile select 2 select 10;
+                private _sourceAirportPos = _airdropSrcEv select 1;
+
+                // First entry into this state: kick the plane awake.
+                private _takeoffIssued = [_event, "airdropTakeoff2Issued", false] call ALIVE_fnc_hashGet;
+                if (!_takeoffIssued && !isNull _planeVehicle && {alive _planeVehicle}) then {
+                    // Release the destination runway -- our plane is leaving it.
+                    if (count _airdropDstEv > 0) then {
+                        [_logic, "unlockAirdropRunway", _airdropDstEv select 0] call MAINCLASS;
+                    };
+
+                    // Clear LANDED so we can re-use the EH on the source landing.
+                    _planeVehicle setVariable ["ALIVE_AIRDROP_LANDED", false, true];
+
+                    // Force engine on, careless behaviour so AI doesn't dawdle.
+                    _planeVehicle engineOn true;
+                    private _crewProfile = [ALIVE_profileHandler, "getProfile", _crewProfID] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_crewProfile") then {
+                        [_crewProfile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                        // Single MOVE waypoint at source airport, altitude PARADROP_HEIGHT.
+                        // AI should taxi if needed and take off cleanly into the route.
+                        private _rtbWPPos = +_sourceAirportPos;
+                        _rtbWPPos set [2, PARADROP_HEIGHT];
+                        private _wpRTB = [_rtbWPPos, 200, "MOVE", "FULL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                        [_crewProfile, "addWaypoint", _wpRTB] call ALIVE_fnc_profileEntity;
+                    };
+
+                    [_event, "airdropTakeoff2Issued", true] call ALIVE_fnc_hashSet;
+                    [_event, "airdropTakeoff2Timer",  0]    call ALIVE_fnc_hashSet;
+                    if (_debug) then {
+                        ["ML - opcomAirdropTakeoff2: plane %1 woken up, RTB waypoint added to source airport %2",
+                            _planeProfID, _airdropSrcEv select 0] call ALiVE_fnc_dump;
+                    };
+                };
+
+                // Wait for plane to lift off (AGL > threshold) before transitioning
+                // to RTB monitor. Timeout safety so we don't hang forever if AI fails.
+                private _planePos = if (!isNull _planeVehicle) then { getPosATL _planeVehicle } else { _planeProfile select 2 select 2 };
+                private _planeAGL = if (count _planePos > 2) then { _planePos select 2 } else { 0 };
+
+                private _toTimer = [_event, "airdropTakeoff2Timer", 0] call ALIVE_fnc_hashGet;
+                _toTimer = _toTimer + 1;
+                [_event, "airdropTakeoff2Timer", _toTimer] call ALIVE_fnc_hashSet;
+
+                if (_planeAGL > AIRDROP_TAKEOFF_LIFTOFF_AGL || _toTimer > AIRDROP_TAKEOFF_TIMEOUT_TICKS) then {
+                    if (_debug) then {
+                        ["ML - opcomAirdropTakeoff2: plane airborne (AGL %1m) or timeout (%2 ticks). Transitioning to opcomAirdropRTB. Event %3",
+                            round _planeAGL, _toTimer, _eventID] call ALiVE_fnc_dump;
+                    };
+                    [_event, "state", "opcomAirdropRTB"] call ALIVE_fnc_hashSet;
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                };
+            };
+
+            case "opcomAirdropRTB": {
+                // Plane is en route back to the source airport. Monitor distance,
+                // transition to opcomAirdropReturnLand once close. Same shape as
+                // opcomAirdropFly but in reverse and with a player-proximity gate
+                // applied at the landing transition.
+                #define AIRDROP_RTB_APPROACH_DISTANCE 3000
+                #define AIRDROP_RTB_TIMEOUT_TICKS 240
+
+                private _planeProfID  = [_event, "airdropPlaneVehicleProfileID", ""] call ALIVE_fnc_hashGet;
+                private _airdropSrcEv = [_event, "airdropSourceAirport",         []] call ALIVE_fnc_hashGet;
+
+                if (_planeProfID == "" || count _airdropSrcEv < 2) exitWith {
+                    ["ML - opcomAirdropRTB: missing plane or source airport on event %1, completing",
+                        _eventID] call ALiVE_fnc_dump;
+                    [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                };
+
+                private _planeProfile = [ALIVE_profileHandler, "getProfile", _planeProfID] call ALIVE_fnc_profileHandler;
+                if (isNil "_planeProfile") exitWith {
+                    ["ML - opcomAirdropRTB: plane profile %1 lost during RTB (shot down?). Releasing source runway and completing event %2",
+                        _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "unlockAirdropRunway", _airdropSrcEv select 0] call MAINCLASS;
+                    [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                };
+
+                private _sourceAirportPos = _airdropSrcEv select 1;
+                private _planePos = _planeProfile select 2 select 2;
+                private _distToSrc = _planePos distance2D _sourceAirportPos;
+
+                private _rtbTimer = [_event, "airdropRtbTimer", 0] call ALIVE_fnc_hashGet;
+                _rtbTimer = _rtbTimer + 1;
+                [_event, "airdropRtbTimer", _rtbTimer] call ALIVE_fnc_hashSet;
+
+                if (_debug && _rtbTimer % 10 == 0) then {
+                    ["ML - opcomAirdropRTB: event %1 plane %2 distance to source=%3m tick=%4",
+                        _eventID, _planeProfID, round _distToSrc, _rtbTimer] call ALiVE_fnc_dump;
+                };
+
+                if (_distToSrc <= AIRDROP_RTB_APPROACH_DISTANCE || _rtbTimer > AIRDROP_RTB_TIMEOUT_TICKS) then {
+                    if (_rtbTimer > AIRDROP_RTB_TIMEOUT_TICKS) then {
+                        ["ML - opcomAirdropRTB: TIMEOUT after %1 ticks (still %2m from source). Forcing return-land.",
+                            _rtbTimer, round _distToSrc] call ALiVE_fnc_dump;
+                    };
+                    [_event, "airdropRtbTimer", 0] call ALIVE_fnc_hashSet;
+                    [_event, "state", "opcomAirdropReturnLand"] call ALIVE_fnc_hashSet;
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                };
+            };
+
+            case "opcomAirdropReturnLand": {
+                // Plane approaching source airport. Player-proximity gate copied
+                // from ATO: if no players within AIRDROP_PLAYER_PROXIMITY_RADIUS
+                // of the source airport, skip the physical landAt and despawn
+                // immediately -- saves AI flight cycles when nobody is watching.
+                #define AIRDROP_PLAYER_PROXIMITY_RADIUS 1000
+                #define AIRDROP_RETURN_LAND_TIMEOUT_TICKS 200
+
+                private _planeProfID  = [_event, "airdropPlaneVehicleProfileID", ""] call ALIVE_fnc_hashGet;
+                private _airdropSrcEv = [_event, "airdropSourceAirport",         []] call ALIVE_fnc_hashGet;
+
+                if (_planeProfID == "" || count _airdropSrcEv < 2) exitWith {
+                    ["ML - opcomAirdropReturnLand: missing plane or source airport on event %1, completing",
+                        _eventID] call ALiVE_fnc_dump;
+                    [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                };
+
+                private _planeProfile = [ALIVE_profileHandler, "getProfile", _planeProfID] call ALIVE_fnc_profileHandler;
+                if (isNil "_planeProfile") exitWith {
+                    ["ML - opcomAirdropReturnLand: plane profile %1 lost on final approach. Releasing source runway and completing event %2",
+                        _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "unlockAirdropRunway", _airdropSrcEv select 0] call MAINCLASS;
+                    [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                };
+
+                private _sourceAirportID  = _airdropSrcEv select 0;
+                private _sourceAirportPos = _airdropSrcEv select 1;
+                private _planeVehicle     = _planeProfile select 2 select 10;
+
+                // Player-proximity check on first entry only.
+                private _returnLandIssued = [_event, "airdropReturnLandIssued", false] call ALIVE_fnc_hashGet;
+                if (!_returnLandIssued) then {
+                    private _playersClose = [_sourceAirportPos, AIRDROP_PLAYER_PROXIMITY_RADIUS] call ALiVE_fnc_anyPlayersInRange;
+                    if (_playersClose == 0) then {
+                        // Nobody watching -- skip the landing animation, go straight to despawn.
+                        if (_debug) then {
+                            ["ML - opcomAirdropReturnLand: no players within %1m of source airport %2, skipping physical landing. Event %3",
+                                AIRDROP_PLAYER_PROXIMITY_RADIUS, _sourceAirportID, _eventID] call ALiVE_fnc_dump;
+                        };
+                        [_event, "state", "opcomAirdropDespawn"] call ALIVE_fnc_hashSet;
+                        [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                    } else {
+                        // Players present -- issue the proper landing.
+                        if (!isNull _planeVehicle && {alive _planeVehicle}) then {
+                            if (_sourceAirportID < 100) then {
+                                _planeVehicle landAt _sourceAirportID;
+                            } else {
+                                private _dynAirport = nearestObject [_sourceAirportPos, "AirportBase"];
+                                if (!isNull _dynAirport) then {
+                                    _planeVehicle landAt _dynAirport;
+                                } else {
+                                    _planeVehicle land "LAND";
+                                };
+                            };
+
+                            _planeVehicle addEventHandler ["LandedStopped", {
+                                (_this select 0) setVariable ["ALIVE_AIRDROP_LANDED", true, true];
+                            }];
+
+                            [_event, "airdropReturnLandIssued", true] call ALIVE_fnc_hashSet;
+                            [_event, "airdropReturnLandTimer",  0]    call ALIVE_fnc_hashSet;
+                            if (_debug) then {
+                                ["ML - opcomAirdropReturnLand: landAt issued for plane %1 at source airport %2 (%3 players in range)",
+                                    _planeProfID, _sourceAirportID, _playersClose] call ALiVE_fnc_dump;
+                            };
+                        };
+                    };
+                } else {
+                    // Subsequent ticks: wait for LANDED or timeout.
+                    private _landed = if (!isNull _planeVehicle) then {
+                        _planeVehicle getVariable ["ALIVE_AIRDROP_LANDED", false]
+                    } else { true };
+
+                    private _rlTimer = [_event, "airdropReturnLandTimer", 0] call ALIVE_fnc_hashGet;
+                    _rlTimer = _rlTimer + 1;
+                    [_event, "airdropReturnLandTimer", _rlTimer] call ALIVE_fnc_hashSet;
+
+                    if (_landed || _rlTimer > AIRDROP_RETURN_LAND_TIMEOUT_TICKS) then {
+                        if (!_landed) then {
+                            ["ML - opcomAirdropReturnLand: TIMEOUT after %1 ticks waiting for LandedStopped at source. Forcing despawn.",
+                                _rlTimer] call ALiVE_fnc_dump;
+                        } else {
+                            if (_debug) then {
+                                ["ML - opcomAirdropReturnLand: plane stopped on source runway. Transitioning to opcomAirdropDespawn. Event %1",
+                                    _eventID] call ALiVE_fnc_dump;
+                            };
+                        };
+                        [_event, "state", "opcomAirdropDespawn"] call ALIVE_fnc_hashSet;
+                        [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                    };
+                };
+            };
+
+            case "opcomAirdropDespawn": {
+                // Final cleanup: release source runway, despawn the plane and
+                // crew profiles, mark event complete. This is the terminal
+                // state for the OPCOM AIRDROP pipeline.
+                private _planeProfID  = [_event, "airdropPlaneVehicleProfileID", ""] call ALIVE_fnc_hashGet;
+                private _crewProfID   = [_event, "airdropPlanePilotProfileID",   ""] call ALIVE_fnc_hashGet;
+                private _airdropSrcEv = [_event, "airdropSourceAirport",         []] call ALIVE_fnc_hashGet;
+
+                if (count _airdropSrcEv > 0) then {
+                    [_logic, "unlockAirdropRunway", _airdropSrcEv select 0] call MAINCLASS;
+                };
+
+                // Drop preventDespawn so ALiVE's normal cleanup can take over,
+                // and despawn the profile right now to keep the airfield tidy.
+                if (_planeProfID != "") then {
+                    private _pp = [ALIVE_profileHandler, "getProfile", _planeProfID] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_pp") then {
+                        [_pp, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                        [_pp, "despawn"]      call ALIVE_fnc_profileVehicle;
+                    };
+                };
+                if (_crewProfID != "") then {
+                    private _cp = [ALIVE_profileHandler, "getProfile", _crewProfID] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_cp") then {
+                        [_cp, "spawnType", []] call ALIVE_fnc_hashSet;
+                        [_cp, "despawn"]      call ALIVE_fnc_profileEntity;
+                    };
+                };
+
+                if (_debug) then {
+                    ["ML - opcomAirdropDespawn: source runway released, plane / crew profiles despawned. Event %1 complete.",
+                        _eventID] call ALiVE_fnc_dump;
                 };
 
                 [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
