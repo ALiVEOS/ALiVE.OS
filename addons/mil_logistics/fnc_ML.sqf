@@ -72,6 +72,17 @@ ARJay & Jman
 #define FUEL_WATCHDOG_HOVER_SPEED_THRESHOLD 5
 #define FUEL_WATCHDOG_MIN_HOVER_HEIGHT 5
 #define MAX_GROUPS_PER_REQUEST 5
+// OPCOM AIRDROP delivery constants
+// FRIENDLY_AIRPORT_RADIUS: max distance (m) from a friendly OPCOM-held objective for an airport to count as 'friendly'.
+// AIRDROP_DEST_MAX_RADIUS: max distance (m) from the requested destination for a friendly airport to qualify as the destination airport.
+// AIRDROP_MIN_FLIGHT_DISTANCE: minimum source-to-destination distance (m) below which AIRDROP is suppressed (heli/ground takes over).
+// AIRDROP_OFFMAP_BUFFER: distance (m) past the world boundary that the offmap-fallback plane spawns.
+// AIRDROP_OFFMAP_STATIC_FALLBACK: distance (m) past LOGCOM HQ used when the boundary-intersection math fails to return a valid t.
+#define FRIENDLY_AIRPORT_RADIUS 250
+#define AIRDROP_DEST_MAX_RADIUS 3000
+#define AIRDROP_MIN_FLIGHT_DISTANCE 1500
+#define AIRDROP_OFFMAP_BUFFER 500
+#define AIRDROP_OFFMAP_STATIC_FALLBACK 5000
 #define MAX_SLINGLOAD_CONCURRENT 3
 #define DISMOUNT_RADIUS 500
 #define VEHICLE_LEAD_DIST 50
@@ -347,6 +358,267 @@ switch(_operation) do {
         ASSERT_TRUE(typeName _args == "STRING",str _args);
 
         _result = _args;
+    };
+    // ============================================================
+    // OPCOM AIRDROP delivery - airport selection helpers
+    // ------------------------------------------------------------
+    // Pure resolver functions used by Rule 1.5 in the LOGCOM_REQUEST
+    // delivery decision tree. No state mutation, no side effects.
+    // Tested by populating known map fixtures and reading the result
+    // arrays back through the debug console.
+    // ============================================================
+    case "getAllAirports": {
+        // Returns an array of [airportID, position] pairs for every
+        // map airport ALiVE knows about: primary cfgWorlds airport
+        // (id 0), secondary airports (id 1..99), and dynamic runways
+        // such as carriers / Eden-placed airbase compositions
+        // (id 100+, mirrors ALiVE_fnc_GetNearestAirportID).
+        private _airports = [];
+
+        // Primary airport (id 0)
+        private _primaryPos = getArray (configFile >> "cfgWorlds" >> WorldName >> "ilsPosition");
+        if (count _primaryPos >= 2) then {
+            _airports pushBack [0, _primaryPos];
+        };
+
+        // Secondary airports (ids 1..N)
+        private _secondary = configFile >> "cfgWorlds" >> WorldName >> "SecondaryAirports";
+        for "_i" from 0 to ((count _secondary) - 1) do {
+            private _ilsPos = getArray ((_secondary select _i) >> "ilsPosition");
+            if (count _ilsPos >= 2) then {
+                _airports pushBack [_i + 1, _ilsPos];
+            };
+        };
+
+        // Dynamic runways (ids 100+) - cached on first call
+        if (isNil "ALiVE_Carriers") then {
+            ALiVE_Carriers = (allAirports select 1);
+        };
+        {
+            _airports pushBack [100 + _forEachIndex, position _x];
+        } forEach ALiVE_Carriers;
+
+        _result = _airports;
+    };
+    case "getFriendlyOpcomObjectivePositions": {
+        // Returns an array of positions of held (defend/reserve) friendly
+        // OPCOM objectives for the given side. Mirrors the iteration
+        // pattern used in LOGCOM_RESUPPLY dynamic source selection so
+        // we stay consistent with how ML already inspects OPCOM state.
+        // _args: side string ("WEST" / "EAST" / "GUER" / "CIV")
+        private _eventSide = _args;
+        private _positions = [];
+
+        {
+            private _handler = _x getVariable ["handler", objNull];
+            if (!isNull _handler) then {
+                private _opcomSide = [_handler, "side"] call ALiVE_fnc_HashGet;
+                if (_opcomSide == _eventSide) then {
+                    private _objectives = [_handler, "objectives", []] call ALiVE_fnc_HashGet;
+                    {
+                        private _objState = [_x, "opcom_state", "none"] call ALiVE_fnc_HashGet;
+                        if (_objState in ["defend", "reserve"]) then {
+                            private _objPos = [_x, "center"] call ALiVE_fnc_HashGet;
+                            if (count _objPos >= 2) then {
+                                _positions pushBack _objPos;
+                            };
+                        };
+                    } forEach _objectives;
+                };
+            };
+        } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+
+        _result = _positions;
+    };
+    case "getFriendlyAirports": {
+        // Returns [[airportID, position], ...] of map airports that lie
+        // within FRIENDLY_AIRPORT_RADIUS of any held friendly OPCOM
+        // objective for the given side. Loose proximity filter accommodates
+        // maps where airport ILS positions don't perfectly overlap with
+        // OPCOM objective centres.
+        // _args: side string
+        private _eventSide = _args;
+        private _allAirports = [_logic, "getAllAirports"] call MAINCLASS;
+        private _friendlyObjs = [_logic, "getFriendlyOpcomObjectivePositions", _eventSide] call MAINCLASS;
+        private _friendlyAirports = [];
+
+        {
+            private _airportPos = _x select 1;
+            private _isFriendly = false;
+            {
+                if ((_x distance2D _airportPos) < FRIENDLY_AIRPORT_RADIUS) exitWith {
+                    _isFriendly = true;
+                };
+            } forEach _friendlyObjs;
+            if (_isFriendly) then {
+                _friendlyAirports pushBack _x;
+            };
+        } forEach _allAirports;
+
+        _result = _friendlyAirports;
+    };
+    case "selectAirdropSource": {
+        // Mode B source selection: nearest friendly airport to LOGCOM HQ.
+        // Picks the rear-area airfield as the conceptual "supply chain
+        // origin". Returns [airportID, position] or [] if no candidates.
+        // _args: friendly airports array
+        private _friendlyAirports = _args;
+        private _hqPos = getPos _logic;
+        private _bestAirport = [];
+        private _bestDist = 1e10;
+
+        {
+            private _airportPos = _x select 1;
+            private _d = _airportPos distance2D _hqPos;
+            if (_d < _bestDist) then {
+                _bestDist = _d;
+                _bestAirport = _x;
+            };
+        } forEach _friendlyAirports;
+
+        _result = _bestAirport;
+    };
+    case "selectAirdropDestination": {
+        // Picks the friendly airport nearest to the requested event
+        // position, within AIRDROP_DEST_MAX_RADIUS. Returns [] if no
+        // friendly airport is close enough to act as a forward operating
+        // base for this delivery.
+        // _args: [friendly airports array, event position, optional max radius]
+        private _friendlyAirports = _args select 0;
+        private _eventPos = _args select 1;
+        private _maxRadius = _args param [2, AIRDROP_DEST_MAX_RADIUS];
+        private _bestAirport = [];
+        private _bestDist = 1e10;
+
+        {
+            private _airportPos = _x select 1;
+            private _d = _airportPos distance2D _eventPos;
+            if (_d < _bestDist && _d <= _maxRadius) then {
+                _bestDist = _d;
+                _bestAirport = _x;
+            };
+        } forEach _friendlyAirports;
+
+        _result = _bestAirport;
+    };
+    case "calculateOffmapSpawnPos": {
+        // Single-airport offmap fallback: trace a ray from the destination
+        // airport through the LOGCOM HQ and continue past until the world
+        // boundary is crossed, then offset by AIRDROP_OFFMAP_BUFFER metres.
+        // The plane will spawn airborne at PARADROP_HEIGHT, already in
+        // level flight, so it can fly in toward the destination airport
+        // from the offmap supply tail.
+        // _args: [destination airport position, hq position]
+        private _destPos = _args select 0;
+        private _hqPos = _args select 1;
+
+        private _dirToHQ = _destPos getDir _hqPos;
+        private _ws = worldSize;
+        private _hqX = _hqPos select 0;
+        private _hqY = _hqPos select 1;
+
+        // Unit vector components (Arma uses degrees; sin/cos return components on the unit circle).
+        private _vx = sin _dirToHQ;
+        private _vy = cos _dirToHQ;
+
+        // Distance to each world boundary along the vector from HQ.
+        // Skip axes where the vector is parallel (would divide by ~0).
+        private _ts = [];
+        if (abs _vx > 0.001) then {
+            if (_vx > 0) then { _ts pushBack ((_ws - _hqX) / _vx); };
+            if (_vx < 0) then { _ts pushBack ((0 - _hqX) / _vx); };
+        };
+        if (abs _vy > 0.001) then {
+            if (_vy > 0) then { _ts pushBack ((_ws - _hqY) / _vy); };
+            if (_vy < 0) then { _ts pushBack ((0 - _hqY) / _vy); };
+        };
+
+        // Smallest positive t = first boundary crossed past HQ along the vector.
+        private _positiveTs = _ts select { _x > 0 };
+
+        private _spawnPos = if (count _positiveTs > 0) then {
+            private _tBoundary = selectMin _positiveTs;
+            _hqPos getPos [_tBoundary + AIRDROP_OFFMAP_BUFFER, _dirToHQ]
+        } else {
+            ["ML - calculateOffmapSpawnPos: vector math returned no positive boundary, using %1m static fallback past HQ", AIRDROP_OFFMAP_STATIC_FALLBACK] call ALiVE_fnc_dump;
+            _hqPos getPos [AIRDROP_OFFMAP_STATIC_FALLBACK, _dirToHQ]
+        };
+
+        _spawnPos set [2, PARADROP_HEIGHT];
+        _result = _spawnPos;
+    };
+    // ------------------------------------------------------------
+    // Runway lock state - separate hash to avoid collision with
+    // ATO's "runways" property. ATO can soft cross-read this if it
+    // ever wants to coordinate. Reciprocal cross-read of ATO's lock
+    // is implemented in isAtoRunwayBusy below.
+    // ------------------------------------------------------------
+    case "airdropRunways": {
+        // Lazy-initialised airport-id -> busy bool hash.
+        private _runways = _logic getVariable ["airdropRunways", nil];
+        if (isNil "_runways") then {
+            _runways = [] call ALiVE_fnc_hashCreate;
+            _logic setVariable ["airdropRunways", _runways];
+        };
+        _result = _runways;
+    };
+    case "addAirdropRunway": {
+        // Register an airport id in the lock hash (busy = false initially).
+        // _args: airport id
+        private _runways = [_logic, "airdropRunways"] call MAINCLASS;
+        if !([_runways, _args] call CBA_fnc_hashHasKey) then {
+            [_runways, _args, false] call ALIVE_fnc_hashSet;
+        };
+    };
+    case "lockAirdropRunway": {
+        // Mark airport runway as busy.
+        // _args: airport id
+        private _runways = [_logic, "airdropRunways"] call MAINCLASS;
+        [_runways, _args, true] call ALIVE_fnc_hashSet;
+    };
+    case "unlockAirdropRunway": {
+        // Mark airport runway as free.
+        // _args: airport id
+        private _runways = [_logic, "airdropRunways"] call MAINCLASS;
+        if ([_runways, _args] call CBA_fnc_hashHasKey) then {
+            [_runways, _args, false] call ALIVE_fnc_hashSet;
+        };
+    };
+    case "isAtoRunwayBusy": {
+        // Soft cross-read of any placed ATO module's runway lock state.
+        // Pure read via getVariable -- no writes, no method calls into
+        // ATO. Safely returns false when no ATO module is placed or
+        // when the lock hash hasn't been initialised yet.
+        // _args: airport id
+        private _airportID = _args;
+        private _isBusy = false;
+        private _atoLogics = (allMissionObjects "Logic") select {
+            _x getVariable ["moduleType", ""] == "ALIVE_mil_ATO"
+        };
+        {
+            private _atoRunways = _x getVariable ["runways", []];
+            if (typeName _atoRunways == "ARRAY"
+                && {[_atoRunways, _airportID] call CBA_fnc_hashHasKey}) then {
+                if ([_atoRunways, _airportID] call ALIVE_fnc_hashGet) exitWith {
+                    _isBusy = true;
+                };
+            };
+        } forEach _atoLogics;
+        _result = _isBusy;
+    };
+    case "isAirdropRunwayBusy": {
+        // Combined check: is this airport busy in EITHER ML's lock or
+        // any placed ATO module's lock? Used by Rule 1.5 to avoid
+        // double-booking a runway.
+        // _args: airport id
+        private _airportID = _args;
+        private _runways = [_logic, "airdropRunways"] call MAINCLASS;
+        private _myBusy = false;
+        if ([_runways, _airportID] call CBA_fnc_hashHasKey) then {
+            _myBusy = [_runways, _airportID] call ALIVE_fnc_hashGet;
+        };
+        private _atoBusy = [_logic, "isAtoRunwayBusy", _airportID] call MAINCLASS;
+        _result = (_myBusy || _atoBusy);
     };
     case "type": {
         if(typeName _args == "STRING") then {
