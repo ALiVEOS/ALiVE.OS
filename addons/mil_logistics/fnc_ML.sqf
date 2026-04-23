@@ -401,26 +401,31 @@ switch(_operation) do {
         _result = _airports;
     };
     case "getFriendlyOpcomObjectivePositions": {
-        // Returns an array of positions of held (defend/reserve) friendly
-        // OPCOM objectives for the given side. Mirrors the iteration
-        // pattern used in LOGCOM_RESUPPLY dynamic source selection so
-        // we stay consistent with how ML already inspects OPCOM state.
+        // Returns an array of positions of held (defend/reserve) OPCOM
+        // objectives where the OPCOM considers the requested side friendly.
+        // Iterates OPCOM_instances directly -- each entry is itself the
+        // OPCOM hash (NOT a Logic with a "handler" variable -- that's a
+        // common foot-gun, see fnc_getAliveMissionFactionsDataSource.sqf
+        // for the canonical iteration pattern). OPCOM friendliness is
+        // determined by the OPCOM's "sidesfriendly" array (built at
+        // OPCOM init via getFriend >= 0.6 vs every side).
         // _args: side string ("WEST" / "EAST" / "GUER" / "CIV")
         private _eventSide = _args;
         private _positions = [];
 
         {
-            private _handler = _x getVariable ["handler", objNull];
-            if (!isNull _handler) then {
-                private _opcomSide = [_handler, "side"] call ALiVE_fnc_HashGet;
-                if (_opcomSide == _eventSide) then {
-                    private _objectives = [_handler, "objectives", []] call ALiVE_fnc_HashGet;
+            if (_x isEqualType []) then {
+                private _sidesFriendly = [_x, "sidesfriendly", []] call ALIVE_fnc_hashGet;
+                if (_eventSide in _sidesFriendly) then {
+                    private _objectives = [_x, "objectives", []] call ALIVE_fnc_hashGet;
                     {
-                        private _objState = [_x, "opcom_state", "none"] call ALiVE_fnc_HashGet;
-                        if (_objState in ["defend", "reserve"]) then {
-                            private _objPos = [_x, "center"] call ALiVE_fnc_HashGet;
-                            if (count _objPos >= 2) then {
-                                _positions pushBack _objPos;
+                        if (_x isEqualType []) then {
+                            private _objState = [_x, "opcom_state", "none"] call ALIVE_fnc_hashGet;
+                            if (_objState in ["defend", "reserve"]) then {
+                                private _objPos = [_x, "center", []] call ALIVE_fnc_hashGet;
+                                if (_objPos isEqualType [] && {count _objPos >= 2}) then {
+                                    _positions pushBack _objPos;
+                                };
                             };
                         };
                     } forEach _objectives;
