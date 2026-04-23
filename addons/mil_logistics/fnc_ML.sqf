@@ -4990,10 +4990,31 @@ switch(_operation) do {
                                                 };
                                             };
                                         } else {
-                                            // Single-airport case -- offmap fallback comes in a later commit.
-                                            if (_debug) then {
-                                                ["ML - AIRDROP suppressed: only one friendly airport (%1) qualifies for both source and destination -- offmap fallback not yet implemented",
-                                                    _sourceID] call ALiVE_fnc_dump;
+                                            // Single-airport case: source and destination resolved
+                                            // to the same airport. Activate the offmap fallback --
+                                            // the plane spawns airborne at the map edge along the
+                                            // ray from destination through LOGCOM HQ, flies in to
+                                            // the airport, lands, unloads, takes off, returns to
+                                            // the offmap point, and despawns. Lets AIRDROP still
+                                            // work on maps where you only hold one airfield.
+                                            private _hqPos = getPos _logic;
+                                            private _offmapSpawnPos = [_logic, "calculateOffmapSpawnPos", [_destPos, _hqPos]] call MAINCLASS;
+                                            // Sanity-check the spawn point is meaningfully far from the destination.
+                                            private _offmapDist = _offmapSpawnPos distance2D _destPos;
+                                            if (_offmapDist >= AIRDROP_MIN_FLIGHT_DISTANCE) then {
+                                                _airdropEligible = true;
+                                                // Replace _airdropSource with the offmap pseudo-airport
+                                                // ([id=-1, position=offmap]). _airdropDest stays as the real airport.
+                                                _airdropSource = [-1, _offmapSpawnPos];
+                                                if (_debug) then {
+                                                    ["ML - Delivery type: AIRDROP OFFMAP fallback (single airport %1, offmap spawn %2 at %3m, plane %4)",
+                                                        _destID, _offmapSpawnPos, round _offmapDist, _fixedWingClass] call ALiVE_fnc_dump;
+                                                };
+                                            } else {
+                                                if (_debug) then {
+                                                    ["ML - AIRDROP suppressed: single airport (%1) and offmap spawn distance %2m < %3m minimum",
+                                                        _destID, round _offmapDist, AIRDROP_MIN_FLIGHT_DISTANCE] call ALiVE_fnc_dump;
+                                                };
                                             };
                                         };
                                     } else {
@@ -5022,9 +5043,12 @@ switch(_operation) do {
                             // case and state machine can pull them later. They were
                             // resolved inside this scope and don't survive past the
                             // closing brace.
+                            // Source id -1 marks the offmap pseudo-airport (single-airport
+                            // fallback) -- dispatch + state machine branch on this.
+                            private _isOffmap = ((_airdropSource select 0) == -1);
                             [_event, "airdropSourceAirport", _airdropSource] call ALIVE_fnc_hashSet;
                             [_event, "airdropDestAirport",   _airdropDest]   call ALIVE_fnc_hashSet;
-                            [_event, "airdropOffmap",        false]          call ALIVE_fnc_hashSet;
+                            [_event, "airdropOffmap",        _isOffmap]      call ALIVE_fnc_hashSet;
                         } else {
                         // Rule 1: Armour always goes by ground (fallback when AIRDROP didn't fire).
                         if (_hasArmour) then {
@@ -6865,35 +6889,53 @@ switch(_operation) do {
                                         private _destAirportID    = _airdropDstEv select 0;
                                         private _destAirportPos   = _airdropDstEv select 1;
 
-                                        // Register + lock the source runway. Destination runway
-                                        // is registered now but only locked when the plane is
-                                        // approaching to land (in airdropLand state).
-                                        [_logic, "addAirdropRunway", _sourceAirportID] call MAINCLASS;
-                                        [_logic, "addAirdropRunway", _destAirportID]   call MAINCLASS;
-                                        [_logic, "lockAirdropRunway", _sourceAirportID] call MAINCLASS;
+                                        private _isOffmap = [_event, "airdropOffmap", false] call ALIVE_fnc_hashGet;
 
-                                        // Resolve taxi-in position + runway heading.
-                                        private _taxiPositions = [_sourceAirportID, "ilsTaxiIn", 4] call ALIVE_fnc_getAirportTaxiPos;
-                                        private _spawnPos = if (count _taxiPositions >= 2) then {
-                                            [_taxiPositions select 0, _taxiPositions select 1, 0]
-                                        } else {
-                                            // Fallback: ILS position (no taxi config on this map's airport).
-                                            private _ilsPos = +_sourceAirportPos;
-                                            _ilsPos set [2, 0];
-                                            _ilsPos
-                                        };
-                                        private _spawnDir = if (count _taxiPositions >= 4) then {
-                                            _spawnPos getDir [_taxiPositions select 2, _taxiPositions select 3]
-                                        } else {
-                                            _spawnPos getDir _destAirportPos
+                                        // Register / lock runways. Offmap source has no real
+                                        // runway to lock -- skip source registration in that case.
+                                        // Destination is always a real airport so always registered.
+                                        [_logic, "addAirdropRunway", _destAirportID] call MAINCLASS;
+                                        if (!_isOffmap) then {
+                                            [_logic, "addAirdropRunway", _sourceAirportID] call MAINCLASS;
+                                            [_logic, "lockAirdropRunway", _sourceAirportID] call MAINCLASS;
                                         };
 
-                                        // Scramble alarm -- mirror ATO's audio cue at the airfield.
-                                        [_spawnPos] spawn {
-                                            private _pos = _this select 0;
-                                            private _alarm = createSoundSource ["Sound_AirRaidSiren", _pos, [], 0];
-                                            sleep 30;
-                                            deleteVehicle _alarm;
+                                        // Resolve spawn position + heading.
+                                        // - Two-airport: ilsTaxiIn (ground) + runway heading.
+                                        // - Offmap fallback: airborne at PARADROP_HEIGHT, heading toward destination.
+                                        private _spawnPos = [];
+                                        private _spawnDir = 0;
+                                        if (_isOffmap) then {
+                                            // Source position is already the offmap point (PARADROP_HEIGHT applied
+                                            // in calculateOffmapSpawnPos). Heading: straight at the destination.
+                                            _spawnPos = +_sourceAirportPos;
+                                            _spawnDir = _spawnPos getDir _destAirportPos;
+                                        } else {
+                                            private _taxiPositions = [_sourceAirportID, "ilsTaxiIn", 4] call ALIVE_fnc_getAirportTaxiPos;
+                                            _spawnPos = if (count _taxiPositions >= 2) then {
+                                                [_taxiPositions select 0, _taxiPositions select 1, 0]
+                                            } else {
+                                                // Fallback: ILS position (no taxi config on this map's airport).
+                                                private _ilsPos = +_sourceAirportPos;
+                                                _ilsPos set [2, 0];
+                                                _ilsPos
+                                            };
+                                            _spawnDir = if (count _taxiPositions >= 4) then {
+                                                _spawnPos getDir [_taxiPositions select 2, _taxiPositions select 3]
+                                            } else {
+                                                _spawnPos getDir _destAirportPos
+                                            };
+                                        };
+
+                                        // Scramble alarm at the SOURCE airport only when we have one
+                                        // (offmap source has nobody around to hear it -- skip).
+                                        if (!_isOffmap) then {
+                                            [_spawnPos] spawn {
+                                                private _pos = _this select 0;
+                                                private _alarm = createSoundSource ["Sound_AirRaidSiren", _pos, [], 0];
+                                                sleep 30;
+                                                deleteVehicle _alarm;
+                                            };
                                         };
 
                                         // Create plane + crew profile pair via standard ALiVE path.
@@ -6911,6 +6953,28 @@ switch(_operation) do {
                                         [_crewProfile,  "spawnType", ["preventDespawn"]] call ALIVE_fnc_hashSet;
                                         [_planeProfile, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
                                         [_planeProfile, "alive_ml_pilot_entity_id", _crewProfID] call ALIVE_fnc_hashSet;
+
+                                        // Offmap fallback: hoist the plane up to PARADROP_HEIGHT
+                                        // with cruise velocity in the heading direction so it
+                                        // arrives "already in level flight" -- no offmap runway
+                                        // exists for it to taxi from. Two-airport case spawns
+                                        // on the runway and lets vanilla AI handle takeoff.
+                                        if (_isOffmap) then {
+                                            private _vehicleObj = _planeProfile select 2 select 10;
+                                            if (!isNull _vehicleObj) then {
+                                                _vehicleObj setPosATL [_spawnPos select 0, _spawnPos select 1, PARADROP_HEIGHT];
+                                                _vehicleObj setDir _spawnDir;
+                                                _vehicleObj engineOn true;
+                                                _vehicleObj flyInHeight PARADROP_HEIGHT;
+                                                // ~360 km/h forward velocity so plane doesn't
+                                                // stall + drop on spawn.
+                                                _vehicleObj setVelocity [(sin _spawnDir) * 100, (cos _spawnDir) * 100, 0];
+                                                if (_debug) then {
+                                                    ["ML - AIRDROP OFFMAP: plane hoisted to %1 AGL with forward velocity, heading %2",
+                                                        PARADROP_HEIGHT, _spawnDir] call ALiVE_fnc_dump;
+                                                };
+                                            };
+                                        };
 
                                         // Add destination waypoint -- straight to the destination
                                         // airport ILS position. landAt will be issued explicitly
@@ -7887,6 +7951,20 @@ switch(_operation) do {
                 private _sourceAirportID  = _airdropSrcEv select 0;
                 private _sourceAirportPos = _airdropSrcEv select 1;
                 private _planeVehicle     = _planeProfile select 2 select 10;
+                private _isOffmap         = [_event, "airdropOffmap", false] call ALIVE_fnc_hashGet;
+
+                // Offmap fallback: there's no real runway to land on. The plane
+                // just needs to reach the offmap waypoint and despawn there.
+                // Skip the player-proximity gate and the landAt entirely --
+                // opcomAirdropDespawn will release any locks and tear down profiles.
+                if (_isOffmap) exitWith {
+                    if (_debug) then {
+                        ["ML - opcomAirdropReturnLand: offmap fallback active, skipping physical landing. Event %1 -> opcomAirdropDespawn",
+                            _eventID] call ALiVE_fnc_dump;
+                    };
+                    [_event, "state", "opcomAirdropDespawn"] call ALIVE_fnc_hashSet;
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                };
 
                 // Player-proximity check on first entry only.
                 private _returnLandIssued = [_event, "airdropReturnLandIssued", false] call ALIVE_fnc_hashGet;
