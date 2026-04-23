@@ -236,6 +236,18 @@
 <Key ID="STR_ALIVE_C2ISTAR_DISPLAY_PLAYER_SECTORS_COMMENT">
     <English>Display map sectors containing players on the map</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ENABLE">
+    <English>Enable Live Commander Intel (COP):</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ENABLE_COMMENT">
+    <English>Enables the Common Operational Picture map overlay — a real-time commander-intel layer that complements T.R.A.C.E. The server polls OPCOM data and broadcasts side-filtered enemy intel, friendly force tracking (BFT), commander objectives, and asymmetric activity to clients. Renders on the main map when open. Where T.R.A.C.E simulates ELINT-style potential-presence shading, COP simulates KNOWN intel reports received by the commander from OPCOM.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE">
+    <English>COP Anchor Distance:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE_COMMENT">
+    <English>Radius around each player within which COP intel (enemies, BFT, objectives, asymmetric) is displayed on the map. The anchor is the player — this distance determines how far from the player's position intel appears. WARNING: high distances (1000 m or more) combined with many objectives or high unit counts can cause COP to take longer to display information and may reduce client frame rate with the map open.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_RUN_EVERY">
     <English>Sector Update time:</English>
 </Key>

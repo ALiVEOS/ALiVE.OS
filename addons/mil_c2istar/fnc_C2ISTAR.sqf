@@ -65,6 +65,8 @@ Peer Reviewed:
 #define DEFAULT_DISPLAY_PLAYER_SECTORS false
 #define DEFAULT_DISPLAY_MIL_SECTORS false
 #define DEFAULT_TRACEFILL "None"
+#define DEFAULT_ENABLE_COP false
+#define DEFAULT_COP_ANCHOR_DISTANCE 1000
 #define DEFAULT_RUN_EVERY 120
 #define DEFAULT_TASK_MIN_DISTANCE 0
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
@@ -153,6 +155,13 @@ switch(_operation) do {
     };
     case "destroy": {
         if (isServer) then {
+            // Stop COP server/asym loops cleanly when the module is destroyed
+            // so spawned `while` threads exit on their next cycle rather than
+            // polling a deleted logic indefinitely.
+            if (!isNil "ALIVE_fnc_COPInit") then {
+                ["stop"] call ALIVE_fnc_COPInit;
+            };
+
             // if server
             _logic setVariable ["super", nil];
             _logic setVariable ["class", nil];
@@ -478,6 +487,26 @@ switch(_operation) do {
     };
     case "displayTraceGrid": {
         _result = [_logic,_operation,_args,DEFAULT_TRACEFILL] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "enableLiveCommanderIntel": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["enableLiveCommanderIntel", _args];
+        } else {
+            _args = _logic getVariable ["enableLiveCommanderIntel", DEFAULT_ENABLE_COP];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["enableLiveCommanderIntel", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    case "copAnchorDistance": {
+        if (typeName _args == "STRING") then { _args = parseNumber _args; };
+        if (typeName _args == "SCALAR") then { _logic setVariable ["copAnchorDistance", _args]; };
+        _result = _logic getVariable ["copAnchorDistance", DEFAULT_COP_ANCHOR_DISTANCE];
+        if (_result < 100) then { _result = DEFAULT_COP_ANCHOR_DISTANCE };
     };
     case "runEvery": {
         if(typeName _args == "STRING") then {
@@ -961,6 +990,17 @@ switch(_operation) do {
                 _logic setvariable ["grid",nil];
             };
 
+            // COP — Common Operational Picture (commander intel overlay)
+            private _enableCOP = [_logic, "enableLiveCommanderIntel"] call MAINCLASS;
+            if (_enableCOP) then {
+                private _anchorDist = [_logic, "copAnchorDistance"] call MAINCLASS;
+                ALIVE_COP_ANCHOR_DISTANCE = _anchorDist;
+                publicVariable "ALIVE_COP_ANCHOR_DISTANCE";
+
+                ["startServer"] call ALIVE_fnc_COPInit;
+                ["startAsym"]   call ALIVE_fnc_COPInit;
+            };
+
             if (_debug) then {
                 ["---------------------------- C2ISTAR %1 - Initial Settings ---------------------------------", _logic] call ALiVE_fnc_dump;
                 private _settings = allVariables _logic;
@@ -1009,6 +1049,14 @@ switch(_operation) do {
             };
 
             [_logic,"side",_sideText] call MAINCLASS;
+
+            // COP — start the client-side Draw EH attachment if enabled.
+            // Reads the Eden attribute here (not from the server publicVariable)
+            // because each client must resolve its own side independently.
+            private _enableCOP_client = [_logic, "enableLiveCommanderIntel"] call MAINCLASS;
+            if (_enableCOP_client) then {
+                ["startClient", _sideText] call ALIVE_fnc_COPInit;
+            };
 
 
             // set the player faction
