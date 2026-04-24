@@ -5157,19 +5157,31 @@ switch(_operation) do {
 
                         }; // end if (count _testFromPos == 0) -- supply network anchor
 
-                        // AIRDROP override: depart from the chosen source airport, not the
-                        // supply network node. The plane lifecycle is anchored to airfields,
-                        // not held objectives, so _reinforcementPosition needs to point at
-                        // the source runway for downstream marker / log / spawn logic.
-                        if (_eventType == "AIRDROP") then {
+                        // AIRDROP note: do NOT override _reinforcementPosition here.
+                        // Earlier versions did, to keep downstream marker / log
+                        // text pointing at the source airport. But that fed the
+                        // offmap pseudo-airport position (sea / off-map / 350m
+                        // AGL) into the cargo profile creation logic which
+                        // then water-skipped every group -- AIRDROP OFFMAP
+                        // fallback events created zero profiles and cancelled.
+                        //
+                        // _reinforcementPosition stays at the supply network
+                        // node (always land) so cargo profiles spawn cleanly.
+                        // The actual plane spawn position is read independently
+                        // from the event's airdropSourceAirport hash entry by
+                        // the AIRDROP dispatch case below -- the override
+                        // wasn't needed for spawn positioning, only for log
+                        // text. The diagnostic log is kept (just informational
+                        // now, no override action).
+                        if (_eventType == "AIRDROP" && _debug) then {
                             private _airdropSrcEv = [_event, "airdropSourceAirport", []] call ALIVE_fnc_hashGet;
-                            if (count _airdropSrcEv > 1) then {
-                                _reinforcementPosition = _airdropSrcEv select 1;
-                                if (_debug) then {
-                                    ["ML - AIRDROP _reinforcementPosition overridden to source airport %1 at %2",
-                                        _airdropSrcEv select 0, _reinforcementPosition] call ALiVE_fnc_dump;
-                                };
-                            };
+                            private _airdropDstEv = [_event, "airdropDestAirport",   []] call ALIVE_fnc_hashGet;
+                            private _isOffmap     = [_event, "airdropOffmap",   false]   call ALIVE_fnc_hashGet;
+                            private _srcLabel = if (_isOffmap) then { "OFFMAP" } else { format ["airport %1", (_airdropSrcEv select 0)] };
+                            ["ML - AIRDROP routing: cargo creates at supply node %1; plane spawns at %2 (%3); plane lands at airport %4 (%5)",
+                                _reinforcementPosition,
+                                _airdropSrcEv select 1, _srcLabel,
+                                _airdropDstEv select 0, _airdropDstEv select 1] call ALiVE_fnc_dump;
                         };
 
                         ["AI LOGCOM Side: %1 Type: %2 From: %3 To: %4 Dist: %5m Water: %6 Heavy: %7",
