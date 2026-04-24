@@ -672,7 +672,7 @@ ALIVE_fnc_COPDrawAll = {
     };
 };
 
-LOG_INFO(MIL_C2ISTAR, "COP - Render: 15 draw functions seeded");
+["COP - Render: 15 draw functions seeded"] call ALiVE_fnc_dump;
 
 private _result = true;
 TRACE_1("COPRender - output",_result);

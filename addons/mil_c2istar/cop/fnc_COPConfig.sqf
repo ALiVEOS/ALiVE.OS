@@ -386,8 +386,8 @@ if (isNil "ALIVE_COP_ICON_CACHE")     then { ALIVE_COP_ICON_CACHE     = createHa
 if (isNil "ALIVE_COP_TYPE_CACHE")     then { ALIVE_COP_TYPE_CACHE     = createHashMap };
 if (isNil "ALIVE_COP_LOC_CACHE")      then { ALIVE_COP_LOC_CACHE      = createHashMap };
 
-// Lifecycle log (Tier 1 — always emits; use LOG_INFO macro from x_lib)
-LOG_INFO(MIL_C2ISTAR, "COP - Config: loaded");
+// Lifecycle log (Tier 1 — always emits via ALiVE_fnc_dump).
+["COP - Config: loaded"] call ALiVE_fnc_dump;
 
 private _result = true;
 TRACE_1("COPConfig - output",_result);

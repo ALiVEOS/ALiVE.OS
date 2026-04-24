@@ -89,9 +89,10 @@ dispatches to per-feature render functions in layer order.
 COP adopts ALiVE's three-tier logging system plus an optional per-category
 filter (Tier 4):
 
-1. **Tier 1 — Lifecycle** (init, errors, critical): `LOG_INFO/WARNING/ERROR/
-   CRITICAL` macros from `x_lib/script_macros.hpp`, routed through
-   `core_fnc_log`. Always emits, regardless of module debug attribute.
+1. **Tier 1 — Lifecycle** (init, errors, critical): emitted via
+   `ALiVE_fnc_dump` with an inline severity prefix (`[ERROR]`, `[WARN]`,
+   `[CRITICAL]`). Always emits, regardless of module debug attribute —
+   matches the direct-dump pattern used by `mil_opcom` and `mil_logistics`.
 2. **Tier 2 — Runtime observability** (cycle summaries, state transitions):
    `ALiVE_fnc_dump`, gated by the `mil_c2istar` module's `debug` attribute.
    Same pattern used by `mil_opcom`, `mil_logistics`, `civ_placement`.

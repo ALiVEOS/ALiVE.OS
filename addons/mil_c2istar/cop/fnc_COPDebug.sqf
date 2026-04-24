@@ -10,7 +10,7 @@ Description:
 
     Admin-visible: dumps and toggles always produce RPT output via
     ALiVE_fnc_dump (bypassing the Tier 2 `_debug` module gate), plus an
-    audit-trail LOG_INFO entry so admin actions always appear in RPT.
+    audit-trail dump entry so admin actions always appear in RPT.
 
     Seeded globals:
       ALIVE_fnc_COPDebugDumpAll         — full state dump of every layer
@@ -105,7 +105,7 @@ ALIVE_fnc_COPDebugDumpAsym = {
 };
 
 ALIVE_fnc_COPDebugDumpAll = {
-    LOG_INFO(MIL_C2ISTAR, "COP - Debug: DumpAll invoked");
+    ["COP - Debug: DumpAll invoked"] call ALiVE_fnc_dump;
     ["COP - Debug: ============================================================"] call ALiVE_fnc_dump;
     ["COP - Debug: FULL DATA DUMP"] call ALiVE_fnc_dump;
     ["COP - Debug: Time: %1 | Side cache: %2 | Anchor: %3m",
@@ -137,7 +137,7 @@ ALIVE_fnc_COPDebugDumpAll = {
 ALIVE_fnc_COPDebugForceBroadcast = {
     if (!isServer) exitWith {
         if (hasInterface) then { systemChat "[COP] Force broadcast must run on server." };
-        LOG_WARNING(MIL_C2ISTAR, "COP - Debug: ForceBroadcast invoked on non-server machine");
+        ["[WARN] COP - Debug: ForceBroadcast invoked on non-server machine"] call ALiVE_fnc_dump;
     };
 
     if (!isNil "ALIVE_COP_LAST_HASH") then {
@@ -147,7 +147,7 @@ ALIVE_fnc_COPDebugForceBroadcast = {
         ALIVE_COP_LAST_HASH_ASYM = createHashMap;
     };
 
-    LOG_INFO(MIL_C2ISTAR, "COP - Debug: Hash cache cleared — next cycle will broadcast all data");
+    ["COP - Debug: Hash cache cleared — next cycle will broadcast all data"] call ALiVE_fnc_dump;
     ["COP - Debug: Hash cache cleared — next cycle will broadcast all data"] call ALiVE_fnc_dump;
     if (hasInterface) then { systemChat "[COP] Hash cleared. Wait up to 60s for next broadcast." };
 };
@@ -183,7 +183,7 @@ ALIVE_fnc_COPDebugShowStats = {
 };
 
 // ============================================================================
-// Runtime Tier 4 filter toggles (emit LOG_INFO audit trail)
+// Runtime Tier 4 filter toggles (emit dump audit trail)
 // ============================================================================
 
 ALIVE_fnc_COPDebugSetLevel = {
@@ -191,7 +191,7 @@ ALIVE_fnc_COPDebugSetLevel = {
     private _oldLevel = missionNamespace getVariable ["ALIVE_COP_DEBUG_LEVEL", 3];
     ALIVE_COP_DEBUG_LEVEL = _newLevel;
     private _msg = format ["COP - Debug: level changed %1 -> %2", _oldLevel, _newLevel];
-    LOG_INFO(MIL_C2ISTAR, _msg);
+    [_msg] call ALiVE_fnc_dump;
     [_msg] call ALiVE_fnc_dump;
     if (hasInterface) then { systemChat format ["[COP] Log level: %1 -> %2", _oldLevel, _newLevel] };
 };
@@ -215,14 +215,14 @@ ALIVE_fnc_COPDebugToggleCategory = {
             systemChat format ["[COP] Unknown category: %1", _cat];
             systemChat "Valid: server, objectives, asym, client, render, perf, broadcast, profile";
         };
-        LOG_WARNING(MIL_C2ISTAR, format ["COP - Debug: ToggleCategory unknown category '%1'", _cat]);
+        [format ["[WARN] COP - Debug: ToggleCategory unknown category '%1'", _cat]] call ALiVE_fnc_dump;
     };
 
     private _current = missionNamespace getVariable [_varName, false];
     private _new = !_current;
     missionNamespace setVariable [_varName, _new];
     private _msg = format ["COP - Debug: category %1 = %2 (was %3)", _cat, _new, _current];
-    LOG_INFO(MIL_C2ISTAR, _msg);
+    [_msg] call ALiVE_fnc_dump;
     [_msg] call ALiVE_fnc_dump;
     if (hasInterface) then { systemChat format ["[COP] %1: %2 -> %3", _cat, _current, _new] };
 };
@@ -236,7 +236,7 @@ ALIVE_fnc_COPDebugInspectOpcom = {
 
     if (!isServer) exitWith {
         if (hasInterface) then { systemChat "[COP] OPCOM inspection must run on server." };
-        LOG_WARNING(MIL_C2ISTAR, "COP - Debug: InspectOpcom invoked on non-server machine");
+        ["[WARN] COP - Debug: InspectOpcom invoked on non-server machine"] call ALiVE_fnc_dump;
     };
 
     if (isNil "ALIVE_COP_OPCOMS") exitWith {
@@ -256,7 +256,7 @@ ALIVE_fnc_COPDebugInspectOpcom = {
     private _objectives = [_opcom, "objectives", []] call ALiVE_fnc_HashGet;
     private _known = [_opcom, "knownentities", []] call ALiVE_fnc_HashGet;
 
-    LOG_INFO(MIL_C2ISTAR, format ["COP - Debug: InspectOpcom %1", _key]);
+    [format ["COP - Debug: InspectOpcom %1", _key]] call ALiVE_fnc_dump;
     ["COP - Debug: === OPCOM %1 ===", _key] call ALiVE_fnc_dump;
     ["COP - Debug:   name: %1", _name] call ALiVE_fnc_dump;
     ["COP - Debug:   controltype: %1", _ctrl] call ALiVE_fnc_dump;
@@ -270,7 +270,7 @@ ALIVE_fnc_COPDebugInspectOpcom = {
 ALIVE_fnc_COPDebugListOpcoms = {
     if (!isServer) exitWith {
         if (hasInterface) then { systemChat "[COP] OPCOM list must run on server." };
-        LOG_WARNING(MIL_C2ISTAR, "COP - Debug: ListOpcoms invoked on non-server machine");
+        ["[WARN] COP - Debug: ListOpcoms invoked on non-server machine"] call ALiVE_fnc_dump;
     };
 
     if (isNil "ALIVE_COP_OPCOMS") exitWith {
@@ -278,7 +278,7 @@ ALIVE_fnc_COPDebugListOpcoms = {
         ["COP - Debug: ALIVE_COP_OPCOMS not initialised"] call ALiVE_fnc_dump;
     };
 
-    LOG_INFO(MIL_C2ISTAR, "COP - Debug: ListOpcoms invoked");
+    ["COP - Debug: ListOpcoms invoked"] call ALiVE_fnc_dump;
     ["COP - Debug: === Tracked OPCOMs ==="] call ALiVE_fnc_dump;
     ["COP - Debug:   Conventional: %1", count ALIVE_COP_OPCOMS] call ALiVE_fnc_dump;
     {
@@ -300,7 +300,7 @@ ALIVE_fnc_COPDebugListOpcoms = {
     if (hasInterface) then { systemChat "[COP] OPCOM list dumped to RPT." };
 };
 
-LOG_INFO(MIL_C2ISTAR, "COP - Debug: 11 commands seeded");
+["COP - Debug: 11 commands seeded"] call ALiVE_fnc_dump;
 
 private _result = true;
 TRACE_1("COPDebug - output",_result);

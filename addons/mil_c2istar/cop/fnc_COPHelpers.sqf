@@ -465,7 +465,7 @@ ALIVE_fnc_COPIsThreat = {
 // ============================================================================
 // Lifecycle log
 // ============================================================================
-LOG_INFO(MIL_C2ISTAR, "COP - Helpers: 18 helpers seeded");
+["COP - Helpers: 18 helpers seeded"] call ALiVE_fnc_dump;
 
 private _result = true;
 TRACE_1("COPHelpers - output",_result);

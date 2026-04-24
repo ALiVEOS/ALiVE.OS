@@ -10,9 +10,10 @@ Description:
     to the appropriate ALiVE logging machinery so output is indistinguishable
     from other ALiVE modules.
 
-    Tier 1 — Lifecycle (error/warn/critical): LOG_ERROR / LOG_WARNING /
-             LOG_CRITICAL macros from x_lib/script_macros.hpp. Always logs,
-             regardless of module debug attribute. Routed to core_fnc_log.
+    Tier 1 — Lifecycle (error/warn/critical): emitted via ALiVE_fnc_dump
+             with an inline severity prefix ([ERROR], [WARN], [CRITICAL]).
+             Always logs, regardless of module debug attribute. Matches the
+             direct ALiVE_fnc_dump usage pattern in mil_opcom / mil_logistics.
 
     Tier 2 — Runtime observability (info/debug/trace): ALiVE_fnc_dump,
              gated by the mil_c2istar module's `debug` attribute.
@@ -43,13 +44,13 @@ Examples:
     // Lifecycle (always logs, bypasses module debug gate):
     ["info", "init", "COP enabled, anchor distance %1m", [_anchorDist]] call ALIVE_fnc_COPLog;
 
-    // Error (always logs as LOG_ERROR):
+    // Error (always logs, prefixed [ERROR]):
     ["error", "server", "getNearProfiles returned nil for side %1", [_side]] call ALIVE_fnc_COPLog;
 
     // Info-level runtime summary (gated by module _debug + category + level):
     ["info", "server", "LoopA cycle %1 | %2ms", [_cycle, _ms]] call ALIVE_fnc_COPLog;
 
-    // Perf warning (always logs via LOG_WARNING):
+    // Perf warning (always logs, prefixed [WARN]):
     ["warn", "perf", "Loop A cycle %1 took %2ms (threshold %3ms)", [_cycle, _ms, _th]] call ALIVE_fnc_COPLog;
     (end)
 
@@ -72,18 +73,20 @@ private _msg = if (_args isEqualTo []) then {
 
 private _prefixed = format ["COP - %1: %2", _category, _msg];
 
-// ---- Tier 1: lifecycle — always log via LOG_* macros (bypass module gate) ----
+// ---- Tier 1: lifecycle — always dump via ALiVE_fnc_dump (bypass module gate) ----
+// Severity prefix is inline in the message text since ALiVE_fnc_dump is
+// severity-agnostic (same pattern used by mil_logistics warnings).
 switch (toLower _level) do {
     case "error": {
-        LOG_ERROR(MIL_C2ISTAR, _prefixed);
+        [format ["[ERROR] %1", _prefixed]] call ALiVE_fnc_dump;
         true
     };
     case "critical": {
-        LOG_CRITICAL(MIL_C2ISTAR, _prefixed);
+        [format ["[CRITICAL] %1", _prefixed]] call ALiVE_fnc_dump;
         true
     };
     case "warn": {
-        LOG_WARNING(MIL_C2ISTAR, _prefixed);
+        [format ["[WARN] %1", _prefixed]] call ALiVE_fnc_dump;
         true
     };
 
