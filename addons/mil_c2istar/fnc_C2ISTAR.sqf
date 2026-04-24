@@ -503,10 +503,22 @@ switch(_operation) do {
         _result = _args;
     };
     case "copAnchorDistance": {
-        if (typeName _args == "STRING") then { _args = parseNumber _args; };
-        if (typeName _args == "SCALAR") then { _logic setVariable ["copAnchorDistance", _args]; };
-        _result = _logic getVariable ["copAnchorDistance", DEFAULT_COP_ANCHOR_DISTANCE];
-        if (_result < 100) then { _result = DEFAULT_COP_ANCHOR_DISTANCE };
+        // Combo attributes serialize as STRING, not SCALAR. Eden's module
+        // base class stores the raw value (e.g. "1000") on the logic before
+        // this case is first called. Read-else-from-logic so we don't
+        // overwrite that value when _args is nil/"" on a pure read call.
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["copAnchorDistance", _args];
+        } else {
+            _args = _logic getVariable ["copAnchorDistance", DEFAULT_COP_ANCHOR_DISTANCE];
+        };
+        // Convert STRING → SCALAR and cache back so subsequent reads skip this.
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+            _logic setVariable ["copAnchorDistance", _args];
+        };
+        if (typeName _args != "SCALAR" || {_args < 100}) then { _args = DEFAULT_COP_ANCHOR_DISTANCE };
+        _result = _args;
     };
     case "runEvery": {
         if(typeName _args == "STRING") then {
