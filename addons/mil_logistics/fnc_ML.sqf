@@ -7825,14 +7825,22 @@ switch(_operation) do {
                     } forEach _x;
                 } forEach _infantryProfiles;
 
-                // Vehicles: spawn slightly offset from the runway so they look
-                // like they rolled off the cargo ramp. Random offset within 30-80m
-                // with a random bearing so multiple deliveries don't stack.
+                // Vehicles: spawn at the apron / dispersal area, well clear of
+                // the runway centerline so they don't physically spawn on top
+                // of the parked plane and explode it. 30-80m offset (the
+                // earlier value) caused armour / mech vehicles to spawn inside
+                // the plane wingspan -- when ALiVE spawned the cargo physically
+                // (busy=false + players nearby), the collision destroyed the
+                // plane before opcomAirdropTakeoff2 could RTB it. 100-200m
+                // gives clearance for typical airport layouts (runway shoulder
+                // ~50m + safety margin) without scattering vehicles off the
+                // installation footprint. Random bearing so successive deliveries
+                // don't stack on top of each other.
                 {
                     {
                         private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                         if (!isNil "_p") then {
-                            private _offset = 30 + random 50;
+                            private _offset = 100 + random 100;
                             private _bearing = random 360;
                             private _vehPos = _destAirportPos getPos [_offset, _bearing];
                             [_p, "position", _vehPos] call ALIVE_fnc_profileVehicle;
