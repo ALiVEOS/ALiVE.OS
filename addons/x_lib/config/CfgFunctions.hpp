@@ -774,6 +774,13 @@ class hashGet
 	RECOMPILE;
 };
 
+class hashGetMany
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_hashGetMany.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class hashRem
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_hashRem.sqf";

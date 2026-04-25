@@ -120,6 +120,7 @@ data
 	ALiVE_fnc_hashCopy
 	ALiVE_fnc_hashCreate
 	ALiVE_fnc_hashGet
+	ALiVE_fnc_hashGetMany
 	ALiVE_fnc_hashRem
 	ALiVE_fnc_hashSet
 	ALiVE_fnc_isHash
