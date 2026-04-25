@@ -102,7 +102,11 @@ switch(_operation) do {
                 TRACE_1("After module init",_logic);
 
                 TRACE_1("Starting process",_logic);
-                [_logic,"start"] call MAINCLASS;
+                [{
+                    private _logic = _this;
+
+                    [_logic,"start"] call MAINCLASS;
+                }, _logic] call CBA_fnc_directCall;
             };
         };
 
@@ -3499,12 +3503,12 @@ switch(_operation) do {
             _hdl = [_logic,"monitor",false] call AliVE_fnc_HashGet;
 
             if (!(_args) && {!(typeName _hdl == "BOOL")}) then {
-                    terminate _hdl;
-                    [_logic,"monitor",nil] call AliVE_fnc_HashSet;
+                terminate _hdl;
+                [_logic,"monitor",nil] call AliVE_fnc_HashSet;
 
-                    if ([_this,"debug",false] call ALiVE_fnc_HashGet) then {
-                        ["OPCOM and TACOM monitoring ended..."] call ALIVE_fnc_dumpR;
-                    };
+                if ([_this,"debug",false] call ALiVE_fnc_HashGet) then {
+                    ["OPCOM and TACOM monitoring ended..."] call ALIVE_fnc_dumpR;
+                };
             } else {
                 _hdl = _logic spawn {
 
@@ -3522,99 +3526,101 @@ switch(_operation) do {
 
                     while {true} do {
 
-                            _state = _FSM_OPCOM getfsmvariable "_OPCOM_status";
-                            _OPCOM_busy = _FSM_OPCOM getfsmvariable "_busy";
-                            _side = _FSM_OPCOM getfsmvariable "_side";
-                            _cycleTime = _FSM_OPCOM getfsmvariable "_cycleTime";
-                            _timestamp = floor(time - (_FSM_OPCOM getfsmvariable "_timestamp"));
-                            _OPC_DATA = _FSM_OPCOM getfsmvariable ["_OPCOM_DATA","nil"];
-                            _OPC_QUEUE = _FSM_OPCOM getfsmvariable ["_OPCOM_QUEUE",[]];
-                            _state_TACOM = _FSM_TACOM getfsmvariable "_TACOM_status";
-                            _TACOM_busy = _FSM_TACOM getfsmvariable "_busy";
+                        _state = _FSM_OPCOM getfsmvariable "_OPCOM_status";
+                        _OPCOM_busy = _FSM_OPCOM getfsmvariable "_busy";
+                        _side = _FSM_OPCOM getfsmvariable "_side";
+                        _cycleTime = _FSM_OPCOM getfsmvariable "_cycleTime";
+                        _timestamp = floor(time - (_FSM_OPCOM getfsmvariable "_timestamp"));
+                        _OPC_DATA = _FSM_OPCOM getfsmvariable ["_OPCOM_DATA","nil"];
+                        _OPC_QUEUE = _FSM_OPCOM getfsmvariable ["_OPCOM_QUEUE",[]];
+                        _state_TACOM = _FSM_TACOM getfsmvariable "_TACOM_status";
+                        _TACOM_busy = _FSM_TACOM getfsmvariable "_busy";
 
-                            //Exit if FSM has ended
-                            if (isnil "_cycleTime") exitwith {["Exiting OPCOM Monitor"] call ALiVE_fnc_Dump};
+                        //Exit if FSM has ended
+                        if (isnil "_cycleTime") exitwith {["Exiting OPCOM Monitor"] call ALiVE_fnc_Dump};
 
-                            _maxLimit = _cycleTime + ((count allunits)*2);
+                        _maxLimit = _cycleTime + ((count allunits)*2);
 
-                            if (GVAR(MONITOR_FULL)) then {
+                        if (GVAR(MONITOR_FULL)) then {
 
-                                private _currentForceStrength = [_this,"currentForceStrength",[]] call ALiVE_fnc_HashGet;
+                            private _currentForceStrength = [_this,"currentForceStrength",[]] call ALiVE_fnc_HashGet;
 
-                                private _states = [] call ALiVE_fnc_HashCreate;
+                            private _states = [] call ALiVE_fnc_HashCreate;
 
-                                {
-                                    private _objective = _x;
-                                    private _state = [_objective,"opcom_state","none"] call ALiVE_fnc_Hashget;
+                            {
+                                private _objective = _x;
+                                private _state = [_objective,"opcom_state","none"] call ALiVE_fnc_Hashget;
 
-                                    [_states,_state,([_states, _state, 0] call ALiVE_fnc_HashGet) + 1] call ALiVE_fnc_HashSet;
-                                } foreach _OPCOM_OBJECTIVES;
+                                [_states,_state,([_states, _state, 0] call ALiVE_fnc_HashGet) + 1] call ALiVE_fnc_HashSet;
+                            } foreach _OPCOM_OBJECTIVES;
 
-                                _message = parsetext format[
-                                        "OPC state: %1 (%2s %3)<br/>TAC state: %4 (%5)<br/>OPC data: %6<br/>OPC processes queued: %7<br/><br/>OPC states: %8<br/>OPC statecount: %9<br/>OPC forces: %10",
-                                        _state,_timestamp,_OPCOM_busy,_state_TACOM,_TACOM_busy,_OPC_DATA,count _OPC_QUEUE,_states select 1,_states select 2,_currentForceStrength,_maxLimit
-                                    ];
-                                hintsilent _message;
-                            };
+                            _message = parsetext format[
+                                "OPC state: %1 (%2s %3)<br/>TAC state: %4 (%5)<br/>OPC data: %6<br/>OPC processes queued: %7<br/><br/>OPC states: %8<br/>OPC statecount: %9<br/>OPC forces: %10",
+                                _state,_timestamp,_OPCOM_busy,_state_TACOM,_TACOM_busy,_OPC_DATA,count _OPC_QUEUE,_states select 1,_states select 2,_currentForceStrength,_maxLimit
+                            ];
+                            hintsilent _message;
+                        };
 
-                            if (_timestamp > _maxLimit) then {
-                            //if (true) then {
-                                // debug ---------------------------------------
-                                if ([_this,"debug",false] call ALiVE_fnc_HashGet) then {
-                                    _message = parsetext (format["<t align=left>OPCOM side: %1<br/><br/>WARNING! Max. duration exceeded!<br/>state OPCOM: %2<br/>state TACOM: %4<br/>duration: %3</t>",_side,_state,_timestamp,_state_TACOM]);
-                                    [_message] call ALIVE_fnc_dump; hintsilent _message;
+                        if (_timestamp > _maxLimit) then {
+                            // debug ---------------------------------------
+                            if ([_this,"debug",false] call ALiVE_fnc_HashGet) then {
+                                _message = parsetext (format["<t align=left>OPCOM side: %1<br/><br/>WARNING! Max. duration exceeded!<br/>state OPCOM: %2<br/>state TACOM: %4<br/>duration: %3</t>",_side,_state,_timestamp,_state_TACOM]);
+                                [_message] call ALIVE_fnc_dump; hintsilent _message;
 
-                                    if (_timestamp > 900) then {
-                                        _FSM_OPCOM setfsmvariable ["_OPCOM_DATA",nil];
-                                        _FSM_OPCOM setfsmvariable ["_busy",false];
-                                    };
+                                if (_timestamp > 900) then {
+                                    _FSM_OPCOM setfsmvariable ["_OPCOM_DATA",nil];
+                                    _FSM_OPCOM setfsmvariable ["_busy",false];
                                 };
-                                // debug ---------------------------------------
                             };
+                            // debug ---------------------------------------
+                        };
 
-                            sleep 1;
+                        sleep 1;
                      };
                 };
+                
                 [_logic,"monitor",_hdl] call AliVE_fnc_HashSet;
             };
+
             _result = _hdl;
         };
 
         case "state": {
-                private["_state"];
+            private["_state"];
 
-                if(typeName _args != "ARRAY") then {
+            if(typeName _args != "ARRAY") then {
+                // Save state
 
-                        // Save state
+                _state = [] call ALIVE_fnc_hashCreate;
 
-                        _state = [] call ALIVE_fnc_hashCreate;
+                // BaseClassHash CHANGE
+                // loop the class hash and set vars on the state hash
+                {
+                    if(!(_x == "super") && !(_x == "class")) then {
+                        [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                    };
+                } forEach (_logic select 1);
 
-                        // BaseClassHash CHANGE
-                        // loop the class hash and set vars on the state hash
-                        {
-                            if(!(_x == "super") && !(_x == "class")) then {
-                                [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                            };
-                        } forEach (_logic select 1);
+                _result = _state;
 
-                        _result = _state;
+            } else {
+                ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
 
-                } else {
-                        ASSERT_TRUE(typeName _args == "ARRAY",str typeName _args);
+                // Restore state
 
-                        // Restore state
-
-                        // BaseClassHash CHANGE
-                        // loop the passed hash and set vars on the class hash
-                        {
-                            [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                        } forEach (_args select 1);
-                };
+                // BaseClassHash CHANGE
+                // loop the passed hash and set vars on the class hash
+                {
+                    [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                } forEach (_args select 1);
+            };
         };
 
         default {
-                _result = [_logic, _operation, _args] call SUPERCLASS;
+            _result = [_logic, _operation, _args] call SUPERCLASS;
         };
 };
-TRACE_1("OPCOM - output",_result);
+
+TRACE_1("OPCOM - output", _result);
+
 if !(isnil "_result") then {_result} else {nil};
