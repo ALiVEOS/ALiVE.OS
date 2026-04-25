@@ -2825,6 +2825,7 @@ switch(_operation) do {
         _result = _objective;
     };
 
+    case "createObjectives";
     case "createobjectives": {
         if (isnil "_args") exitwith {
             _result = [_logic,"objectives"] call ALIVE_fnc_hashGet;
