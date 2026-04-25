@@ -2816,28 +2816,7 @@ switch(_operation) do {
         ]] call ALIVE_fnc_hashCreate;
 
         if (_debug) then {
-            private _debugMarkerID = format[MTEMPLATE, _id];
-            if !(_debugMarkerID call ALiVE_fnc_markerExists) then {
-                private _color = switch (_side) do {
-                    case "EAST" : {"COLORRED"};
-                    case "WEST" : {"COLORBLUE"};
-                    case "GUER" : {"COLORGREEN"};
-                    default {"COLORYELLOW"};
-                };
-
-                [
-                    _debugMarkerID,
-                    ["opcom", _pos] call ALiVE_fnc_debugMarkerOffset,
-                    "ICON",
-                    [0.5,0.5],
-                    _color,
-                    format["%1 #%2 (%3)", _side, _id, _type],
-                    "mil_dot",
-                    "FDiagonal",
-                    0,
-                    0.5
-                ] call ALIVE_fnc_createMarkerGlobal;
-            };
+            [_logic,"createObjectiveDebugMarkers", [_objective]] call MAINCLASS;
         };
 
         private _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
