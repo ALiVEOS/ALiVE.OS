@@ -54,7 +54,13 @@ if (isNil "ALIVE_COP_DEBUG_PERF")          then { ALIVE_COP_DEBUG_PERF          
 if (isNil "ALIVE_COP_DEBUG_BROADCAST")     then { ALIVE_COP_DEBUG_BROADCAST     = true };
 if (isNil "ALIVE_COP_DEBUG_PROFILE")       then { ALIVE_COP_DEBUG_PROFILE       = false };
 
-if (isNil "ALIVE_COP_DEBUG_PERF_WARN_MS")  then { ALIVE_COP_DEBUG_PERF_WARN_MS  = 50 };
+// Threshold for auto-WARN when a server-loop cycle exceeds this many wall-clock
+// milliseconds. Set against wall-clock (not work time) so it includes inter-phase
+// sleep yields — Arma's scheduler can delay a `sleep 0.01` by 30-100 ms each on a
+// busy server, and Loop A has five such yields per cycle. 250 ms is comfortably
+// above idle baseline (typical idle: 200-300 ms; first-cycle warm-up: 500-1000 ms)
+// but still flags pathological multi-second cycles.
+if (isNil "ALIVE_COP_DEBUG_PERF_WARN_MS")  then { ALIVE_COP_DEBUG_PERF_WARN_MS  = 250 };
 
 // ============================================================================
 // MASTER LAYER TOGGLES

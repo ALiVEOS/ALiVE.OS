@@ -398,11 +398,17 @@ ALIVE_fnc_COPBuildBFT = {
     } forEach _clusters;
 
     // Zero profiles despite anchors → info-level (not warning) so it surfaces
-    // in normal RPT without flooding.
+    // in normal RPT without flooding. Anchor positions included for diagnosis
+    // (rounded to integer to keep the line readable) — lets the operator verify
+    // whether the search happened where they expected, e.g. when allPlayers
+    // reports players but their positions are off-map / at spawn lobby / etc.
+    private _anchorSummary = _anchors apply {
+        format ["[%1,%2]", round (_x select 0), round (_x select 1)]
+    };
     if (count _anchors > 0 && _rawProfileCount == 0) then {
-        ["info", "server", "[BFT %1] 0 profiles from %2 anchor(s) at r=%3m", [_sideKey, count _anchors, _searchRadius]] call ALIVE_fnc_COPLog;
+        ["info", "server", "[BFT %1] 0 profiles from %2 anchor(s) at r=%3m | anchors=%4", [_sideKey, count _anchors, _searchRadius, _anchorSummary]] call ALIVE_fnc_COPLog;
     } else {
-        ["debug", "server", "[BFT %1] anchors=%2 rawProfiles=%3 deduped=%4 clusters=%5", [_sideKey, count _anchors, _rawProfileCount, count _positions, count _result]] call ALIVE_fnc_COPLog;
+        ["debug", "server", "[BFT %1] anchors=%2 rawProfiles=%3 deduped=%4 clusters=%5 | anchors=%6", [_sideKey, count _anchors, _rawProfileCount, count _positions, count _result, _anchorSummary]] call ALIVE_fnc_COPLog;
     };
 
     _result
