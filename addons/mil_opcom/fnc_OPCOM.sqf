@@ -577,17 +577,14 @@ switch(_operation) do {
                         };
                     };
 
-                    switch (_type) do {
-                        case ("occupation") : {
-                            _objectives = [_handler,"objectives", [_handler,"createobjectives",[_objectives,"strategic"]] call ALiVE_fnc_OPCOM] call ALiVE_fnc_OPCOM;
-                        };
-                        case ("invasion") : {
-                            _objectives = [_handler,"objectives", [_handler,"createobjectives",[_objectives,"distance"]] call ALiVE_fnc_OPCOM] call ALiVE_fnc_OPCOM;
-                        };
-                        case ("asymmetric") : {
-                            _objectives = [_handler,"objectives", [_handler,"createobjectives",[_objectives,"asymmetric"]] call ALiVE_fnc_OPCOM] call ALiVE_fnc_OPCOM;
-                        };
+                    private _objectiveSortStrategy = switch (_type) do {
+                        case ("occupation") :   { "strategic" };
+                        case ("invasion")   :   { "distance" };
+                        case ("asymmetric") :   { "asymmetric" };
                     };
+
+                    private _objectives = [_handler,"createobjectives", [_objectives,_objectiveSortStrategy]] call MAINCLASS;
+                    _objectives = [_handler,"objectives", _objectives] call MAINCLASS;
 
                     ["OPCOM created %1 new objectives!",count _objectives] call ALiVE_fnc_dump;
                 };
@@ -753,7 +750,7 @@ switch(_operation) do {
                 [_handler,"listen"] call MAINCLASS;
 
                 _logic setVariable ["startupComplete",true,true];
-                [_handler,"startupComplete",true] call ALiVE_fnc_HashSet;
+                [_handler,"startupComplete", true] call ALiVE_fnc_HashSet;
             };
 
 
@@ -2752,20 +2749,19 @@ switch(_operation) do {
     };
 
     case "objectives": {
-        if(isnil "_args") then {
-                _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
+        if (isnil "_args") then {
+            _result = [_logic,"objectives", []] call ALIVE_fnc_hashGet;
         } else {
-                [_logic,"objectives",_args] call ALIVE_fnc_hashSet;
+            if (_args isequaltype []) then {
+                [_logic,"objectives", _args] call ALIVE_fnc_hashSet;
+                _result = _args;
+            };
         };
-        ASSERT_TRUE(typeName _args == "ARRAY",str _args);
-
-        _result = _args;
     };
 
-    case "addObjective": {
-        // allow users to pass side or faction classname for _logic
-        _logic = if (_logic isequaltype "") then {
-            private _identifier = tolower _logic;
+    case "findOPCOMByAllegiance": {
+        if (_args isequaltype "") then {
+            private _identifier = tolower _args;
 
             private _opcomIndex = OPCOM_instances findif {
                 private _factions = ([_x,"factions", []] call ALiVE_fnc_HashGet) apply { tolower _x };
@@ -2775,11 +2771,20 @@ switch(_operation) do {
             };
 
             if (_opcomIndex != -1) then {
-                OPCOM_instances select _opcomIndex
-            } else {
-                ["- vAI operation addObjective didn't find an OPCOM of faction or side %1!", _logic] call ALiVE_fnc_dump;
-                nil
-            }
+                _result = OPCOM_instances select _opcomIndex;
+            };
+        };
+    };
+
+    case "addObjective": {
+        // allow users to pass side or faction classname for _logic
+        _logic = if (_logic isequaltype "") then {
+            private _identifier = _logic;
+            _logic = [nil,"findOPCOMByAllegiance", _identifier] call ALiVE_fnc_OPCOM;
+
+            if (isnil  "_logic") then {
+                ["OPCOM operation 'addObjective' didn't find an OPCOM of faction or side %1!", _identifier] call ALiVE_fnc_dump;
+            };
         } else {
             _logic
         };
