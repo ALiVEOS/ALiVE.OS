@@ -78,11 +78,19 @@ ARJay & Jman
 // AIRLIFT_MIN_FLIGHT_DISTANCE: minimum source-to-destination distance (m) below which AIRLIFT is suppressed (heli/ground takes over).
 // AIRLIFT_OFFMAP_BUFFER: distance (m) past the world boundary that the offmap-fallback plane spawns.
 // AIRLIFT_OFFMAP_STATIC_FALLBACK: distance (m) past LOGCOM HQ used when the boundary-intersection math fails to return a valid t.
+// AIRLIFT_VTOL_DESCENT_HEIGHT: flyInHeight target (m AGL) for VTOL/heli landing approach. Drops AI into helicopter mode for VTOLs.
+// AIRLIFT_VTOL_LAND_PROXIMITY: horizontal distance (m) to dest at which land "LAND" command is issued for vertical descent.
+// AIRLIFT_LANDED_AGL_THRESHOLD: AGL (m) below which a vertical lander is considered on the ground.
+// AIRLIFT_LANDED_SPEED_THRESHOLD: speed (km/h) below which a vertical lander is considered stopped.
 #define FRIENDLY_AIRPORT_RADIUS 250
 #define AIRLIFT_DEST_MAX_RADIUS 3000
 #define AIRLIFT_MIN_FLIGHT_DISTANCE 1500
 #define AIRLIFT_OFFMAP_BUFFER 500
 #define AIRLIFT_OFFMAP_STATIC_FALLBACK 5000
+#define AIRLIFT_VTOL_DESCENT_HEIGHT 30
+#define AIRLIFT_VTOL_LAND_PROXIMITY 100
+#define AIRLIFT_LANDED_AGL_THRESHOLD 2
+#define AIRLIFT_LANDED_SPEED_THRESHOLD 2
 #define MAX_SLINGLOAD_CONCURRENT 3
 #define DISMOUNT_RADIUS 500
 #define VEHICLE_LEAD_DIST 50
@@ -7802,9 +7810,10 @@ switch(_operation) do {
 
                 // Branch on aircraft type:
                 //   - Plane (fixed-wing, no VTOL): standard landAt ILS approach.
-                //   - VTOL / Helicopter: vertical land sequence -- flyInHeight 30
-                //     to drop into helicopter mode, doMove to airport center to
-                //     navigate in, then issue land "LAND" once close so the AI
+                //   - VTOL / Helicopter: vertical land sequence -- flyInHeight to
+                //     AIRLIFT_VTOL_DESCENT_HEIGHT to drop into helicopter mode,
+                //     doMove to airport center to navigate in, then issue land
+                //     "LAND" once within AIRLIFT_VTOL_LAND_PROXIMITY so the AI
                 //     commits to a vertical descent.
                 private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
                 private _destAirportPos = _airliftDstEv select 1;
@@ -7818,7 +7827,7 @@ switch(_operation) do {
                         // mode for VTOLs), navigate to airport center. land "LAND"
                         // is deferred to the proximity check below so the AI doesn't
                         // try to descend mid-flight while still 1km out.
-                        _planeVehicle flyInHeight 30;
+                        _planeVehicle flyInHeight AIRLIFT_VTOL_DESCENT_HEIGHT;
                         _planeVehicle doMove _destAirportPos;
                         [_event, "airliftVTOLLandPending", true] call ALIVE_fnc_hashSet;
                     } else {
@@ -7869,8 +7878,8 @@ switch(_operation) do {
                         private _dist2D = _planeVehicle distance2D _destAirportPos;
                         private _vtolLandPending = [_event, "airliftVTOLLandPending", false] call ALIVE_fnc_hashGet;
 
-                        // Issue land "LAND" once within 100m -- triggers vertical descent.
-                        if (_vtolLandPending && _dist2D < 100) then {
+                        // Issue land "LAND" once within proximity threshold -- triggers vertical descent.
+                        if (_vtolLandPending && _dist2D < AIRLIFT_VTOL_LAND_PROXIMITY) then {
                             _planeVehicle land "LAND";
                             [_event, "airliftVTOLLandPending", false] call ALIVE_fnc_hashSet;
                             if (_debug) then {
@@ -7880,7 +7889,7 @@ switch(_operation) do {
                         };
 
                         // Landed = on the ground AND stopped AND we've issued the descent command.
-                        (_agl < 2) && (_spd < 2) && !_vtolLandPending
+                        (_agl < AIRLIFT_LANDED_AGL_THRESHOLD) && (_spd < AIRLIFT_LANDED_SPEED_THRESHOLD) && !_vtolLandPending
                     } else {
                         _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
                     };
@@ -8237,7 +8246,7 @@ switch(_operation) do {
                         private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
                         if (!isNull _planeVehicle && {alive _planeVehicle}) then {
                             if (_verticalLand) then {
-                                _planeVehicle flyInHeight 30;
+                                _planeVehicle flyInHeight AIRLIFT_VTOL_DESCENT_HEIGHT;
                                 _planeVehicle doMove _sourceAirportPos;
                                 [_event, "airliftReturnVTOLLandPending", true] call ALIVE_fnc_hashSet;
                             } else {
@@ -8269,7 +8278,7 @@ switch(_operation) do {
                 } else {
                     // Subsequent ticks: wait for LANDED or timeout.
                     // VTOL/heli: AGL + speed gate, with deferred land "LAND" fired at
-                    // 100m proximity. Plane: ALIVE_AIRLIFT_LANDED EH check.
+                    // AIRLIFT_VTOL_LAND_PROXIMITY. Plane: ALIVE_AIRLIFT_LANDED EH check.
                     // Null vehicle: if landing was already issued, plane was destroyed
                     // post-issue -- treat as done. If not issued yet, wait next tick.
                     private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
@@ -8280,7 +8289,7 @@ switch(_operation) do {
                             private _dist2D = _planeVehicle distance2D _sourceAirportPos;
                             private _vtolLandPending = [_event, "airliftReturnVTOLLandPending", false] call ALIVE_fnc_hashGet;
 
-                            if (_vtolLandPending && _dist2D < 100) then {
+                            if (_vtolLandPending && _dist2D < AIRLIFT_VTOL_LAND_PROXIMITY) then {
                                 _planeVehicle land "LAND";
                                 [_event, "airliftReturnVTOLLandPending", false] call ALIVE_fnc_hashSet;
                                 if (_debug) then {
@@ -8289,7 +8298,7 @@ switch(_operation) do {
                                 };
                             };
 
-                            (_agl < 2) && (_spd < 2) && !_vtolLandPending
+                            (_agl < AIRLIFT_LANDED_AGL_THRESHOLD) && (_spd < AIRLIFT_LANDED_SPEED_THRESHOLD) && !_vtolLandPending
                         } else {
                             _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
                         };
