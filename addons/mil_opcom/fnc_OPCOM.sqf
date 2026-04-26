@@ -49,8 +49,6 @@ nil
 #define SUPERCLASS ALIVE_fnc_baseClassHash
 #define MAINCLASS ALIVE_fnc_OPCOM
 
-private ["_result"];
-
 TRACE_1("OPCOM - input",_this);
 
 params [
@@ -58,7 +56,7 @@ params [
     ["_operation", "", [""]],
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
-_result = nil;
+private _result = nil;
 
 /*
 _blackOps = ["id"];
@@ -72,7 +70,7 @@ if !(_operation in _blackOps) then {
 
 #define MTEMPLATE "ALiVE_OPCOM_%1"
 
-switch(_operation) do {
+switch (_operation) do {
     case "create": {
         private ["_logic"];
 
@@ -101,662 +99,536 @@ switch(_operation) do {
             TRACE_1("After module init",_logic);
 
             TRACE_1("Starting process",_logic);
-            [{
-                private _logic = _this;
 
-                [_logic,"start"] call MAINCLASS;
-            }, _logic] call CBA_fnc_directCall;
+            _logic setVariable ["startupComplete", false];
+            [_logic,"start"] call MAINCLASS;
+            _logic setVariable ["startupComplete", true, true];
         };
     };
 
     case "start": {
-            /*
-            MODEL - no visual just reference data
-            - nodes
-            - center
-            - size
-            */
+        if (!isServer) exitwith {};
 
-            private ["_handler","_objectives"];
+        // parse module parameters
+        private _customNameParam = _logic getvariable ["customName",""];
+        private _type = _logic getvariable ["controltype","invasion"];
+        private _occupation = (parseNumber str (_logic getvariable ["asym_occupation",-100]))/100;
+        private _intelChance = (parseNumber str (_logic getvariable ["intelchance",-100]))/100;
+        // Phase 4: faction sources, all unioned below.
+        //   factions       : multi-select listbox (primary UX,
+        //                    ORIGINAL property so old `factions`
+        //                    Edit data loads via multi-select
+        //                    Load handler's CSV/array parser)
+        //   factionsManual : Edit field (manual override for
+        //                    unloaded mod factions)
+        //   faction1-4     : hidden legacy slots, applied via
+        //                    ALiVE_HiddenAttribute expression
+        //                    so old missions that picked
+        //                    factions through the pre-Phase-4
+        //                    single-faction dropdowns still
+        //                    work
+        private _factions = [_logic,"convert", _logic getvariable ["factions",[]]] call MAINCLASS;
+        private _factionsManual = [_logic,"convert", _logic getvariable ["factionsManual",[]]] call MAINCLASS;
+        private _faction1 = _logic getvariable ["faction1",""];
+        private _faction2 = _logic getvariable ["faction2",""];
+        private _faction3 = _logic getvariable ["faction3",""];
+        private _faction4 = _logic getvariable ["faction4",""];
+        private _simultanObjectives = parseNumber str (_logic getvariable ["simultanObjectives",10]);
+        private _minAgents = parseNumber str (_logic getvariable ["minAgents",2]);
+        private _asymForceLimit = floor (parseNumber str (_logic getvariable ["asymForceLimit",-1]));
+        private _recruitCycleMin = (parseNumber str (_logic getvariable ["recruitCycleMin",30])) max 0;
+        private _recruitCycleMax = (parseNumber str (_logic getvariable ["recruitCycleMax",60])) max _recruitCycleMin;
+        private _recruitAttemptLimit = (
+            floor (parseNumber str (_logic getvariable ["recruitAttemptLimit",0]))
+        ) max -1;
+        private _recruitSuccessChance = ((parseNumber str (_logic getvariable ["recruitSuccessChance",50])) max 0) min 100;
+        private _hostilityPresenceMultiplier = (parseNumber str (_logic getvariable ["hostilityPresenceMultiplier",1])) max 0;
+        private _hostilityInstallationMultiplier = (parseNumber str (_logic getvariable ["hostilityInstallationMultiplier",1])) max 0;
+        private _hostilityInstallationInterval = ((parseNumber str (_logic getvariable ["hostilityInstallationInterval",10])) max 0) * 60;
+        private _taskProfileCountOverridesRaw = _logic getvariable ["taskProfileCountOverrides",""];
+        private _taskProfileTypeOverridesRaw = _logic getvariable ["taskProfileTypeOverrides",""];
+        private _civicRecruitmentMultiplier = (parseNumber str (_logic getvariable ["civicRecruitmentMultiplier",1])) max 0;
+        private _civicInstallationMultiplier = (parseNumber str (_logic getvariable ["civicInstallationMultiplier",1])) max 0;
+        private _civicRetaliationChanceRaw = (parseNumber str (_logic getvariable ["civicRetaliationChance",0])) max 0;
+        private _civicRetaliationChance = if (_civicRetaliationChanceRaw >= 1) then {
+            (_civicRetaliationChanceRaw min 100) / 100
+        } else {
+            _civicRetaliationChanceRaw min 1
+        };
+        private _civicRetaliationIntensity = (parseNumber str (_logic getvariable ["civicRetaliationIntensity",1])) max 0;
+        private _debug = ((_logic getvariable ["debug","false"]) == "true");
+        private _persistent = ((_logic getvariable ["persistent","false"]) == "true");
+        private _reinforcements = call compile (_logic getvariable ["reinforcements","0.9"]);
+        private _roadblocks = (parseNumber str (_logic getvariable ["roadblocks",1])) > 0;
+        // #697 Phase 2.1: AI-driven friendly destroy of enemy asymmetric
+        // installations. Read the mode string here; the behavioural
+        // implementation lands in follow-up commits (proximity first,
+        // then objective-capture). Valid values: "off", "proximity",
+        // "capture", "both". Default "proximity" preserves the nicer
+        // UX the issue asked for without forcing "both" on mission-
+        // makers upgrading.
+        private _friendlyDisableMode = _logic getvariable ["asym_friendlyDisableInstallations","proximity"];
 
-            //startup
-            _logic setVariable ["startupComplete", false];
+        // Issue #355 - asymmetric progressive recruitment. Controls
+        // whether insurgent recruitment unlocks heavier vehicle
+        // tiers as aggregate hostility rises. "off" preserves the
+        // legacy infantry-only recruitment behaviour. Runtime
+        // logic lives in fnc_INS_helpers.sqf's recruitment loop
+        // + sampleOpcomHostility / classifyGroupTier /
+        // buildTieredGroupRoster helpers.
+        private _asymEscalationIntensity = _logic getvariable ["asym_escalationIntensity","off"];
 
-            if (isServer) then {
+        private _position = getposATL _logic;
 
-                //Retrieve module-object variables
-                _customName = _logic getvariable ["customName",""];
-                _type = _logic getvariable ["controltype","invasion"];
-                _occupation = (parseNumber str (_logic getvariable ["asym_occupation",-100]))/100;
-                _intelChance = (parseNumber str (_logic getvariable ["intelchance",-100]))/100;
-                // Phase 4: faction sources, all unioned below.
-                //   factions       : multi-select listbox (primary UX,
-                //                    ORIGINAL property so old `factions`
-                //                    Edit data loads via multi-select
-                //                    Load handler's CSV/array parser)
-                //   factionsManual : Edit field (manual override for
-                //                    unloaded mod factions)
-                //   faction1-4     : hidden legacy slots, applied via
-                //                    ALiVE_HiddenAttribute expression
-                //                    so old missions that picked
-                //                    factions through the pre-Phase-4
-                //                    single-faction dropdowns still
-                //                    work
-                _factions               = [_logic, "convert", _logic getvariable ["factions",[]]]       call ALiVE_fnc_OPCOM;
-                private _factionsManual = [_logic, "convert", _logic getvariable ["factionsManual",[]]] call ALiVE_fnc_OPCOM;
-                _faction1 = _logic getvariable ["faction1",""];
-                _faction2 = _logic getvariable ["faction2",""];
-                _faction3 = _logic getvariable ["faction3",""];
-                _faction4 = _logic getvariable ["faction4",""];
-                _simultanObjectives = parseNumber str (_logic getvariable ["simultanObjectives",10]);
-                _minAgents = parseNumber str (_logic getvariable ["minAgents",2]);
-                _asymForceLimit = floor (parseNumber str (_logic getvariable ["asymForceLimit",-1]));
-                _recruitCycleMin = (parseNumber str (_logic getvariable ["recruitCycleMin",30])) max 0;
-                _recruitCycleMax = (parseNumber str (_logic getvariable ["recruitCycleMax",60])) max _recruitCycleMin;
-                _recruitAttemptLimit = floor (parseNumber str (_logic getvariable ["recruitAttemptLimit",0]));
-                _recruitAttemptLimit = _recruitAttemptLimit max -1;
-                _recruitSuccessChance = ((parseNumber str (_logic getvariable ["recruitSuccessChance",50])) max 0) min 100;
-                _hostilityPresenceMultiplier = (parseNumber str (_logic getvariable ["hostilityPresenceMultiplier",1])) max 0;
-                _hostilityInstallationMultiplier = (parseNumber str (_logic getvariable ["hostilityInstallationMultiplier",1])) max 0;
-                _hostilityInstallationInterval = ((parseNumber str (_logic getvariable ["hostilityInstallationInterval",10])) max 0) * 60;
-                _taskProfileCountOverridesRaw = _logic getvariable ["taskProfileCountOverrides",""];
-                _taskProfileTypeOverridesRaw = _logic getvariable ["taskProfileTypeOverrides",""];
-                _civicRecruitmentMultiplier = (parseNumber str (_logic getvariable ["civicRecruitmentMultiplier",1])) max 0;
-                _civicInstallationMultiplier = (parseNumber str (_logic getvariable ["civicInstallationMultiplier",1])) max 0;
-                private _civicRetaliationChanceRaw = (parseNumber str (_logic getvariable ["civicRetaliationChance",0])) max 0;
-                _civicRetaliationChance = if (_civicRetaliationChanceRaw >= 1) then {
-                    (_civicRetaliationChanceRaw min 100) / 100
-                } else {
-                    _civicRetaliationChanceRaw min 1
+        //Priority rule: if the Phase-4 sources (`factions`
+        //multi-select and/or `factionsManual` free-text
+        //override) have any non-empty entries, they are the
+        //sole source of truth - the hidden legacy faction1-4
+        //slots are IGNORED. Only when BOTH Phase-4 sources
+        //are empty do we fall back to legacy slots (so
+        //pre-Phase-4 missions that haven't been re-opened /
+        //re-saved in the new Eden still run with their old
+        //single-select picks).
+        //
+        //Previously this union'd all four sources, which let
+        //pre-Phase-4 legacy defaults (typically "BLU_F" in
+        //faction1) pollute the runtime faction list any time
+        //a migrated mission's mission-maker picked a
+        //different faction in the new multi-select. Priority
+        //model means the mission-maker's explicit multi-
+        //select choice is authoritative and the hidden
+        //legacy data is inert until needed.
+        //
+        //All entries still deduped and filtered for empty /
+        //"NONE" sentinel regardless of source.
+        private _primary = _factions + _factionsManual;
+        private _primaryNonEmpty = ({typeName _x == "STRING" && {_x != ""} && {_x != "NONE"}} count _primary) > 0;
+        private _allFactionSources = if (_primaryNonEmpty) then {
+            _primary
+        } else {
+            [_faction1, _faction2, _faction3, _faction4]
+        };
+        _factions = [];
+        {
+            if (typeName _x == "STRING" && {_x != ""} && {_x != "NONE"} && {!(_x in _factions)}) then {
+                _factions pushBack _x;
+            };
+        } forEach _allFactionSources;
+
+        //Pre-Phase-4 the implicit default came from faction1's
+        //"BLU_F" defaultValue (the four single-faction slots
+        //guaranteed _factions had at least one entry). Phase 4
+        //preserves the same fallback so a misconfigured module
+        //doesn't crash on the _factions select 0 below - just
+        //logs a warning so the mission-maker can see they need
+        //to populate Factions.
+        if (_factions isequalto []) then {
+            [
+                "ALiVE OPCOM init WARNING: AI Commander '%1' has no factions configured (Factions multi-select empty AND Factions manual override empty). Defaulting to ['BLU_F']. Pick at least one faction in the Factions multi-select to silence this.",
+                _customName
+            ] call ALiVE_fnc_Dump;
+            _factions pushBack "BLU_F";
+        };
+
+        private _taskProfileCountOverrides = [_logic, "parseTaskProfileCountOverrides", _taskProfileCountOverridesRaw] call MAINCLASS;
+        private _taskProfileTypeOverrides = [_logic, "parseTaskProfileTypeOverrides", _taskProfileTypeOverridesRaw] call MAINCLASS;
+
+        // determine side
+
+        private _side = [(_factions select 0) call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText;
+        if (_side == "NULL") then {
+            ["ALiVE OPCOM init ERROR: AI Commander has invalid side. Factions = %1", _factions] call ALiVE_fnc_Dump;
+            _side = "EAST";
+        };
+
+        ([_side] call ALiVE_fnc_getSideAllegiances) params ["_sidesEnemy","_sidesFriendly"];
+
+        // set custom name
+
+        private _customName = if (isNil "_customNameParam" || _customNameParam == "") then {
+            //set default Name as "[SIDE] Commander" if none provided for backwords compatibility
+            format ["%1 Commander", [_side] call Alive_fnc_sideTextToLong]
+        } else {
+            _customNameParam
+        };
+
+        //Finally set common data
+
+        private _opcomID = str (floor (_position select 0)) + str (floor (_position select 1));
+
+        private _handler = [[
+            ["class", QUOTE(MAINCLASS)],
+            ["side", _side],
+            ["factions", _factions],
+            ["sidesenemy", _sidesEnemy],
+            ["sidesfriendly", _sidesFriendly],
+            ["position", _position],
+            ["simultanobjectives", _simultanObjectives],
+            ["minAgents", _minAgents],
+            ["asymForceLimit", _asymForceLimit],
+            ["recruitCycleMin", _recruitCycleMin],
+            ["recruitCycleMax", _recruitCycleMax],
+            ["recruitAttemptLimit", _recruitAttemptLimit],
+            ["recruitSuccessChance", _recruitSuccessChance],
+            ["hostilityPresenceMultiplier", _hostilityPresenceMultiplier],
+            ["hostilityInstallationMultiplier", _hostilityInstallationMultiplier],
+            ["hostilityInstallationInterval", _hostilityInstallationInterval],
+            ["taskProfileCountOverrides", _taskProfileCountOverrides],
+            ["taskProfileTypeOverrides", _taskProfileTypeOverrides],
+            ["civicRecruitmentMultiplier", _civicRecruitmentMultiplier],
+            ["civicInstallationMultiplier", _civicInstallationMultiplier],
+            ["civicRetaliationChance", _civicRetaliationChance],
+            ["civicRetaliationIntensity", _civicRetaliationIntensity],
+            ["opcomID", _opcomID],
+            ["debug", _debug],
+            ["persistent", _persistent],
+            ["module", _logic],
+            ["reinforcements", _reinforcements],
+            ["asym_occupation", _occupation],
+            ["controltype", _type],
+            ["intelchance", _intelChance],
+            ["roadblocks", _roadblocks],
+            ["friendlyDisableMode", _friendlyDisableMode],
+            ["asymEscalationIntensity", _asymEscalationIntensity],
+            ["name", _customName],
+            ["objectives", []],
+            ["pendingorders", []]
+        ]] call ALIVE_fnc_hashCreate;
+
+        _logic setVariable ["handler", _handler];
+
+        //Add to OPCOM_instances global array for easier access
+
+        if (isnil "OPCOM_instances") then {
+            OPCOM_instances = [];
+        };
+        OPCOM_instances pushback _handler;
+
+        missionnamespace setvariable [
+            format ["OPCOM_%1", (count OPCOM_instances) - 1], // -1 to maintain zero index
+            _handler
+        ];
+
+        // Issue #697 Phases 2.2 + 2.3: periodic scan lets
+        // friendly AI automatically disable this OPCOM's
+        // asymmetric installations (IED factory / Recruitment HQ
+        // / Weapons depot) via two independent triggers -
+        // proximity presence (friendly units within ~150 m of
+        // the installation) and objective capture (a friendly
+        // OPCOM has a "defending" objective overlapping the
+        // insurgent objective). Gated on asymmetric controltype
+        // AND friendlyDisableMode != "off" - the validator
+        // function itself decides which trigger branch to run
+        // per the mode value. Loop self-terminates when the
+        // OPCOM's module logic is deleted - the dispose path
+        // calls deleteVehicle _module, so `isNull _module`
+        // becomes true on the next wake and the loop breaks.
+        if (_type == "asymmetric" && {_friendlyDisableMode != "off"}) then {
+            [_handler] spawn {
+                params ["_handler"];
+                private _SCAN_INTERVAL = 30; // seconds between scans
+                while {true} do {
+                    sleep _SCAN_INTERVAL;
+                    private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
+                    if (isNull _module) exitWith {};
+                    [_handler] call ALIVE_fnc_OPCOMfriendlyDisableInstallations;
                 };
-                _civicRetaliationIntensity = (parseNumber str (_logic getvariable ["civicRetaliationIntensity",1])) max 0;
-                _debug = ((_logic getvariable ["debug","false"]) == "true");
-                _persistent = ((_logic getvariable ["persistent","false"]) == "true");
-                _reinforcements = call compile (_logic getvariable ["reinforcements","0.9"]);
-                _roadblocks = (parseNumber str (_logic getvariable ["roadblocks",1])) > 0;
-                // #697 Phase 2.1: AI-driven friendly destroy of enemy asymmetric
-                // installations. Read the mode string here; the behavioural
-                // implementation lands in follow-up commits (proximity first,
-                // then objective-capture). Valid values: "off", "proximity",
-                // "capture", "both". Default "proximity" preserves the nicer
-                // UX the issue asked for without forcing "both" on mission-
-                // makers upgrading.
-                _friendlyDisableMode = _logic getvariable ["asym_friendlyDisableInstallations","proximity"];
+            };
+        };
 
-                // Issue #355 - asymmetric progressive recruitment. Controls
-                // whether insurgent recruitment unlocks heavier vehicle
-                // tiers as aggregate hostility rises. "off" preserves the
-                // legacy infantry-only recruitment behaviour. Runtime
-                // logic lives in fnc_INS_helpers.sqf's recruitment loop
-                // + sampleOpcomHostility / classifyGroupTier /
-                // buildTieredGroupRoster helpers.
-                _asymEscalationIntensity = _logic getvariable ["asym_escalationIntensity","off"];
-
-                //Get position
-                _position = getposATL _logic;
-
-                //Priority rule: if the Phase-4 sources (`factions`
-                //multi-select and/or `factionsManual` free-text
-                //override) have any non-empty entries, they are the
-                //sole source of truth - the hidden legacy faction1-4
-                //slots are IGNORED. Only when BOTH Phase-4 sources
-                //are empty do we fall back to legacy slots (so
-                //pre-Phase-4 missions that haven't been re-opened /
-                //re-saved in the new Eden still run with their old
-                //single-select picks).
-                //
-                //Previously this union'd all four sources, which let
-                //pre-Phase-4 legacy defaults (typically "BLU_F" in
-                //faction1) pollute the runtime faction list any time
-                //a migrated mission's mission-maker picked a
-                //different faction in the new multi-select. Priority
-                //model means the mission-maker's explicit multi-
-                //select choice is authoritative and the hidden
-                //legacy data is inert until needed.
-                //
-                //All entries still deduped and filtered for empty /
-                //"NONE" sentinel regardless of source.
-                private _primary = _factions + _factionsManual;
-                private _primaryNonEmpty = ({typeName _x == "STRING" && {_x != ""} && {_x != "NONE"}} count _primary) > 0;
-                private _allFactionSources = if (_primaryNonEmpty) then {
-                    _primary
-                } else {
-                    [_faction1, _faction2, _faction3, _faction4]
-                };
-                _factions = [];
+        if (["ALiVE_mil_C2ISTAR"] call ALIVE_fnc_isModuleAvailable) then {
+            // G2 intel pipeline setup for each synced C2ISTAR.
+            // Wrapped in a spawn because the waituntil on the
+            // C2ISTAR's startupComplete flag otherwise blocks
+            // this OPCOM's init: C2ISTAR's own init can take
+            // ~14 s (player-side resolution + static data
+            // loading), and holding OPCOM init open that long
+            // locks the module init phase. Latent bug -
+            // previously masked because the C2ISTAR USAGE text
+            // told mission-makers never to sync it, so the
+            // foreach saw an empty list. Now that the USAGE
+            // text recommends syncing (per the issue that
+            // surfaced this), the wait is actually reached.
+            // Asynchronous G2 creation is safe: OPCOM's init
+            // doesn't consume the G2 reference; it's only used
+            // later by the "listen" / spotrep paths which no-op
+            // while G2 is nil (_G2 getVariable checks handle
+            // absence gracefully).
+            [_logic, _handler, _side] spawn {
+                params ["_logic", "_handler", "_side"];
                 {
-                    if (typeName _x == "STRING" && {_x != ""} && {_x != "NONE"} && {!(_x in _factions)}) then {
-                        _factions pushBack _x;
-                    };
-                } forEach _allFactionSources;
+                    if (typeof _x == "ALiVE_mil_C2ISTAR") then {
+                        waituntil {_x getVariable ["startupComplete",false]};
 
-                //Pre-Phase-4 the implicit default came from faction1's
-                //"BLU_F" defaultValue (the four single-faction slots
-                //guaranteed _factions had at least one entry). Phase 4
-                //preserves the same fallback so a misconfigured module
-                //doesn't crash on the _factions select 0 below - just
-                //logs a warning so the mission-maker can see they need
-                //to populate Factions.
-                if (count _factions == 0) then {
-                    diag_log format [
-                        "ALiVE OPCOM init WARNING: AI Commander '%1' has no factions configured (Factions multi-select empty AND Factions manual override empty). Defaulting to ['BLU_F']. Pick at least one faction in the Factions multi-select to silence this.",
-                        _customName
-                    ];
-                    _factions pushBack "BLU_F";
-                };
-
-                _side = "EAST";
-                switch (getNumber(((_factions select 0) call ALiVE_fnc_configGetFactionClass) >> "side")) do {
-                    case 0 : {_side = "EAST"};
-                    case 1 : {_side = "WEST"};
-                    case 2 : {_side = "GUER"};
-                    default {_side = "EAST"};
-                };
-
-                //Thank you, BIS...
-                if (_side == "GUER") then {_side = "RESISTANCE"};
-
-                _sides = ["EAST","WEST","RESISTANCE"];
-                _sidesEnemy = [];
-                {
-                    if ((([_side] call ALIVE_fnc_sideTextToObject) getfriend ([_x] call ALIVE_fnc_sideTextToObject)) < 0.6) then {
-                        _sidesEnemy pushBack _x
-                    }
-                } foreach (_sides - [_side]);
-                _sidesFriendly = (_sides - _sidesEnemy);
-
-                //Thank you again, BIS...
-                if (_side == "RESISTANCE") then {_side = "GUER"};
-                {if (_x == "RESISTANCE") then {_sidesEnemy set [_foreachIndex,"GUER"]}} foreach _sidesEnemy;
-                {if (_x == "RESISTANCE") then {_sidesFriendly set [_foreachIndex,"GUER"]}} foreach _sidesFriendly;
-
-                //Finally set common data
-
-                //Create OPCOM #Hash#Datahandler
-                _handler = [nil, "createhashobject"] call ALIVE_fnc_OPCOM;
-                _taskProfileCountOverrides = [_logic, "parseTaskProfileCountOverrides", _taskProfileCountOverridesRaw] call ALiVE_fnc_OPCOM;
-                _taskProfileTypeOverrides = [_logic, "parseTaskProfileTypeOverrides", _taskProfileTypeOverridesRaw] call ALiVE_fnc_OPCOM;
-
-                //Set handler on module
-                _logic setVariable ["handler",_handler];
-
-                //Add to OPCOM_instances global array for easier access
-                call compile format["OPCOM_%1 = _handler",count (missionNameSpace getvariable ["OPCOM_instances",[]])];
-                missionNameSpace setVariable ["OPCOM_instances",(missionNameSpace getvariable ["OPCOM_instances",[]]) + [_handler]];
-
-                //Create OPCOM ID
-                _opcomID = str(floor(_position select 0)) + str(floor(_position select 1));
-
-                [_handler,"class", "ALiVE_fnc_OPCOM"] call ALiVE_fnc_hashSet;
-
-                [_handler, "side",_side] call ALiVE_fnc_HashSet;
-                [_handler, "factions",_factions] call ALiVE_fnc_HashSet;
-                [_handler, "sidesenemy",_sidesEnemy] call ALiVE_fnc_HashSet;
-                [_handler, "sidesfriendly",_sidesFriendly] call ALiVE_fnc_HashSet;
-                [_handler, "position",_position] call ALiVE_fnc_HashSet;
-                [_handler, "simultanobjectives",_simultanObjectives] call ALiVE_fnc_HashSet;
-                [_handler, "minAgents",_minAgents] call ALiVE_fnc_HashSet;
-                [_handler, "asymForceLimit",_asymForceLimit] call ALiVE_fnc_HashSet;
-                [_handler, "recruitCycleMin",_recruitCycleMin] call ALiVE_fnc_HashSet;
-                [_handler, "recruitCycleMax",_recruitCycleMax] call ALiVE_fnc_HashSet;
-                [_handler, "recruitAttemptLimit",_recruitAttemptLimit] call ALiVE_fnc_HashSet;
-                [_handler, "recruitSuccessChance",_recruitSuccessChance] call ALiVE_fnc_HashSet;
-                [_handler, "hostilityPresenceMultiplier",_hostilityPresenceMultiplier] call ALiVE_fnc_HashSet;
-                [_handler, "hostilityInstallationMultiplier",_hostilityInstallationMultiplier] call ALiVE_fnc_HashSet;
-                [_handler, "hostilityInstallationInterval",_hostilityInstallationInterval] call ALiVE_fnc_HashSet;
-                [_handler, "taskProfileCountOverrides",_taskProfileCountOverrides] call ALiVE_fnc_HashSet;
-                [_handler, "taskProfileTypeOverrides",_taskProfileTypeOverrides] call ALiVE_fnc_HashSet;
-                [_handler, "civicRecruitmentMultiplier",_civicRecruitmentMultiplier] call ALiVE_fnc_HashSet;
-                [_handler, "civicInstallationMultiplier",_civicInstallationMultiplier] call ALiVE_fnc_HashSet;
-                [_handler, "civicRetaliationChance",_civicRetaliationChance] call ALiVE_fnc_HashSet;
-                [_handler, "civicRetaliationIntensity",_civicRetaliationIntensity] call ALiVE_fnc_HashSet;
-                [_handler, "opcomID",_opcomID] call ALiVE_fnc_HashSet;
-                [_handler, "debug",_debug] call ALiVE_fnc_HashSet;
-                [_handler, "persistent",_persistent] call ALiVE_fnc_HashSet;
-                [_handler, "module",_logic] call ALiVE_fnc_HashSet;
-                [_handler, "reinforcements",_reinforcements] call ALiVE_fnc_HashSet;
-                [_handler, "asym_occupation",_occupation] call ALiVE_fnc_HashSet;
-                [_handler, "controltype",_type] call ALiVE_fnc_HashSet;
-                [_handler, "intelchance",_intelChance] call ALiVE_fnc_HashSet;
-                [_handler, "roadblocks",_roadblocks] call ALiVE_fnc_HashSet;
-                [_handler, "friendlyDisableMode",_friendlyDisableMode] call ALiVE_fnc_HashSet;
-                [_handler, "asymEscalationIntensity",_asymEscalationIntensity] call ALiVE_fnc_HashSet;
-                [_handler, "objectives", []] call ALiVE_fnc_HashSet;
-
-                // Issue #697 Phases 2.2 + 2.3: periodic scan lets
-                // friendly AI automatically disable this OPCOM's
-                // asymmetric installations (IED factory / Recruitment HQ
-                // / Weapons depot) via two independent triggers -
-                // proximity presence (friendly units within ~150 m of
-                // the installation) and objective capture (a friendly
-                // OPCOM has a "defending" objective overlapping the
-                // insurgent objective). Gated on asymmetric controltype
-                // AND friendlyDisableMode != "off" - the validator
-                // function itself decides which trigger branch to run
-                // per the mode value. Loop self-terminates when the
-                // OPCOM's module logic is deleted - the dispose path
-                // calls deleteVehicle _module, so `isNull _module`
-                // becomes true on the next wake and the loop breaks.
-                if (_type == "asymmetric" && {_friendlyDisableMode != "off"}) then {
-                    [_handler] spawn {
-                        params ["_handler"];
-                        private _SCAN_INTERVAL = 30; // seconds between scans
-                        while {true} do {
-                            sleep _SCAN_INTERVAL;
-                            private _module = [_handler, "module", objNull] call ALiVE_fnc_HashGet;
-                            if (isNull _module) exitWith {};
-                            [_handler] call ALIVE_fnc_OPCOMfriendlyDisableInstallations;
+                        private _opcomIntelSides = [ALiVE_mil_C2ISTAR,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
+                        if (_side in _opcomIntelSides) then {
+                            private _G2 = [nil,"create", [_handler]] call ALiVE_fnc_G2;
+                            [_G2,"start"] call ALiVE_fnc_G2;
+                            [_handler,"G2", _G2] call ALiVE_fnc_hashSet;
                         };
                     };
-                };
+                } foreach (synchronizedObjects _logic);
+            };
+        };
 
-                [_handler,"pendingorders", []] call ALiVE_fnc_HashSet;
+        //Spread Intel Information for this OPCOMs side
+        missionnamespace setvariable [
+            format ["ALiVE_MIL_OPCOM_INTELCHANCE_%1", [_side] call ALiVE_fnc_SideTextToObject],
+            _intelChance,
+            true
+        ];
 
-                if (isNil "_customName" || _customName == "") then {
-                    //set default Name as "[SIDE] Commander" if none provided	for backwords compatibility
-                    _defaultName = format["%1 Commander",[_side] call Alive_fnc_sideTextToLong];
-                    [_handler, "name",_defaultName] call ALiVE_fnc_HashSet;
-                } else {
-                    [_handler, "name",_customName] call ALiVE_fnc_HashSet;
-                };
-                if (["ALiVE_mil_C2ISTAR"] call ALIVE_fnc_isModuleAvailable) then {
-                    // G2 intel pipeline setup for each synced C2ISTAR.
-                    // Wrapped in a spawn because the waituntil on the
-                    // C2ISTAR's startupComplete flag otherwise blocks
-                    // this OPCOM's init: C2ISTAR's own init can take
-                    // ~14 s (player-side resolution + static data
-                    // loading), and holding OPCOM init open that long
-                    // locks the module init phase. Latent bug -
-                    // previously masked because the C2ISTAR USAGE text
-                    // told mission-makers never to sync it, so the
-                    // foreach saw an empty list. Now that the USAGE
-                    // text recommends syncing (per the issue that
-                    // surfaced this), the wait is actually reached.
-                    // Asynchronous G2 creation is safe: OPCOM's init
-                    // doesn't consume the G2 reference; it's only used
-                    // later by the "listen" / spotrep paths which no-op
-                    // while G2 is nil (_G2 getVariable checks handle
-                    // absence gracefully).
-                    [_logic, _handler, _side] spawn {
-                        params ["_logic", "_handler", "_side"];
-                        {
-                            if (typeof _x == "ALiVE_mil_C2ISTAR") then {
-                                waituntil {_x getVariable ["startupComplete",false]};
-                                private _opcomIntelSides = [ALiVE_mil_C2ISTAR,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
-                                if (_side in _opcomIntelSides) then {
-                                    private _G2 = [nil,"create", [_handler]] call ALiVE_fnc_G2;
-                                    [_G2,"start"] call ALiVE_fnc_G2;
-                                    [_handler,"G2", _G2] call ALiVE_fnc_hashSet;
-                                };
-                            };
-                        } foreach (synchronizedObjects _logic);
-                    };
-                };
+        // find synced CQB modules, wait for their init to finish, store them
+        private _startTime = diag_ticktime;
+        private _syncedCQBModules = (synchronizedObjects _logic) select {typeof _x == "ALiVE_mil_cqb"};
+        {
+            waituntil { _x getVariable ["startupComplete", false] };
+        } foreach _syncedCQBModules;
 
-                //Spread Intel Information for this OPCOMs side
-                call compile (format["ALiVE_MIL_OPCOM_INTELCHANCE_%1 = _intelChance",[_side] call ALiVE_fnc_SideTextToObject]);
-                call compile (format["PublicVariable 'ALiVE_MIL_OPCOM_INTELCHANCE_%1'",[_side] call ALiVE_fnc_SideTextToObject]);
+        [_handler,"CQB", _syncedCQBModules] call ALiVE_fnc_HashSet;
+        ["ALiVE_fnc_OPCOM - %1: %2 seconds spent waiting for CQB module init", _customName, diag_ticktime - _startTime] call ALiVE_fnc_Dump;
 
-                //Get CQB modules and save them
-                {if (typeof _x == "ALiVE_mil_cqb") then {
-                    waituntil {_x getVariable ["startupComplete",false]};
+        //Set dynamic data depending on type, like section sizes
+        switch (_type) do {
+            case ("invasion") : {
+                [_handler, "sectionsamount_attack", 4] call ALiVE_fnc_HashSet;
+                [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
+                [_handler, "sectionsamount_defend", 2] call ALiVE_fnc_HashSet;
+            };
+            case ("occupation") : {
+                [_handler, "sectionsamount_attack", 4] call ALiVE_fnc_HashSet;
+                [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
+                [_handler, "sectionsamount_defend", 5] call ALiVE_fnc_HashSet;
+            };
+            case ("asymmetric") : {
+                [_handler, "sectionsamount_attack", 1] call ALiVE_fnc_HashSet;
+                [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
+                [_handler, "sectionsamount_defend", 1] call ALiVE_fnc_HashSet;
 
-                    [_handler, "CQB",([_handler, "CQB",[]] call ALiVE_fnc_HashGet) + [_x]] call ALiVE_fnc_HashSet;
-                }} foreach (synchronizedObjects _logic);
+                //initialise INS helpers
+                call ALiVE_fnc_INS_helpers;
 
-                //Set dynamic data depending on type, like section sizes
-                switch (_type) do {
-                    case ("invasion") : {
-                            [_handler, "sectionsamount_attack", 4] call ALiVE_fnc_HashSet;
-                            [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
-                            [_handler, "sectionsamount_defend", 2] call ALiVE_fnc_HashSet;
-                    };
-                    case ("occupation") : {
-                            [_handler, "sectionsamount_attack", 4] call ALiVE_fnc_HashSet;
-                            [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
-                            [_handler, "sectionsamount_defend", 5] call ALiVE_fnc_HashSet;
-                    };
-                    case ("asymmetric") : {
-                            [_handler, "sectionsamount_attack", 1] call ALiVE_fnc_HashSet;
-                            [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashSet;
-                            [_handler, "sectionsamount_defend", 1] call ALiVE_fnc_HashSet;
-
-                            //initialise INS helpers
-                            call ALiVE_fnc_INS_helpers;
-
-                            // Issue #355: build a tiered group roster
-                            // per faction now that the INS helpers are
-                            // loaded. Each call to
-                            // ALiVE_fnc_INS_buildTieredGroupRoster
-                            // walks the faction's CfgGroups, classifies
-                            // each group via INS_classifyGroupTier
-                            // (excludes tanks/jets/helis/ships), and
-                            // buckets the rest into infantry/light/medium.
-                            // Cached on the handler so the recruitment
-                            // loop picks from the pre-built roster each
-                            // cycle instead of re-walking CfgGroups.
-                            private _tieredGroupRoster = [] call ALiVE_fnc_hashCreate;
-                            {
-                                private _factionRoster = [_x] call ALiVE_fnc_INS_buildTieredGroupRoster;
-                                [_tieredGroupRoster, _x, _factionRoster] call ALiVE_fnc_hashSet;
-                            } foreach _factions;
-                            [_handler, "tieredGroupRoster", _tieredGroupRoster] call ALiVE_fnc_HashSet;
-                            [_handler, "escalationLevel", "infantry"] call ALiVE_fnc_HashSet;
-
-                            //reset CQB
-                            [[_handler, "CQB",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_resetCQB;
-                    };
-                };
-
-                private _attackSectionCount = [_handler, "getTaskProfileCount", ["attack", [_handler, "sectionsamount_attack", 4] call ALiVE_fnc_HashGet]] call ALiVE_fnc_OPCOM;
-                private _reserveSectionCount = [_handler, "getTaskProfileCount", ["reserve", [_handler, "sectionsamount_reserve", 1] call ALiVE_fnc_HashGet]] call ALiVE_fnc_OPCOM;
-                private _defendSectionCount = [_handler, "getTaskProfileCount", ["defend", [_handler, "sectionsamount_defend", 2] call ALiVE_fnc_HashGet]] call ALiVE_fnc_OPCOM;
-
-                [_handler, "sectionsamount_attack", _attackSectionCount] call ALiVE_fnc_HashSet;
-                [_handler, "sectionsamount_reserve", _reserveSectionCount] call ALiVE_fnc_HashSet;
-                [_handler, "sectionsamount_defend", _defendSectionCount] call ALiVE_fnc_HashSet;
-
-                /*
-                CONTROLLER  - coordination
-                */
-
-                ///////////
-                //Before starting check if startup parameters are ok!
-                ///////////
-
-                // Check if a SYS Profile Module is available
-                private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
-                // defaults
-                private _error1 = "";
-                private _error2 = "";
-                if !(["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) exitwith {
-                    [_errorMessage, _error1, _error2] call ALIVE_fnc_dumpR;
-                };
-
-                //Wait for virtual profiles ready, output debug for tracing mission makers errors (like forgetting Virtual AI System module)
-                waituntil {["OPCOM Waiting for Virtual AI System..."] call ALiVE_fnc_dump; !(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
-
-                //Wait for sector grid to be ready
-                //waituntil {["OPCOM Waiting for Sector Grid System..."] call ALiVE_fnc_dump; count (([([ALIVE_sectorGrid, "positionToSector", [1,1,0]] call ALIVE_fnc_sectorGrid),"data"] call ALIVE_fnc_hashGet) select 1) > 0};
-
-                //Load Data from DB
-                if ([_handler,"persistent",false] call ALIVE_fnc_HashGet) then {
-                    _objectives = [_handler,"loadObjectivesDB"] call ALiVE_fnc_OPCOM;
-
-                    if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED}) then {
-                        // Load starting forces
-                        private _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
-                        private _key = format ["%1_%2-OPCOM_%3-starting-forces", ALIVE_sys_data_GROUP_ID, _missionName, [_handler, "opcomID"] call CBA_fnc_hashGet];
-                        private _result = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
-
-                        if (_result isEqualType []) then {
-                            private _startingForces = [_result, "data"] call CBA_fnc_hashGet;
-                            [_handler, "startForceStrength", _startingForces] call CBA_fnc_hashSet;
-                        };
-                    };
-                };
-
-                if (!(isnil "_objectives") && {count _objectives > 0}) then {
-                    ["OPCOM loaded %1 objectives from DB!", count _objectives] call ALiVE_fnc_dump;
-                } else {
-                    //If no data was loaded from DB then get objectives data from other modules or placed Location logics!
-                    _objectives = [];
-
-                    //Iterate through all synchronized modules
-                    for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
-                        private ["_size","_objectiveType","_priority"];
-
-                        private _mod = (synchronizedObjects _logic) select _i;
-
-                        // mil_placement_spe deliberately NOT in the list - the module is
-                        // designed to place profile groups / vehicles at a fixed position
-                        // (with module direction driving placement orientation). Syncing
-                        // it to an OPCOM causes OPCOM to sweep its units into the
-                        // objective pool and redeploy them, which defeats the module's
-                        // purpose. Profile sources for OPCOM's faction still count through
-                        // the spe module's own spawns, just not as OPCOM-managed objectives.
-                        if ((typeof _mod) in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
-                            while {_startupComplete = _mod getVariable ["startupComplete", false]; !(_startupComplete)} do {};
-
-                            private _syncedModuleObjectives = [_mod,"objectives",objNull,[]] call ALIVE_fnc_OOsimpleOperation;
-
-                            // Stamp objectiveType per source-module class so downstream
-                            // marker / C2ISTAR / tour consumers can differentiate which
-                            // placement module each objective came from. Previously all
-                            // classes defaulted to "MIL" (via the HashGet default at
-                            // the assignment sites), giving mission-makers no way to tell
-                            // OPCOM-held objectives apart on the map. Issue #809.
-                            private _modLabel = switch (typeof _mod) do {
-                                case "ALiVE_mil_placement":        {"MIL"};
-                                case "ALiVE_mil_placement_custom": {"CUS"};
-                                case "ALiVE_civ_placement":        {"CIV"};
-                                case "ALiVE_civ_placement_custom": {"CCU"};
-                                default {"MIL"};
-                            };
-                            {
-                                [_x, "objectiveType", _modLabel] call ALiVE_fnc_HashSet;
-                            } forEach _syncedModuleObjectives;
-
-                            if (_type == "asymmetric" && {(typeof _mod) in ["ALiVE_civ_placement","ALiVE_civ_placement_custom"]}) then {
-                                private _asymmetricInstallationCountOverrides = [_handler, "parseAsymmetricInstallationCountOverrides", 
-                                    _mod getVariable ["asymmetricInstallationCountOverrides", ""]
-                                ] call ALiVE_fnc_OPCOM;
-
-                                if (count (_asymmetricInstallationCountOverrides select 1) > 0) then {
-                                    private _overrideSource = format ["%1_%2", typeOf _mod, str _mod];
-
-                                    {
-                                        [_x, "asymmetricInstallationCountOverrides", _asymmetricInstallationCountOverrides] call ALiVE_fnc_HashSet;
-                                        [_x, "asymmetricInstallationOverrideSource", _overrideSource] call ALiVE_fnc_HashSet;
-                                    } foreach _syncedModuleObjectives;
-                                };
-                            };
-
-                            _objectives append _syncedModuleObjectives;
-                        } else {
-                            //Is it a synced editor location-gamelogic?
-                            if (_mod iskindof "LocationBase_F") then {
-
-                                //These two values can be overwritten with f.e. *this setvariable ["size",700]* in init-field of editorobject...
-                                _size = _mod getvariable ["size",150];
-                                _priority = _mod getvariable ["priority",200];
-
-                                //Get type of location-logic from config
-                                _objectiveType = getText(configfile >> "CfgVehicles" >> (typeOf _mod) >> "displayName");
-
-                                _obj = [[
-                                    ["center", getposATL _mod],
-                                    ["size", _size],
-                                    ["objectiveType", _objectiveType],
-                                    ["priority", _priority],
-                                    ["clusterID", ""]
-                                ]] call ALiVE_fnc_hashCreate;
-
-                                _objectives pushback _obj;
-                            };
-                        };
-                    };
-
-                    private _objectiveSortStrategy = switch (_type) do {
-                        case ("occupation") :   { "strategic" };
-                        case ("invasion")   :   { "distance" };
-                        case ("asymmetric") :   { "asymmetric" };
-                    };
-
-                    private _objectives = [_handler,"createobjectives", [_objectives,_objectiveSortStrategy]] call MAINCLASS;
-                    _objectives = [_handler,"objectives", _objectives] call MAINCLASS;
-
-                    ["OPCOM created %1 new objectives!",count _objectives] call ALiVE_fnc_dump;
-                };
-
-
-                ///////////
-                //Validate
-                ///////////
-
-
-                //Check if there are any objectives
-                _errorMessage = "There are %1 objectives for this %3 OPCOM instance! %2";
-                _error1 = count _objectives; _error2 = "Please assign Military or Civilian Placement Objectives!"; //defaults
-                if ((count _objectives) == 0) exitwith {
-                    [_errorMessage,_error1,_error2,_factions] call ALIVE_fnc_dumpR;
-                };
-
-                //Warn if there are too many objectives
-                _errorMessage = "There are %1 objectives for this %3 OPCOM instance! %2";
-                _error1 = count _objectives; _error2 = "Please lower the objective count for performance reasons, suggested is below 80!"; //defaults
-                if ((count _objectives) > 80) then {
-                    [_errorMessage,_error1,_error2,_factions] call ALIVE_fnc_dump;
-                };
-
-                //Check if there are any profiles available.
-                //
-                //Enumerate factions offered by synced placement modules
-                //so an OPCOM Factions vs placement-module faction mismatch
-                //surfaces clearly in the RPT. Fires unconditionally (not
-                //debug-gated) because this is the commonest OPCOM-init
-                //misconfiguration: mission-maker picks faction X in OPCOM
-                //but the synced Mil Placement was left on its OPF_F
-                //default, so there are zero profiles for X and OPCOM
-                //silently refuses to run.
-                private _availableFactions = [];
+                // Issue #355: build a tiered group roster
+                // per faction now that the INS helpers are
+                // loaded. Each call to
+                // ALiVE_fnc_INS_buildTieredGroupRoster
+                // walks the faction's CfgGroups, classifies
+                // each group via INS_classifyGroupTier
+                // (excludes tanks/jets/helis/ships), and
+                // buckets the rest into infantry/light/medium.
+                // Cached on the handler so the recruitment
+                // loop picks from the pre-built roster each
+                // cycle instead of re-walking CfgGroups.
+                private _tieredGroupRoster = [] call ALiVE_fnc_hashCreate;
                 {
-                    // mil_placement_spe omitted - see rationale at the placement-class
-                    // iteration above.
-                    if ((typeOf _x) in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
-                        private _fac = _x getVariable ["faction", ""];
-                        if (_fac != "" && {!(_fac in _availableFactions)}) then {
-                            _availableFactions pushBack _fac;
-                        };
-                    };
-                } forEach (synchronizedObjects _logic);
-
-                private _unmatchedFactions = _factions select {!(_x in _availableFactions)};
-                if (count _unmatchedFactions > 0) then {
-                    diag_log format [
-                        "ALiVE OPCOM init MISMATCH: AI Commander '%1' has Factions [%2] but synced placement modules only provide factions [%3]. Unmatched: [%4]. Fix: either change the OPCOM Factions multi-select to match a placement module's faction, or add / sync a Mil Placement (or Mil Placement (Civ Obj)) module with the missing faction to this OPCOM.",
-                        _customName,
-                        _factions joinString ", ",
-                        _availableFactions joinString ", ",
-                        _unmatchedFactions joinString ", "
-                    ];
-                };
-
-                _errorMessage = "There are no groups for OPCOM faction(s) %1! %2";
-                _error1 = _factions;
-                _error2 = "Please check you chose the correct faction(s), and that factions have groups defined in the ArmA 3 default categories infantry, motorized, mechanized, armored, air, sea!";
-                private _profiles_count = 0;
-                {
-                    private _profiles_count_tmp = ([ALIVE_profileHandler, "getProfilesByFaction",_x] call ALIVE_fnc_profileHandler);
-
-                    if !(count _profiles_count_tmp == 0) then {
-                        _profiles_count = _profiles_count + (count _profiles_count_tmp);
-                    } else {
-                        private _error2 = "Please ensure you have configured a Mil Placement or Mil Placement (Civ Obj) module for this faction (or faction units are synced to Virtual AI module). If so, please check groups are correctly configured for this faction.";
-                        [_errorMessage,_x,_error2] call ALIVE_fnc_dumpR;
-                    };
+                    private _factionRoster = [_x] call ALiVE_fnc_INS_buildTieredGroupRoster;
+                    [_tieredGroupRoster, _x, _factionRoster] call ALiVE_fnc_hashSet;
                 } foreach _factions;
-                if (_profiles_count == 0) exitwith {
-                    [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpR;
+                [_handler,"tieredGroupRoster", _tieredGroupRoster] call ALiVE_fnc_HashSet;
+                [_handler,"escalationLevel", "infantry"] call ALiVE_fnc_HashSet;
+
+                private _syncedCQBModules = [_handler,"CQB", []] call ALiVE_fnc_HashGet;
+                [_syncedCQBModules] call ALiVE_fnc_resetCQB;
+            };
+        };
+
+        ([_handler, ["sectionsamount_attack","sectionsamount_defend","sectionsamount_reserve"]] call ALiVE_fnc_hashGetMany) params [
+            "_sectionAmountAttack",
+            "_sectionAmountDefend",
+            "_sectionAmountReserve"
+        ];
+
+        private _attackSectionCount = [_handler,"getTaskProfileCount", ["attack", _sectionAmountAttack]] call MAINCLASS;
+        private _defendSectionCount = [_handler,"getTaskProfileCount", ["defend", _sectionAmountDefend]] call MAINCLASS;
+        private _reserveSectionCount = [_handler,"getTaskProfileCount", ["reserve", _sectionAmountReserve]] call MAINCLASS;
+
+        [_handler,"sectionsamount_attack", _attackSectionCount] call ALiVE_fnc_HashSet;
+        [_handler,"sectionsamount_defend", _defendSectionCount] call ALiVE_fnc_HashSet;
+        [_handler,"sectionsamount_reserve", _reserveSectionCount] call ALiVE_fnc_HashSet;
+
+        /*
+        CONTROLLER  - coordination
+        */
+
+        ///////////
+        //Before starting check if startup parameters are ok!
+        ///////////
+
+        // Check if a SYS Profile Module is available
+        private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
+        // defaults
+        private _error1 = "";
+        private _error2 = "";
+        if !(["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) exitwith {
+            [_errorMessage, _error1, _error2] call ALIVE_fnc_dumpR;
+        };
+
+        //Wait for virtual profiles ready, output debug for tracing mission makers errors (like forgetting Virtual AI System module)
+        waituntil {["OPCOM Waiting for Virtual AI System..."] call ALiVE_fnc_dump; !(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
+
+        //Wait for sector grid to be ready
+        //waituntil {["OPCOM Waiting for Sector Grid System..."] call ALiVE_fnc_dump; count (([([ALIVE_sectorGrid, "positionToSector", [1,1,0]] call ALIVE_fnc_sectorGrid),"data"] call ALIVE_fnc_hashGet) select 1) > 0};
+
+        private "_objectives";
+
+        //Load Data from DB
+        if ([_handler,"persistent",false] call ALIVE_fnc_HashGet) then {
+            _objectives = [_handler,"loadObjectivesDB"] call ALiVE_fnc_OPCOM;
+
+            if (!isNil "ALIVE_sys_data" && {!ALIVE_sys_data_DISABLED}) then {
+                // Load starting forces
+                private _missionName = [missionName, "%20", "-"] call CBA_fnc_replace;
+                private _key = format ["%1_%2-OPCOM_%3-starting-forces", ALIVE_sys_data_GROUP_ID, _missionName, [_handler, "opcomID"] call CBA_fnc_hashGet];
+                private _result = [GVAR(DATAHANDLER), "read", ["mil_opcom", [], _key]] call ALIVE_fnc_Data;
+
+                if (_result isEqualType []) then {
+                    private _startingForces = [_result, "data"] call CBA_fnc_hashGet;
+                    [_handler, "startForceStrength", _startingForces] call CBA_fnc_hashSet;
                 };
+            };
+        };
 
-                //Ok? Check if there is no selected faction used by another OPCOM
-                _OPCOMS = (missionNameSpace getvariable ["OPCOM_instances",[]]) - [_handler];
-                _errorMessage = "Faction %1 is already used by another OPCOM (side: %2)! Please change the faction!";
-                _error1 = ""; _error2 = ""; _exit = false; //defaults
-                {
-                    _Selected_OPCOM = _x;
-                    //Wait until init has passed on that instance
-                    waituntil {!(isnil {[_Selected_OPCOM, "factions"] call ALiVE_fnc_HashGet})};
+        if (!(isnil "_objectives") && {count _objectives > 0}) then {
+            ["OPCOM loaded %1 objectives from DB!", count _objectives] call ALiVE_fnc_dump;
+        } else {
+            //If no data was loaded from DB then get objectives data from other modules or placed Location logics!
+            _objectives = [];
 
-                    _pos_OPCOM_selected = [_Selected_OPCOM, "position"] call ALiVE_fnc_HashGet;
-                    _side_OPCOM_selected = [_Selected_OPCOM, "side"] call ALiVE_fnc_HashGet;
-                    _factions_OPCOM_selected = [_Selected_OPCOM, "factions"] call ALiVE_fnc_HashGet;
+            //Iterate through all synchronized modules
+            for "_i" from 0 to ((count synchronizedObjects _logic)-1) do {
+                private ["_size","_objectiveType","_priority"];
 
-                    //Not really beautiful to identify opcom by position (array check wont work), but it works...
-                    if !(str(_position) == str(_pos_OPCOM_selected)) then {
-                        {
-                            _own_faction = _x;
-                            if (_own_faction in _factions_OPCOM_selected) exitwith {
-                                _exit = true; _error1 = _own_faction; _error2 = _side_OPCOM_selected};
-                        } foreach _factions;
-                        if (_exit) exitwith {_exit = true};
+                private _mod = (synchronizedObjects _logic) select _i;
+
+                // mil_placement_spe deliberately NOT in the list - the module is
+                // designed to place profile groups / vehicles at a fixed position
+                // (with module direction driving placement orientation). Syncing
+                // it to an OPCOM causes OPCOM to sweep its units into the
+                // objective pool and redeploy them, which defeats the module's
+                // purpose. Profile sources for OPCOM's faction still count through
+                // the spe module's own spawns, just not as OPCOM-managed objectives.
+                if ((typeof _mod) in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
+                    while {_startupComplete = _mod getVariable ["startupComplete", false]; !(_startupComplete)} do {};
+
+                    private _syncedModuleObjectives = [_mod,"objectives",objNull,[]] call ALIVE_fnc_OOsimpleOperation;
+
+                    // Stamp objectiveType per source-module class so downstream
+                    // marker / C2ISTAR / tour consumers can differentiate which
+                    // placement module each objective came from. Previously all
+                    // classes defaulted to "MIL" (via the HashGet default at
+                    // the assignment sites), giving mission-makers no way to tell
+                    // OPCOM-held objectives apart on the map. Issue #809.
+                    private _modLabel = switch (typeof _mod) do {
+                        case "ALiVE_mil_placement":        {"MIL"};
+                        case "ALiVE_mil_placement_custom": {"CUS"};
+                        case "ALiVE_civ_placement":        {"CIV"};
+                        case "ALiVE_civ_placement_custom": {"CCU"};
+                        default {"MIL"};
                     };
-                } foreach _OPCOMS;
-                if (_exit) exitwith {
-                    [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpR;
-                };
+                    {
+                        [_x, "objectiveType", _modLabel] call ALiVE_fnc_HashSet;
+                    } forEach _syncedModuleObjectives;
 
-                //Still there? Awesome, check if there are different sides within the factions
-                _errorMessage = "There are different sides within this OPCOM %1! Please only select one side per OPCOM!%2";
-                _error1 = _side; _error2 = ""; _exit = false;  //defaults
-                _exit = !(({(getNumber(((_factions select 0) call ALiVE_fnc_configGetFactionClass) >> "side")) == (getNumber((_x call ALiVE_fnc_configGetFactionClass) >> "side"))} count _factions) == (count _factions));
-                if (_exit) exitwith {
-                    [_errorMessage,_error1,_error2] call ALIVE_fnc_dumpR;
-                };
+                    if (_type == "asymmetric" && {(typeof _mod) in ["ALiVE_civ_placement","ALiVE_civ_placement_custom"]}) then {
+                        private _asymmetricInstallationCountOverrides = [_handler, "parseAsymmetricInstallationCountOverrides", 
+                            _mod getVariable ["asymmetricInstallationCountOverrides", ""]
+                        ] call ALiVE_fnc_OPCOM;
 
-                //Still there, mega, lets summarize...
-                if (_debug) then {
-                    ["OPCOM %1 starts with %2 profiles and %3 objectives!",_side,_profiles_count,count _objectives] call ALIVE_fnc_dumpR;
-                };
+                        if (count (_asymmetricInstallationCountOverrides select 1) > 0) then {
+                            private _overrideSource = format ["%1_%2", typeOf _mod, str _mod];
 
-
-                ///////////
-                //Startup
-                ///////////
-
-
-                //Perform initial cluster occupation and troops analysis as MP modules are finished
-                _clusterOccupationAnalysis = [_handler,_side,_sidesEnemy,_sidesFriendly] call {[_this select 0,"analyzeclusteroccupation",[_this select 3,_this select 2]] call ALiVE_fnc_OPCOM};
-                _forcesInit = [_handler,"scantroops"] call ALiVE_fnc_OPCOM;
-                ["OPCOM %1 Initial analysis done...",_side] call ALiVE_fnc_dump;
-
-                //done this way to easily switch between spawn and call for testing purposes
-                ["OPCOM and TACOM %1 starting...",_side] call ALiVE_fnc_Dump;
-
-                switch _type do {
-                    case ("occupation") : {
-                        _OPCOM = [_handler] call {
-                            _handler = _this select 0;
-
-                            _OPCOM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
-                            _TACOM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
-
-                            [_handler, "OPCOM_FSM",_OPCOM] call ALiVE_fnc_HashSet;
-                            [_handler, "TACOM_FSM",_TACOM] call ALiVE_fnc_HashSet;
+                            {
+                                [_x, "asymmetricInstallationCountOverrides", _asymmetricInstallationCountOverrides] call ALiVE_fnc_HashSet;
+                                [_x, "asymmetricInstallationOverrideSource", _overrideSource] call ALiVE_fnc_HashSet;
+                            } foreach _syncedModuleObjectives;
                         };
                     };
-                    case ("invasion") : {
-                        _OPCOM = [_handler] call {
-                            _handler = _this select 0;
 
-                            _OPCOM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
-                            _TACOM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
+                    _objectives append _syncedModuleObjectives;
+                } else {
+                    //Is it a synced editor location-gamelogic?
+                    if (_mod iskindof "LocationBase_F") then {
 
-                            [_handler, "OPCOM_FSM",_OPCOM] call ALiVE_fnc_HashSet;
-                            [_handler, "TACOM_FSM",_TACOM] call ALiVE_fnc_HashSet;
-                        };
-                    };
-                    case ("asymmetric") : {
-                        _OPCOM = [_handler] execFSM "\x\alive\addons\mil_opcom\insurgency.fsm";
+                        //These two values can be overwritten with f.e. *this setvariable ["size",700]* in init-field of editorobject...
+                        _size = _mod getvariable ["size",150];
+                        _priority = _mod getvariable ["priority",200];
 
-                        [_handler, "OPCOM_FSM",_OPCOM] call ALiVE_fnc_HashSet;
+                        //Get type of location-logic from config
+                        _objectiveType = getText(configfile >> "CfgVehicles" >> (typeOf _mod) >> "displayName");
+
+                        _obj = [[
+                            ["center", getposATL _mod],
+                            ["size", _size],
+                            ["objectiveType", _objectiveType],
+                            ["priority", _priority],
+                            ["clusterID", ""]
+                        ]] call ALiVE_fnc_hashCreate;
+
+                        _objectives pushback _obj;
                     };
                 };
             };
 
-            //Set startup complete and end loading screen if init has passed or an error occurred
-            if (isServer) then {
-                [_handler,"listen"] call MAINCLASS;
-
-                _logic setVariable ["startupComplete",true,true];
-                [_handler,"startupComplete", true] call ALiVE_fnc_HashSet;
+            private _objectiveSortStrategy = switch (_type) do {
+                case ("occupation") :   { "strategic" };
+                case ("invasion")   :   { "distance" };
+                case ("asymmetric") :   { "asymmetric" };
             };
 
+            private _objectives = [_handler,"createobjectives", [_objectives,_objectiveSortStrategy]] call MAINCLASS;
+            _objectives = [_handler,"objectives", _objectives] call MAINCLASS;
 
-            /*
-            VIEW - purely visual
-            */
+            ["OPCOM created %1 new objectives!", count _objectives] call ALiVE_fnc_dump;
+        };
+
+
+        ///////////
+        //Validate
+        ///////////
+
+        private _isValid = [_handler,"validateStartupState"] call MAINCLASS;
+        if (!_isValid) exitwith {};
+
+
+        ///////////
+        //Startup
+        ///////////
+
+
+        // Perform initial cluster occupation and troops analysis as MP modules are finished
+        private _clusterOccupationAnalysis = [_handler,"analyzeclusteroccupation", [_sidesFriendly, _sidesEnemy]] call MAINCLASS;
+        private _forcesInit = [_handler,"scantroops"] call MAINCLASS;
+
+        ["OPCOM %1 Initial analysis done...", _side] call ALiVE_fnc_dump;
+        ["OPCOM and TACOM %1 starting...",_side] call ALiVE_fnc_Dump;
+
+        switch _type do {
+            case "occupation": {
+                private _opcomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
+                private _tacomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
+
+                [_handler,"OPCOM_FSM", _opcomFSM] call ALiVE_fnc_HashSet;
+                [_handler,"TACOM_FSM", _tacomFSM] call ALiVE_fnc_HashSet;
+            };
+            case "invasion": {
+                private _opcomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
+                private _tacomFSM = [_handler] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
+
+                [_handler,"OPCOM_FSM", _opcomFSM] call ALiVE_fnc_HashSet;
+                [_handler,"TACOM_FSM", _tacomFSM] call ALiVE_fnc_HashSet;
+            };
+            case "asymmetric": {
+                private _fsm = [_handler] execFSM "\x\alive\addons\mil_opcom\insurgency.fsm";
+
+                [_handler,"OPCOM_FSM", _fsm] call ALiVE_fnc_HashSet;
+            };
+        };
+
+        // Set startup complete and end loading screen if init has passed or an error occurred
+
+        [_handler,"listen"] call MAINCLASS;
+
+        [_handler,"startupComplete", true] call ALiVE_fnc_HashSet;
     };
 
     case "listen": {
@@ -2331,21 +2203,15 @@ switch(_operation) do {
         private _overrides = [_logic,"taskProfileCountOverrides",[]] call ALiVE_fnc_hashGet;
         if !([_overrides] call ALIVE_fnc_isHash) exitWith {};
 
-        private _found = false;
-        {
-            if (!_found) then {
-                private _taskKey = toLower _x;
+        private _taskOverride = [_overrides, toLower _task] call ALiVE_fnc_hashGet;
+        if (!isnil "_taskOverride" && {_taskOverride isEqualType 0}) exitwith {
+            _result = _taskOverride;
+        };
 
-                if (_taskKey != "") then {
-                    private _override = [_overrides,_taskKey,"__ALIVE_MISSING__"] call ALiVE_fnc_hashGet;
-
-                    if (_override isEqualType 0) then {
-                        _result = _override;
-                        _found = true;
-                    };
-                };
-            };
-        } forEach [_task,_fallbackTask];
+        private _fallbackTaskOverride = [_overrides, toLower _fallbackTask] call ALiVE_fnc_hashGet;
+        if (!isnil "_fallbackTaskOverride" && {_fallbackTaskOverride isEqualType 0}) exitwith {
+            _result = _fallbackTaskOverride;
+        };
     };
 
     case "getTaskProfileTypes": {
@@ -3674,6 +3540,149 @@ switch(_operation) do {
                 [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
             } forEach (_args select 1);
         };
+    };
+
+    case "validateStartupState": {
+        _args params ["_opcomModule"];
+
+        _result = false;
+
+        private _debug = [_logic,"debug"] call ALiVE_fnc_HashGet;
+        private _customName = [_logic,"name"] call ALiVE_fnc_HashGet;
+        private _side = [_logic,"side"] call ALiVE_fnc_HashGet;
+        private _factions = [_logic,"factions"] call ALiVE_fnc_HashGet;
+        private _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
+
+        private _objectiveCount = count _objectives;
+
+        // exit if there are no objectives
+        if (_objectiveCount == 0) exitwith {
+            [
+                "There are 0 objectives for OPCOM instance with factions %1! Please assign Military or Civilian Placement Objectives!",
+                _factions
+            ] call ALIVE_fnc_dumpR;
+        };
+
+        // warning for excessive objective count
+        if (_objectiveCount > 80) then {
+            [
+                "There are %1 objectives for OPCOM instance with factions %2! This may result in decreased performance, suggested objective count is below 80!",
+                _objectiveCount,
+                _factions
+            ] call ALIVE_fnc_dump;
+        };
+
+        //Check if there are any profiles available.
+        //
+        //Enumerate factions offered by synced placement modules
+        //so an OPCOM Factions vs placement-module faction mismatch
+        //surfaces clearly in the RPT. Fires unconditionally (not
+        //debug-gated) because this is the commonest OPCOM-init
+        //misconfiguration: mission-maker picks faction X in OPCOM
+        //but the synced Mil Placement was left on its OPF_F
+        //default, so there are zero profiles for X and OPCOM
+        //silently refuses to run.
+        private _availableFactions = [];
+        {
+            // mil_placement_spe omitted - see rationale at the placement-class
+            // iteration above.
+            if ((typeOf _x) in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
+                private _fac = _x getVariable ["faction", ""];
+                if (_fac != "" && {!(_fac in _availableFactions)}) then {
+                    _availableFactions pushBack _fac;
+                };
+            };
+        } forEach (synchronizedObjects _opcomModule);
+
+        private _unmatchedFactions = _factions select {!(_x in _availableFactions)};
+        if (count _unmatchedFactions > 0) then {
+            [
+                "ALiVE OPCOM init MISMATCH: AI Commander '%1' has Factions [%2] but synced placement modules only provide factions [%3]. Unmatched: [%4]. Fix: either change the OPCOM Factions multi-select to match a placement module's faction, or add / sync a Mil Placement (or Mil Placement (Civ Obj)) module with the missing faction to this OPCOM.",
+                _customName,
+                _factions joinString ", ",
+                _availableFactions joinString ", ",
+                _unmatchedFactions joinString ", "
+            ] call ALiVE_fnc_Dump;
+        };
+
+        // Verify that OPCOM has at least one group
+        // Warn for factions with no groups
+
+        private _playerProfiles = ([ALiVE_profileHandler, "getPlayerEntities"] call ALIVE_fnc_profileHandler) select 1;
+
+        private _opcomProfileCount = 0;
+        private _factionsWithNoGroups = [];
+        {
+            private _factionProfiles = [ALIVE_profileHandler,"getProfilesByFaction", _x] call ALIVE_fnc_profileHandler;
+            _factionProfiles = _factionProfiles - _playerProfiles;
+
+            _opcomProfileCount = _opcomProfileCount + (count _factionProfiles);
+
+            if (_factionProfiles isequalto []) then {
+                _factionsWithNoGroups pushback _x;
+            };
+        } foreach _factions;
+
+        if (_factionsWithNoGroups isnotequalto []) then {
+            [
+                "There are no groups for OPCOM faction(s) %1! %2",
+                _factionsWithNoGroups,
+                "Please ensure you have configured a Mil Placement or Mil Placement (Civ Obj) module for this faction (or faction units are synced to Virtual AI module). If so, please check groups are correctly configured for this faction."
+            ] call ALIVE_fnc_dumpR;
+        };
+
+        if (_opcomProfileCount == 0) exitwith {
+            ["Aborting OPCOM Init... There are no groups for OPCOM with factions %1", _factions] call ALIVE_fnc_dumpR;
+        };
+
+        // validate no other opcom is configured with any of our factions
+        
+        private _otherOPCOMS = OPCOM_instances - [_logic];
+
+        private _factionsWithOtherOPCOMS = [];
+        private _offendingOPCOMFactions = [];
+        {
+            _otherOPCOM = _x;
+
+            // wait until init has passed on that instance
+            waituntil { !(isnil {[_otherOPCOM, "factions"] call ALiVE_fnc_HashGet}) };
+
+            private _otherOPCOMFactions = [_otherOPCOM,"factions"] call ALiVE_fnc_HashGet;
+
+            private _factionsInCommon = _factions arrayintersect _otherOPCOMFactions;
+
+            if (_factionsInCommon isnotequalto []) then {
+                _offendingOPCOMFactions = _otherOPCOMFactions;
+
+                { _factionsWithOtherOPCOMS pushbackunique _x } foreach _factionsInCommon;
+            };
+        } foreach _otherOPCOMS;
+
+        if (_factionsWithOtherOPCOMS isnotequalto []) exitwith {
+            [
+                "Aborting OPCOM Init... Factions %1 are already used by another OPCOM that has factions %2! Please change the faction!",
+                _factionsWithOtherOPCOMS,
+                _offendingOPCOMFactions
+            ] call ALIVE_fnc_dumpR;
+        };
+
+        // Still there? Awesome, verify that all factions are on the same side
+
+        private _factionSides = _factions apply {
+            [_x call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText
+        };
+
+        private _testSide = _factionSides select 0;
+        private _differingSideIndex = _factionSides findIf { _x != _testSide };
+        if (_differingSideIndex != -1) exitwith {
+            ["There are factions from different sides within this OPCOM %1! Please only select one side per OPCOM!", _factions] call ALIVE_fnc_dumpR;
+        };
+
+        if (_debug) then {
+            ["OPCOM %1 starts with %2 profiles and %3 objectives!", _side, _opcomProfileCount, _objectiveCount] call ALIVE_fnc_dumpR;
+        };
+
+        _result = true;
     };
 
     default {
