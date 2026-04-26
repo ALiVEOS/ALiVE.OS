@@ -110,6 +110,7 @@ switch (_operation) do {
         if (!isServer) exitwith {};
 
         // parse module parameters
+
         private _customNameParam = _logic getvariable ["customName",""];
         private _type = _logic getvariable ["controltype","invasion"];
         private _occupation = (parseNumber str (_logic getvariable ["asym_occupation",-100]))/100;
@@ -450,21 +451,16 @@ switch (_operation) do {
         CONTROLLER  - coordination
         */
 
-        ///////////
-        //Before starting check if startup parameters are ok!
-        ///////////
-
-        // Check if a SYS Profile Module is available
-        private _errorMessage = "No Virtual AI system module was found! Please use this module in your mission! %1 %2";
-        // defaults
-        private _error1 = "";
-        private _error2 = "";
         if !(["ALiVE_sys_profile"] call ALiVE_fnc_isModuleAvailable) exitwith {
-            [_errorMessage, _error1, _error2] call ALIVE_fnc_dumpR;
+            ["No Virtual AI system module was found! Please use this module in your mission!"] call ALIVE_fnc_dumpR;
         };
 
         //Wait for virtual profiles ready, output debug for tracing mission makers errors (like forgetting Virtual AI System module)
-        waituntil {["OPCOM Waiting for Virtual AI System..."] call ALiVE_fnc_dump; !(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
+        waituntil {
+            ["OPCOM Waiting for Virtual AI System..."] call ALiVE_fnc_dump;
+            sleep 1;
+            !(isnil "ALiVE_ProfileHandler") && { [ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet }
+        };
 
         //Wait for sector grid to be ready
         //waituntil {["OPCOM Waiting for Sector Grid System..."] call ALiVE_fnc_dump; count (([([ALIVE_sectorGrid, "positionToSector", [1,1,0]] call ALIVE_fnc_sectorGrid),"data"] call ALIVE_fnc_hashGet) select 1) > 0};
