@@ -1,9 +1,9 @@
 // ----------------------------------------------------------------------------
 
 #include "\x\alive\addons\mil_logistics\script_component.hpp"
-SCRIPT(test_ML_AIRDROP);
+SCRIPT(test_ML_AIRLIFT);
 
-//execVM "\x\alive\addons\mil_logistics\tests\test_ML_AIRDROP.sqf"
+//execVM "\x\alive\addons\mil_logistics\tests\test_ML_AIRLIFT.sqf"
 
 // ----------------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ _forceMakeup = [
 ];
 */
 
-_event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,"AIRDROP"],"OPCOM"] call ALIVE_fnc_event;
+_event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,"AIRLIFT"],"OPCOM"] call ALIVE_fnc_event;
 _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
 
 nil;

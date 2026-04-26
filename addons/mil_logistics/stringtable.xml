@@ -299,11 +299,11 @@
     <Portuguese>Quais veículos de transporte aéreo o comandante pode acionar. Lado e facção (padrão) — qualquer helicóptero ou avião de transporte do mesmo lado, independentemente da facção. Apenas facção — restringe o pool a veículos exatamente da mesma facção do comandante.</Portuguese>
     <Russian>Какие авиатранспортные средства может вызывать командир. Сторона и фракция (по умолчанию) — любой вертолёт или транспортный самолёт той же стороны, независимо от фракции. Только фракция — ограничивает пул техникой именно той же фракции, что и у командира.</Russian>
 </Key>
-<Key ID="STR_ALIVE_ML_FIXEDWING_CLASS">
-    <English>Fixed-Wing Transport Class:</English>
+<Key ID="STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS">
+    <English>Strategic Airlift Aircraft Class:</English>
 </Key>
-<Key ID="STR_ALIVE_ML_FIXEDWING_CLASS_DESC">
-    <English>Optional. Classname of a fixed-wing or VTOL transport (e.g. B_T_VTOL_01_infantry_F, RHS_C130J). When set, OPCOM reinforcements may be delivered as a strategic AIRDROP — the plane spawns at a friendly airfield, flies to a friendly airfield near the destination, lands, and unloads cargo (infantry, vehicles, or armor). Requires an airfield held by friendly forces (within 250m of a friendly OPCOM objective) at both ends. Leave blank to disable AIRDROP and use the existing heli/ground delivery logic.</English>
+<Key ID="STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS_DESC">
+    <English>Optional. Classname of the aircraft used for OPCOM strategic airlift between friendly airfields. Plane, VTOL, or helicopter — pick what fits your mission setting (vanilla, RHS, CUP, mod, etc.). The defining feature of this delivery tier is airfield infrastructure, not aircraft type: AIRLIFT only fires when both source and destination have a friendly airport (within 250m of an OPCOM-held objective) and the route exceeds 1500m. When only one airport is friendly the aircraft spawns offmap and flies in. Requires isKindOf "Air" and transportSoldier > 0. Leave blank to disable AIRLIFT and fall back to existing heli/ground delivery. Note: helicopters used here bypass the standard HELI tier's concurrent-mission throttle.</English>
 </Key>
 <Key ID="STR_ALIVE_ML_USAGE">
     <English>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</English>
