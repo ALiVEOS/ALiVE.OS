@@ -7675,6 +7675,11 @@ switch(_operation) do {
                 if (_planeProfID == "" || count _airliftDstEv < 2) exitWith {
                     ["ML - opcomAirliftFly: missing plane profile ID or destination airport on event %1, completing",
                         _eventID] call ALiVE_fnc_dump;
+                    // Defensive: source runway was locked at dispatch. Release if still readable.
+                    private _airliftSrcEvF = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
+                    if (count _airliftSrcEvF > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftSrcEvF select 0] call MAINCLASS;
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -7739,6 +7744,17 @@ switch(_operation) do {
                 if (_planeProfID == "" || count _airliftDstEv < 2) exitWith {
                     ["ML - opcomAirliftLand: missing plane profile ID or destination airport on event %1, completing",
                         _eventID] call ALiVE_fnc_dump;
+                    // Defensive: source runway was locked at dispatch. Destination
+                    // runway was locked in this state's first-entry block (line ~7791)
+                    // if airliftLandIssued is set on a subsequent tick.
+                    private _airliftSrcEvL = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
+                    if (count _airliftSrcEvL > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftSrcEvL select 0] call MAINCLASS;
+                    };
+                    private _landIssuedRel = [_event, "airliftLandIssued", false] call ALIVE_fnc_hashGet;
+                    if (_landIssuedRel && count _airliftDstEv > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftDstEv select 0] call MAINCLASS;
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -7751,6 +7767,13 @@ switch(_operation) do {
                     private _airliftSrcEvB = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
                     if (count _airliftSrcEvB > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftSrcEvB select 0] call MAINCLASS;
+                    };
+                    // Also release destination if airliftLandIssued was set on a
+                    // previous tick (means lock at line ~7791 already fired and
+                    // would otherwise leak when the profile was lost mid-landing).
+                    private _landIssuedRelB = [_event, "airliftLandIssued", false] call ALIVE_fnc_hashGet;
+                    if (_landIssuedRelB && count _airliftDstEv > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftDstEv select 0] call MAINCLASS;
                     };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -8103,6 +8126,11 @@ switch(_operation) do {
                 if (_planeProfID == "" || count _airliftSrcEv < 2) exitWith {
                     ["ML - opcomAirliftRTB: missing plane or source airport on event %1, completing",
                         _eventID] call ALiVE_fnc_dump;
+                    // Defensive: source runway still locked (released only at Despawn).
+                    // Destination already released in Takeoff2.
+                    if (count _airliftSrcEv > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -8154,6 +8182,11 @@ switch(_operation) do {
                 if (_planeProfID == "" || count _airliftSrcEv < 2) exitWith {
                     ["ML - opcomAirliftReturnLand: missing plane or source airport on event %1, completing",
                         _eventID] call ALiVE_fnc_dump;
+                    // Defensive: source runway still locked (released only at Despawn).
+                    // Destination already released in Takeoff2.
+                    if (count _airliftSrcEv > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
