@@ -4995,10 +4995,26 @@ switch(_operation) do {
                                         if (_sourceID != _destID) then {
                                             private _flightDist = _sourcePos distance2D _destPos;
                                             if (_flightDist >= AIRLIFT_MIN_FLIGHT_DISTANCE) then {
-                                                _airliftEligible = true;
-                                                if (_debug) then {
-                                                    ["ML - Delivery type: AIRLIFT (source airport %1 at %2 -> dest airport %3 at %4, flight %5m, plane %6)",
-                                                        _sourceID, _sourcePos, _destID, _destPos, round _flightDist, _airliftAircraftClass] call ALiVE_fnc_dump;
+                                                // Runway availability gate -- avoid double-booking. Each
+                                                // airport can host at most one AIRLIFT in flight at a time.
+                                                // isAirliftRunwayBusy is a combined check across both ML
+                                                // and any placed ATO module's runway locks. Without this
+                                                // gate two LOGCOMs in the same monitor cycle could both
+                                                // dispatch to the same airport pair and spawn planes on
+                                                // the same runway.
+                                                private _srcBusy  = [_logic, "isAirliftRunwayBusy", _sourceID] call MAINCLASS;
+                                                private _destBusy = [_logic, "isAirliftRunwayBusy", _destID]   call MAINCLASS;
+                                                if (_srcBusy || _destBusy) then {
+                                                    if (_debug) then {
+                                                        ["ML - AIRLIFT suppressed: runway busy (sourceID=%1 srcBusy=%2 destID=%3 destBusy=%4)",
+                                                            _sourceID, _srcBusy, _destID, _destBusy] call ALiVE_fnc_dump;
+                                                    };
+                                                } else {
+                                                    _airliftEligible = true;
+                                                    if (_debug) then {
+                                                        ["ML - Delivery type: AIRLIFT (source airport %1 at %2 -> dest airport %3 at %4, flight %5m, plane %6)",
+                                                            _sourceID, _sourcePos, _destID, _destPos, round _flightDist, _airliftAircraftClass] call ALiVE_fnc_dump;
+                                                    };
                                                 };
                                             } else {
                                                 if (_debug) then {
@@ -5019,13 +5035,23 @@ switch(_operation) do {
                                             // Sanity-check the spawn point is meaningfully far from the destination.
                                             private _offmapDist = _offmapSpawnPos distance2D _destPos;
                                             if (_offmapDist >= AIRLIFT_MIN_FLIGHT_DISTANCE) then {
-                                                _airliftEligible = true;
-                                                // Replace _airliftSource with the offmap pseudo-airport
-                                                // ([id=-1, position=offmap]). _airliftDest stays as the real airport.
-                                                _airliftSource = [-1, _offmapSpawnPos];
-                                                if (_debug) then {
-                                                    ["ML - Delivery type: AIRLIFT OFFMAP fallback (single airport %1, offmap spawn %2 at %3m, plane %4)",
-                                                        _destID, _offmapSpawnPos, round _offmapDist, _airliftAircraftClass] call ALiVE_fnc_dump;
+                                                // Runway availability gate (offmap source has no real
+                                                // runway, only the destination airport needs to be free).
+                                                private _destBusy = [_logic, "isAirliftRunwayBusy", _destID] call MAINCLASS;
+                                                if (_destBusy) then {
+                                                    if (_debug) then {
+                                                        ["ML - AIRLIFT suppressed: dest runway %1 busy (offmap fallback)",
+                                                            _destID] call ALiVE_fnc_dump;
+                                                    };
+                                                } else {
+                                                    _airliftEligible = true;
+                                                    // Replace _airliftSource with the offmap pseudo-airport
+                                                    // ([id=-1, position=offmap]). _airliftDest stays as the real airport.
+                                                    _airliftSource = [-1, _offmapSpawnPos];
+                                                    if (_debug) then {
+                                                        ["ML - Delivery type: AIRLIFT OFFMAP fallback (single airport %1, offmap spawn %2 at %3m, plane %4)",
+                                                            _destID, _offmapSpawnPos, round _offmapDist, _airliftAircraftClass] call ALiVE_fnc_dump;
+                                                    };
                                                 };
                                             } else {
                                                 if (_debug) then {
