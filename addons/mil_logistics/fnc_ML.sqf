@@ -78,11 +78,22 @@ ARJay & Jman
 // AIRLIFT_MIN_FLIGHT_DISTANCE: minimum source-to-destination distance (m) below which AIRLIFT is suppressed (heli/ground takes over).
 // AIRLIFT_OFFMAP_BUFFER: distance (m) past the world boundary that the offmap-fallback plane spawns.
 // AIRLIFT_OFFMAP_STATIC_FALLBACK: distance (m) past LOGCOM HQ used when the boundary-intersection math fails to return a valid t.
+// AIRLIFT_VTOL_DESCENT_HEIGHT: flyInHeight target (m AGL) for VTOL/heli landing approach.
+//   Must be > 50m to clear the engine's helicopter altitude clamp -- values below ~50m
+//   are silently ignored by the AI for helicopters and can cause unsafe descent for VTOLs
+//   still in plane mode. Drops AI into helicopter mode for VTOLs at this altitude.
+// AIRLIFT_VTOL_LAND_PROXIMITY: horizontal distance (m) to dest at which land "LAND" command is issued for vertical descent.
+// AIRLIFT_LANDED_AGL_THRESHOLD: AGL (m) below which a vertical lander is considered on the ground.
+// AIRLIFT_LANDED_SPEED_THRESHOLD: speed (km/h) below which a vertical lander is considered stopped.
 #define FRIENDLY_AIRPORT_RADIUS 250
 #define AIRLIFT_DEST_MAX_RADIUS 3000
 #define AIRLIFT_MIN_FLIGHT_DISTANCE 1500
 #define AIRLIFT_OFFMAP_BUFFER 500
 #define AIRLIFT_OFFMAP_STATIC_FALLBACK 5000
+#define AIRLIFT_VTOL_DESCENT_HEIGHT 60
+#define AIRLIFT_VTOL_LAND_PROXIMITY 100
+#define AIRLIFT_LANDED_AGL_THRESHOLD 2
+#define AIRLIFT_LANDED_SPEED_THRESHOLD 2
 #define MAX_SLINGLOAD_CONCURRENT 3
 #define DISMOUNT_RADIUS 500
 #define VEHICLE_LEAD_DIST 50
@@ -4995,10 +5006,26 @@ switch(_operation) do {
                                         if (_sourceID != _destID) then {
                                             private _flightDist = _sourcePos distance2D _destPos;
                                             if (_flightDist >= AIRLIFT_MIN_FLIGHT_DISTANCE) then {
-                                                _airliftEligible = true;
-                                                if (_debug) then {
-                                                    ["ML - Delivery type: AIRLIFT (source airport %1 at %2 -> dest airport %3 at %4, flight %5m, plane %6)",
-                                                        _sourceID, _sourcePos, _destID, _destPos, round _flightDist, _airliftAircraftClass] call ALiVE_fnc_dump;
+                                                // Runway availability gate -- avoid double-booking. Each
+                                                // airport can host at most one AIRLIFT in flight at a time.
+                                                // isAirliftRunwayBusy is a combined check across both ML
+                                                // and any placed ATO module's runway locks. Without this
+                                                // gate two LOGCOMs in the same monitor cycle could both
+                                                // dispatch to the same airport pair and spawn planes on
+                                                // the same runway.
+                                                private _srcBusy  = [_logic, "isAirliftRunwayBusy", _sourceID] call MAINCLASS;
+                                                private _destBusy = [_logic, "isAirliftRunwayBusy", _destID]   call MAINCLASS;
+                                                if (_srcBusy || _destBusy) then {
+                                                    if (_debug) then {
+                                                        ["ML - AIRLIFT suppressed: runway busy (sourceID=%1 srcBusy=%2 destID=%3 destBusy=%4)",
+                                                            _sourceID, _srcBusy, _destID, _destBusy] call ALiVE_fnc_dump;
+                                                    };
+                                                } else {
+                                                    _airliftEligible = true;
+                                                    if (_debug) then {
+                                                        ["ML - Delivery type: AIRLIFT (source airport %1 at %2 -> dest airport %3 at %4, flight %5m, plane %6)",
+                                                            _sourceID, _sourcePos, _destID, _destPos, round _flightDist, _airliftAircraftClass] call ALiVE_fnc_dump;
+                                                    };
                                                 };
                                             } else {
                                                 if (_debug) then {
@@ -5019,13 +5046,23 @@ switch(_operation) do {
                                             // Sanity-check the spawn point is meaningfully far from the destination.
                                             private _offmapDist = _offmapSpawnPos distance2D _destPos;
                                             if (_offmapDist >= AIRLIFT_MIN_FLIGHT_DISTANCE) then {
-                                                _airliftEligible = true;
-                                                // Replace _airliftSource with the offmap pseudo-airport
-                                                // ([id=-1, position=offmap]). _airliftDest stays as the real airport.
-                                                _airliftSource = [-1, _offmapSpawnPos];
-                                                if (_debug) then {
-                                                    ["ML - Delivery type: AIRLIFT OFFMAP fallback (single airport %1, offmap spawn %2 at %3m, plane %4)",
-                                                        _destID, _offmapSpawnPos, round _offmapDist, _airliftAircraftClass] call ALiVE_fnc_dump;
+                                                // Runway availability gate (offmap source has no real
+                                                // runway, only the destination airport needs to be free).
+                                                private _destBusy = [_logic, "isAirliftRunwayBusy", _destID] call MAINCLASS;
+                                                if (_destBusy) then {
+                                                    if (_debug) then {
+                                                        ["ML - AIRLIFT suppressed: dest runway %1 busy (offmap fallback)",
+                                                            _destID] call ALiVE_fnc_dump;
+                                                    };
+                                                } else {
+                                                    _airliftEligible = true;
+                                                    // Replace _airliftSource with the offmap pseudo-airport
+                                                    // ([id=-1, position=offmap]). _airliftDest stays as the real airport.
+                                                    _airliftSource = [-1, _offmapSpawnPos];
+                                                    if (_debug) then {
+                                                        ["ML - Delivery type: AIRLIFT OFFMAP fallback (single airport %1, offmap spawn %2 at %3m, plane %4)",
+                                                            _destID, _offmapSpawnPos, round _offmapDist, _airliftAircraftClass] call ALiVE_fnc_dump;
+                                                    };
                                                 };
                                             } else {
                                                 if (_debug) then {
@@ -7649,6 +7686,11 @@ switch(_operation) do {
                 if (_planeProfID == "" || count _airliftDstEv < 2) exitWith {
                     ["ML - opcomAirliftFly: missing plane profile ID or destination airport on event %1, completing",
                         _eventID] call ALiVE_fnc_dump;
+                    // Defensive: source runway was locked at dispatch. Release if still readable.
+                    private _airliftSrcEvF = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
+                    if (count _airliftSrcEvF > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftSrcEvF select 0] call MAINCLASS;
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -7713,6 +7755,17 @@ switch(_operation) do {
                 if (_planeProfID == "" || count _airliftDstEv < 2) exitWith {
                     ["ML - opcomAirliftLand: missing plane profile ID or destination airport on event %1, completing",
                         _eventID] call ALiVE_fnc_dump;
+                    // Defensive: source runway was locked at dispatch. Destination
+                    // runway was locked in this state's first-entry block (line ~7791)
+                    // if airliftLandIssued is set on a subsequent tick.
+                    private _airliftSrcEvL = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
+                    if (count _airliftSrcEvL > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftSrcEvL select 0] call MAINCLASS;
+                    };
+                    private _landIssuedRel = [_event, "airliftLandIssued", false] call ALIVE_fnc_hashGet;
+                    if (_landIssuedRel && count _airliftDstEv > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftDstEv select 0] call MAINCLASS;
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -7725,6 +7778,13 @@ switch(_operation) do {
                     private _airliftSrcEvB = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
                     if (count _airliftSrcEvB > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftSrcEvB select 0] call MAINCLASS;
+                    };
+                    // Also release destination if airliftLandIssued was set on a
+                    // previous tick (means lock at line ~7791 already fired and
+                    // would otherwise leak when the profile was lost mid-landing).
+                    private _landIssuedRelB = [_event, "airliftLandIssued", false] call ALIVE_fnc_hashGet;
+                    if (_landIssuedRelB && count _airliftDstEv > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftDstEv select 0] call MAINCLASS;
                     };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -7753,12 +7813,20 @@ switch(_operation) do {
 
                 // Branch on aircraft type:
                 //   - Plane (fixed-wing, no VTOL): standard landAt ILS approach.
-                //   - VTOL / Helicopter: vertical land sequence -- flyInHeight 30
-                //     to drop into helicopter mode, doMove to airport center to
-                //     navigate in, then issue land "LAND" once close so the AI
+                //   - VTOL / Helicopter: vertical land sequence -- flyInHeight to
+                //     AIRLIFT_VTOL_DESCENT_HEIGHT to drop into helicopter mode,
+                //     doMove to airport center to navigate in, then issue land
+                //     "LAND" once within AIRLIFT_VTOL_LAND_PROXIMITY so the AI
                 //     commits to a vertical descent.
                 private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
                 private _destAirportPos = _airliftDstEv select 1;
+
+                // Read tick counter BEFORE the landed compute so the vertical-land
+                // gate can use it to skip the issue tick (race protection -- on the
+                // first tick after land "LAND" is issued, AGL+speed+pending could
+                // briefly align as "landed" even though the AI hasn't actually
+                // descended yet).
+                private _landTimer = [_event, "airliftLandTimer", 0] call ALIVE_fnc_hashGet;
 
                 // Issue landing on first entry with a valid vehicle.
                 if (!_landIssued && !isNull _planeVehicle && {alive _planeVehicle}) then {
@@ -7769,8 +7837,13 @@ switch(_operation) do {
                         // mode for VTOLs), navigate to airport center. land "LAND"
                         // is deferred to the proximity check below so the AI doesn't
                         // try to descend mid-flight while still 1km out.
-                        _planeVehicle flyInHeight 30;
-                        _planeVehicle doMove _destAirportPos;
+                        // doMove target needs an explicit z -- ilsPosition is [x,y]
+                        // and doMove with a 2-element position interprets z as 0
+                        // (ground level), which fights with the flyInHeight command
+                        // and causes engine-resolution-dependent descent behaviour.
+                        private _destPos3D = [_destAirportPos select 0, _destAirportPos select 1, AIRLIFT_VTOL_DESCENT_HEIGHT];
+                        _planeVehicle flyInHeight AIRLIFT_VTOL_DESCENT_HEIGHT;
+                        _planeVehicle doMove _destPos3D;
                         [_event, "airliftVTOLLandPending", true] call ALIVE_fnc_hashSet;
                     } else {
                         // Fixed-wing: standard ILS approach via landAt.
@@ -7820,8 +7893,8 @@ switch(_operation) do {
                         private _dist2D = _planeVehicle distance2D _destAirportPos;
                         private _vtolLandPending = [_event, "airliftVTOLLandPending", false] call ALIVE_fnc_hashGet;
 
-                        // Issue land "LAND" once within 100m -- triggers vertical descent.
-                        if (_vtolLandPending && _dist2D < 100) then {
+                        // Issue land "LAND" once within proximity threshold -- triggers vertical descent.
+                        if (_vtolLandPending && _dist2D < AIRLIFT_VTOL_LAND_PROXIMITY) then {
                             _planeVehicle land "LAND";
                             [_event, "airliftVTOLLandPending", false] call ALIVE_fnc_hashSet;
                             if (_debug) then {
@@ -7830,8 +7903,13 @@ switch(_operation) do {
                             };
                         };
 
-                        // Landed = on the ground AND stopped AND we've issued the descent command.
-                        (_agl < 2) && (_spd < 2) && !_vtolLandPending
+                        // Landed = on the ground AND stopped AND we've issued the descent
+                        // command AND we've waited at least one tick since issue (race
+                        // protection -- on the first tick after issue, AGL+speed+pending
+                        // could briefly align as "landed" even though the AI hasn't
+                        // actually descended yet, especially if dist2D was already
+                        // < AIRLIFT_VTOL_LAND_PROXIMITY at issue time).
+                        (_agl < AIRLIFT_LANDED_AGL_THRESHOLD) && (_spd < AIRLIFT_LANDED_SPEED_THRESHOLD) && !_vtolLandPending && _landTimer > 0
                     } else {
                         _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
                     };
@@ -7839,7 +7917,6 @@ switch(_operation) do {
                     _landIssued
                 };
 
-                private _landTimer = [_event, "airliftLandTimer", 0] call ALIVE_fnc_hashGet;
                 _landTimer = _landTimer + 1;
                 [_event, "airliftLandTimer", _landTimer] call ALIVE_fnc_hashSet;
 
@@ -8077,6 +8154,11 @@ switch(_operation) do {
                 if (_planeProfID == "" || count _airliftSrcEv < 2) exitWith {
                     ["ML - opcomAirliftRTB: missing plane or source airport on event %1, completing",
                         _eventID] call ALiVE_fnc_dump;
+                    // Defensive: source runway still locked (released only at Despawn).
+                    // Destination already released in Takeoff2.
+                    if (count _airliftSrcEv > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -8128,6 +8210,11 @@ switch(_operation) do {
                 if (_planeProfID == "" || count _airliftSrcEv < 2) exitWith {
                     ["ML - opcomAirliftReturnLand: missing plane or source airport on event %1, completing",
                         _eventID] call ALiVE_fnc_dump;
+                    // Defensive: source runway still locked (released only at Despawn).
+                    // Destination already released in Takeoff2.
+                    if (count _airliftSrcEv > 0) then {
+                        [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -8178,8 +8265,12 @@ switch(_operation) do {
                         private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
                         if (!isNull _planeVehicle && {alive _planeVehicle}) then {
                             if (_verticalLand) then {
-                                _planeVehicle flyInHeight 30;
-                                _planeVehicle doMove _sourceAirportPos;
+                                // 3D doMove target -- ilsPosition returns [x,y] only;
+                                // without explicit z the AI interprets target altitude
+                                // as 0 and fights with the flyInHeight command.
+                                private _srcPos3D = [_sourceAirportPos select 0, _sourceAirportPos select 1, AIRLIFT_VTOL_DESCENT_HEIGHT];
+                                _planeVehicle flyInHeight AIRLIFT_VTOL_DESCENT_HEIGHT;
+                                _planeVehicle doMove _srcPos3D;
                                 [_event, "airliftReturnVTOLLandPending", true] call ALIVE_fnc_hashSet;
                             } else {
                                 if (_sourceAirportID < 100) then {
@@ -8210,10 +8301,17 @@ switch(_operation) do {
                 } else {
                     // Subsequent ticks: wait for LANDED or timeout.
                     // VTOL/heli: AGL + speed gate, with deferred land "LAND" fired at
-                    // 100m proximity. Plane: ALIVE_AIRLIFT_LANDED EH check.
+                    // AIRLIFT_VTOL_LAND_PROXIMITY, and a one-tick deferral after issue
+                    // to avoid spurious landed=true on the issue tick.
+                    // Plane: ALIVE_AIRLIFT_LANDED EH check.
                     // Null vehicle: if landing was already issued, plane was destroyed
                     // post-issue -- treat as done. If not issued yet, wait next tick.
                     private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
+
+                    // Read tick counter BEFORE landed compute so the vertical-land
+                    // gate can use it for the issue-tick race protection.
+                    private _rlTimer = [_event, "airliftReturnLandTimer", 0] call ALIVE_fnc_hashGet;
+
                     private _landed = if (!isNull _planeVehicle) then {
                         if (_verticalLand) then {
                             private _agl    = (getPosATL _planeVehicle) select 2;
@@ -8221,7 +8319,7 @@ switch(_operation) do {
                             private _dist2D = _planeVehicle distance2D _sourceAirportPos;
                             private _vtolLandPending = [_event, "airliftReturnVTOLLandPending", false] call ALIVE_fnc_hashGet;
 
-                            if (_vtolLandPending && _dist2D < 100) then {
+                            if (_vtolLandPending && _dist2D < AIRLIFT_VTOL_LAND_PROXIMITY) then {
                                 _planeVehicle land "LAND";
                                 [_event, "airliftReturnVTOLLandPending", false] call ALIVE_fnc_hashSet;
                                 if (_debug) then {
@@ -8230,7 +8328,7 @@ switch(_operation) do {
                                 };
                             };
 
-                            (_agl < 2) && (_spd < 2) && !_vtolLandPending
+                            (_agl < AIRLIFT_LANDED_AGL_THRESHOLD) && (_spd < AIRLIFT_LANDED_SPEED_THRESHOLD) && !_vtolLandPending && _rlTimer > 0
                         } else {
                             _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
                         };
@@ -8238,7 +8336,6 @@ switch(_operation) do {
                         _returnLandIssued
                     };
 
-                    private _rlTimer = [_event, "airliftReturnLandTimer", 0] call ALIVE_fnc_hashGet;
                     _rlTimer = _rlTimer + 1;
                     [_event, "airliftReturnLandTimer", _rlTimer] call ALIVE_fnc_hashSet;
 
