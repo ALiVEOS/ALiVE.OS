@@ -1587,6 +1587,13 @@ class getPos
 	RECOMPILE;
 };
 
+class getSideAllegiances
+{
+	file = "\x\alive\addons\x_lib\functions\misc\fnc_getSideAllegiances.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class getSideFactions
 {
 	file = "\x\alive\addons\x_lib\functions\misc\fnc_getSideFactions.sqf";

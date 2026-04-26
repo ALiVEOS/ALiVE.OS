@@ -260,6 +260,7 @@ misc
 	ALiVE_fnc_getDominantFaction
 	ALiVE_fnc_getEnvironment
 	ALiVE_fnc_getPos
+	ALiVE_fnc_getSideAllegiances
 	ALiVE_fnc_getSideFactions
 	ALiVE_fnc_isAbleToHost
 	ALiVE_fnc_isHC
