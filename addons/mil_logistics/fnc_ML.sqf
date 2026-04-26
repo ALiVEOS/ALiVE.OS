@@ -2493,14 +2493,22 @@ switch(_operation) do {
                 ["ML - Enable air transport: %1",_enableAirTransport] call ALiVE_fnc_dump;
                 ["ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALiVE_fnc_dump;
                 if (_airliftAircraftClass != "") then {
-                    private _ts = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier");
-                    private _vtol = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "vtol");
+                    private _ts      = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier");
+                    private _vtol    = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "vtol");
                     private _isPlane = _airliftAircraftClass isKindOf "Plane";
-                    ["ML - AIRLIFT airliftAircraftClass: %1 (isKindOf Plane: %2, vtol: %3, transportSoldier: %4)",
-                        _airliftAircraftClass, _isPlane, _vtol, _ts] call ALiVE_fnc_dump;
-                    if (!_isPlane || _ts == 0) then {
-                        ["ML - WARNING: airliftAircraftClass %1 is not a valid cargo plane (isKindOf Plane=%2, transportSoldier=%3). AIRLIFT rule will not fire for this module.",
-                            _airliftAircraftClass, _isPlane, _ts] call ALiVE_fnc_dump;
+                    private _isHeli  = _airliftAircraftClass isKindOf "Helicopter";
+                    private _isAir   = _airliftAircraftClass isKindOf "Air";
+                    private _category = call {
+                        if (_vtol > 0)  exitWith { "VTOL" };
+                        if (_isHeli)    exitWith { "Helicopter" };
+                        if (_isPlane)   exitWith { "Plane" };
+                        "Unknown"
+                    };
+                    ["ML - AIRLIFT airliftAircraftClass: %1 (category=%2, isKindOf Air=%3, vtol=%4, transportSoldier=%5)",
+                        _airliftAircraftClass, _category, _isAir, _vtol, _ts] call ALiVE_fnc_dump;
+                    if (!_isAir || _ts == 0) then {
+                        ["ML - WARNING: airliftAircraftClass %1 is not a valid air transport (isKindOf Air=%2, transportSoldier=%3). AIRLIFT rule will not fire for this module.",
+                            _airliftAircraftClass, _isAir, _ts] call ALiVE_fnc_dump;
                     };
                 } else {
                     ["ML - AIRLIFT airliftAircraftClass: <not set> (AIRLIFT delivery disabled)"] call ALiVE_fnc_dump;
@@ -4951,23 +4959,27 @@ switch(_operation) do {
                             };
                         } else {
 
-                        // Rule 1.5: AIRLIFT gate -- strategic land-and-unload via cargo plane.
-                        // Conditions: plane class set, valid (kindOf Plane + transportSoldier > 0),
-                        // friendly source airport (nearest to LOGCOM HQ), friendly destination
-                        // airport (within 3000m of event position), source != destination,
-                        // flight distance >= 1500m. Works for infantry / vehicles / armour --
-                        // cargo arrives at the destination airport intact, OPCOM AI takes over
-                        // for the last mile. Single-airport offmap fallback added in a later
-                        // commit (currently suppresses to fall through to existing rules).
+                        // Rule 1.5: AIRLIFT gate -- strategic land-and-unload via the
+                        // mission-defined airlift aircraft. Conditions: aircraft class set,
+                        // valid (kindOf Air + transportSoldier > 0), friendly source airport
+                        // (nearest to LOGCOM HQ), friendly destination airport (within 3000m
+                        // of event position), source != destination, flight distance >= 1500m.
+                        // Works for infantry / vehicles / armour -- cargo arrives at the
+                        // destination airport intact, OPCOM AI takes over for the last mile.
+                        // Single-airport case spawns the plane offmap and flies it in.
+                        // Aircraft can be plane, VTOL, or helicopter -- the defining feature
+                        // is airfield infrastructure, not aircraft type. Helicopters used
+                        // here bypass the standard HELI tier's 2-concurrent throttle (counted
+                        // as AIRLIFT events, not HELI_INSERT).
                         private _airliftEligible = false;
                         private _airliftSource = [];
                         private _airliftDest = [];
 
                         if (_airliftAircraftClass != "") then {
-                            private _isPlane = _airliftAircraftClass isKindOf "Plane";
+                            private _isAirAsset = _airliftAircraftClass isKindOf "Air";
                             private _hasCargo = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier") > 0;
 
-                            if (_isPlane && _hasCargo) then {
+                            if (_isAirAsset && _hasCargo) then {
                                 private _friendlyAirports = [_logic, "getFriendlyAirports", _side] call MAINCLASS;
 
                                 if (count _friendlyAirports > 0) then {
@@ -5036,8 +5048,8 @@ switch(_operation) do {
                                 };
                             } else {
                                 if (_debug) then {
-                                    ["ML - AIRLIFT suppressed: airliftAircraftClass %1 invalid (isKindOf Plane=%2, transportSoldier>0=%3)",
-                                        _airliftAircraftClass, _isPlane, _hasCargo] call ALiVE_fnc_dump;
+                                    ["ML - AIRLIFT suppressed: airliftAircraftClass %1 invalid (isKindOf Air=%2, transportSoldier>0=%3)",
+                                        _airliftAircraftClass, _isAirAsset, _hasCargo] call ALiVE_fnc_dump;
                                 };
                             };
                         };
