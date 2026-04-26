@@ -7028,10 +7028,19 @@ switch(_operation) do {
                                         private _wpDest = [_destAirportPos, 200, "MOVE", "FULL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
                                         [_crewProfile, "addWaypoint", _wpDest] call ALIVE_fnc_profileEntity;
 
+                                        // Detect vertical-lander aircraft (helicopter or VTOL). Vertical
+                                        // landers can't fly the standard fixed-wing ILS approach without
+                                        // crashing -- they need a vertical land sequence (flyInHeight +
+                                        // doMove + land "LAND"). opcomAirliftLand / ReturnLand / Takeoff2
+                                        // branch on this flag.
+                                        private _airliftVerticalLand = (_airliftAircraftClass isKindOf "Helicopter") ||
+                                                                       ((getNumber (configFile >> "CfgVehicles" >> _airliftAircraftClass >> "vtol")) > 0);
+
                                         // Track on event hash + the existing transport profile lists.
-                                        [_event, "airliftPlanePilotProfileID",   _crewProfID]  call ALIVE_fnc_hashSet;
-                                        [_event, "airliftPlaneVehicleProfileID", _planeProfID] call ALIVE_fnc_hashSet;
-                                        [_event, "airliftFlyTimer",              0]            call ALIVE_fnc_hashSet;
+                                        [_event, "airliftPlanePilotProfileID",   _crewProfID]            call ALIVE_fnc_hashSet;
+                                        [_event, "airliftPlaneVehicleProfileID", _planeProfID]           call ALIVE_fnc_hashSet;
+                                        [_event, "airliftFlyTimer",              0]                      call ALIVE_fnc_hashSet;
+                                        [_event, "airliftVerticalLand",          _airliftVerticalLand]   call ALIVE_fnc_hashSet;
                                         _eventTransportProfiles         pushBack _crewProfID;
                                         _eventTransportVehiclesProfiles pushBack _planeProfID;
 
@@ -7045,8 +7054,8 @@ switch(_operation) do {
                                         [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                                         if (_debug) then {
-                                            ["ML - AIRLIFT dispatched: plane %1 (pilotProf=%2 vehProf=%3) source airport %4 [%5] -> dest airport %6 [%7] dist=%8m",
-                                                _airliftAircraftClass, _crewProfID, _planeProfID,
+                                            ["ML - AIRLIFT dispatched: plane %1 (verticalLand=%2 pilotProf=%3 vehProf=%4) source airport %5 [%6] -> dest airport %7 [%8] dist=%9m",
+                                                _airliftAircraftClass, _airliftVerticalLand, _crewProfID, _planeProfID,
                                                 _sourceAirportID, _spawnPos, _destAirportID, _destAirportPos,
                                                 round (_spawnPos distance2D _destAirportPos)] call ALiVE_fnc_dump;
                                         };
@@ -7727,45 +7736,90 @@ switch(_operation) do {
                 // Re-fetch vehicle reference AFTER the forced spawn above.
                 private _planeVehicle = _planeProfile select 2 select 10;
 
-                // Issue landAt + register EH on first entry with a valid vehicle.
+                // Branch on aircraft type:
+                //   - Plane (fixed-wing, no VTOL): standard landAt ILS approach.
+                //   - VTOL / Helicopter: vertical land sequence -- flyInHeight 30
+                //     to drop into helicopter mode, doMove to airport center to
+                //     navigate in, then issue land "LAND" once close so the AI
+                //     commits to a vertical descent.
+                private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
+                private _destAirportPos = _airliftDstEv select 1;
+
+                // Issue landing on first entry with a valid vehicle.
                 if (!_landIssued && !isNull _planeVehicle && {alive _planeVehicle}) then {
                     [_logic, "lockAirliftRunway", _destAirportID] call MAINCLASS;
 
-                    if (_destAirportID < 100) then {
-                        _planeVehicle landAt _destAirportID;
+                    if (_verticalLand) then {
+                        // VTOL / heli: drop altitude (AI auto-transitions out of plane
+                        // mode for VTOLs), navigate to airport center. land "LAND"
+                        // is deferred to the proximity check below so the AI doesn't
+                        // try to descend mid-flight while still 1km out.
+                        _planeVehicle flyInHeight 30;
+                        _planeVehicle doMove _destAirportPos;
+                        [_event, "airliftVTOLLandPending", true] call ALIVE_fnc_hashSet;
                     } else {
-                        // Dynamic airport (carrier or Eden composition) -- find the AirportBase object.
-                        private _dynAirport = nearestObject [_airliftDstEv select 1, "AirportBase"];
-                        if (!isNull _dynAirport) then {
-                            _planeVehicle landAt _dynAirport;
+                        // Fixed-wing: standard ILS approach via landAt.
+                        if (_destAirportID < 100) then {
+                            _planeVehicle landAt _destAirportID;
                         } else {
-                            _planeVehicle land "LAND";
+                            // Dynamic airport (carrier or Eden composition) -- find the AirportBase object.
+                            private _dynAirport = nearestObject [_destAirportPos, "AirportBase"];
+                            if (!isNull _dynAirport) then {
+                                _planeVehicle landAt _dynAirport;
+                            } else {
+                                _planeVehicle land "LAND";
+                            };
                         };
-                    };
 
-                    _planeVehicle addEventHandler ["LandedStopped", {
-                        (_this select 0) setVariable ["ALIVE_AIRLIFT_LANDED", true, true];
-                    }];
+                        _planeVehicle addEventHandler ["LandedStopped", {
+                            (_this select 0) setVariable ["ALIVE_AIRLIFT_LANDED", true, true];
+                        }];
+                    };
 
                     [_event, "airliftLandIssued", true]   call ALIVE_fnc_hashSet;
                     [_event, "airliftLandTimer",   0]     call ALIVE_fnc_hashSet;
                     if (_debug) then {
-                        ["ML - opcomAirliftLand: landAt issued for plane %1 at dest airport %2",
+                        ["ML - opcomAirliftLand: %1 issued for plane %2 at dest airport %3",
+                            (if (_verticalLand) then {"VTOL/heli vertical-land sequence"} else {"landAt"}),
                             _planeProfID, _destAirportID] call ALiVE_fnc_dump;
                     };
                 };
 
-                // Wait for LANDED variable to flip true.
-                // Semantics for null vehicle:
-                //   - If landAt was already issued, vehicle going null means the
-                //     plane was destroyed post-issue -- treat as "done" so we
+                // Wait for LANDED. Detection differs by aircraft type:
+                //   - Plane: LandedStopped EH sets ALIVE_AIRLIFT_LANDED=true when
+                //     wheels stop on the runway.
+                //   - VTOL / Helicopter: LandedStopped doesn't fire reliably for
+                //     vertical land. Use AGL + speed gate. Issue land "LAND" once
+                //     within 100m of dest so the AI commits to descent.
+                //
+                // Null vehicle semantics:
+                //   - If landing was already issued, vehicle going null means the
+                //     aircraft was destroyed post-issue -- treat as "done" so we
                 //     proceed to unload + cleanup (cargo still delivered).
-                //   - If landAt was NOT yet issued (plane still virtual on first
-                //     tick, not yet physical after force-spawn), treat as NOT
-                //     landed -- wait another tick so the next call picks up the
-                //     spawned vehicle.
+                //   - If landing was NOT yet issued (still virtual on first tick),
+                //     treat as NOT landed -- wait another tick.
                 private _landed = if (!isNull _planeVehicle) then {
-                    _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
+                    if (_verticalLand) then {
+                        private _agl    = (getPosATL _planeVehicle) select 2;
+                        private _spd    = abs (speed _planeVehicle);
+                        private _dist2D = _planeVehicle distance2D _destAirportPos;
+                        private _vtolLandPending = [_event, "airliftVTOLLandPending", false] call ALIVE_fnc_hashGet;
+
+                        // Issue land "LAND" once within 100m -- triggers vertical descent.
+                        if (_vtolLandPending && _dist2D < 100) then {
+                            _planeVehicle land "LAND";
+                            [_event, "airliftVTOLLandPending", false] call ALIVE_fnc_hashSet;
+                            if (_debug) then {
+                                ["ML - opcomAirliftLand: VTOL/heli within %1m of dest, issuing land 'LAND' for vertical descent",
+                                    round _dist2D] call ALiVE_fnc_dump;
+                            };
+                        };
+
+                        // Landed = on the ground AND stopped AND we've issued the descent command.
+                        (_agl < 2) && (_spd < 2) && !_vtolLandPending
+                    } else {
+                        _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
+                    };
                 } else {
                     _landIssued
                 };
@@ -7946,6 +8000,16 @@ switch(_operation) do {
 
                     // Force engine on, careless behaviour so AI doesn't dawdle.
                     _planeVehicle engineOn true;
+
+                    // VTOL / heli: nudge flyInHeight up to PARADROP_HEIGHT so the AI
+                    // commits to a vertical takeoff from the apron rather than trying
+                    // to roll. Plane mode AI will accept this as the cruise altitude
+                    // for the RTB leg too.
+                    private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
+                    if (_verticalLand) then {
+                        _planeVehicle flyInHeight PARADROP_HEIGHT;
+                    };
+
                     private _crewProfile = [ALIVE_profileHandler, "getProfile", _crewProfID] call ALIVE_fnc_profileHandler;
                     if (!isNil "_crewProfile") then {
                         [_crewProfile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
@@ -7960,8 +8024,8 @@ switch(_operation) do {
                     [_event, "airliftTakeoff2Issued", true] call ALIVE_fnc_hashSet;
                     [_event, "airliftTakeoff2Timer",  0]    call ALIVE_fnc_hashSet;
                     if (_debug) then {
-                        ["ML - opcomAirliftTakeoff2: plane %1 woken up, RTB waypoint added to source airport %2",
-                            _planeProfID, _airliftSrcEv select 0] call ALiVE_fnc_dump;
+                        ["ML - opcomAirliftTakeoff2: plane %1 woken up (verticalLand=%2), RTB waypoint added to source airport %3",
+                            _planeProfID, _verticalLand, _airliftSrcEv select 0] call ALiVE_fnc_dump;
                     };
                 };
 
@@ -8093,38 +8157,68 @@ switch(_operation) do {
                         [_event, "state", "opcomAirliftDespawn"] call ALIVE_fnc_hashSet;
                         [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                     } else {
-                        // Players present -- issue the proper landing.
+                        // Players present -- issue the proper landing. Branch on aircraft
+                        // type the same way as opcomAirliftLand (VTOL/heli get vertical
+                        // sequence, plane gets standard landAt ILS approach).
+                        private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
                         if (!isNull _planeVehicle && {alive _planeVehicle}) then {
-                            if (_sourceAirportID < 100) then {
-                                _planeVehicle landAt _sourceAirportID;
+                            if (_verticalLand) then {
+                                _planeVehicle flyInHeight 30;
+                                _planeVehicle doMove _sourceAirportPos;
+                                [_event, "airliftReturnVTOLLandPending", true] call ALIVE_fnc_hashSet;
                             } else {
-                                private _dynAirport = nearestObject [_sourceAirportPos, "AirportBase"];
-                                if (!isNull _dynAirport) then {
-                                    _planeVehicle landAt _dynAirport;
+                                if (_sourceAirportID < 100) then {
+                                    _planeVehicle landAt _sourceAirportID;
                                 } else {
-                                    _planeVehicle land "LAND";
+                                    private _dynAirport = nearestObject [_sourceAirportPos, "AirportBase"];
+                                    if (!isNull _dynAirport) then {
+                                        _planeVehicle landAt _dynAirport;
+                                    } else {
+                                        _planeVehicle land "LAND";
+                                    };
                                 };
-                            };
 
-                            _planeVehicle addEventHandler ["LandedStopped", {
-                                (_this select 0) setVariable ["ALIVE_AIRLIFT_LANDED", true, true];
-                            }];
+                                _planeVehicle addEventHandler ["LandedStopped", {
+                                    (_this select 0) setVariable ["ALIVE_AIRLIFT_LANDED", true, true];
+                                }];
+                            };
 
                             [_event, "airliftReturnLandIssued", true] call ALIVE_fnc_hashSet;
                             [_event, "airliftReturnLandTimer",  0]    call ALIVE_fnc_hashSet;
                             if (_debug) then {
-                                ["ML - opcomAirliftReturnLand: landAt issued for plane %1 at source airport %2 (%3 players in range)",
+                                ["ML - opcomAirliftReturnLand: %1 issued for plane %2 at source airport %3 (%4 players in range)",
+                                    (if (_verticalLand) then {"VTOL/heli vertical-land sequence"} else {"landAt"}),
                                     _planeProfID, _sourceAirportID, _playersClose] call ALiVE_fnc_dump;
                             };
                         };
                     };
                 } else {
                     // Subsequent ticks: wait for LANDED or timeout.
-                    // Null vehicle: if landAt was already issued, plane was
-                    // destroyed post-issue -- treat as done. If not issued yet,
-                    // don't transition, wait next tick.
+                    // VTOL/heli: AGL + speed gate, with deferred land "LAND" fired at
+                    // 100m proximity. Plane: ALIVE_AIRLIFT_LANDED EH check.
+                    // Null vehicle: if landing was already issued, plane was destroyed
+                    // post-issue -- treat as done. If not issued yet, wait next tick.
+                    private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
                     private _landed = if (!isNull _planeVehicle) then {
-                        _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
+                        if (_verticalLand) then {
+                            private _agl    = (getPosATL _planeVehicle) select 2;
+                            private _spd    = abs (speed _planeVehicle);
+                            private _dist2D = _planeVehicle distance2D _sourceAirportPos;
+                            private _vtolLandPending = [_event, "airliftReturnVTOLLandPending", false] call ALIVE_fnc_hashGet;
+
+                            if (_vtolLandPending && _dist2D < 100) then {
+                                _planeVehicle land "LAND";
+                                [_event, "airliftReturnVTOLLandPending", false] call ALIVE_fnc_hashSet;
+                                if (_debug) then {
+                                    ["ML - opcomAirliftReturnLand: VTOL/heli within %1m of source, issuing land 'LAND' for vertical descent",
+                                        round _dist2D] call ALiVE_fnc_dump;
+                                };
+                            };
+
+                            (_agl < 2) && (_spd < 2) && !_vtolLandPending
+                        } else {
+                            _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
+                        };
                     } else {
                         _returnLandIssued
                     };
