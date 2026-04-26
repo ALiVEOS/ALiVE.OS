@@ -189,11 +189,11 @@ class CfgVehicles
                                     class Yes { name = "Faction Only"; value = true; };
                                 };
                         };
-                        class fixedWingClass : Edit
+                        class airliftAircraftClass : Edit
                         {
-                                property = "ALiVE_mil_logistics_fixedWingClass";
-                                displayName = "$STR_ALIVE_ML_FIXEDWING_CLASS";
-                                tooltip = "$STR_ALIVE_ML_FIXEDWING_CLASS_DESC";
+                                property = "ALiVE_mil_logistics_airliftAircraftClass";
+                                displayName = "$STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS";
+                                tooltip = "$STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS_DESC";
                                 defaultValue = """""";
                         };
                         // ---- Starting Force Strength ----------------------------------------

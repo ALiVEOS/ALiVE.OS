@@ -27,11 +27,11 @@ _taskPosition = _this select 0;
 _taskSide = _this select 1;
 _taskFaction = _this select 2;
 
-_types = ["AIRDROP","STANDARD","HELI_INSERT"];
+_types = ["AIRLIFT","STANDARD","HELI_INSERT"];
 _type = (selectRandom _types);
 
 switch(_type) do {
-    case "AIRDROP":{
+    case "AIRLIFT":{
 
         _forceMakeup = [
             floor(1 + random(2)), // infantry
