@@ -5623,8 +5623,20 @@ switch(_operation) do {
 
                         if (_eventStillActive && !_waitingForHeli) then {
 
-                        // Throttle: limit concurrent HELI_INSERT missions to avoid
-                        // flooding the AO with helicopters from the same destination
+                        // Throttle: limit concurrent HELI_INSERT/HELI_PARADROP missions
+                        // to 2-in-flight to avoid flooding the AO with helicopters from
+                        // the same destination.
+                        //
+                        // AIRLIFT events are intentionally NOT throttled here -- the
+                        // type filter ["HELI_INSERT","HELI_PARADROP"] excludes them by
+                        // design. Each LOGCOM defines its own AIRLIFT aircraft (single
+                        // mission-maker class per faction) and concurrency is naturally
+                        // bounded by runway availability + the airport-to-airport gate.
+                        // Helicopters used in the AIRLIFT slot are strategic-lift assets
+                        // and shouldn't compete with the tactical HELI_INSERT pool.
+                        // A future refactor of this throttle MUST preserve the AIRLIFT
+                        // exclusion -- if you find yourself unifying the type filter,
+                        // explicitly skip AIRLIFT instead.
                         private _heliThrottleExceeded = false;
                         if (_eventType in ["HELI_INSERT","HELI_PARADROP"]) then {
                             private _activeHeliEvents = 0;
@@ -7120,7 +7132,10 @@ switch(_operation) do {
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
 
-                // Throttle: count all HELI_INSERT events in any active transport state
+                // Throttle: count all HELI_INSERT/HELI_PARADROP events in any active
+                // transport state. AIRLIFT events are intentionally excluded -- see
+                // the detailed rationale at the equivalent throttle in the eventQueue
+                // processor (search "AIRLIFT events are intentionally NOT throttled").
                 private _activeHeliCount = 0;
                 {
                     private _qState = [_x, "state"] call ALIVE_fnc_hashGet;
@@ -9749,6 +9764,9 @@ switch(_operation) do {
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
 
+                // Throttle: same shape as heliTransportStart -- count
+                // HELI_INSERT/HELI_PARADROP events only. AIRLIFT events are
+                // intentionally excluded (see eventQueue processor for full rationale).
                 private _activeHeliCount = 0;
                 {
                     private _qState = [_x, "state"] call ALIVE_fnc_hashGet;
