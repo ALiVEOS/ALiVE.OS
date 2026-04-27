@@ -431,6 +431,31 @@ switch(_operation) do {
         ["ML - AIRLIFT: aircraft lost. Fleet remaining: %1", _newVal] call ALiVE_fnc_dump;
         _result = _newVal;
     };
+    case "airliftCargoSlots": {
+        // Eden-configured cargo capacity (slot count) for the AIRLIFT
+        // aircraft. String form (parsed to number at MLInit) so the
+        // Edit attribute pattern matches airliftAircraftClass /
+        // airliftSourceAirportID / airliftFleetSize. Default "0" =
+        // auto-calc from the aircraft's transportSoldier config
+        // (floor(transportSoldier/8) -- 8 troops per slot heuristic).
+        // Non-zero values are a manual override and bypass the
+        // transportSoldier read entirely. Slot weights are applied in
+        // the Rule 1.5 clamp: 1=infantry, 2=motorised, 3=mechanised,
+        // 4=armour. When slotsRequested > capacity the heavy-first
+        // greedy fill picks armour first so AIRLIFT carries what
+        // other tiers cannot. Examples: Y-32 (transportSoldier 30)
+        // auto = 3 slots; C-130 (92) auto = 11; MH-9 (4) auto = 0.
+        // Override "0" on a small heli effectively disables AIRLIFT
+        // for cargo (capacity 0 -> suppress).
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["airliftCargoSlots", _args];
+        } else {
+            _args = _logic getVariable ["airliftCargoSlots", "0"];
+        };
+        ASSERT_TRUE(typeName _args == "STRING",str _args);
+
+        _result = _args;
+    };
     // ============================================================
     // OPCOM AIRLIFT delivery - airport selection helpers
     // ------------------------------------------------------------
@@ -2602,6 +2627,17 @@ switch(_operation) do {
             // decrements via decrementAirliftFleet (both are MAINCLASS ops).
             _logic setVariable ["airliftFleetRemaining", _airliftFleetSize];
 
+            // Parse Eden cargo-capacity override. "0" or empty = auto-calc
+            // from transportSoldier at clamp time (Rule 1.5). Negative
+            // values are nonsense; clamp to 0. Stored as number on the
+            // logic for the Rule 1.5 read.
+            private _airliftCargoSlotsStr = [_logic, "airliftCargoSlots"] call MAINCLASS;
+            private _airliftCargoSlotsOverride = parseNumber _airliftCargoSlotsStr;
+            if (_airliftCargoSlotsStr == "" || {_airliftCargoSlotsOverride < 0}) then {
+                _airliftCargoSlotsOverride = 0;
+            };
+            _logic setVariable ["airliftCargoSlotsParsed", _airliftCargoSlotsOverride];
+
             _startForceStrengthIncrement = [_logic, "startForceStrengthInc"] call MAINCLASS;
             _startForceStrengthIncrementFactor = parseNumber([_logic, "startForceStrengthIncFactor"] call MAINCLASS);
             _startForceStrengthDecrement = [_logic, "startForceStrengthDec"] call MAINCLASS;
@@ -2649,6 +2685,20 @@ switch(_operation) do {
                     ["ML - AIRLIFT airliftSourceAirportID: <empty> = auto-select most rear airport (furthest friendly airport from event position)"] call ALiVE_fnc_dump;
                 };
                 ["ML - AIRLIFT airliftFleetSize: %1 (initial fleet remaining: %1)", _airliftFleetSize] call ALiVE_fnc_dump;
+                // Cargo-capacity log: show both the Eden override (0 = auto)
+                // and the effective capacity that Rule 1.5 will use for the
+                // currently configured aircraft. Auto = floor(transportSoldier/8).
+                if (_airliftAircraftClass != "") then {
+                    private _tsForCargo = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier");
+                    private _autoSlots = floor (_tsForCargo / 8);
+                    private _effectiveSlots = if (_airliftCargoSlotsOverride > 0) then { _airliftCargoSlotsOverride } else { _autoSlots };
+                    private _capSource = if (_airliftCargoSlotsOverride > 0) then { "Eden override" } else { "auto-calc" };
+                    ["ML - AIRLIFT airliftCargoSlots: override=%1 (0=auto), aircraft %2 transportSoldier=%3, auto-calc=%4, effective capacity=%5 slots (%6)",
+                        _airliftCargoSlotsOverride, _airliftAircraftClass, _tsForCargo, _autoSlots, _effectiveSlots, _capSource] call ALiVE_fnc_dump;
+                } else {
+                    ["ML - AIRLIFT airliftCargoSlots: override=%1 (0=auto), aircraft not set so effective capacity not computable",
+                        _airliftCargoSlotsOverride] call ALiVE_fnc_dump;
+                };
                 ["ML - Enable incremental force strength on objective capture: %1",_startForceStrengthIncrement] call ALiVE_fnc_dump;
                 ["ML - Incremental force strength factor: %1",_startForceStrengthIncrementFactor] call ALiVE_fnc_dump;
                 ["ML - Enable decremental force strength on objective loss: %1",_startForceStrengthDecrement] call ALiVE_fnc_dump;
@@ -5226,6 +5276,125 @@ switch(_operation) do {
                                     ["ML - AIRLIFT suppressed: airliftAircraftClass %1 invalid (isKindOf Air=%2, transportSoldier>0=%3)",
                                         _airliftAircraftClass, _isAirAsset, _hasCargo] call ALiVE_fnc_dump;
                                 };
+                            };
+                        };
+
+                        // ---------------------------------------------------------------
+                        // Cargo capacity clamp (theory dimensions #2 + #7)
+                        //
+                        // Rule 1.5 has decided AIRLIFT is eligible (eligible source +
+                        // dest airports, runway free, fleet remaining). Now check the
+                        // aircraft can actually carry the requested force makeup. If
+                        // cargo exceeds capacity, clamp using a heavy-first greedy
+                        // fill -- AIRLIFT carries armour first because lower tiers
+                        // (HELI_INSERT slingload, STANDARD ground convoy) cannot.
+                        //
+                        // Slot weights: 1=infantry, 2=motorised, 3=mech, 4=armour.
+                        // Plane / heli categories (indices 4,5) are NOT airlifted --
+                        // they fly themselves. They pass through the clamp untouched.
+                        //
+                        // Capacity source:
+                        //   - airliftCargoSlots Eden override > 0: use that.
+                        //   - else auto-calc: floor(transportSoldier / 8). Examples:
+                        //       Y-32 (T=30) -> 3, Mohawk (T=12) -> 1, C-130 (T=92)
+                        //       -> 11, MH-9 (T=4) -> 0.
+                        //
+                        // Two suppression paths:
+                        //   1. capacity == 0: aircraft too small to carry anything.
+                        //      Mission designer picked wrong; bump to HELI/STANDARD.
+                        //   2. heavy-first fill yields zero deliverable groups (all
+                        //      requested types too heavy to fit even one). Suppress
+                        //      so AIRLIFT does not dispatch an empty plane.
+                        //
+                        // When a non-zero subset fits, the unpacked variables AND the
+                        // _eventForceMakeup array are mutated in place. Downstream
+                        // profile-creation loops (lines 5906/6263/6600/6650) iterate
+                        // on the unpacked variables -- mutating those is the
+                        // load-bearing change. _eventForceMakeup mirror keeps the
+                        // hash representation consistent for any later read.
+                        // ---------------------------------------------------------------
+                        if (_airliftEligible) then {
+                            private _slotsRequested = (_eventForceInfantry * 1) + (_eventForceMotorised * 2) + (_eventForceMechanised * 3) + (_eventForceArmour * 4);
+                            private _capOverride = _logic getVariable ["airliftCargoSlotsParsed", 0];
+                            private _tsCargo = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier");
+                            private _capacity = if (_capOverride > 0) then { _capOverride } else { floor (_tsCargo / 8) };
+
+                            if (_capacity == 0) then {
+                                _airliftEligible = false;
+                                if (_debug) then {
+                                    ["ML - AIRLIFT suppressed: aircraft %1 capacity 0 (transportSoldier=%2, override=%3) -- cannot carry anything, falling through to HELI/STANDARD",
+                                        _airliftAircraftClass, _tsCargo, _capOverride] call ALiVE_fnc_dump;
+                                };
+                            } else {
+                                if (_slotsRequested > _capacity) then {
+                                    // Snapshot original makeup for log + heavy-first fill ceiling.
+                                    private _origInf  = _eventForceInfantry;
+                                    private _origMot  = _eventForceMotorised;
+                                    private _origMech = _eventForceMechanised;
+                                    private _origArm  = _eventForceArmour;
+
+                                    private _newInf  = 0;
+                                    private _newMot  = 0;
+                                    private _newMech = 0;
+                                    private _newArm  = 0;
+                                    private _slotsUsed = 0;
+
+                                    // Heavy-first greedy fill. Order: armour (4) -> mech (3) -> mot (2) -> inf (1).
+                                    while {_newArm < _origArm && (_slotsUsed + 4) <= _capacity} do {
+                                        _newArm = _newArm + 1;
+                                        _slotsUsed = _slotsUsed + 4;
+                                    };
+                                    while {_newMech < _origMech && (_slotsUsed + 3) <= _capacity} do {
+                                        _newMech = _newMech + 1;
+                                        _slotsUsed = _slotsUsed + 3;
+                                    };
+                                    while {_newMot < _origMot && (_slotsUsed + 2) <= _capacity} do {
+                                        _newMot = _newMot + 1;
+                                        _slotsUsed = _slotsUsed + 2;
+                                    };
+                                    while {_newInf < _origInf && (_slotsUsed + 1) <= _capacity} do {
+                                        _newInf = _newInf + 1;
+                                        _slotsUsed = _slotsUsed + 1;
+                                    };
+
+                                    private _deliverableSlots = (_newInf * 1) + (_newMot * 2) + (_newMech * 3) + (_newArm * 4);
+
+                                    if (_deliverableSlots == 0) then {
+                                        // Heavy categories don't fit even one and no light to fall back on.
+                                        // Suppress -- letting AIRLIFT spawn an empty plane wastes a sortie
+                                        // and burns fleet pool. Lower tiers (HELI / STANDARD) take over.
+                                        _airliftEligible = false;
+                                        if (_debug) then {
+                                            ["ML - AIRLIFT suppressed: aircraft %1 capacity %2 slots, requested %3 slots [%4 inf, %5 mot, %6 mech, %7 arm] -- heavy-first clamp delivers 0 (heaviest type does not fit), falling through to HELI/STANDARD",
+                                                _airliftAircraftClass, _capacity, _slotsRequested,
+                                                _origInf, _origMot, _origMech, _origArm] call ALiVE_fnc_dump;
+                                        };
+                                    } else {
+                                        // Apply clamp -- update both the unpacked counters (consumed by
+                                        // profile creation loops 5906/6263/6600/6650) and the
+                                        // _eventForceMakeup array (consumed by any later array read).
+                                        _eventForceInfantry   = _newInf;
+                                        _eventForceMotorised  = _newMot;
+                                        _eventForceMechanised = _newMech;
+                                        _eventForceArmour     = _newArm;
+                                        _eventForceMakeup set [0, _newInf];
+                                        _eventForceMakeup set [1, _newMot];
+                                        _eventForceMakeup set [2, _newMech];
+                                        _eventForceMakeup set [3, _newArm];
+
+                                        if (_debug) then {
+                                            ["ML - AIRLIFT clamp: aircraft %1 capacity %2 slots, requested %3 slots [%4 inf, %5 mot, %6 mech, %7 arm], delivered %8 slots [%9 inf, %10 mot, %11 mech, %12 arm] (heavy-first greedy fill)",
+                                                _airliftAircraftClass, _capacity, _slotsRequested,
+                                                _origInf, _origMot, _origMech, _origArm,
+                                                _deliverableSlots,
+                                                _newInf, _newMot, _newMech, _newArm] call ALiVE_fnc_dump;
+                                        };
+                                    };
+                                };
+                                // _slotsRequested <= _capacity: full request fits, no clamp needed.
+                                // Includes the all-zero edge (only plane/heli requested -- AIRLIFT
+                                // doesn't carry those, but the eligibility check earlier didn't gate
+                                // on cargo presence, so leave the assignment to downstream tiers).
                             };
                         };
 

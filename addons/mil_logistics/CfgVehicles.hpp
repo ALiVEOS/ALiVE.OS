@@ -210,6 +210,13 @@ class CfgVehicles
                                 tooltip = "$STR_ALIVE_ML_AIRLIFT_FLEET_SIZE_DESC";
                                 defaultValue = """999""";
                         };
+                        class airliftCargoSlots : Edit
+                        {
+                                property = "ALiVE_mil_logistics_airliftCargoSlots";
+                                displayName = "$STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS";
+                                tooltip = "$STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS_DESC";
+                                defaultValue = """0""";
+                        };
                         // ---- Starting Force Strength ----------------------------------------
                         class HDR_STRENGTH : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_STRENGTH"; displayName = "STARTING FORCE STRENGTH"; };
                         class startForceStrengthInc : Combo

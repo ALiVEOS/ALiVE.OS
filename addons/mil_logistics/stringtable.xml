@@ -317,6 +317,12 @@
 <Key ID="STR_ALIVE_ML_AIRLIFT_FLEET_SIZE_DESC">
     <English>Number of strategic airlift aircraft this LOGCOM has available across the entire mission. Each aircraft loss (profile destroyed in flight, on the runway, during taxi, on RTB, or on final approach) decrements the pool by one. Successful deliveries that complete RTB do NOT decrement -- the same aircraft is reused. AIRLIFT dispatch is suppressed for this LOGCOM once the pool reaches 0. Default 999 = effectively unlimited (current behaviour, no opt-in needed). Set a small number (e.g. 3) to model a realistic squadron with finite strategic transport assets -- 3 sorties before AIRLIFT capability collapses. Set 0 to disable AIRLIFT from mission start without clearing the aircraft class. Hash-corruption error exits (rare, indicates programming bug) do not count as losses.</English>
 </Key>
+<Key ID="STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS">
+    <English>Airlift Cargo Capacity (slots):</English>
+</Key>
+<Key ID="STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS_DESC">
+    <English>Cargo capacity for the AIRLIFT aircraft, expressed in slot count. Default 0 = auto-calc from the aircraft's transportSoldier config (floor(transportSoldier / 8) -- the 8 troops per slot heuristic). A non-zero value is a manual override and bypasses the transportSoldier read; use it when the auto-calc gives a poor result for a modded aircraft (oversized cargo bay, undersized passenger count, etc.). Slot weights applied at dispatch time: 1 = infantry group, 2 = motorised group, 3 = mechanised group, 4 = armour group. Plane and helicopter categories are not airlifted (they fly themselves). When the requested makeup exceeds capacity the AIRLIFT tier uses a heavy-first greedy fill: armour fills first, then mech, then motorised, then infantry -- AIRLIFT carries what lower tiers (HELI slingload, STANDARD ground convoy) cannot. Examples: Y-32 Xi'an (transportSoldier 30) auto = 3 slots; C-130 (92) auto = 11; MH-9 Hummingbird (4) auto = 0. Capacity 0 (auto or override) suppresses AIRLIFT for this dispatch and falls through to HELI/STANDARD.</English>
+</Key>
 <Key ID="STR_ALIVE_ML_USAGE">
     <English>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</English>
     <Chinese>放置軍事後勤模組，用於增援和補給由同步的軍事 AI 指揮官模組控制的派系。</Chinese>
