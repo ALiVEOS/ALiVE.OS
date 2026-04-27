@@ -305,6 +305,12 @@
 <Key ID="STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS_DESC">
     <English>Optional. Classname of the aircraft used for OPCOM strategic airlift between friendly airfields. Plane, VTOL, or helicopter — pick what fits your mission setting (vanilla, RHS, CUP, mod, etc.). The defining feature of this delivery tier is airfield infrastructure, not aircraft type: AIRLIFT only fires when both source and destination have a friendly airport (within 250m of an OPCOM-held objective) and the route exceeds 1500m. When only one airport is friendly the aircraft spawns offmap and flies in. Requires isKindOf "Air" and transportSoldier > 0. Leave blank to disable AIRLIFT and fall back to existing heli/ground delivery. Note: helicopters used here bypass the standard HELI tier's concurrent-mission throttle.</English>
 </Key>
+<Key ID="STR_ALIVE_ML_AIRLIFT_SOURCE_AIRPORT_ID">
+    <English>Airlift Source Airport Override:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_AIRLIFT_SOURCE_AIRPORT_ID_DESC">
+    <English>Optional. Numeric airport ID to pin as the AIRLIFT source (rear hub). Leave blank (default) to auto-select: the algorithm picks the friendly airport furthest from the event position, modelling strategic airlift as rear-to-forward. Set this when the algorithm picks wrong (e.g. a friendly airport across water with no land route, or a specific narrative hub the mission wants to use). Airport ID conventions: 0 = primary map airport, 1..99 = secondary map airports (cfgWorlds SecondaryAirports), 100+ = dynamic / Eden-placed AirportBase compositions and carriers (100 = first ALiVE_Carriers entry, 101 = second, etc.). The override falls back to the algorithm with a warning in the RPT log if the named airport is not in the friendly list (e.g. captured by the enemy mid-mission). The destination airport is always picked by proximity to the event regardless of this setting.</English>
+</Key>
 <Key ID="STR_ALIVE_ML_USAGE">
     <English>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</English>
     <Chinese>放置軍事後勤模組，用於增援和補給由同步的軍事 AI 指揮官模組控制的派系。</Chinese>

@@ -370,6 +370,23 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "airliftSourceAirportID": {
+        // Optional override for the AIRLIFT source airport. When non-empty
+        // the value is parsed as a numeric airport ID (0 = primary, 1..99 =
+        // secondaries, 100+ = dynamic / carriers). Empty string (default)
+        // delegates to selectAirliftSource's hub-and-spoke algorithm:
+        // furthest friendly airport from the event position. Allows mission
+        // makers to pin a specific rear-area hub when the algorithm picks
+        // wrong (e.g. a friendly airport across water that has no land route).
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["airliftSourceAirportID", _args];
+        } else {
+            _args = _logic getVariable ["airliftSourceAirportID", ""];
+        };
+        ASSERT_TRUE(typeName _args == "STRING",str _args);
+
+        _result = _args;
+    };
     // ============================================================
     // OPCOM AIRLIFT delivery - airport selection helpers
     // ------------------------------------------------------------
@@ -474,23 +491,68 @@ switch(_operation) do {
         _result = _friendlyAirports;
     };
     case "selectAirliftSource": {
-        // Mode B source selection: nearest friendly airport to LOGCOM HQ.
-        // Picks the rear-area airfield as the conceptual "supply chain
-        // origin". Returns [airportID, position] or [] if no candidates.
-        // _args: friendly airports array
-        private _friendlyAirports = _args;
-        private _hqPos = getPos _logic;
-        private _bestAirport = [];
-        private _bestDist = 1e10;
+        // Hub-and-spoke source selection: furthest friendly airport from
+        // the event position. Models strategic airlift as REAR -> FORWARD:
+        // the destination is forward (event = where reinforcements are
+        // needed), so the most rear airfield is the supply hub. Replaces
+        // the earlier "nearest to LOGCOM HQ" heuristic which broke when
+        // the HQ wasn't actually placed in the rear (e.g. mobile HQ on a
+        // pushed-up objective). Returns [airportID, position] or [] if no
+        // candidates.
+        //
+        // Eden override: airliftSourceAirportID -- when set to a non-empty
+        // string parsed as a numeric airport ID present in the friendly
+        // list, that airport wins regardless of distance. Falls through to
+        // the algorithm with a warning log if the override is invalid or
+        // the named airport has been lost (became enemy mid-mission).
+        //
+        // _args: [friendly airports array, event position]
+        private _friendlyAirports = _args select 0;
+        private _eventPosition    = _args select 1;
 
+        // Override path -------------------------------------------------
+        private _overrideStr = [_logic, "airliftSourceAirportID"] call MAINCLASS;
+        if (_overrideStr != "" && _overrideStr != "-1") then {
+            private _overrideID = parseNumber _overrideStr;
+            private _overrideMatch = [];
+            {
+                if ((_x select 0) == _overrideID) exitWith {
+                    _overrideMatch = _x;
+                };
+            } forEach _friendlyAirports;
+            if (count _overrideMatch > 0) exitWith {
+                ["ML - selectAirliftSource: using Eden override airport %1 at %2",
+                    _overrideID, _overrideMatch select 1] call ALiVE_fnc_dump;
+                _result = _overrideMatch;
+            };
+            // Override set but airport not in friendly list -- warn and fall
+            // through to the algorithm. Common when the airport was friendly
+            // at mission start but has since been captured by the enemy.
+            ["ML - WARNING selectAirliftSource: airliftSourceAirportID override %1 not found in friendly airports (%2 candidates). Falling back to furthest-from-event algorithm.",
+                _overrideStr, count _friendlyAirports] call ALiVE_fnc_dump;
+        };
+
+        // Algorithm path: pick airport with MAX distance from event.
+        // Two equidistant airports -> first one in iteration wins
+        // (deterministic but arbitrary; mission maker can pin via override).
+        // _bestDist initialised to -1 so the first iteration always sets
+        // _bestAirport, even if distance happens to be 0 (degenerate case
+        // of only one friendly airport sitting at the event position).
+        private _bestAirport = [];
+        private _bestDist = -1;
         {
             private _airportPos = _x select 1;
-            private _d = _airportPos distance2D _hqPos;
-            if (_d < _bestDist) then {
+            private _d = _airportPos distance2D _eventPosition;
+            if (_d > _bestDist) then {
                 _bestDist = _d;
                 _bestAirport = _x;
             };
         } forEach _friendlyAirports;
+
+        if (count _bestAirport > 0) then {
+            ["ML - selectAirliftSource: algorithm picked airport %1 at %2 (%3m from event)",
+                _bestAirport select 0, _bestAirport select 1, round _bestDist] call ALiVE_fnc_dump;
+        };
 
         _result = _bestAirport;
     };
@@ -2483,6 +2545,7 @@ switch(_operation) do {
             _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
             _airliftAircraftClass = [_logic, "airliftAircraftClass"] call MAINCLASS;
+            _airliftSourceAirportID = [_logic, "airliftSourceAirportID"] call MAINCLASS;
 
             _startForceStrengthIncrement = [_logic, "startForceStrengthInc"] call MAINCLASS;
             _startForceStrengthIncrementFactor = parseNumber([_logic, "startForceStrengthIncFactor"] call MAINCLASS);
@@ -2523,6 +2586,12 @@ switch(_operation) do {
                     };
                 } else {
                     ["ML - AIRLIFT airliftAircraftClass: <not set> (AIRLIFT delivery disabled)"] call ALiVE_fnc_dump;
+                };
+                if (_airliftSourceAirportID != "") then {
+                    ["ML - AIRLIFT airliftSourceAirportID: %1 (Eden override -- pinned source airport, bypasses hub-and-spoke algorithm if airport is friendly)",
+                        _airliftSourceAirportID] call ALiVE_fnc_dump;
+                } else {
+                    ["ML - AIRLIFT airliftSourceAirportID: <empty> = auto-select most rear airport (furthest friendly airport from event position)"] call ALiVE_fnc_dump;
                 };
                 ["ML - Enable incremental force strength on objective capture: %1",_startForceStrengthIncrement] call ALiVE_fnc_dump;
                 ["ML - Incremental force strength factor: %1",_startForceStrengthIncrementFactor] call ALiVE_fnc_dump;
@@ -4994,7 +5063,7 @@ switch(_operation) do {
                                 private _friendlyAirports = [_logic, "getFriendlyAirports", _side] call MAINCLASS;
 
                                 if (count _friendlyAirports > 0) then {
-                                    _airliftSource = [_logic, "selectAirliftSource", _friendlyAirports] call MAINCLASS;
+                                    _airliftSource = [_logic, "selectAirliftSource", [_friendlyAirports, _eventPosition]] call MAINCLASS;
                                     _airliftDest   = [_logic, "selectAirliftDestination", [_friendlyAirports, _eventPosition, AIRLIFT_DEST_MAX_RADIUS]] call MAINCLASS;
 
                                     if (count _airliftSource > 0 && count _airliftDest > 0) then {
