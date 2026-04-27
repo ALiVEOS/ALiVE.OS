@@ -7832,7 +7832,28 @@ switch(_operation) do {
                 if (!_landIssued && !isNull _planeVehicle && {alive _planeVehicle}) then {
                     [_logic, "lockAirliftRunway", _destAirportID] call MAINCLASS;
 
-                    if (_verticalLand) then {
+                    // Carrier-vertical opt-in: VTOL/heli at a dynamic airport with a
+                    // recognised AirportBase nearby (e.g. USS Freedom, Eden carrier
+                    // composition). landAt with the AirportBase object lets the engine
+                    // align onto the correct helipad and naturally tracks the moving
+                    // carrier. Falls back to manual flyInHeight + doMove + land "LAND"
+                    // sequence when no AirportBase is found (defensive -- handles
+                    // dynamic airports flagged >= 100 that aren't proper carrier bases,
+                    // and the always-manual static-airfield case).
+                    private _useCarrierLand = false;
+                    if (_verticalLand && _destAirportID >= 100) then {
+                        private _dynAirport = nearestObject [_destAirportPos, "AirportBase"];
+                        if (!isNull _dynAirport) then {
+                            _planeVehicle landAt _dynAirport;
+                            _planeVehicle addEventHandler ["LandedStopped", {
+                                (_this select 0) setVariable ["ALIVE_AIRLIFT_LANDED", true, true];
+                            }];
+                            [_event, "airliftCarrierLand", true] call ALIVE_fnc_hashSet;
+                            _useCarrierLand = true;
+                        };
+                    };
+
+                    if (_verticalLand && !_useCarrierLand) then {
                         // VTOL / heli: drop altitude (AI auto-transitions out of plane
                         // mode for VTOLs), navigate to airport center. land "LAND"
                         // is deferred to the proximity check below so the AI doesn't
@@ -7845,7 +7866,9 @@ switch(_operation) do {
                         _planeVehicle flyInHeight AIRLIFT_VTOL_DESCENT_HEIGHT;
                         _planeVehicle doMove _destPos3D;
                         [_event, "airliftVTOLLandPending", true] call ALIVE_fnc_hashSet;
-                    } else {
+                    };
+
+                    if (!_verticalLand) then {
                         // Fixed-wing: standard ILS approach via landAt.
                         if (_destAirportID < 100) then {
                             _planeVehicle landAt _destAirportID;
@@ -7867,9 +7890,13 @@ switch(_operation) do {
                     [_event, "airliftLandIssued", true]   call ALIVE_fnc_hashSet;
                     [_event, "airliftLandTimer",   0]     call ALIVE_fnc_hashSet;
                     if (_debug) then {
+                        private _branchTag = if (_verticalLand) then {
+                            if (_useCarrierLand) then {"carrier vertical via landAt+EH"} else {"manual vertical sequence"}
+                        } else {
+                            "fixed-wing landAt"
+                        };
                         ["ML - opcomAirliftLand: %1 issued for plane %2 at dest airport %3",
-                            (if (_verticalLand) then {"VTOL/heli vertical-land sequence"} else {"landAt"}),
-                            _planeProfID, _destAirportID] call ALiVE_fnc_dump;
+                            _branchTag, _planeProfID, _destAirportID] call ALiVE_fnc_dump;
                     };
                 };
 
@@ -7886,8 +7913,9 @@ switch(_operation) do {
                 //     proceed to unload + cleanup (cargo still delivered).
                 //   - If landing was NOT yet issued (still virtual on first tick),
                 //     treat as NOT landed -- wait another tick.
+                private _carrierLand = [_event, "airliftCarrierLand", false] call ALIVE_fnc_hashGet;
                 private _landed = if (!isNull _planeVehicle) then {
-                    if (_verticalLand) then {
+                    if (_verticalLand && !_carrierLand) then {
                         private _agl    = (getPosATL _planeVehicle) select 2;
                         private _spd    = abs (speed _planeVehicle);
                         private _dist2D = _planeVehicle distance2D _destAirportPos;
@@ -7911,6 +7939,8 @@ switch(_operation) do {
                         // < AIRLIFT_VTOL_LAND_PROXIMITY at issue time).
                         (_agl < AIRLIFT_LANDED_AGL_THRESHOLD) && (_spd < AIRLIFT_LANDED_SPEED_THRESHOLD) && !_vtolLandPending && _landTimer > 0
                     } else {
+                        // Plane (any airport) OR vertical lander on a carrier --
+                        // engine-managed landAt + LandedStopped EH sets this var.
                         _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
                     };
                 } else {
@@ -8261,10 +8291,25 @@ switch(_operation) do {
                     } else {
                         // Players present -- issue the proper landing. Branch on aircraft
                         // type the same way as opcomAirliftLand (VTOL/heli get vertical
-                        // sequence, plane gets standard landAt ILS approach).
+                        // sequence, plane gets standard landAt ILS approach). VTOL/heli
+                        // at a dynamic airport with an AirportBase nearby uses the engine
+                        // landAt path so it can deck-align on a carrier.
                         private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
                         if (!isNull _planeVehicle && {alive _planeVehicle}) then {
-                            if (_verticalLand) then {
+                            private _useReturnCarrierLand = false;
+                            if (_verticalLand && _sourceAirportID >= 100) then {
+                                private _dynAirport = nearestObject [_sourceAirportPos, "AirportBase"];
+                                if (!isNull _dynAirport) then {
+                                    _planeVehicle landAt _dynAirport;
+                                    _planeVehicle addEventHandler ["LandedStopped", {
+                                        (_this select 0) setVariable ["ALIVE_AIRLIFT_LANDED", true, true];
+                                    }];
+                                    [_event, "airliftCarrierLand", true] call ALIVE_fnc_hashSet;
+                                    _useReturnCarrierLand = true;
+                                };
+                            };
+
+                            if (_verticalLand && !_useReturnCarrierLand) then {
                                 // 3D doMove target -- ilsPosition returns [x,y] only;
                                 // without explicit z the AI interprets target altitude
                                 // as 0 and fights with the flyInHeight command.
@@ -8272,7 +8317,9 @@ switch(_operation) do {
                                 _planeVehicle flyInHeight AIRLIFT_VTOL_DESCENT_HEIGHT;
                                 _planeVehicle doMove _srcPos3D;
                                 [_event, "airliftReturnVTOLLandPending", true] call ALIVE_fnc_hashSet;
-                            } else {
+                            };
+
+                            if (!_verticalLand) then {
                                 if (_sourceAirportID < 100) then {
                                     _planeVehicle landAt _sourceAirportID;
                                 } else {
@@ -8292,9 +8339,13 @@ switch(_operation) do {
                             [_event, "airliftReturnLandIssued", true] call ALIVE_fnc_hashSet;
                             [_event, "airliftReturnLandTimer",  0]    call ALIVE_fnc_hashSet;
                             if (_debug) then {
+                                private _branchTagR = if (_verticalLand) then {
+                                    if (_useReturnCarrierLand) then {"carrier vertical via landAt+EH"} else {"manual vertical sequence"}
+                                } else {
+                                    "fixed-wing landAt"
+                                };
                                 ["ML - opcomAirliftReturnLand: %1 issued for plane %2 at source airport %3 (%4 players in range)",
-                                    (if (_verticalLand) then {"VTOL/heli vertical-land sequence"} else {"landAt"}),
-                                    _planeProfID, _sourceAirportID, _playersClose] call ALiVE_fnc_dump;
+                                    _branchTagR, _planeProfID, _sourceAirportID, _playersClose] call ALiVE_fnc_dump;
                             };
                         };
                     };
@@ -8312,8 +8363,9 @@ switch(_operation) do {
                     // gate can use it for the issue-tick race protection.
                     private _rlTimer = [_event, "airliftReturnLandTimer", 0] call ALIVE_fnc_hashGet;
 
+                    private _carrierLand = [_event, "airliftCarrierLand", false] call ALIVE_fnc_hashGet;
                     private _landed = if (!isNull _planeVehicle) then {
-                        if (_verticalLand) then {
+                        if (_verticalLand && !_carrierLand) then {
                             private _agl    = (getPosATL _planeVehicle) select 2;
                             private _spd    = abs (speed _planeVehicle);
                             private _dist2D = _planeVehicle distance2D _sourceAirportPos;
@@ -8330,6 +8382,8 @@ switch(_operation) do {
 
                             (_agl < AIRLIFT_LANDED_AGL_THRESHOLD) && (_spd < AIRLIFT_LANDED_SPEED_THRESHOLD) && !_vtolLandPending && _rlTimer > 0
                         } else {
+                            // Plane (any airport) OR vertical lander on a carrier --
+                            // engine-managed landAt + LandedStopped EH sets this var.
                             _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
                         };
                     } else {
