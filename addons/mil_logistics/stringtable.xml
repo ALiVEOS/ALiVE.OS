@@ -311,6 +311,12 @@
 <Key ID="STR_ALIVE_ML_AIRLIFT_SOURCE_AIRPORT_ID_DESC">
     <English>Optional. Numeric airport ID to pin as the AIRLIFT source (rear hub). Leave blank (default) to auto-select: the algorithm picks the friendly airport furthest from the event position, modelling strategic airlift as rear-to-forward. Set this when the algorithm picks wrong (e.g. a friendly airport across water with no land route, or a specific narrative hub the mission wants to use). Airport ID conventions: 0 = primary map airport, 1..99 = secondary map airports (cfgWorlds SecondaryAirports), 100+ = dynamic / Eden-placed AirportBase compositions and carriers (100 = first ALiVE_Carriers entry, 101 = second, etc.). The override falls back to the algorithm with a warning in the RPT log if the named airport is not in the friendly list (e.g. captured by the enemy mid-mission). The destination airport is always picked by proximity to the event regardless of this setting.</English>
 </Key>
+<Key ID="STR_ALIVE_ML_AIRLIFT_FLEET_SIZE">
+    <English>Airlift Fleet Size:</English>
+</Key>
+<Key ID="STR_ALIVE_ML_AIRLIFT_FLEET_SIZE_DESC">
+    <English>Number of strategic airlift aircraft this LOGCOM has available across the entire mission. Each aircraft loss (profile destroyed in flight, on the runway, during taxi, on RTB, or on final approach) decrements the pool by one. Successful deliveries that complete RTB do NOT decrement -- the same aircraft is reused. AIRLIFT dispatch is suppressed for this LOGCOM once the pool reaches 0. Default 999 = effectively unlimited (current behaviour, no opt-in needed). Set a small number (e.g. 3) to model a realistic squadron with finite strategic transport assets -- 3 sorties before AIRLIFT capability collapses. Set 0 to disable AIRLIFT from mission start without clearing the aircraft class. Hash-corruption error exits (rare, indicates programming bug) do not count as losses.</English>
+</Key>
 <Key ID="STR_ALIVE_ML_USAGE">
     <English>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</English>
     <Chinese>放置軍事後勤模組，用於增援和補給由同步的軍事 AI 指揮官模組控制的派系。</Chinese>

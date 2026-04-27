@@ -387,6 +387,50 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "airliftFleetSize": {
+        // Eden-configured aircraft fleet pool for this LOGCOM. String form
+        // (parsed to number at MLInit) so Edit attribute pattern matches
+        // airliftAircraftClass / airliftSourceAirportID. Default "999" is
+        // effectively unlimited and preserves existing behaviour for
+        // missions that don't opt into finite tracking. Smaller values
+        // (e.g. "3") model a realistic squadron: each aircraft loss
+        // (profile destroyed) decrements the runtime counter, and AIRLIFT
+        // dispatch is suppressed once the counter hits 0. "0" disables
+        // AIRLIFT from the start.
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["airliftFleetSize", _args];
+        } else {
+            _args = _logic getVariable ["airliftFleetSize", "999"];
+        };
+        ASSERT_TRUE(typeName _args == "STRING",str _args);
+
+        _result = _args;
+    };
+    case "airliftFleetRemaining": {
+        // Read-only runtime counter of aircraft remaining in the LOGCOM
+        // fleet pool. Initialised at MLInit from the parsed airliftFleetSize
+        // value; decremented by decrementAirliftFleet on profile-lost exits
+        // (real aircraft losses). Default 999 = effectively unlimited so
+        // missions that never set airliftFleetSize see no behaviour change
+        // even on a stale logic variable read.
+        _result = _logic getVariable ["airliftFleetRemaining", 999];
+    };
+    case "decrementAirliftFleet": {
+        // Apply a single aircraft loss to the runtime fleet counter.
+        // Called only from the 5 profile-lost (isNil "_planeProfile")
+        // state-machine exits in opcomAirliftFly / Land / Takeoff2 / RTB
+        // / ReturnLand. Successful Despawn (RTB completed) and
+        // missing-IDs exits (hash data corrupted, plane state unknown)
+        // do NOT call this -- losses must be real, not bookkeeping
+        // failures. Min-zero floor protects against double-decrement
+        // races (two losses processed in the same monitor tick each
+        // call this; floor stops the counter going negative).
+        private _val = _logic getVariable ["airliftFleetRemaining", 999];
+        private _newVal = (_val - 1) max 0;
+        _logic setVariable ["airliftFleetRemaining", _newVal];
+        ["ML - AIRLIFT: aircraft lost. Fleet remaining: %1", _newVal] call ALiVE_fnc_dump;
+        _result = _newVal;
+    };
     // ============================================================
     // OPCOM AIRLIFT delivery - airport selection helpers
     // ------------------------------------------------------------
@@ -2546,6 +2590,17 @@ switch(_operation) do {
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
             _airliftAircraftClass = [_logic, "airliftAircraftClass"] call MAINCLASS;
             _airliftSourceAirportID = [_logic, "airliftSourceAirportID"] call MAINCLASS;
+            // Parse Eden string -> number (Edit attribute pattern). Default 999
+            // = effectively unlimited, preserves current behaviour for missions
+            // that don't opt in to finite fleet tracking.
+            private _airliftFleetSizeStr = [_logic, "airliftFleetSize"] call MAINCLASS;
+            private _airliftFleetSize = parseNumber _airliftFleetSizeStr;
+            if (_airliftFleetSizeStr == "" || {_airliftFleetSize < 0}) then {
+                _airliftFleetSize = 999;
+            };
+            // Seed the runtime counter. Reads via airliftFleetRemaining,
+            // decrements via decrementAirliftFleet (both are MAINCLASS ops).
+            _logic setVariable ["airliftFleetRemaining", _airliftFleetSize];
 
             _startForceStrengthIncrement = [_logic, "startForceStrengthInc"] call MAINCLASS;
             _startForceStrengthIncrementFactor = parseNumber([_logic, "startForceStrengthIncFactor"] call MAINCLASS);
@@ -2593,6 +2648,7 @@ switch(_operation) do {
                 } else {
                     ["ML - AIRLIFT airliftSourceAirportID: <empty> = auto-select most rear airport (furthest friendly airport from event position)"] call ALiVE_fnc_dump;
                 };
+                ["ML - AIRLIFT airliftFleetSize: %1 (initial fleet remaining: %1)", _airliftFleetSize] call ALiVE_fnc_dump;
                 ["ML - Enable incremental force strength on objective capture: %1",_startForceStrengthIncrement] call ALiVE_fnc_dump;
                 ["ML - Incremental force strength factor: %1",_startForceStrengthIncrementFactor] call ALiVE_fnc_dump;
                 ["ML - Enable decremental force strength on objective loss: %1",_startForceStrengthDecrement] call ALiVE_fnc_dump;
@@ -5056,6 +5112,19 @@ switch(_operation) do {
                         private _airliftDest = [];
 
                         if (_airliftAircraftClass != "") then {
+                            // Fleet-pool early gate. Default 999 means effectively
+                            // unlimited (current behaviour preserved); mission designers
+                            // who set airliftFleetSize = 3 get exactly 3 sorties before
+                            // AIRLIFT capability collapses for this LOGCOM. 0 disables
+                            // AIRLIFT immediately. Decrement happens in the 5
+                            // profile-lost state-machine exits, not here.
+                            private _fleetRemaining = [_logic, "airliftFleetRemaining"] call MAINCLASS;
+                            if (_fleetRemaining <= 0) exitWith {
+                                if (_debug) then {
+                                    ["ML - AIRLIFT suppressed: fleet exhausted (0 aircraft remaining for this LOGCOM)"] call ALiVE_fnc_dump;
+                                };
+                            };
+
                             private _isAirAsset = _airliftAircraftClass isKindOf "Air";
                             private _hasCargo = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier") > 0;
 
@@ -7770,6 +7839,7 @@ switch(_operation) do {
                     // Plane was destroyed or despawned. Lossy semantics -- no force pool refund.
                     ["ML - opcomAirliftFly: plane profile %1 lost (destroyed?). Releasing source runway and completing event %2",
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     private _airliftSrcEvA = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
                     if (count _airliftSrcEvA > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftSrcEvA select 0] call MAINCLASS;
@@ -7844,6 +7914,7 @@ switch(_operation) do {
                 if (isNil "_planeProfile") exitWith {
                     ["ML - opcomAirliftLand: plane profile %1 lost during landing approach. Completing event %2",
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     private _airliftSrcEvB = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
                     if (count _airliftSrcEvB > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftSrcEvB select 0] call MAINCLASS;
@@ -8167,6 +8238,7 @@ switch(_operation) do {
                 if (isNil "_planeProfile") exitWith {
                     ["ML - opcomAirliftTakeoff2: plane profile %1 lost after unload (destroyed during taxi?). Releasing runways and completing event %2",
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
                     if (count _airliftDstEv > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftDstEv select 0] call MAINCLASS;
@@ -8266,6 +8338,7 @@ switch(_operation) do {
                 if (isNil "_planeProfile") exitWith {
                     ["ML - opcomAirliftRTB: plane profile %1 lost during RTB (shot down?). Releasing source runway and completing event %2",
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -8322,6 +8395,7 @@ switch(_operation) do {
                 if (isNil "_planeProfile") exitWith {
                     ["ML - opcomAirliftReturnLand: plane profile %1 lost on final approach. Releasing source runway and completing event %2",
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
