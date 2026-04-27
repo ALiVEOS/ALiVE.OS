@@ -358,9 +358,13 @@ switch(_operation) do {
         _result = _args;
     };
     case "airliftAircraftClass": {
-        // Optional classname for a fixed-wing or VTOL transport used by the
-        // OPCOM strategic AIRLIFT delivery path. Empty string disables AIRLIFT
-        // and falls back to the existing heli/ground delivery logic.
+        // Optional aircraft input for the OPCOM strategic AIRLIFT delivery path.
+        // Accepts either form (mirrors ALiVE multi-class field convention):
+        //   - Single classname: "B_T_VTOL_01_infantry_F"
+        //   - SQF array literal: ["B_T_VTOL_01_infantry_F","B_Heli_Transport_01_F","RHS_C130J"]
+        // Empty string disables AIRLIFT and falls back to existing heli/ground
+        // delivery logic. The actual per-sortie aircraft pick happens via the
+        // selectAirliftAircraft operation (capacity-weighted random select).
         if (typeName _args == "STRING") then {
             _logic setVariable ["airliftAircraftClass", _args];
         } else {
@@ -369,6 +373,58 @@ switch(_operation) do {
         ASSERT_TRUE(typeName _args == "STRING",str _args);
 
         _result = _args;
+    };
+    case "selectAirliftAircraft": {
+        // Per-sortie aircraft selection from the airliftAircraftClass input.
+        // Parses the raw input (single classname OR SQF array literal),
+        // validates each candidate (isKindOf "Air" + transportSoldier > 0),
+        // and returns one classname picked by transportSoldier-weighted random
+        // (bigger planes more likely chosen). Returns "" if no valid candidates
+        // -- caller should suppress AIRLIFT for the current event.
+        //
+        // _args: ignored (reads directly from logic). Kept for MAINCLASS pattern.
+        private _input = _logic getVariable ["airliftAircraftClass", ""];
+
+        if (_input == "") exitWith {
+            _result = "";
+        };
+
+        // Parse input: SQF array literal if first non-whitespace char is '['.
+        private _candidates = [];
+        private _firstChar = _input select [0,1];
+        if (_firstChar == "[") then {
+            // Try parsing as SQF array of strings. call compile fails silently
+            // on malformed input (returns nil) -- defensive isNil check.
+            private _parsed = call compile _input;
+            if (!isNil "_parsed" && {typeName _parsed == "ARRAY"}) then {
+                _candidates = _parsed select { typeName _x == "STRING" && _x != "" };
+            };
+        } else {
+            _candidates = [_input];
+        };
+
+        // Validate each candidate: must be isKindOf "Air" with cargo capacity.
+        private _validCandidates = _candidates select {
+            (_x isKindOf "Air") && {(getNumber (configFile >> "CfgVehicles" >> _x >> "transportSoldier")) > 0}
+        };
+
+        if (count _validCandidates == 0) exitWith {
+            _result = "";
+        };
+
+        if (count _validCandidates == 1) exitWith {
+            _result = _validCandidates select 0;
+        };
+
+        // Capacity-weighted random select. Build flat [item, weight, ...] pool
+        // for selectRandomWeighted. Weight = transportSoldier (bigger = more likely).
+        private _wrPool = [];
+        {
+            _wrPool pushBack _x;
+            _wrPool pushBack (getNumber (configFile >> "CfgVehicles" >> _x >> "transportSoldier"));
+        } forEach _validCandidates;
+
+        _result = selectRandomWeighted _wrPool;
     };
     case "airliftSourceAirportID": {
         // Optional override for the AIRLIFT source airport. When non-empty
@@ -2658,22 +2714,56 @@ switch(_operation) do {
                 ["ML - Enable air transport: %1",_enableAirTransport] call ALiVE_fnc_dump;
                 ["ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALiVE_fnc_dump;
                 if (_airliftAircraftClass != "") then {
-                    private _ts      = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier");
-                    private _vtol    = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "vtol");
-                    private _isPlane = _airliftAircraftClass isKindOf "Plane";
-                    private _isHeli  = _airliftAircraftClass isKindOf "Helicopter";
-                    private _isAir   = _airliftAircraftClass isKindOf "Air";
-                    private _category = call {
-                        if (_vtol > 0)  exitWith { "VTOL" };
-                        if (_isHeli)    exitWith { "Helicopter" };
-                        if (_isPlane)   exitWith { "Plane" };
-                        "Unknown"
+                    // Parse input: array literal vs single classname (mirrors selectAirliftAircraft logic).
+                    private _candidates = [];
+                    private _firstChar = _airliftAircraftClass select [0,1];
+                    if (_firstChar == "[") then {
+                        private _parsed = call compile _airliftAircraftClass;
+                        if (!isNil "_parsed" && {typeName _parsed == "ARRAY"}) then {
+                            _candidates = _parsed select { typeName _x == "STRING" && _x != "" };
+                        };
+                    } else {
+                        _candidates = [_airliftAircraftClass];
                     };
-                    ["ML - AIRLIFT airliftAircraftClass: %1 (category=%2, isKindOf Air=%3, vtol=%4, transportSoldier=%5)",
-                        _airliftAircraftClass, _category, _isAir, _vtol, _ts] call ALiVE_fnc_dump;
-                    if (!_isAir || _ts == 0) then {
-                        ["ML - WARNING: airliftAircraftClass %1 is not a valid air transport (isKindOf Air=%2, transportSoldier=%3). AIRLIFT rule will not fire for this module.",
-                            _airliftAircraftClass, _isAir, _ts] call ALiVE_fnc_dump;
+
+                    if (count _candidates == 0) then {
+                        ["ML - WARNING: airliftAircraftClass %1 could not be parsed as a classname or array. AIRLIFT rule will not fire for this module.",
+                            _airliftAircraftClass] call ALiVE_fnc_dump;
+                    } else {
+                        ["ML - AIRLIFT airliftAircraftClass: %1 candidate(s) configured", count _candidates] call ALiVE_fnc_dump;
+
+                        // Per-candidate validation + category log.
+                        private _validCount = 0;
+                        {
+                            private _cls = _x;
+                            private _ts      = getNumber(configFile >> "CfgVehicles" >> _cls >> "transportSoldier");
+                            private _vtol    = getNumber(configFile >> "CfgVehicles" >> _cls >> "vtol");
+                            private _isPlane = _cls isKindOf "Plane";
+                            private _isHeli  = _cls isKindOf "Helicopter";
+                            private _isAir   = _cls isKindOf "Air";
+                            private _category = call {
+                                if (_vtol > 0)  exitWith { "VTOL" };
+                                if (_isHeli)    exitWith { "Helicopter" };
+                                if (_isPlane)   exitWith { "Plane" };
+                                "Unknown"
+                            };
+                            private _valid = _isAir && _ts > 0;
+                            if (_valid) then { _validCount = _validCount + 1; };
+                            ["ML - AIRLIFT candidate [%1/%2]: %3 (category=%4, isKindOf Air=%5, vtol=%6, transportSoldier=%7, valid=%8)",
+                                _forEachIndex + 1, count _candidates, _cls, _category, _isAir, _vtol, _ts, _valid] call ALiVE_fnc_dump;
+                            if (!_valid) then {
+                                ["ML - WARNING: AIRLIFT candidate %1 invalid (isKindOf Air=%2, transportSoldier=%3) -- will be excluded from per-sortie selection",
+                                    _cls, _isAir, _ts] call ALiVE_fnc_dump;
+                            };
+                        } forEach _candidates;
+
+                        if (_validCount == 0) then {
+                            ["ML - WARNING: airliftAircraftClass has %1 candidate(s) but ZERO are valid air transports. AIRLIFT rule will not fire for this module.",
+                                count _candidates] call ALiVE_fnc_dump;
+                        } else {
+                            ["ML - AIRLIFT: %1 of %2 candidate(s) valid; per-sortie selection is capacity-weighted random (bigger planes more likely picked)",
+                                _validCount, count _candidates] call ALiVE_fnc_dump;
+                        };
                     };
                 } else {
                     ["ML - AIRLIFT airliftAircraftClass: <not set> (AIRLIFT delivery disabled)"] call ALiVE_fnc_dump;
@@ -2685,16 +2775,35 @@ switch(_operation) do {
                     ["ML - AIRLIFT airliftSourceAirportID: <empty> = auto-select most rear airport (furthest friendly airport from event position)"] call ALiVE_fnc_dump;
                 };
                 ["ML - AIRLIFT airliftFleetSize: %1 (initial fleet remaining: %1)", _airliftFleetSize] call ALiVE_fnc_dump;
-                // Cargo-capacity log: show both the Eden override (0 = auto)
-                // and the effective capacity that Rule 1.5 will use for the
-                // currently configured aircraft. Auto = floor(transportSoldier/8).
+                // Cargo-capacity log: show the Eden override (0 = auto) and
+                // per-candidate effective capacity. With multi-class input the
+                // actual sortie capacity depends on which aircraft selectAirliftAircraft
+                // picks at dispatch time, so we log the range here.
                 if (_airliftAircraftClass != "") then {
-                    private _tsForCargo = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier");
-                    private _autoSlots = floor (_tsForCargo / 8);
-                    private _effectiveSlots = if (_airliftCargoSlotsOverride > 0) then { _airliftCargoSlotsOverride } else { _autoSlots };
-                    private _capSource = if (_airliftCargoSlotsOverride > 0) then { "Eden override" } else { "auto-calc" };
-                    ["ML - AIRLIFT airliftCargoSlots: override=%1 (0=auto), aircraft %2 transportSoldier=%3, auto-calc=%4, effective capacity=%5 slots (%6)",
-                        _airliftCargoSlotsOverride, _airliftAircraftClass, _tsForCargo, _autoSlots, _effectiveSlots, _capSource] call ALiVE_fnc_dump;
+                    // Re-parse candidates (same logic as validator block above).
+                    private _capCandidates = [];
+                    private _firstCharCap = _airliftAircraftClass select [0,1];
+                    if (_firstCharCap == "[") then {
+                        private _parsedCap = call compile _airliftAircraftClass;
+                        if (!isNil "_parsedCap" && {typeName _parsedCap == "ARRAY"}) then {
+                            _capCandidates = _parsedCap select { typeName _x == "STRING" && _x != "" };
+                        };
+                    } else {
+                        _capCandidates = [_airliftAircraftClass];
+                    };
+                    if (_airliftCargoSlotsOverride > 0) then {
+                        ["ML - AIRLIFT airliftCargoSlots: override=%1 (Eden override applies to all candidates regardless of transportSoldier)",
+                            _airliftCargoSlotsOverride] call ALiVE_fnc_dump;
+                    } else {
+                        ["ML - AIRLIFT airliftCargoSlots: override=0 (auto-calc per candidate via floor(transportSoldier/8))",
+                            _airliftCargoSlotsOverride] call ALiVE_fnc_dump;
+                        {
+                            private _tsForCargo = getNumber(configFile >> "CfgVehicles" >> _x >> "transportSoldier");
+                            private _autoSlots = floor (_tsForCargo / 8);
+                            ["ML - AIRLIFT capacity [%1/%2]: %3 transportSoldier=%4 -> auto-capacity=%5 slots",
+                                _forEachIndex + 1, count _capCandidates, _x, _tsForCargo, _autoSlots] call ALiVE_fnc_dump;
+                        } forEach _capCandidates;
+                    };
                 } else {
                     ["ML - AIRLIFT airliftCargoSlots: override=%1 (0=auto), aircraft not set so effective capacity not computable",
                         _airliftCargoSlotsOverride] call ALiVE_fnc_dump;
@@ -5161,6 +5270,12 @@ switch(_operation) do {
                         private _airliftSource = [];
                         private _airliftDest = [];
 
+                        // Selected aircraft for this sortie (set if Rule 1.5 picks AIRLIFT).
+                        // Stored on event hash so cargo clamp + dispatch + verticalLand
+                        // detection all read the same per-sortie pick. Capacity-weighted
+                        // random selection happens inside selectAirliftAircraft.
+                        private _airliftSelectedClass = "";
+
                         if (_airliftAircraftClass != "") then {
                             // Fleet-pool early gate. Default 999 means effectively
                             // unlimited (current behaviour preserved); mission designers
@@ -5175,8 +5290,22 @@ switch(_operation) do {
                                 };
                             };
 
-                            private _isAirAsset = _airliftAircraftClass isKindOf "Air";
-                            private _hasCargo = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier") > 0;
+                            // Per-sortie aircraft selection from the multi-class input.
+                            // selectAirliftAircraft parses input (single class OR array literal),
+                            // validates each candidate (isKindOf Air + transportSoldier > 0),
+                            // and returns one classname picked by capacity-weighted random.
+                            // Returns "" if all candidates invalid.
+                            _airliftSelectedClass = [_logic, "selectAirliftAircraft"] call MAINCLASS;
+
+                            if (_airliftSelectedClass == "") exitWith {
+                                if (_debug) then {
+                                    ["ML - AIRLIFT suppressed: no valid aircraft candidates in airliftAircraftClass=%1 (all failed isKindOf Air or transportSoldier > 0)",
+                                        _airliftAircraftClass] call ALiVE_fnc_dump;
+                                };
+                            };
+
+                            private _isAirAsset = _airliftSelectedClass isKindOf "Air";
+                            private _hasCargo = getNumber(configFile >> "CfgVehicles" >> _airliftSelectedClass >> "transportSoldier") > 0;
 
                             if (_isAirAsset && _hasCargo) then {
                                 private _friendlyAirports = [_logic, "getFriendlyAirports", _side] call MAINCLASS;
@@ -5212,7 +5341,7 @@ switch(_operation) do {
                                                     _airliftEligible = true;
                                                     if (_debug) then {
                                                         ["ML - Delivery type: AIRLIFT (source airport %1 at %2 -> dest airport %3 at %4, flight %5m, plane %6)",
-                                                            _sourceID, _sourcePos, _destID, _destPos, round _flightDist, _airliftAircraftClass] call ALiVE_fnc_dump;
+                                                            _sourceID, _sourcePos, _destID, _destPos, round _flightDist, _airliftSelectedClass] call ALiVE_fnc_dump;
                                                     };
                                                 };
                                             } else {
@@ -5249,7 +5378,7 @@ switch(_operation) do {
                                                     _airliftSource = [-1, _offmapSpawnPos];
                                                     if (_debug) then {
                                                         ["ML - Delivery type: AIRLIFT OFFMAP fallback (single airport %1, offmap spawn %2 at %3m, plane %4)",
-                                                            _destID, _offmapSpawnPos, round _offmapDist, _airliftAircraftClass] call ALiVE_fnc_dump;
+                                                            _destID, _offmapSpawnPos, round _offmapDist, _airliftSelectedClass] call ALiVE_fnc_dump;
                                                     };
                                                 };
                                             } else {
@@ -5273,8 +5402,8 @@ switch(_operation) do {
                                 };
                             } else {
                                 if (_debug) then {
-                                    ["ML - AIRLIFT suppressed: airliftAircraftClass %1 invalid (isKindOf Air=%2, transportSoldier>0=%3)",
-                                        _airliftAircraftClass, _isAirAsset, _hasCargo] call ALiVE_fnc_dump;
+                                    ["ML - AIRLIFT suppressed: selected aircraft %1 invalid (isKindOf Air=%2, transportSoldier>0=%3)",
+                                        _airliftSelectedClass, _isAirAsset, _hasCargo] call ALiVE_fnc_dump;
                                 };
                             };
                         };
@@ -5316,14 +5445,17 @@ switch(_operation) do {
                         if (_airliftEligible) then {
                             private _slotsRequested = (_eventForceInfantry * 1) + (_eventForceMotorised * 2) + (_eventForceMechanised * 3) + (_eventForceArmour * 4);
                             private _capOverride = _logic getVariable ["airliftCargoSlotsParsed", 0];
-                            private _tsCargo = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier");
+                            // Use _airliftSelectedClass (per-sortie pick from selectAirliftAircraft).
+                            // With multi-class input each sortie picks a different aircraft, so
+                            // capacity must be computed against THIS sortie's selection.
+                            private _tsCargo = getNumber(configFile >> "CfgVehicles" >> _airliftSelectedClass >> "transportSoldier");
                             private _capacity = if (_capOverride > 0) then { _capOverride } else { floor (_tsCargo / 8) };
 
                             if (_capacity == 0) then {
                                 _airliftEligible = false;
                                 if (_debug) then {
-                                    ["ML - AIRLIFT suppressed: aircraft %1 capacity 0 (transportSoldier=%2, override=%3) -- cannot carry anything, falling through to HELI/STANDARD",
-                                        _airliftAircraftClass, _tsCargo, _capOverride] call ALiVE_fnc_dump;
+                                    ["ML - AIRLIFT suppressed: selected aircraft %1 capacity 0 (transportSoldier=%2, override=%3) -- cannot carry anything, falling through to HELI/STANDARD",
+                                        _airliftSelectedClass, _tsCargo, _capOverride] call ALiVE_fnc_dump;
                                 };
                             } else {
                                 if (_slotsRequested > _capacity) then {
@@ -5365,8 +5497,8 @@ switch(_operation) do {
                                         // and burns fleet pool. Lower tiers (HELI / STANDARD) take over.
                                         _airliftEligible = false;
                                         if (_debug) then {
-                                            ["ML - AIRLIFT suppressed: aircraft %1 capacity %2 slots, requested %3 slots [%4 inf, %5 mot, %6 mech, %7 arm] -- heavy-first clamp delivers 0 (heaviest type does not fit), falling through to HELI/STANDARD",
-                                                _airliftAircraftClass, _capacity, _slotsRequested,
+                                            ["ML - AIRLIFT suppressed: selected aircraft %1 capacity %2 slots, requested %3 slots [%4 inf, %5 mot, %6 mech, %7 arm] -- heavy-first clamp delivers 0 (heaviest type does not fit), falling through to HELI/STANDARD",
+                                                _airliftSelectedClass, _capacity, _slotsRequested,
                                                 _origInf, _origMot, _origMech, _origArm] call ALiVE_fnc_dump;
                                         };
                                     } else {
@@ -5383,8 +5515,8 @@ switch(_operation) do {
                                         _eventForceMakeup set [3, _newArm];
 
                                         if (_debug) then {
-                                            ["ML - AIRLIFT clamp: aircraft %1 capacity %2 slots, requested %3 slots [%4 inf, %5 mot, %6 mech, %7 arm], delivered %8 slots [%9 inf, %10 mot, %11 mech, %12 arm] (heavy-first greedy fill)",
-                                                _airliftAircraftClass, _capacity, _slotsRequested,
+                                            ["ML - AIRLIFT clamp: selected aircraft %1 capacity %2 slots, requested %3 slots [%4 inf, %5 mot, %6 mech, %7 arm], delivered %8 slots [%9 inf, %10 mot, %11 mech, %12 arm] (heavy-first greedy fill)",
+                                                _airliftSelectedClass, _capacity, _slotsRequested,
                                                 _origInf, _origMot, _origMech, _origArm,
                                                 _deliverableSlots,
                                                 _newInf, _newMot, _newMech, _newArm] call ALiVE_fnc_dump;
@@ -5406,10 +5538,16 @@ switch(_operation) do {
                             // closing brace.
                             // Source id -1 marks the offmap pseudo-airport (single-airport
                             // fallback) -- dispatch + state machine branch on this.
+                            // _airliftSelectedClass is the per-sortie aircraft pick from
+                            // selectAirliftAircraft (capacity-weighted random when input is
+                            // a multi-class array). Dispatch reads this for createProfilesCrewedVehicle
+                            // and verticalLand detection -- it must be the SAME class used
+                            // by Rule 1.5's capacity calc above, so we stash here.
                             private _isOffmap = ((_airliftSource select 0) == -1);
-                            [_event, "airliftSourceAirport", _airliftSource] call ALIVE_fnc_hashSet;
-                            [_event, "airliftDestAirport",   _airliftDest]   call ALIVE_fnc_hashSet;
-                            [_event, "airliftOffmap",        _isOffmap]      call ALIVE_fnc_hashSet;
+                            [_event, "airliftSourceAirport", _airliftSource]         call ALIVE_fnc_hashSet;
+                            [_event, "airliftDestAirport",   _airliftDest]           call ALIVE_fnc_hashSet;
+                            [_event, "airliftOffmap",        _isOffmap]              call ALIVE_fnc_hashSet;
+                            [_event, "airliftSelectedClass", _airliftSelectedClass]  call ALIVE_fnc_hashSet;
                         } else {
                         // Rule 1: Armour always goes by ground (fallback when AIRLIFT didn't fire).
                         if (_hasArmour) then {
@@ -7260,6 +7398,10 @@ switch(_operation) do {
                                     // opcomAirliftUnload state once the plane has landed.
                                     private _airliftSrcEv = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
                                     private _airliftDstEv = [_event, "airliftDestAirport",   []] call ALIVE_fnc_hashGet;
+                                    // Read per-sortie aircraft pick from event hash (set by Rule 1.5).
+                                    // Falls back to airliftAircraftClass for backward compatibility with
+                                    // any code path that didn't go through Rule 1.5 selection (defensive).
+                                    private _selectedClass = [_event, "airliftSelectedClass", _airliftAircraftClass] call ALIVE_fnc_hashGet;
 
                                     if (count _airliftSrcEv < 2 || count _airliftDstEv < 2) then {
                                         // Should not happen -- Rule 1.5 only sets eventType=AIRLIFT
@@ -7343,7 +7485,10 @@ switch(_operation) do {
                                         // Create plane + crew profile pair via standard ALiVE path.
                                         // Args mirror ATO's _isPlane spawn -- side / faction / rank /
                                         // pos / dir / not VTOL / target faction / mission ready / busy.
-                                        private _planeProfiles = [_airliftAircraftClass, _side, _eventFaction, "CAPTAIN", _spawnPos, _spawnDir, false, _eventFaction, true, true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                        // Use _selectedClass (per-sortie pick from selectAirliftAircraft via
+                                        // event hash) NOT _airliftAircraftClass directly -- the latter is the
+                                        // raw input which may be a multi-class array literal.
+                                        private _planeProfiles = [_selectedClass, _side, _eventFaction, "CAPTAIN", _spawnPos, _spawnDir, false, _eventFaction, true, true] call ALIVE_fnc_createProfilesCrewedVehicle;
                                         private _crewProfile  = _planeProfiles select 0;
                                         private _planeProfile = _planeProfiles select 1;
                                         private _crewProfID   = _crewProfile  select 2 select 4;
@@ -7388,9 +7533,11 @@ switch(_operation) do {
                                         // landers can't fly the standard fixed-wing ILS approach without
                                         // crashing -- they need a vertical land sequence (flyInHeight +
                                         // doMove + land "LAND"). opcomAirliftLand / ReturnLand / Takeoff2
-                                        // branch on this flag.
-                                        private _airliftVerticalLand = (_airliftAircraftClass isKindOf "Helicopter") ||
-                                                                       ((getNumber (configFile >> "CfgVehicles" >> _airliftAircraftClass >> "vtol")) > 0);
+                                        // branch on this flag. Computed against the per-sortie selected
+                                        // class (different sorties may pick different classes from the
+                                        // multi-class input).
+                                        private _airliftVerticalLand = (_selectedClass isKindOf "Helicopter") ||
+                                                                       ((getNumber (configFile >> "CfgVehicles" >> _selectedClass >> "vtol")) > 0);
 
                                         // Track on event hash + the existing transport profile lists.
                                         [_event, "airliftPlanePilotProfileID",   _crewProfID]            call ALIVE_fnc_hashSet;
@@ -7411,7 +7558,7 @@ switch(_operation) do {
 
                                         if (_debug) then {
                                             ["ML - AIRLIFT dispatched: plane %1 (verticalLand=%2 pilotProf=%3 vehProf=%4) source airport %5 [%6] -> dest airport %7 [%8] dist=%9m",
-                                                _airliftAircraftClass, _airliftVerticalLand, _crewProfID, _planeProfID,
+                                                _selectedClass, _airliftVerticalLand, _crewProfID, _planeProfID,
                                                 _sourceAirportID, _spawnPos, _destAirportID, _destAirportPos,
                                                 round (_spawnPos distance2D _destAirportPos)] call ALiVE_fnc_dump;
                                         };
