@@ -370,6 +370,92 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "airliftSourceAirportID": {
+        // Optional override for the AIRLIFT source airport. When non-empty
+        // the value is parsed as a numeric airport ID (0 = primary, 1..99 =
+        // secondaries, 100+ = dynamic / carriers). Empty string (default)
+        // delegates to selectAirliftSource's hub-and-spoke algorithm:
+        // furthest friendly airport from the event position. Allows mission
+        // makers to pin a specific rear-area hub when the algorithm picks
+        // wrong (e.g. a friendly airport across water that has no land route).
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["airliftSourceAirportID", _args];
+        } else {
+            _args = _logic getVariable ["airliftSourceAirportID", ""];
+        };
+        ASSERT_TRUE(typeName _args == "STRING",str _args);
+
+        _result = _args;
+    };
+    case "airliftFleetSize": {
+        // Eden-configured aircraft fleet pool for this LOGCOM. String form
+        // (parsed to number at MLInit) so Edit attribute pattern matches
+        // airliftAircraftClass / airliftSourceAirportID. Default "999" is
+        // effectively unlimited and preserves existing behaviour for
+        // missions that don't opt into finite tracking. Smaller values
+        // (e.g. "3") model a realistic squadron: each aircraft loss
+        // (profile destroyed) decrements the runtime counter, and AIRLIFT
+        // dispatch is suppressed once the counter hits 0. "0" disables
+        // AIRLIFT from the start.
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["airliftFleetSize", _args];
+        } else {
+            _args = _logic getVariable ["airliftFleetSize", "999"];
+        };
+        ASSERT_TRUE(typeName _args == "STRING",str _args);
+
+        _result = _args;
+    };
+    case "airliftFleetRemaining": {
+        // Read-only runtime counter of aircraft remaining in the LOGCOM
+        // fleet pool. Initialised at MLInit from the parsed airliftFleetSize
+        // value; decremented by decrementAirliftFleet on profile-lost exits
+        // (real aircraft losses). Default 999 = effectively unlimited so
+        // missions that never set airliftFleetSize see no behaviour change
+        // even on a stale logic variable read.
+        _result = _logic getVariable ["airliftFleetRemaining", 999];
+    };
+    case "decrementAirliftFleet": {
+        // Apply a single aircraft loss to the runtime fleet counter.
+        // Called only from the 5 profile-lost (isNil "_planeProfile")
+        // state-machine exits in opcomAirliftFly / Land / Takeoff2 / RTB
+        // / ReturnLand. Successful Despawn (RTB completed) and
+        // missing-IDs exits (hash data corrupted, plane state unknown)
+        // do NOT call this -- losses must be real, not bookkeeping
+        // failures. Min-zero floor protects against double-decrement
+        // races (two losses processed in the same monitor tick each
+        // call this; floor stops the counter going negative).
+        private _val = _logic getVariable ["airliftFleetRemaining", 999];
+        private _newVal = (_val - 1) max 0;
+        _logic setVariable ["airliftFleetRemaining", _newVal];
+        ["ML - AIRLIFT: aircraft lost. Fleet remaining: %1", _newVal] call ALiVE_fnc_dump;
+        _result = _newVal;
+    };
+    case "airliftCargoSlots": {
+        // Eden-configured cargo capacity (slot count) for the AIRLIFT
+        // aircraft. String form (parsed to number at MLInit) so the
+        // Edit attribute pattern matches airliftAircraftClass /
+        // airliftSourceAirportID / airliftFleetSize. Default "0" =
+        // auto-calc from the aircraft's transportSoldier config
+        // (floor(transportSoldier/8) -- 8 troops per slot heuristic).
+        // Non-zero values are a manual override and bypass the
+        // transportSoldier read entirely. Slot weights are applied in
+        // the Rule 1.5 clamp: 1=infantry, 2=motorised, 3=mechanised,
+        // 4=armour. When slotsRequested > capacity the heavy-first
+        // greedy fill picks armour first so AIRLIFT carries what
+        // other tiers cannot. Examples: Y-32 (transportSoldier 30)
+        // auto = 3 slots; C-130 (92) auto = 11; MH-9 (4) auto = 0.
+        // Override "0" on a small heli effectively disables AIRLIFT
+        // for cargo (capacity 0 -> suppress).
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["airliftCargoSlots", _args];
+        } else {
+            _args = _logic getVariable ["airliftCargoSlots", "0"];
+        };
+        ASSERT_TRUE(typeName _args == "STRING",str _args);
+
+        _result = _args;
+    };
     // ============================================================
     // OPCOM AIRLIFT delivery - airport selection helpers
     // ------------------------------------------------------------
@@ -474,23 +560,68 @@ switch(_operation) do {
         _result = _friendlyAirports;
     };
     case "selectAirliftSource": {
-        // Mode B source selection: nearest friendly airport to LOGCOM HQ.
-        // Picks the rear-area airfield as the conceptual "supply chain
-        // origin". Returns [airportID, position] or [] if no candidates.
-        // _args: friendly airports array
-        private _friendlyAirports = _args;
-        private _hqPos = getPos _logic;
-        private _bestAirport = [];
-        private _bestDist = 1e10;
+        // Hub-and-spoke source selection: furthest friendly airport from
+        // the event position. Models strategic airlift as REAR -> FORWARD:
+        // the destination is forward (event = where reinforcements are
+        // needed), so the most rear airfield is the supply hub. Replaces
+        // the earlier "nearest to LOGCOM HQ" heuristic which broke when
+        // the HQ wasn't actually placed in the rear (e.g. mobile HQ on a
+        // pushed-up objective). Returns [airportID, position] or [] if no
+        // candidates.
+        //
+        // Eden override: airliftSourceAirportID -- when set to a non-empty
+        // string parsed as a numeric airport ID present in the friendly
+        // list, that airport wins regardless of distance. Falls through to
+        // the algorithm with a warning log if the override is invalid or
+        // the named airport has been lost (became enemy mid-mission).
+        //
+        // _args: [friendly airports array, event position]
+        private _friendlyAirports = _args select 0;
+        private _eventPosition    = _args select 1;
 
+        // Override path -------------------------------------------------
+        private _overrideStr = [_logic, "airliftSourceAirportID"] call MAINCLASS;
+        if (_overrideStr != "" && _overrideStr != "-1") then {
+            private _overrideID = parseNumber _overrideStr;
+            private _overrideMatch = [];
+            {
+                if ((_x select 0) == _overrideID) exitWith {
+                    _overrideMatch = _x;
+                };
+            } forEach _friendlyAirports;
+            if (count _overrideMatch > 0) exitWith {
+                ["ML - selectAirliftSource: using Eden override airport %1 at %2",
+                    _overrideID, _overrideMatch select 1] call ALiVE_fnc_dump;
+                _result = _overrideMatch;
+            };
+            // Override set but airport not in friendly list -- warn and fall
+            // through to the algorithm. Common when the airport was friendly
+            // at mission start but has since been captured by the enemy.
+            ["ML - WARNING selectAirliftSource: airliftSourceAirportID override %1 not found in friendly airports (%2 candidates). Falling back to furthest-from-event algorithm.",
+                _overrideStr, count _friendlyAirports] call ALiVE_fnc_dump;
+        };
+
+        // Algorithm path: pick airport with MAX distance from event.
+        // Two equidistant airports -> first one in iteration wins
+        // (deterministic but arbitrary; mission maker can pin via override).
+        // _bestDist initialised to -1 so the first iteration always sets
+        // _bestAirport, even if distance happens to be 0 (degenerate case
+        // of only one friendly airport sitting at the event position).
+        private _bestAirport = [];
+        private _bestDist = -1;
         {
             private _airportPos = _x select 1;
-            private _d = _airportPos distance2D _hqPos;
-            if (_d < _bestDist) then {
+            private _d = _airportPos distance2D _eventPosition;
+            if (_d > _bestDist) then {
                 _bestDist = _d;
                 _bestAirport = _x;
             };
         } forEach _friendlyAirports;
+
+        if (count _bestAirport > 0) then {
+            ["ML - selectAirliftSource: algorithm picked airport %1 at %2 (%3m from event)",
+                _bestAirport select 0, _bestAirport select 1, round _bestDist] call ALiVE_fnc_dump;
+        };
 
         _result = _bestAirport;
     };
@@ -2483,6 +2614,29 @@ switch(_operation) do {
             _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
             _airliftAircraftClass = [_logic, "airliftAircraftClass"] call MAINCLASS;
+            _airliftSourceAirportID = [_logic, "airliftSourceAirportID"] call MAINCLASS;
+            // Parse Eden string -> number (Edit attribute pattern). Default 999
+            // = effectively unlimited, preserves current behaviour for missions
+            // that don't opt in to finite fleet tracking.
+            private _airliftFleetSizeStr = [_logic, "airliftFleetSize"] call MAINCLASS;
+            private _airliftFleetSize = parseNumber _airliftFleetSizeStr;
+            if (_airliftFleetSizeStr == "" || {_airliftFleetSize < 0}) then {
+                _airliftFleetSize = 999;
+            };
+            // Seed the runtime counter. Reads via airliftFleetRemaining,
+            // decrements via decrementAirliftFleet (both are MAINCLASS ops).
+            _logic setVariable ["airliftFleetRemaining", _airliftFleetSize];
+
+            // Parse Eden cargo-capacity override. "0" or empty = auto-calc
+            // from transportSoldier at clamp time (Rule 1.5). Negative
+            // values are nonsense; clamp to 0. Stored as number on the
+            // logic for the Rule 1.5 read.
+            private _airliftCargoSlotsStr = [_logic, "airliftCargoSlots"] call MAINCLASS;
+            private _airliftCargoSlotsOverride = parseNumber _airliftCargoSlotsStr;
+            if (_airliftCargoSlotsStr == "" || {_airliftCargoSlotsOverride < 0}) then {
+                _airliftCargoSlotsOverride = 0;
+            };
+            _logic setVariable ["airliftCargoSlotsParsed", _airliftCargoSlotsOverride];
 
             _startForceStrengthIncrement = [_logic, "startForceStrengthInc"] call MAINCLASS;
             _startForceStrengthIncrementFactor = parseNumber([_logic, "startForceStrengthIncFactor"] call MAINCLASS);
@@ -2523,6 +2677,27 @@ switch(_operation) do {
                     };
                 } else {
                     ["ML - AIRLIFT airliftAircraftClass: <not set> (AIRLIFT delivery disabled)"] call ALiVE_fnc_dump;
+                };
+                if (_airliftSourceAirportID != "") then {
+                    ["ML - AIRLIFT airliftSourceAirportID: %1 (Eden override -- pinned source airport, bypasses hub-and-spoke algorithm if airport is friendly)",
+                        _airliftSourceAirportID] call ALiVE_fnc_dump;
+                } else {
+                    ["ML - AIRLIFT airliftSourceAirportID: <empty> = auto-select most rear airport (furthest friendly airport from event position)"] call ALiVE_fnc_dump;
+                };
+                ["ML - AIRLIFT airliftFleetSize: %1 (initial fleet remaining: %1)", _airliftFleetSize] call ALiVE_fnc_dump;
+                // Cargo-capacity log: show both the Eden override (0 = auto)
+                // and the effective capacity that Rule 1.5 will use for the
+                // currently configured aircraft. Auto = floor(transportSoldier/8).
+                if (_airliftAircraftClass != "") then {
+                    private _tsForCargo = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier");
+                    private _autoSlots = floor (_tsForCargo / 8);
+                    private _effectiveSlots = if (_airliftCargoSlotsOverride > 0) then { _airliftCargoSlotsOverride } else { _autoSlots };
+                    private _capSource = if (_airliftCargoSlotsOverride > 0) then { "Eden override" } else { "auto-calc" };
+                    ["ML - AIRLIFT airliftCargoSlots: override=%1 (0=auto), aircraft %2 transportSoldier=%3, auto-calc=%4, effective capacity=%5 slots (%6)",
+                        _airliftCargoSlotsOverride, _airliftAircraftClass, _tsForCargo, _autoSlots, _effectiveSlots, _capSource] call ALiVE_fnc_dump;
+                } else {
+                    ["ML - AIRLIFT airliftCargoSlots: override=%1 (0=auto), aircraft not set so effective capacity not computable",
+                        _airliftCargoSlotsOverride] call ALiVE_fnc_dump;
                 };
                 ["ML - Enable incremental force strength on objective capture: %1",_startForceStrengthIncrement] call ALiVE_fnc_dump;
                 ["ML - Incremental force strength factor: %1",_startForceStrengthIncrementFactor] call ALiVE_fnc_dump;
@@ -4987,6 +5162,19 @@ switch(_operation) do {
                         private _airliftDest = [];
 
                         if (_airliftAircraftClass != "") then {
+                            // Fleet-pool early gate. Default 999 means effectively
+                            // unlimited (current behaviour preserved); mission designers
+                            // who set airliftFleetSize = 3 get exactly 3 sorties before
+                            // AIRLIFT capability collapses for this LOGCOM. 0 disables
+                            // AIRLIFT immediately. Decrement happens in the 5
+                            // profile-lost state-machine exits, not here.
+                            private _fleetRemaining = [_logic, "airliftFleetRemaining"] call MAINCLASS;
+                            if (_fleetRemaining <= 0) exitWith {
+                                if (_debug) then {
+                                    ["ML - AIRLIFT suppressed: fleet exhausted (0 aircraft remaining for this LOGCOM)"] call ALiVE_fnc_dump;
+                                };
+                            };
+
                             private _isAirAsset = _airliftAircraftClass isKindOf "Air";
                             private _hasCargo = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier") > 0;
 
@@ -4994,7 +5182,7 @@ switch(_operation) do {
                                 private _friendlyAirports = [_logic, "getFriendlyAirports", _side] call MAINCLASS;
 
                                 if (count _friendlyAirports > 0) then {
-                                    _airliftSource = [_logic, "selectAirliftSource", _friendlyAirports] call MAINCLASS;
+                                    _airliftSource = [_logic, "selectAirliftSource", [_friendlyAirports, _eventPosition]] call MAINCLASS;
                                     _airliftDest   = [_logic, "selectAirliftDestination", [_friendlyAirports, _eventPosition, AIRLIFT_DEST_MAX_RADIUS]] call MAINCLASS;
 
                                     if (count _airliftSource > 0 && count _airliftDest > 0) then {
@@ -5088,6 +5276,125 @@ switch(_operation) do {
                                     ["ML - AIRLIFT suppressed: airliftAircraftClass %1 invalid (isKindOf Air=%2, transportSoldier>0=%3)",
                                         _airliftAircraftClass, _isAirAsset, _hasCargo] call ALiVE_fnc_dump;
                                 };
+                            };
+                        };
+
+                        // ---------------------------------------------------------------
+                        // Cargo capacity clamp (theory dimensions #2 + #7)
+                        //
+                        // Rule 1.5 has decided AIRLIFT is eligible (eligible source +
+                        // dest airports, runway free, fleet remaining). Now check the
+                        // aircraft can actually carry the requested force makeup. If
+                        // cargo exceeds capacity, clamp using a heavy-first greedy
+                        // fill -- AIRLIFT carries armour first because lower tiers
+                        // (HELI_INSERT slingload, STANDARD ground convoy) cannot.
+                        //
+                        // Slot weights: 1=infantry, 2=motorised, 3=mech, 4=armour.
+                        // Plane / heli categories (indices 4,5) are NOT airlifted --
+                        // they fly themselves. They pass through the clamp untouched.
+                        //
+                        // Capacity source:
+                        //   - airliftCargoSlots Eden override > 0: use that.
+                        //   - else auto-calc: floor(transportSoldier / 8). Examples:
+                        //       Y-32 (T=30) -> 3, Mohawk (T=12) -> 1, C-130 (T=92)
+                        //       -> 11, MH-9 (T=4) -> 0.
+                        //
+                        // Two suppression paths:
+                        //   1. capacity == 0: aircraft too small to carry anything.
+                        //      Mission designer picked wrong; bump to HELI/STANDARD.
+                        //   2. heavy-first fill yields zero deliverable groups (all
+                        //      requested types too heavy to fit even one). Suppress
+                        //      so AIRLIFT does not dispatch an empty plane.
+                        //
+                        // When a non-zero subset fits, the unpacked variables AND the
+                        // _eventForceMakeup array are mutated in place. Downstream
+                        // profile-creation loops (lines 5906/6263/6600/6650) iterate
+                        // on the unpacked variables -- mutating those is the
+                        // load-bearing change. _eventForceMakeup mirror keeps the
+                        // hash representation consistent for any later read.
+                        // ---------------------------------------------------------------
+                        if (_airliftEligible) then {
+                            private _slotsRequested = (_eventForceInfantry * 1) + (_eventForceMotorised * 2) + (_eventForceMechanised * 3) + (_eventForceArmour * 4);
+                            private _capOverride = _logic getVariable ["airliftCargoSlotsParsed", 0];
+                            private _tsCargo = getNumber(configFile >> "CfgVehicles" >> _airliftAircraftClass >> "transportSoldier");
+                            private _capacity = if (_capOverride > 0) then { _capOverride } else { floor (_tsCargo / 8) };
+
+                            if (_capacity == 0) then {
+                                _airliftEligible = false;
+                                if (_debug) then {
+                                    ["ML - AIRLIFT suppressed: aircraft %1 capacity 0 (transportSoldier=%2, override=%3) -- cannot carry anything, falling through to HELI/STANDARD",
+                                        _airliftAircraftClass, _tsCargo, _capOverride] call ALiVE_fnc_dump;
+                                };
+                            } else {
+                                if (_slotsRequested > _capacity) then {
+                                    // Snapshot original makeup for log + heavy-first fill ceiling.
+                                    private _origInf  = _eventForceInfantry;
+                                    private _origMot  = _eventForceMotorised;
+                                    private _origMech = _eventForceMechanised;
+                                    private _origArm  = _eventForceArmour;
+
+                                    private _newInf  = 0;
+                                    private _newMot  = 0;
+                                    private _newMech = 0;
+                                    private _newArm  = 0;
+                                    private _slotsUsed = 0;
+
+                                    // Heavy-first greedy fill. Order: armour (4) -> mech (3) -> mot (2) -> inf (1).
+                                    while {_newArm < _origArm && (_slotsUsed + 4) <= _capacity} do {
+                                        _newArm = _newArm + 1;
+                                        _slotsUsed = _slotsUsed + 4;
+                                    };
+                                    while {_newMech < _origMech && (_slotsUsed + 3) <= _capacity} do {
+                                        _newMech = _newMech + 1;
+                                        _slotsUsed = _slotsUsed + 3;
+                                    };
+                                    while {_newMot < _origMot && (_slotsUsed + 2) <= _capacity} do {
+                                        _newMot = _newMot + 1;
+                                        _slotsUsed = _slotsUsed + 2;
+                                    };
+                                    while {_newInf < _origInf && (_slotsUsed + 1) <= _capacity} do {
+                                        _newInf = _newInf + 1;
+                                        _slotsUsed = _slotsUsed + 1;
+                                    };
+
+                                    private _deliverableSlots = (_newInf * 1) + (_newMot * 2) + (_newMech * 3) + (_newArm * 4);
+
+                                    if (_deliverableSlots == 0) then {
+                                        // Heavy categories don't fit even one and no light to fall back on.
+                                        // Suppress -- letting AIRLIFT spawn an empty plane wastes a sortie
+                                        // and burns fleet pool. Lower tiers (HELI / STANDARD) take over.
+                                        _airliftEligible = false;
+                                        if (_debug) then {
+                                            ["ML - AIRLIFT suppressed: aircraft %1 capacity %2 slots, requested %3 slots [%4 inf, %5 mot, %6 mech, %7 arm] -- heavy-first clamp delivers 0 (heaviest type does not fit), falling through to HELI/STANDARD",
+                                                _airliftAircraftClass, _capacity, _slotsRequested,
+                                                _origInf, _origMot, _origMech, _origArm] call ALiVE_fnc_dump;
+                                        };
+                                    } else {
+                                        // Apply clamp -- update both the unpacked counters (consumed by
+                                        // profile creation loops 5906/6263/6600/6650) and the
+                                        // _eventForceMakeup array (consumed by any later array read).
+                                        _eventForceInfantry   = _newInf;
+                                        _eventForceMotorised  = _newMot;
+                                        _eventForceMechanised = _newMech;
+                                        _eventForceArmour     = _newArm;
+                                        _eventForceMakeup set [0, _newInf];
+                                        _eventForceMakeup set [1, _newMot];
+                                        _eventForceMakeup set [2, _newMech];
+                                        _eventForceMakeup set [3, _newArm];
+
+                                        if (_debug) then {
+                                            ["ML - AIRLIFT clamp: aircraft %1 capacity %2 slots, requested %3 slots [%4 inf, %5 mot, %6 mech, %7 arm], delivered %8 slots [%9 inf, %10 mot, %11 mech, %12 arm] (heavy-first greedy fill)",
+                                                _airliftAircraftClass, _capacity, _slotsRequested,
+                                                _origInf, _origMot, _origMech, _origArm,
+                                                _deliverableSlots,
+                                                _newInf, _newMot, _newMech, _newArm] call ALiVE_fnc_dump;
+                                        };
+                                    };
+                                };
+                                // _slotsRequested <= _capacity: full request fits, no clamp needed.
+                                // Includes the all-zero edge (only plane/heli requested -- AIRLIFT
+                                // doesn't carry those, but the eligibility check earlier didn't gate
+                                // on cargo presence, so leave the assignment to downstream tiers).
                             };
                         };
 
@@ -7701,6 +8008,7 @@ switch(_operation) do {
                     // Plane was destroyed or despawned. Lossy semantics -- no force pool refund.
                     ["ML - opcomAirliftFly: plane profile %1 lost (destroyed?). Releasing source runway and completing event %2",
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     private _airliftSrcEvA = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
                     if (count _airliftSrcEvA > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftSrcEvA select 0] call MAINCLASS;
@@ -7775,6 +8083,7 @@ switch(_operation) do {
                 if (isNil "_planeProfile") exitWith {
                     ["ML - opcomAirliftLand: plane profile %1 lost during landing approach. Completing event %2",
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     private _airliftSrcEvB = [_event, "airliftSourceAirport", []] call ALIVE_fnc_hashGet;
                     if (count _airliftSrcEvB > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftSrcEvB select 0] call MAINCLASS;
@@ -7832,7 +8141,28 @@ switch(_operation) do {
                 if (!_landIssued && !isNull _planeVehicle && {alive _planeVehicle}) then {
                     [_logic, "lockAirliftRunway", _destAirportID] call MAINCLASS;
 
-                    if (_verticalLand) then {
+                    // Carrier-vertical opt-in: VTOL/heli at a dynamic airport with a
+                    // recognised AirportBase nearby (e.g. USS Freedom, Eden carrier
+                    // composition). landAt with the AirportBase object lets the engine
+                    // align onto the correct helipad and naturally tracks the moving
+                    // carrier. Falls back to manual flyInHeight + doMove + land "LAND"
+                    // sequence when no AirportBase is found (defensive -- handles
+                    // dynamic airports flagged >= 100 that aren't proper carrier bases,
+                    // and the always-manual static-airfield case).
+                    private _useCarrierLand = false;
+                    if (_verticalLand && _destAirportID >= 100) then {
+                        private _dynAirport = nearestObject [_destAirportPos, "AirportBase"];
+                        if (!isNull _dynAirport) then {
+                            _planeVehicle landAt _dynAirport;
+                            _planeVehicle addEventHandler ["LandedStopped", {
+                                (_this select 0) setVariable ["ALIVE_AIRLIFT_LANDED", true, true];
+                            }];
+                            [_event, "airliftCarrierLand", true] call ALIVE_fnc_hashSet;
+                            _useCarrierLand = true;
+                        };
+                    };
+
+                    if (_verticalLand && !_useCarrierLand) then {
                         // VTOL / heli: drop altitude (AI auto-transitions out of plane
                         // mode for VTOLs), navigate to airport center. land "LAND"
                         // is deferred to the proximity check below so the AI doesn't
@@ -7845,7 +8175,9 @@ switch(_operation) do {
                         _planeVehicle flyInHeight AIRLIFT_VTOL_DESCENT_HEIGHT;
                         _planeVehicle doMove _destPos3D;
                         [_event, "airliftVTOLLandPending", true] call ALIVE_fnc_hashSet;
-                    } else {
+                    };
+
+                    if (!_verticalLand) then {
                         // Fixed-wing: standard ILS approach via landAt.
                         if (_destAirportID < 100) then {
                             _planeVehicle landAt _destAirportID;
@@ -7867,9 +8199,13 @@ switch(_operation) do {
                     [_event, "airliftLandIssued", true]   call ALIVE_fnc_hashSet;
                     [_event, "airliftLandTimer",   0]     call ALIVE_fnc_hashSet;
                     if (_debug) then {
+                        private _branchTag = if (_verticalLand) then {
+                            if (_useCarrierLand) then {"carrier vertical via landAt+EH"} else {"manual vertical sequence"}
+                        } else {
+                            "fixed-wing landAt"
+                        };
                         ["ML - opcomAirliftLand: %1 issued for plane %2 at dest airport %3",
-                            (if (_verticalLand) then {"VTOL/heli vertical-land sequence"} else {"landAt"}),
-                            _planeProfID, _destAirportID] call ALiVE_fnc_dump;
+                            _branchTag, _planeProfID, _destAirportID] call ALiVE_fnc_dump;
                     };
                 };
 
@@ -7886,8 +8222,9 @@ switch(_operation) do {
                 //     proceed to unload + cleanup (cargo still delivered).
                 //   - If landing was NOT yet issued (still virtual on first tick),
                 //     treat as NOT landed -- wait another tick.
+                private _carrierLand = [_event, "airliftCarrierLand", false] call ALIVE_fnc_hashGet;
                 private _landed = if (!isNull _planeVehicle) then {
-                    if (_verticalLand) then {
+                    if (_verticalLand && !_carrierLand) then {
                         private _agl    = (getPosATL _planeVehicle) select 2;
                         private _spd    = abs (speed _planeVehicle);
                         private _dist2D = _planeVehicle distance2D _destAirportPos;
@@ -7911,6 +8248,8 @@ switch(_operation) do {
                         // < AIRLIFT_VTOL_LAND_PROXIMITY at issue time).
                         (_agl < AIRLIFT_LANDED_AGL_THRESHOLD) && (_spd < AIRLIFT_LANDED_SPEED_THRESHOLD) && !_vtolLandPending && _landTimer > 0
                     } else {
+                        // Plane (any airport) OR vertical lander on a carrier --
+                        // engine-managed landAt + LandedStopped EH sets this var.
                         _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
                     };
                 } else {
@@ -8068,6 +8407,7 @@ switch(_operation) do {
                 if (isNil "_planeProfile") exitWith {
                     ["ML - opcomAirliftTakeoff2: plane profile %1 lost after unload (destroyed during taxi?). Releasing runways and completing event %2",
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
                     if (count _airliftDstEv > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftDstEv select 0] call MAINCLASS;
@@ -8167,6 +8507,7 @@ switch(_operation) do {
                 if (isNil "_planeProfile") exitWith {
                     ["ML - opcomAirliftRTB: plane profile %1 lost during RTB (shot down?). Releasing source runway and completing event %2",
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -8223,6 +8564,7 @@ switch(_operation) do {
                 if (isNil "_planeProfile") exitWith {
                     ["ML - opcomAirliftReturnLand: plane profile %1 lost on final approach. Releasing source runway and completing event %2",
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
+                    [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -8261,10 +8603,25 @@ switch(_operation) do {
                     } else {
                         // Players present -- issue the proper landing. Branch on aircraft
                         // type the same way as opcomAirliftLand (VTOL/heli get vertical
-                        // sequence, plane gets standard landAt ILS approach).
+                        // sequence, plane gets standard landAt ILS approach). VTOL/heli
+                        // at a dynamic airport with an AirportBase nearby uses the engine
+                        // landAt path so it can deck-align on a carrier.
                         private _verticalLand = [_event, "airliftVerticalLand", false] call ALIVE_fnc_hashGet;
                         if (!isNull _planeVehicle && {alive _planeVehicle}) then {
-                            if (_verticalLand) then {
+                            private _useReturnCarrierLand = false;
+                            if (_verticalLand && _sourceAirportID >= 100) then {
+                                private _dynAirport = nearestObject [_sourceAirportPos, "AirportBase"];
+                                if (!isNull _dynAirport) then {
+                                    _planeVehicle landAt _dynAirport;
+                                    _planeVehicle addEventHandler ["LandedStopped", {
+                                        (_this select 0) setVariable ["ALIVE_AIRLIFT_LANDED", true, true];
+                                    }];
+                                    [_event, "airliftCarrierLand", true] call ALIVE_fnc_hashSet;
+                                    _useReturnCarrierLand = true;
+                                };
+                            };
+
+                            if (_verticalLand && !_useReturnCarrierLand) then {
                                 // 3D doMove target -- ilsPosition returns [x,y] only;
                                 // without explicit z the AI interprets target altitude
                                 // as 0 and fights with the flyInHeight command.
@@ -8272,7 +8629,9 @@ switch(_operation) do {
                                 _planeVehicle flyInHeight AIRLIFT_VTOL_DESCENT_HEIGHT;
                                 _planeVehicle doMove _srcPos3D;
                                 [_event, "airliftReturnVTOLLandPending", true] call ALIVE_fnc_hashSet;
-                            } else {
+                            };
+
+                            if (!_verticalLand) then {
                                 if (_sourceAirportID < 100) then {
                                     _planeVehicle landAt _sourceAirportID;
                                 } else {
@@ -8292,9 +8651,13 @@ switch(_operation) do {
                             [_event, "airliftReturnLandIssued", true] call ALIVE_fnc_hashSet;
                             [_event, "airliftReturnLandTimer",  0]    call ALIVE_fnc_hashSet;
                             if (_debug) then {
+                                private _branchTagR = if (_verticalLand) then {
+                                    if (_useReturnCarrierLand) then {"carrier vertical via landAt+EH"} else {"manual vertical sequence"}
+                                } else {
+                                    "fixed-wing landAt"
+                                };
                                 ["ML - opcomAirliftReturnLand: %1 issued for plane %2 at source airport %3 (%4 players in range)",
-                                    (if (_verticalLand) then {"VTOL/heli vertical-land sequence"} else {"landAt"}),
-                                    _planeProfID, _sourceAirportID, _playersClose] call ALiVE_fnc_dump;
+                                    _branchTagR, _planeProfID, _sourceAirportID, _playersClose] call ALiVE_fnc_dump;
                             };
                         };
                     };
@@ -8312,8 +8675,9 @@ switch(_operation) do {
                     // gate can use it for the issue-tick race protection.
                     private _rlTimer = [_event, "airliftReturnLandTimer", 0] call ALIVE_fnc_hashGet;
 
+                    private _carrierLand = [_event, "airliftCarrierLand", false] call ALIVE_fnc_hashGet;
                     private _landed = if (!isNull _planeVehicle) then {
-                        if (_verticalLand) then {
+                        if (_verticalLand && !_carrierLand) then {
                             private _agl    = (getPosATL _planeVehicle) select 2;
                             private _spd    = abs (speed _planeVehicle);
                             private _dist2D = _planeVehicle distance2D _sourceAirportPos;
@@ -8330,6 +8694,8 @@ switch(_operation) do {
 
                             (_agl < AIRLIFT_LANDED_AGL_THRESHOLD) && (_spd < AIRLIFT_LANDED_SPEED_THRESHOLD) && !_vtolLandPending && _rlTimer > 0
                         } else {
+                            // Plane (any airport) OR vertical lander on a carrier --
+                            // engine-managed landAt + LandedStopped EH sets this var.
                             _planeVehicle getVariable ["ALIVE_AIRLIFT_LANDED", false]
                         };
                     } else {
