@@ -196,9 +196,28 @@ for "_j" from 1 to (count _roadpoints) do {
                     if !(isnil "ALiVE_ProfileHandler") then {
                         _vehicle = [_vehtype, [_fac call ALiVE_fnc_factionSide] call ALiVE_fnc_sideToSideText, _fac, _parkPosition, _parkDirection, true, _fac, [], true] call ALiVE_fnc_createProfileVehicle;
                     } else {
+                        // No-profile-handler fallback path: route through the
+                        // unified vehicle spawn validator (#850 Phase 2) so
+                        // the roadblock vehicle gets the same bbox-aware
+                        // footprint clearance + geometry sweep that profile
+                        // activations get. Without this the vehicle just
+                        // takes _parkPosition unvalidated and can spawn
+                        // through walls / fences. Falls back to _parkPosition
+                        // if the validator can't find a clear spot - the
+                        // allowDamage window below catches the residual case.
+                        private _spawnResult = [_vehtype, _parkPosition, 50, "auto", _parkDirection] call ALiVE_fnc_findVehicleSpawnPosition;
+                        if (count _spawnResult >= 2) then {
+                            _parkPosition = _spawnResult select 0;
+                            _parkDirection = _spawnResult select 1;
+                        };
                         _vehicle = createVehicle [_vehtype, _parkPosition, [], 0, "NONE"];
                         _vehicle setDir _parkDirection;
                         _vehicle setposATL (getposATL _vehicle);
+                        // Same allowDamage settle pattern as the profile path -
+                        // if the vehicle did spawn slightly clipped, the engine
+                        // gets time to resolve before damage re-engages.
+                        _vehicle allowDamage false;
+                        [{_this allowDamage true;}, _vehicle, 15] call CBA_fnc_waitAndExecute;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {

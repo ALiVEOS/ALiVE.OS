@@ -114,13 +114,17 @@ class CfgVehicles {
                 class ModuleDescription
                 {
                     description[] = {"$STR_ALIVE_SPEMP_COMMENT","","$STR_ALIVE_SPEMP_USAGE"};
-                    // No valid sync peers. The module places profile groups / vehicles
-                    // at a fixed position (module direction drives orientation). Syncing
-                    // it to an OPCOM or CQB is actively undesirable - OPCOM's objective-
-                    // pulling iteration at fnc_OPCOM.sqf would sweep the units into its
-                    // pool and redeploy them, defeating the fixed-position intent.
-                    // OPCOM's runtime filter now excludes this class explicitly.
-                    sync[] = {};
+                    // OPCOM / CQB are intentionally NOT valid sync peers. The
+                    // module places profile groups / vehicles at a fixed
+                    // position (module direction drives orientation); syncing
+                    // it to an OPCOM would sweep the units into its pool and
+                    // redeploy them, defeating the fixed-position intent.
+                    // OPCOM's runtime filter excludes this class explicitly.
+                    // sys_factioncompiler IS a valid sync peer - the module
+                    // resolves a synced compiler's compiled faction id at
+                    // runtime via the case "faction": accessor.
+                    sync[] = {"ALiVE_sys_factioncompiler"};
+                    class ALiVE_sys_factioncompiler { description[] = {"Custom Faction Compiler module."}; position=0; direction=0; optional=1; duplicate=0; };
                 };
         };
 };

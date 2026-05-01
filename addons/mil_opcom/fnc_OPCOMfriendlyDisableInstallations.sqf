@@ -107,6 +107,7 @@ private _PROXIMITY_RADIUS = 150;
 private _CAPTURE_RADIUS = 200;
 
 private _objectives = [_handler, "objectives", []] call ALiVE_fnc_HashGet;
+private _processedBuildings = [];
 
 {
     private _objective = _x;
@@ -153,6 +154,7 @@ private _objectives = [_handler, "objectives", []] call ALiVE_fnc_HashGet;
 
         private _canProceed = !isNull _building
             && {alive _building}
+            && {!(_building in _processedBuildings)}
             // Idempotence: if a player hold-action (or an earlier scan)
             // already disabled this building, don't re-fire. The hold-
             // action path sets this same variable at fnc_INS_helpers.sqf
@@ -193,8 +195,8 @@ private _objectives = [_handler, "objectives", []] call ALiVE_fnc_HashGet;
             };
 
             if (_triggered) then {
-                _building setVariable [_disabledVar, true, true];
-                [_building, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH", 2];
+                _processedBuildings pushBack _building;
+                [_building, _caller] call ALiVE_fnc_INS_disableBuildingInstallations;
 
                 // Subtitle: if we have a specific caller (proximity or
                 // capture with unit nearby) use their name and target

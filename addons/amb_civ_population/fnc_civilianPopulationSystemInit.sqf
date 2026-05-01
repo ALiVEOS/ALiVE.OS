@@ -126,10 +126,15 @@ if(isServer) then {
     private _advciv_hideTimeMin      = parseNumber (_logic getVariable ["advciv_hideTimeMin",      "60"]);
     private _advciv_hideTimeMax      = parseNumber (_logic getVariable ["advciv_hideTimeMax",      "180"]);
     private _advciv_preferBuildings  = (_logic getVariable ["advciv_preferBuildings",  "true"])  isEqualTo "true";
+    private _advciv_nightSleepAnim   = (_logic getVariable ["advciv_nightSleepAnim",   "true"])  isEqualTo "true";
     private _advciv_voiceEnabled     = (_logic getVariable ["advciv_voiceEnabled",     "false"]) isEqualTo "true";
     private _advciv_voiceChance      = parseNumber (_logic getVariable ["advciv_voiceChance",      "0.6"]);
     private _advciv_orderMenuRange   = parseNumber (_logic getVariable ["advciv_orderMenuRange",   "4"]);
     private _civIntelGatherChance    = parseNumber (_logic getVariable ["civIntelGatherChance",    "30"]);
+    private _civHostilityIndicator   = _logic getVariable ["civHostilityIndicator", "OFF"];
+    private _civWeaponAimRange       = parseNumber (_logic getVariable ["civWeaponAimRange",       "15"]);
+    private _civVehicleStopOnAim     = (_logic getVariable ["civVehicleStopOnAim",     "true"]) isEqualTo "true";
+    private _civHostilityDecayRate   = parseNumber (_logic getVariable ["civHostilityDecayRate",   "1"]);
 
     private _advciv_vehicleEscape       = (_logic getVariable ["advciv_vehicleEscape",       "true"])  isEqualTo "true";
     private _advciv_vehicleEscapeChance = parseNumber (_logic getVariable ["advciv_vehicleEscapeChance", "0.3"]);
@@ -174,12 +179,17 @@ if(isServer) then {
     ALiVE_advciv_hideTimeMin      = _advciv_hideTimeMin;      publicVariable "ALiVE_advciv_hideTimeMin";
     ALiVE_advciv_hideTimeMax      = _advciv_hideTimeMax;      publicVariable "ALiVE_advciv_hideTimeMax";
     ALiVE_advciv_preferBuildings  = _advciv_preferBuildings;  publicVariable "ALiVE_advciv_preferBuildings";
+    ALiVE_advciv_nightSleepAnim   = _advciv_nightSleepAnim;   publicVariable "ALiVE_advciv_nightSleepAnim";
     ALiVE_advciv_voiceEnabled     = _advciv_voiceEnabled;     publicVariable "ALiVE_advciv_voiceEnabled";
     ALiVE_advciv_voiceChance      = _advciv_voiceChance;      publicVariable "ALiVE_advciv_voiceChance";
     ALiVE_advciv_orderMenuRange   = _advciv_orderMenuRange;   publicVariable "ALiVE_advciv_orderMenuRange";
 
     ALiVE_amb_civ_population_UIMode = _civilianInteractionUI; publicVariable "ALiVE_amb_civ_population_UIMode";
     ALiVE_amb_civ_population_IntelGatherChance = _civIntelGatherChance; publicVariable "ALiVE_amb_civ_population_IntelGatherChance";
+    ALiVE_amb_civ_population_HostilityIndicator = _civHostilityIndicator; publicVariable "ALiVE_amb_civ_population_HostilityIndicator";
+    ALiVE_amb_civ_population_WeaponAimRange = _civWeaponAimRange; publicVariable "ALiVE_amb_civ_population_WeaponAimRange";
+    ALiVE_amb_civ_population_VehicleStopOnAim = _civVehicleStopOnAim; publicVariable "ALiVE_amb_civ_population_VehicleStopOnAim";
+    ALiVE_amb_civ_population_HostilityDecayRate = _civHostilityDecayRate; publicVariable "ALiVE_amb_civ_population_HostilityDecayRate";
 
     ALiVE_advciv_vehicleEscape       = _advciv_vehicleEscape;       publicVariable "ALiVE_advciv_vehicleEscape";
     ALiVE_advciv_vehicleEscapeChance = _advciv_vehicleEscapeChance; publicVariable "ALiVE_advciv_vehicleEscapeChance";

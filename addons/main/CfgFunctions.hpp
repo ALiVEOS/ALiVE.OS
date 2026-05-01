@@ -82,6 +82,42 @@ class cfgFunctions {
                 preInit = 1;
                 RECOMPILE;
             };
+            class edenValidateFactionCompilerSync {
+                description = "3DEN editor-time validator: warns when sys_factioncompiler categories have vehicles synced directly instead of crew";
+                file = "\x\alive\addons\main\fnc_edenValidateFactionCompilerSync.sqf";
+                preInit = 1;
+                RECOMPILE;
+            };
+            class getVehicleBoundingBox {
+                description = "Returns cached [length, width, height] bbox dimensions for a vehicle classname";
+                file = "\x\alive\addons\main\fnc_getVehicleBoundingBox.sqf";
+                RECOMPILE;
+            };
+            class findVehicleSpawnPosition {
+                description = "Unified vehicle spawn-position validator with bbox-aware footprint check + side-of-road placement";
+                file = "\x\alive\addons\main\fnc_findVehicleSpawnPosition.sqf";
+                RECOMPILE;
+            };
+            class activateReserve {
+                description = "Reserve-pool activation tick (one cluster per call) - shared across mil_placement / civ_placement / mil_placement_custom / civ_placement_custom via the cluster's reserveModuleClass hash entry";
+                file = "\x\alive\addons\main\fnc_activateReserve.sqf";
+                RECOMPILE;
+            };
+            class getAirfieldGeometry {
+                description = "Returns runway and taxiway segments around a position (mil_ato attrs + ALiVE_runway tags + BI substring matches)";
+                file = "\x\alive\addons\main\fnc_getAirfieldGeometry.sqf";
+                RECOMPILE;
+            };
+            class findAirSpawnPosition {
+                description = "Unified air-unit spawn-position validator: helipad/hangar/apron/field cascade, runway+taxiway exclusion, door verification";
+                file = "\x\alive\addons\main\fnc_findAirSpawnPosition.sqf";
+                RECOMPILE;
+            };
+            class anyPlayerCanSee {
+                description = "True if any alive player within range can see the target (view-cone + LoS) - deferral gate for visible-state changes";
+                file = "\x\alive\addons\main\fnc_anyPlayerCanSee.sqf";
+                RECOMPILE;
+            };
         };
     };
 };

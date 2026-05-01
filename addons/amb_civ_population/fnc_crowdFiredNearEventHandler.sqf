@@ -20,6 +20,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_unit", "_firer", "_distance"];
@@ -42,6 +43,24 @@ private _anim = "ApanPercMstpSnonWnonDnon_ApanPknlMstpSnonWnonDnon";
 
 if (random 1 > 0.4 && !(_unit getVariable ["ALiVE_Crowd_Fleeing", false]) && alive _unit) then {
 	[_unit, _anim] call ALIVE_fnc_switchMove;
+
+	// Watchdog: switchMove locks the AI animation until "" clears it.
+	// crowdActivator.fsm normally resets ALiVE_Crowd_Fleeing and
+	// clears the anim, but if the FSM doesn't run that branch (mission
+	// save/reload, civ virtualised mid-flee, etc.) the civ stays in
+	// the kneeling-panic / hands-over-head pose indefinitely. 90 s is
+	// the safety net - longer than any reasonable flee duration, so
+	// the FSM remains primary and the watchdog only catches stuck
+	// cases.
+	[{
+		params ["_unit"];
+		if (isNull _unit || {!alive _unit}) exitWith {};
+		private _anim = toLower animationState _unit;
+		if (_anim find "apanp" >= 0) then {
+			[_unit, ""] call ALIVE_fnc_switchMove;
+			_unit setVariable ["ALiVE_Crowd_Fleeing", false, false];
+		};
+	}, [_unit], 90] call CBA_fnc_waitAndExecute;
 } else {
 	if (!(_unit getVariable ["ALiVE_Crowd_Fleeing", false]) && alive _unit) then {[_unit, ""] call ALIVE_fnc_switchMove;};
 };

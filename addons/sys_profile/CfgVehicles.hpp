@@ -47,6 +47,20 @@ class CfgVehicles {
                     class spawnTypeJetRadius : Edit { property = "ALiVE_sys_profile_spawnTypeJetRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT"; defaultValue = """0"""; };
                     class spawnRadiusUAV : Edit { property = "ALiVE_sys_profile_spawnRadiusUAV"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT"; defaultValue = """-1"""; };
                     class smoothSpawn : Edit { property = "ALiVE_sys_profile_smoothSpawn"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT"; defaultValue = """0.3"""; };
+                    class vehicleSpawnSettleSeconds : Combo
+                    {
+                            property = "ALiVE_sys_profile_vehicleSpawnSettleSeconds";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_COMMENT";
+                            defaultValue = """15""";
+                            class Values
+                            {
+                                class FIVE     { name = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_5";  value = "5"; };
+                                class TEN      { name = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_10"; value = "10"; };
+                                class FIFTEEN  { name = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_15"; value = "15"; default = 1; };
+                                class THIRTY   { name = "$STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_30"; value = "30"; };
+                            };
+                    };
 
                     // ---- Despawn Linger -------------------------------------------------
                     class HDR_LINGER : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_LINGER"; displayName = "DESPAWN LINGER"; };

@@ -237,13 +237,149 @@
     <Russian>Готовность:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_READINESS_LEVEL_COMMENT">
-    <English>The proportion of the force that will be actively on duty and patrolling at mission start. Lower values leave more units in reserve.</English>
-    <Chinese>任務開始時主動值勤和巡邏的部隊比例。較低的值會讓更多單位留作預備隊。</Chinese>
-    <Chinesesimp>任务开始时主动值勤和巡逻的部队比例。较低的值会让更多单位留作预备队。</Chinesesimp>
-    <Spanish>La proporción de la fuerza que estará activamente de servicio y patrullando al inicio de la misión. Valores menores dejan más unidades en reserva.</Spanish>
-    <French>La proportion de la force qui sera activement en service et en patrouille au début de la mission. Des valeurs plus faibles laissent plus d'unités en réserve.</French>
-    <Portuguese>A proporção da força que estará ativamente em serviço e patrulhando no início da missão. Valores mais baixos deixam mais unidades de reserva.</Portuguese>
-    <Russian>Доля сил, которые будут на активном дежурстве и патрулировании при старте миссии. Меньшие значения оставляют больше юнитов в резерве.</Russian>
+    <English>Percentage of the configured INFANTRY force that activates at mission start. The remaining infantry stays in a reserve pool inside each objective and wakes to defend it when the active force takes losses (see Reserve activation threshold). Vehicle groups (armoured / mechanised / motorised) and air groups always activate at mission start regardless of this setting. Use 'Active patrol percent' to control how the active force splits between patrolling and garrisoning buildings.</English>
+    <Chinese>任務開始時啟動的步兵部隊百分比。剩餘步兵留在每個目標內的預備隊池中，當現役部隊損失時將被喚醒以保衛目標（請參閱「預備隊啟動閾值」）。車輛群組（裝甲／機械化／摩托化）和空中群組無論此設定如何，始終在任務開始時啟動。使用「現役巡邏百分比」來控制現役部隊在巡邏和駐守建築物之間的分配。</Chinese>
+    <Chinesesimp>任务开始时激活的步兵部队百分比。剩余步兵留在每个目标内的预备队池中，当现役部队遭受损失时将被唤醒以防御目标（参见"预备队激活阈值"）。车辆群组（装甲／机械化／摩托化）和空中群组无论此设置如何，始终在任务开始时激活。使用"现役巡逻百分比"控制现役部队在巡逻和驻守建筑之间的分配。</Chinesesimp>
+    <Spanish>Porcentaje de la fuerza de INFANTERÍA configurada que se activa al inicio de la misión. La infantería restante permanece en una reserva dentro de cada objetivo y se activa para defenderlo cuando la fuerza activa sufre bajas (ver Umbral de activación de reservas). Los grupos de vehículos (blindados / mecanizados / motorizados) y los grupos aéreos siempre se activan al inicio de la misión, independientemente de este ajuste. Usa 'Porcentaje de patrulla activa' para controlar cómo se divide la fuerza activa entre patrullar y guarnecer edificios.</Spanish>
+    <French>Pourcentage de la force d'INFANTERIE configurée qui s'active au début de la mission. L'infanterie restante reste dans une réserve à l'intérieur de chaque objectif et se réveille pour le défendre lorsque la force active subit des pertes (voir Seuil d'activation des réserves). Les groupes de véhicules (blindés / mécanisés / motorisés) et les groupes aériens s'activent toujours au début de la mission, indépendamment de ce paramètre. Utilisez 'Pourcentage de patrouille active' pour contrôler comment la force active se répartit entre patrouiller et garnir les bâtiments.</French>
+    <Portuguese>Porcentagem da força de INFANTARIA configurada que ativa no início da missão. A infantaria restante permanece em uma reserva dentro de cada objetivo e é despertada para defendê-lo quando a força ativa sofre baixas (ver Limite de ativação de reservas). Grupos de veículos (blindados / mecanizados / motorizados) e grupos aéreos sempre ativam no início da missão, independentemente dessa configuração. Use 'Porcentagem de patrulha ativa' para controlar como a força ativa se divide entre patrulhar e guarnecer edifícios.</Portuguese>
+    <Russian>Процент настроенных пехотных сил, активирующихся в начале миссии. Оставшаяся пехота остаётся в резерве внутри каждого объекта и пробуждается для его защиты, когда активные силы несут потери (см. «Порог активации резерва»). Группы техники (бронетехника / механизированные / моторизованные) и воздушные группы всегда активируются в начале миссии, независимо от этой настройки. Используйте «Процент активного патрулирования» для контроля распределения активных сил между патрулированием и гарнизоном зданий.</Russian>
+</Key>
+<!-- AI-translated first pass for the reserve-pool string set (2026-04-30). Native-speaker review pending; correct in place if any phrasing reads off. -->
+<Key ID="STR_ALIVE_MP_HDR_RESERVE">
+    <English>READINESS &amp; RESERVES</English>
+    <Chinese>戰備與預備隊</Chinese>
+    <Chinesesimp>战备与预备队</Chinesesimp>
+    <Spanish>PREPARACIÓN Y RESERVAS</Spanish>
+    <French>DISPONIBILITÉ ET RÉSERVES</French>
+    <Portuguese>PRONTIDÃO E RESERVAS</Portuguese>
+    <Russian>ГОТОВНОСТЬ И РЕЗЕРВЫ</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_ACTIVE_PATROL_PERCENT">
+    <English>Active patrol percent:</English>
+    <Chinese>現役巡邏百分比：</Chinese>
+    <Chinesesimp>现役巡逻百分比：</Chinesesimp>
+    <Spanish>Porcentaje de patrulla activa:</Spanish>
+    <French>Pourcentage de patrouille active :</French>
+    <Portuguese>Porcentagem de patrulha ativa:</Portuguese>
+    <Russian>Процент активного патрулирования:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_ACTIVE_PATROL_PERCENT_COMMENT">
+    <English>Of the units active at mission start, what percentage actively patrols (vs garrisons buildings near the objective). 100% = all patrol; 0% = all garrison. Only affects active units — see 'Readiness' for the active vs reserve split.</English>
+    <Chinese>任務開始時現役單位中，主動巡邏的百分比（相對於駐守目標附近建築物）。100% = 全部巡邏；0% = 全部駐守。僅影響現役單位 — 請參閱「戰備」以了解現役與預備隊的分配。</Chinese>
+    <Chinesesimp>任务开始时现役单位中，主动巡逻的百分比（相对于驻守目标附近建筑）。100% = 全部巡逻；0% = 全部驻守。仅影响现役单位 — 参见"战备"了解现役与预备队的分配。</Chinesesimp>
+    <Spanish>De las unidades activas al inicio de la misión, qué porcentaje patrulla activamente (en lugar de guarnecer edificios cerca del objetivo). 100% = todas patrullan; 0% = todas guarnecen. Solo afecta a unidades activas — ver 'Disponibilidad' para la división activa vs reserva.</Spanish>
+    <French>Parmi les unités actives au début de la mission, quel pourcentage patrouille activement (par rapport à garnir les bâtiments près de l'objectif). 100 % = toutes en patrouille ; 0 % = toutes en garnison. Affecte uniquement les unités actives — voir 'Disponibilité' pour la répartition active / réserve.</French>
+    <Portuguese>Das unidades ativas no início da missão, qual porcentagem patrulha ativamente (em vez de guarnecer edifícios próximos ao objetivo). 100% = todas patrulham; 0% = todas guarnecem. Afeta apenas unidades ativas — ver 'Prontidão' para a divisão ativa vs reserva.</Portuguese>
+    <Russian>Из юнитов, активных в начале миссии, какой процент активно патрулирует (вместо гарнизона зданий возле объекта). 100% = все патрулируют; 0% = все в гарнизоне. Влияет только на активные юниты — см. «Готовность» для деления активные / резерв.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD">
+    <English>Reserve activation threshold:</English>
+    <Chinese>預備隊啟動閾值：</Chinese>
+    <Chinesesimp>预备队激活阈值：</Chinesesimp>
+    <Spanish>Umbral de activación de reservas:</Spanish>
+    <French>Seuil d'activation des réserves :</French>
+    <Portuguese>Limite de ativação de reservas:</Portuguese>
+    <Russian>Порог активации резерва:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD_COMMENT">
+    <English>Active force level at which reserves wake to defend the objective. 25% = wait until heavily depleted. 50% = wake when half are lost. 75% = wake early. 100% = wake on first loss. Reserves wake into objective buildings; for long-range vehicle reinforcements see the OPCOM module's Reinforcements setting.</English>
+    <Chinese>預備隊喚醒以保衛目標的現役部隊水平。25% = 等待嚴重損耗。50% = 損失一半時喚醒。75% = 提早喚醒。100% = 首次損失即喚醒。預備隊在目標建築物內喚醒；遠程車輛增援請參閱 OPCOM 模組的「增援」設定。</Chinese>
+    <Chinesesimp>预备队唤醒以防御目标的现役部队水平。25% = 等待严重损耗。50% = 损失一半时唤醒。75% = 提早唤醒。100% = 首次损失即唤醒。预备队在目标建筑内唤醒；远程车辆增援参见 OPCOM 模块的"增援"设置。</Chinesesimp>
+    <Spanish>Nivel de la fuerza activa en el que las reservas se activan para defender el objetivo. 25% = esperar hasta gran pérdida. 50% = activar al perder la mitad. 75% = activar pronto. 100% = activar a la primera baja. Las reservas se activan dentro de los edificios del objetivo; para refuerzos de vehículos de largo alcance ver la opción Refuerzos del módulo OPCOM.</Spanish>
+    <French>Niveau de la force active auquel les réserves se réveillent pour défendre l'objectif. 25 % = attendre une forte attrition. 50 % = se réveiller à mi-pertes. 75 % = se réveiller tôt. 100 % = se réveiller à la première perte. Les réserves se réveillent dans les bâtiments de l'objectif ; pour des renforts véhicules longue distance, voir le paramètre Renforts du module OPCOM.</French>
+    <Portuguese>Nível da força ativa em que as reservas despertam para defender o objetivo. 25% = esperar até grande perda. 50% = despertar com metade perdida. 75% = despertar cedo. 100% = despertar na primeira perda. As reservas despertam nos edifícios do objetivo; para reforços de veículos de longo alcance ver a configuração Reforços do módulo OPCOM.</Portuguese>
+    <Russian>Уровень активных сил, при котором резервы пробуждаются для защиты объекта. 25% = ждать сильных потерь. 50% = пробудить при потере половины. 75% = пробудить рано. 100% = пробудить при первой потере. Резервы появляются в зданиях объекта; для дальних подкреплений техникой см. настройку «Подкрепления» модуля OPCOM.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN">
+    <English>Reserve activation cooldown (s):</English>
+    <Chinese>預備隊啟動冷卻時間（秒）：</Chinese>
+    <Chinesesimp>预备队激活冷却时间（秒）：</Chinesesimp>
+    <Spanish>Tiempo de espera de activación de reservas (s):</Spanish>
+    <French>Délai d'activation des réserves (s) :</French>
+    <Portuguese>Tempo de espera de ativação de reservas (s):</Portuguese>
+    <Russian>Перезарядка активации резерва (с):</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN_COMMENT">
+    <English>Minimum seconds between reserve activations within the same objective. Prevents waterfall reinforcement when the active force takes rapid losses.</English>
+    <Chinese>同一目標內預備隊啟動之間的最短秒數。防止現役部隊快速損失時的瀑布式增援。</Chinese>
+    <Chinesesimp>同一目标内预备队激活之间的最短秒数。防止现役部队快速损失时的瀑布式增援。</Chinesesimp>
+    <Spanish>Segundos mínimos entre activaciones de reservas dentro del mismo objetivo. Evita refuerzo en cascada cuando la fuerza activa sufre bajas rápidas.</Spanish>
+    <French>Secondes minimum entre les activations de réserves au sein du même objectif. Empêche le renfort en cascade lorsque la force active subit des pertes rapides.</French>
+    <Portuguese>Segundos mínimos entre ativações de reservas dentro do mesmo objetivo. Evita reforço em cascata quando a força ativa sofre baixas rápidas.</Portuguese>
+    <Russian>Минимальное число секунд между активациями резерва в пределах одного объекта. Предотвращает каскадное подкрепление при быстрых потерях активных сил.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_ENGAGEMENT_MULTIPLIER">
+    <English>Reserve engagement radius:</English>
+    <Chinese>預備隊交戰半徑：</Chinese>
+    <Chinesesimp>预备队交战半径：</Chinesesimp>
+    <Spanish>Radio de combate de reservas:</Spanish>
+    <French>Rayon d'engagement des réserves :</French>
+    <Portuguese>Raio de engajamento de reservas:</Portuguese>
+    <Russian>Радиус боевого контакта резерва:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_ENGAGEMENT_MULTIPLIER_COMMENT">
+    <English>How close a player must be to the objective for reserves to wake, expressed as a multiple of the cluster size. Default 3x means a player within (cluster_size * 3) metres triggers activation; for a 150 m cluster that's a 450 m engagement radius. Increase to wake reserves earlier from a distance, decrease for tighter engagements.</English>
+    <Chinese>玩家必須距離目標多近才能喚醒預備隊，以叢集大小的倍數表示。預設 3 倍意味著玩家在（叢集大小 × 3）公尺內觸發啟動；對於 150 公尺的叢集，這是 450 公尺的交戰半徑。增加以更早從遠處喚醒預備隊，減少以獲得更緊湊的交戰。</Chinese>
+    <Chinesesimp>玩家必须距离目标多近才能唤醒预备队，以集群大小的倍数表示。默认 3 倍意味着玩家在（集群大小 × 3）米内触发激活；对于 150 米的集群，这是 450 米的交战半径。增加以更早从远处唤醒预备队，减少以获得更紧凑的交战。</Chinesesimp>
+    <Spanish>Qué tan cerca debe estar un jugador del objetivo para que las reservas se activen, expresado como múltiplo del tamaño del clúster. El valor por defecto 3x significa que un jugador a menos de (tamaño_clúster * 3) metros activa; para un clúster de 150 m son 450 m de radio de combate. Aumenta para activar reservas antes desde la distancia, disminuye para combates más cerrados.</Spanish>
+    <French>À quelle distance un joueur doit être de l'objectif pour que les réserves se réveillent, exprimé comme un multiple de la taille du cluster. La valeur par défaut 3x signifie qu'un joueur à moins de (taille_cluster × 3) mètres déclenche l'activation ; pour un cluster de 150 m, cela fait 450 m de rayon d'engagement. Augmentez pour réveiller les réserves plus tôt à distance, diminuez pour des engagements plus serrés.</French>
+    <Portuguese>Quão perto um jogador deve estar do objetivo para que as reservas despertem, expresso como múltiplo do tamanho do cluster. O padrão 3x significa que um jogador a menos de (tamanho_cluster * 3) metros aciona a ativação; para um cluster de 150 m são 450 m de raio de engajamento. Aumente para despertar reservas mais cedo à distância, diminua para engajamentos mais próximos.</Portuguese>
+    <Russian>Насколько близко игрок должен находиться к объекту для пробуждения резервов, выражено как множитель размера кластера. По умолчанию 3x — игрок в пределах (размер_кластера * 3) метров запускает активацию; для кластера 150 м это радиус боевого контакта 450 м. Увеличьте для более раннего пробуждения резервов на расстоянии, уменьшите для более тесных столкновений.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_LOCK_CLEARED_BUILDINGS">
+    <English>Lock cleared buildings:</English>
+    <Chinese>鎖定已清除的建築物：</Chinese>
+    <Chinesesimp>锁定已清除的建筑：</Chinesesimp>
+    <Spanish>Bloquear edificios despejados:</Spanish>
+    <French>Verrouiller les bâtiments nettoyés :</French>
+    <Portuguese>Travar edifícios limpos:</Portuguese>
+    <Russian>Блокировать зачищенные здания:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_LOCK_CLEARED_BUILDINGS_COMMENT">
+    <English>Whether buildings the reserve spawn picker has seen inside its 80 m player-proximity bubble get permanently disqualified for the rest of the mission. Yes (default) = touched once, locked. Reserves won't pop into a building you've already cleared, even if you walk well past it. No = the 80 m gate is rechecked each activation; a building you've moved away from becomes eligible to host reserves again. Yes is more immersion-friendly; No lets the cluster keep refilling as you push through.</English>
+    <Chinese>預備隊生成選擇器在其 80 公尺玩家鄰近範圍內看到的建築物是否在任務剩餘時間內永久取消資格。是（預設）= 觸碰一次即鎖定。預備隊不會出現在您已清除的建築物中，即使您走遠了。否 = 每次啟動時重新檢查 80 公尺閘門；您已遠離的建築物再次有資格容納預備隊。是更具沉浸感；否讓叢集在您推進時持續補充。</Chinese>
+    <Chinesesimp>预备队生成选择器在其 80 米玩家邻近范围内看到的建筑是否在任务剩余时间内永久取消资格。是（默认）= 触碰一次即锁定。预备队不会出现在您已清除的建筑中，即使您走远了。否 = 每次激活时重新检查 80 米门；您已远离的建筑再次有资格容纳预备队。是更具沉浸感；否让集群在您推进时持续补充。</Chinesesimp>
+    <Spanish>Si los edificios que el selector de aparición de reservas ha visto dentro de su burbuja de proximidad al jugador de 80 m quedan permanentemente descalificados durante el resto de la misión. Sí (por defecto) = tocado una vez, bloqueado. Las reservas no aparecerán en un edificio que ya hayas despejado, incluso si te alejas mucho. No = la puerta de 80 m se vuelve a comprobar en cada activación; un edificio del que te has alejado vuelve a ser elegible para acoger reservas. Sí es más inmersivo; No permite al objetivo seguir reponiéndose mientras avanzas.</Spanish>
+    <French>Si les bâtiments que le sélecteur de spawn de réserve a vus dans sa bulle de proximité de 80 m du joueur sont définitivement disqualifiés pour le reste de la mission. Oui (par défaut) = touché une fois, verrouillé. Les réserves n'apparaîtront pas dans un bâtiment que vous avez déjà nettoyé, même si vous vous en éloignez beaucoup. Non = la porte de 80 m est revérifiée à chaque activation ; un bâtiment dont vous vous êtes éloigné redevient éligible pour accueillir des réserves. Oui est plus immersif ; Non permet à l'objectif de continuer à se remplir au fur et à mesure que vous avancez.</French>
+    <Portuguese>Se os edifícios que o selecionador de spawn de reservas viu dentro de sua bolha de proximidade do jogador de 80 m ficam permanentemente desqualificados pelo resto da missão. Sim (padrão) = tocado uma vez, travado. As reservas não surgirão em um edifício que você já limpou, mesmo se você se afastar muito. Não = o portão de 80 m é reverificado em cada ativação; um edifício do qual você se afastou volta a ser elegível para hospedar reservas. Sim é mais imersivo; Não permite que o objetivo continue se reabastecendo enquanto você avança.</Portuguese>
+    <Russian>Здания, которые селектор появления резерва видел в его 80-метровом пузыре близости к игроку, будут навсегда дисквалифицированы на оставшуюся часть миссии. Да (по умолчанию) = тронуто один раз, заблокировано. Резервы не появятся в здании, которое вы уже зачистили, даже если вы далеко отошли. Нет = 80-метровый порог проверяется заново при каждой активации; здание, от которого вы отошли, снова имеет право принимать резервы. Да более иммерсивно; Нет позволяет объекту продолжать пополняться по мере продвижения.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_EMPTY_VEHICLE_LOCKED">
+    <English>Lock empty reserve vehicles:</English>
+    <Chinese>鎖定空載預備車輛：</Chinese>
+    <Chinesesimp>锁定空载预备车辆：</Chinesesimp>
+    <Spanish>Bloquear vehículos de reserva vacíos:</Spanish>
+    <French>Verrouiller les véhicules de réserve vides :</French>
+    <Portuguese>Travar veículos de reserva vazios:</Portuguese>
+    <Russian>Блокировать пустую резервную технику:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_EMPTY_VEHICLE_LOCKED_COMMENT">
+    <English>Whether vehicles in the reserve pool (parked empty awaiting crew) are locked until activation. Yes (default) = player cannot steal or hijack them mid-mission. No = empty vehicles are unlocked, mission-makers can deliberately let players sneak into the motorpool. Locks lift automatically when activation crews the vehicle.</English>
+    <Chinese>預備隊池中的車輛（停放空載等待乘員）是否在啟動前鎖定。是（預設）= 玩家無法在任務中竊取或劫持。否 = 空載車輛解鎖，任務製作者可以讓玩家潛入車隊。啟動時車輛獲得乘員後鎖會自動解除。</Chinese>
+    <Chinesesimp>预备队池中的车辆（停放空载等待乘员）是否在激活前锁定。是（默认）= 玩家无法在任务中窃取或劫持。否 = 空载车辆解锁，任务制作者可以让玩家潜入车队。激活时车辆获得乘员后锁会自动解除。</Chinesesimp>
+    <Spanish>Si los vehículos en la reserva (estacionados vacíos esperando tripulación) están bloqueados hasta su activación. Sí (por defecto) = el jugador no puede robarlos ni secuestrarlos a media misión. No = los vehículos vacíos quedan desbloqueados, los creadores pueden dejar deliberadamente que los jugadores se cuelen en el parque de vehículos. Los bloqueos se levantan automáticamente cuando la activación tripula el vehículo.</Spanish>
+    <French>Si les véhicules dans la réserve (stationnés vides en attente d'équipage) sont verrouillés jusqu'à leur activation. Oui (par défaut) = le joueur ne peut ni les voler ni les détourner en cours de mission. Non = les véhicules vides sont déverrouillés, les créateurs de mission peuvent délibérément laisser les joueurs s'infiltrer dans le parc. Les verrouillages se lèvent automatiquement lorsque l'activation équipe le véhicule.</French>
+    <Portuguese>Se os veículos na reserva (estacionados vazios aguardando tripulação) ficam travados até a ativação. Sim (padrão) = o jogador não pode roubá-los nem sequestrá-los no meio da missão. Não = veículos vazios ficam destravados, criadores de missão podem deixar os jogadores infiltrarem-se no parque de veículos. Os bloqueios são liberados automaticamente quando a ativação tripula o veículo.</Portuguese>
+    <Russian>Заблокирована ли техника в резерве (припаркованная пустой в ожидании экипажа) до активации. Да (по умолчанию) = игрок не может украсть или угнать её во время миссии. Нет = пустая техника разблокирована, создатели миссий могут намеренно позволить игрокам пробираться к автопарку. Блокировка автоматически снимается, когда активация комплектует технику экипажем.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR">
+    <English>Reserve crew with destroyed vehicle:</English>
+    <Chinese>預備隊乘員（車輛已毀）：</Chinese>
+    <Chinesesimp>预备队乘员（车辆已毁）：</Chinesesimp>
+    <Spanish>Tripulación de reserva con vehículo destruido:</Spanish>
+    <French>Équipage de réserve avec véhicule détruit :</French>
+    <Portuguese>Tripulação de reserva com veículo destruído:</Portuguese>
+    <Russian>Резервный экипаж с уничтоженной техникой:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR_COMMENT">
+    <English>What happens when a reserve crew's linked vehicle is destroyed before activation. Spawn as infantry (default) = crew spawns at a nearby building like a normal infantry reserve. Drop silently = crew is removed from the pool without spawning, reducing force proportionally to vehicle losses.</English>
+    <Chinese>當預備隊乘員的關聯車輛在啟動前被摧毀時會發生什麼。作為步兵生成（預設）= 乘員在附近建築物生成，如同普通步兵預備隊。靜默丟棄 = 乘員從池中移除而不生成，部隊根據車輛損失成比例減少。</Chinese>
+    <Chinesesimp>当预备队乘员的关联车辆在激活前被摧毁时会发生什么。作为步兵生成（默认）= 乘员在附近建筑生成，如同普通步兵预备队。静默丢弃 = 乘员从池中移除而不生成，部队根据车辆损失成比例减少。</Chinesesimp>
+    <Spanish>Qué sucede cuando el vehículo vinculado a una tripulación de reserva es destruido antes de su activación. Aparecer como infantería (por defecto) = la tripulación aparece en un edificio cercano como una reserva de infantería normal. Descartar silenciosamente = la tripulación se elimina de la reserva sin aparecer, reduciendo la fuerza proporcionalmente a las pérdidas de vehículos.</Spanish>
+    <French>Que se passe-t-il lorsque le véhicule lié à un équipage de réserve est détruit avant l'activation. Faire apparaître comme infanterie (par défaut) = l'équipage apparaît dans un bâtiment voisin comme une réserve d'infanterie normale. Abandonner silencieusement = l'équipage est retiré de la réserve sans apparition, réduisant la force proportionnellement aux pertes de véhicules.</French>
+    <Portuguese>O que acontece quando o veículo vinculado a uma tripulação de reserva é destruído antes da ativação. Surgir como infantaria (padrão) = a tripulação surge em um edifício próximo como uma reserva de infantaria normal. Descartar silenciosamente = a tripulação é removida da reserva sem surgir, reduzindo a força proporcionalmente às perdas de veículos.</Portuguese>
+    <Russian>Что происходит, когда связанная с резервным экипажем техника уничтожается до активации. Появиться как пехота (по умолчанию) = экипаж появляется в ближайшем здании как обычный пехотный резерв. Тихо удалить = экипаж удаляется из резерва без появления, уменьшая силы пропорционально потерям техники.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACEMENT">
     <English>Place units:</English>

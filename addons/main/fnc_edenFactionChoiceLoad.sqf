@@ -47,12 +47,12 @@ is the property name used by the majority of single-select faction
 attributes (mil_placement, civ_placement, mil_ato, sys_quickstart
 etc.). Modules whose faction attribute is named something else
 (e.g. `ambientVehicleFaction` in amb_civ_placement, `ambientCrowdFaction`
-in amb_civ_population) MUST override attributeLoad at the attribute
-level to pass their specific property name - otherwise the logic
-variable fallback reads the wrong variable and can silently
-cross-contaminate with another attribute's stored value on the same
-module. See reference_eden_multiselect_control.md for the overall
-parameter-passing pattern established by the Multi handler.
+in amb_civ_population) reach this handler through a variant control
+class (e.g. ALiVE_FactionChoice_Civilian_AmbientVehicleFaction in
+addons/main/CfgVehicles.hpp) that itself defines attributeLoad with
+the right _varName argument. Per-attribute attributeLoad overrides
+on the `class X { control = "Y"; }` shape are silently ignored by
+Eden, so the variant control class is the only honoured hook.
 
 Parameters:
     [_display, _allowedSides, _varName]

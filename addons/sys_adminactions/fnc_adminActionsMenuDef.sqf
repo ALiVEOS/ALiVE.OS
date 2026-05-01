@@ -242,16 +242,16 @@ private _menuDef = switch (_menuName) do {
                     -1,
                     !isNil QMOD(sys_statistics_ENABLED),
                     !isNil QMOD(statistics)
-                ]/*,
-                [localize "STR_ALIVE_Data" + " >",
+                ],
+                [localize "STR_ALIVE_DATA_MENU" + " >",
                     "",
                     "",
-                    localize "STR_ALIVE_Data_COMMENT",
-                    ["call ALiVE_fnc_dataMenuDef", "data", 1],
+                    localize "STR_ALIVE_DATA_MENU_COMMENT",
+                    ["call ALiVE_fnc_dataMenuDef", ["data"], 1],
                     -1,
                     !isNil QMOD(sys_data) && {!MOD(sys_data_DISABLED)},
                     !isNil QMOD(sys_data)
-                ]*/
+                ]
             ]
         ]
     };

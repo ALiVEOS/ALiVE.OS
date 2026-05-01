@@ -285,6 +285,26 @@
     <Portuguese>Alto</Portuguese>
     <Russian>Высокая</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OPCOM_ASYM_EXCLUDE_KINDS">
+    <English>Excluded force kinds:</English>
+    <French>Catégories de force exclues:</French>
+    <Portuguese>Categorias de força excluídas:</Portuguese>
+    <Russian>Исключённые типы сил:</Russian>
+    <Spanish>Tipos de fuerza excluidos:</Spanish>
+    <Chinese>排除的部隊類型:</Chinese>
+    <Chinesesimp>排除的部队类型:</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OPCOM_ASYM_EXCLUDE_KINDS_COMMENT">
+    <English>Comma-separated list of CfgVehicles parent class names whose group entries are excluded from the asymmetric tiered roster. Default keeps tanks, planes, helicopters, and ships out of insurgent recruitment, matching the legacy behaviour. Edit the list to widen recruitment for state-backed insurgent factions (e.g. remove "Tank" to allow old tanks) or narrow it further (e.g. add "Truck" to exclude trucks). Empty = no kinds excluded.</English>
+    <French>Liste séparée par des virgules de noms de classes parentes CfgVehicles dont les entrées de groupe sont exclues de la liste à paliers asymétrique. Par défaut, exclut les chars, avions, hélicoptères et navires du recrutement insurgé, ce qui correspond au comportement antérieur. Modifiez la liste pour élargir le recrutement des factions insurgées soutenues par un État (ex. retirer "Tank" pour autoriser les vieux chars) ou la restreindre davantage (ex. ajouter "Truck" pour exclure les camions). Vide = aucune catégorie exclue.</French>
+    <Portuguese>Lista separada por vírgulas de nomes de classes pai do CfgVehicles cujas entradas de grupo são excluídas da lista escalonada assimétrica. O padrão mantém tanques, aviões, helicópteros e navios fora do recrutamento insurgente, correspondendo ao comportamento legado. Edite a lista para ampliar o recrutamento de facções insurgentes apoiadas por estados (ex. remover "Tank" para permitir tanques antigos) ou restringir ainda mais (ex. adicionar "Truck" para excluir caminhões). Vazio = nenhuma categoria excluída.</Portuguese>
+    <Russian>Список через запятую родительских классов CfgVehicles, чьи групповые записи исключаются из ярусного состава асимметричной OPCOM. По умолчанию исключает танки, самолёты, вертолёты и корабли из набора повстанцев, что соответствует прежнему поведению. Отредактируйте список, чтобы расширить набор для повстанческих фракций, поддерживаемых государствами (например, убрать "Tank", чтобы разрешить старые танки), или сузить его (например, добавить "Truck", чтобы исключить грузовики). Пусто = ничего не исключено.</Russian>
+    <Spanish>Lista separada por comas de nombres de clases padre de CfgVehicles cuyas entradas de grupo se excluyen del listado por niveles asimétrico. El valor predeterminado mantiene tanques, aviones, helicópteros y barcos fuera del reclutamiento insurgente, manteniendo el comportamiento heredado. Edita la lista para ampliar el reclutamiento de facciones insurgentes respaldadas por estados (p. ej. quitar "Tank" para permitir tanques antiguos) o restringirla aún más (p. ej. añadir "Truck" para excluir camiones). Vacío = ninguna categoría excluida.</Spanish>
+    <Chinese>以逗號分隔的 CfgVehicles 父類別名稱清單,其群組將從不對稱分級名單中排除。預設將戰車、飛機、直升機和艦船排除於叛亂方招募之外,符合舊有行為。編輯此清單以擴大國家支援的叛亂派系的招募範圍 (例如移除 "Tank" 以允許舊式戰車),或進一步縮限範圍 (例如新增 "Truck" 以排除卡車)。留空 = 不排除任何類別。</Chinese>
+    <Chinesesimp>以逗号分隔的 CfgVehicles 父类别名称清单,其群组将从不对称分级名单中排除。默认将坦克、飞机、直升机和舰船排除于叛乱方招募之外,符合旧有行为。编辑此清单以扩大国家支援的叛乱派系的招募范围 (例如移除 "Tank" 以允许旧式坦克),或进一步缩限范围 (例如新增 "Truck" 以排除卡车)。留空 = 不排除任何类别。</Chinesesimp>
+</Key>
 <Key ID="STR_ALIVE_OPCOM_ROADBLOCKS">
     <English>Roadblocks:</English>
     <Chinese>路障：</Chinese>

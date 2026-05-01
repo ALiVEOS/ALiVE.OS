@@ -95,7 +95,7 @@ switch(_operation) do {
                         // packed without binarisation (AddonBuilder -packonly dev builds). Normalise once
                         // here and PV back so the downstream UI handlers and FSMs that read this off
                         // NEO_radioLogic always see a bool and don't choke on `if (_audio) then`.
-                        if !(_audio isEqualType true) then { _audio = parseNumber str _audio > 0; };
+                        if !(_audio isEqualType true) then { _audio = parseNumber format ["%1", _audio] > 0; };
                         NEO_radioLogic setVariable ["combatsupport_audio", _audio, true];
 
                         _transportArrays = [];
@@ -284,9 +284,9 @@ switch(_operation) do {
                                     // binarisation (AddonBuilder -packonly, used for fast dev iteration) Eden
                                     // returns these as STRING ("0"/"1"). The isEqualType guards here no-op on
                                     // binarised builds and only trigger on the un-binarised dev path.
-                                    if !(_slingloading isEqualType true) then { _slingloading = parseNumber str _slingloading > 0; };
+                                    if !(_slingloading isEqualType true) then { _slingloading = parseNumber format ["%1", _slingloading] > 0; };
                                     _containers = ((synchronizedObjects _logic) select _i) getvariable ["transport_containers",0];
-                                    if !(_containers isEqualType 0) then { _containers = parseNumber str _containers; };
+                                    if !(_containers isEqualType 0) then { _containers = parseNumber format ["%1", _containers]; };
                                     // Military Logistics Simulation module attrs - Combo without typeName, Eden
                                     // always returns STRING. Bare parseNumber handles STRING directly.
                                     _transportLogistics = parseNumber (((synchronizedObjects _logic) select _i) getvariable ["transport_logistics","0"]);

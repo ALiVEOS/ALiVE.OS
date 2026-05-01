@@ -305,9 +305,19 @@ switch (_taskState) do {
                 _position = (_remotePosition getPos [(random 200), (random 200)]);
                 _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                 _profileID = _profiles select 0 select 2 select 4;
-                _position = (_taskPosition getPos [(random 40), (random 40)]);
-                _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
-                [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+
+                // Two-waypoint chain: aggressive ingress to an
+                // approach point 150 m short of the objective, then
+                // search-and-destroy at the objective itself.
+                // Replaces the single MOVE / SAFE / NO CHANGE
+                // waypoint that had attackers walking in like a
+                // patrol (#848).
+                private _approachPos = _taskPosition getPos [150, _taskPosition getDir _remotePosition];
+                private _attackPos = (_taskPosition getPos [(random 40), (random 40)]);
+                private _approachWP = [_approachPos, 100, "MOVE", "FULL", 50, [], "LINE", "YELLOW", "AWARE"] call ALIVE_fnc_createProfileWaypoint;
+                private _attackWP   = [_attackPos,   100, "SAD",  "FULL", 50, [], "LINE", "RED",    "COMBAT"] call ALIVE_fnc_createProfileWaypoint;
+                [(_profiles select 0), "addWaypoint", _approachWP] call ALIVE_fnc_profileEntity;
+                [(_profiles select 0), "addWaypoint", _attackWP]   call ALIVE_fnc_profileEntity;
 
                 _profileIDs pushback _profileID;
 
@@ -337,9 +347,19 @@ switch (_taskState) do {
                     _position = (_remotePosition getPos [(random 200), (random 200)]);
                     _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                     _profileID = _profiles select 0 select 2 select 4;
-                    _position = (_taskPosition getPos [(random 40), (random 40)]);
-                    _profileWaypoint = [_position, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
-                    [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+
+                    // Two-waypoint chain (matches the infantry path
+                    // above): aggressive ingress at AWARE / YELLOW /
+                    // FULL to an approach point 150 m short of the
+                    // objective, then SAD / COMBAT / RED at the
+                    // objective. Replaces the single MOVE / SAFE
+                    // waypoint (#848).
+                    private _approachPos = _taskPosition getPos [150, _taskPosition getDir _remotePosition];
+                    private _attackPos = (_taskPosition getPos [(random 40), (random 40)]);
+                    private _approachWP = [_approachPos, 100, "MOVE", "FULL", 50, [], "LINE", "YELLOW", "AWARE"] call ALIVE_fnc_createProfileWaypoint;
+                    private _attackWP   = [_attackPos,   100, "SAD",  "FULL", 50, [], "LINE", "RED",    "COMBAT"] call ALIVE_fnc_createProfileWaypoint;
+                    [(_profiles select 0), "addWaypoint", _approachWP] call ALIVE_fnc_profileEntity;
+                    [(_profiles select 0), "addWaypoint", _attackWP]   call ALIVE_fnc_profileEntity;
 
                     _profileIDs pushback _profileID;
 

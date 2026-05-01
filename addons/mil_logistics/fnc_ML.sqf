@@ -2645,9 +2645,30 @@ switch(_operation) do {
                     default { "B_Truck_01_ammo_F" };
                 };
 
-                private _truck = createVehicle [_truckClass, _sourcePos, [], 10, "NONE"];
-                _truck setDir (_sourcePos getDir _targetPos);
+                // Route through the unified vehicle spawn validator
+                // (#850). _sourcePos is an installation marker that's
+                // usually clear, but if the source is in a built-up
+                // base the truck can spawn clipped into a wall and
+                // detonate before driving off. Falls back to the
+                // original _sourcePos when the validator finds nothing.
+                private _truckSpawnPos = _sourcePos;
+                private _spawnResult = [_truckClass, _sourcePos, 50, "auto"] call ALiVE_fnc_findVehicleSpawnPosition;
+                if (count _spawnResult >= 2) then {
+                    _truckSpawnPos = _spawnResult select 0;
+                    // Direction is overwritten below to face _targetPos
+                    // - we only need the validated position here.
+                };
+
+                private _truck = createVehicle [_truckClass, _truckSpawnPos, [], 10, "NONE"];
+                _truck setDir (_truckSpawnPos getDir _targetPos);
                 createVehicleCrew _truck;
+
+                // Settle window mirroring the profile / roadblock
+                // / civilian-vehicle paths. 15 s of damage immunity
+                // covers any residual clipping while the engine
+                // resolves the placement.
+                _truck allowDamage false;
+                [{_this allowDamage true;}, _truck, 15] call CBA_fnc_waitAndExecute;
                 private _truckGrp = group (driver _truck);
 
                 // Assign waypoint to target position.
@@ -9881,6 +9902,20 @@ switch(_operation) do {
                                     _vehicleClass = selectRandom _containers;
 
                                     //_profile = [_vehicleClass,_side,_eventFaction,_position,random(360),false,_eventFaction,_payload] call ALIVE_fnc_createProfileVehicle;
+
+                                    // Route ground-spawned reinforcement containers through
+                                    // the unified vehicle spawn validator (#850). Random
+                                    // 200 m scatter from the cluster lands on unvalidated
+                                    // ground - bbox-aware footprint check rejects buildings
+                                    // / walls / fences. Paradrop containers descend under
+                                    // canopy and don't need ground-footprint validation -
+                                    // the parachute touchdown handles placement.
+                                    if (!_paraDrop) then {
+                                        private _spawnResult = [_vehicleClass, _position, 50, "auto"] call ALiVE_fnc_findVehicleSpawnPosition;
+                                        if (count _spawnResult >= 2) then {
+                                            _position = _spawnResult select 0;
+                                        };
+                                    };
 
                                     _vehicle = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
 

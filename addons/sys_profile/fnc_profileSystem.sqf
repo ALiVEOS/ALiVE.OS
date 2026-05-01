@@ -516,6 +516,12 @@ switch(_operation) do {
             };
             _result = [_logic,"smoothSpawn"] call ALIVE_fnc_hashGet;
     };
+    case "vehicleSpawnSettleSeconds": {
+            if(typeName _args == "SCALAR") then {
+                    [_logic,"vehicleSpawnSettleSeconds",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"vehicleSpawnSettleSeconds"] call ALIVE_fnc_hashGet;
+    };
 
     case "state": {
         private["_state"];

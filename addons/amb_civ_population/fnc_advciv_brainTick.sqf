@@ -229,13 +229,27 @@ switch (_state) do {
         if (_stateChanged) then {
             _unit setBehaviour "CARELESS";
             _unit setSpeedMode "LIMITED";
-            if (vehicle _unit == _unit) then { _unit setUnitPos "UP"; };
+            if (vehicle _unit == _unit) then {
+                _unit setUnitPos "UP";
+                // Clear any lingering animation lock from prior state. The HANDSUP
+                // path in fnc_advciv_react locks the unit into the surrender anim
+                // via `switchMove "AmovPercMstpSsurWnonDnon"`, and similar locks
+                // can come from HIDING / HIT_REACT reactions. setUnitPos "UP" alone
+                // does NOT escape a switchMove lock - it just updates the AI's
+                // stance preference. Order-driven transitions handle this in
+                // fnc_advciv_react and civAimRelease, but the autonomous state
+                // machine path (HIDING -> ALERT -> CALM via state-timer expiry,
+                // no order change) had no equivalent and left civs visually
+                // stuck in surrender / cower poses while reporting CALM.
+                _unit switchMove "";
+            };
             _unit enableAI "PATH";
             // Reset escape/panic flags so they're clean for the next threat
             _unit setVariable ["ALiVE_advciv_vehicleEscapeTried", false];
             _unit setVariable ["ALiVE_advciv_nearShots", 0];
             _unit setVariable ["ALiVE_advciv_panicRunStart", 0];
             _unit setVariable ["ALiVE_advciv_hidingBuilding", objNull, true];
+            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Pose DEBUG] CALM entry civ=%1 - cleared switchMove lock", name _unit]; };
         };
         if (vehicle _unit == _unit) then {
             [_unit] call ALiVE_fnc_advciv_ambientLife;
@@ -249,11 +263,19 @@ switch (_state) do {
         if (_stateChanged) then {
             _unit setBehaviour "AWARE";
             _unit setSpeedMode "LIMITED";
-            if (vehicle _unit == _unit) then { _unit setUnitPos "UP"; };
+            if (vehicle _unit == _unit) then {
+                _unit setUnitPos "UP";
+                // Clear any lingering animation lock - see CALM-entry comment
+                // for the full rationale. ALERT is a stand-and-watch state, so
+                // any prior surrender / cower anim from HIDING / HANDSUP needs
+                // clearing for the unit to actually face / track the threat.
+                _unit switchMove "";
+            };
             _unit setVariable ["ALiVE_advciv_stateTimer", time + 8 + random 12];
             _unit setVariable ["ALiVE_advciv_vehicleEscapeTried", false];
             private _source = _unit getVariable ["ALiVE_advciv_panicSource", [0,0,0]];
             if !(_source isEqualTo [0,0,0]) then { _unit doWatch _source; };
+            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Pose DEBUG] ALERT entry civ=%1 - cleared switchMove lock", name _unit]; };
         };
 
         private _alertTimer = _unit getVariable ["ALiVE_advciv_stateTimer", 0];
@@ -270,7 +292,16 @@ switch (_state) do {
                     alive _x
                     && {side _x != civilian}
                     && {side _x != sideLogic}
-                    && {(_x getVariable ["ALiVE_advciv_firedAtCiv", false]) || {rating _x < -500}}
+                    && {
+                    // firedAtCivTime is the wall-clock timestamp at which this
+                    // unit fired/exploded near a civilian. Treat them as a live
+                    // threat only while time-since-fire is within the shot
+                    // memory window, so the perma-flag stale-state bug (a
+                    // single AI fire event keeping civs in HIDING for the
+                    // rest of the mission) can't recur.
+                    private _firedAt = _x getVariable ["ALiVE_advciv_firedAtCivTime", -1];
+                    (_firedAt > 0 && {time - _firedAt < ALiVE_advciv_shotMemoryTime}) || {rating _x < -500}
+                }
                 };
                 _realThreat = (count _hostiles > 0);
             };
@@ -489,19 +520,39 @@ switch (_state) do {
                 _u forceSpeed -1;
                 [_u, "GUNFIRE"] call ALiVE_fnc_advciv_react;
 
-                // After ~25 s of running, transition to HIDING wherever they ended up
+                // After ~25 s of running, re-attempt to find a building near the
+                // unit's NEW position before dropping to HIDING in place. The flee
+                // movement may have brought the unit into range of cover that
+                // wasn't reachable from the original spawn position. If no
+                // building is in range now either, fall back to HIDING wherever
+                // the unit ended up (legacy behaviour, prevents civs running forever).
                 [{
                     params ["_u2"];
                     if (alive _u2 && {_u2 getVariable ["ALiVE_advciv_state", "CALM"] == "PANIC"}) then {
-                        if (vehicle _u2 == _u2) then { _u2 setUnitPos "DOWN"; };
-                        _u2 setVariable ["ALiVE_advciv_state", "HIDING", true];
-                        _u2 setVariable ["ALiVE_advciv_stateTimer", time + ALiVE_advciv_hideTimeMin + random (ALiVE_advciv_hideTimeMax - ALiVE_advciv_hideTimeMin)];
+                        private _retryHouse = [_u2] call ALiVE_fnc_advciv_findHouseProgressive;
+                        private _retryBld   = _retryHouse select 0;
+                        private _retryPos   = _retryHouse select 1;
+                        if (!isNull _retryBld && {count _retryPos > 0}) then {
+                            private _targetPos = selectRandom _retryPos;
+                            _u2 setVariable ["ALiVE_advciv_hidingPos", _targetPos, true];
+                            _u2 setVariable ["ALiVE_advciv_hidingBuilding", _retryBld, true];
+                            _u2 setVariable ["ALiVE_advciv_panicRunStart", 0];
+                            _u2 doMove _targetPos;
+                            _u2 setSpeedMode "FULL";
+                            _u2 forceSpeed -1;
+                            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Hide DEBUG] fleeOpen-25s civ=%1 retry FOUND building dist=%2 - retargeting", name _u2, _u2 distance _retryBld]; };
+                        } else {
+                            if (vehicle _u2 == _u2) then { _u2 setUnitPos "DOWN"; };
+                            _u2 setVariable ["ALiVE_advciv_state", "HIDING", true];
+                            _u2 setVariable ["ALiVE_advciv_stateTimer", time + ALiVE_advciv_hideTimeMin + random (ALiVE_advciv_hideTimeMax - ALiVE_advciv_hideTimeMin)];
+                            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Hide DEBUG] fleeOpen-25s civ=%1 retry FOUND NOTHING - HIDING in place at %2", name _u2, getPos _u2]; };
+                        };
                     };
                 }, [_u], 25] call CBA_fnc_waitAndExecute;
             };
 
             if (ALiVE_advciv_preferBuildings) then {
-                private _houseData = [_unit] call ALiVE_fnc_advciv_findHouse;
+                private _houseData = [_unit] call ALiVE_fnc_advciv_findHouseProgressive;
                 private _building  = _houseData select 0;
                 private _positions = _houseData select 1;
 
@@ -545,15 +596,33 @@ switch (_state) do {
                     _unit setVariable ["ALiVE_advciv_panicRunStart", time];
                 };
 
-                // If the unit has been running for 30 s without arriving, give up and
-                // drop into HIDING in place rather than running forever
+                // If the unit has been running for 30 s without arriving, re-attempt
+                // findHouse from the unit's CURRENT position before giving up. The
+                // run may have brought a closer building into range, so try one more
+                // time. If still nothing usable, drop into HIDING in place per the
+                // legacy give-up behaviour.
                 if (time - (_unit getVariable ["ALiVE_advciv_panicRunStart", time]) > 30) then {
-                    _unit setVariable ["ALiVE_advciv_hidingPos", [], true];
-                    _unit setVariable ["ALiVE_advciv_panicRunStart", 0];
-                    _unit setVariable ["ALiVE_advciv_hidingBuilding", objNull, true];
-                    if (vehicle _unit == _unit) then { _unit setUnitPos "DOWN"; };
-                    _unit setVariable ["ALiVE_advciv_state", "HIDING", true];
-                    _unit setVariable ["ALiVE_advciv_stateTimer", time + 60 + random 60];
+                    private _retryHouse = [_unit] call ALiVE_fnc_advciv_findHouseProgressive;
+                    private _retryBld   = _retryHouse select 0;
+                    private _retryPos   = _retryHouse select 1;
+                    if (!isNull _retryBld && {count _retryPos > 0}) then {
+                        private _targetPos = selectRandom _retryPos;
+                        _unit setVariable ["ALiVE_advciv_hidingPos", _targetPos, true];
+                        _unit setVariable ["ALiVE_advciv_hidingBuilding", _retryBld, true];
+                        _unit setVariable ["ALiVE_advciv_panicRunStart", 0];
+                        _unit doMove _targetPos;
+                        _unit setSpeedMode "FULL";
+                        _unit forceSpeed -1;
+                        if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Hide DEBUG] panicRun-30s-timeout civ=%1 retry FOUND building dist=%2 - retargeting", name _unit, _unit distance _retryBld]; };
+                    } else {
+                        _unit setVariable ["ALiVE_advciv_hidingPos", [], true];
+                        _unit setVariable ["ALiVE_advciv_panicRunStart", 0];
+                        _unit setVariable ["ALiVE_advciv_hidingBuilding", objNull, true];
+                        if (vehicle _unit == _unit) then { _unit setUnitPos "DOWN"; };
+                        _unit setVariable ["ALiVE_advciv_state", "HIDING", true];
+                        _unit setVariable ["ALiVE_advciv_stateTimer", time + 60 + random 60];
+                        if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Hide DEBUG] panicRun-30s-timeout civ=%1 retry FOUND NOTHING - HIDING in place at %2", name _unit, getPos _unit]; };
+                    };
                 };
             };
         };
@@ -606,19 +675,41 @@ switch (_state) do {
                 alive _x
                 && {side _x != civilian}
                 && {side _x != sideLogic}
-                && {(_x getVariable ["ALiVE_advciv_firedAtCiv", false]) || {rating _x < -500}}
+                && {
+                    // firedAtCivTime is the wall-clock timestamp at which this
+                    // unit fired/exploded near a civilian. Treat them as a live
+                    // threat only while time-since-fire is within the shot
+                    // memory window, so the perma-flag stale-state bug (a
+                    // single AI fire event keeping civs in HIDING for the
+                    // rest of the mission) can't recur.
+                    private _firedAt = _x getVariable ["ALiVE_advciv_firedAtCivTime", -1];
+                    (_firedAt > 0 && {time - _firedAt < ALiVE_advciv_shotMemoryTime}) || {rating _x < -500}
+                }
             } count (_unit nearEntities ["CAManBase", ALiVE_advciv_reactionRadius]);
 
+            if (ALiVE_advciv_debug) then {
+                diag_log format ["[ALiVE Threat DEBUG] HIDING-exit-check civ=%1 hostileNear=%2 lastShot=%3 elapsedSinceLastShot=%4 shotMemoryTime=%5", name _unit, _hostileNear, _lastShot, (time - _lastShot), ALiVE_advciv_shotMemoryTime];
+                {diag_log format ["[ALiVE Threat DEBUG]   nearby unit=%1 side=%2 firedAt=%3 elapsedSinceFire=%4 rating=%5", name _x, side _x, _x getVariable ["ALiVE_advciv_firedAtCivTime", -1], (if ((_x getVariable ["ALiVE_advciv_firedAtCivTime", -1]) > 0) then {time - (_x getVariable ["ALiVE_advciv_firedAtCivTime", -1])} else {-1}), rating _x]} forEach (_unit nearEntities ["CAManBase", ALiVE_advciv_reactionRadius]);
+            };
             if (_hostileNear > 0 && {(time - _lastShot) < ALiVE_advciv_shotMemoryTime}) then {
+                if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Threat DEBUG] civ=%1 EXTENDING hide timer (still threatened)", name _unit]; };
                 // Still dangerous — extend the hide timer and keep hiding
                 _unit setVariable ["ALiVE_advciv_stateTimer", time + ALiVE_advciv_hideTimeMin + random (ALiVE_advciv_hideTimeMax - ALiVE_advciv_hideTimeMin)];
             } else {
+                if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Threat DEBUG] civ=%1 RELEASING HIDING -> ALERT (cooldown clear)", name _unit]; };
                 // Safe — transition back to ALERT for a brief observation window
                 _unit setVariable ["ALiVE_advciv_state", "ALERT", true];
                 _unit setVariable ["ALiVE_advciv_stateTimer", 0];
                 _unit setVariable ["ALiVE_advciv_nearShots", 0];
                 _unit enableAI "PATH";
-                if (vehicle _unit == _unit) then { _unit setUnitPos "UP"; };
+                // setUnitPos "UP" applies regardless of vehicle state. The
+                // engine treats setUnitPos as a stance preference that
+                // applies on next dismount when in a vehicle, so the
+                // previous `if (vehicle _unit == _unit)` gate left a
+                // dismount-after-HIDING civ stuck on the MIDDLE / DOWN
+                // pose set during HIDING entry, walking around crouched
+                // once they exited the vehicle.
+                _unit setUnitPos "UP";
                 _unit doWatch objNull;
 
                 private _hidingBld = _unit getVariable ["ALiVE_advciv_hidingBuilding", objNull];

@@ -55,6 +55,7 @@ if(isServer) then {
     private _pathfindingSize = parseSimpleArray (_logic getVariable ["pathfindingSize", "[1000.100]"]);
     private _seaTransport = (_logic getVariable ["seaTransport", "false"]) == "true";
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
+    private _vehicleSpawnSettleSeconds = parseNumber (_logic getVariable ["vehicleSpawnSettleSeconds", "15"]);
 
     //Ensure Event Log is loaded
     if (isnil "ALIVE_eventLog") then {
@@ -82,6 +83,7 @@ if(isServer) then {
     [ALIVE_profileSystem, "pathfindingSize", _pathfindingSize] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "seaTransport", _seaTransport] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "smoothSpawn", _smoothSpawn] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "vehicleSpawnSettleSeconds", _vehicleSpawnSettleSeconds] call ALIVE_fnc_profileSystem;
 
     _logic setVariable ["handler",ALIVE_profileSystem];
     [ALIVE_profileSystem,"handler",_logic] call ALiVE_fnc_HashSet;

@@ -123,6 +123,30 @@ class Cfg3DEN
             attributeSave = "_this call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceSave.sqf'";
         };
 
+        // Variant control classes for civilian-side single-select
+        // faction attributes that store the selection under a non-
+        // default setVariable key (i.e. NOT "faction"). The variant
+        // class is the canonical hook because per-attribute
+        // attributeLoad / attributeSave overrides on the
+        // `class X { control = "Y"; }` shape are silently ignored
+        // by Eden - only attributes inheriting from a base class
+        // that itself defines attributeLoad / attributeSave have
+        // those overrides honoured.
+        //
+        // Each variant passes its target setVariable key as the
+        // third argument to the load handler and the second
+        // argument to the save handler, ensuring the persisted
+        // logic-variable name matches what the consuming module's
+        // expression writes (and what its case-accessor reads).
+        class ALiVE_FactionChoice_Civilian_AmbientVehicleFaction: ALiVE_FactionChoice_Civilian {
+            attributeLoad = "[_this, [3], 'ambientVehicleFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceLoad.sqf'";
+            attributeSave = "[_this, 'ambientVehicleFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceSave.sqf'";
+        };
+        class ALiVE_FactionChoice_Civilian_AmbientCrowdFaction: ALiVE_FactionChoice_Civilian {
+            attributeLoad = "[_this, [3], 'ambientCrowdFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceLoad.sqf'";
+            attributeSave = "[_this, 'ambientCrowdFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceSave.sqf'";
+        };
+
         // ALiVE_FactionChoiceMulti family:
         //   Multi-select counterpart to ALiVE_FactionChoice. Same dynamic
         //   population (CfgFactionClasses + missionConfig, side filtered,
@@ -333,17 +357,44 @@ class Cfg3DEN
         };
 
         class ALiVE_FactionChoiceMulti: ALiVE_FactionChoiceMulti_Base {
-            attributeLoad = "[_this, [0,1,2,3], 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeLoad = "[_this, [0,1,2,3], 'factions', [], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
         class ALiVE_FactionChoiceMulti_Military: ALiVE_FactionChoiceMulti_Base {
-            attributeLoad = "[_this, [0,1,2], 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeLoad = "[_this, [0,1,2], 'factions', [], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
         class ALiVE_FactionChoiceMulti_Civilian: ALiVE_FactionChoiceMulti_Base {
-            attributeLoad = "[_this, [3], 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeLoad = "[_this, [3], 'factions', [], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
+        };
+
+        // Variant of _Military that pre-ticks BLU_F when the listbox
+        // resolves empty. Used by mil_opcom's `factions` attribute,
+        // which has a runtime fallback to BLU_F (warns + defaults in
+        // fnc_OPCOM.sqf when the configured factions list is empty);
+        // showing BLU_F pre-ticked in the listbox aligns the visual
+        // state with what the runtime will use.
+        //
+        // Encoded as a control-class variant rather than a per-attribute
+        // attributeLoad override because Eden's attribute system reads
+        // attributeLoad from the control class for controls-group-based
+        // custom controls; per-attribute overrides on the Cfg3DEN /
+        // CfgVehicles attribute class do not propagate. (Confirmed via
+        // ENTRY-state diagnostic logging during #860 testing - the
+        // override path produced _this count=3 / initialDefault=[],
+        // matching the inherited control-class shape rather than the
+        // 4-element override.)
+        //
+        // Other ALiVE_FactionChoiceMulti consumers (mil_cqb /
+        // sup_player_resupply / sys_aiskill / amb_civ_population) keep
+        // the unmodified _Military / _Civilian / base variant - their
+        // empty default is semantic opt-in, not a broken-state
+        // placeholder.
+        class ALiVE_FactionChoiceMulti_Military_Default_BLU_F: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, [0,1,2], 'factions', ['BLU_F'], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
@@ -378,6 +429,40 @@ class Cfg3DEN
         class ALiVE_ItemChoiceMulti_Ration: ALiVE_FactionChoiceMulti_Base {
             attributeLoad = "[_this, 'ration', 'customHumRatItems'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenItemChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'customHumRatItems'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenItemChoiceMultiSave.sqf'";
+        };
+
+        // ALiVE_AnimalChoiceMulti family:
+        //   Multi-select listbox of ambient animal classnames populated
+        //   from the CfgALiVEAmbientAnimals registry. Each registry
+        //   entry is gated on a cfgPatchesName, so animals from
+        //   unloaded mods are excluded - mission-makers only see the
+        //   classes their current mod set actually provides.
+        //
+        //   Two species categories: poultry (urban backyard birds -
+        //   spawn near civilian buildings inside towns) and herd
+        //   (sheep / goats - spawn in open fields outside the town
+        //   footprint). Used by amb_civ_placement's ambient-animals
+        //   feature.
+        //
+        //   Each variant pre-ticks a vanilla A3 default pool when no
+        //   stored value is found (4th arg to attributeLoad), so
+        //   fresh module placement shows the standard farm-animal
+        //   classes already selected. The 5th arg plumbs Cfg3DEN's
+        //   engine-auto-populated `_value` through so saved
+        //   selections persist across Eden re-open regardless of
+        //   logic-var name (matches the FactionChoiceMulti fix in
+        //   commit 4d9d7e14).
+        //
+        //   Substrate inherited from ALiVE_FactionChoiceMulti_Base -
+        //   same listbox geometry, font, scrollbars.
+        class ALiVE_AnimalChoiceMulti_Poultry: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, 'poultry', 'customPoultryClasses', ['Hen_random_F', 'Cock_random_F'], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenAnimalChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'customPoultryClasses'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenItemChoiceMultiSave.sqf'";
+        };
+
+        class ALiVE_AnimalChoiceMulti_Herd: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, 'herd', 'customHerdClasses', ['Goat_random_F', 'Sheep_random_F'], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenAnimalChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'customHerdClasses'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenItemChoiceMultiSave.sqf'";
         };
 
         // Hidden attribute - renders zero UI (h = 0, empty controls).

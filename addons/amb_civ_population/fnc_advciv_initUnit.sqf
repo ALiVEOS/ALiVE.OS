@@ -164,6 +164,45 @@ _unit addEventHandler ["Hit", {
     if (isNull _unit || {!alive _unit}) exitWith {};
     if (isPlayer _unit) exitWith {};
     if (_damage < 0.01) exitWith {};                                           // Ignore negligible hits
+
+    // Bump the civ's personal hostility when wounded by a player. Damage
+    // is the per-hit delta (0-1), scaled by 80 so a light wound nudges
+    // the victim toward Wary, a heavy wound pushes them firmly into
+    // Hostile. Clamped to 100. Repeated hits compound up to the cap.
+    // Applied BEFORE the hitReacting early-exit below so the hostility
+    // bump still lands on civs that are mid-react from a prior hit.
+    //
+    // Two write paths:
+    // - The runtime variable on the unit object - covers civs without
+    //   an agentID (read by the non-agent branch of case "getData").
+    // - The agent profile's "posture" key (which lives at
+    //   `_civProfile select 2 select 12`) - canonical source read by
+    //   the agent branch of case "getData" for the questioning /
+    //   Gather Intel / hostility-indicator flows. Updating the runtime
+    //   variable alone leaves agent-tracked civs (the typical case in
+    //   advciv-active missions) showing stale hostility in the dialog.
+    //   Server-authoritative; isServer-gated since Hit fires on the
+    //   unit's owner.
+    if (!isNull _instigator && {isPlayer _instigator}) then {
+        private _bump = round (_damage * 80);
+
+        private _currentHostility = _unit getVariable ["ALiVE_CivPop_Hostility", 30];
+        private _newHostility = (_currentHostility + _bump) min 100;
+        _unit setVariable ["ALiVE_CivPop_Hostility", _newHostility, true];
+
+        if (isServer) then {
+            private _civID = _unit getVariable ["agentID", ""];
+            if (_civID != "") then {
+                private _civProfile = [ALIVE_agentHandler, "getAgent", _civID] call ALIVE_fnc_agentHandler;
+                if (!isNil "_civProfile") then {
+                    private _profileHostility = (_civProfile select 2) select 12;
+                    private _newProfileHostility = (_profileHostility + _bump) min 100;
+                    [_civProfile, "posture", _newProfileHostility] call ALiVE_fnc_hashSet;
+                };
+            };
+        };
+    };
+
     if (_unit getVariable ["ALiVE_advciv_hitReacting", false]) exitWith {};    // Already reacting
 
     _unit setVariable ["ALiVE_advciv_order", "NONE", true];

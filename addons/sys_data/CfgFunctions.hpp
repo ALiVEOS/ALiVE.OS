@@ -61,6 +61,11 @@ class cfgFunctions {
                         file = "\x\alive\addons\sys_data\fnc_data_onPlayerDisconnected.sqf";
                         RECOMPILE;
                 };
+                class dataMenuDef {
+                        description = "Admin-menu submenu for ALiVE persist-data wipe actions";
+                        file = "\x\alive\addons\sys_data\fnc_dataMenuDef.sqf";
+                        RECOMPILE;
+                };
             };
         };
 };

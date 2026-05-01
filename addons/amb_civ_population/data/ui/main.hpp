@@ -64,6 +64,32 @@ class ALiVE_CivilianInteraction {
 			h = 0.0559999 * safezoneH;
 			sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 2)";
 		};
+		// Perceived hostility readout, populated on dialog open by
+		// ALiVE_fnc_civInteract case "loadData". Hidden when the
+		// civHostilityIndicator module attribute is OFF (default);
+		// shows a coloured bucket label or numeric percentage when
+		// DESCRIPTIVE / NUMERIC. Sits to the right of CivName on
+		// the same row so disposition reads alongside identity.
+		//
+		// Geometry: x=0.530, w=0.145 keeps the right edge at 0.675,
+		// leaving a 0.007-safezoneW margin to the dialog body's
+		// right edge at 0.682 (Background x=0.2375 + w=0.4448).
+		// At 1.5x sizeEx the longest possible NUMERIC string
+		// (e.g. "Defiant (~79%)" ~14 chars) needs roughly 0.098
+		// safezoneW, so the 0.145 width has comfortable padding
+		// for any label / numeric combination without clipping.
+		class CivInteract_HostilityLabel: CivInteract_RscText {
+			idc = 9247;
+
+			text = "";
+			x = 0.530 * safezoneW + safezoneX;
+			y = 0.258 * safezoneH + safezoneY;
+			w = 0.145 * safezoneW;
+			h = 0.0559999 * safezoneH;
+			style = 1;  // ST_RIGHT
+			sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1.5)";
+			colorActive[] = {0,0,0,0};
+		};
 		class CivInteract_Pic: RscPicture
 		{
 			idc = 1200;
@@ -156,7 +182,7 @@ class ALiVE_CivilianInteraction {
 		class CivInteract_CalmDown: CivInteract_RscButton {
 			idc = 92324;
 			action = "[ALiVE_civInteractHandler,'CalmDown'] call ALiVE_fnc_civInteract";
-			text = "Calm";
+			text = "Calm Down";
             x = 0.4595 * safezoneW + safezoneX;
             y = 0.7916 * safezoneH + safezoneY;
             w = 0.0525 * safezoneW;

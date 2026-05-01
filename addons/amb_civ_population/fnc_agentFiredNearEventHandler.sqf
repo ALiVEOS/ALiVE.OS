@@ -20,6 +20,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_unit", "_firer", "_distance"];
@@ -36,6 +37,25 @@ if (_distance < 50) then {
 
 	if (random 1 > 0.4 && !(_unit getVariable ["isFleeing", false])) then {
 		[_unit, _anim] call ALIVE_fnc_switchMove;
+
+		// Watchdog: switchMove locks the AI animation until "" clears
+		// it. The cc_flee `cooldown` state normally fires that clear
+		// after the civ reaches home, but if the flee never reaches
+		// cooldown (path blocked, agent virtualised mid-flee, mission
+		// save/reload, etc.) the civ is stuck walking around in the
+		// kneeling-panic / hands-over-head pose indefinitely. This
+		// 90 s timeout is the safety net - longer than any reasonable
+		// flee duration, so the normal recovery path remains primary
+		// and the watchdog only kicks in for stuck cases.
+		[{
+			params ["_unit"];
+			if (isNull _unit || {!alive _unit}) exitWith {};
+			private _anim = toLower animationState _unit;
+			if (_anim find "apanp" >= 0) then {
+				[_unit, ""] call ALIVE_fnc_switchMove;
+				_unit setVariable ["isFleeing", false, false];
+			};
+		}, [_unit], 90] call CBA_fnc_waitAndExecute;
 	};
 
 	// Play panic noise

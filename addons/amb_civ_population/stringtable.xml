@@ -1054,6 +1054,36 @@
     <Chinesesimp>搜集情报</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_REFUSES_COOPERATION">
+    <English>Civilian refuses to cooperate</English>
+    <French>Le civil refuse de cooperer</French>
+    <Portuguese>O civil recusa-se a cooperar</Portuguese>
+    <Russian>Гражданский отказывается сотрудничать</Russian>
+    <Spanish>El civil se niega a cooperar</Spanish>
+    <Chinese>平民拒絕合作</Chinese>
+    <Chinesesimp>平民拒绝合作</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_REFUSES_TOOLTIP">
+    <English>Civilian refuses cooperation</English>
+    <French>Le civil refuse la cooperation</French>
+    <Portuguese>O civil recusa cooperacao</Portuguese>
+    <Russian>Гражданский отказывается от сотрудничества</Russian>
+    <Spanish>El civil rechaza la cooperacion</Spanish>
+    <Chinese>平民拒絕合作</Chinese>
+    <Chinesesimp>平民拒绝合作</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_DETAIN_NEED_CUFFS">
+    <English>You need a Cable Tie to detain a civilian.</English>
+    <French>Vous avez besoin d'un collier de serrage pour detenir un civil.</French>
+    <Portuguese>Precisa de uma abracadeira para deter um civil.</Portuguese>
+    <Russian>Чтобы задержать гражданского, нужна стяжка.</Russian>
+    <Spanish>Necesitas una brida para detener a un civil.</Spanish>
+    <Chinese>需要束線帶才能拘留平民。</Chinese>
+    <Chinesesimp>需要扎线带才能拘留平民。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_HOME">
     <English>Where do you live?</English>
     <French>Où habitez-vous?</French>
@@ -1132,6 +1162,271 @@
     <Spanish>¿Cuál es la opinión de nuestras fuerzas en esta área?</Spanish>
     <Chinese>本地對我方部隊的看法如何?</Chinese>
     <Chinesesimp>我们在这个地区的部队有什么看法？</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_NEEDS">
+    <English>What do you need?</English>
+    <French>De quoi avez-vous besoin?</French>
+    <Portuguese>Do que precisa?</Portuguese>
+    <Russian>Что вам нужно?</Russian>
+    <Spanish>Que necesita?</Spanish>
+    <Chinese>你需要什麼?</Chinese>
+    <Chinesesimp>你需要什么?</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_PRESSURE">
+    <English>Has anyone been pressuring you?</English>
+    <French>Quelqu'un vous a-t-il fait pression?</French>
+    <Portuguese>Alguem anda a pressiona-lo?</Portuguese>
+    <Russian>Вас кто-нибудь принуждал?</Russian>
+    <Spanish>Alguien lo ha estado presionando?</Spanish>
+    <Chinese>有人在向你施壓嗎?</Chinese>
+    <Chinesesimp>有人在向你施压吗?</Chinesesimp>
+</Key>
+<!-- ---- Needs responses (no hostile-tier branch needed - the dialog
+     greys the Question listbox at Defiant+; this case only runs at
+     Friendly / Neutral / Wary) ---- -->
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_BOTH_1">
+    <English>Anything you can spare. We've got nothing - no food, no clean water.</English>
+    <French>Tout ce que vous pouvez nous donner. Nous n'avons rien - ni nourriture, ni eau propre.</French>
+    <Portuguese>Qualquer coisa que possa dispensar. Nao temos nada - nem comida, nem agua limpa.</Portuguese>
+    <Russian>Всё, что можете уделить. У нас ничего нет - ни еды, ни чистой воды.</Russian>
+    <Spanish>Cualquier cosa que pueda darnos. No tenemos nada: ni comida, ni agua limpia.</Spanish>
+    <Chinese>任何能給的我們都需要。我們什麼都沒有 - 沒有食物,沒有乾淨的水。</Chinese>
+    <Chinesesimp>任何能给的我们都需要。我们什么都没有 - 没有食物,没有干净的水。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_BOTH_2">
+    <English>Food and water, please. The children are suffering.</English>
+    <French>De la nourriture et de l'eau, s'il vous plait. Les enfants souffrent.</French>
+    <Portuguese>Comida e agua, por favor. As criancas estao a sofrer.</Portuguese>
+    <Russian>Еду и воду, пожалуйста. Дети страдают.</Russian>
+    <Spanish>Comida y agua, por favor. Los ninos estan sufriendo.</Spanish>
+    <Chinese>食物和水,拜託。孩子們在受苦。</Chinese>
+    <Chinesesimp>食物和水,拜托。孩子们在受苦。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_BOTH_3">
+    <English>We're hungry and thirsty. Anything would help.</English>
+    <French>Nous avons faim et soif. N'importe quoi nous aiderait.</French>
+    <Portuguese>Temos fome e sede. Qualquer coisa ajudara.</Portuguese>
+    <Russian>Мы голодны и испытываем жажду. Любая помощь пригодится.</Russian>
+    <Spanish>Tenemos hambre y sed. Cualquier cosa nos ayudaria.</Spanish>
+    <Chinese>我們又餓又渴。任何東西都有幫助。</Chinese>
+    <Chinesesimp>我们又饿又渴。任何东西都有帮助。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_FOOD_1">
+    <English>We could really use some food. Haven't had a proper meal in days.</English>
+    <French>Nous aurions vraiment besoin de nourriture. Pas un vrai repas depuis des jours.</French>
+    <Portuguese>Estamos mesmo a precisar de comida. Ha dias que nao fazemos uma refeicao decente.</Portuguese>
+    <Russian>Нам очень нужна еда. Уже несколько дней не было нормальной еды.</Russian>
+    <Spanish>Nos vendria muy bien algo de comida. Hace dias que no comemos algo decente.</Spanish>
+    <Chinese>我們真的很需要食物。已經好幾天沒有像樣的一餐了。</Chinese>
+    <Chinesesimp>我们真的很需要食物。已经好几天没有像样的一餐了。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_FOOD_2">
+    <English>Food, if you have any. We're getting by on water but the cupboards are bare.</English>
+    <French>De la nourriture, si vous en avez. Nous nous debrouillons avec l'eau, mais les placards sont vides.</French>
+    <Portuguese>Comida, se tiver. Vamos aguentando com agua, mas os armarios estao vazios.</Portuguese>
+    <Russian>Еду, если есть. Воду мы кое-как находим, но шкафы пусты.</Russian>
+    <Spanish>Comida, si tiene. Vamos tirando con el agua, pero los armarios estan vacios.</Spanish>
+    <Chinese>食物,如果你有的話。水還勉強夠,但櫥櫃裡什麼都沒了。</Chinese>
+    <Chinesesimp>食物,如果你有的话。水还勉强够,但橱柜里什么都没了。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_FOOD_3">
+    <English>A ration would mean a lot. We're hungry but at least the well still runs.</English>
+    <French>Une ration nous aiderait beaucoup. Nous avons faim, mais au moins le puits coule encore.</French>
+    <Portuguese>Uma racao faria muita diferenca. Temos fome, mas pelo menos o poco ainda da agua.</Portuguese>
+    <Russian>Паёк очень бы пригодился. Голодаем, но хоть колодец ещё работает.</Russian>
+    <Spanish>Una racion significaria mucho. Tenemos hambre, pero al menos el pozo sigue dando agua.</Spanish>
+    <Chinese>一份口糧就幫了大忙。我們很餓,但至少井水還能用。</Chinese>
+    <Chinesesimp>一份口粮就帮了大忙。我们很饿,但至少井水还能用。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_WATER_1">
+    <English>Water, please. The supply has been bad for weeks.</English>
+    <French>De l'eau, s'il vous plait. L'approvisionnement est mauvais depuis des semaines.</French>
+    <Portuguese>Agua, por favor. O abastecimento esta mau ha semanas.</Portuguese>
+    <Russian>Воды, пожалуйста. Уже несколько недель с водой плохо.</Russian>
+    <Spanish>Agua, por favor. El suministro lleva semanas mal.</Spanish>
+    <Chinese>水,拜託。供水已經不好好幾週了。</Chinese>
+    <Chinesesimp>水,拜托。供水已经不好好几周了。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_WATER_2">
+    <English>Clean water, if you can spare any. Food we can manage.</English>
+    <French>De l'eau propre, si vous en avez a donner. La nourriture, on s'en sort.</French>
+    <Portuguese>Agua limpa, se puder dispensar. Comida, conseguimos arranjar.</Portuguese>
+    <Russian>Чистую воду, если есть. С едой мы справляемся.</Russian>
+    <Spanish>Agua limpia, si puede dejarnos. Comida nos arreglamos.</Spanish>
+    <Chinese>乾淨的水,如果你能省出一些。食物我們還能應付。</Chinese>
+    <Chinesesimp>干净的水,如果你能省出一些。食物我们还能应付。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_WATER_3">
+    <English>We're thirsty - the wells are running dry.</English>
+    <French>Nous avons soif - les puits s'assechent.</French>
+    <Portuguese>Estamos com sede - os pocos estao a secar.</Portuguese>
+    <Russian>Хочется пить - колодцы пересыхают.</Russian>
+    <Spanish>Tenemos sed: los pozos se estan secando.</Spanish>
+    <Chinese>我們很渴 - 井水快乾了。</Chinese>
+    <Chinesesimp>我们很渴 - 井水快干了。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_NOTHING_1">
+    <English>We're alright. Thank you for asking.</English>
+    <French>Nous allons bien. Merci de votre attention.</French>
+    <Portuguese>Estamos bem. Obrigado por perguntar.</Portuguese>
+    <Russian>У нас всё в порядке. Спасибо, что спросили.</Russian>
+    <Spanish>Estamos bien. Gracias por preguntar.</Spanish>
+    <Chinese>我們還好。謝謝你的關心。</Chinese>
+    <Chinesesimp>我们还好。谢谢你的关心。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_NOTHING_2">
+    <English>Nothing right now. Save your supplies for those who need them more.</English>
+    <French>Rien pour l'instant. Gardez vos provisions pour ceux qui en ont plus besoin.</French>
+    <Portuguese>Nada por agora. Guarde os mantimentos para quem precisa mais.</Portuguese>
+    <Russian>Сейчас ничего. Приберегите припасы для тех, кому нужнее.</Russian>
+    <Spanish>Nada por ahora. Guarda tus suministros para quienes los necesiten mas.</Spanish>
+    <Chinese>現在不需要。把物資留給更需要的人吧。</Chinese>
+    <Chinesesimp>现在不需要。把物资留给更需要的人吧。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_NOTHING_3">
+    <English>We have enough for now. Bless you for offering.</English>
+    <French>Nous avons assez pour l'instant. Soyez beni pour votre proposition.</French>
+    <Portuguese>Temos o suficiente por agora. Que Deus o abencoe por oferecer.</Portuguese>
+    <Russian>Пока у нас всего достаточно. Спасибо вам за предложение.</Russian>
+    <Spanish>Tenemos suficiente por ahora. Que Dios te bendiga por ofrecerlo.</Spanish>
+    <Chinese>我們目前夠用了。願神保佑你的好意。</Chinese>
+    <Chinesesimp>我们目前够用了。愿神保佑你的好意。</Chinesesimp>
+</Key>
+<!-- ---- Pressure responses ---- -->
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_NONE_1">
+    <English>No, no one has come around. Things have been quiet.</English>
+    <French>Non, personne n'est venu. Tout est calme.</French>
+    <Portuguese>Nao, ninguem apareceu. Tem estado tudo calmo.</Portuguese>
+    <Russian>Нет, никто не приходил. Всё спокойно.</Russian>
+    <Spanish>No, no ha venido nadie. Todo ha estado tranquilo.</Spanish>
+    <Chinese>沒有,沒人來過。一直很平靜。</Chinese>
+    <Chinesesimp>没有,没人来过。一直很平静。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_NONE_2">
+    <English>Not lately. The neighbours would say the same.</English>
+    <French>Pas recemment. Les voisins diraient la meme chose.</French>
+    <Portuguese>Ultimamente nao. Os vizinhos diriam o mesmo.</Portuguese>
+    <Russian>В последнее время нет. Соседи скажут то же самое.</Russian>
+    <Spanish>Ultimamente no. Los vecinos dirian lo mismo.</Spanish>
+    <Chinese>最近沒有。鄰居們也會這麼說。</Chinese>
+    <Chinesesimp>最近没有。邻居们也会这么说。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_NONE_3">
+    <English>No - we keep our heads down and they leave us alone.</English>
+    <French>Non - nous restons discrets et ils nous laissent tranquilles.</French>
+    <Portuguese>Nao - mantemo-nos discretos e eles deixam-nos em paz.</Portuguese>
+    <Russian>Нет - мы держимся тихо, и нас не трогают.</Russian>
+    <Spanish>No: mantenemos un perfil bajo y nos dejan en paz.</Spanish>
+    <Chinese>沒有 - 我們低調行事,他們也不來找麻煩。</Chinese>
+    <Chinesesimp>没有 - 我们低调行事,他们也不来找麻烦。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_YES_1">
+    <English>Yes. Men came through, asking questions. We told them nothing.</English>
+    <French>Oui. Des hommes sont venus, ils ont pose des questions. Nous ne leur avons rien dit.</French>
+    <Portuguese>Sim. Vieram ca uns homens, a fazer perguntas. Nao lhes dissemos nada.</Portuguese>
+    <Russian>Да. Приходили какие-то люди, задавали вопросы. Мы им ничего не сказали.</Russian>
+    <Spanish>Si. Vinieron unos hombres haciendo preguntas. No les dijimos nada.</Spanish>
+    <Chinese>有。有些人來問問題。我們什麼都沒告訴他們。</Chinese>
+    <Chinesesimp>有。有些人来问问题。我们什么都没告诉他们。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_YES_2">
+    <English>They were here. Said we'd regret it if we spoke to soldiers like you.</English>
+    <French>Ils sont passes. Ils ont dit qu'on le regretterait si on parlait a des soldats comme vous.</French>
+    <Portuguese>Estiveram aqui. Disseram que iamos arrepender-nos se falassemos com soldados como voces.</Portuguese>
+    <Russian>Они были здесь. Сказали, мы пожалеем, если будем разговаривать с такими солдатами, как вы.</Russian>
+    <Spanish>Estuvieron aqui. Dijeron que lo lamentariamos si hablabamos con soldados como ustedes.</Spanish>
+    <Chinese>他們來過。說如果我們跟你們這樣的士兵講話,我們會後悔的。</Chinese>
+    <Chinesesimp>他们来过。说如果我们跟你们这样的士兵讲话,我们会后悔的。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_YES_3">
+    <English>A few of them came around. Took what they wanted, made threats. We're frightened.</English>
+    <French>Quelques-uns sont passes. Ils ont pris ce qu'ils voulaient, fait des menaces. Nous avons peur.</French>
+    <Portuguese>Vieram ca uns quantos. Levaram o que quiseram, fizeram ameacas. Estamos com medo.</Portuguese>
+    <Russian>Несколько их приходили. Забрали что хотели, угрожали. Нам страшно.</Russian>
+    <Spanish>Vinieron unos cuantos. Se llevaron lo que quisieron, nos amenazaron. Tenemos miedo.</Spanish>
+    <Chinese>他們有幾個人來過。拿走了想要的東西,還威脅我們。我們很害怕。</Chinese>
+    <Chinesesimp>他们有几个人来过。拿走了想要的东西,还威胁我们。我们很害怕。</Chinesesimp>
+</Key>
+<!-- ---- Hostile-roll responses for Needs / Pressure ---- -->
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_HOSTILE_1">
+    <English>I don't want anything from you. Just leave.</English>
+    <French>Je ne veux rien de vous. Partez, c'est tout.</French>
+    <Portuguese>Nao quero nada de si. Va-se embora.</Portuguese>
+    <Russian>Мне от вас ничего не нужно. Уходите.</Russian>
+    <Spanish>No quiero nada de usted. Largese.</Spanish>
+    <Chinese>我不要你的任何東西。走開就是了。</Chinese>
+    <Chinesesimp>我不要你的任何东西。走开就是了。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_HOSTILE_2">
+    <English>Keep your handouts. We'll manage on our own.</English>
+    <French>Gardez vos aumones. Nous nous debrouillerons seuls.</French>
+    <Portuguese>Guarde a sua esmola. Ca nos arranjamos.</Portuguese>
+    <Russian>Оставьте свои подачки себе. Мы справимся сами.</Russian>
+    <Spanish>Quedese con sus limosnas. Nos las arreglaremos solos.</Spanish>
+    <Chinese>把你的施捨收起來。我們自己會應付。</Chinese>
+    <Chinesesimp>把你的施舍收起来。我们自己会应付。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_HOSTILE_3">
+    <English>Nothing. Take your charity somewhere it's wanted.</English>
+    <French>Rien. Allez offrir votre charite la ou elle est appreciee.</French>
+    <Portuguese>Nada. Leve a sua caridade para onde a queiram.</Portuguese>
+    <Russian>Ничего. Несите свою благотворительность туда, где её ждут.</Russian>
+    <Spanish>Nada. Lleve su caridad a donde la quieran.</Spanish>
+    <Chinese>不需要。把你的慈善帶到別人歡迎的地方去。</Chinese>
+    <Chinesesimp>不需要。把你的慈善带到别人欢迎的地方去。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_HOSTILE_1">
+    <English>That's not your business.</English>
+    <French>Ca ne vous regarde pas.</French>
+    <Portuguese>Isso nao e da sua conta.</Portuguese>
+    <Russian>Это не ваше дело.</Russian>
+    <Spanish>Eso no es asunto suyo.</Spanish>
+    <Chinese>這不關你的事。</Chinese>
+    <Chinesesimp>这不关你的事。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_HOSTILE_2">
+    <English>I'm not talking about that with you.</English>
+    <French>Je ne vais pas parler de ca avec vous.</French>
+    <Portuguese>Nao vou falar disso consigo.</Portuguese>
+    <Russian>Я с вами об этом разговаривать не буду.</Russian>
+    <Spanish>No voy a hablar de eso con usted.</Spanish>
+    <Chinese>這個話題我不會跟你談。</Chinese>
+    <Chinesesimp>这个话题我不会跟你谈。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_HOSTILE_3">
+    <English>Ask someone else. I've got nothing to say.</English>
+    <French>Demandez a quelqu'un d'autre. Je n'ai rien a dire.</French>
+    <Portuguese>Pergunte a outra pessoa. Nao tenho nada a dizer.</Portuguese>
+    <Russian>Спросите у кого-нибудь другого. Мне сказать нечего.</Russian>
+    <Spanish>Preguntele a otra persona. No tengo nada que decir.</Spanish>
+    <Chinese>去問別人吧。我沒什麼好說的。</Chinese>
+    <Chinesesimp>去问别人吧。我没什么好说的。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_1">
@@ -4453,6 +4748,12 @@
     <Chinese>啟用時,平民會先尋找建築物內躲藏,再考慮開放地面。預設值:是。</Chinese>
     <Chinesesimp>启用后,平民会先到建筑内寻求掩蔽,然后再寻找空地。默认:是。</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_ADVCIV_NIGHT_SLEEP_ANIM">
+    <English>Night Sleep Animation:</English>
+</Key>
+<Key ID="STR_ALIVE_ADVCIV_NIGHT_SLEEP_ANIM_COMMENT">
+    <English>When enabled, civilians at home indoors during night hours (22:00 - 06:00) play a lying-down sleep animation. When disabled, civilians still go indoors and stand idle at night (existing behaviour) but skip the visual sleep pose. Default: Yes.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_VOICE_ENABLED">
     <English>Enable Voice Lines:</English>
@@ -4532,6 +4833,166 @@
     <Spanish>Probabilidad base (0-100) de que la interacción Obtener inteligencia revele en el mapa los marcadores de instalaciones enemigas. Modulada al hacer clic por la hostilidad individual del civil (ALiVE_CivPop_Hostility, 0-100, por defecto 30): un civil hostil puede negarse (la probabilidad aumenta a partir de una hostilidad de 50) o mentir y revelar marcadores señuelo en posiciones falsas plausibles (la probabilidad de engaño aumenta a partir de una hostilidad de 25). La oportunidad de inteligencia del civil se consume en cualquier intento, por lo que cada civil solo puede ser interrogado una vez. Se aplica a las rutas de Diálogo ALiVE y ACE Interact; la ruta CLASSIC de la rueda del ratón conserva su comportamiento heredado (aproximadamente el 10 por ciento de los civiles tiene la entrada, siempre exitosa al hacer clic). Predeterminado: 30.</Spanish>
     <Chinese>蒐集情報 平民互動揭示地圖上敵方設施標記的基礎機率 (0-100)。點擊時會根據該平民的個別敵意 (ALiVE_CivPop_Hostility,0-100,預設 30) 進行調整:敵意高的平民可能直接拒絕 (敵意 50 起機率遞增),或撒謊並在看似合理的錯誤位置顯示誘餌標記 (敵意 25 起欺騙機率遞增)。無論結果如何,每次嘗試都會消耗該平民的情報機會,因此每位平民只能被詢問一次。適用於 ALiVE 對話框與 ACE Interact 路徑;CLASSIC 滑鼠滾輪路徑維持原有行為 (約 10 % 的平民具備此選項,點擊時必定成功)。預設值:30。</Chinese>
     <Chinesesimp>搜集情报 平民互动揭示地图上敌方设施标记的基础几率 (0-100)。点击时会根据该平民的个人敌意 (ALiVE_CivPop_Hostility,0-100,默认 30) 进行调整:敌意高的平民可能直接拒绝 (敌意 50 起几率递增),或撒谎并在看似合理的错误位置显示诱饵标记 (敌意 25 起欺骗几率递增)。无论结果如何,每次尝试都会消耗该平民的情报机会,因此每位平民只能被询问一次。适用于 ALiVE 对话框与 ACE Interact 路径;CLASSIC 鼠标滚轮路径保持原有行为 (约 10 % 的平民具备此选项,点击时必定成功)。默认:30。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR">
+    <English>Hostility Indicator:</English>
+    <French>Indicateur d'hostilité:</French>
+    <Portuguese>Indicador de Hostilidade:</Portuguese>
+    <Russian>Индикатор враждебности:</Russian>
+    <Spanish>Indicador de hostilidad:</Spanish>
+    <Chinese>敵意指示器:</Chinese>
+    <Chinesesimp>敌意指示器:</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR_COMMENT">
+    <English>Whether the civilian interaction dialog shows a perceived hostility readout for the targeted civilian. The displayed value is the civilian's individual hostility (ALiVE_CivPop_Hostility, 0-100) plus a small per-civilian noise offset, so the indicator is approximate not exact - mirrors the same imperfect-perception model used by Gather Intel. Off (default): no indicator, players read disposition from the civilian's stop-on-approach gesture (wave / head-shake) instead. Descriptive: shows a labelled bucket (Friendly / Neutral / Wary / Defiant / Hostile). Numeric: shows the perceived percentage with a tilde to flag uncertainty.</English>
+    <French>Indique si la fenêtre d'interaction civile affiche une lecture d'hostilité perçue pour le civil ciblé. La valeur affichée est l'hostilité individuelle du civil (ALiVE_CivPop_Hostility, 0-100) plus un petit décalage de bruit propre à chaque civil, donc l'indicateur est approximatif et non exact - reflète le même modèle de perception imparfaite que Recueillir des renseignements. Désactivé (par défaut): pas d'indicateur, les joueurs lisent la disposition à partir du geste d'arrêt à l'approche (salut / hochement de tête négatif). Descriptif: affiche un palier nommé (Amical / Neutre / Méfiant / Récalcitrant / Hostile). Numérique: affiche le pourcentage perçu avec un tilde pour signaler l'incertitude.</French>
+    <Portuguese>Se a janela de interação civil exibe uma leitura de hostilidade percebida para o civil visado. O valor mostrado é a hostilidade individual do civil (ALiVE_CivPop_Hostility, 0-100) mais um pequeno deslocamento de ruído por civil, pelo que o indicador é aproximado, não exato - reflete o mesmo modelo de perceção imperfeita usado pela Coleta de Informação. Desligado (padrão): sem indicador, os jogadores leem a disposição a partir do gesto de parada na aproximação (aceno / abano de cabeça negativo). Descritivo: mostra um nível nomeado (Amigável / Neutro / Cauteloso / Desafiador / Hostil). Numérico: mostra a percentagem percebida com um til para indicar incerteza.</Portuguese>
+    <Russian>Показывать ли в окне взаимодействия с гражданским предполагаемый уровень враждебности выбранного гражданского. Отображаемое значение - это индивидуальная враждебность гражданского (ALiVE_CivPop_Hostility, 0-100) плюс небольшое индивидуальное смещение, поэтому индикатор приблизительный, а не точный - отражает ту же модель несовершенного восприятия, что и в "Собрать разведданные". Выключено (по умолчанию): нет индикатора, игроки читают расположение по жесту остановки при приближении (приветствие / отрицательное покачивание головой). Описательное: показывает названный уровень (Дружественный / Нейтральный / Настороженный / Вызывающий / Враждебный). Числовое: показывает воспринимаемый процент с тильдой для обозначения неопределённости.</Russian>
+    <Spanish>Si el diálogo de interacción civil muestra una lectura de hostilidad percibida para el civil objetivo. El valor mostrado es la hostilidad individual del civil (ALiVE_CivPop_Hostility, 0-100) más un pequeño desplazamiento de ruido por civil, por lo que el indicador es aproximado, no exacto - refleja el mismo modelo de percepción imperfecta usado por Obtener inteligencia. Desactivado (por defecto): sin indicador, los jugadores leen la disposición a partir del gesto de parada al acercarse (saludo / negación con la cabeza). Descriptivo: muestra un nivel etiquetado (Amistoso / Neutral / Cauteloso / Desafiante / Hostil). Numérico: muestra el porcentaje percibido con una tilde para indicar incertidumbre.</Spanish>
+    <Chinese>平民互動對話框是否顯示目標平民的感知敵意數值。顯示的值為該平民的個別敵意 (ALiVE_CivPop_Hostility,0-100) 加上每位平民的小幅隨機偏移,因此指示為估計而非精確 — 反映與「蒐集情報」相同的不完美感知模型。關閉 (預設):無指示器,玩家透過平民接近時的停止姿勢 (揮手 / 搖頭) 判斷態度。描述式:顯示分級標籤 (友好 / 中立 / 警戒 / 反抗 / 敵對)。數值式:顯示感知百分比並加上波浪號以表示不確定。</Chinese>
+    <Chinesesimp>平民互动对话框是否显示目标平民的感知敌意数值。显示的值为该平民的个别敌意 (ALiVE_CivPop_Hostility,0-100) 加上每位平民的小幅随机偏移,因此指示为估计而非精确 — 反映与"搜集情报"相同的不完美感知模型。关闭 (默认):无指示器,玩家通过平民接近时的停止姿势 (挥手 / 摇头) 判断态度。描述式:显示分级标签 (友好 / 中立 / 警戒 / 反抗 / 敌对)。数值式:显示感知百分比并加上波浪号以表示不确定。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR_OFF">
+    <English>Off</English>
+    <French>Désactivé</French>
+    <Portuguese>Desligado</Portuguese>
+    <Russian>Выключено</Russian>
+    <Spanish>Desactivado</Spanish>
+    <Chinese>關閉</Chinese>
+    <Chinesesimp>关闭</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR_DESCRIPTIVE">
+    <English>Descriptive (perceived)</English>
+    <French>Descriptif (perçu)</French>
+    <Portuguese>Descritivo (percebido)</Portuguese>
+    <Russian>Описательное (восприятие)</Russian>
+    <Spanish>Descriptivo (percibido)</Spanish>
+    <Chinese>描述式 (感知)</Chinese>
+    <Chinesesimp>描述式 (感知)</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR_NUMERIC">
+    <English>Numeric (perceived)</English>
+    <French>Numérique (perçu)</French>
+    <Portuguese>Numérico (percebido)</Portuguese>
+    <Russian>Числовое (восприятие)</Russian>
+    <Spanish>Numérico (percibido)</Spanish>
+    <Chinese>數值式 (感知)</Chinese>
+    <Chinesesimp>数值式 (感知)</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_WEAPON_AIM_RANGE">
+    <English>Weapon Aim Reaction Range (m):</English>
+    <French>Distance de reaction au pointage d'arme (m):</French>
+    <Portuguese>Alcance de reacao a mira de arma (m):</Portuguese>
+    <Russian>Дистанция реакции на прицеливание (м):</Russian>
+    <Spanish>Distancia de reaccion al apuntar con arma (m):</Spanish>
+    <Chinese>武器瞄準反應距離 (m):</Chinese>
+    <Chinesesimp>武器瞄准反应距离 (m):</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_WEAPON_AIM_RANGE_COMMENT">
+    <English>Maximum distance (in metres) at which a civilian will react to a player aiming a weapon at them. Reaction is gated on three additional conditions: the player has a raised weapon, the civilian has line-of-sight to the player, and the player holds aim on the civilian for 2 seconds. Reaction varies by the civilian's hostility (Friendly civilians react with confusion and keep walking; Neutral and Wary civilians surrender; Defiant and Hostile civilians flee). Set to 0 to disable the system entirely. Default: 15.</English>
+    <French>Distance maximale (en metres) a laquelle un civil reagit lorsqu'un joueur pointe une arme sur lui. La reaction est conditionnee par trois criteres supplementaires: l'arme du joueur est levee, le civil a une ligne de vue sur le joueur, et le joueur maintient sa visee sur le civil pendant 2 secondes. La reaction varie selon l'hostilite du civil (les civils amicaux reagissent avec confusion et continuent a marcher; les civils neutres et mefiants se rendent; les civils recalcitrants et hostiles fuient). Mettre a 0 pour desactiver entierement le systeme. Par defaut: 15.</French>
+    <Portuguese>Distancia maxima (em metros) a que um civil reage quando um jogador aponta uma arma na sua direcao. A reacao esta condicionada a tres condicoes adicionais: o jogador tem a arma erguida, o civil tem linha de visao para o jogador, e o jogador mantem a mira no civil durante 2 segundos. A reacao varia consoante a hostilidade do civil (civis amigaveis reagem com confusao e continuam a andar; civis neutros e cautelosos rendem-se; civis desafiadores e hostis fogem). Definir 0 para desativar totalmente o sistema. Padrao: 15.</Portuguese>
+    <Russian>Максимальная дистанция (в метрах), на которой гражданский реагирует на наведённое на него оружие игрока. Реакция запускается при выполнении трёх дополнительных условий: оружие игрока поднято, гражданский видит игрока, и игрок удерживает прицел на гражданском в течение 2 секунд. Реакция зависит от враждебности гражданского (дружественные гражданские реагируют замешательством и продолжают идти; нейтральные и настороженные сдаются; вызывающие и враждебные убегают). Установите 0, чтобы полностью отключить систему. По умолчанию: 15.</Russian>
+    <Spanish>Distancia maxima (en metros) a la que un civil reacciona cuando un jugador le apunta con un arma. La reaccion esta condicionada por tres requisitos adicionales: el jugador tiene el arma alzada, el civil tiene linea de vision al jugador, y el jugador mantiene la punteria sobre el civil durante 2 segundos. La reaccion varia segun la hostilidad del civil (los civiles amistosos reaccionan con confusion y siguen caminando; los civiles neutrales y cautelosos se rinden; los civiles desafiantes y hostiles huyen). Pon 0 para desactivar el sistema por completo. Predeterminado: 15.</Spanish>
+    <Chinese>玩家用武器瞄準平民時,平民做出反應的最大距離(以公尺計)。反應另需滿足三個條件:玩家武器已舉起、平民對玩家有視線、玩家持續瞄準該平民達 2 秒。反應依平民敵意而異(友好的平民會表現困惑並繼續行走;中立與警戒的平民會投降;反抗與敵對的平民會逃跑)。設為 0 可完全停用此系統。預設:15。</Chinese>
+    <Chinesesimp>玩家用武器瞄准平民时,平民做出反应的最大距离(以米计)。反应另需满足三个条件:玩家武器已举起、平民对玩家有视线、玩家持续瞄准该平民达 2 秒。反应依平民敌意而异(友好的平民会表现困惑并继续行走;中立与警戒的平民会投降;反抗与敌对的平民会逃跑)。设为 0 可完全停用此系统。默认:15。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_VEHICLE_STOP_ON_AIM">
+    <English>Vehicle Stops on Aim/Gesture:</English>
+    <French>Vehicule s'arrete sur arme/geste:</French>
+    <Portuguese>Veiculo para com mira/gesto:</Portuguese>
+    <Russian>Стоп транспорта по сигналу:</Russian>
+    <Spanish>Detener vehiculo con senal:</Spanish>
+    <Chinese>武器或手勢停車:</Chinese>
+    <Chinesesimp>武器或手势停车:</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_VEHICLE_STOP_ON_AIM_COMMENT">
+    <English>When a player signals a civilian-driven vehicle, the driver complies by braking, cutting the engine, dismounting, and standing by the door in surrender pose so the player can engage. Two trigger paths: aiming a raised weapon at the vehicle (range 50 metres) or playing a stop / cease-fire / freeze gesture while looking at the vehicle (range 30 metres - hand signal, COIN-friendly). The driver refuses if they are hostile (effective hostility 60 or higher). Multi-occupant vehicles only stop the driver; passengers stay seated. Default: Yes.</English>
+    <French>Lorsqu'un joueur signale un vehicule conduit par un civil, le conducteur obtempere: il freine, coupe le moteur, descend du vehicule et reste pres de la portiere en posture de reddition pour que le joueur puisse interagir. Deux declencheurs: pointer une arme levee sur le vehicule (portee 50 metres) ou executer un geste d'arret / cessez-le-feu / halte en regardant le vehicule (portee 30 metres - signal manuel adapte aux missions COIN). Le conducteur refuse s'il est hostile (hostilite effective de 60 ou plus). Sur les vehicules a plusieurs occupants, seul le conducteur s'arrete; les passagers restent en place. Par defaut: Oui.</French>
+    <Portuguese>Quando um jogador sinaliza um veiculo conduzido por civis, o condutor cumpre: trava, desliga o motor, desmonta e fica junto da porta em pose de rendicao para o jogador interagir. Duas formas de acionar: apontar uma arma erguida ao veiculo (alcance 50 metros) ou executar um gesto de parar / cessar fogo / congelar enquanto olha para o veiculo (alcance 30 metros - sinal manual, adequado a missoes COIN). O condutor recusa se estiver hostil (hostilidade efetiva de 60 ou superior). Em veiculos com varios ocupantes apenas o condutor para; os passageiros permanecem sentados. Padrao: Sim.</Portuguese>
+    <Russian>Когда игрок подаёт сигнал гражданскому транспорту, водитель подчиняется: тормозит, глушит двигатель, выходит и встаёт у двери в позе сдачи, чтобы игрок мог взаимодействовать. Два способа: навести поднятое оружие на транспорт (дистанция 50 метров) или выполнить жест 'стоп / прекратить огонь / стой', глядя на транспорт (дистанция 30 метров - ручной сигнал, удобный в COIN-операциях). Водитель отказывается, если он враждебен (эффективная враждебность 60 и выше). В транспорте с несколькими людьми останавливается только водитель; пассажиры остаются на местах. По умолчанию: Да.</Russian>
+    <Spanish>Cuando un jugador hace una senal a un vehiculo conducido por un civil, el conductor obedece: frena, apaga el motor, se baja y se queda junto a la puerta en pose de rendicion para que el jugador pueda interactuar. Dos disparadores: apuntar con un arma alzada al vehiculo (alcance 50 metros) o realizar un gesto de alto / alto el fuego / congelar mientras se mira al vehiculo (alcance 30 metros - senal manual, idonea para misiones COIN). El conductor se niega si esta hostil (hostilidad efectiva de 60 o mas). En vehiculos con varios ocupantes solo el conductor se detiene; los pasajeros se quedan sentados. Predeterminado: Si.</Spanish>
+    <Chinese>當玩家對平民駕駛的車輛發出信號時,駕駛會配合:踩煞車、熄火、下車,並以投降姿勢站在車門旁讓玩家進行互動。兩種觸發方式:以舉起的武器瞄準車輛(範圍 50 公尺),或在注視車輛的同時做出停止 / 停火 / 凍結手勢(範圍 30 公尺 — 手勢示意,適合 COIN 任務)。如果駕駛處於敵對狀態(實際敵意 60 或以上)則拒絕。多人載具只有駕駛會停車;乘客留在座位上。預設:是。</Chinese>
+    <Chinesesimp>当玩家对平民驾驶的车辆发出信号时,驾驶会配合:踩刹车、熄火、下车,并以投降姿势站在车门旁让玩家进行互动。两种触发方式:以举起的武器瞄准车辆(范围 50 米),或在注视车辆的同时做出停止 / 停火 / 冻结手势(范围 30 米 — 手势示意,适合 COIN 任务)。如果驾驶处于敌对状态(实际敌意 60 或以上)则拒绝。多人载具只有驾驶会停车;乘客留在座位上。默认:是。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_DECAY_RATE">
+    <English>Hostility decay rate (per minute):</English>
+    <Chinese>敵意衰減速率(每分鐘):</Chinese>
+    <Chinesesimp>敌意衰减速率(每分钟):</Chinesesimp>
+    <French>Taux de decroissance de l'hostilite (par minute):</French>
+    <Spanish>Tasa de reduccion de hostilidad (por minuto):</Spanish>
+    <Portuguese>Taxa de reducao da hostilidade (por minuto):</Portuguese>
+    <Russian>Скорость спада враждебности (в минуту):</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_DECAY_RATE_COMMENT">
+    <English>How fast individual civilian hostility recovers per minute toward neutral when the civilian isn't being interacted with. Decay applies only to civilians currently in the active world; virtualised civilians reset to default on their next spawn cycle. The side-baseline floor (set by the BLUFOR / OPFOR / Independent Hostility attributes above) still applies at indicator render time. 0 disables decay. Default: 1.</English>
+    <Chinese>當沒有與平民互動時,個別平民的敵意每分鐘朝中立方向恢復的速度。衰減僅適用於當前活躍世界中的平民;虛擬化的平民會在下次生成循環時重置為預設值。陣營基準下限(由上方的 BLUFOR / OPFOR / 獨立陣營敵意屬性設定)在指示器顯示時仍會生效。0 表示停用衰減。預設值:1。</Chinese>
+    <Chinesesimp>当没有与平民互动时,个别平民的敌意每分钟朝中立方向恢复的速度。衰减仅适用于当前活跃世界中的平民;虚拟化的平民会在下次生成循环时重置为默认值。阵营基准下限(由上方的 BLUFOR / OPFOR / 独立阵营敌意属性设定)在指示器显示时仍会生效。0 表示禁用衰减。默认值:1。</Chinesesimp>
+    <French>Vitesse a laquelle l'hostilite individuelle d'un civil revient vers la neutralite par minute lorsqu'aucune interaction n'a lieu. La decroissance ne s'applique qu'aux civils actuellement actifs dans le monde; les civils virtualises sont reinitialises a la valeur par defaut au prochain cycle de spawn. Le seuil minimum par camp (defini par les attributs Hostilite BLUFOR / OPFOR / Independent ci-dessus) reste applique au rendu de l'indicateur. 0 desactive la decroissance. Par defaut: 1.</French>
+    <Spanish>Velocidad con la que la hostilidad individual de un civil se reduce por minuto hacia la neutralidad cuando no se interactua con el civil. La reduccion solo se aplica a civiles actualmente activos en el mundo; los civiles virtualizados se reinician al valor por defecto en su proximo ciclo de aparicion. El minimo por bando (definido por los atributos Hostilidad BLUFOR / OPFOR / Independiente arriba) sigue aplicandose al renderizar el indicador. 0 desactiva la reduccion. Predeterminado: 1.</Spanish>
+    <Portuguese>Velocidade com que a hostilidade individual de um civil diminui por minuto em direcao a neutralidade quando nao ha interacao com o civil. A reducao so se aplica a civis atualmente ativos no mundo; civis virtualizados sao redefinidos para o valor padrao no proximo ciclo de spawn. O minimo por lado (definido pelos atributos Hostilidade BLUFOR / OPFOR / Independente acima) continua a aplicar-se no rendering do indicador. 0 desativa a reducao. Padrao: 1.</Portuguese>
+    <Russian>Скорость, с которой индивидуальная враждебность мирного жителя восстанавливается к нейтральному уровню за минуту, когда с ним не взаимодействуют. Спад действует только на мирных жителей, активных в мире в данный момент; виртуализированные мирные жители сбрасываются к значению по умолчанию при следующем цикле появления. Базовый минимум по стороне (заданный атрибутами враждебности BLUFOR / OPFOR / Independent выше) по-прежнему применяется при отображении индикатора. 0 отключает спад. По умолчанию: 1.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_FRIENDLY">
+    <English>Friendly</English>
+    <French>Amical</French>
+    <Portuguese>Amigável</Portuguese>
+    <Russian>Дружественный</Russian>
+    <Spanish>Amistoso</Spanish>
+    <Chinese>友好</Chinese>
+    <Chinesesimp>友好</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_NEUTRAL">
+    <English>Neutral</English>
+    <French>Neutre</French>
+    <Portuguese>Neutro</Portuguese>
+    <Russian>Нейтральный</Russian>
+    <Spanish>Neutral</Spanish>
+    <Chinese>中立</Chinese>
+    <Chinesesimp>中立</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_WARY">
+    <English>Wary</English>
+    <French>Méfiant</French>
+    <Portuguese>Cauteloso</Portuguese>
+    <Russian>Настороженный</Russian>
+    <Spanish>Cauteloso</Spanish>
+    <Chinese>警戒</Chinese>
+    <Chinesesimp>警戒</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_HOSTILE">
+    <English>Hostile</English>
+    <French>Hostile</French>
+    <Portuguese>Hostil</Portuguese>
+    <Russian>Враждебный</Russian>
+    <Spanish>Hostil</Spanish>
+    <Chinese>敵對</Chinese>
+    <Chinesesimp>敌对</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_DEFIANT">
+    <English>Defiant</English>
+    <French>Récalcitrant</French>
+    <Portuguese>Desafiador</Portuguese>
+    <Russian>Вызывающий</Russian>
+    <Spanish>Desafiante</Spanish>
+    <Chinese>反抗</Chinese>
+    <Chinesesimp>反抗</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_INTEL_REVEALED">

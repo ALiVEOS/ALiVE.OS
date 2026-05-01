@@ -50,7 +50,15 @@ class CfgVehicles {
                 tooltip = "Config-backed faction used for side, compositions, and static fallback data.";
                 control = "ALiVE_FactionChoice_Military";
                 typeName = "STRING";
-                expression = "_this setVariable ['proxyFaction', _value];";
+                // Internal setVariable key is "faction" so the shared
+                // save / load handlers in addons/main (which hardcode
+                // "faction" in their broadcast write + default read
+                // path) persist the value end-to-end. Per-attribute
+                // attributeLoad overrides on this `class X { control
+                // = "Y"; }` shape are not honoured by Eden, so we
+                // align the variable name with the handlers' default
+                // instead. Init code reads getVariable ["faction"].
+                expression = "_this setVariable ['faction', _value];";
                 defaultValue = """OPF_F""";
             };
             class deleteTemplates : Combo {
@@ -61,6 +69,16 @@ class CfgVehicles {
                 class Values {
                     class Yes {name = "Yes"; value = true; default = 1;};
                     class No {name = "No"; value = false;};
+                };
+            };
+            class overrideMode : Combo {
+                property = "ALiVE_sys_factioncompiler_overrideMode";
+                displayName = "Faction Override Mode";
+                tooltip = "How the compiled groups integrate with the Faction ID. New faction = compiled groups become a brand-new mission-local faction (default; Faction ID must NOT match an existing faction). Override categories = compiled groups REPLACE the synced categories of the existing Faction ID, leaving other categories untouched (Faction ID must match an existing curated or inferred faction; Proxy Faction is ignored).";
+                defaultValue = """NewFaction""";
+                class Values {
+                    class NewFaction {name = "New faction"; value = "NewFaction"; default = 1;};
+                    class OverrideCategories {name = "Override categories"; value = "OverrideCategories";};
                 };
             };
             class ModuleDescription : ModuleDescription {};
@@ -74,7 +92,11 @@ class CfgVehicles {
             sync[] = {
                 "ALiVE_sys_factioncompiler_category",
                 "ALiVE_mil_placement",
-                "ALiVE_mil_placement_custom"
+                "ALiVE_mil_placement_custom",
+                "ALiVE_mil_placement_spe",
+                "ALiVE_civ_placement",
+                "ALiVE_civ_placement_custom",
+                "ALiVE_mil_ato"
             };
             class ALiVE_sys_factioncompiler_category {
                 description[] = {"Group category helper module."};
@@ -92,6 +114,34 @@ class CfgVehicles {
             };
             class ALiVE_mil_placement_custom {
                 description[] = {"Custom Military Placement module."};
+                position = 0;
+                direction = 0;
+                optional = 1;
+                duplicate = 1;
+            };
+            class ALiVE_mil_placement_spe {
+                description[] = {"Garrison-Objective Military Placement module."};
+                position = 0;
+                direction = 0;
+                optional = 1;
+                duplicate = 1;
+            };
+            class ALiVE_civ_placement {
+                description[] = {"Military Placement at Civilian Objectives module."};
+                position = 0;
+                direction = 0;
+                optional = 1;
+                duplicate = 1;
+            };
+            class ALiVE_civ_placement_custom {
+                description[] = {"Custom Military Placement at Civilian Objectives module."};
+                position = 0;
+                direction = 0;
+                optional = 1;
+                duplicate = 1;
+            };
+            class ALiVE_mil_ato {
+                description[] = {"Air Tasking Order module."};
                 position = 0;
                 direction = 0;
                 optional = 1;

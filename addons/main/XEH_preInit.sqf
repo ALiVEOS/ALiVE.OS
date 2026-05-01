@@ -43,7 +43,8 @@ if (is3DEN) then {
     // so it's guaranteed available when the EHs fire. CfgFunctions entry
     // still registered for completeness / runtime callers.
     ALiVE_edenFactionValidator = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenValidateOpcomFactions.sqf";
-    diag_log format ["ALiVE 3DEN: inline-compiled validator; typeName=%1", typeName ALiVE_edenFactionValidator];
+    ALiVE_edenValidateFactionCompilerSync = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenValidateFactionCompilerSync.sqf";
+    diag_log format ["ALiVE 3DEN: inline-compiled validators; OPCOM=%1, compilerSync=%2", typeName ALiVE_edenFactionValidator, typeName ALiVE_edenValidateFactionCompilerSync];
 
     // EH callbacks scope validation to the OPCOMs actually affected by
     // each event, then hand off to the debounced validator. Without
@@ -129,36 +130,121 @@ if (is3DEN) then {
     //                                     the next attr/sync action will
     //                                     catch any resulting issue.
     add3DENEventHandler ["OnConnectingEnd", {
-        private _dest = _this param [2, objNull];
+        private _connType = _this param [0, ""];
+        private _src      = _this param [1, []];
+        private _dest     = _this param [2, objNull];
         if (isNil "_dest") exitWith {};                   // disconnect
         if !(_dest isEqualType objNull) exitWith {};      // unexpected shape
         if (isNull _dest) exitWith {};
 
-        private _scope = [];
-        if ((typeOf _dest) == "ALiVE_mil_OPCOM") then {
-            _scope pushBack _dest;
-        } else {
-            // Destination is not an OPCOM - it's the other end of the sync
-            // (typically a placement). Walk its current sync connections to
-            // find the OPCOM(s) the user just linked it to.
-            private _syncs = (get3DENConnections _dest) select {(_x select 0) == "Sync"};
+        // _src arrives as a 6-bucket nested array:
+        //   [[obj0a, obj0b, ...], [], ..., [obj3a, ...], [], []]
+        // Each bucket holds entities of one Eden type (units in 0,
+        // modules / systems around 3, etc.). Flatten to a list of
+        // objects so we can iterate uniformly with _dest.
+        private _srcs = [];
+        if (_src isEqualType []) then {
             {
-                private _peer = _x select 1;
-                if (!isNil "_peer" && {_peer isEqualType objNull} && {!isNull _peer} && {(typeOf _peer) == "ALiVE_mil_OPCOM"}) then {
-                    _scope pushBackUnique _peer;
+                if (_x isEqualType []) then {
+                    {
+                        if (_x isEqualType objNull && {!isNull _x}) then {
+                            _srcs pushBack _x;
+                        };
+                    } forEach _x;
                 };
-            } forEach _syncs;
+            } forEach _src;
         };
 
-        // Skip entirely if the changed connection didn't touch an OPCOM -
-        // a sync between two non-OPCOM modules can't affect OPCOM-faction
-        // validation.
-        if (count _scope > 0) then {
-            ["sync", _scope] call ALiVE_edenFactionValidator;
+        // OPCOM faction-source validator: runs only when dest is a
+        // Logic-derived module. OnConnectingEnd fires for every
+        // connection type (Sync between modules, Group between units,
+        // etc.) - walking get3DENConnections on a non-Logic destination
+        // returns connection entries that don't fit the [type, peers]
+        // array shape Sync entries do.
+        if (_dest isKindOf "Logic") then {
+            private _scope = [];
+            if ((typeOf _dest) == "ALiVE_mil_OPCOM") then {
+                _scope pushBack _dest;
+            } else {
+                // Destination is not an OPCOM - it's the other end of the
+                // sync (typically a placement). Walk its current sync
+                // connections to find the OPCOM(s) the user just linked it
+                // to. Defensive type check on each entry: get3DENConnections
+                // can return non-array entries on some destination types.
+                private _syncs = (get3DENConnections _dest) select {
+                    _x isEqualType [] && {count _x >= 2} && {(_x select 0) == "Sync"}
+                };
+                {
+                    private _peer = _x select 1;
+                    if (!isNil "_peer" && {_peer isEqualType objNull} && {!isNull _peer} && {(typeOf _peer) == "ALiVE_mil_OPCOM"}) then {
+                        _scope pushBackUnique _peer;
+                    };
+                } forEach _syncs;
+            };
+
+            if (count _scope > 0) then {
+                ["sync", _scope] call ALiVE_edenFactionValidator;
+            };
+        };
+
+        // Faction-compiler category sync hint. Fires only on Sync
+        // connections (Group / IsAttachedTo / etc. don't carry the
+        // misuse pattern). Inspects the immediate endpoints of the
+        // connection - no need to query peer lists, the event tells
+        // us exactly which two entities just got linked.
+        if (_connType == "Sync") then {
+            private _endpoints = _srcs + [_dest];
+            private _categories = _endpoints select {
+                (typeOf _x) == "ALiVE_sys_factioncompiler_category"
+            };
+
+            if (count _categories > 0) then {
+                // A category module is one of the endpoints. The OTHER
+                // endpoints should be CAManBase (template unit) or
+                // Logic (the compiler module). Anything else is the
+                // misuse pattern - vehicle / static / decoration.
+                private _bads = _endpoints select {
+                    !(_x in _categories)
+                    && {!(_x isKindOf "Logic")}
+                    && {!(_x isKindOf "CAManBase")}
+                };
+                if (count _bads > 0) then {
+                    private _types = _bads apply { typeOf _x };
+                    private _categoryAttr = (_categories select 0) getVariable ["category", "Infantry"];
+                    private _msg = format [
+                        "ALiVE: Faction Compiler Category '%1' was synced to vehicle/object [%2]. The compiler captures groups via the CREW unit (e.g. pilot, driver, gunner). Sync ONE crew member from inside the vehicle to this category module instead - not the vehicle itself.",
+                        _categoryAttr,
+                        _types joinString ", "
+                    ];
+                    [_msg, 1, 60] call BIS_fnc_3DENNotification;
+                    diag_log format [
+                        "ALiVE 3DEN compiler-sync hint: category '%1' synced to non-CAManBase [%2]",
+                        _categoryAttr,
+                        _types joinString ", "
+                    ];
+                } else {
+                    // Sync involves a category but all other endpoints
+                    // are valid (CAManBase or compiler Logic). Quick
+                    // green confirmation.
+                    private _categoryAttr = (_categories select 0) getVariable ["category", "Infantry"];
+                    private _hasUnit = (_endpoints findIf { _x isKindOf "CAManBase" }) >= 0;
+                    if (_hasUnit) then {
+                        private _msg = format [
+                            "ALiVE: Faction Compiler Category '%1' template unit synced.",
+                            _categoryAttr
+                        ];
+                        [_msg, 0, 10] call BIS_fnc_3DENNotification;
+                    };
+                };
+            };
         };
     }];
 
-    // Preview: empty scope -> validator walks every OPCOM in the scene.
-    add3DENEventHandler ["OnMissionPreview", { ["preview", []] call ALiVE_edenFactionValidator }];
-    diag_log "ALiVE 3DEN: faction-sync validator registered (scoped: OnEntityAttributeChanged + OnConnectingEnd + OnMissionPreview)";
+    // Preview: empty scope -> validators walk every OPCOM / every
+    // category module in the scene.
+    add3DENEventHandler ["OnMissionPreview", {
+        ["preview", []] call ALiVE_edenFactionValidator;
+        ["preview", []] call ALiVE_edenValidateFactionCompilerSync;
+    }];
+    diag_log "ALiVE 3DEN: faction-sync + compiler-sync validators registered (OnEntityAttributeChanged + OnConnectingEnd + OnMissionPreview)";
 };

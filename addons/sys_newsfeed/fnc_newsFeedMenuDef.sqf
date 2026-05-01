@@ -72,12 +72,19 @@ _menus =
     [
         ["main", "ALiVE", _menuRsc],
         [
+            // Newsfeed entry hidden - the Newsfeed backend is legacy and
+            // no longer hosted. The module itself is already scope=1 (hidden
+            // from the Eden module browser), so new missions can't add it;
+            // legacy missions that placed the module in the past still load
+            // but the menu entry no longer renders. Restore by flipping the
+            // visible/enabled flags below if a custom Newsfeed host is stood
+            // up.
             [localize "STR_ALIVE_NEWSFEED",
                 {[] call ALIVE_fnc_newsFeedMenuInit},
                 "",
                 localize "STR_ALIVE_NEWSFEED_COMMENT",
                  "",
-                 -1, 1, true
+                 -1, 0, false
             ]
         ]
     ]

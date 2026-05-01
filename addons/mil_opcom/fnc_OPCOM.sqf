@@ -113,8 +113,8 @@ switch (_operation) do {
 
         private _customNameParam = _logic getvariable ["customName",""];
         private _type = _logic getvariable ["controltype","invasion"];
-        private _occupation = (parseNumber str (_logic getvariable ["asym_occupation",-100]))/100;
-        private _intelChance = (parseNumber str (_logic getvariable ["intelchance",-100]))/100;
+        private _occupation = (parseNumber format ["%1", _logic getvariable ["asym_occupation",-100]])/100;
+        private _intelChance = (parseNumber format ["%1", _logic getvariable ["intelchance",-100]])/100;
         // Phase 4: faction sources, all unioned below.
         //   factions       : multi-select listbox (primary UX,
         //                    ORIGINAL property so old `factions`
@@ -134,33 +134,34 @@ switch (_operation) do {
         private _faction2 = _logic getvariable ["faction2",""];
         private _faction3 = _logic getvariable ["faction3",""];
         private _faction4 = _logic getvariable ["faction4",""];
-        private _simultanObjectives = parseNumber str (_logic getvariable ["simultanObjectives",10]);
-        private _minAgents = parseNumber str (_logic getvariable ["minAgents",2]);
-        private _asymForceLimit = floor (parseNumber str (_logic getvariable ["asymForceLimit",-1]));
-        private _recruitCycleMin = (parseNumber str (_logic getvariable ["recruitCycleMin",30])) max 0;
-        private _recruitCycleMax = (parseNumber str (_logic getvariable ["recruitCycleMax",60])) max _recruitCycleMin;
-        private _recruitAttemptLimit = (
-            floor (parseNumber str (_logic getvariable ["recruitAttemptLimit",0]))
-        ) max -1;
-        private _recruitSuccessChance = ((parseNumber str (_logic getvariable ["recruitSuccessChance",50])) max 0) min 100;
-        private _hostilityPresenceMultiplier = (parseNumber str (_logic getvariable ["hostilityPresenceMultiplier",1])) max 0;
-        private _hostilityInstallationMultiplier = (parseNumber str (_logic getvariable ["hostilityInstallationMultiplier",1])) max 0;
-        private _hostilityInstallationInterval = ((parseNumber str (_logic getvariable ["hostilityInstallationInterval",10])) max 0) * 60;
+        private _simultanObjectives = parseNumber format ["%1", _logic getvariable ["simultanObjectives",10]];
+        private _minAgents = parseNumber format ["%1", _logic getvariable ["minAgents",2]];
+        private _asymForceLimit = floor (parseNumber format ["%1", _logic getvariable ["asymForceLimit",-1]]);
+        private _recruitCycleMin = (parseNumber format ["%1", _logic getvariable ["recruitCycleMin",30]]) max 0;
+        private _recruitCycleMax = (parseNumber format ["%1", _logic getvariable ["recruitCycleMax",60]]) max _recruitCycleMin;
+
+        private _recruitAttemptLimit = floor (parseNumber format ["%1", _logic getvariable ["recruitAttemptLimit",0]]);
+        _recruitAttemptLimit = _recruitAttemptLimit max -1;
+
+        private _recruitSuccessChance = ((parseNumber format ["%1", _logic getvariable ["recruitSuccessChance",50]]) max 0) min 100;
+        private _hostilityPresenceMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityPresenceMultiplier",1]]) max 0;
+        private _hostilityInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityInstallationMultiplier",1]]) max 0;
+        private _hostilityInstallationInterval = ((parseNumber format ["%1", _logic getvariable ["hostilityInstallationInterval",10]]) max 0) * 60;
         private _taskProfileCountOverridesRaw = _logic getvariable ["taskProfileCountOverrides",""];
         private _taskProfileTypeOverridesRaw = _logic getvariable ["taskProfileTypeOverrides",""];
-        private _civicRecruitmentMultiplier = (parseNumber str (_logic getvariable ["civicRecruitmentMultiplier",1])) max 0;
-        private _civicInstallationMultiplier = (parseNumber str (_logic getvariable ["civicInstallationMultiplier",1])) max 0;
-        private _civicRetaliationChanceRaw = (parseNumber str (_logic getvariable ["civicRetaliationChance",0])) max 0;
+        private _civicRecruitmentMultiplier = (parseNumber format ["%1", _logic getvariable ["civicRecruitmentMultiplier",1]]) max 0;
+        private _civicInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["civicInstallationMultiplier",1]]) max 0;
+        private _civicRetaliationChanceRaw = (parseNumber format ["%1", _logic getvariable ["civicRetaliationChance",0]]) max 0;
         private _civicRetaliationChance = if (_civicRetaliationChanceRaw >= 1) then {
             (_civicRetaliationChanceRaw min 100) / 100
         } else {
             _civicRetaliationChanceRaw min 1
         };
-        private _civicRetaliationIntensity = (parseNumber str (_logic getvariable ["civicRetaliationIntensity",1])) max 0;
+        private _civicRetaliationIntensity = (parseNumber format ["%1", _logic getvariable ["civicRetaliationIntensity",1]]) max 0;
         private _debug = ((_logic getvariable ["debug","false"]) == "true");
         private _persistent = ((_logic getvariable ["persistent","false"]) == "true");
         private _reinforcements = call compile (_logic getvariable ["reinforcements","0.9"]);
-        private _roadblocks = (parseNumber str (_logic getvariable ["roadblocks",1])) > 0;
+        private _roadblocks = (parseNumber format ["%1", _logic getvariable ["roadblocks",1]]) > 0;
         // #697 Phase 2.1: AI-driven friendly destroy of enemy asymmetric
         // installations. Read the mode string here; the behavioural
         // implementation lands in follow-up commits (proximity first,
@@ -178,6 +179,22 @@ switch (_operation) do {
         // + sampleOpcomHostility / classifyGroupTier /
         // buildTieredGroupRoster helpers.
         private _asymEscalationIntensity = _logic getvariable ["asym_escalationIntensity","off"];
+
+        // #861: configurable per-OPCOM list of CfgVehicles parent
+        // class names whose group entries are excluded from the
+        // asymmetric tiered roster. Default matches the previous
+        // hard-coded behaviour (no tanks / planes / helis / ships)
+        // so existing missions keep working without a touch;
+        // mission-makers running state-backed insurgent factions
+        // can edit the comma-separated list to widen recruitment.
+        private _asymExcludeRaw = _logic getVariable ["asym_excludeKinds", "Tank,Plane,Helicopter,Ship"];
+        private _asymExcludeKinds = [];
+        {
+            private _t = _x;
+            while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+            while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do { _t = _t select [0, count _t - 1] };
+            if (_t != "") then { _asymExcludeKinds pushBackUnique _t };
+        } forEach ([_asymExcludeRaw, ","] call CBA_fnc_split);
 
         private _position = getposATL _logic;
 
@@ -291,6 +308,7 @@ switch (_operation) do {
             ["roadblocks", _roadblocks],
             ["friendlyDisableMode", _friendlyDisableMode],
             ["asymEscalationIntensity", _asymEscalationIntensity],
+            ["asymExcludeKinds", _asymExcludeKinds],
             ["name", _customName],
             ["objectives", []],
             ["pendingorders", []]
@@ -421,8 +439,9 @@ switch (_operation) do {
                 // loop picks from the pre-built roster each
                 // cycle instead of re-walking CfgGroups.
                 private _tieredGroupRoster = [] call ALiVE_fnc_hashCreate;
+                private _excludeKinds = [_handler, "asymExcludeKinds", ["Tank", "Plane", "Helicopter", "Ship"]] call ALiVE_fnc_HashGet;
                 {
-                    private _factionRoster = [_x] call ALiVE_fnc_INS_buildTieredGroupRoster;
+                    private _factionRoster = [_x, _excludeKinds] call ALiVE_fnc_INS_buildTieredGroupRoster;
                     [_tieredGroupRoster, _x, _factionRoster] call ALiVE_fnc_hashSet;
                 } foreach _factions;
                 [_handler,"tieredGroupRoster", _tieredGroupRoster] call ALiVE_fnc_HashSet;
@@ -1996,23 +2015,42 @@ switch (_operation) do {
 
         if (_installationType in ["HQ", "factory", "depot"]) then {
             private _buildings = [_center, _size] call ALiVE_fnc_INS_filterObjectiveBuildings;
-            private _usedBuildings = [];
+            private _locallyUsedBuildings = [];
+            private _externallyUsedBuildings = [];
 
             {
                 private _occupied = [_logic, "convertObject", [_objective, _x, []] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
                 if (alive _occupied) then {
-                    _usedBuildings pushBackUnique _occupied;
+                    _locallyUsedBuildings pushBackUnique _occupied;
                 };
             } foreach ["factory", "HQ", "depot"];
 
+            {
+                private _candidateObjective = _x;
+                if (([_candidateObjective, "objectiveID", ""] call ALiVE_fnc_HashGet) != _objectiveID) then {
+                    {
+                        private _occupied = [_logic, "convertObject", [_candidateObjective, _x, []] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                        if (alive _occupied) then {
+                            _externallyUsedBuildings pushBackUnique _occupied;
+                        };
+                    } foreach ["factory", "HQ", "depot"];
+                };
+            } foreach ([_logic, "objectives", []] call ALiVE_fnc_HashGet);
+
             private _candidateBuildings = [];
             {
-                if !(_x in _usedBuildings) then {
+                if !(_x in _externallyUsedBuildings) then {
                     _candidateBuildings pushBack _x;
                 };
             } foreach _buildings;
-            if (count _candidateBuildings == 0) then {
-                _candidateBuildings = _buildings;
+
+            private _preferredBuildings = _candidateBuildings select {
+                !(_x in _locallyUsedBuildings)
+            };
+            private _selectionBuildings = if (count _preferredBuildings > 0) then {
+                _preferredBuildings
+            } else {
+                _candidateBuildings
             };
 
             if (_target isEqualType objNull && {!isNull _target} && {alive _target} && {_target in _candidateBuildings}) then {
@@ -2020,7 +2058,7 @@ switch (_operation) do {
             };
 
             if (isNull _selectedTarget) then {
-                private _sortedBuildings = [_candidateBuildings, [_anchorPos], {_Input0 distance2D _x}, "ASCEND"] call ALiVE_fnc_SortBy;
+                private _sortedBuildings = [_selectionBuildings, [_anchorPos], {_Input0 distance2D _x}, "ASCEND"] call ALiVE_fnc_SortBy;
                 if (count _sortedBuildings > 0) then {
                     if (_useClosestBuilding || {(_anchorPos distance2D (_sortedBuildings select 0)) <= 15}) then {
                         _selectedTarget = _sortedBuildings select 0;
@@ -3352,7 +3390,7 @@ switch (_operation) do {
         private _enableMonitor = _args;
 
         private _hdl = [_logic,"monitor", false] call AliVE_fnc_HashGet;
-        private _debug = [_this,"debug",false] call ALiVE_fnc_HashGet;
+        private _debug = [_logic,"debug", false] call ALiVE_fnc_HashGet;
 
         if (!(_enableMonitor) && {!(_hdl isequaltype true)}) then {
             terminate _hdl;
@@ -3363,6 +3401,7 @@ switch (_operation) do {
             };
         } else {
             _hdl = _logic spawn {
+                private _debug = [_this,"debug", false] call ALiVE_fnc_HashGet;
                 if (_debug) then {
                     ["OPCOM and TACOM monitoring started..."] call ALIVE_fnc_dumpR;
                 };

@@ -25,9 +25,17 @@ params [["_unit", objNull]];
 if (isNull _unit) exitWith {[]};
 
 [
-    ["ALiVE_advciv_state",        _unit getVariable ["ALiVE_advciv_state",        "CALM"]],
-    ["ALiVE_advciv_homePos",      _unit getVariable ["ALiVE_advciv_homePos",      getPos _unit]],
-    ["ALiVE_advciv_hidingPos",    _unit getVariable ["ALiVE_advciv_hidingPos",    []]],
-    ["ALiVE_advciv_nearShots",    _unit getVariable ["ALiVE_advciv_nearShots",    0]],
-    ["ALiVE_advciv_lastShotTime", _unit getVariable ["ALiVE_advciv_lastShotTime", 0]]
+    ["ALiVE_advciv_state",          _unit getVariable ["ALiVE_advciv_state",          "CALM"]],
+    ["ALiVE_advciv_homePos",        _unit getVariable ["ALiVE_advciv_homePos",        getPos _unit]],
+    ["ALiVE_advciv_hidingPos",      _unit getVariable ["ALiVE_advciv_hidingPos",      []]],
+    ["ALiVE_advciv_nearShots",      _unit getVariable ["ALiVE_advciv_nearShots",      0]],
+    ["ALiVE_advciv_lastShotTime",   _unit getVariable ["ALiVE_advciv_lastShotTime",   0]],
+    // Per-civ perceived-hostility offset for the civHostilityIndicator
+    // attribute. Lazy-initialised on first dialog open against this civ;
+    // persists for the lifetime of the unit object so re-opening shows
+    // the same perceived value until actual hostility shifts the bucket.
+    // Saved via this function for future cross-cycle persistence; the
+    // restore-side currently doesn't read advcivState back (pre-existing
+    // gap, not blocking Phase 1 - the offset re-initialises on respawn).
+    ["ALiVE_CivPop_PerceivedOffset", _unit getVariable ["ALiVE_CivPop_PerceivedOffset", 0]]
 ]

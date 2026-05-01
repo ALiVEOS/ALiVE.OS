@@ -80,6 +80,30 @@ private _baseCond = {
     {!(_target getVariable ["ALiVE_advciv_blacklist", false])}
 };
 
+// Hostility-tier gate: hide actions whose effective hostility band has
+// the civ refusing the interaction. Mirrors the dialog's tier-driven
+// grey-out (case "loadData" in fnc_civInteract) so the same civ shows
+// the same available actions whether the player uses ACE or the dialog.
+//   _condBelowDefiant: visible only when h < 60 - hidden at Defiant+.
+//                      Used for cooperative / order-style actions.
+//   _condBelowHostile: visible only when h < 80 - hidden only at Hostile.
+//                      Used for Calm Down (Defiant still allows the
+//                      de-escalation attempt; Hostile locks it out).
+// Talk, Go Away, Go Home, and Detain stay on the base condition only -
+// they are the always-available exits / coercive actions.
+private _condBelowDefiant = {
+    alive _target &&
+    {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
+    {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+    {[_target, 60] call ALiVE_fnc_civAceTierGate}
+};
+private _condBelowHostile = {
+    alive _target &&
+    {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
+    {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+    {[_target, 80] call ALiVE_fnc_civAceTierGate}
+};
+
 // ------------------------------------------------------------------------
 // Root: ALiVE submenu on civilian targets, under ACE's standard target-
 // action parent (ACE_MainActions). Inheritance flag (true) is essential
@@ -129,32 +153,71 @@ private _a = [
 // Commands submenu
 // ------------------------------------------------------------------------
 _a = ["ALiVE_Civ_Follow", "Follow Me", "",
-    { [ALiVE_civInteractHandler, "Follow", _target] call ALiVE_fnc_civInteract }, _baseCond
+    { [ALiVE_civInteractHandler, "Follow", _target] call ALiVE_fnc_civInteract }, _condBelowDefiant
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCmd, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
 _a = ["ALiVE_Civ_Stay", "Stay Here", "",
-    { [ALiVE_civInteractHandler, "StayHere", _target] call ALiVE_fnc_civInteract }, _baseCond
+    { [ALiVE_civInteractHandler, "StayHere", _target] call ALiVE_fnc_civInteract }, _condBelowDefiant
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCmd, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
+// Go Home stays on the base condition - always-available exit (sends
+// civ back to home pos), part of the Hostile / Defiant active set.
 _a = ["ALiVE_Civ_GoHome", "Go Home", "",
     { [ALiVE_civInteractHandler, "GoHome", _target] call ALiVE_fnc_civInteract }, _baseCond
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCmd, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
+// Get In - visible only when the civ is on foot AND an empty unlocked
+// LandVehicle is within 50 m. Below-Defiant tier-gated. The two
+// context conditions are merged into one closure so ACE can re-evaluate
+// each menu open as the civ / nearby vehicles move.
 _a = ["ALiVE_Civ_GetIn", "Get In Vehicle", "",
-    { [ALiVE_civInteractHandler, "GetInVehicle", _target] call ALiVE_fnc_civInteract }, _baseCond
+    { [ALiVE_civInteractHandler, "GetInVehicle", _target] call ALiVE_fnc_civInteract },
+    {
+        alive _target &&
+        {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
+        {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+        {[_target, 60] call ALiVE_fnc_civAceTierGate} &&
+        {vehicle _target == _target} &&
+        {
+            // Match the react GETIN target search - any alive movable
+            // LandVehicle in range. Locked / full filtering is handled
+            // by the brain-tick GETIN cancel path, not here.
+            (count (nearestObjects [_target, ["LandVehicle"], 50] select {
+                alive _x && {canMove _x}
+            })) > 0
+        }
+    }
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCmd, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
+// Get Out - visible only when the civ is in a vehicle. Below-Defiant
+// tier-gated. Same dispatch endpoint as Get In; case "GetInVehicle"
+// in fnc_civInteract toggles between GETIN / GETOUT based on the
+// civ's vehicle state.
+_a = ["ALiVE_Civ_GetOut", "Get Out Vehicle", "",
+    { [ALiVE_civInteractHandler, "GetInVehicle", _target] call ALiVE_fnc_civInteract },
+    {
+        alive _target &&
+        {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
+        {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+        {[_target, 60] call ALiVE_fnc_civAceTierGate} &&
+        {vehicle _target != _target}
+    }
+] call ace_interact_menu_fnc_createAction;
+["CAManBase", 0, _pCmd, _a, true] call ace_interact_menu_fnc_addActionToClass;
+
+// Go Away stays on the base condition - always-available exit (dismiss
+// civ), part of the Hostile / Defiant active set.
 _a = ["ALiVE_Civ_GoAway", "Go Away", "",
     { [ALiVE_civInteractHandler, "goAway", _target] call ALiVE_fnc_civInteract }, _baseCond
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCmd, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
 _a = ["ALiVE_Civ_Stop", "Stop", "",
-    { [ALiVE_civInteractHandler, "Stop", _target] call ALiVE_fnc_civInteract }, _baseCond
+    { [ALiVE_civInteractHandler, "Stop", _target] call ALiVE_fnc_civInteract }, _condBelowDefiant
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCmd, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
@@ -162,25 +225,29 @@ _a = ["ALiVE_Civ_Stop", "Stop", "",
 // Coercion submenu
 // ------------------------------------------------------------------------
 _a = ["ALiVE_Civ_HandsUp", "Hands Up", "",
-    { [ALiVE_civInteractHandler, "HandsUp", _target] call ALiVE_fnc_civInteract }, _baseCond
+    { [ALiVE_civInteractHandler, "HandsUp", _target] call ALiVE_fnc_civInteract }, _condBelowDefiant
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCoercion, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
+// Calm Down is hidden only at Hostile - Defiant still allows the
+// de-escalation attempt.
 _a = ["ALiVE_Civ_Calm", "Calm Down", "",
-    { [ALiVE_civInteractHandler, "CalmDown", _target] call ALiVE_fnc_civInteract }, _baseCond
+    { [ALiVE_civInteractHandler, "CalmDown", _target] call ALiVE_fnc_civInteract }, _condBelowHostile
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCoercion, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
 _a = ["ALiVE_Civ_Kneel", "Kneel", "",
-    { [ALiVE_civInteractHandler, "Kneel", _target] call ALiVE_fnc_civInteract }, _baseCond
+    { [ALiVE_civInteractHandler, "Kneel", _target] call ALiVE_fnc_civInteract }, _condBelowDefiant
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCoercion, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
 _a = ["ALiVE_Civ_GetDown", "Get Down", "",
-    { [ALiVE_civInteractHandler, "getDown", _target] call ALiVE_fnc_civInteract }, _baseCond
+    { [ALiVE_civInteractHandler, "getDown", _target] call ALiVE_fnc_civInteract }, _condBelowDefiant
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pCoercion, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
+// Detain stays on the base condition - always-available coercive
+// action, part of both Defiant and Hostile active sets.
 _a = ["ALiVE_Civ_Detain", "Detain / Release", "",
     { [ALiVE_civInteractHandler, "Detain", _target] call ALiVE_fnc_civInteract }, _baseCond
 ] call ace_interact_menu_fnc_createAction;
@@ -189,14 +256,14 @@ _a = ["ALiVE_Civ_Detain", "Detain / Release", "",
 // ------------------------------------------------------------------------
 // Intel submenu
 // ------------------------------------------------------------------------
-// Negotiate - role-gated. Condition extends the base with a role check so
-// the entry only appears on civilians tagged with one of the five roles.
+// Negotiate - role-gated AND tier-gated. Hidden at Defiant+ (h>=60).
 _a = ["ALiVE_Civ_Negotiate", "Negotiate", "",
     { [ALiVE_civInteractHandler, "Negotiate", _target] call ALiVE_fnc_civInteract },
     {
         alive _target &&
         {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
         {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+        {[_target, 60] call ALiVE_fnc_civAceTierGate} &&
         {
             (_target getVariable ["townelder", false]) ||
             {_target getVariable ["major", false]} ||
@@ -208,14 +275,15 @@ _a = ["ALiVE_Civ_Negotiate", "Negotiate", "",
 ] call ace_interact_menu_fnc_createAction;
 ["CAManBase", 0, _pIntel, _a, true] call ace_interact_menu_fnc_addActionToClass;
 
-// Gather Intel - only visible until first use per civilian (mirrors the
-// original 10% addAction's one-shot intelGathered flag).
+// Gather Intel - one-shot per civilian (mirrors the original 10%
+// addAction's intelGathered flag) AND tier-gated. Hidden at Defiant+.
 _a = ["ALiVE_Civ_GatherIntel", "Gather Intel", "",
     { [ALiVE_civInteractHandler, "GatherIntel", _target] call ALiVE_fnc_civInteract },
     {
         alive _target &&
         {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
         {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+        {[_target, 60] call ALiVE_fnc_civAceTierGate} &&
         {isNil {_target getVariable "intelGathered"}}
     }
 ] call ace_interact_menu_fnc_createAction;

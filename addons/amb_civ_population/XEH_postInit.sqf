@@ -1,5 +1,60 @@
 #include "script_component.hpp"
 
+// ============================================================================
+// Orphan civilian-vehicle cleanup (server-only)
+// ----------------------------------------------------------------------------
+// Civilian vehicle profiles can end up driverless mid-mission for several
+// reasons - borrowed driver got culled before the sleep-while-driving guard
+// landed, driver was killed in a crash, ACE knocked them out, etc. Without a
+// cleanup the empty vehicle sits on the road indefinitely and can block AI
+// pathing or look out of place to players.
+//
+// This PFH scans active civilian vehicle profiles every 10 s, starts an
+// orphan timer when no living crew is found, and once the timer exceeds 30 s
+// despawns the vehicle - subject to the visibility gate so the player never
+// sees it pop out. Runs ahead of the AdvCiv enabled check so the handler is
+// active even on missions that don't enable AdvCiv.
+// ============================================================================
+if (isServer) then {
+    [{
+        // Wait until the civ agent handler is initialised
+        if (isNil "ALIVE_agentHandler") exitWith {};
+
+        private _agentsActive = [ALIVE_agentHandler, "getActive"] call ALIVE_fnc_agentHandler;
+        if (isNil "_agentsActive") exitWith {};
+
+        // CBA hash shape: [true, [keys], [values]]. Iterate values directly.
+        {
+            private _logic = _x;
+            // Profile struct: select 2 select 4 = type ("agent" | "vehicle")
+            private _type = _logic select 2 select 4;
+            if (_type isEqualTo "vehicle") then {
+                private _unit = _logic select 2 select 5; // unit
+                if (!isNull _unit && {alive _unit} && {(_unit isKindOf "LandVehicle" || {_unit isKindOf "Air" || {_unit isKindOf "Ship"}})}) then {
+                    private _crewAlive = ({alive _x} count (crew _unit)) > 0;
+                    if (_crewAlive) then {
+                        // Reset orphan timer when a living crew is present
+                        _unit setVariable ["ALiVE_orphanSince", -1];
+                    } else {
+                        private _since = _unit getVariable ["ALiVE_orphanSince", -1];
+                        if (_since < 0) then {
+                            _unit setVariable ["ALiVE_orphanSince", time];
+                        } else {
+                            if ((time - _since) > 30) then {
+                                // Visibility gate before deletion - never pop
+                                // a vehicle out in front of a player.
+                                if !([_unit, 150] call ALiVE_fnc_anyPlayerCanSee) then {
+                                    [_logic, "despawn"] call ALIVE_fnc_civilianVehicle;
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        } forEach (_agentsActive select 2);
+    }, 10, []] call CBA_fnc_addPerFrameHandler;
+};
+
 // Safety check: if ALiVE_advciv_enabled doesn't exist yet, exit gracefully
 // This can happen if XEH_postInit runs before the Civilian Population module initializes
 if (isNil "ALiVE_advciv_enabled") exitWith {
@@ -36,6 +91,76 @@ if (isServer) then {
         } forEach _units;
     }, 1, []] call CBA_fnc_addPerFrameHandler;
 
+    // Decay civilian hostility posture over time (per-civ, 60s tick).
+    // Mission-maker controls rate via ModuleAmbientCivilians_Population's
+    // civHostilityDecayRate attribute (units = posture per minute toward 0;
+    // 0 disables). Only acts on civilians currently in the active world
+    // (ALiVE_advciv_activeUnits); virtualised civilians reset to default
+    // posture on their next virtual->real cycle anyway, so this handler
+    // has nothing to add for them.
+    //
+    // Two posture stores to decay depending on civ type:
+    //   - Ambient civs (have agentID): canonical posture lives in the
+    //     agent profile's "posture" hash field. Written by UpdateHostility
+    //     fall-through at fnc_civInteract.sqf:732 on questions / gives /
+    //     etc. The dialog reads this field at open time
+    //     (fnc_civInteract.sqf:511) into its CivData snapshot.
+    //   - Non-agent civs (Eden-placed, no agentID): canonical posture is
+    //     the unit's ALiVE_CivPop_Hostility variable. Written by AimReact
+    //     and by the non-agent dialog branch at fnc_civInteract.sqf:535.
+    //
+    // Floor: 0. The hostility-indicator render does
+    // max(_civPosture, _sideBaseline) at display time so the per-side
+    // baseline floor still applies without needing baseline-aware logic
+    // here.
+    //
+    // Skip rules: rate <= 0 disables the tick. Per-civ skip when the
+    // active store reads <= 0 (no posture history or already at floor).
+    //
+    // Open-dialog caveat: if a dialog is currently open on a civ, that
+    // dialog's CivData is a snapshot taken at open time. Decay updates
+    // the canonical store but won't be reflected in the open dialog
+    // until close + reopen. Acceptable for a passive recovery mechanic.
+    //
+    // Traumatised civs decay at half rate. fnc_advciv_civAimReact sets
+    // ALiVE_advciv_traumatised on civs aimed at while at Wary tier
+    // (40-59 hostility) - reads as "compliant but resentful". The flag
+    // persists for the lifetime of the unit object (cleared naturally
+    // when the civ goes virtual; new unit on respawn starts fresh).
+    [{
+        if (!ALiVE_advciv_enabled) exitWith {};
+        private _rate = missionNamespace getVariable ["ALiVE_amb_civ_population_HostilityDecayRate", 1];
+        if (_rate <= 0) exitWith {};
+        private _units = +ALiVE_advciv_activeUnits;
+        {
+            if (!isNull _x && {alive _x}) then {
+                // Traumatised civs (Wary-tier aim-reaction flag) decay slower
+                private _effectiveRate = if (_x getVariable ["ALiVE_advciv_traumatised", false]) then {
+                    _rate * 0.5
+                } else {
+                    _rate
+                };
+                private _civID = _x getVariable ["agentID", ""];
+                if (_civID != "" && {!isNil "ALIVE_agentHandler"}) then {
+                    // Ambient civ — decay agent profile posture (canonical store)
+                    private _profile = [ALIVE_agentHandler, "getAgent", _civID] call ALIVE_fnc_agentHandler;
+                    if (!isNil "_profile") then {
+                        private _h = [_profile, "posture", -1] call ALiVE_fnc_hashGet;
+                        if (_h > 0) then {
+                            [_profile, "posture", (_h - _effectiveRate) max 0] call ALiVE_fnc_hashSet;
+                        };
+                    };
+                } else {
+                    // Non-agent civ (Eden-placed) — decay unit variable
+                    private _h = _x getVariable ["ALiVE_CivPop_Hostility", -1];
+                    if (_h > 0) then {
+                        _x setVariable ["ALiVE_CivPop_Hostility", (_h - _effectiveRate) max 0, true];
+                    };
+                };
+            };
+        } forEach _units;
+    }, 60, []] call CBA_fnc_addPerFrameHandler;
+
     // Civilian killed event - spread panic
     addMissionEventHandler ["EntityKilled", {
         params ["_killed", "_killer", "_instigator"];
@@ -44,7 +169,8 @@ if (isServer) then {
         if (isNull _attackerUnit) exitWith {};
         if (_attackerUnit == _killed) exitWith {};
         if (side _attackerUnit == civilian) exitWith {};
-        _attackerUnit setVariable ["ALiVE_advciv_firedAtCiv", true, true];
+        _attackerUnit setVariable ["ALiVE_advciv_firedAtCivTime", time, true];
+        if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=XEH_EntityKilled", name _attackerUnit, side _attackerUnit, time]; };
         {
             if (alive _x && {side _x == civilian} && {!isPlayer _x} && {_x != _killed} && {_x getVariable ["ALiVE_advciv_active", false]}) then {
                 _x setVariable ["ALiVE_advciv_state", "PANIC", true];
@@ -195,8 +321,16 @@ if (hasInterface) then {
     //
     // Per-frame rate 0.5 s is cheap - only scans a 5 m sphere around the
     // local player. Config-side check (side == 3) gates to civilians.
-    // disableAI / enableAI / doWatch run on the unit's owner via
-    // remoteExec; the wave gesture broadcasts so every client renders it.
+    // disableAI / enableAI / doWatch / doStop / setDir run on the unit's
+    // owner via remoteExec; the wave gesture broadcasts so every client
+    // renders it.
+    //
+    // setDir snaps the civ to face the player at the moment of freeze.
+    // Without it, civs approached from behind get the doWatch (which
+    // orients the gun-aim vector) but their body stays aimed in the
+    // walking direction - the player ends up talking to the civ's back.
+    // doStop halts any in-flight pathing animation that disableAI "MOVE"
+    // alone leaves running until the next AI tick.
     [{
         if (isNull player || {!alive player}) exitWith {};
         if ((missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"]) == "CLASSIC") exitWith {};
@@ -219,9 +353,33 @@ if (hasInterface) then {
                     private _frozen = _civ getVariable ["ALiVE_civ_approachFreeze", false];
 
                     if (_d < 2 && {!_frozen}) then {
+                        // Pick the approach gesture by the civ's effective
+                        // hostility - per-civ ALiVE_CivPop_Hostility floored
+                        // by the module's per-side campaign baseline (the
+                        // same combined value the dialog hostility indicator
+                        // displays). Fires regardless of indicator mode so
+                        // even indicator-off missions get a discoverable
+                        // disposition cue from the wave / head-shake choice.
+                        private _civHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
+                        private _playerSide = str (side (group player));
+                        private _sideBaseline = if (!isNil "ALIVE_civilianHostility") then {
+                            [ALIVE_civilianHostility, _playerSide, 0] call ALiVE_fnc_hashGet
+                        } else { 0 };
+                        private _hostility = (_civHostility max _sideBaseline) max 0 min 100;
+                        private _gesture = switch (true) do {
+                            case (_hostility < 20):  { "GestureHi" };       // Friendly - wave
+                            case (_hostility < 40):  { "GestureHi" };       // Neutral  - wave (baseline cue)
+                            case (_hostility < 60):  { "Gesture_No" };      // Wary     - short head shake
+                            case (_hostility < 80):  { "Gesture_NoLong" };  // Defiant  - emphatic refusal
+                            default                  { "Gesture_NoLong" };  // Hostile  - emphatic refusal
+                        };
+
+                        private _bearing = _civ getDir player;
                         [_civ, "MOVE"] remoteExec ["disableAI", _civ];
+                        [_civ] remoteExec ["doStop", _civ];
+                        [_civ, _bearing] remoteExec ["setDir", _civ];
                         [_civ, player] remoteExec ["doWatch", _civ];
-                        [_civ, "GestureHi"] remoteExec ["playAction", 0];
+                        [_civ, _gesture] remoteExec ["playAction", 0];
                         _civ setVariable ["ALiVE_civ_approachFreeze", true, true];
                     };
                     if (_d > 3 && {_frozen}) then {
@@ -232,6 +390,212 @@ if (hasInterface) then {
                 };
             };
         } forEach _nearby;
+    }, 0.5, []] call CBA_fnc_addPerFrameHandler;
+
+    // Weapon-aim civ-pressure handler. Runs alongside the approach-
+    // freeze handler. Per-frame at 0.25 s for finer 2 s sustained-aim
+    // detection than approach-freeze's 0.5 s tick.
+    //
+    // Trigger gates, cheap-to-expensive:
+    //   1. Module attribute civWeaponAimRange > 0 (0 disables system).
+    //   2. Player on foot (vehicle weapons are out of scope here).
+    //   3. Player has a raised weapon.
+    //   4. Civilian within civWeaponAimRange (sphere).
+    //   5. Civilian under the player's cursor (cursorObject).
+    //   6. Civilian has line-of-sight to the player (eye-to-eye, civ
+    //      side - the civ has to actually see the threat).
+    //   7. All conditions sustained for 2 s before reaction fires.
+    //
+    // Hysteresis on the hold-time clear: brief cursor flicker (one or
+    // a few ticks of cursorObject momentarily missing the civ during
+    // their walk animation) is forgiven for up to 1 s. Without it the
+    // accumulated hold timer would reset constantly on a moving civ.
+    //
+    // Reaction dispatch lives in ALIVE_fnc_advciv_civAimReact (server-
+    // authoritative). Bucket varies by the civ's hostility: Friendly
+    // shrugs, Neutral / Wary surrender, Defiant / Hostile flee.
+    [{
+        if (isNull player || {!alive player}) exitWith {};
+
+        private _aimRange = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimRange", 15];
+        if (_aimRange <= 0) exitWith {};
+        if (vehicle player != player) exitWith {};
+        if (currentWeapon player == "") exitWith {};
+        if (weaponLowered player) exitWith {};
+
+        private _nearby = nearestObjects [player, ["CAManBase"], _aimRange];
+        private _civsInRange = _nearby select {
+            alive _x &&
+            {_x != player} &&
+            {!isPlayer _x} &&
+            {(getNumber (configFile >> "CfgVehicles" >> typeOf _x >> "side")) == 3} &&
+            {!(_x getVariable ["ALiVE_advciv_blacklist", false])}
+        };
+
+        {
+            private _civ = _x;
+            private _state = _civ getVariable ["ALiVE_advciv_state", "CALM"];
+            private _order = _civ getVariable ["ALiVE_advciv_order", "NONE"];
+            if ((_state in ["PANIC", "HIDING"]) || {_order == "HANDSUP"}) then {
+                // Skip - civ already in a target state.
+            } else {
+                private _aimingAt = (cursorObject == _civ);
+                private _civCanSeePlayer = false;
+                if (_aimingAt) then {
+                    _civCanSeePlayer = !(lineIntersects [eyePos _civ, eyePos player, _civ, player]);
+                };
+
+                if (_aimingAt && _civCanSeePlayer) then {
+                    _civ setVariable ["ALiVE_advciv_lastAimTick", time, true];
+
+                    private _sinceVar = _civ getVariable ["ALiVE_advciv_aimedAtSince", -1];
+                    if (_sinceVar < 0) then {
+                        _civ setVariable ["ALiVE_advciv_aimedAtSince", time, true];
+                    };
+                    private _heldFor = time - (_civ getVariable ["ALiVE_advciv_aimedAtSince", time]);
+                    if (_heldFor >= 2 && {isNil {_civ getVariable "ALiVE_advciv_aimReactFired"}}) then {
+                        private _hostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
+                        private _bucket = switch (true) do {
+                            case (_hostility < 20):  { "Friendly" };
+                            case (_hostility < 40):  { "Neutral" };
+                            case (_hostility < 60):  { "Wary" };
+                            case (_hostility < 80):  { "Defiant" };
+                            default                  { "Hostile" };
+                        };
+                        _civ setVariable ["ALiVE_advciv_aimReactFired", true, true];
+                        [_civ, _bucket, player] remoteExec ["ALIVE_fnc_advciv_civAimReact", 2];
+                    };
+                } else {
+                    private _lastSeen = _civ getVariable ["ALiVE_advciv_lastAimTick", -10];
+                    if (time - _lastSeen > 1) then {
+                        if !(isNil {_civ getVariable "ALiVE_advciv_aimedAtSince"}) then {
+                            _civ setVariable ["ALiVE_advciv_aimedAtSince", nil, true];
+                            _civ setVariable ["ALiVE_advciv_aimReactFired", nil, true];
+                            _civ setVariable ["ALiVE_advciv_lastAimTick", nil, true];
+                        };
+                    };
+                };
+            };
+        } forEach _civsInRange;
+    }, 0.25, []] call CBA_fnc_addPerFrameHandler;
+
+    // Civilian vehicle stop on player weapon-aim or stop gesture. When
+    // the local player aims a raised weapon at a civ-driven vehicle OR
+    // plays a stop / cease-fire / freeze gesture while looking at one,
+    // the driver is signalled to stop and dismount. Two triggers cover
+    // two play styles:
+    //   - Weapon-aim: "pull over or I shoot". Range 50 m.
+    //   - Gesture:    non-threatening hand signal, COIN-friendly.
+    //                 Range 30 m (tighter - it's a hand-signal, not an
+    //                 optic-range threat).
+    // Both share the same dispatch endpoint and refusal gates.
+    //
+    // Once-per-driver debounce via the ALiVE_CivPop_VehicleStopTriggered
+    // flag.
+    //
+    // Trigger gates, cheap-to-expensive:
+    //   1. Module attribute civVehicleStopOnAim = true.
+    //   2. Player on foot.
+    //   3. EITHER (a) raised weapon, OR (b) stop / cease-fire / freeze
+    //      gesture currently playing on the player.
+    //   4. Civ-driven vehicle within range (50 m weapon / 30 m gesture).
+    //   5. Aim cone <= 10 degrees between camera view direction and
+    //      bearing-to-vehicle.
+    //   6. Driver state allows compliance (not already triggered) and
+    //      effective hostility < 60.
+    //
+    // Per-frame at 0.5 s - vehicles move slower than pedestrians so the
+    // tighter 0.25 s tick of the aim-pressure handler is unnecessary.
+    [{
+        if (isNull player || {!alive player}) exitWith {};
+
+        if (!(missionNamespace getVariable ["ALiVE_amb_civ_population_VehicleStopOnAim", true])) exitWith {};
+        if (vehicle player != player) exitWith {};
+
+        // Resolve trigger source. Weapon-aim has priority - if both are
+        // active, range stays at the weapon-aim 50 m.
+        private _weaponAim = (currentWeapon player != "") && {!weaponLowered player};
+        private _animLower = toLower (animationState player);
+        private _gestureStop = (_animLower find "ceasefire" >= 0) ||
+                               {_animLower find "stop" >= 0} ||
+                               {_animLower find "freeze" >= 0};
+
+        if (!_weaponAim && {!_gestureStop}) exitWith {};
+
+        private _range = if (_weaponAim) then { 50 } else { 30 };
+        private _trigger = if (_weaponAim) then { "WEAPON" } else { "GESTURE" };
+
+        private _vehicles = nearestObjects [player, ["LandVehicle", "Air", "Ship"], _range];
+        if (count _vehicles == 0) exitWith {};
+
+        // Use the camera's actual view direction as the source-of-truth
+        // for "what the player is aiming at". eyeDirection / weaponDirection
+        // both follow the character model, which in 3rd person is locked
+        // to the body forward direction even when the camera (and the
+        // player's perception of aim) is rotated elsewhere. Camera view
+        // direction always matches what the player sees on screen,
+        // regardless of 1st / 3rd person / freelook.
+        private _camPos = positionCameraToWorld [0, 0, 0];
+        private _camForward = positionCameraToWorld [0, 0, 1];
+        private _playerEye = _camPos;  // anchor the angle math at the camera, not the head
+        private _aimDir = vectorNormalized (_camForward vectorDiff _camPos);
+
+        {
+            private _veh = _x;
+            if (alive _veh) then {
+                private _drv = driver _veh;
+                if (
+                    !isNull _drv &&
+                    {alive _drv} &&
+                    {!isPlayer _drv}
+                ) then {
+                    private _drvSide = getNumber (configFile >> "CfgVehicles" >> typeOf _drv >> "side");
+                    if (_drvSide == 3) then {
+                        if (
+                            !(_drv getVariable ["ALiVE_advciv_blacklist", false]) &&
+                            {!(_drv getVariable ["ALiVE_CivPop_VehicleStopTriggered", false])}
+                        ) then {
+                            private _state = _drv getVariable ["ALiVE_advciv_state", "CALM"];
+                            private _order = _drv getVariable ["ALiVE_advciv_order", "NONE"];
+
+                            // Use aimPos so the angle math uses the vehicle's
+                            // natural aim-target point (chest / centre height),
+                            // not the ground-level position. With eyePos at
+                            // ~1.7 m and position at 0 m the angle is wildly
+                            // off at close range.
+                            private _aimPt = aimPos _veh;
+                            private _toVeh = vectorNormalized (_aimPt vectorDiff _playerEye);
+                            private _dot = (_aimDir vectorDotProduct _toVeh) max -1 min 1;
+                            private _angle = acos _dot;
+                            private _dist = round (player distance _veh);
+
+                            // Skip only already-triggered drivers. State is
+                            // not gated - the player aiming a weapon is a
+                            // stronger immediate threat than whatever the
+                            // civ's brain-tick state was, and the gameplay
+                            // intent is "all drivers comply" so the
+                            // feature works in tense fleeing-driver
+                            // scenarios as well as calm ones.
+                            if !(_order == "STOP_VEHICLE") then {
+                                if (_angle < 10) then {
+                                    private _civHostility = _drv getVariable ["ALiVE_CivPop_Hostility", 30];
+                                    private _playerSide = str (side (group player));
+                                    private _sideBaseline = if (!isNil "ALIVE_civilianHostility") then {
+                                        [ALIVE_civilianHostility, _playerSide, 0] call ALiVE_fnc_hashGet
+                                    } else { 0 };
+                                    private _h = (_civHostility max _sideBaseline) max 0 min 100;
+
+                                    if (_h < 60) then {
+                                        _drv setVariable ["ALiVE_CivPop_VehicleStopTriggered", true, true];
+                                        [_drv, "STOP_VEHICLE", _veh] remoteExec ["ALIVE_fnc_advciv_react", _drv];
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        } forEach _vehicles;
     }, 0.5, []] call CBA_fnc_addPerFrameHandler;
 
     // Use CBA_fnc_waitUntilAndExecute instead of waitUntil to avoid suspending errors.

@@ -433,6 +433,146 @@
     <Russian>Случайные повреждения на некоторых транспортных средствах</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_ANIMAL_AMOUNT">
+    <English>Ambient Animals:</English>
+    <French>Animaux d'ambiance :</French>
+    <Portuguese>Animais ambientais:</Portuguese>
+    <Russian>Фоновые животные:</Russian>
+    <Spanish>Animales ambientales:</Spanish>
+    <Chinese>環境動物:</Chinese>
+    <Chinesesimp>环境动物:</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_ANIMAL_AMOUNT_COMMENT">
+    <English>How many ambient farm animals spawn at civilian objectives. Two species pools placed differently: poultry (hens, cocks) appear near civilian buildings inside towns as backyard birds, in groups of 1-4 with a per-building chance. Herd animals (goats, sheep) appear in fields outside the town footprint, in flocks of 2-5; per-cluster herd count - Low: 1 (guaranteed), Medium: 2-4, High: 3-7. Animals are decorative ambient life and don't register with the cluster handler or agent system. Default: None (opt-in).</English>
+    <French>Quantité d'animaux d'élevage d'ambiance générés dans les objectifs civils. Deux groupes d'espèces placés différemment : la volaille (poules, coqs) apparaît près des bâtiments civils à l'intérieur des villes, comme des poules de basse-cour, en groupes de 1 à 4 avec une probabilité par bâtiment. Les animaux de troupeau (chèvres, moutons) apparaissent dans les champs en dehors de l'emprise urbaine, en troupeaux de 2 à 5 ; nombre de troupeaux par objectif - Faible : 1 (garanti), Moyen : 2 à 4, Élevé : 3 à 7. Les animaux constituent une vie d'ambiance décorative et ne s'enregistrent pas auprès du gestionnaire de clusters ni du système d'agents. Par défaut : Aucun (activation explicite).</French>
+    <Portuguese>Quantos animais de fazenda ambientais surgem nos objetivos civis. Dois grupos de espécies colocados de forma diferente: aves de capoeira (galinhas, galos) aparecem perto dos edifícios civis dentro das vilas, como aves de quintal, em grupos de 1 a 4 com uma probabilidade por edifício. Animais de rebanho (cabras, ovelhas) aparecem nos campos fora da área urbana, em rebanhos de 2 a 5; número de rebanhos por objetivo - Baixo: 1 (garantido), Médio: 2 a 4, Alto: 3 a 7. Os animais são vida ambiental decorativa e não se registam no gestor de clusters nem no sistema de agentes. Padrão: Nenhum (opção explícita).</Portuguese>
+    <Russian>Сколько фоновых сельскохозяйственных животных появляется в гражданских целях. Два пула видов размещаются по-разному: домашняя птица (куры, петухи) появляется у гражданских зданий внутри городов как дворовая птица группами по 1-4 с вероятностью на каждое здание. Стадные животные (козы, овцы) появляются на полях за пределами городской застройки стадами по 2-5; количество стад на цель - Мало: 1 (гарантировано), Средне: 2-4, Много: 3-7. Животные - декоративная фоновая жизнь, не регистрирующаяся в обработчике кластеров или системе агентов. По умолчанию: Нет (включается вручную).</Russian>
+    <Spanish>Cuántos animales de granja ambientales aparecen en los objetivos civiles. Dos grupos de especies colocados de forma distinta: las aves de corral (gallinas, gallos) aparecen cerca de los edificios civiles dentro de los pueblos, como aves de patio trasero, en grupos de 1 a 4 con probabilidad por edificio. Los animales de rebaño (cabras, ovejas) aparecen en los campos fuera del casco urbano, en rebaños de 2 a 5; número de rebaños por objetivo - Bajo: 1 (garantizado), Medio: 2 a 4, Alto: 3 a 7. Los animales son vida ambiental decorativa y no se registran en el gestor de clústeres ni en el sistema de agentes. Predeterminado: Ninguno (activación explícita).</Spanish>
+    <Chinese>在平民目標處生成多少環境農場動物。兩個物種池採用不同的放置方式:家禽(母雞、公雞)在村鎮內的平民建築附近以後院家禽形式生成,每群 1-4 隻,依每棟建築獨立判定機率。畜群動物(山羊、綿羊)出現在村鎮範圍以外的田野,每群 2-5 隻;每個目標的畜群數量 — 低:1 群 (保證),中:2-4 群,高:3-7 群。動物是裝飾性的環境生命,不會註冊到群集處理器或代理系統。預設:無 (需手動啟用)。</Chinese>
+    <Chinesesimp>在平民目标处生成多少环境农场动物。两个物种池采用不同的放置方式:家禽(母鸡、公鸡)在村镇内的平民建筑附近以后院家禽形式生成,每群 1-4 只,依每栋建筑独立判定几率。畜群动物(山羊、绵羊)出现在村镇范围以外的田野,每群 2-5 只;每个目标的畜群数量 — 低:1 群 (保证),中:2-4 群,高:3-7 群。动物是装饰性的环境生命,不会注册到集群处理器或代理系统。默认:无 (需手动启用)。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_ANIMAL_AMOUNT_NONE">
+    <English>None</English>
+    <French>Aucun</French>
+    <Portuguese>Nenhum</Portuguese>
+    <Russian>Нет</Russian>
+    <Spanish>Ninguno</Spanish>
+    <Chinese>無</Chinese>
+    <Chinesesimp>无</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_ANIMAL_AMOUNT_LOW">
+    <English>Few ambient animals</English>
+    <French>Peu d'animaux d'ambiance</French>
+    <Portuguese>Poucos animais ambientais</Portuguese>
+    <Russian>Мало фоновых животных</Russian>
+    <Spanish>Pocos animales ambientales</Spanish>
+    <Chinese>少量環境動物</Chinese>
+    <Chinesesimp>少量环境动物</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_ANIMAL_AMOUNT_MEDIUM">
+    <English>Moderate ambient animals</English>
+    <French>Quantité modérée d'animaux d'ambiance</French>
+    <Portuguese>Quantidade moderada de animais ambientais</Portuguese>
+    <Russian>Умеренное количество фоновых животных</Russian>
+    <Spanish>Cantidad moderada de animales ambientales</Spanish>
+    <Chinese>中等數量的環境動物</Chinese>
+    <Chinesesimp>中等数量的环境动物</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_AMBIENT_ANIMAL_AMOUNT_HIGH">
+    <English>Many ambient animals</English>
+    <French>Beaucoup d'animaux d'ambiance</French>
+    <Portuguese>Muitos animais ambientais</Portuguese>
+    <Russian>Много фоновых животных</Russian>
+    <Spanish>Muchos animales ambientales</Spanish>
+    <Chinese>大量環境動物</Chinese>
+    <Chinesesimp>较多周围的环境动物</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_POULTRY_CLASSES">
+    <English>Poultry Classes:</English>
+    <French>Classes de volaille :</French>
+    <Portuguese>Classes de aves de capoeira:</Portuguese>
+    <Russian>Классы домашней птицы:</Russian>
+    <Spanish>Clases de aves de corral:</Spanish>
+    <Chinese>家禽類別:</Chinese>
+    <Chinesesimp>家禽类别:</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_POULTRY_CLASSES_COMMENT">
+    <English>Animal classnames spawned as urban poultry near civilian buildings inside towns. Auto-detected entries from loaded mods (gated by CfgALiVEAmbientAnimals registry); deselect any to exclude. Vanilla A3 hens and cockerels are pre-ticked on first placement. Leaving the listbox empty AND the manual override field empty falls back to the vanilla pool.</English>
+    <French>Noms de classes des animaux apparaissant comme volaille urbaine près des bâtiments civils à l'intérieur des villes. Entrées détectées automatiquement à partir des mods chargés (filtrées par le registre CfgALiVEAmbientAnimals) ; décochez celles à exclure. Les poules et coqs vanille d'Arma 3 sont pré-cochés au premier placement. Laisser la liste ET le champ manuel vides revient au pool vanille.</French>
+    <Portuguese>Nomes de classes de animais que aparecem como aves de capoeira urbanas perto dos edifícios civis dentro das vilas. Entradas detetadas automaticamente nos mods carregados (filtradas pelo registo CfgALiVEAmbientAnimals); desmarque as que pretende excluir. As galinhas e galos vanilla do Arma 3 estão pré-selecionados no primeiro posicionamento. Deixar a lista E o campo manual vazios reverte para o conjunto vanilla.</Portuguese>
+    <Russian>Имена классов животных, появляющихся как городская домашняя птица у гражданских зданий внутри городов. Записи автоматически определяются из загруженных модов (фильтруются реестром CfgALiVEAmbientAnimals); снимите отметки с тех, что нужно исключить. Куры и петухи Arma 3 отмечены по умолчанию при первом размещении. Если оставить и список, и ручное поле пустыми - используется ванильный пул.</Russian>
+    <Spanish>Nombres de clase de animales que aparecen como aves de corral urbanas cerca de los edificios civiles dentro de los pueblos. Entradas detectadas automáticamente a partir de los mods cargados (filtradas por el registro CfgALiVEAmbientAnimals); desmarque las que quiera excluir. Las gallinas y gallos vanilla de Arma 3 están preseleccionados en la primera colocación. Dejar la lista Y el campo manual vacíos vuelve al conjunto vanilla.</Spanish>
+    <Chinese>於村鎮內平民建築附近以城市家禽形式生成的動物類別名稱。從已載入的模組自動偵測 (依 CfgALiVEAmbientAnimals 註冊表過濾);取消勾選即可排除。第一次放置時,Arma 3 原生的母雞與公雞已預先勾選。若清單與手動欄位都留空,將回退至原生資源池。</Chinese>
+    <Chinesesimp>于村镇内平民建筑附近以城市家禽形式生成的动物类别名称。从已加载的模组自动检测 (依 CfgALiVEAmbientAnimals 注册表过滤);取消勾选即可排除。第一次放置时,Arma 3 原生的母鸡与公鸡已预先勾选。若清单与手动栏位都留空,将回退至原生资源池。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_POULTRY_CLASSES_MANUAL">
+    <English>Poultry Classes (manual):</English>
+    <French>Classes de volaille (manuel) :</French>
+    <Portuguese>Classes de aves (manual):</Portuguese>
+    <Russian>Классы домашней птицы (вручную):</Russian>
+    <Spanish>Clases de aves (manual):</Spanish>
+    <Chinese>家禽類別 (手動):</Chinese>
+    <Chinesesimp>家禽类别 (手动):</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_POULTRY_CLASSES_MANUAL_COMMENT">
+    <English>Optional comma-separated list of additional poultry classnames not in the registry dropdown. Useful for bespoke mod content that hasn't been added to CfgALiVEAmbientAnimals yet. The runtime adds these to whatever's selected in the dropdown above. Leave blank if all your animals are in the dropdown.</English>
+    <French>Liste optionnelle séparée par des virgules de noms de classes de volaille supplémentaires absents du menu déroulant. Utile pour du contenu de mod sur mesure qui n'a pas encore été ajouté à CfgALiVEAmbientAnimals. Le runtime les ajoute à la sélection du menu ci-dessus. Laisser vide si tous vos animaux figurent dans le menu.</French>
+    <Portuguese>Lista opcional separada por vírgulas de nomes de classes de aves adicionais que não estejam no menu suspenso. Útil para conteúdo de mod personalizado ainda não adicionado a CfgALiVEAmbientAnimals. O runtime adiciona-os ao que estiver selecionado no menu acima. Deixe em branco se todos os seus animais já estiverem no menu.</Portuguese>
+    <Russian>Необязательный список имён дополнительных классов домашней птицы, отсутствующих в выпадающем меню, через запятую. Полезно для модов, ещё не добавленных в CfgALiVEAmbientAnimals. В рантайме они добавляются к тому, что выбрано в меню выше. Оставьте пустым, если все ваши животные есть в меню.</Russian>
+    <Spanish>Lista opcional separada por comas de nombres de clase de aves adicionales no incluidos en el menú desplegable. Útil para contenido de mod a medida que aún no se haya añadido a CfgALiVEAmbientAnimals. El runtime las suma a lo seleccionado en el menú anterior. Déjelo en blanco si todos sus animales están en el menú.</Spanish>
+    <Chinese>可選用,列出未列於下拉清單中的額外家禽類別名稱,以逗號分隔。適用於尚未加入 CfgALiVEAmbientAnimals 註冊表的客製化模組內容。執行時會將其加入上方下拉清單的選取結果中。如果你的動物都已在下拉清單中,留空即可。</Chinese>
+    <Chinesesimp>可选用,列出未列于下拉清单中的额外家禽类别名称,以逗号分隔。适用于尚未加入 CfgALiVEAmbientAnimals 注册表的定制化模组内容。执行时会将其加入上方下拉清单的选取结果中。如果你的动物都已在下拉清单中,留空即可。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_HERD_CLASSES">
+    <English>Herd Classes:</English>
+    <French>Classes de troupeau :</French>
+    <Portuguese>Classes de rebanho:</Portuguese>
+    <Russian>Классы стадных животных:</Russian>
+    <Spanish>Clases de rebaño:</Spanish>
+    <Chinese>畜群類別:</Chinese>
+    <Chinesesimp>畜群类别:</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_HERD_CLASSES_COMMENT">
+    <English>Animal classnames spawned as field herds in the open countryside outside town footprints. Auto-detected entries from loaded mods (gated by CfgALiVEAmbientAnimals registry); deselect any to exclude. Vanilla A3 goats and sheep are pre-ticked on first placement. Leaving the listbox empty AND the manual override field empty falls back to the vanilla pool.</English>
+    <French>Noms de classes des animaux apparaissant en troupeaux dans les champs en dehors des villes. Entrées détectées automatiquement à partir des mods chargés (filtrées par le registre CfgALiVEAmbientAnimals) ; décochez celles à exclure. Les chèvres et moutons vanille d'Arma 3 sont pré-cochés au premier placement. Laisser la liste ET le champ manuel vides revient au pool vanille.</French>
+    <Portuguese>Nomes de classes de animais que aparecem em rebanhos no campo aberto fora dos limites das vilas. Entradas detetadas automaticamente nos mods carregados (filtradas pelo registo CfgALiVEAmbientAnimals); desmarque as que pretende excluir. As cabras e ovelhas vanilla do Arma 3 estão pré-selecionadas no primeiro posicionamento. Deixar a lista E o campo manual vazios reverte para o conjunto vanilla.</Portuguese>
+    <Russian>Имена классов животных, появляющихся стадами в открытой местности за пределами городов. Записи автоматически определяются из загруженных модов (фильтруются реестром CfgALiVEAmbientAnimals); снимите отметки с тех, что нужно исключить. Козы и овцы Arma 3 отмечены по умолчанию при первом размещении. Если оставить и список, и ручное поле пустыми - используется ванильный пул.</Russian>
+    <Spanish>Nombres de clase de animales que aparecen como rebaños en el campo abierto fuera del casco urbano. Entradas detectadas automáticamente a partir de los mods cargados (filtradas por el registro CfgALiVEAmbientAnimals); desmarque las que quiera excluir. Las cabras y ovejas vanilla de Arma 3 están preseleccionadas en la primera colocación. Dejar la lista Y el campo manual vacíos vuelve al conjunto vanilla.</Spanish>
+    <Chinese>於村鎮範圍以外的開闊鄉野以畜群形式生成的動物類別名稱。從已載入的模組自動偵測 (依 CfgALiVEAmbientAnimals 註冊表過濾);取消勾選即可排除。第一次放置時,Arma 3 原生的山羊與綿羊已預先勾選。若清單與手動欄位都留空,將回退至原生資源池。</Chinese>
+    <Chinesesimp>于村镇范围以外的开阔乡野以畜群形式生成的动物类别名称。从已加载的模组自动检测 (依 CfgALiVEAmbientAnimals 注册表过滤);取消勾选即可排除。第一次放置时,Arma 3 原生的山羊与绵羊已预先勾选。若清单与手动栏位都留空,将回退至原生资源池。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_HERD_CLASSES_MANUAL">
+    <English>Herd Classes (manual):</English>
+    <French>Classes de troupeau (manuel) :</French>
+    <Portuguese>Classes de rebanho (manual):</Portuguese>
+    <Russian>Классы стадных животных (вручную):</Russian>
+    <Spanish>Clases de rebaño (manual):</Spanish>
+    <Chinese>畜群類別 (手動):</Chinese>
+    <Chinesesimp>畜群类别 (手动):</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AMBCP_HERD_CLASSES_MANUAL_COMMENT">
+    <English>Optional comma-separated list of additional herd-animal classnames not in the registry dropdown. Useful for bespoke mod content that hasn't been added to CfgALiVEAmbientAnimals yet. The runtime adds these to whatever's selected in the dropdown above. Leave blank if all your animals are in the dropdown.</English>
+    <French>Liste optionnelle séparée par des virgules de noms de classes d'animaux de troupeau supplémentaires absents du menu déroulant. Utile pour du contenu de mod sur mesure qui n'a pas encore été ajouté à CfgALiVEAmbientAnimals. Le runtime les ajoute à la sélection du menu ci-dessus. Laisser vide si tous vos animaux figurent dans le menu.</French>
+    <Portuguese>Lista opcional separada por vírgulas de nomes de classes de animais de rebanho adicionais que não estejam no menu suspenso. Útil para conteúdo de mod personalizado ainda não adicionado a CfgALiVEAmbientAnimals. O runtime adiciona-os ao que estiver selecionado no menu acima. Deixe em branco se todos os seus animais já estiverem no menu.</Portuguese>
+    <Russian>Необязательный список имён дополнительных классов стадных животных, отсутствующих в выпадающем меню, через запятую. Полезно для модов, ещё не добавленных в CfgALiVEAmbientAnimals. В рантайме они добавляются к тому, что выбрано в меню выше. Оставьте пустым, если все ваши животные есть в меню.</Russian>
+    <Spanish>Lista opcional separada por comas de nombres de clase de animales de rebaño adicionales no incluidos en el menú desplegable. Útil para contenido de mod a medida que aún no se haya añadido a CfgALiVEAmbientAnimals. El runtime las suma a lo seleccionado en el menú anterior. Déjelo en blanco si todos sus animales están en el menú.</Spanish>
+    <Chinese>可選用,列出未列於下拉清單中的額外畜群動物類別名稱,以逗號分隔。適用於尚未加入 CfgALiVEAmbientAnimals 註冊表的客製化模組內容。執行時會將其加入上方下拉清單的選取結果中。如果你的動物都已在下拉清單中,留空即可。</Chinese>
+    <Chinesesimp>可选用,列出未列于下拉清单中的额外畜群动物类别名称,以逗号分隔。适用于尚未加入 CfgALiVEAmbientAnimals 注册表的定制化模组内容。执行时会将其加入上方下拉清单的选取结果中。如果你的动物都已在下拉清单中,留空即可。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_USAGE">
     <English>Define the settings on the module, place optional TAOR / Blacklist markers!</English>
     <Chinesesimp>定义模块上的设置,放置可选的TAOR/黑名单标记</Chinesesimp>
