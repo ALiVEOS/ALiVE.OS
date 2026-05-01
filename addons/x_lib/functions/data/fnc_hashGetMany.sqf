@@ -20,8 +20,8 @@ Examples:
 // retrieve many keys at once
 _values = [_hash, ["key1","key2","key3"]] call ALiVE_fnc_hashGetMany;
 
-// retrieve many keys and pull them into variables
-([_hash, ["key1","key2","key3"]] call ALiVE_fnc_hashGetMany) params ["_value1","_value2","_value3"];
+// retrieve many keys and pull them into local variables
+([_hash, ["key1","key2","key3"]] call ALiVE_fnc_hashGetMany) params ["_value1","_value2",["_value3","defaultValue"]];
 (end)
 
 See Also:
@@ -37,28 +37,8 @@ private _hashKeys = _hash select 1;
 private _hashValues = _hash select 2;
 
 _keys apply {
-    if (_x isequaltype "") then {
-        private _keyIndex = _hashKeys find _x;
-        if (_keyIndex >= 0) then {
-            _hashValues select _keyIndex
-        }
-    } else {
-        // assuming array, if different type.. you deserve the error
-        _x params ["_key","_default"];
-
-        private _keyIndex = _hashKeys find _key;
-        if (_keyIndex >= 0) then {
-            _hashValues select _keyIndex
-        } else {
-            if (isnil "_default") then {
-                nil
-            } else {
-                if (_default isequaltype []) then {
-                    +_default
-                } else {
-                    _default
-                }
-            }
-        }
-    }
+    private _keyIndex = _hashKeys find _x;
+    if (_keyIndex >= 0) then {
+        _hashValues select _keyIndex
+    };
 }
