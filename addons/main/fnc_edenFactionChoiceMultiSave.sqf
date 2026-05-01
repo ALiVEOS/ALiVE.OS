@@ -11,7 +11,7 @@ control family. Multi-select counterpart to fnc_edenFactionChoiceSave.sqf.
 Reads ALL selected items from the multi-select ListBox (IDC 100), maps
 each to its lbData (faction classname), and returns an SQF array literal
 string like `["BLU_F","OPF_F","IND_F"]`. This format is what the
-existing mil_opcom `factions` consumer (case "convert" in fnc_OPCOM.sqf)
+existing mil_opcom `factions` consumer (ALiVE_fnc_parseArrayFromString)
 already accepts and parses, so no runtime changes are needed downstream.
 
 Three storage paths to make the value survive Eden's serialisation
