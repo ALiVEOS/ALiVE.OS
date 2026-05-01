@@ -116,7 +116,7 @@ switch(_operation) do {
                     sleep 2;
 
                     //Retrieve module-object variables
-                    _logic setvariable ["ALiVE_GC_INDIVIDUALTYPES",([_logic,"convert",(_logic getvariable ["ALiVE_GC_INDIVIDUALTYPES",[]])] call ALiVE_fnc_GC),true];
+                    _logic setvariable ["ALiVE_GC_INDIVIDUALTYPES", [_logic getvariable ["ALiVE_GC_INDIVIDUALTYPES",[]]] call ALiVE_fnc_parseArrayFromString, true];
                     _debug = _logic getvariable ["debug","false"];
                     _interval = _logic getvariable ["ALiVE_GC_INTERVAL","300"];
 
@@ -187,27 +187,6 @@ switch(_operation) do {
                 deleteVehicle _logic;
                 deleteGroup (group _logic);
             };
-        };
-
-        case "convert": {
-            if !(isNil "_args") then {
-                if(typeName _args == "STRING") then {
-                    if !(_args == "") then {
-                        _args = [_args, " ", ""] call CBA_fnc_replace;
-                        _args = [_args, "[", ""] call CBA_fnc_replace;
-                        _args = [_args, "]", ""] call CBA_fnc_replace;
-                        _args = [_args, """", ""] call CBA_fnc_replace;
-                        _args = [_args, ","] call CBA_fnc_split;
-
-                        if !(count _args > 0) then {
-                            _args = [];
-                        };
-                    } else {
-                        _args = [];
-                    };
-                };
-            };
-            _result = _args;
         };
 
         case "collect": {
