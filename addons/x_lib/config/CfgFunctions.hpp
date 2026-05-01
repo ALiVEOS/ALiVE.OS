@@ -648,6 +648,13 @@ class dirToText
 	RECOMPILE;
 };
 
+class parseArrayFromString
+{
+	file = "\x\alive\addons\x_lib\functions\conversions\fnc_parseArrayFromString.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class sideNumberToText
 {
 	file = "\x\alive\addons\x_lib\functions\conversions\fnc_sideNumberToText.sqf";

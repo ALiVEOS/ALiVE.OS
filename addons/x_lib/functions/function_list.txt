@@ -98,6 +98,7 @@ config
 conversions
 
 	ALiVE_fnc_dirToText
+	ALiVE_fnc_parseArrayFromString
 	ALiVE_fnc_sideNumberToText
 	ALiVE_fnc_sideObjectToNumber
 	ALiVE_fnc_sideTextToLong
