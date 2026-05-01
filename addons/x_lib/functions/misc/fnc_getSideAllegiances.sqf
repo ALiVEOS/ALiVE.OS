@@ -17,7 +17,7 @@ array
 
 Examples:
 (begin example)
-_allegiances = ["WEST"] call ALiVE_fnc_aALiVE_fnc_getSideAllegiancesddActionGlobal;
+_allegiances = ["WEST"] call ALiVE_fnc_getSideAllegiances;
 (end)
 
 See Also:
