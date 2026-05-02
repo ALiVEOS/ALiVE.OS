@@ -307,6 +307,39 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "excludeKinds": {
+        // Comma-separated list of CfgVehicles parent class names whose
+        // groups are dropped from the reinforcement candidate pool.
+        // First call parses the raw string into an array and caches it
+        // on the logic under "excludeKindsParsed"; subsequent calls just
+        // return the cached array.
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["excludeKinds", _args];
+            private _parsed = [];
+            {
+                private _t = _x;
+                while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+                while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do { _t = _t select [0, count _t - 1] };
+                if (_t != "") then { _parsed pushBackUnique _t };
+            } forEach ([_args, ","] call CBA_fnc_split);
+            _logic setVariable ["excludeKindsParsed", _parsed];
+            _result = _parsed;
+        } else {
+            private _cached = _logic getVariable ["excludeKindsParsed", nil];
+            if (isNil "_cached") then {
+                private _raw = _logic getVariable ["excludeKinds", ""];
+                _cached = [];
+                {
+                    private _t = _x;
+                    while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+                    while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do { _t = _t select [0, count _t - 1] };
+                    if (_t != "") then { _cached pushBackUnique _t };
+                } forEach ([_raw, ","] call CBA_fnc_split);
+                _logic setVariable ["excludeKindsParsed", _cached];
+            };
+            _result = _cached;
+        };
+    };
     case "enableAirTransport": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["enableAirTransport", _args];
@@ -2146,7 +2179,7 @@ switch(_operation) do {
     case "init": {
         if (isServer) then {
 
-            private ["_debug","_forcePool","_type","_allowInfantry","_allowMechanised","_allowMotorised","_allowArmour","_allowHeli","_allowPlane"];
+            private ["_debug","_forcePool","_type","_allowInfantry","_allowMechanised","_allowMotorised","_allowArmour","_allowHeli","_allowPlane","_excludeKinds"];
 
             // if server, initialise module game logic
             _logic setVariable ["super", SUPERCLASS];
@@ -2178,6 +2211,10 @@ switch(_operation) do {
             _allowArmour = [_logic, "allowArmourReinforcement"] call MAINCLASS;
             _allowHeli = [_logic, "allowHeliReinforcement"] call MAINCLASS;
             _allowPlane = [_logic, "allowPlaneReinforcement"] call MAINCLASS;
+            // Trigger one-shot parse + cache of the comma-separated
+            // Excluded Kinds list so the candidate-build sites read a
+            // ready-made array. Empty list = no kinds excluded.
+            _excludeKinds = [_logic, "excludeKinds"] call MAINCLASS;
 
             _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
@@ -2199,6 +2236,7 @@ switch(_operation) do {
                 ["ML - Allow armour requests: %1",_allowArmour] call ALiVE_fnc_dump;
                 ["ML - Allow heli requests: %1",_allowHeli] call ALiVE_fnc_dump;
                 ["ML - Allow plane requests: %1",_allowPlane] call ALiVE_fnc_dump;
+                ["ML - Excluded kinds: %1",_excludeKinds] call ALiVE_fnc_dump;
                 ["ML - Enable air transport: %1",_enableAirTransport] call ALiVE_fnc_dump;
                 ["ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALiVE_fnc_dump;
                 ["ML - Enable incremental force strength on objective capture: %1",_startForceStrengthIncrement] call ALiVE_fnc_dump;
@@ -5333,6 +5371,7 @@ switch(_operation) do {
                         };
 
                         _motorisedGroups = _motorisedGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+                        _motorisedGroups = [_motorisedGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _motorisedGroups;
                         _totalCount = _totalCount + _groupCount;
 
@@ -5690,6 +5729,7 @@ switch(_operation) do {
                         };
 
                         _infantryGroups = _infantryGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+                        _infantryGroups = [_infantryGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _infantryGroups;
                         _totalCount = _totalCount + _groupCount;
 
@@ -6036,6 +6076,7 @@ switch(_operation) do {
                         };
 
                         _armourGroups = _armourGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+                        _armourGroups = [_armourGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _armourGroups;
                         _totalCount = _totalCount + _groupCount;
 
@@ -6086,6 +6127,7 @@ switch(_operation) do {
                         };
 
                         _mechanisedGroups = _mechanisedGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+                        _mechanisedGroups = [_mechanisedGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _mechanisedGroups;
                         _totalCount = _totalCount + _groupCount;
 
@@ -6260,6 +6302,7 @@ switch(_operation) do {
 
                             _planeClasses = [0,_eventFaction,"Plane"] call ALiVE_fnc_findVehicleType;
                             _planeClasses = _planeClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+                            _planeClasses = [_planeClasses, "", ([_logic, "excludeKinds"] call MAINCLASS), "vehicles"] call ALIVE_fnc_MLExcludeKindsFilter;
 
                             for "_i" from 0 to _eventForcePlane -1 do {
 
@@ -6321,6 +6364,7 @@ switch(_operation) do {
 
                             _heliClasses = [0,_eventFaction,"Helicopter"] call ALiVE_fnc_findVehicleType;
                             _heliClasses = _heliClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+                            _heliClasses = [_heliClasses, "", ([_logic, "excludeKinds"] call MAINCLASS), "vehicles"] call ALIVE_fnc_MLExcludeKindsFilter;
 
                             for "_i" from 0 to _eventForceHeli -1 do {
 

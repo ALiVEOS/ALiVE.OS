@@ -31,6 +31,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_logistics\fnc_MLAttachSmokeOrStrobe.sqf";
                                 RECOMPILE;
                         };
+                        class MLExcludeKindsFilter {
+                                description = "Filters reinforcement candidates against the Excluded Kinds attribute";
+                                file = "\x\alive\addons\mil_logistics\fnc_MLExcludeKindsFilter.sqf";
+                                RECOMPILE;
+                        };
                 };
         };
 };
