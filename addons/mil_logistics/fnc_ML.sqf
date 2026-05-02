@@ -2247,6 +2247,26 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
 
 
+            // Apply per-faction custom-class overrides to the static-data
+            // registries. Each attribute is a canonical string in the
+            // FACTION1=class1,class2;FACTION2=class3 form (see
+            // fnc_resolveFactionStaticChoice for the parser). Mode toggles
+            // between full replace (default; matches the legacy init.sqf
+            // hashSet override pattern) and append (extend stock factions
+            // with mod classes without dropping existing entries).
+            private _customMode = _logic getVariable ["customStaticDataMode", "REPLACE"];
+            private _customLand = _logic getVariable ["customLandTransport", ""];
+            private _customAir  = _logic getVariable ["customAirTransport", ""];
+            private _customCont = _logic getVariable ["customContainers", ""];
+            private _touchedLand = [_customLand, ALIVE_factionDefaultTransport,    _customMode] call ALIVE_fnc_resolveFactionStaticChoice;
+            private _touchedAir  = [_customAir,  ALIVE_factionDefaultAirTransport, _customMode] call ALIVE_fnc_resolveFactionStaticChoice;
+            private _touchedCont = [_customCont, ALIVE_factionDefaultContainers,   _customMode] call ALIVE_fnc_resolveFactionStaticChoice;
+            if (_debug) then {
+                ["ML - Custom static data: mode=%1 landTouched=%2 airTouched=%3 containersTouched=%4",
+                    _customMode, _touchedLand, _touchedAir, _touchedCont] call ALiVE_fnc_dump;
+            };
+
+
             // create the global registry
             if(isNil "ALIVE_MLGlobalRegistry") then {
                 ALIVE_MLGlobalRegistry = [nil, "create"] call ALIVE_fnc_MLGlobalRegistry;

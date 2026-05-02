@@ -16,6 +16,7 @@
 class ctrlControlsGroupNoScrollbars;
 class ctrlListBox;
 class ctrlStatic;
+class ctrlEdit;
 
 class CfgFactionClasses {
     class Alive {
@@ -463,6 +464,184 @@ class Cfg3DEN
         class ALiVE_AnimalChoiceMulti_Herd: ALiVE_FactionChoiceMulti_Base {
             attributeLoad = "[_this, 'herd', 'customHerdClasses', ['Goat_random_F', 'Sheep_random_F'], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenAnimalChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'customHerdClasses'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenItemChoiceMultiSave.sqf'";
+        };
+
+        // ALiVE_FactionStaticDataChoice family:
+        //   Lets a mission-maker override the per-faction static-data
+        //   registries (mil_logistics ground / air transport / airdrop
+        //   containers; mil_placement support / supply classes) from
+        //   inside Eden, instead of hand-editing init.sqf to call
+        //   ALIVE_fnc_hashSet on the global registry hashes.
+        //
+        //   Layout: controlsGroup containing a multi-select listbox of
+        //   classes drawn from the module's currently-selected factions
+        //   (filtered by kind - "land" / "air" / "container" / "support"
+        //   / "supply"), plus a free-text override Edit at the bottom for
+        //   classes the listbox doesn't surface (mod-specific classes,
+        //   community classes that don't live in CfgGroups, etc.).
+        //
+        //   Storage: a single string on the logic, format
+        //     FACTION1=class1,class2;FACTION2=class3
+        //   On Eden re-open, classes that match a listbox row are ticked,
+        //   the rest pre-fill the override field. On module init the
+        //   resolver merges both halves and applies via hashSet to the
+        //   global registry (same plumbing as the existing init.sqf
+        //   override pattern, just driven by Eden state).
+        //
+        //   Substrate is a fresh ctrlControlsGroupNoScrollbars (NOT
+        //   inherited from ALiVE_FactionChoiceMulti_Base) because this
+        //   control needs a taller layout to fit the override Edit row
+        //   below the listbox.
+        class ALiVE_FactionStaticDataChoice_Base: ctrlControlsGroupNoScrollbars {
+            type  = 15;
+            style = 0;
+            idc   = -1;
+            x = 0;
+            y = 0;
+            w = "130 * (pixelW * pixelGrid * 0.5)";
+            h = "70 * (pixelH * pixelGrid * 0.5)";
+            colorBackground[] = {0, 0, 0, 0};
+            colorText[]       = {1, 1, 1, 1};
+            text   = "";
+            font   = "RobotoCondensed";
+            sizeEx = "pixelH * pixelGrid * 2.2";
+
+            class VScrollbar {};
+            class HScrollbar {};
+
+            class controls {
+                class Title: ctrlStatic {
+                    idc      = 101;
+                    type     = 0;
+                    style    = 1;
+                    x        = 0;
+                    y        = 0;
+                    w        = "48 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0};
+                    colorText[]       = {1, 1, 1, 0.9};
+                    text     = "Override:";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 2.2";
+                    tooltip  = "Pick classes to use as the kind override for the listed faction. Ctrl+click toggles individual rows. The Override field below accepts comma-separated class names for mod classes not shown in the listbox.";
+                    tooltipColorShade[] = {0, 0, 0, 1};
+                    tooltipColorText[]  = {1, 1, 1, 1};
+                    tooltipColorBox[]   = {0, 0, 0, 1};
+                };
+
+                class List: ctrlListBox {
+                    idc = 100;
+                    type = 5;
+                    style = 16 + 0x20;
+                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    y = 0;
+                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    h = "55 * (pixelH * pixelGrid * 0.5)";
+
+                    color[]                  = {1, 0.62, 0, 1};
+                    colorActive[]            = {0, 0, 0, 0.5};
+                    colorFocused[]           = {0, 0, 0, 0.5};
+                    colorHover[]             = {0, 0, 0, 0.5};
+                    colorText[]              = {1, 1, 1, 1};
+                    colorBackground[]        = {0, 0, 0, 0.5};
+                    colorSelect[]            = {0, 0, 0, 1};
+                    colorSelect2[]           = {0, 0, 0, 1};
+                    colorSelectBackground[]  = {1, 0.62, 0, 1};
+                    colorSelectBackground2[] = {1, 0.62, 0, 1};
+                    colorDisabled[]          = {1, 1, 1, 0.25};
+                    shadow                   = 0;
+                    colorShadow[]            = {0, 0, 0, 0};
+
+                    tooltipColorShade[] = {0, 0, 0, 1};
+                    tooltipColorText[]  = {1, 1, 1, 1};
+                    tooltipColorBox[]   = {0, 0, 0, 1};
+
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    rowHeight = "pixelH * pixelGrid * 2.2";
+                    period   = 1.2;
+
+                    soundSelect[] = {"", 0, 0};
+                    maxHistoryDelay = 1.0;
+
+                    class ListScrollBar {
+                        color[]         = {1, 1, 1, 0.6};
+                        colorActive[]   = {1, 1, 1, 1};
+                        colorDisabled[] = {1, 1, 1, 0.3};
+                        arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+                        arrowFull  = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+                        border     = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+                        thumb      = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+                    };
+                };
+
+                class OverrideLabel: ctrlStatic {
+                    idc      = 103;
+                    type     = 0;
+                    style    = 1;
+                    x        = 0;
+                    y        = "57 * (pixelH * pixelGrid * 0.5)";
+                    w        = "48 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0};
+                    colorText[]       = {1, 1, 1, 0.7};
+                    text     = "Override classes:";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    tooltip  = "Free-text comma-separated class names. Use the same FACTION=class1,class2;FACTION2=class3 syntax. Useful for mod classes the listbox above doesn't show.";
+                    tooltipColorShade[] = {0, 0, 0, 1};
+                    tooltipColorText[]  = {1, 1, 1, 1};
+                    tooltipColorBox[]   = {0, 0, 0, 1};
+                };
+
+                class Override: ctrlEdit {
+                    idc      = 102;
+                    type     = 2;
+                    style    = 0;
+                    x        = "48 * (pixelW * pixelGrid * 0.5)";
+                    y        = "57 * (pixelH * pixelGrid * 0.5)";
+                    w        = "82 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    text     = "";
+                    colorBackground[] = {0, 0, 0, 0.5};
+                    colorText[]       = {1, 1, 1, 1};
+                    colorSelection[]  = {1, 0.62, 0, 0.6};
+                    colorDisabled[]   = {1, 1, 1, 0.25};
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    autocomplete = "";
+                    canModify = 1;
+                };
+            };
+        };
+
+        // Per-kind variants. Each plumbs a kind-filter token through to the
+        // listbox feeder + a different logic-variable name + a localised
+        // title string. The handler resolves the filter token to a CfgGroups
+        // category list (and isKindOf gate) for the listbox population.
+        class ALiVE_FactionStaticDataChoice_LandTransport: ALiVE_FactionStaticDataChoice_Base {
+            attributeLoad = "[_this, 'land', 'customLandTransport', '$STR_ALIVE_ML_CUSTOM_LAND_TRANSPORT', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionStaticDataLoad.sqf'";
+            attributeSave = "[_this, 'customLandTransport'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionStaticDataSave.sqf'";
+        };
+
+        class ALiVE_FactionStaticDataChoice_AirTransport: ALiVE_FactionStaticDataChoice_Base {
+            attributeLoad = "[_this, 'air', 'customAirTransport', '$STR_ALIVE_ML_CUSTOM_AIR_TRANSPORT', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionStaticDataLoad.sqf'";
+            attributeSave = "[_this, 'customAirTransport'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionStaticDataSave.sqf'";
+        };
+
+        class ALiVE_FactionStaticDataChoice_Containers: ALiVE_FactionStaticDataChoice_Base {
+            attributeLoad = "[_this, 'container', 'customContainers', '$STR_ALIVE_ML_CUSTOM_CONTAINERS', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionStaticDataLoad.sqf'";
+            attributeSave = "[_this, 'customContainers'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionStaticDataSave.sqf'";
+        };
+
+        class ALiVE_FactionStaticDataChoice_Supports: ALiVE_FactionStaticDataChoice_Base {
+            attributeLoad = "[_this, 'support', 'customSupports', '$STR_ALIVE_MP_CUSTOM_SUPPORTS', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionStaticDataLoad.sqf'";
+            attributeSave = "[_this, 'customSupports'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionStaticDataSave.sqf'";
+        };
+
+        class ALiVE_FactionStaticDataChoice_Supplies: ALiVE_FactionStaticDataChoice_Base {
+            attributeLoad = "[_this, 'supply', 'customSupplies', '$STR_ALIVE_MP_CUSTOM_SUPPLIES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionStaticDataLoad.sqf'";
+            attributeSave = "[_this, 'customSupplies'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionStaticDataSave.sqf'";
         };
 
         // Hidden attribute - renders zero UI (h = 0, empty controls).

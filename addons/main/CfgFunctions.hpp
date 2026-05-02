@@ -118,6 +118,26 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_anyPlayerCanSee.sqf";
                 RECOMPILE;
             };
+            class listFactionVehicleClasses {
+                description = "Feeder for ALiVE_FactionStaticDataChoice - returns kind-filtered CfgVehicles classes per faction";
+                file = "\x\alive\addons\main\fnc_listFactionVehicleClasses.sqf";
+                RECOMPILE;
+            };
+            class edenFactionStaticDataLoad {
+                description = "Eden attributeLoad handler for ALiVE_FactionStaticDataChoice (multi-select listbox + override field)";
+                file = "\x\alive\addons\main\fnc_edenFactionStaticDataLoad.sqf";
+                RECOMPILE;
+            };
+            class edenFactionStaticDataSave {
+                description = "Eden attributeSave handler for ALiVE_FactionStaticDataChoice";
+                file = "\x\alive\addons\main\fnc_edenFactionStaticDataSave.sqf";
+                RECOMPILE;
+            };
+            class resolveFactionStaticChoice {
+                description = "Module-init resolver: parses canonical FACTION=class string and merges into target static-data registry hash";
+                file = "\x\alive\addons\main\fnc_resolveFactionStaticChoice.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
