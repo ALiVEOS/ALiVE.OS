@@ -27,8 +27,7 @@ _values = [_hash, ["key1","key2","key3"]] call ALiVE_fnc_hashGetMany;
 See Also:
 
 Author:
-ARJay
-Wolffy
+SpyderBlack723
 ---------------------------------------------------------------------------- */
 
 params ["_hash","_keys"];
