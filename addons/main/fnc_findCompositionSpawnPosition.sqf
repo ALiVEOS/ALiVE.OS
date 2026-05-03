@@ -63,6 +63,11 @@ Parameters:
     _this select 4: NUMBER  - preferred direction in degrees [0, 360].
                               -1 (default) = random. Used at Stage 1 only;
                               roadblock mode overrides with road heading.
+    _this select 5: BOOL    - caller-side debug flag. OR'd with the global
+                              `ALiVE_compSpawn_debug`. Lets a module pass
+                              its own debug attribute through without
+                              relying on init.sqf timing (which can fire
+                              after module init in MP host). Default false.
 
 Returns:
     ARRAY [_pos, _dir] on success, [] on failure.
@@ -96,7 +101,8 @@ params [
     ["_radius",     200,     [0]],
     ["_envelope",   30,      [0]],
     ["_mode",       "military", [""]],
-    ["_preferredDir", -1,    [0]]
+    ["_preferredDir", -1,    [0]],
+    ["_callerDebug", false, [false]]
 ];
 
 if (count _centerPos < 2) exitWith { [] };
@@ -108,7 +114,7 @@ if !(_mode in ["field", "military", "civilian", "roadblock"]) then {
     _mode = "military";
 };
 
-private _debug = !isNil "ALiVE_compSpawn_debug" && {ALiVE_compSpawn_debug};
+private _debug = _callerDebug || (!isNil "ALiVE_compSpawn_debug" && {ALiVE_compSpawn_debug});
 
 if (_debug) then {
     diag_log format ["[ALiVE CompSpawn] ENTER pos=%1 radius=%2 envelope=%3 mode=%4", _centerPos, _radius, _envelope, _mode];
@@ -291,11 +297,11 @@ private _candidateClear = {
     //    to sit near roads / urban infrastructure where sub-degree slopes
     //    are unavoidable.
     private _slopeRules = switch (_mode) do {
-        case "field":     {[0.05, 0.985]};   // ~2.9 deg delta + ~10 deg normal-Z
-        case "military":  {[0.07, 0.970]};   // ~4.0 deg delta + ~14 deg
-        case "civilian":  {[0.10, 0.950]};   // ~5.7 deg delta + ~18 deg
-        case "roadblock": {[0.10, 0.950]};   // road heading dominates anyway
-        default           {[0.07, 0.970]};
+        case "field":     {[0.07, 0.970]};   // ~4.0 deg delta + ~14 deg normal-Z
+        case "military":  {[0.10, 0.950]};   // ~5.7 deg delta + ~18 deg
+        case "civilian":  {[0.12, 0.930]};   // ~6.8 deg delta + ~22 deg
+        case "roadblock": {[0.12, 0.930]};   // road heading dominates anyway
+        default           {[0.10, 0.950]};
     };
     _slopeRules params ["_deltaRatio", "_normalZMin"];
 
@@ -313,13 +319,16 @@ private _candidateClear = {
     //
     //   Outer: 4 samples at an extended radius + centre, budget scaled to the
     //          extended radius's wider span. Catches surrounding hillsides /
-    //          cliffs that crowd the camp from beyond its own footprint. The
-    //          extended radius scales with envelope but floors at 25m so small
-    //          compositions still reach into the surrounding terrain (a 15m
-    //          comp's natural 1.5x envHalf would only reach ~11m, invisible to
-    //          neighbourhood detection).
+    //          cliffs that crowd the spawn from beyond its own footprint.
+    //          Extended radius is `(envHalf * 1.5) max 25m` - the floor
+    //          ensures small compositions still reach into surrounding
+    //          terrain (a 15m comp's natural envHalf is only 7.5m), while
+    //          the modest multiplier prevents large FieldHQ-scale envelopes
+    //          from sampling so far out that natural rolling terrain trips
+    //          the rejection (180m+ samples on Stratis catch gentle hillsides
+    //          unrelated to the actual spawn footprint).
     private _maxDelta = _env * _deltaRatio;
-    private _outerRadius = (_envHalf * 3) max 25;
+    private _outerRadius = (_envHalf * 1.5) max 25;
     private _neighbourhoodMaxDelta = (_outerRadius * 2) * _deltaRatio;
 
     private _innerSamples = [_p select 2];
@@ -408,8 +417,8 @@ for "_i" from 1 to _maxAttempts do {
     };
 };
 
-if (count _result == 0 && {_debug}) then {
-    diag_log format ["[ALiVE CompSpawn] EXIT FAIL: %1 attempts exhausted", _maxAttempts];
+if (count _result == 0) then {
+    diag_log format ["[ALiVE CompSpawn] EXIT FAIL: %1 attempts exhausted (envelope=%2 mode=%3 radius=%4 centre=%5)", _maxAttempts, _envelope, _mode, _radius, _centerPos];
 };
 
 _result

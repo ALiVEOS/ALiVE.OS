@@ -122,6 +122,12 @@
     <English>Selects HQ objective close to the module or if unavailable spawns an HQ composition at the module position</English>
     <Chinesesimp>选择模块附近的总部目标,或者如果不可用,则在模块位置生成总部合成</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_CMP_CREATE_FIELD_HQ">
+    <English>Create Field HQ:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CREATE_FIELD_HQ_COMMENT">
+    <English>Spawn a Field HQ composition (large building cluster) near this module's position. Validator picks a clear flat spot via a 3-tier search (50m / 150m / 300m). When Create as HQ is also enabled, the building HQ registration uses the spawned composition's buildings.</English>
+</Key>
 <Key ID="STR_ALIVE_CMP_USAGE">
     <English>Place the Custom Military Objective module in the editor, select the desired Size, Priority and force composition. Custom factions can be entered in the text box (separated by a comma).</English>
     <Chinesesimp>将“自定义军事目标”模块放入编辑器中,选择所需的大小、优先级和部队组成。可以在文本框中输入自定义派别(用逗号分隔)。</Chinesesimp>

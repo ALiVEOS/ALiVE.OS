@@ -437,6 +437,7 @@ switch(_operation) do {
             private _composition = [_logic, "composition"] call MAINCLASS;
             private _ambientVehicleAmount = parseNumber([_logic, "ambientVehicleAmount"] call MAINCLASS);
             private _createHQ = [_logic, "createHQ"] call MAINCLASS;
+            private _createFieldHQ = [_logic, "createFieldHQ"] call MAINCLASS;
             private _placeHelis = [_logic, "placeHelis"] call MAINCLASS;
             private _placeSupplies = [_logic, "placeSupplies"] call MAINCLASS;
             private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
@@ -489,7 +490,7 @@ switch(_operation) do {
                         private _compResult = [];
                         private _tierUsed = -1;
                         {
-                            _compResult = [_position, _x, _envelope, "military", direction _logic] call ALiVE_fnc_findCompositionSpawnPosition;
+                            _compResult = [_position, _x, _envelope, "military", direction _logic, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
                             if (count _compResult > 0) exitWith { _tierUsed = _x };
                         } forEach _radii;
 
@@ -904,11 +905,72 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
+            // Create Field HQ - explicit FieldHQ composition spawn.
+            //
+            // Spawns a FieldHQ composition near the module regardless of
+            // whether real buildings exist nearby. Independent of the
+            // Create as HQ toggle - users can enable both (the createHQ
+            // block below registers an HQ Building from the spawned
+            // composition) or just createFieldHQ alone (composition
+            // spawns standalone, no building HQ registration).
+
+            private _fieldHQSpawned = false;
+            private _fieldHQSafePos = position _logic;
+
+            if (_createFieldHQ) then {
+                if (isNil QMOD(COMPOSITIONS_LOADED)) then {
+                    private _compType = "Military";
+                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                        _compType = "Guerrilla";
+                    };
+                    private _HQ = (selectRandom ([_compType, ["FieldHQ"], ["Large","Medium"], _faction] call ALiVE_fnc_getCompositions));
+                    if (isNil "_HQ") then {
+                        _HQ = (selectRandom ([_compType, ["HQ","FieldHQ"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions));
+                    };
+
+                    if (!isNil "_HQ") then {
+                        private _envelope = [_HQ] call ALiVE_fnc_getCompositionRadius;
+                        // Wider tiers than the implicit fallback - users who
+                        // explicitly enabled Create Field HQ want a FieldHQ
+                        // even if the surrounding area is built up. 500m
+                        // outer reach mirrors mil_placement Field HQ's
+                        // cluster-size search radius.
+                        private _radii = [50, 200, 500];
+                        private _compResult = [];
+                        private _tierUsed = -1;
+                        {
+                            _compResult = [position _logic, _x, _envelope, "fieldhq", direction _logic, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+                            if (count _compResult > 0) exitWith { _tierUsed = _x };
+                        } forEach _radii;
+
+                        if (count _compResult > 0) then {
+                            _compResult params ["_safePos", "_safeDir"];
+                            [_HQ, _safePos, _safeDir, _faction] call ALIVE_fnc_spawnComposition;
+                            _fieldHQSpawned = true;
+                            _fieldHQSafePos = _safePos;
+                            if (_debug) then {
+                                [_safePos, 4, format ["%1 - Field HQ (%2)", _side, configName _HQ], "ColorOrange", "placement.cmp.comp"] call ALIVE_fnc_placeDebugMarker;
+                                ["CMP [%1] - Field HQ composition %2 spawned at %3 (module pos was %4, %5m offset, search tier %6m)",
+                                    _faction, configName _HQ, _safePos, position _logic, round (_safePos distance position _logic), _tierUsed] call ALiVE_fnc_dump;
+                            };
+                        } else {
+                            ["CMP [%1] - Warning: Field HQ validator found no clear spawn position within %2m of module (tried %3 search tiers) - composition %4 not spawned",
+                                _faction, selectMax _radii, count _radii, configName _HQ] call ALiVE_fnc_dump;
+                        };
+                    };
+                };
+            };
+
             // Create HQ
 
             if(_createHQ) then {
 
-                private _modulePosition = position _logic;
+                // When createFieldHQ has spawned a composition, search for HQ
+                // buildings starting from the validated FieldHQ position so
+                // the composition's own buildings get registered as the HQ.
+                // Falls back to the module position when createFieldHQ is off
+                // or didn't spawn.
+                private _modulePosition = if (_fieldHQSpawned) then { _fieldHQSafePos } else { position _logic };
 
                 private _nodes = [_cluster, "nodes"] call ALIVE_fnc_hashGet;
 
@@ -918,7 +980,10 @@ switch(_operation) do {
 
                 if (count _buildings == 0) then {_buildings = [_modulePosition, _size, ALIVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes] call ALIVE_fnc_findNearObjectsByType};
 
-                if (count _buildings == 0) then {
+                // Implicit FieldHQ-composition fallback: only fires when
+                // createFieldHQ is OFF (otherwise the explicit block above
+                // already handled it - avoids double-spawn).
+                if (count _buildings == 0 && {!_createFieldHQ}) then {
                     ["CMP - Warning no HQ locations found, spawning composition"] call ALiVE_fnc_dump;
 
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
@@ -946,7 +1011,7 @@ switch(_operation) do {
                             private _compResult = [];
                             private _tierUsed = -1;
                             {
-                                _compResult = [_modulePosition, _x, _envelope, "fieldhq", direction _logic] call ALiVE_fnc_findCompositionSpawnPosition;
+                                _compResult = [_modulePosition, _x, _envelope, "fieldhq", direction _logic, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
                                 if (count _compResult > 0) exitWith { _tierUsed = _x };
                             } forEach _radii;
 
