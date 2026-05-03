@@ -2,55 +2,135 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB">
     <English>Military Close Quarters Battle</English>
     <Chinesesimp>军事近距离作战</Chinesesimp>
+    <Chinese>軍事室內近距離戰鬥</Chinese>
+    <Spanish>Combate Cuerpo a Cuerpo Militar</Spanish>
+    <French>Combat rapproché militaire</French>
+    <Portuguese>Combate Próximo Militar</Portuguese>
+    <Russian>Военный ближний бой</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_COMMENT">
     <English>ALiVE Military Close Quarters Battle</English>
     <Chinesesimp>ALiVE军事近距离作战</Chinesesimp>
+    <Chinese>ALiVE 軍事室內近距離戰鬥</Chinese>
+    <Spanish>Combate Cuerpo a Cuerpo Militar de ALiVE</Spanish>
+    <French>Combat rapproché militaire ALiVE</French>
+    <Portuguese>Combate Próximo Militar ALiVE</Portuguese>
+    <Russian>Военный ближний бой ALiVE</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DEBUG">
     <English>Enable Debug:</English>
     <Chinesesimp>启用调试:</Chinesesimp>
+    <Chinese>啟用調試：</Chinese>
+    <Spanish>Activar depuración:</Spanish>
+    <French>Activer le débogage:</French>
+    <Portuguese>Ativar depuração:</Portuguese>
+    <Russian>Включить отладку:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DEBUG_COMMENT">
     <English>Enables CQB Module Debug</English>
     <Chinesesimp>启用CQB模块调试</Chinesesimp>
+    <Chinese>啟用 CQB 模組調試</Chinese>
+    <Spanish>Activa la depuración del módulo CQB</Spanish>
+    <French>Active le débogage du module CQB</French>
+    <Portuguese>Ativa a depuração do módulo CQB</Portuguese>
+    <Russian>Включает отладку модуля CQB</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PERSISTENT">
     <English>Persistent:</English>
     <Chinesesimp>持久性:</Chinesesimp>
+    <Chinese>持久化：</Chinese>
+    <Spanish>Persistente:</Spanish>
+    <French>Persistant:</French>
+    <Portuguese>Persistente:</Portuguese>
+    <Russian>Сохраняемость:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PERSISTENT_COMMENT">
     <English>Enables CQB persistence (requires ALiVE Data Module)</English>
     <Chinesesimp>启用CQB持久性(需要ALiVE数据模块)</Chinesesimp>
+    <Chinese>啟用 CQB 持久化（需要 ALiVE 資料模組）</Chinese>
+    <Spanish>Activa la persistencia de CQB (requiere el módulo ALiVE Data)</Spanish>
+    <French>Active la persistance CQB (nécessite le module ALiVE Data)</French>
+    <Portuguese>Ativa a persistência de CQB (requer o módulo ALiVE Data)</Portuguese>
+    <Russian>Включает сохранение CQB (требуется модуль ALiVE Data)</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_LOCALITY">
     <English>Locality:</English>
     <Chinesesimp>地点:</Chinesesimp>
+    <Chinese>AI 所在端：</Chinese>
+    <Spanish>Localidad:</Spanish>
+    <French>Localité:</French>
+    <Portuguese>Localidade:</Portuguese>
+    <Russian>Локальность:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_LOCALITY_COMMENT">
     <English>Selects locality of hosted AI</English>
     <Chinesesimp>选择托管AI的位置</Chinesesimp>
+    <Chinese>選擇受託管 AI 的所在端</Chinese>
+    <Spanish>Selecciona la localidad de la IA hospedada</Spanish>
+    <French>Sélectionne la localité de l'IA hébergée</French>
+    <Portuguese>Seleciona a localidade da IA hospedada</Portuguese>
+    <Russian>Выбирает локальность размещаемого ИИ</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_AMOUNT">
     <English>Group Size:</English>
+    <Chinese>小組人數：</Chinese>
+    <Chinesesimp>小组人数：</Chinesesimp>
+    <Spanish>Tamaño del grupo:</Spanish>
+    <French>Taille du groupe:</French>
+    <Portuguese>Tamanho do grupo:</Portuguese>
+    <Russian>Размер группы:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_AMOUNT_COMMENT">
     <English>Number of units per CQB group. Actual count is randomised between 1 and this value each time a group spawns.</English>
+    <Chinese>每個 CQB 小組的單位數量。實際數量在每次小組生成時於 1 至此數值之間隨機決定。</Chinese>
+    <Chinesesimp>每个 CQB 小组的单位数量。实际数量在每次小组生成时于 1 至此数值之间随机决定。</Chinesesimp>
+    <Spanish>Número de unidades por grupo CQB. La cantidad real se aleatoriza entre 1 y este valor cada vez que se genera un grupo.</Spanish>
+    <French>Nombre d'unités par groupe CQB. Le nombre réel est tiré au hasard entre 1 et cette valeur à chaque apparition d'un groupe.</French>
+    <Portuguese>Número de unidades por grupo CQB. A quantidade real é aleatorizada entre 1 e este valor sempre que um grupo é gerado.</Portuguese>
+    <Russian>Количество юнитов в группе CQB. Фактическое число случайно выбирается от 1 до этого значения при каждом появлении группы.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_ENABLE">
     <English>Enable CQB</English>
     <Chinesesimp>启用CQB</Chinesesimp>
+    <Chinese>啟用 CQB</Chinese>
+    <Spanish>Activar CQB</Spanish>
+    <French>Activer CQB</French>
+    <Portuguese>Ativar CQB</Portuguese>
+    <Russian>Включить CQB</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_ENABLE_COMMENT">
     <English>Enables CQB module</English>
     <Chinesesimp>启用CQB模块</Chinesesimp>
+    <Chinese>啟用 CQB 模組</Chinese>
+    <Spanish>Activa el módulo CQB</Spanish>
+    <French>Active le module CQB</French>
+    <Portuguese>Ativa o módulo CQB</Portuguese>
+    <Russian>Включает модуль CQB</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_FACTIONS">
     <English>Factions:</English>
     <Chinesesimp>派系:</Chinesesimp>
+    <Chinese>派系：</Chinese>
+    <Spanish>Facciones:</Spanish>
+    <French>Factions:</French>
+    <Portuguese>Facções:</Portuguese>
+    <Russian>Фракции:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CQB_FACTIONS_COMMENT">
     <English>Pick one or more factions for CQB to spawn. Only applies when Placement is set to Static; has no effect when set to Dominant. Left-click to select one item; Ctrl+Left-click to toggle; Shift+Left-click to range-select. List is auto-populated from loaded faction mods. Combined with the manual override field below at runtime.</English>
@@ -79,202 +159,546 @@
     <Portuguese>Opcional. Digite classnames de facções adicionais para mods não carregados atualmente. Formato: nomes separados por vírgulas, sem espaços ou aspas.</Portuguese>
     <Russian>Необязательно. Введите classnames дополнительных фракций для незагруженных модов. Формат: имена через запятую, без пробелов и кавычек.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_TYPE">
     <English>Type:</English>
     <Chinesesimp>类型:</Chinesesimp>
+    <Chinese>類型：</Chinese>
+    <Spanish>Tipo:</Spanish>
+    <French>Type:</French>
+    <Portuguese>Tipo:</Portuguese>
+    <Russian>Тип:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_TYPE_COMMENT">
     <English>Chooses the type of buildings in which CQB will be present</English>
     <Chinesesimp>选择CQB将出现的建筑类型</Chinesesimp>
+    <Chinese>選擇 CQB 將出現的建築類型</Chinese>
+    <Spanish>Elige el tipo de edificios en los que estará presente el CQB</Spanish>
+    <French>Choisit le type de bâtiments dans lesquels le CQB sera présent</French>
+    <Portuguese>Escolhe o tipo de edifícios em que o CQB estará presente</Portuguese>
+    <Russian>Выбирает тип зданий, в которых будет присутствовать CQB</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWN">
     <English>Probability:</English>
     <Chinesesimp>概率:</Chinesesimp>
+    <Chinese>機率：</Chinese>
+    <Spanish>Probabilidad:</Spanish>
+    <French>Probabilité:</French>
+    <Portuguese>Probabilidade:</Portuguese>
+    <Russian>Вероятность:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWN_COMMENT">
     <English>Probability in % that a house will be occupied</English>
     <Chinesesimp>房屋被占用的概率(%)</Chinesesimp>
+    <Chinese>建築被佔用的機率（%）</Chinese>
+    <Spanish>Probabilidad en % de que una casa esté ocupada</Spanish>
+    <French>Probabilité en % qu'une maison soit occupée</French>
+    <Portuguese>Probabilidade em % de que uma casa esteja ocupada</Portuguese>
+    <Russian>Вероятность в %, что дом будет занят</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DISABLE">
     <English>Disable CQB:</English>
     <Chinesesimp>禁用CQB:</Chinesesimp>
+    <Chinese>停用 CQB：</Chinese>
+    <Spanish>Desactivar CQB:</Spanish>
+    <French>Désactiver CQB:</French>
+    <Portuguese>Desativar CQB:</Portuguese>
+    <Russian>Отключить CQB:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DISABLE_COMMENT">
     <English>Disables CQB module</English>
     <Chinesesimp>禁用CQB模块</Chinesesimp>
+    <Chinese>停用 CQB 模組</Chinese>
+    <Spanish>Desactiva el módulo CQB</Spanish>
+    <French>Désactive le module CQB</French>
+    <Portuguese>Desativa o módulo CQB</Portuguese>
+    <Russian>Отключает модуль CQB</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_ERROR1">
     <English>Only one CQB module can be used</English>
     <Chinesesimp>只能使用一个CQB模块</Chinesesimp>
+    <Chinese>僅允許使用一個 CQB 模組</Chinese>
+    <Spanish>Solo se puede usar un módulo CQB</Spanish>
+    <French>Un seul module CQB peut être utilisé</French>
+    <Portuguese>Apenas um módulo CQB pode ser usado</Portuguese>
+    <Russian>Можно использовать только один модуль CQB</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_USAGE">
     <English>Place the CQB module and select the preferred intensity. Optionally, CQB can be synced to a Mil/Civ Placement module.</English>
     <Chinesesimp>放置CQB模块并选择首选强度。或者,CQB可以同步到Mil/Civ Placement模块。</Chinesesimp>
+    <Chinese>放置 CQB 模組並選擇偏好強度。可選地將 CQB 同步到軍事/平民放置模組。</Chinese>
+    <Spanish>Coloca el módulo CQB y elige la intensidad preferida. Opcionalmente, el CQB puede sincronizarse a un módulo de Colocación Militar/Civil.</Spanish>
+    <French>Placez le module CQB et choisissez l'intensité souhaitée. Le CQB peut éventuellement être synchronisé à un module de placement militaire/civil.</French>
+    <Portuguese>Coloque o módulo CQB e selecione a intensidade preferida. Opcionalmente, o CQB pode ser sincronizado a um módulo de Posicionamento Militar/Civil.</Portuguese>
+    <Russian>Разместите модуль CQB и выберите желаемую интенсивность. По желанию CQB можно синхронизировать с модулем Военного/Гражданского размещения.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_LOCATIONTYPE">
     <English>CQB locations:</English>
     <Chinesesimp>CQB 位置:</Chinesesimp>
+    <Chinese>CQB 位置：</Chinese>
+    <Spanish>Ubicaciones de CQB:</Spanish>
+    <French>Emplacements CQB:</French>
+    <Portuguese>Locais de CQB:</Portuguese>
+    <Russian>Места CQB:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_LOCATIONTYPE_COMMENT">
     <English>Selects the type of area in which CQB will be available. If synced to a Mil/Civ Placement module this setting will be overwritten</English>
     <Chinesesimp>选择CQB可用的区域类型。如果同步到Mil/Civ Placement模块,此设置将被覆盖</Chinesesimp>
+    <Chinese>選擇 CQB 將可用的區域類型。若同步至軍事/平民放置模組,此設定將被覆寫</Chinese>
+    <Spanish>Selecciona el tipo de área en el que el CQB estará disponible. Si se sincroniza con un módulo de Colocación Militar/Civil, esta configuración será sobrescrita</Spanish>
+    <French>Sélectionne le type de zone dans laquelle le CQB sera disponible. Si synchronisé à un module de placement militaire/civil, ce paramètre sera écrasé</French>
+    <Portuguese>Seleciona o tipo de área em que o CQB estará disponível. Se sincronizado a um módulo de Posicionamento Militar/Civil, esta configuração será sobrescrita</Portuguese>
+    <Russian>Выбирает тип области, в которой будет доступен CQB. При синхронизации с модулем Военного/Гражданского размещения этот параметр будет переопределён</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_BLACKLIST">
     <English>Blacklist Marker:</English>
     <Chinesesimp>黑名单标记:</Chinesesimp>
+    <Chinese>黑名單標記：</Chinese>
+    <Spanish>Marcador de lista negra:</Spanish>
+    <French>Marqueur liste noire:</French>
+    <Portuguese>Marcador de lista negra:</Portuguese>
+    <Russian>Маркер чёрного списка:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_BLACKLIST_COMMENT">
     <English>Excludes buildings inside this marker (or markers) from CQB. Enter marker names separated by commas, no spaces, no quotes — e.g. marker1,marker2. Leave blank for no exclusions.</English>
     <Chinesesimp>不存在CQB的标记</Chinesesimp>
+    <Chinese>從 CQB 排除此標記（或多個標記）內的建築。輸入以逗號分隔的標記名稱,無空格、無引號 — 例如 marker1,marker2。留空表示無排除。</Chinese>
+    <Spanish>Excluye los edificios dentro de este marcador (o marcadores) del CQB. Introduce los nombres de marcador separados por comas, sin espacios, sin comillas — p. ej. marker1,marker2. Deja vacío para no aplicar exclusiones.</Spanish>
+    <French>Exclut les bâtiments à l'intérieur de ce marqueur (ou de ces marqueurs) du CQB. Entrez les noms des marqueurs séparés par des virgules, sans espaces, sans guillemets — ex. marker1,marker2. Laissez vide pour aucune exclusion.</French>
+    <Portuguese>Exclui os edifícios dentro deste marcador (ou marcadores) do CQB. Insira os nomes dos marcadores separados por vírgulas, sem espaços, sem aspas — ex. marker1,marker2. Deixe em branco para nenhuma exclusão.</Portuguese>
+    <Russian>Исключает здания внутри этого маркера (или маркеров) из CQB. Введите имена маркеров через запятую, без пробелов, без кавычек — например, marker1,marker2. Оставьте пустым, чтобы исключений не было.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_WHITELIST">
     <English>TAOR Marker:</English>
     <Chinesesimp>TAOR标记:</Chinesesimp>
+    <Chinese>TAOR 標記：</Chinese>
+    <Spanish>Marcador TAOR:</Spanish>
+    <French>Marqueur TAOR:</French>
+    <Portuguese>Marcador TAOR:</Portuguese>
+    <Russian>Маркер TAOR:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_WHITELIST_COMMENT">
     <English>Restricts CQB to buildings inside this marker (or markers). Enter marker names separated by commas, no spaces, no quotes — e.g. marker1,marker2. Leave blank for no restriction. Overridden if this module is synced to a Placement module.</English>
     <Chinesesimp>CQB将出现的标记</Chinesesimp>
+    <Chinese>將 CQB 限制在此標記（或多個標記）內的建築。輸入以逗號分隔的標記名稱,無空格、無引號 — 例如 marker1,marker2。留空表示不限制。若此模組同步至放置模組,則被覆寫。</Chinese>
+    <Spanish>Restringe el CQB a los edificios dentro de este marcador (o marcadores). Introduce los nombres de marcador separados por comas, sin espacios, sin comillas — p. ej. marker1,marker2. Deja vacío para no aplicar restricciones. Sobrescrito si este módulo se sincroniza a un módulo de Colocación.</Spanish>
+    <French>Restreint le CQB aux bâtiments à l'intérieur de ce marqueur (ou de ces marqueurs). Entrez les noms des marqueurs séparés par des virgules, sans espaces, sans guillemets — ex. marker1,marker2. Laissez vide pour aucune restriction. Écrasé si ce module est synchronisé à un module de placement.</French>
+    <Portuguese>Restringe o CQB aos edifícios dentro deste marcador (ou marcadores). Insira os nomes dos marcadores separados por vírgulas, sem espaços, sem aspas — ex. marker1,marker2. Deixe em branco para nenhuma restrição. Sobrescrito se este módulo for sincronizado a um módulo de Posicionamento.</Portuguese>
+    <Russian>Ограничивает CQB зданиями внутри этого маркера (или маркеров). Введите имена маркеров через запятую, без пробелов, без кавычек — например, marker1,marker2. Оставьте пустым, чтобы не ограничивать. Переопределяется при синхронизации этого модуля с модулем Размещения.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_USEDOMINANTFACTION">
     <English>Placement:</English>
     <Chinesesimp>安置:</Chinesesimp>
+    <Chinese>派系決定方式：</Chinese>
+    <Spanish>Determinación de facción:</Spanish>
+    <French>Détermination de faction:</French>
+    <Portuguese>Determinação de facção:</Portuguese>
+    <Russian>Определение фракции:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_USEDOMINANTFACTION_COMMENT">
     <English>CQB will determine the dominant faction or use static factions from the faction param fields</English>
     <Chinesesimp>CQB将确定主导势力或使用势力参数字段中的静态势力</Chinesesimp>
+    <Chinese>CQB 將決定主導派系或使用派系參數欄位中的靜態派系</Chinese>
+    <Spanish>CQB determinará la facción dominante o usará facciones estáticas de los campos de parámetros de facción</Spanish>
+    <French>CQB déterminera la faction dominante ou utilisera les factions statiques des champs de paramètres de faction</French>
+    <Portuguese>CQB determinará a facção dominante ou usará facções estáticas dos campos de parâmetros de facção</Portuguese>
+    <Russian>CQB определит доминирующую фракцию или использует статические фракции из полей параметров фракции</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DENSITY">
     <English>Density:</English>
     <Chinesesimp>密度:</Chinesesimp>
+    <Chinese>密度：</Chinese>
+    <Spanish>Densidad:</Spanish>
+    <French>Densité:</French>
+    <Portuguese>Densidade:</Portuguese>
+    <Russian>Плотность:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DENSITY_COMMENT">
     <English>Density of additional CQB placement. Adds more house locations with a minimum distance of x metres to each other, resulting in a tight grid of CQB positions.</English>
     <Chinesesimp>额外CQB放置密度</Chinesesimp>
+    <Chinese>額外 CQB 放置的密度。新增更多建築位置,彼此間距至少 x 公尺,形成緊密的 CQB 位置網格。</Chinese>
+    <Spanish>Densidad de colocación adicional de CQB. Añade más ubicaciones de casas con una distancia mínima de x metros entre sí, resultando en una rejilla densa de posiciones CQB.</Spanish>
+    <French>Densité de placement CQB supplémentaire. Ajoute plus d'emplacements de maisons avec une distance minimale de x mètres entre eux, résultant en une grille serrée de positions CQB.</French>
+    <Portuguese>Densidade de posicionamento CQB adicional. Adiciona mais locais de casas com uma distância mínima de x metros entre si, resultando numa grelha densa de posições CQB.</Portuguese>
+    <Russian>Плотность дополнительного размещения CQB. Добавляет больше домов с минимальным расстоянием x метров друг от друга, создавая плотную сетку позиций CQB.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLCHANCE">
     <English>Patrol chance:</English>
     <Chinesesimp>巡逻几率</Chinesesimp>
+    <Chinese>巡邏機率：</Chinese>
+    <Spanish>Probabilidad de patrulla:</Spanish>
+    <French>Probabilité de patrouille:</French>
+    <Portuguese>Probabilidade de patrulha:</Portuguese>
+    <Russian>Вероятность патрулирования:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLCHANCE_COMMENT">
     <English>Percentage chance units might patrol around their spawn point.</English>
     <Chinesesimp>单位可能在刷新点附近巡逻</Chinesesimp>
+    <Chinese>單位可能在其生成點周圍巡邏的機率百分比。</Chinese>
+    <Spanish>Porcentaje de probabilidad de que las unidades patrullen alrededor de su punto de aparición.</Spanish>
+    <French>Pourcentage de chance que les unités patrouillent autour de leur point d'apparition.</French>
+    <Portuguese>Probabilidade percentual de as unidades patrulharem em torno do seu ponto de aparecimento.</Portuguese>
+    <Russian>Процентная вероятность того, что юниты будут патрулировать вокруг точки появления.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLSEARCHCHANCE">
     <English>Patrol search chance:</English>
     <Chinesesimp>巡逻搜查几率</Chinesesimp>
+    <Chinese>巡邏搜索機率：</Chinese>
+    <Spanish>Probabilidad de búsqueda en patrulla:</Spanish>
+    <French>Probabilité de fouille en patrouille:</French>
+    <Portuguese>Probabilidade de busca em patrulha:</Portuguese>
+    <Russian>Вероятность обыска при патрулировании:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLSEARCHCHANCE_COMMENT">
     <English>Percentage chance units will search nearby houses at a patrol waypoint.</English>
     <Chinesesimp>单位在巡逻航路点搜索附近房屋的几率</Chinesesimp>
+    <Chinese>單位於巡邏路徑點時搜索附近建築的機率百分比。</Chinese>
+    <Spanish>Porcentaje de probabilidad de que las unidades registren las casas cercanas en un waypoint de patrulla.</Spanish>
+    <French>Pourcentage de chance que les unités fouillent les maisons proches à un point de cheminement de patrouille.</French>
+    <Portuguese>Probabilidade percentual de as unidades vasculharem casas próximas num waypoint de patrulha.</Portuguese>
+    <Russian>Процентная вероятность того, что юниты будут обыскивать ближайшие дома в точке патрульного маршрута.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_MINWAITTIME">
     <English>Patrol min WP wait (s):</English>
+    <Chinese>巡邏 WP 最短停留（秒）：</Chinese>
+    <Chinesesimp>巡逻 WP 最短停留（秒）：</Chinesesimp>
+    <Spanish>Espera mín. en WP de patrulla (s):</Spanish>
+    <French>Attente min. au PdC de patrouille (s):</French>
+    <Portuguese>Espera mín. em WP de patrulha (s):</Portuguese>
+    <Russian>Мин. ожидание на WP патруля (с):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_MINWAITTIME_COMMENT">
     <English>Minimum time in seconds the group waits at each patrol waypoint.</English>
+    <Chinese>小組於每個巡邏路徑點的最短等待時間（秒）。</Chinese>
+    <Chinesesimp>小组于每个巡逻路径点的最短等待时间（秒）。</Chinesesimp>
+    <Spanish>Tiempo mínimo en segundos que el grupo espera en cada waypoint de patrulla.</Spanish>
+    <French>Temps minimum en secondes que le groupe attend à chaque point de cheminement de patrouille.</French>
+    <Portuguese>Tempo mínimo em segundos que o grupo espera em cada waypoint de patrulha.</Portuguese>
+    <Russian>Минимальное время в секундах, которое группа ждёт на каждой патрульной точке маршрута.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_MIDWAITTIME">
     <English>Patrol mid WP wait (s):</English>
+    <Chinese>巡邏 WP 中位停留（秒）：</Chinese>
+    <Chinesesimp>巡逻 WP 中位停留（秒）：</Chinesesimp>
+    <Spanish>Espera media en WP de patrulla (s):</Spanish>
+    <French>Attente moy. au PdC de patrouille (s):</French>
+    <Portuguese>Espera média em WP de patrulha (s):</Portuguese>
+    <Russian>Среднее ожидание на WP патруля (с):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_MIDWAITTIME_COMMENT">
     <English>Median time in seconds the group waits at each patrol waypoint.</English>
+    <Chinese>小組於每個巡邏路徑點的中位等待時間（秒）。</Chinese>
+    <Chinesesimp>小组于每个巡逻路径点的中位等待时间（秒）。</Chinesesimp>
+    <Spanish>Tiempo medio en segundos que el grupo espera en cada waypoint de patrulla.</Spanish>
+    <French>Temps médian en secondes que le groupe attend à chaque point de cheminement de patrouille.</French>
+    <Portuguese>Tempo mediano em segundos que o grupo espera em cada waypoint de patrulha.</Portuguese>
+    <Russian>Медианное время в секундах, которое группа ждёт на каждой патрульной точке маршрута.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_MAXWAITTIME">
     <English>Patrol max WP wait (s):</English>
+    <Chinese>巡邏 WP 最長停留（秒）：</Chinese>
+    <Chinesesimp>巡逻 WP 最长停留（秒）：</Chinesesimp>
+    <Spanish>Espera máx. en WP de patrulla (s):</Spanish>
+    <French>Attente max. au PdC de patrouille (s):</French>
+    <Portuguese>Espera máx. em WP de patrulha (s):</Portuguese>
+    <Russian>Макс. ожидание на WP патруля (с):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_MAXWAITTIME_COMMENT">
     <English>Maximum time in seconds the group waits at each patrol waypoint.</English>
+    <Chinese>小組於每個巡邏路徑點的最長等待時間（秒）。</Chinese>
+    <Chinesesimp>小组于每个巡逻路径点的最长等待时间（秒）。</Chinesesimp>
+    <Spanish>Tiempo máximo en segundos que el grupo espera en cada waypoint de patrulla.</Spanish>
+    <French>Temps maximum en secondes que le groupe attend à chaque point de cheminement de patrouille.</French>
+    <Portuguese>Tempo máximo em segundos que o grupo espera em cada waypoint de patrulha.</Portuguese>
+    <Russian>Максимальное время в секундах, которое группа ждёт на каждой патрульной точке маршрута.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_MINDIST">
     <English>Min patrol radius (m):</English>
+    <Chinese>最小巡邏半徑（公尺）：</Chinese>
+    <Chinesesimp>最小巡逻半径（米）：</Chinesesimp>
+    <Spanish>Radio mín. de patrulla (m):</Spanish>
+    <French>Rayon min. de patrouille (m):</French>
+    <Portuguese>Raio mín. de patrulha (m):</Portuguese>
+    <Russian>Мин. радиус патруля (м):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_MINDIST_COMMENT">
     <English>If group is patrolling, then the patrol radius will be no smaller than this value. The radius will be randomly calculated for each group between minimum and maximum patrol radius.</English>
     <Chinesesimp>如果小组正在巡逻,则巡逻半径将不小于此值.每组的半径将在最小和最大巡逻半径之间随机计算.</Chinesesimp>
+    <Chinese>若小組正在巡邏,則巡邏半徑不會小於此值。每個小組的半徑將在最小與最大巡邏半徑之間隨機計算。</Chinese>
+    <Spanish>Si el grupo está patrullando, el radio de patrulla no será menor que este valor. El radio se calculará aleatoriamente para cada grupo entre el radio mínimo y máximo de patrulla.</Spanish>
+    <French>Si le groupe patrouille, le rayon de patrouille ne sera pas inférieur à cette valeur. Le rayon est calculé aléatoirement pour chaque groupe entre le rayon de patrouille minimum et maximum.</French>
+    <Portuguese>Se o grupo estiver a patrulhar, o raio de patrulha não será menor que este valor. O raio é calculado aleatoriamente para cada grupo entre o raio mínimo e máximo de patrulha.</Portuguese>
+    <Russian>Если группа патрулирует, радиус патруля не будет меньше этого значения. Радиус вычисляется случайно для каждой группы между минимальным и максимальным радиусом патруля.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_MAXDIST">
     <English>Max patrol radius (m):</English>
+    <Chinese>最大巡邏半徑（公尺）：</Chinese>
+    <Chinesesimp>最大巡逻半径（米）：</Chinesesimp>
+    <Spanish>Radio máx. de patrulla (m):</Spanish>
+    <French>Rayon max. de patrouille (m):</French>
+    <Portuguese>Raio máx. de patrulha (m):</Portuguese>
+    <Russian>Макс. радиус патруля (м):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_MAXDIST_COMMENT">
     <English>If group is patrolling, then the group radius will be no bigger than this value. The radius will be randomly calculated for each group between minimum and maximum patrol radius.</English>
     <Chinesesimp>如果小组正在巡逻,则巡逻半径将不大于此值.每组的半径将在最小和最大巡逻半径之间随机计算.</Chinesesimp>
+    <Chinese>若小組正在巡邏,則小組半徑不會大於此值。每個小組的半徑將在最小與最大巡邏半徑之間隨機計算。</Chinese>
+    <Spanish>Si el grupo está patrullando, el radio del grupo no será mayor que este valor. El radio se calculará aleatoriamente para cada grupo entre el radio mínimo y máximo de patrulla.</Spanish>
+    <French>Si le groupe patrouille, le rayon du groupe ne sera pas supérieur à cette valeur. Le rayon est calculé aléatoirement pour chaque groupe entre le rayon de patrouille minimum et maximum.</French>
+    <Portuguese>Se o grupo estiver a patrulhar, o raio do grupo não será maior que este valor. O raio é calculado aleatoriamente para cada grupo entre o raio mínimo e máximo de patrulha.</Portuguese>
+    <Russian>Если группа патрулирует, радиус группы не будет больше этого значения. Радиус вычисляется случайно для каждой группы между минимальным и максимальным радиусом патруля.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE">
     <English>Spawn Ground (m):</English>
+    <Chinese>地面單位生成距離（公尺）：</Chinese>
+    <Chinesesimp>地面单位生成距离（米）：</Chinesesimp>
+    <Spanish>Generación terrestre (m):</Spanish>
+    <French>Apparition au sol (m):</French>
+    <Portuguese>Geração terrestre (m):</Portuguese>
+    <Russian>Появление пехоты (м):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT">
     <English>Distance in metres at which ground units spawn/despawn around the player. Note: strategic placements use 1.4x this value.</English>
+    <Chinese>玩家周圍地面單位生成/解除生成的距離（公尺）。注意：戰略放置使用此值的 1.4 倍。</Chinese>
+    <Chinesesimp>玩家周围地面单位生成/解除生成的距离（米）。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
+    <Spanish>Distancia en metros a la que las unidades terrestres se generan/desaparecen alrededor del jugador. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
+    <French>Distance en mètres à laquelle les unités au sol apparaissent/disparaissent autour du joueur. Note : les placements stratégiques utilisent 1,4× cette valeur.</French>
+    <Portuguese>Distância em metros à qual as unidades terrestres aparecem/desaparecem em torno do jogador. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
+    <Russian>Расстояние в метрах, на котором наземные юниты появляются/исчезают вокруг игрока. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCESTATIC">
     <English>Spawn Static Weapon (m):</English>
+    <Chinese>靜態武器生成距離（公尺）：</Chinese>
+    <Chinesesimp>静态武器生成距离（米）：</Chinesesimp>
+    <Spanish>Generación de armas estáticas (m):</Spanish>
+    <French>Apparition armes statiques (m):</French>
+    <Portuguese>Geração de armas estáticas (m):</Portuguese>
+    <Russian>Появление стационарного оружия (м):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCESTATIC_COMMENT">
     <English>Distance in metres at which static weapons spawn/despawn around the player. Note: strategic placements use 1.4x this value.</English>
+    <Chinese>玩家周圍靜態武器生成/解除生成的距離（公尺）。注意：戰略放置使用此值的 1.4 倍。</Chinese>
+    <Chinesesimp>玩家周围静态武器生成/解除生成的距离（米）。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
+    <Spanish>Distancia en metros a la que las armas estáticas se generan/desaparecen alrededor del jugador. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
+    <French>Distance en mètres à laquelle les armes statiques apparaissent/disparaissent autour du joueur. Note : les placements stratégiques utilisent 1,4× cette valeur.</French>
+    <Portuguese>Distância em metros à qual as armas estáticas aparecem/desaparecem em torno do jogador. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
+    <Russian>Расстояние в метрах, на котором стационарное оружие появляется/исчезает вокруг игрока. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI">
     <English>Spawn Heli (m):</English>
+    <Chinese>直升機生成距離（公尺）：</Chinese>
+    <Chinesesimp>直升机生成距离（米）：</Chinesesimp>
+    <Spanish>Generación de helicópteros (m):</Spanish>
+    <French>Apparition hélicoptères (m):</French>
+    <Portuguese>Geração de helicópteros (m):</Portuguese>
+    <Russian>Появление вертолётов (м):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI_COMMENT">
     <English>Distance in metres at which helicopters spawn/despawn around the player. Set to 0 to disable helicopter spawning. Note: strategic placements use 1.4x this value.</English>
+    <Chinese>玩家周圍直升機生成/解除生成的距離（公尺）。設為 0 以停用直升機生成。注意：戰略放置使用此值的 1.4 倍。</Chinese>
+    <Chinesesimp>玩家周围直升机生成/解除生成的距离（米）。设为 0 以停用直升机生成。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
+    <Spanish>Distancia en metros a la que los helicópteros se generan/desaparecen alrededor del jugador. Establece en 0 para desactivar la generación de helicópteros. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
+    <French>Distance en mètres à laquelle les hélicoptères apparaissent/disparaissent autour du joueur. Réglez sur 0 pour désactiver l'apparition d'hélicoptères. Note : les placements stratégiques utilisent 1,4× cette valeur.</French>
+    <Portuguese>Distância em metros à qual os helicópteros aparecem/desaparecem em torno do jogador. Defina como 0 para desativar a geração de helicópteros. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
+    <Russian>Расстояние в метрах, на котором вертолёты появляются/исчезают вокруг игрока. Установите 0, чтобы отключить появление вертолётов. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET">
     <English>Spawn Jet (m):</English>
+    <Chinese>戰機生成距離（公尺）：</Chinese>
+    <Chinesesimp>战机生成距离（米）：</Chinesesimp>
+    <Spanish>Generación de jets (m):</Spanish>
+    <French>Apparition jets (m):</French>
+    <Portuguese>Geração de jatos (m):</Portuguese>
+    <Russian>Появление самолётов (м):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET_COMMENT">
     <English>Distance in metres at which fixed-wing aircraft spawn/despawn around the player. Set to 0 to disable jet spawning. Note: strategic placements use 1.4x this value.</English>
+    <Chinese>玩家周圍固定翼飛機生成/解除生成的距離（公尺）。設為 0 以停用戰機生成。注意：戰略放置使用此值的 1.4 倍。</Chinese>
+    <Chinesesimp>玩家周围固定翼飞机生成/解除生成的距离（米）。设为 0 以停用战机生成。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
+    <Spanish>Distancia en metros a la que los aviones de ala fija se generan/desaparecen alrededor del jugador. Establece en 0 para desactivar la generación de jets. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
+    <French>Distance en mètres à laquelle les avions à voilure fixe apparaissent/disparaissent autour du joueur. Réglez sur 0 pour désactiver l'apparition de jets. Note : les placements stratégiques utilisent 1,4× cette valeur.</French>
+    <Portuguese>Distância em metros à qual as aeronaves de asa fixa aparecem/desaparecem em torno do jogador. Defina como 0 para desativar a geração de jatos. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
+    <Russian>Расстояние в метрах, на котором самолёты с неподвижным крылом появляются/исчезают вокруг игрока. Установите 0, чтобы отключить появление самолётов. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DEBUG_ENABLE">
     <English>Activate CQB Debug</English>
     <Chinesesimp>激活CQB调试</Chinesesimp>
+    <Chinese>啟用 CQB 調試</Chinese>
+    <Spanish>Activar depuración CQB</Spanish>
+    <French>Activer le débogage CQB</French>
+    <Portuguese>Ativar depuração CQB</Portuguese>
+    <Russian>Включить отладку CQB</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DEBUG_ENABLE_COMMENT">
     <English>Activates CQB Debug</English>
     <Chinesesimp>激活CQB调试</Chinesesimp>
+    <Chinese>啟用 CQB 調試</Chinese>
+    <Spanish>Activa la depuración CQB</Spanish>
+    <French>Active le débogage CQB</French>
+    <Portuguese>Ativa a depuração CQB</Portuguese>
+    <Russian>Включает отладку CQB</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DEBUG_DISABLE">
     <English>Deactivate CQB Debug</English>
     <Chinesesimp>停用CQB调试</Chinesesimp>
+    <Chinese>停用 CQB 調試</Chinese>
+    <Spanish>Desactivar depuración CQB</Spanish>
+    <French>Désactiver le débogage CQB</French>
+    <Portuguese>Desativar depuração CQB</Portuguese>
+    <Russian>Отключить отладку CQB</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DEBUG_DISABLE_COMMENT">
     <English>Deactivates CQB Debug</English>
     <Chinesesimp>停用CQB调试</Chinesesimp>
+    <Chinese>停用 CQB 調試</Chinese>
+    <Spanish>Desactiva la depuración CQB</Spanish>
+    <French>Désactive le débogage CQB</French>
+    <Portuguese>Desativa a depuração CQB</Portuguese>
+    <Russian>Отключает отладку CQB</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS">
     <English>Static weapons:</English>
     <Chinesesimp>静态武器:</Chinesesimp>
+    <Chinese>靜態武器：</Chinese>
+    <Spanish>Armas estáticas:</Spanish>
+    <French>Armes statiques:</French>
+    <Portuguese>Armas estáticas:</Portuguese>
+    <Russian>Стационарное оружие:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS_COMMENT">
     <English>Density of static weapon emplacements in CQB areas, such as mortars and machine guns</English>
     <Chinesesimp>CQB区域的静态武器安放密度,如迫击炮和机枪</Chinesesimp>
+    <Chinese>CQB 區域中靜態武器陣地的密度,例如迫擊砲與機槍</Chinese>
+    <Spanish>Densidad de emplazamientos de armas estáticas en áreas CQB, como morteros y ametralladoras</Spanish>
+    <French>Densité des emplacements d'armes statiques dans les zones CQB, comme les mortiers et les mitrailleuses</French>
+    <Portuguese>Densidade de emplazamentos de armas estáticas em áreas CQB, como morteiros e metralhadoras</Portuguese>
+    <Russian>Плотность позиций стационарного оружия в зонах CQB, таких как миномёты и пулемёты</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES">
     <English>Static weapon Classnames:</English>
     <Chinesesimp>静态武器类别名称:</Chinesesimp>
+    <Chinese>靜態武器類別名稱：</Chinese>
+    <Spanish>Classnames de armas estáticas:</Spanish>
+    <French>Classnames d'armes statiques:</French>
+    <Portuguese>Classnames de armas estáticas:</Portuguese>
+    <Russian>Имена классов стационарного оружия:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES_COMMENT">
     <English>Classnames of static weapons eligible to spawn in CQB areas. Separate multiple classnames with commas, no spaces, no quotes — e.g. B_HMG_01_high_F,O_Mortar_01_F. Defaults to a mix of HMG and mortar classnames.</English>
     <Chinesesimp>可以生成的静态武器</Chinesesimp>
+    <Chinese>可生成於 CQB 區域的靜態武器類別名稱。多個類別名稱以逗號分隔,無空格、無引號 — 例如 B_HMG_01_high_F,O_Mortar_01_F。預設為 HMG 與迫擊砲類別的混合。</Chinese>
+    <Spanish>Nombres de clase de armas estáticas elegibles para aparecer en áreas CQB. Separa varios nombres de clase con comas, sin espacios, sin comillas — p. ej. B_HMG_01_high_F,O_Mortar_01_F. Predeterminado: una mezcla de nombres de clase de HMG y mortero.</Spanish>
+    <French>Noms de classes d'armes statiques pouvant apparaître dans les zones CQB. Séparez plusieurs noms de classes par des virgules, sans espaces, sans guillemets — ex. B_HMG_01_high_F,O_Mortar_01_F. Par défaut : un mélange de classes HMG et mortier.</French>
+    <Portuguese>Nomes de classes de armas estáticas elegíveis para aparecer em áreas CQB. Separe vários nomes de classes por vírgulas, sem espaços, sem aspas — ex. B_HMG_01_high_F,O_Mortar_01_F. Padrão: uma mistura de classes de HMG e morteiro.</Portuguese>
+    <Russian>Имена классов стационарного оружия, которое может появиться в зонах CQB. Разделяйте несколько имён классов запятыми, без пробелов, без кавычек — например, B_HMG_01_high_F,O_Mortar_01_F. По умолчанию: смесь классов HMG и миномётов.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_UNIT_BLACKLIST">
     <English>Blacklist Units:</English>
     <Chinesesimp>黑名单单位:</Chinesesimp>
+    <Chinese>黑名單單位：</Chinese>
+    <Spanish>Lista negra de unidades:</Spanish>
+    <French>Liste noire d'unités:</French>
+    <Portuguese>Lista negra de unidades:</Portuguese>
+    <Russian>Чёрный список юнитов:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_UNIT_BLACKLIST_COMMENT">
     <English>Prevents specific unit group classnames from being used by this CQB module. Enter group classnames separated by commas, no spaces, no quotes — e.g. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</English>
     <Chinesesimp>本CQB模块的黑名单单位</Chinesesimp>
+    <Chinese>防止特定單位小組類別名稱被此 CQB 模組使用。輸入以逗號分隔的小組類別名稱,無空格、無引號 — 例如 OPF_G_Inf_AT_F,OPF_G_Inf_AA_F。</Chinese>
+    <Spanish>Evita que classnames específicos de grupos de unidades sean usados por este módulo CQB. Introduce los classnames de grupo separados por comas, sin espacios, sin comillas — p. ej. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</Spanish>
+    <French>Empêche des classnames spécifiques de groupes d'unités d'être utilisés par ce module CQB. Entrez les classnames de groupe séparés par des virgules, sans espaces, sans guillemets — ex. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</French>
+    <Portuguese>Impede que classnames específicos de grupos de unidades sejam usados por este módulo CQB. Insira os classnames de grupo separados por vírgulas, sem espaços, sem aspas — ex. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</Portuguese>
+    <Russian>Запрещает использование конкретных классов групп юнитов этим модулем CQB. Вводите имена классов групп через запятую, без пробелов, без кавычек — например, OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</Russian>
 </Key>
 
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_ON_EACH_SPAWN">
     <English>On unit spawn (SQF):</English>
+    <Chinese>單位生成時（SQF）：</Chinese>
+    <Chinesesimp>单位生成时（SQF）：</Chinesesimp>
+    <Spanish>Al generar unidad (SQF):</Spanish>
+    <French>À l'apparition d'une unité (SQF):</French>
+    <Portuguese>Ao gerar unidade (SQF):</Portuguese>
+    <Russian>При появлении юнита (SQF):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_ON_EACH_SPAWN_COMMENT">
     <English>SQF code executed each time a CQB unit spawns. _this = [unit, profileID, side, faction]. Runs server-side in a scheduled thread. To affect all clients use remoteExec or publicVariable. hint and player commands will have no effect. Example: _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</English>
+    <Chinese>每次 CQB 單位生成時執行的 SQF 程式碼。_this = [unit, profileID, side, faction]。在伺服器端排程執行緒中執行。若要影響所有客戶端,請使用 remoteExec 或 publicVariable。hint 與 player 命令無效。範例:_this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Chinese>
+    <Chinesesimp>每次 CQB 单位生成时执行的 SQF 代码。_this = [unit, profileID, side, faction]。在服务器端调度线程中执行。若要影响所有客户端,请使用 remoteExec 或 publicVariable。hint 与 player 命令无效。示例:_this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Chinesesimp>
+    <Spanish>Código SQF ejecutado cada vez que aparece una unidad CQB. _this = [unit, profileID, side, faction]. Se ejecuta en el lado del servidor en un hilo programado. Para afectar a todos los clientes usa remoteExec o publicVariable. Los comandos hint y player no tendrán efecto. Ejemplo: _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Spanish>
+    <French>Code SQF exécuté à chaque apparition d'une unité CQB. _this = [unit, profileID, side, faction]. S'exécute côté serveur dans un thread planifié. Pour affecter tous les clients, utilisez remoteExec ou publicVariable. Les commandes hint et player n'auront aucun effet. Exemple : _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</French>
+    <Portuguese>Código SQF executado sempre que uma unidade CQB aparece. _this = [unit, profileID, side, faction]. Executa no lado do servidor numa thread agendada. Para afetar todos os clientes, use remoteExec ou publicVariable. Os comandos hint e player não terão efeito. Exemplo: _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Portuguese>
+    <Russian>Код SQF, выполняемый каждый раз при появлении юнита CQB. _this = [unit, profileID, side, faction]. Выполняется на стороне сервера в запланированном потоке. Чтобы повлиять на всех клиентов, используйте remoteExec или publicVariable. Команды hint и player не будут иметь эффекта. Пример: _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_ON_EACH_SPAWN_ONCE">
     <English>Run once per unit:</English>
+    <Chinese>每單位僅執行一次：</Chinese>
+    <Chinesesimp>每单位仅执行一次：</Chinesesimp>
+    <Spanish>Ejecutar una vez por unidad:</Spanish>
+    <French>Exécuter une fois par unité:</French>
+    <Portuguese>Executar uma vez por unidade:</Portuguese>
+    <Russian>Выполнить один раз на юнита:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_ON_EACH_SPAWN_ONCE_COMMENT">
     <English>Yes: the SQF hook runs only on the first spawn of each unit — useful for one-time setup like adding event handlers. No: runs every time the unit re-spawns.</English>
+    <Chinese>是：SQF 鉤子僅在每個單位首次生成時執行 — 適用於一次性設定,例如新增事件處理器。否：每次單位重新生成時都執行。</Chinese>
+    <Chinesesimp>是：SQF 钩子仅在每个单位首次生成时执行 — 适用于一次性设定,例如新增事件处理器。否：每次单位重新生成时都执行。</Chinesesimp>
+    <Spanish>Sí: el hook SQF se ejecuta solo en la primera aparición de cada unidad — útil para configuraciones únicas como agregar manejadores de eventos. No: se ejecuta cada vez que la unidad reaparece.</Spanish>
+    <French>Oui : le hook SQF ne s'exécute qu'à la première apparition de chaque unité — utile pour la configuration ponctuelle comme l'ajout de gestionnaires d'événements. Non : s'exécute à chaque réapparition de l'unité.</French>
+    <Portuguese>Sim: o hook SQF é executado apenas no primeiro aparecimento de cada unidade — útil para configuração pontual como adicionar manipuladores de eventos. Não: executa cada vez que a unidade reaparece.</Portuguese>
+    <Russian>Да: SQF-обработчик выполняется только при первом появлении каждого юнита — полезно для одноразовой настройки, например добавления обработчиков событий. Нет: выполняется каждый раз при повторном появлении юнита.</Russian>
 </Key>
 </Container></Package></Project>
 

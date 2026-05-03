@@ -2,39 +2,123 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR">
     <English>Player Combat Logistics</English>
     <Chinesesimp>玩家战斗后勤</Chinesesimp>
+    <Chinese>玩家戰鬥後勤</Chinese>
+    <Spanish>Logística de combate del jugador</Spanish>
+    <French>Logistique de combat joueur</French>
+    <Portuguese>Logística de combate do jogador</Portuguese>
+    <Russian>Боевое снабжение игрока</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_COMMENT">
     <English>Resupply players with logistics requests</English>
     <Chinesesimp>为玩家提供后勤补给</Chinesesimp>
+    <Chinese>透過後勤請求為玩家補給</Chinese>
+    <Spanish>Reabastece a los jugadores mediante solicitudes logísticas</Spanish>
+    <French>Réapprovisionne les joueurs via des demandes logistiques</French>
+    <Portuguese>Reabastece jogadores através de solicitações logísticas</Portuguese>
+    <Russian>Пополняет припасы игроков через логистические запросы</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_ALLOW">
     <English>Trigger Item:</English>
+    <Chinese>觸發物品：</Chinese>
+    <Chinesesimp>触发物品：</Chinesesimp>
+    <Spanish>Objeto desencadenante:</Spanish>
+    <French>Objet déclencheur:</French>
+    <Portuguese>Item gatilho:</Portuguese>
+    <Russian>Предмет-триггер:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_ALLOW_COMMENT">
     <English>Class name of the item a player must carry to access the resupply tablet (e.g. LaserDesignator). Class names are case-sensitive.</English>
+    <Chinese>玩家必須攜帶以存取補給平板的物品類別名稱（例如 LaserDesignator）。類別名稱區分大小寫。</Chinese>
+    <Chinesesimp>玩家必须携带以访问补给平板的物品类别名称（例如 LaserDesignator）。类别名称区分大小写。</Chinesesimp>
+    <Spanish>Nombre de clase del objeto que el jugador debe portar para acceder a la tableta de reabastecimiento (p. ej. LaserDesignator). Los nombres de clase distinguen mayúsculas y minúsculas.</Spanish>
+    <French>Nom de classe de l'objet que le joueur doit porter pour accéder à la tablette de réapprovisionnement (ex. LaserDesignator). Les noms de classe sont sensibles à la casse.</French>
+    <Portuguese>Nome da classe do item que o jogador deve carregar para acessar o tablet de reabastecimento (ex. LaserDesignator). Os nomes de classe são sensíveis a maiúsculas/minúsculas.</Portuguese>
+    <Russian>Имя класса предмета, который должен быть у игрока для доступа к планшету снабжения (например, LaserDesignator). Имена классов чувствительны к регистру.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE">
     <English>Restriction Type:</English>
+    <Chinese>限制類型：</Chinese>
+    <Chinesesimp>限制类型：</Chinesesimp>
+    <Spanish>Tipo de restricción:</Spanish>
+    <French>Type de restriction:</French>
+    <Portuguese>Tipo de restrição:</Portuguese>
+    <Russian>Тип ограничения:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_COMMENT">
     <English>Controls which vehicles and groups are available to the player.\n\n• Side — shows all assets belonging to the player's side.\n• Faction — shows only assets from the player's own faction, or from the factions listed in Faction Whitelist below.</English>
+    <Chinese>控制玩家可使用哪些載具與小組。
+
+• 陣營 — 顯示玩家所屬陣營的所有資源。
+• 派系 — 僅顯示玩家自身派系的資源,或下方派系白名單中列出的派系資源。</Chinese>
+    <Chinesesimp>控制玩家可使用哪些载具与小组。
+
+• 阵营 — 显示玩家所属阵营的所有资源。
+• 派系 — 仅显示玩家自身派系的资源,或下方派系白名单中列出的派系资源。</Chinesesimp>
+    <Spanish>Controla qué vehículos y grupos están disponibles para el jugador.
+
+• Bando — muestra todos los activos del bando del jugador.
+• Facción — solo muestra activos de la facción del jugador o de las listadas en la lista blanca de facciones de abajo.</Spanish>
+    <French>Contrôle quels véhicules et groupes sont disponibles pour le joueur.
+
+• Camp — affiche tous les actifs appartenant au camp du joueur.
+• Faction — n'affiche que les actifs de la faction du joueur, ou des factions listées dans la liste blanche de factions ci-dessous.</French>
+    <Portuguese>Controla quais veículos e grupos estão disponíveis para o jogador.
+
+• Lado — mostra todos os ativos do lado do jogador.
+• Facção — mostra apenas ativos da própria facção do jogador ou das facções listadas na lista de permissões de facções abaixo.</Portuguese>
+    <Russian>Управляет тем, какая техника и группы доступны игроку.
+
+• Сторона — показывает все активы стороны игрока.
+• Фракция — показывает только активы собственной фракции игрока или фракций из белого списка ниже.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_SIDE">
     <English>Side</English>
     <Chinesesimp>阵营</Chinesesimp>
+    <Chinese>陣營</Chinese>
+    <Spanish>Bando</Spanish>
+    <French>Camp</French>
+    <Portuguese>Lado</Portuguese>
+    <Russian>Сторона</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_FACTION">
     <English>Faction</English>
     <Chinesesimp>阵营</Chinesesimp>
+    <Chinese>派系</Chinese>
+    <Spanish>Facción</Spanish>
+    <French>Faction</French>
+    <Portuguese>Facção</Portuguese>
+    <Russian>Фракция</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST">
     <English>Factions:</English>
+    <Chinese>派系：</Chinese>
+    <Chinesesimp>派系：</Chinesesimp>
+    <Spanish>Facciones:</Spanish>
+    <French>Factions:</French>
+    <Portuguese>Facções:</Portuguese>
+    <Russian>Фракции:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST_COMMENT">
     <English>Select the factions whose vehicles and groups are available for resupply. If left empty, defaults to the player's faction at runtime. Use the manual field below for factions not shown in the list. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>選取載具與小組可用於補給的派系。若留空,執行時預設為玩家所屬派系。下方手動欄位可用於清單未顯示的派系。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>选取载具与小组可用于补给的派系。若留空,执行时默认为玩家所属派系。下方手动字段可用于清单未显示的派系。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Selecciona las facciones cuyos vehículos y grupos están disponibles para el reabastecimiento. Si se deja vacío, recurre a la facción del jugador en tiempo de ejecución. Usa el campo manual de abajo para facciones que no aparezcan en la lista. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Sélectionnez les factions dont les véhicules et les groupes sont disponibles pour le réapprovisionnement. Si laissé vide, utilise la faction du joueur à l'exécution. Utilisez le champ manuel ci-dessous pour les factions qui n'apparaissent pas dans la liste. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Selecione as facções cujos veículos e grupos estão disponíveis para reabastecimento. Se deixado vazio, recorre à facção do jogador em tempo de execução. Use o campo manual abaixo para facções não exibidas na lista. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Выберите фракции, чьи техника и группы доступны для пополнения. Если оставить пустым, по умолчанию используется фракция игрока в рантайме. Используйте поле ручного ввода ниже для фракций, не показанных в списке. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST_MANUAL">
     <English>Factions (manual override):</English>
@@ -54,43 +138,124 @@
     <Portuguese>Opcional. Digite classnames de facções adicionais para mods não carregados atualmente. Formato: nomes separados por vírgulas, sem espaços ou aspas.</Portuguese>
     <Russian>Необязательно. Введите classnames дополнительных фракций для незагруженных модов. Формат: имена через запятую, без пробелов и кавычек.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_FILTER_FRIENDLY_FACTIONS">
     <English>Filter Friendly Factions:</English>
+    <Chinese>篩選友軍派系：</Chinese>
+    <Chinesesimp>筛选友军派系：</Chinesesimp>
+    <Spanish>Filtrar facciones aliadas:</Spanish>
+    <French>Filtrer les factions alliées:</French>
+    <Portuguese>Filtrar facções aliadas:</Portuguese>
+    <Russian>Фильтр дружественных фракций:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_FILTER_FRIENDLY_FACTIONS_COMMENT">
     <English>When enabled, the Reinforce List (Groups) only shows factions actively commanded by OPCOM modules friendly to the player's side. Disable to show all config factions. Has no effect if Faction Whitelist is set.</English>
+    <Chinese>啟用時,「增援清單（小組）」僅顯示由對玩家陣營友善的 OPCOM 模組所實際指揮的派系。停用以顯示所有設定派系。若已設定派系白名單則無作用。</Chinese>
+    <Chinesesimp>启用时,「增援清单（小组）」仅显示由对玩家阵营友善的 OPCOM 模块所实际指挥的派系。停用以显示所有配置派系。若已设定派系白名单则无作用。</Chinesesimp>
+    <Spanish>Cuando está activado, la Lista de refuerzo (Grupos) solo muestra facciones comandadas activamente por módulos OPCOM amistosos al bando del jugador. Desactiva para mostrar todas las facciones del config. No tiene efecto si la lista blanca de facciones está establecida.</Spanish>
+    <French>Lorsqu'activé, la liste de renforts (Groupes) n'affiche que les factions activement commandées par des modules OPCOM alliés au camp du joueur. Désactivez pour afficher toutes les factions du config. N'a aucun effet si la liste blanche de factions est définie.</French>
+    <Portuguese>Quando ativado, a Lista de Reforços (Grupos) mostra apenas facções comandadas ativamente por módulos OPCOM aliados ao lado do jogador. Desative para mostrar todas as facções do config. Não tem efeito se a lista de permissões de facções estiver definida.</Portuguese>
+    <Russian>Когда включено, список подкреплений (группы) показывает только фракции, активно управляемые модулями OPCOM, дружественными стороне игрока. Отключите, чтобы показывать все фракции из конфига. Не имеет эффекта, если задан белый список фракций.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP">
     <English>Allow Airdrop:</English>
+    <Chinese>允許空投：</Chinese>
+    <Chinesesimp>允许空投：</Chinesesimp>
+    <Spanish>Permitir lanzamiento aéreo:</Spanish>
+    <French>Autoriser le largage aérien:</French>
+    <Portuguese>Permitir lançamento aéreo:</Portuguese>
+    <Russian>Разрешить десантирование:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP_COMMENT">
     <English>Allow players to request supplies via Air Drop</English>
     <Chinesesimp>允许玩家通过空投请求补给</Chinesesimp>
+    <Chinese>允許玩家透過空投請求補給</Chinese>
+    <Spanish>Permite a los jugadores solicitar suministros mediante lanzamiento aéreo</Spanish>
+    <French>Permet aux joueurs de demander du ravitaillement par largage aérien</French>
+    <Portuguese>Permite aos jogadores solicitar suprimentos via lançamento aéreo</Portuguese>
+    <Russian>Разрешает игрокам запрашивать припасы через десантирование</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT">
     <English>Allow Heli/VTOL:</English>
+    <Chinese>允許直升機/VTOL：</Chinese>
+    <Chinesesimp>允许直升机/VTOL：</Chinesesimp>
+    <Spanish>Permitir helicóptero/VTOL:</Spanish>
+    <French>Autoriser hélicoptère/VTOL:</French>
+    <Portuguese>Permitir helicóptero/VTOL:</Portuguese>
+    <Russian>Разрешить вертолёт/VTOL:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT_COMMENT">
     <English>Allow players to request supplies via Helicopter/VTOL</English>
     <Chinesesimp>允许玩家通过直升机/垂直起降请求补给</Chinesesimp>
+    <Chinese>允許玩家透過直升機/VTOL 請求補給</Chinese>
+    <Spanish>Permite a los jugadores solicitar suministros mediante helicóptero/VTOL</Spanish>
+    <French>Permet aux joueurs de demander du ravitaillement par hélicoptère/VTOL</French>
+    <Portuguese>Permite aos jogadores solicitar suprimentos via helicóptero/VTOL</Portuguese>
+    <Russian>Разрешает игрокам запрашивать припасы через вертолёт/VTOL</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY">
     <English>Allow Convoy:</English>
+    <Chinese>允許車隊：</Chinese>
+    <Chinesesimp>允许车队：</Chinesesimp>
+    <Spanish>Permitir convoy:</Spanish>
+    <French>Autoriser convoi:</French>
+    <Portuguese>Permitir comboio:</Portuguese>
+    <Russian>Разрешить конвой:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY_COMMENT">
     <English>Allow players to request supplies via Convoy</English>
     <Chinesesimp>允许玩家通过车队请求补给</Chinesesimp>
+    <Chinese>允許玩家透過車隊請求補給</Chinese>
+    <Spanish>Permite a los jugadores solicitar suministros mediante convoy</Spanish>
+    <French>Permet aux joueurs de demander du ravitaillement par convoi</French>
+    <Portuguese>Permite aos jogadores solicitar suprimentos via comboio</Portuguese>
+    <Russian>Разрешает игрокам запрашивать припасы через конвой</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST">
     <English>Item Blacklist:</English>
+    <Chinese>物品黑名單：</Chinese>
+    <Chinesesimp>物品黑名单：</Chinesesimp>
+    <Spanish>Lista negra de objetos:</Spanish>
+    <French>Liste noire des objets:</French>
+    <Portuguese>Lista negra de itens:</Portuguese>
+    <Russian>Чёрный список предметов:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT">
     <English>Comma-separated list of config class names to exclude from the resupply catalog (e.g. Box_IND_Ammo_F,B_MRAP_01_F). Class names are case-sensitive.</English>
+    <Chinese>以逗號分隔的設定類別名稱清單,將從補給目錄中排除（例如 Box_IND_Ammo_F,B_MRAP_01_F）。類別名稱區分大小寫。</Chinese>
+    <Chinesesimp>以逗号分隔的配置类别名称清单,将从补给目录中排除（例如 Box_IND_Ammo_F,B_MRAP_01_F）。类别名称区分大小写。</Chinesesimp>
+    <Spanish>Lista separada por comas de nombres de clase del config a excluir del catálogo de reabastecimiento (p. ej. Box_IND_Ammo_F,B_MRAP_01_F). Los nombres de clase distinguen mayúsculas y minúsculas.</Spanish>
+    <French>Liste séparée par des virgules de noms de classes du config à exclure du catalogue de réapprovisionnement (ex. Box_IND_Ammo_F,B_MRAP_01_F). Les noms de classe sont sensibles à la casse.</French>
+    <Portuguese>Lista separada por vírgulas de nomes de classes do config a excluir do catálogo de reabastecimento (ex. Box_IND_Ammo_F,B_MRAP_01_F). Os nomes de classe são sensíveis a maiúsculas/minúsculas.</Portuguese>
+    <Russian>Список через запятую имён классов конфига, исключаемых из каталога снабжения (например, Box_IND_Ammo_F,B_MRAP_01_F). Имена классов чувствительны к регистру.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST">
     <English>Item Whitelist:</English>
+    <Chinese>物品白名單：</Chinese>
+    <Chinesesimp>物品白名单：</Chinesesimp>
+    <Spanish>Lista blanca de objetos:</Spanish>
+    <French>Liste blanche des objets:</French>
+    <Portuguese>Lista de permissões de itens:</Portuguese>
+    <Russian>Белый список предметов:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT">
     <English>Comma-separated list of config class names to restrict the resupply catalog to. Only these classes will appear (e.g. Box_IND_Ammo_F,B_MRAP_01_F). Class names are case-sensitive.</English>
+    <Chinese>以逗號分隔的設定類別名稱清單,用於將補給目錄限制為僅這些類別（例如 Box_IND_Ammo_F,B_MRAP_01_F）。類別名稱區分大小寫。</Chinese>
+    <Chinesesimp>以逗号分隔的配置类别名称清单,用于将补给目录限制为仅这些类别（例如 Box_IND_Ammo_F,B_MRAP_01_F）。类别名称区分大小写。</Chinesesimp>
+    <Spanish>Lista separada por comas de nombres de clase del config para restringir el catálogo de reabastecimiento únicamente a estas clases (p. ej. Box_IND_Ammo_F,B_MRAP_01_F). Solo aparecerán estas clases. Los nombres de clase distinguen mayúsculas y minúsculas.</Spanish>
+    <French>Liste séparée par des virgules de noms de classes du config pour restreindre le catalogue de réapprovisionnement à ces seules classes (ex. Box_IND_Ammo_F,B_MRAP_01_F). Seules ces classes apparaîtront. Les noms de classe sont sensibles à la casse.</French>
+    <Portuguese>Lista separada por vírgulas de nomes de classes do config para restringir o catálogo de reabastecimento apenas a estas classes (ex. Box_IND_Ammo_F,B_MRAP_01_F). Apenas estas classes aparecerão. Os nomes de classe são sensíveis a maiúsculas/minúsculas.</Portuguese>
+    <Russian>Список через запятую имён классов конфига, ограничивающий каталог снабжения только этими классами (например, Box_IND_Ammo_F,B_MRAP_01_F). Появятся только эти классы. Имена классов чувствительны к регистру.</Russian>
 </Key>
 </Container></Package></Project>
