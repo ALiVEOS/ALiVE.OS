@@ -17,6 +17,8 @@ class ctrlControlsGroupNoScrollbars;
 class ctrlListBox;
 class ctrlStatic;
 class ctrlEdit;
+class ctrlCombo;
+class ctrlButton;
 
 class CfgFactionClasses {
     class Alive {
@@ -327,6 +329,7 @@ class Cfg3DEN
                     // border for legibility (Eden's default attribute
                     // tooltip is too transparent; yellow border was
                     // visually distracting).
+                    tooltip  = "Multi-select: Ctrl+click toggles individual rows. Shift+click selects a range. Plain click replaces the selection with just that one row.";
                     tooltipColorShade[] = {0, 0, 0, 1};
                     tooltipColorText[]  = {1, 1, 1, 1};
                     tooltipColorBox[]   = {0, 0, 0, 1};
@@ -499,7 +502,22 @@ class Cfg3DEN
             x = 0;
             y = 0;
             w = "130 * (pixelW * pixelGrid * 0.5)";
-            h = "70 * (pixelH * pixelGrid * 0.5)";
+            // Layout (grid units, halved per existing module-dialog
+            // convention):
+            //   y=0  h=5  Title (left col)  + Faction Combo (right col)
+            //   y=6  h=50 Listbox (right col, full width)
+            //   y=57 h=5  Override Label (left col) + Override Edit (right col)
+            //
+            // Total = 62 grid units. The reactive faction-picker combo
+            // (idc 200) sits at the top right and drives listbox /
+            // override population for the currently-selected faction.
+            // attributeLoad attaches an LBSelChanged handler to the
+            // combo that flushes the current view's ticks + override
+            // text into a per-faction hash on the display, then
+            // repopulates listbox + override Edit for the newly-picked
+            // faction. attributeSave does the final flush before
+            // serialising.
+            h = "62 * (pixelH * pixelGrid * 0.5)";
             colorBackground[] = {0, 0, 0, 0};
             colorText[]       = {1, 1, 1, 1};
             text   = "";
@@ -510,6 +528,9 @@ class Cfg3DEN
             class HScrollbar {};
 
             class controls {
+                // Row 1 left: title (per-attribute label set at runtime
+                // by attributeLoad from the localised string in the
+                // variant control's plumbed args).
                 class Title: ctrlStatic {
                     idc      = 101;
                     type     = 0;
@@ -523,20 +544,95 @@ class Cfg3DEN
                     text     = "Override:";
                     font     = "RobotoCondensed";
                     sizeEx   = "pixelH * pixelGrid * 2.2";
-                    tooltip  = "Pick classes to use as the kind override for the listed faction. Ctrl+click toggles individual rows. The Override field below accepts comma-separated class names for mod classes not shown in the listbox.";
+                    tooltip  = "Use the Next button to pick a faction, then tick classes from the listbox to build the override set for that faction.\n\nMulti-select: Ctrl+click toggles individual rows in/out of the selection. Shift+click selects a range. Plain click replaces the selection with just that one row.\n\nThe Override field accepts free-text class names for mod classes the listbox doesn't surface (combined with listbox ticks). The 'Custom Class Mode' setting at the top of the section controls whether the combined set REPLACES the faction's registry entry or APPENDS to it.";
                     tooltipColorShade[] = {0, 0, 0, 1};
                     tooltipColorText[]  = {1, 1, 1, 1};
                     tooltipColorBox[]   = {0, 0, 0, 1};
                 };
 
+                // Row 1 right: faction-picker. Two-control approach
+                // after ctrlListBox (multiple geometry tries) + ctrlCombo
+                // both refused to render inside the 3DEN attribute
+                // controlsGroup. Layout: a static text label showing the
+                // currently-active faction (idc 200) on the left of the
+                // value column, and a "Next" button (idc 202) on the
+                // right. Click the button to cycle to the next faction
+                // (wrapping); right-click to cycle to the previous. The
+                // attached ButtonClick handler in the load handler does
+                // the per-faction view flush + reload.
+                class FactionLabel: ctrlStatic {
+                    idc      = 200;
+                    type     = 0;
+                    style    = 0;        // ST_LEFT
+                    x        = "48 * (pixelW * pixelGrid * 0.5)";
+                    y        = 0;
+                    w        = "65 * (pixelW * pixelGrid * 0.5)";
+                    h        = "6 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0.5};
+                    colorText[]       = {1, 0.62, 0, 1};
+                    text     = "";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 2.0";
+                    tooltip  = "Currently-active faction. The listbox + override field below show overrides for THIS faction. Use the Next button to cycle through other factions when the module manages more than one.";
+                    tooltipColorShade[] = {0, 0, 0, 1};
+                    tooltipColorText[]  = {1, 1, 1, 1};
+                    tooltipColorBox[]   = {0, 0, 0, 1};
+                };
+
+                class FactionNextButton: ctrlButton {
+                    idc      = 202;
+                    type     = 1;        // CT_BUTTON
+                    style    = 2;        // ST_CENTER
+                    x        = "115 * (pixelW * pixelGrid * 0.5)";
+                    y        = 0;
+                    w        = "15 * (pixelW * pixelGrid * 0.5)";
+                    h        = "6 * (pixelH * pixelGrid * 0.5)";
+                    text     = "Next >";
+                    default  = 0;
+
+                    colorBackground[]        = {1, 0.62, 0, 0.6};
+                    colorBackgroundDisabled[]= {0.4, 0.4, 0.4, 0.5};
+                    colorBackgroundActive[]  = {1, 0.62, 0, 1};
+                    colorFocused[]           = {1, 0.62, 0, 1};
+                    colorBackgroundFocused[] = {1, 0.62, 0, 1};
+                    // White text on orange BG.
+                    colorText[]              = {1, 1, 1, 1};
+                    colorDisabled[]          = {1, 1, 1, 0.25};
+                    colorBorder[]            = {0, 0, 0, 1};
+                    borderSize               = 0;
+                    offsetX                  = 0;
+                    offsetY                  = 0;
+                    offsetPressedX           = 0;
+                    offsetPressedY           = 0;
+                    colorShadow[]            = {0, 0, 0, 0};
+                    soundEnter[]             = {"", 0, 0};
+                    soundPush[]              = {"", 0, 0};
+                    soundClick[]             = {"", 0, 0};
+                    soundEscape[]            = {"", 0, 0};
+
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    tooltip  = "Cycle to the next faction.";
+                    tooltipColorShade[] = {0, 0, 0, 1};
+                    tooltipColorText[]  = {1, 1, 1, 1};
+                    tooltipColorBox[]   = {0, 0, 0, 1};
+                };
+
+                // Row 2 right: multi-select listbox showing the
+                // currently-picked faction's classes (filtered by the
+                // attribute's kind). Repopulated by the LBSelChanged
+                // handler attached to FactionPicker.
                 class List: ctrlListBox {
                     idc = 100;
                     type = 5;
                     style = 16 + 0x20;
+                    // Listbox starts after the faction-picker row above
+                    // (picker static + button at y=0 h=6, gap, list at
+                    // y=7).
                     x = "48 * (pixelW * pixelGrid * 0.5)";
-                    y = 0;
+                    y = "7 * (pixelH * pixelGrid * 0.5)";
                     w = "82 * (pixelW * pixelGrid * 0.5)";
-                    h = "55 * (pixelH * pixelGrid * 0.5)";
+                    h = "48 * (pixelH * pixelGrid * 0.5)";
 
                     color[]                  = {1, 0.62, 0, 1};
                     colorActive[]            = {0, 0, 0, 0.5};
@@ -552,13 +648,16 @@ class Cfg3DEN
                     shadow                   = 0;
                     colorShadow[]            = {0, 0, 0, 0};
 
+                    tooltip  = "Multi-select: Ctrl+click toggles individual rows. Shift+click selects a range. Plain click replaces the selection with just that one row.";
                     tooltipColorShade[] = {0, 0, 0, 1};
                     tooltipColorText[]  = {1, 1, 1, 1};
                     tooltipColorBox[]   = {0, 0, 0, 1};
 
                     font     = "RobotoCondensed";
-                    sizeEx   = "pixelH * pixelGrid * 1.8";
-                    rowHeight = "pixelH * pixelGrid * 2.2";
+                    // Match OPCOM's faction-multi listbox at sizeEx 2.0
+                    // for consistency across faction-related controls.
+                    sizeEx   = "pixelH * pixelGrid * 2.0";
+                    rowHeight = "pixelH * pixelGrid * 2.4";
                     period   = 1.2;
 
                     soundSelect[] = {"", 0, 0};
@@ -575,6 +674,7 @@ class Cfg3DEN
                     };
                 };
 
+                // Row 3 left: override-field label.
                 class OverrideLabel: ctrlStatic {
                     idc      = 103;
                     type     = 0;
@@ -587,13 +687,17 @@ class Cfg3DEN
                     colorText[]       = {1, 1, 1, 0.7};
                     text     = "Override classes:";
                     font     = "RobotoCondensed";
-                    sizeEx   = "pixelH * pixelGrid * 1.8";
-                    tooltip  = "Free-text comma-separated class names. Use the same FACTION=class1,class2;FACTION2=class3 syntax. Useful for mod classes the listbox above doesn't show.";
+                    sizeEx   = "pixelH * pixelGrid * 2.2";
+                    tooltip  = "Free-text comma-separated class names for THIS faction (the one currently picked above). For mod classes the listbox doesn't surface. Combined with the listbox ticks - both contribute to this faction's override set. The 'Custom Class Mode' at the top decides whether that set REPLACES the registry's existing entry for the faction or APPENDS to it. Switching the faction picker swaps the field to the new faction's saved overrides.";
                     tooltipColorShade[] = {0, 0, 0, 1};
                     tooltipColorText[]  = {1, 1, 1, 1};
                     tooltipColorBox[]   = {0, 0, 0, 1};
                 };
 
+                // Row 3 right: per-faction override Edit. Shows the
+                // currently-picked faction's overrides; LBSelChanged on
+                // the combo flushes its text to the per-faction hash
+                // on swap.
                 class Override: ctrlEdit {
                     idc      = 102;
                     type     = 2;

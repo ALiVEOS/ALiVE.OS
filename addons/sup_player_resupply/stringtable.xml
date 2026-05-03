@@ -34,7 +34,7 @@
     <English>Factions:</English>
 </Key>
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST_COMMENT">
-    <English>Select the factions whose vehicles and groups are available for resupply. If left empty, defaults to the player's faction at runtime. Use the manual field below for factions not shown in the list.</English>
+    <English>Select the factions whose vehicles and groups are available for resupply. If left empty, defaults to the player's faction at runtime. Use the manual field below for factions not shown in the list. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 </Key>
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST_MANUAL">
     <English>Factions (manual override):</English>

@@ -27,28 +27,28 @@
 	<Chinesesimp>招募派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_RECRUIT_COMMENT">
-    <English>Units of these factions will use Recruit-tier skill values (low accuracy, slow reactions, short detection range). Lowest preset — use for untrained militia or irregular forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
+    <English>Units of these factions will use Recruit-tier skill values (low accuracy, slow reactions, short detection range). Lowest preset — use for untrained militia or irregular forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_REGULAR">
     <English>Regular Factions:</English>
 	<Chinesesimp>常规派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_REGULAR_COMMENT">
-    <English>Units of these factions will use Regular-tier skill values (moderate accuracy, average reactions). Baseline preset suitable for most conventional forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
+    <English>Units of these factions will use Regular-tier skill values (moderate accuracy, average reactions). Baseline preset suitable for most conventional forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_VETERAN">
     <English>Veteran Factions:</English>
 	<Chinesesimp>资深派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_VETERAN_COMMENT">
-    <English>Units of these factions will use Veteran-tier skill values (good accuracy, faster reactions, better spotting). Use for experienced infantry or special operations forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
+    <English>Units of these factions will use Veteran-tier skill values (good accuracy, faster reactions, better spotting). Use for experienced infantry or special operations forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_EXPERT">
     <English>Expert Factions:</English>
 	<Chinesesimp>专家派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_EXPERT_COMMENT">
-    <English>Units of these factions will use Expert-tier skill values (high accuracy, fast reactions, long detection range). Highest preset — use for top-tier special forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
+    <English>Units of these factions will use Expert-tier skill values (high accuracy, fast reactions, long detection range). Highest preset — use for top-tier special forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_FACTIONS_MANUAL">
     <English>Factions (manual override):</English>
@@ -72,7 +72,7 @@
     <English>Factions:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMENT">
-    <English>Factions whose units will receive the exact skill values you configure below. This section is independent of the preset tiers above — presets use fixed hardcoded values, while this section gives full control over each parameter. If a faction is also assigned to a preset tier, the custom values take precedence. Leave empty to apply no custom values.</English>
+    <English>Factions whose units will receive the exact skill values you configure below. This section is independent of the preset tiers above — presets use fixed hardcoded values, while this section gives full control over each parameter. If a faction is also assigned to a preset tier, the custom values take precedence. Leave empty to apply no custom values. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN">
     <English>Minimum Ability:</English>
