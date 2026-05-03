@@ -802,6 +802,13 @@ class hashSet
 	RECOMPILE;
 };
 
+class hashSetMany
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_hashSetMany.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class isHash
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_isHash.sqf";

@@ -124,6 +124,7 @@ data
 	ALiVE_fnc_hashGetMany
 	ALiVE_fnc_hashRem
 	ALiVE_fnc_hashSet
+	ALiVE_fnc_hashSetMany
 	ALiVE_fnc_isHash
 	ALiVE_fnc_JSON
 	ALiVE_fnc_parseJSON
