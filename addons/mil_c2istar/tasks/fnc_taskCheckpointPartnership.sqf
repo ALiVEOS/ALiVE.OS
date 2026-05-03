@@ -198,7 +198,7 @@ switch (_taskState) do {
         for "_i" from 0 to 1 do {
             private _vipPosition = [_eventPosition, 3 + (random 8), random 360] call BIS_fnc_relPos;
             _vipPosition set [2, 0];
-            private _vip = _civGroup createUnit [selectRandom ["C_man_polo_1_F", "C_man_polo_4_F", "C_man_p_fugitive_F", "C_man_w_worker_F"], _vipPosition, [], 0, "NONE"];
+            private _vip = _civGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _vipPosition, [], 0, "NONE"];
             removeAllWeapons _vip;
             _vip disableAI "AUTOTARGET";
             _vip disableAI "TARGET";
@@ -216,7 +216,7 @@ switch (_taskState) do {
         for "_i" from 0 to 3 do {
             private _crowdPosition = [_eventPosition, 5 + (random 12), random 360] call BIS_fnc_relPos;
             _crowdPosition set [2, 0];
-            private _crowdUnit = _civGroup createUnit [selectRandom ["C_man_1", "C_man_polo_2_F", "C_man_shorts_1_F", "C_man_polo_5_F", "C_man_w_worker_F"], _crowdPosition, [], 0, "NONE"];
+            private _crowdUnit = _civGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _crowdPosition, [], 0, "NONE"];
             removeAllWeapons _crowdUnit;
             _crowdUnit disableAI "AUTOTARGET";
             _crowdUnit disableAI "TARGET";

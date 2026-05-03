@@ -928,13 +928,19 @@ switch (_operation) do {
                 private _belowTerrain = (getPosATL _v select 2) < -0.5;
                 private _speed = vectorMagnitude (velocity _v);
                 // Freeze criterion: vehicle is GENUINELY broken if it took
-                // damage, ended up below terrain, or is still moving (physics
-                // didn't settle in 15 s = still in a clip). Drift alone is
-                // NOT a problem - the engine often nudges vehicles 5-100 m
-                // out of a clip and they end up at a perfectly stable
-                // healthy spot. Earlier criterion (drift > 5) lost
-                // legitimate vehicles per mission start.
-                private _stillBroken = (damage _v) > 0.1 || _belowTerrain || _speed > 1;
+                // damage or ended up below terrain. Drift is NOT a problem -
+                // the engine often nudges vehicles 5-100 m out of a clip and
+                // they end up at a perfectly stable healthy spot. Earlier
+                // criterion (drift > 5) lost legitimate vehicles per mission
+                // start; speed > 1 dropped 2026-05-01 because active patrol /
+                // convoy profiles are legitimately moving when the settle
+                // window expires - flagging them as "still in clip" left
+                // C2ISTAR Destroy Vehicles tasks (#870) targeting frozen
+                // wrecks that couldn't be destroyed. Damage + below-terrain
+                // alone catch real failure modes; an engine-launched-into-
+                // a-wall vehicle accumulates damage during the launch and
+                // gets caught by the damage check.
+                private _stillBroken = (damage _v) > 0.1 || _belowTerrain;
                 if (_stillBroken) then {
                     // Spawn-clip resolution failed - freeze instead of
                     // letting damage re-engage on a wreck-in-waiting.

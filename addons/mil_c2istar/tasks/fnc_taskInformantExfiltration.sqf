@@ -208,7 +208,7 @@ switch (_taskState) do {
             _vipPosition = +_sourceCenter;
         };
 
-        private _vipClass = selectRandom ["C_man_1", "C_man_polo_1_F", "C_man_polo_4_F", "C_man_w_worker_F"];
+        private _vipClass = selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses);
         private _vipGroup = createGroup [civilian, true];
         private _vip = _vipGroup createUnit [_vipClass, _vipPosition, [], 0, "NONE"];
         removeAllWeapons _vip;

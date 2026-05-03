@@ -263,6 +263,26 @@
     <Portuguese>Permite reforços de avião</Portuguese>
     <Russian>Разрешает подкрепления на самолётах</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_EXCLUDE_KINDS">
+    <English>Excluded Kinds:</English>
+    <Chinese>排除的類型:</Chinese>
+    <Chinesesimp>排除的类型:</Chinesesimp>
+    <Spanish>Tipos excluidos:</Spanish>
+    <French>Catégories exclues:</French>
+    <Portuguese>Categorias excluídas:</Portuguese>
+    <Russian>Исключённые типы:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_EXCLUDE_KINDS_COMMENT">
+    <English>Comma-separated list of CfgVehicles class names. Each entry can be either a broad parent kind (e.g. "Tank", "Plane", "Helicopter") OR a specific vehicle classname (e.g. "B_MBT_01_TUSK_F"). Any reinforcement group containing a unit whose vehicle matches or inherits from one of the listed classes is excluded from the candidate pool. Mix freely to block whole categories or pick off individual problem vehicles, without disabling the higher-level Allow toggles above. Empty = nothing excluded.</English>
+    <Chinese>以逗號分隔的 CfgVehicles 類別名稱清單。每一項可填入廣泛的父類別 (例如 "Tank"、"Plane"、"Helicopter"),或特定的載具類別名稱 (例如 "B_MBT_01_TUSK_F")。任何增援小組若包含載具符合或繼承自所列類別的單位,將從候選池中排除。可自由混用,以封鎖整個類別或針對個別問題載具,無需停用上方的允許開關。留空 = 不排除任何項目。</Chinese>
+    <Chinesesimp>以逗号分隔的 CfgVehicles 类别名称清单。每一项可填入广泛的父类别 (例如 "Tank"、"Plane"、"Helicopter"),或特定的载具类别名称 (例如 "B_MBT_01_TUSK_F")。任何增援小组若包含载具符合或继承自所列类别的单位,将从候选池中排除。可自由混用,以封锁整个类别或针对个别问题载具,无需停用上方的允许开关。留空 = 不排除任何项目。</Chinesesimp>
+    <Spanish>Lista separada por comas de nombres de clases de CfgVehicles. Cada entrada puede ser una categoría padre amplia (p. ej. "Tank", "Plane", "Helicopter") O un classname de vehículo específico (p. ej. "B_MBT_01_TUSK_F"). Cualquier grupo de refuerzo que contenga una unidad cuyo vehículo coincida o herede de una de las clases listadas queda excluido del conjunto de candidatos. Mezcla libremente para bloquear categorías enteras o vehículos problemáticos individuales, sin desactivar los conmutadores Permitir de arriba. Vacío = nada excluido.</Spanish>
+    <French>Liste séparée par des virgules de noms de classes CfgVehicles. Chaque entrée peut être soit une catégorie parente large (ex. "Tank", "Plane", "Helicopter"), soit un classname de véhicule spécifique (ex. "B_MBT_01_TUSK_F"). Tout groupe de renfort contenant une unité dont le véhicule correspond ou hérite de l'une des classes listées est exclu du vivier de candidats. Mélangez librement pour bloquer des catégories entières ou cibler des véhicules problématiques précis, sans désactiver les bascules Autoriser ci-dessus. Vide = rien d'exclu.</French>
+    <Portuguese>Lista separada por vírgulas de nomes de classes do CfgVehicles. Cada entrada pode ser uma categoria pai ampla (ex. "Tank", "Plane", "Helicopter") OU um classname de veículo específico (ex. "B_MBT_01_TUSK_F"). Qualquer grupo de reforço que contenha uma unidade cujo veículo corresponda ou herde de uma das classes listadas é excluído do conjunto de candidatos. Misture livremente para bloquear categorias inteiras ou alvejar veículos problemáticos específicos, sem desativar os interruptores Permitir acima. Vazio = nada excluído.</Portuguese>
+    <Russian>Список через запятую имён классов CfgVehicles. Каждая запись может быть как широкой родительской категорией (например, "Tank", "Plane", "Helicopter"), так и конкретным именем класса техники (например, "B_MBT_01_TUSK_F"). Любая группа подкрепления, содержащая юнит, чей транспорт совпадает или наследуется от одного из перечисленных классов, исключается из пула кандидатов. Свободно сочетайте, чтобы заблокировать целые категории или отдельные проблемные машины, не отключая переключатели «Разрешить» выше. Пусто = ничего не исключено.</Russian>
+</Key>
 <Key ID="STR_ALIVE_ML_ENABLE_AIR_TRANSPORT">
     <English>Enable Air Transport:</English>
     <Chinese>啟用空中運輸：</Chinese>

@@ -27,6 +27,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params [
@@ -55,7 +56,16 @@ private _found = [];
             // Go find nearest land
             private _pos = [_centerPos, _distance / 2] call ALiVE_fnc_getClosestLand;
 
-            if (_pos distance _centerPos > 5) then {
+            // Re-check distance-from-players on the substituted land
+            // position. The original sector centre passed the player-
+            // distance check while it was over water, but the nearest land
+            // can lie BETWEEN the sector centre and the player on coastal
+            // maps - so the substitute can be much closer to the player
+            // than _distance permits. Without this re-check, C2ISTAR
+            // wave-spawn callers (#868: checkpoint defence, mil defence)
+            // got spawn positions 20-50 m from the player on coastal
+            // maps like Stratis.
+            if (_pos distance _centerPos > 5 && {([_pos, _distance] call ALiVE_fnc_anyPlayersInRange) == 0}) then {
 				_found pushBack _pos;
             };
         } else {

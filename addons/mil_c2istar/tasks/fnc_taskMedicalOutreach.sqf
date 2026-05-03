@@ -80,7 +80,7 @@ switch (_taskState) do {
         _cratePosition set [2, 0];
 
         private _contactGroup = createGroup [civilian, true];
-        private _contact = _contactGroup createUnit [selectRandom ["C_man_1", "C_man_polo_1_F", "C_man_polo_2_F", "C_man_shorts_1_F"], _contactPosition, [], 0, "NONE"];
+        private _contact = _contactGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _contactPosition, [], 0, "NONE"];
         removeAllWeapons _contact;
         _contact disableAI "AUTOTARGET";
         _contact disableAI "TARGET";

@@ -131,6 +131,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -513,7 +514,20 @@ switch(_operation) do {
 
         private _waypoint = _args;
 
+        // Defensive: index 21 is "units" array on entity profiles, but
+        // "hasSimulated" Bool on vehicle profiles. A vehicle profile being
+        // mistakenly routed through this case (e.g. via addWaypoint on the
+        // wrong profile object) used to throw "Type Bool, expected Array"
+        // when the select 0 ran - aborting whatever transport / convoy /
+        // dismount path called it. Type-check before reaching the array
+        // op so the no-op falls out cleanly and surfaces the wrong-routing
+        // bug at the call site instead of crashing the calling thread.
         private _units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
+        if (typeName _units != "ARRAY") exitWith {
+            diag_log format ["ALiVE profileEntity profileWaypointToWaypoint: profile %1 has non-array units (got %2). Likely a vehicle profile routed through entity API at the call site - skipping.",
+                _logic select 2 select 4, typeName _units];
+        };
+
         private _unit = _units select 0;
 
         if !(isnil "_unit") then {

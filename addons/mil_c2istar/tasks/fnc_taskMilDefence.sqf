@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -298,8 +299,18 @@ switch (_taskState) do {
 
             //["INF GROUPS: %1",_groups] call ALIVE_fnc_dump;
 
-            _remotePosition = [_taskPosition, 500, 5, true] call ALIVE_fnc_getPositionDistancePlayers;
-            _remotePosition = (selectRandom _remotePosition);
+            // Fallback when no qualifying remote sectors are found (small map,
+            // dispersed players, or coastal-filter edge cases after #868):
+            // selectRandom [] returns nil and the next line's `nil getPos`
+            // would error. Mirror the fallback already used by
+            // fnc_taskCheckpointPartnership: drop back to a 450 m offset
+            // from the task position so the wave still spawns.
+            private _remotePositions = [_taskPosition, 500, 5, true] call ALIVE_fnc_getPositionDistancePlayers;
+            _remotePosition = if (count _remotePositions > 0) then {
+                selectRandom _remotePositions
+            } else {
+                [_taskPosition, 450, random 360] call BIS_fnc_relPos
+            };
 
             {
                 _position = (_remotePosition getPos [(random 200), (random 200)]);

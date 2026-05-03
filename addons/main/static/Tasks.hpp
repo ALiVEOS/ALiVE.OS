@@ -881,36 +881,40 @@
 
 	[ALIVE_generatedTasks, "MedicalOutreach", ["Medical Outreach",_options]] call ALIVE_fnc_hashSet;
 
-// Checkpoint Partnership Task
+// Local Liaison Task (internal class CheckpointPartnership - retained for SQM /
+// auto-task config back-compat; user-facing strings reframed to match the
+// actual implementation, which protects a local-leader meeting + crowd at a
+// settlement edge, not a roadblock-style checkpoint. #868 sub-report flagged
+// the dialog wording mismatch).
 
 	_options = [];
 
 	_tasksData = [] call ALIVE_fnc_hashCreate;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Checkpoint Partnership in %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Establish and hold a joint checkpoint in %1 with local partners."] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Local Liaison in %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Protect a local liaison meeting in %1 and keep partner personnel alive while you hold the site."] call ALIVE_fnc_hashSet;
 	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Deploy to %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Move to %1, prepare the checkpoint position, and coordinate with the local security team."] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","Move to %1 and establish the joint checkpoint, Over."],["PLAYERS","Roger, moving to the checkpoint site."]]] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_failed",[["HQ","The checkpoint in %1 is no longer viable. Abort and report, Over."],["PLAYERS","Roger, checkpoint compromised."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Move to %1, establish security around the meeting site, and coordinate with the local team."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Move to %1 and prepare security for the liaison meeting, Over."],["PLAYERS","Roger, moving to the meeting site."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["HQ","The liaison meeting in %1 is no longer viable. Abort and report, Over."],["PLAYERS","Roger, meeting compromised."]]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Setup",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Hold checkpoint in %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Maintain the checkpoint in %1, repel hostile disruption, and keep the partner team alive."] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","Partner personnel are on station in %1. Hold the checkpoint and protect the local team, Over."],["PLAYERS","Roger, checkpoint security is established."]]] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_success",[["PLAYERS","Checkpoint operation in %1 is secure, Over."],["HQ","Roger. That should improve local confidence in the security forces, Out."]]] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_failed",[["HQ","The checkpoint in %1 collapsed under hostile pressure. Break contact and report, Over."],["PLAYERS","Roger, checkpoint lost."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Secure liaison in %1"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Maintain security at the liaison meeting in %1, repel hostile disruption, and keep the partner team alive."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Partner personnel are on station in %1. Secure the meeting and protect the local team, Over."],["PLAYERS","Roger, meeting security is established."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","Liaison meeting in %1 concluded successfully, Over."],["HQ","Roger. That should improve local confidence in the security forces, Out."]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["HQ","The liaison meeting in %1 collapsed under hostile pressure. Break contact and report, Over."],["PLAYERS","Roger, meeting lost."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"reward",["forcePool",12]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Secure",_taskData] call ALIVE_fnc_hashSet;
 
 	_options set [count _options,_tasksData];
 
-	[ALIVE_generatedTasks, "CheckpointPartnership", ["Checkpoint Partnership",_options]] call ALIVE_fnc_hashSet;
+	[ALIVE_generatedTasks, "CheckpointPartnership", ["Local Liaison",_options]] call ALIVE_fnc_hashSet;
 
 // Informant Exfiltration Task
 

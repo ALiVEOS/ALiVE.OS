@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -192,7 +193,7 @@ switch (_taskState) do {
 
             private["_units","_nearestTown","_dialog","_formatDescription","_formatChat","_formatMessage","_formatMessageText"];
 
-            _units = [[_taskEnemyFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
+            _units = [[_taskEnemyFaction], 1, ALiVE_MIL_CQB_UNITBLACKLIST] call ALiVE_fnc_taskGetHVTUnits;
 
             _nearestTown = [_targetPosition] call ALIVE_fnc_taskGetNearestLocationName;
 
@@ -380,7 +381,7 @@ switch (_taskState) do {
 
                         _HVTProfile1ID = _HVTProfile1 select 2 select 4;
 
-                        _units = [[_taskEnemyFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
+                        _units = [[_taskEnemyFaction], 1, ALiVE_MIL_CQB_UNITBLACKLIST] call ALiVE_fnc_taskGetHVTUnits;
 
                         _HVTProfile2 = [_units,_taskEnemySide,_taskEnemyFaction,_taskPosition,random(360),_taskEnemyFaction,true] call ALIVE_fnc_createProfileEntity;
                         _HVTProfile2ID = _HVTProfile2 select 2 select 4;
@@ -418,7 +419,7 @@ switch (_taskState) do {
 
                         private["_units","_HVTProfile1","_HVTProfile1ID","_remotePosition"];
 
-                        _units = [[_taskEnemyFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
+                        _units = [[_taskEnemyFaction], 1, ALiVE_MIL_CQB_UNITBLACKLIST] call ALiVE_fnc_taskGetHVTUnits;
 
                         _remotePosition = [_taskPosition, 2000, 1, true] call ALIVE_fnc_getPositionDistancePlayers;
 
@@ -448,7 +449,7 @@ switch (_taskState) do {
 
                         private["_units","_HVTProfile1","_HVTProfile1ID","_remotePosition","_extractionPosition"];
 
-                        _units = [[_taskEnemyFaction],1,ALiVE_MIL_CQB_UNITBLACKLIST,true] call ALiVE_fnc_chooseRandomUnits;
+                        _units = [[_taskEnemyFaction], 1, ALiVE_MIL_CQB_UNITBLACKLIST] call ALiVE_fnc_taskGetHVTUnits;
 
                         _remotePosition = [_taskPosition, 2000, 1, true] call ALIVE_fnc_getPositionDistancePlayers;
                         _extractionPosition = [_taskPosition, 4000, 1, true] call ALIVE_fnc_getPositionDistancePlayers;

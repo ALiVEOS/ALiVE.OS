@@ -77,7 +77,7 @@ switch (_taskState) do {
         };
 
         private _leaderGroup = createGroup [civilian, true];
-        private _leader = _leaderGroup createUnit [selectRandom ["C_man_p_fugitive_F", "C_man_polo_4_F", "C_man_polo_5_F", "C_man_w_worker_F"], _leaderPosition, [], 0, "NONE"];
+        private _leader = _leaderGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _leaderPosition, [], 0, "NONE"];
         removeAllWeapons _leader;
         _leader disableAI "AUTOTARGET";
         _leader disableAI "TARGET";

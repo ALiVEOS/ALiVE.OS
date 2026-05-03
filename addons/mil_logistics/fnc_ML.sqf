@@ -307,6 +307,39 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "excludeKinds": {
+        // Comma-separated list of CfgVehicles parent class names whose
+        // groups are dropped from the reinforcement candidate pool.
+        // First call parses the raw string into an array and caches it
+        // on the logic under "excludeKindsParsed"; subsequent calls just
+        // return the cached array.
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["excludeKinds", _args];
+            private _parsed = [];
+            {
+                private _t = _x;
+                while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+                while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do { _t = _t select [0, count _t - 1] };
+                if (_t != "") then { _parsed pushBackUnique _t };
+            } forEach ([_args, ","] call CBA_fnc_split);
+            _logic setVariable ["excludeKindsParsed", _parsed];
+            _result = _parsed;
+        } else {
+            private _cached = _logic getVariable ["excludeKindsParsed", nil];
+            if (isNil "_cached") then {
+                private _raw = _logic getVariable ["excludeKinds", ""];
+                _cached = [];
+                {
+                    private _t = _x;
+                    while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+                    while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do { _t = _t select [0, count _t - 1] };
+                    if (_t != "") then { _cached pushBackUnique _t };
+                } forEach ([_raw, ","] call CBA_fnc_split);
+                _logic setVariable ["excludeKindsParsed", _cached];
+            };
+            _result = _cached;
+        };
+    };
     case "enableAirTransport": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["enableAirTransport", _args];
@@ -2146,7 +2179,7 @@ switch(_operation) do {
     case "init": {
         if (isServer) then {
 
-            private ["_debug","_forcePool","_type","_allowInfantry","_allowMechanised","_allowMotorised","_allowArmour","_allowHeli","_allowPlane"];
+            private ["_debug","_forcePool","_type","_allowInfantry","_allowMechanised","_allowMotorised","_allowArmour","_allowHeli","_allowPlane","_excludeKinds"];
 
             // if server, initialise module game logic
             _logic setVariable ["super", SUPERCLASS];
@@ -2178,6 +2211,10 @@ switch(_operation) do {
             _allowArmour = [_logic, "allowArmourReinforcement"] call MAINCLASS;
             _allowHeli = [_logic, "allowHeliReinforcement"] call MAINCLASS;
             _allowPlane = [_logic, "allowPlaneReinforcement"] call MAINCLASS;
+            // Trigger one-shot parse + cache of the comma-separated
+            // Excluded Kinds list so the candidate-build sites read a
+            // ready-made array. Empty list = no kinds excluded.
+            _excludeKinds = [_logic, "excludeKinds"] call MAINCLASS;
 
             _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
@@ -2199,6 +2236,7 @@ switch(_operation) do {
                 ["ML - Allow armour requests: %1",_allowArmour] call ALiVE_fnc_dump;
                 ["ML - Allow heli requests: %1",_allowHeli] call ALiVE_fnc_dump;
                 ["ML - Allow plane requests: %1",_allowPlane] call ALiVE_fnc_dump;
+                ["ML - Excluded kinds: %1",_excludeKinds] call ALiVE_fnc_dump;
                 ["ML - Enable air transport: %1",_enableAirTransport] call ALiVE_fnc_dump;
                 ["ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALiVE_fnc_dump;
                 ["ML - Enable incremental force strength on objective capture: %1",_startForceStrengthIncrement] call ALiVE_fnc_dump;
@@ -4850,18 +4888,45 @@ switch(_operation) do {
 
                                     if (_hasAliveProfiles) then {
 
-                                        // Check for enemy presence near the objective
+                                        // Check for enemy presence near the objective.
+                                        //
+                                        // Two-source check (#mil_logistics 2026-05-01 fix):
+                                        //   1. nearEntities catches SPAWNED units (players nearby).
+                                        //   2. ALiVE_fnc_getNearProfiles catches VIRTUALISED enemy
+                                        //      profiles (no players nearby - the common case for
+                                        //      contested objectives away from the player's AO).
+                                        //
+                                        // Without (2), an enemy-occupied objective whose units are
+                                        // virtualised looks "empty" to nearEntities, the validation
+                                        // passes, and HELI_INSERT routes reinforcements straight
+                                        // into hostile territory. Symptom: paradrop reinforcements
+                                        // landed at an enemy-held objective whose attackers were
+                                        // virtualised, so nearEntities returned 0 there.
                                         private _objPos = [_obj, "center"] call ALIVE_fnc_hashGet;
                                         private _sideObj = [_side] call ALIVE_fnc_sideTextToObject;
                                         private _nearUnits = _objPos nearEntities [["Man","Car","Tank"], 300];
                                         private _enemyNear = _nearUnits select { side _x != _sideObj && side _x != civilian };
 
-                                        if (count _enemyNear < 3) then {
+                                        // Build enemy-side string list for the profile lookup.
+                                        // getNearProfiles' categorySide takes side text strings
+                                        // ("EAST"/"WEST"/"GUER"), not side objects.
+                                        private _enemySides = ["EAST","WEST","GUER"] - [_side];
+                                        private _enemyProfiles = [_objPos, 300, [_enemySides, "entity"], true] call ALIVE_fnc_getNearProfiles;
+                                        // Filter out civilian-side profiles defensively in case
+                                        // a faction registry quirk leaves a civ profile flagged
+                                        // as a non-friendly side.
+                                        _enemyProfiles = _enemyProfiles select {
+                                            ((_x select 2 select 3) != "CIV") && {(_x select 2 select 3) != "CIVILIAN"}
+                                        };
+
+                                        private _enemyTotal = (count _enemyNear) + (count _enemyProfiles);
+
+                                        if (_enemyTotal < 3) then {
                                             _heldObjectives pushback _obj;
                                         } else {
                                             if (_debug) then {
-                                                ["ML - HELI_INSERT: Objective at %1 has tacom_state=reserve but %2 enemy units within 300m - treating as lost",
-                                                    _objPos, count _enemyNear] call ALiVE_fnc_dump;
+                                                ["ML - HELI_INSERT: Objective at %1 has tacom_state=reserve but %2 enemy units within 300m (entities=%3 profiles=%4) - treating as lost",
+                                                    _objPos, _enemyTotal, count _enemyNear, count _enemyProfiles] call ALiVE_fnc_dump;
                                             };
                                         };
 
@@ -4882,7 +4947,7 @@ switch(_operation) do {
                                     private _objID    = [_x, "objectiveID"] call ALIVE_fnc_hashGet;
                                     private _objState = [_x, "tacom_state", "none"] call ALIVE_fnc_hashGet;
                                     private _nearLocName = [_objPos] call ALIVE_fnc_taskGetNearestLocationName;
-                                    ["ML - HELI_INSERT: Held objective %1 near %2 at %3 tacom_state=%4",
+                                    ["ML - HELI_INSERT: Friendly-held objective %1 near %2 at %3 tacom_state=%4",
                                         _objID, _nearLocName, _objPos, _objState] call ALiVE_fnc_dump;
 
                                     // Temporary marker - auto-deletes after 3 minutes
@@ -5306,6 +5371,7 @@ switch(_operation) do {
                         };
 
                         _motorisedGroups = _motorisedGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+                        _motorisedGroups = [_motorisedGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _motorisedGroups;
                         _totalCount = _totalCount + _groupCount;
 
@@ -5421,6 +5487,16 @@ switch(_operation) do {
                             if(count _transportGroups == 0 || !_limitTransportToFaction) then {
                                 _transportGroups append ([ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet);
                             };
+
+                            // HELI_INSERT requires LANDING at the destination LZ. Filter
+                            // _transportGroups to Helicopter-kindOf classes only - VTOL
+                            // planes (MV-22 Osprey, V-44 Blackfish) appear in some faction
+                            // / side air-transport registries but fail to use the helipad
+                            // landing positions and the slingload pickup never completes.
+                            // HELI_PARADROP (overflight, no landing) keeps planes / VTOLs;
+                            // only filter on this slingload-via-HELI_INSERT path. select
+                            // creates a new array so the registry stays intact.
+                            _transportGroups = _transportGroups select { _x isKindOf "Helicopter" };
 
                             if(count _transportGroups > 0) then {
 
@@ -5653,6 +5729,7 @@ switch(_operation) do {
                         };
 
                         _infantryGroups = _infantryGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+                        _infantryGroups = [_infantryGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _infantryGroups;
                         _totalCount = _totalCount + _groupCount;
 
@@ -5726,6 +5803,15 @@ switch(_operation) do {
                             if(count _transportGroups == 0) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
                             };
+
+                            // HELI_INSERT (infantry transport) requires LANDING at the
+                            // destination LZ. Filter to Helicopter-kindOf classes only -
+                            // VTOL planes (MV-22 Osprey, V-44 Blackfish) appear in some
+                            // faction / side air-transport registries but cannot use the
+                            // helipad landing positions, leaving infantry stuck on the
+                            // departure LZ. HELI_PARADROP (overflight) keeps planes / VTOLs.
+                            // select creates a new array so the registry stays intact.
+                            _transportGroups = _transportGroups select { _x isKindOf "Helicopter" };
 
                             if(count _transportGroups > 0) then {
 
@@ -5990,6 +6076,7 @@ switch(_operation) do {
                         };
 
                         _armourGroups = _armourGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+                        _armourGroups = [_armourGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _armourGroups;
                         _totalCount = _totalCount + _groupCount;
 
@@ -6040,6 +6127,7 @@ switch(_operation) do {
                         };
 
                         _mechanisedGroups = _mechanisedGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+                        _mechanisedGroups = [_mechanisedGroups, _eventFaction, ([_logic, "excludeKinds"] call MAINCLASS), "groups"] call ALIVE_fnc_MLExcludeKindsFilter;
                         _groupCount = count _mechanisedGroups;
                         _totalCount = _totalCount + _groupCount;
 
@@ -6214,6 +6302,7 @@ switch(_operation) do {
 
                             _planeClasses = [0,_eventFaction,"Plane"] call ALiVE_fnc_findVehicleType;
                             _planeClasses = _planeClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+                            _planeClasses = [_planeClasses, "", ([_logic, "excludeKinds"] call MAINCLASS), "vehicles"] call ALIVE_fnc_MLExcludeKindsFilter;
 
                             for "_i" from 0 to _eventForcePlane -1 do {
 
@@ -6275,6 +6364,7 @@ switch(_operation) do {
 
                             _heliClasses = [0,_eventFaction,"Helicopter"] call ALiVE_fnc_findVehicleType;
                             _heliClasses = _heliClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+                            _heliClasses = [_heliClasses, "", ([_logic, "excludeKinds"] call MAINCLASS), "vehicles"] call ALIVE_fnc_MLExcludeKindsFilter;
 
                             for "_i" from 0 to _eventForceHeli -1 do {
 
@@ -6442,7 +6532,7 @@ switch(_operation) do {
                                     [_event, "state", "transportLoad"] call ALIVE_fnc_hashSet;
 
                                     // dispatch event
-                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                                 };
@@ -6453,7 +6543,7 @@ switch(_operation) do {
                                     [_event, "state", "heliTransportStart"] call ALIVE_fnc_hashSet;
 
                                     // dispatch event
-                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                                 };
@@ -6461,7 +6551,7 @@ switch(_operation) do {
 
                                     [_event, "state", "heliParadropStart"] call ALIVE_fnc_hashSet;
 
-                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                                 };
@@ -6472,7 +6562,7 @@ switch(_operation) do {
                                     [_event, "state", "airdropWait"] call ALIVE_fnc_hashSet;
 
                                     // dispatch event
-                                    _logEvent = ['LOGISTICS_DESTINATION', [_eventPosition,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                                    _logEvent = ['LOGISTICS_DESTINATION', [_eventPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                                 };
@@ -6526,6 +6616,11 @@ switch(_operation) do {
                 _infantryProfiles = [_eventCargoProfiles, 'infantry'] call ALIVE_fnc_hashGet;
                 _planeProfiles = [_eventCargoProfiles, 'plane'] call ALIVE_fnc_hashGet;
                 _heliProfiles = [_eventCargoProfiles, 'heli'] call ALIVE_fnc_hashGet;
+
+                if (_debug) then {
+                    ["ML - heliTransportStart ENTER: event=%1 transportProfiles=%2 infantryProfiles=%3 destination=%4",
+                        _eventID, count _transportProfiles, count _infantryProfiles, _eventPosition] call ALiVE_fnc_dump;
+                };
 
                 _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
@@ -6676,7 +6771,7 @@ switch(_operation) do {
 
 
                 // dispatch event
-                _logEvent = ['LOGISTICS_DESTINATION', [_eventPosition,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                _logEvent = ['LOGISTICS_DESTINATION', [_eventPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                 [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                 // respond to player request
@@ -6686,6 +6781,15 @@ switch(_operation) do {
                 };
 
 
+                // Reset stateData on entry so heliTransport's iteration counter
+                // starts at 0. Without this, _waitIterations inherits whatever
+                // value the prior state left in stateData[0] - a heli that
+                // entered heliTransport with stateData[0] already near 200
+                // would trip the stuck-recovery cadence (50/80/110/140/170/200)
+                // and the 200-iteration timeout within minutes of state entry,
+                // not the documented 33-minute window (200 ticks * 10 s
+                // monitor loop).
+                [_event, "stateData", []] call ALIVE_fnc_hashSet;
                 [_event, "state", "heliTransport"] call ALIVE_fnc_hashSet;
                 [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
 
@@ -6697,6 +6801,12 @@ switch(_operation) do {
 
                 private ["_waitTotalIterations","_waitIterations","_waitDifference","_transportProfiles","_infantryProfiles","_completed",
                 "_planeProfiles","_heliProfiles","_waypointsCompleted","_waypointsNotCompleted","_profile","_position","_distance","_count"];
+
+                if (_debug) then {
+                    private _iterPreview = _eventStateData param [0, 0];
+                    ["ML - heliTransport ENTER: event=%1 iter=%2 transportProfiles=%3 destination=%4",
+                        _eventID, _iterPreview, count _eventTransportProfiles, _eventPosition] call ALiVE_fnc_dump;
+                };
 
                 _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
@@ -6728,7 +6838,20 @@ switch(_operation) do {
 
                     if!(isNil "_profile") then {
 
-                        _completed = [_logic,"checkWaypointCompleted",_profile] call MAINCLASS;
+                        // Once an entity profile has signalled delivery (sling_ready
+                        // received, or live position confirmed within 500 m of the event
+                        // centre on a prior iteration), latch a per-profile delivered
+                        // flag and treat it as completed for the rest of heliTransport.
+                        // Without this, a heli that delivered then started RTB drifts
+                        // beyond 500 m, the position check below fails on the next
+                        // iteration, and the stuck-recovery block reassigns its
+                        // waypoint BACK to the event centre - cancelling RTB and
+                        // looping the heli around the drop site. Source of the
+                        // "freezing during phases" symptom in mil_logistics RPTs.
+                        private _alreadyDelivered = [_profile, "alive_ml_delivered", false] call ALIVE_fnc_hashGet;
+                        _completed = if (_alreadyDelivered) then { true } else {
+                            [_logic,"checkWaypointCompleted",_profile] call MAINCLASS
+                        };
 
                         if!(_completed) then {
 
@@ -6744,6 +6867,11 @@ switch(_operation) do {
                                 if (!isNull _heliObj && alive _heliObj) then {
                                     if (_heliObj distance _eventPosition < 500) then {
                                         _completed = true;
+                                        // Latch delivered so subsequent iterations skip
+                                        // the stuck-recovery branch.
+                                        [_profile, "alive_ml_delivered", true] call ALIVE_fnc_hashSet;
+                                        ["ML - heliTransport: %1 LATCH delivered via position-check (dist=%2 iter=%3)",
+                                            _x, _heliObj distance _eventPosition, _waitIterations] call ALiVE_fnc_dump;
                                     };
 
                                     // Stuck-heli recovery: if the heli has not reached the
@@ -6778,6 +6906,8 @@ switch(_operation) do {
                                     // Clear the flag immediately to prevent duplicate calls on
                                     // subsequent monitor loop cycles before the profile is destroyed.
                                     [_profile, "alive_ml_sling_ready", false] call ALIVE_fnc_hashSet;
+                                    // Latch delivered so subsequent iterations skip recovery.
+                                    [_profile, "alive_ml_delivered", true] call ALIVE_fnc_hashSet;
                                     ["ML - heliTransport: %1 sling_ready signal received (no-player path), triggering unload. _heliActive=%2 heliObjNull=%3",
                                         _x, (_profile select 2 select 1), isNull _heliObjSR] call ALiVE_fnc_dump;
                                 };
@@ -6787,7 +6917,15 @@ switch(_operation) do {
 
                         if (_completed) then {
                             _waypointsCompleted = _waypointsCompleted + 1;
-                            [_logic,"unloadTransportHelicopter",[_event,_profile]] call MAINCLASS;
+                            // Skip the unload re-trigger on iterations after the first
+                            // successful delivery. The first call is sufficient; the
+                            // alive_ml_sling_unload_active guard inside
+                            // unloadTransportHelicopter no-ops re-entry, but skipping
+                            // here avoids the redundant call entirely and keeps the log
+                            // clean.
+                            if (!_alreadyDelivered) then {
+                                [_logic,"unloadTransportHelicopter",[_event,_profile]] call MAINCLASS;
+                            };
                         } else {
                             _waypointsNotCompleted = _waypointsNotCompleted + 1;
                         };
@@ -6826,7 +6964,13 @@ switch(_operation) do {
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
 
-                        _completed = [_logic,"checkWaypointCompleted",_profile] call MAINCLASS;
+                        // Mirror the _transportProfiles loop above: latch a delivered
+                        // flag once a heli has reached the destination, and skip
+                        // the stuck-recovery branch on subsequent iterations.
+                        private _alreadyDelivered = [_profile, "alive_ml_delivered", false] call ALIVE_fnc_hashGet;
+                        _completed = if (_alreadyDelivered) then { true } else {
+                            [_logic,"checkWaypointCompleted",_profile] call MAINCLASS
+                        };
 
                         if!(_completed) then {
 
@@ -6852,6 +6996,11 @@ switch(_operation) do {
                             if (!isNull _heliObj && alive _heliObj) then {
                                 if (_heliObj distance _eventPosition < 500) then {
                                     _completed = true;
+                                    // Latch delivered so subsequent iterations skip
+                                    // the stuck-recovery branch.
+                                    [_profile, "alive_ml_delivered", true] call ALIVE_fnc_hashSet;
+                                    ["ML - heliTransport: %1 LATCH delivered via position-check (heliProfiles, dist=%2 iter=%3)",
+                                        _x, _heliObj distance _eventPosition, _waitIterations] call ALiVE_fnc_dump;
                                 };
                                 if (_heliActive && !_completed && _waitIterations > 20 && (_waitIterations - 20) % 30 == 0) then {
                                     private _newWP = [_eventPosition, 200, "MOVE", "NORMAL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
@@ -6875,6 +7024,8 @@ switch(_operation) do {
                             if (!_alreadyActiveH) then {
                                 _completed = true;
                                 [_profile, "alive_ml_sling_ready", false] call ALIVE_fnc_hashSet;
+                                // Latch delivered so subsequent iterations skip recovery.
+                                [_profile, "alive_ml_delivered", true] call ALIVE_fnc_hashSet;
                                 ["ML - heliTransport: %1 sling_ready signal (heliProfiles no-player path), triggering unload. _heliActive=%2 heliObjNull=%3",
                                     _x, (_profile select 2 select 1), isNull _heliObjSRH] call ALiVE_fnc_dump;
                             };
@@ -6882,7 +7033,11 @@ switch(_operation) do {
 
                         if (_completed) then {
                             _waypointsCompleted = _waypointsCompleted + 1;
-                            [_logic,"unloadTransportHelicopter",[_event,_profile]] call MAINCLASS;
+                            // Skip the unload re-trigger on iterations after the first
+                            // successful delivery. Same rationale as _transportProfiles.
+                            if (!_alreadyDelivered) then {
+                                [_logic,"unloadTransportHelicopter",[_event,_profile]] call MAINCLASS;
+                            };
                         } else {
                             _waypointsNotCompleted = _waypointsNotCompleted + 1;
                         };
@@ -6942,6 +7097,11 @@ switch(_operation) do {
             };
 
             case "heliTransportReturn": {
+
+                if (_debug) then {
+                    ["ML - heliTransportReturn ENTER: event=%1 transportProfiles=%2",
+                        _eventID, count _eventTransportProfiles] call ALiVE_fnc_dump;
+                };
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0 && count _eventTransportProfiles == 0) exitWith {
@@ -7653,7 +7813,7 @@ switch(_operation) do {
 
 
                 // dispatch event
-                _logEvent = ['LOGISTICS_DESTINATION', [_eventPosition,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                _logEvent = ['LOGISTICS_DESTINATION', [_eventPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                 [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
 
@@ -7800,11 +7960,44 @@ switch(_operation) do {
                                 _vehProfID, _leadPos, _roadSnapped] call ALiVE_fnc_dump;
                         };
 
-                        [_vehProfile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
-                        private _leadWP = [_leadPos,      10, "MOVE", "LIMITED", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint;
-                        private _destWP = [_eventPosition, 50, "MOVE", "LIMITED", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint;
-                        [_vehProfile, "addWaypoint", _leadWP] call ALIVE_fnc_profileEntity;
-                        [_vehProfile, "addWaypoint", _destWP] call ALIVE_fnc_profileEntity;
+                        // Route waypoints through the GROUP / PILOT entity profile,
+                        // not the vehicle profile. Vehicle profiles don't carry
+                        // a "units" / "waypoints" array - those live on the
+                        // entity profile of whichever group commands the
+                        // vehicle. Calling profileEntity addWaypoint on a
+                        // vehicle profile cascades into profileWaypointToWaypoint
+                        // (fnc_profileEntity.sqf:516) which reads
+                        // `_logic select 2 select 21` expecting the entity-layout
+                        // "units" array - in vehicle layout that index is the
+                        // "hasSimulated" Bool, producing a runtime "Type Bool,
+                        // expected Array" error and aborting the dismount.
+                        //
+                        // Reach the commanding entity via the vehicle profile's
+                        // entitiesInCommandOf list (vehicle layout select 2
+                        // select 8) and address waypoints to the first member
+                        // (the pilot / driver entity).
+                        private _entitiesInCommandOf = _vehProfile select 2 select 8;
+                        if (count _entitiesInCommandOf > 0) then {
+                            private _pilotProfileID = _entitiesInCommandOf select 0;
+                            private _pilotProfile = [ALIVE_profileHandler, "getProfile", _pilotProfileID] call ALIVE_fnc_profileHandler;
+                            if (!isNil "_pilotProfile") then {
+                                [_pilotProfile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                                private _leadWP = [_leadPos,      10, "MOVE", "LIMITED", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint;
+                                private _destWP = [_eventPosition, 50, "MOVE", "LIMITED", 2, [], "COLUMN"] call ALIVE_fnc_createProfileWaypoint;
+                                [_pilotProfile, "addWaypoint", _leadWP] call ALIVE_fnc_profileEntity;
+                                [_pilotProfile, "addWaypoint", _destWP] call ALIVE_fnc_profileEntity;
+                            } else {
+                                if (_debug) then {
+                                    ["ML - transportTravel: Vehicle %1 pilot profile %2 not found, skipping overwatch waypoint",
+                                        _vehProfID, _pilotProfileID] call ALiVE_fnc_dump;
+                                };
+                            };
+                        } else {
+                            if (_debug) then {
+                                ["ML - transportTravel: Vehicle %1 has no entitiesInCommandOf, skipping overwatch waypoint",
+                                    _vehProfID] call ALiVE_fnc_dump;
+                            };
+                        };
 
                         _dismountTriggered = true;
 
@@ -8491,6 +8684,11 @@ switch(_operation) do {
                 _transportProfiles = _eventTransportProfiles;
                 _infantryProfiles  = [_eventCargoProfiles, 'infantry'] call ALIVE_fnc_hashGet;
 
+                if (_debug) then {
+                    ["ML - heliParadropStart ENTER: event=%1 transportProfiles=%2 infantryProfiles=%3 destination=%4",
+                        _eventID, count _transportProfiles, count _infantryProfiles, _eventPosition] call ALiVE_fnc_dump;
+                };
+
                 _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
@@ -8559,6 +8757,10 @@ switch(_operation) do {
                     };
                 } forEach _transportProfiles;
 
+                // Reset stateData on entry to heliParadropFly so its 300-iteration
+                // timeout starts at 0. Mirrors the heliTransport reset - same
+                // stateData-inheritance bug between transition states.
+                [_event, "stateData", []] call ALIVE_fnc_hashSet;
                 [_event, "state", "heliParadropFly"] call ALIVE_fnc_hashSet;
                 [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
 
@@ -8622,6 +8824,11 @@ switch(_operation) do {
             };
 
             case "heliParadropReturn": {
+
+                if (_debug) then {
+                    ["ML - heliParadropReturn ENTER: event=%1 transportProfiles=%2",
+                        _eventID, count _eventTransportProfiles] call ALiVE_fnc_dump;
+                };
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if (_count == 0 && count _eventTransportProfiles == 0) exitWith {
@@ -10017,7 +10224,7 @@ switch(_operation) do {
                                     [_event, "state", "transportLoad"] call ALIVE_fnc_hashSet;
 
                                     // dispatch event
-                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                                 };
@@ -10028,7 +10235,7 @@ switch(_operation) do {
                                     [_event, "state", "heliTransportStart"] call ALIVE_fnc_hashSet;
 
                                     // dispatch event
-                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                                    _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                                 };
@@ -10229,7 +10436,7 @@ switch(_operation) do {
                                     [_event, "state", "airdropStart"] call ALIVE_fnc_hashSet;
 
                                     // dispatch event
-                                    _logEvent = ['LOGISTICS_DESTINATION', [_eventPosition,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                                    _logEvent = ['LOGISTICS_DESTINATION', [_eventPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                                 };
@@ -11751,7 +11958,7 @@ switch(_operation) do {
 
             // dispatch event
             _finalDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
-            _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+            _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
             [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
             // Arrival summary -- always logged
@@ -12250,7 +12457,7 @@ switch(_operation) do {
 
                     // dispatch event
                     _finalDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
-                    _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                    _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                     // respond to player request
@@ -12266,7 +12473,7 @@ switch(_operation) do {
 
                     // dispatch event
                     _finalDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
-                    _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                    _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                     [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
                     // respond to player request
@@ -12327,7 +12534,7 @@ switch(_operation) do {
 
                 // dispatch event
                 _finalDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
-                _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID],"Logistics"] call ALIVE_fnc_event;
+                _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
                 [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
             };
