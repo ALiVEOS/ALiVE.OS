@@ -453,23 +453,57 @@ switch(_operation) do {
 
             if (typeName _composition == "STRING" && _composition != "" && _composition != "false") then {
                 if (isNil QMOD(COMPOSITIONS_LOADED)) then {
-                    // Get a composition
+                    // Resolve the composition config first so we can size the
+                    // validator's envelope to its actual footprint.
                     private _compType = "Military";
                     If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
                         _compType = "Guerrilla";
                     };
 
                     private _comp = [_composition, _compType] call ALIVE_fnc_findComposition;
-
-                    if (count _comp > 0) then {
-                        [_comp, _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
-                    } else {
+                    if (count _comp == 0) then {
                         private _compDef = ([_compType, [_composition], [], _faction] call ALiVE_fnc_getCompositions);
-
                         if (count _compDef > 0) then {
-                            [(selectRandom _compDef), _position, direction _logic, _faction] call ALIVE_fnc_spawnComposition;
+                            _comp = selectRandom _compDef;
+                        };
+                    };
+
+                    if (count _comp == 0) then {
+                        ["CMP: Custom composition '%1' not found!", _composition] call ALiVE_fnc_dump;
+                    } else {
+                        // Validate spawn position. Military mode tolerates
+                        // roadside compositions (custom-objective users often
+                        // place checkpoints / camps right on a road) while
+                        // still rejecting runways, helipads, buildings, water,
+                        // steep slopes, soft surfaces. Direction is preserved
+                        // as module heading via _preferredDir.
+                        //
+                        // Three-tier progressive search:
+                        //   Tier 1 (50m)  - strict, respects user's chosen pos
+                        //   Tier 2 (150m) - mild expansion, near module
+                        //   Tier 3 (300m) - generous, composition in vicinity
+                        // Dump line reports which tier succeeded so the mission-
+                        // maker can see how disrupted the placement is.
+                        private _envelope = [_comp] call ALiVE_fnc_getCompositionRadius;
+                        private _radii = [50, 150, 300];
+                        private _compResult = [];
+                        private _tierUsed = -1;
+                        {
+                            _compResult = [_position, _x, _envelope, "military", direction _logic] call ALiVE_fnc_findCompositionSpawnPosition;
+                            if (count _compResult > 0) exitWith { _tierUsed = _x };
+                        } forEach _radii;
+
+                        if (count _compResult > 0) then {
+                            _compResult params ["_safePos", "_safeDir"];
+                            [_comp, _safePos, _safeDir, _faction] call ALIVE_fnc_spawnComposition;
+                            if (_debug) then {
+                                [_safePos, 4, format ["%1 - Custom Comp (%2)", _side, configName _comp], "ColorOrange", "placement.cmp.comp"] call ALIVE_fnc_placeDebugMarker;
+                                ["CMP [%1] - Custom composition %2 spawned at %3 (module pos was %4, %5m offset, search tier %6m)",
+                                    _faction, configName _comp, _safePos, _position, round (_safePos distance _position), _tierUsed] call ALiVE_fnc_dump;
+                            };
                         } else {
-                            ["CMP: Custom composition '%1' not found!", _composition] call ALiVE_fnc_dump;
+                            ["CMP [%1] - Warning: Custom composition '%2' validator found no clear spawn position within %3m of module (tried %4 search tiers) - skipped",
+                                _faction, _composition, selectMax _radii, count _radii] call ALiVE_fnc_dump;
                         };
                     };
                 };
@@ -900,9 +934,36 @@ switch(_operation) do {
                             _HQ = (selectRandom ([_compType, ["HQ","FieldHQ"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions));
                         };
 
-                        [_HQ, _modulePosition, direction _logic, _faction] call ALiVE_fnc_spawnComposition;
+                        // Validate the FieldHQ-fallback spawn position.
+                        // Three-tier progressive search (50m / 150m / 300m)
+                        // matches the Custom Composition site - HQ-class
+                        // spawns prefer placement to skipping, but the dump
+                        // line still reports how far the validator had to
+                        // move from the user's chosen module position.
+                        if (!isNil "_HQ") then {
+                            private _envelope = [_HQ] call ALiVE_fnc_getCompositionRadius;
+                            private _radii = [50, 150, 300];
+                            private _compResult = [];
+                            private _tierUsed = -1;
+                            {
+                                _compResult = [_modulePosition, _x, _envelope, "fieldhq", direction _logic] call ALiVE_fnc_findCompositionSpawnPosition;
+                                if (count _compResult > 0) exitWith { _tierUsed = _x };
+                            } forEach _radii;
 
-                        _buildings = [_modulePosition, _size, ALIVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes] call ALIVE_fnc_findNearObjectsByType;
+                            if (count _compResult > 0) then {
+                                _compResult params ["_safePos", "_safeDir"];
+                                [_HQ, _safePos, _safeDir, _faction] call ALIVE_fnc_spawnComposition;
+                                _buildings = [_safePos, _size, ALIVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes] call ALIVE_fnc_findNearObjectsByType;
+                                if (_debug) then {
+                                    [_safePos, 4, format ["%1 - Field HQ Fallback (%2)", _side, configName _HQ], "ColorOrange", "placement.cmp.comp"] call ALIVE_fnc_placeDebugMarker;
+                                    ["CMP [%1] - Field HQ fallback composition %2 spawned at %3 (module pos was %4, %5m offset, search tier %6m)",
+                                        _faction, configName _HQ, _safePos, _modulePosition, round (_safePos distance _modulePosition), _tierUsed] call ALiVE_fnc_dump;
+                                };
+                            } else {
+                                ["CMP [%1] - Warning: Field HQ fallback validator found no clear spawn position within %2m of module (tried %3 search tiers) - composition %4 not spawned",
+                                    _faction, selectMax _radii, count _radii, configName _HQ] call ALiVE_fnc_dump;
+                            };
+                        };
                     };
                 };
 

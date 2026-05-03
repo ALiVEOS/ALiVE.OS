@@ -204,48 +204,77 @@ private _candidateClear = {
         false
     };
 
-    // 4. Building / wall / fence inside envelope - terrain-type sweep
+    // 4. Solid obstacle inside envelope - bbox-aware on ALL nearby objects.
+    //    Class-hierarchy matching (`nearestObjects` with type list) is
+    //    unreliable for stock A3 buildings - Land_MilOffices_V1_F doesn't
+    //    isKindOf "House" / "Building" / "Static" - and the terrain-type
+    //    tag set doesn't reliably cover military structures either. Empty
+    //    type filter mirrors the working pattern in
+    //    ALiVE_fnc_findNearObjectsByType: get all objects, then filter by
+    //    bbox volume (>8 m^3 rejects signs / posts / lamps / small ammo
+    //    boxes) and bbox-intrusion distance. Living things (Man) are
+    //    excluded since they don't physically block spawn and get
+    //    repositioned downstream anyway.
+    //
+    //    Note on flow: `exitWith` exits the IMMEDIATE enclosing scope, so
+    //    `if (X) then { exitWith {false} }` only exits the then-block, not
+    //    the function. We compute _buildingIntruders inside the then-block
+    //    and check it at function-top-level so the exitWith-at-true-scope
+    //    actually returns false from _candidateClear.
+    private _buildingIntruders = [];
     if (_excludeBuildings) then {
-        private _terrainHits = nearestTerrainObjects [_p, _staticTerrainTypes, _envHalf, false, true];
-        if (count _terrainHits > 0) exitWith {
-            if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: %2 static obstacles in envelope", _p, count _terrainHits] };
-            false
-        };
-        // Also reject if a class-based building-derived object is inside
-        // (catches mod content that doesn't carry terrain-type tags).
-        private _objHits = nearestObjects [_p, ["House", "Building", "Wall", "Fence", "Static"], _envHalf];
-        // Filter out tiny clutter (signs, posts) - we want REAL footprint
-        // obstacles. Heuristic: bbox volume > 8 m^3.
-        _objHits = _objHits select {
-            private _bbox = boundingBoxReal _x;
-            _bbox params ["_min", "_max"];
-            private _w = (_max select 0) - (_min select 0);
-            private _l = (_max select 1) - (_min select 1);
-            private _h = (_max select 2) - (_min select 2);
-            (_w * _l * _h) > 8
-        };
-        if (count _objHits > 0) exitWith {
-            if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: %2 class-based building obstacles in envelope", _p, count _objHits] };
-            false
+        private _buildingCheckRadius = (_envHalf + 15) max 25;
+        private _allHits = nearestObjects [_p, [], _buildingCheckRadius];
+
+        _buildingIntruders = _allHits select {
+            // Avoid exitWith inside a select-predicate code block - in some
+            // SQF versions exitWith aborts the entire select (returns Bool
+            // instead of the filtered Array, causing `count` downstream to
+            // throw "Type Bool, expected Array"). Use if-then-else instead.
+            if (_x isKindOf "Man") then { false } else {
+                private _bbox = boundingBoxReal _x;
+                _bbox params ["_bMin", "_bMax"];
+                private _w = (_bMax select 0) - (_bMin select 0);
+                private _l = (_bMax select 1) - (_bMin select 1);
+                private _h = (_bMax select 2) - (_bMin select 2);
+                (_w * _l * _h > 8) && {
+                    private _pLocal = _x worldToModel _p;
+                    private _cx = ((_pLocal select 0) max (_bMin select 0)) min (_bMax select 0);
+                    private _cy = ((_pLocal select 1) max (_bMin select 1)) min (_bMax select 1);
+                    private _dx = (_pLocal select 0) - _cx;
+                    private _dy = (_pLocal select 1) - _cy;
+                    sqrt ((_dx * _dx) + (_dy * _dy)) < _envHalf
+                }
+            }
         };
     };
+    if (count _buildingIntruders > 0) exitWith {
+        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: %2 obstacle bbox(s) intersect envelope: first=%3", _p, count _buildingIntruders, typeOf (_buildingIntruders select 0)] };
+        false
+    };
 
-    // 5. Water exclusion - any water within envelope
+    // 5. Water exclusion - any water within envelope.
+    //    Same flow note as check 4: the inner exitWiths only abort the
+    //    then-block, so we capture rejection state in a flag and exitWith
+    //    at function-top-level.
+    private _waterCentre = false;
+    private _waterEdge   = false;
     if (_excludeWater) then {
-        if (surfaceIsWater _p) exitWith {
-            if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: water surface", _p] };
-            false
+        if (surfaceIsWater _p) then { _waterCentre = true };
+        if (!_waterCentre) then {
+            for "_a" from 0 to 315 step 45 do {
+                private _ep = _p getPos [_envHalf, _a];
+                if (surfaceIsWater _ep) exitWith { _waterEdge = true };
+            };
         };
-        // Sample envelope perimeter for shore intrusion
-        private _waterEdge = false;
-        for "_a" from 0 to 315 step 45 do {
-            private _ep = _p getPos [_envHalf, _a];
-            if (surfaceIsWater _ep) exitWith { _waterEdge = true };
-        };
-        if (_waterEdge) exitWith {
-            if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: water within envelope perimeter", _p] };
-            false
-        };
+    };
+    if (_waterCentre) exitWith {
+        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: water surface", _p] };
+        false
+    };
+    if (_waterEdge) exitWith {
+        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: water within envelope perimeter", _p] };
+        false
     };
 
     // 6. Slope check - per-mode strictness via three tests:
