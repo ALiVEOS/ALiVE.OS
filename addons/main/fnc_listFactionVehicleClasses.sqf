@@ -100,7 +100,6 @@ if (isNil "ALIVE_factionDefaultTransport" || {isNil "ALIVE_factionDefaultContain
 
 private _factionLookup = createHashMap;
 private _registry = if (_registryName != "") then { missionNamespace getVariable [_registryName, nil] } else { nil };
-diag_log format ["ALIVE listFactionVehicleClasses: kind=%1 registry=%2 isNil=%3 type=%4", _kind, _registryName, isNil "_registry", if (isNil "_registry") then {"nil"} else {typeName _registry}];
 {
     private _seed = [];
     if (!isNil "_registry" && {typeName _registry == "ARRAY"}) then {
@@ -182,27 +181,20 @@ private _kindCategories = switch (_kind) do {
 };
 
 if (count _kindCategories > 0) then {
-    private _allEntities = all3DENEntities;
-    diag_log format ["ALIVE listFactionVehicleClasses COMPILER: all3DENEntities array count=%1 cat3-count=%2 (categories: 0=obj 1=grp 2=trg 3=sys ...)", count _allEntities, count (_allEntities param [3, []])];
-    private _systems = _allEntities param [3, []];
+    private _systems = all3DENEntities param [3, []];
     private _allCompilers = _systems select { (typeOf _x) isEqualTo "ALiVE_sys_factioncompiler" };
-    diag_log format ["ALIVE listFactionVehicleClasses COMPILER: kind=%1 categoriesNeeded=%2 compilersFound=%3", _kind, _kindCategories, count _allCompilers];
     {
         private _compiler = _x;
         private _compilerFactionId = _compiler getVariable ["factionId", ""];
-        diag_log format ["ALIVE listFactionVehicleClasses COMPILER: compiler %1 factionId='%2' inLookup=%3", _compiler, _compilerFactionId, _compilerFactionId in _factionLookup];
         if (_compilerFactionId != "" && {_compilerFactionId in _factionLookup}) then {
             private _bucket = _factionLookup get _compilerFactionId;
             // Walk the compiler's syncs to find category sub-modules.
             private _compilerSyncs = (get3DENConnections _compiler) select {(_x select 0) == "Sync"};
-            diag_log format ["ALIVE listFactionVehicleClasses COMPILER: compiler %1 sync edges=%2", _compiler, count _compilerSyncs];
             {
                 private _catModule = _x select 1;
                 if (typeName _catModule == "OBJECT" && {!isNull _catModule} && {(typeOf _catModule) isEqualTo "ALiVE_sys_factioncompiler_category"}) then {
                     private _categoryName = _catModule getVariable ["category", "Infantry"];
-                    private _isMatch = _categoryName in _kindCategories;
-                    diag_log format ["ALIVE listFactionVehicleClasses COMPILER:   category module %1 category='%2' matches=%3", _catModule, _categoryName, _isMatch];
-                    if (_isMatch) then {
+                    if (_categoryName in _kindCategories) then {
                         // Walk the category's synced units, follow each
                         // group's units to collect template vehicles.
                         // synchronizedObjects is the runtime-side API and
@@ -210,25 +202,19 @@ if (count _kindCategories > 0) then {
                         // side equivalent is get3DENConnections.
                         private _seenGroups = [];
                         private _catSyncs = (get3DENConnections _catModule) select {(_x select 0) == "Sync"} apply {_x select 1};
-                        diag_log format ["ALIVE listFactionVehicleClasses COMPILER:   category synced entities=%1", count _catSyncs];
                         {
                             private _unit = _x;
-                            private _isMan = typeName _unit == "OBJECT" && {!isNull _unit} && {_unit isKindOf "CAManBase"};
-                            diag_log format ["ALIVE listFactionVehicleClasses COMPILER:     entity %1 (typeOf %2) isMan=%3", _unit, typeOf _unit, _isMan];
-                            if (_isMan) then {
+                            if (typeName _unit == "OBJECT" && {!isNull _unit} && {_unit isKindOf "CAManBase"}) then {
                                 private _grp = group _unit;
                                 if (!isNull _grp && {!(_grp in _seenGroups)}) then {
                                     _seenGroups pushBack _grp;
-                                    diag_log format ["ALIVE listFactionVehicleClasses COMPILER:       group has %1 units", count (units _grp)];
                                     {
                                         private _member = _x;
                                         private _veh = vehicle _member;
-                                        diag_log format ["ALIVE listFactionVehicleClasses COMPILER:         member %1 vehicle=%2 typeOf-vehicle=%3 isSelf=%4", _member, _veh, typeOf _veh, _veh isEqualTo _member];
                                         if (!isNull _veh && {!(_veh isEqualTo _member)}) then {
                                             private _vClass = typeOf _veh;
                                             if (_vClass != "" && {!(_vClass in _bucket)}) then {
                                                 _bucket pushBack _vClass;
-                                                diag_log format ["ALIVE listFactionVehicleClasses COMPILER:         ADDED %1 to faction %2", _vClass, _compilerFactionId];
                                             };
                                         };
                                     } forEach (units _grp);

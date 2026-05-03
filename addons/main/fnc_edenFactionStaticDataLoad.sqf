@@ -355,7 +355,6 @@ private _loadView = {
         // synced to the consuming module.
         private _consumingLogic = _d getVariable ["customConsumingLogic", objNull];
         private _feed = [_kindLocal, [_faction], _consumingLogic] call _feeder;
-        diag_log format ["ALIVE FactionStaticData VIEW: faction=%1 kind=%2 feed=%3", _faction, _kindLocal, _feed];
         if (count _feed > 0) then {
             (_feed select 0) params ["", "_classes"];
             {
@@ -435,18 +434,16 @@ private _renderLabel = {
 };
 _display setVariable ["customRenderLabel", _renderLabel];
 
-diag_log format ["ALIVE FactionStaticData LOAD: button isNull=%1", isNull _buttonCtrl];
 if (!isNull _buttonCtrl) then {
-    private _ehId = _buttonCtrl ctrlAddEventHandler ["ButtonClick", {
+    _buttonCtrl ctrlAddEventHandler ["ButtonClick", {
         params ["_btn"];
-        diag_log "ALIVE FactionStaticData CYCLE: ButtonClick fired";
         // ctrlParent returns the DIALOG, not the controlsGroup that owns
         // the per-faction state setVariables. Use ctrlParentControlsGroup
         // to walk up to my controlsGroup.
         private _d = ctrlParentControlsGroup _btn;
-        if (isNull _d) exitWith { diag_log "ALIVE FactionStaticData CYCLE: ctrlParentControlsGroup returned null"; };
+        if (isNull _d) exitWith {};
         private _l = _d getVariable ["customFactionList", []];
-        if (count _l == 0) exitWith { diag_log "ALIVE FactionStaticData CYCLE: empty faction list, no-op"; };
+        if (count _l == 0) exitWith {};
 
         // Flush current view's UI state into the per-faction hash
         // before swapping.
@@ -458,7 +455,6 @@ if (!isNull _buttonCtrl) then {
         private _idx = _l find _cur;
         _idx = (_idx + 1) mod (count _l);
         private _newFaction = _l select _idx;
-        diag_log format ["ALIVE FactionStaticData CYCLE: %1 -> %2 (idx=%3 of %4)", _cur, _newFaction, _idx, count _l];
 
         private _load = _d getVariable "customLoadView";
         if (!isNil "_load") then { [_d, _newFaction] call _load; };
@@ -466,7 +462,6 @@ if (!isNull _buttonCtrl) then {
         private _render = _d getVariable "customRenderLabel";
         if (!isNil "_render") then { [_d] call _render; };
     }];
-    diag_log format ["ALIVE FactionStaticData LOAD: ButtonClick handler attached, ehId=%1", _ehId];
 };
 
 // Pick the first faction (alphabetical) and render its view + label.
