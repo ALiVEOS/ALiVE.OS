@@ -359,9 +359,17 @@ private _loadView = {
         if (count _feed > 0) then {
             (_feed select 0) params ["", "_classes"];
             {
-                private _idx = _listCtrl lbAdd _x;
-                _listCtrl lbSetData [_idx, _x];
-                _surfacedSet set [_x, _idx];
+                private _cls = _x;
+                // Friendly displayName from CfgVehicles + raw classname
+                // in parens, mirroring the TaskTypeChoice listbox shape.
+                // Acronym-y mod classes like rhsusf_M1078A1P2_B_D_fmtv_usarmy
+                // become readable while the raw name stays visible for
+                // mission-makers who need to type it elsewhere.
+                private _dn = getText (configFile >> "CfgVehicles" >> _cls >> "displayName");
+                private _label = if (_dn != "" && {_dn != _cls}) then { format ["%1 (%2)", _dn, _cls] } else { _cls };
+                private _idx = _listCtrl lbAdd _label;
+                _listCtrl lbSetData [_idx, _cls];
+                _surfacedSet set [_cls, _idx];
             } forEach _classes;
         };
 
@@ -412,7 +420,17 @@ private _renderLabel = {
     } else {
         private _idx = _l find _f;
         if (_idx < 0) then { _idx = 0; };
-        _lc ctrlSetText format ["Faction: %1  (%2/%3)", _l select _idx, _idx + 1, count _l];
+        // Friendly displayName from CfgFactionClasses + raw classname
+        // in parens, mirroring the listbox row format. Mod factions
+        // missing a displayName fall back to bare classname.
+        private _factionRaw = _l select _idx;
+        private _dn = getText (configFile >> "CfgFactionClasses" >> _factionRaw >> "displayName");
+        private _label = if (_dn != "" && {_dn != _factionRaw}) then {
+            format ["%1 (%2)  [%3/%4]", _dn, _factionRaw, _idx + 1, count _l]
+        } else {
+            format ["%1  [%2/%3]", _factionRaw, _idx + 1, count _l]
+        };
+        _lc ctrlSetText _label;
     };
 };
 _display setVariable ["customRenderLabel", _renderLabel];
