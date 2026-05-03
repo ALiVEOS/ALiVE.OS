@@ -1552,8 +1552,8 @@ class FSM
        "		};" \n
        "	};" \n
        "" \n
-       "// Resize the spawn array to fit within the limiter" \n
-       "	_agentsToSpawn resize _activeLimiter;" \n
+       "// Resize the spawn array to fit within the limiter (only ever shrinks - resize past current count would pad with nil and the forEach below trips Undefined variable _x)" \n
+       "	_agentsToSpawn resize (_activeLimiter min count _agentsToSpawn);" \n
        "" \n
        "// Count new spawns" \n
        "	{" \n
