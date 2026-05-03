@@ -70,7 +70,7 @@ _longest = _maxWidth max _maxLength;
 
 if(_debug) then {
     [_position] call ALIVE_fnc_spawnDebugMarker;
-    [_position] call ALIVE_fnc_placeDebugMarker;
+    [_position, 0, format ["Parking - search start (%1)", _vehicleClass], "ColorGrey", "placement.parking"] call ALIVE_fnc_placeDebugMarker;
 };
 
 _excludedObject = true;
@@ -214,7 +214,7 @@ for "_i" from 1 to 4 do {
 	 if(_debug) then {
 		 ["getParkingPosition result is _pos %1 | _dir %2", _position, _direction] call ALiVE_fnc_dump;
 		 [_position, 1] call ALIVE_fnc_spawnDebugMarker;
-		 [_position, 1] call ALIVE_fnc_placeDebugMarker;
+		 [_position, 1, format ["Parking - picked (%1)", _vehicleClass], "ColorGrey", "placement.parking"] call ALIVE_fnc_placeDebugMarker;
 	 };
 
   } else {

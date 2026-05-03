@@ -913,7 +913,8 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        [position _hqBuilding, 4] call ALIVE_fnc_placeDebugMarker;
+                        [position _hqBuilding, 4, format ["%1 - HQ Building (%2)", _side, _faction], "ColorOrange", "placement.cmp"] call ALIVE_fnc_placeDebugMarker;
+                        ["CMP [%1] - HQ Building placed at %2 - building %3", _faction, position _hqBuilding, typeOf _hqBuilding] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 

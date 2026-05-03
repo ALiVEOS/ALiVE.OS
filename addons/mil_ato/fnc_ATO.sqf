@@ -1592,7 +1592,9 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        [position _hqBuilding, 4] call ALIVE_fnc_placeDebugMarker;
+                        private _atoSide = getNumber ((_faction call ALiVE_fnc_configGetFactionClass) >> "side") call ALIVE_fnc_sideNumberToText;
+                        [position _hqBuilding, 4, format ["%1 - ATO HQ Building (%2)", _atoSide, _faction], "ColorPink", "placement.ato"] call ALIVE_fnc_placeDebugMarker;
+                        ["ATO [%1] - HQ Building placed at %2 - building %3", _faction, position _hqBuilding, typeOf _hqBuilding] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -1672,9 +1674,10 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        [_flatPos, 4] call ALIVE_fnc_placeDebugMarker;
+                        private _atoSide = getNumber ((_faction call ALiVE_fnc_configGetFactionClass) >> "side") call ALIVE_fnc_sideNumberToText;
+                        [_flatPos, 4, format ["%1 - Field ATO (%2)", _atoSide, _faction], "ColorPink", "placement.ato"] call ALIVE_fnc_placeDebugMarker;
 
-                        ["ATO %1 - Field ATO created: %2 - %3", _logic, configName _HQ, [_logic, "HQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
+                        ["ATO [%1] - Field ATO created at %2 - composition %3 - building %4", _faction, _flatPos, configName _HQ, [_logic, "HQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
                 };
@@ -1712,7 +1715,8 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    [position _hqBuilding, 4] call ALIVE_fnc_placeDebugMarker;
+                    private _atoSide = getNumber ((_faction call ALiVE_fnc_configGetFactionClass) >> "side") call ALIVE_fnc_sideNumberToText;
+                    [position _hqBuilding, 4, format ["%1 - ATO Building (%2)", _atoSide, _faction], "ColorPink", "placement.ato"] call ALIVE_fnc_placeDebugMarker;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 

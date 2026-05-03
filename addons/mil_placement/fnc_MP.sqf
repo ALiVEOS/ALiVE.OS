@@ -821,7 +821,8 @@ switch(_operation) do {
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
-                            [position _hqBuilding, 4] call ALIVE_fnc_placeDebugMarker;
+                            [position _hqBuilding, 4, format ["%1 - HQ Building (%2)", _side, _faction], "ColorBlue", "placement.mp"] call ALIVE_fnc_placeDebugMarker;
+                            ["MP [%1] - HQ Building placed at %2 - building %3", _faction, position _hqBuilding, typeOf _hqBuilding] call ALiVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
 
@@ -909,9 +910,9 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        [_flatPos, 4] call ALIVE_fnc_placeDebugMarker;
+                        [_flatPos, 4, format ["%1 - Field HQ (%2)", _side, _faction], "ColorBlue", "placement.mp"] call ALIVE_fnc_placeDebugMarker;
                         if !(isNil "_HQ") then {
-                          ["MP - Field HQ created: %1 - %2", configName _HQ, [_logic, "FieldHQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
+                          ["MP [%1] - Field HQ created at %2 - composition %3 - building %4", _faction, _flatPos, configName _HQ, [_logic, "FieldHQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
                         };
                     };
                     // DEBUG -------------------------------------------------------------------------------------
@@ -921,10 +922,14 @@ switch(_operation) do {
             };
 
             if (count _landClusters > 0) then {
+                private _campIndex = 0;
                 {
                     private ["_compType","_composition","_pos"];
                     _pos = [_x,"center"] call ALiVE_fnc_HashGet;
 
+                    // NOTE: _flatPos is computed but the composition spawn
+                    // below uses raw _pos, not _flatPos. Pre-existing bug
+                    // / dead code - flagged for fix during validator wiring.
                     _flatPos = [_pos,500] call ALiVE_fnc_findFlatArea;
 
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
@@ -942,6 +947,15 @@ switch(_operation) do {
 
                         if(count _composition > 0) then {
                             [_composition, _pos, random 360, _faction] call ALIVE_fnc_spawnComposition;
+                            _campIndex = _campIndex + 1;
+
+                            // DEBUG -----------------------------------------------------------
+                            if (_debug) then {
+                                [_pos, 4, format ["%1 - Random Camp #%2 (%3)", _side, _campIndex, configName _composition], "ColorBlue", "placement.mp"] call ALIVE_fnc_placeDebugMarker;
+                                ["MP [%1] - Random Camp #%2 spawned at %3 (cluster center) - composition %4 (flatPos was %5, currently unused)",
+                                    _faction, _campIndex, _pos, configName _composition, _flatPos] call ALiVE_fnc_dump;
+                            };
+                            // DEBUG -----------------------------------------------------------
                         };
                     };
 

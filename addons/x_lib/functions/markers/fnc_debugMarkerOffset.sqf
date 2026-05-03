@@ -35,9 +35,13 @@ Registered emitters (2026-04-20):
     "opcom"            OPCOM objectives (mil_opcom/fnc_OPCOM.sqf)        N +75m
     "analysis.live"    live-analysis type marker (fnc_analysis)          E +75m
     "analysis.sector"  sector ID label (fnc_analysis/fnc_sector.sqf)     S -75m
+    "placement.mp"     mil_placement HQ / Field HQ / Camp                W -75m
+    "placement.cmp"   mil_placement_custom HQ                            NE +75/+75
+    "placement.ato"    mil_ato HQ / Field ATO                            NW -75/+75
+    "placement.parking" fnc_strategic getParkingPosition                 SE +75/-75
 
 Reserved compass slots for future emitters:
-    W -75m, NE, NW, SE, SW
+    SW
 
 Author:
 Jman
@@ -46,11 +50,15 @@ Jman
 params ["_emitterId", "_center"];
 
 private _offset = switch (_emitterId) do {
-    case "strategic":        {[  0,   0]};
-    case "opcom":            {[  0,  75]};
-    case "analysis.live":    {[ 75,   0]};
-    case "analysis.sector":  {[  0, -75]};
-    default                  {[  0,   0]};
+    case "strategic":         {[  0,   0]};
+    case "opcom":             {[  0,  75]};
+    case "analysis.live":     {[ 75,   0]};
+    case "analysis.sector":   {[  0, -75]};
+    case "placement.mp":      {[-75,   0]};
+    case "placement.cmp":     {[ 75,  75]};
+    case "placement.ato":     {[-75,  75]};
+    case "placement.parking": {[ 75, -75]};
+    default                   {[  0,   0]};
 };
 
 [
