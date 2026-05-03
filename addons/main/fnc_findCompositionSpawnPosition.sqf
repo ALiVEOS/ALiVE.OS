@@ -248,17 +248,66 @@ private _candidateClear = {
         };
     };
 
-    // 6. Slope check - sample envelope corners, reject if any pair
-    // exceeds 5m elevation difference (~ 0.1 gradient over envelope).
-    private _maxDelta = _env * 0.1;
-    private _samples = [];
-    {
-        _samples pushBack ((_p getPos [_envHalf, _x]) select 2);
-    } forEach [0, 90, 180, 270];
-    private _hi = selectMax _samples;
-    private _lo = selectMin _samples;
-    if (_hi - _lo > _maxDelta) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: slope %2m > %3m max", _p, _hi - _lo, _maxDelta] };
+    // 6. Slope check - per-mode strictness via three tests:
+    //    (a) surfaceNormal Z component at centre - direct engine-measured
+    //        ground tilt (1.0 = perfectly flat, 0.985 ~= 10 deg, 0.97 ~= 14 deg)
+    //    (b) Inner elevation-delta - 8 samples at envelope perimeter + centre,
+    //        catches slopes / steps within the composition's own footprint.
+    //    (c) Outer elevation-delta - 4 samples at extended radius + centre,
+    //        catches surrounding hillsides / cliffs that crowd the camp from
+    //        beyond its footprint. Extended radius is `(envHalf * 3) max 25m`
+    //        so small compositions still reach into the surrounding terrain.
+    //    Field mode (Random Camps + Field HQ) is strictest. Civilian /
+    //    roadblock get more lenient thresholds since they typically need
+    //    to sit near roads / urban infrastructure where sub-degree slopes
+    //    are unavoidable.
+    private _slopeRules = switch (_mode) do {
+        case "field":     {[0.05, 0.985]};   // ~2.9 deg delta + ~10 deg normal-Z
+        case "military":  {[0.07, 0.970]};   // ~4.0 deg delta + ~14 deg
+        case "civilian":  {[0.10, 0.950]};   // ~5.7 deg delta + ~18 deg
+        case "roadblock": {[0.10, 0.950]};   // road heading dominates anyway
+        default           {[0.07, 0.970]};
+    };
+    _slopeRules params ["_deltaRatio", "_normalZMin"];
+
+    private _normal = surfaceNormal _p;
+    private _normalZ = _normal select 2;
+    if (_normalZ < _normalZMin) exitWith {
+        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: surfaceNormal Z %2 < %3 (mode %4)", _p, _normalZ, _normalZMin, _mode] };
+        false
+    };
+
+    // Two complementary slope-delta checks with independent budgets:
+    //
+    //   Inner: 8 samples at envelope perimeter + centre, budget = _env * _deltaRatio.
+    //          Catches slopes / steps within the composition's own footprint.
+    //
+    //   Outer: 4 samples at an extended radius + centre, budget scaled to the
+    //          extended radius's wider span. Catches surrounding hillsides /
+    //          cliffs that crowd the camp from beyond its own footprint. The
+    //          extended radius scales with envelope but floors at 25m so small
+    //          compositions still reach into the surrounding terrain (a 15m
+    //          comp's natural 1.5x envHalf would only reach ~11m, invisible to
+    //          neighbourhood detection).
+    private _maxDelta = _env * _deltaRatio;
+    private _outerRadius = (_envHalf * 3) max 25;
+    private _neighbourhoodMaxDelta = (_outerRadius * 2) * _deltaRatio;
+
+    private _innerSamples = [_p select 2];
+    { _innerSamples pushBack ((_p getPos [_envHalf, _x]) select 2); } forEach [0, 45, 90, 135, 180, 225, 270, 315];
+    private _innerHi = selectMax _innerSamples;
+    private _innerLo = selectMin _innerSamples;
+    if (_innerHi - _innerLo > _maxDelta) exitWith {
+        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: composition slope-delta %2m > %3m max (mode %4)", _p, _innerHi - _innerLo, _maxDelta, _mode] };
+        false
+    };
+
+    private _outerSamples = [_p select 2];
+    { _outerSamples pushBack ((_p getPos [_outerRadius, _x]) select 2); } forEach [0, 90, 180, 270];
+    private _outerHi = selectMax _outerSamples;
+    private _outerLo = selectMin _outerSamples;
+    if (_outerHi - _outerLo > _neighbourhoodMaxDelta) exitWith {
+        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: neighbourhood slope-delta %2m > %3m max at %4m radius (mode %5)", _p, _outerHi - _outerLo, _neighbourhoodMaxDelta, _outerRadius, _mode] };
         false
     };
 

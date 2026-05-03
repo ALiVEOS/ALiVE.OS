@@ -545,36 +545,45 @@ switch(_operation) do {
 
                         _sectors = [ALIVE_sectorGrid, "sectors"] call ALIVE_fnc_sectorGrid;
                         {
-                            private ["_sector","_sectorData","_flatEmpty","_id","_cluster"];
+                            private ["_sector","_sectorData","_flatEmpty"];
 
                             _sector = _x;
                             _sectorData = [_sector, "data",["",[],[],nil]] call ALIVE_fnc_hashGet;
 
                             _flatEmpty = [_sectorData,"flatEmpty",[]] call ALIVE_fnc_hashGet;
 
-                            if (count _flatEmpty > 0) then {
-                                private ["_pos"];
+                            // Iterate every flat-empty position in this sector
+                            // rather than using only the first. Each candidate
+                            // is accepted as a Random Camp cluster centre only
+                            // when no existing cluster (mil cluster OR a camp
+                            // already added this run) sits within _randomCampsMil
+                            // metres. Lets a populated sector contribute several
+                            // camps; small/sparse sectors still cap at 0-1.
+                            {
+                                private _candidatePos = _x;
+                                private _tooClose = ({([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet) distance _candidatePos < _randomCampsMil} count _clustersX > 0);
 
-                                _pos = _flatEmpty select 0;
+                                if (!_tooClose) then {
+                                    private _campCenter = [_candidatePos,500] call ALiVE_fnc_findFlatArea;
+                                    // Cluster ID built from x AND y. The prior
+                                    // form concatenated x with itself, producing
+                                    // collisions whenever two candidates shared
+                                    // an X-floor (latent bug, harmless when only
+                                    // one camp per sector was added).
+                                    private _campId = format["c_%1_%2", floor (_campCenter select 0), floor (_campCenter select 1)];
 
-                                if ({([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet) distance _pos < _randomCampsMil} count _clustersX > 0) exitwith {};
+                                    private _campCluster = [nil, "create"] call ALIVE_fnc_cluster;
+                                    [_campCluster,"nodes",nearestObjects [_campCenter,["static"],50]] call ALIVE_fnc_hashSet;
+                                    [_campCluster,"clusterID",_campId] call ALIVE_fnc_hashSet;
+                                    [_campCluster,"center",_campCenter] call ALIVE_fnc_hashSet;
+                                    [_campCluster,"size",100] call ALIVE_fnc_hashSet;
+                                    [_campCluster,"type","MIL"] call ALIVE_fnc_hashSet;
+                                    [_campCluster,"priority",100] call ALIVE_fnc_hashSet;
 
-                                 _pos = [_pos,500] call ALiVE_fnc_findFlatArea;
-                                 _id = format["c_%1",str(floor(_pos select 0)) + str(floor(_pos select 0))];
-
-                                _cluster = [nil, "create"] call ALIVE_fnc_cluster;
-                                [_cluster,"nodes",nearestObjects [_pos,["static"],50]] call ALIVE_fnc_hashSet;
-                                [_cluster,"clusterID",_id] call ALIVE_fnc_hashSet;
-                                [_cluster,"center",_pos] call ALIVE_fnc_hashSet;
-                                [_cluster,"size",100] call ALIVE_fnc_hashSet;
-                                [_cluster,"type","MIL"] call ALIVE_fnc_hashSet;
-                                [_cluster,"priority",100] call ALIVE_fnc_hashSet;
-
-                                [_data,_id,_cluster] call ALiVE_fnc_HashSet;
-                                _clustersX pushback _cluster;
-
-                                //_cluster call ALiVE_fnc_InspectHash;
-                            };
+                                    [_data,_campId,_campCluster] call ALiVE_fnc_HashSet;
+                                    _clustersX pushback _campCluster;
+                                };
+                            } foreach _flatEmpty;
 
                             ALIVE_clustersMilLand = _data;
 
@@ -863,7 +872,7 @@ switch(_operation) do {
                 _modulePosition = position _logic;
 
                 if(_countHQClusters > 0) then {
-                    private ["_compType","_HQ"];
+                    private ["_compType","_HQ","_compResult","_safePos","_safeDir"];
                     if(_countHQClusters > 1) then {
                         _sortedData = [_HQClusters,[],{_modulePosition distance ([_x, "center"] call ALIVE_fnc_hashGet)},"ASCEND"] call ALiVE_fnc_SortBy;
                         _closestHQCluster = _sortedData select 0;
@@ -874,11 +883,11 @@ switch(_operation) do {
                     _pos = [_closestHQCluster,"center"] call ALiVE_fnc_HashGet;
                     _size = [_closestHQCluster,"size",300] call ALiVE_fnc_HashGet;
 
-                    _flatPos = [_pos,_size] call ALiVE_fnc_findFlatArea;
-
+                    // Pick the composition FIRST so we can size the validator's
+                    // envelope to the actual footprint. When persistence already
+                    // restored compositions (COMPOSITIONS_LOADED set), _HQ stays
+                    // unassigned and the validator uses a default 50m envelope.
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
-
-                        // Get a composition
                         _compType = "Military";
                         If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
                             _compType = "Guerrilla";
@@ -888,34 +897,54 @@ switch(_operation) do {
                         if (isNil "_HQ") then {
                             _HQ = (selectRandom ([_compType, ["HQ","FieldHQ"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions));
                         };
-
-                        _nearRoads = _flatpos nearRoads 1000;
-                        _direction = if (count _nearRoads > 0) then {direction (_nearRoads select 0)} else {random 360};
-
-                        [_HQ, _flatPos, _direction, _faction] call ALiVE_fnc_spawnComposition;
                     };
 
-                    [_logic, "FieldHQBuilding", nearestObject [_flatPos, "building"]] call MAINCLASS;
+                    // Validate spawn position. fieldhq mode (alias of field) rejects
+                    // runways, taxiways, helipads, all roads, buildings / walls /
+                    // fences inside the envelope, water, steep slopes, and soft
+                    // surfaces. Envelope sized to the actual composition diameter
+                    // when known.
+                    private _envelope = if (!isNil "_HQ") then { [_HQ] call ALiVE_fnc_getCompositionRadius } else { 50 };
+                    _compResult = [_pos, _size, _envelope, "fieldhq"] call ALiVE_fnc_findCompositionSpawnPosition;
 
-                    if !(ALIVE_loadProfilesPersistent) then {
-                        _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
-                        _profiles = [_group, _flatPos, random 360, true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+                    if (count _compResult > 0) then {
+                        _compResult params ["_safePos", "_safeDir"];
+                        // Override validator's random direction with road-aligned
+                        // heading when a road exists within 1000m. Preserves prior
+                        // behaviour: Field HQ entrance points toward nearest road.
+                        _nearRoads = _safePos nearRoads 1000;
+                        if (count _nearRoads > 0) then { _safeDir = direction (_nearRoads select 0) };
 
-                        {
-                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
-                            };
-                        } foreach _profiles;
-                    };
-
-                    // DEBUG -------------------------------------------------------------------------------------
-                    if(_debug) then {
-                        [_flatPos, 4, format ["%1 - Field HQ (%2)", _side, _faction], "ColorBlue", "placement.mp"] call ALIVE_fnc_placeDebugMarker;
-                        if !(isNil "_HQ") then {
-                          ["MP [%1] - Field HQ created at %2 - composition %3 - building %4", _faction, _flatPos, configName _HQ, [_logic, "FieldHQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
+                        if (!isNil "_HQ") then {
+                            [_HQ, _safePos, _safeDir, _faction] call ALiVE_fnc_spawnComposition;
                         };
+
+                        [_logic, "FieldHQBuilding", nearestObject [_safePos, "building"]] call MAINCLASS;
+
+                        if !(ALIVE_loadProfilesPersistent) then {
+                            _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
+                            _profiles = [_group, _safePos, random 360, true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
+
+                            {
+                                if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
+                                };
+                            } foreach _profiles;
+                        };
+
+                        // DEBUG -------------------------------------------------------------------------------------
+                        if(_debug) then {
+                            [_safePos, 4, format ["%1 - Field HQ (%2)", _side, _faction], "ColorBlue", "placement.mp"] call ALIVE_fnc_placeDebugMarker;
+                            if !(isNil "_HQ") then {
+                              ["MP [%1] - Field HQ created at %2 - composition %3 - building %4 (cluster center was %5, %6m offset)",
+                                _faction, _safePos, configName _HQ, [_logic, "FieldHQBuilding"] call MAINCLASS, _pos, round (_safePos distance _pos)] call ALiVE_fnc_dump;
+                            };
+                        };
+                        // DEBUG -------------------------------------------------------------------------------------
+                    } else {
+                        ["MP [%1] - Warning: Field HQ validator found no clear spawn position within %2m of cluster %3 - skipped",
+                            _faction, _size, _pos] call ALiVE_fnc_dump;
                     };
-                    // DEBUG -------------------------------------------------------------------------------------
                 } else {
                     ["MP - Warning no Field HQ locations found"] call ALiVE_fnc_dump;
                 };
@@ -924,13 +953,8 @@ switch(_operation) do {
             if (count _landClusters > 0) then {
                 private _campIndex = 0;
                 {
-                    private ["_compType","_composition","_pos"];
+                    private ["_compType","_composition","_pos","_compResult","_safePos","_safeDir"];
                     _pos = [_x,"center"] call ALiVE_fnc_HashGet;
-
-                    // NOTE: _flatPos is computed but the composition spawn
-                    // below uses raw _pos, not _flatPos. Pre-existing bug
-                    // / dead code - flagged for fix during validator wiring.
-                    _flatPos = [_pos,500] call ALiVE_fnc_findFlatArea;
 
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
                         // Get a composition
@@ -946,16 +970,34 @@ switch(_operation) do {
                         };
 
                         if(count _composition > 0) then {
-                            [_composition, _pos, random 360, _faction] call ALIVE_fnc_spawnComposition;
-                            _campIndex = _campIndex + 1;
+                            // Validate spawn position. Field mode rejects runways,
+                            // taxiways, helipads, all roads, buildings / walls /
+                            // fences inside the envelope, water, steep slopes, and
+                            // soft surfaces. Stage 1 tries the cluster centre first,
+                            // stage 2 falls back to a 200-sample random toss within
+                            // the search radius. Envelope sized to the actual
+                            // composition diameter so big camps get correspondingly
+                            // bigger clearance requirements (and the per-mode slope
+                            // / road / helipad exclusions scale with it).
+                            private _envelope = [_composition] call ALiVE_fnc_getCompositionRadius;
+                            _compResult = [_pos, 500, _envelope, "field"] call ALiVE_fnc_findCompositionSpawnPosition;
 
-                            // DEBUG -----------------------------------------------------------
-                            if (_debug) then {
-                                [_pos, 4, format ["%1 - Random Camp #%2 (%3)", _side, _campIndex, configName _composition], "ColorBlue", "placement.mp"] call ALIVE_fnc_placeDebugMarker;
-                                ["MP [%1] - Random Camp #%2 spawned at %3 (cluster center) - composition %4 (flatPos was %5, currently unused)",
-                                    _faction, _campIndex, _pos, configName _composition, _flatPos] call ALiVE_fnc_dump;
+                            if (count _compResult > 0) then {
+                                _compResult params ["_safePos", "_safeDir"];
+                                [_composition, _safePos, _safeDir, _faction] call ALIVE_fnc_spawnComposition;
+                                _campIndex = _campIndex + 1;
+
+                                // DEBUG -----------------------------------------------------------
+                                if (_debug) then {
+                                    [_safePos, 4, format ["%1 - Random Camp #%2 (%3)", _side, _campIndex, configName _composition], "ColorBlue", "placement.mp"] call ALIVE_fnc_placeDebugMarker;
+                                    ["MP [%1] - Random Camp #%2 spawned at %3 - composition %4 (cluster center was %5, %6m offset)",
+                                        _faction, _campIndex, _safePos, configName _composition, _pos, round (_safePos distance _pos)] call ALiVE_fnc_dump;
+                                };
+                                // DEBUG -----------------------------------------------------------
+                            } else {
+                                ["MP [%1] - Random Camp at cluster %2 SKIPPED: validator found no clear spawn position within 500m (runway / built-up area / water / off-map)",
+                                    _faction, _pos] call ALiVE_fnc_dump;
                             };
-                            // DEBUG -----------------------------------------------------------
                         };
                     };
 

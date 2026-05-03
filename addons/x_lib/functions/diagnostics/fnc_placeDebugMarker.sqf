@@ -13,7 +13,10 @@ unlabelled flags.
 When the optional emitter id is set, the marker position runs through
 ALiVE_fnc_debugMarkerOffset so its label fans out to a reserved compass
 slot around the anchor - prevents text-vs-text overlap when multiple
-modules drop markers at the same cluster centre.
+modules drop markers at the same cluster centre. In that case a small
+no-text anchor mil_dot is also placed at the actual position in the same
+colour so users can read both the label (separated from any cluster
+anchor marker) AND see precisely where the spawn landed.
 
 Parameters:
 0: ARRAY  - position
@@ -73,5 +76,18 @@ _m setMarkerColor _color;
 _m setMarkerAlpha 1;
 if (_text isEqualType "" && {_text != ""}) then {
     _m setMarkerText _text;
+};
+
+// When the label was offset to a compass slot, drop a small anchor dot
+// at the actual position so users can read both the label (separated
+// from any cluster anchor marker) AND see precisely where the spawn
+// landed.
+if (!(_markerPos isEqualTo _position)) then {
+    private _anchor = createMarker [format ["%1_anchor", _m], _position];
+    _anchor setMarkerShape "ICON";
+    _anchor setMarkerSize [0.4, 0.4];
+    _anchor setMarkerType "mil_dot";
+    _anchor setMarkerColor _color;
+    _anchor setMarkerAlpha 1;
 };
 _m

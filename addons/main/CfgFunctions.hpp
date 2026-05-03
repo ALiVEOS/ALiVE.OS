@@ -103,6 +103,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_findCompositionSpawnPosition.sqf";
                 RECOMPILE;
             };
+            class getCompositionRadius {
+                description = "Returns cached composition diameter in metres - walks CfgGroups>Empty config, doubles max-from-origin object distance, adds 5m buffer";
+                file = "\x\alive\addons\main\fnc_getCompositionRadius.sqf";
+                RECOMPILE;
+            };
             class activateReserve {
                 description = "Reserve-pool activation tick (one cluster per call) - shared across mil_placement / civ_placement / mil_placement_custom / civ_placement_custom via the cluster's reserveModuleClass hash entry";
                 file = "\x\alive\addons\main\fnc_activateReserve.sqf";
