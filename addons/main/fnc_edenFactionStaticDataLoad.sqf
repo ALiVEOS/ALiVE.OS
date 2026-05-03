@@ -200,11 +200,22 @@ if (!isNull _logicObj) then {
     {
         private _peer = _x select 1;
         if (typeName _peer == "OBJECT" && {!isNull _peer}) then {
+            // OPCOM and similar - read common faction-list var names.
             {
                 private _candidate = _x;
                 private _v = _peer getVariable [_candidate, nil];
                 if (!isNil "_v") then { [_v, _moduleFactions] call _addFromValue; };
             } forEach _candidates;
+            // sys_factioncompiler - the compiled factionId is what the
+            // user-facing override applies to. The picker needs it in
+            // the faction list so the listbox feeder's compiler-walk
+            // path actually fires for that faction.
+            if ((typeOf _peer) isEqualTo "ALiVE_sys_factioncompiler") then {
+                private _compilerFactionId = _peer getVariable ["factionId", ""];
+                if (_compilerFactionId != "") then {
+                    _moduleFactions pushBackUnique _compilerFactionId;
+                };
+            };
         };
     } forEach _synced;
 };
@@ -219,6 +230,7 @@ _display setVariable ["customStateByFaction", _hashByFaction];
 _display setVariable ["customKind", _kind];
 _display setVariable ["customVarName", _varName];
 _display setVariable ["customCurrentFaction", ""];
+_display setVariable ["customConsumingLogic", _logicObj];
 
 // ------------------------------------------------------------------------
 // Define view-flush + view-load closures and stash them on the display.
@@ -274,7 +286,11 @@ private _loadView = {
             _feeder = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_listFactionVehicleClasses.sqf";
             _d setVariable ["customListFeeder", _feeder];
         };
-        private _feed = [_kindLocal, [_faction]] call _feeder;
+        // Pass the consuming module's logic so the feeder's third source
+        // (sys_factioncompiler walk) can find compiler / category modules
+        // synced to the consuming module.
+        private _consumingLogic = _d getVariable ["customConsumingLogic", objNull];
+        private _feed = [_kindLocal, [_faction], _consumingLogic] call _feeder;
         diag_log format ["ALIVE FactionStaticData VIEW: faction=%1 kind=%2 feed=%3", _faction, _kindLocal, _feed];
         if (count _feed > 0) then {
             (_feed select 0) params ["", "_classes"];
