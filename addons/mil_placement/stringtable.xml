@@ -915,6 +915,66 @@
 <Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_ALL">
     <English>100%</English>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_CUSTOM_MODE">
+    <English>Custom Class Mode:</English>
+    <Chinese>自訂類別模式：</Chinese>
+    <Chinesesimp>自定义类别模式：</Chinesesimp>
+    <Spanish>Modo de clases personalizadas:</Spanish>
+    <French>Mode classes personnalisées:</French>
+    <Portuguese>Modo de classes personalizadas:</Portuguese>
+    <Russian>Режим пользовательских классов:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_CUSTOM_MODE_COMMENT">
+    <English>How the custom class lists below merge into the global static-data registry. Replace (default) overwrites each faction's existing entry with the user-supplied list — matches the legacy init.sqf hashSet override pattern. Append keeps the existing entries and adds the user-supplied list on top, deduped — useful when extending stock factions with mod classes without losing the defaults.</English>
+    <Chinese>下方自訂類別清單如何合併進全域靜態資料表。取代（預設）以使用者提供的清單覆蓋每個派系既有的項目 — 與舊式 init.sqf hashSet 覆寫模式相符。附加保留既有項目,並在其上加入使用者提供的清單並去重 — 適合在擴充原始派系時加入模組類別,而不失去預設值。</Chinese>
+    <Chinesesimp>下方自定义类别清单如何合并进全局静态数据表。取代（默认）以用户提供的清单覆盖每个派系既有的项目 — 与旧式 init.sqf hashSet 覆写模式相符。附加保留既有项目,并在其上加入用户提供的清单并去重 — 适合在扩充原始派系时加入模组类别,而不失去默认值。</Chinesesimp>
+    <Spanish>Cómo se combinan las listas de clases personalizadas con el registro global de datos estáticos. Replace (predeterminado) sobrescribe la entrada existente de cada facción con la lista proporcionada — equivale al patrón heredado de hashSet en init.sqf. Append conserva las entradas existentes y añade encima la lista proporcionada, deduplicada — útil para ampliar facciones estándar con clases de mods sin perder los valores predeterminados.</Spanish>
+    <French>Comment les listes de classes personnalisées ci-dessous fusionnent avec le registre global de données statiques. Replace (par défaut) écrase l'entrée existante de chaque faction avec la liste fournie — équivalent au modèle hashSet hérité dans init.sqf. Append conserve les entrées existantes et ajoute la liste fournie par-dessus, dédupliquée — utile pour étendre les factions standard avec des classes de mods sans perdre les valeurs par défaut.</French>
+    <Portuguese>Como as listas de classes personalizadas abaixo se mesclam com o registro global de dados estáticos. Replace (padrão) sobrescreve a entrada existente de cada facção com a lista fornecida — equivale ao padrão herdado de hashSet em init.sqf. Append mantém as entradas existentes e adiciona a lista fornecida em cima, deduplicada — útil para estender facções padrão com classes de mods sem perder os valores padrão.</Portuguese>
+    <Russian>Как списки пользовательских классов ниже объединяются с глобальным реестром статических данных. Replace (по умолчанию) перезаписывает существующую запись каждой фракции переданным списком — соответствует прежнему шаблону hashSet в init.sqf. Append сохраняет существующие записи и добавляет переданный список сверху с дедупликацией — полезно для расширения стандартных фракций модовыми классами без потери значений по умолчанию.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_CUSTOM_SUPPORTS">
+    <English>Override Support Vehicles:</English>
+    <Chinese>覆寫支援載具：</Chinese>
+    <Chinesesimp>覆写支援载具：</Chinesesimp>
+    <Spanish>Override vehículos de apoyo:</Spanish>
+    <French>Override véhicules de soutien:</French>
+    <Portuguese>Override veículos de apoio:</Portuguese>
+    <Russian>Перекрыть машины поддержки:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_CUSTOM_SUPPORTS_COMMENT">
+    <English>Per-faction overrides for the ambient support-vehicle pool (ALIVE_factionDefaultSupports) — the ammo / fuel / repair / medical trucks placed near military objectives. Tick classes from the listbox; type extra mod classes into the override field with FACTION=class1,class2;FACTION2=class3 syntax. Replace mode wipes the faction's stock list with your selection; Append mode adds your selection on top of stock entries. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>對環境支援載具池（ALIVE_factionDefaultSupports）進行各派系覆寫 — 即放置於軍事目標附近的彈藥 / 燃料 / 維修 / 醫療卡車。在列表框中勾選類別;在覆寫欄位以 FACTION=class1,class2;FACTION2=class3 語法輸入額外的模組類別。取代模式會以您的選擇清除該派系的原始清單;附加模式則在原始項目之上加入您的選擇。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>对环境支援载具池（ALIVE_factionDefaultSupports）进行各派系覆写 — 即放置于军事目标附近的弹药 / 燃料 / 维修 / 医疗卡车。在列表框中勾选类别;在覆写字段以 FACTION=class1,class2;FACTION2=class3 语法输入额外的模组类别。取代模式会以您的选择清除该派系的原始清单;附加模式则在原始项目之上加入您的选择。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Reemplazos por facción del pool de vehículos de apoyo ambientales (ALIVE_factionDefaultSupports) — los camiones de munición / combustible / reparación / medical colocados cerca de objetivos militares. Marca clases en el listbox; introduce clases de mods adicionales en el campo override con la sintaxis FACTION=class1,class2;FACTION2=class3. El modo Replace borra la lista estándar de la facción con tu selección; el modo Append añade tu selección encima de las entradas estándar. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Surcharges par faction du vivier de véhicules de soutien d'ambiance (ALIVE_factionDefaultSupports) — les camions de munitions / carburant / réparation / médical placés près des objectifs militaires. Cochez des classes dans la liste; saisissez des classes de mods supplémentaires dans le champ override avec la syntaxe FACTION=class1,class2;FACTION2=class3. Le mode Replace efface la liste d'origine de la faction et la remplace par votre sélection; le mode Append ajoute votre sélection par-dessus les entrées d'origine. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Substituições por facção do pool de veículos de apoio ambientais (ALIVE_factionDefaultSupports) — os caminhões de munição / combustível / reparo / médico colocados perto de objetivos militares. Marque classes no listbox; insira classes de mods adicionais no campo override com a sintaxe FACTION=class1,class2;FACTION2=class3. O modo Replace apaga a lista padrão da facção com a sua seleção; o modo Append adiciona a sua seleção sobre as entradas padrão. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Переопределения по фракциям для пула вспомогательных машин окружения (ALIVE_factionDefaultSupports) — боеприпасных / топливных / ремонтных / медицинских грузовиков, размещаемых у военных объектов. Отмечайте классы в списке; вводите дополнительные модовые классы в поле override, используя синтаксис FACTION=class1,class2;FACTION2=class3. Режим Replace стирает стоковый список фракции и заменяет его вашим выбором; режим Append добавляет ваш выбор поверх стоковых записей. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_CUSTOM_SUPPLIES">
+    <English>Override Supply Boxes:</English>
+    <Chinese>覆寫補給箱：</Chinese>
+    <Chinesesimp>覆写补给箱：</Chinesesimp>
+    <Spanish>Override cajas de suministros:</Spanish>
+    <French>Override caisses de ravitaillement:</French>
+    <Portuguese>Override caixas de suprimentos:</Portuguese>
+    <Russian>Перекрыть ящики снабжения:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_CUSTOM_SUPPLIES_COMMENT">
+    <English>Per-faction overrides for the random supply-box pool (ALIVE_factionDefaultSupplies) — the ammo / weapon / specialist crates placed near military objectives. Tick classes from the listbox; type extra mod classes into the override field with FACTION=class1,class2;FACTION2=class3 syntax. Replace mode wipes the faction's stock list with your selection; Append mode adds your selection on top of stock entries. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>對隨機補給箱池（ALIVE_factionDefaultSupplies）進行各派系覆寫 — 即放置於軍事目標附近的彈藥 / 武器 / 專業裝備箱。在列表框中勾選類別;在覆寫欄位以 FACTION=class1,class2;FACTION2=class3 語法輸入額外的模組類別。取代模式會以您的選擇清除該派系的原始清單;附加模式則在原始項目之上加入您的選擇。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>对随机补给箱池（ALIVE_factionDefaultSupplies）进行各派系覆写 — 即放置于军事目标附近的弹药 / 武器 / 专业装备箱。在列表框中勾选类别;在覆写字段以 FACTION=class1,class2;FACTION2=class3 语法输入额外的模组类别。取代模式会以您的选择清除该派系的原始清单;附加模式则在原始项目之上加入您的选择。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Reemplazos por facción del pool de cajas de suministros aleatorias (ALIVE_factionDefaultSupplies) — las cajas de munición / armas / especialistas colocadas cerca de objetivos militares. Marca clases en el listbox; introduce clases de mods adicionales en el campo override con la sintaxis FACTION=class1,class2;FACTION2=class3. El modo Replace borra la lista estándar de la facción con tu selección; el modo Append añade tu selección encima de las entradas estándar. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Surcharges par faction du vivier de caisses de ravitaillement aléatoires (ALIVE_factionDefaultSupplies) — les caisses de munitions / armes / spécialiste placées près des objectifs militaires. Cochez des classes dans la liste; saisissez des classes de mods supplémentaires dans le champ override avec la syntaxe FACTION=class1,class2;FACTION2=class3. Le mode Replace efface la liste d'origine de la faction et la remplace par votre sélection; le mode Append ajoute votre sélection par-dessus les entrées d'origine. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Substituições por facção do pool de caixas de suprimentos aleatórias (ALIVE_factionDefaultSupplies) — as caixas de munição / armas / especialista colocadas perto de objetivos militares. Marque classes no listbox; insira classes de mods adicionais no campo override com a sintaxe FACTION=class1,class2;FACTION2=class3. O modo Replace apaga a lista padrão da facção com a sua seleção; o modo Append adiciona a sua seleção sobre as entradas padrão. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Переопределения по фракциям для пула случайных ящиков снабжения (ALIVE_factionDefaultSupplies) — боеприпасных / оружейных / специальных ящиков, размещаемых у военных объектов. Отмечайте классы в списке; вводите дополнительные модовые классы в поле override, используя синтаксис FACTION=class1,class2;FACTION2=class3. Режим Replace стирает стоковый список фракции и заменяет его вашим выбором; режим Append добавляет ваш выбор поверх стоковых записей. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
+</Key>
 <Key ID="STR_ALIVE_MP_ON_EACH_SPAWN">
     <English>On unit spawn (SQF):</English>
     <Chinese>單位生成時（SQF）：</Chinese>

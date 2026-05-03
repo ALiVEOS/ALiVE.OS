@@ -143,6 +143,40 @@ class CfgVehicles {
                                 class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_NONE";value="0";default=1;}; class LOW{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_LOW";value="0.2";}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_MEDIUM";value="0.6";}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_HIGH";value="1";}; };
                         };
 
+                        // ---- Custom Static Data ---------------------------------------------
+                        class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_CUSTOM"; displayName = "CUSTOM SUPPORT CLASSES"; };
+                        class customStaticDataMode : Combo
+                        {
+                                property = "ALiVE_mil_placement_customStaticDataMode";
+                                displayName = "$STR_ALIVE_MP_CUSTOM_MODE";
+                                tooltip = "$STR_ALIVE_MP_CUSTOM_MODE_COMMENT";
+                                defaultValue = """REPLACE""";
+                                class Values
+                                {
+                                    class Replace { name = "Replace"; value = "REPLACE"; default = 1; };
+                                    class Append  { name = "Append";  value = "APPEND";  };
+                                };
+                        };
+                        class customSupports
+                        {
+                                property     = "ALiVE_mil_placement_customSupports";
+                                displayName  = "$STR_ALIVE_MP_CUSTOM_SUPPORTS";
+                                tooltip      = "$STR_ALIVE_MP_CUSTOM_SUPPORTS_COMMENT";
+                                control      = "ALiVE_FactionStaticDataChoice_Supports";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['customSupports', _value];";
+                                defaultValue = """""";
+                        };
+                        class customSupplies
+                        {
+                                property     = "ALiVE_mil_placement_customSupplies";
+                                displayName  = "$STR_ALIVE_MP_CUSTOM_SUPPLIES";
+                                tooltip      = "$STR_ALIVE_MP_CUSTOM_SUPPLIES_COMMENT";
+                                control      = "ALiVE_FactionStaticDataChoice_Supplies";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['customSupplies', _value];";
+                                defaultValue = """""";
+                        };
                         // ---- On Spawn Hook --------------------------------------------------
                         class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
                         class onEachSpawn : ALiVE_EditMultilineSQF

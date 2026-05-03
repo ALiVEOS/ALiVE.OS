@@ -393,6 +393,25 @@ switch(_operation) do {
 
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
 
+            // Apply per-faction custom-class overrides to the static-data
+            // registries. Each attribute is a canonical string in the
+            // FACTION1=class1,class2;FACTION2=class3 form (see
+            // fnc_resolveFactionStaticChoice for the parser). Mode toggles
+            // between full replace (default; matches the legacy init.sqf
+            // hashSet override pattern) and append (extend stock factions
+            // with mod classes without dropping existing entries).
+            private _customMode = _logic getVariable ["customStaticDataMode", "REPLACE"];
+            private _customSupports = _logic getVariable ["customSupports", ""];
+            private _customSupplies = _logic getVariable ["customSupplies", ""];
+            private _touchedSupports = [_customSupports, ALIVE_factionDefaultSupports, _customMode] call ALIVE_fnc_resolveFactionStaticChoice;
+            private _touchedSupplies = [_customSupplies, ALIVE_factionDefaultSupplies, _customMode] call ALIVE_fnc_resolveFactionStaticChoice;
+            private _mpDebug = _logic getVariable ["debug", false];
+            if (_mpDebug isEqualType "" && {_mpDebug == "true"}) then { _mpDebug = true };
+            if (_mpDebug isEqualTo true) then {
+                ["MP - Custom static data: mode=%1 supportsTouched=%2 suppliesTouched=%3",
+                    _customMode, _touchedSupports, _touchedSupplies] call ALiVE_fnc_dump;
+            };
+
             [_logic,"start"] call MAINCLASS;
 
         } else {

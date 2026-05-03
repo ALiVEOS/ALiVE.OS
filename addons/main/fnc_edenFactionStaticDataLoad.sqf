@@ -187,7 +187,11 @@ private _moduleFactions = [];
 
 if (!isNull _logicObj) then {
     // 1. Self
-    private _candidates = ["factions", "CQB_FACTIONS", "insurgentFaction", "skillFactionsBLUFOR", "skillFactionsOPFOR", "skillFactionsINDFOR", "skillFactionsCIVILIAN", "pr_factionWhitelist"];
+    // 'faction' (singular) covers single-faction modules like
+    // mil_placement / mil_placement_custom / mil_placement_spe /
+    // civ_placement which let the mission-maker pick ONE faction
+    // via ALiVE_FactionChoice_Military.
+    private _candidates = ["factions", "faction", "CQB_FACTIONS", "insurgentFaction", "skillFactionsBLUFOR", "skillFactionsOPFOR", "skillFactionsINDFOR", "skillFactionsCIVILIAN", "pr_factionWhitelist"];
     {
         private _v = _logicObj getVariable [_x, nil];
         if (!isNil "_v") then { [_v, _moduleFactions] call _addFromValue; };
@@ -222,6 +226,66 @@ if (!isNull _logicObj) then {
 
 // 3. Saved-value keys (so unloaded-mod factions still appear)
 { _moduleFactions pushBackUnique _x; } forEach (keys _hashByFaction);
+
+// ------------------------------------------------------------------------
+// Side filter. If the consuming module has its own primary faction
+// (single-faction modules like mil_placement do; mil_logistics doesn't),
+// restrict the picker to factions sharing that faction's side. Stops the
+// picker from offering BLUFOR factions to override on an OPFOR mil_placement.
+//
+// Primary-faction sources, first non-empty wins:
+//     own 'faction' (singular)  ->  CfgFactionClasses.side
+//     own 'factions' (multi)    ->  first entry's CfgFactionClasses.side
+// If neither resolves to a known side, no filter is applied (mil_logistics
+// path keeps working unchanged - it inherits factions from synced OPCOM
+// which already constrains to one side).
+// ------------------------------------------------------------------------
+if (!isNull _logicObj && {count _moduleFactions > 1}) then {
+    private _resolveSide = {
+        params ["_facName"];
+        if (typeName _facName != "STRING" || {_facName == ""}) exitWith {-1};
+        private _cfg = configFile >> "CfgFactionClasses" >> _facName;
+        if (!isClass _cfg) exitWith {-1};
+        if (!isNumber (_cfg >> "side")) exitWith {-1};
+        getNumber (_cfg >> "side")
+    };
+
+    private _ownFaction = "";
+    private _ownSingle = _logicObj getVariable ["faction", ""];
+    if (typeName _ownSingle == "STRING" && {_ownSingle != ""}) then { _ownFaction = _ownSingle; };
+    if (_ownFaction == "") then {
+        private _ownMulti = _logicObj getVariable ["factions", nil];
+        private _firstFromMulti = "";
+        if (!isNil "_ownMulti") then {
+            if (typeName _ownMulti == "ARRAY" && {count _ownMulti > 0}) then {
+                _firstFromMulti = _ownMulti select 0;
+            };
+            if (typeName _ownMulti == "STRING" && {_ownMulti != ""}) then {
+                if ((_ownMulti select [0, 1]) == "[") then {
+                    private _p = parseSimpleArray _ownMulti;
+                    if (typeName _p == "ARRAY" && {count _p > 0}) then { _firstFromMulti = _p select 0; };
+                } else {
+                    private _parts = [_ownMulti, ","] call CBA_fnc_split;
+                    if (count _parts > 0) then { _firstFromMulti = _parts select 0; };
+                };
+            };
+        };
+        if (typeName _firstFromMulti == "STRING" && {_firstFromMulti != ""}) then { _ownFaction = _firstFromMulti; };
+    };
+
+    private _ownSide = [_ownFaction] call _resolveSide;
+    if (_ownSide >= 0 && {_ownSide < 4}) then {
+        private _filtered = _moduleFactions select {
+            private _facSide = [_x] call _resolveSide;
+            // Keep factions of the same side. Unknown-side factions
+            // (e.g. mod factions without a CfgFactionClasses entry)
+            // are kept so the picker doesn't lose unrecognised entries.
+            _facSide == _ownSide || {_facSide < 0}
+        };
+        diag_log format ["ALIVE FactionStaticData LOAD: side filter active - own faction=%1 side=%2 - kept %3/%4", _ownFaction, _ownSide, count _filtered, count _moduleFactions];
+        _moduleFactions = _filtered;
+    };
+};
 
 // ------------------------------------------------------------------------
 // Cache state on the display so LBSelChanged + attributeSave can read it.

@@ -198,7 +198,7 @@ class CfgVehicles
                                 };
                         };
                         // ---- Custom Static Data ---------------------------------------------
-                        class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_CUSTOM"; displayName = "CUSTOM CLASSES"; };
+                        class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_CUSTOM"; displayName = "CUSTOM TRANSPORT CLASSES"; };
                         class customStaticDataMode : Combo
                         {
                                 property = "ALiVE_mil_logistics_customStaticDataMode";
