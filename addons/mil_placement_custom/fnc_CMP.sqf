@@ -550,12 +550,40 @@ switch(_operation) do {
                         };
 
                         {
-                            private _class = _x;
+                            private _entry = _x;
                             if (!isNull _spawnedComp) exitWith {};
 
-                            // Resolve composition config (findComposition first,
-                            // getCompositions substring fallback).
-                            private _comp = [_class, _compType] call ALIVE_fnc_findComposition;
+                            // Picker entries can be qualified `class|category|size`
+                            // (new format - disambiguates size variants of the
+                            // same class) or legacy `class` (old saves + Override
+                            // Edit free-text). Qualified path uses the size hint
+                            // to pull the exact variant; legacy falls back to
+                            // findComposition's first-match.
+                            private _class = _entry;
+                            private _entrySize = "";
+                            private _pipeIdx = _entry find "|";
+                            if (_pipeIdx > 0) then {
+                                _class = _entry select [0, _pipeIdx];
+                                private _rest = _entry select [_pipeIdx + 1];
+                                private _pipe2 = _rest find "|";
+                                if (_pipe2 > 0) then {
+                                    _entrySize = _rest select [_pipe2 + 1];
+                                };
+                            };
+
+                            // Resolve composition config. Prefer size-qualified
+                            // getCompositions when the picker entry carries a
+                            // size hint, then findComposition first-match,
+                            // then size-agnostic getCompositions as the final
+                            // fallback.
+                            private _comp = [];
+                            if (_entrySize != "" && {_entrySize != "Unspecified"}) then {
+                                private _compDef = ([_compType, [_class], [_entrySize], _faction] call ALiVE_fnc_getCompositions);
+                                if (count _compDef > 0) then { _comp = selectRandom _compDef };
+                            };
+                            if (count _comp == 0) then {
+                                _comp = [_class, _compType] call ALIVE_fnc_findComposition;
+                            };
                             if (count _comp == 0) then {
                                 private _compDef = ([_compType, [_class], [], _faction] call ALiVE_fnc_getCompositions);
                                 if (count _compDef > 0) then {

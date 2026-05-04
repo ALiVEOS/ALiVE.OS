@@ -126,7 +126,16 @@ if (_debug) then {
 private _excludeRoads      = (_mode == "field");       // field-strict avoids ALL roads
 private _excludeRunways    = true;                     // always exclude
 private _excludeHelipads   = true;                     // always exclude
-private _excludeBuildings  = true;                     // always exclude inside footprint
+// Roadblock mode SKIPS the envelope-wide building bbox check.
+// Roadblock compositions sit on a road centreline by design; the road
+// network already routes around buildings, and flanking buildings are
+// part of the urban context the checkpoint is supposed to live in
+// (towns, villages). Enforcing envelope-wide clearance rejects every
+// realistic road point in built-up areas (RPT pattern: "N obstacle
+// bbox(s) intersect envelope" with N=4..24 in town tests). Field /
+// military / civilian modes keep the check - they spawn off-road and
+// nearby buildings genuinely block their footprint.
+private _excludeBuildings  = (_mode != "roadblock");   // skip in roadblock mode
 private _excludeWater      = true;                     // always exclude
 private _requireRoad       = (_mode == "roadblock");   // roadblock REQUIRES road
 private _maxAttempts       = if (_mode == "roadblock") then { 12 } else { 200 };
@@ -327,16 +336,24 @@ private _candidateClear = {
     //          from sampling so far out that natural rolling terrain trips
     //          the rejection (180m+ samples on Stratis catch gentle hillsides
     //          unrelated to the actual spawn footprint).
-    private _maxDelta = _env * _deltaRatio;
+    // Inner slope sampling. Default is envHalf (catches slope across the
+    // composition's footprint half-radius). Roadblock mode widens this to
+    // the full envelope - composition objects extend up to that reach
+    // into the verge / shoulder, and a checkpoint half-on a 5m embankment
+    // looks broken even when the road centre itself is graded. Budget
+    // scales with sampling diameter so the slope-ratio policy stays
+    // consistent (same percent grade allowed regardless of width).
+    private _innerRadius = if (_mode == "roadblock") then { _env } else { _envHalf };
+    private _maxDelta = (_innerRadius * 2) * _deltaRatio;
     private _outerRadius = (_envHalf * 1.5) max 25;
     private _neighbourhoodMaxDelta = (_outerRadius * 2) * _deltaRatio;
 
     private _innerSamples = [_p select 2];
-    { _innerSamples pushBack ((_p getPos [_envHalf, _x]) select 2); } forEach [0, 45, 90, 135, 180, 225, 270, 315];
+    { _innerSamples pushBack ((_p getPos [_innerRadius, _x]) select 2); } forEach [0, 45, 90, 135, 180, 225, 270, 315];
     private _innerHi = selectMax _innerSamples;
     private _innerLo = selectMin _innerSamples;
     if (_innerHi - _innerLo > _maxDelta) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: composition slope-delta %2m > %3m max (mode %4)", _p, _innerHi - _innerLo, _maxDelta, _mode] };
+        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: composition slope-delta %2m > %3m max at %4m radius (mode %5)", _p, _innerHi - _innerLo, _maxDelta, _innerRadius, _mode] };
         false
     };
 
@@ -364,6 +381,12 @@ private _candidateClear = {
 // Roadblock mode: find nearest road, snap position to its centreline,
 // orient along its heading. Used as the candidate position before
 // running it through _candidateClear.
+//
+// `direction _roadPiece` returns 0 for A3 road segments (they're terrain
+// features, not vehicles, and don't carry a meaningful direction). The
+// correct tangent is the angle from this road point to its nearest
+// connected neighbour, which `roadsConnectedTo` exposes. Falls back to
+// `direction` only when the road is a true dead-end with no neighbours.
 // ------------------------------------------------------------------------
 private _findRoadCandidate = {
     params ["_p", "_searchRadius"];
@@ -372,7 +395,12 @@ private _findRoadCandidate = {
     // Sort by distance to centre - closest first
     _nearby = [_nearby, [], { _x distance _p }, "ASCEND"] call BIS_fnc_sortBy;
     private _picked = _nearby select 0;
-    private _roadDir = direction _picked;
+    private _roadConnectedTo = roadsConnectedTo _picked;
+    private _roadDir = if (count _roadConnectedTo > 0) then {
+        _picked getDir (_roadConnectedTo select 0)
+    } else {
+        direction _picked
+    };
     private _roadPos = getPosATL _picked;
     [_roadPos, _roadDir]
 };
@@ -398,7 +426,44 @@ if (_mode == "roadblock") exitWith {
         if (_debug) then { diag_log format ["[ALiVE CompSpawn] EXIT FAIL: road candidate %1 fails clearance", _rPos] };
         []
     };
-    if (_debug) then { diag_log format ["[ALiVE CompSpawn] EXIT roadblock pos=%1 dir=%2", _rPos, _rDir] };
+    // Extra perpendicular-to-road slope check. Roads themselves are
+    // graded flat along their direction even on hillsides; the issue
+    // is the verge that drops away on either side. Compositions that
+    // span the road width (gates / wings / hesco walls / outposts)
+    // put their OUTERMOST objects out at full envelope radius, and a
+    // 1m+ vertical drop there breaks layout cohesion (objects float /
+    // clip / tilt visibly).
+    //
+    // The general 8-compass slope check averages this away because
+    // most of the eight axes lie along/near the road. Sampling
+    // ONLY at the two road-perpendicular axes catches the verge
+    // profile directly. Sampling extends to the FULL envelope radius
+    // (not half) - the outpost wings of a 35m-envelope composition
+    // reach 35m out, so a check that stops at 26m misses the slope
+    // the outermost wing actually sits on.
+    private _perpAngles = [_rDir + 90, _rDir - 90];
+    private _perpDistances = [_envelope * 0.33, _envelope * 0.67, _envelope];
+    private _baseZ = _rPos select 2;
+    private _perpDeltas = [];
+    {
+        private _ang = _x;
+        {
+            private _sp = _rPos getPos [_x, _ang];
+            _perpDeltas pushBack (abs ((_sp select 2) - _baseZ));
+        } forEach _perpDistances;
+    } forEach _perpAngles;
+    private _maxPerpDelta = selectMax _perpDeltas;
+    // Budget: 8% slope max measured to envelope radius. Tighter than
+    // the general envelope slope check because verge-edge objects
+    // tilt visibly on slopes the road centreline itself handles
+    // cleanly. For env=35m this allows 2.8m drop at 35m perp - any
+    // steeper and the outermost wing tilts off the verge.
+    private _perpBudget = _envelope * 0.08;
+    if (_maxPerpDelta > _perpBudget) exitWith {
+        if (_debug) then { diag_log format ["[ALiVE CompSpawn] EXIT FAIL: road candidate %1 perpendicular slope-delta %2m > %3m budget (roadDir %4, envelope %5)", _rPos, _maxPerpDelta, _perpBudget, _rDir, _envelope] };
+        []
+    };
+    if (_debug) then { diag_log format ["[ALiVE CompSpawn] EXIT roadblock pos=%1 dir=%2 perpDelta=%3m budget=%4m", _rPos, _rDir, _maxPerpDelta, _perpBudget] };
     [_rPos, _rDir]
 };
 

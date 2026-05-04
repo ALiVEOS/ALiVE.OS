@@ -659,6 +659,18 @@
     <Portuguese>A proporção da força que estará ativamente em serviço e patrulhando no início da missão. Valores mais baixos deixam mais unidades de reserva.</Portuguese>
     <Russian>Доля сил, которые будут на активном дежурстве и патрулировании при старте миссии. Меньшие значения оставляют больше юнитов в резерве.</Russian>
 </Key>
+<Key ID="STR_ALIVE_CP_HDR_ROADBLOCKS">
+    <English>ROADBLOCKS</English>
+</Key>
+<Key ID="STR_ALIVE_CP_HDR_SEAPATROLS">
+    <English>SEA PATROLS</English>
+</Key>
+<Key ID="STR_ALIVE_CP_ROADBLOCK_COMPOSITIONS">
+    <English>Roadblock Compositions:</English>
+</Key>
+<Key ID="STR_ALIVE_CP_ROADBLOCK_COMPOSITIONS_COMMENT">
+    <English>Multi-select listbox of compositions sampled when a roadblock spawns. The validator iterates the ticked classes in shuffled order at each candidate road-point and uses the first that fits the snapped road position (slope / surface / clearance / nearby-building checks all sized to the composition's actual envelope, not a fixed 10 m disc). When the picker is empty the runtime falls through to the legacy CheckpointsBarricades / Medium-or-Small category search. The Override field accepts free-text class names for mod compositions the listbox doesn't surface. Spawned compositions get the road's tangent direction (parallel-to-road); compositions designed to sit perpendicular across the road aren't auto-detected yet. Multi-select: Ctrl+click toggles individual rows, Shift+click selects a range, plain click replaces with just that one row.</English>
+</Key>
 <Key ID="STR_ALIVE_CP_ROADBLOCKS">
     <English>Roadblocks:</English>
     <Chinese>路障：</Chinese>

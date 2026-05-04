@@ -317,6 +317,9 @@ switch(_operation) do {
     case "roadBlocks": {
         _result = [_logic,_operation,_args,DEFAULT_RB] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "roadblockCompositions": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
     // Main process
     case "init": {
         if (isServer) then {
@@ -684,6 +687,16 @@ switch(_operation) do {
 
                             _roadBlocks = parsenumber([_logic, "roadBlocks"] call MAINCLASS);
                             _debug = [_logic, "debug"] call MAINCLASS;
+                            // Read once outside the spawn loop. The picker
+                            // value is a static SQM string (multi-class CSV
+                            // with optional [F:..] filter prefix that
+                            // createRoadblock strips). Threaded into each
+                            // createRoadblock call so the validator's
+                            // multi-class fitment search can sample the
+                            // ticked pool per spawn instead of relying on
+                            // the legacy ALiVE_compositions_roadblocks
+                            // global / category fallback.
+                            private _roadblockComps = [_logic, "roadblockCompositions"] call MAINCLASS;
                             _maxRoadblockSpawnAttempts = 10;
                             _lastRoadblockDebug = -30;
 
@@ -716,7 +729,7 @@ switch(_operation) do {
 
                                             if (_spawn) then {
                                                 _spawnChecks = _spawnChecks + 1;
-                                                _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug] call ALiVE_fnc_createRoadblock;
+                                                _thisroadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps] call ALiVE_fnc_createRoadblock;
                                                 if (_debug) then { ["_thisroadblockResult: %1, count: %2", _thisroadblockResult, count _thisroadblockResult] call ALiVE_fnc_dump };
                                                  if (count _thisroadblockResult > 0)  then {
                                                    GVAR(ROADBLOCK_LOCATIONS) set [_foreachIndex, -1];
@@ -1390,6 +1403,23 @@ switch(_operation) do {
                     _rb pushback _size;
 
                     GVAR(ROADBLOCK_LOCATIONS) pushback _rb;
+
+                    // Debug-mode preview marker. ROADBLOCK_LOCATIONS holds the
+                    // CLUSTER centre - the actual roadblock spawns at a road
+                    // point inside the cluster when a player triggers it. Drop
+                    // a brown mil_box at the cluster centre at queue time so
+                    // mission-makers can see WHERE roadblocks are planned
+                    // before walking the map. The actual spawned roadblock
+                    // gets its own brown mil_dot marker at the snapped road
+                    // position via fnc_createRoadblock.
+                    if (_debug) then {
+                        // Deterministic marker name lets fnc_createRoadblock
+                        // find + delete the queue marker once the actual
+                        // roadblock spawns (so the user sees one marker per
+                        // roadblock - the spawn marker - not two).
+                        private _qName = format ["ALiVE_RB_Q_%1_%2", floor (_center select 0), floor (_center select 1)];
+                        [_center, 2, format ["RoadBlock Q (%1m)", _size], "ColorBrown", "placement.cp.roadblock_q", _qName] call ALIVE_fnc_placeDebugMarker;
+                    };
 
                 };
 

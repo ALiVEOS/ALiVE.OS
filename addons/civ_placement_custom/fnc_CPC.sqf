@@ -221,6 +221,9 @@ switch (_operation) do {
     case "roadBlocks": {
         _result = [_logic, _operation, _args, DEFAULT_RB] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "roadblockCompositions": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "init": {
         if (isServer) then {
             _logic setVariable ["super", SUPERCLASS];
@@ -272,6 +275,14 @@ switch (_operation) do {
             [_cluster, "size", _objectiveSize] call ALIVE_fnc_hashSet;
             [_cluster, "type", "CIV"] call ALIVE_fnc_hashSet;
             [_cluster, "priority", _priority] call ALIVE_fnc_hashSet;
+            // ColorRed marks user-placed custom civilian objectives
+            // distinct from the auto-gen civ palette (HQ=Black,
+            // Power=Yellow, Comms=White, Marine=Blue, Rail=Khaki,
+            // Fuel=Orange, Construction=Pink, Settlement=Green). The
+            // shared cluster-marker renderer in fnc_strategic/fnc_cluster.sqf
+            // reads this colour, maps it to the "Custom" sub-type label
+            // and prepends it so the map shows "Custom: <id>|CIV|<pri>|<size>".
+            [_cluster, "debugColor", "ColorRed"] call ALIVE_fnc_hashSet;
             [_cluster, "debug", _debug] call ALIVE_fnc_cluster;
 
             [_logic, "objectives", [_cluster]] call MAINCLASS;
@@ -322,6 +333,9 @@ switch (_operation) do {
 
                         private _roadBlocks = parseNumber([_logic, "roadBlocks"] call MAINCLASS);
                         private _debug = [_logic, "debug"] call MAINCLASS;
+                        // Picker pool threaded into each createRoadblock call -
+                        // see civ_placement/fnc_CP.sqf for the pattern.
+                        private _roadblockComps = [_logic, "roadblockCompositions"] call MAINCLASS;
                         private _maxRoadblockSpawnAttempts = 10;
                         private _lastRoadblockDebug = -30;
 
@@ -346,7 +360,7 @@ switch (_operation) do {
                                     if (_spawn) then {
                                         _spawnChecks = _spawnChecks + 1;
 
-                                        private _roadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug] call ALiVE_fnc_createRoadblock;
+                                        private _roadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps] call ALiVE_fnc_createRoadblock;
                                         private _roadblockLocation = [_position, _size];
 
                                         if (count _roadblockResult > 0) then {
@@ -841,6 +855,17 @@ switch (_operation) do {
 
                     if ((ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS findIf {_x isEqualTo _roadblockLocation}) < 0) then {
                         ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS pushBack _roadblockLocation;
+                    };
+
+                    // Debug-mode preview marker - see comment in
+                    // civ_placement/fnc_CP.sqf where the same pattern lands.
+                    // Cluster-centre brown mil_box at queue time; the actual
+                    // spawned roadblock gets its own brown mil_dot at the
+                    // snapped road position via fnc_createRoadblock.
+                    if (_debug) then {
+                        // Deterministic marker name - see CP's matching call.
+                        private _qName = format ["ALiVE_RB_Q_%1_%2", floor (_center select 0), floor (_center select 1)];
+                        [_center, 2, format ["RoadBlock Q (%1m)", _clusterSize], "ColorBrown", "placement.cp.roadblock_q", _qName] call ALIVE_fnc_placeDebugMarker;
                     };
                 };
             } forEach _clusters;

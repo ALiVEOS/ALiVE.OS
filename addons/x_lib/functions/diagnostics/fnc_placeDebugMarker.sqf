@@ -24,6 +24,11 @@ Parameters:
 2: STRING - text label drawn next to the marker - optional, default ""
 3: STRING - marker colour name (e.g. "ColorBlue", "ColorRed", "ColorGreen") - optional, default "ColorGreen"
 4: STRING - emitter id for ALiVE_fnc_debugMarkerOffset compass-slot lookup - optional, default ""
+5: STRING - explicit marker name override - optional, default "" (auto-generated `<time>_debug`).
+            Pass a deterministic name when the caller needs to look up + delete the marker
+            later (e.g. queue markers that should disappear once the actual spawn lands).
+            The companion `_anchor` marker (placed when the emitter id offsets the label
+            position) uses the same name with `_anchor` appended.
 
 Returns:
 STRING - marker name
@@ -49,15 +54,16 @@ ARJay
 Jman
 ---------------------------------------------------------------------------- */
 
-private ["_indicators","_position","_type","_text","_color","_emitterId","_markerPos","_err","_m"];
+private ["_indicators","_position","_type","_text","_color","_emitterId","_nameOverride","_markerPos","_err","_m","_markerName"];
 
 _indicators = ["waypoint","mil_dot","mil_box","mil_triangle","mil_flag"];
 
-_position   = _this select 0;
-_type       = if (count _this > 1) then {_this select 1} else {0};
-_text       = if (count _this > 2) then {_this select 2} else {""};
-_color      = if (count _this > 3) then {_this select 3} else {"ColorGreen"};
-_emitterId  = if (count _this > 4) then {_this select 4} else {""};
+_position     = _this select 0;
+_type         = if (count _this > 1) then {_this select 1} else {0};
+_text         = if (count _this > 2) then {_this select 2} else {""};
+_color        = if (count _this > 3) then {_this select 3} else {"ColorGreen"};
+_emitterId    = if (count _this > 4) then {_this select 4} else {""};
+_nameOverride = if (count _this > 5) then {_this select 5} else {""};
 
 _err = format["spawn debug marker position not valid - %1",_position];
 ASSERT_TRUE(typeName _position == "ARRAY",_err);
@@ -68,7 +74,12 @@ _markerPos = if (_emitterId isEqualType "" && {_emitterId != ""} && {!isNil "ALi
     _position
 };
 
-_m = createMarker [format["%1_debug",(time + random 10000)], _markerPos];
+_markerName = if (_nameOverride isEqualType "" && {_nameOverride != ""}) then {
+    _nameOverride
+} else {
+    format["%1_debug",(time + random 10000)]
+};
+_m = createMarker [_markerName, _markerPos];
 _m setMarkerShape "ICON";
 _m setMarkerSize [.65, .65];
 _m setMarkerType (_indicators select _type);

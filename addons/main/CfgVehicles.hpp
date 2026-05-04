@@ -1186,6 +1186,24 @@ class Cfg3DEN
             attributeSave = "[_this, 'composition'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenCompositionChoiceSave.sqf'";
         };
 
+        // Roadblock-composition picker variant. Used by civ_placement +
+        // civ_placement_custom for the `roadblockCompositions` attribute
+        // (the multi-select pool fnc_createRoadblock samples per spawn).
+        // Same controlsGroup as the base; LOAD passes "CheckpointsBarricades"
+        // as the initial Category filter so first-time Eden opens show the
+        // roadblock-relevant subset without making the user cycle. Saved
+        // filter state still wins on subsequent opens, so a user who
+        // explicitly cycles to All / a different category gets that view
+        // restored on reload.
+        class ALiVE_CompositionChoice_CivRoadblock: ALiVE_CompositionChoice_Base {
+            // Category lock uses substring patterns (case-insensitive) so 3rd-
+            // party mod compositions whose category isn't the BIS literal
+            // "CheckpointsBarricades" still surface. Display label is the
+            // single friendly name shown in the locked Category row.
+            attributeLoad = "[_this, 'roadblockCompositions', 'faction', '$STR_ALIVE_CP_ROADBLOCK_COMPOSITIONS', _value, 'checkpoint,barricade,roadblock', 'Roadblocks'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenCompositionChoiceLoad.sqf'";
+            attributeSave = "[_this, 'roadblockCompositions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenCompositionChoiceSave.sqf'";
+        };
+
         // Hidden attribute - renders zero UI (h = 0, empty controls).
         // Used by legacy attributes that need to round-trip SQM data
         // through their `expression` without surfacing in the panel.

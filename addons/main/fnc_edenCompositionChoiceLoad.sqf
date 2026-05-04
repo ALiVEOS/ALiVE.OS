@@ -32,14 +32,29 @@ Description:
         _sideIdx / _sizeIdx / _categoryIdx - current filter indices
 
 Parameters:
-    [_display, _varName, _factionVar, _titleStr, _sqmValue]
-    _display     : DISPLAY - Eden attribute display (the controls-group control)
-    _varName     : STRING  - logic-variable name of the composition attribute
-                             (e.g. "composition")
-    _factionVar  : STRING  - logic-variable name of the module's faction
-                             attribute (e.g. "faction")
-    _titleStr    : STRING  - localised title text or $STR_ key
-    _sqmValue    : STRING  - SQM-deserialised value (Cfg3DEN's `_value`)
+    [_display, _varName, _factionVar, _titleStr, _sqmValue, _categoryPatterns, _categoryDisplayLabel]
+    _display              : DISPLAY - Eden attribute display (controls-group)
+    _varName              : STRING  - logic-variable name of the composition attribute
+                                      (e.g. "composition")
+    _factionVar           : STRING  - logic-variable name of the module's faction
+                                      attribute (e.g. "faction")
+    _titleStr             : STRING  - localised title text or $STR_ key
+    _sqmValue             : STRING  - SQM-deserialised value (Cfg3DEN's `_value`)
+    _categoryPatterns     : STRING  - optional. Comma-separated substring patterns
+                                      (case-insensitive) used to HARD-FILTER the
+                                      listbox to a category family. Empty string =
+                                      no filter (full Category cycle remains active).
+                                      For the roadblock picker pass e.g.
+                                      "checkpoint,barricade,roadblock" so 3rd-party
+                                      mod compositions whose category names don't
+                                      exactly match the BIS "CheckpointsBarricades"
+                                      label still surface.
+    _categoryDisplayLabel : STRING  - optional. Display label shown in the locked
+                                      Category row. Defaults to `_categoryPatterns`
+                                      itself (fine for single-pattern locks); per-
+                                      module wrappers pass a friendly name when the
+                                      pattern list contains multiple keywords
+                                      (e.g. "Roadblocks").
 
 Author:
     Jman
@@ -50,6 +65,8 @@ private _varName = "";
 private _factionVar = "";
 private _titleStr = "Compositions:";
 private _sqmValue = "";
+private _categoryPatterns = "";
+private _categoryDisplayLabel = "";
 
 if (typeName _this == "ARRAY") then {
     if (count _this > 0) then { _display = _this select 0; };
@@ -57,9 +74,17 @@ if (typeName _this == "ARRAY") then {
     if (count _this > 2 && {typeName (_this select 2) == "STRING"}) then { _factionVar = _this select 2; };
     if (count _this > 3 && {typeName (_this select 3) == "STRING"}) then { _titleStr = _this select 3; };
     if (count _this > 4 && {typeName (_this select 4) == "STRING"}) then { _sqmValue = _this select 4; };
+    if (count _this > 5 && {typeName (_this select 5) == "STRING"}) then { _categoryPatterns = _this select 5; };
+    if (count _this > 6 && {typeName (_this select 6) == "STRING"}) then { _categoryDisplayLabel = _this select 6; };
 } else {
     _display = _this;
 };
+
+// Display label defaults to the pattern string itself when not supplied -
+// fine when the lock is a single exact category (legacy MPCustom case
+// passing nothing at all leaves _categoryPatterns "" and the lock is
+// inactive entirely).
+if (_categoryDisplayLabel == "") then { _categoryDisplayLabel = _categoryPatterns };
 
 if (isNull _display) exitWith {
     diag_log "ALIVE CompositionChoice LOAD: null display";
@@ -139,6 +164,96 @@ if (_value_classes != "") then {
 private _allComps = [_faction] call compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_listFactionCompositions.sqf";
 if (typeName _allComps != "ARRAY") then { _allComps = [] };
 
+// Hard category lock. When the per-module subclass passes a category
+// pattern list (e.g. "checkpoint,barricade,roadblock" for roadblock
+// picker), the listbox MUST never surface compositions outside that
+// family - it's not a "default view" hint, it's a domain restriction.
+// Substring match (case-insensitive) so 3rd-party mods whose category
+// names don't exactly match BIS labels still surface (e.g. a mod's
+// "INS_Checkpoints" matches the "checkpoint" pattern). Filter the
+// feeder result here so every downstream option list (Side / Size /
+// Source) only enumerates values present in the locked subset, and
+// the Category cycle becomes a no-op showing just the display label.
+if (_categoryPatterns != "") then {
+    private _patterns = [];
+    {
+        _patterns pushBack (toLower _x);
+    } forEach ([_categoryPatterns, ","] call CBA_fnc_split);
+    private _preCount = count _allComps;
+    private _categoriesSeen = [];
+    {
+        _categoriesSeen pushBackUnique (_x select 4);
+    } forEach _allComps;
+    private _filtered = [];
+    {
+        private _comp = _x;
+        private _cat = toLower (_comp select 4);
+        private _matched = false;
+        {
+            if (_cat find _x >= 0) exitWith { _matched = true };
+        } forEach _patterns;
+        if (_matched) then { _filtered pushBack _comp };
+    } forEach _allComps;
+    _allComps = _filtered;
+    diag_log format ["ALIVE CompositionChoice CategoryFilter: patterns=%1 preCount=%2 postCount=%3 categoriesSeen=%4", _patterns, _preCount, count _allComps, _categoriesSeen];
+};
+
+// Auto-upgrade legacy class-only entries in _selectedClasses to fully
+// qualified `class|category|size` keys.
+//
+// Two-pass to handle "mixed save" cases left behind by the bug fix
+// rollout: a save can contain BOTH a legacy `Checkpoint_BLU_F` entry
+// AND qualified `Checkpoint_BLU_F|...|Medium` / `|...|Small` entries
+// in the same string. The user's last explicit action was per-variant
+// (qualified), and the legacy entry is leftover noise from a save made
+// before per-variant selection landed.
+//
+// Pass 1 collects the set of classes that already have qualified
+// entries.
+// Pass 2 processes each entry:
+//   - Qualified -> keep
+//   - Legacy, class has qualified entries -> DROP (qualified wins)
+//   - Legacy, class has no qualified entries -> expand into qualified
+//     keys for every matching row in _allComps (preserves old "all
+//     variants" semantic for clean legacy saves)
+//   - Legacy, no matching row in _allComps -> keep legacy (mod not
+//     loaded this session; Override Edit will surface it)
+private _classesWithQualified = [];
+{
+    private _pipeIdx = _x find "|";
+    if (_pipeIdx > 0) then {
+        _classesWithQualified pushBackUnique (_x select [0, _pipeIdx]);
+    };
+} forEach _selectedClasses;
+
+private _upgradedSelected = [];
+{
+    private _entry = _x;
+    private _pipeIdx = _entry find "|";
+    if (_pipeIdx > 0) then {
+        _upgradedSelected pushBackUnique _entry;
+    } else {
+        private _legacyClass = _entry;
+        if (_legacyClass in _classesWithQualified) then {
+            // Drop - the qualified entries for this class are
+            // authoritative; the legacy is leftover from a save made
+            // before per-variant selection was wired up.
+        } else {
+            private _expanded = false;
+            {
+                _x params ["_class", "", "", "_size", "_category"];
+                if (_class == _legacyClass) then {
+                    private _sizeKey = if (_size == "") then { "Unspecified" } else { _size };
+                    _upgradedSelected pushBackUnique (format ["%1|%2|%3", _class, _category, _sizeKey]);
+                    _expanded = true;
+                };
+            } forEach _allComps;
+            if (!_expanded) then { _upgradedSelected pushBackUnique _legacyClass };
+        };
+    };
+} forEach _selectedClasses;
+_selectedClasses = _upgradedSelected;
+
 // Build filter option lists from the data. "All" is always the first option.
 // Note: avoid `_display` as a destructure name here - it would shadow the
 // outer-scope `_display` (controlsGroup control), and even though `params`
@@ -164,7 +279,16 @@ _sourcesPresent sort true;
 
 private _sideOptions = ["All"] + _sidesPresent;
 private _sizeOptions = ["All"] + _sizesPresent;
-private _categoryOptions = ["All"] + _categoriesPresent;
+// When the picker is category-locked (roadblock picker, etc.), drop
+// "All" from the Category options so the displayed value reads as the
+// locked category display label itself rather than "Category: All".
+// Cycling has nothing to advance to, which is the intended UX -
+// telling the user "this picker is roadblocks-only, that's it".
+private _categoryOptions = if (_categoryPatterns != "") then {
+    [_categoryDisplayLabel]
+} else {
+    ["All"] + _categoriesPresent
+};
 private _sourceOptions = ["All"] + _sourcesPresent;
 
 // Filter state persistence cascade:
@@ -188,6 +312,12 @@ if (!isNil "_persistedFilters") then {
     };
 };
 if (isNil "_savedFilters") then { _savedFilters = [0, 0, 0, 0] };
+// When the picker is category-locked, force the Category index to 0
+// regardless of any saved filter prefix - the locked options array
+// only has one entry. Pre-lock missions saved with e.g. [F:0,0,2,0]
+// would otherwise clamp downstream but going through this branch
+// keeps intent explicit.
+if (_categoryPatterns != "") then { _savedFilters set [2, 0] };
 
 private _sideIdx     = _savedFilters select 0;
 private _sizeIdx     = _savedFilters select 1;
@@ -211,6 +341,13 @@ _display setVariable ["alive_sideIdx", _sideIdx];
 _display setVariable ["alive_sizeIdx", _sizeIdx];
 _display setVariable ["alive_categoryIdx", _categoryIdx];
 _display setVariable ["alive_sourceIdx", _sourceIdx];
+// Lock flag: signals to populate that the category filter has already
+// been applied at feeder pre-filter time (substring patterns), so the
+// per-row exact-match _passCat check should pass-through. Without this
+// flag, populate rejects every row whose actual `_category` doesn't
+// equal the display label string (e.g. real category
+// "CheckpointsBarricades" vs display label "Roadblocks").
+_display setVariable ["alive_categoryLocked", (_categoryPatterns != "")];
 
 // Update the filter labels with their current values.
 private _sideLabel     = _display controlsGroupCtrl 1200;
@@ -235,6 +372,7 @@ private _populateFn = {
     private _zIdx      = _disp getVariable ["alive_sizeIdx", 0];
     private _cIdx      = _disp getVariable ["alive_categoryIdx", 0];
     private _mIdx      = _disp getVariable ["alive_sourceIdx", 0];
+    private _catLocked = _disp getVariable ["alive_categoryLocked", false];
     private _sFilt     = _sOpts select _sIdx;
     private _zFilt     = _zOpts select _zIdx;
     private _cFilt     = _cOpts select _cIdx;
@@ -242,6 +380,13 @@ private _populateFn = {
 
     private _list = _disp controlsGroupCtrl 100;
     if (isNull _list) exitWith {};
+    // Gate the LBSelChanged handler. Each lbSetSelected call below
+    // fires LBSelChanged synchronously, which reads partial selection
+    // state and would incorrectly remove classes that haven't been
+    // re-ticked yet. The gate makes LBSelChanged a no-op for
+    // programmatic ticks; only genuine user clicks (with the gate
+    // off) update the cumulative selection set.
+    _disp setVariable ["alive_populating", true];
     lbClear _list;
 
     private _surfaced = 0;
@@ -251,7 +396,12 @@ private _populateFn = {
         private _sizeKey = if (_size == "") then { "Unspecified" } else { _size };
         private _passSide   = (_sFilt == "All") || (_side     == _sFilt);
         private _passSize   = (_zFilt == "All") || (_sizeKey  == _zFilt);
-        private _passCat    = (_cFilt == "All") || (_category == _cFilt);
+        // _catLocked: feeder pre-filter already restricted _allComps
+        // to the matching category family (substring patterns); skip
+        // the exact-match per-row check so e.g. real category
+        // "CheckpointsBarricades" passes when the display label is
+        // "Roadblocks".
+        private _passCat    = _catLocked || (_cFilt == "All") || (_category == _cFilt);
         private _passSource = (_mFilt == "All") || (_source   == _mFilt);
 
         if (_passSide && _passSize && _passCat && _passSource) then {
@@ -262,9 +412,23 @@ private _populateFn = {
                 format ["%1 [%2/%3] {%4}", _class, _side, _sizeLabel, _source]
             };
             private _idx = _list lbAdd _label;
-            _list lbSetData [_idx, _class];
+            // Qualified key `class|category|size` lets size variants of
+            // the same class (e.g. BIS Checkpoint_BLU_F appears 3x in
+            // CfgGroups under CheckpointsBarricadesLarge / Medium /
+            // Small) be selected independently. Class-only storage was
+            // ambiguous - selecting Large would tick all 3 size variants
+            // on reload. lbData is what LBSelChanged + SAVE both read,
+            // so qualifying it here propagates everywhere.
+            private _qKey = format ["%1|%2|%3", _class, _category, _sizeKey];
+            _list lbSetData [_idx, _qKey];
             _surfaced = _surfaced + 1;
-            if (_class in _sel) then {
+            // Exact qualified-key match only. The auto-upgrade pass at
+            // LOAD time has already expanded any legacy class-only
+            // entries into qualified keys, so a bare-class match here
+            // would only re-introduce the wildcard bug it was meant to
+            // patch around (legacy entry ticking all size variants of
+            // the same class).
+            if (_qKey in _sel) then {
                 _list lbSetSelected [_idx, true];
                 _ticked = _ticked + 1;
             };
@@ -272,17 +436,28 @@ private _populateFn = {
     } forEach _all;
 
     diag_log format ["ALIVE CompositionChoice POPULATE: side=%1 size=%2 category=%3 source=%4 surfaced=%5 ticked=%6", _sFilt, _zFilt, _cFilt, _mFilt, _surfaced, _ticked];
+    // Re-open the LBSelChanged gate. From here on, any selection
+    // change is a genuine user click and SHOULD mutate _sel.
+    _disp setVariable ["alive_populating", false];
 };
 
 // Initial population (All/All/All).
 [_display] call _populateFn;
 
 // Override-Edit pre-fill: any saved class not in _allComps goes here.
+// Saved entries can be qualified (`class|category|size`) or legacy
+// (class-only). Extract the class portion either way before checking
+// against the registry. Missing entries are surfaced as their original
+// (qualified or legacy) string so the user can edit them directly.
 private _allClassesInData = [];
 { _allClassesInData pushBackUnique (_x select 0); } forEach _allComps;
 private _missing = [];
 {
-    if !(_x in _allClassesInData) then { _missing pushBackUnique _x };
+    private _entry = _x;
+    private _classPart = _entry;
+    private _pipeIdx = _entry find "|";
+    if (_pipeIdx > 0) then { _classPart = _entry select [0, _pipeIdx] };
+    if !(_classPart in _allClassesInData) then { _missing pushBackUnique _entry };
 } forEach _selectedClasses;
 private _editCtrl = _display controlsGroupCtrl 102;
 if (!isNull _editCtrl) then {
@@ -337,6 +512,49 @@ private _attachCycle = {
 [1212, 1202, "alive_categoryIdx", "alive_categoryOptions", "Category"] call _attachCycle;
 [1213, 1203, "alive_sourceIdx",   "alive_sourceOptions",   "Source"]   call _attachCycle;
 
+// When category is hard-locked, the Category row is dead UI - cycling
+// has nothing to advance to and the picker context (e.g. "Roadblock
+// Compositions:" Eden label) already implies the lock. Hide the label
+// and Next button, then reflow the layout: Source row shifts up to
+// the freed slot, and the listbox grows upward to claim the recovered
+// 5 grid units. Override row at y=63 stays put.
+//
+// Reflow uses ctrlSetPosition + ctrlCommit at runtime rather than
+// touching the shared base's positions in CfgVehicles, so the camp
+// picker variant (which doesn't lock and needs all 4 filter rows
+// visible) is unaffected.
+if (_categoryPatterns != "") then {
+    private _catLabel    = _display controlsGroupCtrl 1202;
+    private _catBtn      = _display controlsGroupCtrl 1212;
+    private _sourceLabel = _display controlsGroupCtrl 1203;
+    private _sourceBtn   = _display controlsGroupCtrl 1213;
+    private _listbox     = _display controlsGroupCtrl 100;
+
+    if (!isNull _catLabel) then { _catLabel ctrlShow false };
+    if (!isNull _catBtn)   then { _catBtn   ctrlShow false };
+
+    // 5 grid units = same delta the Category row used. Use the same
+    // pixel-grid math the CfgVehicles definitions use so positions
+    // stay aligned with the rest of the layout.
+    private _shift = 5 * (pixelH * pixelGrid * 0.5);
+    {
+        if (!isNull _x) then {
+            private _pos = ctrlPosition _x;
+            _pos set [1, (_pos select 1) - _shift];
+            _x ctrlSetPosition _pos;
+            _x ctrlCommit 0;
+        };
+    } forEach [_sourceLabel, _sourceBtn];
+
+    if (!isNull _listbox) then {
+        private _pos = ctrlPosition _listbox;
+        _pos set [1, (_pos select 1) - _shift];
+        _pos set [3, (_pos select 3) + _shift];
+        _listbox ctrlSetPosition _pos;
+        _listbox ctrlCommit 0;
+    };
+};
+
 // Wire LBSelChanged on the listbox to keep _selectedClasses in sync with
 // user clicks. Only updates classes for currently-visible rows; classes
 // from previously-filtered views remain in the set.
@@ -346,6 +564,9 @@ if (!isNull _list) then {
     _list ctrlAddEventHandler ["LBSelChanged", {
         params ["_lb"];
         private _disp = _lb getVariable "alive_disp";
+        // Gate: ignore programmatic selection changes during populate.
+        // _populateFn flips this off after re-ticking is complete.
+        if (_disp getVariable ["alive_populating", false]) exitWith {};
         private _sel  = _disp getVariable ["alive_selectedClasses", []];
         private _selIdx = lbSelection _lb;
         // For each currently-visible row, sync its class membership in _sel.
@@ -360,6 +581,7 @@ if (!isNull _list) then {
             };
         };
         _disp setVariable ["alive_selectedClasses", _sel];
+        diag_log format ["ALIVE CompositionChoice LBSelChanged: visible=%1 selectedRows=%2 cumulative=%3", lbSize _lb, count _selIdx, count _sel];
     }];
 };
 
