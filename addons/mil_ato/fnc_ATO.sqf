@@ -1620,43 +1620,64 @@ switch(_operation) do {
                     // Spawn a field HQ
                     private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
                     private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
-                    private _HQ = nil;
-                    // private _flatPos = [_pos,_size,45] call ALiVE_fnc_findFlatArea;
+                    // Debug-only runway marker visualisation. The unified
+                    // composition-spawn validator handles runway / taxiway /
+                    // helipad rejection natively via getAirfieldGeometry; the
+                    // marker overlay is kept just for the visible runway
+                    // outline during debug previews.
                     private _runwayMarkers = [_pos,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
-                    private _flatPos = [_runwayMarkers,_pos,_size] call ALiVE_fnc_CheckSpawnInMarkerArea;
-                    
+
+                    // Composition selection - hoisted outside the
+                    // !COMPOSITIONS_LOADED branch so the validator below can
+                    // size its envelope to the actual layout. Falls back to
+                    // generic HQ / FieldHQ / Communications when no
+                    // Airports / Heliports composition exists for the faction.
+                    private _compType = "Military";
+                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                        _compType = "Guerrilla";
+                    };
+                    private _HQ = selectRandom ([_compType, ["Airports","Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
+                    if (isNil "_HQ") then {
+                        _HQ = selectRandom ([_compType, ["HQ","FieldHQ","Communications"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
+                    };
+
+                    if (isNil "_HQ") exitWith {
+                        ["ATO [%1] - Field ATO: no Airport / Heliport / HQ composition available for faction (compType %2) - skipped", _faction, _compType] call ALiVE_fnc_dump;
+                    };
+
+                    // Road-tangent preferred direction (airports tend to align
+                    // with the nearest road's heading in built-up areas).
+                    // Computed against cluster centre (validator hasn't run
+                    // yet - was incorrectly using uninitialised _flatPos in
+                    // the legacy path).
+                    private _nearRoad = [_pos, 750, true] call ALiVE_fnc_getClosestRoad;
+                    private _direction = if (_nearRoad distance _pos > 5) then {
+                        private _road = roadat _nearRoad;
+                        private _roadConnectedTo = roadsConnectedTo _road;
+                        if (count _roadConnectedTo > 0) then {
+                            private _connectedRoad = _roadConnectedTo select 0;
+                            (_road getDir _connectedRoad)
+                        } else {
+                            90
+                        };
+                    } else {
+                        0
+                    };
+
+                    // Validator wiring. Replaces the legacy CheckSpawnInMarkerArea
+                    // + findFlatArea path. Mode "military" excludes runways /
+                    // helipads / buildings / sloped surface / water natively;
+                    // the marker-based runway exclusion the legacy helper did
+                    // is now redundant.
+                    private _envelope = [_HQ] call ALiVE_fnc_getCompositionRadius;
+                    private _result = [_pos, _size, _envelope, "military", _direction, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+                    if (count _result == 0) exitWith {
+                        ["ATO [%1] - Field ATO: validator found no clear spawn position within %2m of %3 (envelope %4m) - skipped", _faction, _size, _pos, _envelope] call ALiVE_fnc_dump;
+                    };
+                    _result params ["_flatPos", "_safeDir"];
 
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
-
-                        // Get a composition
-                        private _compType = "Military";
-                        If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                            _compType = "Guerrilla";
-                        };
-                        _HQ = selectRandom ([_compType, ["Airports","Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
-
-                        if (isNil "_HQ") then {
-                            _HQ = selectRandom ([_compType, ["HQ","FieldHQ","Communications"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
-                        };
-
-                        private _nearRoad = [_flatpos, 750, true] call ALiVE_fnc_getClosestRoad;
-
-                        private _direction = if (_nearRoad distance _flatpos > 5) then {
-                            private _road = roadat _nearRoad;
-                            private _roadConnectedTo = roadsConnectedTo _road;
-                            if (count _roadConnectedTo > 0) then {
-                                private _connectedRoad = _roadConnectedTo select 0;
-                                (_road getDir _connectedRoad)
-                            } else {
-                                90
-                            };
-                        } else {
-                            0
-                        };
-
-                        // [_logic,"createMarker",[_nearRoad,"WEST","HQ " + str(_direction),0]] call MAINCLASS;
-
-                        [_HQ, _flatPos, _direction, _faction] call ALiVE_fnc_spawnComposition;
+                        [_HQ, _flatPos, _safeDir, _faction] call ALiVE_fnc_spawnComposition;
                     };
 
                     [_logic, "HQBuilding", nearestObject [_flatPos, "building"]] call MAINCLASS;
@@ -1677,7 +1698,7 @@ switch(_operation) do {
                         private _atoSide = getNumber ((_faction call ALiVE_fnc_configGetFactionClass) >> "side") call ALIVE_fnc_sideNumberToText;
                         [_flatPos, 4, format ["%1 - Field ATO (%2)", _atoSide, _faction], "ColorPink", "placement.ato"] call ALIVE_fnc_placeDebugMarker;
 
-                        ["ATO [%1] - Field ATO created at %2 - composition %3 - building %4", _faction, _flatPos, configName _HQ, [_logic, "HQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
+                        ["ATO [%1] - Field ATO created at %2 - composition %3 - building %4 (envelope=%5m, dir=%6)", _faction, _flatPos, configName _HQ, [_logic, "HQBuilding"] call MAINCLASS, _envelope, _safeDir] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
                 };
@@ -1741,11 +1762,9 @@ switch(_operation) do {
                     // Spawn a AA composition
                     private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
                     private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
-                    // private _flatPos = [_pos,(_size*4),70] call ALiVE_fnc_findFlatArea;
+                    // Debug-only runway marker visualisation - validator handles
+                    // runway exclusion natively (see Field ATO comment above).
                     private _runwayMarkers = [_pos,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
-                    private _flatPos = [_runwayMarkers,_pos,_size] call ALiVE_fnc_CheckSpawnInMarkerArea;
-        
-                    private _AA = nil;
 
                     private _searchString = ["AA_Bunker","SAM_Site","SAM_Bunker","AA_Site"];
 
@@ -1756,7 +1775,7 @@ switch(_operation) do {
                     };
 
                     // Find an Anti Air site or SAM Site
-                    _AA = selectRandom ([_compType, ["fort"], [], _faction, false, _searchString] call ALiVE_fnc_getCompositions);
+                    private _AA = selectRandom ([_compType, ["fort"], [], _faction, false, _searchString] call ALiVE_fnc_getCompositions);
 
                     if (isNil "_AA") then { // Look for smaller AA bunker
                         _AA = selectRandom ([_compType, ["fort"], [], _faction, false, ["AntiAirBunker"]] call ALiVE_fnc_getCompositions);
@@ -1764,9 +1783,10 @@ switch(_operation) do {
                     };
 
                     if !(isNil "_AA") then {
-                        private _nearRoad = [_flatpos, 750, true] call ALiVE_fnc_getClosestRoad;
-
-                        private _direction = if (_nearRoad distance _flatpos > 5) then {
+                        // Road-tangent preferred direction. Computed against
+                        // cluster centre (validator hasn't run yet).
+                        private _nearRoad = [_pos, 750, true] call ALiVE_fnc_getClosestRoad;
+                        private _direction = if (_nearRoad distance _pos > 5) then {
                             private _road = roadat _nearRoad;
                             private _roadConnectedTo = roadsConnectedTo _road;
                             if (count _roadConnectedTo > 0) then {
@@ -1779,30 +1799,40 @@ switch(_operation) do {
                             0
                         };
 
-                        [_flatPos, _compType, ["fort"], _faction, [], 2, 0, 0, 0, 0, false, _searchString, _direction] call ALiVE_fnc_spawnRandomPopulatedComposition;
+                        // Validator wiring. AA / SAM compositions are smaller
+                        // than the Field ATO (typical envelope 20-35m) so a
+                        // tighter clear-circle requirement applies here. The
+                        // search radius _size matches the cluster footprint.
+                        private _envelope = [_AA] call ALiVE_fnc_getCompositionRadius;
+                        private _result = [_pos, _size, _envelope, "military", _direction, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+                        if (count _result == 0) exitWith {
+                            ["ATO [%1] - AA composition: validator found no clear spawn position within %2m of %3 (envelope %4m) - skipped", _faction, _size, _pos, _envelope] call ALiVE_fnc_dump;
+                        };
+                        _result params ["_flatPos", "_safeDir"];
+
+                        [_flatPos, _compType, ["fort"], _faction, [], 2, 0, 0, 0, 0, false, _searchString, _safeDir] call ALiVE_fnc_spawnRandomPopulatedComposition;
 
                         if (_debug) then {
-                            ["ATO %1 - Placing %4 AA: %2 at %3", _logic, _AA, _flatpos, _faction] call ALiVE_fnc_dump;
+                            ["ATO %1 - Placing %4 AA: %2 at %3 (envelope=%5m, dir=%6)", _logic, _AA, _flatPos, _faction, _envelope, _safeDir] call ALiVE_fnc_dump;
+                            private _atoSide = getNumber ((_faction call ALiVE_fnc_configGetFactionClass) >> "side") call ALIVE_fnc_sideNumberToText;
+                            [_flatPos, 4, format ["%1 - AA Site (%2)", _atoSide, _faction], "ColorPink", "placement.ato"] call ALIVE_fnc_placeDebugMarker;
                         };
-                    } else {
-                        // Spawn Static AA
 
-                    };
-
-                    // Add crew to SAM or AA or man static (crew are not stored as part of composition)
-                    if !(isNil "_AA") then {
-                        private _vehicles = nearestObjects [_flatpos, ["AAA_System_01_base_F","SAM_System_01_base_F","SAM_System_02_base_F"], 70];
-
+                        // Add crew to SAM or AA or man static (crew are not
+                        // stored as part of composition).
+                        private _vehicles = nearestObjects [_flatPos, ["AAA_System_01_base_F","SAM_System_01_base_F","SAM_System_02_base_F"], 70];
                         {
                             // Create profiles that are not despawned? This ensures they are put back after restart
                             createVehicleCrew _x;
                             if (side _x == WEST) then {
                                 [_x, "Green", [], false] call BIS_fnc_initVehicle;
                             };
-
                         } forEach _vehicles;
                     } else {
-                        // Man Statics
+                        // No AA composition available for this faction.
+                        // Static AA spawn fallback intentionally not
+                        // implemented (legacy behaviour); kept as a stub
+                        // for future Phase 4 follow-up.
                     };
                 };
             };
@@ -2057,48 +2087,52 @@ switch(_operation) do {
                         // IF there are no helipads available, we want atleast 1 chopper. Spawn a composition
                         if (count _aprofiles == 0) then {
                             // Spawn a heliport
-                            private _validPos = true;
                             private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
-
                             private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
-                            private _heliport = nil;
-                            private _flatPos = [_pos,_size,30] call ALiVE_fnc_findFlatArea;
 
-                            private _position = _flatpos;
-
-                            if (str(_flatPos) == "[0,0,0]") then {
-                                _validPos = false;
+                            // Composition selection - hoisted outside the
+                            // !COMPOSITIONS_LOADED branch so the validator
+                            // below can size its envelope to the actual layout.
+                            private _compType = "Military";
+                            If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                                _compType = "Guerrilla";
                             };
+                            private _heliport = selectRandom ([_compType, ["Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
 
-                            if (isNil QMOD(COMPOSITIONS_LOADED) && _validPos) then {
+                            if !(isNil "_heliport") then {
 
-                                // Get a composition
-                                private _compType = "Military";
-                                If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                                    _compType = "Guerrilla";
+                                // Road-tangent preferred direction. Computed
+                                // against cluster centre (validator hasn't
+                                // run yet).
+                                private _nearRoad = [_pos, 750, true] call ALiVE_fnc_getClosestRoad;
+                                private _direct = if (_nearRoad distance _pos > 5) then {
+                                    private _road = roadat _nearRoad;
+                                    private _roadConnectedTo = roadsConnectedTo _road;
+                                    if (count _roadConnectedTo > 0) then {
+                                        private _connectedRoad = _roadConnectedTo select 0;
+                                        (_road getDir _connectedRoad)
+                                    } else {
+                                        90
+                                    };
+                                } else {
+                                    0
                                 };
 
-                                _heliport = selectRandom ([_compType, ["Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
+                                // Validator wiring. Mode "military" excludes
+                                // existing helipads from the footprint
+                                // (`_excludeHelipads`) so a new Heliport
+                                // composition won't overlap an existing one.
+                                private _envelope = [_heliport] call ALiVE_fnc_getCompositionRadius;
+                                private _result = [_pos, _size, _envelope, "military", _direct, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+                                if (count _result == 0) exitWith {
+                                    ["ATO [%1] - Heliport: validator found no clear spawn position within %2m of %3 (envelope %4m) - skipped", _faction, _size, _pos, _envelope] call ALiVE_fnc_dump;
+                                };
+                                _result params ["_flatPos", "_safeDir"];
+                                _direct = _safeDir;
+                                private _position = _flatPos;
 
-                                if !(isNil "_heliport") then {
-                                    private _nearRoad = [_flatpos,750,true] call ALiVE_fnc_getClosestRoad;
-
-                                    private _direct = if (_nearRoad distance _flatpos > 5) then {
-                                        private _road = roadat _nearRoad;
-                                        private _roadConnectedTo = roadsConnectedTo _road;
-                                        if (count _roadConnectedTo > 0) then {
-                                            private _connectedRoad = _roadConnectedTo select 0;
-                                            (_road getDir _connectedRoad)
-                                        } else {
-                                            90
-                                        };
-                                    } else {
-                                        0
-                                    };
-
-                                    // [_logic,"createMarker",[_nearRoad,_side,str(_direct),0]] call MAINCLASS;
-
-                                    [_heliport, _flatPos, _direct, _faction] call ALiVE_fnc_spawnComposition;
+                                if (isNil QMOD(COMPOSITIONS_LOADED)) then {
+                                    [_heliport, _flatPos, _safeDir, _faction] call ALiVE_fnc_spawnComposition;
 
                                     private _helipad = nearestObject [_flatpos, "HeliH"];
 
@@ -2250,8 +2284,27 @@ switch(_operation) do {
 
                                             private _hangar = selectRandom ([_compType, ["Airports"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
                                             if !(isNil "_hangar") then {
-                                                private _flatPos = [position _x,150,50] call ALiVE_fnc_findFlatArea;
-                                                [_hangar, _flatPos, direction _x, _faction] call ALiVE_fnc_spawnComposition;
+                                                // Validator wiring. Search
+                                                // anchored on the existing
+                                                // airport building (`_x` in
+                                                // the surrounding foreach);
+                                                // direction inherits from
+                                                // the building so the new
+                                                // hangar aligns with the
+                                                // airfield's primary axis.
+                                                private _envelope = [_hangar] call ALiVE_fnc_getCompositionRadius;
+                                                private _result = [position _x, 150, _envelope, "military", direction _x, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+                                                if (count _result > 0) then {
+                                                    _result params ["_flatPos", "_safeDir"];
+                                                    [_hangar, _flatPos, _safeDir, _faction] call ALiVE_fnc_spawnComposition;
+                                                    if (_debug) then {
+                                                        ["ATO [%1] - Hangar: %2 spawned at %3 (envelope=%4m, dir=%5)", _faction, configName _hangar, _flatPos, _envelope, _safeDir] call ALiVE_fnc_dump;
+                                                    };
+                                                } else {
+                                                    if (_debug) then {
+                                                        ["ATO [%1] - Hangar: validator found no clear spawn position within 150m of %2 (envelope %3m) - skipped", _faction, position _x, _envelope] call ALiVE_fnc_dump;
+                                                    };
+                                                };
                                             };
                                             };
                                         };
