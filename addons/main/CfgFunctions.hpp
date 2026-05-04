@@ -163,6 +163,21 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_resolveTaskTypeChoice.sqf";
                 RECOMPILE;
             };
+            class listFactionCompositions {
+                description = "Feeder for ALiVE_CompositionChoice - returns [class, displayName] pairs for compositions valid for a given faction";
+                file = "\x\alive\addons\main\fnc_listFactionCompositions.sqf";
+                RECOMPILE;
+            };
+            class edenCompositionChoiceLoad {
+                description = "Eden attributeLoad handler for ALiVE_CompositionChoice (faction-aware composition multi-select listbox + override field)";
+                file = "\x\alive\addons\main\fnc_edenCompositionChoiceLoad.sqf";
+                RECOMPILE;
+            };
+            class edenCompositionChoiceSave {
+                description = "Eden attributeSave handler for ALiVE_CompositionChoice";
+                file = "\x\alive\addons\main\fnc_edenCompositionChoiceSave.sqf";
+                RECOMPILE;
+            };
         };
     };
 };

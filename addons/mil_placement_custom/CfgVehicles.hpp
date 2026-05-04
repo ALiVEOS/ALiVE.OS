@@ -98,7 +98,16 @@ class CfgVehicles {
                                 property = "ALiVE_mil_placement_custom_guardPatrolPercentage"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT_COMMENT"; defaultValue = """50""";
                                 class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_NONE";value="0";}; class LOW{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_LOW";value="25";}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_MEDIUM";value="50";default=1;}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_HIGH";value="75";}; class ALL{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_ALL";value="100";}; };
                         };
-                        class composition : Edit { property = "ALiVE_mil_placement_custom_composition"; displayName = "$STR_ALIVE_CMP_COMPOSITION"; tooltip = "$STR_ALIVE_CMP_COMPOSITION_COMMENT"; defaultValue = """"""; };
+                        class composition
+                        {
+                                property     = "ALiVE_mil_placement_custom_composition";
+                                displayName  = "$STR_ALIVE_CMP_COMPOSITION";
+                                tooltip      = "$STR_ALIVE_CMP_COMPOSITION_COMMENT";
+                                control      = "ALiVE_CompositionChoice_MPCustom";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['composition', _value];";
+                                defaultValue = """""";
+                        };
                         class createHQ : Combo { property = "ALiVE_mil_placement_custom_createHQ"; displayName = "$STR_ALIVE_CMP_CREATE_HQ"; tooltip = "$STR_ALIVE_CMP_CREATE_HQ_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class createFieldHQ : Combo { property = "ALiVE_mil_placement_custom_createFieldHQ"; displayName = "$STR_ALIVE_CMP_CREATE_FIELD_HQ"; tooltip = "$STR_ALIVE_CMP_CREATE_FIELD_HQ_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class placeHelis : Combo { property = "ALiVE_mil_placement_custom_placeHelis"; displayName = "$STR_ALIVE_MP_PLACE_HELI"; tooltip = "$STR_ALIVE_MP_PLACE_HELI_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };

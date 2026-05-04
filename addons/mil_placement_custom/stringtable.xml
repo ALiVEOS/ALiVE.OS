@@ -87,7 +87,7 @@
     <Chinesesimp>平民放置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_COMMENT">
-    <English>Enter in the type (HQ, Fort, Heliport etc.) or classname of a composition (Go to Config Viewer, CfgGroups > Empty and copy the classname)</English>
+    <English>Multi-select listbox of compositions valid for the module's faction (Military for WEST/EAST, Guerrilla for RESISTANCE). At spawn time the validator tries the ticked compositions in shuffled order at three search tiers (50m / 150m / 300m) and uses the first that fits the surrounding terrain, so a tight site can still get a spawn from an alternative pick in the pool. The Override field accepts free-text class names for mod compositions the listbox doesn't surface. Empty selection = no composition spawn. Multi-select: Ctrl+click toggles individual rows, Shift+click selects a range, plain click replaces with just that one row.</English>
     <Chinesesimp>输入组合的类型(总部,要塞,直升机机场等)或者组合类名</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION_BIS_A">
@@ -123,10 +123,10 @@
     <Chinesesimp>选择模块附近的总部目标,或者如果不可用,则在模块位置生成总部合成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CREATE_FIELD_HQ">
-    <English>Create Field HQ:</English>
+    <English>Auto Field HQ if empty:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CREATE_FIELD_HQ_COMMENT">
-    <English>Spawn a Field HQ composition (large building cluster) near this module's position. Validator picks a clear flat spot via a 3-tier search (50m / 150m / 300m). When Create as HQ is also enabled, the building HQ registration uses the spawned composition's buildings.</English>
+    <English>Auto-fill fallback for the Spawn Composition picker. When the picker is empty and this is set to Yes, a random FieldHQ-class composition spawns near the module (validator-checked, 3-tier 50m / 200m / 500m search). When the picker has any tick or override class, this toggle is ignored and the picked composition takes precedence. Use when the spot needs an HQ but the specific composition doesn't matter.</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_USAGE">
     <English>Place the Custom Military Objective module in the editor, select the desired Size, Priority and force composition. Custom factions can be entered in the text box (separated by a comma).</English>

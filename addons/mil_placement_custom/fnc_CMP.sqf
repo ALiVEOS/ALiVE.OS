@@ -238,6 +238,21 @@ switch(_operation) do {
         _result = _args;
     };
 
+    case "createFieldHQ": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["createFieldHQ", _args];
+        } else {
+            _args = _logic getVariable ["createFieldHQ", false];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["createFieldHQ", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+
     case "placeHelis": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeHelis", _args];
@@ -450,7 +465,24 @@ switch(_operation) do {
             // Load static data
             call ALiVE_fnc_staticDataHandler;
 
-            // Spawn the composition
+            // Spawn the composition.
+            //
+            // Track whether a user-picker composition spawned + at what
+            // position, so the createHQ block downstream can use that
+            // position as its building-search anchor (the composition's
+            // own buildings should be the HQ source when the user has
+            // picked compositions). Falls back to the createFieldHQ
+            // safePos, then to the raw module pos.
+            //
+            // Marker name + class are tracked separately so the createHQ
+            // block can delete the Custom Comp marker and emit a combined
+            // "HQ + Custom Comp (Class)" label when the HQ Building
+            // happens to BE the composition's central object.
+            private _compositionSpawned = false;
+            private _compositionSafePos = position _logic;
+            private _compositionMarkerName = "";
+            private _compositionSpawnedClass = "";
+            private _compositionEnvelope = 30;
 
             if (typeName _composition == "STRING" && _composition != "" && _composition != "false") then {
                 if (isNil QMOD(COMPOSITIONS_LOADED)) then {
@@ -461,51 +493,107 @@ switch(_operation) do {
                         _compType = "Guerrilla";
                     };
 
-                    private _comp = [_composition, _compType] call ALIVE_fnc_findComposition;
-                    if (count _comp == 0) then {
-                        private _compDef = ([_compType, [_composition], [], _faction] call ALiVE_fnc_getCompositions);
-                        if (count _compDef > 0) then {
-                            _comp = selectRandom _compDef;
+                    // The composition attribute is now a comma-separated list
+                    // of class names (multi-select picker). Parse, dedupe,
+                    // pick one at random per spawn. Legacy single-class
+                    // strings round-trip cleanly as a 1-element list.
+                    //
+                    // Strip the optional [F:sideIdx,sizeIdx,categoryIdx,
+                    // sourceIdx] prefix the Eden picker prepends for filter-
+                    // state persistence across mission save/reload. Only
+                    // the picker's LOAD handler cares about the indices;
+                    // the runtime spawn just needs the class CSV.
+                    private _compForParse = _composition;
+                    if (count _compForParse > 3 && {(_compForParse select [0, 3]) == "[F:"}) then {
+                        private _closeIdx = _compForParse find "]";
+                        if (_closeIdx > 3) then {
+                            _compForParse = _compForParse select [_closeIdx + 1];
                         };
                     };
+                    private _compClasses = [];
+                    {
+                        private _t = _x;
+                        while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+                        while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do { _t = _t select [0, count _t - 1] };
+                        if (_t != "") then { _compClasses pushBackUnique _t };
+                    } forEach ([_compForParse, ","] call CBA_fnc_split);
 
-                    if (count _comp == 0) then {
-                        ["CMP: Custom composition '%1' not found!", _composition] call ALiVE_fnc_dump;
-                    } else {
-                        // Validate spawn position. Military mode tolerates
-                        // roadside compositions (custom-objective users often
-                        // place checkpoints / camps right on a road) while
-                        // still rejecting runways, helipads, buildings, water,
-                        // steep slopes, soft surfaces. Direction is preserved
-                        // as module heading via _preferredDir.
-                        //
-                        // Three-tier progressive search:
-                        //   Tier 1 (50m)  - strict, respects user's chosen pos
-                        //   Tier 2 (150m) - mild expansion, near module
-                        //   Tier 3 (300m) - generous, composition in vicinity
-                        // Dump line reports which tier succeeded so the mission-
-                        // maker can see how disrupted the placement is.
-                        private _envelope = [_comp] call ALiVE_fnc_getCompositionRadius;
-                        private _radii = [50, 150, 300];
-                        private _compResult = [];
-                        private _tierUsed = -1;
-                        {
-                            _compResult = [_position, _x, _envelope, "military", direction _logic, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
-                            if (count _compResult > 0) exitWith { _tierUsed = _x };
-                        } forEach _radii;
+                    // Multi-class fitment search. When the picker has multiple
+                    // selections the validator tries each candidate at each
+                    // tier and picks the FIRST that fits, so a tight terrain
+                    // can still get a spawn from an alternative composition
+                    // in the user's pool. Tier-major iteration prefers tighter
+                    // placement (all candidates tried at 50m before any falls
+                    // back to 150m); within a tier the candidate order is
+                    // shuffled so multiple module instances get variety
+                    // rather than always picking the same first-listed class.
+                    //
+                    // Tier 1 (50m)  - strict, respects user's chosen pos
+                    // Tier 2 (150m) - mild expansion, near module
+                    // Tier 3 (300m) - generous, composition in vicinity
 
-                        if (count _compResult > 0) then {
-                            _compResult params ["_safePos", "_safeDir"];
-                            [_comp, _safePos, _safeDir, _faction] call ALIVE_fnc_spawnComposition;
-                            if (_debug) then {
-                                [_safePos, 4, format ["%1 - Custom Comp (%2)", _side, configName _comp], "ColorOrange", "placement.cmp.comp"] call ALIVE_fnc_placeDebugMarker;
-                                ["CMP [%1] - Custom composition %2 spawned at %3 (module pos was %4, %5m offset, search tier %6m)",
-                                    _faction, configName _comp, _safePos, _position, round (_safePos distance _position), _tierUsed] call ALiVE_fnc_dump;
-                            };
-                        } else {
-                            ["CMP [%1] - Warning: Custom composition '%2' validator found no clear spawn position within %3m of module (tried %4 search tiers) - skipped",
-                                _faction, _composition, selectMax _radii, count _radii] call ALiVE_fnc_dump;
+                    private _spawnedComp = configNull;
+                    private _spawnedSafePos = position _logic;
+                    private _spawnedSafeDir = direction _logic;
+                    private _spawnedTier = -1;
+
+                    {
+                        private _tier = _x;
+                        if (!isNull _spawnedComp) exitWith {};
+
+                        // Inline Fisher-Yates shuffle of _compClasses for
+                        // this tier's pass. No BIS_fnc_arrayShuffle dep.
+                        private _shufflePool = +_compClasses;
+                        private _shuffled = [];
+                        while {count _shufflePool > 0} do {
+                            _shuffled pushBack (_shufflePool deleteAt (floor random count _shufflePool));
                         };
+
+                        {
+                            private _class = _x;
+                            if (!isNull _spawnedComp) exitWith {};
+
+                            // Resolve composition config (findComposition first,
+                            // getCompositions substring fallback).
+                            private _comp = [_class, _compType] call ALIVE_fnc_findComposition;
+                            if (count _comp == 0) then {
+                                private _compDef = ([_compType, [_class], [], _faction] call ALiVE_fnc_getCompositions);
+                                if (count _compDef > 0) then {
+                                    _comp = selectRandom _compDef;
+                                };
+                            };
+                            if (count _comp > 0) then {
+                                private _envelope = [_comp] call ALiVE_fnc_getCompositionRadius;
+                                private _result = [_position, _tier, _envelope, "military", direction _logic, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+                                if (count _result > 0) then {
+                                    _result params ["_sp", "_sd"];
+                                    _spawnedComp = _comp;
+                                    _spawnedSafePos = _sp;
+                                    _spawnedSafeDir = _sd;
+                                    _spawnedTier = _tier;
+                                };
+                            };
+                        } forEach _shuffled;
+                    } forEach [50, 150, 300];
+
+                    if (!isNull _spawnedComp) then {
+                        [_spawnedComp, _spawnedSafePos, _spawnedSafeDir, _faction] call ALIVE_fnc_spawnComposition;
+                        _compositionSpawned = true;
+                        _compositionSafePos = _spawnedSafePos;
+                        _compositionSpawnedClass = configName _spawnedComp;
+                        // Cache the envelope so the createHQ block downstream
+                        // can size its composition-membership search to the
+                        // actual layout (small radio kit vs. a sprawling
+                        // BIS Camp Bravery have very different reaches).
+                        _compositionEnvelope = ([_spawnedComp] call ALiVE_fnc_getCompositionRadius) max 30;
+                        if (_debug) then {
+                            _compositionMarkerName = [_spawnedSafePos, 4, format ["%1 - Custom Comp (%2)", _side, _compositionSpawnedClass], "ColorOrange", "placement.cmp.comp"] call ALIVE_fnc_placeDebugMarker;
+                            ["CMP [%1] - Custom composition %2 spawned at %3 (module pos was %4, %5m offset, search tier %6m, picked from %7 selections)",
+                                _faction, _compositionSpawnedClass, _spawnedSafePos, _position, round (_spawnedSafePos distance _position), _spawnedTier, count _compClasses] call ALiVE_fnc_dump;
+                        };
+                    } else {
+                        ["CMP [%1] - Warning: None of the %2 selected compositions could be placed within 300m of module (tried 3 search tiers) - skipped (selections: '%3')",
+                            _faction, count _compClasses, _composition] call ALiVE_fnc_dump;
                     };
                 };
             };
@@ -905,19 +993,38 @@ switch(_operation) do {
             };
             // DEBUG -------------------------------------------------------------------------------------
 
-            // Create Field HQ - explicit FieldHQ composition spawn.
+            // Create Field HQ - auto-pick fallback.
             //
-            // Spawns a FieldHQ composition near the module regardless of
-            // whether real buildings exist nearby. Independent of the
-            // Create as HQ toggle - users can enable both (the createHQ
-            // block below registers an HQ Building from the spawned
-            // composition) or just createFieldHQ alone (composition
-            // spawns standalone, no building HQ registration).
+            // Spawns a random FieldHQ composition ONLY when the picker is
+            // genuinely EMPTY (no class names saved). When the user has
+            // ticked compositions in the picker but validator failed for
+            // all of them, this block does NOT substitute a different
+            // composition - the user's intent is respected and createHQ
+            // falls back to a building search at module pos instead.
+            //
+            // Behaviour matrix:
+            //   picker has selections + createFieldHQ on   -> picker comp (this block skipped)
+            //   picker has selections + createFieldHQ off  -> picker comp
+            //   picker has selections, validator fails     -> NO composition; createHQ does building search
+            //   picker empty  + createFieldHQ on           -> auto FieldHQ (this block fires)
+            //   picker empty  + createFieldHQ off          -> no composition
 
             private _fieldHQSpawned = false;
             private _fieldHQSafePos = position _logic;
+            private _fieldHQMarkerName = "";
+            private _fieldHQSpawnedClass = "";
+            private _fieldHQEnvelope = 30;
+            // Strip the picker's [F:...] prefix before checking emptiness so
+            // a saved-but-empty picker (just "[F:0,0,0,0]" with no classes)
+            // correctly evaluates as empty.
+            private _pickerCheck = _composition;
+            if (typeName _pickerCheck == "STRING" && {count _pickerCheck > 3} && {(_pickerCheck select [0, 3]) == "[F:"}) then {
+                private _closeIdx = _pickerCheck find "]";
+                if (_closeIdx > 3) then { _pickerCheck = _pickerCheck select [_closeIdx + 1] };
+            };
+            private _pickerEmpty = (typeName _pickerCheck != "STRING") || {_pickerCheck == ""} || {_pickerCheck == "false"};
 
-            if (_createFieldHQ) then {
+            if (_createFieldHQ && _pickerEmpty) then {
                 if (isNil QMOD(COMPOSITIONS_LOADED)) then {
                     private _compType = "Military";
                     If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
@@ -948,10 +1055,12 @@ switch(_operation) do {
                             [_HQ, _safePos, _safeDir, _faction] call ALIVE_fnc_spawnComposition;
                             _fieldHQSpawned = true;
                             _fieldHQSafePos = _safePos;
+                            _fieldHQSpawnedClass = configName _HQ;
+                            _fieldHQEnvelope = ([_HQ] call ALiVE_fnc_getCompositionRadius) max 30;
                             if (_debug) then {
-                                [_safePos, 4, format ["%1 - Field HQ (%2)", _side, configName _HQ], "ColorOrange", "placement.cmp.comp"] call ALIVE_fnc_placeDebugMarker;
+                                _fieldHQMarkerName = [_safePos, 4, format ["%1 - Field HQ (%2)", _side, _fieldHQSpawnedClass], "ColorOrange", "placement.cmp.comp"] call ALIVE_fnc_placeDebugMarker;
                                 ["CMP [%1] - Field HQ composition %2 spawned at %3 (module pos was %4, %5m offset, search tier %6m)",
-                                    _faction, configName _HQ, _safePos, position _logic, round (_safePos distance position _logic), _tierUsed] call ALiVE_fnc_dump;
+                                    _faction, _fieldHQSpawnedClass, _safePos, position _logic, round (_safePos distance position _logic), _tierUsed] call ALiVE_fnc_dump;
                             };
                         } else {
                             ["CMP [%1] - Warning: Field HQ validator found no clear spawn position within %2m of module (tried %3 search tiers) - composition %4 not spawned",
@@ -965,12 +1074,18 @@ switch(_operation) do {
 
             if(_createHQ) then {
 
-                // When createFieldHQ has spawned a composition, search for HQ
-                // buildings starting from the validated FieldHQ position so
-                // the composition's own buildings get registered as the HQ.
-                // Falls back to the module position when createFieldHQ is off
-                // or didn't spawn.
-                private _modulePosition = if (_fieldHQSpawned) then { _fieldHQSafePos } else { position _logic };
+                // Building-search anchor cascade: when a composition has
+                // been placed near the module, search for HQ buildings
+                // starting at that composition's validated position so
+                // its own buildings get registered as the HQ. Priority:
+                //   1. User-picker composition pos (when populated + spawned)
+                //   2. Auto-FieldHQ pos (when picker empty + createFieldHQ on)
+                //   3. Module position (no composition spawned)
+                private _modulePosition = switch (true) do {
+                    case (_compositionSpawned): { _compositionSafePos };
+                    case (_fieldHQSpawned):     { _fieldHQSafePos };
+                    default                     { position _logic };
+                };
 
                 private _nodes = [_cluster, "nodes"] call ALIVE_fnc_hashGet;
 
@@ -980,56 +1095,48 @@ switch(_operation) do {
 
                 if (count _buildings == 0) then {_buildings = [_modulePosition, _size, ALIVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes] call ALIVE_fnc_findNearObjectsByType};
 
-                // Implicit FieldHQ-composition fallback: only fires when
-                // createFieldHQ is OFF (otherwise the explicit block above
-                // already handled it - avoids double-spawn).
-                if (count _buildings == 0 && {!_createFieldHQ}) then {
-                    ["CMP - Warning no HQ locations found, spawning composition"] call ALiVE_fnc_dump;
-
-                    if (isNil QMOD(COMPOSITIONS_LOADED)) then {
-
-                        // Get a composition
-                        private _compType = "Military";
-                        If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                            _compType = "Guerrilla";
-                        };
-                        private _HQ = (selectRandom ([_compType, ["FieldHQ"], ["Large","Medium"], _faction] call ALiVE_fnc_getCompositions));
-
-                        if (isNil "_HQ") then {
-                            _HQ = (selectRandom ([_compType, ["HQ","FieldHQ"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions));
-                        };
-
-                        // Validate the FieldHQ-fallback spawn position.
-                        // Three-tier progressive search (50m / 150m / 300m)
-                        // matches the Custom Composition site - HQ-class
-                        // spawns prefer placement to skipping, but the dump
-                        // line still reports how far the validator had to
-                        // move from the user's chosen module position.
-                        if (!isNil "_HQ") then {
-                            private _envelope = [_HQ] call ALiVE_fnc_getCompositionRadius;
-                            private _radii = [50, 150, 300];
-                            private _compResult = [];
-                            private _tierUsed = -1;
-                            {
-                                _compResult = [_modulePosition, _x, _envelope, "fieldhq", direction _logic, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
-                                if (count _compResult > 0) exitWith { _tierUsed = _x };
-                            } forEach _radii;
-
-                            if (count _compResult > 0) then {
-                                _compResult params ["_safePos", "_safeDir"];
-                                [_HQ, _safePos, _safeDir, _faction] call ALIVE_fnc_spawnComposition;
-                                _buildings = [_safePos, _size, ALIVE_militaryBuildingTypes + ALIVE_militaryHQBuildingTypes] call ALIVE_fnc_findNearObjectsByType;
-                                if (_debug) then {
-                                    [_safePos, 4, format ["%1 - Field HQ Fallback (%2)", _side, configName _HQ], "ColorOrange", "placement.cmp.comp"] call ALIVE_fnc_placeDebugMarker;
-                                    ["CMP [%1] - Field HQ fallback composition %2 spawned at %3 (module pos was %4, %5m offset, search tier %6m)",
-                                        _faction, configName _HQ, _safePos, _modulePosition, round (_safePos distance _modulePosition), _tierUsed] call ALiVE_fnc_dump;
-                                };
-                            } else {
-                                ["CMP [%1] - Warning: Field HQ fallback validator found no clear spawn position within %2m of module (tried %3 search tiers) - composition %4 not spawned",
-                                    _faction, selectMax _radii, count _radii, configName _HQ] call ALiVE_fnc_dump;
-                            };
-                        };
+                // When a composition was spawned at this anchor, ADD the
+                // composition's substantial static objects to the candidate
+                // pool. Lets non-typed compositions (radar dome, watertower,
+                // checkpoint kit) count as HQ buildings even when their
+                // class names aren't in ALIVE_militaryHQBuildingTypes / the
+                // wider militaryBuildingTypes list. Closest-to-anchor wins
+                // after re-sort, so the composition's central object
+                // typically dominates over distant map-placed buildings.
+                //
+                // No implicit composition spawn here - createHQ uses
+                // EITHER the picker's spawned composition OR an existing
+                // building. Auto-FieldHQ generation is the explicit job of
+                // the Auto Field HQ if empty toggle above (which fires
+                // before this block when picker is empty).
+                // Track which objects came from the just-spawned composition
+                // so the HQ-Building marker dedupe below can identify when the
+                // chosen building is part of the composition (vs. an existing
+                // map building that happened to be nearby). Search radius is
+                // sized to the spawned composition's actual envelope so a
+                // sprawling layout (e.g. BIS Camp Bravery) still has all its
+                // objects considered, not just those within an arbitrary 30m.
+                private _compStructures = [];
+                if (_compositionSpawned || _fieldHQSpawned) then {
+                    private _searchRadius = if (_compositionSpawned) then { _compositionEnvelope } else { _fieldHQEnvelope };
+                    private _compNearby = nearestObjects [_modulePosition, [], _searchRadius];
+                    _compStructures = _compNearby select {
+                        (!(_x isKindOf "AllVehicles")) && {
+                            private _bbox = boundingBoxReal _x;
+                            _bbox params ["_bMin", "_bMax"];
+                            private _w = (_bMax select 0) - (_bMin select 0);
+                            private _l = (_bMax select 1) - (_bMin select 1);
+                            private _h = (_bMax select 2) - (_bMin select 2);
+                            (_w * _l * _h) > 8
+                        }
                     };
+                    {
+                        if !(_x in _buildings) then { _buildings pushBack _x };
+                    } forEach _compStructures;
+                    // Re-sort the combined pool by distance to anchor so
+                    // the composition's centre object (typically at safePos)
+                    // wins over map-placed buildings further out.
+                    _buildings = [_buildings, [_modulePosition], {_Input0 distance _x}, "ASCENDING"] call ALiVE_fnc_SortBy;
                 };
 
                 if (count _buildings > 0) then {
@@ -1039,8 +1146,36 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        [position _hqBuilding, 4, format ["%1 - HQ Building (%2)", _side, _faction], "ColorOrange", "placement.cmp"] call ALIVE_fnc_placeDebugMarker;
-                        ["CMP [%1] - HQ Building placed at %2 - building %3", _faction, position _hqBuilding, typeOf _hqBuilding] call ALiVE_fnc_dump;
+                        // Detect when the registered HQ Building IS one of
+                        // the composition's own objects (membership test, not
+                        // distance test - composition anchor and main object
+                        // can be many metres apart in larger layouts). When
+                        // it is, delete the redundant Custom Comp / Field HQ
+                        // marker and use a combined label on the HQ Building
+                        // marker so a single object isn't tagged twice.
+                        private _hqPos = position _hqBuilding;
+                        private _hqIsCompObj = (_hqBuilding in _compStructures);
+                        private _hqIsComp    = _compositionSpawned && _hqIsCompObj;
+                        private _hqIsFieldHQ = _fieldHQSpawned     && _hqIsCompObj;
+
+                        if (_hqIsComp && {_compositionMarkerName != ""}) then {
+                            deleteMarker _compositionMarkerName;
+                            deleteMarker (_compositionMarkerName + "_anchor");
+                        };
+                        if (_hqIsFieldHQ && {_fieldHQMarkerName != ""}) then {
+                            deleteMarker _fieldHQMarkerName;
+                            deleteMarker (_fieldHQMarkerName + "_anchor");
+                        };
+
+                        private _hqLabel = switch (true) do {
+                            case (_hqIsComp):    { format ["%1 - HQ + Custom Comp (%2)", _side, _compositionSpawnedClass] };
+                            case (_hqIsFieldHQ): { format ["%1 - HQ + Field HQ (%2)",    _side, _fieldHQSpawnedClass] };
+                            default              { format ["%1 - HQ Building (%2)",      _side, _faction] };
+                        };
+
+                        [_hqPos, 4, _hqLabel, "ColorOrange", "placement.cmp"] call ALIVE_fnc_placeDebugMarker;
+                        ["CMP [%1] - HQ Building placed at %2 - building %3 (compObj=%4, hqIsComp=%5, hqIsFieldHQ=%6, compStructuresCount=%7)",
+                            _faction, _hqPos, typeOf _hqBuilding, _hqIsCompObj, _hqIsComp, _hqIsFieldHQ, count _compStructures] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
