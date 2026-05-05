@@ -102,15 +102,28 @@ params [
     ["_envelope",   30,      [0]],
     ["_mode",       "military", [""]],
     ["_preferredDir", -1,    [0]],
-    ["_callerDebug", false, [false]]
+    ["_callerDebug", false, [false]],
+    ["_runwayClearanceMul", 1.0, [0]]
 ];
+
+// _runwayClearanceMul scales the runway/taxiway rejection radius. Default
+// 1.0 = full envelope (strict "no composition object ever intersects a
+// runway", correct for camps / FOBs / roadblocks). Tight airfields with
+// large compositions (env > ~50m) can't satisfy the strict rule because
+// the safe zone outside both runway and ocean is narrower than the
+// envelope - in that case, the caller passes a smaller multiplier (e.g.
+// mil_ato AA passes 0.6) to allow some outermost-object clipping risk
+// in exchange for actually spawning the composition. Compositions whose
+// purpose is to PROTECT the airfield (AA / SAM) are the natural use
+// case for the relaxed mode.
+if (_runwayClearanceMul <= 0) then { _runwayClearanceMul = 1.0 };
 
 if (count _centerPos < 2) exitWith { [] };
 if (count _centerPos < 3) then { _centerPos = _centerPos + [0] };
 
 _mode = toLower _mode;
 if (_mode == "fieldhq") then { _mode = "field" };
-if !(_mode in ["field", "military", "civilian", "roadblock"]) then {
+if !(_mode in ["field", "military", "civilian", "roadblock", "ato"]) then {
     _mode = "military";
 };
 
@@ -125,8 +138,12 @@ if (_debug) then {
 // ------------------------------------------------------------------------
 private _excludeRoads      = (_mode == "field");       // field-strict avoids ALL roads
 private _excludeRunways    = true;                     // always exclude
-private _excludeHelipads   = true;                     // always exclude
-// Roadblock mode SKIPS the envelope-wide building bbox check.
+// "ato" mode skips the helipad check - AA / SAM compositions placed
+// on an active airbase are EXPECTED to sit near helipads they defend.
+// Treating helipad proximity as a rejection makes the validator
+// over-reject in dense airfield environments (Stratis peninsula).
+private _excludeHelipads   = (_mode != "ato");
+// Roadblock + ato modes SKIP the envelope-wide building bbox check.
 // Roadblock compositions sit on a road centreline by design; the road
 // network already routes around buildings, and flanking buildings are
 // part of the urban context the checkpoint is supposed to live in
@@ -135,7 +152,12 @@ private _excludeHelipads   = true;                     // always exclude
 // bbox(s) intersect envelope" with N=4..24 in town tests). Field /
 // military / civilian modes keep the check - they spawn off-road and
 // nearby buildings genuinely block their footprint.
-private _excludeBuildings  = (_mode != "roadblock");   // skip in roadblock mode
+// Roadblock mode skips for the road-network reason above. "ato" mode
+// also skips - airbase-resident AA / SAM compositions are surrounded
+// by airfield infrastructure (hangars, fences, lamps, taxiway markers)
+// that the bbox volume check flags as obstacles, which would reject
+// every candidate in dense airfield environments.
+private _excludeBuildings  = !(_mode in ["roadblock", "ato"]);
 private _excludeWater      = true;                     // always exclude
 private _requireRoad       = (_mode == "roadblock");   // roadblock REQUIRES road
 private _maxAttempts       = if (_mode == "roadblock") then { 12 } else { 200 };
@@ -170,7 +192,11 @@ private _staticTerrainTypes = [
 // envelope-half.
 // ------------------------------------------------------------------------
 private _onAirfieldSurface = {
-    params ["_p", "_envHalf"];
+    // Returns true when point _p is within `_clearance` metres of any
+    // runway/taxiway segment edge. Caller passes the COMPOSITION'S full
+    // envelope as the clearance so the segment-edge proximity check
+    // accounts for objects extending all the way out from the anchor.
+    params ["_p", "_clearance"];
     private _hit = false;
     {
         _x params ["_a", "_b", "_hw"];
@@ -188,7 +214,7 @@ private _onAirfieldSurface = {
             private _dx = _px - _cx;
             private _dy = _py - _cy;
             private _dist = sqrt (_dx * _dx + _dy * _dy);
-            if (_dist <= _hw + _envHalf) exitWith { _hit = true };
+            if (_dist <= _hw + _clearance) exitWith { _hit = true };
         };
     } forEach (_runwaySegments + _taxiwaySegments);
     _hit
@@ -201,20 +227,34 @@ private _candidateClear = {
     params ["_p", "_env"];
     private _envHalf = _env / 2;
 
-    // 1. Runway / taxiway exclusion
-    if (_excludeRunways && {[_p, _envHalf] call _onAirfieldSurface}) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: airfield surface", _p] };
+    // External-feature exclusions (1-3 below) use FULL envelope as the
+    // rejection radius, not envHalf. Composition objects extend from the
+    // anchor `_p` out to `_env` in any direction; if a runway / helipad /
+    // road sits within `_env` of `_p`, the composition's outer objects
+    // can land on top of it. Using envHalf under-rejected by half the
+    // envelope - e.g. a 30m-envelope AA bunker placed with its centre
+    // 16m from a runway centreline would pass envHalf=15m but its outer
+    // sandbags reach up to 14m PAST the runway centreline, blocking the
+    // runway. Internal samples (slope, water perimeter, bbox intrusion)
+    // still use envHalf because those test the inside of the footprint.
+    //
+    // 1. Runway / taxiway exclusion. Caller can scale the rejection
+    // radius via `_runwayClearanceMul` - default 1.0 (strict, full env);
+    // mil_ato AA passes ~0.6 to allow placement on tight airfields where
+    // the strict rule would skip the spawn entirely.
+    if (_excludeRunways && {[_p, _env * _runwayClearanceMul] call _onAirfieldSurface}) exitWith {
+        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: airfield surface (clearance=%2m, mul=%3)", _p, _env * _runwayClearanceMul, _runwayClearanceMul] };
         false
     };
 
     // 2. Helipad exclusion (any HeliH within envelope)
-    if (_excludeHelipads && {count (_p nearObjects ["HeliH", _envHalf + 10]) > 0}) exitWith {
+    if (_excludeHelipads && {count (_p nearObjects ["HeliH", _env + 10]) > 0}) exitWith {
         if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: helipad nearby", _p] };
         false
     };
 
     // 3. Road exclusion (field mode only)
-    if (_excludeRoads && {count (_p nearRoads (_envHalf + 5)) > 0}) exitWith {
+    if (_excludeRoads && {count (_p nearRoads (_env + 5)) > 0}) exitWith {
         if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: road nearby (field mode)", _p] };
         false
     };
@@ -238,7 +278,13 @@ private _candidateClear = {
     //    actually returns false from _candidateClear.
     private _buildingIntruders = [];
     if (_excludeBuildings) then {
-        private _buildingCheckRadius = (_envHalf + 15) max 25;
+        // Same envelope-vs-envHalf rationale as the runway / helipad
+        // exclusions above: composition objects extend to FULL envelope
+        // from the anchor, so any building whose bbox sits within `_env`
+        // of `_p` could be clipped by an outer composition object. The
+        // +15 padding on the search radius is to catch building CENTRES
+        // outside the envelope but with bboxes that extend inside.
+        private _buildingCheckRadius = (_env + 15) max 25;
         private _allHits = nearestObjects [_p, [], _buildingCheckRadius];
 
         _buildingIntruders = _allHits select {
@@ -258,7 +304,7 @@ private _candidateClear = {
                     private _cy = ((_pLocal select 1) max (_bMin select 1)) min (_bMax select 1);
                     private _dx = (_pLocal select 0) - _cx;
                     private _dy = (_pLocal select 1) - _cy;
-                    sqrt ((_dx * _dx) + (_dy * _dy)) < _envHalf
+                    sqrt ((_dx * _dx) + (_dy * _dy)) < _env
                 }
             }
         };

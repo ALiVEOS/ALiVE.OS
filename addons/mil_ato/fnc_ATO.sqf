@@ -1757,83 +1757,20 @@ switch(_operation) do {
 
                 // If available, place 1 AA composition or static AA by HQ
 
-                if (isNil QMOD(COMPOSITIONS_LOADED)) then {
-
-                    // Spawn a AA composition
-                    private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
-                    private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
-                    // Debug-only runway marker visualisation - validator handles
-                    // runway exclusion natively (see Field ATO comment above).
-                    private _runwayMarkers = [_pos,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
-
-                    private _searchString = ["AA_Bunker","SAM_Site","SAM_Bunker","AA_Site"];
-
-                    // Get a composition
-                    private _compType = "Military";
-                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                        _compType = "Guerrilla";
-                    };
-
-                    // Find an Anti Air site or SAM Site
-                    private _AA = selectRandom ([_compType, ["fort"], [], _faction, false, _searchString] call ALiVE_fnc_getCompositions);
-
-                    if (isNil "_AA") then { // Look for smaller AA bunker
-                        _AA = selectRandom ([_compType, ["fort"], [], _faction, false, ["AntiAirBunker"]] call ALiVE_fnc_getCompositions);
-                        _searchString = ["AntiAirBunker"];
-                    };
-
-                    if !(isNil "_AA") then {
-                        // Road-tangent preferred direction. Computed against
-                        // cluster centre (validator hasn't run yet).
-                        private _nearRoad = [_pos, 750, true] call ALiVE_fnc_getClosestRoad;
-                        private _direction = if (_nearRoad distance _pos > 5) then {
-                            private _road = roadat _nearRoad;
-                            private _roadConnectedTo = roadsConnectedTo _road;
-                            if (count _roadConnectedTo > 0) then {
-                                private _connectedRoad = _roadConnectedTo select 0;
-                                (_road getDir _connectedRoad)
-                            } else {
-                                90
-                            };
-                        } else {
-                            0
-                        };
-
-                        // Validator wiring. AA / SAM compositions are smaller
-                        // than the Field ATO (typical envelope 20-35m) so a
-                        // tighter clear-circle requirement applies here. The
-                        // search radius _size matches the cluster footprint.
-                        private _envelope = [_AA] call ALiVE_fnc_getCompositionRadius;
-                        private _result = [_pos, _size, _envelope, "military", _direction, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
-                        if (count _result == 0) exitWith {
-                            ["ATO [%1] - AA composition: validator found no clear spawn position within %2m of %3 (envelope %4m) - skipped", _faction, _size, _pos, _envelope] call ALiVE_fnc_dump;
-                        };
-                        _result params ["_flatPos", "_safeDir"];
-
-                        [_flatPos, _compType, ["fort"], _faction, [], 2, 0, 0, 0, 0, false, _searchString, _safeDir] call ALiVE_fnc_spawnRandomPopulatedComposition;
-
-                        if (_debug) then {
-                            ["ATO %1 - Placing %4 AA: %2 at %3 (envelope=%5m, dir=%6)", _logic, _AA, _flatPos, _faction, _envelope, _safeDir] call ALiVE_fnc_dump;
-                            private _atoSide = getNumber ((_faction call ALiVE_fnc_configGetFactionClass) >> "side") call ALIVE_fnc_sideNumberToText;
-                            [_flatPos, 4, format ["%1 - AA Site (%2)", _atoSide, _faction], "ColorPink", "placement.ato"] call ALIVE_fnc_placeDebugMarker;
-                        };
-
-                        // Add crew to SAM or AA or man static (crew are not
-                        // stored as part of composition).
-                        private _vehicles = nearestObjects [_flatPos, ["AAA_System_01_base_F","SAM_System_01_base_F","SAM_System_02_base_F"], 70];
-                        {
-                            // Create profiles that are not despawned? This ensures they are put back after restart
-                            createVehicleCrew _x;
-                            if (side _x == WEST) then {
-                                [_x, "Green", [], false] call BIS_fnc_initVehicle;
-                            };
-                        } forEach _vehicles;
-                    } else {
-                        // No AA composition available for this faction.
-                        // Static AA spawn fallback intentionally not
-                        // implemented (legacy behaviour); kept as a stub
-                        // for future Phase 4 follow-up.
-                    };
+                // AA placement intentionally stubbed pending the unit-based
+                // replacement (queued strategy memo - airbase AA unit
+                // placement). The previous composition-based path here
+                // spawned mostly decorative scenery (sandbags, camo netting,
+                // occasional non-functional AA system) without delivering
+                // actual AA cover for the airbase. The replacement design
+                // spawns crewed AA / SAM units at strategic airfield
+                // positions with mission-maker multi-select picker + manual
+                // class field for mod overrides.
+                //
+                // Until the replacement lands, the placeAA toggle is
+                // honoured (logged here) but no spawn occurs.
+                if (isNil QMOD(COMPOSITIONS_LOADED) && _debug) then {
+                    ["ATO [%1] - placeAA enabled but unit-based AA placement not yet implemented (composition path retired) - no AA spawned this run", _faction] call ALiVE_fnc_dump;
                 };
             };
 
