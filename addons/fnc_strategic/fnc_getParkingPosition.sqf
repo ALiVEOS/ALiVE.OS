@@ -104,7 +104,17 @@ for "_i" from 1 to 4 do {
    _x0 = (_position) select 0;
    _y0 = (_position) select 1;
    _distanceFromCenterLineOfRoad = abs((_y2 - _y1) * _x0 - (_x2 - _x1) * _y0 + (_x2 * _y1) - (_y2 * _x1)) / (_P1 distance2D _P2);
-	 _nearbyObjects = (nearestObjects [_position, ["house","Wreck_Base","Ruins","Building","land_vn_cave_base","Car", "Truck", "Tank", "Plane", "Helicopter"], _nearbyObjectdistance]) + (nearestTerrainObjects [_position, ["BUILDING","BUNKER", "BUSH","BUSSTOP","CHAPEL","CHURCH","CROSS","FENCE","FOREST BORDER","FOREST SQUARE","FOREST TRIANGLE","FOREST","FORTRESS","FOUNTAIN","FUELSTATION","HIDE","HOSPITAL","HOUSE","LIGHTHOUSE","POWER LINES","POWERSOLAR","POWERWAVE","POWERWIND","QUAY","RAILWAY","ROCK","ROCKS","RUIN","SHIPWRECK","SMALL TREE","STACK", "TOURISM", "TRANSMITTER", "TREE","VIEW-TOWER", "WALL", "WATERTOWER","Wreck_Base"],_vehicleMapSize + _nearbyObjectdistance]);
+	 // Sweep radius for the OBJECT pass scales with vehicle mapSize the
+	 // same way the TERRAIN pass already does. Original code used a flat
+	 // 15m for objects; for long vehicles (HEMTT mapSize 10, MTVR mapSize
+	 // 8) that misses mission-placed buildings / walls / wrecks whose
+	 // origins sit 16-25m from the candidate but whose bbox reaches
+	 // inward into the vehicle's footprint. Symptom: vehicle spawns
+	 // clipped to a structure, engine resolves with explosion. The
+	 // terrain pass already uses _vehicleMapSize + _nearbyObjectdistance;
+	 // mirroring that on the object pass closes the gap for the most
+	 // common cluttered-town spawn cases.
+	 _nearbyObjects = (nearestObjects [_position, ["house","Wreck_Base","Ruins","Building","land_vn_cave_base","Car", "Truck", "Tank", "Plane", "Helicopter"], _vehicleMapSize + _nearbyObjectdistance]) + (nearestTerrainObjects [_position, ["BUILDING","BUNKER", "BUSH","BUSSTOP","CHAPEL","CHURCH","CROSS","FENCE","FOREST BORDER","FOREST SQUARE","FOREST TRIANGLE","FOREST","FORTRESS","FOUNTAIN","FUELSTATION","HIDE","HOSPITAL","HOUSE","LIGHTHOUSE","POWER LINES","POWERSOLAR","POWERWAVE","POWERWIND","QUAY","RAILWAY","ROCK","ROCKS","RUIN","SHIPWRECK","SMALL TREE","STACK", "TOURISM", "TRANSMITTER", "TREE","VIEW-TOWER", "WALL", "WATERTOWER","Wreck_Base"],_vehicleMapSize + _nearbyObjectdistance]);
 	 if (count _blacklist == 0) then {_blacklist = ["Land_BarGate_F"];};
 	 { 
 		 _excludedObject = (typeOf _x) in _blacklist;
