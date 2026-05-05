@@ -469,6 +469,221 @@ class Cfg3DEN
             attributeSave = "[_this, 'customHerdClasses'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenItemChoiceMultiSave.sqf'";
         };
 
+        // ALiVE_FilteredMultiSelect_Base:
+        //   Consolidated multi-select listbox + single-axis filter row +
+        //   Override Edit. Used by amb_civ_placement (Animal Classes -
+        //   poultry/herd categories) and amb_civ_population (Humanitarian
+        //   Items - water/ration categories) to replace the previous
+        //   per-category two-listbox-plus-Manual layout.
+        //
+        //   Layout (53 grid units total):
+        //     y=0   h=5   Title                (left col)
+        //     y=0   h=4   FilterLabel + Next   (right col, top of value column)
+        //     y=5   h=42  Listbox              (right col, multi-select)
+        //     y=48  h=5   Override Label/Edit  (free-text mod classes)
+        //
+        //   Filter cycle button (idc 1210) cycles through ["All", cat1,
+        //   cat2, ...] and HIDES rows outside the active category. The
+        //   cumulative selection set survives cycling - LOAD/SAVE store
+        //   ticks on the controlsGroup namespace under
+        //   alive_selectedClasses, same race-avoidance pattern as the
+        //   composition picker (gate flag during programmatic re-tick).
+        //
+        //   Storage shape: a single STRING attribute on the logic in
+        //   structured form `cat1:Class1,Class2;cat2:Class3` so one
+        //   consolidated SQM slot replaces N per-category slots. Runtime
+        //   reads the consolidated key first; legacy per-category attrs
+        //   stay defined as hidden back-compat aliases so missions saved
+        //   pre-consolidation still resolve via their existing logic
+        //   vars when the consolidated key is empty.
+        class ALiVE_FilteredMultiSelect_Base: ctrlControlsGroupNoScrollbars {
+            type  = 15;
+            style = 0;
+            idc   = -1;
+            x = 0;
+            y = 0;
+            w = "130 * (pixelW * pixelGrid * 0.5)";
+            h = "53 * (pixelH * pixelGrid * 0.5)";
+            colorBackground[] = {0, 0, 0, 0};
+            colorText[]       = {1, 1, 1, 1};
+            text   = "";
+            font   = "RobotoCondensed";
+            sizeEx = "pixelH * pixelGrid * 2.2";
+
+            class VScrollbar {};
+            class HScrollbar {};
+
+            class controls {
+                class Title: ctrlStatic {
+                    idc      = 101;
+                    type     = 0;
+                    style    = 1;
+                    x        = 0;
+                    y        = 0;
+                    w        = "48 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0};
+                    colorText[]       = {1, 1, 1, 0.9};
+                    text     = "Items:";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 2.2";
+                    tooltip  = "Tick items from the listbox. Filter narrows by category. Multi-select: Ctrl+click toggles individual rows, Shift+click selects a range, plain click replaces the selection with just that one row. Override field accepts free-text class names for mod entries the listbox doesn't surface.";
+                    tooltipColorShade[] = {0, 0, 0, 1};
+                    tooltipColorText[]  = {1, 1, 1, 1};
+                    tooltipColorBox[]   = {0, 0, 0, 1};
+                };
+
+                class FilterLabel: ctrlStatic {
+                    idc      = 1200;
+                    type     = 0;
+                    style    = 0;
+                    x        = "48 * (pixelW * pixelGrid * 0.5)";
+                    y        = 0;
+                    w        = "65 * (pixelW * pixelGrid * 0.5)";
+                    h        = "4 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0.5};
+                    colorText[]       = {1, 0.62, 0, 1};
+                    text     = "Type: All";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    tooltip  = "Filter the listbox by category. Click Next > to cycle through available categories.";
+                    tooltipColorShade[] = {0, 0, 0, 1};
+                    tooltipColorText[]  = {1, 1, 1, 1};
+                    tooltipColorBox[]   = {0, 0, 0, 1};
+                };
+
+                class FilterNext: ctrlButton {
+                    idc      = 1210;
+                    type     = 1;
+                    style    = 2;
+                    x        = "115 * (pixelW * pixelGrid * 0.5)";
+                    y        = 0;
+                    w        = "15 * (pixelW * pixelGrid * 0.5)";
+                    h        = "4 * (pixelH * pixelGrid * 0.5)";
+                    text     = "Next >";
+                    default  = 0;
+                    colorBackground[]        = {1, 0.62, 0, 0.6};
+                    colorBackgroundDisabled[]= {0.4, 0.4, 0.4, 0.5};
+                    colorBackgroundActive[]  = {1, 0.62, 0, 1};
+                    colorFocused[]           = {1, 0.62, 0, 1};
+                    colorBackgroundFocused[] = {1, 0.62, 0, 1};
+                    colorText[]              = {1, 1, 1, 1};
+                    colorDisabled[]          = {1, 1, 1, 0.25};
+                    colorBorder[]            = {0, 0, 0, 1};
+                    borderSize               = 0;
+                    offsetX = 0; offsetY = 0; offsetPressedX = 0; offsetPressedY = 0;
+                    colorShadow[] = {0, 0, 0, 0};
+                    soundEnter[]  = {"", 0, 0};
+                    soundPush[]   = {"", 0, 0};
+                    soundClick[]  = {"", 0, 0};
+                    soundEscape[] = {"", 0, 0};
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.6";
+                };
+
+                class List: ctrlListBox {
+                    idc = 100;
+                    type = 5;            // CT_LISTBOX
+                    style = 16 + 0x20;   // ST_FRAME + LB_MULTI
+                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    y = "5 * (pixelH * pixelGrid * 0.5)";
+                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    h = "42 * (pixelH * pixelGrid * 0.5)";
+
+                    color[]                  = {1, 0.62, 0, 1};
+                    colorActive[]            = {0, 0, 0, 0.5};
+                    colorFocused[]           = {0, 0, 0, 0.5};
+                    colorHover[]             = {0, 0, 0, 0.5};
+                    colorText[]              = {1, 1, 1, 1};
+                    colorBackground[]        = {0, 0, 0, 0.5};
+                    colorSelect[]            = {0, 0, 0, 1};
+                    colorSelect2[]           = {0, 0, 0, 1};
+                    colorSelectBackground[]  = {1, 0.62, 0, 1};
+                    colorSelectBackground2[] = {1, 0.62, 0, 1};
+                    colorDisabled[]          = {1, 1, 1, 0.25};
+                    shadow                   = 0;
+                    colorShadow[]            = {0, 0, 0, 0};
+
+                    tooltip  = "Multi-select: Ctrl+click toggles individual rows. Shift+click selects a range. Plain click replaces the selection with just that one row. Filtered rows from other categories are hidden but their ticks are preserved across cycles.";
+                    tooltipColorShade[] = {0, 0, 0, 1};
+                    tooltipColorText[]  = {1, 1, 1, 1};
+                    tooltipColorBox[]   = {0, 0, 0, 1};
+
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 2.0";
+                    rowHeight = "pixelH * pixelGrid * 2.4";
+                    period   = 1.2;
+
+                    soundSelect[] = {"", 0, 0};
+                    maxHistoryDelay = 1.0;
+
+                    class ListScrollBar {
+                        color[]         = {1, 1, 1, 0.6};
+                        colorActive[]   = {1, 1, 1, 1};
+                        colorDisabled[] = {1, 1, 1, 0.3};
+                        arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+                        arrowFull  = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+                        border     = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+                        thumb      = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+                    };
+                };
+
+                class OverrideLabel: ctrlStatic {
+                    idc      = 103;
+                    type     = 0;
+                    style    = 1;
+                    x        = 0;
+                    y        = "48 * (pixelH * pixelGrid * 0.5)";
+                    w        = "48 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0};
+                    colorText[]       = {1, 1, 1, 0.7};
+                    text     = "Override entries:";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 2.2";
+                    tooltip  = "Free-text comma-separated class names for mod entries the listbox doesn't surface. Combined with the listbox ticks above at save time.";
+                    tooltipColorShade[] = {0, 0, 0, 1};
+                    tooltipColorText[]  = {1, 1, 1, 1};
+                    tooltipColorBox[]   = {0, 0, 0, 1};
+                };
+
+                class Override: ctrlEdit {
+                    idc      = 102;
+                    type     = 2;
+                    style    = 0;
+                    x        = "48 * (pixelW * pixelGrid * 0.5)";
+                    y        = "48 * (pixelH * pixelGrid * 0.5)";
+                    w        = "82 * (pixelW * pixelGrid * 0.5)";
+                    h        = "5 * (pixelH * pixelGrid * 0.5)";
+                    text     = "";
+                    colorBackground[] = {0, 0, 0, 0.5};
+                    colorText[]       = {1, 1, 1, 1};
+                    colorSelection[]  = {1, 0.62, 0, 0.6};
+                    colorDisabled[]   = {1, 1, 1, 0.25};
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    autocomplete = "";
+                    canModify = 1;
+                };
+            };
+        };
+
+        // Animal subclass: poultry + herd categories. Wires the LOAD
+        // handler with the legacy per-category varNames + their Manual
+        // back-compat partners so existing missions migrate cleanly into
+        // the consolidated picker.
+        class ALiVE_AnimalChoiceMulti_Filtered: ALiVE_FilteredMultiSelect_Base {
+            attributeLoad = "[_this, 'CfgALiVEAmbientAnimals', 'poultry,herd', 'customPoultryClasses,customHerdClasses', ['Hen_random_F','Cock_random_F','Goat_random_F','Sheep_random_F'], _value, '$STR_ALIVE_AMBCP_ANIMAL_CLASSES', 'customPoultryClassesManual,customHerdClassesManual', 'customAnimalClasses'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFilteredMultiSelectLoad.sqf'";
+            attributeSave = "[_this, 'CfgALiVEAmbientAnimals', 'poultry,herd', 'customPoultryClasses,customHerdClasses', 'customPoultryClassesManual,customHerdClassesManual'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFilteredMultiSelectSave.sqf'";
+        };
+
+        // Item subclass: water + ration categories. Same shape as the
+        // animal variant but reads CfgALiVEHumanitarianItems.
+        class ALiVE_ItemChoiceMulti_Filtered: ALiVE_FilteredMultiSelect_Base {
+            attributeLoad = "[_this, 'CfgALiVEHumanitarianItems', 'water,ration', 'customWaterItems,customHumRatItems', [], _value, '$STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS', 'customWaterItemsManual,customHumRatItemsManual', 'customHumanitarianItems'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFilteredMultiSelectLoad.sqf'";
+            attributeSave = "[_this, 'CfgALiVEHumanitarianItems', 'water,ration', 'customWaterItems,customHumRatItems', 'customWaterItemsManual,customHumRatItemsManual'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFilteredMultiSelectSave.sqf'";
+        };
+
         // ALiVE_FactionStaticDataChoice family:
         //   Lets a mission-maker override the per-faction static-data
         //   registries (mil_logistics ground / air transport / airdrop

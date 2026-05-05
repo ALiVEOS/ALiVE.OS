@@ -492,6 +492,12 @@
     <Chinese>大量環境動物</Chinese>
     <Chinesesimp>较多周围的环境动物</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_AMBCP_ANIMAL_CLASSES">
+    <English>Animal Classes:</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_ANIMAL_CLASSES_COMMENT">
+    <English>Animal classnames spawned as ambient civilian fauna. Filter cycles between All / Poultry / Herd; ticks survive cycling so the cumulative selection set is what gets used at runtime. Poultry spawn near civilian buildings inside towns; herd spawn in open countryside outside town footprints. Auto-detected entries from loaded mods (gated by CfgALiVEAmbientAnimals registry). Vanilla A3 hens, cockerels, goats and sheep are pre-ticked on first placement. The Override Entries field accepts free-text comma-separated class names for mod entries not in the registry; combined with listbox ticks at save time. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_POULTRY_CLASSES">
     <English>Poultry Classes:</English>

@@ -116,6 +116,7 @@ switch(_operation) do {
             "ambientVehicleAmount",
             "ambientVehicleFaction",
             "ambientAnimalAmount",
+            "customAnimalClasses",
             "customPoultryClasses",
             "customPoultryClassesManual",
             "customHerdClasses",
@@ -600,53 +601,77 @@ switch(_operation) do {
             // register with the cluster handler or the agent system -
             // they're decorative ambient life.
             if (_ambientAnimalAmount > 0) then {
-                // Resolve the poultry / herd pools from the per-attribute
-                // multi-select listboxes plus the manual-override edit
-                // fields. Multi-select is the registry-driven path
-                // (CfgALiVEAmbientAnimals); manual is for classnames the
-                // mission-maker knows about that aren't in the registry.
-                // Final pool = union of (multi-select selection) +
-                // (manual override, parsed as SQF array literal or CSV).
+                // Resolve the poultry / herd pools. Priority cascade:
+                //   1. Consolidated `customAnimalClasses` (preferred,
+                //      written by the new ALiVE_AnimalChoiceMulti_Filtered
+                //      picker). Structured-format string
+                //          poultry:Class1,Class2;herd:Class3,Class4
+                //      with one segment per category.
+                //   2. Legacy per-category attrs union with their Manual
+                //      back-compat partners (only consulted when the
+                //      consolidated key is empty - i.e. mission saved
+                //      before the consolidated picker was introduced).
+                //   3. Vanilla fallback when both the listbox and the
+                //      legacy attrs are empty.
+                private _consolidatedRaw = _logic getVariable ["customAnimalClasses", ""];
+                private _consolidatedBuckets = createHashMap;
+                if (_consolidatedRaw isEqualType "" && {_consolidatedRaw != ""}) then {
+                    {
+                        private _segment = _x;
+                        private _colonIdx = _segment find ":";
+                        if (_colonIdx > 0) then {
+                            private _segCat = toLower (_segment select [0, _colonIdx]);
+                            private _classCsv = _segment select [_colonIdx + 1];
+                            private _arr = _consolidatedBuckets getOrDefault [_segCat, []];
+                            {
+                                private _p = _x;
+                                while {count _p > 0 && {(_p select [0,1]) == " "}} do { _p = _p select [1] };
+                                while {count _p > 0 && {(_p select [count _p - 1, 1]) == " "}} do { _p = _p select [0, count _p - 1] };
+                                if (_p != "") then { _arr pushBackUnique _p };
+                            } forEach ([_classCsv, ","] call CBA_fnc_split);
+                            _consolidatedBuckets set [_segCat, _arr];
+                        };
+                    } forEach ([_consolidatedRaw, ";"] call CBA_fnc_split);
+                };
+
                 private _fnc_resolvePool = {
-                    params ["_logicVar", "_manualVar", "_vanillaFallback"];
-                    private _multiRaw = _logic getVariable [_logicVar, ""];
-                    private _manualRaw = _logic getVariable [_manualVar, ""];
+                    params ["_category", "_logicVar", "_manualVar", "_vanillaFallback"];
                     private _pool = [];
 
-                    // Parse multi-select. Same forms accepted by the load
-                    // handler: SQF array literal, CSV, or single name.
-                    if (_multiRaw isEqualType "" && {_multiRaw != ""}) then {
-                        if ((_multiRaw select [0,1]) == "[") then {
-                            private _parsed = parseSimpleArray _multiRaw;
-                            if (typeName _parsed == "ARRAY") then {
-                                { if (typeName _x == "STRING" && {_x != ""}) then { _pool pushBackUnique _x } } forEach _parsed;
+                    // Path 1: consolidated picker output for this category
+                    private _bucket = _consolidatedBuckets getOrDefault [toLower _category, []];
+                    if (count _bucket > 0) then {
+                        { _pool pushBackUnique _x } forEach _bucket;
+                    } else {
+                        // Path 2: legacy listbox + Manual union (back-compat)
+                        private _multiRaw = _logic getVariable [_logicVar, ""];
+                        private _manualRaw = _logic getVariable [_manualVar, ""];
+                        if (_multiRaw isEqualType "" && {_multiRaw != ""}) then {
+                            if ((_multiRaw select [0,1]) == "[") then {
+                                private _parsed = parseSimpleArray _multiRaw;
+                                if (typeName _parsed == "ARRAY") then {
+                                    { if (typeName _x == "STRING" && {_x != ""}) then { _pool pushBackUnique _x } } forEach _parsed;
+                                };
+                            } else {
+                                {
+                                    private _p = _x;
+                                    while {count _p > 0 && {(_p select [0, 1]) == " "}} do { _p = _p select [1] };
+                                    while {count _p > 0 && {(_p select [count _p - 1, 1]) == " "}} do { _p = _p select [0, count _p - 1] };
+                                    if (_p != "") then { _pool pushBackUnique _p };
+                                } forEach ([_multiRaw, ","] call CBA_fnc_split);
                             };
-                        } else {
+                        };
+                        if (_manualRaw isEqualType "" && {_manualRaw != ""}) then {
                             {
                                 private _p = _x;
                                 while {count _p > 0 && {(_p select [0, 1]) == " "}} do { _p = _p select [1] };
                                 while {count _p > 0 && {(_p select [count _p - 1, 1]) == " "}} do { _p = _p select [0, count _p - 1] };
                                 if (_p != "") then { _pool pushBackUnique _p };
-                            } forEach ([_multiRaw, ","] call CBA_fnc_split);
+                            } forEach ([_manualRaw, ","] call CBA_fnc_split);
                         };
                     };
 
-                    // Append manual-override entries (CSV).
-                    if (_manualRaw isEqualType "" && {_manualRaw != ""}) then {
-                        {
-                            private _p = _x;
-                            while {count _p > 0 && {(_p select [0, 1]) == " "}} do { _p = _p select [1] };
-                            while {count _p > 0 && {(_p select [count _p - 1, 1]) == " "}} do { _p = _p select [0, count _p - 1] };
-                            if (_p != "") then { _pool pushBackUnique _p };
-                        } forEach ([_manualRaw, ","] call CBA_fnc_split);
-                    };
-
-                    // Vanilla fallback if the user emptied both fields.
-                    // Mission-maker can disable this category by setting
-                    // ambientAnimalAmount to NONE; deselecting all classes
-                    // in the listbox + leaving manual blank otherwise
-                    // falls back to the canonical pool so the feature
-                    // doesn't silently no-op.
+                    // Path 3: vanilla fallback if everything resolved empty
                     if (count _pool == 0) then {
                         _pool = _vanillaFallback;
                     };
@@ -655,8 +680,8 @@ switch(_operation) do {
                     _pool select { isClass (configFile >> "CfgVehicles" >> _x) }
                 };
 
-                private _poultryPool = ["customPoultryClasses", "customPoultryClassesManual", ["Hen_random_F", "Cock_random_F"]] call _fnc_resolvePool;
-                private _herdPool    = ["customHerdClasses",    "customHerdClassesManual",    ["Goat_random_F", "Sheep_random_F"]] call _fnc_resolvePool;
+                private _poultryPool = ["poultry", "customPoultryClasses", "customPoultryClassesManual", ["Hen_random_F", "Cock_random_F"]] call _fnc_resolvePool;
+                private _herdPool    = ["herd",    "customHerdClasses",    "customHerdClassesManual",    ["Goat_random_F", "Sheep_random_F"]] call _fnc_resolvePool;
 
                 private _countPoultry = 0;
                 private _countHerd = 0;

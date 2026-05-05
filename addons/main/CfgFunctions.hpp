@@ -178,6 +178,16 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_edenCompositionChoiceSave.sqf";
                 RECOMPILE;
             };
+            class edenFilteredMultiSelectLoad {
+                description = "Eden attributeLoad handler for ALiVE_FilteredMultiSelect_Base derivatives (single-axis filtered listbox + override edit, consolidated structured-format storage)";
+                file = "\x\alive\addons\main\fnc_edenFilteredMultiSelectLoad.sqf";
+                RECOMPILE;
+            };
+            class edenFilteredMultiSelectSave {
+                description = "Eden attributeSave handler for ALiVE_FilteredMultiSelect_Base derivatives";
+                file = "\x\alive\addons\main\fnc_edenFilteredMultiSelectSave.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
