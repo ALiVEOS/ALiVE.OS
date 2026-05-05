@@ -122,7 +122,31 @@ for "_i" from 1 to 4 do {
 		 };
 		 [];
 	 };
-	
+
+	 // Overhead-obstacle guard. The 2D nearbyObjects sweep above misses
+	 // structures whose footprint centre is outside the 20m radius but
+	 // whose roof extends over the candidate position - open sheds,
+	 // fuel-station canopies, awnings, hangar interiors. Without this,
+	 // the vehicle spawns at z=1m with its body protruding into the
+	 // roof's collision volume; engine resolves spawn-inside-collision
+	 // by exploding the vehicle. Cast an upward ray from the candidate
+	 // to the vehicle's bbox height (+0.5m margin) and reject if
+	 // anything is in the way - the for loop tries the next road
+	 // segment, falling through to no-vehicle if all 4 attempts fail.
+	 private _vehBox = [_vehicleClass] call ALIVE_fnc_getVehicleBoundingBox;
+	 private _vehHeight = (_vehBox param [2, 2.5]) max 1.5;
+	 private _overheadHits = lineIntersectsObjs [
+		 AGLToASL [_position#0, _position#1, 0.5],
+		 AGLToASL [_position#0, _position#1, _vehHeight + 0.5],
+		 objNull, objNull, true, 1, "GEOM"
+	 ];
+	 if (count _overheadHits > 0) exitWith {
+		 if(_debug) then {
+			 ["Overhead obstacle, exiting (%1)", typeOf (_overheadHits#0)] call ALiVE_fnc_dump;
+		 };
+		 [];
+	 };
+
 	 if (_distanceFromCenterLineOfRoad < _minDistanceFromCenterLineOfRoad) exitWith {
 		 if(_debug) then {
 			 ["Too close to the center line, exiting"] call ALiVE_fnc_dump;
