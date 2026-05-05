@@ -164,30 +164,35 @@ class CfgVehicles {
             class HDR_HUMANITARIAN : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_HUMANITARIAN"; displayName = "HUMANITARIAN"; };
             class humanitarianHostilityChance : Combo { property = "ALiVE_amb_civ_population_humanitarianHostilityChance"; displayName = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE"; tooltip = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT"; defaultValue = """20"""; class Values { class LOW{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_LOW";value="20";default=1;}; class MEDIUM{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_MEDIUM";value="40";}; class HIGH{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_HIGH";value="60";}; class EXTREME{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_EXTREME";value="80";}; }; };
             class maxAllowAid : Edit { property = "ALiVE_amb_civ_population_maxAllowAid"; displayName = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID"; tooltip = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT"; defaultValue = """3"""; };
-            class customWaterItems
+            // Consolidated Humanitarian Items picker (replaces the
+            // previous four-attribute layout: per-category listbox +
+            // per-category Manual edit + spacer). Stored in structured
+            // format "water:Class1,Class2;ration:Class3,Class4" via
+            // the ALiVE_ItemChoiceMulti_Filtered control. Runtime
+            // resolver in fnc_civilianPopulationSystemInit.sqf prefers
+            // this attribute; legacy per-category attrs below remain
+            // defined as hidden back-compat aliases so missions saved
+            // before consolidation still resolve via their existing
+            // logic vars when the consolidated key is empty.
+            class customHumanitarianItems
             {
-                property     = "ALiVE_amb_civ_population_customWaterItems";
-                displayName  = "$STR_ALIVE_CIV_POP_WATER_ITEMS";
-                tooltip      = "$STR_ALIVE_CIV_POP_WATER_ITEMS_COMMENT";
-                control      = "ALiVE_ItemChoiceMulti_Water";
+                property     = "ALiVE_amb_civ_population_customHumanitarianItems";
+                displayName  = "$STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS";
+                tooltip      = "$STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS_COMMENT";
+                control      = "ALiVE_ItemChoiceMulti_Filtered";
                 typeName     = "STRING";
-                expression   = "_this setVariable ['customWaterItems', _value];";
-                defaultValue = """[]""";
+                expression   = "_this setVariable ['customHumanitarianItems', _value];";
+                defaultValue = """""";
             };
-            class customWaterItemsManual : Edit { property = "ALiVE_amb_civ_population_customWaterItemsManual"; displayName = "$STR_ALIVE_CIV_POP_ITEMS_MANUAL"; tooltip = "$STR_ALIVE_CIV_POP_ITEMS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-            class SPACER_CUSTOM_WATER : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_SPACER_CUSTOM_WATER"; displayName = " "; };
-            class customHumRatItems
-            {
-                property     = "ALiVE_amb_civ_population_customHumRatItems";
-                displayName  = "$STR_ALIVE_CIV_POP_HUMRAT_ITEMS";
-                tooltip      = "$STR_ALIVE_CIV_POP_HUMRAT_ITEMS_COMMENT";
-                control      = "ALiVE_ItemChoiceMulti_Ration";
-                typeName     = "STRING";
-                expression   = "_this setVariable ['customHumRatItems', _value];";
-                defaultValue = """[]""";
-            };
-            class customHumRatItemsManual : Edit { property = "ALiVE_amb_civ_population_customHumRatItemsManual"; displayName = "$STR_ALIVE_CIV_POP_ITEMS_MANUAL"; tooltip = "$STR_ALIVE_CIV_POP_ITEMS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-            class SPACER_CUSTOM_HUMRAT : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_SPACER_CUSTOM_HUMRAT"; displayName = " "; };
+            // Hidden legacy aliases - SQM-stored values from missions
+            // saved before the consolidated picker existed are still
+            // pushed onto the logic at scenario init via these
+            // expressions, and the runtime resolver falls back to
+            // them when customHumanitarianItems is empty.
+            class customWaterItems        { property = "ALiVE_amb_civ_population_customWaterItems";        control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['customWaterItems', _value];";        typeName = "STRING"; displayName = ""; };
+            class customWaterItemsManual  { property = "ALiVE_amb_civ_population_customWaterItemsManual";  control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['customWaterItemsManual', _value];";  typeName = "STRING"; displayName = ""; };
+            class customHumRatItems       { property = "ALiVE_amb_civ_population_customHumRatItems";       control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['customHumRatItems', _value];";       typeName = "STRING"; displayName = ""; };
+            class customHumRatItemsManual { property = "ALiVE_amb_civ_population_customHumRatItemsManual"; control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['customHumRatItemsManual', _value];"; typeName = "STRING"; displayName = ""; };
 
             // ---- Advanced Civilians - General -----------------------------------
             class HDR_ADVCIV : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV"; displayName = "ADVANCED CIVILIANS - GENERAL"; };

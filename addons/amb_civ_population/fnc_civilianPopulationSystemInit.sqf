@@ -45,17 +45,49 @@ if(isServer) then {
     private _ambientCrowdLimit = parseNumber (_logic getVariable ["ambientCrowdLimit","50"]);
     private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction",""]);
 
-    // Custom water / ration item classnames. Merge the multi-select
-    // (ALiVE_ItemChoiceMulti_Water/_Ration) array with the manual-
-    // override Edit sibling (comma-separated string) into a deduped
-    // array. Backward-compat with legacy SQMs that stored the value as
-    // a single comma-separated string, an SQF array literal, or a bare
-    // classname. Also fixes a pre-existing variable-name mismatch on
-    // the ration field: CfgVehicles property is customHumRatItems but
-    // this file previously read customRationItems, so the attribute
-    // never reached the runtime.
+    // Custom water / ration item classnames. Resolution priority:
+    //   1. Consolidated `customHumanitarianItems` (preferred, written
+    //      by the ALiVE_ItemChoiceMulti_Filtered picker). Structured
+    //      string "water:Class1,Class2;ration:Class3,Class4" with one
+    //      segment per category.
+    //   2. Legacy per-category attrs (customWaterItems / customHumRatItems)
+    //      union with their Manual back-compat partners. Only consulted
+    //      when the consolidated key is empty - i.e. mission saved
+    //      before the consolidated picker was introduced.
+    //
+    // Backward-compat parsing on the legacy path accepts SQF array
+    // literal, comma-separated string, or bare classname. A pre-existing
+    // variable-name mismatch on the ration field (read customRationItems
+    // instead of customHumRatItems, so the attribute never reached
+    // the runtime) was fixed alongside the legacy reader.
+    private _consolidatedRaw = _logic getVariable ["customHumanitarianItems", ""];
+    private _consolidatedBuckets = createHashMap;
+    if (_consolidatedRaw isEqualType "" && {_consolidatedRaw != ""}) then {
+        {
+            private _segment = _x;
+            private _colonIdx = _segment find ":";
+            if (_colonIdx > 0) then {
+                private _segCat = toLower (_segment select [0, _colonIdx]);
+                private _classCsv = _segment select [_colonIdx + 1];
+                private _arr = _consolidatedBuckets getOrDefault [_segCat, []];
+                {
+                    private _p = _x;
+                    while {count _p > 0 && {(_p select [0,1]) == " "}} do { _p = _p select [1] };
+                    while {count _p > 0 && {(_p select [count _p - 1, 1]) == " "}} do { _p = _p select [0, count _p - 1] };
+                    if (_p != "") then { _arr pushBackUnique _p };
+                } forEach ([_classCsv, ","] call CBA_fnc_split);
+                _consolidatedBuckets set [_segCat, _arr];
+            };
+        } forEach ([_consolidatedRaw, ";"] call CBA_fnc_split);
+    };
+
     private _mergeItems = {
-        params ["_primaryKey", "_manualKey"];
+        params ["_category", "_primaryKey", "_manualKey"];
+        // Path 1: consolidated picker output for this category
+        private _consolidatedBucket = _consolidatedBuckets getOrDefault [toLower _category, []];
+        if (count _consolidatedBucket > 0) exitWith { +_consolidatedBucket };
+
+        // Path 2: legacy listbox + Manual union (back-compat)
         private _raw    = _logic getVariable [_primaryKey, []];
         private _manual = _logic getVariable [_manualKey, ""];
         private _arr = if (typeName _raw == "ARRAY") then {
@@ -82,8 +114,8 @@ if(isServer) then {
         } forEach (_arr + _manualArr);
         _merged
     };
-    private _customWaterItems  = ["customWaterItems",  "customWaterItemsManual"]  call _mergeItems;
-    private _customRationItems = ["customHumRatItems", "customHumRatItemsManual"] call _mergeItems;
+    private _customWaterItems  = ["water",  "customWaterItems",  "customWaterItemsManual"]  call _mergeItems;
+    private _customRationItems = ["ration", "customHumRatItems", "customHumRatItemsManual"] call _mergeItems;
 
     // Publish the disable-ambient-sounds toggle as a mission-namespace global
     // so the per-building sound functions (fnc_addAmbientRoomMusic,

@@ -851,6 +851,12 @@
     <Chinese>單位平民可接收人道口糧/飲水瓶的最大數量</Chinese>
     <Chinesesimp>一个平民最多可以得到多少人道主义口粮/水瓶</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS">
+    <English>Humanitarian Items:</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS_COMMENT">
+    <English>Humanitarian item classnames offered to ambient civilians during interaction. Filter cycles between All / Water / Ration; ticks survive cycling so the cumulative selection set is what gets used at runtime. Water items are offered when a civilian asks for water; ration items when they ask for food. Auto-detected entries from loaded mods (gated by CfgALiVEHumanitarianItems registry); deselect any to exclude. The Override Entries field accepts free-text comma-separated class names for mod entries not in the registry; combined with listbox ticks at save time. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_WATER_ITEMS">
     <English>Custom Water Classes:</English>
