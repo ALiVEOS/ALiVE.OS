@@ -37,6 +37,24 @@ private ["_index", "_isDefault"];
 
 if (isNil "BIS_fnc_areEqual") then { LOG( "WARNING: BIS_fnc_areEqual is Nil") };
 
+// DIAG-STRIP : Phase 6 hashSet "Zero divisor" trace logger. Dumps every
+// hashSet call so the RPT line immediately preceding the "Zero divisor"
+// engine error identifies the offending key/value pair if the latent bug
+// fires again. The original error (single occurrence ~3 min after mission
+// init, civilian-agent virtual-to-real transition) is not reliably
+// reproducible after multiple extended test runs - investigation deferred.
+// Tagged DIAG-STRIP so the block is easy to find for removal or extension.
+//
+// Nil _value is a valid call shape (signals default-removal branch) - the
+// original code's isNil check below handles it. Diag must guard the
+// format call or it spams "Undefined variable in expression: _value".
+diag_log format [
+    "DIAG-STRIP hashSet: key=%1 valueType=%2 value=%3",
+    _key,
+    if (isNil "_value") then { "nil" } else { typeName _value },
+    if (isNil "_value") then { "<nil>" } else { _value }
+];
+
 // Work out whether the new value is the default value for this assoc.
 _isDefault = [if (isNil "_value") then { nil } else { _value },
 _hash select HASH_DEFAULT_VALUE] call (uiNamespace getVariable "BIS_fnc_areEqual");
