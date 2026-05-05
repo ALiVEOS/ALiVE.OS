@@ -684,6 +684,28 @@ class Cfg3DEN
             attributeSave = "[_this, 'CfgALiVEHumanitarianItems', 'water,ration', 'customWaterItems,customHumRatItems', 'customWaterItemsManual,customHumRatItemsManual'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFilteredMultiSelectSave.sqf'";
         };
 
+        // ALiVE_FactionTierChoice:
+        //   Swap-selection variant of the filtered multi-select substrate.
+        //   Listbox shows ALL military-side factions at all times; the
+        //   filter cycle button SWAPS which tier's tick state is currently
+        //   displayed (NOT hides rows). Each faction can be ticked under
+        //   any tier independently. Used by sys_aiskill to consolidate the
+        //   four skill-tier listboxes (Recruit / Regular / Veteran / Expert)
+        //   plus the Custom Skill listbox into one picker.
+        //
+        //   Storage shape: structured string
+        //     "recruit:OPF_F;regular:BLU_F,IND_F;veteran:;expert:;custom:CUP_F"
+        //   on a single consolidated attr (skillTierFactions).
+        //
+        //   Inherits the same controlsGroup substrate as the hide-rows
+        //   variant (ALiVE_FilteredMultiSelect_Base) - identical UI shape.
+        //   Only the LOAD/SAVE handlers differ to encode the swap
+        //   semantic.
+        class ALiVE_FactionTierChoice: ALiVE_FilteredMultiSelect_Base {
+            attributeLoad = "[_this, [0,1,2], 'skillTierFactions', 'skillFactionsRecruit,skillFactionsRegular,skillFactionsVeteran,skillFactionsExpert,customSkillFactions', 'skillFactionsRecruitManual,skillFactionsRegularManual,skillFactionsVeteranManual,skillFactionsExpertManual,customSkillFactionsManual', 'Recruit,Regular,Veteran,Expert,Custom', _value, '$STR_ALIVE_AISKILL_TIER_FACTIONS'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionTierChoiceLoad.sqf'";
+            attributeSave = "[_this, 'skillTierFactions', 'skillFactionsRecruit,skillFactionsRegular,skillFactionsVeteran,skillFactionsExpert,customSkillFactions', 'skillFactionsRecruitManual,skillFactionsRegularManual,skillFactionsVeteranManual,skillFactionsExpertManual,customSkillFactionsManual', 'Recruit,Regular,Veteran,Expert,Custom'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionTierChoiceSave.sqf'";
+        };
+
         // ALiVE_FactionStaticDataChoice family:
         //   Lets a mission-maker override the per-faction static-data
         //   registries (mil_logistics ground / air transport / airdrop

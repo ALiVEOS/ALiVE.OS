@@ -188,6 +188,16 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_edenFilteredMultiSelectSave.sqf";
                 RECOMPILE;
             };
+            class edenFactionTierChoiceLoad {
+                description = "Eden attributeLoad handler for ALiVE_FactionTierChoice (swap-selection per-tier picker - all factions visible, filter cycles which tier's ticks display)";
+                file = "\x\alive\addons\main\fnc_edenFactionTierChoiceLoad.sqf";
+                RECOMPILE;
+            };
+            class edenFactionTierChoiceSave {
+                description = "Eden attributeSave handler for ALiVE_FactionTierChoice";
+                file = "\x\alive\addons\main\fnc_edenFactionTierChoiceSave.sqf";
+                RECOMPILE;
+            };
         };
     };
 };

@@ -52,6 +52,12 @@
     <Portuguese>Ativa a depuração do módulo de Habilidade IA</Portuguese>
     <Russian>Включает отладку модуля «Мастерство ИИ»</Russian>
 </Key>
+<Key ID="STR_ALIVE_AISKILL_TIER_FACTIONS">
+    <English>Skill Tier Factions:</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_TIER_FACTIONS_COMMENT">
+    <English>Per-faction AI skill assignment, consolidated. Filter cycle button at top swaps between Recruit / Regular / Veteran / Expert / Custom; ALL military-side factions stay visible across cycles, ticks represent only the active tier. The same faction can be ticked under any tier independently (later tier wins at runtime if duplicated). Recruit / Regular / Veteran / Expert apply fixed preset skill values; Custom applies the Custom Skill Values defined in the section below. The Override Entries field accepts free-text comma-separated faction classnames the registry doesn't surface; entries are tier-scoped (added to the active tier on save). Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_RECRUIT">
     <English>Recruit Factions:</English>
