@@ -158,6 +158,15 @@ switch(_operation) do {
     case "customSpecOpsCount": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "aaCount": {
+        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "aaBehaviour": {
+        _result = [_logic,_operation,_args,"static"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "aaClasses": {
+        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+    };
     // Determine force faction
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
@@ -704,7 +713,8 @@ switch(_operation) do {
             "_placeHelis","_placeSupplies","_factionConfig","_factionSideNumber","_side","_countProfiles","_vehicleClass",
             "_position","_direction","_unitBlackist","_vehicleBlacklist","_groupBlacklist","_heliClasses","_nodes",
             "_airClasses","_node","_buildings","_customInfantryCount","_customMotorisedCount","_customMechanisedCount",
-            "_customArmourCount","_customSpecOpsCount","_countVehicleClusters","_createHQ","_createFieldHQ","_file"];
+            "_customArmourCount","_customSpecOpsCount","_countVehicleClusters","_createHQ","_createFieldHQ","_file",
+            "_aaCount","_aaBehaviour","_aaClasses"];
 
 
             _debug = [_logic, "debug"] call MAINCLASS;
@@ -768,6 +778,21 @@ switch(_operation) do {
             }else{
                 _customSpecOpsCount = parseNumber _customSpecOpsCount;
             };
+
+            // AA placement attrs. aaCount Edit defaults to "0" - no AA
+            // spawned unless explicitly raised. aaBehaviour Combo defaults
+            // to "static" (OPCOM no-reposition tag). aaClasses CSV from the
+            // AA picker, falls back to ALIVE_factionDefaultAA hash at spawn
+            // time when empty.
+            _aaCount = [_logic, "aaCount"] call MAINCLASS;
+            if(_aaCount == "") then {
+                _aaCount = 0;
+            } else {
+                _aaCount = parseNumber _aaCount;
+            };
+            _aaBehaviour = [_logic, "aaBehaviour"] call MAINCLASS;
+            if(_aaBehaviour == "") then { _aaBehaviour = "static" };
+            _aaClasses = [_logic, "aaClasses"] call MAINCLASS;
 
             _countHQClusters = count _HQClusters;
             _countAirClusters = count _airClusters;
@@ -1219,6 +1244,217 @@ switch(_operation) do {
                 ["MP [%1] - Air units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedAir,_countUncrewedAir] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
+
+
+            // AA placement.
+            //
+            // Per-cluster distribution: ceil(_aaCount / _clusterCount) slots
+            // per cluster, capped at _aaCount total. Each slot validated via
+            // findCompositionSpawnPosition mode="ato" with envelope=10m
+            // (unit footprint, not a composition envelope) so AA lands
+            // on a clear non-runway / non-taxiway position. Crewed via
+            // createProfileVehicle - the profile system populates the gun /
+            // launcher crew and the engine AI engages incoming aircraft.
+            //
+            // Class resolution: picker CSV first, ALIVE_factionDefaultAA
+            // hash fallback. Empty result skips the block with a debug
+            // log so faction-default gaps are surfaced.
+            //
+            // _aaBehaviour ("static" / "roaming") tracked on
+            // ALIVE_aaProfileBehaviour hash keyed by profileID - read-side
+            // is consumed by OPCOM for movement decisions.
+            if (_aaCount > 0 && {!isNil "_clusters"} && {count _clusters > 0}) then {
+                private _resolved = [];
+                if (_aaClasses != "") then {
+                    {
+                        private _t = _x;
+                        while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+                        while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do {
+                            _t = _t select [0, count _t - 1];
+                        };
+                        if (_t != "") then { _resolved pushBackUnique _t };
+                    } forEach ([_aaClasses, ","] call CBA_fnc_split);
+                };
+                if (count _resolved == 0 && {!isNil "ALIVE_factionDefaultAA"}) then {
+                    private _hashVal = [ALIVE_factionDefaultAA, _faction] call ALIVE_fnc_hashGet;
+                    if (!isNil "_hashVal" && {typeName _hashVal == "ARRAY"}) then { _resolved = _hashVal };
+                };
+
+                if (count _resolved > 0) then {
+                    private _aaPlaced = 0;
+                    private _aaSlotsPerCluster = ceil (_aaCount / (count _clusters));
+                    // Used-positions list shared across the cluster loop -
+                    // findCompositionSpawnPosition has no memory of prior
+                    // calls, so without an explicit exclusion the validator
+                    // returns near-identical positions on each call (the
+                    // "best" spot in a 50m radius is often a single dominant
+                    // candidate). 30m minimum separation - labels are
+                    // pushed to a 60m radial offset from cluster centre
+                    // with per-AA angular jitter, so AA-AA label spacing
+                    // is independent of AA-AA physical spacing.
+                    private _usedAAPositions = [];
+
+                    // Neighbour-aware search radius cap. Default 150m
+                    // gives the validator more room than the prior 50m
+                    // (which often yielded a single dominant candidate
+                    // and forced separation to fail). Cap at half the
+                    // distance to the nearest other placement-class
+                    // module so AA from this module never spawns into
+                    // territory another module owns. Floor 50m so
+                    // close-packed modules still have a workable area;
+                    // ceiling 200m so a lone module on a giant TAOR
+                    // doesn't search a useless 1km radius.
+                    private _aaNeighbours = [];
+                    {
+                        _aaNeighbours = _aaNeighbours + (allMissionObjects _x);
+                    } forEach ["ALiVE_mil_placement", "ALiVE_mil_placement_custom",
+                               "ALiVE_mil_placement_spe", "ALiVE_civ_placement",
+                               "ALiVE_civ_placement_custom", "ALiVE_mil_ato"];
+                    _aaNeighbours = _aaNeighbours - [_logic];
+                    {
+                        if (_aaPlaced >= _aaCount) exitWith {};
+                        // _clusters elements are hashmaps - "center" key
+                        // holds the cluster centre position (existing pattern
+                        // at fnc_MP.sqf:840 / 902 / 1921). `position _x`
+                        // throws Type Array vs Object on hashmaps.
+                        private _clusterPos = [_x, "center"] call ALIVE_fnc_hashGet;
+                        if (isNil "_clusterPos" || {typeName _clusterPos != "ARRAY"}) then { _clusterPos = [0,0,0] };
+
+                        // Per-cluster search radius - cap at half-distance
+                        // to nearest neighbouring placement module from
+                        // THIS cluster's position (clusters in a large
+                        // module can be 200m+ from the module's editor
+                        // position, so neighbour distance varies).
+                        private _aaSearchRadius = 150;
+                        {
+                            private _gap = (position _x) distance2D _clusterPos;
+                            if (_gap > 0 && {_gap / 2 < _aaSearchRadius}) then {
+                                _aaSearchRadius = _gap / 2;
+                            };
+                        } forEach _aaNeighbours;
+                        if (_aaSearchRadius < 50) then { _aaSearchRadius = 50 };
+                        if (_aaSearchRadius > 200) then { _aaSearchRadius = 200 };
+                        if (_debug) then {
+                            ["MP [%1] - AA cluster radius=%2m (neighbours=%3)", _faction, _aaSearchRadius, count _aaNeighbours] call ALiVE_fnc_dump;
+                        };
+
+                        for "_i" from 1 to _aaSlotsPerCluster do {
+                            if (_aaPlaced >= _aaCount) exitWith {};
+                            private _aaClass = selectRandom _resolved;
+                            // mode="field" excludes buildings + helipads
+                            // + runways/taxiways + ALL roads. Static AA
+                            // shouldn't sit in hangars (mode="ato" allows
+                            // that), on helipads (block resupply), on
+                            // runways (block aircraft), or on roads (block
+                            // vehicle traffic + AA tips on cambered road
+                            // surfaces). field mode is the only one with
+                            // the road-exclusion flag set.
+                            //
+                            // Angular sweep: build a ring-grid of candidate
+                            // centres around _clusterPos (12 angles x 4
+                            // distance rings = 48 candidates), shuffle for
+                            // run-to-run variation, then validate each in
+                            // shuffled order until one passes the field-
+                            // mode clear check AND the 30m separation
+                            // check. Candidates beyond _aaSearchRadius
+                            // (neighbour-aware cap) are skipped, so the
+                            // sweep never infringes on an adjacent
+                            // placement module's territory.
+                            private _safePos = [];
+                            private _safeDir = 0;
+                            private _accepted = false;
+                            private _candidates = [];
+                            {
+                                private _ring = _x;
+                                for "_a" from 0 to 11 do {
+                                    private _angle = _a * 30 + (random 25);
+                                    _candidates pushBack [
+                                        (_clusterPos select 0) + _ring * (sin _angle),
+                                        (_clusterPos select 1) + _ring * (cos _angle),
+                                        _clusterPos param [2, 0]
+                                    ];
+                                };
+                            } forEach [40, 70, 100, 130];
+                            _candidates = _candidates call BIS_fnc_arrayShuffle;
+                            {
+                                if (_accepted) exitWith {};
+                                private _cand = _x;
+                                if ((_cand distance2D _clusterPos) <= _aaSearchRadius) then {
+                                    private _aaResult = [_cand, 20, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
+                                    if (count _aaResult >= 2) then {
+                                        private _testPos = _aaResult select 0;
+                                        private _tooClose = false;
+                                        { if (_testPos distance2D _x < 30) exitWith { _tooClose = true } } forEach _usedAAPositions;
+                                        if (!_tooClose) then {
+                                            _safePos = _testPos;
+                                            _safeDir = _aaResult select 1;
+                                            _accepted = true;
+                                        };
+                                    };
+                                };
+                            } forEach _candidates;
+                            if (_accepted) then {
+                                _usedAAPositions pushBack _safePos;
+                                private _aaProfile = [_aaClass, _side, _faction, _safePos, _safeDir, false, _faction] call ALIVE_fnc_createProfileVehicle;
+                                // aaBehaviour stored on a side-channel hash
+                                // keyed by profileID. fnc_profileVehicle is
+                                // fixed-case dispatch, no generic field
+                                // setter; the OPCOM consumer reads from
+                                // ALIVE_aaProfileBehaviour to decide
+                                // movement orders.
+                                if (!isNil "_aaProfile") then {
+                                    private _profileID = [_aaProfile, "profileID"] call ALIVE_fnc_profileVehicle;
+                                    if (typeName _profileID == "STRING" && {_profileID != ""}) then {
+                                        if (isNil "ALIVE_aaProfileBehaviour") then {
+                                            ALIVE_aaProfileBehaviour = [] call ALIVE_fnc_hashCreate;
+                                        };
+                                        [ALIVE_aaProfileBehaviour, _profileID, _aaBehaviour] call ALIVE_fnc_hashSet;
+                                    };
+                                };
+                                _countProfiles = _countProfiles + 1;
+                                _aaPlaced = _aaPlaced + 1;
+
+                                if (_debug) then {
+                                    // Anchor dot at actual spawn position +
+                                    // labeled marker at radial offset away
+                                    // from cluster centre. Pushes the AA
+                                    // label clear of the cluster's own
+                                    // label (e.g. "FACTION|MIL|size|prio")
+                                    // which renders at the cluster anchor.
+                                    // Per-index angular jitter fans labels
+                                    // of co-radial AA out to different
+                                    // angles so they don't stack either.
+                                    private _aaLabel = format ["AA #%1 [%2]", _aaPlaced, _aaBehaviour];
+                                    private _dx = (_safePos select 0) - (_clusterPos select 0);
+                                    private _dy = (_safePos select 1) - (_clusterPos select 1);
+                                    private _norm = sqrt (_dx * _dx + _dy * _dy);
+                                    if (_norm < 1) then { _dx = 1; _dy = 0; _norm = 1 };
+                                    _dx = _dx / _norm; _dy = _dy / _norm;
+                                    private _jitterAngles = [0, 30, -30, 60, -60, 90, -90];
+                                    private _jit = _jitterAngles select ((_aaPlaced - 1) mod (count _jitterAngles));
+                                    private _cosJ = cos _jit; private _sinJ = sin _jit;
+                                    private _rdx = _cosJ * _dx - _sinJ * _dy;
+                                    private _rdy = _sinJ * _dx + _cosJ * _dy;
+                                    private _labelPos = [(_safePos select 0) + _rdx * 60, (_safePos select 1) + _rdy * 60, _safePos param [2, 0]];
+                                    [_safePos, 1, "", "ColorBlue"] call ALIVE_fnc_placeDebugMarker;
+                                    [_labelPos, 3, _aaLabel, "ColorBlue"] call ALIVE_fnc_placeDebugMarker;
+                                };
+                            };
+                        };
+                    } forEach _clusters;
+
+                    if (_debug) then {
+                        ["MP [%1] - AA units placed: %2 of %3 (behaviour=%4, sources=%5)",
+                            _faction, _aaPlaced, _aaCount, _aaBehaviour,
+                            if (_aaClasses != "") then {"picker"} else {"factionDefault"}
+                        ] call ALiVE_fnc_dump;
+                    };
+                } else {
+                    if (_debug) then {
+                        ["MP [%1] - AA spawn skipped: picker empty AND no ALIVE_factionDefaultAA entry for this faction", _faction] call ALiVE_fnc_dump;
+                    };
+                };
+            };
 
 
             // Spawn ambient vehicles

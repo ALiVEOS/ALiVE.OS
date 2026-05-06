@@ -48,9 +48,11 @@ Registered emitters (2026-05-04):
     separating the text:
     "placement.cp.roadblock_q" civ_placement / civ_placement_custom
                               roadblock-queue marker                     NNW -40/+40
+    "placement.mp.aa"          mil_placement AA unit                     NNE +40/+40
+    "placement.cmp.aa"         mil_placement_custom AA unit              SSE +40/-40
 
 Reserved slots for future emitters:
-    Inner ring still has NNE / ENE / ESE / SSE / SSW / WSW / WNW free
+    Inner ring still has ENE / ESE / SSW / WSW / WNW free
 
 Author:
 Jman
@@ -69,6 +71,8 @@ private _offset = switch (_emitterId) do {
     case "placement.ato":            {[-75,  75]};
     case "placement.parking":        {[ 75, -75]};
     case "placement.cp.roadblock_q": {[-40,  40]};
+    case "placement.mp.aa":          {[ 40,  40]};
+    case "placement.cmp.aa":         {[ 40, -40]};
     default                          {[  0,   0]};
 };
 
