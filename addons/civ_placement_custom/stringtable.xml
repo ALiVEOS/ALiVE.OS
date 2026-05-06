@@ -2,26 +2,75 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC">
     <English>Military Placement (Cust. Civ. Obj.)</English>
+    <Chinese>軍事佈局（自訂平民目標）</Chinese>
+    <Chinesesimp>军事布局（自定义平民目标）</Chinesesimp>
+    <Spanish>Colocación militar (Obj. Civ. Pers.)</Spanish>
+    <French>Placement militaire (Obj. civ. pers.)</French>
+    <Portuguese>Colocação militar (Obj. civ. pers.)</Portuguese>
+    <Russian>Размещение армии (поль. гражд. цель)</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_COMMENT">
     <English>Strategic Military Placement at Custom Civilian Objective</English>
+    <Chinese>在自訂平民目標的戰略軍事佈局</Chinese>
+    <Chinesesimp>在自定义平民目标的战略军事布局</Chinesesimp>
+    <Spanish>Colocación militar estratégica en objetivo civil personalizado</Spanish>
+    <French>Placement militaire stratégique sur objectif civil personnalisé</French>
+    <Portuguese>Colocação militar estratégica em objetivo civil personalizado</Portuguese>
+    <Russian>Стратегическое военное размещение на пользовательской гражданской цели</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_USAGE">
     <English>Place the module in the editor, set the custom civilian objective radius and priority, then configure the military-placement force settings for that civilian objective.</English>
+    <Chinese>將模組放置於編輯器中，設定自訂平民目標的半徑與優先級，然後為該平民目標配置軍事佈局部隊設定。</Chinese>
+    <Chinesesimp>将模块放置于编辑器中，设定自定义平民目标的半径与优先级，然后为该平民目标配置军事布局部队设定。</Chinesesimp>
+    <Spanish>Coloca el módulo en el editor, establece el radio y la prioridad del objetivo civil personalizado, luego configura los ajustes de fuerza de colocación militar para ese objetivo civil.</Spanish>
+    <French>Placez le module dans l'éditeur, définissez le rayon et la priorité de l'objectif civil personnalisé, puis configurez les paramètres de force du placement militaire pour cet objectif civil.</French>
+    <Portuguese>Coloque o módulo no editor, defina o raio e a prioridade do objetivo civil personalizado, depois configure as definições de força de colocação militar para esse objetivo civil.</Portuguese>
+    <Russian>Поместите модуль в редакторе, задайте радиус и приоритет пользовательской гражданской цели, затем настройте параметры силы военного размещения для этой гражданской цели.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_OBJECTIVE_SIZE">
     <English>Objective size:</English>
+    <Chinese>目標大小:</Chinese>
+    <Chinesesimp>目标大小:</Chinesesimp>
+    <Spanish>Tamaño del objetivo:</Spanish>
+    <French>Taille de l'objectif:</French>
+    <Portuguese>Tamanho do objetivo:</Portuguese>
+    <Russian>Размер цели:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_OBJECTIVE_SIZE_COMMENT">
     <English>Radius of the custom civilian objective used by OPCOM and local force placement.</English>
+    <Chinese>OPCOM 與本地部隊佈局所使用的自訂平民目標半徑。</Chinese>
+    <Chinesesimp>OPCOM 与本地部队布局所使用的自定义平民目标半径。</Chinesesimp>
+    <Spanish>Radio del objetivo civil personalizado usado por OPCOM y la colocación de fuerzas locales.</Spanish>
+    <French>Rayon de l'objectif civil personnalisé utilisé par OPCOM et le placement des forces locales.</French>
+    <Portuguese>Raio do objetivo civil personalizado usado pelo OPCOM e pela colocação de forças locais.</Portuguese>
+    <Russian>Радиус пользовательской гражданской цели, используемый OPCOM и локальным размещением сил.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_PRIORITY">
     <English>Objective priority:</English>
+    <Chinese>目標優先級:</Chinese>
+    <Chinesesimp>目标优先级:</Chinesesimp>
+    <Spanish>Prioridad del objetivo:</Spanish>
+    <French>Priorité de l'objectif:</French>
+    <Portuguese>Prioridade do objetivo:</Portuguese>
+    <Russian>Приоритет цели:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_PRIORITY_COMMENT">
     <English>Priority of the custom civilian objective. Used by OPCOM target evaluation.</English>
+    <Chinese>自訂平民目標的優先級。OPCOM 目標評估使用。</Chinese>
+    <Chinesesimp>自定义平民目标的优先级。OPCOM 目标评估使用。</Chinesesimp>
+    <Spanish>Prioridad del objetivo civil personalizado. Usada por la evaluación de objetivos de OPCOM.</Spanish>
+    <French>Priorité de l'objectif civil personnalisé. Utilisée par l'évaluation des objectifs OPCOM.</French>
+    <Portuguese>Prioridade do objetivo civil personalizado. Usada pela avaliação de objetivos do OPCOM.</Portuguese>
+    <Russian>Приоритет пользовательской гражданской цели. Используется при оценке целей OPCOM.</Russian>
 </Key>
 </Container></Package></Project>
 
