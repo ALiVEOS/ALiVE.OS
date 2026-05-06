@@ -28,7 +28,7 @@
     <Chinesesimp>启用调试</Chinesesimp>
     <Chinese>啟用除錯:</Chinese>
     <Spanish>Activar depuración:</Spanish>
-    <French>Activer le débogage :</French>
+    <French>Activer le débogage:</French>
     <Portuguese>Ativar depuração:</Portuguese>
     <Russian>Включить отладку:</Russian>
 </Key>
@@ -48,7 +48,7 @@
     <Chinesesimp>TAOR标记</Chinesesimp>
     <Chinese>戰術區標記:</Chinese>
     <Spanish>Marcador TAOR:</Spanish>
-    <French>Marqueur TAOR :</French>
+    <French>Marqueur TAOR:</French>
     <Portuguese>Marcador TAOR:</Portuguese>
     <Russian>Маркер TAOR:</Russian>
 </Key>
@@ -68,7 +68,7 @@
     <Chinesesimp>黑名单标记</Chinesesimp>
     <Chinese>黑名單標記:</Chinese>
     <Spanish>Marcador de lista negra:</Spanish>
-    <French>Marqueur de liste noire :</French>
+    <French>Marqueur de liste noire:</French>
     <Portuguese>Marcador de lista negra:</Portuguese>
     <Russian>Маркер чёрного списка:</Russian>
 </Key>
@@ -88,7 +88,7 @@
     <Chinesesimp>目标大小筛选器</Chinesesimp>
     <Chinese>目標大小篩選:</Chinese>
     <Spanish>Filtro de tamaño de objetivo:</Spanish>
-    <French>Filtre de taille d'objectif :</French>
+    <French>Filtre de taille d'objectif:</French>
     <Portuguese>Filtro de tamanho do objetivo:</Portuguese>
     <Russian>Фильтр размера объекта:</Russian>
 </Key>
@@ -98,7 +98,7 @@
     <Chinese>依半徑(公尺)篩選平民目標。正值門檻會略過小目標；反向門檻會略過大目標。</Chinese>
     <Chinesesimp>按半径(米)筛选平民目标。正值阈值会跳过小目标；反向阈值会跳过大目标。</Chinesesimp>
     <Spanish>Filtra objetivos civiles por radio (metros). Los umbrales positivos omiten los objetivos pequeños; los umbrales inversos omiten los grandes.</Spanish>
-    <French>Filtre les objectifs civils par rayon (mètres). Les seuils positifs ignorent les petits objectifs ; les seuils inverses ignorent les grands.</French>
+    <French>Filtre les objectifs civils par rayon (mètres). Les seuils positifs ignorent les petits objectifs; les seuils inverses ignorent les grands.</French>
     <Portuguese>Filtra objetivos civis por raio (metros). Limites positivos ignoram objetivos pequenos; limites inversos ignoram os grandes.</Portuguese>
     <Russian>Фильтрует гражданские объекты по радиусу (метры). Положительные пороги пропускают малые объекты; обратные пороги пропускают крупные.</Russian>
 </Key>
@@ -198,7 +198,7 @@
     <Chinesesimp>目标优先级筛选器</Chinesesimp>
     <Chinese>目標優先級篩選:</Chinese>
     <Spanish>Filtro de prioridad del objetivo:</Spanish>
-    <French>Filtre de priorité d'objectif :</French>
+    <French>Filtre de priorité d'objectif:</French>
     <Portuguese>Filtro de prioridade do objetivo:</Portuguese>
     <Russian>Фильтр приоритета объекта:</Russian>
 </Key>
@@ -258,7 +258,7 @@
     <Chinese>平民派系:</Chinese>
     <Chinesesimp>平民派系:</Chinesesimp>
     <Spanish>Facción civil:</Spanish>
-    <French>Faction civile :</French>
+    <French>Faction civile:</French>
     <Portuguese>Facção civil:</Portuguese>
     <Russian>Гражданская фракция:</Russian>
 </Key>
@@ -278,7 +278,7 @@
     <Chinesesimp>放置级别</Chinesesimp>
     <Chinese>放置等級:</Chinese>
     <Spanish>Nivel de colocación:</Spanish>
-    <French>Niveau de placement :</French>
+    <French>Niveau de placement:</French>
     <Portuguese>Nível de posicionamento:</Portuguese>
     <Russian>Уровень расстановки:</Russian>
 </Key>
@@ -288,7 +288,7 @@
     <Chinese>每個地點放置的平民人員數量(Medium = 基準;Extreme 為 4 倍)</Chinese>
     <Chinesesimp>每个地点放置的平民人员数量(Medium = 基准;Extreme 为 4 倍)</Chinesesimp>
     <Spanish>Cantidad de agentes civiles por ubicación (Medium = base; Extreme multiplica por 4)</Spanish>
-    <French>Nombre d'agents civils placés par emplacement (Medium = base ; Extreme multiplie par 4)</French>
+    <French>Nombre d'agents civils placés par emplacement (Medium = base; Extreme multiplie par 4)</French>
     <Portuguese>Número de agentes civis por localização (Medium = base; Extreme multiplica por 4)</Portuguese>
     <Russian>Число гражданских на локацию (Medium = базовое; Extreme — в 4 раза больше)</Russian>
 </Key>
@@ -338,7 +338,7 @@
     <Chinese>環境車輛數量:</Chinese>
     <Chinesesimp>环境车辆数量:</Chinesesimp>
     <Spanish>Cantidad de vehículos ambientales:</Spanish>
-    <French>Quantité de véhicules d'ambiance :</French>
+    <French>Quantité de véhicules d'ambiance:</French>
     <Portuguese>Quantidade de veículos ambientais:</Portuguese>
     <Russian>Количество фоновых транспортных средств:</Russian>
 </Key>
@@ -398,7 +398,7 @@
     <Chinesesimp>周围的环境车辆势力</Chinesesimp>
     <Chinese>環境車輛派系:</Chinese>
     <Spanish>Facción de vehículos ambientales:</Spanish>
-    <French>Faction des véhicules d'ambiance :</French>
+    <French>Faction des véhicules d'ambiance:</French>
     <Portuguese>Facção dos veículos ambientais:</Portuguese>
     <Russian>Фракция фоновых транспортных средств:</Russian>
 </Key>
@@ -418,7 +418,7 @@
     <Chinesesimp>随机平民载具伤害</Chinesesimp>
     <Chinese>隨機車輛損傷:</Chinese>
     <Spanish>Daño aleatorio de vehículo:</Spanish>
-    <French>Dégâts aléatoires du véhicule :</French>
+    <French>Dégâts aléatoires du véhicule:</French>
     <Portuguese>Dano aleatório do veículo:</Portuguese>
     <Russian>Случайные повреждения транспорта:</Russian>
 </Key>
@@ -435,7 +435,7 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_ANIMAL_AMOUNT">
     <English>Ambient Animals:</English>
-    <French>Animaux d'ambiance :</French>
+    <French>Animaux d'ambiance:</French>
     <Portuguese>Animais ambientais:</Portuguese>
     <Russian>Фоновые животные:</Russian>
     <Spanish>Animales ambientales:</Spanish>
@@ -445,7 +445,7 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_AMBIENT_ANIMAL_AMOUNT_COMMENT">
     <English>How many ambient farm animals spawn at civilian objectives. Two species pools placed differently: poultry (hens, cocks) appear near civilian buildings inside towns as backyard birds, in groups of 1-4 with a per-building chance. Herd animals (goats, sheep) appear in fields outside the town footprint, in flocks of 2-5; per-cluster herd count - Low: 1 (guaranteed), Medium: 2-4, High: 3-7. Animals are decorative ambient life and don't register with the cluster handler or agent system. Default: None (opt-in).</English>
-    <French>Quantité d'animaux d'élevage d'ambiance générés dans les objectifs civils. Deux groupes d'espèces placés différemment : la volaille (poules, coqs) apparaît près des bâtiments civils à l'intérieur des villes, comme des poules de basse-cour, en groupes de 1 à 4 avec une probabilité par bâtiment. Les animaux de troupeau (chèvres, moutons) apparaissent dans les champs en dehors de l'emprise urbaine, en troupeaux de 2 à 5 ; nombre de troupeaux par objectif - Faible : 1 (garanti), Moyen : 2 à 4, Élevé : 3 à 7. Les animaux constituent une vie d'ambiance décorative et ne s'enregistrent pas auprès du gestionnaire de clusters ni du système d'agents. Par défaut : Aucun (activation explicite).</French>
+    <French>Quantité d'animaux d'élevage d'ambiance générés dans les objectifs civils. Deux groupes d'espèces placés différemment: la volaille (poules, coqs) apparaît près des bâtiments civils à l'intérieur des villes, comme des poules de basse-cour, en groupes de 1 à 4 avec une probabilité par bâtiment. Les animaux de troupeau (chèvres, moutons) apparaissent dans les champs en dehors de l'emprise urbaine, en troupeaux de 2 à 5; nombre de troupeaux par objectif - Faible: 1 (garanti), Moyen: 2 à 4, Élevé: 3 à 7. Les animaux constituent une vie d'ambiance décorative et ne s'enregistrent pas auprès du gestionnaire de clusters ni du système d'agents. Par défaut: Aucun (activation explicite).</French>
     <Portuguese>Quantos animais de fazenda ambientais surgem nos objetivos civis. Dois grupos de espécies colocados de forma diferente: aves de capoeira (galinhas, galos) aparecem perto dos edifícios civis dentro das vilas, como aves de quintal, em grupos de 1 a 4 com uma probabilidade por edifício. Animais de rebanho (cabras, ovelhas) aparecem nos campos fora da área urbana, em rebanhos de 2 a 5; número de rebanhos por objetivo - Baixo: 1 (garantido), Médio: 2 a 4, Alto: 3 a 7. Os animais são vida ambiental decorativa e não se registam no gestor de clusters nem no sistema de agentes. Padrão: Nenhum (opção explícita).</Portuguese>
     <Russian>Сколько фоновых сельскохозяйственных животных появляется в гражданских целях. Два пула видов размещаются по-разному: домашняя птица (куры, петухи) появляется у гражданских зданий внутри городов как дворовая птица группами по 1-4 с вероятностью на каждое здание. Стадные животные (козы, овцы) появляются на полях за пределами городской застройки стадами по 2-5; количество стад на цель - Мало: 1 (гарантировано), Средне: 2-4, Много: 3-7. Животные - декоративная фоновая жизнь, не регистрирующаяся в обработчике кластеров или системе агентов. По умолчанию: Нет (включается вручную).</Russian>
     <Spanish>Cuántos animales de granja ambientales aparecen en los objetivos civiles. Dos grupos de especies colocados de forma distinta: las aves de corral (gallinas, gallos) aparecen cerca de los edificios civiles dentro de los pueblos, como aves de patio trasero, en grupos de 1 a 4 con probabilidad por edificio. Los animales de rebaño (cabras, ovejas) aparecen en los campos fuera del casco urbano, en rebaños de 2 a 5; número de rebaños por objetivo - Bajo: 1 (garantizado), Medio: 2 a 4, Alto: 3 a 7. Los animales son vida ambiental decorativa y no se registran en el gestor de clústeres ni en el sistema de agentes. Predeterminado: Ninguno (activación explícita).</Spanish>
@@ -492,16 +492,30 @@
     <Chinese>大量環境動物</Chinese>
     <Chinesesimp>较多周围的环境动物</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_ANIMAL_CLASSES">
     <English>Animal Classes:</English>
+    <Chinese>動物分類:</Chinese>
+    <Chinesesimp>动物分类:</Chinesesimp>
+    <Spanish>Clases de animales:</Spanish>
+    <French>Classes d'animaux:</French>
+    <Portuguese>Classes de animais:</Portuguese>
+    <Russian>Классы животных:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_ANIMAL_CLASSES_COMMENT">
     <English>Animal classnames spawned as ambient civilian fauna. Filter cycles between All / Poultry / Herd; ticks survive cycling so the cumulative selection set is what gets used at runtime. Poultry spawn near civilian buildings inside towns; herd spawn in open countryside outside town footprints. Auto-detected entries from loaded mods (gated by CfgALiVEAmbientAnimals registry). Vanilla A3 hens, cockerels, goats and sheep are pre-ticked on first placement. The Override Entries field accepts free-text comma-separated class names for mod entries not in the registry; combined with listbox ticks at save time. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>作為環境平民動物群生成的動物類別名稱。篩選器在 全部 / 家禽 / 牲畜 之間循環；勾選在切換間保留，所以最終使用的是累積選擇集。家禽在城鎮內的平民建築附近生成；牲畜在城鎮足跡之外的開闊鄉村生成。從已載入模組自動偵測的條目（由 CfgALiVEAmbientAnimals 登記表把關）。原生 A3 母雞、公雞、山羊、綿羊在首次放置時預設勾選。Override Entries 欄位接受逗號分隔的、登記表未包含的模組類別名稱自由文字；保存時與清單勾選合併。多選：左鍵點擊選擇一行；Ctrl+左鍵切換單行；Shift+左鍵選擇範圍。</Chinese>
+    <Chinesesimp>作为环境平民动物群生成的动物类别名称。筛选器在 全部 / 家禽 / 牲畜 之间循环；勾选在切换间保留，所以最终使用的是累积选择集。家禽在城镇内的平民建筑附近生成；牲畜在城镇足迹之外的开阔乡村生成。从已加载模组自动检测的条目（由 CfgALiVEAmbientAnimals 注册表把关）。原生 A3 母鸡、公鸡、山羊、绵羊在首次放置时预先勾选。Override Entries 字段接受逗号分隔的、注册表未包含的模组类名自由文本；保存时与列表勾选合并。多选：左键点击选择一行；Ctrl+左键切换单行；Shift+左键选择范围。</Chinesesimp>
+    <Spanish>Classnames de animales generados como fauna civil ambiental. El filtro cicla entre Todos / Aves de corral / Rebaño; los ticks sobreviven al ciclo de filtro, así que el conjunto acumulado es lo que se usa en tiempo de ejecución. Las aves de corral aparecen cerca de edificios civiles dentro de los pueblos; el rebaño aparece en campo abierto fuera de la huella urbana. Entradas auto-detectadas de los mods cargados (filtrado por el registro CfgALiVEAmbientAnimals). Las gallinas, gallos, cabras y ovejas vanilla de A3 están pre-marcados en la primera colocación. El campo Override Entries acepta nombres de clase libres separados por comas para entradas de mod no en el registro; combinados con los ticks del listbox al guardar. Multiselección: clic-izquierdo selecciona una fila; Ctrl+clic-izquierdo alterna filas individuales; Shift+clic-izquierdo selecciona un rango.</Spanish>
+    <French>Classnames d'animaux faisant apparaître la faune civile d'ambiance. Le filtre cycle entre Tout / Volaille / Troupeau; les coches survivent au cycle de filtre, donc l'ensemble cumulé est ce qui est utilisé à l'exécution. Les volailles apparaissent près des bâtiments civils dans les villes; le troupeau apparaît en pleine campagne hors de l'empreinte urbaine. Entrées auto-détectées des mods chargés (filtrées par le registre CfgALiVEAmbientAnimals). Les poules, coqs, chèvres et moutons vanilla d'A3 sont pré-cochés au premier placement. Le champ Override Entries accepte des noms de classe libres séparés par des virgules pour les entrées de mods absents du registre; combinés avec les coches de la listbox à la sauvegarde. Multi-sélection: clic-gauche sélectionne une ligne; Ctrl+clic-gauche bascule des lignes individuelles; Shift+clic-gauche sélectionne une plage.</French>
+    <Portuguese>Classnames de animais gerados como fauna civil ambiente. O filtro cicla entre Todos / Aves / Rebanho; as marcações sobrevivem ao ciclo de filtro, portanto o conjunto cumulativo é o que é usado em tempo de execução. As aves aparecem perto de edifícios civis dentro das vilas; o rebanho aparece em campo aberto fora da pegada urbana. Entradas auto-detectadas dos mods carregados (filtradas pelo registro CfgALiVEAmbientAnimals). As galinhas, galos, cabras e ovelhas vanilla de A3 são pré-marcadas no primeiro posicionamento. O campo Override Entries aceita nomes de classe livres separados por vírgulas para entradas de mods não no registro; combinados com as marcações do listbox ao salvar. Seleção múltipla: clique-esquerdo seleciona uma linha; Ctrl+clique-esquerdo alterna linhas individuais; Shift+clique-esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Классы животных, появляющиеся как окружающая гражданская фауна. Фильтр циклически переключается между Все / Птица / Стадо; галочки сохраняются между переключениями, поэтому накопленный набор - это то, что используется во время выполнения. Птица появляется рядом с гражданскими зданиями внутри городов; стадо появляется в открытой сельской местности за пределами городской застройки. Автоматически обнаруженные записи из загруженных модов (отфильтровано через реестр CfgALiVEAmbientAnimals). Стандартные A3 куры, петухи, козы и овцы предварительно отмечены при первом размещении. Поле Override Entries принимает имена классов через запятую для записей модов, отсутствующих в реестре; объединяется с галочками в списке при сохранении. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_POULTRY_CLASSES">
     <English>Poultry Classes:</English>
-    <French>Classes de volaille :</French>
+    <French>Classes de volaille:</French>
     <Portuguese>Classes de aves de capoeira:</Portuguese>
     <Russian>Классы домашней птицы:</Russian>
     <Spanish>Clases de aves de corral:</Spanish>
@@ -511,7 +525,7 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_POULTRY_CLASSES_COMMENT">
     <English>Animal classnames spawned as urban poultry near civilian buildings inside towns. Auto-detected entries from loaded mods (gated by CfgALiVEAmbientAnimals registry); deselect any to exclude. Vanilla A3 hens and cockerels are pre-ticked on first placement. Leaving the listbox empty AND the manual override field empty falls back to the vanilla pool. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
-    <French>Noms de classes des animaux apparaissant comme volaille urbaine près des bâtiments civils à l'intérieur des villes. Entrées détectées automatiquement à partir des mods chargés (filtrées par le registre CfgALiVEAmbientAnimals) ; décochez celles à exclure. Les poules et coqs vanille d'Arma 3 sont pré-cochés au premier placement. Laisser la liste ET le champ manuel vides revient au pool vanille. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <French>Noms de classes des animaux apparaissant comme volaille urbaine près des bâtiments civils à l'intérieur des villes. Entrées détectées automatiquement à partir des mods chargés (filtrées par le registre CfgALiVEAmbientAnimals); décochez celles à exclure. Les poules et coqs vanille d'Arma 3 sont pré-cochés au premier placement. Laisser la liste ET le champ manuel vides revient au pool vanille. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
     <Portuguese>Nomes de classes de animais que aparecem como aves de capoeira urbanas perto dos edifícios civis dentro das vilas. Entradas detetadas automaticamente nos mods carregados (filtradas pelo registo CfgALiVEAmbientAnimals); desmarque as que pretende excluir. As galinhas e galos vanilla do Arma 3 estão pré-selecionados no primeiro posicionamento. Deixar a lista E o campo manual vazios reverte para o conjunto vanilla. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
     <Russian>Имена классов животных, появляющихся как городская домашняя птица у гражданских зданий внутри городов. Записи автоматически определяются из загруженных модов (фильтруются реестром CfgALiVEAmbientAnimals); снимите отметки с тех, что нужно исключить. Куры и петухи Arma 3 отмечены по умолчанию при первом размещении. Если оставить и список, и ручное поле пустыми - используется ванильный пул. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
     <Spanish>Nombres de clase de animales que aparecen como aves de corral urbanas cerca de los edificios civiles dentro de los pueblos. Entradas detectadas automáticamente a partir de los mods cargados (filtradas por el registro CfgALiVEAmbientAnimals); desmarque las que quiera excluir. Las gallinas y gallos vanilla de Arma 3 están preseleccionados en la primera colocación. Dejar la lista Y el campo manual vacíos vuelve al conjunto vanilla. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
@@ -521,7 +535,7 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_POULTRY_CLASSES_MANUAL">
     <English>Poultry Classes (manual):</English>
-    <French>Classes de volaille (manuel) :</French>
+    <French>Classes de volaille (manuel):</French>
     <Portuguese>Classes de aves (manual):</Portuguese>
     <Russian>Классы домашней птицы (вручную):</Russian>
     <Spanish>Clases de aves (manual):</Spanish>
@@ -541,7 +555,7 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_HERD_CLASSES">
     <English>Herd Classes:</English>
-    <French>Classes de troupeau :</French>
+    <French>Classes de troupeau:</French>
     <Portuguese>Classes de rebanho:</Portuguese>
     <Russian>Классы стадных животных:</Russian>
     <Spanish>Clases de rebaño:</Spanish>
@@ -551,7 +565,7 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_HERD_CLASSES_COMMENT">
     <English>Animal classnames spawned as field herds in the open countryside outside town footprints. Auto-detected entries from loaded mods (gated by CfgALiVEAmbientAnimals registry); deselect any to exclude. Vanilla A3 goats and sheep are pre-ticked on first placement. Leaving the listbox empty AND the manual override field empty falls back to the vanilla pool. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
-    <French>Noms de classes des animaux apparaissant en troupeaux dans les champs en dehors des villes. Entrées détectées automatiquement à partir des mods chargés (filtrées par le registre CfgALiVEAmbientAnimals) ; décochez celles à exclure. Les chèvres et moutons vanille d'Arma 3 sont pré-cochés au premier placement. Laisser la liste ET le champ manuel vides revient au pool vanille. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <French>Noms de classes des animaux apparaissant en troupeaux dans les champs en dehors des villes. Entrées détectées automatiquement à partir des mods chargés (filtrées par le registre CfgALiVEAmbientAnimals); décochez celles à exclure. Les chèvres et moutons vanille d'Arma 3 sont pré-cochés au premier placement. Laisser la liste ET le champ manuel vides revient au pool vanille. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
     <Portuguese>Nomes de classes de animais que aparecem em rebanhos no campo aberto fora dos limites das vilas. Entradas detetadas automaticamente nos mods carregados (filtradas pelo registo CfgALiVEAmbientAnimals); desmarque as que pretende excluir. As cabras e ovelhas vanilla do Arma 3 estão pré-selecionadas no primeiro posicionamento. Deixar a lista E o campo manual vazios reverte para o conjunto vanilla. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
     <Russian>Имена классов животных, появляющихся стадами в открытой местности за пределами городов. Записи автоматически определяются из загруженных модов (фильтруются реестром CfgALiVEAmbientAnimals); снимите отметки с тех, что нужно исключить. Козы и овцы Arma 3 отмечены по умолчанию при первом размещении. Если оставить и список, и ручное поле пустыми - используется ванильный пул. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
     <Spanish>Nombres de clase de animales que aparecen como rebaños en el campo abierto fuera del casco urbano. Entradas detectadas automáticamente a partir de los mods cargados (filtradas por el registro CfgALiVEAmbientAnimals); desmarque las que quiera excluir. Las cabras y ovejas vanilla de Arma 3 están preseleccionadas en la primera colocación. Dejar la lista Y el campo manual vacíos vuelve al conjunto vanilla. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
@@ -561,7 +575,7 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_HERD_CLASSES_MANUAL">
     <English>Herd Classes (manual):</English>
-    <French>Classes de troupeau (manuel) :</French>
+    <French>Classes de troupeau (manuel):</French>
     <Portuguese>Classes de rebanho (manual):</Portuguese>
     <Russian>Классы стадных животных (вручную):</Russian>
     <Spanish>Clases de rebaño (manual):</Spanish>
@@ -584,7 +598,7 @@
     <Chinesesimp>定义模块上的设置,放置可选的TAOR/黑名单标记</Chinesesimp>
     <Chinese>在模組上定義設定,並選擇性地放置 TAOR / 黑名單標記!</Chinese>
     <Spanish>Define los ajustes del módulo y coloca marcadores TAOR / Lista negra opcionales.</Spanish>
-    <French>Définissez les paramètres sur le module, placez des marqueurs TAOR / Liste noire facultatifs !</French>
+    <French>Définissez les paramètres sur le module, placez des marqueurs TAOR / Liste noire facultatifs!</French>
     <Portuguese>Defina as configurações no módulo e coloque marcadores TAOR / Lista negra opcionais!</Portuguese>
     <Russian>Настройте параметры модуля и расставьте опциональные маркеры TAOR / чёрного списка!</Russian>
 </Key>
