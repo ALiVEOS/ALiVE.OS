@@ -118,6 +118,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_getAirfieldGeometry.sqf";
                 RECOMPILE;
             };
+            class findRunwayClear {
+                description = "Returns input position unchanged when clear of runway/taxiway segments by `_clearance`m beyond halfWidth, or a perpendicular-nudged position otherwise. One-shot waypoint / unit-sweep helper";
+                file = "\x\alive\addons\main\fnc_findRunwayClear.sqf";
+                RECOMPILE;
+            };
             class findAirSpawnPosition {
                 description = "Unified air-unit spawn-position validator: helipad/hangar/apron/field cascade, runway+taxiway exclusion, door verification";
                 file = "\x\alive\addons\main\fnc_findAirSpawnPosition.sqf";

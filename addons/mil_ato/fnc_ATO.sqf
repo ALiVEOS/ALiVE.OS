@@ -4316,6 +4316,194 @@ switch(_operation) do {
                                     };
                                 };
 
+                                // Continuous taxi/takeoff path watchdog. The
+                                // aircraft taxis along an unpredictable path
+                                // (apron -> taxiway -> runway -> roll), and
+                                // AI may walk into that path mid-taxi. A
+                                // one-shot sweep at takeoff start can't
+                                // catch that. This spawns an async loop
+                                // that:
+                                //
+                                //   1. Waits up to 30s for the aircraft
+                                //      profile to spawn its real vehicle
+                                //      object (the spawn happens further
+                                //      down this same code path - watchdog
+                                //      starts watching only after the
+                                //      vehicle exists).
+                                //   2. Tick every 1s. Scan a 100m radius
+                                //      around the aircraft. Filter to AI
+                                //      within a forward cone (+/-60 deg of
+                                //      aircraft facing) - those are the
+                                //      ones in the taxi/takeoff path.
+                                //   3. Teleport any matching AI 80m off
+                                //      perpendicular to the side. setPos
+                                //      bypasses BIS AI orders entirely.
+                                //   4. Exit when aircraft is airborne (Z >
+                                //      50m), destroyed/null, or 120s
+                                //      timeout (worst case).
+                                //
+                                // Excludes pilots (kindOf Pilot - aircraft
+                                // crew), players, and empty vehicles.
+                                if (_isPlane) then {
+                                    [_profileID, _vehicleClass, _airportID, _debug] spawn {
+                                        params ["_profileID", "_vehicleClass", "_airportID", "_debug"];
+
+                                        // Look up profile (scoped local;
+                                        // _profile in outer scope isn't
+                                        // defined yet at this insertion
+                                        // point - it's set further down
+                                        // in fnc_ATO).
+                                        private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+                                        if (isNil "_profile") exitWith {
+                                            if (_debug) then {
+                                                ["ATO sweep watchdog [%1]: profile %2 lookup failed - exit", _vehicleClass, _profileID] call ALiVE_fnc_dump;
+                                            };
+                                        };
+
+                                        // Wait for aircraft vehicle to spawn
+                                        private _vehicleObj = objNull;
+                                        private _waitStart = diag_tickTime;
+                                        while {
+                                            isNull _vehicleObj
+                                            && {(diag_tickTime - _waitStart) < 30}
+                                        } do {
+                                            _vehicleObj = [_profile, "vehicle", objNull] call ALiVE_fnc_hashGet;
+                                            sleep 0.5;
+                                        };
+
+                                        if (isNull _vehicleObj) exitWith {
+                                            if (_debug) then {
+                                                ["ATO sweep watchdog [%1, airport %2]: aircraft never spawned within 30s - exit", _vehicleClass, _airportID] call ALiVE_fnc_dump;
+                                            };
+                                        };
+
+                                        if (_debug) then {
+                                            ["ATO sweep watchdog [%1, airport %2]: tracking %3", _vehicleClass, _airportID, _vehicleObj] call ALiVE_fnc_dump;
+                                        };
+
+                                        // Track until airborne / dead / timeout
+                                        private _trackStart = diag_tickTime;
+                                        private _totalDoMove = 0;
+                                        private _totalTeleport = 0;
+                                        while {
+                                            !isNull _vehicleObj
+                                            && {alive _vehicleObj}
+                                            && {(getPosATL _vehicleObj) select 2 < 50}
+                                            && {(diag_tickTime - _trackStart) < 120}
+                                        } do {
+                                            private _pos = getPosATL _vehicleObj;
+                                            private _dir = direction _vehicleObj;
+                                            {
+                                                private _u = _x;
+                                                // Pilot exclusion: kindOf "Pilot"
+                                                // catches BIS variants but RHS
+                                                // pilots may not inherit the
+                                                // base class. Also substring-
+                                                // match typeOf for "pilot" /
+                                                // "crew" to catch mod-defined
+                                                // crew classes.
+                                                private _typeLower = toLower (typeOf _u);
+                                                private _isCrewLike = (_u isKindOf "Pilot")
+                                                    || {_typeLower find "pilot" >= 0}
+                                                    || {_typeLower find "crew" >= 0};
+                                                // Aircraft proximity exclusion:
+                                                // anything within 30m of the
+                                                // aircraft is likely its own
+                                                // crew about to board. The
+                                                // forward-cone scan starts at
+                                                // the aircraft so this protects
+                                                // boarding crew from being
+                                                // teleported away.
+                                                private _distFromAircraft = _u distance _vehicleObj;
+                                                if (
+                                                    alive _u
+                                                    && {_u != _vehicleObj}
+                                                    && {!isPlayer (effectiveCommander _u)}
+                                                    && {!_isCrewLike}
+                                                    && {_distFromAircraft > 30}
+                                                ) then {
+                                                    private _hasLiveCrew = if (_u isKindOf "CAManBase") then {
+                                                        true
+                                                    } else {
+                                                        ({alive _x} count (crew _u)) > 0
+                                                    };
+                                                    if (_hasLiveCrew) then {
+                                                        // Forward cone gate: only
+                                                        // sweep units in the path
+                                                        // ahead of the aircraft.
+                                                        private _bearing = _pos getDir _u;
+                                                        private _angleDelta = abs ((_bearing - _dir + 540) mod 360 - 180);
+                                                        if (_angleDelta < 60) then {
+                                                            // Sweep target: 80m
+                                                            // perpendicular to the
+                                                            // forward axis. Random
+                                                            // side so units don't
+                                                            // pile up on one flank.
+                                                            private _sideDir = _dir + (selectRandom [-90, 90]);
+                                                            private _clearPos = _pos getPos [80, _sideDir];
+
+                                                            // Two-stage move: first
+                                                            // try doMove + commandMove
+                                                            // (graceful, AI walks off);
+                                                            // 5s grace period; if unit
+                                                            // hasn't moved 3m+ from
+                                                            // warn position by then,
+                                                            // teleport. State per-unit
+                                                            // via setVariable.
+                                                            private _unitPos = getPosATL _u;
+                                                            private _warnTime = _u getVariable ["ALiVE_ATO_sweep_warnTime", -1];
+                                                            if (_warnTime < 0) then {
+                                                                // First sighting -
+                                                                // issue doMove, mark.
+                                                                private _grp = group _u;
+                                                                _grp setBehaviour "AWARE";
+                                                                _grp setSpeedMode "NORMAL";
+                                                                _u enableAI "MOVE";
+                                                                _u enableAI "PATH";
+                                                                _u doMove _clearPos;
+                                                                _u commandMove _clearPos;
+                                                                _u setVariable ["ALiVE_ATO_sweep_warnTime", diag_tickTime];
+                                                                _u setVariable ["ALiVE_ATO_sweep_warnPos", _unitPos];
+                                                                _u setVariable ["ALiVE_ATO_sweep_clearPos", _clearPos];
+                                                                _totalDoMove = _totalDoMove + 1;
+                                                            } else {
+                                                                private _warnPos = _u getVariable ["ALiVE_ATO_sweep_warnPos", _unitPos];
+                                                                private _moved = _unitPos distance _warnPos;
+                                                                private _elapsed = diag_tickTime - _warnTime;
+                                                                if (_moved > 10) then {
+                                                                    // Successfully
+                                                                    // moved away,
+                                                                    // reset state in
+                                                                    // case they
+                                                                    // wander back.
+                                                                    _u setVariable ["ALiVE_ATO_sweep_warnTime", -1];
+                                                                } else {
+                                                                    if (_elapsed > 5) then {
+                                                                        // 5s grace
+                                                                        // expired, no
+                                                                        // movement -
+                                                                        // teleport.
+                                                                        private _tgt = _u getVariable ["ALiVE_ATO_sweep_clearPos", _clearPos];
+                                                                        _u setPosATL _tgt;
+                                                                        _u setVariable ["ALiVE_ATO_sweep_warnTime", -1];
+                                                                        _totalTeleport = _totalTeleport + 1;
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            } forEach (nearestObjects [_pos, ["CAManBase","Car","Tank","Truck_F"], 100]);
+                                            sleep 1;
+                                        };
+
+                                        if (_debug) then {
+                                            private _z = if (!isNull _vehicleObj) then { (getPosATL _vehicleObj) select 2 } else { -1 };
+                                            ["ATO sweep watchdog [%1]: ended after %2s, doMove issued=%3 teleport fallback=%4 (aircraftZ=%5 alive=%6)", _vehicleClass, round (diag_tickTime - _trackStart), _totalDoMove, _totalTeleport, _z, !isNull _vehicleObj && {alive _vehicleObj}] call ALiVE_fnc_dump;
+                                        };
+                                    };
+                                };
+
                                 // If not active then assign crew and spawn else move crew into aircraft
                                 private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
                                 private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
