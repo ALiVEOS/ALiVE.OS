@@ -163,6 +163,48 @@ private _populateFn = {
     _disp setVariable ["alive_populating", true];
     lbClear _list;
 
+    // Variant tag derivation: when multiple entries share the same
+    // displayName (e.g. four RHS Stinger pods all read "FIM-92F (DMS)"
+    // because RHS gives the same display to every camo / branch
+    // variant), strip the longest common classname prefix from each
+    // and use the remainder as a [tag] appended to the visible name.
+    // Singleton displays (no shared name) get no tag.
+    private _displayGroups = createHashMap;
+    {
+        private _d = _x select 1;
+        private _c = _x select 0;
+        private _bucket = if (_d in _displayGroups) then { _displayGroups get _d } else { [] };
+        _bucket pushBack _c;
+        _displayGroups set [_d, _bucket];
+    } forEach _all;
+
+    private _variantTags = createHashMap;
+    {
+        private _classesInGroup = _displayGroups get _x;
+        if (count _classesInGroup > 1) then {
+            private _prefArr = toArray (_classesInGroup select 0);
+            {
+                private _otherArr = toArray _x;
+                private _maxLen = (count _prefArr) min (count _otherArr);
+                private _newLen = 0;
+                for "_i" from 0 to (_maxLen - 1) do {
+                    if ((_prefArr select _i) != (_otherArr select _i)) exitWith {};
+                    _newLen = _i + 1;
+                };
+                _prefArr = _prefArr select [0, _newLen];
+            } forEach _classesInGroup;
+            private _prefLen = count _prefArr;
+            {
+                private _c = _x;
+                private _tag = _c select [_prefLen];
+                if ((count _tag > 0) && {(_tag select [0, 1]) == "_"}) then {
+                    _tag = _tag select [1];
+                };
+                _variantTags set [toLower _c, _tag];
+            } forEach _classesInGroup;
+        };
+    } forEach (keys _displayGroups);
+
     private _selLowerSet = createHashMap;
     { _selLowerSet set [toLower _x, true] } forEach _sel;
 
@@ -194,7 +236,16 @@ private _populateFn = {
         _bucket sort true;
         {
             _x params ["_class", "_display", "_side", "_role", "_category", ""];
-            private _label = format ["%1 - %2 [%3/%4] (%5)", _src, _display, _side, _role, _class];
+            // Classname first so its variant suffix stays visible
+            // through listbox truncation, plus an auto-derived [tag]
+            // on the displayName when entries share a name (see
+            // variant-tag computation above).
+            private _displayLabel = _display;
+            if ((toLower _class) in _variantTags) then {
+                private _tag = _variantTags get (toLower _class);
+                if (_tag != "") then { _displayLabel = format ["%1 [%2]", _display, _tag] };
+            };
+            private _label = format ["%1 | %2 [%3] %4", _class, _displayLabel, _role, _src];
             private _idx = _list lbAdd _label;
             _list lbSetData [_idx, _class];
             if ((toLower _class) in _selLowerSet) then {
