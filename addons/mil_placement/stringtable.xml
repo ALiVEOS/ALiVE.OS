@@ -260,7 +260,7 @@
     <Chinese>現役巡邏百分比：</Chinese>
     <Chinesesimp>现役巡逻百分比：</Chinesesimp>
     <Spanish>Porcentaje de patrulla activa:</Spanish>
-    <French>Pourcentage de patrouille active :</French>
+    <French>Pourcentage de patrouille active:</French>
     <Portuguese>Porcentagem de patrulha ativa:</Portuguese>
     <Russian>Процент активного патрулирования:</Russian>
 </Key>
@@ -269,7 +269,7 @@
     <Chinese>任務開始時現役單位中，主動巡邏的百分比（相對於駐守目標附近建築物）。100% = 全部巡邏；0% = 全部駐守。僅影響現役單位 — 請參閱「戰備」以了解現役與預備隊的分配。</Chinese>
     <Chinesesimp>任务开始时现役单位中，主动巡逻的百分比（相对于驻守目标附近建筑）。100% = 全部巡逻；0% = 全部驻守。仅影响现役单位 — 参见"战备"了解现役与预备队的分配。</Chinesesimp>
     <Spanish>De las unidades activas al inicio de la misión, qué porcentaje patrulla activamente (en lugar de guarnecer edificios cerca del objetivo). 100% = todas patrullan; 0% = todas guarnecen. Solo afecta a unidades activas — ver 'Disponibilidad' para la división activa vs reserva.</Spanish>
-    <French>Parmi les unités actives au début de la mission, quel pourcentage patrouille activement (par rapport à garnir les bâtiments près de l'objectif). 100 % = toutes en patrouille ; 0 % = toutes en garnison. Affecte uniquement les unités actives — voir 'Disponibilité' pour la répartition active / réserve.</French>
+    <French>Parmi les unités actives au début de la mission, quel pourcentage patrouille activement (par rapport à garnir les bâtiments près de l'objectif). 100 % = toutes en patrouille; 0 % = toutes en garnison. Affecte uniquement les unités actives — voir 'Disponibilité' pour la répartition active / réserve.</French>
     <Portuguese>Das unidades ativas no início da missão, qual porcentagem patrulha ativamente (em vez de guarnecer edifícios próximos ao objetivo). 100% = todas patrulham; 0% = todas guarnecem. Afeta apenas unidades ativas — ver 'Prontidão' para a divisão ativa vs reserva.</Portuguese>
     <Russian>Из юнитов, активных в начале миссии, какой процент активно патрулирует (вместо гарнизона зданий возле объекта). 100% = все патрулируют; 0% = все в гарнизоне. Влияет только на активные юниты — см. «Готовность» для деления активные / резерв.</Russian>
 </Key>
@@ -278,7 +278,7 @@
     <Chinese>預備隊啟動閾值：</Chinese>
     <Chinesesimp>预备队激活阈值：</Chinesesimp>
     <Spanish>Umbral de activación de reservas:</Spanish>
-    <French>Seuil d'activation des réserves :</French>
+    <French>Seuil d'activation des réserves:</French>
     <Portuguese>Limite de ativação de reservas:</Portuguese>
     <Russian>Порог активации резерва:</Russian>
 </Key>
@@ -287,7 +287,7 @@
     <Chinese>預備隊喚醒以保衛目標的現役部隊水平。25% = 等待嚴重損耗。50% = 損失一半時喚醒。75% = 提早喚醒。100% = 首次損失即喚醒。預備隊在目標建築物內喚醒；遠程車輛增援請參閱 OPCOM 模組的「增援」設定。</Chinese>
     <Chinesesimp>预备队唤醒以防御目标的现役部队水平。25% = 等待严重损耗。50% = 损失一半时唤醒。75% = 提早唤醒。100% = 首次损失即唤醒。预备队在目标建筑内唤醒；远程车辆增援参见 OPCOM 模块的"增援"设置。</Chinesesimp>
     <Spanish>Nivel de la fuerza activa en el que las reservas se activan para defender el objetivo. 25% = esperar hasta gran pérdida. 50% = activar al perder la mitad. 75% = activar pronto. 100% = activar a la primera baja. Las reservas se activan dentro de los edificios del objetivo; para refuerzos de vehículos de largo alcance ver la opción Refuerzos del módulo OPCOM.</Spanish>
-    <French>Niveau de la force active auquel les réserves se réveillent pour défendre l'objectif. 25 % = attendre une forte attrition. 50 % = se réveiller à mi-pertes. 75 % = se réveiller tôt. 100 % = se réveiller à la première perte. Les réserves se réveillent dans les bâtiments de l'objectif ; pour des renforts véhicules longue distance, voir le paramètre Renforts du module OPCOM.</French>
+    <French>Niveau de la force active auquel les réserves se réveillent pour défendre l'objectif. 25 % = attendre une forte attrition. 50 % = se réveiller à mi-pertes. 75 % = se réveiller tôt. 100 % = se réveiller à la première perte. Les réserves se réveillent dans les bâtiments de l'objectif; pour des renforts véhicules longue distance, voir le paramètre Renforts du module OPCOM.</French>
     <Portuguese>Nível da força ativa em que as reservas despertam para defender o objetivo. 25% = esperar até grande perda. 50% = despertar com metade perdida. 75% = despertar cedo. 100% = despertar na primeira perda. As reservas despertam nos edifícios do objetivo; para reforços de veículos de longo alcance ver a configuração Reforços do módulo OPCOM.</Portuguese>
     <Russian>Уровень активных сил, при котором резервы пробуждаются для защиты объекта. 25% = ждать сильных потерь. 50% = пробудить при потере половины. 75% = пробудить рано. 100% = пробудить при первой потере. Резервы появляются в зданиях объекта; для дальних подкреплений техникой см. настройку «Подкрепления» модуля OPCOM.</Russian>
 </Key>
@@ -296,7 +296,7 @@
     <Chinese>預備隊啟動冷卻時間（秒）：</Chinese>
     <Chinesesimp>预备队激活冷却时间（秒）：</Chinesesimp>
     <Spanish>Tiempo de espera de activación de reservas (s):</Spanish>
-    <French>Délai d'activation des réserves (s) :</French>
+    <French>Délai d'activation des réserves (s):</French>
     <Portuguese>Tempo de espera de ativação de reservas (s):</Portuguese>
     <Russian>Перезарядка активации резерва (с):</Russian>
 </Key>
@@ -314,7 +314,7 @@
     <Chinese>預備隊交戰半徑：</Chinese>
     <Chinesesimp>预备队交战半径：</Chinesesimp>
     <Spanish>Radio de combate de reservas:</Spanish>
-    <French>Rayon d'engagement des réserves :</French>
+    <French>Rayon d'engagement des réserves:</French>
     <Portuguese>Raio de engajamento de reservas:</Portuguese>
     <Russian>Радиус боевого контакта резерва:</Russian>
 </Key>
@@ -323,7 +323,7 @@
     <Chinese>玩家必須距離目標多近才能喚醒預備隊，以叢集大小的倍數表示。預設 3 倍意味著玩家在（叢集大小 × 3）公尺內觸發啟動；對於 150 公尺的叢集，這是 450 公尺的交戰半徑。增加以更早從遠處喚醒預備隊，減少以獲得更緊湊的交戰。</Chinese>
     <Chinesesimp>玩家必须距离目标多近才能唤醒预备队，以集群大小的倍数表示。默认 3 倍意味着玩家在（集群大小 × 3）米内触发激活；对于 150 米的集群，这是 450 米的交战半径。增加以更早从远处唤醒预备队，减少以获得更紧凑的交战。</Chinesesimp>
     <Spanish>Qué tan cerca debe estar un jugador del objetivo para que las reservas se activen, expresado como múltiplo del tamaño del clúster. El valor por defecto 3x significa que un jugador a menos de (tamaño_clúster * 3) metros activa; para un clúster de 150 m son 450 m de radio de combate. Aumenta para activar reservas antes desde la distancia, disminuye para combates más cerrados.</Spanish>
-    <French>À quelle distance un joueur doit être de l'objectif pour que les réserves se réveillent, exprimé comme un multiple de la taille du cluster. La valeur par défaut 3x signifie qu'un joueur à moins de (taille_cluster × 3) mètres déclenche l'activation ; pour un cluster de 150 m, cela fait 450 m de rayon d'engagement. Augmentez pour réveiller les réserves plus tôt à distance, diminuez pour des engagements plus serrés.</French>
+    <French>À quelle distance un joueur doit être de l'objectif pour que les réserves se réveillent, exprimé comme un multiple de la taille du cluster. La valeur par défaut 3x signifie qu'un joueur à moins de (taille_cluster × 3) mètres déclenche l'activation; pour un cluster de 150 m, cela fait 450 m de rayon d'engagement. Augmentez pour réveiller les réserves plus tôt à distance, diminuez pour des engagements plus serrés.</French>
     <Portuguese>Quão perto um jogador deve estar do objetivo para que as reservas despertem, expresso como múltiplo do tamanho do cluster. O padrão 3x significa que um jogador a menos de (tamanho_cluster * 3) metros aciona a ativação; para um cluster de 150 m são 450 m de raio de engajamento. Aumente para despertar reservas mais cedo à distância, diminua para engajamentos mais próximos.</Portuguese>
     <Russian>Насколько близко игрок должен находиться к объекту для пробуждения резервов, выражено как множитель размера кластера. По умолчанию 3x — игрок в пределах (размер_кластера * 3) метров запускает активацию; для кластера 150 м это радиус боевого контакта 450 м. Увеличьте для более раннего пробуждения резервов на расстоянии, уменьшите для более тесных столкновений.</Russian>
 </Key>
@@ -332,7 +332,7 @@
     <Chinese>鎖定已清除的建築物：</Chinese>
     <Chinesesimp>锁定已清除的建筑：</Chinesesimp>
     <Spanish>Bloquear edificios despejados:</Spanish>
-    <French>Verrouiller les bâtiments nettoyés :</French>
+    <French>Verrouiller les bâtiments nettoyés:</French>
     <Portuguese>Travar edifícios limpos:</Portuguese>
     <Russian>Блокировать зачищенные здания:</Russian>
 </Key>
@@ -341,7 +341,7 @@
     <Chinese>預備隊生成選擇器在其 80 公尺玩家鄰近範圍內看到的建築物是否在任務剩餘時間內永久取消資格。是（預設）= 觸碰一次即鎖定。預備隊不會出現在您已清除的建築物中，即使您走遠了。否 = 每次啟動時重新檢查 80 公尺閘門；您已遠離的建築物再次有資格容納預備隊。是更具沉浸感；否讓叢集在您推進時持續補充。</Chinese>
     <Chinesesimp>预备队生成选择器在其 80 米玩家邻近范围内看到的建筑是否在任务剩余时间内永久取消资格。是（默认）= 触碰一次即锁定。预备队不会出现在您已清除的建筑中，即使您走远了。否 = 每次激活时重新检查 80 米门；您已远离的建筑再次有资格容纳预备队。是更具沉浸感；否让集群在您推进时持续补充。</Chinesesimp>
     <Spanish>Si los edificios que el selector de aparición de reservas ha visto dentro de su burbuja de proximidad al jugador de 80 m quedan permanentemente descalificados durante el resto de la misión. Sí (por defecto) = tocado una vez, bloqueado. Las reservas no aparecerán en un edificio que ya hayas despejado, incluso si te alejas mucho. No = la puerta de 80 m se vuelve a comprobar en cada activación; un edificio del que te has alejado vuelve a ser elegible para acoger reservas. Sí es más inmersivo; No permite al objetivo seguir reponiéndose mientras avanzas.</Spanish>
-    <French>Si les bâtiments que le sélecteur de spawn de réserve a vus dans sa bulle de proximité de 80 m du joueur sont définitivement disqualifiés pour le reste de la mission. Oui (par défaut) = touché une fois, verrouillé. Les réserves n'apparaîtront pas dans un bâtiment que vous avez déjà nettoyé, même si vous vous en éloignez beaucoup. Non = la porte de 80 m est revérifiée à chaque activation ; un bâtiment dont vous vous êtes éloigné redevient éligible pour accueillir des réserves. Oui est plus immersif ; Non permet à l'objectif de continuer à se remplir au fur et à mesure que vous avancez.</French>
+    <French>Si les bâtiments que le sélecteur de spawn de réserve a vus dans sa bulle de proximité de 80 m du joueur sont définitivement disqualifiés pour le reste de la mission. Oui (par défaut) = touché une fois, verrouillé. Les réserves n'apparaîtront pas dans un bâtiment que vous avez déjà nettoyé, même si vous vous en éloignez beaucoup. Non = la porte de 80 m est revérifiée à chaque activation; un bâtiment dont vous vous êtes éloigné redevient éligible pour accueillir des réserves. Oui est plus immersif; Non permet à l'objectif de continuer à se remplir au fur et à mesure que vous avancez.</French>
     <Portuguese>Se os edifícios que o selecionador de spawn de reservas viu dentro de sua bolha de proximidade do jogador de 80 m ficam permanentemente desqualificados pelo resto da missão. Sim (padrão) = tocado uma vez, travado. As reservas não surgirão em um edifício que você já limpou, mesmo se você se afastar muito. Não = o portão de 80 m é reverificado em cada ativação; um edifício do qual você se afastou volta a ser elegível para hospedar reservas. Sim é mais imersivo; Não permite que o objetivo continue se reabastecendo enquanto você avança.</Portuguese>
     <Russian>Здания, которые селектор появления резерва видел в его 80-метровом пузыре близости к игроку, будут навсегда дисквалифицированы на оставшуюся часть миссии. Да (по умолчанию) = тронуто один раз, заблокировано. Резервы не появятся в здании, которое вы уже зачистили, даже если вы далеко отошли. Нет = 80-метровый порог проверяется заново при каждой активации; здание, от которого вы отошли, снова имеет право принимать резервы. Да более иммерсивно; Нет позволяет объекту продолжать пополняться по мере продвижения.</Russian>
 </Key>
@@ -350,7 +350,7 @@
     <Chinese>鎖定空載預備車輛：</Chinese>
     <Chinesesimp>锁定空载预备车辆：</Chinesesimp>
     <Spanish>Bloquear vehículos de reserva vacíos:</Spanish>
-    <French>Verrouiller les véhicules de réserve vides :</French>
+    <French>Verrouiller les véhicules de réserve vides:</French>
     <Portuguese>Travar veículos de reserva vazios:</Portuguese>
     <Russian>Блокировать пустую резервную технику:</Russian>
 </Key>
@@ -368,7 +368,7 @@
     <Chinese>預備隊乘員（車輛已毀）：</Chinese>
     <Chinesesimp>预备队乘员（车辆已毁）：</Chinesesimp>
     <Spanish>Tripulación de reserva con vehículo destruido:</Spanish>
-    <French>Équipage de réserve avec véhicule détruit :</French>
+    <French>Équipage de réserve avec véhicule détruit:</French>
     <Portuguese>Tripulação de reserva com veículo destruído:</Portuguese>
     <Russian>Резервный экипаж с уничтоженной техникой:</Russian>
 </Key>
@@ -1041,7 +1041,7 @@
     <Chinese>對環境支援載具池（ALIVE_factionDefaultSupports）進行各派系覆寫 — 即放置於軍事目標附近的彈藥 / 燃料 / 維修 / 醫療卡車。在列表框中勾選類別;在覆寫欄位以 FACTION=class1,class2;FACTION2=class3 語法輸入額外的模組類別。取代模式會以您的選擇清除該派系的原始清單;附加模式則在原始項目之上加入您的選擇。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>对环境支援载具池（ALIVE_factionDefaultSupports）进行各派系覆写 — 即放置于军事目标附近的弹药 / 燃料 / 维修 / 医疗卡车。在列表框中勾选类别;在覆写字段以 FACTION=class1,class2;FACTION2=class3 语法输入额外的模组类别。取代模式会以您的选择清除该派系的原始清单;附加模式则在原始项目之上加入您的选择。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Reemplazos por facción del pool de vehículos de apoyo ambientales (ALIVE_factionDefaultSupports) — los camiones de munición / combustible / reparación / medical colocados cerca de objetivos militares. Marca clases en el listbox; introduce clases de mods adicionales en el campo override con la sintaxis FACTION=class1,class2;FACTION2=class3. El modo Replace borra la lista estándar de la facción con tu selección; el modo Append añade tu selección encima de las entradas estándar. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
-    <French>Surcharges par faction du vivier de véhicules de soutien d'ambiance (ALIVE_factionDefaultSupports) — les camions de munitions / carburant / réparation / médical placés près des objectifs militaires. Cochez des classes dans la liste; saisissez des classes de mods supplémentaires dans le champ override avec la syntaxe FACTION=class1,class2;FACTION2=class3. Le mode Replace efface la liste d'origine de la faction et la remplace par votre sélection; le mode Append ajoute votre sélection par-dessus les entrées d'origine. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <French>Surcharges par faction du vivier de véhicules de soutien d'ambiance (ALIVE_factionDefaultSupports) — les camions de munitions / carburant / réparation / médical placés près des objectifs militaires. Cochez des classes dans la liste; saisissez des classes de mods supplémentaires dans le champ override avec la syntaxe FACTION=class1,class2;FACTION2=class3. Le mode Replace efface la liste d'origine de la faction et la remplace par votre sélection; le mode Append ajoute votre sélection par-dessus les entrées d'origine. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
     <Portuguese>Substituições por facção do pool de veículos de apoio ambientais (ALIVE_factionDefaultSupports) — os caminhões de munição / combustível / reparo / médico colocados perto de objetivos militares. Marque classes no listbox; insira classes de mods adicionais no campo override com a sintaxe FACTION=class1,class2;FACTION2=class3. O modo Replace apaga a lista padrão da facção com a sua seleção; o modo Append adiciona a sua seleção sobre as entradas padrão. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
     <Russian>Переопределения по фракциям для пула вспомогательных машин окружения (ALIVE_factionDefaultSupports) — боеприпасных / топливных / ремонтных / медицинских грузовиков, размещаемых у военных объектов. Отмечайте классы в списке; вводите дополнительные модовые классы в поле override, используя синтаксис FACTION=class1,class2;FACTION2=class3. Режим Replace стирает стоковый список фракции и заменяет его вашим выбором; режим Append добавляет ваш выбор поверх стоковых записей. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
@@ -1061,7 +1061,7 @@
     <Chinese>對隨機補給箱池（ALIVE_factionDefaultSupplies）進行各派系覆寫 — 即放置於軍事目標附近的彈藥 / 武器 / 專業裝備箱。在列表框中勾選類別;在覆寫欄位以 FACTION=class1,class2;FACTION2=class3 語法輸入額外的模組類別。取代模式會以您的選擇清除該派系的原始清單;附加模式則在原始項目之上加入您的選擇。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>对随机补给箱池（ALIVE_factionDefaultSupplies）进行各派系覆写 — 即放置于军事目标附近的弹药 / 武器 / 专业装备箱。在列表框中勾选类别;在覆写字段以 FACTION=class1,class2;FACTION2=class3 语法输入额外的模组类别。取代模式会以您的选择清除该派系的原始清单;附加模式则在原始项目之上加入您的选择。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Reemplazos por facción del pool de cajas de suministros aleatorias (ALIVE_factionDefaultSupplies) — las cajas de munición / armas / especialistas colocadas cerca de objetivos militares. Marca clases en el listbox; introduce clases de mods adicionales en el campo override con la sintaxis FACTION=class1,class2;FACTION2=class3. El modo Replace borra la lista estándar de la facción con tu selección; el modo Append añade tu selección encima de las entradas estándar. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
-    <French>Surcharges par faction du vivier de caisses de ravitaillement aléatoires (ALIVE_factionDefaultSupplies) — les caisses de munitions / armes / spécialiste placées près des objectifs militaires. Cochez des classes dans la liste; saisissez des classes de mods supplémentaires dans le champ override avec la syntaxe FACTION=class1,class2;FACTION2=class3. Le mode Replace efface la liste d'origine de la faction et la remplace par votre sélection; le mode Append ajoute votre sélection par-dessus les entrées d'origine. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <French>Surcharges par faction du vivier de caisses de ravitaillement aléatoires (ALIVE_factionDefaultSupplies) — les caisses de munitions / armes / spécialiste placées près des objectifs militaires. Cochez des classes dans la liste; saisissez des classes de mods supplémentaires dans le champ override avec la syntaxe FACTION=class1,class2;FACTION2=class3. Le mode Replace efface la liste d'origine de la faction et la remplace par votre sélection; le mode Append ajoute votre sélection par-dessus les entrées d'origine. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
     <Portuguese>Substituições por facção do pool de caixas de suprimentos aleatórias (ALIVE_factionDefaultSupplies) — as caixas de munição / armas / especialista colocadas perto de objetivos militares. Marque classes no listbox; insira classes de mods adicionais no campo override com a sintaxe FACTION=class1,class2;FACTION2=class3. O modo Replace apaga a lista padrão da facção com a sua seleção; o modo Append adiciona a sua seleção sobre as entradas padrão. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
     <Russian>Переопределения по фракциям для пула случайных ящиков снабжения (ALIVE_factionDefaultSupplies) — боеприпасных / оружейных / специальных ящиков, размещаемых у военных объектов. Отмечайте классы в списке; вводите дополнительные модовые классы в поле override, используя синтаксис FACTION=class1,class2;FACTION2=class3. Режим Replace стирает стоковый список фракции и заменяет его вашим выбором; режим Append добавляет ваш выбор поверх стоковых записей. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
