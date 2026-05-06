@@ -660,32 +660,95 @@
     <Portuguese>Substitui a quantidade calculada de grupos de operações especiais. Digite um número inteiro. Deixe em branco para usar o valor calculado a partir do Tamanho e da Ponderação da Força. Defina como 0 para não gerar grupos de operações especiais.</Portuguese>
     <Russian>Переопределяет рассчитанное количество групп спецназа. Введите целое число. Оставьте пустым, чтобы использовать значение, рассчитанное из размера и весового состава сил. Установите 0, чтобы не создавать группы спецназа.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_HDR_ANTIAIR">
     <English>ANTI-AIR</English>
+    <Chinese>防空</Chinese>
+    <Chinesesimp>防空</Chinesesimp>
+    <Spanish>ANTI-AÉREO</Spanish>
+    <French>ANTI-AÉRIEN</French>
+    <Portuguese>ANTIAÉREO</Portuguese>
+    <Russian>ПВО</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AA_COUNT">
     <English>Spawn AA Units:</English>
+    <Chinese>生成防空單位:</Chinese>
+    <Chinesesimp>生成防空单位:</Chinesesimp>
+    <Spanish>Generar unidades AA:</Spanish>
+    <French>Apparition unités AA:</French>
+    <Portuguese>Gerar unidades AA:</Portuguese>
+    <Russian>Создать ПВО:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AA_COUNT_COMMENT">
     <English>Number of AA (anti-air) units to spawn for this module. Whole number. 0 = no AA. Scale to your TAOR size - small clusters might want 1-3, a large airbase TAOR could justify 10+. Each AA slot routes through the composition spawn validator (envelope 10m, mode "ato") so the unit lands on a clear, non-runway position. Crewed AA engages incoming aircraft via vanilla AI. Class drawn from the AA Classes picker below if non-empty, else from the per-faction default list.</English>
+    <Chinese>為此模組生成的防空（AA）單位數量。整數。0 = 不生成防空。根據TAOR大小調整 - 小型叢集可能需要1-3，大型空軍基地TAOR可能需要10+。每個防空槽位透過組合生成驗證器（包絡10米，模式 "ato"），確保單位降落在乾淨、非跑道位置。配備人員的防空透過原生AI攻擊來襲飛機。如果下方AA Classes選擇器非空，則從中選擇類別，否則從派系預設清單中選擇。</Chinese>
+    <Chinesesimp>为此模块生成的防空（AA）单位数量。整数。0 = 不生成防空。根据TAOR大小调整 - 小型集群可能需要1-3，大型空军基地TAOR可能需要10+。每个防空槽位通过组合生成验证器（包络10米，模式 "ato"），确保单位降落在干净、非跑道位置。配备人员的防空通过原生AI攻击来袭飞机。如果下方AA Classes选择器非空，则从中选择类别，否则从派系默认列表中选择。</Chinesesimp>
+    <Spanish>Número de unidades AA (antiaéreas) a generar para este módulo. Número entero. 0 = sin AA. Ajusta al tamaño de tu TAOR - los clusters pequeños suelen querer 1-3, un TAOR de base aérea grande puede justificar 10+. Cada slot de AA pasa por el validador de generación de composiciones (envoltura 10m, modo "ato") para que la unidad aterrice en una posición despejada, fuera de pista. Las AA tripuladas atacan aeronaves entrantes mediante la IA vanilla. La clase se toma del selector AA Classes inferior si no está vacío, o de la lista por defecto de la facción.</Spanish>
+    <French>Nombre d'unités AA (anti-aériennes) à faire apparaître pour ce module. Nombre entier. 0 = aucune AA. Adaptez à la taille de votre TAOR - les petits clusters peuvent vouloir 1-3, un grand TAOR de base aérienne peut justifier 10+. Chaque emplacement AA passe par le validateur de position de composition (enveloppe 10m, mode "ato") pour que l'unité atterrisse sur une position dégagée, hors piste. Les AA équipées engagent les aéronefs entrants via l'IA vanilla. La classe est tirée du sélecteur AA Classes ci-dessous s'il n'est pas vide, sinon de la liste par défaut de la faction.</French>
+    <Portuguese>Número de unidades AA (antiaéreas) para gerar neste módulo. Número inteiro. 0 = sem AA. Dimensione ao tamanho do seu TAOR - clusters pequenos podem querer 1-3, um TAOR de base aérea grande pode justificar 10+. Cada slot de AA passa pelo validador de geração de composição (envelope 10m, modo "ato") para que a unidade pouse em uma posição limpa, fora da pista. As AA tripuladas engajam aeronaves recebidas via IA vanilla. A classe é tirada do seletor AA Classes abaixo se não estiver vazio, ou da lista padrão por facção.</Portuguese>
+    <Russian>Количество единиц ПВО (противовоздушных) для создания в этом модуле. Целое число. 0 = без ПВО. Масштабируйте по размеру вашего TAOR - небольшие кластеры могут потребовать 1-3, а большой TAOR авиабазы может оправдать 10+. Каждый слот ПВО проходит через валидатор позиции композиции (зона 10м, режим "ato"), чтобы юнит появился на чистой позиции вне взлётной полосы. Экипированные ПВО атакуют входящие самолёты через стандартный ИИ. Класс берётся из селектора AA Classes ниже, если он не пуст, иначе из списка по умолчанию для фракции.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AA_BEHAVIOUR">
     <English>AA Behaviour:</English>
+    <Chinese>防空行為:</Chinese>
+    <Chinesesimp>防空行为:</Chinesesimp>
+    <Spanish>Comportamiento AA:</Spanish>
+    <French>Comportement AA:</French>
+    <Portuguese>Comportamento AA:</Portuguese>
+    <Russian>Поведение ПВО:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AA_BEHAVIOUR_COMMENT">
     <English>Static = AA stays at its initial spawn position; OPCOM cannot reposition it. Suitable for fixed defensive emplacements. Roaming = AA participates in OPCOM movement orders alongside other force units; commanders can shift it as the battle develops.</English>
+    <Chinese>靜止 = 防空保持在初始生成位置；OPCOM無法重新部署。適用於固定防禦工事。流動 = 防空與其他部隊一同參與OPCOM移動命令；指揮官可隨戰局調整。</Chinese>
+    <Chinesesimp>静止 = 防空保持在初始生成位置；OPCOM无法重新部署。适用于固定防御工事。流动 = 防空与其他部队一同参与OPCOM移动命令；指挥官可随战局调整。</Chinesesimp>
+    <Spanish>Estático = la AA permanece en su posición inicial de aparición; OPCOM no puede reposicionarla. Adecuado para emplazamientos defensivos fijos. Móvil = la AA participa en las órdenes de movimiento de OPCOM junto con otras unidades; los comandantes pueden moverla conforme avanza la batalla.</Spanish>
+    <French>Statique = l'AA reste à sa position d'apparition initiale; OPCOM ne peut pas la repositionner. Adapté aux emplacements défensifs fixes. Mobile = l'AA participe aux ordres de mouvement OPCOM aux côtés des autres unités; les commandants peuvent la déplacer au fil de la bataille.</French>
+    <Portuguese>Estático = a AA permanece em sua posição inicial de aparecimento; OPCOM não pode reposicioná-la. Adequado para emplacamentos defensivos fixos. Móvel = a AA participa das ordens de movimento OPCOM junto com outras unidades; os comandantes podem movê-la conforme a batalha avança.</Portuguese>
+    <Russian>Стационарное = ПВО остаётся в начальной позиции появления; OPCOM не может её переместить. Подходит для постоянных оборонительных позиций. Подвижное = ПВО участвует в приказах движения OPCOM наравне с другими боевыми единицами; командиры могут перемещать её по ходу боя.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AA_BEHAVIOUR_STATIC">
     <English>Static</English>
+    <Chinese>靜止</Chinese>
+    <Chinesesimp>静止</Chinesesimp>
+    <Spanish>Estático</Spanish>
+    <French>Statique</French>
+    <Portuguese>Estático</Portuguese>
+    <Russian>Стационарное</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AA_BEHAVIOUR_ROAMING">
     <English>Roaming</English>
+    <Chinese>流動</Chinese>
+    <Chinesesimp>流动</Chinesesimp>
+    <Spanish>Móvil</Spanish>
+    <French>Mobile</French>
+    <Portuguese>Móvel</Portuguese>
+    <Russian>Подвижное</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AA_CLASSES">
     <English>AA Classes:</English>
+    <Chinese>防空分類:</Chinese>
+    <Chinesesimp>防空分类:</Chinesesimp>
+    <Spanish>Clases AA:</Spanish>
+    <French>Classes AA:</French>
+    <Portuguese>Classes AA:</Portuguese>
+    <Russian>Классы ПВО:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AA_CLASSES_COMMENT">
     <English>Multi-select listbox of AA-shape vehicle classes for this faction. Filter cycle: All / Vehicle / Static (StaticWeapon descendants). Default selection is empty - leave empty to use the per-faction fallback list (ALIVE_factionDefaultAA, BIS WEST/EAST/GUER + APEX). The Override Entries field accepts comma-separated mod classnames the listbox doesn't surface. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>適用於此派系的防空形態載具類別多選清單。篩選循環: 全部 / 載具 / 靜止（StaticWeapon子類）。預設選擇為空 - 留空以使用每派系後備清單（ALIVE_factionDefaultAA, BIS WEST/EAST/GUER + APEX）。Override Entries 欄位接受逗號分隔的、清單未列出的模組類別名稱。多選: 左鍵點擊選擇一行；Ctrl+左鍵切換單行；Shift+左鍵選擇範圍。</Chinese>
+    <Chinesesimp>适用于此派系的防空形态载具类别多选列表。筛选循环: 全部 / 载具 / 静止（StaticWeapon子类）。默认选择为空 - 留空以使用每派系备用列表（ALIVE_factionDefaultAA, BIS WEST/EAST/GUER + APEX）。Override Entries 字段接受逗号分隔的、列表未呈现的模组类名。多选: 左键点击选择一行；Ctrl+左键切换单行；Shift+左键选择范围。</Chinesesimp>
+    <Spanish>Listbox multiselección de clases de vehículos con forma AA para esta facción. Ciclo de filtro: Todo / Vehículo / Estático (descendientes de StaticWeapon). La selección por defecto está vacía - déjala vacía para usar la lista de respaldo por facción (ALIVE_factionDefaultAA, BIS WEST/EAST/GUER + APEX). El campo Override Entries acepta classnames de mods separados por comas que el listbox no muestra. Multiselección: clic-izquierdo selecciona una fila; Ctrl+clic-izquierdo alterna filas individuales; Shift+clic-izquierdo selecciona un rango.</Spanish>
+    <French>Listbox multi-sélection des classes de véhicules de forme AA pour cette faction. Cycle de filtre: Tout / Véhicule / Statique (descendants de StaticWeapon). La sélection par défaut est vide - laissez vide pour utiliser la liste de repli par faction (ALIVE_factionDefaultAA, BIS WEST/EAST/GUER + APEX). Le champ Override Entries accepte des classnames de mods séparés par des virgules que la listbox n'affiche pas. Multi-sélection: clic-gauche sélectionne une ligne; Ctrl+clic-gauche bascule les lignes individuelles; Shift+clic-gauche sélectionne une plage.</French>
+    <Portuguese>Listbox de seleção múltipla de classes de veículos em forma de AA para esta facção. Ciclo de filtro: Todos / Veículo / Estático (descendentes de StaticWeapon). A seleção padrão está vazia - deixe vazia para usar a lista de fallback por facção (ALIVE_factionDefaultAA, BIS WEST/EAST/GUER + APEX). O campo Override Entries aceita classnames de mods separados por vírgulas que a listbox não mostra. Seleção múltipla: clique-esquerdo seleciona uma linha; Ctrl+clique-esquerdo alterna linhas individuais; Shift+clique-esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Список с множественным выбором классов техники формы ПВО для этой фракции. Цикл фильтра: Все / Транспорт / Стационарные (потомки StaticWeapon). Выбор по умолчанию пуст - оставьте пустым для использования резервного списка по фракции (ALIVE_factionDefaultAA, BIS WEST/EAST/GUER + APEX). Поле Override Entries принимает имена классов модов через запятую, которые список не отображает. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_FACTION">
     <English>Force Faction:</English>
