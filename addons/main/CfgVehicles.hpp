@@ -677,6 +677,17 @@ class Cfg3DEN
             attributeSave = "[_this, 'CfgALiVEAmbientAnimals', 'poultry,herd', 'customPoultryClasses,customHerdClasses', 'customPoultryClassesManual,customHerdClassesManual'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFilteredMultiSelectSave.sqf'";
         };
 
+        // AA Unit subclass: faction-aware multi-select of AA-shape
+        // CfgVehicles classes. Filter cycles All / Vehicle / Static
+        // (data-driven from listFactionAAUnits role tags). Override
+        // Edit accepts free-text mod classes the predicate doesn't
+        // surface. Used by mil_placement / mil_placement_custom for
+        // per-cluster AA force composition.
+        class ALiVE_AAUnitChoiceMulti: ALiVE_FilteredMultiSelect_Base {
+            attributeLoad = "[_this, 'aaClasses', 'faction', '$STR_ALIVE_MP_AA_CLASSES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenAAUnitChoiceLoad.sqf'";
+            attributeSave = "[_this, 'aaClasses'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenAAUnitChoiceSave.sqf'";
+        };
+
         // Item subclass: water + ration categories. Same shape as the
         // animal variant but reads CfgALiVEHumanitarianItems.
         class ALiVE_ItemChoiceMulti_Filtered: ALiVE_FilteredMultiSelect_Base {

@@ -85,6 +85,32 @@ class CfgVehicles {
                         class customMechanisedCount : Edit { property = "ALiVE_mil_placement_custom_customMechanisedCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customArmourCount : Edit { property = "ALiVE_mil_placement_custom_customArmourCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customSpecOpsCount : Edit { property = "ALiVE_mil_placement_custom_customSpecOpsCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT_COMMENT"; defaultValue = """0"""; };
+
+                        // ---- Anti-Air -------------------------------------------------------
+                        class HDR_ANTIAIR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ANTIAIR"; displayName = "$STR_ALIVE_CMP_HDR_ANTIAIR"; };
+                        class aaCount : Edit { property = "ALiVE_mil_placement_custom_aaCount"; displayName = "$STR_ALIVE_CMP_AA_COUNT"; tooltip = "$STR_ALIVE_CMP_AA_COUNT_COMMENT"; defaultValue = """0"""; };
+                        class aaBehaviour : Combo
+                        {
+                                property = "ALiVE_mil_placement_custom_aaBehaviour";
+                                displayName = "$STR_ALIVE_CMP_AA_BEHAVIOUR";
+                                tooltip = "$STR_ALIVE_CMP_AA_BEHAVIOUR_COMMENT";
+                                defaultValue = """static""";
+                                class Values
+                                {
+                                    class STATIC  { name = "$STR_ALIVE_CMP_AA_BEHAVIOUR_STATIC";  value = "static"; default = 1; };
+                                    class ROAMING { name = "$STR_ALIVE_CMP_AA_BEHAVIOUR_ROAMING"; value = "roaming"; };
+                                };
+                        };
+                        class aaClasses
+                        {
+                                property     = "ALiVE_mil_placement_custom_aaClasses";
+                                displayName  = "$STR_ALIVE_CMP_AA_CLASSES";
+                                tooltip      = "$STR_ALIVE_CMP_AA_CLASSES_COMMENT";
+                                control      = "ALiVE_AAUnitChoiceMulti";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['aaClasses', _value];";
+                                defaultValue = """""";
+                        };
                         // ---- Ambient Presence -----------------------------------------------
                         class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_AMBIENT"; displayName = "AMBIENT PRESENCE"; };
                         class guardProbability : Combo

@@ -82,6 +82,33 @@
     <English>Set count of SpecOps groups to be spawned, set to 0 for none</English>
     <Chinesesimp>设置要生成的特战小组计数,如果没有则设置为0</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_CMP_HDR_ANTIAIR">
+    <English>ANTI-AIR</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_AA_COUNT">
+    <English>Spawn AA Units:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_AA_COUNT_COMMENT">
+    <English>Number of AA (anti-air) units to spawn for this objective. Whole number. 0 = no AA. Scale to TAOR / objective size. Each AA slot routes through the composition spawn validator (envelope 10m, mode "ato") so the unit lands on a clear, non-runway position. Crewed AA engages incoming aircraft via vanilla AI. Class drawn from the AA Classes picker below if non-empty, else from the per-faction default list.</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_AA_BEHAVIOUR">
+    <English>AA Behaviour:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_AA_BEHAVIOUR_COMMENT">
+    <English>Static = AA stays at its initial spawn position; OPCOM cannot reposition it. Suitable for fixed defensive emplacements. Roaming = AA participates in OPCOM movement orders alongside other force units; commanders can shift it as the battle develops.</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_AA_BEHAVIOUR_STATIC">
+    <English>Static</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_AA_BEHAVIOUR_ROAMING">
+    <English>Roaming</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_AA_CLASSES">
+    <English>AA Classes:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_AA_CLASSES_COMMENT">
+    <English>Multi-select listbox of AA-shape vehicle classes for this faction. Filter cycle: All / Vehicle / Static (StaticWeapon descendants). Default selection is empty - leave empty to use the per-faction fallback list (ALIVE_factionDefaultAA). The Override Entries field accepts comma-separated mod classnames the listbox doesn't surface. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+</Key>
 <Key ID="STR_ALIVE_CMP_COMPOSITION">
     <English>Spawn Composition:</English>
     <Chinesesimp>平民放置</Chinesesimp>

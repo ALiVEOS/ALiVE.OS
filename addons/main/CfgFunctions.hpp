@@ -123,6 +123,21 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_findRunwayClear.sqf";
                 RECOMPILE;
             };
+            class listFactionAAUnits {
+                description = "Feeder for ALiVE_AAUnitChoiceMulti - returns AA-shape CfgVehicles classes for a faction as 6-tuples [class, display, side, role, category, source]";
+                file = "\x\alive\addons\main\fnc_listFactionAAUnits.sqf";
+                RECOMPILE;
+            };
+            class edenAAUnitChoiceLoad {
+                description = "Eden attributeLoad handler for ALiVE_AAUnitChoiceMulti (faction-aware AA unit multi-select listbox + Role filter + override field)";
+                file = "\x\alive\addons\main\fnc_edenAAUnitChoiceLoad.sqf";
+                RECOMPILE;
+            };
+            class edenAAUnitChoiceSave {
+                description = "Eden attributeSave handler for ALiVE_AAUnitChoiceMulti";
+                file = "\x\alive\addons\main\fnc_edenAAUnitChoiceSave.sqf";
+                RECOMPILE;
+            };
             class findAirSpawnPosition {
                 description = "Unified air-unit spawn-position validator: helipad/hangar/apron/field cascade, runway+taxiway exclusion, door verification";
                 file = "\x\alive\addons\main\fnc_findAirSpawnPosition.sqf";

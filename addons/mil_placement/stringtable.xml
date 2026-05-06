@@ -660,6 +660,33 @@
     <Portuguese>Substitui a quantidade calculada de grupos de operações especiais. Digite um número inteiro. Deixe em branco para usar o valor calculado a partir do Tamanho e da Ponderação da Força. Defina como 0 para não gerar grupos de operações especiais.</Portuguese>
     <Russian>Переопределяет рассчитанное количество групп спецназа. Введите целое число. Оставьте пустым, чтобы использовать значение, рассчитанное из размера и весового состава сил. Установите 0, чтобы не создавать группы спецназа.</Russian>
 </Key>
+<Key ID="STR_ALIVE_MP_HDR_ANTIAIR">
+    <English>ANTI-AIR</English>
+</Key>
+<Key ID="STR_ALIVE_MP_AA_COUNT">
+    <English>Spawn AA Units:</English>
+</Key>
+<Key ID="STR_ALIVE_MP_AA_COUNT_COMMENT">
+    <English>Number of AA (anti-air) units to spawn for this module. Whole number. 0 = no AA. Scale to your TAOR size - small clusters might want 1-3, a large airbase TAOR could justify 10+. Each AA slot routes through the composition spawn validator (envelope 10m, mode "ato") so the unit lands on a clear, non-runway position. Crewed AA engages incoming aircraft via vanilla AI. Class drawn from the AA Classes picker below if non-empty, else from the per-faction default list.</English>
+</Key>
+<Key ID="STR_ALIVE_MP_AA_BEHAVIOUR">
+    <English>AA Behaviour:</English>
+</Key>
+<Key ID="STR_ALIVE_MP_AA_BEHAVIOUR_COMMENT">
+    <English>Static = AA stays at its initial spawn position; OPCOM cannot reposition it. Suitable for fixed defensive emplacements. Roaming = AA participates in OPCOM movement orders alongside other force units; commanders can shift it as the battle develops.</English>
+</Key>
+<Key ID="STR_ALIVE_MP_AA_BEHAVIOUR_STATIC">
+    <English>Static</English>
+</Key>
+<Key ID="STR_ALIVE_MP_AA_BEHAVIOUR_ROAMING">
+    <English>Roaming</English>
+</Key>
+<Key ID="STR_ALIVE_MP_AA_CLASSES">
+    <English>AA Classes:</English>
+</Key>
+<Key ID="STR_ALIVE_MP_AA_CLASSES_COMMENT">
+    <English>Multi-select listbox of AA-shape vehicle classes for this faction. Filter cycle: All / Vehicle / Static (StaticWeapon descendants). Default selection is empty - leave empty to use the per-faction fallback list (ALIVE_factionDefaultAA, BIS WEST/EAST/GUER + APEX). The Override Entries field accepts comma-separated mod classnames the listbox doesn't surface. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+</Key>
 <Key ID="STR_ALIVE_MP_FACTION">
     <English>Force Faction:</English>
     <Chinese>武力派別：</Chinese>
