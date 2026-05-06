@@ -1189,9 +1189,9 @@
     <Chinese>有人在向你施壓嗎?</Chinese>
     <Chinesesimp>有人在向你施压吗?</Chinesesimp>
 </Key>
-<!-- ---- Needs responses (no hostile-tier branch needed - the dialog
+<!-- ==== Needs responses (no hostile-tier branch needed - the dialog
      greys the Question listbox at Defiant+; this case only runs at
-     Friendly / Neutral / Wary) ---- -->
+     Friendly / Neutral / Wary) ==== -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_BOTH_1">
     <English>Anything you can spare. We've got nothing - no food, no clean water.</English>
@@ -1312,7 +1312,7 @@
     <Chinese>我們目前夠用了。願神保佑你的好意。</Chinese>
     <Chinesesimp>我们目前够用了。愿神保佑你的好意。</Chinesesimp>
 </Key>
-<!-- ---- Pressure responses ---- -->
+<!-- ==== Pressure responses ==== -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_NONE_1">
     <English>No, no one has come around. Things have been quiet.</English>
@@ -1373,7 +1373,7 @@
     <Chinese>他們有幾個人來過。拿走了想要的東西,還威脅我們。我們很害怕。</Chinese>
     <Chinesesimp>他们有几个人来过。拿走了想要的东西,还威胁我们。我们很害怕。</Chinesesimp>
 </Key>
-<!-- ---- Hostile-roll responses for Needs / Pressure ---- -->
+<!-- ==== Hostile-roll responses for Needs / Pressure ==== -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_HOSTILE_1">
     <English>I don't want anything from you. Just leave.</English>
