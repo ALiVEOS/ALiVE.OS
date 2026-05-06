@@ -278,8 +278,10 @@ for "_j" from 1 to (count _roadpoints) do {
         // the per-module placement markers (mil_placement = blue,
         // mil_placement_custom = orange). No emitter id - roadblocks
         // land at unique road points so the compass-slot offset doesn't
-        // apply.
-        [_spawnedSafePos, 1, format ["RoadBlock - %1 (%2)", _fac, _spawnedClass], "ColorBrown"] call ALiVE_fnc_placeDebugMarker;
+        // apply. Deterministic name lets fnc_RB_recapture replace the
+        // marker on capture rather than stack a second one over it.
+        private _rbMarkerName = format ["ALiVE_RB_M_%1_%2", floor (_spawnedSafePos select 0), floor (_spawnedSafePos select 1)];
+        [_spawnedSafePos, 1, format ["RoadBlock - %1 (%2)", _fac, _spawnedClass], "ColorBrown", "", _rbMarkerName] call ALiVE_fnc_placeDebugMarker;
     };
 
     // Walk the composition class list - used downstream by getParkingPosition
@@ -395,6 +397,14 @@ for "_j" from 1 to (count _roadpoints) do {
             [_blockers, _roadpos, 100, true, false, 1, nil, 50] call ALIVE_fnc_groupGarrison;
         };
     };
+
+    // Register the capture watchdog. Tracks defender vs attacker presence
+    // in the composition's envelope; if defenders die and attackers hold
+    // for 30s, dominant attacker faction takes over via fnc_RB_recapture.
+    // Anchor state stored on an invisible Logic object at the spawn pos.
+    private _watchdogEnv = ([_spawnedComp] call ALiVE_fnc_getCompositionRadius) max 15;
+    [_spawnedSafePos, _fac, _spawnedClass, _watchdogEnv, _debug]
+        call ALIVE_fnc_RB_captureWatchdog;
 
 };
 

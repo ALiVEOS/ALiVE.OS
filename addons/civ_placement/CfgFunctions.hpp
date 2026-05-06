@@ -26,6 +26,16 @@ class cfgFunctions {
                                 file = "\x\alive\addons\civ_placement\fnc_createRoadblock.sqf";
                                 recompile = 1;
                         };
+                        class RB_captureWatchdog {
+                                description = "Per-roadblock capture watchdog: 5s PFH that flips ownership when defenders die and attackers hold for 30s";
+                                file = "\x\alive\addons\civ_placement\fnc_RB_captureWatchdog.sqf";
+                                recompile = 1;
+                        };
+                        class RB_recapture {
+                                description = "Re-garrison a captured roadblock under a new faction; mutates anchor state";
+                                file = "\x\alive\addons\civ_placement\fnc_RB_recapture.sqf";
+                                recompile = 1;
+                        };
                 };
         };
 };
