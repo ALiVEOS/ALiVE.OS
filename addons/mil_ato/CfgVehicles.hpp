@@ -117,18 +117,6 @@ class CfgVehicles
                             class No { name = "No"; value = false; default = 1; };
                         };
                 };
-                class placeAA : Combo
-                {
-                        property = "ALiVE_mil_ato_placeAA";
-                        displayName = "$STR_ALIVE_ATO_PLACE_AA";
-                        tooltip = "$STR_ALIVE_ATO_PLACE_AA_COMMENT";
-                        defaultValue = """false""";
-                        class Values
-                        {
-                            class Yes { name = "Yes"; value = true; };
-                            class No { name = "No"; value = false; default = 1; };
-                        };
-                };
                 class generateTasks : Combo
                 {
                         property = "ALiVE_mil_ato_generateTasks";

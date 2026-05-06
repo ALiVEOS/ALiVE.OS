@@ -560,20 +560,6 @@ switch(_operation) do {
 
         _result = _args;
     };
-    case "placeAA": {
-        if (_args isEqualType true) then {
-            _logic setVariable ["placeAA", _args];
-        } else {
-            _args = _logic getVariable ["placeAA", false];
-        };
-        if (_args isEqualType "") then {
-            if(_args == "true") then {_args = true;} else {_args = false;};
-            _logic setVariable ["placeAA", _args];
-        };
-        ASSERT_TRUE(_args isEqualType true,str _args);
-
-        _result = _args;
-    };
     case "placeAir": {
         if (_args isEqualType true) then {
             _logic setVariable ["placeAir", _args];
@@ -1445,7 +1431,6 @@ switch(_operation) do {
                 ["ATO - Factions: %1",[_logic, "factions"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Persistent: %1",[_logic, "persistent"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Create HQ: %1",[_logic, "createHQ"] call MAINCLASS] call ALiVE_fnc_dump;
-                ["ATO - Place Anti-Air: %1",[_logic, "placeAA"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Place Air Assets: %1",[_logic, "placeAir"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Generate Tasks: %1",[_logic, "generateTasks"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Generate SEAD Tasks: %1",[_logic, "generateSEADTasks"] call MAINCLASS] call ALiVE_fnc_dump;
@@ -1745,32 +1730,6 @@ switch(_operation) do {
 
                 if (_debug) then {
                     ["ATO %1 - ATO building selected: %2", _logic, [_logic, "HQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
-                };
-            };
-
-            // Establish Anti-Air Defenses
-            private _placeAA = [_logic, "placeAA"] call MAINCLASS;
-            If (_placeAA) then {
-                // Dedicated AA protecting your ATO base
-
-                // Get static AA for faction
-
-                // If available, place 1 AA composition or static AA by HQ
-
-                // AA placement intentionally stubbed pending the unit-based
-                // replacement (queued strategy memo - airbase AA unit
-                // placement). The previous composition-based path here
-                // spawned mostly decorative scenery (sandbags, camo netting,
-                // occasional non-functional AA system) without delivering
-                // actual AA cover for the airbase. The replacement design
-                // spawns crewed AA / SAM units at strategic airfield
-                // positions with mission-maker multi-select picker + manual
-                // class field for mod overrides.
-                //
-                // Until the replacement lands, the placeAA toggle is
-                // honoured (logged here) but no spawn occurs.
-                if (isNil QMOD(COMPOSITIONS_LOADED) && _debug) then {
-                    ["ATO [%1] - placeAA enabled but unit-based AA placement not yet implemented (composition path retired) - no AA spawned this run", _faction] call ALiVE_fnc_dump;
                 };
             };
 
