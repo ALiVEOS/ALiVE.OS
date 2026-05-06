@@ -1014,7 +1014,33 @@ switch(_operation) do {
 
                                 // DEBUG -----------------------------------------------------------
                                 if (_debug) then {
-                                    [_safePos, 4, format ["%1 - Random Camp #%2 (%3)", _side, _campIndex, configName _composition], "ColorBlue", "placement.mp"] call ALIVE_fnc_placeDebugMarker;
+                                    // Anchor dot at actual spawn + labeled
+                                    // marker at a 60m radial offset away
+                                    // from the cluster centre, with per-
+                                    // camp angular jitter. Mirrors the AA
+                                    // marker design - prevents the labels
+                                    // of multiple Random Camps in one
+                                    // cluster from stacking at the W
+                                    // compass slot the placement.mp
+                                    // emitter would otherwise route them
+                                    // to. Camps are 50-300m apart in a
+                                    // typical TAOR; the radial offset
+                                    // pushes labels outward, the jitter
+                                    // fans co-radial labels apart.
+                                    private _campLabel = format ["%1 - Random Camp #%2 (%3)", _side, _campIndex, configName _composition];
+                                    private _dx = (_safePos select 0) - (_pos select 0);
+                                    private _dy = (_safePos select 1) - (_pos select 1);
+                                    private _norm = sqrt (_dx * _dx + _dy * _dy);
+                                    if (_norm < 1) then { _dx = 1; _dy = 0; _norm = 1 };
+                                    _dx = _dx / _norm; _dy = _dy / _norm;
+                                    private _jitterAngles = [0, 30, -30, 60, -60, 90, -90];
+                                    private _jit = _jitterAngles select ((_campIndex - 1) mod (count _jitterAngles));
+                                    private _cosJ = cos _jit; private _sinJ = sin _jit;
+                                    private _rdx = _cosJ * _dx - _sinJ * _dy;
+                                    private _rdy = _sinJ * _dx + _cosJ * _dy;
+                                    private _labelPos = [(_safePos select 0) + _rdx * 60, (_safePos select 1) + _rdy * 60, _safePos param [2, 0]];
+                                    [_safePos, 1, "", "ColorBlue"] call ALIVE_fnc_placeDebugMarker;
+                                    [_labelPos, 4, _campLabel, "ColorBlue"] call ALIVE_fnc_placeDebugMarker;
                                     ["MP [%1] - Random Camp #%2 spawned at %3 - composition %4 (cluster center was %5, %6m offset)",
                                         _faction, _campIndex, _safePos, configName _composition, _pos, round (_safePos distance _pos)] call ALiVE_fnc_dump;
                                 };
