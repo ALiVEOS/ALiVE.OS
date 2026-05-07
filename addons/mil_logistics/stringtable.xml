@@ -311,7 +311,7 @@
     <Russian>Авиатранспортные средства:</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_LIMIT_COMMENT">
-    <English>Which air transport vehicles the commander can call on. Side and Faction (default) — any helicopter or transport plane belonging to the same side may be used, regardless of faction. Faction Only — restricts the pool to vehicles from the exact same faction as the commander.</English>
+    <English>Which air transport vehicles the commander can call on. Side and Faction (default) — any helicopter or transport plane belonging to the same side may be used, regardless of faction. Faction Only — restricts the pool to vehicles from the exact same faction as the commander. NOTE: this setting only filters the side-default pool. The Override Air Transport list below is faction-keyed, so its entries always apply to that faction regardless of this setting — a Faction Only setup will still see your override classes.</English>
     <Chinese>指揮官可呼叫哪些空中運輸載具。陣營與派系（預設）— 同方任何直升機或運輸機都可使用，不論派系。僅派系 — 池僅限與指揮官相同派系的載具。</Chinese>
     <Chinesesimp>指挥官可呼叫哪些空中运输载具。阵营与派系（默认）— 同方任何直升机或运输机都可使用，不论派系。仅派系 — 池仅限与指挥官相同派系的载具。</Chinesesimp>
     <Spanish>Qué vehículos de transporte aéreo puede convocar el comandante. Bando y facción (predeterminado) — cualquier helicóptero o avión de transporte del mismo bando, independientemente de la facción. Solo facción — restringe el pool a vehículos exactamente de la misma facción que el comandante.</Spanish>
@@ -331,7 +331,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_CUSTOM_MODE_COMMENT">
-    <English>How the custom class lists below merge into the global static-data registry. Replace (default) overwrites each faction's existing entry with the user-supplied list — matches the legacy init.sqf hashSet override pattern. Append keeps the existing entries and adds the user-supplied list on top, deduped — useful when extending stock factions with mod classes without losing the defaults.</English>
+    <English>How the custom class lists below merge into the global static-data registry. Replace (default) overwrites each faction's existing entry with the user-supplied list — matches the legacy init.sqf hashSet override pattern. Append keeps the existing entries and adds the user-supplied list on top, deduped — useful when extending stock factions with mod classes without losing the defaults. WARNING: legacy hashSet calls in init.sqf / staticData.sqf execute AFTER module init and silently overwrite this setting. Use either the Eden picker or legacy init-time hashSet for a given faction, not both.</English>
     <Chinese>下方自訂類別清單如何合併進全域靜態資料表。取代（預設）以使用者提供的清單覆蓋每個派系既有的項目 — 與舊式 init.sqf hashSet 覆寫模式相符。附加保留既有項目，並在其上加入使用者提供的清單並去重 — 適合在擴充原始派系時加入模組類別,而不失去預設值。</Chinese>
     <Chinesesimp>下方自定义类别清单如何合并进全局静态数据表。取代（默认）以用户提供的清单覆盖每个派系既有的项目 — 与旧式 init.sqf hashSet 覆写模式相符。附加保留既有项目,并在其上加入用户提供的清单并去重 — 适合在扩充原始派系时加入模组类别,而不失去默认值。</Chinesesimp>
     <Spanish>Cómo se combinan las listas de clases personalizadas con el registro global de datos estáticos. Replace (predeterminado) sobrescribe la entrada existente de cada facción con la lista proporcionada — equivale al patrón heredado de hashSet en init.sqf. Append conserva las entradas existentes y añade encima la lista proporcionada, deduplicada — útil para ampliar facciones estándar con clases de mods sin perder los valores predeterminados.</Spanish>
