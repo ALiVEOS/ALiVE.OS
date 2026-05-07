@@ -227,6 +227,23 @@ private _candidateClear = {
     params ["_p", "_env"];
     private _envHalf = _env / 2;
 
+    // 0. World-bounds rejection. When the caller's centre is near the
+    // map edge, getPos [random radius, random angle] can land outside
+    // the playable area. surfaceIsWater / nearObjects / nearRoads all
+    // return clear/empty off-map, so nothing else rejects these
+    // candidates - compositions then spawn beyond the visible terrain.
+    // worldSize bounds the playable square; any candidate with X or Y
+    // outside [0, worldSize] is rejected first. (Issue #877: Random
+    // camps spawning outside map bounds.)
+    private _wsz = worldSize;
+    if (
+        ((_p select 0) < 0) || {(_p select 0) > _wsz} ||
+        {(_p select 1) < 0} || {(_p select 1) > _wsz}
+    ) exitWith {
+        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: outside world bounds (worldSize=%2)", _p, _wsz] };
+        false
+    };
+
     // External-feature exclusions (1-3 below) use FULL envelope as the
     // rejection radius, not envHalf. Composition objects extend from the
     // anchor `_p` out to `_env` in any direction; if a runway / helipad /
