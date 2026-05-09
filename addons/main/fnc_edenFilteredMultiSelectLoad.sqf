@@ -229,6 +229,12 @@ private _entries = [];
 private _classToCat = createHashMap;
 private _classToSide = createHashMap;
 private _seen = createHashMap;
+// Source-level visibility for mod authors who add their own subclass to
+// the registry from their addon's config.cpp. Per-source counts are
+// surfaced in the LOAD diagnostic line at function exit so RPT shows
+// "MyMod: 12 (radar=4, antenna=8)" alongside ALiVE's pre-registered
+// blocks. Lets authors confirm their convention block is detected.
+private _sourceCounts = [];
 private _registry = configFile >> _registryClass;
 if (isClass _registry) then {
     for "_i" from 0 to (count _registry - 1) do {
@@ -238,6 +244,7 @@ if (isClass _registry) then {
             if (_cp != "" && {isClass (configFile >> "CfgPatches" >> _cp)}) then {
                 private _modLabel = getText (_source >> "displayName");
                 if (_modLabel == "") then { _modLabel = configName _source };
+                private _entriesBefore = count _entries;
                 {
                     private _cat = _x;
                     private _catClass = _source >> _cat;
@@ -288,6 +295,10 @@ if (isClass _registry) then {
                         } forEach _flatArr;
                     };
                 } forEach _categories;
+                private _added = (count _entries) - _entriesBefore;
+                if (_added > 0) then {
+                    _sourceCounts pushBack format ["%1=%2", _modLabel, _added];
+                };
             };
         };
     };
@@ -586,7 +597,7 @@ _listCtrl ctrlAddEventHandler ["LBSelChanged", {
 }];
 
 diag_log format [
-    "ALIVE FilteredMultiSelect LOAD: registry=%1 categories=%2 varNames=%3 consolidatedVar='%4' consolidatedRaw='%5' sqm='%6' selected=%7 entries=%8 legacyManual=%9",
+    "ALIVE FilteredMultiSelect LOAD: registry=%1 categories=%2 varNames=%3 consolidatedVar='%4' consolidatedRaw='%5' sqm='%6' selected=%7 entries=%8 sources=[%9] legacyManual=%10",
     _registryClass, _categories, _varNames, _consolidatedVar, _consolidatedRaw, _sqmValue,
-    count _selectedClasses, count _entries, _legacyManualVars
+    count _selectedClasses, count _entries, _sourceCounts joinString ", ", _legacyManualVars
 ];
