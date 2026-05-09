@@ -160,7 +160,16 @@ private _excludeHelipads   = (_mode != "ato");
 private _excludeBuildings  = !(_mode in ["roadblock", "ato"]);
 private _excludeWater      = true;                     // always exclude
 private _requireRoad       = (_mode == "roadblock");   // roadblock REQUIRES road
-private _maxAttempts       = if (_mode == "roadblock") then { 12 } else { 200 };
+// Attempts scale with search radius. Original fixed 200 was right for
+// 50-150m search areas but became extremely sparse coverage at 500m+.
+// Linear scaling: 200 attempts at 150m baseline, doubles per 150m
+// of additional radius. Capped at 1200 to bound init-time cost.
+// Roadblock keeps its low fixed count - it's a road-network-constrained
+// search, not an area sweep.
+private _maxAttempts       = if (_mode == "roadblock") then { 12 } else {
+    private _scaled = round (200 * (_radius / 150));
+    (_scaled max 200) min 1200
+};
 
 // ------------------------------------------------------------------------
 // Airfield geometry - runway / taxiway segments to reject. Cached per
@@ -283,10 +292,15 @@ private _candidateClear = {
     //    tag set doesn't reliably cover military structures either. Empty
     //    type filter mirrors the working pattern in
     //    ALiVE_fnc_findNearObjectsByType: get all objects, then filter by
-    //    bbox volume (>8 m^3 rejects signs / posts / lamps / small ammo
-    //    boxes) and bbox-intrusion distance. Living things (Man) are
-    //    excluded since they don't physically block spawn and get
-    //    repositioned downstream anyway.
+    //    bbox volume (>30 m^3 keeps real blockers - buildings 100+ m^3,
+    //    walls 30-200 m^3 - while letting small clutter through: signs,
+    //    posts, lamps, ammo boxes, single fence segments 5-20 m^3,
+    //    scrub 1-10 m^3). The original 8 m^3 threshold rejected so much
+    //    clutter that obstacle-dense terrain like Stratis around Kamino
+    //    couldn't fit any composition - 200-1000 attempts at 750m radius
+    //    found zero clear positions despite visible open fields. Living
+    //    things (Man) are excluded since they don't physically block
+    //    spawn and get repositioned downstream anyway.
     //
     //    Note on flow: `exitWith` exits the IMMEDIATE enclosing scope, so
     //    `if (X) then { exitWith {false} }` only exits the then-block, not
@@ -315,7 +329,7 @@ private _candidateClear = {
                 private _w = (_bMax select 0) - (_bMin select 0);
                 private _l = (_bMax select 1) - (_bMin select 1);
                 private _h = (_bMax select 2) - (_bMin select 2);
-                (_w * _l * _h > 8) && {
+                (_w * _l * _h > 30) && {
                     private _pLocal = _x worldToModel _p;
                     private _cx = ((_pLocal select 0) max (_bMin select 0)) min (_bMax select 0);
                     private _cy = ((_pLocal select 1) max (_bMin select 1)) min (_bMax select 1);
@@ -532,11 +546,19 @@ if (_mode == "roadblock") exitWith {
 
 // ------------------------------------------------------------------------
 // Stage 2: random sample within radius.
+//
+// Distance is sqrt-uniform so candidates spread by AREA, not by linear
+// radius - `random _radius` (uniform-along-radius) clusters samples in
+// the central disk: half the samples land in the inner 50% radius which
+// is only 25% of the area. sqrt(random 1) * _radius is the textbook
+// inverse-CDF transform for uniform-disk sampling. Uniform area coverage
+// matters most when _radius is large (search-cap-expanded scenarios)
+// where the outer annulus is where unobstructed terrain typically lives.
 // ------------------------------------------------------------------------
 private _result = [];
 for "_i" from 1 to _maxAttempts do {
     private _angle = random 360;
-    private _dist  = random _radius;
+    private _dist  = sqrt (random 1) * _radius;
     private _candidate = _centerPos getPos [_dist, _angle];
     if ([_candidate, _envelope] call _candidateClear) exitWith {
         private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
