@@ -1537,7 +1537,22 @@ switch(_operation) do {
                             } forEach _candidates;
                             if (_accepted) then {
                                 _usedAAPositions pushBack _safePos;
-                                private _aaProfile = [_aaClass, _side, _faction, _safePos, _safeDir, false, _faction] call ALIVE_fnc_createProfileVehicle;
+                                // Crew-bearing classes (POOK SAM SA-19 / SA-22
+                                // family and any non-StaticWeapon mod AA
+                                // vehicle) need explicit crew profiles -
+                                // createProfileVehicle alone leaves the
+                                // gunner seat empty, so the gun never
+                                // engages. createProfilesCrewedVehicle
+                                // adds the crew unit profiles + vehicle
+                                // assignment so gunner / loader spawn
+                                // alongside the vehicle.
+                                private _aaCrewClass = getText (configFile >> "CfgVehicles" >> _aaClass >> "crew");
+                                private _aaProfile = if (_aaCrewClass != "") then {
+                                    private _profiles = [_aaClass, _side, _faction, "PRIVATE", _safePos, _safeDir, false, _faction] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    _profiles select 1
+                                } else {
+                                    [_aaClass, _side, _faction, _safePos, _safeDir, false, _faction] call ALIVE_fnc_createProfileVehicle
+                                };
                                 // aaBehaviour stored on a side-channel hash
                                 // keyed by profileID. fnc_profileVehicle is
                                 // fixed-case dispatch, no generic field

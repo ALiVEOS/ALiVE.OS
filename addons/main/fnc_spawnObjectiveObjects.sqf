@@ -222,7 +222,25 @@ for "_i" from 1 to _count do {
         private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
         private _factionSideNumber = if (!isNil "_factionConfig") then { getNumber (_factionConfig >> "side") } else { 3 };
         private _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
-        private _profile = [_cls, _side, _faction, _safePos, _safeDir, false, _faction] call ALIVE_fnc_createProfileVehicle;
+        // Anything with a crew unit configured in CfgVehicles needs crew
+        // to actually scan / track / engage / drive (POOK SAM radar masts,
+        // ZSU AA gun trucks, EAA launcher vehicles, AA tanks). Pure scenery
+        // (signal panels, satellite dish props, antennas, transmitter
+        // boxes) has no crew config. Detect via getText >> crew and route
+        // accordingly:
+        //   has crew -> createProfilesCrewedVehicle (registers crew profile
+        //               alongside the vehicle so the spawn handler
+        //               instantiates gunner / driver / commander on
+        //               profile activation)
+        //   no crew  -> createProfileVehicle (scenery)
+        // Detection covers ALL vehicle kinds (Tank, Wheeled_APC, Plane,
+        // Helicopter, StaticWeapon) without enumerating each.
+        private _crewClass = getText (configFile >> "CfgVehicles" >> _cls >> "crew");
+        if (_crewClass != "") then {
+            [_cls, _side, _faction, "PRIVATE", _safePos, _safeDir, false, _faction] call ALIVE_fnc_createProfilesCrewedVehicle;
+        } else {
+            [_cls, _side, _faction, _safePos, _safeDir, false, _faction] call ALIVE_fnc_createProfileVehicle;
+        };
         // Force upright via the profile-spawn path. Slot 10 is objNull
         // until ALiVE later activates the profile (player proximity);
         // pass classname + position so the helper wires the class init
