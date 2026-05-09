@@ -276,13 +276,17 @@ class Cfg3DEN
                     idc = 100;
                     type = 5;            // CT_LISTBOX
                     style = 16 + 0x20;   // ST_FRAME + LB_MULTI
-                    // Right column: aligns flush with the standard
-                    // Eden value column (where Combo / Edit inputs on
-                    // adjacent rows begin), fills to the
-                    // controlsGroup's right edge.
-                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    // Listbox claims full controlsGroup width (x=0, w=130)
+                    // so long class+display+mod-tag rows aren't clipped at
+                    // the right edge. Sibling chrome (Title label / Faction
+                    // header strip / Override edit) keeps original 48-grid
+                    // left-margin layout - same asymmetric pattern as the
+                    // FilteredMultiSelect_Base substrate. 4-grid left inset
+                    // so the listbox doesn't bleed flush to the dialog's
+                    // left edge.
+                    x = "4 * (pixelW * pixelGrid * 0.5)";
                     y = 0;
-                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    w = "126 * (pixelW * pixelGrid * 0.5)";
                     h = "50 * (pixelH * pixelGrid * 0.5)";
 
                     // color[] is the listbox frame / line rendering
@@ -503,7 +507,10 @@ class Cfg3DEN
             x = 0;
             y = 0;
             w = "130 * (pixelW * pixelGrid * 0.5)";
-            h = "53 * (pixelH * pixelGrid * 0.5)";
+            // Total height grew 53 -> 58 (+5 grid units) when the side
+            // filter strip was added on a second row (y=5..9). Listbox
+            // pushed from y=5 to y=10, override row from y=48 to y=53.
+            h = "58 * (pixelH * pixelGrid * 0.5)";
             colorBackground[] = {0, 0, 0, 0};
             colorText[]       = {1, 1, 1, 1};
             text   = "";
@@ -514,6 +521,16 @@ class Cfg3DEN
             class HScrollbar {};
 
             class controls {
+                // Geometry asymmetry by design: the inner listbox (idc 100)
+                // claims full controlsGroup width (x=0, w=130) so long
+                // class+display+mod-tag rows aren't clipped at the right
+                // edge. The header strip (FilterLabel + FilterNext) and
+                // the Override edit field stay in their original 48-grid
+                // left-margin layout because their content (filter cycle
+                // status, free-text override entry) is short enough to
+                // not need the extra width and the inner Title /
+                // OverrideLabel column labels add useful UX context for
+                // those rows.
                 class Title: ctrlStatic {
                     idc      = 101;
                     type     = 0;
@@ -581,13 +598,76 @@ class Cfg3DEN
                     sizeEx   = "pixelH * pixelGrid * 1.6";
                 };
 
+                // SECOND ROW - side filter strip. Identical layout to the
+                // category strip on row 0, just shifted down 5 grid units.
+                // IDCs 1201 / 1211 (mirror 1200 / 1210). LOAD handler
+                // builds a per-class side via hybrid detection (CfgVehicles
+                // `side` config first, class-name suffix heuristic when
+                // side is -1 / Empty), then intersects category + side
+                // filters when populating the listbox.
+                //
+                // Side filter is always-on in the substrate. Consumers
+                // whose data has no meaningful side variation (animals,
+                // humanitarian items) just see "Side: All" with the cycle
+                // doing nothing useful; harmless cosmetic noise. Consumers
+                // with side-themed data (objective objects from POOK SAM
+                // BLUFOR/IND/OPFOR variants etc.) get a real second filter
+                // axis.
+                class SideFilterLabel: ctrlStatic {
+                    idc      = 1201;
+                    type     = 0;
+                    style    = 0;
+                    x        = "48 * (pixelW * pixelGrid * 0.5)";
+                    y        = "5 * (pixelH * pixelGrid * 0.5)";
+                    w        = "65 * (pixelW * pixelGrid * 0.5)";
+                    h        = "4 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0.5};
+                    colorText[]       = {1, 0.62, 0, 1};
+                    text     = "Side: All";
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.8";
+                    tooltip  = "Filter the listbox by side. Click Next > to cycle: All / BLUFOR / OPFOR / Independent / Civilian / Empty (no side declared). Side is read from CfgVehicles >> side first; classes flagged Empty are re-checked against class-name suffixes (_BLUFOR / _IND / _INDFOR / _OPFOR) so theme-by-suffix mod content (POOK SAM family etc.) is filterable.";
+                    tooltipColorShade[] = {0, 0, 0, 1};
+                    tooltipColorText[]  = {1, 1, 1, 1};
+                    tooltipColorBox[]   = {0, 0, 0, 1};
+                };
+
+                class SideFilterNext: ctrlButton {
+                    idc      = 1211;
+                    type     = 1;
+                    style    = 2;
+                    x        = "115 * (pixelW * pixelGrid * 0.5)";
+                    y        = "5 * (pixelH * pixelGrid * 0.5)";
+                    w        = "15 * (pixelW * pixelGrid * 0.5)";
+                    h        = "4 * (pixelH * pixelGrid * 0.5)";
+                    text     = "Next >";
+                    default  = 0;
+                    colorBackground[]        = {1, 0.62, 0, 0.6};
+                    colorBackgroundDisabled[]= {0.4, 0.4, 0.4, 0.5};
+                    colorBackgroundActive[]  = {1, 0.62, 0, 1};
+                    colorFocused[]           = {1, 0.62, 0, 1};
+                    colorBackgroundFocused[] = {1, 0.62, 0, 1};
+                    colorText[]              = {1, 1, 1, 1};
+                    colorDisabled[]          = {1, 1, 1, 0.25};
+                    colorBorder[]            = {0, 0, 0, 1};
+                    borderSize               = 0;
+                    offsetX = 0; offsetY = 0; offsetPressedX = 0; offsetPressedY = 0;
+                    colorShadow[] = {0, 0, 0, 0};
+                    soundEnter[]  = {"", 0, 0};
+                    soundPush[]   = {"", 0, 0};
+                    soundClick[]  = {"", 0, 0};
+                    soundEscape[] = {"", 0, 0};
+                    font     = "RobotoCondensed";
+                    sizeEx   = "pixelH * pixelGrid * 1.6";
+                };
+
                 class List: ctrlListBox {
                     idc = 100;
                     type = 5;            // CT_LISTBOX
                     style = 16 + 0x20;   // ST_FRAME + LB_MULTI
-                    x = "48 * (pixelW * pixelGrid * 0.5)";
-                    y = "5 * (pixelH * pixelGrid * 0.5)";
-                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    x = "4 * (pixelW * pixelGrid * 0.5)";
+                    y = "10 * (pixelH * pixelGrid * 0.5)";
+                    w = "126 * (pixelW * pixelGrid * 0.5)";
                     h = "42 * (pixelH * pixelGrid * 0.5)";
 
                     color[]                  = {1, 0.62, 0, 1};
@@ -633,7 +713,7 @@ class Cfg3DEN
                     type     = 0;
                     style    = 1;
                     x        = 0;
-                    y        = "48 * (pixelH * pixelGrid * 0.5)";
+                    y        = "53 * (pixelH * pixelGrid * 0.5)";
                     w        = "48 * (pixelW * pixelGrid * 0.5)";
                     h        = "5 * (pixelH * pixelGrid * 0.5)";
                     colorBackground[] = {0, 0, 0, 0};
@@ -652,7 +732,7 @@ class Cfg3DEN
                     type     = 2;
                     style    = 0;
                     x        = "48 * (pixelW * pixelGrid * 0.5)";
-                    y        = "48 * (pixelH * pixelGrid * 0.5)";
+                    y        = "53 * (pixelH * pixelGrid * 0.5)";
                     w        = "82 * (pixelW * pixelGrid * 0.5)";
                     h        = "5 * (pixelH * pixelGrid * 0.5)";
                     text     = "";
@@ -693,6 +773,26 @@ class Cfg3DEN
         class ALiVE_ItemChoiceMulti_Filtered: ALiVE_FilteredMultiSelect_Base {
             attributeLoad = "[_this, 'CfgALiVEHumanitarianItems', 'water,ration', 'customWaterItems,customHumRatItems', [], _value, '$STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS', 'customWaterItemsManual,customHumRatItemsManual', 'customHumanitarianItems'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFilteredMultiSelectLoad.sqf'";
             attributeSave = "[_this, 'CfgALiVEHumanitarianItems', 'water,ration', 'customWaterItems,customHumRatItems', 'customWaterItemsManual,customHumRatItemsManual'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFilteredMultiSelectSave.sqf'";
+        };
+
+        // Objective-objects subclass: comms / radar / antenna props +
+        // visual signal panels for objective scenery placement (#875).
+        // Reads Cfg3rdPartyObjectiveObjects with the new flat-array
+        // schema (objectClasses[] + staticDataObjects[]) - 246 classes
+        // across 9 mod blocks (vanilla + Contact + Jets DLCs + RHS x4 +
+        // Crows EW + POOK SAM/Camonets + EAA + Drongos AO).
+        //
+        // Filter cycle: All / objectClasses (comms+radar) /
+        // staticDataObjects (signal panels). Same hide-rows semantic
+        // as Animals / HumanitarianItems variants.
+        //
+        // No legacy varNames or Manual back-compat fields - this is
+        // a fresh attribute (#875), not a consolidation of pre-existing
+        // pickers. Per-category fallback varNames provided as
+        // forward-compat scaffolding only.
+        class ALiVE_ObjectiveObjectChoice: ALiVE_FilteredMultiSelect_Base {
+            attributeLoad = "[_this, 'Cfg3rdPartyObjectiveObjects', 'radar,antenna,dataTerminal,jammer,comms,staticData', 'objectiveRadarClasses,objectiveAntennaClasses,objectiveDataTerminalClasses,objectiveJammerClasses,objectiveCommsClasses,objectiveStaticDataClasses', [], _value, '$STR_ALIVE_OBJECTIVE_OBJECTS', '', 'objectiveObjects', '$STR_ALIVE_OBJECTIVE_OVERRIDE'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFilteredMultiSelectLoad.sqf'";
+            attributeSave = "[_this, 'Cfg3rdPartyObjectiveObjects', 'radar,antenna,dataTerminal,jammer,comms,staticData', 'objectiveRadarClasses,objectiveAntennaClasses,objectiveDataTerminalClasses,objectiveJammerClasses,objectiveCommsClasses,objectiveStaticDataClasses', ''] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFilteredMultiSelectSave.sqf'";
         };
 
         // ALiVE_FactionTierChoice:
@@ -876,10 +976,13 @@ class Cfg3DEN
                     style = 16 + 0x20;
                     // Listbox starts after the faction-picker row above
                     // (picker static + button at y=0 h=6, gap, list at
-                    // y=7).
-                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    // y=7). Listbox at x=4 w=126 (4-grid left inset so it
+                    // doesn't bleed flush to the dialog's left edge);
+                    // faction picker strip + Override edit field keep
+                    // original 48-grid left-margin layout.
+                    x = "4 * (pixelW * pixelGrid * 0.5)";
                     y = "7 * (pixelH * pixelGrid * 0.5)";
-                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    w = "126 * (pixelW * pixelGrid * 0.5)";
                     h = "48 * (pixelH * pixelGrid * 0.5)";
 
                     color[]                  = {1, 0.62, 0, 1};
@@ -1052,9 +1155,12 @@ class Cfg3DEN
                     idc = 100;
                     type = 5;
                     style = 16 + 0x20;   // ST_FRAME + LB_MULTI
-                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    // Listbox at x=4 w=126 (4-grid left inset so it
+                    // doesn't bleed flush to the dialog's left edge);
+                    // sibling chrome keeps original 48-grid left margin.
+                    x = "4 * (pixelW * pixelGrid * 0.5)";
                     y = 0;
-                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    w = "126 * (pixelW * pixelGrid * 0.5)";
                     h = "50 * (pixelH * pixelGrid * 0.5)";
 
                     color[]                  = {1, 0.62, 0, 1};
@@ -1342,9 +1448,13 @@ class Cfg3DEN
                     idc = 100;
                     type = 5;
                     style = 16 + 0x20;   // ST_FRAME + LB_MULTI
-                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    // Listbox at x=4 w=126 (4-grid left inset so it
+                    // doesn't bleed flush to the dialog's left edge);
+                    // sibling chrome / filter strips keep original
+                    // 48-grid left margin.
+                    x = "4 * (pixelW * pixelGrid * 0.5)";
                     y = "20 * (pixelH * pixelGrid * 0.5)";
-                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    w = "126 * (pixelW * pixelGrid * 0.5)";
                     h = "42 * (pixelH * pixelGrid * 0.5)";
 
                     color[]                  = {1, 0.62, 0, 1};

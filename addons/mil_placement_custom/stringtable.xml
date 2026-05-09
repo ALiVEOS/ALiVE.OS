@@ -39,7 +39,7 @@
     <Chinesesimp>目标大小</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_SIZE_COMMENT">
-    <English>Size of the custom objective. Used by OPCOM and others for target evaluation</English>
+    <English>Radius (in metres) of the custom objective. Defines the area within which the picked composition, AA pods, supplies, and objective scenery objects are placed. Also used by OPCOM and intel for target evaluation.</English>
     <Chinesesimp>自定义目标的大小。用于OPCOM和其他目标评估</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT">

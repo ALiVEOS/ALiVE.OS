@@ -149,6 +149,16 @@ switch (_operation) do {
     case "asymmetricInstallationCountOverrides": {
         _result = [_logic, _operation, _args, DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
+    // #875 - objective scenery objects: AA-style triplet.
+    case "objectiveObjects": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "objectiveObjectsCount": {
+        _result = [_logic, _operation, _args, "0"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "objectiveObjectsBehaviour": {
+        _result = [_logic, _operation, _args, "dispersed"] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "onEachSpawn": {
         _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -291,6 +301,14 @@ switch (_operation) do {
 
             if (_debug) then {
                 ["CPC created custom civilian objective %1", _objectiveName] call ALiVE_fnc_dump;
+                // Outline circle showing the configured Objective Size
+                // radius. Mirrors the mil_ied debug-marker pattern -
+                // Ellipse shape with Border brush so the area is
+                // visible without obscuring map detail. ColorRed
+                // matches the cluster's debugColor for visual
+                // continuity with the cluster's anchor marker.
+                private _circleName = format ["alive_cpc_objsize_%1", _objectiveName];
+                [_circleName, _position, "Ellipse", [_objectiveSize, _objectiveSize], "TEXT:", format ["Objective Size (%1m)", _objectiveSize], "COLOR:", "ColorRed", "BRUSH:", "Border", "GLOBAL"] call CBA_fnc_createMarker;
             };
 
             if (_withPlacement) then {
@@ -891,6 +909,17 @@ switch (_operation) do {
                 ["CPC - Placement completed"] call ALiVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+            };
+
+            // #875 - objective scenery objects (AA-style triplet).
+            private _objSizeRadius_CPC = if (!isNil "_objectiveSize" && {_objectiveSize > 0}) then { _objectiveSize } else { 150 };
+            private _objCountStr_CPC = [_logic, "objectiveObjectsCount"] call MAINCLASS;
+            private _objCount_CPC = if (typeName _objCountStr_CPC == "STRING" && {_objCountStr_CPC != ""}) then { parseNumber _objCountStr_CPC } else { 0 };
+            private _objBehaviour_CPC = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
+            private _countObjectiveObjects_CPC = [_logic, _position, _objSizeRadius_CPC, _objCount_CPC, _objBehaviour_CPC, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            if (_debug) then {
+                ["CPC - Objective objects placed: %1 of %2 (radius=%3 behaviour=%4)",
+                    _countObjectiveObjects_CPC, _objCount_CPC, _objSizeRadius_CPC, _objBehaviour_CPC] call ALiVE_fnc_dump;
             };
 
             _logic setVariable ["startupComplete", true];

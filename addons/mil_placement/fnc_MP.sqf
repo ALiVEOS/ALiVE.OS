@@ -256,6 +256,36 @@ switch(_operation) do {
 
         _result = _args;
     };
+
+    // #875 - objective scenery objects: AA-style triplet.
+    case "objectiveObjects": {
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["objectiveObjects", _args];
+        } else {
+            _args = _logic getVariable ["objectiveObjects", ""];
+        };
+        if (typeName _args != "STRING") then { _args = ""; };
+        _result = _args;
+    };
+    case "objectiveObjectsCount": {
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["objectiveObjectsCount", _args];
+        } else {
+            _args = _logic getVariable ["objectiveObjectsCount", "0"];
+        };
+        if (typeName _args != "STRING") then { _args = "0"; };
+        _result = _args;
+    };
+    case "objectiveObjectsBehaviour": {
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["objectiveObjectsBehaviour", _args];
+        } else {
+            _args = _logic getVariable ["objectiveObjectsBehaviour", "dispersed"];
+        };
+        if (typeName _args != "STRING" || {_args == ""}) then { _args = "dispersed"; };
+        _result = _args;
+    };
+
     // Return TAOR marker
     case "taor": {
         if(typeName _args == "STRING") then {
@@ -928,9 +958,30 @@ switch(_operation) do {
                     // runways, taxiways, helipads, all roads, buildings / walls /
                     // fences inside the envelope, water, steep slopes, and soft
                     // surfaces. Envelope sized to the actual composition diameter
-                    // when known.
+                    // when known. Tier loop expands outward from cluster size to
+                    // a neighbour-aware ceiling for obstacle-dense locales (e.g.
+                    // firing ranges) where the cluster centre + 200m around it
+                    // is fully blocked. Cap is half-distance to nearest sibling
+                    // ALiVE placement-class module (floor _size, ceiling 800).
                     private _envelope = if (!isNil "_HQ") then { [_HQ] call ALiVE_fnc_getCompositionRadius } else { 50 };
-                    _compResult = [_pos, _size, _envelope, "fieldhq"] call ALiVE_fnc_findCompositionSpawnPosition;
+                    // Start cap at ceiling 800 and shrink for close neighbours;
+                    // floor _size preserves the original cluster-sized search
+                    // when sibling modules are close enough to force clamping.
+                    private _hqCap = [_logic, _pos, 800, _size, 800] call ALIVE_fnc_neighbourAwareSearchCap;
+                    private _hqTiers = [_size];
+                    if (_hqCap > _size) then {
+                        if (_hqCap >= _size + 200) then {
+                            _hqTiers pushBack (_size + 200);
+                            if (_hqCap > _size + 200) then { _hqTiers pushBack _hqCap };
+                        } else {
+                            _hqTiers pushBack _hqCap;
+                        };
+                    };
+                    _compResult = [];
+                    {
+                        if (count _compResult > 0) exitWith {};
+                        _compResult = [_pos, _x, _envelope, "fieldhq"] call ALiVE_fnc_findCompositionSpawnPosition;
+                    } forEach _hqTiers;
 
                     if (count _compResult > 0) then {
                         _compResult params ["_safePos", "_safeDir"];
@@ -967,12 +1018,25 @@ switch(_operation) do {
                         };
                         // DEBUG -------------------------------------------------------------------------------------
                     } else {
-                        ["MP [%1] - Warning: Field HQ validator found no clear spawn position within %2m of cluster %3 - skipped",
-                            _faction, _size, _pos] call ALiVE_fnc_dump;
+                        ["MP [%1] - Warning: Field HQ validator found no clear spawn position within %2m of cluster %3 (tried %4 tiers: %5) - skipped",
+                            _faction, _hqTiers select (count _hqTiers - 1), _pos, count _hqTiers, _hqTiers] call ALiVE_fnc_dump;
                     };
                 } else {
                     ["MP - Warning no Field HQ locations found"] call ALiVE_fnc_dump;
                 };
+            };
+
+            // #875 - objective scenery objects (AA-style triplet). 250m
+            // default radius for the TAOR-spanning module - keeps scenery
+            // in the Field HQ area without bleeding into satellite Random
+            // Camps.
+            private _objCountStr_MP = [_logic, "objectiveObjectsCount"] call MAINCLASS;
+            private _objCount_MP = if (typeName _objCountStr_MP == "STRING" && {_objCountStr_MP != ""}) then { parseNumber _objCountStr_MP } else { 0 };
+            private _objBehaviour_MP = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
+            private _countObjectiveObjects_MP = [_logic, position _logic, 250, _objCount_MP, _objBehaviour_MP, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            if (_debug) then {
+                ["MP [%1] - Objective objects placed: %2 of %3 (behaviour=%4)",
+                    _faction, _countObjectiveObjects_MP, _objCount_MP, _objBehaviour_MP] call ALiVE_fnc_dump;
             };
 
             if (count _landClusters > 0) then {
@@ -1005,7 +1069,23 @@ switch(_operation) do {
                             // bigger clearance requirements (and the per-mode slope
                             // / road / helipad exclusions scale with it).
                             private _envelope = [_composition] call ALiVE_fnc_getCompositionRadius;
-                            _compResult = [_pos, 500, _envelope, "field"] call ALiVE_fnc_findCompositionSpawnPosition;
+                            // Tier loop expands outward from 500m to a neighbour-
+                            // aware ceiling for obstacle-dense locales. Cap is
+                            // half-distance to nearest sibling ALiVE placement
+                            // module (floor 500, ceiling 800). Two CMP/MP modules
+                            // less than 1000m apart clamp back to today's 500m.
+                            // Start cap at ceiling 800 and shrink for close
+                            // neighbours; floor 500 preserves the original
+                            // single-shot 500m search when sibling modules
+                            // are close enough to force clamping.
+                            private _campCap = [_logic, _pos, 800, 500, 800] call ALIVE_fnc_neighbourAwareSearchCap;
+                            private _campTiers = [500];
+                            if (_campCap > 500) then { _campTiers pushBack _campCap };
+                            _compResult = [];
+                            {
+                                if (count _compResult > 0) exitWith {};
+                                _compResult = [_pos, _x, _envelope, "field"] call ALiVE_fnc_findCompositionSpawnPosition;
+                            } forEach _campTiers;
 
                             if (count _compResult > 0) then {
                                 _compResult params ["_safePos", "_safeDir"];
@@ -1046,8 +1126,8 @@ switch(_operation) do {
                                 };
                                 // DEBUG -----------------------------------------------------------
                             } else {
-                                ["MP [%1] - Random Camp at cluster %2 SKIPPED: validator found no clear spawn position within 500m (runway / built-up area / water / off-map)",
-                                    _faction, _pos] call ALiVE_fnc_dump;
+                                ["MP [%1] - Random Camp at cluster %2 SKIPPED: validator found no clear spawn position within %3m (tried %4 tiers: %5; runway / built-up area / water / off-map)",
+                                    _faction, _pos, _campTiers select (count _campTiers - 1), count _campTiers, _campTiers] call ALiVE_fnc_dump;
                             };
                         };
                     };
@@ -1087,7 +1167,21 @@ switch(_operation) do {
 
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
-                            private _buildingPositions = [_x] call BIS_fnc_buildingPositions;
+                            // Ground-level filter on buildingPos slots.
+                            // BIS_fnc_buildingPositions returns ALL building
+                            // slots (AGL Z) including upper floors / rooftops.
+                            // Without filtering, selectRandom can land
+                            // supply crates on watchtower tops / inside
+                            // elevated guard structures (visually wrong -
+                            // crate-on-tower / crate-on-roof). Filter to
+                            // Z < 1.5m AGL keeps ground entries / doorway
+                            // slots, drops elevated positions. Fall back to
+                            // building center (also ground level) when no
+                            // ground-level building slot exists.
+                            private _allBuildingPositions = [_x] call BIS_fnc_buildingPositions;
+                            private _buildingPositions = _allBuildingPositions select {
+                                (_x select 2) < 1.5
+                            };
 
                             if (count _buildingPositions > 0) then {
                                 _position = (selectRandom _buildingPositions);
@@ -1100,7 +1194,18 @@ switch(_operation) do {
 
                             if(random 1 > 0.6) then {
 
-                                _box = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
+                                // Spawn via createProfileVehicle so the
+                                // crate enters ALiVE's profile system
+                                // (virtualises when no players nearby,
+                                // persists across save/load). Falls back to
+                                // direct createVehicle if profile creation
+                                // returns nil. createCrew=false.
+                                private _supplyProfile = [_vehicleClass, _side, _faction, _position, _direction, false, _faction] call ALIVE_fnc_createProfileVehicle;
+                                // Force upright via profile-spawn path: slot
+                                // 10 is objNull until the profile activates.
+                                // Pass classname + position so the class
+                                // init EH fires on eventual spawn.
+                                [objNull, _direction, _vehicleClass, _position] call ALIVE_fnc_registerForceUpright;
                                 _countSupplies = _countSupplies + 1;
                             };
                         } forEach _buildings;
@@ -1409,7 +1514,18 @@ switch(_operation) do {
                                     private _aaResult = [_cand, 20, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
                                     if (count _aaResult >= 2) then {
                                         private _testPos = _aaResult select 0;
-                                        private _tooClose = false;
+                                        // Post-validator road backstop -
+                                        // layered. nearRoads catches CfgRoads;
+                                        // isOnRoad ring samples catch
+                                        // unclassified drivable surfaces.
+                                        private _onRoad = count (_testPos nearRoads 15) > 0;
+                                        if (!_onRoad) then {
+                                            for "_a" from 0 to 7 do {
+                                                private _samplePt = _testPos getPos [6, _a * 45];
+                                                if (isOnRoad _samplePt) exitWith { _onRoad = true; };
+                                            };
+                                        };
+                                        private _tooClose = _onRoad;
                                         { if (_testPos distance2D _x < 30) exitWith { _tooClose = true } } forEach _usedAAPositions;
                                         if (!_tooClose) then {
                                             _safePos = _testPos;
@@ -1435,6 +1551,23 @@ switch(_operation) do {
                                             ALIVE_aaProfileBehaviour = [] call ALIVE_fnc_hashCreate;
                                         };
                                         [ALIVE_aaProfileBehaviour, _profileID, _aaBehaviour] call ALIVE_fnc_hashSet;
+                                    };
+                                    // Force upright when behaviour is static.
+                                    // Helper records position-grid key in a
+                                    // registry + class init EH so re-
+                                    // activations after virtualisation
+                                    // re-apply setVectorUp (profile schema
+                                    // only stores pos+dir, not vectorUp).
+                                    // Roaming AA skipped - vehicles need
+                                    // terrain alignment for normal physics.
+                                    if (_aaBehaviour == "static") then {
+                                        // Profile-spawn path: slot 10 is
+                                        // objNull until the profile activates.
+                                        // Pass classname + position so the
+                                        // helper wires the class init EH that
+                                        // fires when the engine creates the
+                                        // entity on activation.
+                                        [objNull, _safeDir, _aaClass, _safePos] call ALIVE_fnc_registerForceUpright;
                                     };
                                 };
                                 _countProfiles = _countProfiles + 1;

@@ -101,4 +101,37 @@
 <Key ID="STR_ALIVE_MOD_LAUNCHER_ACTION">
     <English>ALiVE Mod Website</English>
 </Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS">
+    <English>Objective Objects</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COMMENT">
+    <English>Static / scenery objects (jammers, radars, antennas, satellite dishes, signal panels) to spawn at the objective. Filterable picker shows currently-loaded classes from registered mods (vanilla A3 + DLCs + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations etc.). Filter cycle: All / Object Classes (comms+radar) / Static Data (signal panels). Override Edit field accepts free-text class names not surfaced by the picker.</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OVERRIDE">
+    <English>Override Objects:</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_HDR">
+    <English>OBJECTIVE OBJECTS</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COUNT">
+    <English>Spawn Objective Units</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT">
+    <English>How many scenery objects to spawn at the objective, drawn at random from the Objective Objects picker pool. Default 0 (disabled - no scenery spawned). Selection is with replacement, so a small pool plus a high count means duplicates appear.</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR">
+    <English>Objective Behaviour</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_COMMENT">
+    <English>How spawned objects are distributed within the module's area of influence. Clustered = tight grouping near the objective center. Dispersed = spread evenly across the area (default). Perimeter = ring at the edge of the search radius. Validator-checked positions only - roads / runways / buildings / water / steep slopes excluded regardless of shape.</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_CLUSTERED">
+    <English>Clustered</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_DISPERSED">
+    <English>Dispersed</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_PERIMETER">
+    <English>Perimeter</English>
+</Key>
 </Container></Package></Project>

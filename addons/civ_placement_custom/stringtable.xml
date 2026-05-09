@@ -44,7 +44,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_OBJECTIVE_SIZE_COMMENT">
-    <English>Radius of the custom civilian objective used by OPCOM and local force placement.</English>
+    <English>Radius (in metres) of the custom civilian objective. Defines the area within which the cluster's static objects are gathered and objective scenery objects are placed. Also used by OPCOM and intel for target evaluation.</English>
     <Chinese>OPCOM 與本地部隊佈局所使用的自訂平民目標半徑。</Chinese>
     <Chinesesimp>OPCOM 与本地部队布局所使用的自定义平民目标半径。</Chinesesimp>
     <Spanish>Radio del objetivo civil personalizado usado por OPCOM y la colocación de fuerzas locales.</Spanish>

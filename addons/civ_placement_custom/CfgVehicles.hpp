@@ -95,6 +95,39 @@ class CfgVehicles {
             class customArmourCount : Edit { property = "ALiVE_civ_placement_custom_customArmourCount"; displayName = "$STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT_COMMENT"; defaultValue = """"""; };
             class customSpecOpsCount : Edit { property = "ALiVE_civ_placement_custom_customSpecOpsCount"; displayName = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT_COMMENT"; defaultValue = """"""; };
             class asymmetricInstallationCountOverrides : Edit { property = "ALiVE_civ_placement_custom_asymmetricInstallationCountOverrides"; displayName = "$STR_ALIVE_CP_ASYM_INSTALLATION_COUNT_OVERRIDES"; tooltip = "$STR_ALIVE_CP_ASYM_INSTALLATION_COUNT_OVERRIDES_COMMENT"; defaultValue = """"""; };
+            // ---- Objective Objects (#875) ---------------------------------------
+            class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
+            // AA-style triplet: count Edit + behaviour Combo + picker.
+            class objectiveObjectsCount : Edit
+            {
+                    property     = "ALiVE_civ_placement_custom_objectiveObjectsCount";
+                    displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT";
+                    tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT";
+                    defaultValue = """0""";
+            };
+            class objectiveObjectsBehaviour : Combo
+            {
+                    property     = "ALiVE_civ_placement_custom_objectiveObjectsBehaviour";
+                    displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR";
+                    tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_COMMENT";
+                    defaultValue = """dispersed""";
+                    class Values
+                    {
+                        class CLUSTERED { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_CLUSTERED"; value = "clustered"; };
+                        class DISPERSED { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_DISPERSED"; value = "dispersed"; default = 1; };
+                        class PERIMETER { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_PERIMETER"; value = "perimeter"; };
+                    };
+            };
+            class objectiveObjects
+            {
+                    property     = "ALiVE_civ_placement_custom_objectiveObjects";
+                    displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS";
+                    tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_COMMENT";
+                    control      = "ALiVE_ObjectiveObjectChoice";
+                    typeName     = "STRING";
+                    expression   = "_this setVariable ['objectiveObjects', _value];";
+                    defaultValue = """""";
+            };
             // ---- Ambient Presence -----------------------------------------------
             class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_AMBIENT"; displayName = "AMBIENT PRESENCE"; };
             class guardProbability : Combo

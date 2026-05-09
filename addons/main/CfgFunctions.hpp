@@ -41,6 +41,21 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_normalizeFlexiMenuActions.sqf";
                 RECOMPILE;
             };
+            class spawnObjectiveObjects {
+                description = "Parses the objectiveObjects setVariable string from a module logic and spawns the picked classes around the supplied center (#875 shared helper)";
+                file = "\x\alive\addons\main\fnc_spawnObjectiveObjects.sqf";
+                RECOMPILE;
+            };
+            class registerForceUpright {
+                description = "Tags an entity for force-upright orientation and records its position-grid key for re-application after ALiVE virtualisation cycles";
+                file = "\x\alive\addons\main\fnc_registerForceUpright.sqf";
+                RECOMPILE;
+            };
+            class neighbourAwareSearchCap {
+                description = "Returns a search-radius ceiling capped at half-distance to the nearest sibling ALiVE placement-class module logic, clamped to [floor, ceiling]";
+                file = "\x\alive\addons\main\fnc_neighbourAwareSearchCap.sqf";
+                RECOMPILE;
+            };
             class pauseModule {
                 description = "Pauses given module(s)";
                 file = "\x\alive\addons\main\fnc_pauseModule.sqf";

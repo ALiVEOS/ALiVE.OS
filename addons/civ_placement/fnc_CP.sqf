@@ -263,6 +263,16 @@ switch(_operation) do {
     case "reserveOrphanCrewBehaviour": {
         _result = [_logic,_operation,_args,DEFAULT_RESERVE_ORPHAN_CREW_BEHAVIOUR] call ALIVE_fnc_OOsimpleOperation;
     };
+    // #875 - objective scenery objects: AA-style triplet.
+    case "objectiveObjects": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "objectiveObjectsCount": {
+        _result = [_logic, _operation, _args, "0"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "objectiveObjectsBehaviour": {
+        _result = [_logic, _operation, _args, "dispersed"] call ALIVE_fnc_OOsimpleOperation;
+    };
 
     // Return placement setting
     case "withPlacement": {
@@ -1451,6 +1461,17 @@ switch(_operation) do {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
+
+            // #875 - objective scenery objects (AA-style triplet).
+            private _debugCP = [_logic, "debug"] call MAINCLASS;
+            private _objCountStr_CP = [_logic, "objectiveObjectsCount"] call MAINCLASS;
+            private _objCount_CP = if (typeName _objCountStr_CP == "STRING" && {_objCountStr_CP != ""}) then { parseNumber _objCountStr_CP } else { 0 };
+            private _objBehaviour_CP = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
+            private _countObjectiveObjects_CP = [_logic, position _logic, 250, _objCount_CP, _objBehaviour_CP, _debugCP] call ALiVE_fnc_spawnObjectiveObjects;
+            if (_debugCP) then {
+                ["CP - Objective objects placed: %1 of %2 (behaviour=%3)",
+                    _countObjectiveObjects_CP, _objCount_CP, _objBehaviour_CP] call ALiVE_fnc_dump;
+            };
 
             // set module as started
             _logic setVariable ["startupComplete", true];

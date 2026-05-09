@@ -315,6 +315,35 @@ switch(_operation) do {
         _result = _args;
     };
 
+    // #875 - objective scenery objects: AA-style triplet.
+    case "objectiveObjects": {
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["objectiveObjects", _args];
+        } else {
+            _args = _logic getVariable ["objectiveObjects", ""];
+        };
+        if (typeName _args != "STRING") then { _args = ""; };
+        _result = _args;
+    };
+    case "objectiveObjectsCount": {
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["objectiveObjectsCount", _args];
+        } else {
+            _args = _logic getVariable ["objectiveObjectsCount", "0"];
+        };
+        if (typeName _args != "STRING") then { _args = "0"; };
+        _result = _args;
+    };
+    case "objectiveObjectsBehaviour": {
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["objectiveObjectsBehaviour", _args];
+        } else {
+            _args = _logic getVariable ["objectiveObjectsBehaviour", "dispersed"];
+        };
+        if (typeName _args != "STRING" || {_args == ""}) then { _args = "dispersed"; };
+        _result = _args;
+    };
+
     case "objectives": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -477,12 +506,22 @@ switch(_operation) do {
             private _createFieldHQ = [_logic, "createFieldHQ"] call MAINCLASS;
             private _placeHelis = [_logic, "placeHelis"] call MAINCLASS;
             private _placeSupplies = [_logic, "placeSupplies"] call MAINCLASS;
+            private _objectiveObjectsRaw = [_logic, "objectiveObjects"] call MAINCLASS;
             private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             private _factionSideNumber = getNumber(_factionConfig >> "side");
             private _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             private _countProfiles = 0;
             private _position = position _logic;
             private _allowPlayerTasking = [_logic, "allowPlayerTasking"] call MAINCLASS;
+
+            // Outline circle showing the configured Objective Size
+            // (size attr) radius. Mirrors the mil_ied / civ_placement_custom
+            // debug-marker pattern - Ellipse + Border so the area is
+            // visible without obscuring map detail.
+            if (_debug) then {
+                private _circleName = format ["alive_cmp_objsize_%1", floor((_position select 0) + (_position select 1))];
+                [_circleName, _position, "Ellipse", [_size, _size], "TEXT:", format ["Objective Size (%1m)", _size], "COLOR:", "ColorRed", "BRUSH:", "Border", "GLOBAL"] call CBA_fnc_createMarker;
+            };
 
             // Load static data
             call ALiVE_fnc_staticDataHandler;
@@ -553,6 +592,19 @@ switch(_operation) do {
                     // Tier 1 (50m)  - strict, respects user's chosen pos
                     // Tier 2 (150m) - mild expansion, near module
                     // Tier 3 (300m) - generous, composition in vicinity
+                    // Tiers extend progressively from 50m up to the user-
+                    // configured Objective Size (size attr), capped down
+                    // by half-distance to the nearest sibling ALiVE
+                    // placement-class module so adjacent modules don't
+                    // compete for the same patch. The user's debug-circle
+                    // marker shows the resulting search area.
+
+                    private _compCap = [_logic, _position, _size, 50, _size] call ALIVE_fnc_neighbourAwareSearchCap;
+                    private _allTiers = [50, 150, 300, 500, 800, 1200, 2000];
+                    private _compTiers = _allTiers select { _x <= _compCap };
+                    if (count _compTiers == 0 || (_compTiers select (count _compTiers - 1)) < _compCap) then {
+                        _compTiers pushBack _compCap;
+                    };
 
                     private _spawnedComp = configNull;
                     private _spawnedSafePos = position _logic;
@@ -624,7 +676,7 @@ switch(_operation) do {
                                 };
                             };
                         } forEach _shuffled;
-                    } forEach [50, 150, 300];
+                    } forEach _compTiers;
 
                     if (!isNull _spawnedComp) then {
                         [_spawnedComp, _spawnedSafePos, _spawnedSafeDir, _faction] call ALIVE_fnc_spawnComposition;
@@ -642,8 +694,8 @@ switch(_operation) do {
                                 _faction, _compositionSpawnedClass, _spawnedSafePos, _position, round (_spawnedSafePos distance _position), _spawnedTier, count _compClasses] call ALiVE_fnc_dump;
                         };
                     } else {
-                        ["CMP [%1] - Warning: None of the %2 selected compositions could be placed within 300m of module (tried 3 search tiers) - skipped (selections: '%3')",
-                            _faction, count _compClasses, _composition] call ALiVE_fnc_dump;
+                        ["CMP [%1] - Warning: None of the %2 selected compositions could be placed within %3m of module (tried %4 search tiers: %5) - skipped (selections: '%6')",
+                            _faction, count _compClasses, _compTiers select (count _compTiers - 1), count _compTiers, _compTiers, _composition] call ALiVE_fnc_dump;
                     };
                 };
             };
@@ -1274,7 +1326,22 @@ switch(_operation) do {
                             private _vehicleClass = (selectRandom _supplyClasses);
 
                             if(random 1 > 0.3) then {
-                                private _box = createVehicle [_vehicleClass, _position, [], 0, "NONE"];
+                                // Spawn via createProfileVehicle so the
+                                // crate enters ALiVE's profile system
+                                // (virtualises when no players nearby,
+                                // persists across save/load). Mirrors the
+                                // pattern used by AA placement and the #875
+                                // objective objects helper. Falls back to
+                                // direct createVehicle if profile creation
+                                // returns nil. createCrew=false (supplies
+                                // don't need crew).
+                                private _supplyProfile = [_vehicleClass, _side, _faction, _position, _direction, false, _faction] call ALIVE_fnc_createProfileVehicle;
+                                // Force upright via the profile-spawn path:
+                                // slot 10 is objNull until the profile
+                                // activates physically. Pass classname +
+                                // position so the helper can wire the class
+                                // init EH that fires on eventual spawn.
+                                [objNull, _direction, _vehicleClass, _position] call ALIVE_fnc_registerForceUpright;
                                 _countSupplies = _countSupplies + 1;
                             };
                         } forEach _buildings;
@@ -1287,6 +1354,23 @@ switch(_operation) do {
                 ["CMP [%1] - Supplies placed: %2",_faction,_countSupplies] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
+
+
+            // #875 - objective scenery objects (AA-style triplet:
+            // count + behaviour + picker pool). Shared helper does
+            // validator-checked spawn with neighbour-aware radius
+            // capping and configurable distribution shape.
+            private _objSizeStr = [_logic, "size"] call MAINCLASS;
+            private _objSizeRadius = if (typeName _objSizeStr == "STRING" && {_objSizeStr != ""}) then { parseNumber _objSizeStr } else { 150 };
+            if (_objSizeRadius <= 0) then { _objSizeRadius = 150 };
+            private _objCountStr = [_logic, "objectiveObjectsCount"] call MAINCLASS;
+            private _objCount = if (typeName _objCountStr == "STRING" && {_objCountStr != ""}) then { parseNumber _objCountStr } else { 0 };
+            private _objBehaviour = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
+            private _countObjectiveObjects = [_logic, _position, _objSizeRadius, _objCount, _objBehaviour, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            if (_debug) then {
+                ["CMP [%1] - Objective objects placed: %2 of %3 (radius=%4 behaviour=%5)",
+                    _faction, _countObjectiveObjects, _objCount, _objSizeRadius, _objBehaviour] call ALiVE_fnc_dump;
+            };
 
 
             // Spawn helicopters on pads
@@ -1553,24 +1637,14 @@ switch(_operation) do {
                     // 50m for close-packed modules; ceiling 200m so a
                     // lone module on a giant map doesn't search a useless
                     // 1km radius.
-                    private _aaSearchRadius = 150;
-                    private _aaNeighbours = [];
-                    {
-                        _aaNeighbours = _aaNeighbours + (allMissionObjects _x);
-                    } forEach ["ALiVE_mil_placement", "ALiVE_mil_placement_custom",
-                               "ALiVE_mil_placement_spe", "ALiVE_civ_placement",
-                               "ALiVE_civ_placement_custom", "ALiVE_mil_ato"];
-                    _aaNeighbours = _aaNeighbours - [_logic];
-                    {
-                        private _gap = (position _x) distance2D _position;
-                        if (_gap > 0 && {_gap / 2 < _aaSearchRadius}) then {
-                            _aaSearchRadius = _gap / 2;
-                        };
-                    } forEach _aaNeighbours;
-                    if (_aaSearchRadius < 50) then { _aaSearchRadius = 50 };
-                    if (_aaSearchRadius > 200) then { _aaSearchRadius = 200 };
+                    // AA placement uses the user-configured Objective Size
+                    // as its search ceiling. Helper shrinks for close
+                    // sibling modules. Floor 50m so very small _size
+                    // values still leave room for the static-weapon
+                    // footprint + 30m AA-AA separation.
+                    private _aaSearchRadius = [_logic, _position, _size, 50, _size] call ALIVE_fnc_neighbourAwareSearchCap;
                     if (_debug) then {
-                        ["CMP [%1] - AA search radius=%2m (neighbours=%3)", _faction, _aaSearchRadius, count _aaNeighbours] call ALiVE_fnc_dump;
+                        ["CMP [%1] - AA search radius=%2m (size=%3)", _faction, _aaSearchRadius, _size] call ALiVE_fnc_dump;
                     };
                     for "_i" from 1 to _aaCount do {
                         private _aaClass = selectRandom _resolved;
@@ -1613,7 +1687,19 @@ switch(_operation) do {
                                 private _aaResult = [_cand, 20, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
                                 if (count _aaResult >= 2) then {
                                     private _testPos = _aaResult select 0;
-                                    private _tooClose = false;
+                                    // Post-validator road backstop - layered
+                                    // check. nearRoads catches CfgRoads
+                                    // objects; isOnRoad sampled in an 8-point
+                                    // ring catches drivable surfaces that
+                                    // aren't in CfgRoads (dirt paths / trails).
+                                    private _onRoad = count (_testPos nearRoads 15) > 0;
+                                    if (!_onRoad) then {
+                                        for "_a" from 0 to 7 do {
+                                            private _samplePt = _testPos getPos [6, _a * 45];
+                                            if (isOnRoad _samplePt) exitWith { _onRoad = true; };
+                                        };
+                                    };
+                                    private _tooClose = _onRoad;
                                     { if (_testPos distance2D _x < 30) exitWith { _tooClose = true } } forEach _usedAAPositions;
                                     if (!_tooClose) then {
                                         _safePos = _testPos;
@@ -1633,6 +1719,24 @@ switch(_operation) do {
                                         ALIVE_aaProfileBehaviour = [] call ALIVE_fnc_hashCreate;
                                     };
                                     [ALIVE_aaProfileBehaviour, _profileID, _aaBehaviour] call ALIVE_fnc_hashSet;
+                                };
+                                // Force upright when behaviour is static.
+                                // Helper records position-grid key in a
+                                // registry + class init EH so re-activations
+                                // after virtualisation re-apply setVectorUp
+                                // (the profile schema only stores pos+dir,
+                                // not vectorUp - so re-spawn would tilt
+                                // again without the persistent registry).
+                                // Roaming AA skipped - vehicles need terrain
+                                // alignment for normal physics.
+                                if (_aaBehaviour == "static") then {
+                                    // Profile-spawn path: slot 10 is objNull
+                                    // until the profile activates physically
+                                    // (player proximity). Pass classname +
+                                    // position so the helper can wire the
+                                    // class init EH that fires when the
+                                    // engine eventually creates the entity.
+                                    [objNull, _safeDir, _aaClass, _safePos] call ALIVE_fnc_registerForceUpright;
                                 };
                             };
                             _aaPlaced = _aaPlaced + 1;

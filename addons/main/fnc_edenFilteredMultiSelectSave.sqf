@@ -125,6 +125,7 @@ if (isClass _registry) then {
                     private _cat = _x;
                     private _catClass = _source >> _cat;
                     if (isClass _catClass) then {
+                        // Nested-subclass schema (HumanitarianItems / Animals).
                         for "_j" from 0 to (count _catClass - 1) do {
                             private _entry = _catClass select _j;
                             if (isClass _entry) then {
@@ -136,6 +137,21 @@ if (isClass _registry) then {
                                 };
                             };
                         };
+                    } else {
+                        // Flat-array schema (Cfg3rdPartyObjectiveObjects).
+                        // Mirrors the LOAD-handler fallback so the SAVE
+                        // bucketer can map flat-array classes back to
+                        // their declaring category.
+                        private _flatArr = getArray (_source >> _cat);
+                        {
+                            private _cn = _x;
+                            if (typeName _cn == "STRING" && {_cn != ""}) then {
+                                private _key = toLower _cn;
+                                if !(_key in _classToCat) then {
+                                    _classToCat set [_key, _cat];
+                                };
+                            };
+                        } forEach _flatArr;
                     };
                 } forEach _categories;
             };

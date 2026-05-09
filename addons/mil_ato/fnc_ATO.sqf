@@ -696,6 +696,16 @@ switch(_operation) do {
     case "side": {
         _result = [_logic,_operation,_args,DEFAULT_SIDE] call ALIVE_fnc_OOsimpleOperation;
     };
+    // #875 - objective scenery objects: AA-style triplet.
+    case "objectiveObjects": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "objectiveObjectsCount": {
+        _result = [_logic, _operation, _args, "0"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "objectiveObjectsBehaviour": {
+        _result = [_logic, _operation, _args, "dispersed"] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "HQBuilding": {
         _result = [_logic,_operation,_args,objNull] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -1757,6 +1767,17 @@ switch(_operation) do {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
+
+            // #875 - objective scenery objects (AA-style triplet).
+            // 350m default radius for the airfield area.
+            private _objCountStr_ATO = [_logic, "objectiveObjectsCount"] call MAINCLASS;
+            private _objCount_ATO = if (typeName _objCountStr_ATO == "STRING" && {_objCountStr_ATO != ""}) then { parseNumber _objCountStr_ATO } else { 0 };
+            private _objBehaviour_ATO = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
+            private _countObjectiveObjects_ATO = [_logic, position _logic, 350, _objCount_ATO, _objBehaviour_ATO, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            if (_debug) then {
+                ["ATO %1 - Objective objects placed: %2 of %3 (behaviour=%4)",
+                    _logic, _countObjectiveObjects_ATO, _objCount_ATO, _objBehaviour_ATO] call ALiVE_fnc_dump;
+            };
 
             _logic setVariable ["startupComplete", true];
 
