@@ -1504,26 +1504,6 @@ ALiVE_fnc_INS_getBuildingInstallations = {
     _installations
 };
 
-ALiVE_fnc_INS_disableBuildingInstallations = {
-    params [
-        ["_building", objNull, [objNull]],
-        ["_caller", objNull, [objNull]]
-    ];
-
-    if (isNull _building) exitwith {};
-
-    {
-        _x params ["_objectiveKey", "_installationVar", "_disabledVar"];
-        _building setVariable [_disabledVar, true, true];
-    } forEach ([_building] call ALiVE_fnc_INS_getBuildingInstallations);
-
-    if (isServer) then {
-        [_building, _caller] call ALIVE_fnc_INS_buildingKilledEH;
-    } else {
-        [_building, _caller] remoteExec ["ALIVE_fnc_INS_buildingKilledEH", 2];
-    };
-};
-
 ALiVE_fnc_spawnFurniture = {
 
     private ["_pos","_furniture","_bomb","_box","_created"];
@@ -1706,9 +1686,7 @@ ALiVE_fnc_INS_addInstallationHoldActions = {
                     if (isNull _building) exitWith {};
 
                     [_target, _ID] remoteExec ["BIS_fnc_holdActionRemove", 0, _target];
-                    [_building, _caller] call ALiVE_fnc_INS_disableBuildingInstallations;
-
-                    [_subtitleTitle, format [_subtitleText,name _caller, mapGridPosition _building]] remoteExec ["BIS_fnc_showSubtitle",side (group _caller)];
+                    [_building, _caller, _subtitleTitle, _subtitleText] remoteExec ["ALiVE_fnc_INS_disableBuildingInstallations", 2];
                 },
                 {},
                 [_building, _disabledVar, _subtitleTitle, _subtitleText],
