@@ -69,17 +69,17 @@ private _formatRemaining = {
 private _selectWaveGroup = {
     params ["_enemyFaction", "_groupTypes"];
 
-    private _group = "FALSE";
+    private _candidateGroups = [];
     {
-        if (_group == "FALSE") then {
-            private _candidate = [_x, _enemyFaction] call ALIVE_fnc_configGetRandomGroup;
-            if (!(_candidate == "FALSE") && {!(_candidate in ALiVE_PLACEMENT_GROUPBLACKLIST)}) then {
-                _group = _candidate;
-            };
+        private _candidate = [_x, _enemyFaction] call ALIVE_fnc_configGetRandomGroup;
+        if (!(_candidate == "FALSE") && {!(_candidate in ALiVE_PLACEMENT_GROUPBLACKLIST)}) then {
+            _candidateGroups pushBack _candidate;
         };
     } forEach _groupTypes;
 
-    _group
+    if (_candidateGroups isEqualTo []) exitWith {"FALSE"};
+
+    selectRandom _candidateGroups
 };
 
 private _getEventLosses = {
