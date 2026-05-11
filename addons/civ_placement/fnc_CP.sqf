@@ -1256,7 +1256,15 @@ switch(_operation) do {
                  for "_i" from 0 to _guardProbabilityCount -1 do {
 
                     _guardGroup = (selectRandom _infantryGroups);
-                    _guards = [_guardGroup, [_center, _guardDistance] call CBA_fnc_RandPos, random(360), true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                    // Water-aware random pick - up to 10 retries before
+                    // falling back to _center. Prevents coastal civ
+                    // clusters from dropping infantry profiles in water.
+                    private _guardPos = _center;
+                    for "_try" from 1 to 10 do {
+                        private _candidate = [_center, _guardDistance] call CBA_fnc_RandPos;
+                        if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
+                    };
+                    _guards = [_guardGroup, _guardPos, random(360), true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {

@@ -725,7 +725,14 @@ switch (_operation) do {
                 if (count _infantryGroups > 0 && {_guardProbabilityCount > 0}) then {
                     for "_i" from 0 to _guardProbabilityCount - 1 do {
                         private _guardGroup = selectRandom _infantryGroups;
-                        private _guards = [_guardGroup, [_center, _guardDistance] call CBA_fnc_RandPos, random 360, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                        // Water-aware random pick - up to 10 retries before
+                        // falling back to _center.
+                        private _guardPos = _center;
+                        for "_try" from 1 to 10 do {
+                            private _candidate = [_center, _guardDistance] call CBA_fnc_RandPos;
+                            if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
+                        };
+                        private _guards = [_guardGroup, _guardPos, random 360, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
                         {
                             if (([_x, "type"] call ALiVE_fnc_HashGet) == "entity") then {
                                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", _guardProbabilityCount, _guardPatrolPercentage]]] call ALIVE_fnc_profileEntity;
