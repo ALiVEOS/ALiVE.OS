@@ -406,6 +406,67 @@ class Cfg3DEN
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
+        // ALiVE_SideChoiceMulti:
+        //   Multi-select listbox for sides (EAST / WEST / GUER). Used by
+        //   mil_c2istar's opcomIntelSides attribute, which selects which
+        //   synced OPCOMs feed their G2 spotrep pipeline into C2ISTAR.
+        //   Sides are a fixed three-entry enum so the LOAD handler
+        //   hardcodes the rows - no CfgFactionClasses walk required.
+        //   Civilian (CIV) is omitted because civilians can't run an
+        //   OPCOM commander.
+        //
+        //   Storage shape: CSV string "EAST,WEST" so the existing
+        //   runtime path in fnc_C2ISTAR.sqf (which pipes the value
+        //   through ALiVE_fnc_stringListToArray then uppercases) keeps
+        //   working unchanged. LOAD also accepts SQF array literal,
+        //   single-token, and empty-string forms so missions saved
+        //   with the legacy Edit-field format restore cleanly.
+        //
+        //   Substrate inherited from ALiVE_FactionChoiceMulti_Base -
+        //   same controlsGroup chrome, listbox styling, scrollbars.
+        //   Geometry overrides: outer h compacted to 25 grid units
+        //   (three short rows don't need the parent's 55), inner
+        //   listbox pushed to y=5 so it sits BELOW the Title row
+        //   rather than overlapping it. Without these overrides the
+        //   Title text ("Commander Intel Sides:") sits in the same
+        //   y-band as the listbox's first row and visually clashes -
+        //   tolerable on faction lists where long classnames hide
+        //   the title, ugly with only three short rows.
+        //
+        //   The LOAD handler calls ctrlSetText on the Title sub-control
+        //   (idc 101) so the visible label can be customised per
+        //   consuming attribute rather than locked to the parent
+        //   substrate's "Override Factions:".
+        class ALiVE_SideChoiceMulti: ALiVE_FactionChoiceMulti_Base {
+            // Compact 4-row listbox sitting in the normal right column
+            // (x=48..130) so the Title sub-control has the left column
+            // (x=0..48) to itself without overlap. Outer height covers
+            // Title row (0..5) + Listbox (5..27) + 1 grid unit of bottom
+            // padding.
+            h = "28 * (pixelH * pixelGrid * 0.5)";
+            class controls: controls {
+                // Explicit no-op inheritance to keep the sibling Title
+                // sub-control when overriding List below. Without this,
+                // overriding one nested class via `class List: List {}`
+                // can silently drop the other nested classes from the
+                // resolved controlsGroup config.
+                class Title: Title {};
+                class List: List {
+                    // Style redeclared explicitly so the LB_MULTI bit
+                    // (0x20) survives nested-class inheritance. Without
+                    // it the listbox can silently degrade to single-
+                    // select and persistence reads only the focused row.
+                    style = 16 + 0x20;
+                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    y = "5 * (pixelH * pixelGrid * 0.5)";
+                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    h = "22 * (pixelH * pixelGrid * 0.5)";
+                };
+            };
+            attributeLoad = "[_this, 'opcomIntelSides', 'Commander Intel Sides:', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'opcomIntelSides'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";
+        };
+
         // ALiVE_ItemChoiceMulti family:
         //   Multi-select listbox of humanitarian items (water or ration)
         //   populated from the CfgALiVEHumanitarianItems registry. Each

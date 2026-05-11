@@ -396,12 +396,14 @@ class CfgVehicles {
 
                     // ---- Global intel ---------------------------------------------------
                     class HDR_GLOBAL_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_GLOBAL_INTEL"; displayName = "GLOBAL INTEL"; };
-                    class opcomIntelSides : Edit
+                    class opcomIntelSides
                     {
-                            property = "ALiVE_MIL_C2ISTAR_opcomIntelSides";
-                            displayName = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES";
-                            tooltip = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES_COMMENT";
-                            typeName = "STRING";
+                            property     = "ALiVE_MIL_C2ISTAR_opcomIntelSides";
+                            displayName  = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES";
+                            tooltip      = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES_COMMENT";
+                            control      = "ALiVE_SideChoiceMulti";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['opcomIntelSides', _value];";
                             defaultValue = """""";
                     };
                     class displayIntel : Combo
