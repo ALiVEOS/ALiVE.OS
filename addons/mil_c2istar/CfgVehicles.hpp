@@ -29,11 +29,8 @@ class CfgVehicles {
                 picture = "x\alive\addons\mil_C2ISTAR\icon_mil_C2.paa";
                 class Attributes : AttributesBase
                 {
-                    class MODULE_PARAMS: ALiVE_ModuleSubTitle
-                    {
-                            property = QGVAR(__LINE__);
-                            displayName = "MODULE PARAMETERS";
-                    };
+                    // ---- Module parameters ----------------------------------------------
+                    class HDR_MODULE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_MODULE"; displayName = "MODULE PARAMETERS"; };
                     class debug : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_debug";
@@ -42,17 +39,8 @@ class CfgVehicles {
                             defaultValue = """false""";
                             class Values
                             {
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-
-                                    };
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No  { name = "No";  value = "false"; };
                             };
                     };
                     class c2_item : Edit
@@ -62,12 +50,9 @@ class CfgVehicles {
                             tooltip = "$STR_ALIVE_C2ISTAR_ALLOW_COMMENT";
                             defaultValue = """LaserDesignator""";
                     };
-                    // FACTION FILTERS
-                    class FACTION_FILTERS : ALiVE_ModuleSubTitle
-                    {
-                            property = QGVAR(__LINE__);
-                            displayName = " FACTION FILTER PARAMETERS";
-                    };
+
+                    // ---- Faction filters ------------------------------------------------
+                    class HDR_FACTION_FILTERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_FACTION_FILTERS"; displayName = "FACTION FILTERS"; };
                     class filterEnemyFactions : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_filterEnemyFactions";
@@ -76,24 +61,13 @@ class CfgVehicles {
                             defaultValue = """true""";
                             class Values
                             {
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No  { name = "No";  value = "false"; };
                             };
                     };
-                    // TASKING
-                    class TASKING : ALiVE_ModuleSubTitle
-                    {
-                            property = QGVAR(__LINE__);
-                            displayName = " TASKING PARAMETERS";
-                    };
+
+                    // ---- Auto-generated tasks ------------------------------------------
+                    class HDR_AUTO_TASKS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_AUTO_TASKS"; displayName = "AUTO-GENERATED TASKS"; };
                     class persistent : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_persistent";
@@ -102,18 +76,28 @@ class CfgVehicles {
                             defaultValue = """false""";
                             class Values
                             {
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
                             };
                     };
+                    class taskMinDistance : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_taskMinDistance";
+                            displayName = "$STR_ALIVE_C2ISTAR_TASK_MIN_DISTANCE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_MIN_DISTANCE_COMMENT";
+                            defaultValue = """0""";
+                            typeName = "NUMBER";
+                    };
+                    class vipPanicTimeout : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_vipPanicTimeout";
+                            displayName = "$STR_ALIVE_C2ISTAR_VIP_PANIC_TIMEOUT";
+                            tooltip = "$STR_ALIVE_C2ISTAR_VIP_PANIC_TIMEOUT_COMMENT";
+                            defaultValue = """180""";
+                            typeName = "NUMBER";
+                    };
+
+                    class SPACER_AUTOTASK_DEFAULTS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_AUTOTASK_DEFAULTS"; displayName = " "; };
                     class autoGenerateBlufor : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateBlufor";
@@ -122,21 +106,9 @@ class CfgVehicles {
                             defaultValue = """None""";
                             class Values
                             {
-                                    class None
-                                    {
-                                            name = "None";
-                                            value = "None";
-                                    };
-                                    class Strategic
-                                    {
-                                            name = "Strategic";
-                                            value = "Strategic";
-                                    };
-                                    class Constant
-                                    {
-                                            name = "Constant";
-                                            value = "Constant";
-                                    };
+                                    class None      { name = "None";      value = "None"; };
+                                    class Strategic { name = "Strategic"; value = "Strategic"; };
+                                    class Constant  { name = "Constant";  value = "Constant"; };
                             };
                     };
                     class autoGenerateBluforFaction : Edit
@@ -161,21 +133,9 @@ class CfgVehicles {
                             defaultValue = """None""";
                             class Values
                             {
-                                    class None
-                                    {
-                                            name = "None";
-                                            value = "None";
-                                    };
-                                    class Strategic
-                                    {
-                                            name = "Strategic";
-                                            value = "Strategic";
-                                    };
-                                    class Constant
-                                    {
-                                            name = "Constant";
-                                            value = "Constant";
-                                    };
+                                    class None      { name = "None";      value = "None"; };
+                                    class Strategic { name = "Strategic"; value = "Strategic"; };
+                                    class Constant  { name = "Constant";  value = "Constant"; };
                             };
                     };
                     class autoGenerateOpforFaction : Edit
@@ -200,21 +160,9 @@ class CfgVehicles {
                             defaultValue = """None""";
                             class Values
                             {
-                                    class None
-                                    {
-                                            name = "None";
-                                            value = "None";
-                                    };
-                                    class Strategic
-                                    {
-                                            name = "Strategic";
-                                            value = "Strategic";
-                                    };
-                                    class Constant
-                                    {
-                                            name = "Constant";
-                                            value = "Constant";
-                                    };
+                                    class None      { name = "None";      value = "None"; };
+                                    class Strategic { name = "Strategic"; value = "Strategic"; };
+                                    class Constant  { name = "Constant";  value = "Constant"; };
                             };
                     };
                     class autoGenerateIndforFaction : Edit
@@ -231,28 +179,8 @@ class CfgVehicles {
                             tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_ENEMY_FACTION_COMMENT";
                             defaultValue = """OPF_F""";
                     };
-                    class taskMinDistance : Edit
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_taskMinDistance";
-                            displayName = "Minimum Task Distance (m)";
-                            tooltip = "Optional mission-wide minimum travel distance for auto-picked Short/Medium/Long generated task locations. Set to 0 to disable.";
-                            defaultValue = """0""";
-                            typeName = "NUMBER";
-                    };
-                    class vipPanicTimeout : Edit
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_vipPanicTimeout";
-                            displayName = "VIP Panic Timeout (s)";
-                            tooltip = "How long a panicked VIP can stay uncontrolled before the escort task fails.";
-                            defaultValue = """180""";
-                            typeName = "NUMBER";
-                    };
-                    // CUSTOM TASK CLASSES
-                    class CUSTOM_TASKS: ALiVE_ModuleSubTitle
-                    {
-                            property = QGVAR(__LINE__);
-                            displayName = " CUSTOM TASK CLASSES";
-                    };
+
+                    class SPACER_AUTOTASK_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_AUTOTASK_CUSTOM"; displayName = " "; };
                     class customStaticDataMode : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_customStaticDataMode";
@@ -275,135 +203,118 @@ class CfgVehicles {
                             expression   = "_this setVariable ['customAutoGeneratedTasks', _value];";
                             defaultValue = """""";
                     };
-                    class CIVIC_STATE: ALiVE_ModuleSubTitle
-                    {
-                            property = QGVAR(__LINE__);
-                            displayName = " CIVIC STATE PARAMETERS";
-                    };
+
+                    // ---- Civic state (Hearts & Minds) ----------------------------------
+                    class HDR_CIVIC_STATE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_CIVIC_STATE"; displayName = "CIVIC STATE (HEARTS & MINDS)"; };
                     class civicStateEnabled : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicStateEnabled";
-                            displayName = "Enable Civic-State COIN Model";
-                            tooltip = "Enable the multi-axis trust/security/services settlement model used by the fork's Hearts and Minds features.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_ENABLED";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_ENABLED_COMMENT";
                             defaultValue = """false""";
                             class Values
                             {
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
                             };
                     };
+
+                    class SPACER_CIVIC_MULT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_CIVIC_MULT"; displayName = " "; };
                     class civicTrustSuccessMultiplier : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicTrustSuccessMultiplier";
-                            displayName = "Trust Success Multiplier";
-                            tooltip = "Multiplier applied to trust gains from successful Hearts and Minds tasks.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_TRUST_SUCCESS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_TRUST_SUCCESS_COMMENT";
                             defaultValue = """1""";
                             typeName = "NUMBER";
                     };
                     class civicTrustFailureMultiplier : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicTrustFailureMultiplier";
-                            displayName = "Trust Failure Multiplier";
-                            tooltip = "Multiplier applied to trust losses from failed Hearts and Minds tasks or backlash.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_TRUST_FAILURE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_TRUST_FAILURE_COMMENT";
                             defaultValue = """1""";
                             typeName = "NUMBER";
                     };
                     class civicSecuritySuccessMultiplier : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicSecuritySuccessMultiplier";
-                            displayName = "Security Success Multiplier";
-                            tooltip = "Multiplier applied to security gains from successful Hearts and Minds tasks.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_SECURITY_SUCCESS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_SECURITY_SUCCESS_COMMENT";
                             defaultValue = """1""";
                             typeName = "NUMBER";
                     };
                     class civicSecurityFailureMultiplier : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicSecurityFailureMultiplier";
-                            displayName = "Security Failure Multiplier";
-                            tooltip = "Multiplier applied to security losses from failed Hearts and Minds tasks or backlash.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_SECURITY_FAILURE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_SECURITY_FAILURE_COMMENT";
                             defaultValue = """1""";
                             typeName = "NUMBER";
                     };
                     class civicServicesSuccessMultiplier : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicServicesSuccessMultiplier";
-                            displayName = "Services Success Multiplier";
-                            tooltip = "Multiplier applied to services gains from successful Hearts and Minds tasks.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_SERVICES_SUCCESS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_SERVICES_SUCCESS_COMMENT";
                             defaultValue = """1""";
                             typeName = "NUMBER";
                     };
                     class civicServicesFailureMultiplier : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicServicesFailureMultiplier";
-                            displayName = "Services Failure Multiplier";
-                            tooltip = "Multiplier applied to services losses from failed Hearts and Minds tasks or backlash.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_SERVICES_FAILURE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_SERVICES_FAILURE_COMMENT";
                             defaultValue = """1""";
                             typeName = "NUMBER";
                     };
+
+                    class SPACER_CIVIC_MISC : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_CIVIC_MISC"; displayName = " "; };
                     class civicCooldownMultiplier : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicCooldownMultiplier";
-                            displayName = "Civic Cooldown Multiplier";
-                            tooltip = "Multiplier applied to Hearts and Minds task cooldowns for the civic-state model.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_COOLDOWN";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_COOLDOWN_COMMENT";
                             defaultValue = """1""";
                             typeName = "NUMBER";
                     };
                     class civicDuplicateTaskPenalty : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicDuplicateTaskPenalty";
-                            displayName = "Duplicate Task Penalty";
-                            tooltip = "Penalty strength applied when the same Hearts and Minds task repeats in a settlement.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_DUP_PENALTY";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_DUP_PENALTY_COMMENT";
                             defaultValue = """0.15""";
                             typeName = "NUMBER";
                     };
                     class civicEnabledTaskFamilies : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicEnabledTaskFamilies";
-                            displayName = "Enabled Civic Task Families";
-                            tooltip = "Comma-separated list of Hearts and Minds task types allowed for civic-state generation. Use task type ids with no spaces.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_FAMILIES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_FAMILIES_COMMENT";
                             defaultValue = """AidDelivery,SupplyConvoy,MeetLocalLeader,VIPEscort,SecureCommunityEvent,RepairCriticalService,MedicalOutreach,CheckpointPartnership,InformantExfiltration,MarketReopening""";
                     };
                     class civicTaskWeights : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicTaskWeights";
-                            displayName = "Civic Task Weights";
-                            tooltip = "Comma-separated TaskType=Weight pairs used by civic-state task selection. Use no spaces.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_WEIGHTS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_WEIGHTS_COMMENT";
                             defaultValue = """AidDelivery=1,SupplyConvoy=1,MeetLocalLeader=1,VIPEscort=1,SecureCommunityEvent=1,RepairCriticalService=1,MedicalOutreach=1,CheckpointPartnership=1,InformantExfiltration=1,MarketReopening=1""";
                     };
                     class civicDebugIntel : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_civicDebugIntel";
-                            displayName = "Show Civic Debug Intel";
-                            tooltip = "Append civic-state trust/security/services summaries to generated Hearts and Minds task descriptions.";
+                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_DEBUG_INTEL";
+                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_DEBUG_INTEL_COMMENT";
                             defaultValue = """false""";
                             class Values
                             {
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
                             };
                     };
-                    // GROUP MANAGEMENT
-                    class GROUP_MANAGEMENT: ALiVE_ModuleSubTitle
-                    {
-                            property = QGVAR(__LINE__);
-                            displayName = " GROUP MANAGEMENT PARAMETERS";
-                    };
+
+                    // ---- Player role scoping -------------------------------------------
+                    class HDR_PLAYER_ROLE_SCOPING : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_PLAYER_ROLE_SCOPING"; displayName = "PLAYER ROLE SCOPING"; };
                     class gmLimit : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_gmLimit";
@@ -412,25 +323,12 @@ class CfgVehicles {
                             defaultValue = """SIDE""";
                             class Values
                             {
-                                    class SIDE
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_GM_LIMIT_SIDE";
-                                            value = "SIDE";
-
-                                    };
-                                    class FACTION
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_GM_LIMIT_FACTION";
-                                            value = "FACTION";
-                                    };
+                                    class SIDE    { name = "$STR_ALIVE_C2ISTAR_GM_LIMIT_SIDE";    value = "SIDE"; };
+                                    class FACTION { name = "$STR_ALIVE_C2ISTAR_GM_LIMIT_FACTION"; value = "FACTION"; };
                             };
                     };
-                    // OPERATIONS
-                    class OPERATIONS_TABLET: ALiVE_ModuleSubTitle
-                    {
-                            property = QGVAR(__LINE__);
-                            displayName = " OPERATIONS TABLET PARAMETERS";
-                    };
+
+                    class SPACER_ROLE_OPS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_OPS"; displayName = " "; };
                     class scomOpsLimit : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_scomOpsLimit";
@@ -439,21 +337,9 @@ class CfgVehicles {
                             defaultValue = """SIDE""";
                             class Values
                             {
-                                    class SIDE
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT_SIDE";
-                                            value = "SIDE";
-                                    };
-                                    class FACTION
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT_FACTION";
-                                            value = "FACTION";
-                                    };
-                                    class ALL
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT_ALL";
-                                            value = "ALL";
-                                    };
+                                    class SIDE    { name = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT_SIDE";    value = "SIDE"; };
+                                    class FACTION { name = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT_FACTION"; value = "FACTION"; };
+                                    class ALL     { name = "$STR_ALIVE_C2ISTAR_SCOM_OPS_LIMIT_ALL";     value = "ALL"; };
                             };
                     };
                     class scomOpsAllowSpectate : Combo
@@ -464,16 +350,8 @@ class CfgVehicles {
                             defaultValue = """true""";
                             class Values
                             {
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
                             };
                     };
                     class scomOpsAllowInstantJoin : Combo
@@ -484,16 +362,8 @@ class CfgVehicles {
                             defaultValue = """true""";
                             class Values
                             {
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
                             };
                     };
                     class scomOpsAllowImageIntelligence : Combo
@@ -504,24 +374,12 @@ class CfgVehicles {
                             defaultValue = """true""";
                             class Values
                             {
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
                             };
                     };
-                    // INTEL TABLET
-                    class INTEL_TABLET: ALiVE_ModuleSubTitle
-                    {
-                            property = QGVAR(__LINE__);
-                            displayName = " INTEL TABLET PARAMETERS";
-                    };
+
+                    class SPACER_ROLE_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_INTEL"; displayName = " "; };
                     class scomIntelLimit : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_scomIntelLimit";
@@ -530,29 +388,14 @@ class CfgVehicles {
                             defaultValue = """SIDE""";
                             class Values
                             {
-                                    class SIDE
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_SIDE";
-                                            value = "SIDE";
-                                    };
-                                    class FACTION
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_FACTION";
-                                            value = "FACTION";
-                                    };
-                                    class ALL
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_ALL";
-                                            value = "ALL";
-                                    };
+                                    class SIDE    { name = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_SIDE";    value = "SIDE"; };
+                                    class FACTION { name = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_FACTION"; value = "FACTION"; };
+                                    class ALL     { name = "$STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT_ALL";     value = "ALL"; };
                             };
                     };
-                    // INTEL
-                    class INTEL : ALiVE_ModuleSubTitle
-                    {
-                            property = QGVAR(__LINE__);
-                            displayName = " GLOBAL INTEL PARAMETERS";
-                    };
+
+                    // ---- Global intel ---------------------------------------------------
+                    class HDR_GLOBAL_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_GLOBAL_INTEL"; displayName = "GLOBAL INTEL"; };
                     class opcomIntelSides : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_opcomIntelSides";
@@ -569,16 +412,8 @@ class CfgVehicles {
                             defaultValue = """false""";
                             class Values
                             {
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No  { name = "No";  value = "false"; };
                             };
                     };
                     class mapIntelVisibility : Combo
@@ -589,26 +424,10 @@ class CfgVehicles {
                             defaultValue = """SIDE""";
                             class Values
                             {
-                                    class SIDE
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_SIDE";
-                                            value = "SIDE";
-                                    };
-                                    class FACTION
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_FACTION";
-                                            value = "FACTION";
-                                    };
-                                    class FRIENDLY
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_FRIENDLY";
-                                            value = "FRIENDLY";
-                                    };
-                                    class ALL
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_ALL";
-                                            value = "ALL";
-                                    };
+                                    class SIDE     { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_SIDE";     value = "SIDE"; };
+                                    class FACTION  { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_FACTION";  value = "FACTION"; };
+                                    class FRIENDLY { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_FRIENDLY"; value = "FRIENDLY"; };
+                                    class ALL      { name = "$STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_ALL";      value = "ALL"; };
                             };
                     };
                     class mapIntelRevealInstallations : Combo
@@ -619,16 +438,8 @@ class CfgVehicles {
                             defaultValue = """false""";
                             class Values
                             {
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
                             };
                     };
                     class displayDiarySpotrep : Combo
@@ -639,16 +450,8 @@ class CfgVehicles {
                             defaultValue = """false""";
                             class Values
                             {
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No  { name = "No";  value = "false"; };
                             };
                     };
                     class intelChance : Combo
@@ -659,26 +462,11 @@ class CfgVehicles {
                             defaultValue = """1""";
                             class Values
                             {
-                                    class LOW
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_LOW";
-                                            value = "0.1";
-                                    };
-                                    class MEDIUM
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_MEDIUM";
-                                            value = "0.2";
-                                    };
-                                    class HIGH
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_HIGH";
-                                            value = "0.4";
-                                    };
-                                    class TOTAL
-                                    {
-                                            name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_TOTAL";
-                                            value = "1";
-                                    };
+                                    class LOW       { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_LOW";       value = "0.1"; };
+                                    class MEDIUM    { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_MEDIUM";    value = "0.2"; };
+                                    class HIGH      { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_HIGH";      value = "0.4"; };
+                                    class VERY_HIGH { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_VERY_HIGH"; value = "0.8"; };
+                                    class TOTAL     { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_TOTAL";     value = "1"; };
                             };
                     };
                     class friendlyIntel : Combo
@@ -689,16 +477,8 @@ class CfgVehicles {
                             defaultValue = """false""";
                             class Values
                             {
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No  { name = "No";  value = "false"; };
                             };
                     };
                     class friendlyIntelRadius : Edit
@@ -707,6 +487,7 @@ class CfgVehicles {
                             displayName = "$STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_RADIUS";
                             tooltip = "$STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_RADIUS_COMMENT";
                             defaultValue = """2000""";
+                            typeName = "NUMBER";
                     };
                     class displayMilitarySectors : Combo
                     {
@@ -716,61 +497,8 @@ class CfgVehicles {
                             defaultValue = """false""";
                             class Values
                             {
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
-                            };
-                    };
-                    class displayTraceGrid : Combo
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_displayTraceGrid";
-                            displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_TRACEGRID";
-                            tooltip = "$STR_ALIVE_C2ISTAR_DISPLAY_TRACEGRID_COMMENT";
-                            defaultValue = """None""";
-                            class Values
-                            {
-                                    class None
-                                    {
-                                            name = "None";
-                                            value = "None";
-                                    };
-                                    class Solid
-                                    {
-                                            name = "Solid";
-                                            value = "Solid";
-                                    };
-                                    class Horizontal
-                                    {
-                                            name = "Horizontal";
-                                            value = "Horizontal";
-                                    };
-                                    class Vertical
-                                    {
-                                            name = "Vertical";
-                                            value = "Vertical";
-                                    };
-                                    class FDiagonal
-                                    {
-                                            name = "F-Diagonal";
-                                            value = "FDiagonal";
-                                    };
-                                    class BDiagonal
-                                    {
-                                            name = "B-Diagonal";
-                                            value = "BDiagonal";
-                                    };
-                                    class Cross
-                                    {
-                                            name = "Cross";
-                                            value = "Cross";
-                                    };
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No  { name = "No";  value = "false"; };
                             };
                     };
                     class displayPlayerSectors : Combo
@@ -781,16 +509,25 @@ class CfgVehicles {
                             defaultValue = """false""";
                             class Values
                             {
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No  { name = "No";  value = "false"; };
+                            };
+                    };
+                    class displayTraceGrid : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_displayTraceGrid";
+                            displayName = "$STR_ALIVE_C2ISTAR_DISPLAY_TRACEGRID";
+                            tooltip = "$STR_ALIVE_C2ISTAR_DISPLAY_TRACEGRID_COMMENT";
+                            defaultValue = """None""";
+                            class Values
+                            {
+                                    class None       { name = "None";       value = "None"; };
+                                    class Solid      { name = "Solid";      value = "Solid"; };
+                                    class Horizontal { name = "Horizontal"; value = "Horizontal"; };
+                                    class Vertical   { name = "Vertical";   value = "Vertical"; };
+                                    class FDiagonal  { name = "F-Diagonal"; value = "FDiagonal"; };
+                                    class BDiagonal  { name = "B-Diagonal"; value = "BDiagonal"; };
+                                    class Cross      { name = "Cross";      value = "Cross"; };
                             };
                     };
                     class runEvery: Edit
