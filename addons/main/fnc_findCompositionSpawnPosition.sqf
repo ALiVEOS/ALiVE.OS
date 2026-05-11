@@ -176,10 +176,18 @@ private _maxAttempts       = if (_mode == "roadblock") then { 12 } else {
 // call (callers usually feed the same _centerPos for one camp/HQ pick).
 // ------------------------------------------------------------------------
 private _airfield = [_centerPos, _radius + 200] call ALiVE_fnc_getAirfieldGeometry;
-_airfield params ["_runwaySegments", "_taxiwaySegments"];
+_airfield params ["_runwaySegments", "_taxiwaySegments", ["_airfieldZones", []]];
 
-if (_debug && {count _runwaySegments + count _taxiwaySegments > 0}) then {
-    diag_log format ["[ALiVE CompSpawn]   airfield: %1 runway seg, %2 taxiway seg", count _runwaySegments, count _taxiwaySegments];
+// Airfield-area exclusion: reject candidates inside ANY of the
+// nearestLocations "Airport" zones returned by getAirfieldGeometry's
+// Tier 4. Skipped in ato mode where AA / SAM compositions are placed
+// ON the airfield by design. The runway / taxiway segment check still
+// runs - even in ato mode we don't want gun crews on the runway
+// centerline.
+private _excludeAirfieldArea = !(_mode in ["ato"]);
+
+if (_debug && {count _runwaySegments + count _taxiwaySegments + count _airfieldZones > 0}) then {
+    diag_log format ["[ALiVE CompSpawn]   airfield: %1 runway seg, %2 taxiway seg, %3 airport zone(s)", count _runwaySegments, count _taxiwaySegments, count _airfieldZones];
 };
 
 // ------------------------------------------------------------------------
@@ -207,6 +215,12 @@ private _onAirfieldSurface = {
     // accounts for objects extending all the way out from the anchor.
     params ["_p", "_clearance"];
     private _hit = false;
+    // Build the segment list dynamically per call so the airfield-zone
+    // tier can be skipped in ato mode (where AA / SAM placement on the
+    // airfield is intentional). Runway + taxiway centerlines stay
+    // excluded in all modes.
+    private _segments = _runwaySegments + _taxiwaySegments;
+    if (_excludeAirfieldArea) then { _segments = _segments + _airfieldZones };
     {
         _x params ["_a", "_b", "_hw"];
         // Distance from point _p to line segment _a..b
@@ -215,17 +229,22 @@ private _onAirfieldSurface = {
         private _px = _p select 0; private _py = _p select 1;
         private _segDx = _bx - _ax; private _segDy = _by - _ay;
         private _segLen2 = _segDx * _segDx + _segDy * _segDy;
+        // Point-segment (start==end) handling: Tier 3 substring matches
+        // and Tier 4 airfield zones are degenerate. Without this fallback
+        // they'd be silently skipped (segLen2 == 0 fails the >0.001 gate).
+        private _cx = _ax;
+        private _cy = _ay;
         if (_segLen2 > 0.001) then {
             private _t = (((_px - _ax) * _segDx) + ((_py - _ay) * _segDy)) / _segLen2;
             _t = (_t max 0) min 1;
-            private _cx = _ax + _t * _segDx;
-            private _cy = _ay + _t * _segDy;
-            private _dx = _px - _cx;
-            private _dy = _py - _cy;
-            private _dist = sqrt (_dx * _dx + _dy * _dy);
-            if (_dist <= _hw + _clearance) exitWith { _hit = true };
+            _cx = _ax + _t * _segDx;
+            _cy = _ay + _t * _segDy;
         };
-    } forEach (_runwaySegments + _taxiwaySegments);
+        private _dx = _px - _cx;
+        private _dy = _py - _cy;
+        private _dist = sqrt (_dx * _dx + _dy * _dy);
+        if (_dist <= _hw + _clearance) exitWith { _hit = true };
+    } forEach _segments;
     _hit
 };
 
