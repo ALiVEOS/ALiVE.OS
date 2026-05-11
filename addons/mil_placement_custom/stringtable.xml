@@ -38,9 +38,15 @@
     <English>Objective size:</English>
     <Chinesesimp>目标大小</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_SIZE_COMMENT">
     <English>Radius (in metres) of the custom objective. Defines the area within which the picked composition, AA pods, supplies, and objective scenery objects are placed. Also used by OPCOM and intel for target evaluation.</English>
-    <Chinesesimp>自定义目标的大小。用于OPCOM和其他目标评估</Chinesesimp>
+    <Chinese>自訂目標的半徑（以公尺為單位）。定義了已選擇的組合、防空陣地、補給品和目標場景物件的放置區域。同時用於OPCOM和情報的目標評估。</Chinese>
+    <Chinesesimp>自定义目标的半径（以公尺为单位）。定义了已选择的组合、防空阵地、补给品和目标场景物件的放置区域。同时用于OPCOM和情报的目标评估。</Chinesesimp>
+    <Spanish>Radio (en metros) del objetivo personalizado. Define el área dentro de la cual se colocan la composición seleccionada, los emplazamientos AA, los suministros y los objetos decorativos del objetivo. También usado por OPCOM e inteligencia para la evaluación de objetivos.</Spanish>
+    <French>Rayon (en mètres) de l'objectif personnalisé. Définit la zone dans laquelle sont placés la composition sélectionnée, les pièces AA, les ravitaillements et les objets décoratifs de l'objectif. Également utilisé par OPCOM et le renseignement pour l'évaluation des objectifs.</French>
+    <Portuguese>Raio (em metros) do objetivo personalizado. Define a área dentro da qual são colocados a composição selecionada, as posições AA, os suprimentos e os objetos decorativos do objetivo. Também usado pelo OPCOM e inteligência para avaliação de objetivos.</Portuguese>
+    <Russian>Радиус (в метрах) пользовательской цели. Определяет область, внутри которой размещаются выбранная композиция, ПВО, припасы и декоративные объекты цели. Также используется OPCOM и разведкой для оценки целей.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_INFANTRY_COUNT">
     <English>Infantry Count:</English>

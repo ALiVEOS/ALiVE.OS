@@ -45,12 +45,12 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_OBJECTIVE_SIZE_COMMENT">
     <English>Radius (in metres) of the custom civilian objective. Defines the area within which the cluster's static objects are gathered and objective scenery objects are placed. Also used by OPCOM and intel for target evaluation.</English>
-    <Chinese>OPCOM 與本地部隊佈局所使用的自訂平民目標半徑。</Chinese>
-    <Chinesesimp>OPCOM 与本地部队布局所使用的自定义平民目标半径。</Chinesesimp>
-    <Spanish>Radio del objetivo civil personalizado usado por OPCOM y la colocación de fuerzas locales.</Spanish>
-    <French>Rayon de l'objectif civil personnalisé utilisé par OPCOM et le placement des forces locales.</French>
-    <Portuguese>Raio do objetivo civil personalizado usado pelo OPCOM e pela colocação de forças locais.</Portuguese>
-    <Russian>Радиус пользовательской гражданской цели, используемый OPCOM и локальным размещением сил.</Russian>
+    <Chinese>自訂平民目標的半徑（以公尺為單位）。定義了集群的靜態物件收集區域以及目標場景物件的放置區域。同時用於OPCOM和情報的目標評估。</Chinese>
+    <Chinesesimp>自定义平民目标的半径（以公尺为单位）。定义了集群的静态物件收集区域以及目标场景物件的放置区域。同时用于OPCOM和情报的目标评估。</Chinesesimp>
+    <Spanish>Radio (en metros) del objetivo civil personalizado. Define el área dentro de la cual se recopilan los objetos estáticos del clúster y se colocan los objetos decorativos del objetivo. También usado por OPCOM e inteligencia para la evaluación de objetivos.</Spanish>
+    <French>Rayon (en mètres) de l'objectif civil personnalisé. Définit la zone dans laquelle les objets statiques du cluster sont rassemblés et les objets décoratifs de l'objectif sont placés. Également utilisé par OPCOM et le renseignement pour l'évaluation des objectifs.</French>
+    <Portuguese>Raio (em metros) do objetivo civil personalizado. Define a área dentro da qual os objetos estáticos do cluster são reunidos e os objetos decorativos do objetivo são colocados. Também usado pelo OPCOM e inteligência para avaliação de objetivos.</Portuguese>
+    <Russian>Радиус (в метрах) пользовательской гражданской цели. Определяет область, внутри которой собираются статические объекты кластера и размещаются декоративные объекты цели. Также используется OPCOM и разведкой для оценки целей.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CPC_PRIORITY">
