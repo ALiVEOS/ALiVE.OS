@@ -50,4 +50,26 @@ _ymax = 0;
 
 _result = [_xmin + ((_xmax - _xmin) / 2), _ymin + ((_ymax - _ymin) / 2)];
 
+// Water-snap fallback. Bounding-box midpoint can land in water when
+// the cluster's nodes span a bay or peninsula neck (one settlement
+// north of the bay, another south - the midpoint sits on the water
+// between them). Downstream consumers (mil_placement guard
+// placement, cluster-anchored task spawns) treat _result as a
+// land-side reference and break when it's underwater. Snap to the
+// nearest node - nodes are static objects (buildings) so they're
+// land-guaranteed.
+if ((count _nodes > 0) && {surfaceIsWater _result}) then {
+    private _nearest = _nodes select 0;
+    private _nearestDist = (getPosATL _nearest) distance2D _result;
+    {
+        private _d = (getPosATL _x) distance2D _result;
+        if (_d < _nearestDist) then {
+            _nearest = _x;
+            _nearestDist = _d;
+        };
+    } forEach _nodes;
+    private _np = getPosATL _nearest;
+    _result = [_np select 0, _np select 1];
+};
+
 _result;
