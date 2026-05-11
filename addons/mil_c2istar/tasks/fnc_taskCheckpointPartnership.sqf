@@ -5,7 +5,7 @@ SCRIPT(taskCheckpointPartnership);
 Function: ALIVE_fnc_taskCheckpointPartnership
 
 Description:
-Secure a joint checkpoint with local partners and repel hostile disruption.
+Secure a local liaison meeting with partner personnel and repel hostile disruption.
 
 Author:
 Javen
@@ -39,10 +39,47 @@ private _activateAttendees = {
     {
         if !(isNull _x) then {
             _x setCaptive false;
+            _x enableAI "MOVE";
             _x enableAI "FSM";
             _x setBehaviour "CARELESS";
         };
     } forEach (([_taskParams, "vipTargets", []] call ALIVE_fnc_hashGet) + ([_taskParams, "crowdTargets", []] call ALIVE_fnc_hashGet));
+};
+
+private _showTaskUpdate = {
+    params ["_taskPlayers", "_title", "_message"];
+
+    {
+        private _player = [_x] call ALIVE_fnc_getPlayerByUID;
+        if !(isNull _player) then {
+            [_title, _message] remoteExec ["BIS_fnc_showSubtitle", _player];
+        };
+    } forEach _taskPlayers;
+};
+
+private _formatRemaining = {
+    params ["_finishAt"];
+
+    private _remaining = ceil ((_finishAt - serverTime) max 0);
+    if (_remaining >= 90) exitWith {format ["%1 minutes", ceil (_remaining / 60)]};
+
+    format ["%1 seconds", _remaining]
+};
+
+private _selectWaveGroup = {
+    params ["_enemyFaction", "_groupTypes"];
+
+    private _group = "FALSE";
+    {
+        if (_group == "FALSE") then {
+            private _candidate = [_x, _enemyFaction] call ALIVE_fnc_configGetRandomGroup;
+            if (!(_candidate == "FALSE") && {!(_candidate in ALiVE_PLACEMENT_GROUPBLACKLIST)}) then {
+                _group = _candidate;
+            };
+        };
+    } forEach _groupTypes;
+
+    _group
 };
 
 private _getEventLosses = {
@@ -65,13 +102,11 @@ private _spawnWaveProfiles = {
     private _groupCount = (_currentWave max 1) * (1 + floor (random 2));
 
     for "_i" from 0 to _groupCount - 1 do {
-        private _group = ["Infantry", _enemyFaction] call ALIVE_fnc_configGetRandomGroup;
+        private _group = [_enemyFaction, ["Infantry", "SpecOps", "Motorized", "Mechanized"]] call _selectWaveGroup;
         if !(_group == "FALSE") then {
             _groups pushBack _group;
         };
     };
-
-    _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;
 
     private _remotePositions = [_taskPosition, 600, 5, true] call ALIVE_fnc_getPositionDistancePlayers;
     private _remotePosition = if (count _remotePositions > 0) then {
@@ -85,30 +120,40 @@ private _spawnWaveProfiles = {
         private _profiles = [_x, _spawnPosition, random 360, true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
         if (count _profiles > 0) then {
             private _profileID = _profiles select 0 select 2 select 4;
-            private _waypointPosition = (_taskPosition getPos [random 40, random 360]);
-            private _profileWaypoint = [_waypointPosition, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
-            [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+            private _approachPosition = _taskPosition getPos [150, _taskPosition getDir _remotePosition];
+            private _attackPosition = (_taskPosition getPos [random 40, random 360]);
+            private _approachWaypoint = [_approachPosition, 100, "MOVE", "FULL", 50, [], "LINE", "YELLOW", "AWARE"] call ALIVE_fnc_createProfileWaypoint;
+            private _attackWaypoint = [_attackPosition, 100, "SAD", "FULL", 50, [], "LINE", "RED", "COMBAT"] call ALIVE_fnc_createProfileWaypoint;
+            [(_profiles select 0), "addWaypoint", _approachWaypoint] call ALIVE_fnc_profileEntity;
+            [(_profiles select 0), "addWaypoint", _attackWaypoint] call ALIVE_fnc_profileEntity;
             _profileIDs pushBack _profileID;
+        } else {
+            ["C2ISTAR - Task CheckpointPartnership - Failed to create profiles for group %1 faction %2 wave %3", _x, _enemyFaction, _currentWave] call ALIVE_fnc_dump;
         };
     } forEach _groups;
 
     if (random 1 > 0.6) then {
-        private _vehicleGroupTypes = ["Motorized", "Mechanized"];
-        private _vehicleGroupType = selectRandom _vehicleGroupTypes;
-        private _vehicleGroup = [_vehicleGroupType, _enemyFaction] call ALIVE_fnc_configGetRandomGroup;
+        private _vehicleGroup = [_enemyFaction, ["Motorized", "Mechanized", "Armored"]] call _selectWaveGroup;
         if !(_vehicleGroup == "FALSE") then {
-            if !(_vehicleGroup in ALiVE_PLACEMENT_GROUPBLACKLIST) then {
-                private _spawnPosition = (_remotePosition getPos [random 200, random 360]);
-                private _profiles = [_vehicleGroup, _spawnPosition, random 360, true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
-                if (count _profiles > 0) then {
-                    private _profileID = _profiles select 0 select 2 select 4;
-                    private _waypointPosition = (_taskPosition getPos [random 40, random 360]);
-                    private _profileWaypoint = [_waypointPosition, 100, "MOVE", "FULL", 100, [], "LINE", "NO CHANGE", "SAFE"] call ALIVE_fnc_createProfileWaypoint;
-                    [(_profiles select 0), "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-                    _profileIDs pushBack _profileID;
-                };
+            private _spawnPosition = (_remotePosition getPos [random 200, random 360]);
+            private _profiles = [_vehicleGroup, _spawnPosition, random 360, true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+            if (count _profiles > 0) then {
+                private _profileID = _profiles select 0 select 2 select 4;
+                private _approachPosition = _taskPosition getPos [150, _taskPosition getDir _remotePosition];
+                private _attackPosition = (_taskPosition getPos [random 40, random 360]);
+                private _approachWaypoint = [_approachPosition, 100, "MOVE", "FULL", 50, [], "LINE", "YELLOW", "AWARE"] call ALIVE_fnc_createProfileWaypoint;
+                private _attackWaypoint = [_attackPosition, 100, "SAD", "FULL", 50, [], "LINE", "RED", "COMBAT"] call ALIVE_fnc_createProfileWaypoint;
+                [(_profiles select 0), "addWaypoint", _approachWaypoint] call ALIVE_fnc_profileEntity;
+                [(_profiles select 0), "addWaypoint", _attackWaypoint] call ALIVE_fnc_profileEntity;
+                _profileIDs pushBack _profileID;
+            } else {
+                ["C2ISTAR - Task CheckpointPartnership - Failed to create vehicle profiles for group %1 faction %2 wave %3", _vehicleGroup, _enemyFaction, _currentWave] call ALIVE_fnc_dump;
             };
         };
+    };
+
+    if (_profileIDs isEqualTo []) then {
+        ["C2ISTAR - Task CheckpointPartnership - Hostile wave %1 created no profiles for faction %2 from groups %3", _currentWave, _enemyFaction, _groups] call ALIVE_fnc_dump;
     };
 
     _profileIDs
@@ -313,6 +358,8 @@ switch (_taskState) do {
         [_taskParams, "nextWaveAt", 0] call ALIVE_fnc_hashSet;
         [_taskParams, "entityProfileIDs", []] call ALIVE_fnc_hashSet;
         [_taskParams, "maxCivilianLosses", 1] call ALIVE_fnc_hashSet;
+        [_taskParams, "nextProgressAt", 0] call ALIVE_fnc_hashSet;
+        [_taskParams, "spawnFailureCount", 0] call ALIVE_fnc_hashSet;
 
         _result = [_tasks, _taskParams];
     };
@@ -365,7 +412,7 @@ switch (_taskState) do {
 
             [_params] call _cleanupObjects;
         } else {
-            [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "event location"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "liaison site"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
             if ([_taskPosition, _taskPlayers, 120] call ALIVE_fnc_taskHavePlayersReachedDestination) then {
                 [_params] call _activateAttendees;
@@ -373,6 +420,7 @@ switch (_taskState) do {
                 [_params, "holdUntil", serverTime + 540] call ALIVE_fnc_hashSet;
                 [_params, "forceCompleteAt", serverTime + 1140] call ALIVE_fnc_hashSet;
                 [_params, "nextWaveAt", serverTime + 30] call ALIVE_fnc_hashSet;
+                [_params, "nextProgressAt", serverTime + 60] call ALIVE_fnc_hashSet;
                 [_params, "nextTask", ([_params, "taskIDs"] call ALIVE_fnc_hashGet) select 2] call ALIVE_fnc_hashSet;
 
                 _task set [8, "Succeeded"];
@@ -380,6 +428,7 @@ switch (_taskState) do {
                 _result = _task;
 
                 [_taskPlayers, _taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                [_taskPlayers, "Liaison Update", "Meeting started. Hold the site for about 9 minutes. Hostile disruption may arrive shortly."] call _showTaskUpdate;
             };
         };
     };
@@ -406,6 +455,7 @@ switch (_taskState) do {
         private _lastWave = [_params, "lastWave", 0] call ALIVE_fnc_hashGet;
         private _totalWaves = [_params, "totalWaves", 2] call ALIVE_fnc_hashGet;
         private _nextWaveAt = [_params, "nextWaveAt", 0] call ALIVE_fnc_hashGet;
+        private _nextProgressAt = [_params, "nextProgressAt", 0] call ALIVE_fnc_hashGet;
         private _enemyFaction = [_params, "enemyFaction", ""] call ALIVE_fnc_hashGet;
         private _entityProfileIDs = [_params, "entityProfileIDs", []] call ALIVE_fnc_hashGet;
         private _losses = [_params] call _getEventLosses;
@@ -417,7 +467,7 @@ switch (_taskState) do {
             [_params, "lastState", "Secure"] call ALIVE_fnc_hashSet;
         };
 
-        [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "community event"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+        [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "liaison meeting"] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
         if (_vipLosses > 0 || {_crowdLosses > ([_params, "maxCivilianLosses", 1] call ALIVE_fnc_hashGet)}) then {
             [_params, "nextTask", ""] call ALIVE_fnc_hashSet;
@@ -441,9 +491,44 @@ switch (_taskState) do {
 
             [_params] call _cleanupObjects;
         } else {
+            if (_holdUntil > 0 && {serverTime >= _nextProgressAt}) then {
+                private _waveStatus = if !(_entityProfileIDs isEqualTo []) then {
+                    format ["Wave %1 of %2 is active.", _lastWave max 1, _totalWaves]
+                } else {
+                    if (_currentWave <= _totalWaves) then {
+                        format ["Wave %1 of %2 is pending.", _currentWave, _totalWaves]
+                    } else {
+                        "All disruption waves are handled."
+                    };
+                };
+                [_taskPlayers, "Liaison Update", format ["Hold the meeting site. %1 remaining. %2", [_holdUntil] call _formatRemaining, _waveStatus]] call _showTaskUpdate;
+                [_params, "nextProgressAt", serverTime + 120] call ALIVE_fnc_hashSet;
+            };
+
             if (_currentWave <= _totalWaves && {serverTime >= _nextWaveAt} && {_entityProfileIDs isEqualTo []}) then {
                 private _waveProfileIDs = [_taskPosition, _enemyFaction, _currentWave] call _spawnWaveProfiles;
                 if (_waveProfileIDs isEqualTo []) then {
+                    private _spawnFailureCount = ([_params, "spawnFailureCount", 0] call ALIVE_fnc_hashGet) + 1;
+                    [_params, "spawnFailureCount", _spawnFailureCount] call ALIVE_fnc_hashSet;
+
+                    if (_spawnFailureCount == 1) then {
+                        [_taskPlayers, "Liaison Update", "No hostile contact has formed yet. Continue holding the meeting site."] call _showTaskUpdate;
+                    };
+
+                    if (_spawnFailureCount >= _totalWaves) then {
+                        private _wrapUpAt = serverTime + 60;
+                        if (_holdUntil <= 0 || {_holdUntil > _wrapUpAt}) then {
+                            _holdUntil = _wrapUpAt;
+                            _forceCompleteAt = _wrapUpAt + 120;
+                            [_params, "holdUntil", _holdUntil] call ALIVE_fnc_hashSet;
+                            [_params, "forceCompleteAt", _forceCompleteAt] call ALIVE_fnc_hashSet;
+                            [_params, "nextProgressAt", serverTime] call ALIVE_fnc_hashSet;
+                        };
+                        if (_spawnFailureCount == _totalWaves) then {
+                            [_taskPlayers, "Liaison Update", "No hostile response materialized. Hold the perimeter while the meeting wraps up."] call _showTaskUpdate;
+                        };
+                    };
+
                     if (_currentWave < _totalWaves) then {
                         [_params, "currentWave", _currentWave + 1] call ALIVE_fnc_hashSet;
                         [_params, "nextWaveAt", serverTime + 1] call ALIVE_fnc_hashSet;
@@ -453,9 +538,11 @@ switch (_taskState) do {
                     };
                 } else {
                     [_params, "entityProfileIDs", _waveProfileIDs] call ALIVE_fnc_hashSet;
+                    [_params, "spawnFailureCount", 0] call ALIVE_fnc_hashSet;
                     [_params, "lastWave", _currentWave] call ALIVE_fnc_hashSet;
                     _entityProfileIDs = _waveProfileIDs;
                     _lastWave = _currentWave;
+                    [_taskPlayers, "Liaison Update", format ["Hostile disruption wave %1 of %2 is moving on the liaison site.", _currentWave, _totalWaves]] call _showTaskUpdate;
                 };
             };
 
@@ -464,13 +551,16 @@ switch (_taskState) do {
                 private _allDestroyed = [_entitiesState, "allDestroyed"] call ALIVE_fnc_hashGet;
 
                 if (_allDestroyed) then {
+                    private _completedWave = _currentWave;
                     [_params, "entityProfileIDs", []] call ALIVE_fnc_hashSet;
                     if (_currentWave < _totalWaves) then {
                         [_params, "currentWave", _currentWave + 1] call ALIVE_fnc_hashSet;
                         [_params, "nextWaveAt", serverTime + 75] call ALIVE_fnc_hashSet;
+                        [_taskPlayers, "Liaison Update", format ["Wave %1 of %2 repelled. Next disruption expected shortly.", _completedWave, _totalWaves]] call _showTaskUpdate;
                     } else {
                         [_params, "currentWave", _totalWaves + 1] call ALIVE_fnc_hashSet;
                         [_params, "nextWaveAt", 0] call ALIVE_fnc_hashSet;
+                        [_taskPlayers, "Liaison Update", "Final hostile wave repelled. Hold until the meeting concludes."] call _showTaskUpdate;
                     };
                 };
             };

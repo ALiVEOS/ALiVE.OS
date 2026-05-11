@@ -893,7 +893,7 @@
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Local Liaison in %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Protect a local liaison meeting in %1 and keep partner personnel alive while you hold the site."] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Protect a local liaison meeting in %1 and keep partner personnel alive through the timed security hold."] call ALIVE_fnc_hashSet;
 	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
@@ -905,7 +905,7 @@
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Secure liaison in %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Maintain security at the liaison meeting in %1, repel hostile disruption, and keep the partner team alive."] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Maintain security at the liaison meeting in %1 for roughly nine minutes, repel hostile disruption, and keep the partner team alive."] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","Partner personnel are on station in %1. Secure the meeting and protect the local team, Over."],["PLAYERS","Roger, meeting security is established."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","Liaison meeting in %1 concluded successfully, Over."],["HQ","Roger. That should improve local confidence in the security forces, Out."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_failed",[["HQ","The liaison meeting in %1 collapsed under hostile pressure. Break contact and report, Over."],["PLAYERS","Roger, meeting lost."]]] call ALIVE_fnc_hashSet;
