@@ -82,40 +82,74 @@ if (_debug) then {
     ];
 };
 
-// Spawn new garrison. Profile-system path preferred; real-AI fallback
-// when profile handler isn't loaded.
-if !(isnil "ALiVE_ProfileHandler") then {
-    private _group = ["Infantry", _newFaction] call ALIVE_fnc_configGetRandomGroup;
-    if (count _group > 0) then {
-        private _guards = [_group, _pos, random 360, true, _newFaction, true]
-            call ALIVE_fnc_createProfilesFromGroupConfig;
-        {
-            if (([_x, "type"] call ALiVE_fnc_HashGet) == "entity") then {
-                [
-                    _x,
-                    "setActiveCommand",
-                    ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 1]]
-                ] call ALIVE_fnc_profileEntity;
-                [_x, "busy", true] call ALIVE_fnc_hashSet;
+// Spawn new garrison off-camera. Issue #883 reported "friendly AI
+// teleporting" at cleared roadblocks - the player who just attacked
+// the position would see attacker-faction units materialise next to
+// them the moment the contested-hold timer flipped ownership. Deferred
+// spawn waits until no player is within 300m of the anchor (or a
+// safety timeout fires) before instantiating the profile. The capture
+// state has already flipped on the anchor state vars above, so the
+// debug marker / watchdog reflect the new ownership immediately - only
+// the visible unit spawn is delayed.
+//
+// Bail conditions:
+//   - anchor deleted (mission cleanup)
+//   - currentFaction changed (faction flipped again under us before
+//     our garrison materialised - the new owner will spawn its own)
+[_anchor, _newFaction, _pos, _newSide, _debug] spawn {
+    params ["_a", "_f", "_p", "_s", "_d"];
+    private _safetyTimeout = diag_tickTime + 600;  // 10 min cap
+
+    // Short-circuit `||` with code blocks: stops at the first true and
+    // returns it as the waitUntil result. `exitWith` inside an if-then
+    // block here would only exit that if-scope, NOT the waitUntil
+    // (per reference_sqf_exitwith_scope.md) - so flow would continue
+    // to the getVariable call on a null anchor and error.
+    waitUntil {
+        sleep 5;
+        isNull _a ||
+        {(_a getVariable ["ALiVE_RB_currentFaction", ""]) != _f} ||
+        {diag_tickTime > _safetyTimeout} ||
+        {({(_x distance2D _p) < 300} count allPlayers) == 0}
+    };
+
+    if (isNull _a) exitWith {
+        if (_d) then { diag_log "ALIVE_RB_recapture: anchor deleted before deferred spawn" };
+    };
+    if ((_a getVariable ["ALiVE_RB_currentFaction", ""]) != _f) exitWith {
+        if (_d) then { diag_log format ["ALIVE_RB_recapture: %1 ownership flipped before deferred spawn, abandoning", _f] };
+    };
+
+    if !(isnil "ALiVE_ProfileHandler") then {
+        private _group = ["Infantry", _f] call ALIVE_fnc_configGetRandomGroup;
+        if (count _group > 0) then {
+            private _guards = [_group, _p, random 360, true, _f, true]
+                call ALIVE_fnc_createProfilesFromGroupConfig;
+            {
+                if (([_x, "type"] call ALiVE_fnc_HashGet) == "entity") then {
+                    [
+                        _x,
+                        "setActiveCommand",
+                        ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 1]]
+                    ] call ALIVE_fnc_profileEntity;
+                    [_x, "busy", true] call ALIVE_fnc_hashSet;
+                };
+            } forEach _guards;
+            if (_d) then {
+                diag_log format ["ALIVE_RB_recapture: deferred profile spawn %1 guards for %2", count _guards, _f];
             };
-        } forEach _guards;
-        if (_debug) then {
-            diag_log format ["ALIVE_RB_recapture: profile-system spawned %1 guards for %2", count _guards, _newFaction];
+        } else {
+            if (_d) then {
+                diag_log format ["ALIVE_RB_recapture: no Infantry group config for faction %1, skipping garrison", _f];
+            };
         };
     } else {
-        if (_debug) then {
-            diag_log format ["ALIVE_RB_recapture: no Infantry group config for faction %1, skipping garrison", _newFaction];
-        };
-    };
-} else {
-    [_pos, _newSide, _newFaction] spawn {
-        params ["_p", "_s", "_f"];
         private _blockers = [_p, _s, "Infantry", _f] call ALiVE_fnc_randomGroupByType;
         sleep 1;
         [_blockers, _p, 100, true, false, 1, nil, 50] call ALIVE_fnc_groupGarrison;
-    };
-    if (_debug) then {
-        diag_log format ["ALIVE_RB_recapture: real-AI path spawned for faction %1", _newFaction];
+        if (_d) then {
+            diag_log format ["ALIVE_RB_recapture: deferred real-AI spawn for faction %1", _f];
+        };
     };
 };
 
