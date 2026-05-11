@@ -39,6 +39,7 @@ if(isServer) then {
     MOD(SYS_PROFILE) = _logic;
 
     private _debug = (_logic getVariable ["debug","false"]) == "true";
+    private _debugVirtualisedProfiles = (_logic getVariable ["debugVirtualisedProfiles","false"]) == "true";
     private _persistent = (_logic getVariable ["persistent","false"]) == "true";
     private _syncMode = _logic getVariable ["syncronised","ADD"];
     private _syncedUnits = synchronizedObjects _logic;
@@ -90,8 +91,15 @@ if(isServer) then {
 
     PublicVariable QMOD(SYS_PROFILE);
 
+    // #863 - publish the admin/Zeus debug-map global from the Eden
+    // attribute. Live console toggle still works:
+    //   ALiVE_debugVirtualisedProfiles = true; publicVariable "ALiVE_debugVirtualisedProfiles";
+    // The PFH registered in XEH_postInit reads this global each tick.
+    ALiVE_debugVirtualisedProfiles = _debugVirtualisedProfiles;
+    publicVariable "ALiVE_debugVirtualisedProfiles";
+
     [ALIVE_profileSystem,"start"] call ALIVE_fnc_profileSystem;
-    
+
 };
 
 if (isDedicated || (isServer)) then {

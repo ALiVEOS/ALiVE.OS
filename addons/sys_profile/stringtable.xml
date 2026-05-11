@@ -15,7 +15,7 @@
     <Chinesesimp>启用调试:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_COMMENT">
-    <English>Enables Module Debug</English>
+    <English>Enables the module's GLOBAL debug-marker stream: every registered profile gets a map marker visible to ALL players in the mission, with side colour and a NATO-style type icon. Useful for development / single-player testing. For an admin-only / Zeus-only equivalent (markers invisible to regular players), use the separate "Debug Virtualised Profiles" attribute below. The two systems overlap when both are on - turn this OFF if you only want the admin-only view.</English>
     <Chinesesimp>启用模块调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT">
@@ -252,5 +252,11 @@
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_MID_COMBAT_EXTENSION_COMMENT">
     <English>If a profile within its Post-Death linger window is still in combat when the grace would expire, extend the linger by this many seconds. Repeats while combat continues. Default 60.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_VIRT">
+    <English>Debug Virtualised Profiles:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_VIRT_COMMENT">
+    <English>When ON, periodic ADMIN / ZEUS-ONLY map markers show every virtualised + active profile's position with side colour, type icon, and a rich label (active/virtualised state, vehicle vs entity, side, class, waypoint count). Non-admin / non-Zeus players see nothing. Off in production - costs nothing when disabled. 5s refresh. NOTE: this is separate from the "Enable Debug" attribute above, which emits GLOBAL markers visible to all players. If both are on, the two marker sets overlap; turn "Enable Debug" OFF if you only want the admin-only view. Toggle live with: ALiVE_debugVirtualisedProfiles = true; publicVariable "ALiVE_debugVirtualisedProfiles";</English>
 </Key>
 </Container></Package></Project>

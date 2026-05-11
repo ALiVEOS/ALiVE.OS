@@ -24,6 +24,7 @@ class CfgVehicles {
                     // ---- General --------------------------------------------------------
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_GENERAL"; displayName = "GENERAL"; };
                     class debug : Combo { property = "ALiVE_sys_profile_debug"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_DEBUG"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_DEBUG_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
+                    class debugVirtualisedProfiles : Combo { property = "ALiVE_sys_profile_debugVirtualisedProfiles"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_DEBUG_VIRT"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_DEBUG_VIRT_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                     class persistent : Combo { property = "ALiVE_sys_profile_persistent"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_PERSISTENT"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PERSISTENT_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; }; };
                     class syncronised : Combo
                     {
