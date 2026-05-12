@@ -71,6 +71,69 @@ if (_overrideText != "") then {
 };
 
 // ------------------------------------------------------------------------
+// Dependency-driven preservation: the load handler hides families
+// whose dependencies aren't currently met (civic-only when
+// civicState=OFF; insurgency tasks when no asymmetric OPCOM is
+// placed). Without the preservation block below, saving in that
+// state would WIPE any existing dependency-gated entries on the
+// logic - the user would have to re-tick them after the dependency
+// flips. Re-merge those entries from the existing saved value
+// before serialising.
+private _civicOnlyTasks = ["MedicalOutreach", "CheckpointPartnership", "InformantExfiltration", "MarketReopening"];
+private _insurgencyTasks = ["InsurgencyDestroyAssets", "InsurgencyPatrol"];
+private _selected = get3DENSelected "logic";
+private _logicObj = if (count _selected > 0) then { _selected select 0 } else { objNull };
+
+// Trim helper for entries pulled from the saved CSV.
+private _trim = {
+    params ["_t"];
+    while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+    while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do { _t = _t select [0, count _t - 1] };
+    _t
+};
+
+if (!isNull _logicObj) then {
+    private _csEnabledVar = _logicObj getVariable ["civicStateEnabled", false];
+    private _csEnabled = switch (typeName _csEnabledVar) do {
+        case "BOOL":   { _csEnabledVar };
+        case "STRING": { (toLower _csEnabledVar) == "true" };
+        default        { false };
+    };
+
+    // Detect asymmetric OPCOM presence (same idiom as load handler +
+    // fnc_edenValidateOpcomFactions). all3DENEntities returns mixed
+    // buckets; only Object-typed module entries matter.
+    private _hasAsymmetricOpcom = false;
+    {
+        {
+            if (_x isEqualType objNull && {!isNull _x} && {(typeOf _x) == "ALiVE_mil_OPCOM"}) then {
+                private _ct = _x getVariable ["controltype", ""];
+                if (typeName _ct == "STRING" && {(toLower _ct) == "asymmetric"}) exitWith {
+                    _hasAsymmetricOpcom = true;
+                };
+            };
+        } forEach _x;
+        if (_hasAsymmetricOpcom) exitWith {};
+    } forEach all3DENEntities;
+
+    private _hiddenTasks = [];
+    if (!_csEnabled) then { _hiddenTasks append _civicOnlyTasks; };
+    if (!_hasAsymmetricOpcom) then { _hiddenTasks append _insurgencyTasks; };
+
+    if (count _hiddenTasks > 0) then {
+        private _existingValue = _logicObj getVariable [_varName, ""];
+        if (typeName _existingValue == "STRING" && {_existingValue != ""}) then {
+            {
+                private _t = [_x] call _trim;
+                if (_t != "" && {_t in _hiddenTasks}) then {
+                    _merged pushBackUnique _t;
+                };
+            } forEach ([_existingValue, ","] call CBA_fnc_split);
+        };
+    };
+};
+
+// ------------------------------------------------------------------------
 // Sort for deterministic serialisation across re-saves.
 // ------------------------------------------------------------------------
 _merged sort true;
@@ -78,9 +141,8 @@ private _value = _merged joinString ",";
 
 _display setVariable ["value", _value];
 
-private _selected = get3DENSelected "logic";
-if (count _selected > 0) then {
-    (_selected select 0) setVariable [_varName, _value];
+if (!isNull _logicObj) then {
+    _logicObj setVariable [_varName, _value];
 };
 
 diag_log format ["ALIVE TaskTypeChoice SAVE: varName=%1 value='%2'", _varName, _value];

@@ -320,7 +320,7 @@
     <English>Enable Civic-State COIN Model:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_ENABLED_COMMENT">
-    <English>Enables the multi-axis trust / security / services settlement model used by the fork's Hearts and Minds task family. When off, civic tasks generate with simpler success / failure scoring and no per-settlement state tracking.</English>
+    <English>Enables the multi-axis trust / security / services settlement model behind Hearts and Minds tasking. When ON: full 10-task family available (adds Medical Outreach, Checkpoint Partnership, Informant Exfiltration, Market Reopening on top of the legacy 6); per-cluster support state tracked across success / failure / retaliation events; cluster picker prefers settlements with rising insurgent pressure. When OFF: only the 6 legacy families spawn (Aid Delivery, Supply Convoy, Meet Local Leader, VIP Escort, Secure Community Event, Repair Critical Service); simpler success / failure scoring; cluster picker sorts purely by distance. Toggle this BEFORE picking entries in the multi-selects below - the listboxes filter their visible options based on this setting (re-open the attribute panel after toggling to refresh).</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_TRUST_SUCCESS">
     <English>Trust Success Multiplier:</English>
