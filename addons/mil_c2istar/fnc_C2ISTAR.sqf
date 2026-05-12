@@ -710,6 +710,16 @@ switch(_operation) do {
 
         _debug = [_logic, "debug"] call MAINCLASS;
 
+        // Singleton: ALIVE_MIL_C2ISTAR is read by fnc_taskRequest /
+        // fnc_taskHandler / fnc_playerOrders / sys_spotrep and OPCOM's
+        // spotrep block. Multiple C2ISTAR modules in one mission overwrite
+        // each other through this global, so the last-initialised module
+        // silently wins. Warn the mission-maker via RPT so the symptom
+        // (only one C2ISTAR's settings taking effect) is diagnosable
+        // without source diving.
+        if (!isNil "ALIVE_MIL_C2ISTAR" && {!isNull ALIVE_MIL_C2ISTAR} && {ALIVE_MIL_C2ISTAR != _logic}) then {
+            ["ALiVE_fnc_C2ISTAR WARNING: multiple ALiVE_mil_C2ISTAR modules detected. The singleton global ALIVE_MIL_C2ISTAR is being overwritten - only the last-initialised module's configuration will be active. Place a single C2ISTAR module per mission."] call ALiVE_fnc_DumpR;
+        };
         ALIVE_MIL_C2ISTAR = _logic;
 
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;

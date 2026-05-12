@@ -395,7 +395,13 @@ switch(_operation) do {
                             {
                                 if (typeof _x == "ALiVE_mil_C2ISTAR") then {
                                     waituntil {_x getVariable ["startupComplete",false]};
-                                    private _opcomIntelSides = [ALiVE_mil_C2ISTAR,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
+                                    // Read opcomIntelSides from the SPECIFIC C2ISTAR
+                                    // that's synced to this OPCOM (the foreach
+                                    // iteration variable), not the global ALIVE_MIL_C2ISTAR
+                                    // singleton - the global tracks only the
+                                    // last-initialised module and would skip per-
+                                    // sync configuration in a multi-C2ISTAR mission.
+                                    private _opcomIntelSides = [_x,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
                                     if (_side in _opcomIntelSides) then {
                                         private _G2 = [nil,"create", [_handler]] call ALiVE_fnc_G2;
                                         [_G2,"start"] call ALiVE_fnc_G2;
