@@ -315,11 +315,14 @@ class CfgVehicles {
                             defaultValue = """0.15""";
                             typeName = "NUMBER";
                     };
-                    class civicEnabledTaskFamilies : Edit
+                    class civicEnabledTaskFamilies
                     {
-                            property = "ALiVE_MIL_C2ISTAR_civicEnabledTaskFamilies";
-                            displayName = "$STR_ALIVE_C2ISTAR_CIVIC_FAMILIES";
-                            tooltip = "$STR_ALIVE_C2ISTAR_CIVIC_FAMILIES_COMMENT";
+                            property     = "ALiVE_MIL_C2ISTAR_civicEnabledTaskFamilies";
+                            displayName  = "$STR_ALIVE_C2ISTAR_CIVIC_FAMILIES";
+                            tooltip      = "$STR_ALIVE_C2ISTAR_CIVIC_FAMILIES_COMMENT";
+                            control      = "ALiVE_TaskTypeChoice_Civic";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['civicEnabledTaskFamilies', _value];";
                             defaultValue = """AidDelivery,SupplyConvoy,MeetLocalLeader,VIPEscort,SecureCommunityEvent,RepairCriticalService,MedicalOutreach,CheckpointPartnership,InformantExfiltration,MarketReopening""";
                     };
                     class civicTaskWeights : Edit

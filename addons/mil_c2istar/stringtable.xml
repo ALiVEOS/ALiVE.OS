@@ -365,7 +365,7 @@
     <English>Enabled Civic Task Families:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_FAMILIES_COMMENT">
-    <English>Comma-separated list of Hearts and Minds task type ids allowed for civic-state generation. Use task type ids exactly as defined in the task registry, with no spaces. Long string — edit in an external editor and paste.</English>
+    <English>Pick one or more Hearts-and-Minds task families that civic-state generation may produce. Untick a family to exclude it from the generation pool. The Override field accepts free-text mod-defined task ids the listbox doesn't surface.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_WEIGHTS">
     <English>Civic Task Weights:</English>
