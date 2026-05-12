@@ -64,6 +64,32 @@ class ALiVE_CivilianInteraction {
 			h = 0.0559999 * safezoneH;
 			sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 2)";
 		};
+		// Perceived hostility readout, populated on dialog open by
+		// ALiVE_fnc_civInteract case "loadData". Hidden when the
+		// civHostilityIndicator module attribute is OFF (default);
+		// shows a coloured bucket label or numeric percentage when
+		// DESCRIPTIVE / NUMERIC. Sits to the right of CivName on
+		// the same row so disposition reads alongside identity.
+		//
+		// Geometry: x=0.530, w=0.145 keeps the right edge at 0.675,
+		// leaving a 0.007-safezoneW margin to the dialog body's
+		// right edge at 0.682 (Background x=0.2375 + w=0.4448).
+		// At 1.5x sizeEx the longest possible NUMERIC string
+		// (e.g. "Defiant (~79%)" ~14 chars) needs roughly 0.098
+		// safezoneW, so the 0.145 width has comfortable padding
+		// for any label / numeric combination without clipping.
+		class CivInteract_HostilityLabel: CivInteract_RscText {
+			idc = 9247;
+
+			text = "";
+			x = 0.530 * safezoneW + safezoneX;
+			y = 0.258 * safezoneH + safezoneY;
+			w = 0.145 * safezoneW;
+			h = 0.0559999 * safezoneH;
+			style = 1;  // ST_RIGHT
+			sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1.5)";
+			colorActive[] = {0,0,0,0};
+		};
 		class CivInteract_Pic: RscPicture
 		{
 			idc = 1200;
@@ -96,6 +122,113 @@ class ALiVE_CivilianInteraction {
 		};
 		
 		
+		// --- AdvCiv command row (added in Phase 5b/5c of amb_civ_placement arc).
+		//     Mirrors the verb set from fnc_advciv_orderMenu into the dialog
+		//     so a single "Talk to Civilian" entry point can drive AdvCiv
+		//     commands without a separate scroll-wheel sprawl. Each action
+		//     closes the dialog first so the command feedback happens at
+		//     the right moment. "Negotiate" is dialog-gated visually but
+		//     the handler case does its own role check; a visually-disabled
+		//     state is not attempted here to keep the hpp simple.
+
+		class CivInteract_Follow: CivInteract_RscButton {
+			idc = 92320;
+			action = "[ALiVE_civInteractHandler,'Follow'] call ALiVE_fnc_civInteract";
+			text = "Follow";
+            x = 0.2375 * safezoneW + safezoneX;
+            y = 0.7916 * safezoneH + safezoneY;
+            w = 0.0525 * safezoneW;
+            h = 0.028 * safezoneH;
+			colorBackground[] = {0,0,0,0.5};
+			colorActive[] = {0,0,0,0.5};
+		};
+
+		class CivInteract_Stay: CivInteract_RscButton {
+			idc = 92321;
+			action = "[ALiVE_civInteractHandler,'StayHere'] call ALiVE_fnc_civInteract";
+			text = "Stay";
+            x = 0.2930 * safezoneW + safezoneX;
+            y = 0.7916 * safezoneH + safezoneY;
+            w = 0.0525 * safezoneW;
+            h = 0.028 * safezoneH;
+			colorBackground[] = {0,0,0,0.5};
+			colorActive[] = {0,0,0,0.5};
+		};
+
+		class CivInteract_GoHome: CivInteract_RscButton {
+			idc = 92322;
+			action = "[ALiVE_civInteractHandler,'GoHome'] call ALiVE_fnc_civInteract";
+			text = "Go Home";
+            x = 0.3485 * safezoneW + safezoneX;
+            y = 0.7916 * safezoneH + safezoneY;
+            w = 0.0525 * safezoneW;
+            h = 0.028 * safezoneH;
+			colorBackground[] = {0,0,0,0.5};
+			colorActive[] = {0,0,0,0.5};
+		};
+
+		class CivInteract_HandsUp: CivInteract_RscButton {
+			idc = 92323;
+			action = "[ALiVE_civInteractHandler,'HandsUp'] call ALiVE_fnc_civInteract";
+			text = "Hands Up";
+            x = 0.4040 * safezoneW + safezoneX;
+            y = 0.7916 * safezoneH + safezoneY;
+            w = 0.0525 * safezoneW;
+            h = 0.028 * safezoneH;
+			colorBackground[] = {0,0,0,0.5};
+			colorActive[] = {0,0,0,0.5};
+		};
+
+		class CivInteract_CalmDown: CivInteract_RscButton {
+			idc = 92324;
+			action = "[ALiVE_civInteractHandler,'CalmDown'] call ALiVE_fnc_civInteract";
+			text = "Calm Down";
+            x = 0.4595 * safezoneW + safezoneX;
+            y = 0.7916 * safezoneH + safezoneY;
+            w = 0.0525 * safezoneW;
+            h = 0.028 * safezoneH;
+			colorBackground[] = {0,0,0,0.5};
+			colorActive[] = {0,0,0,0.5};
+		};
+
+		class CivInteract_Kneel: CivInteract_RscButton {
+			idc = 92325;
+			action = "[ALiVE_civInteractHandler,'Kneel'] call ALiVE_fnc_civInteract";
+			text = "Kneel";
+            x = 0.5150 * safezoneW + safezoneX;
+            y = 0.7916 * safezoneH + safezoneY;
+            w = 0.0525 * safezoneW;
+            h = 0.028 * safezoneH;
+			colorBackground[] = {0,0,0,0.5};
+			colorActive[] = {0,0,0,0.5};
+		};
+
+		class CivInteract_GetIn: CivInteract_RscButton {
+			idc = 92326;
+			action = "[ALiVE_civInteractHandler,'GetInVehicle'] call ALiVE_fnc_civInteract";
+			text = "Get In";
+            x = 0.5705 * safezoneW + safezoneX;
+            y = 0.7916 * safezoneH + safezoneY;
+            w = 0.0525 * safezoneW;
+            h = 0.028 * safezoneH;
+			colorBackground[] = {0,0,0,0.5};
+			colorActive[] = {0,0,0,0.5};
+		};
+
+		class CivInteract_Negotiate: CivInteract_RscButton {
+			idc = 92327;
+			action = "[ALiVE_civInteractHandler,'Negotiate'] call ALiVE_fnc_civInteract";
+			text = "Negotiate";
+            x = 0.6260 * safezoneW + safezoneX;
+            y = 0.7916 * safezoneH + safezoneY;
+            w = 0.0525 * safezoneW;
+            h = 0.028 * safezoneH;
+			colorBackground[] = {0,0,0,0.5};
+			colorActive[] = {0,0,0,0.5};
+		};
+
+		// --- End AdvCiv command row ---
+
 		class CivInteract_Stop: CivInteract_RscButton {
 			idc = 92310;
 			action = "[ALiVE_civInteractHandler,'Stop'] call ALiVE_fnc_civInteract";
@@ -168,6 +301,24 @@ class ALiVE_CivilianInteraction {
 			text = "Give Water";
 			x = 0.17 * safezoneW + safezoneX;
 			y = 0.687 * safezoneH + safezoneY;
+			w = 0.065625 * safezoneW;
+			h = 0.0280001 * safezoneH;
+			colorActive[] = {0,0,0,0.5};
+		};
+
+		// Gather Intel. One-shot per civilian; ctrlShow is gated by the
+		// intelGathered variable in fnc_civInteract's case "openMenu", so
+		// the button disappears after the first attempt against that civ.
+		// Outcome is chance-gated server-side in case "GatherIntel" via
+		// ALiVE_amb_civ_population_IntelGatherChance.
+		class CivInteract_GatherIntel: CivInteract_RscButton
+		{
+			idc = 92316;
+			action = "[ALiVE_civInteractHandler,'GatherIntel'] call ALiVE_fnc_civInteract";
+
+			text = "$STR_ALIVE_CIV_INTERACT_ACTIONS_GATHERINTEL";
+			x = 0.17 * safezoneW + safezoneX;
+			y = 0.731 * safezoneH + safezoneY;
 			w = 0.065625 * safezoneW;
 			h = 0.0280001 * safezoneH;
 			colorActive[] = {0,0,0,0.5};

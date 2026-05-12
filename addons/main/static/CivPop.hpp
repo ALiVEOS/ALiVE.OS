@@ -39,18 +39,63 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 [ALIVE_civilianWeapons, "gm_fc_ge_civ", [["gm_p210_blk","gm_magazineWell_9x19mm_p210"],["gm_p1_blk","gm_magazineWell_9x19mm_p1"],["gm_pm63_blk","gm_magazineWell_9x18mm_pm63"],["gm_hk512_ris_wud","gm_magazineWell_12ga_7rnd"],["gm_mp5a2_blk","gm_magazineWell_9x19mm_mp5"],["gm_mp2a1_blk","gm_magazineWell_9x19mm_mp2"]]] call ALIVE_fnc_hashSet;
 
 
-// Civ Pop Interaction
+// Civ Pop Interaction — items recognised as "water"/"ration" for
+// civilian humanitarian aid interactions (fnc_civInteract.sqf giveItem
+// action). Classnames that don't resolve at runtime are harmless — the
+// lookup either finds a matching item in the player's inventory or
+// doesn't. Grouped by source mod for maintainability; no CfgPatches
+// gating currently applied (flat list).
 ALiVE_CivPop_Interaction_WaterItems = [
+        // Vanilla ALiVE
         "ALiVE_Waterbottle",
-        "ACE_WaterBottle",    // ACEX
-        "vn_prop_drink_01", "vn_prop_drink_02", "vn_prop_drink_05" // VN crate drinks
+        // ACE3 (ace_field_rations) — current classes; ACEX names
+        // deprecated 2021-ish, kept below for backward-compat with
+        // legacy missions.
+        "ACE_Canteen",
+        "ACE_WaterBottle",
+        "ACE_Spirit",
+        "ACE_Franta",
+        "ACE_RedGull",
+        // Vanilla Arma 3 soft-drink cans
+        "Item_Can_V1_F", "Item_Can_V2_F", "Item_Can_V3_F",
+        // MGM Foods
+        "mgm_item_redgull",
+        // Kurt's Survival System (KSS)
+        "KSS_water_plastic_bottle",
+        // S.O.G. Prairie Fire (Vietnam) crate drinks
+        "vn_prop_drink_01", "vn_prop_drink_02", "vn_prop_drink_05"
 ];
 
 ALiVE_CivPop_Interaction_RationItems = [
+        // Vanilla ALiVE
         "ALiVE_Humrat",
-        "ACE_Humanitarian_Ration",  // ACEX
-        "vn_b_item_rations_01",    // VN
-        "vn_prop_food_fresh_01", "vn_prop_food_fresh_02", "vn_prop_food_meal_01", "vn_prop_food_sack_01", "vn_prop_food_sack_02" // VN crate food
+        // ACE3 (ace_field_rations) — modern MRE set + misc rations
+        "ACE_MRE_BeefStew",
+        "ACE_MRE_ChickenTikkaMasala",
+        "ACE_MRE_ChickenWithRice",
+        "ACE_MRE_CreamOfChickenSoup",
+        "ACE_MRE_LambCurry",
+        "ACE_MRE_MeatballsWithPasta",
+        "ACE_MRE_SteakVegetables",
+        "ACE_HumanitarianRation",
+        "ACE_Banana",
+        "ACE_SunflowerSeeds",
+        "ACE_BeefJerky",
+        // Legacy ACEX humanitarian ration (class retired ~2021 but
+        // kept here so missions built during the ACEX era still
+        // pattern-match if the player happens to carry an old cache).
+        "ACE_Humanitarian_Ration",
+        // Vanilla Arma 3
+        "Item_TacticalBacon_F",
+        // MGM Foods
+        "mgm_item_mre",
+        // Kurt's Survival System (KSS)
+        "KSS_canned_beef", "KSS_canned_fish",
+        // S.O.G. Prairie Fire (Vietnam)
+        "vn_b_item_rations_01",
+        "vn_prop_food_fresh_01", "vn_prop_food_fresh_02",
+        "vn_prop_food_meal_01",
+        "vn_prop_food_sack_01", "vn_prop_food_sack_02"
 ];
 
 // Civ Pop Crowds

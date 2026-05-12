@@ -1,5 +1,5 @@
 #include "\x\alive\addons\main\script_component.hpp"
-SCRIPT(isModuleInisitalised);
+SCRIPT(isModuleInitialised);
 
 /* ----------------------------------------------------------------------------
 Function: ALiVE_fnc_isModuleInitialised

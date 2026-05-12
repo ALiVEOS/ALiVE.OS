@@ -67,20 +67,8 @@ class CfgVehicles {
                                     class automatic { name = "Auto"; value = "server"; default = 1; };
                                 };
                         };
-                        // ---- Placement & Density -------------------------------------------
-                        class HDR_PLACEMENT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_PLACEMENT"; displayName = "PLACEMENT & DENSITY"; };
-                        class CQB_TYPE : Combo
-                        {
-                                property = "ALiVE_mil_cqb_CQB_TYPE";
-                                displayName = "$STR_ALIVE_CQB_TYPE";
-                                tooltip = "$STR_ALIVE_CQB_TYPE_COMMENT";
-                                defaultValue = """regular""";
-                                class Values
-                                {
-                                    class MIL { name = "Strategic"; value = "strategic"; };
-                                    class CIV { name = "Civilian"; value = "regular"; default = 1; };
-                                };
-                        };
+                        // ---- Coverage & Density ---------------------------------------------
+                        class HDR_PLACEMENT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_PLACEMENT"; displayName = "COVERAGE & DENSITY"; };
                         class CQB_LOCATIONTYPE : Combo
                         {
                                 property = "ALiVE_mil_cqb_CQB_LOCATIONTYPE";
@@ -91,6 +79,18 @@ class CfgVehicles {
                                 {
                                     class Towns { name = "Towns"; value = "towns"; };
                                     class All { name = "Complete map"; value = "all"; default = 1; };
+                                };
+                        };
+                        class CQB_TYPE : Combo
+                        {
+                                property = "ALiVE_mil_cqb_CQB_TYPE";
+                                displayName = "$STR_ALIVE_CQB_TYPE";
+                                tooltip = "$STR_ALIVE_CQB_TYPE_COMMENT";
+                                defaultValue = """regular""";
+                                class Values
+                                {
+                                    class MIL { name = "Strategic"; value = "strategic"; };
+                                    class CIV { name = "Civilian"; value = "regular"; default = 1; };
                                 };
                         };
                         class CQB_spawn_setting : Combo
@@ -113,7 +113,6 @@ class CfgVehicles {
                                     class CQB_spawn_70 { name = "70%"; value = 0.7; };
                                     class CQB_spawn_80 { name = "80%"; value = 0.8; };
                                     class CQB_spawn_90 { name = "90%"; value = 0.9; };
-                                    class CQB_spawn_99 { name = "99%"; value = 0.99; };
                                     class CQB_spawn_100 { name = "100%"; value = 1; };
                                 };
                         };
@@ -132,6 +131,65 @@ class CfgVehicles {
                                     class CQB_DENSITY_20 { name = "low"; value = 2000; };
                                 };
                         };
+                        class CQB_amount : Combo
+                        {
+                                property = "ALiVE_mil_cqb_CQB_amount";
+                                displayName = "$STR_ALIVE_CQB_AMOUNT";
+                                tooltip = "$STR_ALIVE_CQB_AMOUNT_COMMENT";
+                                defaultValue = """2""";
+                                class Values
+                                {
+                                    class Solo     { name = "Solo (1)";        value = 1; };
+                                    class Pair     { name = "Pair (1-2)";      value = 2; default = 1; };
+                                    class Fireteam { name = "Fireteam (1-4)";  value = 4; };
+                                };
+                        };
+                        // ---- Filters --------------------------------------------------------
+                        class HDR_FILTERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_FILTERS"; displayName = "FILTERS"; };
+                        class whitelist : Edit { property = "ALiVE_mil_cqb_whitelist"; displayName = "$STR_ALIVE_CQB_WHITELIST"; tooltip = "$STR_ALIVE_CQB_WHITELIST_COMMENT"; defaultValue = """"""; };
+                        class blacklist : Edit { property = "ALiVE_mil_cqb_blacklist"; displayName = "$STR_ALIVE_CQB_BLACKLIST"; tooltip = "$STR_ALIVE_CQB_BLACKLIST_COMMENT"; defaultValue = """"""; };
+                        class units_blacklist : Edit { property = "ALiVE_mil_cqb_units_blacklist"; displayName = "$STR_ALIVE_CQB_UNIT_BLACKLIST"; tooltip = "$STR_ALIVE_CQB_UNIT_BLACKLIST_COMMENT"; defaultValue = """"""; };
+                        // ---- Factions -------------------------------------------------------
+                        class HDR_FACTIONS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_FACTIONS"; displayName = "FACTIONS"; };
+                        class CQB_UseDominantFaction : Combo
+                        {
+                                property = "ALiVE_mil_cqb_CQB_UseDominantFaction";
+                                displayName = "$STR_ALIVE_CQB_USEDOMINANTFACTION";
+                                tooltip = "$STR_ALIVE_CQB_USEDOMINANTFACTION_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                    class Yes { name = "Dominant"; value = "true"; default = 1; };
+                                    class No { name = "Static"; value = "false"; };
+                                };
+                        };
+                        class CQB_FACTIONS
+                        {
+                                property     = "ALiVE_mil_cqb_CQB_FACTIONS";
+                                displayName  = "$STR_ALIVE_CQB_FACTIONS";
+                                tooltip      = "$STR_ALIVE_CQB_FACTIONS_COMMENT";
+                                control      = "ALiVE_FactionChoiceMulti_Military";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['CQB_FACTIONS', _value];";
+                                defaultValue = """[]""";
+                        };
+                        class CQB_FACTIONS_manual : Edit
+                        {
+                                property     = "ALiVE_mil_cqb_CQB_FACTIONS_manual";
+                                displayName  = "$STR_ALIVE_CQB_FACTIONS_MANUAL";
+                                tooltip      = "$STR_ALIVE_CQB_FACTIONS_MANUAL_COMMENT";
+                                defaultValue = """""";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['CQB_FACTIONS_manual', _value];";
+                        };
+                        // ---- Spacer ---------------------------------------------------------
+                        class SPACER_FACTIONS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_SPACER_FACTIONS"; displayName = " "; };
+                        // ---- Spawn Distances ------------------------------------------------
+                        class HDR_SPAWN : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_SPAWN"; displayName = "SPAWN DISTANCES"; };
+                        class CQB_spawndistance : Edit { property = "ALiVE_mil_cqb_CQB_spawndistance"; displayName = "$STR_ALIVE_CQB_SPAWNDISTANCE"; tooltip = "$STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT"; defaultValue = """700"""; };
+                        class CQB_spawndistanceStatic : Edit { property = "ALiVE_mil_cqb_CQB_spawndistanceStatic"; displayName = "$STR_ALIVE_CQB_SPAWNDISTANCESTATIC"; tooltip = "$STR_ALIVE_CQB_SPAWNDISTANCESTATIC_COMMENT"; defaultValue = """1200"""; };
+                        class CQB_spawndistanceHeli : Edit { property = "ALiVE_mil_cqb_CQB_spawndistanceHeli"; displayName = "$STR_ALIVE_CQB_SPAWNDISTANCEHELI"; tooltip = "$STR_ALIVE_CQB_SPAWNDISTANCEHELI_COMMENT"; defaultValue = """0"""; };
+                        class CQB_spawndistanceJet : Edit { property = "ALiVE_mil_cqb_CQB_spawndistanceJet"; displayName = "$STR_ALIVE_CQB_SPAWNDISTANCEJET"; tooltip = "$STR_ALIVE_CQB_SPAWNDISTANCEJET_COMMENT"; defaultValue = """0"""; };
                         // ---- Patrol Behaviour -----------------------------------------------
                         class HDR_PATROL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_PATROL"; displayName = "PATROL BEHAVIOUR"; };
                         class CQB_patrol_chance : Combo
@@ -142,7 +200,8 @@ class CfgVehicles {
                                 defaultValue = """0.3""";
                                 class Values
                                 {
-                                    class CQB_patrol_chance_1 { name = "1%"; value = 0.01; };
+                                    class CQB_patrol_chance_1  { name = "1%";  value = 0.01; };
+                                    class CQB_patrol_chance_5  { name = "5%";  value = 0.05; };
                                     class CQB_patrol_chance_10 { name = "10%"; value = 0.1; };
                                     class CQB_patrol_chance_20 { name = "20%"; value = 0.2; };
                                     class CQB_patrol_chance_30 { name = "30%"; value = 0.3; default = 1; };
@@ -152,7 +211,6 @@ class CfgVehicles {
                                     class CQB_patrol_chance_70 { name = "70%"; value = 0.7; };
                                     class CQB_patrol_chance_80 { name = "80%"; value = 0.8; };
                                     class CQB_patrol_chance_90 { name = "90%"; value = 0.9; };
-                                    class CQB_patrol_chance_99 { name = "99%"; value = 0.99; };
                                     class CQB_patrol_chance_100 { name = "100%"; value = 1; };
                                 };
                         };
@@ -164,7 +222,8 @@ class CfgVehicles {
                                 defaultValue = """0.3""";
                                 class Values
                                 {
-                                    class CQB_patrol_searchchance_1 { name = "1%"; value = 0.01; };
+                                    class CQB_patrol_searchchance_1  { name = "1%";  value = 0.01; };
+                                    class CQB_patrol_searchchance_5  { name = "5%";  value = 0.05; };
                                     class CQB_patrol_searchchance_10 { name = "10%"; value = 0.1; };
                                     class CQB_patrol_searchchance_20 { name = "20%"; value = 0.2; };
                                     class CQB_patrol_searchchance_30 { name = "30%"; value = 0.3; default = 1; };
@@ -184,19 +243,6 @@ class CfgVehicles {
                         class CQB_patrol_maxist : Edit { property = "ALiVE_mil_cqb_CQB_patrol_maxist"; displayName = "$STR_ALIVE_CQB_MAXDIST"; tooltip = "$STR_ALIVE_CQB_MAXDIST_COMMENT"; defaultValue = """100"""; };
                         // ---- Static Weapons ------------------------------------------------
                         class HDR_STATIC : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_STATIC"; displayName = "STATIC WEAPONS"; };
-                        class CQB_amount : Combo
-                        {
-                                property = "ALiVE_mil_cqb_CQB_amount";
-                                displayName = "$STR_ALIVE_CQB_AMOUNT";
-                                tooltip = "$STR_ALIVE_CQB_AMOUNT_COMMENT";
-                                defaultValue = """3""";
-                                class Values
-                                {
-                                    class Solo { name = "Solo"; value = 1; };
-                                    class Pair { name = "Pair"; value = 3; default = 1; };
-                                    class Fireteam { name = "Fireteam"; value = 5; };
-                                };
-                        };
                         class CQB_staticWeapons : Combo
                         {
                                 property = "ALiVE_mil_cqb_CQB_staticWeapons";
@@ -213,28 +259,6 @@ class CfgVehicles {
                                 };
                         };
                         class CQB_staticWeaponsClassnames : Edit { property = "ALiVE_mil_cqb_CQB_staticWeaponsClassnames"; displayName = "$STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES"; tooltip = "$STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES_COMMENT"; defaultValue = """B_HMG_01_high_F,O_Mortar_01_F,O_HMG_01_high_F"""; };
-                        // ---- Factions & Filters --------------------------------------------
-                        class HDR_FACTIONS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_FACTIONS"; displayName = "FACTIONS & FILTERS"; };
-                        class CQB_UseDominantFaction : Combo
-                        {
-                                property = "ALiVE_mil_cqb_CQB_UseDominantFaction";
-                                displayName = "$STR_ALIVE_CQB_USEDOMINANTFACTION";
-                                tooltip = "$STR_ALIVE_CQB_USEDOMINANTFACTION_COMMENT";
-                                defaultValue = """true""";
-                                class Values
-                                {
-                                    class Yes { name = "Dominant"; value = "true"; default = 1; };
-                                    class No { name = "Static"; value = "false"; };
-                                };
-                        };
-                        class CQB_spawndistance : Edit { property = "ALiVE_mil_cqb_CQB_spawndistance"; displayName = "$STR_ALIVE_CQB_SPAWNDISTANCE"; tooltip = "$STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT"; defaultValue = """700"""; };
-                        class CQB_spawndistanceStatic : Edit { property = "ALiVE_mil_cqb_CQB_spawndistanceStatic"; displayName = "$STR_ALIVE_CQB_SPAWNDISTANCESTATIC"; tooltip = "$STR_ALIVE_CQB_SPAWNDISTANCESTATIC_COMMENT"; defaultValue = """1200"""; };
-                        class CQB_spawndistanceHeli : Edit { property = "ALiVE_mil_cqb_CQB_spawndistanceHeli"; displayName = "$STR_ALIVE_CQB_SPAWNDISTANCEHELI"; tooltip = "$STR_ALIVE_CQB_SPAWNDISTANCEHELI_COMMENT"; defaultValue = """0"""; };
-                        class CQB_spawndistanceJet : Edit { property = "ALiVE_mil_cqb_CQB_spawndistanceJet"; displayName = "$STR_ALIVE_CQB_SPAWNDISTANCEJET"; tooltip = "$STR_ALIVE_CQB_SPAWNDISTANCEJET_COMMENT"; defaultValue = """0"""; };
-                        class CQB_FACTIONS : Edit { property = "ALiVE_mil_cqb_CQB_FACTIONS"; displayName = "$STR_ALIVE_CQB_FACTIONS"; tooltip = "$STR_ALIVE_CQB_FACTIONS_COMMENT"; defaultValue = """OPF_F"""; };
-                        class whitelist : Edit { property = "ALiVE_mil_cqb_whitelist"; displayName = "$STR_ALIVE_CQB_WHITELIST"; tooltip = "$STR_ALIVE_CQB_WHITELIST_COMMENT"; defaultValue = """"""; };
-                        class blacklist : Edit { property = "ALiVE_mil_cqb_blacklist"; displayName = "$STR_ALIVE_CQB_BLACKLIST"; tooltip = "$STR_ALIVE_CQB_BLACKLIST_COMMENT"; defaultValue = """"""; };
-                        class units_blacklist : Edit { property = "ALiVE_mil_cqb_units_blacklist"; displayName = "$STR_ALIVE_CQB_UNIT_BLACKLIST"; tooltip = "$STR_ALIVE_CQB_UNIT_BLACKLIST_COMMENT"; defaultValue = """"""; };
                         // ---- On Spawn Hook --------------------------------------------------
                         class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };
                         class onEachSpawn : ALiVE_EditMultilineSQF

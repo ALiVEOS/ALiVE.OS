@@ -23,6 +23,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 params
@@ -103,6 +104,20 @@ GVAR(AI_DISTRIBUTOR) = [_interval] spawn {
 
                 private _HC = (GVAR(AI_DISTRIBUTOR_HCLIST) select _HC_index);
                 _HC_index = (_HC_index + 1);
+
+                // Naked-unit workaround for issue #604. The engine
+                // occasionally resets affected units' loadouts to their
+                // config default during ownership transfer, visibly
+                // stripping 3rd-party faction uniforms / gear back to
+                // vanilla. Snapshot each unit's current loadout into a
+                // public variable immediately before setGroupOwner; the
+                // class event handler registered in main/XEH_postInit.sqf
+                // reapplies the snapshot on the receiving machine when
+                // the unit becomes local and appears naked. Mirrors the
+                // pattern in ACEX's fnc_transferGroups.sqf.
+                {
+                    _x setVariable ["ALiVE_HC_SavedLoadout", getUnitLoadout _x, true];
+                } forEach (units _x);
 
                 _x setGroupOwner (owner _HC);
 

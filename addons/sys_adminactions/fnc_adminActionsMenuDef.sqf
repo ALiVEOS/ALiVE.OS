@@ -34,6 +34,7 @@ See Also:
 Author:
 Wolffy.au
 shukari
+Jman
 
 //-----------------------------------------------------------------------------
 // Menu example
@@ -56,7 +57,13 @@ _params params [
         ["_menuRsc", "popup"]
     ];
 
-switch (_menuName) do {
+// Normalize CBA flexiMenu code-block actions to the string form required by
+// buttonSetAction. This file returns a single menu per switch case rather
+// than the common `_menus` list, so the helper is invoked on the switch
+// result (it auto-detects single-menu vs list-of-menus shape). In-place
+// mutation means we can safely return the local even if the helper returned
+// an unexpected value.
+private _menuDef = switch (_menuName) do {
     case "main": {
         private _isAdmin = call ALIVE_fnc_isServerAdmin || call BIS_fnc_isDebugConsoleAllowed;
         
@@ -235,18 +242,21 @@ switch (_menuName) do {
                     -1,
                     !isNil QMOD(sys_statistics_ENABLED),
                     !isNil QMOD(statistics)
-                ]/*,
-                [localize "STR_ALIVE_Data" + " >",
+                ],
+                [localize "STR_ALIVE_DATA_MENU" + " >",
                     "",
                     "",
-                    localize "STR_ALIVE_Data_COMMENT",
-                    ["call ALiVE_fnc_dataMenuDef", "data", 1],
+                    localize "STR_ALIVE_DATA_MENU_COMMENT",
+                    ["call ALiVE_fnc_dataMenuDef", ["data"], 1],
                     -1,
                     !isNil QMOD(sys_data) && {!MOD(sys_data_DISABLED)},
                     !isNil QMOD(sys_data)
-                ]*/
+                ]
             ]
         ]
     };
     default {[]};
 };
+_menuDef call ALiVE_fnc_normalizeFlexiMenuActions;
+_menuDef
+

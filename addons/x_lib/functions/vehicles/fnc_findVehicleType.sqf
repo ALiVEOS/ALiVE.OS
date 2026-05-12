@@ -2,7 +2,7 @@
 SCRIPT(findVehicleType);
 
 /* ----------------------------------------------------------------------------
-Function: ALiVE_fnc_findVehicleType
+Function: ALIVE_fnc_findVehicleType
 
 Description:
 Used to find vehicles for specific type, side and free cargo slots
@@ -44,13 +44,45 @@ if (typeName _fac == "ARRAY") then {
     _id = [_id, "[", ""] call CBA_fnc_replace;
     _id = [_id, "]", ""] call CBA_fnc_replace;
     _id = [_id, "'", ""] call CBA_fnc_replace;
-    _id = [_id, """", ""] call CBA_fnc_replace;
+    _id = [_id, toString [34], ""] call CBA_fnc_replace;
 };
 
 private _searchBag = format["ALiVE_X_LIB_SEARCHBAG_%1_%2_%3",_id,_type,_noWeapons];
 
 if !(isnil {call compile _searchBag}) exitwith {call compile _searchBag};
 
+private _compiledVehicles = [];
+if (!isNil "ALiVE_fnc_factionCompilerFindVehicleType") then {
+    _compiledVehicles = [_cargoslots, _fac, _type, _noWeapons, _minScope] call ALiVE_fnc_factionCompilerFindVehicleType;
+};
+
+if (!isNil "ALiVE_fnc_factionCompilerIsCompiledFaction") then {
+    if (_fac isEqualType "") then {
+        if ([_fac] call ALiVE_fnc_factionCompilerIsCompiledFaction) then {
+            if (count _compiledVehicles == 0) then {
+                _fac = [_fac] call ALiVE_fnc_factionCompilerGetConfigFaction;
+            } else {
+                _fac = [];
+            };
+        };
+    } else {
+        if (_fac isEqualType []) then {
+            private _resolvedFactions = [];
+            {
+                if (_x isEqualType "" && {[_x] call ALiVE_fnc_factionCompilerIsCompiledFaction}) then {
+                    private _compiledFactionVehicles = [_cargoslots, _x, _type, _noWeapons, _minScope] call ALiVE_fnc_factionCompilerFindVehicleType;
+
+                    if (count _compiledFactionVehicles == 0) then {
+                        _resolvedFactions pushBackUnique ([_x] call ALiVE_fnc_factionCompilerGetConfigFaction);
+                    };
+                } else {
+                    _resolvedFactions pushBackUnique _x;
+                };
+            } forEach _fac;
+            _fac = _resolvedFactions;
+        };
+    };
+};
 _nonConfigs = ["StaticWeapon","CruiseMissile1","CruiseMissile2","Chukar_EP1","Chukar","Chukar_AllwaysEnemy_EP1"];
 _nonSims = ["parachute","house"];
 
@@ -71,7 +103,7 @@ if (typename _fac == "STRING") then {
     } foreach _fac;
 };
 
-_allvehs = [];
+_allvehs = +_compiledVehicles;
 
 for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
     _entry = (configFile >> "CfgVehicles") select _y;
@@ -127,6 +159,6 @@ for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
     };
 };
 
-//call compile (format["%1 = %2",_searchbag,_allvehs]);
+_allvehs = _allvehs arrayIntersect _allvehs;
 
 _allvehs

@@ -38,6 +38,8 @@ ARJay
 
 params ["_config","_position","_azi","_faction"];
 
+private _configFaction = if (!isNil "ALiVE_fnc_factionCompilerGetConfigFaction") then {[_faction] call ALiVE_fnc_factionCompilerGetConfigFaction} else {_faction};
+
 ["Spawning Composition: %1", _this] call ALiVE_fnc_dump;
 
 private ["_posX", "_posY"];
@@ -172,7 +174,7 @@ for "_i" from 0 to ((count _objects) - 1) do {
     // if object is faction-specific
     // and doesn't belong to passed faction
     // delete it
-    if (faction _newObj != _faction && {_newObj iskindof "LandVehicle" || {_newObj iskindof "FlagCarrier"}}) then {
+    if (faction _newObj != _configFaction && {_newObj iskindof "LandVehicle" || {_newObj iskindof "FlagCarrier"}}) then {
         deleteVehicle _newObj;
     } else {
         _newObj setDir (_azi + _azimuth);
@@ -236,6 +238,4 @@ _charge = createVehicle ["ALIVE_DemoCharge_Remote_Ammo",_position, [], 0, "CAN_C
 _charge setvariable [QGVAR(COMPOSITION_OBJECTS),_created];
 _charge enableSimulation false;
 _charge hideObjectGlobal true;
-
-
 

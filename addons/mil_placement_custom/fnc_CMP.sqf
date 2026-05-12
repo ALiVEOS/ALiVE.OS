@@ -23,7 +23,7 @@ Array - state - Save and restore module state
 Array - faction - Faction associated with module
 
 Examples:
-[_logic, "faction", "OPF_F"] call ALiVE_fnc_CMP;
+[_logic, "faction", "BLU_F"] call ALiVE_fnc_CMP;
 
 See Also:
 - <ALIVE_fnc_CMPInit>
@@ -35,7 +35,7 @@ ARJay
 #define SUPERCLASS                      ALIVE_fnc_baseClass
 #define MAINCLASS                       ALIVE_fnc_CMP
 #define MTEMPLATE                       "ALiVE_CMP_%1"
-#define DEFAULT_FACTION                 QUOTE(OPF_F)
+#define DEFAULT_FACTION                 QUOTE(BLU_F)
 #define DEFAULT_SIZE                    "50"
 #define DEFAULT_PRIORITY                "50"
 #define DEFAULT_NO_TEXT                 "0"
@@ -150,6 +150,13 @@ switch(_operation) do {
 
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
+
+        if !(_args isEqualType "") then {
+            private _compiledFaction = [_logic] call ALiVE_fnc_factionCompilerResolveForModule;
+            if !(_compiledFaction isEqualTo "") then {
+                _result = _compiledFaction;
+            };
+        };
     };
     
     case "guardProbability": {
@@ -727,7 +734,8 @@ switch(_operation) do {
             if(_placeSupplies) then {
 
                 // attempt to get supplies by faction
-                private _supplyClasses = [ALIVE_factionDefaultSupplies,_faction,[]] call ALIVE_fnc_hashGet;
+                private _staticFaction = [_faction] call ALiVE_fnc_factionCompilerGetConfigFaction;
+                private _supplyClasses = [ALIVE_factionDefaultSupplies,_staticFaction,[]] call ALIVE_fnc_hashGet;
 
                 //["SUPPLY CLASSES: %1",_supplyClasses] call ALIVE_fnc_dump;
 
@@ -823,7 +831,8 @@ switch(_operation) do {
                 private _landClasses = _carClasses + _armorClasses;
                 _landClasses = _landClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
-                private _supportClasses = [ALIVE_factionDefaultSupports,_faction,[]] call ALIVE_fnc_hashGet;
+                private _staticFaction = [_faction] call ALiVE_fnc_factionCompilerGetConfigFaction;
+                private _supportClasses = [ALIVE_factionDefaultSupports,_staticFaction,[]] call ALIVE_fnc_hashGet;
 
                 //["SUPPORT CLASSES: %1",_supportClasses] call ALIVE_fnc_dump;
 

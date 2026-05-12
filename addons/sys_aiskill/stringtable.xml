@@ -27,40 +27,52 @@
 	<Chinesesimp>招募派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_RECRUIT_COMMENT">
-    <English>Faction units will be given recruit skill level. Separate multiple factions with commas, no spaces, no quotes — e.g. BLU_F,OPF_F</English>
-	<Chinesesimp>派系单位将获得招募技能等级,用逗号分隔多个派系(BLU_F,OPF_F,IND_F,BLU_G_F)</Chinesesimp>
+    <English>Units of these factions will use Recruit-tier skill values (low accuracy, slow reactions, short detection range). Lowest preset — use for untrained militia or irregular forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_REGULAR">
     <English>Regular Factions:</English>
 	<Chinesesimp>常规派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_REGULAR_COMMENT">
-    <English>Faction units will be given regular skill level. Separate multiple factions with commas, no spaces, no quotes — e.g. BLU_F,OPF_F</English>
-	<Chinesesimp>派系单位将获得常规技能等级,用逗号分隔多个派系(BLU_F,OPF_F,IND_F,BLU_G_F)</Chinesesimp>
+    <English>Units of these factions will use Regular-tier skill values (moderate accuracy, average reactions). Baseline preset suitable for most conventional forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_VETERAN">
     <English>Veteran Factions:</English>
 	<Chinesesimp>资深派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_VETERAN_COMMENT">
-    <English>Faction units will be given veteran skill level. Separate multiple factions with commas, no spaces, no quotes — e.g. BLU_F,OPF_F</English>
-	<Chinesesimp>派系单位将获得资深技能等级,用逗号分隔多个派系(BLU_F,OPF_F,IND_F,BLU_G_F)</Chinesesimp>
+    <English>Units of these factions will use Veteran-tier skill values (good accuracy, faster reactions, better spotting). Use for experienced infantry or special operations forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_EXPERT">
     <English>Expert Factions:</English>
 	<Chinesesimp>专家派系：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_EXPERT_COMMENT">
-    <English>Faction units will be given expert skill level. Separate multiple factions with commas, no spaces, no quotes — e.g. BLU_F,OPF_F</English>
-	<Chinesesimp>派系单位将获得专家技能等级,用逗号分隔多个派系(BLU_F,OPF_F,IND_F,BLU_G_F)</Chinesesimp>
+    <English>Units of these factions will use Expert-tier skill values (high accuracy, fast reactions, long detection range). Highest preset — use for top-tier special forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_FACTIONS_MANUAL">
+    <English>Factions (manual override):</English>
+    <Chinese>派系（手動覆蓋）:</Chinese>
+    <Chinesesimp>派系（手动覆盖）:</Chinesesimp>
+    <Spanish>Facciones (anulación manual):</Spanish>
+    <French>Factions (remplacement manuel)&#xa0;:</French>
+    <Portuguese>Facções (substituição manual):</Portuguese>
+    <Russian>Фракции (ручное переопределение):</Russian>
+</Key>
+<Key ID="STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT">
+    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes — e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
+    <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
+    <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
+    <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
+    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format : noms séparés par des virgules, sans espaces ni guillemets.</French>
+    <Portuguese>Opcional. Digite classnames de facções adicionais para mods não carregados atualmente. Formato: nomes separados por vírgulas, sem espaços ou aspas.</Portuguese>
+    <Russian>Необязательно. Введите classnames дополнительных фракций для незагруженных модов. Формат: имена через запятую, без пробелов и кавычек.</Russian>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM">
-    <English>Custom Skill:</English>
-	<Chinesesimp>自定义技能：</Chinesesimp>
+    <English>Factions:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMENT">
-    <English>Factions that will receive the custom skill values below. Separate multiple factions with commas, no spaces, no quotes — e.g. BLU_F,OPF_F</English>
-	<Chinesesimp>将具有以下自定义技能设置的派系,用逗号分隔多个派系(BLU_F,OPF_F,IND_F,BLU_G_F)</Chinesesimp>
+    <English>Factions whose units will receive the exact skill values you configure below. This section is independent of the preset tiers above — presets use fixed hardcoded values, while this section gives full control over each parameter. If a faction is also assigned to a preset tier, the custom values take precedence. Leave empty to apply no custom values.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN">
     <English>Minimum Ability:</English>
@@ -95,20 +107,16 @@
 	<Chinesesimp>瞄准摇晃</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED">
-    <English>How quickly the unit acquires and tracks targets (0.0–1.0). Higher values mean faster target acquisition.</English>
-	<Chinesesimp>瞄准速度</Chinesesimp>
+    <English>Aim Speed:</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED_COMMENT">
-    <English>Aim Speed</English>
-	<Chinesesimp>瞄准速度</Chinesesimp>
+    <English>How quickly the unit acquires and tracks targets (0.0–1.0). Higher values mean faster target acquisition.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE">
-    <English>Endurance:</English>
-	<Chinesesimp>耐力：</Chinesesimp>
+    <English>Endurance (unused):</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE_COMMENT">
-    <English>Unit stamina and fatigue resistance (0.0–1.0). Higher values allow the unit to run longer before becoming fatigued.</English>
-	<Chinesesimp>耐力</Chinesesimp>
+    <English>No effect in Arma 3 — the endurance sub-skill has been ignored by the engine since early development. Value is accepted but never applied. This field will be removed in a future version.</English>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE">
     <English>Spot Distance:</English>
@@ -139,10 +147,8 @@
 	<Chinesesimp>怯懦：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_FLEEING_COMMENT">
-    <English>How easily the unit will flee</English>
-	<Chinesesimp>单位会逃跑的难易程度</Chinesesimp>
+    <English>Likelihood that the unit abandons combat and retreats when under fire (0.0–1.0). Higher values make units more prone to fleeing. Lower values keep them engaged longer. Works alongside Courage.</English>
 </Key>
-
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_RELOAD">
     <English>Reload:</English>
 	<Chinesesimp>装填：</Chinesesimp>

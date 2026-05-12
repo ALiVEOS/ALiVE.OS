@@ -21,6 +21,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_acemenu\fnc_aceMenuPR.sqf";
                 RECOMPILE;
             };
+            class aceMenuCiv {
+                description = "Registers the ALiVE civilian-interaction ACE menu branch on CAManBase targets";
+                file = "\x\alive\addons\sys_acemenu\fnc_aceMenuCiv.sqf";
+                RECOMPILE;
+            };
             class aceMenu_repDialog {
                 description = "SITREP and PATROLREP dialog wrapper";
                 file = "\x\alive\addons\sys_acemenu\fnc_aceMenu_repDialog.sqf";

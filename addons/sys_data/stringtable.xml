@@ -117,7 +117,167 @@
             <Key ID="STR_ALIVE_Data_customPerfMonCode_COMMENT">
                 <English>Customize objects counted and intervals. Ensure interval values are in ascending order. 'triggers' will count allMissionObjects "EmptyDetector", 'entities' will count entities "All", 'objects' will count allMissionObjects "All", 'activeScripts' will count all active scripts. Any thing else will be count YOURPARAM i.e. count allDead.</English>
                 <Chinesesimp>自定义对象计数和间隔。确保间隔值按升序排列。'triggers'将计算所有的missionobjects "EmptyDetector", 'entities'将计算实体"All", 'objects'将计算所有的missionobjects "All", 'activeScripts'将计算所有的活动脚本。其他的将被计算为YOURPARAM,也就是计算allDead。</Chinesesimp>
-            </Key>                        
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_MENU">
+                <English>Persistent Data</English>
+                <Chinese>持久化資料</Chinese>
+                <Chinesesimp>持久化数据</Chinesesimp>
+                <French>Données persistantes</French>
+                <Spanish>Datos persistentes</Spanish>
+                <Portuguese>Dados persistentes</Portuguese>
+                <Russian>Постоянные данные</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_MENU_COMMENT">
+                <English>Wipe ALiVE persistence data (current mission or all data)</English>
+                <Chinese>清除ALiVE持久化資料(當前任務或全部資料)</Chinese>
+                <Chinesesimp>清除ALiVE持久化数据(当前任务或全部数据)</Chinesesimp>
+                <French>Effacer les données de persistance ALiVE (mission actuelle ou toutes les données)</French>
+                <Spanish>Borrar datos de persistencia de ALiVE (misión actual o todos los datos)</Spanish>
+                <Portuguese>Apagar dados de persistência ALiVE (missão atual ou todos os dados)</Portuguese>
+                <Russian>Удалить данные сохранения ALiVE (текущая миссия или все данные)</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_MISSION">
+                <English>Clear Current Mission's Data</English>
+                <Chinese>清除當前任務的資料</Chinese>
+                <Chinesesimp>清除当前任务的数据</Chinesesimp>
+                <French>Effacer les données de la mission actuelle</French>
+                <Spanish>Borrar datos de la misión actual</Spanish>
+                <Portuguese>Apagar dados da missão atual</Portuguese>
+                <Russian>Очистить данные текущей миссии</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_MISSION_COMMENT">
+                <English>Removes only the current mission's saved ALiVE data. Cannot be undone.</English>
+                <Chinese>僅刪除當前任務的ALiVE存檔資料。無法撤銷。</Chinese>
+                <Chinesesimp>仅删除当前任务的ALiVE存档数据。无法撤销。</Chinesesimp>
+                <French>Supprime uniquement les données sauvegardées d'ALiVE pour la mission actuelle. Action irréversible.</French>
+                <Spanish>Elimina solo los datos guardados de ALiVE de la misión actual. No se puede deshacer.</Spanish>
+                <Portuguese>Remove apenas os dados salvos do ALiVE da missão atual. Não pode ser desfeito.</Portuguese>
+                <Russian>Удаляет только сохранённые данные ALiVE текущей миссии. Отменить невозможно.</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_WIPE_ALL">
+                <English>Wipe ALL ALiVE Data</English>
+                <Chinese>清除所有ALiVE資料</Chinese>
+                <Chinesesimp>清除所有ALiVE数据</Chinesesimp>
+                <French>Effacer TOUTES les données ALiVE</French>
+                <Spanish>Borrar TODOS los datos de ALiVE</Spanish>
+                <Portuguese>Apagar TODOS os dados ALiVE</Portuguese>
+                <Russian>Удалить ВСЕ данные ALiVE</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_WIPE_ALL_COMMENT">
+                <English>Removes all saved ALiVE data for every mission. Cannot be undone.</English>
+                <Chinese>刪除所有任務的全部ALiVE存檔資料。無法撤銷。</Chinese>
+                <Chinesesimp>删除所有任务的全部ALiVE存档数据。无法撤销。</Chinesesimp>
+                <French>Supprime toutes les données sauvegardées d'ALiVE pour toutes les missions. Action irréversible.</French>
+                <Spanish>Elimina todos los datos guardados de ALiVE de todas las misiones. No se puede deshacer.</Spanish>
+                <Portuguese>Remove todos os dados salvos do ALiVE de todas as missões. Não pode ser desfeito.</Portuguese>
+                <Russian>Удаляет все сохранённые данные ALiVE для всех миссий. Отменить невозможно.</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_CONFIRM_TITLE">
+                <English>Confirm: Clear Mission Data</English>
+                <Chinese>確認:清除任務資料</Chinese>
+                <Chinesesimp>确认:清除任务数据</Chinesesimp>
+                <French>Confirmer: effacer les données de mission</French>
+                <Spanish>Confirmar: borrar datos de la misión</Spanish>
+                <Portuguese>Confirmar: apagar dados da missão</Portuguese>
+                <Russian>Подтвердить: очистить данные миссии</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_CONFIRM_YES">
+                <English>Yes, Clear This Mission's Data</English>
+                <Chinese>是的,清除該任務的資料</Chinese>
+                <Chinesesimp>是的,清除该任务的数据</Chinesesimp>
+                <French>Oui, effacer les données de cette mission</French>
+                <Spanish>Sí, borrar los datos de esta misión</Spanish>
+                <Portuguese>Sim, apagar os dados desta missão</Portuguese>
+                <Russian>Да, очистить данные этой миссии</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_CONFIRM_YES_COMMENT">
+                <English>Permanently clears the current mission's saved data. Cannot be undone.</English>
+                <Chinese>永久清除當前任務的存檔資料。無法撤銷。</Chinese>
+                <Chinesesimp>永久清除当前任务的存档数据。无法撤销。</Chinesesimp>
+                <French>Efface définitivement les données sauvegardées de la mission actuelle. Action irréversible.</French>
+                <Spanish>Borra permanentemente los datos guardados de la misión actual. No se puede deshacer.</Spanish>
+                <Portuguese>Apaga permanentemente os dados salvos da missão atual. Não pode ser desfeito.</Portuguese>
+                <Russian>Безвозвратно очищает сохранённые данные текущей миссии. Отменить невозможно.</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_WIPE_CONFIRM_TITLE">
+                <English>Confirm: Wipe ALL Data</English>
+                <Chinese>確認:清除全部資料</Chinese>
+                <Chinesesimp>确认:清除全部数据</Chinesesimp>
+                <French>Confirmer: effacer TOUTES les données</French>
+                <Spanish>Confirmar: borrar TODOS los datos</Spanish>
+                <Portuguese>Confirmar: apagar TODOS os dados</Portuguese>
+                <Russian>Подтвердить: удалить ВСЕ данные</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_WIPE_CONFIRM_YES">
+                <English>Yes, Wipe ALL ALiVE Data</English>
+                <Chinese>是的,清除全部ALiVE資料</Chinese>
+                <Chinesesimp>是的,清除全部ALiVE数据</Chinesesimp>
+                <French>Oui, effacer TOUTES les données ALiVE</French>
+                <Spanish>Sí, borrar TODOS los datos de ALiVE</Spanish>
+                <Portuguese>Sim, apagar TODOS os dados ALiVE</Portuguese>
+                <Russian>Да, удалить ВСЕ данные ALiVE</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_WIPE_CONFIRM_YES_COMMENT">
+                <English>Permanently wipes all ALiVE saved data across every mission. Cannot be undone.</English>
+                <Chinese>永久清除所有任務的全部ALiVE存檔資料。無法撤銷。</Chinese>
+                <Chinesesimp>永久清除所有任务的全部ALiVE存档数据。无法撤销。</Chinesesimp>
+                <French>Efface définitivement toutes les données sauvegardées d'ALiVE pour toutes les missions. Action irréversible.</French>
+                <Spanish>Borra permanentemente todos los datos guardados de ALiVE de todas las misiones. No se puede deshacer.</Spanish>
+                <Portuguese>Apaga permanentemente todos os dados salvos do ALiVE em todas as missões. Não pode ser desfeito.</Portuguese>
+                <Russian>Безвозвратно удаляет все сохранённые данные ALiVE во всех миссиях. Отменить невозможно.</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CONFIRM_CANCEL">
+                <English>Cancel</English>
+                <Chinese>取消</Chinese>
+                <Chinesesimp>取消</Chinesesimp>
+                <French>Annuler</French>
+                <Spanish>Cancelar</Spanish>
+                <Portuguese>Cancelar</Portuguese>
+                <Russian>Отмена</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CONFIRM_CANCEL_COMMENT">
+                <English>Return to the previous menu without wiping anything</English>
+                <Chinese>返回上一級選單,不清除任何內容</Chinese>
+                <Chinesesimp>返回上一级菜单,不清除任何内容</Chinesesimp>
+                <French>Revenir au menu précédent sans rien effacer</French>
+                <Spanish>Volver al menú anterior sin borrar nada</Spanish>
+                <Portuguese>Voltar ao menu anterior sem apagar nada</Portuguese>
+                <Russian>Вернуться в предыдущее меню без удаления данных</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_CLEAR_DONE">
+                <English>ALiVE: Current mission's data cleared</English>
+                <Chinese>ALiVE:當前任務資料已清除</Chinese>
+                <Chinesesimp>ALiVE:当前任务数据已清除</Chinesesimp>
+                <French>ALiVE: données de la mission actuelle effacées</French>
+                <Spanish>ALiVE: datos de la misión actual eliminados</Spanish>
+                <Portuguese>ALiVE: dados da missão atual apagados</Portuguese>
+                <Russian>ALiVE: данные текущей миссии очищены</Russian>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_DATA_WIPE_DONE">
+                <English>ALiVE: All ALiVE data wiped</English>
+                <Chinese>ALiVE:所有ALiVE資料已清除</Chinese>
+                <Chinesesimp>ALiVE:所有ALiVE数据已清除</Chinesesimp>
+                <French>ALiVE: toutes les données ALiVE effacées</French>
+                <Spanish>ALiVE: todos los datos de ALiVE eliminados</Spanish>
+                <Portuguese>ALiVE: todos os dados ALiVE apagados</Portuguese>
+                <Russian>ALiVE: все данные ALiVE удалены</Russian>
+            </Key>
         </Container>
     </Package>
 </Project>

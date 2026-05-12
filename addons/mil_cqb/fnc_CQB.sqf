@@ -35,6 +35,7 @@ See Also:
 
 Author:
 Wolffy, Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS ALIVE_fnc_baseClassHash
@@ -213,8 +214,27 @@ switch(_operation) do {
             private _locality = _logic getvariable ["CQB_locality_setting","server"];
             _logic setVariable ["locality", _locality];
 
-            private _factions = _logic getvariable ["CQB_FACTIONS",DEFAULT_FACTIONS];
-            _factions = [_logic,"factions",_factions] call ALiVE_fnc_CQB;
+            // Union multi-select list + manual override field; dedup and drop empties
+            private _factionsRaw    = _logic getVariable ["CQB_FACTIONS",       []];
+            private _factionsManual = _logic getVariable ["CQB_FACTIONS_manual", ""];
+            private _factionsArr = if (typeName _factionsRaw == "ARRAY") then {
+                +_factionsRaw
+            } else {
+                if (_factionsRaw == "") then { [] } else {
+                    [[_factionsRaw, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+                }
+            };
+            private _manualArr = if (_factionsManual == "") then { [] } else {
+                [[_factionsManual, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+            };
+            private _merged = [];
+            {
+                if (typeName _x == "STRING" && {_x != ""} && {_x != "NONE"} && {!(_x in _merged)}) then {
+                    _merged pushBack _x;
+                };
+            } forEach (_factionsArr + _manualArr);
+            if (count _merged == 0) then { _merged = DEFAULT_FACTIONS; };
+            _factions = [_logic, "factions", _merged] call ALiVE_fnc_CQB;
 
             private _useDominantFaction = _logic getvariable ["CQB_UseDominantFaction","true"];
             if (_useDominantFaction isEqualType "") then {_useDominantFaction = (_useDominantFaction == "true")};

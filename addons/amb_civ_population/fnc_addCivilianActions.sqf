@@ -22,11 +22,20 @@ See Also:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 private _object = _this select 0;
 
 if ((side group _object) != CIVILIAN || {isnil QGVAR(ROLES_DISABLED)} || {GVAR(ROLES_DISABLED)}) exitWith {}; // only add actions if civilian roles module field != none
+
+// Skip the legacy role-talk + detain / search / intel scroll-wheel
+// sprawl unless the mission-maker explicitly selected CLASSIC mode on
+// the civilian interaction UI attribute. In every other mode (AUTO /
+// DIALOG / ACE) the same verbs are reachable through the dialog
+// (`Negotiate` button + gear browser) or the ACE branch, avoiding the
+// ~10-item addAction list that motivated the UX consolidation.
+if ((missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"]) != "CLASSIC") exitWith {};
 
 private _role = localize "STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_TOWNELDER";
 private _text = format[localize "STR_ALIVE_CIV_INTERACT_ACTIONS_TALKTO",_role];

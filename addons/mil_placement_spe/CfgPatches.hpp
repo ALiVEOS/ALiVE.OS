@@ -4,7 +4,7 @@ class CfgPatches {
         units[] = {};
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
-        requiredAddons[] = {"ALIVE_fnc_strategic"};
+        requiredAddons[] = {"ALIVE_fnc_strategic","ALIVE_sys_factioncompiler"};
         versionDesc = "ALiVE";
         VERSION_CONFIG;
         author = MODULE_AUTHOR;

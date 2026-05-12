@@ -22,11 +22,13 @@ class CfgVehicles {
         class ModuleDescription { description = "$STR_ALIVE_AISKILL_COMMENT"; };
         class Attributes : AttributesBase
         {
+            // ── GENERAL ──────────────────────────────────────────────────────
+            class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_GENERAL"; displayName = "GENERAL"; };
             class debug : Combo
             {
                     property = "ALiVE_sys_aiskill_debug";
                     displayName = "$STR_ALIVE_AISKILL_DEBUG";
-                    tooltip = "$STR_ALIVE_AISKILL_COMMENT";
+                    tooltip = "$STR_ALIVE_AISKILL_DEBUG_COMMENT";
                     defaultValue = """0""";
                     class Values
                     {
@@ -34,15 +36,70 @@ class CfgVehicles {
                         class No { name = "No"; value = 0; default = 1; };
                     };
             };
-            // ---- Skill Presets by Faction ----------------------------------
+            // ── SKILL PRESETS BY FACTION ──────────────────────────────────────
             class HDR_PRESETS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_PRESETS"; displayName = "SKILL PRESETS BY FACTION"; };
-            class skillFactionsRecruit : Edit { property = "ALiVE_sys_aiskill_skillFactionsRecruit"; displayName = "$STR_ALIVE_AISKILL_RECRUIT"; tooltip = "$STR_ALIVE_AISKILL_RECRUIT_COMMENT"; defaultValue = """"""; };
-            class skillFactionsRegular : Edit { property = "ALiVE_sys_aiskill_skillFactionsRegular"; displayName = "$STR_ALIVE_AISKILL_REGULAR"; tooltip = "$STR_ALIVE_AISKILL_REGULAR_COMMENT"; defaultValue = """"""; };
-            class skillFactionsVeteran : Edit { property = "ALiVE_sys_aiskill_skillFactionsVeteran"; displayName = "$STR_ALIVE_AISKILL_VETERAN"; tooltip = "$STR_ALIVE_AISKILL_VETERAN_COMMENT"; defaultValue = """"""; };
-            class skillFactionsExpert : Edit { property = "ALiVE_sys_aiskill_skillFactionsExpert"; displayName = "$STR_ALIVE_AISKILL_EXPERT"; tooltip = "$STR_ALIVE_AISKILL_EXPERT_COMMENT"; defaultValue = """"""; };
-            // ---- Custom Skill Override ------------------------------------
-            class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_CUSTOM"; displayName = "CUSTOM SKILL OVERRIDE"; };
-            class customSkillFactions : Edit { property = "ALiVE_sys_aiskill_customSkillFactions"; displayName = "$STR_ALIVE_AISKILL_CUSTOM"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_COMMENT"; defaultValue = """"""; };
+            class skillFactionsRecruit
+            {
+                property     = "ALiVE_sys_aiskill_skillFactionsRecruit";
+                displayName  = "$STR_ALIVE_AISKILL_RECRUIT";
+                tooltip      = "$STR_ALIVE_AISKILL_RECRUIT_COMMENT";
+                control      = "ALiVE_FactionChoiceMulti_Military";
+                typeName     = "STRING";
+                expression   = "_this setVariable ['skillFactionsRecruit', _value];";
+                defaultValue = """[]""";
+            };
+            class skillFactionsRecruitManual : Edit { property = "ALiVE_sys_aiskill_skillFactionsRecruitManual"; displayName = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+            class SPACER_RECRUIT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_SPACER_RECRUIT"; displayName = " "; };
+            class skillFactionsRegular
+            {
+                property     = "ALiVE_sys_aiskill_skillFactionsRegular";
+                displayName  = "$STR_ALIVE_AISKILL_REGULAR";
+                tooltip      = "$STR_ALIVE_AISKILL_REGULAR_COMMENT";
+                control      = "ALiVE_FactionChoiceMulti_Military";
+                typeName     = "STRING";
+                expression   = "_this setVariable ['skillFactionsRegular', _value];";
+                defaultValue = """[]""";
+            };
+            class skillFactionsRegularManual : Edit { property = "ALiVE_sys_aiskill_skillFactionsRegularManual"; displayName = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+            class SPACER_REGULAR : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_SPACER_REGULAR"; displayName = " "; };
+            class skillFactionsVeteran
+            {
+                property     = "ALiVE_sys_aiskill_skillFactionsVeteran";
+                displayName  = "$STR_ALIVE_AISKILL_VETERAN";
+                tooltip      = "$STR_ALIVE_AISKILL_VETERAN_COMMENT";
+                control      = "ALiVE_FactionChoiceMulti_Military";
+                typeName     = "STRING";
+                expression   = "_this setVariable ['skillFactionsVeteran', _value];";
+                defaultValue = """[]""";
+            };
+            class skillFactionsVeteranManual : Edit { property = "ALiVE_sys_aiskill_skillFactionsVeteranManual"; displayName = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+            class SPACER_VETERAN : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_SPACER_VETERAN"; displayName = " "; };
+            class skillFactionsExpert
+            {
+                property     = "ALiVE_sys_aiskill_skillFactionsExpert";
+                displayName  = "$STR_ALIVE_AISKILL_EXPERT";
+                tooltip      = "$STR_ALIVE_AISKILL_EXPERT_COMMENT";
+                control      = "ALiVE_FactionChoiceMulti_Military";
+                typeName     = "STRING";
+                expression   = "_this setVariable ['skillFactionsExpert', _value];";
+                defaultValue = """[]""";
+            };
+            class skillFactionsExpertManual : Edit { property = "ALiVE_sys_aiskill_skillFactionsExpertManual"; displayName = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+            class SPACER_EXPERT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_SPACER_EXPERT"; displayName = " "; };
+            // ── CUSTOM SKILL OVERRIDE ─────────────────────────────────────────
+            class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_CUSTOM"; displayName = "CUSTOM SKILL VALUES"; };
+            class customSkillFactions
+            {
+                property     = "ALiVE_sys_aiskill_customSkillFactions";
+                displayName  = "$STR_ALIVE_AISKILL_CUSTOM";
+                tooltip      = "$STR_ALIVE_AISKILL_CUSTOM_COMMENT";
+                control      = "ALiVE_FactionChoiceMulti_Military";
+                typeName     = "STRING";
+                expression   = "_this setVariable ['customSkillFactions', _value];";
+                defaultValue = """[]""";
+            };
+            class customSkillFactionsManual : Edit { property = "ALiVE_sys_aiskill_customSkillFactionsManual"; displayName = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+            class SPACER_CUSTOM_FACTIONS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_SPACER_CUSTOM_FACTIONS"; displayName = " "; };
             class customSkillAbilityMin : Edit { property = "ALiVE_sys_aiskill_customSkillAbilityMin"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN_COMMENT"; defaultValue = """0.2"""; typeName = "NUMBER"; };
             class customSkillAbilityMax : Edit { property = "ALiVE_sys_aiskill_customSkillAbilityMax"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX_COMMENT"; defaultValue = """0.25"""; typeName = "NUMBER"; };
             class customSkillAimAccuracy : Edit { property = "ALiVE_sys_aiskill_customSkillAimAccuracy"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY_COMMENT"; defaultValue = """0.3"""; typeName = "NUMBER"; };

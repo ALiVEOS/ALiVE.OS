@@ -32,7 +32,7 @@ See Also:
 
 Author:
 Tupolov, Wolffy
-
+Jman
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -106,6 +106,11 @@ if (_menuName == "civpop") then {
         ]
     ];
 };
+
+// Normalize CBA flexiMenu code-block actions to the string form required by
+// buttonSetAction (CBA fnc_list.sqf / fnc_menu.sqf passes the action slot
+// straight through, which strictly needs STRING).
+_menus call ALiVE_fnc_normalizeFlexiMenuActions;
 
 //-----------------------------------------------------------------------------
 private _menuDef = [];

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
@@ -11,20 +11,16 @@
     <Chinesesimp>为玩家提供后勤补给</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PR_ALLOW">
-    <English>Call Log. Support with</English>
-    <Chinesesimp>调用日志. 支持</Chinesesimp>
+    <English>Trigger Item:</English>
 </Key>
 <Key ID="STR_ALIVE_PR_ALLOW_COMMENT">
-    <English>Define the item the player must have to be able to use Player Resupply i.e "LaserDesignator"</English>
-    <Chinesesimp>定义玩家必须能够使用玩家补给的道具即.例如“激光指示器”</Chinesesimp>
+    <English>Class name of the item a player must carry to access the resupply tablet (e.g. LaserDesignator). Class names are case-sensitive.</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE">
-    <English>Restrict to</English>
-    <Chinesesimp>限制为</Chinesesimp>
+    <English>Restriction Type:</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_COMMENT">
-    <English>Restrict the player selection to items from own side or their own faction / whitelisted factions (defined below)</English>
-    <Chinesesimp>限制玩家选择己方或对方阵营/白名单阵营 (定义如下)</Chinesesimp>
+    <English>Controls which vehicles and groups are available to the player.\n\n• Side — shows all assets belonging to the player's side.\n• Faction — shows only assets from the player's own faction, or from the factions listed in Faction Whitelist below.</English>
 </Key>
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_SIDE">
     <English>Side</English>
@@ -34,58 +30,67 @@
     <English>Faction</English>
     <Chinesesimp>阵营</Chinesesimp>
 </Key>
-<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP">
-    <English>Allow Airdrop</English>
-    <Chinesesimp>允许空投</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP_COMMENT">
-    <English>Allow players to request supplies via Air Drop</English>
-    <Chinesesimp>允许玩家通过空投请求补给</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT">
-    <English>Allow Helicopter/VTOL Resupply</English>
-    <Chinesesimp>允许直升机/垂直起落 补给</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT_COMMENT">
-    <English>Allow players to request supplies via Helicopter/VTOL</English>
-    <Chinesesimp>允许玩家通过直升机/垂直起降请求补给</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY">
-    <English>Allow Convoy</English>
-    <Chinesesimp>允许车队</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY_COMMENT">
-    <English>Allow players to request supplies via Convoy</English>
-    <Chinesesimp>允许玩家通过车队请求补给</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST">
-    <English>Blacklist</English>
-    <Chinesesimp>黑名单</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT">
-    <English>Excluded config classes (f.e. Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! Caution: case sensitive!</English>
-    <Chinesesimp>排除配置类 (f.e. Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! 注意: 区分大小写!</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST">
-    <English>Whitelist</English>
-    <Chinesesimp>白名单</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT">
-    <English>Only these config classes will be used (Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! Caution: case sensitive!</English>
-    <Chinesesimp>只使用这些配置类 (Box_IND_Ammo_F,B_Soldier_diver_base_F,B_MRAP_01_F,...)! 注意: 区分大小写!</Chinesesimp>
-</Key>
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST">
-    <English>Faction Whitelist</English>
-    <Chinesesimp>阵营白名单</Chinesesimp>
+    <English>Factions:</English>
 </Key>
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST_COMMENT">
-    <English>If defined, only vehicles/groups from these factions (BLU_F,BLU_T_F...) can be delivered. If undefined, defaults to player faction. Caution: case sensitive!</English>
-    <Chinesesimp>如果已定义，则仅限来自这些阵营的车辆/团体(BLU_F,BLU_T_F...) 可以递送. 如果未定义，默认为玩家阵营.注意:区分大小写!</Chinesesimp>
+    <English>Select the factions whose vehicles and groups are available for resupply. If left empty, defaults to the player's faction at runtime. Use the manual field below for factions not shown in the list.</English>
+</Key>
+<Key ID="STR_ALIVE_PR_FACTION_WHITELIST_MANUAL">
+    <English>Factions (manual override):</English>
+    <Chinese>派系（手動覆蓋）:</Chinese>
+    <Chinesesimp>派系（手动覆盖）:</Chinesesimp>
+    <Spanish>Facciones (anulación manual):</Spanish>
+    <French>Factions (remplacement manuel)&#xa0;:</French>
+    <Portuguese>Facções (substituição manual):</Portuguese>
+    <Russian>Фракции (ручное переопределение):</Russian>
+</Key>
+<Key ID="STR_ALIVE_PR_FACTION_WHITELIST_MANUAL_COMMENT">
+    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes — e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
+    <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
+    <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
+    <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
+    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format : noms séparés par des virgules, sans espaces ni guillemets.</French>
+    <Portuguese>Opcional. Digite classnames de facções adicionais para mods não carregados atualmente. Formato: nomes separados por vírgulas, sem espaços ou aspas.</Portuguese>
+    <Russian>Необязательно. Введите classnames дополнительных фракций для незагруженных модов. Формат: имена через запятую, без пробелов и кавычек.</Russian>
 </Key>
 <Key ID="STR_ALIVE_PR_FILTER_FRIENDLY_FACTIONS">
     <English>Filter Friendly Factions:</English>
 </Key>
 <Key ID="STR_ALIVE_PR_FILTER_FRIENDLY_FACTIONS_COMMENT">
     <English>When enabled, the Reinforce List (Groups) only shows factions actively commanded by OPCOM modules friendly to the player's side. Disable to show all config factions. Has no effect if Faction Whitelist is set.</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP">
+    <English>Allow Airdrop:</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP_COMMENT">
+    <English>Allow players to request supplies via Air Drop</English>
+    <Chinesesimp>允许玩家通过空投请求补给</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT">
+    <English>Allow Heli/VTOL:</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_INSERT_COMMENT">
+    <English>Allow players to request supplies via Helicopter/VTOL</English>
+    <Chinesesimp>允许玩家通过直升机/垂直起降请求补给</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY">
+    <English>Allow Convoy:</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_CONVOY_COMMENT">
+    <English>Allow players to request supplies via Convoy</English>
+    <Chinesesimp>允许玩家通过车队请求补给</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST">
+    <English>Item Blacklist:</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_BLACKLIST_COMMENT">
+    <English>Comma-separated list of config class names to exclude from the resupply catalog (e.g. Box_IND_Ammo_F,B_MRAP_01_F). Class names are case-sensitive.</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST">
+    <English>Item Whitelist:</English>
+</Key>
+<Key ID="STR_ALIVE_PR_RESTRICTION_WHITELIST_COMMENT">
+    <English>Comma-separated list of config class names to restrict the resupply catalog to. Only these classes will appear (e.g. Box_IND_Ammo_F,B_MRAP_01_F). Class names are case-sensitive.</English>
 </Key>
 </Container></Package></Project>

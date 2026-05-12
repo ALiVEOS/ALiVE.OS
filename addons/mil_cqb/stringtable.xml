@@ -35,12 +35,10 @@
     <Chinesesimp>选择托管AI的位置</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_AMOUNT">
-    <English>AI Amount:</English>
-    <Chinesesimp>AI 数量:</Chinesesimp>
+    <English>Group Size:</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_AMOUNT_COMMENT">
-    <English>Max group size spawned per CQB location</English>
-    <Chinesesimp>每个CQB位置生成的最大组大小</Chinesesimp>
+    <English>Number of units per CQB group. Actual count is randomised between 1 and this value each time a group spawns.</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_ENABLE">
     <English>Enable CQB</English>
@@ -55,8 +53,31 @@
     <Chinesesimp>派系:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_FACTIONS_COMMENT">
-    <English>Faction(s) to use when Placement is set to Static. Enter a single classname or multiple separated by commas, no spaces, no quotes — e.g. OPF_F,OPF_G_F. All factions must be on the same side. Has no effect when Placement is set to Dominant.</English>
-    <Chinesesimp>选择CQB单位的派系</Chinesesimp>
+    <English>Pick one or more factions for CQB to spawn. Only applies when Placement is set to Static; has no effect when set to Dominant. Left-click to select one item; Ctrl+Left-click to toggle; Shift+Left-click to range-select. List is auto-populated from loaded faction mods. Combined with the manual override field below at runtime.</English>
+    <Chinesesimp>选择CQB单位的派系。仅在"布置"设置为静态时适用。</Chinesesimp>
+    <Chinese>選擇CQB單位的派系。僅在「佈置」設定為靜態時適用。</Chinese>
+    <Spanish>Seleccione una o más facciones para CQB. Solo se aplica cuando el despliegue está en Estático.</Spanish>
+    <French>Sélectionnez une ou plusieurs factions pour le CQB. S'applique uniquement lorsque le déploiement est défini sur Statique.</French>
+    <Portuguese>Selecione uma ou mais facções para o CQB. Aplica-se apenas quando o Posicionamento está definido como Estático.</Portuguese>
+    <Russian>Выберите одну или несколько фракций для CQB. Применяется только когда размещение установлено на Статическое.</Russian>
+</Key>
+<Key ID="STR_ALIVE_CQB_FACTIONS_MANUAL">
+    <English>Factions (manual override):</English>
+    <Chinesesimp>派系（手动覆盖）:</Chinesesimp>
+    <Chinese>派系（手動覆蓋）:</Chinese>
+    <Spanish>Facciones (anulación manual):</Spanish>
+    <French>Factions (remplacement manuel)&#xa0;:</French>
+    <Portuguese>Facções (substituição manual):</Portuguese>
+    <Russian>Фракции (ручное переопределение):</Russian>
+</Key>
+<Key ID="STR_ALIVE_CQB_FACTIONS_MANUAL_COMMENT">
+    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes — e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
+    <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
+    <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
+    <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
+    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format : noms séparés par des virgules, sans espaces ni guillemets.</French>
+    <Portuguese>Opcional. Digite classnames de facções adicionais para mods não carregados atualmente. Formato: nomes separados por vírgulas, sem espaços ou aspas.</Portuguese>
+    <Russian>Необязательно. Введите classnames дополнительных фракций для незагруженных модов. Формат: имена через запятую, без пробелов и кавычек.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CQB_TYPE">
     <English>Type:</English>
@@ -147,76 +168,60 @@
     <Chinesesimp>单位在巡逻航路点搜索附近房屋的几率</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MINWAITTIME">
-    <English>Patrol min WP wait:</English>
-    <Chinesesimp>巡逻最小等待时间</Chinesesimp>
+    <English>Patrol min WP wait (s):</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_MINWAITTIME_COMMENT">
-    <English>Seconds. Minimum threshold time the group will stop and wait at each waypoint.</English>
-    <Chinesesimp>秒.小组将在每个航路点停止并等待的最小阈值时间.</Chinesesimp>
+    <English>Minimum time in seconds the group waits at each patrol waypoint.</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_MIDWAITTIME">
-    <English>Patrol mid WP wait:</English>
-    <Chinesesimp>巡逻中等等待时间</Chinesesimp>
+    <English>Patrol mid WP wait (s):</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_MIDWAITTIME_COMMENT">
-    <English>Seconds. Median threshold time the group will stop and wait at each waypoint.</English>
-    <Chinesesimp>秒.小组将在每个航路点停止并等待的中间阈值时间.</Chinesesimp>
-</Key>    
+    <English>Median time in seconds the group waits at each patrol waypoint.</English>
+</Key>
 <Key ID="STR_ALIVE_CQB_MAXWAITTIME">
-    <English>Patrol max WP wait:</English>
-    <Chinesesimp>巡逻最大等待时间</Chinesesimp>
+    <English>Patrol max WP wait (s):</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_MAXWAITTIME_COMMENT">
-    <English>Seconds. Maximum threshold time the group will stop and wait at each waypoint.</English>
-    <Chinesesimp>秒.小组将在每个航路点停止并等待的最大阈值时间.</Chinesesimp>
+    <English>Maximum time in seconds the group waits at each patrol waypoint.</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_MINDIST">
-    <English>Minimum patrol radius:</English>
-    <Chinesesimp>最小巡逻半径</Chinesesimp>
+    <English>Min patrol radius (m):</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_MINDIST_COMMENT">
     <English>If group is patrolling, then the patrol radius will be no smaller than this value. The radius will be randomly calculated for each group between minimum and maximum patrol radius.</English>
     <Chinesesimp>如果小组正在巡逻,则巡逻半径将不小于此值.每组的半径将在最小和最大巡逻半径之间随机计算.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_MAXDIST">
-    <English>Maximum patrol radius:</English>
-    <Chinesesimp>最大巡逻半径</Chinesesimp>
+    <English>Max patrol radius (m):</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_MAXDIST_COMMENT">
     <English>If group is patrolling, then the group radius will be no bigger than this value. The radius will be randomly calculated for each group between minimum and maximum patrol radius.</English>
     <Chinesesimp>如果小组正在巡逻,则巡逻半径将不大于此值.每组的半径将在最小和最大巡逻半径之间随机计算.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE">
-    <English>Spawn Ground:</English>
-    <Chinesesimp>生成地面:</Chinesesimp>
+    <English>Spawn Ground (m):</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCE_COMMENT">
-    <English>Spawn distance for ground units.  Note that spawn distance for strategic placements is a factor 1.4 of this value</English>
-    <Chinesesimp>地面单位的生成距离。请注意,战略部署的生成距离是该值的系数1.4</Chinesesimp>
+    <English>Distance in metres at which ground units spawn/despawn around the player. Note: strategic placements use 1.4x this value.</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCESTATIC">
-    <English>Spawn Static Weapon:</English>
-    <Chinesesimp>生成静态武器:</Chinesesimp>
+    <English>Spawn Static Weapon (m):</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCESTATIC_COMMENT">
-    <English>Spawn distance for static weapons.  Note that spawn distance for strategic placements is a factor 1.4 of this value</English>
-    <Chinesesimp>静态武器的生成距离。请注意,战略部署的生成距离是该值的系数1.4</Chinesesimp>
+    <English>Distance in metres at which static weapons spawn/despawn around the player. Note: strategic placements use 1.4x this value.</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI">
-    <English>Spawn Heli:</English>
-    <Chinesesimp>生成声音:</Chinesesimp>
+    <English>Spawn Heli (m):</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEHELI_COMMENT">
-    <English>Spawn distance for helicopters (0 to disable spawning). Note that spawn distance for strategic placements is a factor 1.4 of this value</English>
-    <Chinesesimp>直升机的兵距离(0表示禁用生成)。请注意,战略部署的产卵距离是该值的系数1.4</Chinesesimp>
+    <English>Distance in metres at which helicopters spawn/despawn around the player. Set to 0 to disable helicopter spawning. Note: strategic placements use 1.4x this value.</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET">
-    <English>Spawn Jet:</English>
-    <Chinesesimp>生成喷气机:</Chinesesimp>
+    <English>Spawn Jet (m):</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_SPAWNDISTANCEJET_COMMENT">
-    <English>Spawn distance for aircraft (0 to disable spawning). Note that spawn distance for strategic placements is a factor 1.4 of this value</English>
-    <Chinesesimp>飞机生成距离(0表示生成禁用)。请注意,战略部署生成的距离是该值的系数1.4</Chinesesimp>
+    <English>Distance in metres at which fixed-wing aircraft spawn/despawn around the player. Set to 0 to disable jet spawning. Note: strategic placements use 1.4x this value.</English>
 </Key>
 <Key ID="STR_ALIVE_CQB_DEBUG_ENABLE">
     <English>Activate CQB Debug</English>

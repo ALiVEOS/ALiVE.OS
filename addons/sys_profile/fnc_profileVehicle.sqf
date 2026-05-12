@@ -79,6 +79,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -504,6 +505,21 @@ switch (_operation) do {
 
                     // Check to see if placed on carrier/ship
                     if !([_position] call ALiVE_fnc_nearShip) then {
+                        // Run the unified air spawn validator (#850).
+                        // Profile coords may be stale - world state can
+                        // shift between virtualise and de-virtualise
+                        // (other vehicles, IED clutter, mod-added
+                        // objects). When the validator finds a clear
+                        // spot in range, use it; otherwise fall back
+                        // to the profile position with the existing
+                        // vehicleSpawnSettleSeconds safety window.
+                        if !(_isSPE) then {
+                            private _airResult = [_vehicleClass, _position, 200, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                            if (count _airResult >= 2) then {
+                                _position = _airResult select 0;
+                                _direction = _airResult select 1;
+                            };
+                        };
                         _position set [2,0.5];
                     } else {
                        // _special = "NONE";
@@ -522,18 +538,39 @@ switch (_operation) do {
                     if (tolower _vehicleType == "ship") then {
                         _position = [_position, 0, 50, 10, 2, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
                     } else {
-                        if !(_isSPE) then { _position = [_position,0,100,10,0,0.5,0,[],[_position], _vehicleType] call ALIVE_fnc_findFilteredSafePos; };
-                        //Check direction of street
-                        _roads = _position nearRoads 25;
-                        _roadsConnected = roadsConnectedTo (_roads select 0);
+                        // Switch to the unified spawn-position validator
+                        // (#850 fix). Returns [_pos, _dir] with side-of-road
+                        // lateral offset, bbox-aware footprint clearance,
+                        // and full obstacle-table rejection. Falls back to
+                        // the original profile position when no safe spot
+                        // is found in the search radius - the existing
+                        // 5 s allowDamage window catches the residual
+                        // bad-spawn cases.
+                        if !(_isSPE) then {
+                            private _spawnResult = [_vehicleClass, _position, 100, "auto"] call ALiVE_fnc_findVehicleSpawnPosition;
+                            if (count _spawnResult >= 2) then {
+                                _position = _spawnResult select 0;
+                                _direction = _spawnResult select 1;
+                            };
+                            // else: keep the original position + later
+                            // direction logic; allowDamage window covers it.
+                        };
 
-                        
-                        if (!isnil "_roadsConnected" && {count _roadsConnected > 1}) then {
-                            _roads = _roadsConnected;
-                            _direction = (_roads select 0) getDir (_roads select 1);
-                        } else {
-                            if (count _roads > 1) then {
-                                _direction = (_roads select 0) getDir (_roads select 1);
+                        // Direction fallback / refinement. Only run when
+                        // the unified validator didn't already supply a
+                        // direction (SPE branch above, or empty result).
+                        if (_direction == 0 || _isSPE) then {
+                            _roads = _position nearRoads 25;
+                            if (count _roads > 0) then {
+                                _roadsConnected = roadsConnectedTo (_roads select 0);
+                                if (!isnil "_roadsConnected" && {count _roadsConnected > 1}) then {
+                                    _roads = _roadsConnected;
+                                    _direction = (_roads select 0) getDir (_roads select 1);
+                                } else {
+                                    if (count _roads > 1) then {
+                                        _direction = (_roads select 0) getDir (_roads select 1);
+                                    };
+                                };
                             };
                         };
                        // Update the direction of static weapons!
@@ -775,8 +812,15 @@ switch (_operation) do {
             // store the profile id on the active profiles index
             [ALIVE_profileHandler,"setActive",[_profileID,_side,_logic]] call ALIVE_fnc_profileHandler;
 
-            // Kick off timer to enable damage
-            [{_this allowDamage true;}, _vehicle, 5] call CBA_fnc_waitAndExecute;
+            // Kick off timer to enable damage. Settle window is tunable
+            // via the sys_profile module attribute vehicleSpawnSettleSeconds
+            // (default 15 s). Longer windows cover edge cases where the
+            // unified spawn validator returned [] and the vehicle is
+            // sitting on a residual bad position; the engine has more
+            // time to resolve the impact before damage re-engages.
+            private _settleSeconds = [ALIVE_profileSystem, "vehicleSpawnSettleSeconds"] call ALIVE_fnc_profileSystem;
+            if (isNil "_settleSeconds" || {_settleSeconds <= 0}) then { _settleSeconds = 15 };
+            [{_this allowDamage true;}, _vehicle, _settleSeconds] call CBA_fnc_waitAndExecute;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {

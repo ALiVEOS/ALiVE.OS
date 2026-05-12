@@ -18,6 +18,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 
 Peer Reviewed:
 nil
@@ -38,8 +39,8 @@ _disablePersistence = _logic getvariable ["DISABLEPERSISTENCE","false"];
 _disableTow = _logic getvariable ["DISABLETOW","false"];
 _disableLift = _logic getvariable ["DISABLELIFT","false"];
 _disableLoad = _logic getvariable ["DISABLELOAD","false"];
-_disable3D = _logic getvariable ["DISABLE3D","false"];
 _blacklist = _logic getvariable ["BLACKLIST",""];
+_whitelistRaw = _logic getvariable ["WHITELIST",""];
 
 waituntil {!isnil QMOD(SYS_LOGISTICS)};
 
@@ -50,7 +51,15 @@ MOD(SYS_LOGISTICS) setvariable ["DISABLEPERSISTENCE", _disablePersistence == "tr
 MOD(SYS_LOGISTICS) setvariable ["DISABLETOW", _disableTow == "true", true];
 MOD(SYS_LOGISTICS) setvariable ["DISABLELIFT", _disableLift == "true", true];
 MOD(SYS_LOGISTICS) setvariable ["DISABLELOAD", _disableLoad == "true", true];
-MOD(SYS_LOGISTICS) setvariable ["DISABLE3D", _disable3D == "true", true];
 MOD(SYS_LOGISTICS) setvariable ["BLACKLIST",[_logic, "blacklist", _blacklist] call ALiVE_fnc_Logistics, true];
+
+private _whitelistArr = if (_whitelistRaw == "") then {
+    []
+} else {
+    private _parts = [_whitelistRaw, ","] call CBA_fnc_split;
+    _parts = _parts apply { [_x, " ", ""] call CBA_fnc_replace };
+    _parts select { _x != "" }
+};
+MOD(SYS_LOGISTICS) setvariable ["WHITELIST", _whitelistArr, true];
 
 _logic

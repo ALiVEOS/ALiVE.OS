@@ -4,7 +4,6 @@ set exe=MakePBO -A -P -N -U -X=thumbs.db,*.h,*.dep,*.bak,*.png,*.log,*.pew
 set source=P:\x\alive\addons
 
 set exeuncommpressed=MakePBO.exe -A -N -P -X=thumbs.db,*.h,*.dep,*.bak,*.png,*.log,*.pew
-set uncommpressedsource=P:\x\alive\addons\mil_OPCOM
 
 rem ********************
 rem find the arma3 path
@@ -40,13 +39,17 @@ echo SOURCE - %source%
 
 set target="%_ARMA3PATH%\@alive\addons"
 
-FOR /F "tokens=1* delims=," %%A in ('dir %source% /ad /b') do (
-	%exe% "%source%\%%A"
-	if ERRORLEVEL 1 goto err
+IF NOT EXIST %target% (
+	MD %target%
 )
 
- echo %exeuncommpressed% %uncommpressedsource%
- %exeuncommpressed% "%uncommpressedsource%"
+FOR /F "tokens=1* delims=," %%A in ('dir %source% /ad /b') do (
+    echo %%A | findstr /b "\." >nul
+    if errorlevel 1 (
+        %exe% "%source%\%%A"
+        if ERRORLEVEL 1 goto err
+    )
+)
 
 del /Y %target%\*.pbo
 move /Y %source%\*.pbo %target%\
@@ -60,12 +63,12 @@ IF NOT EXIST %target% (
 )
 
 FOR /F "tokens=1* delims=," %%A in ('dir %source% /ad /b') do (
-	%exe% "%source%\%%A"
-	if ERRORLEVEL 1 goto err
+    echo %%A | findstr /b "\." >nul
+    if errorlevel 1 (
+        %exe% "%source%\%%A"
+        if ERRORLEVEL 1 goto err
+    )
 )
-
- echo %exeuncommpressed% %uncommpressedsource%
- %exeuncommpressed% "%uncommpressedsource%"
 
 del /Y %target%\*.pbo
 move /Y %source%\*.pbo %target%\

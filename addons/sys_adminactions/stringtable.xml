@@ -93,7 +93,7 @@
 	<Chinesesimp>编辑非配置单位：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CREATE_PROFILES_ENABLE">
-    <English>Profile non profiled units</English>
+    <English>Profile Non-Profiled Units</English>
 	<Chinesesimp>编辑非配置单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_CREATE_PROFILES_COMMENT">
@@ -121,7 +121,7 @@
 	<Chinesesimp>放置一个管理动作模块,以提供服务器管理或单人玩家管理功能,如传送,备份还原(GHOST)和运行脚本。</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS">
-    <English>Toggle OPCOM installations</English>
+    <English>Toggle OPCOM Installations</English>
 	<Chinesesimp>切换作战指挥设施</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ADMINACTIONS_OPCOM_TOGGLEINSTALLATIONS_COMMENT">

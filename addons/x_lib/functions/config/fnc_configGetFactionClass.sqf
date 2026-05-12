@@ -31,10 +31,10 @@ nil
 private "_value";
 
 if (typeName _this == "ARRAY") then {
-	["INCORRECT TYPE PASSED TO configGetFactionClass: %1", _this] call ALiVE_fnc_dump;
-	_value = _this select 0;
+    ["INCORRECT TYPE PASSED TO configGetFactionClass: %1", _this] call ALiVE_fnc_dump;
+    _value = _this select 0;
 } else {
-	_value = _this;
+    _value = _this;
 };
 
 private _path = missionConfigFile >> "CfgFactionClasses" >> _value;
@@ -42,22 +42,32 @@ private _path = missionConfigFile >> "CfgFactionClasses" >> _value;
 if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _value};
 
 if !(isClass _path) then {
-	// Check to see if faction has a mapping within groups
-	if (!isnil "ALiVE_factionCustomMappings") then {
-		{
-	       private _factionData = [ALiVE_factionCustomMappings, _x] call ALiVE_fnc_hashGet;
+    if (!isNil "ALiVE_factionCustomMappings" && {_value in (ALiVE_factionCustomMappings select 1)}) then {
+        private _factionData = [ALiVE_factionCustomMappings, _value] call ALiVE_fnc_hashGet;
+        private _configFaction = [_factionData, "ConfigFactionName", [_factionData, "FactionName", _value] call ALiVE_fnc_hashGet] call ALiVE_fnc_hashGet;
 
-		   private _factionSide = [_factionData,"GroupSideName"] call ALiVE_fnc_hashGet;
+        _path = missionConfigFile >> "CfgFactionClasses" >> _configFaction;
+        if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _configFaction};
+    };
+};
 
-		   private _faction = [_factionData,"GroupFactionName"] call ALiVE_fnc_hashGet;
+if !(isClass _path) then {
+    // Check to see if faction has a mapping within groups
+    if (!isnil "ALiVE_factionCustomMappings") then {
+        {
+           private _factionData = [ALiVE_factionCustomMappings, _x] call ALiVE_fnc_hashGet;
 
-		   if (_value == _faction) then {
-		   		_path = missionConfigFile >> "CfgFactionClasses" >> _x;
-				if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _x};
-		   };
+           private _factionSide = [_factionData,"GroupSideName"] call ALiVE_fnc_hashGet;
 
-		} foreach (ALiVE_factionCustomMappings select 1);
-	};
+           private _faction = [_factionData,"GroupFactionName"] call ALiVE_fnc_hashGet;
+
+           if (_value == _faction) then {
+                _path = missionConfigFile >> "CfgFactionClasses" >> _x;
+                if !(isClass _path) then {_path = configFile >> "CfgFactionClasses" >> _x};
+           };
+
+        } foreach (ALiVE_factionCustomMappings select 1);
+    };
 };
 
 _path

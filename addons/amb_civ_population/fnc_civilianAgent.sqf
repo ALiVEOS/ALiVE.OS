@@ -58,6 +58,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -384,9 +385,38 @@ switch(_operation) do {
             _unit setVariable ["priest", _priest,_priest];
             _unit setVariable ["politician", _politician,_politician];
 
-            // Set Name
-            if (_firstName != "" && _lastName != "") then {
-                _unit setName [format["%1 %2",_firstName, _lastName], _firstName, _lastName];
+            // Set Name. Resolves the canonical name for this civilian
+            // from three sources in priority order:
+            //   1. ALiVE_PersistentName on the agent profile - set on a
+            //      previous spawn of this same agent (this branch below)
+            //      OR on the first dialog open in case "getData" of
+            //      fnc_civInteract. Survives virtual <-> real cycles
+            //      because the agent profile persists.
+            //   2. Explicit firstName + lastName on the logic - set when
+            //      role-specific names (townelder etc.) are pre-assigned
+            //      at agent-create time.
+            //   3. Engine-default name _unit holds immediately after
+            //      createUnit (BIS pulls it from the class's genericNames
+            //      config). First-spawn fallback - captures into the
+            //      profile so subsequent respawns pick up the same name.
+            // Resolves #246 (Persist Civilian Names).
+            private _persistentName = [_logic, "ALiVE_PersistentName", ""] call ALiVE_fnc_hashGet;
+            if (_persistentName != "") then {
+                private _spaceIdx = _persistentName find " ";
+                private _first = if (_spaceIdx > 0) then { _persistentName select [0, _spaceIdx] } else { _persistentName };
+                private _last  = if (_spaceIdx > 0) then { _persistentName select [_spaceIdx + 1] } else { "" };
+                _unit setName [_persistentName, _first, _last];
+            } else {
+                if (_firstName != "" && _lastName != "") then {
+                    private _full = format ["%1 %2", _firstName, _lastName];
+                    _unit setName [_full, _firstName, _lastName];
+                    [_logic, "ALiVE_PersistentName", _full] call ALiVE_fnc_hashSet;
+                } else {
+                    private _engineName = name _unit;
+                    if (_engineName != "") then {
+                        [_logic, "ALiVE_PersistentName", _engineName] call ALiVE_fnc_hashSet;
+                    };
+                };
             };
 
             // killed event handler

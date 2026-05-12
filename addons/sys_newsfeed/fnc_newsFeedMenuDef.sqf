@@ -32,6 +32,7 @@ See Also:
 
 Author:
 Gunny
+Jman
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -71,12 +72,19 @@ _menus =
     [
         ["main", "ALiVE", _menuRsc],
         [
+            // Newsfeed entry hidden - the Newsfeed backend is legacy and
+            // no longer hosted. The module itself is already scope=1 (hidden
+            // from the Eden module browser), so new missions can't add it;
+            // legacy missions that placed the module in the past still load
+            // but the menu entry no longer renders. Restore by flipping the
+            // visible/enabled flags below if a custom Newsfeed host is stood
+            // up.
             [localize "STR_ALIVE_NEWSFEED",
                 {[] call ALIVE_fnc_newsFeedMenuInit},
                 "",
                 localize "STR_ALIVE_NEWSFEED_COMMENT",
                  "",
-                 -1, 1, true
+                 -1, 0, false
             ]
         ]
     ]
@@ -84,6 +92,11 @@ _menus =
 
 
 //-----------------------------------------------------------------------------
+// Normalize CBA flexiMenu code-block actions to the string form required by
+// buttonSetAction (CBA fnc_list.sqf / fnc_menu.sqf passes the action slot
+// straight through, which strictly needs STRING).
+_menus call ALiVE_fnc_normalizeFlexiMenuActions;
+
 _menuDef = [];
 {
     if (_x select 0 select 0 == _menuName) exitWith {_menuDef = _x};

@@ -44,14 +44,14 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_RADIUS">
-    <English>Spawn Radius:</English>
-    <French>Rayon d'apparition:</French>
-    <Portuguese>Raio de Spawn:</Portuguese>
-    <Russian>Радиус спавна:</Russian>
-    <Spanish>Radio de aparición:</Spanish>
-    <Chinese>生成半徑:</Chinese>
-    <Chinesesimp>生成半径:</Chinesesimp>
-</Key>
+    <English>Spawn Radius (m):</English>
+
+    <Chinese>生成半徑（公尺）:</Chinese>
+    <Chinesesimp>生成半径（米）:</Chinesesimp>
+    <Spanish>Radio de aparición (m):</Spanish>
+    <French>Rayon d'apparition (m):</French>
+    <Portuguese>Raio de spawn (m):</Portuguese>
+    <Russian>Радиус спавна (м):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_RADIUS_COMMENT">
     <English>Sets the distance from players to spawn civilian units</English>
@@ -64,14 +64,14 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_ACTIVE_LIMITER">
-    <English>Active Limiter:</English>
-    <French>Limite active:</French>
-    <Portuguese>Limite Ativo:</Portuguese>
-    <Russian>Лимит активных:</Russian>
-    <Spanish>Limitador activo:</Spanish>
-    <Chinese>活動上限:</Chinese>
-    <Chinesesimp>活动限制:</Chinesesimp>
-</Key>
+    <English>Active Limiter (count):</English>
+
+    <Chinese>同時活動上限（數量）:</Chinese>
+    <Chinesesimp>同时活动上限（数量）:</Chinesesimp>
+    <Spanish>Límite activo (nº):</Spanish>
+    <French>Limite active (nb):</French>
+    <Portuguese>Limite ativo (qtd):</Portuguese>
+    <Russian>Активный лимит (шт):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_ACTIVE_LIMITER_COMMENT">
     <English>Sets the max number of civilians to spawn at any one time</English>
@@ -84,14 +84,14 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_JET_RADIUS">
-    <English>Spawn planes radius:</English>
-    <French>Rayon d'apparition avion:</French>
-    <Portuguese>Raio de spawn em aviões:</Portuguese>
-    <Russian>Радиус спавна (самолёт):</Russian>
-    <Spanish>Radio de aparición en aviones:</Spanish>
-    <Chinese>戰機生成半徑:</Chinese>
-    <Chinesesimp>生成飞机半径:</Chinesesimp>
-</Key>
+    <English>Spawn Planes Radius (m):</English>
+
+    <Chinese>噴射機生成半徑（公尺）:</Chinese>
+    <Chinesesimp>喷气机生成半径（米）:</Chinesesimp>
+    <Spanish>Radio aparición aviones (m):</Spanish>
+    <French>Rayon avions (m):</French>
+    <Portuguese>Raio de spawn aviões (m):</Portuguese>
+    <Russian>Радиус спавна самолётов (м):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_JET_RADIUS_COMMENT">
     <English>The radius around player in planes to spawn civilians. Set to 0 to disable spawning while in planes</English>
@@ -104,14 +104,14 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_HELI_RADIUS">
-    <English>Spawn heli radius:</English>
-    <French>Rayon d'apparition hélico:</French>
-    <Portuguese>Raio de spawn em heli:</Portuguese>
-    <Russian>Радиус спавна (вертолёт):</Russian>
-    <Spanish>Radio de aparición en helicópteros:</Spanish>
-    <Chinese>直升機生成半徑:</Chinese>
-    <Chinesesimp>生成直升机半径:</Chinesesimp>
-</Key>
+    <English>Spawn Heli Radius (m):</English>
+
+    <Chinese>直升機生成半徑（公尺）:</Chinese>
+    <Chinesesimp>直升机生成半径（米）:</Chinesesimp>
+    <Spanish>Radio aparición helis (m):</Spanish>
+    <French>Rayon hélicos (m):</French>
+    <Portuguese>Raio de spawn helis (m):</Portuguese>
+    <Russian>Радиус спавна вертолётов (м):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_HELI_RADIUS_COMMENT">
     <English>The radius around player in helicopters to spawn civilians. Set to 0 to disable spawning while in helicopters</English>
@@ -124,24 +124,59 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST">
-    <English>BLUFOR Hostility</English>
-    <French>Hostilité BLUFOR</French>
-    <Portuguese>Hostilidade BLUFOR</Portuguese>
-    <Russian>Враждебность к BLUFOR</Russian>
-    <Spanish>Hostilidad BLUFOR</Spanish>
-    <Chinese>BLUFOR 敵意</Chinese>
-    <Chinesesimp>BLUFOR敌意</Chinesesimp>
-</Key>
+    <English>BLUFOR Hostility:</English>
+
+    <Chinese>BLUFOR 敵意:</Chinese>
+    <Chinesesimp>BLUFOR 敌意:</Chinesesimp>
+    <Spanish>Hostilidad BLUFOR:</Spanish>
+    <French>Hostilité BLUFOR:</French>
+    <Portuguese>Hostilidade BLUFOR:</Portuguese>
+    <Russian>Враждебность к BLUFOR:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST_COMMENT">
-    <English>How hostile are civilians initially to BLUFOR side</English>
-    <French>Niveau d'hostilité initiale des civils envers le camp BLUFOR</French>
-    <Portuguese>Quão hostis são os civis inicialmente em relação ao lado BLUFOR</Portuguese>
-    <Russian>Исходный уровень враждебности гражданских к стороне BLUFOR</Russian>
-    <Spanish>Nivel inicial de hostilidad de los civiles hacia el bando BLUFOR</Spanish>
-    <Chinese>平民初始對 BLUFOR 陣營的敵意程度</Chinese>
-    <Chinesesimp>平民最初对BLUFOR的敌意有多大</Chinesesimp>
-</Key>
+    <English>Initial hostility level of civilians toward the BLUFOR side (0-200 scale; higher = more hostile).
+
+• Low (0) — civilians start neutral; hostility builds only from insurgent activity.
+• Medium (30) — mild pre-existing animosity; some settlements begin wary.
+• High (60) — strong pre-existing hostility; most settlements begin unfriendly.
+• Extreme (130) — population begins actively hostile; hearts-and-minds work is much harder.</English>
+
+    <Chinese>平民對 BLUFOR 陣營的初始敵意（0-200 級別；數值愈高愈敵對）。
+
+• 低 (0) — 平民起始中立；敵意僅源於叛亂活動。
+• 中 (30) — 輕度既有敵意；部分聚落起始警戒。
+• 高 (60) — 強烈既有敵意；多數聚落起始不友善。
+• 極端 (130) — 平民起始積極敵對；人心爭奪工作大幅受阻。</Chinese>
+    <Chinesesimp>平民对 BLUFOR 阵营的初始敌意（0-200 等级；数值越高越敌对）。
+
+• 低 (0) — 平民起始中立；敌意仅源于叛乱活动。
+• 中 (30) — 轻度既有敌意；部分聚落起始警戒。
+• 高 (60) — 强烈既有敌意；多数聚落起始不友好。
+• 极端 (130) — 平民起始积极敌对；民心工作大幅受阻。</Chinesesimp>
+    <Spanish>Nivel de hostilidad inicial de los civiles hacia el bando BLUFOR (escala 0-200; mayor = más hostil).
+
+• Bajo (0) — los civiles empiezan neutrales; la hostilidad sólo crece por la actividad insurgente.
+• Medio (30) — ligera animosidad preexistente; algunas localidades empiezan cautas.
+• Alto (60) — fuerte hostilidad preexistente; la mayoría de localidades empiezan poco amistosas.
+• Extremo (130) — la población empieza abiertamente hostil; el trabajo de corazones y mentes es mucho más difícil.</Spanish>
+    <French>Niveau d'hostilité initial des civils envers le camp BLUFOR (échelle 0-200; plus élevé = plus hostile).
+
+• Faible (0) — les civils sont neutres au départ; l'hostilité ne monte que suite à l'activité insurgée.
+• Moyen (30) — animosité préexistante légère; certaines agglomérations commencent méfiantes.
+• Élevé (60) — forte hostilité préexistente; la plupart des agglomérations commencent peu amicales.
+• Extrême (130) — la population commence activement hostile; le travail coeurs et esprits est bien plus ardu.</French>
+    <Portuguese>Nível de hostilidade inicial dos civis em relação ao lado BLUFOR (escala 0-200; maior = mais hostil).
+
+• Baixo (0) — civis começam neutros; a hostilidade só cresce pela atividade insurgente.
+• Médio (30) — leve animosidade pré-existente; alguns assentamentos começam cautelosos.
+• Alto (60) — forte hostilidade pré-existente; a maioria dos assentamentos começa pouco amistosa.
+• Extremo (130) — a população começa ativamente hostil; trabalho de corações e mentes fica muito mais difícil.</Portuguese>
+    <Russian>Исходный уровень враждебности гражданских к стороне BLUFOR (шкала 0-200; выше — враждебнее).
+
+• Низкий (0) — гражданские начинают нейтрально; враждебность растёт только от деятельности повстанцев.
+• Средний (30) — лёгкая предшествующая неприязнь; некоторые поселения начинают настороженными.
+• Высокий (60) — сильная предшествующая враждебность; большинство поселений начинают недружелюбными.
+• Экстремальный (130) — население начинает активно враждебным; работа на сердца и умы становится гораздо сложнее.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST_LOW">
     <English>Low</English>
@@ -184,24 +219,59 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_EAST">
-    <English>OPFOR Hostility</English>
-    <French>Hostilité OPFOR</French>
-    <Portuguese>Hostilidade OPFOR</Portuguese>
-    <Russian>Враждебность к OPFOR</Russian>
-    <Spanish>Hostilidad OPFOR</Spanish>
-    <Chinese>OPFOR 敵意</Chinese>
-    <Chinesesimp>OPFOR敌意</Chinesesimp>
-</Key>
+    <English>OPFOR Hostility:</English>
+
+    <Chinese>OPFOR 敵意:</Chinese>
+    <Chinesesimp>OPFOR 敌意:</Chinesesimp>
+    <Spanish>Hostilidad OPFOR:</Spanish>
+    <French>Hostilité OPFOR:</French>
+    <Portuguese>Hostilidade OPFOR:</Portuguese>
+    <Russian>Враждебность к OPFOR:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_EAST_COMMENT">
-    <English>How hostile are civilians initially to OPFOR side</English>
-    <French>Niveau d'hostilité initiale des civils envers le camp OPFOR</French>
-    <Portuguese>Quão hostis são os civis inicialmente em relação ao lado OPFOR</Portuguese>
-    <Russian>Исходный уровень враждебности гражданских к стороне OPFOR</Russian>
-    <Spanish>Nivel inicial de hostilidad de los civiles hacia el bando OPFOR</Spanish>
-    <Chinese>平民初始對 OPFOR 陣營的敵意程度</Chinese>
-    <Chinesesimp>平民最初对OPFOR一方的敌意有多大</Chinesesimp>
-</Key>
+    <English>Initial hostility level of civilians toward the OPFOR side (0-200 scale; higher = more hostile).
+
+• Low (0) — civilians start neutral; hostility builds only from insurgent activity.
+• Medium (30) — mild pre-existing animosity; some settlements begin wary.
+• High (60) — strong pre-existing hostility; most settlements begin unfriendly.
+• Extreme (130) — population begins actively hostile; hearts-and-minds work is much harder.</English>
+
+    <Chinese>平民對 OPFOR 陣營的初始敵意（0-200 級別；數值愈高愈敵對）。
+
+• 低 (0) — 平民起始中立；敵意僅源於叛亂活動。
+• 中 (30) — 輕度既有敵意；部分聚落起始警戒。
+• 高 (60) — 強烈既有敵意；多數聚落起始不友善。
+• 極端 (130) — 平民起始積極敵對；人心爭奪工作大幅受阻。</Chinese>
+    <Chinesesimp>平民对 OPFOR 阵营的初始敌意（0-200 等级；数值越高越敌对）。
+
+• 低 (0) — 平民起始中立；敌意仅源于叛乱活动。
+• 中 (30) — 轻度既有敌意；部分聚落起始警戒。
+• 高 (60) — 强烈既有敌意；多数聚落起始不友好。
+• 极端 (130) — 平民起始积极敌对；民心工作大幅受阻。</Chinesesimp>
+    <Spanish>Nivel de hostilidad inicial de los civiles hacia el bando OPFOR (escala 0-200; mayor = más hostil).
+
+• Bajo (0) — los civiles empiezan neutrales; la hostilidad sólo crece por la actividad insurgente.
+• Medio (30) — ligera animosidad preexistente; algunas localidades empiezan cautas.
+• Alto (60) — fuerte hostilidad preexistente; la mayoría de localidades empiezan poco amistosas.
+• Extremo (130) — la población empieza abiertamente hostil; el trabajo de corazones y mentes es mucho más difícil.</Spanish>
+    <French>Niveau d'hostilité initial des civils envers le camp OPFOR (échelle 0-200; plus élevé = plus hostile).
+
+• Faible (0) — les civils sont neutres au départ; l'hostilité ne monte que suite à l'activité insurgée.
+• Moyen (30) — animosité préexistante légère; certaines agglomérations commencent méfiantes.
+• Élevé (60) — forte hostilité préexistente; la plupart des agglomérations commencent peu amicales.
+• Extrême (130) — la population commence activement hostile; le travail coeurs et esprits est bien plus ardu.</French>
+    <Portuguese>Nível de hostilidade inicial dos civis em relação ao lado OPFOR (escala 0-200; maior = mais hostil).
+
+• Baixo (0) — civis começam neutros; a hostilidade só cresce pela atividade insurgente.
+• Médio (30) — leve animosidade pré-existente; alguns assentamentos começam cautelosos.
+• Alto (60) — forte hostilidade pré-existente; a maioria dos assentamentos começa pouco amistosa.
+• Extremo (130) — a população começa ativamente hostil; trabalho de corações e mentes fica muito mais difícil.</Portuguese>
+    <Russian>Исходный уровень враждебности гражданских к стороне OPFOR (шкала 0-200; выше — враждебнее).
+
+• Низкий (0) — гражданские начинают нейтрально; враждебность растёт только от деятельности повстанцев.
+• Средний (30) — лёгкая предшествующая неприязнь; некоторые поселения начинают настороженными.
+• Высокий (60) — сильная предшествующая враждебность; большинство поселений начинают недружелюбными.
+• Экстремальный (130) — население начинает активно враждебным; работа на сердца и умы становится гораздо сложнее.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_EAST_LOW">
     <English>Low</English>
@@ -244,24 +314,59 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDEP">
-    <English>Independent Hostility</English>
-    <French>Hostilité Indépendants</French>
-    <Portuguese>Hostilidade Independente</Portuguese>
-    <Russian>Враждебность к INDFOR</Russian>
-    <Spanish>Hostilidad Independiente</Spanish>
-    <Chinese>中立方敵意</Chinese>
-    <Chinesesimp>Independent敌意</Chinesesimp>
-</Key>
+    <English>Independent Hostility:</English>
+
+    <Chinese>獨立陣營敵意:</Chinese>
+    <Chinesesimp>独立阵营敌意:</Chinesesimp>
+    <Spanish>Hostilidad Independiente:</Spanish>
+    <French>Hostilité Indépendant:</French>
+    <Portuguese>Hostilidade Independente:</Portuguese>
+    <Russian>Враждебность к Независимым:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDEP_COMMENT">
-    <English>How hostile are civilians initially to Independent side</English>
-    <French>Niveau d'hostilité initiale des civils envers le camp Indépendant</French>
-    <Portuguese>Quão hostis são os civis inicialmente em relação ao lado Independente</Portuguese>
-    <Russian>Исходный уровень враждебности гражданских к стороне INDFOR</Russian>
-    <Spanish>Nivel inicial de hostilidad de los civiles hacia el bando Independiente</Spanish>
-    <Chinese>平民初始對中立方陣營的敵意程度</Chinese>
-    <Chinesesimp>平民最初对Independent一方的敌意有多大</Chinesesimp>
-</Key>
+    <English>Initial hostility level of civilians toward the Independent side (0-200 scale; higher = more hostile).
+
+• Low (0) — civilians start neutral; hostility builds only from insurgent activity.
+• Medium (30) — mild pre-existing animosity; some settlements begin wary.
+• High (60) — strong pre-existing hostility; most settlements begin unfriendly.
+• Extreme (130) — population begins actively hostile; hearts-and-minds work is much harder.</English>
+
+    <Chinese>平民對 Independent 陣營的初始敵意（0-200 級別；數值愈高愈敵對）。
+
+• 低 (0) — 平民起始中立；敵意僅源於叛亂活動。
+• 中 (30) — 輕度既有敵意；部分聚落起始警戒。
+• 高 (60) — 強烈既有敵意；多數聚落起始不友善。
+• 極端 (130) — 平民起始積極敵對；人心爭奪工作大幅受阻。</Chinese>
+    <Chinesesimp>平民对 Independent 阵营的初始敌意（0-200 等级；数值越高越敌对）。
+
+• 低 (0) — 平民起始中立；敌意仅源于叛乱活动。
+• 中 (30) — 轻度既有敌意；部分聚落起始警戒。
+• 高 (60) — 强烈既有敌意；多数聚落起始不友好。
+• 极端 (130) — 平民起始积极敌对；民心工作大幅受阻。</Chinesesimp>
+    <Spanish>Nivel de hostilidad inicial de los civiles hacia el bando Independiente (escala 0-200; mayor = más hostil).
+
+• Bajo (0) — los civiles empiezan neutrales; la hostilidad sólo crece por la actividad insurgente.
+• Medio (30) — ligera animosidad preexistente; algunas localidades empiezan cautas.
+• Alto (60) — fuerte hostilidad preexistente; la mayoría de localidades empiezan poco amistosas.
+• Extremo (130) — la población empieza abiertamente hostil; el trabajo de corazones y mentes es mucho más difícil.</Spanish>
+    <French>Niveau d'hostilité initial des civils envers le camp Indépendant (échelle 0-200; plus élevé = plus hostile).
+
+• Faible (0) — les civils sont neutres au départ; l'hostilité ne monte que suite à l'activité insurgée.
+• Moyen (30) — animosité préexistante légère; certaines agglomérations commencent méfiantes.
+• Élevé (60) — forte hostilité préexistente; la plupart des agglomérations commencent peu amicales.
+• Extrême (130) — la population commence activement hostile; le travail coeurs et esprits est bien plus ardu.</French>
+    <Portuguese>Nível de hostilidade inicial dos civis em relação ao lado Independente (escala 0-200; maior = mais hostil).
+
+• Baixo (0) — civis começam neutros; a hostilidade só cresce pela atividade insurgente.
+• Médio (30) — leve animosidade pré-existente; alguns assentamentos começam cautelosos.
+• Alto (60) — forte hostilidade pré-existente; a maioria dos assentamentos começa pouco amistosa.
+• Extremo (130) — a população começa ativamente hostil; trabalho de corações e mentes fica muito mais difícil.</Portuguese>
+    <Russian>Исходный уровень враждебности гражданских к стороне Независимый (шкала 0-200; выше — враждебнее).
+
+• Низкий (0) — гражданские начинают нейтрально; враждебность растёт только от деятельности повстанцев.
+• Средний (30) — лёгкая предшествующая неприязнь; некоторые поселения начинают настороженными.
+• Высокий (60) — сильная предшествующая враждебность; большинство поселений начинают недружелюбными.
+• Экстремальный (130) — население начинает активно враждебным; работа на сердца и умы становится гораздо сложнее.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDEP_LOW">
     <English>Low</English>
@@ -314,14 +419,14 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CIVILIAN_ROLES">
-    <English>Civilian roles:</English>
-    <French>Rôles civils:</French>
-    <Portuguese>Papéis civis:</Portuguese>
-    <Russian>Роли гражданских:</Russian>
-    <Spanish>Roles civiles:</Spanish>
+    <English>Civilian Roles:</English>
+
     <Chinese>平民角色:</Chinese>
     <Chinesesimp>平民角色:</Chinesesimp>
-</Key>
+    <Spanish>Roles civiles:</Spanish>
+    <French>Rôles civils:</French>
+    <Portuguese>Papéis civis:</Portuguese>
+    <Russian>Роли гражданских:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CIVILIAN_ROLES_COMMENT">
     <English>Adds civilian roles of either Eastern (muezzins, town elders) or Western type (priests, politicians)</English>
@@ -395,14 +500,14 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_ENABLE_INTERACTION">
-    <English>Enable Interaction</English>
-    <French>Activer l'interaction</French>
-    <Portuguese>Ativar Interação</Portuguese>
-    <Russian>Включить взаимодействие</Russian>
-    <Spanish>Activar interacción</Spanish>
-    <Chinese>啟用互動</Chinese>
-    <Chinesesimp>启用互动</Chinesesimp>
-</Key>
+    <English>Enable Interaction:</English>
+
+    <Chinese>啟用互動:</Chinese>
+    <Chinesesimp>启用互动:</Chinesesimp>
+    <Spanish>Activar interacción:</Spanish>
+    <French>Activer l'interaction:</French>
+    <Portuguese>Ativar interação:</Portuguese>
+    <Russian>Включить взаимодействие:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_ENABLE_INTERACTION_COMMENT">
     <English>Enable advanced dialogue and interaction options with civilians.</English>
@@ -414,15 +519,75 @@
     <Chinesesimp>启用与平民的高级对话和互动选项。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_CIV_POP_LIMIT_INTERACTION">
-    <English>Limit Interaction</English>
-    <French>Limiter l'interaction</French>
-    <Portuguese>Limitar Interação</Portuguese>
-    <Russian>Ограничить взаимодействие</Russian>
-    <Spanish>Limitar interacción</Spanish>
-    <Chinese>限制互動</Chinese>
-    <Chinesesimp>限制互动</Chinesesimp>
+<Key ID="STR_ALIVE_CIV_POP_UI_MODE">
+    <English>Civilian Interaction UI:</English>
+    <Chinese>平民互動介面:</Chinese>
+    <Chinesesimp>平民互动界面:</Chinesesimp>
+    <Spanish>Interfaz de interacción civil:</Spanish>
+    <French>Interface d'interaction civile :</French>
+    <Portuguese>Interface de interação civil:</Portuguese>
+    <Russian>Интерфейс взаимодействия с гражданскими:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_UI_MODE_COMMENT">
+    <English>How players interact with civilians. Auto registers both the dialog addAction and (when ACE is loaded) the ACE interaction menu branch. Dialog uses only the scroll-wheel addAction. Ace forces ACE-only. Classic keeps the legacy scroll-wheel action list (many entries).</English>
+    <Chinese>玩家與平民互動的方式。Auto 同時註冊對話框滑鼠滾輪選項與(若載入 ACE)ACE 互動選單分支。Dialog 僅使用滑鼠滾輪選項。Ace 僅啟用 ACE。Classic 保留傳統滑鼠滾輪操作列表(多個項目)。</Chinese>
+    <Chinesesimp>玩家与平民互动的方式。Auto 同时注册对话框滑鼠滚轮选项与(若加载 ACE)ACE 互动菜单分支。Dialog 仅使用滑鼠滚轮选项。Ace 仅启用 ACE。Classic 保留传统滑鼠滚轮操作列表(多个项目)。</Chinesesimp>
+    <Spanish>Cómo interactúan los jugadores con los civiles. Auto registra tanto la acción de rueda del ratón del diálogo como (si ACE está cargado) la rama del menú de interacción ACE. Dialog solo usa la acción de rueda. Ace fuerza solo ACE. Classic mantiene la lista tradicional de acciones (muchas entradas).</Spanish>
+    <French>Interaction entre joueurs et civils. Auto enregistre à la fois l'action roulette du dialogue et (si ACE est chargé) la branche du menu d'interaction ACE. Dialog n'utilise que l'action roulette. Ace force ACE uniquement. Classic conserve la liste d'actions roulette héritée (nombreuses entrées).</French>
+    <Portuguese>Como os jogadores interagem com civis. Auto regista tanto a ação de roda do rato do diálogo como (se o ACE estiver carregado) o ramo do menu de interação ACE. Dialog usa apenas a ação de roda. Ace força apenas ACE. Classic mantém a lista tradicional de ações (muitas entradas).</Portuguese>
+    <Russian>Как игроки взаимодействуют с гражданскими. Auto регистрирует и действие колёсика мыши диалога, и (если загружен ACE) ветку меню взаимодействия ACE. Dialog использует только действие колёсика. Ace форсирует только ACE. Classic сохраняет устаревший список действий колёсика (много пунктов).</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_UI_MODE_AUTO">
+    <English>Auto (Dialog + ACE when loaded)</English>
+    <Chinese>自動 (對話框 + 載入 ACE 時啟用 ACE)</Chinese>
+    <Chinesesimp>自动 (对话框 + 加载 ACE 时启用 ACE)</Chinesesimp>
+    <Spanish>Automático (Diálogo + ACE si está cargado)</Spanish>
+    <French>Automatique (Dialogue + ACE si chargé)</French>
+    <Portuguese>Automático (Diálogo + ACE quando carregado)</Portuguese>
+    <Russian>Авто (Диалог + ACE при загрузке)</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_UI_MODE_DIALOG">
+    <English>Dialog</English>
+    <Chinese>對話框</Chinese>
+    <Chinesesimp>对话框</Chinesesimp>
+    <Spanish>Diálogo</Spanish>
+    <French>Dialogue</French>
+    <Portuguese>Diálogo</Portuguese>
+    <Russian>Диалог</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_UI_MODE_CLASSIC">
+    <English>Classic scroll-wheel (legacy)</English>
+    <Chinese>傳統滑鼠滾輪 (舊版)</Chinese>
+    <Chinesesimp>传统滑鼠滚轮 (旧版)</Chinesesimp>
+    <Spanish>Rueda del ratón clásica (heredado)</Spanish>
+    <French>Roulette de souris classique (hérité)</French>
+    <Portuguese>Roda do rato clássica (legado)</Portuguese>
+    <Russian>Классическое колёсико мыши (устаревший)</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_UI_MODE_ACE">
+    <English>ACE Interaction Menu</English>
+    <Chinese>ACE 互動選單</Chinese>
+    <Chinesesimp>ACE 互动菜单</Chinesesimp>
+    <Spanish>Menú de interacción ACE</Spanish>
+    <French>Menu d'interaction ACE</French>
+    <Portuguese>Menu de interação ACE</Portuguese>
+    <Russian>Меню взаимодействия ACE</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_LIMIT_INTERACTION">
+    <English>Limit Interaction:</English>
+
+    <Chinese>限制互動:</Chinese>
+    <Chinesesimp>限制互动:</Chinesesimp>
+    <Spanish>Limitar interacción:</Spanish>
+    <French>Limiter l'interaction:</French>
+    <Portuguese>Limitar interação:</Portuguese>
+    <Russian>Ограничить взаимодействие:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_LIMIT_INTERACTION_COMMENT">
     <English>Comma-separated list of classnames or player UIDs to restrict civilian interaction to. Leave empty to allow all players.</English>
@@ -435,34 +600,52 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_INSURGENT_FACTION">
-    <English>Insurgent Faction</English>
-    <French>Faction insurgée</French>
-    <Portuguese>Facção Insurgente</Portuguese>
-    <Russian>Фракция повстанцев</Russian>
-    <Spanish>Facción insurgente</Spanish>
-    <Chinese>叛軍派系</Chinese>
-    <Chinesesimp>叛乱阵营</Chinesesimp>
-</Key>
+    <English>Insurgent Factions:</English>
+
+    <Chinese>叛軍派系:</Chinese>
+    <Chinesesimp>叛乱阵营:</Chinesesimp>
+    <Spanish>Facciones insurgentes:</Spanish>
+    <French>Factions insurgées:</French>
+    <Portuguese>Facções insurgentes:</Portuguese>
+    <Russian>Фракции повстанцев:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT">
-    <English>Faction classname of the hostile force civilians will inform players about during interactions (e.g. OPF_F).</English>
-    <French>Classname de la faction hostile sur laquelle les civils renseigneront les joueurs lors des interactions (ex: OPF_F).</French>
-    <Portuguese>Classname da facção hostil sobre a qual os civis informarão os jogadores durante as interações (ex.: OPF_F).</Portuguese>
-    <Russian>Имя класса фракции враждебных сил, о которых гражданские будут информировать игроков в диалогах (например, OPF_F).</Russian>
-    <Spanish>Classname de facción de la fuerza hostil sobre la que los civiles informarán a los jugadores durante las interacciones (p. ej. OPF_F).</Spanish>
-    <Chinese>敵對勢力的派系類別名稱,互動時平民會向玩家告知其情報(例如 OPF_F)。</Chinese>
-    <Chinesesimp>敌对势力的阵营 classname,平民将在互动中向玩家通报该势力的信息(例如 OPF_F)。</Chinesesimp>
+    <English>Select one or more factions treated as the hostile insurgent force. Civilians will warn players about these factions during interactions, and nearby units of these factions count as insurgents in dialogue responses. Use the manual field below for factions from mods not currently loaded.</English>
+
+    <Chinese>選擇一個或多個被視為敵對叛亂勢力的派系。互動時平民會向玩家提及這些派系，附近屬於這些派系的單位在對話回應中會視為叛亂分子。對於目前未載入的模組派系，使用下方手動欄位。</Chinese>
+    <Chinesesimp>选择一个或多个被视为敌对叛乱势力的阵营。互动时平民会向玩家提及这些阵营，附近属于这些阵营的单位在对话回应中会视为叛乱分子。对于当前未加载的模组阵营，使用下方手动字段。</Chinesesimp>
+    <Spanish>Selecciona una o varias facciones tratadas como fuerza insurgente hostil. Los civiles advertirán a los jugadores sobre estas facciones durante las interacciones, y las unidades cercanas de estas facciones cuentan como insurgentes en las respuestas de diálogo. Usa el campo manual de abajo para facciones de mods no cargados actualmente.</Spanish>
+    <French>Sélectionnez une ou plusieurs factions considérées comme force insurgée hostile. Les civils avertiront les joueurs de ces factions lors des interactions, et les unités proches de ces factions comptent comme des insurgés dans les réponses de dialogue. Utilisez le champ manuel ci-dessous pour les factions de mods non chargés.</French>
+    <Portuguese>Selecione uma ou mais facções tratadas como força insurgente hostil. Os civis avisarão os jogadores sobre essas facções durante as interações, e as unidades próximas dessas facções contam como insurgentes nas respostas de diálogo. Use o campo manual abaixo para facções de mods não carregados.</Portuguese>
+    <Russian>Выберите одну или несколько фракций, считаемых враждебными повстанческими силами. Гражданские будут предупреждать игроков об этих фракциях во время взаимодействий, а ближайшие подразделения этих фракций считаются повстанцами в ответах диалогов. Для фракций из незагруженных модов используйте ручное поле ниже.</Russian></Key>
+<Key ID="STR_ALIVE_CIV_POP_FACTIONS_MANUAL">
+    <English>Factions (manual override):</English>
+    <Chinese>派系（手動覆蓋）:</Chinese>
+    <Chinesesimp>派系（手动覆盖）:</Chinesesimp>
+    <Spanish>Facciones (anulación manual):</Spanish>
+    <French>Factions (remplacement manuel)&#xa0;:</French>
+    <Portuguese>Facções (substituição manual):</Portuguese>
+    <Russian>Фракции (ручное переопределение):</Russian>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_FACTIONS_MANUAL_COMMENT">
+    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes — e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
+    <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
+    <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
+    <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
+    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format : noms séparés par des virgules, sans espaces ni guillemets.</French>
+    <Portuguese>Opcional. Digite classnames de facções adicionais para mods não carregados atualmente. Formato: nomes separados por vírgulas, sem espaços ou aspas.</Portuguese>
+    <Russian>Необязательно. Введите classnames дополнительных фракций для незагруженных модов. Формат: имена через запятую, без пробелов и кавычек.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_SPAWN_RADIUS">
-    <English>Crowd Spawn Radius</English>
-    <French>Rayon d'apparition des foules</French>
-    <Portuguese>Raio de Spawn de Multidão</Portuguese>
-    <Russian>Радиус спавна толпы</Russian>
-    <Spanish>Radio de aparición de multitudes</Spanish>
-    <Chinese>人群生成半徑</Chinese>
-    <Chinesesimp>人群生成半径</Chinesesimp>
-</Key>
+    <English>Crowd Spawn Radius (m):</English>
+
+    <Chinese>人群生成半徑（公尺）:</Chinese>
+    <Chinesesimp>人群生成半径（米）:</Chinesesimp>
+    <Spanish>Radio aparición multitudes (m):</Spanish>
+    <French>Rayon foules (m):</French>
+    <Portuguese>Raio spawn multidão (m):</Portuguese>
+    <Russian>Радиус спавна толп (м):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_SPAWN_RADIUS_COMMENT">
     <English>The radius at which houses are activated to spawn civilians for crowds. Set to 0 to disable crowds.</English>
@@ -475,14 +658,14 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_DENSITY">
-    <English>Crowd Civs per House</English>
-    <French>Civils par maison (foules)</French>
-    <Portuguese>Civis por Casa em Multidão</Portuguese>
-    <Russian>Гражданских на дом</Russian>
-    <Spanish>Civiles por casa en multitudes</Spanish>
-    <Chinese>每棟房屋人群平民數</Chinese>
-    <Chinesesimp>房子里挤满了平民</Chinesesimp>
-</Key>
+    <English>Crowd Civs per House (count):</English>
+
+    <Chinese>每棟房屋平民數（數量）:</Chinese>
+    <Chinesesimp>每栋房屋平民数（数量）:</Chinesesimp>
+    <Spanish>Civiles por casa (nº):</Spanish>
+    <French>Civils par maison (nb):</French>
+    <Portuguese>Civis por casa (qtd):</Portuguese>
+    <Russian>Гражданских на дом (шт):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_DENSITY_COMMENT">
     <English>The number of civilians spawned per house for crowds</English>
@@ -495,14 +678,14 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER">
-    <English>Crowd Limit</English>
-    <French>Limite des foules</French>
-    <Portuguese>Limite de Multidão</Portuguese>
-    <Russian>Лимит толпы</Russian>
-    <Spanish>Límite de multitudes</Spanish>
-    <Chinese>人群上限</Chinese>
-    <Chinesesimp>人群限制</Chinesesimp>
-</Key>
+    <English>Crowd Limit (count):</English>
+
+    <Chinese>人群上限（數量）:</Chinese>
+    <Chinesesimp>人群上限（数量）:</Chinesesimp>
+    <Spanish>Límite de multitudes (nº):</Spanish>
+    <French>Limite foules (nb):</French>
+    <Portuguese>Limite multidões (qtd):</Portuguese>
+    <Russian>Лимит толп (шт):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_ACTIVE_LIMITER_COMMENT">
     <English>Maximum number of civilians that can be active for all crowds</English>
@@ -515,54 +698,149 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_FACTION">
-    <English>Crowd Faction</English>
-    <French>Faction des foules</French>
-    <Portuguese>Facção da Multidão</Portuguese>
-    <Russian>Фракция толпы</Russian>
-    <Spanish>Facción de multitudes</Spanish>
-    <Chinese>人群派系</Chinese>
-    <Chinesesimp>人群派系</Chinesesimp>
-</Key>
+    <English>Crowd Faction:</English>
+
+    <Chinese>人群派系:</Chinese>
+    <Chinesesimp>人群派系:</Chinesesimp>
+    <Spanish>Facción de multitudes:</Spanish>
+    <French>Faction des foules:</French>
+    <Portuguese>Facção da multidão:</Portuguese>
+    <Russian>Фракция толпы:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_FACTION_COMMENT">
-    <English>Optional: Will improve performance if single default faction is specified. Otherwise faction will be chosen based on civilian clusster faction.</English>
-    <French>Optionnel: améliore les performances si une seule faction par défaut est spécifiée. Sinon, la faction sera choisie selon la faction du cluster civil.</French>
-    <Portuguese>Opcional: melhora o desempenho se uma única facção padrão for especificada. Caso contrário, a facção será escolhida com base na facção do cluster civil.</Portuguese>
-    <Russian>Опционально: единая фракция по умолчанию улучшит производительность. Иначе фракция выбирается по фракции гражданского кластера.</Russian>
-    <Spanish>Opcional: el rendimiento mejora si se especifica una única facción por defecto. De lo contrario, la facción se elegirá según la facción del cluster civil.</Spanish>
-    <Chinese>選填:指定單一預設派系可提升效能。否則會依平民聚落派系自動選擇。</Chinese>
-    <Chinesesimp>可选:将提高性能，如果单个默认派别指定。否则将根据平民集群阵营选择阵营。</Chinesesimp>
+    <English>Optional. Select a single civilian faction to use for ambient crowd spawns. Specifying a faction improves performance; leave unset to have the crowd activator pick a faction per building from nearby civilians. Factions from mods not currently loaded appear as "(unrecognised)" — the stored value is preserved regardless.</English>
+
+    <Chinese>選填。選擇一個單一平民派系用於環境人群生成。指定派系可提升效能；留空則由人群啟動器依附近平民為每棟建築選擇派系。目前未載入的模組派系會顯示為「(unrecognised)」——無論如何會保留儲存值。</Chinese>
+    <Chinesesimp>可选。选择一个单一平民阵营用于环境人群生成。指定阵营可提升性能；留空则由人群启动器按附近平民为每栋建筑选择阵营。当前未加载的模组阵营会显示为「(unrecognised)」——无论如何都会保留存储值。</Chinesesimp>
+    <Spanish>Opcional. Selecciona una única facción civil para las apariciones de multitudes ambientales. Especificar una facción mejora el rendimiento; déjalo sin marcar para que el activador de multitudes elija una facción por edificio a partir de los civiles cercanos. Las facciones de mods no cargados aparecen como «(unrecognised)» — el valor guardado se conserva igualmente.</Spanish>
+    <French>Facultatif. Sélectionnez une seule faction civile pour les apparitions de foules ambiantes. Spécifier une faction améliore les performances; laissez vide pour que l'activateur de foules choisisse une faction par bâtiment à partir des civils à proximité. Les factions de mods non chargés apparaissent comme «(unrecognised)» — la valeur enregistrée est préservée dans tous les cas.</French>
+    <Portuguese>Opcional. Selecione uma única facção civil para os spawns de multidões ambientais. Especificar uma facção melhora o desempenho; deixe em branco para que o ativador de multidões escolha uma facção por edifício a partir dos civis próximos. Facções de mods não carregados aparecem como «(unrecognised)» — o valor armazenado é preservado de qualquer forma.</Portuguese>
+    <Russian>Необязательно. Выберите одну гражданскую фракцию для спавна окружающих толп. Указание фракции повышает производительность; оставьте пустым, чтобы активатор толп выбирал фракцию по зданию из ближайших гражданских. Фракции из незагруженных модов отображаются как «(unrecognised)» — сохранённое значение сохраняется в любом случае.</Russian></Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_DISABLE_AMBIENT_SOUNDS">
+    <English>Disable Ambient Sounds:</English>
+    <Chinese>停用環境音效:</Chinese>
+    <Chinesesimp>禁用环境音效:</Chinesesimp>
+    <Spanish>Desactivar sonidos ambientales:</Spanish>
+    <French>Désactiver sons ambiants:</French>
+    <Portuguese>Desativar sons ambientais:</Portuguese>
+    <Russian>Отключить окружающие звуки:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_DISABLE_AMBIENT_SOUNDS_COMMENT">
+    <English>Turns off the per-building ambient sounds played from civilian buildings (radio, TV, prayer calls, etc.). Enable this if the built-in sound pool doesn't match your mission locale (e.g. Greek radio on a Middle Eastern map) or when you want full audio control via other mods. Does not affect crowd noise, panic shouts, or AdvCiv voice lines.</English>
+    <Chinese>關閉從平民建築播放的每棟建築環境音效（廣播、電視、禮拜呼喚等）。若內建音效池與任務在地環境不符（例如中東地圖上的希臘廣播），或您想透過其他模組完全掌控音訊時，請啟用此選項。不影響人群聲響、恐慌呼喊或 AdvCiv 語音行。</Chinese>
+    <Chinesesimp>关闭从平民建筑播放的每栋建筑环境音效（广播、电视、礼拜呼唤等）。若内建音效池与任务所在地环境不符（例如中东地图上的希腊广播），或您想通过其他模组完全掌控音频时，请启用此选项。不影响人群声响、恐慌呼喊或 AdvCiv 语音行。</Chinesesimp>
+    <Spanish>Desactiva los sonidos ambientales por edificio reproducidos desde los edificios civiles (radio, TV, llamadas a la oración, etc.). Habilítalo si el grupo de sonidos integrado no coincide con el escenario de tu misión (p. ej. radio griega en un mapa de Oriente Medio) o cuando quieras control de audio completo mediante otros mods. No afecta al ruido de la multitud, gritos de pánico ni líneas de voz de AdvCiv.</Spanish>
+    <French>Désactive les sons ambiants par bâtiment joués depuis les bâtiments civils (radio, TV, appels à la prière, etc.). Activez-le si le pool de sons intégré ne correspond pas au contexte de votre mission (p. ex. radio grecque sur une carte du Moyen-Orient) ou si vous souhaitez un contrôle audio complet via d'autres mods. N'affecte pas le bruit de la foule, les cris de panique ni les lignes vocales AdvCiv.</French>
+    <Portuguese>Desativa os sons ambientais por edifício reproduzidos a partir de edifícios civis (rádio, TV, chamadas para oração, etc.). Ative se o conjunto de sons integrado não combinar com o ambiente da sua missão (p. ex. rádio grega num mapa do Médio Oriente) ou quando quiser controle total de áudio via outros mods. Não afeta o ruído da multidão, gritos de pânico nem linhas de voz do AdvCiv.</Portuguese>
+    <Russian>Отключает окружающие звуки по зданиям, проигрываемые из гражданских зданий (радио, ТВ, призывы к молитве и т. п.). Включите, если встроенный пул звуков не соответствует локации миссии (напр. греческое радио на ближневосточной карте) или если хотите полный контроль звука через другие моды. Не влияет на шум толпы, крики паники и реплики AdvCiv.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE">
-    <English>Humanitarian Hostility Decrease</English>
-    <French>Baisse d'hostilité humanitaire</French>
-    <Portuguese>Redução de Hostilidade por Ajuda Humanitária</Portuguese>
-    <Russian>Снижение враждебности за помощь</Russian>
-    <Spanish>Reducción de hostilidad por ayuda humanitaria</Spanish>
-    <Chinese>人道援助降低敵意機率</Chinese>
-    <Chinesesimp>人道主义的敌意降低</Chinesesimp>
-</Key>
+    <English>Humanitarian Hostility Decrease:</English>
+
+    <Chinese>人道援助敵意降低:</Chinese>
+    <Chinesesimp>人道援助敌意降低:</Chinesesimp>
+    <Spanish>Reducción hostilidad humanitaria:</Spanish>
+    <French>Baisse hostilité humanitaire:</French>
+    <Portuguese>Redução hostilidade humanitária:</Portuguese>
+    <Russian>Снижение враждебности от помощи:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT">
-    <English>Chance that providing Humanitarian Rations and Water to Civilians will decrease sector hostility</English>
-    <French>Probabilité que la distribution de rations et d'eau humanitaires aux civils réduise l'hostilité du secteur</French>
-    <Portuguese>Chance de que fornecer Rações Humanitárias e Água aos civis reduza a hostilidade do setor</Portuguese>
-    <Russian>Вероятность того, что выдача гуманитарных пайков и воды гражданским снизит враждебность сектора</Russian>
-    <Spanish>Probabilidad de que entregar raciones humanitarias y agua a los civiles reduzca la hostilidad del sector</Spanish>
-    <Chinese>提供人道口糧與飲水予平民時,降低區域敵意的機率</Chinese>
-    <Chinesesimp>向平民提供人道主义口粮和水将减少隔离区敌意的机会</Chinesesimp>
-</Key>
+    <English>Probability that giving humanitarian rations or water to a civilian decreases sector hostility.
+
+• Low (20%) — each aid action has a 1-in-5 chance of helping.
+• Medium (40%) — balanced default for most campaigns.
+• High (60%) — aid usually helps; fast hearts-and-minds progression.
+• Extreme (80%) — aid almost always helps; trivial to flip sector mood.</English>
+
+    <Chinese>向平民提供人道口糧或飲水時，降低該聚落敵意的機率。
+
+• 低 (20%) — 每次援助行動有 5 分之 1 的機率見效。
+• 中 (40%) — 多數戰役的平衡預設。
+• 高 (60%) — 援助通常有效；人心爭奪進展較快。
+• 極端 (80%) — 援助幾乎總是有效；輕易翻轉聚落情緒。</Chinese>
+    <Chinesesimp>向平民提供人道口粮或饮水时，降低该聚落敌意的概率。
+
+• 低 (20%) — 每次援助行动有五分之一的几率见效。
+• 中 (40%) — 多数战役的平衡默认值。
+• 高 (60%) — 援助通常有效；民心工作进展较快。
+• 极端 (80%) — 援助几乎总是有效；轻易翻转聚落情绪。</Chinesesimp>
+    <Spanish>Probabilidad de que dar raciones humanitarias o agua a un civil reduzca la hostilidad del sector.
+
+• Bajo (20%) — cada acción de ayuda tiene 1 entre 5 de surtir efecto.
+• Medio (40%) — valor por defecto equilibrado para la mayoría de campañas.
+• Alto (60%) — la ayuda suele surtir efecto; progresión rápida de corazones y mentes.
+• Extremo (80%) — la ayuda casi siempre surte efecto; trivial voltear el ánimo del sector.</Spanish>
+    <French>Probabilité que donner des rations humanitaires ou de l'eau à un civil baisse l'hostilité du secteur.
+
+• Faible (20%) — chaque acte d'aide a 1 chance sur 5 de porter fruit.
+• Moyen (40%) — valeur par défaut équilibrée pour la plupart des campagnes.
+• Élevé (60%) — l'aide fonctionne généralement; progression rapide des coeurs et esprits.
+• Extrême (80%) — l'aide fonctionne presque toujours; trivial de retourner le climat du secteur.</French>
+    <Portuguese>Probabilidade de que dar rações humanitárias ou água a um civil reduza a hostilidade do setor.
+
+• Baixo (20%) — cada ação de ajuda tem 1 em 5 de chance de surtir efeito.
+• Médio (40%) — valor padrão equilibrado para a maioria das campanhas.
+• Alto (60%) — a ajuda geralmente funciona; progressão rápida de corações e mentes.
+• Extremo (80%) — a ajuda quase sempre funciona; trivial virar o ânimo do setor.</Portuguese>
+    <Russian>Вероятность того, что передача гуманитарных пайков или воды гражданскому снижает враждебность сектора.
+
+• Низкий (20%) — у каждого акта помощи 1 шанс из 5 сработать.
+• Средний (40%) — сбалансированное значение по умолчанию для большинства кампаний.
+• Высокий (60%) — помощь обычно срабатывает; быстрое развитие сердец и умов.
+• Экстремальный (80%) — помощь почти всегда срабатывает; легко перевернуть настроение сектора.</Russian></Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_LOW">
+    <English>Low (20%)</English>
+
+    <Chinese>低 (20%)</Chinese>
+    <Chinesesimp>低 (20%)</Chinesesimp>
+    <Spanish>Bajo (20%)</Spanish>
+    <French>Faible (20%)</French>
+    <Portuguese>Baixo (20%)</Portuguese>
+    <Russian>Низкий (20%)</Russian></Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_MEDIUM">
+    <English>Medium (40%)</English>
+
+    <Chinese>中 (40%)</Chinese>
+    <Chinesesimp>中 (40%)</Chinesesimp>
+    <Spanish>Medio (40%)</Spanish>
+    <French>Moyen (40%)</French>
+    <Portuguese>Médio (40%)</Portuguese>
+    <Russian>Средний (40%)</Russian></Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_HIGH">
+    <English>High (60%)</English>
+
+    <Chinese>高 (60%)</Chinese>
+    <Chinesesimp>高 (60%)</Chinesesimp>
+    <Spanish>Alto (60%)</Spanish>
+    <French>Élevé (60%)</French>
+    <Portuguese>Alto (60%)</Portuguese>
+    <Russian>Высокий (60%)</Russian></Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_EXTREME">
+    <English>Extreme (80%)</English>
+
+    <Chinese>極端 (80%)</Chinese>
+    <Chinesesimp>极端 (80%)</Chinesesimp>
+    <Spanish>Extremo (80%)</Spanish>
+    <French>Extrême (80%)</French>
+    <Portuguese>Extremo (80%)</Portuguese>
+    <Russian>Экстремальный (80%)</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_MAX_ALLOWED_AID">
-    <English>Civilian Humanitarian Aid Limit</English>
-    <French>Limite d'aide humanitaire par civil</French>
-    <Portuguese>Limite de Ajuda Humanitária por Civil</Portuguese>
-    <Russian>Лимит гуманитарной помощи</Russian>
-    <Spanish>Límite de ayuda humanitaria por civil</Spanish>
-    <Chinese>平民人道援助上限</Chinese>
-    <Chinesesimp>民用人道主义援助限额</Chinesesimp>
-</Key>
+    <English>Humanitarian Aid Limit (count):</English>
+
+    <Chinese>人道援助上限（數量）:</Chinese>
+    <Chinesesimp>人道援助上限（数量）:</Chinesesimp>
+    <Spanish>Límite ayuda humanitaria (nº):</Spanish>
+    <French>Limite aide humanitaire (nb):</French>
+    <Portuguese>Limite ajuda humanitária (qtd):</Portuguese>
+    <Russian>Лимит гумпомощи (шт):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT">
     <English>Maximum number of Humanitarian Rations/Water Bottles a Civilian is allowed to receive</English>
@@ -575,64 +853,64 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_WATER_ITEMS">
-    <English>Custom Water Classes</English>
-    <French>Classes d'eau personnalisées</French>
-    <Portuguese>Classes de Água Personalizadas</Portuguese>
-    <Russian>Пользовательские классы воды</Russian>
-    <Spanish>Clases de agua personalizadas</Spanish>
-    <Chinese>自訂飲水類別</Chinese>
-    <Chinesesimp>定制水类</Chinesesimp>
-</Key>
+    <English>Custom Water Classes:</English>
+
+    <Chinese>自訂飲水類別:</Chinese>
+    <Chinesesimp>自定义饮水类别:</Chinesesimp>
+    <Spanish>Clases de agua personalizadas:</Spanish>
+    <French>Classes d'eau personnalisées:</French>
+    <Portuguese>Classes de água personalizadas:</Portuguese>
+    <Russian>Свои классы воды:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_WATER_ITEMS_COMMENT">
-    <English>Enter a list of classnames (comma separated) for any custom water items you want used for humanitarian purposes</English>
-    <French>Entrer une liste de classnames (séparés par des virgules) pour tout objet d'eau personnalisé à utiliser à des fins humanitaires</French>
-    <Portuguese>Informe uma lista de classnames (separados por vírgula) de itens de água personalizados para uso humanitário</Portuguese>
-    <Russian>Введите список имён классов (через запятую) для пользовательских предметов воды, используемых в гуманитарных целях</Russian>
-    <Spanish>Introduce una lista de classnames (separados por comas) de cualquier objeto de agua personalizado que quieras usar con fines humanitarios</Spanish>
-    <Chinese>輸入類別名稱清單(以逗號分隔),指定任何要作為人道用途的自訂飲水物品</Chinese>
-    <Chinesesimp>输入您希望用于人道主义目的的任何自定义水项目的类名列表(逗号分隔)</Chinesesimp>
-</Key>
+    <English>Select water items civilians may receive as humanitarian aid. The list shows items from loaded mods (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — these are added to ALiVE's built-in defaults. Use the manual field below to include items from mods not currently loaded but expected at mission time.</English>
+
+    <Chinese>選擇平民可作為人道援助接收的飲水物品。清單顯示已載入模組（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 這些項目會加到 ALiVE 內建預設之上。對於目前未載入但預期於任務時存在的模組物品，使用下方手動欄位。</Chinese>
+    <Chinesesimp>选择平民可作为人道援助接收的饮水物品。列表显示已加载模组（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 这些项目会加到 ALiVE 内置默认之上。对于当前未加载但预期于任务时存在的模组物品，使用下方手动字段。</Chinesesimp>
+    <Spanish>Selecciona los objetos de agua que los civiles pueden recibir como ayuda humanitaria. La lista muestra objetos de los mods cargados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — se añaden a los predeterminados integrados de ALiVE. Usa el campo manual de abajo para incluir objetos de mods no cargados actualmente pero esperados al momento de la misión.</Spanish>
+    <French>Sélectionnez les objets d'eau que les civils peuvent recevoir comme aide humanitaire. La liste affiche les objets des mods chargés (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — ils s'ajoutent aux valeurs par défaut intégrées d'ALiVE. Utilisez le champ manuel ci-dessous pour inclure des objets de mods non chargés actuellement mais attendus au moment de la mission.</French>
+    <Portuguese>Selecione os itens de água que os civis podem receber como ajuda humanitária. A lista mostra itens dos mods carregados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — estes são adicionados aos padrões integrados do ALiVE. Use o campo manual abaixo para incluir itens de mods não carregados atualmente, mas esperados no momento da missão.</Portuguese>
+    <Russian>Выберите предметы воды, которые гражданские могут получить в качестве гуманитарной помощи. В списке показаны предметы из загруженных модов (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — они добавляются к встроенным по умолчанию ALiVE. Используйте ручное поле ниже, чтобы включить предметы из модов, не загруженных в настоящее время, но ожидаемых во время миссии.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HUMRAT_ITEMS">
-    <English>Custom Ration Classes</English>
-    <French>Classes de rations personnalisées</French>
-    <Portuguese>Classes de Ração Personalizadas</Portuguese>
-    <Russian>Пользовательские классы пайков</Russian>
-    <Spanish>Clases de raciones personalizadas</Spanish>
-    <Chinese>自訂口糧類別</Chinese>
-    <Chinesesimp>定制定量类</Chinesesimp>
-</Key>
+    <English>Custom Ration Classes:</English>
+
+    <Chinese>自訂口糧類別:</Chinese>
+    <Chinesesimp>自定义口粮类别:</Chinesesimp>
+    <Spanish>Clases de raciones personalizadas:</Spanish>
+    <French>Classes de rations personnalisées:</French>
+    <Portuguese>Classes de ração personalizadas:</Portuguese>
+    <Russian>Свои классы пайков:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HUMRAT_ITEMS_COMMENT">
-    <English>Enter a list of classnames (comma separated) for any custom ration items you want used for humanitarian purposes</English>
-    <French>Entrer une liste de classnames (séparés par des virgules) pour tout objet de rations personnalisé à utiliser à des fins humanitaires</French>
-    <Portuguese>Informe uma lista de classnames (separados por vírgula) de itens de ração personalizados para uso humanitário</Portuguese>
-    <Russian>Введите список имён классов (через запятую) для пользовательских пайков, используемых в гуманитарных целях</Russian>
-    <Spanish>Introduce una lista de classnames (separados por comas) de cualquier objeto de ración personalizado que quieras usar con fines humanitarios</Spanish>
-    <Chinese>輸入類別名稱清單(以逗號分隔),指定任何要作為人道用途的自訂口糧物品</Chinese>
-    <Chinesesimp>输入您想用于人道主义目的的任何定制配给项目的类名列表(逗号分隔)</Chinesesimp>
-</Key>
+    <English>Select ration items civilians may receive as humanitarian aid. The list shows items from loaded mods (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — these are added to ALiVE's built-in defaults. Use the manual field below to include items from mods not currently loaded but expected at mission time.</English>
+
+    <Chinese>選擇平民可作為人道援助接收的口糧物品。清單顯示已載入模組（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 這些項目會加到 ALiVE 內建預設之上。對於目前未載入但預期於任務時存在的模組物品，使用下方手動欄位。</Chinese>
+    <Chinesesimp>选择平民可作为人道援助接收的口粮物品。列表显示已加载模组（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 这些项目会加到 ALiVE 内置默认之上。对于当前未加载但预期于任务时存在的模组物品，使用下方手动字段。</Chinesesimp>
+    <Spanish>Selecciona los objetos de ración que los civiles pueden recibir como ayuda humanitaria. La lista muestra objetos de los mods cargados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — se añaden a los predeterminados integrados de ALiVE. Usa el campo manual de abajo para incluir objetos de mods no cargados actualmente pero esperados al momento de la misión.</Spanish>
+    <French>Sélectionnez les objets de ration que les civils peuvent recevoir comme aide humanitaire. La liste affiche les objets des mods chargés (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — ils s'ajoutent aux valeurs par défaut intégrées d'ALiVE. Utilisez le champ manuel ci-dessous pour inclure des objets de mods non chargés actuellement mais attendus au moment de la mission.</French>
+    <Portuguese>Selecione os itens de ração que os civis podem receber como ajuda humanitária. A lista mostra itens dos mods carregados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — estes são adicionados aos padrões integrados do ALiVE. Use o campo manual abaixo para incluir itens de mods não carregados atualmente, mas esperados no momento da missão.</Portuguese>
+    <Russian>Выберите предметы пайков, которые гражданские могут получить в качестве гуманитарной помощи. В списке показаны предметы из загруженных модов (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — они добавляются к встроенным по умолчанию ALiVE. Используйте ручное поле ниже, чтобы включить предметы из модов, не загруженных в настоящее время, но ожидаемых во время миссии.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_CIV_POP_ACEX_COMPAT">
-    <English>Use ACEX Humanitarian Items</English>
-    <French>Utiliser les objets humanitaires ACEX</French>
-    <Portuguese>Usar Itens Humanitários do ACEX</Portuguese>
-    <Russian>Использовать ACEX-предметы</Russian>
-    <Spanish>Usar objetos humanitarios de ACEX</Spanish>
-    <Chinese>使用 ACEX 人道援助物品</Chinese>
-    <Chinesesimp>使用ACEX人道主义物品</Chinesesimp>
-</Key>
+<Key ID="STR_ALIVE_CIV_POP_ITEMS_MANUAL">
+    <English>Classes (manual override):</English>
+
+    <Chinese>類別（手動覆蓋）:</Chinese>
+    <Chinesesimp>类别（手动覆盖）:</Chinesesimp>
+    <Spanish>Clases (anulación manual):</Spanish>
+    <French>Classes (remplacement manuel):</French>
+    <Portuguese>Classes (substituição manual):</Portuguese>
+    <Russian>Классы (ручное переопределение):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_CIV_POP_ACEX_COMPAT_COMMENT">
-    <English>Enable the use of ACEX Humanitarian items instead of the default ALiVE ones</English>
-    <French>Activer l'utilisation des objets humanitaires ACEX à la place de ceux d'ALiVE par défaut</French>
-    <Portuguese>Ativa o uso dos itens humanitários do ACEX em vez dos padrões do ALiVE</Portuguese>
-    <Russian>Использовать гуманитарные предметы ACEX вместо стандартных ALiVE</Russian>
-    <Spanish>Activa el uso de los objetos humanitarios de ACEX en lugar de los predeterminados de ALiVE</Spanish>
-    <Chinese>啟用 ACEX 人道援助物品,取代預設的 ALiVE 物品</Chinese>
-    <Chinesesimp>启用ACEX人道物品的使用，而不是默认的生命物品</Chinesesimp>
-</Key>  
+<Key ID="STR_ALIVE_CIV_POP_ITEMS_MANUAL_COMMENT">
+    <English>Optional. Type extra item classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes — e.g. mod_item_01,mod_item_02. Combined with the selection above at runtime.</English>
+
+    <Chinese>可選。輸入目前未載入但預期於任務時存在的模組物品類名。格式：逗號分隔的類名，無空格無引號 — 例如 mod_item_01,mod_item_02。執行時與上方選擇合併。</Chinese>
+    <Chinesesimp>可选。输入当前未加载但预期于任务时存在的模组物品类名。格式：逗号分隔的类名，无空格无引号 — 例如 mod_item_01,mod_item_02。运行时与上方选择合并。</Chinesesimp>
+    <Spanish>Opcional. Escribe classnames de objeto adicionales para mods no cargados actualmente pero esperados al momento de la misión. Formato: classnames separados por comas, sin espacios ni comillas — p. ej. mod_item_01,mod_item_02. Combinado con la selección de arriba en tiempo de ejecución.</Spanish>
+    <French>Facultatif. Saisissez les classnames d'objets supplémentaires pour les mods non chargés actuellement mais attendus au moment de la mission. Format: classnames séparés par des virgules, sans espaces ni guillemets — p. ex. mod_item_01,mod_item_02. Combinés avec la sélection ci-dessus au moment de l'exécution.</French>
+    <Portuguese>Opcional. Digite classnames de item adicionais para mods não carregados atualmente, mas esperados no momento da missão. Formato: classnames separados por vírgulas, sem espaços ou aspas — p. ex. mod_item_01,mod_item_02. Combinados com a seleção acima em tempo de execução.</Portuguese>
+    <Russian>Необязательно. Введите дополнительные classnames предметов для модов, не загруженных в настоящее время, но ожидаемых во время миссии. Формат: classnames через запятую, без пробелов и кавычек — напр. mod_item_01,mod_item_02. Объединяется с выбором выше во время выполнения.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_TOOMUCHAID">
     <English>This civilian does not require any more humanitarian aid.</English>
@@ -693,7 +971,8 @@
     <Spanish>almuédano</Spanish>
     <Chinese>宣禮員</Chinese>
     <Chinesesimp>穆兹津</Chinesesimp>
-</Key>
+
+    <French>muezzin</French></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_ROLE_POLITICIAN">
     <English>politician</English>
@@ -722,7 +1001,8 @@
     <Spanish>Detener</Spanish>
     <Chinese>停下</Chinese>
     <Chinesesimp>扣留</Chinesesimp>
-</Key>
+
+    <French>Arrêter</French></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_ACTIONS_DETAIN">
     <English>Detain</English>
@@ -772,6 +1052,36 @@
     <Spanish>Obtener inteligencia</Spanish>
     <Chinese>蒐集情報</Chinese>
     <Chinesesimp>搜集情报</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_REFUSES_COOPERATION">
+    <English>Civilian refuses to cooperate</English>
+    <French>Le civil refuse de cooperer</French>
+    <Portuguese>O civil recusa-se a cooperar</Portuguese>
+    <Russian>Гражданский отказывается сотрудничать</Russian>
+    <Spanish>El civil se niega a cooperar</Spanish>
+    <Chinese>平民拒絕合作</Chinese>
+    <Chinesesimp>平民拒绝合作</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_REFUSES_TOOLTIP">
+    <English>Civilian refuses cooperation</English>
+    <French>Le civil refuse la cooperation</French>
+    <Portuguese>O civil recusa cooperacao</Portuguese>
+    <Russian>Гражданский отказывается от сотрудничества</Russian>
+    <Spanish>El civil rechaza la cooperacion</Spanish>
+    <Chinese>平民拒絕合作</Chinese>
+    <Chinesesimp>平民拒绝合作</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_DETAIN_NEED_CUFFS">
+    <English>You need a Cable Tie to detain a civilian.</English>
+    <French>Vous avez besoin d'un collier de serrage pour detenir un civil.</French>
+    <Portuguese>Precisa de uma abracadeira para deter um civil.</Portuguese>
+    <Russian>Чтобы задержать гражданского, нужна стяжка.</Russian>
+    <Spanish>Necesitas una brida para detener a un civil.</Spanish>
+    <Chinese>需要束線帶才能拘留平民。</Chinese>
+    <Chinesesimp>需要扎线带才能拘留平民。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_HOME">
@@ -852,6 +1162,271 @@
     <Spanish>¿Cuál es la opinión de nuestras fuerzas en esta área?</Spanish>
     <Chinese>本地對我方部隊的看法如何?</Chinese>
     <Chinesesimp>我们在这个地区的部队有什么看法？</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_NEEDS">
+    <English>What do you need?</English>
+    <French>De quoi avez-vous besoin?</French>
+    <Portuguese>Do que precisa?</Portuguese>
+    <Russian>Что вам нужно?</Russian>
+    <Spanish>Que necesita?</Spanish>
+    <Chinese>你需要什麼?</Chinese>
+    <Chinesesimp>你需要什么?</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_PRESSURE">
+    <English>Has anyone been pressuring you?</English>
+    <French>Quelqu'un vous a-t-il fait pression?</French>
+    <Portuguese>Alguem anda a pressiona-lo?</Portuguese>
+    <Russian>Вас кто-нибудь принуждал?</Russian>
+    <Spanish>Alguien lo ha estado presionando?</Spanish>
+    <Chinese>有人在向你施壓嗎?</Chinese>
+    <Chinesesimp>有人在向你施压吗?</Chinesesimp>
+</Key>
+<!-- ---- Needs responses (no hostile-tier branch needed - the dialog
+     greys the Question listbox at Defiant+; this case only runs at
+     Friendly / Neutral / Wary) ---- -->
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_BOTH_1">
+    <English>Anything you can spare. We've got nothing - no food, no clean water.</English>
+    <French>Tout ce que vous pouvez nous donner. Nous n'avons rien - ni nourriture, ni eau propre.</French>
+    <Portuguese>Qualquer coisa que possa dispensar. Nao temos nada - nem comida, nem agua limpa.</Portuguese>
+    <Russian>Всё, что можете уделить. У нас ничего нет - ни еды, ни чистой воды.</Russian>
+    <Spanish>Cualquier cosa que pueda darnos. No tenemos nada: ni comida, ni agua limpia.</Spanish>
+    <Chinese>任何能給的我們都需要。我們什麼都沒有 - 沒有食物,沒有乾淨的水。</Chinese>
+    <Chinesesimp>任何能给的我们都需要。我们什么都没有 - 没有食物,没有干净的水。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_BOTH_2">
+    <English>Food and water, please. The children are suffering.</English>
+    <French>De la nourriture et de l'eau, s'il vous plait. Les enfants souffrent.</French>
+    <Portuguese>Comida e agua, por favor. As criancas estao a sofrer.</Portuguese>
+    <Russian>Еду и воду, пожалуйста. Дети страдают.</Russian>
+    <Spanish>Comida y agua, por favor. Los ninos estan sufriendo.</Spanish>
+    <Chinese>食物和水,拜託。孩子們在受苦。</Chinese>
+    <Chinesesimp>食物和水,拜托。孩子们在受苦。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_BOTH_3">
+    <English>We're hungry and thirsty. Anything would help.</English>
+    <French>Nous avons faim et soif. N'importe quoi nous aiderait.</French>
+    <Portuguese>Temos fome e sede. Qualquer coisa ajudara.</Portuguese>
+    <Russian>Мы голодны и испытываем жажду. Любая помощь пригодится.</Russian>
+    <Spanish>Tenemos hambre y sed. Cualquier cosa nos ayudaria.</Spanish>
+    <Chinese>我們又餓又渴。任何東西都有幫助。</Chinese>
+    <Chinesesimp>我们又饿又渴。任何东西都有帮助。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_FOOD_1">
+    <English>We could really use some food. Haven't had a proper meal in days.</English>
+    <French>Nous aurions vraiment besoin de nourriture. Pas un vrai repas depuis des jours.</French>
+    <Portuguese>Estamos mesmo a precisar de comida. Ha dias que nao fazemos uma refeicao decente.</Portuguese>
+    <Russian>Нам очень нужна еда. Уже несколько дней не было нормальной еды.</Russian>
+    <Spanish>Nos vendria muy bien algo de comida. Hace dias que no comemos algo decente.</Spanish>
+    <Chinese>我們真的很需要食物。已經好幾天沒有像樣的一餐了。</Chinese>
+    <Chinesesimp>我们真的很需要食物。已经好几天没有像样的一餐了。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_FOOD_2">
+    <English>Food, if you have any. We're getting by on water but the cupboards are bare.</English>
+    <French>De la nourriture, si vous en avez. Nous nous debrouillons avec l'eau, mais les placards sont vides.</French>
+    <Portuguese>Comida, se tiver. Vamos aguentando com agua, mas os armarios estao vazios.</Portuguese>
+    <Russian>Еду, если есть. Воду мы кое-как находим, но шкафы пусты.</Russian>
+    <Spanish>Comida, si tiene. Vamos tirando con el agua, pero los armarios estan vacios.</Spanish>
+    <Chinese>食物,如果你有的話。水還勉強夠,但櫥櫃裡什麼都沒了。</Chinese>
+    <Chinesesimp>食物,如果你有的话。水还勉强够,但橱柜里什么都没了。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_FOOD_3">
+    <English>A ration would mean a lot. We're hungry but at least the well still runs.</English>
+    <French>Une ration nous aiderait beaucoup. Nous avons faim, mais au moins le puits coule encore.</French>
+    <Portuguese>Uma racao faria muita diferenca. Temos fome, mas pelo menos o poco ainda da agua.</Portuguese>
+    <Russian>Паёк очень бы пригодился. Голодаем, но хоть колодец ещё работает.</Russian>
+    <Spanish>Una racion significaria mucho. Tenemos hambre, pero al menos el pozo sigue dando agua.</Spanish>
+    <Chinese>一份口糧就幫了大忙。我們很餓,但至少井水還能用。</Chinese>
+    <Chinesesimp>一份口粮就帮了大忙。我们很饿,但至少井水还能用。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_WATER_1">
+    <English>Water, please. The supply has been bad for weeks.</English>
+    <French>De l'eau, s'il vous plait. L'approvisionnement est mauvais depuis des semaines.</French>
+    <Portuguese>Agua, por favor. O abastecimento esta mau ha semanas.</Portuguese>
+    <Russian>Воды, пожалуйста. Уже несколько недель с водой плохо.</Russian>
+    <Spanish>Agua, por favor. El suministro lleva semanas mal.</Spanish>
+    <Chinese>水,拜託。供水已經不好好幾週了。</Chinese>
+    <Chinesesimp>水,拜托。供水已经不好好几周了。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_WATER_2">
+    <English>Clean water, if you can spare any. Food we can manage.</English>
+    <French>De l'eau propre, si vous en avez a donner. La nourriture, on s'en sort.</French>
+    <Portuguese>Agua limpa, se puder dispensar. Comida, conseguimos arranjar.</Portuguese>
+    <Russian>Чистую воду, если есть. С едой мы справляемся.</Russian>
+    <Spanish>Agua limpia, si puede dejarnos. Comida nos arreglamos.</Spanish>
+    <Chinese>乾淨的水,如果你能省出一些。食物我們還能應付。</Chinese>
+    <Chinesesimp>干净的水,如果你能省出一些。食物我们还能应付。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_WATER_3">
+    <English>We're thirsty - the wells are running dry.</English>
+    <French>Nous avons soif - les puits s'assechent.</French>
+    <Portuguese>Estamos com sede - os pocos estao a secar.</Portuguese>
+    <Russian>Хочется пить - колодцы пересыхают.</Russian>
+    <Spanish>Tenemos sed: los pozos se estan secando.</Spanish>
+    <Chinese>我們很渴 - 井水快乾了。</Chinese>
+    <Chinesesimp>我们很渴 - 井水快干了。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_NOTHING_1">
+    <English>We're alright. Thank you for asking.</English>
+    <French>Nous allons bien. Merci de votre attention.</French>
+    <Portuguese>Estamos bem. Obrigado por perguntar.</Portuguese>
+    <Russian>У нас всё в порядке. Спасибо, что спросили.</Russian>
+    <Spanish>Estamos bien. Gracias por preguntar.</Spanish>
+    <Chinese>我們還好。謝謝你的關心。</Chinese>
+    <Chinesesimp>我们还好。谢谢你的关心。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_NOTHING_2">
+    <English>Nothing right now. Save your supplies for those who need them more.</English>
+    <French>Rien pour l'instant. Gardez vos provisions pour ceux qui en ont plus besoin.</French>
+    <Portuguese>Nada por agora. Guarde os mantimentos para quem precisa mais.</Portuguese>
+    <Russian>Сейчас ничего. Приберегите припасы для тех, кому нужнее.</Russian>
+    <Spanish>Nada por ahora. Guarda tus suministros para quienes los necesiten mas.</Spanish>
+    <Chinese>現在不需要。把物資留給更需要的人吧。</Chinese>
+    <Chinesesimp>现在不需要。把物资留给更需要的人吧。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_NOTHING_3">
+    <English>We have enough for now. Bless you for offering.</English>
+    <French>Nous avons assez pour l'instant. Soyez beni pour votre proposition.</French>
+    <Portuguese>Temos o suficiente por agora. Que Deus o abencoe por oferecer.</Portuguese>
+    <Russian>Пока у нас всего достаточно. Спасибо вам за предложение.</Russian>
+    <Spanish>Tenemos suficiente por ahora. Que Dios te bendiga por ofrecerlo.</Spanish>
+    <Chinese>我們目前夠用了。願神保佑你的好意。</Chinese>
+    <Chinesesimp>我们目前够用了。愿神保佑你的好意。</Chinesesimp>
+</Key>
+<!-- ---- Pressure responses ---- -->
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_NONE_1">
+    <English>No, no one has come around. Things have been quiet.</English>
+    <French>Non, personne n'est venu. Tout est calme.</French>
+    <Portuguese>Nao, ninguem apareceu. Tem estado tudo calmo.</Portuguese>
+    <Russian>Нет, никто не приходил. Всё спокойно.</Russian>
+    <Spanish>No, no ha venido nadie. Todo ha estado tranquilo.</Spanish>
+    <Chinese>沒有,沒人來過。一直很平靜。</Chinese>
+    <Chinesesimp>没有,没人来过。一直很平静。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_NONE_2">
+    <English>Not lately. The neighbours would say the same.</English>
+    <French>Pas recemment. Les voisins diraient la meme chose.</French>
+    <Portuguese>Ultimamente nao. Os vizinhos diriam o mesmo.</Portuguese>
+    <Russian>В последнее время нет. Соседи скажут то же самое.</Russian>
+    <Spanish>Ultimamente no. Los vecinos dirian lo mismo.</Spanish>
+    <Chinese>最近沒有。鄰居們也會這麼說。</Chinese>
+    <Chinesesimp>最近没有。邻居们也会这么说。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_NONE_3">
+    <English>No - we keep our heads down and they leave us alone.</English>
+    <French>Non - nous restons discrets et ils nous laissent tranquilles.</French>
+    <Portuguese>Nao - mantemo-nos discretos e eles deixam-nos em paz.</Portuguese>
+    <Russian>Нет - мы держимся тихо, и нас не трогают.</Russian>
+    <Spanish>No: mantenemos un perfil bajo y nos dejan en paz.</Spanish>
+    <Chinese>沒有 - 我們低調行事,他們也不來找麻煩。</Chinese>
+    <Chinesesimp>没有 - 我们低调行事,他们也不来找麻烦。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_YES_1">
+    <English>Yes. Men came through, asking questions. We told them nothing.</English>
+    <French>Oui. Des hommes sont venus, ils ont pose des questions. Nous ne leur avons rien dit.</French>
+    <Portuguese>Sim. Vieram ca uns homens, a fazer perguntas. Nao lhes dissemos nada.</Portuguese>
+    <Russian>Да. Приходили какие-то люди, задавали вопросы. Мы им ничего не сказали.</Russian>
+    <Spanish>Si. Vinieron unos hombres haciendo preguntas. No les dijimos nada.</Spanish>
+    <Chinese>有。有些人來問問題。我們什麼都沒告訴他們。</Chinese>
+    <Chinesesimp>有。有些人来问问题。我们什么都没告诉他们。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_YES_2">
+    <English>They were here. Said we'd regret it if we spoke to soldiers like you.</English>
+    <French>Ils sont passes. Ils ont dit qu'on le regretterait si on parlait a des soldats comme vous.</French>
+    <Portuguese>Estiveram aqui. Disseram que iamos arrepender-nos se falassemos com soldados como voces.</Portuguese>
+    <Russian>Они были здесь. Сказали, мы пожалеем, если будем разговаривать с такими солдатами, как вы.</Russian>
+    <Spanish>Estuvieron aqui. Dijeron que lo lamentariamos si hablabamos con soldados como ustedes.</Spanish>
+    <Chinese>他們來過。說如果我們跟你們這樣的士兵講話,我們會後悔的。</Chinese>
+    <Chinesesimp>他们来过。说如果我们跟你们这样的士兵讲话,我们会后悔的。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_YES_3">
+    <English>A few of them came around. Took what they wanted, made threats. We're frightened.</English>
+    <French>Quelques-uns sont passes. Ils ont pris ce qu'ils voulaient, fait des menaces. Nous avons peur.</French>
+    <Portuguese>Vieram ca uns quantos. Levaram o que quiseram, fizeram ameacas. Estamos com medo.</Portuguese>
+    <Russian>Несколько их приходили. Забрали что хотели, угрожали. Нам страшно.</Russian>
+    <Spanish>Vinieron unos cuantos. Se llevaron lo que quisieron, nos amenazaron. Tenemos miedo.</Spanish>
+    <Chinese>他們有幾個人來過。拿走了想要的東西,還威脅我們。我們很害怕。</Chinese>
+    <Chinesesimp>他们有几个人来过。拿走了想要的东西,还威胁我们。我们很害怕。</Chinesesimp>
+</Key>
+<!-- ---- Hostile-roll responses for Needs / Pressure ---- -->
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_HOSTILE_1">
+    <English>I don't want anything from you. Just leave.</English>
+    <French>Je ne veux rien de vous. Partez, c'est tout.</French>
+    <Portuguese>Nao quero nada de si. Va-se embora.</Portuguese>
+    <Russian>Мне от вас ничего не нужно. Уходите.</Russian>
+    <Spanish>No quiero nada de usted. Largese.</Spanish>
+    <Chinese>我不要你的任何東西。走開就是了。</Chinese>
+    <Chinesesimp>我不要你的任何东西。走开就是了。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_HOSTILE_2">
+    <English>Keep your handouts. We'll manage on our own.</English>
+    <French>Gardez vos aumones. Nous nous debrouillerons seuls.</French>
+    <Portuguese>Guarde a sua esmola. Ca nos arranjamos.</Portuguese>
+    <Russian>Оставьте свои подачки себе. Мы справимся сами.</Russian>
+    <Spanish>Quedese con sus limosnas. Nos las arreglaremos solos.</Spanish>
+    <Chinese>把你的施捨收起來。我們自己會應付。</Chinese>
+    <Chinesesimp>把你的施舍收起来。我们自己会应付。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_HOSTILE_3">
+    <English>Nothing. Take your charity somewhere it's wanted.</English>
+    <French>Rien. Allez offrir votre charite la ou elle est appreciee.</French>
+    <Portuguese>Nada. Leve a sua caridade para onde a queiram.</Portuguese>
+    <Russian>Ничего. Несите свою благотворительность туда, где её ждут.</Russian>
+    <Spanish>Nada. Lleve su caridad a donde la quieran.</Spanish>
+    <Chinese>不需要。把你的慈善帶到別人歡迎的地方去。</Chinese>
+    <Chinesesimp>不需要。把你的慈善带到别人欢迎的地方去。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_HOSTILE_1">
+    <English>That's not your business.</English>
+    <French>Ca ne vous regarde pas.</French>
+    <Portuguese>Isso nao e da sua conta.</Portuguese>
+    <Russian>Это не ваше дело.</Russian>
+    <Spanish>Eso no es asunto suyo.</Spanish>
+    <Chinese>這不關你的事。</Chinese>
+    <Chinesesimp>这不关你的事。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_HOSTILE_2">
+    <English>I'm not talking about that with you.</English>
+    <French>Je ne vais pas parler de ca avec vous.</French>
+    <Portuguese>Nao vou falar disso consigo.</Portuguese>
+    <Russian>Я с вами об этом разговаривать не буду.</Russian>
+    <Spanish>No voy a hablar de eso con usted.</Spanish>
+    <Chinese>這個話題我不會跟你談。</Chinese>
+    <Chinesesimp>这个话题我不会跟你谈。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_HOSTILE_3">
+    <English>Ask someone else. I've got nothing to say.</English>
+    <French>Demandez a quelqu'un d'autre. Je n'ai rien a dire.</French>
+    <Portuguese>Pergunte a outra pessoa. Nao tenho nada a dizer.</Portuguese>
+    <Russian>Спросите у кого-нибудь другого. Мне сказать нечего.</Russian>
+    <Spanish>Preguntele a otra persona. No tengo nada que decir.</Spanish>
+    <Chinese>去問別人吧。我沒什麼好說的。</Chinese>
+    <Chinesesimp>去问别人吧。我没什么好说的。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_QUESTIONS_IRRITATED_HOSTILE_1">
@@ -3709,30 +4284,6 @@
 <!--  Advanced Civilians module parameters                        -->
 <!-- ============================================================ -->
 
-<!-- General -->
-<Key ID="STR_ALIVE_ADVCIV_SECTION_HEADER">
-    <English></English>
-</Key>
-<!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_ADVCIV_SECTION_HEADER_COMMENT">
-    <English>The following parameters apply only when Enable Advanced Civilians is set to Yes.</English>
-    <French>Les paramètres suivants ne s'appliquent que lorsque Activer les civils avancés est sur Oui.</French>
-    <Portuguese>Os parâmetros a seguir só se aplicam quando Ativar Civis Avançados estiver definido como Sim.</Portuguese>
-    <Russian>Следующие параметры применяются, только если параметр «Включить продвинутых гражданских» установлен в «Да».</Russian>
-    <Spanish>Los siguientes parámetros se aplican solo cuando Activar Civiles Avanzados está en Sí.</Spanish>
-    <Chinese>下列參數僅在「啟用進階平民」設為「是」時才會生效。</Chinese>
-    <Chinesesimp>以下参数仅在“启用高级平民”设为“是”时生效。</Chinesesimp>
-</Key>
-<!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_ADVCIV_SECTION_HEADER_VALUE">
-    <English>-- Advanced Civilians Settings --</English>
-    <French>-- Paramètres Civils avancés --</French>
-    <Portuguese>-- Configurações de Civis Avançados --</Portuguese>
-    <Russian>-- Настройки продвинутых гражданских --</Russian>
-    <Spanish>-- Ajustes de Civiles Avanzados --</Spanish>
-    <Chinese>-- 進階平民設定 --</Chinese>
-    <Chinesesimp>-- 高级平民设置 --</Chinesesimp>
-</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_ENABLED">
     <English>Enable Advanced Civilians:</English>
@@ -4238,66 +4789,215 @@
     <Chinesesimp>平民对危险作出反应时播放语音的机率。默认:0.6。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_ADVCIV_ORDER_MENU_ENABLED">
-    <English>Enable Order Menu:</English>
-    <French>Activer le menu d'ordres:</French>
-    <Portuguese>Ativar Menu de Ordens:</Portuguese>
-    <Russian>Включить меню приказов:</Russian>
-    <Spanish>Activar menú de órdenes:</Spanish>
-    <Chinese>啟用指令選單:</Chinese>
-    <Chinesesimp>启用命令菜单:</Chinesesimp>
+<Key ID="STR_ALIVE_CIV_POP_INTERACTION_RANGE">
+    <English>Interaction Range (m):</English>
+    <French>Portée d'interaction (m):</French>
+    <Portuguese>Alcance de Interação (m):</Portuguese>
+    <Russian>Дальность взаимодействия (м):</Russian>
+    <Spanish>Alcance de interacción (m):</Spanish>
+    <Chinese>互動範圍 (公尺):</Chinese>
+    <Chinesesimp>互动范围(米):</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_ADVCIV_ORDER_MENU_ENABLED_COMMENT">
-    <English>Show a scroll-wheel action menu on civilians allowing players to issue orders. Default: Yes.</English>
-    <French>Affiche un menu d'actions à la molette sur les civils permettant aux joueurs de donner des ordres. Par défaut: Oui.</French>
-    <Portuguese>Exibe um menu de ações (roda do mouse) em civis, permitindo que os jogadores emitam ordens. Padrão: Sim.</Portuguese>
-    <Russian>Показывать меню действий в колесе прокрутки на гражданских, позволяющее игрокам отдавать приказы. По умолчанию: Да.</Russian>
-    <Spanish>Muestra un menú de acción de rueda en los civiles que permite a los jugadores dar órdenes. Por defecto: Sí.</Spanish>
-    <Chinese>在平民身上顯示滾輪動作選單,讓玩家可對其下達指令。預設值:是。</Chinese>
-    <Chinesesimp>在平民身上显示滚轮动作菜单,让玩家下达命令。默认:是。</Chinesesimp>
+<Key ID="STR_ALIVE_CIV_POP_INTERACTION_RANGE_COMMENT">
+    <English>Maximum scroll-wheel distance at which a civilian-interaction action (Talk to Civilian / Interact / advciv quick commands) appears on a civilian. Default: 4.</English>
+    <French>Distance maximale à la molette à laquelle une action d'interaction civile (Parler au civil / Interagir / ordres rapides advciv) apparaît sur un civil. Par défaut: 4.</French>
+    <Portuguese>Distância máxima da roda do rato à qual uma ação de interação civil (Falar com Civil / Interagir / comandos rápidos advciv) aparece num civil. Padrão: 4.</Portuguese>
+    <Russian>Максимальное расстояние колеса прокрутки, на котором действие взаимодействия с гражданским (Поговорить / Взаимодействовать / быстрые команды advciv) появляется на гражданском. По умолчанию: 4.</Russian>
+    <Spanish>Distancia máxima de la rueda del ratón a la que aparece una acción de interacción civil (Hablar con civil / Interactuar / comandos rápidos advciv) sobre un civil. Por defecto: 4.</Spanish>
+    <Chinese>滑鼠滾輪可顯示平民互動操作 (與平民交談 / 互動 / advciv 快速指令) 的最大距離。預設值:4。</Chinese>
+    <Chinesesimp>滑鼠滚轮可显示平民互动操作 (与平民交谈 / 互动 / advciv 快速命令) 的最大距离。默认:4。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_ADVCIV_ORDER_MENU_RANGE">
-    <English>Order Menu Range (m):</English>
-    <French>Portée menu d'ordres (m):</French>
-    <Portuguese>Alcance do Menu de Ordens (m):</Portuguese>
-    <Russian>Дальность меню приказов (м):</Russian>
-    <Spanish>Alcance del menú de órdenes (m):</Spanish>
-    <Chinese>指令選單範圍 (公尺):</Chinese>
-    <Chinesesimp>命令菜单范围(米):</Chinesesimp>
+<Key ID="STR_ALIVE_CIV_POP_INTEL_GATHER_CHANCE">
+    <English>Gather Intel Chance (%):</English>
+    <French>Chance de renseignement (%):</French>
+    <Portuguese>Chance de Coletar Informação (%):</Portuguese>
+    <Russian>Шанс получить разведданные (%):</Russian>
+    <Spanish>Probabilidad de obtener inteligencia (%):</Spanish>
+    <Chinese>蒐集情報機率 (%):</Chinese>
+    <Chinesesimp>搜集情报几率 (%):</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_ADVCIV_ORDER_MENU_RANGE_COMMENT">
-    <English>Maximum distance at which the civilian scroll menu is accessible. Default: 4.</English>
-    <French>Distance maximale à laquelle le menu molette civil est accessible. Par défaut: 4.</French>
-    <Portuguese>Distância máxima na qual o menu de ações do civil é acessível. Padrão: 4.</Portuguese>
-    <Russian>Максимальное расстояние, на котором доступно меню прокрутки гражданских. По умолчанию: 4.</Russian>
-    <Spanish>Distancia máxima a la que el menú de rueda del civil es accesible. Por defecto: 4.</Spanish>
-    <Chinese>平民滾輪選單可用的最大距離。預設值:4。</Chinese>
-    <Chinesesimp>平民滚轮菜单可用的最大距离。默认:4。</Chinesesimp>
+<Key ID="STR_ALIVE_CIV_POP_INTEL_GATHER_CHANCE_COMMENT">
+    <English>Base probability (0-100) that the Gather Intel civilian interaction reveals enemy installation markers on the map. Modulated at click time by the civilian's individual hostility (ALiVE_CivPop_Hostility, 0-100, default 30): a hostile civilian may refuse outright (chance scales up from hostility 50) or lie and reveal decoy markers at plausible-looking false positions (deception chance scales up from hostility 25). The civilian's intel opportunity is consumed on any attempt, so each civilian can only be queried once. Applies to the ALiVE Dialog and ACE Interact paths; the CLASSIC scroll-wheel path keeps its legacy behaviour (roughly 10 percent of civilians carry the entry, always successful when clicked). Default: 30.</English>
+    <French>Probabilité de base (0-100) que l'interaction Recueillir des renseignements révèle les marqueurs des installations ennemies sur la carte. Modulée au clic par l'hostilité individuelle du civil (ALiVE_CivPop_Hostility, 0-100, par défaut 30): un civil hostile peut refuser (chance qui augmente à partir d'une hostilité de 50) ou mentir et révéler des marqueurs leurres à de fausses positions plausibles (chance de tromperie qui augmente à partir d'une hostilité de 25). L'opportunité de renseignement du civil est consommée à chaque tentative, de sorte que chaque civil ne peut être interrogé qu'une seule fois. S'applique aux voies Dialogue ALiVE et ACE Interact; la voie CLASSIC à la molette conserve son comportement hérité (environ 10 pour cent des civils portent l'entrée, toujours réussie une fois cliquée). Par défaut: 30.</French>
+    <Portuguese>Probabilidade base (0-100) de a interação Coletar Informação revelar marcadores de instalações inimigas no mapa. Modulada no clique pela hostilidade individual do civil (ALiVE_CivPop_Hostility, 0-100, padrão 30): um civil hostil pode recusar-se (a chance aumenta a partir de uma hostilidade de 50) ou mentir e revelar marcadores falsos em posições plausíveis (a chance de engano aumenta a partir de uma hostilidade de 25). A oportunidade de informação do civil é consumida em qualquer tentativa, pelo que cada civil só pode ser questionado uma vez. Aplica-se aos caminhos do Diálogo ALiVE e ACE Interact; o caminho CLASSIC da roda do rato mantém o seu comportamento herdado (cerca de 10 por cento dos civis possuem a entrada, sempre bem-sucedida quando clicada). Padrão: 30.</Portuguese>
+    <Russian>Базовая вероятность (0-100), что взаимодействие "Собрать разведданные" покажет на карте маркеры вражеских установок. Модулируется при нажатии индивидуальной враждебностью гражданского (ALiVE_CivPop_Hostility, 0-100, по умолчанию 30): враждебный гражданский может отказаться (шанс растёт начиная с враждебности 50) или солгать и показать ложные маркеры в правдоподобных ложных местах (шанс обмана растёт начиная с враждебности 25). Возможность получить разведданные у гражданского расходуется при любой попытке, поэтому каждого гражданского можно опросить только один раз. Применяется к путям "Диалог ALiVE" и "ACE Interact"; путь CLASSIC через колесо прокрутки сохраняет своё прежнее поведение (примерно у 10 процентов гражданских есть эта опция, всегда успешная при нажатии). По умолчанию: 30.</Russian>
+    <Spanish>Probabilidad base (0-100) de que la interacción Obtener inteligencia revele en el mapa los marcadores de instalaciones enemigas. Modulada al hacer clic por la hostilidad individual del civil (ALiVE_CivPop_Hostility, 0-100, por defecto 30): un civil hostil puede negarse (la probabilidad aumenta a partir de una hostilidad de 50) o mentir y revelar marcadores señuelo en posiciones falsas plausibles (la probabilidad de engaño aumenta a partir de una hostilidad de 25). La oportunidad de inteligencia del civil se consume en cualquier intento, por lo que cada civil solo puede ser interrogado una vez. Se aplica a las rutas de Diálogo ALiVE y ACE Interact; la ruta CLASSIC de la rueda del ratón conserva su comportamiento heredado (aproximadamente el 10 por ciento de los civiles tiene la entrada, siempre exitosa al hacer clic). Predeterminado: 30.</Spanish>
+    <Chinese>蒐集情報 平民互動揭示地圖上敵方設施標記的基礎機率 (0-100)。點擊時會根據該平民的個別敵意 (ALiVE_CivPop_Hostility,0-100,預設 30) 進行調整:敵意高的平民可能直接拒絕 (敵意 50 起機率遞增),或撒謊並在看似合理的錯誤位置顯示誘餌標記 (敵意 25 起欺騙機率遞增)。無論結果如何,每次嘗試都會消耗該平民的情報機會,因此每位平民只能被詢問一次。適用於 ALiVE 對話框與 ACE Interact 路徑;CLASSIC 滑鼠滾輪路徑維持原有行為 (約 10 % 的平民具備此選項,點擊時必定成功)。預設值:30。</Chinese>
+    <Chinesesimp>搜集情报 平民互动揭示地图上敌方设施标记的基础几率 (0-100)。点击时会根据该平民的个人敌意 (ALiVE_CivPop_Hostility,0-100,默认 30) 进行调整:敌意高的平民可能直接拒绝 (敌意 50 起几率递增),或撒谎并在看似合理的错误位置显示诱饵标记 (敌意 25 起欺骗几率递增)。无论结果如何,每次尝试都会消耗该平民的情报机会,因此每位平民只能被询问一次。适用于 ALiVE 对话框与 ACE Interact 路径;CLASSIC 鼠标滚轮路径保持原有行为 (约 10 % 的平民具备此选项,点击时必定成功)。默认:30。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_ADVCIV_PLAYER_ANIMATIONS">
-    <English>Player Gesture Animations:</English>
-    <French>Animations des gestes joueur:</French>
-    <Portuguese>Animações de Gestos do Jogador:</Portuguese>
-    <Russian>Анимации жестов игрока:</Russian>
-    <Spanish>Animaciones de gestos del jugador:</Spanish>
-    <Chinese>玩家手勢動畫:</Chinese>
-    <Chinesesimp>玩家手势动画:</Chinesesimp>
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR">
+    <English>Hostility Indicator:</English>
+    <French>Indicateur d'hostilité:</French>
+    <Portuguese>Indicador de Hostilidade:</Portuguese>
+    <Russian>Индикатор враждебности:</Russian>
+    <Spanish>Indicador de hostilidad:</Spanish>
+    <Chinese>敵意指示器:</Chinese>
+    <Chinesesimp>敌意指示器:</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
-<Key ID="STR_ALIVE_ADVCIV_PLAYER_ANIMATIONS_COMMENT">
-    <English>Play hand signal animations on the player when issuing orders to civilians. Default: Yes.</English>
-    <French>Joue des animations de signes de la main sur le joueur lorsqu'il donne des ordres aux civils. Par défaut: Oui.</French>
-    <Portuguese>Reproduz animações de sinais manuais no jogador ao emitir ordens a civis. Padrão: Sim.</Portuguese>
-    <Russian>Проигрывать анимации жестов руками на игроке при отдаче приказов гражданским. По умолчанию: Да.</Russian>
-    <Spanish>Reproduce animaciones de señales manuales en el jugador al dar órdenes a los civiles. Por defecto: Sí.</Spanish>
-    <Chinese>對平民下達指令時,於玩家身上播放手勢動畫。預設值:是。</Chinese>
-    <Chinesesimp>对平民下达命令时在玩家身上播放手势信号动画。默认:是。</Chinesesimp>
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR_COMMENT">
+    <English>Whether the civilian interaction dialog shows a perceived hostility readout for the targeted civilian. The displayed value is the civilian's individual hostility (ALiVE_CivPop_Hostility, 0-100) plus a small per-civilian noise offset, so the indicator is approximate not exact - mirrors the same imperfect-perception model used by Gather Intel. Off (default): no indicator, players read disposition from the civilian's stop-on-approach gesture (wave / head-shake) instead. Descriptive: shows a labelled bucket (Friendly / Neutral / Wary / Defiant / Hostile). Numeric: shows the perceived percentage with a tilde to flag uncertainty.</English>
+    <French>Indique si la fenêtre d'interaction civile affiche une lecture d'hostilité perçue pour le civil ciblé. La valeur affichée est l'hostilité individuelle du civil (ALiVE_CivPop_Hostility, 0-100) plus un petit décalage de bruit propre à chaque civil, donc l'indicateur est approximatif et non exact - reflète le même modèle de perception imparfaite que Recueillir des renseignements. Désactivé (par défaut): pas d'indicateur, les joueurs lisent la disposition à partir du geste d'arrêt à l'approche (salut / hochement de tête négatif). Descriptif: affiche un palier nommé (Amical / Neutre / Méfiant / Récalcitrant / Hostile). Numérique: affiche le pourcentage perçu avec un tilde pour signaler l'incertitude.</French>
+    <Portuguese>Se a janela de interação civil exibe uma leitura de hostilidade percebida para o civil visado. O valor mostrado é a hostilidade individual do civil (ALiVE_CivPop_Hostility, 0-100) mais um pequeno deslocamento de ruído por civil, pelo que o indicador é aproximado, não exato - reflete o mesmo modelo de perceção imperfeita usado pela Coleta de Informação. Desligado (padrão): sem indicador, os jogadores leem a disposição a partir do gesto de parada na aproximação (aceno / abano de cabeça negativo). Descritivo: mostra um nível nomeado (Amigável / Neutro / Cauteloso / Desafiador / Hostil). Numérico: mostra a percentagem percebida com um til para indicar incerteza.</Portuguese>
+    <Russian>Показывать ли в окне взаимодействия с гражданским предполагаемый уровень враждебности выбранного гражданского. Отображаемое значение - это индивидуальная враждебность гражданского (ALiVE_CivPop_Hostility, 0-100) плюс небольшое индивидуальное смещение, поэтому индикатор приблизительный, а не точный - отражает ту же модель несовершенного восприятия, что и в "Собрать разведданные". Выключено (по умолчанию): нет индикатора, игроки читают расположение по жесту остановки при приближении (приветствие / отрицательное покачивание головой). Описательное: показывает названный уровень (Дружественный / Нейтральный / Настороженный / Вызывающий / Враждебный). Числовое: показывает воспринимаемый процент с тильдой для обозначения неопределённости.</Russian>
+    <Spanish>Si el diálogo de interacción civil muestra una lectura de hostilidad percibida para el civil objetivo. El valor mostrado es la hostilidad individual del civil (ALiVE_CivPop_Hostility, 0-100) más un pequeño desplazamiento de ruido por civil, por lo que el indicador es aproximado, no exacto - refleja el mismo modelo de percepción imperfecta usado por Obtener inteligencia. Desactivado (por defecto): sin indicador, los jugadores leen la disposición a partir del gesto de parada al acercarse (saludo / negación con la cabeza). Descriptivo: muestra un nivel etiquetado (Amistoso / Neutral / Cauteloso / Desafiante / Hostil). Numérico: muestra el porcentaje percibido con una tilde para indicar incertidumbre.</Spanish>
+    <Chinese>平民互動對話框是否顯示目標平民的感知敵意數值。顯示的值為該平民的個別敵意 (ALiVE_CivPop_Hostility,0-100) 加上每位平民的小幅隨機偏移,因此指示為估計而非精確 — 反映與「蒐集情報」相同的不完美感知模型。關閉 (預設):無指示器,玩家透過平民接近時的停止姿勢 (揮手 / 搖頭) 判斷態度。描述式:顯示分級標籤 (友好 / 中立 / 警戒 / 反抗 / 敵對)。數值式:顯示感知百分比並加上波浪號以表示不確定。</Chinese>
+    <Chinesesimp>平民互动对话框是否显示目标平民的感知敌意数值。显示的值为该平民的个别敌意 (ALiVE_CivPop_Hostility,0-100) 加上每位平民的小幅随机偏移,因此指示为估计而非精确 — 反映与"搜集情报"相同的不完美感知模型。关闭 (默认):无指示器,玩家通过平民接近时的停止姿势 (挥手 / 摇头) 判断态度。描述式:显示分级标签 (友好 / 中立 / 警戒 / 反抗 / 敌对)。数值式:显示感知百分比并加上波浪号以表示不确定。</Chinesesimp>
 </Key>
-
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR_OFF">
+    <English>Off</English>
+    <French>Désactivé</French>
+    <Portuguese>Desligado</Portuguese>
+    <Russian>Выключено</Russian>
+    <Spanish>Desactivado</Spanish>
+    <Chinese>關閉</Chinese>
+    <Chinesesimp>关闭</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR_DESCRIPTIVE">
+    <English>Descriptive (perceived)</English>
+    <French>Descriptif (perçu)</French>
+    <Portuguese>Descritivo (percebido)</Portuguese>
+    <Russian>Описательное (восприятие)</Russian>
+    <Spanish>Descriptivo (percibido)</Spanish>
+    <Chinese>描述式 (感知)</Chinese>
+    <Chinesesimp>描述式 (感知)</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDICATOR_NUMERIC">
+    <English>Numeric (perceived)</English>
+    <French>Numérique (perçu)</French>
+    <Portuguese>Numérico (percebido)</Portuguese>
+    <Russian>Числовое (восприятие)</Russian>
+    <Spanish>Numérico (percibido)</Spanish>
+    <Chinese>數值式 (感知)</Chinese>
+    <Chinesesimp>数值式 (感知)</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_WEAPON_AIM_RANGE">
+    <English>Weapon Aim Reaction Range (m):</English>
+    <French>Distance de reaction au pointage d'arme (m):</French>
+    <Portuguese>Alcance de reacao a mira de arma (m):</Portuguese>
+    <Russian>Дистанция реакции на прицеливание (м):</Russian>
+    <Spanish>Distancia de reaccion al apuntar con arma (m):</Spanish>
+    <Chinese>武器瞄準反應距離 (m):</Chinese>
+    <Chinesesimp>武器瞄准反应距离 (m):</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_WEAPON_AIM_RANGE_COMMENT">
+    <English>Maximum distance (in metres) at which a civilian will react to a player aiming a weapon at them. Reaction is gated on three additional conditions: the player has a raised weapon, the civilian has line-of-sight to the player, and the player holds aim on the civilian for 2 seconds. Reaction varies by the civilian's hostility (Friendly civilians react with confusion and keep walking; Neutral and Wary civilians surrender; Defiant and Hostile civilians flee). Set to 0 to disable the system entirely. Default: 15.</English>
+    <French>Distance maximale (en metres) a laquelle un civil reagit lorsqu'un joueur pointe une arme sur lui. La reaction est conditionnee par trois criteres supplementaires: l'arme du joueur est levee, le civil a une ligne de vue sur le joueur, et le joueur maintient sa visee sur le civil pendant 2 secondes. La reaction varie selon l'hostilite du civil (les civils amicaux reagissent avec confusion et continuent a marcher; les civils neutres et mefiants se rendent; les civils recalcitrants et hostiles fuient). Mettre a 0 pour desactiver entierement le systeme. Par defaut: 15.</French>
+    <Portuguese>Distancia maxima (em metros) a que um civil reage quando um jogador aponta uma arma na sua direcao. A reacao esta condicionada a tres condicoes adicionais: o jogador tem a arma erguida, o civil tem linha de visao para o jogador, e o jogador mantem a mira no civil durante 2 segundos. A reacao varia consoante a hostilidade do civil (civis amigaveis reagem com confusao e continuam a andar; civis neutros e cautelosos rendem-se; civis desafiadores e hostis fogem). Definir 0 para desativar totalmente o sistema. Padrao: 15.</Portuguese>
+    <Russian>Максимальная дистанция (в метрах), на которой гражданский реагирует на наведённое на него оружие игрока. Реакция запускается при выполнении трёх дополнительных условий: оружие игрока поднято, гражданский видит игрока, и игрок удерживает прицел на гражданском в течение 2 секунд. Реакция зависит от враждебности гражданского (дружественные гражданские реагируют замешательством и продолжают идти; нейтральные и настороженные сдаются; вызывающие и враждебные убегают). Установите 0, чтобы полностью отключить систему. По умолчанию: 15.</Russian>
+    <Spanish>Distancia maxima (en metros) a la que un civil reacciona cuando un jugador le apunta con un arma. La reaccion esta condicionada por tres requisitos adicionales: el jugador tiene el arma alzada, el civil tiene linea de vision al jugador, y el jugador mantiene la punteria sobre el civil durante 2 segundos. La reaccion varia segun la hostilidad del civil (los civiles amistosos reaccionan con confusion y siguen caminando; los civiles neutrales y cautelosos se rinden; los civiles desafiantes y hostiles huyen). Pon 0 para desactivar el sistema por completo. Predeterminado: 15.</Spanish>
+    <Chinese>玩家用武器瞄準平民時,平民做出反應的最大距離(以公尺計)。反應另需滿足三個條件:玩家武器已舉起、平民對玩家有視線、玩家持續瞄準該平民達 2 秒。反應依平民敵意而異(友好的平民會表現困惑並繼續行走;中立與警戒的平民會投降;反抗與敵對的平民會逃跑)。設為 0 可完全停用此系統。預設:15。</Chinese>
+    <Chinesesimp>玩家用武器瞄准平民时,平民做出反应的最大距离(以米计)。反应另需满足三个条件:玩家武器已举起、平民对玩家有视线、玩家持续瞄准该平民达 2 秒。反应依平民敌意而异(友好的平民会表现困惑并继续行走;中立与警戒的平民会投降;反抗与敌对的平民会逃跑)。设为 0 可完全停用此系统。默认:15。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_VEHICLE_STOP_ON_AIM">
+    <English>Vehicle Stops on Aim/Gesture:</English>
+    <French>Vehicule s'arrete sur arme/geste:</French>
+    <Portuguese>Veiculo para com mira/gesto:</Portuguese>
+    <Russian>Стоп транспорта по сигналу:</Russian>
+    <Spanish>Detener vehiculo con senal:</Spanish>
+    <Chinese>武器或手勢停車:</Chinese>
+    <Chinesesimp>武器或手势停车:</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_VEHICLE_STOP_ON_AIM_COMMENT">
+    <English>When a player signals a civilian-driven vehicle, the driver complies by braking, cutting the engine, dismounting, and standing by the door in surrender pose so the player can engage. Two trigger paths: aiming a raised weapon at the vehicle (range 50 metres) or playing a stop / cease-fire / freeze gesture while looking at the vehicle (range 30 metres - hand signal, COIN-friendly). The driver refuses if they are hostile (effective hostility 60 or higher). Multi-occupant vehicles only stop the driver; passengers stay seated. Default: Yes.</English>
+    <French>Lorsqu'un joueur signale un vehicule conduit par un civil, le conducteur obtempere: il freine, coupe le moteur, descend du vehicule et reste pres de la portiere en posture de reddition pour que le joueur puisse interagir. Deux declencheurs: pointer une arme levee sur le vehicule (portee 50 metres) ou executer un geste d'arret / cessez-le-feu / halte en regardant le vehicule (portee 30 metres - signal manuel adapte aux missions COIN). Le conducteur refuse s'il est hostile (hostilite effective de 60 ou plus). Sur les vehicules a plusieurs occupants, seul le conducteur s'arrete; les passagers restent en place. Par defaut: Oui.</French>
+    <Portuguese>Quando um jogador sinaliza um veiculo conduzido por civis, o condutor cumpre: trava, desliga o motor, desmonta e fica junto da porta em pose de rendicao para o jogador interagir. Duas formas de acionar: apontar uma arma erguida ao veiculo (alcance 50 metros) ou executar um gesto de parar / cessar fogo / congelar enquanto olha para o veiculo (alcance 30 metros - sinal manual, adequado a missoes COIN). O condutor recusa se estiver hostil (hostilidade efetiva de 60 ou superior). Em veiculos com varios ocupantes apenas o condutor para; os passageiros permanecem sentados. Padrao: Sim.</Portuguese>
+    <Russian>Когда игрок подаёт сигнал гражданскому транспорту, водитель подчиняется: тормозит, глушит двигатель, выходит и встаёт у двери в позе сдачи, чтобы игрок мог взаимодействовать. Два способа: навести поднятое оружие на транспорт (дистанция 50 метров) или выполнить жест 'стоп / прекратить огонь / стой', глядя на транспорт (дистанция 30 метров - ручной сигнал, удобный в COIN-операциях). Водитель отказывается, если он враждебен (эффективная враждебность 60 и выше). В транспорте с несколькими людьми останавливается только водитель; пассажиры остаются на местах. По умолчанию: Да.</Russian>
+    <Spanish>Cuando un jugador hace una senal a un vehiculo conducido por un civil, el conductor obedece: frena, apaga el motor, se baja y se queda junto a la puerta en pose de rendicion para que el jugador pueda interactuar. Dos disparadores: apuntar con un arma alzada al vehiculo (alcance 50 metros) o realizar un gesto de alto / alto el fuego / congelar mientras se mira al vehiculo (alcance 30 metros - senal manual, idonea para misiones COIN). El conductor se niega si esta hostil (hostilidad efectiva de 60 o mas). En vehiculos con varios ocupantes solo el conductor se detiene; los pasajeros se quedan sentados. Predeterminado: Si.</Spanish>
+    <Chinese>當玩家對平民駕駛的車輛發出信號時,駕駛會配合:踩煞車、熄火、下車,並以投降姿勢站在車門旁讓玩家進行互動。兩種觸發方式:以舉起的武器瞄準車輛(範圍 50 公尺),或在注視車輛的同時做出停止 / 停火 / 凍結手勢(範圍 30 公尺 — 手勢示意,適合 COIN 任務)。如果駕駛處於敵對狀態(實際敵意 60 或以上)則拒絕。多人載具只有駕駛會停車;乘客留在座位上。預設:是。</Chinese>
+    <Chinesesimp>当玩家对平民驾驶的车辆发出信号时,驾驶会配合:踩刹车、熄火、下车,并以投降姿势站在车门旁让玩家进行互动。两种触发方式:以举起的武器瞄准车辆(范围 50 米),或在注视车辆的同时做出停止 / 停火 / 冻结手势(范围 30 米 — 手势示意,适合 COIN 任务)。如果驾驶处于敌对状态(实际敌意 60 或以上)则拒绝。多人载具只有驾驶会停车;乘客留在座位上。默认:是。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_FRIENDLY">
+    <English>Friendly</English>
+    <French>Amical</French>
+    <Portuguese>Amigável</Portuguese>
+    <Russian>Дружественный</Russian>
+    <Spanish>Amistoso</Spanish>
+    <Chinese>友好</Chinese>
+    <Chinesesimp>友好</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_NEUTRAL">
+    <English>Neutral</English>
+    <French>Neutre</French>
+    <Portuguese>Neutro</Portuguese>
+    <Russian>Нейтральный</Russian>
+    <Spanish>Neutral</Spanish>
+    <Chinese>中立</Chinese>
+    <Chinesesimp>中立</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_WARY">
+    <English>Wary</English>
+    <French>Méfiant</French>
+    <Portuguese>Cauteloso</Portuguese>
+    <Russian>Настороженный</Russian>
+    <Spanish>Cauteloso</Spanish>
+    <Chinese>警戒</Chinese>
+    <Chinesesimp>警戒</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_HOSTILE">
+    <English>Hostile</English>
+    <French>Hostile</French>
+    <Portuguese>Hostil</Portuguese>
+    <Russian>Враждебный</Russian>
+    <Spanish>Hostil</Spanish>
+    <Chinese>敵對</Chinese>
+    <Chinesesimp>敌对</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_DEFIANT">
+    <English>Defiant</English>
+    <French>Récalcitrant</French>
+    <Portuguese>Desafiador</Portuguese>
+    <Russian>Вызывающий</Russian>
+    <Spanish>Desafiante</Spanish>
+    <Chinese>反抗</Chinese>
+    <Chinesesimp>反抗</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_INTEL_REVEALED">
+    <English>The civilian points out nearby enemy installations on your map.</English>
+    <French>Le civil vous indique les installations ennemies proches sur votre carte.</French>
+    <Portuguese>O civil aponta as instalações inimigas próximas no seu mapa.</Portuguese>
+    <Russian>Гражданский показывает на вашей карте ближайшие вражеские установки.</Russian>
+    <Spanish>El civil señala las instalaciones enemigas cercanas en tu mapa.</Spanish>
+    <Chinese>該平民在你的地圖上指出附近的敵方設施。</Chinese>
+    <Chinesesimp>该平民在你的地图上指出附近的敌方设施。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_INTEL_NOTHING">
+    <English>The civilian has nothing useful to share about enemy positions.</English>
+    <French>Le civil n'a rien d'utile à partager sur les positions ennemies.</French>
+    <Portuguese>O civil não tem nada de útil para partilhar sobre posições inimigas.</Portuguese>
+    <Russian>Гражданскому нечего рассказать о позициях противника.</Russian>
+    <Spanish>El civil no tiene nada útil que compartir sobre las posiciones enemigas.</Spanish>
+    <Chinese>該平民對敵軍位置一無所知。</Chinese>
+    <Chinesesimp>该平民对敌军位置一无所知。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_INTERACT_INTEL_REFUSED">
+    <English>The civilian refuses to speak about enemy movements.</English>
+    <French>Le civil refuse de parler des mouvements ennemis.</French>
+    <Portuguese>O civil recusa-se a falar sobre os movimentos inimigos.</Portuguese>
+    <Russian>Гражданский отказывается говорить о передвижениях противника.</Russian>
+    <Spanish>El civil se niega a hablar sobre los movimientos enemigos.</Spanish>
+    <Chinese>該平民拒絕談論敵軍動向。</Chinese>
+    <Chinesesimp>该平民拒绝谈论敌军动向。</Chinesesimp>
+</Key>
 <!-- Vehicle -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_VEHICLE_ESCAPE">

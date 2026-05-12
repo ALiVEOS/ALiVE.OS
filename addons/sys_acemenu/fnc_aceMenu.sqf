@@ -20,6 +20,7 @@ See Also:
 
 Author:
 Whigital
+Jman
 
 Peer reviewed:
 nil
@@ -63,4 +64,10 @@ if ([QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable) then {
 // Player Resupply | Logistics //
 if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
     [] spawn FUNCMAIN(aceMenuPR);
+};
+
+// Civilian interaction (target-action tree on CAManBase, gated inside the
+// function on the civilianInteractionUI UI mode attribute) //
+if ([QMOD(AMB_CIV_POPULATION)] call ALiVE_fnc_isModuleAvailable) then {
+    [] spawn FUNCMAIN(aceMenuCiv);
 };

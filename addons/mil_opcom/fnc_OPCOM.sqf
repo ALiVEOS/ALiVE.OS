@@ -90,7 +90,6 @@ switch(_operation) do {
 
         case "init": {
             if (isServer) then {
-                // if server, initialise module game logic
                 _logic setVariable ["super", SUPERCLASS];
                 _logic setVariable ["class", MAINCLASS];
                 _logic setVariable ["moduleType", "ALIVE_OPCOM"];
@@ -100,15 +99,9 @@ switch(_operation) do {
 
                     PublicVariable QUOTE(ADDON);
                 };
-            };
+                TRACE_1("After module init",_logic);
 
-            TRACE_1("After module init",_logic);
-
-            waituntil {!isnil QUOTE(ADDON)};
-
-            TRACE_1("Starting process",_logic);
-
-            if (isServer) then {
+                TRACE_1("Starting process",_logic);
                 [_logic,"start"] call MAINCLASS;
             };
         };
@@ -195,6 +188,22 @@ switch(_operation) do {
                     // + sampleOpcomHostility / classifyGroupTier /
                     // buildTieredGroupRoster helpers.
                     _asymEscalationIntensity = _logic getvariable ["asym_escalationIntensity","off"];
+
+                    // #861: configurable per-OPCOM list of CfgVehicles parent
+                    // class names whose group entries are excluded from the
+                    // asymmetric tiered roster. Default matches the previous
+                    // hard-coded behaviour (no tanks / planes / helis / ships)
+                    // so existing missions keep working without a touch;
+                    // mission-makers running state-backed insurgent factions
+                    // can edit the comma-separated list to widen recruitment.
+                    private _asymExcludeRaw = _logic getVariable ["asym_excludeKinds", "Tank,Plane,Helicopter,Ship"];
+                    private _asymExcludeKinds = [];
+                    {
+                        private _t = _x;
+                        while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+                        while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do { _t = _t select [0, count _t - 1] };
+                        if (_t != "") then { _asymExcludeKinds pushBackUnique _t };
+                    } forEach ([_asymExcludeRaw, ","] call CBA_fnc_split);
 
                     //Get position
                     _position = getposATL _logic;
@@ -325,6 +334,7 @@ switch(_operation) do {
                     [_handler, "roadblocks",_roadblocks] call ALiVE_fnc_HashSet;
                     [_handler, "friendlyDisableMode",_friendlyDisableMode] call ALiVE_fnc_HashSet;
                     [_handler, "asymEscalationIntensity",_asymEscalationIntensity] call ALiVE_fnc_HashSet;
+                    [_handler, "asymExcludeKinds",_asymExcludeKinds] call ALiVE_fnc_HashSet;
 
                     // Issue #697 Phases 2.2 + 2.3: periodic scan lets
                     // friendly AI automatically disable this OPCOM's
@@ -439,8 +449,9 @@ switch(_operation) do {
                                 // loop picks from the pre-built roster each
                                 // cycle instead of re-walking CfgGroups.
                                 private _tieredGroupRoster = [] call ALiVE_fnc_hashCreate;
+                                private _excludeKinds = [_handler, "asymExcludeKinds", ["Tank", "Plane", "Helicopter", "Ship"]] call ALiVE_fnc_HashGet;
                                 {
-                                    private _factionRoster = [_x] call ALiVE_fnc_INS_buildTieredGroupRoster;
+                                    private _factionRoster = [_x, _excludeKinds] call ALiVE_fnc_INS_buildTieredGroupRoster;
                                     [_tieredGroupRoster, _x, _factionRoster] call ALiVE_fnc_hashSet;
                                 } foreach _factions;
                                 [_handler, "tieredGroupRoster", _tieredGroupRoster] call ALiVE_fnc_HashSet;
@@ -2159,23 +2170,42 @@ switch(_operation) do {
 
             if (_installationType in ["HQ", "factory", "depot"]) then {
                 private _buildings = [_center, _size] call ALiVE_fnc_INS_filterObjectiveBuildings;
-                private _usedBuildings = [];
+                private _locallyUsedBuildings = [];
+                private _externallyUsedBuildings = [];
 
                 {
                     private _occupied = [_logic, "convertObject", [_objective, _x, []] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
                     if (alive _occupied) then {
-                        _usedBuildings pushBackUnique _occupied;
+                        _locallyUsedBuildings pushBackUnique _occupied;
                     };
                 } foreach ["factory", "HQ", "depot"];
 
+                {
+                    private _candidateObjective = _x;
+                    if (([_candidateObjective, "objectiveID", ""] call ALiVE_fnc_HashGet) != _objectiveID) then {
+                        {
+                            private _occupied = [_logic, "convertObject", [_candidateObjective, _x, []] call ALiVE_fnc_HashGet] call ALiVE_fnc_OPCOM;
+                            if (alive _occupied) then {
+                                _externallyUsedBuildings pushBackUnique _occupied;
+                            };
+                        } foreach ["factory", "HQ", "depot"];
+                    };
+                } foreach ([_logic, "objectives", []] call ALiVE_fnc_HashGet);
+
                 private _candidateBuildings = [];
                 {
-                    if !(_x in _usedBuildings) then {
+                    if !(_x in _externallyUsedBuildings) then {
                         _candidateBuildings pushBack _x;
                     };
                 } foreach _buildings;
-                if (count _candidateBuildings == 0) then {
-                    _candidateBuildings = _buildings;
+
+                private _preferredBuildings = _candidateBuildings select {
+                    !(_x in _locallyUsedBuildings)
+                };
+                private _selectionBuildings = if (count _preferredBuildings > 0) then {
+                    _preferredBuildings
+                } else {
+                    _candidateBuildings
                 };
 
                 if (_target isEqualType objNull && {!isNull _target} && {alive _target} && {_target in _candidateBuildings}) then {
@@ -2183,7 +2213,7 @@ switch(_operation) do {
                 };
 
                 if (isNull _selectedTarget) then {
-                    private _sortedBuildings = [_candidateBuildings, [_anchorPos], {_Input0 distance2D _x}, "ASCEND"] call ALiVE_fnc_SortBy;
+                    private _sortedBuildings = [_selectionBuildings, [_anchorPos], {_Input0 distance2D _x}, "ASCEND"] call ALiVE_fnc_SortBy;
                     if (count _sortedBuildings > 0) then {
                         if (_useClosestBuilding || {(_anchorPos distance2D (_sortedBuildings select 0)) <= 15}) then {
                             _selectedTarget = _sortedBuildings select 0;

@@ -730,6 +730,13 @@ switch(_operation) do {
     };
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION] call ALIVE_fnc_OOsimpleOperation;
+
+        if !(_args isEqualType "") then {
+            private _compiledFaction = [_logic] call ALiVE_fnc_factionCompilerResolveForModule;
+            if !(_compiledFaction isEqualTo "") then {
+                _result = _compiledFaction;
+            };
+        };
     };
     case "factions": {
         _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;

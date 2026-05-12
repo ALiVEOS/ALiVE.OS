@@ -34,7 +34,24 @@ Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-private _ctrl = (_this controlsGroupCtrl 100);
+// Unpack invocation. New-style call from variant control classes that
+// pass a custom variable name is
+//   [_this, _varName] call compile preprocessFileLineNumbers '...'
+// Legacy direct call is `_this call ...` where _this = display, with
+// _varName defaulting to "faction" (the property name used by the
+// majority of single-select faction attributes).
+private _display = controlNull;
+private _varName = "faction";
+if (typeName _this == "ARRAY") then {
+    _display = _this select 0;
+    if (count _this > 1 && {typeName (_this select 1) == "STRING"} && {(_this select 1) != ""}) then {
+        _varName = _this select 1;
+    };
+} else {
+    _display = _this;
+};
+
+private _ctrl = (_display controlsGroupCtrl 100);
 private _sel = lbCurSel _ctrl;
 private _result = if (_sel < 0) then {
     "OPF_F"
@@ -48,11 +65,15 @@ if (typeName _result != "STRING" || {_result == ""}) then {
 };
 
 // Path 1: Eden "value" slot - for SQM serialisation
-_this setVariable ["value", _result];
+_display setVariable ["value", _result];
 
-// Path 2: logic variable - for attributeLoad to find on re-open
+// Path 2: logic variable - for attributeLoad to find on re-open AND for
+// Eden's variables[] SQM serialisation (broadcast=true). Variant control
+// classes with a non-default _varName write to that key instead of
+// "faction" so attributes with a sibling "faction" on the same module
+// don't clobber each other's stored values.
 {
-    _x setVariable ["faction", _result, true];
+    _x setVariable [_varName, _result, true];
 } forEach (get3DENSelected "logic");
 
 // Path 3 (mission start re-apply) is handled by the attribute's `expression`

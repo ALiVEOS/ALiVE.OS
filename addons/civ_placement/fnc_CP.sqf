@@ -47,7 +47,7 @@ Jman
 #define DEFAULT_PRIORITY_FILTER "0"
 #define DEFAULT_TYPE QUOTE(RANDOM)
 #define DEFAULT_WITH_PLACEMENT true
-#define DEFAULT_FACTION QUOTE(OPF_F)
+#define DEFAULT_FACTION QUOTE(BLU_F)
 #define DEFAULT_CLUSTER_TYPE QUOTE(All)
 #define DEFAULT_NO_TEXT ""
 #define DEFAULT_READINESS_LEVEL "1"
@@ -170,6 +170,13 @@ switch(_operation) do {
     // Determine force faction
     case "faction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
+
+        if !(_args isEqualType "") then {
+            private _compiledFaction = [_logic] call ALiVE_fnc_factionCompilerResolveForModule;
+            if !(_compiledFaction isEqualTo "") then {
+                _result = _compiledFaction;
+            };
+        };
     };
     case "guardRadius": {
         _result = [_logic,_operation,_args,DEFAULT_AMBIENT_GUARD_RADIUS] call ALIVE_fnc_OOsimpleOperation;

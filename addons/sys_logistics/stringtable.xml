@@ -2,108 +2,283 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS">
     <English>Player Logistics</English>
+    <Chinese>玩家後勤</Chinese>
     <Chinesesimp>玩家后勤</Chinesesimp>
+    <Spanish>Logística del Jugador</Spanish>
+    <French>Logistique Joueur</French>
+    <Portuguese>Logística do Jogador</Portuguese>
+    <Russian>Логистика игрока</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_COMMENT">
-    <English>Enables the possibility to use the ALiVE Logistics system</English>
-    <Chinesesimp>允许使用ALiVE后勤系统</Chinesesimp>
+    <English>Enables the ALiVE player logistics system</English>
+    <Chinese>啟用 ALiVE 玩家後勤系統</Chinese>
+    <Chinesesimp>启用 ALiVE 玩家后勤系统</Chinesesimp>
+    <Spanish>Habilita el sistema de logística del jugador ALiVE</Spanish>
+    <French>Active le système de logistique joueur ALiVE</French>
+    <Portuguese>Ativa o sistema de logística do jogador ALiVE</Portuguese>
+    <Russian>Включает систему логистики игрока ALiVE</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_ERROR1">
+    <English>Only one player logistics module allowed</English>
+    <Chinese>僅允許一個玩家後勤模組</Chinese>
+    <Chinesesimp>仅允许一个玩家后勤模块</Chinesesimp>
+    <Spanish>Solo se permite un módulo de logística del jugador</Spanish>
+    <French>Un seul module de logistique joueur autorisé</French>
+    <Portuguese>Apenas um módulo de logística do jogador é permitido</Portuguese>
+    <Russian>Разрешён только один модуль логистики игрока</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICSDISABLE">
+    <English>Player Logistics (Settings)</English>
+    <Chinese>玩家後勤（設定）</Chinese>
+    <Chinesesimp>玩家后勤（设置）</Chinesesimp>
+    <Spanish>Logística del Jugador (Ajustes)</Spanish>
+    <French>Logistique Joueur (Paramètres)</French>
+    <Portuguese>Logística do Jogador (Configurações)</Portuguese>
+    <Russian>Логистика игрока (Настройки)</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICSDISABLE_COMMENT">
+    <English>Configures ALiVE player logistics behaviour: toggles individual features on or off, extends the list of carryable object classes, and excludes specific classes or objects from all logistics interactions</English>
+    <Chinese>設定 ALiVE 玩家後勤行為：逐項開啟或關閉功能、延伸可攜帶物件類別清單，並排除特定類別或物件不參與所有後勤互動</Chinese>
+    <Chinesesimp>配置 ALiVE 玩家后勤行为：逐项开启或关闭功能、扩展可携带物件类别列表，并排除特定类别或物件不参与所有后勤交互</Chinesesimp>
+    <Spanish>Configura el comportamiento de la logística del jugador ALiVE: activa o desactiva funciones individuales, amplía la lista de clases de objetos transportables y excluye clases u objetos específicos de todas las interacciones logísticas</Spanish>
+    <French>Configure le comportement de la logistique joueur ALiVE: active ou désactive des fonctionnalités individuelles, étend la liste des classes d'objets transportables et exclut des classes ou objets spécifiques de toutes les interactions logistiques</French>
+    <Portuguese>Configura o comportamento da logística do jogador ALiVE: ativa ou desativa recursos individuais, expande a lista de classes de objetos carregáveis e exclui classes ou objetos específicos de todas as interações logísticas</Portuguese>
+    <Russian>Настраивает поведение логистики игрока ALiVE: включает или отключает отдельные функции, расширяет список переносимых классов объектов и исключает конкретные классы или объекты из всех логистических взаимодействий</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICSDISABLE_USAGE">
+    <English>Place this module to configure ALiVE player logistics for your mission. Toggle individual features on or off, extend the carry list via the whitelist, or exclude object classes via the blacklist. Sync individual objects to this module to exclude them from all logistics interactions regardless of class.</English>
+    <Chinese>放置此模組以為您的任務設定 ALiVE 玩家後勤。逐項開啟或關閉功能、透過白名單延伸攜帶清單，或透過黑名單排除物件類別。將個別物件同步至此模組，以不論類別一律排除其所有後勤互動。</Chinese>
+    <Chinesesimp>放置此模块以为您的任务配置 ALiVE 玩家后勤。逐项开启或关闭功能、通过白名单扩展携带列表，或通过黑名单排除物件类别。将个别物件同步至此模块，以不论类别一律排除其所有后勤交互。</Chinesesimp>
+    <Spanish>Coloca este módulo para configurar la logística del jugador ALiVE en tu misión. Activa o desactiva funciones individuales, amplía la lista de transporte mediante la lista blanca o excluye clases de objetos mediante la lista negra. Sincroniza objetos individuales a este módulo para excluirlos de todas las interacciones logísticas independientemente de su clase.</Spanish>
+    <French>Placez ce module pour configurer la logistique joueur ALiVE dans votre mission. Activez ou désactivez des fonctionnalités individuelles, étendez la liste de transport via la liste blanche, ou excluez des classes d'objets via la liste noire. Synchronisez des objets individuels à ce module pour les exclure de toutes les interactions logistiques quelle que soit leur classe.</French>
+    <Portuguese>Coloque este módulo para configurar a logística do jogador ALiVE na sua missão. Ative ou desative recursos individuais, estenda a lista de transporte via whitelist, ou exclua classes de objetos via blacklist. Sincronize objetos individuais a este módulo para excluí-los de todas as interações logísticas independentemente da classe.</Portuguese>
+    <Russian>Разместите этот модуль, чтобы настроить логистику игрока ALiVE для вашей миссии. Включайте или отключайте отдельные функции, расширяйте список переноса через белый список или исключайте классы объектов через чёрный список. Синхронизируйте отдельные объекты с этим модулем, чтобы исключить их из всех логистических взаимодействий независимо от класса.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_DEBUG">
+    <English>Enable Debug:</English>
+    <Chinese>啟用除錯:</Chinese>
+    <Chinesesimp>启用调试:</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
+    <French>Activer le débogage:</French>
+    <Portuguese>Ativar depuração:</Portuguese>
+    <Russian>Включить отладку:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_DEBUG_COMMENT">
+    <English>Outputs logistics system diagnostics to the RPT log.</English>
+    <Chinese>將後勤系統診斷輸出至 RPT 日誌。</Chinese>
+    <Chinesesimp>将后勤系统诊断输出至 RPT 日志。</Chinesesimp>
+    <Spanish>Vuelca diagnósticos del sistema de logística al registro RPT.</Spanish>
+    <French>Écrit les diagnostics du système de logistique dans le journal RPT.</French>
+    <Portuguese>Emite diagnósticos do sistema de logística para o log RPT.</Portuguese>
+    <Russian>Выводит диагностику системы логистики в лог RPT.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_ENABLEACTIONS">
+    <English>Enable Logistics Actions</English>
+    <Chinese>啟用後勤操作</Chinese>
+    <Chinesesimp>启用后勤操作</Chinesesimp>
+    <Spanish>Activar acciones de logística</Spanish>
+    <French>Activer les actions de logistique</French>
+    <Portuguese>Ativar ações de logística</Portuguese>
+    <Russian>Включить логистические действия</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_ENABLEACTIONS_COMMENT">
+    <English>Attach the scroll-wheel logistics actions (load, carry, tow, lift) to nearby vehicles and supplies.</English>
+    <Chinese>將滑鼠滾輪後勤操作 (裝載、搬運、拖曳、吊掛) 附加到附近的載具與物資上。</Chinese>
+    <Chinesesimp>将滑鼠滚轮后勤操作 (装载、搬运、拖曳、吊挂) 附加到附近的载具与物资上。</Chinesesimp>
+    <Spanish>Adjunta las acciones de logística de la rueda del ratón (cargar, transportar, remolcar, elevar) a vehículos y suministros cercanos.</Spanish>
+    <French>Associe les actions de logistique à la roulette (charger, porter, remorquer, élinguer) aux véhicules et au ravitaillement proches.</French>
+    <Portuguese>Anexa as ações de logística da roda do rato (carregar, transportar, rebocar, içar) a veículos e suprimentos próximos.</Portuguese>
+    <Russian>Привязывает логистические действия колёсика (погрузка, переноска, буксировка, подъём) к ближайшим транспортным средствам и грузам.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_DISABLEACTIONS">
+    <English>Disable Logistics Actions</English>
+    <Chinese>停用後勤操作</Chinese>
+    <Chinesesimp>禁用后勤操作</Chinesesimp>
+    <Spanish>Desactivar acciones de logística</Spanish>
+    <French>Désactiver les actions de logistique</French>
+    <Portuguese>Desativar ações de logística</Portuguese>
+    <Russian>Отключить логистические действия</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_DISABLEACTIONS_COMMENT">
+    <English>Remove the scroll-wheel logistics actions from your player until re-enabled.</English>
+    <Chinese>從您的玩家身上移除滑鼠滾輪後勤操作,直到再次啟用。</Chinese>
+    <Chinesesimp>从您的玩家身上移除滑鼠滚轮后勤操作,直到再次启用。</Chinesesimp>
+    <Spanish>Quita las acciones de logística de la rueda del ratón de tu jugador hasta que se reactiven.</Spanish>
+    <French>Retire les actions de logistique à la roulette du joueur jusqu'à réactivation.</French>
+    <Portuguese>Remove as ações de logística da roda do rato do jogador até serem reativadas.</Portuguese>
+    <Russian>Снимает логистические действия колёсика с игрока до повторного включения.</Russian>
 </Key>
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELOG">
     <English>Disable Logistics:</English>
-    <Chinesesimp>禁用后勤：</Chinesesimp>
+    <Chinese>停用後勤:</Chinese>
+    <Chinesesimp>禁用后勤:</Chinesesimp>
+    <Spanish>Desactivar logística:</Spanish>
+    <French>Désactiver logistique:</French>
+    <Portuguese>Desativar logística:</Portuguese>
+    <Russian>Отключить логистику:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELOG_COMMENT">
-    <English>Kills Player Logistics completely!</English>
-    <Chinesesimp>完全消灭玩家后勤</Chinesesimp>
+    <English>Disables the entire ALiVE logistics system for this mission. Overrides all other settings in this module. Useful for disabling logistics in specific missions without removing the module.</English>
+    <Chinese>為此任務停用整個 ALiVE 後勤系統。將覆寫此模組中其他所有設定。適用於在特定任務中停用後勤卻不移除模組。</Chinese>
+    <Chinesesimp>为此任务禁用整个 ALiVE 后勤系统。将覆盖此模块中其他所有设置。适用于在特定任务中禁用后勤却不移除模块。</Chinesesimp>
+    <Spanish>Desactiva todo el sistema de logística ALiVE para esta misión. Anula el resto de ajustes de este módulo. Útil para desactivar la logística en misiones concretas sin quitar el módulo.</Spanish>
+    <French>Désactive l'ensemble du système de logistique ALiVE pour cette mission. Remplace tous les autres paramètres de ce module. Utile pour désactiver la logistique sur des missions spécifiques sans retirer le module.</French>
+    <Portuguese>Desativa todo o sistema de logística ALiVE para esta missão. Substitui as demais configurações deste módulo. Útil para desativar a logística em missões específicas sem remover o módulo.</Portuguese>
+    <Russian>Отключает всю систему логистики ALiVE для этой миссии. Переопределяет все остальные настройки этого модуля. Полезно для отключения логистики в конкретных миссиях без удаления модуля.</Russian>
 </Key>
-<Key ID="STR_ALIVE_LOGISTICSDISABLE">
-    <English>Player Logistics (Disable)</English>
-    <Chinesesimp>玩家后勤(禁用)</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICSDISABLE_COMMENT">
-    <English>Disables the possibility to move, load, unload and tow on all or specific objects ()!</English>
-    <Chinesesimp>禁止在所有或特定对象上移动、装载、卸载和牵引()!</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICSDISABLE_USAGE">
-    <English>Place 'Disable Player Logistics'-module in your mission and set the appropriate settings and if you want to disable certain player logistics features or sync objects that you want to exclude completely!</English>
-    <Chinesesimp>将“禁用玩家后勤”模块放置在您的任务中，并设置适当的设置，如果您想禁用某些玩家后勤功能或同步您想完全排除的对象！</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICS_DEBUG">
-    <English>Debug:</English>
-    <Chinesesimp>调试:</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICS_DEBUG_COMMENT">
-    <English>Enable Debug</English>
-    <Chinesesimp>启动调试</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICS_DISABLEACTIONS_COMMENT">
-    <English>Deactivate Logistics Actions</English>
-    <Chinesesimp>停用后勤操作</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICS_ENABLEACTIONS_COMMENT">
-    <English>Activate Logistics Actions</English>
-    <Chinesesimp>激活后勤操作</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICS_ERROR1">
-    <English>Only one player logistics module allowed</English>
-    <Chinesesimp>仅允许一个玩家后勤模块</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE">
-    <English>Disable Persistence:</English>
-    <Chinesesimp>禁止持续存在:</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE_COMMENT">
-    <English>Disables the possibility to save to DB!</English>
-    <Chinesesimp>禁止保存到数据库！</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICS_DISABLELOAD">
-    <English>Disable Load/Unload:</English>
-    <Chinesesimp>禁用加载/卸载：</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_LOGISTICS_DISABLELOAD_COMMENT">
-    <English>Disables the possibility to load / unload!</English>
-    <Chinesesimp>禁用加载/卸载！</Chinesesimp>
-</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_DISABLECARRY">
     <English>Disable Carry:</English>
+    <Chinese>停用攜帶:</Chinese>
     <Chinesesimp>禁止携带:</Chinesesimp>
+    <Spanish>Desactivar transporte:</Spanish>
+    <French>Désactiver portage:</French>
+    <Portuguese>Desativar carregar:</Portuguese>
+    <Russian>Отключить переноску:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_DISABLECARRY_COMMENT">
-    <English>Disables the possibility to carry objects!</English>
-    <Chinesesimp>禁止携带物品！</Chinesesimp>
+    <English>Disables the ability for players to pick up and carry objects.</English>
+    <Chinese>停用玩家拾取與攜帶物件的能力。</Chinese>
+    <Chinesesimp>禁用玩家拾取与携带物件的能力。</Chinesesimp>
+    <Spanish>Desactiva la capacidad de los jugadores de recoger y transportar objetos.</Spanish>
+    <French>Désactive la capacité des joueurs à ramasser et transporter des objets.</French>
+    <Portuguese>Desativa a capacidade dos jogadores de pegar e carregar objetos.</Portuguese>
+    <Russian>Отключает возможность игроков поднимать и переносить объекты.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_DISABLETOW">
     <English>Disable Towing:</English>
-    <Chinesesimp>禁用牵引：</Chinesesimp>
+    <Chinese>停用牽引:</Chinese>
+    <Chinesesimp>禁用牵引:</Chinesesimp>
+    <Spanish>Desactivar remolque:</Spanish>
+    <French>Désactiver remorquage:</French>
+    <Portuguese>Desativar reboque:</Portuguese>
+    <Russian>Отключить буксировку:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_DISABLETOW_COMMENT">
-    <English>Disables the possibility to tow vehicles!</English>
-    <Chinesesimp>禁止牵引车辆！</Chinesesimp>
+    <English>Disables the ability for players to tow vehicles behind another vehicle.</English>
+    <Chinese>停用玩家用另一輛車輛牽引車輛的能力。</Chinese>
+    <Chinesesimp>禁用玩家用另一辆车辆牵引车辆的能力。</Chinesesimp>
+    <Spanish>Desactiva la capacidad de los jugadores de remolcar vehículos detrás de otro vehículo.</Spanish>
+    <French>Désactive la capacité des joueurs à remorquer des véhicules derrière un autre véhicule.</French>
+    <Portuguese>Desativa a capacidade dos jogadores de rebocar veículos atrás de outro veículo.</Portuguese>
+    <Russian>Отключает возможность игроков буксировать машины за другой машиной.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELIFT">
     <English>Disable Lifting:</English>
-    <Chinesesimp>禁止吊运</Chinesesimp>
+    <Chinese>停用吊運:</Chinese>
+    <Chinesesimp>禁用吊运:</Chinesesimp>
+    <Spanish>Desactivar elevación:</Spanish>
+    <French>Désactiver levage:</French>
+    <Portuguese>Desativar elevação:</Portuguese>
+    <Russian>Отключить подъём:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_DISABLELIFT_COMMENT">
-    <English>Disables lifting objects/vehicles!</English>
-    <Chinesesimp>禁止吊运物体/车辆！</Chinesesimp>
+    <English>Disables the ability for helicopters to sling-load and lift objects or vehicles.</English>
+    <Chinese>停用直升機吊掛與吊運物件或車輛的能力。</Chinese>
+    <Chinesesimp>禁用直升机吊挂与吊运物件或车辆的能力。</Chinesesimp>
+    <Spanish>Desactiva la capacidad de los helicópteros de hacer eslingado aéreo y elevar objetos o vehículos.</Spanish>
+    <French>Désactive la capacité des hélicoptères à élinguer et soulever des objets ou véhicules.</French>
+    <Portuguese>Desativa a capacidade dos helicópteros de fazer içamento aéreo e elevar objetos ou veículos.</Portuguese>
+    <Russian>Отключает способность вертолётов подвешивать и поднимать объекты или машины.</Russian>
 </Key>
-<Key ID="STR_ALIVE_LOGISTICS_DISABLE3D">
-    <English>Disable 3D:</English>
-    <Chinesesimp>禁用3D:</Chinesesimp>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_DISABLELOAD">
+    <English>Disable Load/Unload:</English>
+    <Chinese>停用裝載/卸載:</Chinese>
+    <Chinesesimp>禁用加载/卸载:</Chinesesimp>
+    <Spanish>Desactivar cargar/descargar:</Spanish>
+    <French>Désactiver charger/décharger:</French>
+    <Portuguese>Desativar carga/descarga:</Portuguese>
+    <Russian>Отключить загрузку/выгрузку:</Russian>
 </Key>
-<Key ID="STR_ALIVE_LOGISTICS_DISABLE3D_COMMENT">
-    <English>Disables 3D Editor (WIP)</English>
-    <Chinesesimp>禁用3D编辑器(WIP)</Chinesesimp>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_DISABLELOAD_COMMENT">
+    <English>Disables the ability to load objects into vehicles and unload them.</English>
+    <Chinese>停用將物件裝入車輛與卸載的能力。</Chinese>
+    <Chinesesimp>禁用将物件装入车辆与卸载的能力。</Chinesesimp>
+    <Spanish>Desactiva la capacidad de cargar objetos en vehículos y descargarlos.</Spanish>
+    <French>Désactive la capacité à charger des objets dans des véhicules et à les décharger.</French>
+    <Portuguese>Desativa a capacidade de carregar objetos em veículos e descarregá-los.</Portuguese>
+    <Russian>Отключает возможность загружать объекты в машины и выгружать их.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE">
+    <English>Disable Persistence:</English>
+    <Chinese>停用持久化:</Chinese>
+    <Chinesesimp>禁用持久化:</Chinesesimp>
+    <Spanish>Desactivar persistencia:</Spanish>
+    <French>Désactiver persistance:</French>
+    <Portuguese>Desativar persistência:</Portuguese>
+    <Russian>Отключить сохранение:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE_COMMENT">
+    <English>Disables saving and restoring logistics object state between sessions. When enabled, objects moved or repositioned via ALiVE logistics will not persist. Requires the ALiVE Data module to have any effect.</English>
+    <Chinese>停用在場次間儲存與還原後勤物件狀態。啟用後，透過 ALiVE 後勤移動或重新放置的物件將不會保留。需要 ALiVE 資料模組才能生效。</Chinese>
+    <Chinesesimp>禁用在会话间保存与恢复后勤物件状态。启用后，通过 ALiVE 后勤移动或重新放置的物件将不会保留。需要 ALiVE 数据模块才能生效。</Chinesesimp>
+    <Spanish>Desactiva el guardado y la restauración del estado de los objetos de logística entre sesiones. Al activarlo, los objetos movidos o reposicionados mediante la logística ALiVE no persistirán. Requiere el módulo de Datos ALiVE para surtir efecto.</Spanish>
+    <French>Désactive la sauvegarde et la restauration de l'état des objets de logistique entre les sessions. Lorsqu'activé, les objets déplacés ou repositionnés via la logistique ALiVE ne persisteront pas. Nécessite le module Données ALiVE pour produire un effet.</French>
+    <Portuguese>Desativa o salvamento e a restauração do estado dos objetos de logística entre sessões. Quando ativado, objetos movidos ou reposicionados via logística ALiVE não persistirão. Requer o módulo de Dados ALiVE para ter efeito.</Portuguese>
+    <Russian>Отключает сохранение и восстановление состояния логистических объектов между сессиями. При включении объекты, перемещённые или переставленные через логистику ALiVE, не сохранятся. Для эффекта требуется модуль данных ALiVE.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_BLACKLIST">
     <English>Blacklist:</English>
+    <Chinese>黑名單:</Chinese>
     <Chinesesimp>黑名单:</Chinesesimp>
+    <Spanish>Lista negra:</Spanish>
+    <French>Liste noire:</French>
+    <Portuguese>Lista negra:</Portuguese>
+    <Russian>Чёрный список:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_BLACKLIST_COMMENT">
-    <English>Excludes given class from any ALiVE Logistics feature (f.e. "B_Soldier_F","Land")</English>
-    <Chinesesimp>从任何ALiVE后勤功能中排除给定的类(例如“B_Sdidir_f”、“Land”)</Chinesesimp>
+    <English>Comma-separated list of config class names to exclude from all ALiVE logistics interactions. Any object whose type matches or inherits from a listed class cannot be carried, towed, lifted or loaded. Example: B_Soldier_F,Land_Cargo20_military_green_F</English>
+    <Chinese>以逗號分隔的設定類別名稱清單，將從所有 ALiVE 後勤互動中排除。任何類型符合或繼承自列出類別的物件皆無法被攜帶、牽引、吊運或裝載。範例：B_Soldier_F,Land_Cargo20_military_green_F</Chinese>
+    <Chinesesimp>以逗号分隔的配置类别名称列表，将从所有 ALiVE 后勤交互中排除。任何类型符合或继承自列出类别的物件皆无法被携带、牵引、吊运或装载。示例：B_Soldier_F,Land_Cargo20_military_green_F</Chinesesimp>
+    <Spanish>Lista de nombres de clase de configuración separada por comas que se excluirán de todas las interacciones de logística ALiVE. Cualquier objeto cuyo tipo coincida o herede de una clase listada no podrá ser transportado, remolcado, elevado ni cargado. Ejemplo: B_Soldier_F,Land_Cargo20_military_green_F</Spanish>
+    <French>Liste de noms de classe de configuration séparés par virgules à exclure de toutes les interactions de logistique ALiVE. Tout objet dont le type correspond à ou hérite d'une classe listée ne peut pas être transporté, remorqué, élingué ou chargé. Exemple: B_Soldier_F,Land_Cargo20_military_green_F</French>
+    <Portuguese>Lista de nomes de classe de configuração separados por vírgulas a serem excluídos de todas as interações de logística ALiVE. Qualquer objeto cujo tipo corresponda ou herde de uma classe listada não pode ser carregado, rebocado, içado ou carregado em veículo. Exemplo: B_Soldier_F,Land_Cargo20_military_green_F</Portuguese>
+    <Russian>Список имён классов конфигурации через запятую, исключаемых из всех логистических взаимодействий ALiVE. Любой объект, тип которого совпадает с классом из списка или наследуется от него, не может быть перенесён, отбуксирован, поднят или загружен. Пример: B_Soldier_F,Land_Cargo20_military_green_F</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_WHITELIST">
+    <English>Carry Whitelist:</English>
+    <Chinese>攜帶白名單:</Chinese>
+    <Chinesesimp>携带白名单:</Chinesesimp>
+    <Spanish>Lista blanca de transporte:</Spanish>
+    <French>Liste blanche de portage:</French>
+    <Portuguese>Lista branca de transporte:</Portuguese>
+    <Russian>Белый список переноски:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_LOGISTICS_WHITELIST_COMMENT">
+    <English>Comma-separated list of additional config class names to allow carrying and loading, beyond the built-in defaults. Use this to enable logistics interactions for object types not in the default carry list. Example: Land_Cargo20_military_green_F,Box_IND_Ammo_F</English>
+    <Chinese>以逗號分隔的額外設定類別名稱清單，允許攜帶與裝載，超出內建預設值。用以為不在預設攜帶清單中的物件類型啟用後勤互動。範例：Land_Cargo20_military_green_F,Box_IND_Ammo_F</Chinese>
+    <Chinesesimp>以逗号分隔的额外配置类别名称列表，允许携带与装载，超出内建默认值。用以为不在默认携带列表中的物件类型启用后勤交互。示例：Land_Cargo20_military_green_F,Box_IND_Ammo_F</Chinesesimp>
+    <Spanish>Lista separada por comas de nombres de clase de configuración adicionales que se permitirán transportar y cargar, más allá de los predeterminados. Úsala para habilitar interacciones de logística para tipos de objetos no incluidos en la lista de transporte predeterminada. Ejemplo: Land_Cargo20_military_green_F,Box_IND_Ammo_F</Spanish>
+    <French>Liste séparée par virgules de noms de classe de configuration supplémentaires à autoriser au portage et au chargement, au-delà des valeurs par défaut intégrées. Utilisez-la pour activer les interactions de logistique pour des types d'objets absents de la liste de portage par défaut. Exemple: Land_Cargo20_military_green_F,Box_IND_Ammo_F</French>
+    <Portuguese>Lista separada por vírgulas de nomes de classe de configuração adicionais a permitir transportar e carregar em veículos, além dos padrões embutidos. Use isto para habilitar interações de logística para tipos de objetos ausentes da lista de transporte padrão. Exemplo: Land_Cargo20_military_green_F,Box_IND_Ammo_F</Portuguese>
+    <Russian>Список дополнительных имён классов конфигурации через запятую, разрешённых для переноски и загрузки, сверх встроенных значений по умолчанию. Используйте для включения логистических взаимодействий для типов объектов, отсутствующих в стандартном списке переноски. Пример: Land_Cargo20_military_green_F,Box_IND_Ammo_F</Russian>
 </Key>
 </Container></Package></Project>

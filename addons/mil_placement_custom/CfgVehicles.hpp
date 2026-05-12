@@ -33,7 +33,7 @@ class CfgVehicles {
                                 control      = "ALiVE_FactionChoice_Military";
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['faction', _value];";
-                                defaultValue = """OPF_F""";
+                                defaultValue = """BLU_F""";
                         };
                         class priority : Edit { property = "ALiVE_mil_placement_custom_priority"; displayName = "$STR_ALIVE_CMP_PRIORITY"; tooltip = "$STR_ALIVE_CMP_PRIORITY_COMMENT"; defaultValue = """50"""; };
                         class size : Edit { property = "ALiVE_mil_placement_custom_size"; displayName = "$STR_ALIVE_CMP_SIZE"; tooltip = "$STR_ALIVE_CMP_SIZE_COMMENT"; defaultValue = """50"""; };
@@ -98,9 +98,10 @@ class CfgVehicles {
                 class ModuleDescription
                 {
                     description[] = {"$STR_ALIVE_CMP_COMMENT","","$STR_ALIVE_CMP_USAGE"};
-                    sync[] = {"ALiVE_mil_OPCOM","ALiVE_mil_CQB"};
+                    sync[] = {"ALiVE_mil_OPCOM","ALiVE_mil_CQB","ALiVE_sys_factioncompiler"};
                     class ALiVE_mil_OPCOM { description[] = {"$STR_ALIVE_OPCOM_COMMENT","","$STR_ALIVE_OPCOM_USAGE"}; position=0; direction=0; optional=1; duplicate=1; };
                     class ALiVE_mil_CQB { description[] = {"$STR_ALIVE_CQB_COMMENT","","$STR_ALIVE_CQB_USAGE"}; position=0; direction=0; optional=1; duplicate=1; };
+                    class ALiVE_sys_factioncompiler { description[] = {"Compiled custom faction override module."}; position=0; direction=0; optional=1; duplicate=0; };
                 };
         };
 };

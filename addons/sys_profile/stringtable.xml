@@ -169,6 +169,66 @@
     <English>Sleep values between spawning units to not overload engine</English>
     <Chinesesimp>生成单位之间的睡眠值不会使引擎过载</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE">
+    <English>Vehicle Spawn Settle (s):</English>
+    <French>Stabilisation au spawn (s):</French>
+    <Portuguese>Estabilizacao no spawn (s):</Portuguese>
+    <Russian>Стабилизация при спавне (с):</Russian>
+    <Spanish>Estabilizacion al spawn (s):</Spanish>
+    <Chinese>車輛生成穩定 (秒):</Chinese>
+    <Chinesesimp>车辆生成稳定 (秒):</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_COMMENT">
+    <English>Seconds of damage immunity granted to a profile-spawned vehicle after creation. The engine needs a brief window to resolve collisions and settle the vehicle's pose before damage takes effect; without it, vehicles spawning near terrain features sometimes explode immediately. The unified spawn-position validator (#850) covers the common cases by finding clear spots beforehand; this window catches residual edge cases where no clear spot was available and the vehicle landed on its original profile position. Higher values are safer but mean newly-spawned enemy vehicles are briefly invulnerable. Default 15 s.</English>
+    <French>Nombre de secondes d'immunite aux degats accordees a un vehicule issu d'un profil apres sa creation. Le moteur a besoin d'une breve fenetre pour resoudre les collisions et stabiliser la pose du vehicule avant que les degats prennent effet ; sans cela, les vehicules apparaissant pres d'elements de terrain explosent parfois immediatement. Le validateur unifie de position de spawn (#850) couvre les cas courants en trouvant des emplacements degages au prealable ; cette fenetre rattrape les cas residuels ou aucun emplacement n'a ete trouve et le vehicule a atterri sur sa position de profil initiale. Des valeurs plus elevees sont plus surs mais signifient que les vehicules ennemis fraichement apparus sont brievement invulnerables. Par defaut : 15 s.</French>
+    <Portuguese>Segundos de imunidade a danos concedidos a um veiculo gerado a partir de um perfil apos a sua criacao. O motor precisa de uma breve janela para resolver colisoes e estabilizar a pose do veiculo antes de o dano produzir efeito ; sem ela, veiculos que surgem proximos de elementos do terreno por vezes explodem imediatamente. O validador unificado de posicao de spawn (#850) cobre os casos comuns ao encontrar pontos livres com antecedencia ; esta janela apanha os casos residuais em que nao havia ponto livre e o veiculo aterrou na sua posicao original de perfil. Valores mais altos sao mais seguros mas significam que os veiculos inimigos recem-criados ficam brevemente invulneraveis. Padrao: 15 s.</Portuguese>
+    <Russian>Сколько секунд защиты от урона получает транспорт, появившийся из профиля, сразу после создания. Движку нужно небольшое окно, чтобы разрешить коллизии и стабилизировать позу транспорта до того, как урон начнёт действовать ; без этого транспорт, появляющийся рядом с элементами местности, иногда взрывается сразу. Единый валидатор позиции спавна (#850) покрывает обычные случаи, заранее находя свободные точки ; это окно ловит остаточные случаи, когда свободной точки не нашлось, и транспорт оказался на своей исходной позиции профиля. Большие значения безопаснее, но означают, что только что появившийся вражеский транспорт ненадолго неуязвим. По умолчанию 15 с.</Russian>
+    <Spanish>Segundos de inmunidad al dano concedidos a un vehiculo generado desde un perfil tras su creacion. El motor necesita una breve ventana para resolver colisiones y estabilizar la pose del vehiculo antes de que el dano surta efecto ; sin ella, los vehiculos que aparecen cerca de elementos del terreno a veces explotan de inmediato. El validador unificado de posicion de spawn (#850) cubre los casos comunes al encontrar puntos despejados con antelacion ; esta ventana captura los casos residuales en los que no habia punto despejado y el vehiculo aterrizo en su posicion original de perfil. Valores mas altos son mas seguros, pero significa que los vehiculos enemigos recien aparecidos son brevemente invulnerables. Predeterminado: 15 s.</Spanish>
+    <Chinese>由設定檔生成車輛時,生成後給予的傷害免疫秒數。引擎需要短暫窗口來處理碰撞並使車輛姿態穩定,之後傷害才會生效;若無此窗口,在地形物件附近生成的車輛偶爾會立即爆炸。統一生成位置驗證器 (#850) 透過事先尋找乾淨位置覆蓋常見情況;此窗口處理殘餘狀況 — 找不到乾淨位置時,車輛落在原始設定檔位置。較高的值更安全,但代表剛生成的敵方車輛短暫無敵。預設:15 秒。</Chinese>
+    <Chinesesimp>由设定档生成车辆时,生成后给予的伤害免疫秒数。引擎需要短暂窗口来处理碰撞并使车辆姿态稳定,之后伤害才会生效;若无此窗口,在地形物件附近生成的车辆偶尔会立即爆炸。统一生成位置验证器 (#850) 通过事先寻找干净位置覆盖常见情况;此窗口处理残余状况 — 找不到干净位置时,车辆落在原始设定档位置。较高的值更安全,但代表刚生成的敌方车辆短暂无敌。默认:15 秒。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_5">
+    <English>5 seconds (legacy)</English>
+    <French>5 secondes (heritage)</French>
+    <Portuguese>5 segundos (legado)</Portuguese>
+    <Russian>5 секунд (старое значение)</Russian>
+    <Spanish>5 segundos (heredado)</Spanish>
+    <Chinese>5 秒 (舊版)</Chinese>
+    <Chinesesimp>5 秒 (旧版)</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_10">
+    <English>10 seconds</English>
+    <French>10 secondes</French>
+    <Portuguese>10 segundos</Portuguese>
+    <Russian>10 секунд</Russian>
+    <Spanish>10 segundos</Spanish>
+    <Chinese>10 秒</Chinese>
+    <Chinesesimp>10 秒</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_15">
+    <English>15 seconds (default)</English>
+    <French>15 secondes (par defaut)</French>
+    <Portuguese>15 segundos (padrao)</Portuguese>
+    <Russian>15 секунд (по умолчанию)</Russian>
+    <Spanish>15 segundos (predeterminado)</Spanish>
+    <Chinese>15 秒 (預設)</Chinese>
+    <Chinesesimp>15 秒 (默认)</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_30">
+    <English>30 seconds</English>
+    <French>30 secondes</French>
+    <Portuguese>30 segundos</Portuguese>
+    <Russian>30 секунд</Russian>
+    <Spanish>30 segundos</Spanish>
+    <Chinese>30 秒</Chinese>
+    <Chinesesimp>30 秒</Chinesesimp>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLAYER_OCCUPANT_GRACE">
     <English>Player Occupant Grace (s):</English>
 </Key>

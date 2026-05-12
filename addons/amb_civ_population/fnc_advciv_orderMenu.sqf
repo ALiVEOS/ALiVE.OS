@@ -28,6 +28,13 @@ if (isNull _unit || {!alive _unit}) exitWith {};
 if (_unit getVariable ["ALiVE_advciv_blacklist", false]) exitWith {};
 if (_unit getVariable ["ALiVE_advciv_orderMenuAdded", false]) exitWith {};   // Don't double-add
 
+// Skip the eight AdvCiv quick-command addActions unless CLASSIC mode
+// is selected. In AUTO / DIALOG / ACE modes these verbs reach the
+// player via the dialog's new AdvCiv command row (or the ACE branch
+// once sys_acemenu's civilian integration lands), replacing the
+// scroll-wheel sprawl with a single interaction entry point.
+if ((missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"]) != "CLASSIC") exitWith {};
+
 _unit setVariable ["ALiVE_advciv_orderMenuAdded", true];
 
 private _range = ALiVE_advciv_orderMenuRange;

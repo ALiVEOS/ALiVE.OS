@@ -618,7 +618,14 @@ switch (_state) do {
                 _unit setVariable ["ALiVE_advciv_stateTimer", 0];
                 _unit setVariable ["ALiVE_advciv_nearShots", 0];
                 _unit enableAI "PATH";
-                if (vehicle _unit == _unit) then { _unit setUnitPos "UP"; };
+                // setUnitPos "UP" applies regardless of vehicle state. The
+                // engine treats setUnitPos as a stance preference that
+                // applies on next dismount when in a vehicle, so the
+                // previous `if (vehicle _unit == _unit)` gate left a
+                // dismount-after-HIDING civ stuck on the MIDDLE / DOWN
+                // pose set during HIDING entry, walking around crouched
+                // once they exited the vehicle.
+                _unit setUnitPos "UP";
                 _unit doWatch objNull;
 
                 private _hidingBld = _unit getVariable ["ALiVE_advciv_hidingBuilding", objNull];

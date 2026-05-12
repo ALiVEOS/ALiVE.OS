@@ -48,6 +48,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer Reviewed:
 Wolffy.au 20131113
@@ -197,11 +198,36 @@ switch(_operation) do {
         TRACE_1("After module init",_logic);
 
         if (isServer) then {
-            [_logic, "skillFactionsRecruit", _logic getVariable ["skillFactionsRecruit", []]] call MAINCLASS;
-            [_logic, "skillFactionsRegular", _logic getVariable ["skillFactionsRegular", []]] call MAINCLASS;
-            [_logic, "skillFactionsVeteran", _logic getVariable ["skillFactionsVeteran", []]] call MAINCLASS;
-            [_logic, "skillFactionsExpert", _logic getVariable ["skillFactionsExpert", []]] call MAINCLASS;
-            [_logic, "customSkillFactions", _logic getVariable ["customSkillFactions", []]] call MAINCLASS;
+            // Union multi-select + manual override for each faction skill field
+            {
+                private _key       = _x select 0;
+                private _manualKey = _x select 1;
+                private _rawArr    = _logic getVariable [_key, []];
+                private _factionsArr = if (typeName _rawArr == "ARRAY") then {
+                    +_rawArr
+                } else {
+                    if (_rawArr == "") then { [] } else {
+                        [[_rawArr, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+                    }
+                };
+                private _manualRaw = _logic getVariable [_manualKey, ""];
+                private _manualArr = if (_manualRaw == "") then { [] } else {
+                    [[_manualRaw, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+                };
+                private _merged = [];
+                {
+                    if (typeName _x == "STRING" && {_x != ""} && {_x != "NONE"} && {!(_x in _merged)}) then {
+                        _merged pushBack _x;
+                    };
+                } forEach (_factionsArr + _manualArr);
+                [_logic, _key, _merged] call MAINCLASS;
+            } forEach [
+                ["skillFactionsRecruit",  "skillFactionsRecruitManual"],
+                ["skillFactionsRegular",  "skillFactionsRegularManual"],
+                ["skillFactionsVeteran",  "skillFactionsVeteranManual"],
+                ["skillFactionsExpert",   "skillFactionsExpertManual"],
+                ["customSkillFactions",   "customSkillFactionsManual"]
+            ];
 
             [_logic, "start"] call MAINCLASS;
         };

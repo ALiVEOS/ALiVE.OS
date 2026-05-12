@@ -21,7 +21,7 @@ Jman
 #define DEFAULT_OBJECTIVES []
 #define DEFAULT_OBJECTIVES_MARINE []
 #define DEFAULT_TYPE "Random"
-#define DEFAULT_FACTION QUOTE(OPF_F)
+#define DEFAULT_FACTION QUOTE(BLU_F)
 #define DEFAULT_NO_TEXT ""
 #define DEFAULT_READINESS_LEVEL "1"
 #define DEFAULT_RB "10"
@@ -150,6 +150,13 @@ switch (_operation) do {
 
     case "faction": {
         _result = [_logic, _operation, _args, DEFAULT_FACTION, [] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
+
+        if !(_args isEqualType "") then {
+            private _compiledFaction = [_logic] call ALiVE_fnc_factionCompilerResolveForModule;
+            if !(_compiledFaction isEqualTo "") then {
+                _result = _compiledFaction;
+            };
+        };
     };
     case "guardProbability": {
         _result = [_logic, _operation, _args, DEFAULT_AMBIENT_GUARD_AMOUNT] call ALIVE_fnc_OOsimpleOperation;

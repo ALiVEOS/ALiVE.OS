@@ -92,8 +92,10 @@ if (count _veh > 0) then {
         // Add vehicle to list to return
         _vblist pushback _vb;
 
-        // remove from working list to avoid duplicates
-        _veh set [_select, nil];
+        // NOTE: don't "fix" this by reintroducing `_carClasses set [_select, nil]` -
+        // nil'ing an index leaves the array length unchanged, and the next
+        // iteration's `_carClasses select <random>` can land on the nil hole,
+        // making `_carType` undefined at the createVehicle call above.
     };
 
 };

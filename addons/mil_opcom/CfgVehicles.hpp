@@ -121,7 +121,13 @@ class CfgVehicles {
                                 property     = "ALiVE_mil_opcom_factions";
                                 displayName  = "$STR_ALIVE_OPCOM_FACTIONS";
                                 tooltip      = "Pick one or more factions for this AI Commander to control.\n\nLeft-click = replace selection with just that item.\nCtrl + Left-click = toggle individual item (multi-select).\nShift + Left-click = select range.\n\nList is auto-populated from currently-loaded faction mods. Selections here are combined with the manual override field below at runtime.";
-                                control      = "ALiVE_FactionChoiceMulti_Military";
+                                // Default-BLU_F variant of FactionChoiceMulti_Military.
+                                // Pre-ticks BLU_F in the listbox when the resolved
+                                // selection is empty. Mirrors the runtime fallback in
+                                // fnc_OPCOM.sqf (warn + default to BLU_F when the
+                                // factions list is empty) so the listbox visual state
+                                // matches what the runtime is going to use.
+                                control      = "ALiVE_FactionChoiceMulti_Military_Default_BLU_F";
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['factions', _value];";
                                 defaultValue = """[]""";
@@ -249,6 +255,14 @@ class CfgVehicles {
                                     class medium { name = "$STR_ALIVE_OPCOM_ASYM_ESCALATION_INTENSITY_MEDIUM"; value = "medium"; };
                                     class high   { name = "$STR_ALIVE_OPCOM_ASYM_ESCALATION_INTENSITY_HIGH";   value = "high"; };
                                 };
+                        };
+                        class asym_excludeKinds : Edit
+                        {
+                                property = "ALiVE_mil_opcom_asym_excludeKinds";
+                                displayName = "$STR_ALIVE_OPCOM_ASYM_EXCLUDE_KINDS";
+                                tooltip = "$STR_ALIVE_OPCOM_ASYM_EXCLUDE_KINDS_COMMENT";
+                                defaultValue = """Tank,Plane,Helicopter,Ship""";
+                                typeName = "STRING";
                         };
                         class minAgents : Edit
                         {

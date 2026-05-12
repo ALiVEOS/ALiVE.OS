@@ -5,7 +5,7 @@ SCRIPT(AMBCP);
 /* ----------------------------------------------------------------------------
 Function: ALIVE_fnc_AMBCP
 Description:
-Civitary objectives
+Civilian objectives
 
 Parameters:
 Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
@@ -30,6 +30,7 @@ See Also:
 Author:
 Wolffy
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 #define SUPERCLASS ALIVE_fnc_baseClass
@@ -39,10 +40,11 @@ ARJay
 #define DEFAULT_OBJECTIVES []
 #define DEFAULT_TAOR []
 #define DEFAULT_BLACKLIST []
-#define DEFAULT_SIZE_FILTER "160"
+#define DEFAULT_SIZE_FILTER "250"
 #define DEFAULT_PRIORITY_FILTER "0"
 #define DEFAULT_FACTION QUOTE(CIV_F)
-#define DEFAULT_AMBIENT_VEHICLE_AMOUNT "0.1"
+#define DEFAULT_AMBIENT_VEHICLE_AMOUNT "0.2"
+#define DEFAULT_AMBIENT_ANIMAL_AMOUNT "0"
 #define DEFAULT_PLACEMENT_MULTIPLIER "0.5"
 
 private ["_result"];
@@ -92,7 +94,34 @@ switch(_operation) do {
     };
     case "state": {
 
-        private _simple_operations = ["targets", "size","type","faction"];
+        // State save / restore list. Original hardcoded list only covered
+        // four keys (targets / size / type / faction), so every other Eden
+        // attribute silently reverted to its runtime default on persistence
+        // restore. Expanded to include all ten module attributes alongside
+        // the original three runtime-state keys; any legacy persisted state
+        // files that only contain the four original keys still round-trip
+        // correctly because the hashGet default returns nil for missing
+        // entries and the case handlers treat nil as "keep current".
+        private _simple_operations = [
+            // Runtime state (original entries, retained)
+            "targets", "size", "type",
+            // Eden attributes (persistence gap fix)
+            "debug",
+            "taor",
+            "blacklist",
+            "sizeFilter",
+            "priorityFilter",
+            "faction",
+            "placementMultiplier",
+            "ambientVehicleAmount",
+            "ambientVehicleFaction",
+            "ambientAnimalAmount",
+            "customPoultryClasses",
+            "customPoultryClassesManual",
+            "customHerdClasses",
+            "customHerdClassesManual",
+            "initialdamage"
+        ];
 
         if !(_args isEqualType []) then {
             private _state = [] call CBA_fnc_hashCreate;
@@ -188,8 +217,13 @@ switch(_operation) do {
     case "ambientVehicleFaction": {
         _result = [_logic,_operation,_args,DEFAULT_FACTION,[] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
     };
-    
-    
+
+    // Return the Ambient Animal Amount
+    case "ambientAnimalAmount": {
+        _result = [_logic,_operation,_args,DEFAULT_AMBIENT_ANIMAL_AMOUNT] call ALIVE_fnc_OOsimpleOperation;
+    };
+
+
     // Ambient vehicle Initial Damage
     case "initialdamage": {
         if (_args isEqualType true) then {
@@ -209,46 +243,6 @@ switch(_operation) do {
 
     // Return the objectives as an array of clusters
     case "objectives": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
-    };
-
-    // Return the HQ objectives as an array of clusters
-    case "objectivesHQ": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
-    };
-
-    // Return the Power objectives as an array of clusters
-    case "objectivesPower": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
-    };
-
-    // Return the Comms objectives as an array of clusters
-    case "objectivesComms": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
-    };
-
-    // Return the MARINE objectives as an array of clusters
-    case "objectivesMarine": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
-    };
-
-    // Return the RAIL objectives as an array of clusters
-    case "objectivesRail": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
-    };
-
-    // Return the FUEL objectives as an array of clusters
-    case "objectivesFuel": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
-    };
-
-    // Return the CONSTRUCTION objectives as an array of clusters
-    case "objectivesConstruction": {
-        _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
-    };
-
-    // Return the SETTLEMENT objectives as an array of clusters
-    case "objectivesSettlement": {
         _result = [_logic,_operation,_args,DEFAULT_OBJECTIVES] call ALIVE_fnc_OOsimpleOperation;
     };
 
@@ -275,7 +269,7 @@ switch(_operation) do {
             TRACE_1("After module init",_logic);
 
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
-            [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
+            [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call MAINCLASS;
 
             if !([QMOD(sys_profile)] call ALiVE_fnc_isModuleAvailable) exitwith {
                 ["Profile System module not placed! Exiting..."] call ALiVE_fnc_DumpR;
@@ -293,9 +287,9 @@ switch(_operation) do {
             waituntil {!isnil QUOTE(ADDON)};
 
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
-            [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
+            [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call MAINCLASS;
             {_x setMarkerAlpha 0} foreach (_logic getVariable ["taor", DEFAULT_TAOR]);
-            {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_TAOR]);
+            {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_BLACKLIST]);
         };
 
     };
@@ -349,13 +343,6 @@ switch(_operation) do {
                     [_message] call ALIVE_fnc_dump;
                     //_error = true;
                 };
-
-                /*
-                if (!(isnil "_message") && {isnil QGVAR(CLUSTERWARNING_DISPLAYED)}) then {
-                    GVAR(CLUSTERWARNING_DISPLAYED) = true;
-                    [[_message],"BIS_fnc_guiMessage",nil,true] spawn BIS_fnc_MP;
-                };
-                */
             };
 
             if!(_error) then {
@@ -364,39 +351,12 @@ switch(_operation) do {
                 private _sizeFilter = parseNumber([_logic, "sizeFilter"] call MAINCLASS);
                 private _priorityFilter = parseNumber([_logic, "priorityFilter"] call MAINCLASS);
 
-                // check markers for existance
-                private ["_marker","_counter"];
-
-                if(count _taor > 0) then {
-                    _counter = 0;
-                    {
-                        _marker =_x;
-                        if!(_marker call ALIVE_fnc_markerExists) then {
-                            _taor = _taor - [_taor select _counter];
-                        }else{
-                            _counter = _counter + 1;
-                        };
-                    } forEach _taor;
-                };
-
-                if(count _blacklist > 0) then {
-                    _counter = 0;
-                    {
-                        _marker =_x;
-                        if!(_marker call ALIVE_fnc_markerExists) then {
-                            _blacklist = _blacklist - [_blacklist select _counter];
-                        }else{
-                            _counter = _counter + 1;
-                        };
-                    } forEach _blacklist;
-                };
+                // drop any TAOR / blacklist markers that no longer exist
+                // (mission save may have outlived a marker the author removed)
+                _taor = _taor select { _x call ALIVE_fnc_markerExists };
+                _blacklist = _blacklist select { _x call ALIVE_fnc_markerExists };
 
                 private _clusters = DEFAULT_OBJECTIVES;
-
-
-                if(!(worldName == "Altis") && _sizeFilter == 160) then {
-                    _sizeFilter = 0;
-                };
 
                 if !(isnil "ALIVE_clustersCivSettlement") then {
 
@@ -409,135 +369,6 @@ switch(_operation) do {
                      } forEach _clusters;
                      [_logic, "objectives", _clusters] call MAINCLASS;
                 };
-
-                /*
-                _clusters = ALIVE_clustersCiv select 2;
-                _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                {
-                    [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                } forEach _clusters;
-                [_logic, "objectives", _clusters] call MAINCLASS;
-
-
-                if !(isnil "ALIVE_clustersCivSettlement") then {
-                     _clusters = ALIVE_clustersCivSettlement select 2;
-                     _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                     _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                     _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                     {
-                          [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                     } forEach _clusters;
-                     [_logic, "objectivesSettlement", _clusters] call MAINCLASS;
-                };
-
-
-                if !(isnil "ALIVE_clustersCivHQ") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
-                    };
-                    _clusters = ALIVE_clustersCivHQ select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                    {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesHQ", _clusters] call MAINCLASS;
-                };
-
-
-                if !(isnil "ALIVE_clustersCivPower") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
-                    };
-                    _clusters = ALIVE_clustersCivPower select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                    {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesPower", _clusters] call MAINCLASS;
-                };
-
-
-                if !(isnil "ALIVE_clustersCivComms") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
-                    };
-                    _clusters = ALIVE_clustersCivComms select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                    {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesComms", _clusters] call MAINCLASS;
-                };
-
-
-                if !(isnil "ALIVE_clustersCivMarine") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
-                    };
-                    _clusters = ALIVE_clustersCivMarine select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                    {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesMarine", _clusters] call MAINCLASS;
-                };
-
-
-                if !(isnil "ALIVE_clustersCivRail") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
-                    };
-                    _clusters = ALIVE_clustersCivRail select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                    {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesRail", _clusters] call MAINCLASS;
-                };
-
-
-                if !(isnil "ALIVE_clustersCivFuel") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
-                    };
-                    _clusters = ALIVE_clustersCivFuel select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                    {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesFuel", _clusters] call MAINCLASS;
-                };
-
-
-                if !(isnil "ALIVE_clustersCivConstruction") then {
-                    if(_sizeFilter == 160) then {
-                        _sizeFilter = 0;
-                    };
-                    _clusters = ALIVE_clustersCivConstruction select 2;
-                    _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                    {
-                        [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                    } forEach _clusters;
-                    [_logic, "objectivesConstruction", _clusters] call MAINCLASS;
-                };
-                */
-
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
@@ -585,20 +416,6 @@ switch(_operation) do {
 
             private _clusters = [_logic, "objectives"] call MAINCLASS;
 
-            /*
-            private _clusters = [_logic, "objectives"] call MAINCLASS;
-            private _clustersSettlement = [_logic, "objectivesSettlement", _clusters] call MAINCLASS;
-            private _clustersHQ = [_logic, "objectivesHQ", _clusters] call MAINCLASS;
-            private _clustersPower = [_logic, "objectivesPower", _clusters] call MAINCLASS;
-            private _clustersComms = [_logic, "objectivesComms", _clusters] call MAINCLASS;
-            private _clustersMarine = [_logic, "objectivesMarine", _clusters] call MAINCLASS;
-            private _clustersRail = [_logic, "objectivesRail", _clusters] call MAINCLASS;
-            private _clustersFuel = [_logic, "objectivesFuel", _clusters] call MAINCLASS;
-            private _clustersConstruction = [_logic, "objectivesConstruction", _clusters] call MAINCLASS;
-            */
-
-
-
             if(count _clusters > 0) then {
                 {
                     [ALIVE_clusterHandler, "registerCluster", _x] call ALIVE_fnc_clusterHandler;
@@ -645,33 +462,19 @@ switch(_operation) do {
 
             private _clusters = [_logic, "objectives"] call MAINCLASS;
 
-            /*
-            _clusters = [_logic, "objectives"] call MAINCLASS;
-            _clustersSettlement = [_logic, "objectivesSettlement", _clusters] call MAINCLASS;
-            _clustersHQ = [_logic, "objectivesHQ", _clusters] call MAINCLASS;
-            _clustersPower = [_logic, "objectivesPower", _clusters] call MAINCLASS;
-            _clustersComms = [_logic, "objectivesComms", _clusters] call MAINCLASS;
-            _clustersMarine = [_logic, "objectivesMarine", _clusters] call MAINCLASS;
-            _clustersRail = [_logic, "objectivesRail", _clusters] call MAINCLASS;
-            _clustersFuel = [_logic, "objectivesFuel", _clusters] call MAINCLASS;
-            _clustersConstruction = [_logic, "objectivesConstruction", _clusters] call MAINCLASS;
-            */
-
             private _faction = [_logic, "faction"] call MAINCLASS;
             private _placementMultiplier = parseNumber([_logic, "placementMultiplier"] call MAINCLASS);
             private _ambientVehicleAmount = parseNumber([_logic, "ambientVehicleAmount"] call MAINCLASS);
             private _ambientVehicleFaction = [_logic, "ambientVehicleFaction"] call MAINCLASS;
+            private _ambientAnimalAmount = parseNumber([_logic, "ambientAnimalAmount"] call MAINCLASS);
             private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             private _factionSideNumber = getNumber(_factionConfig >> "side");
             private _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
 
             private _initialdamage = [_logic, "initialdamage"] call MAINCLASS;
-            
-            // get current environment settings
-            private _env = call ALIVE_fnc_getEnvironment;
 
-            // get current global civilian population posture
+            // side-effect call: primes the civilian-population global posture
             [] call ALIVE_fnc_getGlobalPosture;
 
 
@@ -733,42 +536,6 @@ switch(_operation) do {
                         private _parkingChance = 0.25 * _ambientVehicleAmount;
                         _supportMax = 3 * _parkingChance;
 
-                        //["COUNT BUILDINGS: %1",_countBuildings] call ALIVE_fnc_dump;
-                        //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;
-
-                        /*if(_countBuildings > 50) then {
-                            _supportMax = 3;
-                            _parkingChance = 0.1 * _ambientVehicleAmount;
-                        };
-
-                        if(_countBuildings > 40 && _countBuildings < 50) then {
-                            _supportMax = 2;
-                            _parkingChance = 0.2 * _ambientVehicleAmount;
-                        };
-
-                        if(_countBuildings > 30 && _countBuildings < 41) then {
-                            _supportMax = 2;
-                            _parkingChance = 0.3 * _ambientVehicleAmount;
-                        };
-
-                        if(_countBuildings > 20 && _countBuildings < 31) then {
-                            _supportMax = 1;
-                            _parkingChance = 0.4 * _ambientVehicleAmount;
-                        };
-
-                        if(_countBuildings > 10 && _countBuildings < 21) then {
-                            _supportMax = 1;
-                            _parkingChance = 0.5 * _ambientVehicleAmount;
-                        };
-
-                        if(_countBuildings > 0 && _countBuildings < 11) then {
-                            _supportMax = 0;
-                            _parkingChance = 0.6 * _ambientVehicleAmount;
-                        };
-                        */
-                        //["SUPPORT MAX: %1",_supportMax] call ALIVE_fnc_dump;
-                        //["CHANCE: %1",_parkingChance] call ALIVE_fnc_dump;
-
                         private _usedPositions = [];
 
                         {
@@ -812,10 +579,255 @@ switch(_operation) do {
                 };
             };
 
+            // Place ambient animals.
+            //
+            // Two species pools placed differently to match real-world
+            // animal husbandry:
+            //   - Poultry (Hen, Cock): in town - spawn near civilian
+            //     buildings inside the cluster footprint. Backyard
+            //     chickens are realistic in any built-up area.
+            //   - Herd animals (Goat, Sheep): in fields - spawn
+            //     OUTSIDE the cluster footprint, away from buildings,
+            //     in open countryside near where farms would live.
+            // Resolves #488. Default amount is NONE (opt-in).
+            //
+            // Density at each amount level:
+            //   LOW    (0.2): poultry 2 % per civ building; 0-1 herd / cluster.
+            //   MEDIUM (0.6): poultry 6 %;                  1-2 herds / cluster.
+            //   HIGH   (1.0): poultry 10 %;                 2-4 herds / cluster.
+            // Each group is homogeneous (one species per group;
+            // real-world flocks aren't mixed-species). Animals don't
+            // register with the cluster handler or the agent system -
+            // they're decorative ambient life.
+            if (_ambientAnimalAmount > 0) then {
+                // Resolve the poultry / herd pools from the per-attribute
+                // multi-select listboxes plus the manual-override edit
+                // fields. Multi-select is the registry-driven path
+                // (CfgALiVEAmbientAnimals); manual is for classnames the
+                // mission-maker knows about that aren't in the registry.
+                // Final pool = union of (multi-select selection) +
+                // (manual override, parsed as SQF array literal or CSV).
+                private _fnc_resolvePool = {
+                    params ["_logicVar", "_manualVar", "_vanillaFallback"];
+                    private _multiRaw = _logic getVariable [_logicVar, ""];
+                    private _manualRaw = _logic getVariable [_manualVar, ""];
+                    private _pool = [];
+
+                    // Parse multi-select. Same forms accepted by the load
+                    // handler: SQF array literal, CSV, or single name.
+                    if (_multiRaw isEqualType "" && {_multiRaw != ""}) then {
+                        if ((_multiRaw select [0,1]) == "[") then {
+                            private _parsed = parseSimpleArray _multiRaw;
+                            if (typeName _parsed == "ARRAY") then {
+                                { if (typeName _x == "STRING" && {_x != ""}) then { _pool pushBackUnique _x } } forEach _parsed;
+                            };
+                        } else {
+                            {
+                                private _p = _x;
+                                while {count _p > 0 && {(_p select [0, 1]) == " "}} do { _p = _p select [1] };
+                                while {count _p > 0 && {(_p select [count _p - 1, 1]) == " "}} do { _p = _p select [0, count _p - 1] };
+                                if (_p != "") then { _pool pushBackUnique _p };
+                            } forEach ([_multiRaw, ","] call CBA_fnc_split);
+                        };
+                    };
+
+                    // Append manual-override entries (CSV).
+                    if (_manualRaw isEqualType "" && {_manualRaw != ""}) then {
+                        {
+                            private _p = _x;
+                            while {count _p > 0 && {(_p select [0, 1]) == " "}} do { _p = _p select [1] };
+                            while {count _p > 0 && {(_p select [count _p - 1, 1]) == " "}} do { _p = _p select [0, count _p - 1] };
+                            if (_p != "") then { _pool pushBackUnique _p };
+                        } forEach ([_manualRaw, ","] call CBA_fnc_split);
+                    };
+
+                    // Vanilla fallback if the user emptied both fields.
+                    // Mission-maker can disable this category by setting
+                    // ambientAnimalAmount to NONE; deselecting all classes
+                    // in the listbox + leaving manual blank otherwise
+                    // falls back to the canonical pool so the feature
+                    // doesn't silently no-op.
+                    if (count _pool == 0) then {
+                        _pool = _vanillaFallback;
+                    };
+
+                    // Filter to classes actually present in CfgVehicles.
+                    _pool select { isClass (configFile >> "CfgVehicles" >> _x) }
+                };
+
+                private _poultryPool = ["customPoultryClasses", "customPoultryClassesManual", ["Hen_random_F", "Cock_random_F"]] call _fnc_resolvePool;
+                private _herdPool    = ["customHerdClasses",    "customHerdClassesManual",    ["Goat_random_F", "Sheep_random_F"]] call _fnc_resolvePool;
+
+                private _countPoultry = 0;
+                private _countHerd = 0;
+
+                // Mission-scope registry. Each entry:
+                //   [pos, class, groupSize, units, kind]
+                // Spawning is deferred to a player-proximity handler
+                // attached at the bottom of this block - keeping
+                // hundreds of always-on animal units across the map
+                // costs the server ~40 server FPS.
+                if (isNil "ALiVE_AMBCP_animalRegistry") then {
+                    ALiVE_AMBCP_animalRegistry = [];
+                };
+
+                // ---- Poultry near civilian buildings ----
+                if (count _poultryPool > 0) then {
+                    private _poultryChance = 0.10 * _ambientAnimalAmount;
+                    {
+                        private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
+                        private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                        {
+                            if (random 1 < _poultryChance) then {
+                                private _basePos = _x getRelPos [3 + random 8, random 360];
+                                private _animalClass = selectRandom _poultryPool;
+                                private _groupSize = 1 + floor (random 4);
+                                ALiVE_AMBCP_animalRegistry pushBack [_basePos, _animalClass, _groupSize, [], "poultry"];
+                                _countPoultry = _countPoultry + _groupSize;
+                            };
+                        } forEach _buildings;
+                    } forEach _clusters;
+                };
+
+                // ---- Herd animals in fields outside the cluster ----
+                // Spawn anywhere outside the cluster footprint (town,
+                // military site, industrial area) - the geometric
+                // "outside cluster_size" check is sufficient because
+                // a cluster's `size` IS the radius the placer treats
+                // as that location's built-up area. Fields, hill
+                // sides, open country: all valid. The only per-
+                // position filter is surfaceIsWater (don't spawn
+                // sheep in the sea). No building-proximity filter -
+                // a stray fence or shed in open country is fine.
+                if (count _herdPool > 0) then {
+                    private _herdsTried = 0;
+                    private _herdsPlaced = 0;
+                    {
+                        private _center = [_x, "center"] call ALIVE_fnc_hashGet;
+                        private _clusterSize = [_x, "size"] call ALIVE_fnc_hashGet;
+                        if (isNil "_clusterSize" || {_clusterSize isEqualType ""}) then { _clusterSize = 200 };
+
+                        // Per-cluster herd count = base + random bonus,
+                        // both scaled by the amount setting. The base
+                        // guarantees a minimum density at any non-zero
+                        // setting (so HIGH feels like "many"); the
+                        // bonus adds spread.
+                        //   LOW    (0.2): base 1 + 0       = 1 / cluster
+                        //   MEDIUM (0.6): base 2 + 0..2    = 2-4 / cluster
+                        //   HIGH   (1.0): base 3 + 0..4    = 3-7 / cluster
+                        private _herdBase = ceil (_ambientAnimalAmount * 3);
+                        private _herdBonus = floor (random (_ambientAnimalAmount * 5));
+                        private _herdCount = _herdBase + _herdBonus;
+
+                        for "_h" from 1 to _herdCount do {
+                            _herdsTried = _herdsTried + 1;
+
+                            // Spawn radius: cluster_size + 50 to
+                            // cluster_size + 350. Wider band than
+                            // before so terrain that has a long
+                            // approach (ridge / valley) gets at least
+                            // some open ground in the sample range.
+                            // 10 attempts to dodge water; first one
+                            // usually wins on land terrains.
+                            private _herdPos = [];
+                            for "_a" from 1 to 10 do {
+                                private _candidate = _center getPos [_clusterSize + 50 + random 300, random 360];
+                                if !(surfaceIsWater _candidate) exitWith {
+                                    _herdPos = _candidate;
+                                };
+                            };
+
+                            if !(_herdPos isEqualTo []) then {
+                                private _animalClass = selectRandom _herdPool;
+                                // Herds bigger than poultry groups -
+                                // sheep flocks of 2-5 read more
+                                // naturally than 1-2 lone goats.
+                                private _groupSize = 2 + floor (random 4);
+                                ALiVE_AMBCP_animalRegistry pushBack [_herdPos, _animalClass, _groupSize, [], "herd"];
+                                _countHerd = _countHerd + _groupSize;
+                                _herdsPlaced = _herdsPlaced + 1;
+
+                                // Debug map marker at each herd spawn so the
+                                // mission-maker can find them via the Eden /
+                                // mission map. Server-created markers are
+                                // global. Markers stay around for the
+                                // session - cheap visualisation aid that's
+                                // only created when module debug is on.
+                                if (_debug) then {
+                                    private _markerName = format ["ALIVE_AMBCP_herd_%1_%2", floor diag_tickTime * 1000, _herdsPlaced];
+                                    createMarker [_markerName, _herdPos];
+                                    _markerName setMarkerType "mil_triangle";
+                                    _markerName setMarkerColor "ColorCIV";
+                                    _markerName setMarkerText format ["%1x %2", _groupSize, _animalClass];
+                                };
+                            };
+                        };
+                    } forEach _clusters;
+
+                    if (_debug) then {
+                        ["AMBCP - Herds: tried %1 placed %2 across %3 clusters", _herdsTried, _herdsPlaced, count _clusters] call ALiVE_fnc_dump;
+                    };
+                };
+
+                // Player-proximity spawn / despawn handler. Walks the
+                // registry every 30 s. For each entry:
+                //   - any player within 1500 m AND empty -> spawn
+                //   - no player within 2000 m AND populated -> delete
+                // The 500 m hysteresis avoids flicker at the boundary.
+                // Server-only; clients see the spawned units via the
+                // engine's normal network replication.
+                //
+                // Guard prevents the handler from being attached
+                // twice if the start case fires more than once
+                // (mission load, debug re-init, etc).
+                if (isNil "ALiVE_AMBCP_animalHandlerAttached") then {
+                    ALiVE_AMBCP_animalHandlerAttached = true;
+
+                    ALiVE_AMBCP_fnc_animalUpdate = {
+                        {
+                            _x params ["_pos", "_class", "_count", "_units", "_kind"];
+                            private _activate   = (allPlayers findIf { alive _x && {(_x distance _pos) < 1500} }) >= 0;
+                            private _deactivate = (allPlayers findIf { alive _x && {(_x distance _pos) < 2000} }) <  0;
+
+                            if (_activate && {count _units == 0}) then {
+                                // createAgent is lighter than createUnit:
+                                // no group attachment, no group AI tick.
+                                // Animals (Animal_Base_F subclasses) are
+                                // CAManBase-ancestor types so createAgent
+                                // works on them.
+                                private _spread = if (_kind == "herd") then { 12 } else { 4 };
+                                private _half = _spread / 2;
+                                private _newUnits = [];
+                                for "_i" from 1 to _count do {
+                                    private _offset = _pos vectorAdd [(random _spread) - _half, (random _spread) - _half, 0];
+                                    _newUnits pushBack (createAgent [_class, _offset, [], 0, "CAN_COLLIDE"]);
+                                };
+                                _x set [3, _newUnits];
+                            };
+
+                            if (_deactivate && {count _units > 0}) then {
+                                { deleteVehicle _x } forEach _units;
+                                _x set [3, []];
+                            };
+                        } forEach ALiVE_AMBCP_animalRegistry;
+                    };
+
+                    [] call ALiVE_AMBCP_fnc_animalUpdate;
+                    [ALiVE_AMBCP_fnc_animalUpdate, 30] call CBA_fnc_addPerFrameHandler;
+                };
+
+                if (_debug) then {
+                    ["AMBCP - Placed %1 ambient animals (poultry: %2, herds: %3, amount: %4)", _countPoultry + _countHerd, _countPoultry, _countHerd, _ambientAnimalAmount] call ALiVE_fnc_dump;
+                };
+            };
+
             // Place ambient civilians
 
-            // avoid error that stems from BIS population module CIV_F unit classes
-            // https://github.com/ALiVEOS/ALiVE.OS/issues/522
+            // Scope bump for known civilian factions whose generic Man units
+            // have scope = 1 (BI internal) but need to appear in the spawn
+            // class list. Kept as defensive guard even though the original
+            // trigger (issue #522, BI population module CIV_F side 7) was
+            // resolved engine-side.
             private _minScope = 1;
             if (_faction == "CIV_F" || _faction == "C_VIET" || _faction == "SPE_CIV") then {_minScope = 2};
 
@@ -846,32 +858,6 @@ switch(_operation) do {
 
                     private _spawnChance = 0.25 * _placementMultiplier;
 
-                    /*
-                    From: https://github.com/ALiVEOS/ALiVE.OS/issues/205
-                    if(_countBuildings > 50) then {
-                        _spawnChance = 0.1 * _placementMultiplier;
-                    };
-
-                    if(_countBuildings > 40 && _countBuildings < 50) then {
-                        _spawnChance = 0.2 * _placementMultiplier;
-                    };
-
-                    if(_countBuildings > 30 && _countBuildings < 41) then {
-                        _spawnChance = 0.3 * _placementMultiplier;
-                    };
-
-                    if(_countBuildings > 20 && _countBuildings < 31) then {
-                        _spawnChance = 0.5 * _placementMultiplier;
-                    };
-
-                    if(_countBuildings > 10 && _countBuildings < 21) then {
-                        _spawnChance = 0.7 * _placementMultiplier;
-                    };
-
-                    if(_countBuildings > 0 && _countBuildings < 11) then {
-                        _spawnChance = 0.8 * _placementMultiplier;
-                    };
-                    */
                     {
 
                         if(random 1 < _spawnChance) then {
@@ -894,10 +880,36 @@ switch(_operation) do {
                             [_agent, "homeCluster", _clusterID] call ALIVE_fnc_civilianAgent;
                             [_agent, "homePosition", _buildingPosition] call ALIVE_fnc_civilianAgent;
 
-                            // Add persistent name to civ
-                            private _genName = getText(configFile >> "CfgVehicles" >> _unitClass >> "genericNames");
-                            private _firstName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "FirstNames") -1) ));
-                            private _lastName = getText((configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") select (random (count (configfile >> "CfgWorlds" >> "GenericNames" >> _genName >> "LastNames") -1) ));
+                            // Add persistent name to civ. Defensive path:
+                            // genericNames may be defined as either text (class
+                            // name pointing to CfgWorlds >> GenericNames) or as
+                            // an array (some third-party unit configs); handle
+                            // both. Also guard against missing GenericNames
+                            // sub-config or empty FirstNames / LastNames lists
+                            // so non-conforming factions don't silently assign
+                            // empty names.
+                            private _genNamesProperty = configFile >> "CfgVehicles" >> _unitClass >> "genericNames";
+                            private _genName = "";
+                            if (isText _genNamesProperty) then {
+                                _genName = getText _genNamesProperty;
+                            };
+                            if (isArray _genNamesProperty) then {
+                                _genName = (getArray _genNamesProperty) param [0, ""];
+                            };
+
+                            private _firstName = "";
+                            private _lastName = "";
+                            private _genNamesCfg = configFile >> "CfgWorlds" >> "GenericNames" >> _genName;
+                            if (isClass _genNamesCfg) then {
+                                private _firstNamesCfg = _genNamesCfg >> "FirstNames";
+                                private _lastNamesCfg = _genNamesCfg >> "LastNames";
+                                if (count _firstNamesCfg > 0) then {
+                                    _firstName = getText (_firstNamesCfg select floor random count _firstNamesCfg);
+                                };
+                                if (count _lastNamesCfg > 0) then {
+                                    _lastName = getText (_lastNamesCfg select floor random count _lastNamesCfg);
+                                };
+                            };
 
                             [_agent, "firstName", _firstName] call ALIVE_fnc_civilianAgent;
                             [_agent, "lastName", _lastName] call ALIVE_fnc_civilianAgent;

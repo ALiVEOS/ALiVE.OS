@@ -213,11 +213,16 @@ class CfgVehicles
         class ModuleDescription
         {
             description[] = {"$STR_ALIVE_ATO_COMMENT","","$STR_ALIVE_ATO_USAGE"};
-            sync[] = {"ALiVE_mil_OPCOM"};
+            sync[] = {"ALiVE_mil_OPCOM","ALiVE_sys_factioncompiler"};
             class ALiVE_mil_OPCOM
             {
                 description[] = {"$STR_ALIVE_OPCOM_COMMENT","","$STR_ALIVE_OPCOM_USAGE"};
                 position = 1; direction = 0; optional = 1; duplicate = 1;
+            };
+            class ALiVE_sys_factioncompiler
+            {
+                description[] = {"Custom Faction Compiler module."};
+                position = 0; direction = 0; optional = 1; duplicate = 0;
             };
         };
     };

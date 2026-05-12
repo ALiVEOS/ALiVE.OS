@@ -57,6 +57,7 @@ private _groupProfiles = [];
 // groups/units and don't get substitution applied.
 private _originalFaction = _prefix;
 private _isInferredRedirect = false;
+private _compiledFaction = "";
 
 // Check to see if faction has a mapping
 if(!isNil "ALIVE_factionCustomMappings") then {
@@ -66,6 +67,9 @@ if(!isNil "ALIVE_factionCustomMappings") then {
         // HashMaps - getOrDefault doesn't apply. Use the 3-arg form of
         // ALiVE_fnc_hashGet which returns the default when the key is
         // absent (curated mappings never set "Inferred").
+        if ([_customMappings, "CompiledFaction", false] call ALIVE_fnc_hashGet) then {
+            _compiledFaction = [_customMappings, "FactionName", _prefix] call ALIVE_fnc_hashGet;
+        };
         if ([_customMappings, "Inferred", false] call ALIVE_fnc_hashGet) then {
             _isInferredRedirect = true;
         };
@@ -74,6 +78,11 @@ if(!isNil "ALIVE_factionCustomMappings") then {
 };
 
 // ["Group faction: %1",_prefix] call ALIVE_fnc_dump;
+
+if !(_compiledFaction isEqualTo "") then {
+    private _compiledProfiles = [_groupClass, _position, _direction, _spawnGoodPosition, _compiledFaction, _busy, _isSPE, _aiBehaviour, _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_factionCompilerCreateProfilesFromGroup;
+    if (count _compiledProfiles > 0) exitWith {_compiledProfiles};
+};
 
 private _config = [_prefix, _groupClass] call ALIVE_fnc_configGetGroup;
 

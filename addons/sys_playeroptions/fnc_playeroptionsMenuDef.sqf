@@ -32,6 +32,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 Peer reviewed:
 nil
@@ -117,8 +118,8 @@ if (_menuName == "playeroptions") then {
                       true,
                     !isnil QMOD(sys_playertags) && ( MOD(sys_playertags) getVariable ["display_enabled", false])
                 ],
-                [localize "STR_ALIVE_LOGISTICS_ENABLEACTIONS_COMMENT",
-                    {[MOD(SYS_LOGISTICS),"addActions"] call ALiVE_fnc_Logistics},
+                [localize "STR_ALIVE_LOGISTICS_ENABLEACTIONS",
+                    "[ALiVE_SYS_LOGISTICS, ""addActions""] call ALiVE_fnc_Logistics",
                     "",
                     localize "STR_ALIVE_LOGISTICS_ENABLEACTIONS_COMMENT",
                     "",
@@ -126,8 +127,8 @@ if (_menuName == "playeroptions") then {
                     true,
                     !isnil QMOD(sys_logistics) && (isnil {player getvariable [QMOD(SYS_LOGISTICS_ACTIONS),nil]})
                 ],
-                [localize "STR_ALIVE_LOGISTICS_DISABLEACTIONS_COMMENT",
-                    {[MOD(SYS_LOGISTICS),"removeActions"] call ALiVE_fnc_Logistics},
+                [localize "STR_ALIVE_LOGISTICS_DISABLEACTIONS",
+                    "[ALiVE_SYS_LOGISTICS, ""removeActions""] call ALiVE_fnc_Logistics",
                     "",
                     localize "STR_ALIVE_LOGISTICS_DISABLEACTIONS_COMMENT",
                     "",
@@ -168,6 +169,11 @@ if (_menuName == "playeroptions") then {
 };
 
 //-----------------------------------------------------------------------------
+// Normalize CBA flexiMenu code-block actions to the string form required by
+// buttonSetAction (CBA fnc_list.sqf / fnc_menu.sqf passes the action slot
+// straight through, which strictly needs STRING).
+_menus call ALiVE_fnc_normalizeFlexiMenuActions;
+
 _menuDef = [];
 {
     if (_x select 0 select 0 == _menuName) exitWith {_menuDef = _x};

@@ -136,6 +136,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_civInteract.sqf";
                 RECOMPILE;
             };
+            class gatherIntelDeceptive {
+                description = "Places decoy installation markers when a hostile civilian lies about enemy positions";
+                file = "\x\alive\addons\amb_civ_population\fnc_gatherIntelDeceptive.sqf";
+                RECOMPILE;
+            };
             class civInteractInit {
                 description = "Initializes civilian interaction";
                 file = "\x\alive\addons\amb_civ_population\fnc_civInteractInit.sqf";
@@ -204,6 +209,21 @@ class cfgFunctions {
             class advciv_react {
                 description = "AdvCiv react";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_react.sqf";
+                RECOMPILE;
+            };
+            class advciv_civAimReact {
+                description = "AdvCiv server-side civilian aim-pressure reaction dispatch";
+                file = "\x\alive\addons\amb_civ_population\fnc_advciv_civAimReact.sqf";
+                RECOMPILE;
+            };
+            class advciv_civAimRelease {
+                description = "AdvCiv server-side release of an aim-pressure-triggered HandsUp civilian";
+                file = "\x\alive\addons\amb_civ_population\fnc_advciv_civAimRelease.sqf";
+                RECOMPILE;
+            };
+            class civAceTierGate {
+                description = "Tier-gate predicate for ACE civilian interact menu entries";
+                file = "\x\alive\addons\amb_civ_population\fnc_civAceTierGate.sqf";
                 RECOMPILE;
             };
             class advciv_convertAgentAndFollow {

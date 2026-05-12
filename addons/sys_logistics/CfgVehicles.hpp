@@ -36,16 +36,22 @@ class CfgVehicles {
             };
             class Attributes : AttributesBase
             {
-                    class DEBUG : Combo { property = "ALiVE_sys_logistics_DEBUG"; displayName = "$STR_ALIVE_LOGISTICS_DEBUG"; tooltip = "$STR_ALIVE_LOGISTICS_DEBUG_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
-                    class DISABLELOG : Combo { property = "ALiVE_sys_logistics_DISABLELOG"; displayName = "$STR_ALIVE_LOGISTICS_DISABLELOG"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLELOG_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
-                    class DISABLEPERSISTENCE : Combo { property = "ALiVE_sys_logistics_DISABLEPERSISTENCE"; displayName = "$STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
-                    class DISABLELOAD : Combo { property = "ALiVE_sys_logistics_DISABLELOAD"; displayName = "$STR_ALIVE_LOGISTICS_DISABLELOAD"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLELOAD_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
-                    class DISABLETOW : Combo { property = "ALiVE_sys_logistics_DISABLETOW"; displayName = "$STR_ALIVE_LOGISTICS_DISABLETOW"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLETOW_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
-                    class DISABLELIFT : Combo { property = "ALiVE_sys_logistics_DISABLELIFT"; displayName = "$STR_ALIVE_LOGISTICS_DISABLELIFT"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLELIFT_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
-                    class DISABLECARRY : Combo { property = "ALiVE_sys_logistics_DISABLECARRY"; displayName = "$STR_ALIVE_LOGISTICS_DISABLECARRY"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLECARRY_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
-                    class DISABLE3D : Combo { property = "ALiVE_sys_logistics_DISABLE3D"; displayName = "$STR_ALIVE_LOGISTICS_DISABLE3D"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLE3D_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
-                    class BLACKLIST : Edit { property = "ALiVE_sys_logistics_BLACKLIST"; displayName = "$STR_ALIVE_LOGISTICS_BLACKLIST"; tooltip = "$STR_ALIVE_LOGISTICS_BLACKLIST_COMMENT"; defaultValue = """"""; };
-                    class ModuleDescription : ModuleDescription {};
+                // ── GENERAL ─────────────────────────────────────────────────
+                class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sys_logistics_HDR_GENERAL"; displayName = "GENERAL"; };
+                class DEBUG : Combo { property = "ALiVE_sys_logistics_DEBUG"; displayName = "$STR_ALIVE_LOGISTICS_DEBUG"; tooltip = "$STR_ALIVE_LOGISTICS_DEBUG_COMMENT"; defaultValue = """false"""; class Values { class Yes { name = "Yes"; value = true; }; class No { name = "No"; value = false; default = 1; }; }; };
+                // ── FEATURES ────────────────────────────────────────────────
+                class HDR_FEATURES : ALiVE_ModuleSubTitle { property = "ALiVE_sys_logistics_HDR_FEATURES"; displayName = "FEATURES"; };
+                class DISABLELOG : Combo { property = "ALiVE_sys_logistics_DISABLELOG"; displayName = "$STR_ALIVE_LOGISTICS_DISABLELOG"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLELOG_COMMENT"; defaultValue = """false"""; class Values { class Yes { name = "Yes"; value = true; }; class No { name = "No"; value = false; default = 1; }; }; };
+                class DISABLECARRY : Combo { property = "ALiVE_sys_logistics_DISABLECARRY"; displayName = "$STR_ALIVE_LOGISTICS_DISABLECARRY"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLECARRY_COMMENT"; defaultValue = """false"""; class Values { class Yes { name = "Yes"; value = true; }; class No { name = "No"; value = false; default = 1; }; }; };
+                class DISABLETOW : Combo { property = "ALiVE_sys_logistics_DISABLETOW"; displayName = "$STR_ALIVE_LOGISTICS_DISABLETOW"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLETOW_COMMENT"; defaultValue = """false"""; class Values { class Yes { name = "Yes"; value = true; }; class No { name = "No"; value = false; default = 1; }; }; };
+                class DISABLELIFT : Combo { property = "ALiVE_sys_logistics_DISABLELIFT"; displayName = "$STR_ALIVE_LOGISTICS_DISABLELIFT"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLELIFT_COMMENT"; defaultValue = """false"""; class Values { class Yes { name = "Yes"; value = true; }; class No { name = "No"; value = false; default = 1; }; }; };
+                class DISABLELOAD : Combo { property = "ALiVE_sys_logistics_DISABLELOAD"; displayName = "$STR_ALIVE_LOGISTICS_DISABLELOAD"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLELOAD_COMMENT"; defaultValue = """false"""; class Values { class Yes { name = "Yes"; value = true; }; class No { name = "No"; value = false; default = 1; }; }; };
+                class DISABLEPERSISTENCE : Combo { property = "ALiVE_sys_logistics_DISABLEPERSISTENCE"; displayName = "$STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE"; tooltip = "$STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE_COMMENT"; defaultValue = """false"""; class Values { class Yes { name = "Yes"; value = true; }; class No { name = "No"; value = false; default = 1; }; }; };
+                // ── FILTERS ─────────────────────────────────────────────────
+                class HDR_FILTERS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_logistics_HDR_FILTERS"; displayName = "FILTERS"; };
+                class BLACKLIST : Edit { property = "ALiVE_sys_logistics_BLACKLIST"; displayName = "$STR_ALIVE_LOGISTICS_BLACKLIST"; tooltip = "$STR_ALIVE_LOGISTICS_BLACKLIST_COMMENT"; defaultValue = """"""; };
+                class WHITELIST : Edit { property = "ALiVE_sys_logistics_WHITELIST"; displayName = "$STR_ALIVE_LOGISTICS_WHITELIST"; tooltip = "$STR_ALIVE_LOGISTICS_WHITELIST_COMMENT"; defaultValue = """"""; };
+                class ModuleDescription : ModuleDescription {};
             };
         };
 };

@@ -45,11 +45,52 @@ if(isServer) then {
     private _ambientCrowdLimit = parseNumber (_logic getVariable ["ambientCrowdLimit","50"]);
     private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction",""]);
 
-    private _customWaterItems = [_logic getvariable "customWaterItems", " ", ""] call CBA_fnc_replace;
-    _customWaterItems = [_customWaterItems, ","] call CBA_fnc_split;
+    // Custom water / ration item classnames. Merge the multi-select
+    // (ALiVE_ItemChoiceMulti_Water/_Ration) array with the manual-
+    // override Edit sibling (comma-separated string) into a deduped
+    // array. Backward-compat with legacy SQMs that stored the value as
+    // a single comma-separated string, an SQF array literal, or a bare
+    // classname. Also fixes a pre-existing variable-name mismatch on
+    // the ration field: CfgVehicles property is customHumRatItems but
+    // this file previously read customRationItems, so the attribute
+    // never reached the runtime.
+    private _mergeItems = {
+        params ["_primaryKey", "_manualKey"];
+        private _raw    = _logic getVariable [_primaryKey, []];
+        private _manual = _logic getVariable [_manualKey, ""];
+        private _arr = if (typeName _raw == "ARRAY") then {
+            +_raw
+        } else {
+            if (_raw == "") then { [] } else {
+                private _trimmed = [_raw, " ", ""] call CBA_fnc_replace;
+                if (count _trimmed > 0 && {(_trimmed select [0, 1]) == "["}) then {
+                    private _parsed = parseSimpleArray _trimmed;
+                    if (typeName _parsed == "ARRAY") then { _parsed } else { [] }
+                } else {
+                    [_trimmed, ","] call CBA_fnc_split
+                }
+            }
+        };
+        private _manualArr = if (_manual == "") then { [] } else {
+            [[_manual, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+        };
+        private _merged = [];
+        {
+            if (typeName _x == "STRING" && {_x != ""} && {!(_x in _merged)}) then {
+                _merged pushBack _x;
+            };
+        } forEach (_arr + _manualArr);
+        _merged
+    };
+    private _customWaterItems  = ["customWaterItems",  "customWaterItemsManual"]  call _mergeItems;
+    private _customRationItems = ["customHumRatItems", "customHumRatItemsManual"] call _mergeItems;
 
-    private _customRationItems = [_logic getvariable "customRationItems", " ", ""] call CBA_fnc_replace;
-    _customRationItems = [_customRationItems, ","] call CBA_fnc_split;
+    // Publish the disable-ambient-sounds toggle as a mission-namespace global
+    // so the per-building sound functions (fnc_addAmbientRoomMusic,
+    // fnc_addCustomBuildingSound) can early-exit without the crowd activator
+    // FSM needing to know about the setting. Issue #857.
+    private _disableAmbientSounds = (_logic getVariable ["disableAmbientSounds", "false"]) isEqualTo "true";
+    missionNamespace setVariable ["ALiVE_CivPop_AmbientSoundsDisabled", _disableAmbientSounds, true];
 
     // ----------------------------------------------------------------
     //  Advanced Civilians - read module args and set globals
@@ -87,9 +128,11 @@ if(isServer) then {
     private _advciv_preferBuildings  = (_logic getVariable ["advciv_preferBuildings",  "true"])  isEqualTo "true";
     private _advciv_voiceEnabled     = (_logic getVariable ["advciv_voiceEnabled",     "false"]) isEqualTo "true";
     private _advciv_voiceChance      = parseNumber (_logic getVariable ["advciv_voiceChance",      "0.6"]);
-    private _advciv_orderMenuEnabled = (_logic getVariable ["advciv_orderMenuEnabled", "true"])  isEqualTo "true";
     private _advciv_orderMenuRange   = parseNumber (_logic getVariable ["advciv_orderMenuRange",   "4"]);
-    private _advciv_playerAnimations = (_logic getVariable ["advciv_playerAnimations", "true"])  isEqualTo "true";
+    private _civIntelGatherChance    = parseNumber (_logic getVariable ["civIntelGatherChance",    "30"]);
+    private _civHostilityIndicator   = _logic getVariable ["civHostilityIndicator", "OFF"];
+    private _civWeaponAimRange       = parseNumber (_logic getVariable ["civWeaponAimRange",       "15"]);
+    private _civVehicleStopOnAim     = (_logic getVariable ["civVehicleStopOnAim",     "true"]) isEqualTo "true";
 
     private _advciv_vehicleEscape       = (_logic getVariable ["advciv_vehicleEscape",       "true"])  isEqualTo "true";
     private _advciv_vehicleEscapeChance = parseNumber (_logic getVariable ["advciv_vehicleEscapeChance", "0.3"]);
@@ -99,6 +142,14 @@ if(isServer) then {
     private _advciv_loadedThreshold     = parseNumber (_logic getVariable ["advciv_loadedThreshold",     "4"]);
 
     private _advciv_missionCriticalCheck = (_logic getVariable ["advciv_missionCriticalCheck", "true"])  isEqualTo "true";
+
+    // Civilian interaction UI mode (AUTO / DIALOG / CLASSIC / ACE).
+    // AUTO picks ACE when ace_interact_menu is loaded, else DIALOG at
+    // the addAction registration sites. CLASSIC preserves the legacy
+    // scroll-wheel sprawl (advciv_orderMenu + addCivilianActions).
+    // ACE is a reserved mode for the forthcoming sys_acemenu civilian
+    // branch; today it falls through to DIALOG until that branch lands.
+    private _civilianInteractionUI = _logic getVariable ["civilianInteractionUI", "AUTO"];
 
     // Publish all Advanced Civilian globals
     ALiVE_advciv_enabled          = _advciv_enabled;          publicVariable "ALiVE_advciv_enabled";
@@ -128,9 +179,13 @@ if(isServer) then {
     ALiVE_advciv_preferBuildings  = _advciv_preferBuildings;  publicVariable "ALiVE_advciv_preferBuildings";
     ALiVE_advciv_voiceEnabled     = _advciv_voiceEnabled;     publicVariable "ALiVE_advciv_voiceEnabled";
     ALiVE_advciv_voiceChance      = _advciv_voiceChance;      publicVariable "ALiVE_advciv_voiceChance";
-    ALiVE_advciv_orderMenuEnabled = _advciv_orderMenuEnabled; publicVariable "ALiVE_advciv_orderMenuEnabled";
     ALiVE_advciv_orderMenuRange   = _advciv_orderMenuRange;   publicVariable "ALiVE_advciv_orderMenuRange";
-    ALiVE_advciv_playerAnimations = _advciv_playerAnimations; publicVariable "ALiVE_advciv_playerAnimations";
+
+    ALiVE_amb_civ_population_UIMode = _civilianInteractionUI; publicVariable "ALiVE_amb_civ_population_UIMode";
+    ALiVE_amb_civ_population_IntelGatherChance = _civIntelGatherChance; publicVariable "ALiVE_amb_civ_population_IntelGatherChance";
+    ALiVE_amb_civ_population_HostilityIndicator = _civHostilityIndicator; publicVariable "ALiVE_amb_civ_population_HostilityIndicator";
+    ALiVE_amb_civ_population_WeaponAimRange = _civWeaponAimRange; publicVariable "ALiVE_amb_civ_population_WeaponAimRange";
+    ALiVE_amb_civ_population_VehicleStopOnAim = _civVehicleStopOnAim; publicVariable "ALiVE_amb_civ_population_VehicleStopOnAim";
 
     ALiVE_advciv_vehicleEscape       = _advciv_vehicleEscape;       publicVariable "ALiVE_advciv_vehicleEscape";
     ALiVE_advciv_vehicleEscapeChance = _advciv_vehicleEscapeChance; publicVariable "ALiVE_advciv_vehicleEscapeChance";

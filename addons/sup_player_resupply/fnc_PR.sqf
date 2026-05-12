@@ -27,6 +27,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer Reviewed:
 ---------------------------------------------------------------------------- */
@@ -436,8 +437,28 @@ switch(_operation) do {
         // load static data
         call ALiVE_fnc_staticDataHandler;
 
-        // Set faction whitelist
-        ALIVE_PR_FACTIONLIST = [_logic, "factions", _logic getVariable ["pr_factionWhitelist", DEFAULT_FACTIONS]] call MAINCLASS;
+        // Union multi-select list + manual override field; dedup and drop empties
+        private _factionsRaw    = _logic getVariable ["pr_factionWhitelist",       []];
+        private _factionsManual = _logic getVariable ["pr_factionWhitelistManual", ""];
+        private _factionsArr = if (typeName _factionsRaw == "ARRAY") then {
+            +_factionsRaw
+        } else {
+            if (_factionsRaw == "") then { [] } else {
+                [[_factionsRaw, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+            }
+        };
+        private _manualArr = if (_factionsManual == "") then { [] } else {
+            [[_factionsManual, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+        };
+        private _merged = [];
+        {
+            if (typeName _x == "STRING" && {_x != ""} && {_x != "NONE"} && {!(_x in _merged)}) then {
+                _merged pushBack _x;
+            };
+        } forEach (_factionsArr + _manualArr);
+        // Store merged result so the filterFriendlyFactions check below still works
+        _logic setVariable ["pr_factionWhitelist", _merged];
+        ALIVE_PR_FACTIONLIST = [_logic, "factions", _merged] call MAINCLASS;
 
         // If filterFriendlyFactions is enabled and no explicit whitelist was set,
         // replace ALIVE_PR_FACTIONLIST with factions from OPCOM instances friendly
