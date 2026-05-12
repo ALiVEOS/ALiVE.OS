@@ -21,13 +21,19 @@ Peer Reviewed:
     nil
 ---------------------------------------------------------------------------- */
 
-params [["_unit", objNull, [objNull]]];
+params [["_unit", objNull, [objNull]], ["_radius", -1, [0]]];
 
 if (isNull _unit) exitWith {[objNull, []]};
 
+// Default radius is the module-configured fleeRadius. Callers (notably
+// fnc_advciv_findHouseProgressive) override this to do a wider sweep when
+// the default radius has nothing usable - e.g. civs stranded mid-bridge or
+// on open runways where the nearest building is genuinely beyond fleeRadius.
+if (_radius < 0) then { _radius = ALiVE_advciv_fleeRadius; };
+
 private _panicSource   = _unit getVariable ["ALiVE_advciv_panicSource", [0,0,0]];
 private _homePos       = _unit getVariable ["ALiVE_advciv_homePos", getPos _unit];
-private _buildings     = nearestObjects [_unit, ["House", "Building"], ALiVE_advciv_fleeRadius];
+private _buildings     = nearestObjects [_unit, ["House", "Building"], _radius];
 private _bestBuilding  = objNull;
 private _bestPositions = [];
 private _bestScore     = -999;

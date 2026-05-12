@@ -75,7 +75,8 @@ addMissionEventHandler ["EntityKilled", {
     if (side _killed == civilian) then {
         private _attackerUnit = if (!isNull _instigator) then {_instigator} else {_killer};
         if (!isNull _attackerUnit) then {
-            _attackerUnit setVariable ["ALiVE_advciv_firedAtCiv", true, true];
+            _attackerUnit setVariable ["ALiVE_advciv_firedAtCivTime", time, true];
+            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=CivKilled", name _attackerUnit, side _attackerUnit, time]; };
         };
 
         {
@@ -97,7 +98,8 @@ addMissionEventHandler ["EntityKilled", {
             private _nearCivs = _pos nearEntities ["CAManBase", 50];
             private _civNear = {alive _x && {side _x == civilian} && {!isPlayer _x}} count _nearCivs;
             if (_civNear > 0) then {
-                _unit setVariable ["ALiVE_advciv_firedAtCiv", true, true];
+                _unit setVariable ["ALiVE_advciv_firedAtCivTime", time, true];
+                if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=FiredMan-near-civ civsInRange=%4", name _unit, side _unit, time, _civNear]; };
             };
 
             {

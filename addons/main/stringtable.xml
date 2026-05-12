@@ -101,4 +101,114 @@
 <Key ID="STR_ALIVE_MOD_LAUNCHER_ACTION">
     <English>ALiVE Mod Website</English>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS">
+    <English>Objective Objects</English>
+    <Chinese>目標物件</Chinese>
+    <Chinesesimp>目标物件</Chinesesimp>
+    <Spanish>Objetos del objetivo</Spanish>
+    <French>Objets de l'objectif</French>
+    <Portuguese>Objetos do objetivo</Portuguese>
+    <Russian>Объекты цели</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COMMENT">
+    <English>Static / scenery objects (jammers, radars, antennas, satellite dishes, signal panels) to spawn at the objective. Filterable picker shows currently-loaded classes from registered mods (vanilla A3 + DLCs + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations etc.). Filter cycle: All / Object Classes (comms+radar) / Static Data (signal panels). Override Edit field accepts free-text class names not surfaced by the picker.</English>
+    <Chinese>靜態/場景物件（干擾器、雷達、天線、衛星接收盤、訊號板）將生成於目標位置。可篩選的選擇器顯示已載入mod的類別（原版A3 + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations等）。篩選循環：全部/物件類別（通訊+雷達）/靜態數據（訊號板）。覆寫編輯欄位接受選擇器未顯示的自訂類別名稱。</Chinese>
+    <Chinesesimp>静态/场景物件（干扰器、雷达、天线、卫星接收盘、信号板）将生成于目标位置。可筛选的选择器显示已加载mod的类别（原版A3 + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations等）。筛选循环：全部/物件类别（通讯+雷达）/静态数据（信号板）。覆写编辑栏位接受选择器未显示的自定义类别名称。</Chinesesimp>
+    <Spanish>Objetos estáticos / decorativos (interferidores, radares, antenas, antenas parabólicas, paneles de señales) para generar en el objetivo. El selector filtrable muestra las clases actualmente cargadas de los mods registrados (A3 vanilla + DLCs + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations, etc.). Ciclo de filtro: Todos / Clases de objetos (comunicaciones+radar) / Datos estáticos (paneles de señales). El campo Sustituir acepta nombres de clase en texto libre no listados por el selector.</Spanish>
+    <French>Objets statiques / décoratifs (brouilleurs, radars, antennes, paraboles, panneaux de signaux) à générer à l'objectif. Le sélecteur filtrable affiche les classes actuellement chargées des mods enregistrés (A3 vanilla + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations, etc.). Cycle de filtre: Tous / Classes d'objets (comm+radar) / Données statiques (panneaux de signaux). Le champ Remplacer accepte des noms de classes en texte libre non listés par le sélecteur.</French>
+    <Portuguese>Objetos estáticos / cenário (interferidores, radares, antenas, antenas parabólicas, painéis de sinal) para gerar no objetivo. O seletor filtrável mostra as classes carregadas atualmente dos mods registados (A3 vanilla + DLCs + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations, etc.). Ciclo de filtro: Todos / Classes de objetos (comunicações+radar) / Dados estáticos (painéis de sinal). O campo Substituir aceita nomes de classes em texto livre não listados pelo seletor.</Portuguese>
+    <Russian>Статические / декоративные объекты (глушилки, радары, антенны, спутниковые тарелки, сигнальные панели) для размещения на цели. Фильтруемый выбор показывает загруженные классы из зарегистрированных модов (A3 vanilla + DLC + RHS + POOK SAM + Crows EW + Expanded Anti Air + Drongos Air Operations и т.д.). Цикл фильтра: Все / Классы объектов (связь+радар) / Статические данные (сигнальные панели). Поле Переопределение принимает свободные имена классов, не отображаемые в селекторе.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OVERRIDE">
+    <English>Override Objects:</English>
+    <Chinese>覆寫物件:</Chinese>
+    <Chinesesimp>覆写物件:</Chinesesimp>
+    <Spanish>Sustituir objetos:</Spanish>
+    <French>Remplacer les objets:</French>
+    <Portuguese>Substituir objetos:</Portuguese>
+    <Russian>Переопределить объекты:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_HDR">
+    <English>OBJECTIVE OBJECTS</English>
+    <Chinese>目標物件</Chinese>
+    <Chinesesimp>目标物件</Chinesesimp>
+    <Spanish>OBJETOS DEL OBJETIVO</Spanish>
+    <French>OBJETS DE L'OBJECTIF</French>
+    <Portuguese>OBJETOS DO OBJETIVO</Portuguese>
+    <Russian>ОБЪЕКТЫ ЦЕЛИ</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COUNT">
+    <English>Spawn Objective Units</English>
+    <Chinese>生成目標單位</Chinese>
+    <Chinesesimp>生成目标单位</Chinesesimp>
+    <Spanish>Generar unidades del objetivo</Spanish>
+    <French>Apparition unités d'objectif</French>
+    <Portuguese>Gerar unidades do objetivo</Portuguese>
+    <Russian>Создать единицы цели</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT">
+    <English>How many scenery objects to spawn at the objective, drawn at random from the Objective Objects picker pool. Default 0 (disabled - no scenery spawned). Selection is with replacement, so a small pool plus a high count means duplicates appear.</English>
+    <Chinese>在目標位置生成多少場景物件，從目標物件選擇器池中隨機抽取。預設為0（停用 - 不生成場景物件）。選擇允許重複，因此小型池加上高計數意味著會出現重複物件。</Chinese>
+    <Chinesesimp>在目标位置生成多少场景物件，从目标物件选择器池中随机抽取。默认为0（停用 - 不生成场景物件）。选择允许重复，因此小型池加上高计数意味着会出现重复物件。</Chinesesimp>
+    <Spanish>Cuántos objetos decorativos generar en el objetivo, extraídos al azar del grupo del selector de Objetos del objetivo. Por defecto 0 (desactivado - no se genera decoración). La selección es con reemplazo, así que un grupo pequeño con un conteo alto significa que aparecerán duplicados.</Spanish>
+    <French>Nombre d'objets décoratifs à générer à l'objectif, tirés au hasard du pool du sélecteur Objets de l'objectif. Par défaut 0 (désactivé - aucun décor généré). La sélection est avec remplacement, donc un petit pool avec un nombre élevé signifie que des doublons apparaîtront.</French>
+    <Portuguese>Quantos objetos decorativos gerar no objetivo, sorteados aleatoriamente do conjunto do seletor de Objetos do objetivo. Padrão 0 (desativado - nada gerado). A seleção é com reposição, portanto um conjunto pequeno com uma contagem alta significa que duplicados aparecerão.</Portuguese>
+    <Russian>Сколько декоративных объектов создать на цели, выбранных случайно из пула селектора Объектов цели. По умолчанию 0 (отключено - декорации не создаются). Выборка с возвратом, поэтому маленький пул с большим количеством означает появление дубликатов.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR">
+    <English>Objective Behaviour</English>
+    <Chinese>目標行為</Chinese>
+    <Chinesesimp>目标行为</Chinesesimp>
+    <Spanish>Comportamiento del objetivo</Spanish>
+    <French>Comportement de l'objectif</French>
+    <Portuguese>Comportamento do objetivo</Portuguese>
+    <Russian>Поведение цели</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_COMMENT">
+    <English>How spawned objects are distributed within the module's area of influence. Clustered = tight grouping near the objective center. Dispersed = spread evenly across the area (default). Perimeter = ring at the edge of the search radius. Validator-checked positions only - roads / runways / buildings / water / steep slopes excluded regardless of shape.</English>
+    <Chinese>生成的物件如何在模組影響範圍內分佈。集中 = 在目標中心附近緊密成群。分散 = 在區域內均勻散佈（預設）。周邊 = 在搜尋半徑邊緣形成環狀。僅使用驗證器檢查過的位置 - 無論形狀如何，道路/跑道/建築物/水域/陡坡都會被排除。</Chinese>
+    <Chinesesimp>生成的物件如何在模块影响范围内分布。集中 = 在目标中心附近紧密成群。分散 = 在区域内均匀散布（默认）。周边 = 在搜寻半径边缘形成环状。仅使用验证器检查过的位置 - 无论形状如何，道路/跑道/建筑物/水域/陡坡都会被排除。</Chinesesimp>
+    <Spanish>Cómo se distribuyen los objetos generados dentro del área de influencia del módulo. Agrupados = agrupación cerrada cerca del centro del objetivo. Dispersos = repartidos uniformemente por el área (predeterminado). Perímetro = anillo en el borde del radio de búsqueda. Solo posiciones validadas - carreteras / pistas / edificios / agua / pendientes pronunciadas se excluyen sin importar la forma.</Spanish>
+    <French>Distribution des objets générés dans la zone d'influence du module. Groupés = regroupement serré près du centre de l'objectif. Dispersés = répartis uniformément dans la zone (par défaut). Périmètre = anneau au bord du rayon de recherche. Positions validées uniquement - routes / pistes / bâtiments / eau / pentes raides exclues quelle que soit la forme.</French>
+    <Portuguese>Como os objetos gerados são distribuídos dentro da área de influência do módulo. Agrupados = agrupamento próximo ao centro do objetivo. Dispersos = espalhados uniformemente pela área (padrão). Perímetro = anel na borda do raio de busca. Apenas posições validadas - estradas / pistas / edifícios / água / encostas íngremes excluídas independentemente da forma.</Portuguese>
+    <Russian>Как сгенерированные объекты распределяются в зоне влияния модуля. Сгруппировано = плотное скопление возле центра цели. Рассеяно = равномерно распределено по области (по умолчанию). По периметру = кольцо по краю радиуса поиска. Только позиции, прошедшие проверку - дороги / взлётные полосы / здания / вода / крутые склоны исключены независимо от формы.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_CLUSTERED">
+    <English>Clustered</English>
+    <Chinese>集中</Chinese>
+    <Chinesesimp>集中</Chinesesimp>
+    <Spanish>Agrupados</Spanish>
+    <French>Groupés</French>
+    <Portuguese>Agrupados</Portuguese>
+    <Russian>Сгруппировано</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_DISPERSED">
+    <English>Dispersed</English>
+    <Chinese>分散</Chinese>
+    <Chinesesimp>分散</Chinesesimp>
+    <Spanish>Dispersos</Spanish>
+    <French>Dispersés</French>
+    <Portuguese>Dispersos</Portuguese>
+    <Russian>Рассеяно</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_PERIMETER">
+    <English>Perimeter</English>
+    <Chinese>周邊</Chinese>
+    <Chinesesimp>周边</Chinesesimp>
+    <Spanish>Perímetro</Spanish>
+    <French>Périmètre</French>
+    <Portuguese>Perímetro</Portuguese>
+    <Russian>Периметр</Russian>
+</Key>
 </Container></Package></Project>

@@ -140,29 +140,38 @@ class CfgVehicles {
                                     class HIGH { name = "$STR_ALIVE_AMBCP_AMBIENT_ANIMAL_AMOUNT_HIGH"; value = "1"; };
                                 };
                         };
-                        class customPoultryClasses
+                        // Consolidated Animal Classes picker (replaces
+                        // the previous four-attribute layout: per-category
+                        // listbox + per-category Manual edit + spacer).
+                        // Stored in structured format
+                        // "poultry:Class1,Class2;herd:Class3,Class4" via
+                        // the ALiVE_AnimalChoiceMulti_Filtered control.
+                        // Runtime resolver in fnc_AMBCP.sqf prefers this
+                        // attribute; legacy per-category attrs below
+                        // remain defined as hidden back-compat aliases
+                        // so missions saved before consolidation still
+                        // resolve via their existing logic vars when
+                        // the consolidated key is empty.
+                        class customAnimalClasses
                         {
-                                property     = "ALiVE_amb_civ_placement_customPoultryClasses";
-                                displayName  = "$STR_ALIVE_AMBCP_POULTRY_CLASSES";
-                                tooltip      = "$STR_ALIVE_AMBCP_POULTRY_CLASSES_COMMENT";
-                                control      = "ALiVE_AnimalChoiceMulti_Poultry";
+                                property     = "ALiVE_amb_civ_placement_customAnimalClasses";
+                                displayName  = "$STR_ALIVE_AMBCP_ANIMAL_CLASSES";
+                                tooltip      = "$STR_ALIVE_AMBCP_ANIMAL_CLASSES_COMMENT";
+                                control      = "ALiVE_AnimalChoiceMulti_Filtered";
                                 typeName     = "STRING";
-                                expression   = "_this setVariable ['customPoultryClasses', _value];";
-                                defaultValue = """[]""";
+                                expression   = "_this setVariable ['customAnimalClasses', _value];";
+                                defaultValue = """""";
                         };
-                        class customPoultryClassesManual : Edit { property = "ALiVE_amb_civ_placement_customPoultryClassesManual"; displayName = "$STR_ALIVE_AMBCP_POULTRY_CLASSES_MANUAL"; tooltip = "$STR_ALIVE_AMBCP_POULTRY_CLASSES_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-                        class SPACER_POULTRY : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_placement_SPACER_POULTRY"; displayName = " "; };
-                        class customHerdClasses
-                        {
-                                property     = "ALiVE_amb_civ_placement_customHerdClasses";
-                                displayName  = "$STR_ALIVE_AMBCP_HERD_CLASSES";
-                                tooltip      = "$STR_ALIVE_AMBCP_HERD_CLASSES_COMMENT";
-                                control      = "ALiVE_AnimalChoiceMulti_Herd";
-                                typeName     = "STRING";
-                                expression   = "_this setVariable ['customHerdClasses', _value];";
-                                defaultValue = """[]""";
-                        };
-                        class customHerdClassesManual : Edit { property = "ALiVE_amb_civ_placement_customHerdClassesManual"; displayName = "$STR_ALIVE_AMBCP_HERD_CLASSES_MANUAL"; tooltip = "$STR_ALIVE_AMBCP_HERD_CLASSES_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
+                        // Hidden legacy aliases - SQM-stored values from
+                        // missions saved before the consolidated picker
+                        // existed are still pushed onto the logic at
+                        // scenario init via these expressions, and the
+                        // runtime resolver falls back to them when
+                        // customAnimalClasses is empty.
+                        class customPoultryClasses       { property = "ALiVE_amb_civ_placement_customPoultryClasses";       control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['customPoultryClasses', _value];";       typeName = "STRING"; displayName = ""; };
+                        class customPoultryClassesManual { property = "ALiVE_amb_civ_placement_customPoultryClassesManual"; control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['customPoultryClassesManual', _value];"; typeName = "STRING"; displayName = ""; };
+                        class customHerdClasses          { property = "ALiVE_amb_civ_placement_customHerdClasses";          control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['customHerdClasses', _value];";          typeName = "STRING"; displayName = ""; };
+                        class customHerdClassesManual    { property = "ALiVE_amb_civ_placement_customHerdClassesManual";    control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['customHerdClassesManual', _value];";    typeName = "STRING"; displayName = ""; };
                         class ModuleDescription : ModuleDescription {};
                 };
                 class ModuleDescription

@@ -20,6 +20,12 @@ Jman
 
 if (!isServer) exitWith {};
 
+// #863 - register the admin / Zeus-visible debug-snapshot PFH. The PFH
+// no-ops unless `ALiVE_debugVirtualisedProfiles` is true, so production
+// missions pay nothing. Enable in debug console:
+//   ALiVE_debugVirtualisedProfiles = true; publicVariable "ALiVE_debugVirtualisedProfiles";
+[] call ALiVE_fnc_debugVirtualisedProfiles;
+
 addMissionEventHandler ["Map", {
     params ["_mapIsOpened"];
     if (!_mapIsOpened) exitWith {};

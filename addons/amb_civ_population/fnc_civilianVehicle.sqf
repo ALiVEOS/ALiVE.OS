@@ -58,6 +58,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -328,13 +329,64 @@ switch(_operation) do {
         // not already active
         if!(_active) then {
 
+            // Route the parking position through the unified vehicle
+            // spawn validator (#850). The position came from
+            // ALiVE_fnc_getParkingPosition at cluster init, which doesn't
+            // do a bbox-aware footprint check - so cars routinely spawn
+            // clipped into building corners / fences / walls and explode
+            // on the setPosAGLS settle. The validator's geometry sweep
+            // catches that geometry directly. Falls back to the original
+            // _position if the validator can't find a clear spot - the
+            // allowDamage settle window below covers the residual case.
+            // Pass the agent's stored direction so Stage 1 preserves the
+            // parking orientation when the original position is accepted.
+            private _spawnResult = [_agentClass, _position, 30, "auto", _direction] call ALiVE_fnc_findVehicleSpawnPosition;
+            if (count _spawnResult >= 2) then {
+                _position = _spawnResult select 0;
+                _direction = _spawnResult select 1;
+            };
+
             private _unit = createVehicle [_agentClass, [0,0,500 + random 500], [], 0, "NONE"];
-            
+            // Suppress damage IMMEDIATELY after creation - the civilian
+            // vehicle path between createVehicle and the original
+            // allowDamage call (~80 lines later) was long enough for a
+            // clipping spawn to take massive engine-collision damage
+            // before suppression engaged. Re-enabled after settle below.
+            _unit allowDamage false;
+
             _unit setDir _direction;
-            
+
             _unit setVelocity [0,0,0];
 
             [_unit,+_position] call ALiVE_fnc_setPosAGLS;
+
+            // #850 diagnostic. Mirrors the sys_profile path - tag with spawn
+            // time/pos and attach Killed/HandleDamage handlers so the RPT can
+            // correlate visible wrecks with their validator ENTER lines.
+            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+                _unit setVariable ["ALiVE_spawnTime", time];
+                _unit setVariable ["ALiVE_spawnPos", _position];
+                _unit addEventHandler ["Killed", {
+                    params ["_v"];
+                    private _spawnTime = _v getVariable ["ALiVE_spawnTime", -1];
+                    diag_log format ["[ALiVE VehSpawn DEBUG] KILLED class=%1 spawnPos=%2 deathPos=%3 elapsed=%4s",
+                        typeOf _v, _v getVariable ["ALiVE_spawnPos", [0,0,0]],
+                        getPosATL _v, (if (_spawnTime >= 0) then {time - _spawnTime} else {-1})];
+                }];
+                _unit addEventHandler ["HandleDamage", {
+                    params ["_v", "", "_damage"];
+                    private _spawnTime = _v getVariable ["ALiVE_spawnTime", -1];
+                    if (_damage > 0.05 && {(time - _spawnTime) < 60}) then {
+                        if !(_v getVariable ["ALiVE_firstDamageLogged", false]) then {
+                            _v setVariable ["ALiVE_firstDamageLogged", true];
+                            diag_log format ["[ALiVE VehSpawn DEBUG] DAMAGED class=%1 spawnPos=%2 currentPos=%3 damage=%4 elapsed=%5s",
+                                typeOf _v, _v getVariable ["ALiVE_spawnPos", [0,0,0]],
+                                getPosATL _v, _damage, time - _spawnTime];
+                        };
+                    };
+                    _damage
+                }];
+            };
             
             _unit setFuel _fuel;
             
@@ -368,9 +420,15 @@ switch(_operation) do {
 			       	
                 _diceRoll = random 1;
                 if(_diceRoll < 0.45) then {
-			       	   (_nearcivs select 0) moveInDriver _unit;
-                 (_nearcivs select 0) assignAsDriver _unit;
-                 ["civilian driver: %1",_nearcivs select 0] call ALIVE_fnc_dump;
+                 private _civDriver = _nearcivs select 0;
+                 _civDriver moveInDriver _unit;
+                 _civDriver assignAsDriver _unit;
+                 // Tag the borrowed civ + vehicle so the foot agent cull
+                 // skips them while they are driving (sleep-while-driving),
+                 // and the orphan-vehicle cleanup knows who the driver is.
+                 _civDriver setVariable ["ALiVE_civDrivingVehicle", _unit, true];
+                 _unit setVariable ["ALiVE_civDriverUnit", _civDriver, true];
+                 ["civilian driver: %1",_civDriver] call ALIVE_fnc_dump;
                 };
 			       }; 
              // END Civ Drivers
@@ -381,6 +439,13 @@ switch(_operation) do {
 
             // store the profile id on the active profiles index
             [ALIVE_agentHandler,"setActive",[_agentID,_logic]] call ALIVE_fnc_agentHandler;
+
+            // Settle window (#850). Mirrors the profile-vehicle and
+            // roadblock paths - if the vehicle did spawn slightly
+            // clipped, the engine gets time to resolve before damage
+            // re-engages. allowDamage was set immediately post-create
+            // above; this just schedules the re-enable.
+            [{_this allowDamage true;}, _unit, 15] call CBA_fnc_waitAndExecute;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -403,7 +468,26 @@ switch(_operation) do {
         // not already inactive
         if(_active) then {
 
+            // Visibility gate: defer despawn while a player can actually
+            // see the vehicle. Active flag stays true so the cluster
+            // activator re-evaluates next tick - the activator naturally
+            // rotates to an alternate culling target when one is gated, so
+            // a permanently-watched vehicle does not block the cull pipeline.
+            if (!isNull _unit && {alive _unit} && {[_unit, 150] call ALiVE_fnc_anyPlayerCanSee}) exitWith {};
+
             [_logic,"active",false] call ALIVE_fnc_hashSet;
+
+            // Eject the borrowed civ driver before the vehicle is deleted
+            // (sleep-while-driving cleanup). Without this, deleteVehicle
+            // would also delete the driver - and the foot agent profile
+            // would then be orphaned and visible-pop on the next tick.
+            // Move them out gently so they re-enter normal foot-agent flow.
+            private _civDriver = _unit getVariable ["ALiVE_civDriverUnit", objNull];
+            if (!isNull _civDriver && {alive _civDriver}) then {
+                _civDriver setVariable ["ALiVE_civDrivingVehicle", nil, true];
+                moveOut _civDriver;
+                unassignVehicle _civDriver;
+            };
 
             private _position = getPosATL _unit;
             _position set [2, (_position select 2) + 1];

@@ -236,6 +236,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_findHouse.sqf";
                 RECOMPILE;
             };
+            class advciv_findHouseProgressive {
+                description = "AdvCiv find house with progressive-radius retry (1x / 2x / 3x fleeRadius)";
+                file = "\x\alive\addons\amb_civ_population\fnc_advciv_findHouseProgressive.sqf";
+                RECOMPILE;
+            };
             class advciv_saveStateToProfile {
                 description = "AdvCiv save state to profile";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_saveStateToProfile.sqf";

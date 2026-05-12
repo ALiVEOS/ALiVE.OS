@@ -77,6 +77,15 @@ if (count _veh > 0) then {
         _carType = _carClasses select _select;
         _road = _roads select (floor(random (count _roads)));
         _position = [position _road, 0, 4, 1, 0, 4, 0] call bis_fnc_findSafePos;
+        // Route through the unified vehicle spawn validator (#850).
+        // BIS_fnc_findSafePos isn't bbox-aware - a long-thin VBIED
+        // carrier whose centre fits a 4 m radius can still clip a
+        // wall or fence with its nose / tail and detonate prematurely
+        // on spawn. Validator's geometry sweep catches that.
+        private _spawnResult = [_carType, _position, 30, "auto"] call ALiVE_fnc_findVehicleSpawnPosition;
+        if (count _spawnResult >= 2) then {
+            _position = _spawnResult select 0;
+        };
         _vb = createVehicle [_carType, _position, [], 0, "NONE"];
         _roadConnectedTo = roadsConnectedTo _road;
         _roadDirection = if (_roadConnectedTo isEqualTo []) then {

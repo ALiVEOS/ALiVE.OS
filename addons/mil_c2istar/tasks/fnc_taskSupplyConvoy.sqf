@@ -136,14 +136,33 @@ switch (_taskState) do {
             _destinationContactPosition = +_destinationCenter;
         };
 
-        private _convoyPosition = [_sourceContactPosition, 8, 20, 0, 0, 0.4, 0] call BIS_fnc_findSafePos;
-        if (_convoyPosition isEqualTo []) then {
-            _convoyPosition = [_sourceContactPosition, 10, random 360] call BIS_fnc_relPos;
+        // Convoy van placement (#868 sub-report: vehicles spawning in woods).
+        // Route through the unified vehicle spawn validator so the van lands
+        // on a road verge with a bbox-aware footprint check, rather than
+        // BIS_fnc_findSafePos which doesn't know about roads or vehicle
+        // dimensions and routinely placed vans 8-20 m from the contact in
+        // dense forest where the player couldn't drive away.
+        private _convoyVehicleClass = "C_Van_01_box_F";
+        private _convoyDir = random 360;
+        private _convoyPosition = +_sourceContactPosition;
+        private _spawnResult = [_convoyVehicleClass, _sourceContactPosition, 80, "road", _convoyDir] call ALiVE_fnc_findVehicleSpawnPosition;
+        if (count _spawnResult >= 2) then {
+            _convoyPosition = _spawnResult select 0;
+            _convoyDir = _spawnResult select 1;
+        } else {
+            // Validator failed (no road / no flat ground in radius). Fall back
+            // to the original findSafePos path so the task still spawns.
+            private _safePos = [_sourceContactPosition, 8, 20, 0, 0, 0.4, 0] call BIS_fnc_findSafePos;
+            if !(_safePos isEqualTo []) then {
+                _convoyPosition = _safePos;
+            } else {
+                _convoyPosition = [_sourceContactPosition, 10, random 360] call BIS_fnc_relPos;
+            };
         };
         _convoyPosition set [2, 0];
 
         private _sourceContactGroup = createGroup [civilian, true];
-        private _sourceContact = _sourceContactGroup createUnit [selectRandom ["C_man_1", "C_man_polo_1_F", "C_man_polo_2_F", "C_man_w_worker_F"], _sourceContactPosition, [], 0, "NONE"];
+        private _sourceContact = _sourceContactGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _sourceContactPosition, [], 0, "NONE"];
         removeAllWeapons _sourceContact;
         _sourceContact disableAI "AUTOTARGET";
         _sourceContact disableAI "TARGET";
@@ -157,7 +176,7 @@ switch (_taskState) do {
         _sourceContact setVariable ["ALiVE_advciv_active", false, true];
 
         private _destinationContactGroup = createGroup [civilian, true];
-        private _destinationContact = _destinationContactGroup createUnit [selectRandom ["C_man_1", "C_man_polo_4_F", "C_man_polo_5_F", "C_man_w_worker_F"], _destinationContactPosition, [], 0, "NONE"];
+        private _destinationContact = _destinationContactGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _destinationContactPosition, [], 0, "NONE"];
         removeAllWeapons _destinationContact;
         _destinationContact disableAI "AUTOTARGET";
         _destinationContact disableAI "TARGET";
@@ -170,9 +189,9 @@ switch (_taskState) do {
         _destinationContact setVariable ["ALiVE_advciv_blacklist", true, true];
         _destinationContact setVariable ["ALiVE_advciv_active", false, true];
 
-        private _convoyVehicle = createVehicle ["C_Van_01_box_F", _convoyPosition, [], 0, "NONE"];
+        private _convoyVehicle = createVehicle [_convoyVehicleClass, _convoyPosition, [], 0, "NONE"];
         _convoyVehicle setPosATL _convoyPosition;
-        _convoyVehicle setDir random 360;
+        _convoyVehicle setDir _convoyDir;
         _convoyVehicle setFuel 1;
         _convoyVehicle setDamage 0;
         _convoyVehicle setVehicleLock "UNLOCKED";

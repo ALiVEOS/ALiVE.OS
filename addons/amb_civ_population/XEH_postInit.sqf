@@ -1,5 +1,60 @@
 #include "script_component.hpp"
 
+// ============================================================================
+// Orphan civilian-vehicle cleanup (server-only)
+// ----------------------------------------------------------------------------
+// Civilian vehicle profiles can end up driverless mid-mission for several
+// reasons - borrowed driver got culled before the sleep-while-driving guard
+// landed, driver was killed in a crash, ACE knocked them out, etc. Without a
+// cleanup the empty vehicle sits on the road indefinitely and can block AI
+// pathing or look out of place to players.
+//
+// This PFH scans active civilian vehicle profiles every 10 s, starts an
+// orphan timer when no living crew is found, and once the timer exceeds 30 s
+// despawns the vehicle - subject to the visibility gate so the player never
+// sees it pop out. Runs ahead of the AdvCiv enabled check so the handler is
+// active even on missions that don't enable AdvCiv.
+// ============================================================================
+if (isServer) then {
+    [{
+        // Wait until the civ agent handler is initialised
+        if (isNil "ALIVE_agentHandler") exitWith {};
+
+        private _agentsActive = [ALIVE_agentHandler, "getActive"] call ALIVE_fnc_agentHandler;
+        if (isNil "_agentsActive") exitWith {};
+
+        // CBA hash shape: [true, [keys], [values]]. Iterate values directly.
+        {
+            private _logic = _x;
+            // Profile struct: select 2 select 4 = type ("agent" | "vehicle")
+            private _type = _logic select 2 select 4;
+            if (_type isEqualTo "vehicle") then {
+                private _unit = _logic select 2 select 5; // unit
+                if (!isNull _unit && {alive _unit} && {(_unit isKindOf "LandVehicle" || {_unit isKindOf "Air" || {_unit isKindOf "Ship"}})}) then {
+                    private _crewAlive = ({alive _x} count (crew _unit)) > 0;
+                    if (_crewAlive) then {
+                        // Reset orphan timer when a living crew is present
+                        _unit setVariable ["ALiVE_orphanSince", -1];
+                    } else {
+                        private _since = _unit getVariable ["ALiVE_orphanSince", -1];
+                        if (_since < 0) then {
+                            _unit setVariable ["ALiVE_orphanSince", time];
+                        } else {
+                            if ((time - _since) > 30) then {
+                                // Visibility gate before deletion - never pop
+                                // a vehicle out in front of a player.
+                                if !([_unit, 150] call ALiVE_fnc_anyPlayerCanSee) then {
+                                    [_logic, "despawn"] call ALIVE_fnc_civilianVehicle;
+                                };
+                            };
+                        };
+                    };
+                };
+            };
+        } forEach (_agentsActive select 2);
+    }, 10, []] call CBA_fnc_addPerFrameHandler;
+};
+
 // Safety check: if ALiVE_advciv_enabled doesn't exist yet, exit gracefully
 // This can happen if XEH_postInit runs before the Civilian Population module initializes
 if (isNil "ALiVE_advciv_enabled") exitWith {
@@ -36,6 +91,76 @@ if (isServer) then {
         } forEach _units;
     }, 1, []] call CBA_fnc_addPerFrameHandler;
 
+    // Decay civilian hostility posture over time (per-civ, 60s tick).
+    // Mission-maker controls rate via ModuleAmbientCivilians_Population's
+    // civHostilityDecayRate attribute (units = posture per minute toward 0;
+    // 0 disables). Only acts on civilians currently in the active world
+    // (ALiVE_advciv_activeUnits); virtualised civilians reset to default
+    // posture on their next virtual->real cycle anyway, so this handler
+    // has nothing to add for them.
+    //
+    // Two posture stores to decay depending on civ type:
+    //   - Ambient civs (have agentID): canonical posture lives in the
+    //     agent profile's "posture" hash field. Written by UpdateHostility
+    //     fall-through at fnc_civInteract.sqf:732 on questions / gives /
+    //     etc. The dialog reads this field at open time
+    //     (fnc_civInteract.sqf:511) into its CivData snapshot.
+    //   - Non-agent civs (Eden-placed, no agentID): canonical posture is
+    //     the unit's ALiVE_CivPop_Hostility variable. Written by AimReact
+    //     and by the non-agent dialog branch at fnc_civInteract.sqf:535.
+    //
+    // Floor: 0. The hostility-indicator render does
+    // max(_civPosture, _sideBaseline) at display time so the per-side
+    // baseline floor still applies without needing baseline-aware logic
+    // here.
+    //
+    // Skip rules: rate <= 0 disables the tick. Per-civ skip when the
+    // active store reads <= 0 (no posture history or already at floor).
+    //
+    // Open-dialog caveat: if a dialog is currently open on a civ, that
+    // dialog's CivData is a snapshot taken at open time. Decay updates
+    // the canonical store but won't be reflected in the open dialog
+    // until close + reopen. Acceptable for a passive recovery mechanic.
+    //
+    // Traumatised civs decay at half rate. fnc_advciv_civAimReact sets
+    // ALiVE_advciv_traumatised on civs aimed at while at Wary tier
+    // (40-59 hostility) - reads as "compliant but resentful". The flag
+    // persists for the lifetime of the unit object (cleared naturally
+    // when the civ goes virtual; new unit on respawn starts fresh).
+    [{
+        if (!ALiVE_advciv_enabled) exitWith {};
+        private _rate = missionNamespace getVariable ["ALiVE_amb_civ_population_HostilityDecayRate", 1];
+        if (_rate <= 0) exitWith {};
+        private _units = +ALiVE_advciv_activeUnits;
+        {
+            if (!isNull _x && {alive _x}) then {
+                // Traumatised civs (Wary-tier aim-reaction flag) decay slower
+                private _effectiveRate = if (_x getVariable ["ALiVE_advciv_traumatised", false]) then {
+                    _rate * 0.5
+                } else {
+                    _rate
+                };
+                private _civID = _x getVariable ["agentID", ""];
+                if (_civID != "" && {!isNil "ALIVE_agentHandler"}) then {
+                    // Ambient civ — decay agent profile posture (canonical store)
+                    private _profile = [ALIVE_agentHandler, "getAgent", _civID] call ALIVE_fnc_agentHandler;
+                    if (!isNil "_profile") then {
+                        private _h = [_profile, "posture", -1] call ALiVE_fnc_hashGet;
+                        if (_h > 0) then {
+                            [_profile, "posture", (_h - _effectiveRate) max 0] call ALiVE_fnc_hashSet;
+                        };
+                    };
+                } else {
+                    // Non-agent civ (Eden-placed) — decay unit variable
+                    private _h = _x getVariable ["ALiVE_CivPop_Hostility", -1];
+                    if (_h > 0) then {
+                        _x setVariable ["ALiVE_CivPop_Hostility", (_h - _effectiveRate) max 0, true];
+                    };
+                };
+            };
+        } forEach _units;
+    }, 60, []] call CBA_fnc_addPerFrameHandler;
+
     // Civilian killed event - spread panic
     addMissionEventHandler ["EntityKilled", {
         params ["_killed", "_killer", "_instigator"];
@@ -44,7 +169,8 @@ if (isServer) then {
         if (isNull _attackerUnit) exitWith {};
         if (_attackerUnit == _killed) exitWith {};
         if (side _attackerUnit == civilian) exitWith {};
-        _attackerUnit setVariable ["ALiVE_advciv_firedAtCiv", true, true];
+        _attackerUnit setVariable ["ALiVE_advciv_firedAtCivTime", time, true];
+        if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=XEH_EntityKilled", name _attackerUnit, side _attackerUnit, time]; };
         {
             if (alive _x && {side _x == civilian} && {!isPlayer _x} && {_x != _killed} && {_x getVariable ["ALiVE_advciv_active", false]}) then {
                 _x setVariable ["ALiVE_advciv_state", "PANIC", true];

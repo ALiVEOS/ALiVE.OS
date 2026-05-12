@@ -547,7 +547,12 @@ switch (_operation) do {
                         // 5 s allowDamage window catches the residual
                         // bad-spawn cases.
                         if !(_isSPE) then {
-                            private _spawnResult = [_vehicleClass, _position, 100, "auto"] call ALiVE_fnc_findVehicleSpawnPosition;
+                            // Pass the profile's stored direction so Stage 1
+                            // (centre accept) preserves the original parking
+                            // orientation instead of rotating the vehicle to
+                            // a random heading. Stages 2 / 3 still override
+                            // with their own direction (road-aligned / random).
+                            private _spawnResult = [_vehicleClass, _position, 100, "auto", _direction] call ALiVE_fnc_findVehicleSpawnPosition;
                             if (count _spawnResult >= 2) then {
                                 _position = _spawnResult select 0;
                                 _direction = _spawnResult select 1;
@@ -589,6 +594,85 @@ switch (_operation) do {
             _vehicle setDir _direction;
             _vehicle setFuel _fuel;
             _vehicle engineOn _engineOn;
+
+            // mil_placement vehicles (active + reserve) are tagged with
+            // `ALiVE_reserveLocked` at placement when the cluster's
+            // `reserveEmptyVehicleLocked` attribute is on. Honour the
+            // flag here only when the vehicle is empty - locking a
+            // crewed vehicle would block the crew AI from driving it
+            // (lock 2 only allows AI from the vehicle's own group,
+            // which empty-reserve crew aren't in by the time they
+            // moveIn). The activation flow unlocks the vehicle
+            // explicitly before crew arrives, and this re-lock gate
+            // catches future virtualisation cycles where the vehicle
+            // re-spawns empty (crew profile killed, vehicle preserved).
+            private _reserveLockFlag = [_logic, "ALiVE_reserveLocked", false] call ALiVE_fnc_HashGet;
+            private _crewCount = count crew _vehicle;
+            if (_reserveLockFlag && _crewCount == 0) then {
+                _vehicle lock 2;
+            };
+            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+                diag_log format ["[ALiVE VehSpawn DEBUG] LOCK-CHECK class=%1 pos=%2 reserveLockFlag=%3 crewCount=%4 action=%5 lockedNow=%6 nearestLocation=%7",
+                    _vehicleClass, getPosATL _vehicle, _reserveLockFlag,
+                    _crewCount,
+                    if (_reserveLockFlag && _crewCount == 0) then {"applied lock 2"} else {"no change"},
+                    locked _vehicle,
+                    text (nearestLocation [getPos _vehicle, ""])];
+            };
+
+            // #850 diagnostic. When ALiVE_vehicleSpawn_debug is on, tag the
+            // vehicle with its spawn time and attach Killed/HandleDamage
+            // handlers + a periodic state monitor. The monitor exists because
+            // earlier testing showed vehicles dying INSIDE the allowDamage
+            // false window without the HandleDamage EH firing - meaning
+            // something is bypassing both allowDamage and the damage event
+            // chain (engine-level destruction from terrain clip / out-of-
+            // bounds is the leading hypothesis). The 1 s tick logs damage /
+            // alive / position so the exact transition can be pinpointed.
+            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+                _vehicle setVariable ["ALiVE_spawnTime", time];
+                _vehicle setVariable ["ALiVE_spawnPos", _position];
+                _vehicle addEventHandler ["Killed", {
+                    params ["_unit"];
+                    private _spawnTime = _unit getVariable ["ALiVE_spawnTime", -1];
+                    private _spawnPos = _unit getVariable ["ALiVE_spawnPos", [0,0,0]];
+                    diag_log format ["[ALiVE VehSpawn DEBUG] KILLED class=%1 spawnPos=%2 deathPos=%3 elapsed=%4s",
+                        typeOf _unit, _spawnPos, getPosATL _unit, (if (_spawnTime >= 0) then {time - _spawnTime} else {-1})];
+                }];
+                _vehicle addEventHandler ["HandleDamage", {
+                    params ["_unit", "", "_damage"];
+                    private _spawnTime = _unit getVariable ["ALiVE_spawnTime", -1];
+                    if (_damage > 0.05 && {(time - _spawnTime) < 60}) then {
+                        if !(_unit getVariable ["ALiVE_firstDamageLogged", false]) then {
+                            _unit setVariable ["ALiVE_firstDamageLogged", true];
+                            diag_log format ["[ALiVE VehSpawn DEBUG] DAMAGED class=%1 spawnPos=%2 currentPos=%3 damage=%4 elapsed=%5s",
+                                typeOf _unit, _unit getVariable ["ALiVE_spawnPos", [0,0,0]],
+                                getPosATL _unit, _damage, time - _spawnTime];
+                        };
+                    };
+                    _damage
+                }];
+
+                // Periodic state monitor - 1 s tick for first 30 s. Catches
+                // the exact frame when alive flips false / damage spikes,
+                // even when allowDamage=false should have prevented it.
+                _vehicle setVariable ["ALiVE_monitorTick", 0];
+                [{
+                    params ["_args", "_handle"];
+                    _args params ["_v"];
+                    if (isNull _v) exitWith { [_handle] call CBA_fnc_removePerFrameHandler };
+                    private _spawnTime = _v getVariable ["ALiVE_spawnTime", time];
+                    private _tick = _v getVariable ["ALiVE_monitorTick", 0];
+                    private _elapsed = time - _spawnTime;
+                    diag_log format ["[ALiVE VehSpawn DEBUG] MONITOR class=%1 tick=%2 elapsed=%3s alive=%4 damage=%5 pos=%6 vel=%7",
+                        typeOf _v, _tick, _elapsed, alive _v, damage _v,
+                        getPosATL _v, vectorMagnitude (velocity _v)];
+                    _v setVariable ["ALiVE_monitorTick", _tick + 1];
+                    if (_elapsed > 30 || {!alive _v}) then {
+                        [_handle] call CBA_fnc_removePerFrameHandler;
+                    };
+                }, 1, [_vehicle]] call CBA_fnc_addPerFrameHandler;
+            };
 
             // FLY ignores height on vehicle creation, reset position
             if (_special isEqualTo "FLY")  then {
@@ -818,9 +902,75 @@ switch (_operation) do {
             // unified spawn validator returned [] and the vehicle is
             // sitting on a residual bad position; the engine has more
             // time to resolve the impact before damage re-engages.
+            //
+            // At the end of the window, instead of unconditionally
+            // re-enabling damage, check vehicle state. The validator
+            // can't catch every obstacle (some fence classes lack GEOM
+            // LOD; some are kindOf NonStrategic which we can't blanket
+            // reject without huge collateral). When that happens the
+            // engine launches the vehicle to escape the clip - it ends
+            // up in a new bad spot, sits with allowDamage=false during
+            // settle, and the 15 s flip-back cashes in pent-up engine
+            // damage as a single 100+ point hit. Detect the symptom
+            // (vehicle accumulated damage > 0.1, OR drifted far from
+            // its spawn position, OR ended up below terrain) and freeze
+            // the vehicle as a static decoration via
+            // enableSimulationGlobal false rather than letting it die.
             private _settleSeconds = [ALIVE_profileSystem, "vehicleSpawnSettleSeconds"] call ALIVE_fnc_profileSystem;
             if (isNil "_settleSeconds" || {_settleSeconds <= 0}) then { _settleSeconds = 15 };
-            [{_this allowDamage true;}, _vehicle, _settleSeconds] call CBA_fnc_waitAndExecute;
+            _vehicle setVariable ["ALiVE_settleSpawnPos", _position];
+            [{
+                params ["_v"];
+                if (isNull _v) exitWith {};
+                if (!alive _v) exitWith {}; // already dead, nothing to do
+                private _spawnPos = _v getVariable ["ALiVE_settleSpawnPos", getPosATL _v];
+                private _drift = (_v distance2D _spawnPos);
+                private _belowTerrain = (getPosATL _v select 2) < -0.5;
+                private _speed = vectorMagnitude (velocity _v);
+                // Freeze criterion: vehicle is GENUINELY broken if it took
+                // damage or ended up below terrain. Drift is NOT a problem -
+                // the engine often nudges vehicles 5-100 m out of a clip and
+                // they end up at a perfectly stable healthy spot. Earlier
+                // criterion (drift > 5) lost legitimate vehicles per mission
+                // start; speed > 1 dropped 2026-05-01 because active patrol /
+                // convoy profiles are legitimately moving when the settle
+                // window expires - flagging them as "still in clip" left
+                // C2ISTAR Destroy Vehicles tasks (#870) targeting frozen
+                // wrecks that couldn't be destroyed. Damage + below-terrain
+                // alone catch real failure modes; an engine-launched-into-
+                // a-wall vehicle accumulates damage during the launch and
+                // gets caught by the damage check.
+                private _stillBroken = (damage _v) > 0.1 || _belowTerrain;
+                if (_stillBroken) then {
+                    // Spawn-clip resolution failed - freeze instead of
+                    // letting damage re-engage on a wreck-in-waiting.
+                    _v enableSimulationGlobal false;
+                    if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+                        diag_log format ["[ALiVE VehSpawn DEBUG] FROZEN class=%1 pos=%2 spawnPos=%3 damage=%4 drift=%5 speed=%6 belowTerrain=%7 (post-settle clip detected, scheduling despawn)",
+                            typeOf _v, getPosATL _v, _spawnPos, damage _v, _drift, _speed, _belowTerrain];
+                    };
+                    // Frozen vehicles are visually-only; no physics, no
+                    // gameplay value. Delete after 5 min so the world
+                    // doesn't accumulate static debris each time the
+                    // safety net fires. The profile entry stays intact -
+                    // if the player approaches the same area again later,
+                    // the profile re-spawns and the validator gets another
+                    // attempt (potentially at a better position once
+                    // adjacent vehicles / clutter have shifted).
+                    [{
+                        params ["_v2"];
+                        if (!isNull _v2) then {
+                            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+                                diag_log format ["[ALiVE VehSpawn DEBUG] DESPAWN-FROZEN class=%1 pos=%2 (5 min cleanup)",
+                                    typeOf _v2, getPosATL _v2];
+                            };
+                            deleteVehicle _v2;
+                        };
+                    }, [_v], 300] call CBA_fnc_waitAndExecute;
+                } else {
+                    _v allowDamage true;
+                };
+            }, [_vehicle], _settleSeconds] call CBA_fnc_waitAndExecute;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {

@@ -242,10 +242,8 @@ if (_autoGenerateStrategicTasks) then {
                 if ((_autoOrderPlayers select 0) isEqualTo []) then {
                     _autoGenerateStrategicTasks = false;
                 } else {
-                    if (count (_autoOrderPlayers select 0) != count (_sidePlayers select 0)) then {
-                        _taskPlayers = _autoOrderPlayers;
-                        _apply = "Individual";
-                    };
+                    _taskPlayers = _autoOrderPlayers;
+                    _apply = "Individual";
                 };
             };
         };

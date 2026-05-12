@@ -54,15 +54,40 @@ class CfgVehicles {
                     property = "ALiVE_civ_placement_custom_readinessLevel"; displayName = "$STR_ALIVE_CP_READINESS_LEVEL"; tooltip = "$STR_ALIVE_CP_READINESS_LEVEL_COMMENT"; defaultValue = """1""";
                     class Values { class NONE{name="100%";value="1";default=1;}; class HIGH{name="75%";value="0.75";}; class MEDIUM{name="50%";value="0.5";}; class LOW{name="25%";value="0.25";}; };
             };
-            class roadBlocks : Combo
+            // Reserve-pool attributes - shared semantics with mil_placement.
+            // Stringtable keys are canonical in mil_placement (STR_ALIVE_MP_*)
+            // and cross-referenced here.
+            class HDR_RESERVE : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_RESERVE"; displayName = "$STR_ALIVE_MP_HDR_RESERVE"; };
+            class activePatrolPercent : Combo
             {
-                    property = "ALiVE_civ_placement_custom_roadBlocks"; displayName = "$STR_ALIVE_CP_ROADBLOCKS"; tooltip = "$STR_ALIVE_CP_ROADBLOCKS_COMMENT"; defaultValue = """0""";
-                    class Values { class NONE{name="None";value="0";default=1;}; class All{name="All";value="100";}; class EXTREME{name="Extreme";value="75";}; class HIGH{name="High";value="50";}; class MEDIUM{name="Medium";value="35";}; class LOW{name="low";value="15";}; };
+                    property = "ALiVE_civ_placement_custom_activePatrolPercent"; displayName = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_ACTIVE_PATROL_PERCENT_COMMENT"; defaultValue = """0.75""";
+                    class Values { class FULL{name="100%";value="1";}; class HIGH{name="75%";value="0.75";default=1;}; class MEDIUM{name="50%";value="0.5";}; class LOW{name="25%";value="0.25";}; class ZERO{name="0%";value="0";}; };
             };
-            class placeSeaPatrols : Combo
+            class reserveActivationThreshold : Combo
             {
-                    property = "ALiVE_civ_placement_custom_placeSeaPatrols"; displayName = "$STR_ALIVE_CP_PLACE_SEAPATROLS"; tooltip = "$STR_ALIVE_CP_PLACE_SEAPATROLS_COMMENT"; defaultValue = """0""";
-                    class Values { class NONE{name="None";value=0;default=1;}; class All{name="All";value=1;}; class EXTREME{name="Extreme";value=0.75;}; class HIGH{name="High";value=0.55;}; class MEDIUM{name="Medium";value=0.33;}; class LOW{name="Low";value=0.2;}; };
+                    property = "ALiVE_civ_placement_custom_reserveActivationThreshold"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_THRESHOLD_COMMENT"; defaultValue = """0.5""";
+                    class Values { class HEAVY{name="25%";value="0.25";}; class MEDIUM{name="50%";value="0.5";default=1;}; class EARLY{name="75%";value="0.75";}; class IMMEDIATE{name="100%";value="1";}; };
+            };
+            class reserveActivationCooldown : Edit { property = "ALiVE_civ_placement_custom_reserveActivationCooldown"; displayName = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN"; tooltip = "$STR_ALIVE_MP_RESERVE_ACTIVATION_COOLDOWN_COMMENT"; defaultValue = """30"""; };
+            class reserveEngagementMultiplier : Combo
+            {
+                    property = "ALiVE_civ_placement_custom_reserveEngagementMultiplier"; displayName = "$STR_ALIVE_MP_RESERVE_ENGAGEMENT_MULTIPLIER"; tooltip = "$STR_ALIVE_MP_RESERVE_ENGAGEMENT_MULTIPLIER_COMMENT"; defaultValue = """3""";
+                    class Values { class CLOSE{name="1.5x cluster";value="1.5";}; class NEAR{name="2x cluster";value="2";}; class STANDARD{name="3x cluster";value="3";default=1;}; class FAR{name="4x cluster";value="4";}; class WIDE{name="6x cluster";value="6";}; };
+            };
+            class reserveLockClearedBuildings : Combo
+            {
+                    property = "ALiVE_civ_placement_custom_reserveLockClearedBuildings"; displayName = "$STR_ALIVE_MP_RESERVE_LOCK_CLEARED_BUILDINGS"; tooltip = "$STR_ALIVE_MP_RESERVE_LOCK_CLEARED_BUILDINGS_COMMENT"; defaultValue = """1""";
+                    class Values { class YES{name="Yes";value="1";default=1;}; class NO{name="No";value="0";}; };
+            };
+            class reserveEmptyVehicleLocked : Combo
+            {
+                    property = "ALiVE_civ_placement_custom_reserveEmptyVehicleLocked"; displayName = "$STR_ALIVE_MP_RESERVE_EMPTY_VEHICLE_LOCKED"; tooltip = "$STR_ALIVE_MP_RESERVE_EMPTY_VEHICLE_LOCKED_COMMENT"; defaultValue = """1""";
+                    class Values { class YES{name="Yes";value="1";default=1;}; class NO{name="No";value="0";}; };
+            };
+            class reserveOrphanCrewBehaviour : Combo
+            {
+                    property = "ALiVE_civ_placement_custom_reserveOrphanCrewBehaviour"; displayName = "$STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR"; tooltip = "$STR_ALIVE_MP_RESERVE_ORPHAN_CREW_BEHAVIOUR_COMMENT"; defaultValue = """SpawnAsInfantry""";
+                    class Values { class INFANTRY{name="Spawn as infantry";value="SpawnAsInfantry";default=1;}; class DROP{name="Drop silently";value="Drop";}; };
             };
             class customInfantryCount : Edit { property = "ALiVE_civ_placement_custom_customInfantryCount"; displayName = "$STR_ALIVE_CP_CUSTOM_INFANTRY_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_INFANTRY_COUNT_COMMENT"; defaultValue = """"""; };
             class customMotorisedCount : Edit { property = "ALiVE_civ_placement_custom_customMotorisedCount"; displayName = "$STR_ALIVE_CP_CUSTOM_MOTORISED_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_MOTORISED_COUNT_COMMENT"; defaultValue = """"""; };
@@ -70,6 +95,39 @@ class CfgVehicles {
             class customArmourCount : Edit { property = "ALiVE_civ_placement_custom_customArmourCount"; displayName = "$STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT_COMMENT"; defaultValue = """"""; };
             class customSpecOpsCount : Edit { property = "ALiVE_civ_placement_custom_customSpecOpsCount"; displayName = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT_COMMENT"; defaultValue = """"""; };
             class asymmetricInstallationCountOverrides : Edit { property = "ALiVE_civ_placement_custom_asymmetricInstallationCountOverrides"; displayName = "$STR_ALIVE_CP_ASYM_INSTALLATION_COUNT_OVERRIDES"; tooltip = "$STR_ALIVE_CP_ASYM_INSTALLATION_COUNT_OVERRIDES_COMMENT"; defaultValue = """"""; };
+            // ---- Objective Objects (#875) ---------------------------------------
+            class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
+            // AA-style triplet: count Edit + behaviour Combo + picker.
+            class objectiveObjectsCount : Edit
+            {
+                    property     = "ALiVE_civ_placement_custom_objectiveObjectsCount";
+                    displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT";
+                    tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT";
+                    defaultValue = """0""";
+            };
+            class objectiveObjectsBehaviour : Combo
+            {
+                    property     = "ALiVE_civ_placement_custom_objectiveObjectsBehaviour";
+                    displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR";
+                    tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_COMMENT";
+                    defaultValue = """dispersed""";
+                    class Values
+                    {
+                        class CLUSTERED { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_CLUSTERED"; value = "clustered"; };
+                        class DISPERSED { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_DISPERSED"; value = "dispersed"; default = 1; };
+                        class PERIMETER { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_PERIMETER"; value = "perimeter"; };
+                    };
+            };
+            class objectiveObjects
+            {
+                    property     = "ALiVE_civ_placement_custom_objectiveObjects";
+                    displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS";
+                    tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_COMMENT";
+                    control      = "ALiVE_ObjectiveObjectChoice";
+                    typeName     = "STRING";
+                    expression   = "_this setVariable ['objectiveObjects', _value];";
+                    defaultValue = """""";
+            };
             // ---- Ambient Presence -----------------------------------------------
             class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_AMBIENT"; displayName = "AMBIENT PRESENCE"; };
             class guardProbability : Combo
@@ -82,6 +140,30 @@ class CfgVehicles {
             {
                     property = "ALiVE_civ_placement_custom_guardPatrolPercentage"; displayName = "$STR_ALIVE_CP_CUSTOM_GUARD_PATROL_PERCENT"; tooltip = "$STR_ALIVE_CP_CUSTOM_GUARD_PATROL_PERCENT_COMMENT"; defaultValue = """50""";
                     class Values { class NONE{name="$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_NONE";value="0";}; class LOW{name="$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_LOW";value="25";}; class MEDIUM{name="$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_MEDIUM";value="50";default=1;}; class HIGH{name="$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_HIGH";value="75";}; class ALL{name="$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_ALL";value="100";}; };
+            };
+            // ---- Roadblocks -----------------------------------------------------
+            class HDR_ROADBLOCKS : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_ROADBLOCKS"; displayName = "$STR_ALIVE_CP_HDR_ROADBLOCKS"; };
+            class roadBlocks : Combo
+            {
+                    property = "ALiVE_civ_placement_custom_roadBlocks"; displayName = "$STR_ALIVE_CP_ROADBLOCKS"; tooltip = "$STR_ALIVE_CP_ROADBLOCKS_COMMENT"; defaultValue = """0""";
+                    class Values { class NONE{name="None";value="0";default=1;}; class All{name="All";value="100";}; class EXTREME{name="Extreme";value="75";}; class HIGH{name="High";value="50";}; class MEDIUM{name="Medium";value="35";}; class LOW{name="low";value="15";}; };
+            };
+            class roadblockCompositions
+            {
+                    property     = "ALiVE_civ_placement_custom_roadblockCompositions";
+                    displayName  = "$STR_ALIVE_CP_ROADBLOCK_COMPOSITIONS";
+                    tooltip      = "$STR_ALIVE_CP_ROADBLOCK_COMPOSITIONS_COMMENT";
+                    control      = "ALiVE_CompositionChoice_CivRoadblock";
+                    typeName     = "STRING";
+                    expression   = "_this setVariable ['roadblockCompositions', _value];";
+                    defaultValue = """""";
+            };
+            // ---- Sea Patrols ----------------------------------------------------
+            class HDR_SEAPATROLS : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_SEAPATROLS"; displayName = "$STR_ALIVE_CP_HDR_SEAPATROLS"; };
+            class placeSeaPatrols : Combo
+            {
+                    property = "ALiVE_civ_placement_custom_placeSeaPatrols"; displayName = "$STR_ALIVE_CP_PLACE_SEAPATROLS"; tooltip = "$STR_ALIVE_CP_PLACE_SEAPATROLS_COMMENT"; defaultValue = """0""";
+                    class Values { class NONE{name="None";value=0;default=1;}; class All{name="All";value=1;}; class EXTREME{name="Extreme";value=0.75;}; class HIGH{name="High";value=0.55;}; class MEDIUM{name="Medium";value=0.33;}; class LOW{name="Low";value=0.2;}; };
             };
             // ---- On Spawn Hook --------------------------------------------------
             class HDR_HOOK : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_HOOK"; displayName = "ON SPAWN HOOK"; };

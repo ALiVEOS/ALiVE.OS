@@ -163,6 +163,14 @@ class CfgVehicles
                                     class No { name = "No"; value = false; };
                                 };
                         };
+                        class excludeKinds : Edit
+                        {
+                                property = "ALiVE_mil_logistics_excludeKinds";
+                                displayName = "$STR_ALIVE_ML_EXCLUDE_KINDS";
+                                tooltip = "$STR_ALIVE_ML_EXCLUDE_KINDS_COMMENT";
+                                defaultValue = """""";
+                                typeName = "STRING";
+                        };
                         // ---- Transport ------------------------------------------------------
                         class HDR_TRANSPORT : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_TRANSPORT"; displayName = "TRANSPORT"; };
                         class enableAirTransport : Combo
@@ -216,6 +224,50 @@ class CfgVehicles
                                 displayName = "$STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS";
                                 tooltip = "$STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS_DESC";
                                 defaultValue = """0""";
+                        };
+                        // ---- Custom Static Data ---------------------------------------------
+                        class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_CUSTOM"; displayName = "CUSTOM TRANSPORT CLASSES"; };
+                        class customStaticDataMode : Combo
+                        {
+                                property = "ALiVE_mil_logistics_customStaticDataMode";
+                                displayName = "$STR_ALIVE_ML_CUSTOM_MODE";
+                                tooltip = "$STR_ALIVE_ML_CUSTOM_MODE_COMMENT";
+                                defaultValue = """REPLACE""";
+                                class Values
+                                {
+                                    class Replace { name = "Replace"; value = "REPLACE"; default = 1; };
+                                    class Append  { name = "Append";  value = "APPEND";  };
+                                };
+                        };
+                        class customLandTransport
+                        {
+                                property     = "ALiVE_mil_logistics_customLandTransport";
+                                displayName  = "$STR_ALIVE_ML_CUSTOM_LAND_TRANSPORT";
+                                tooltip      = "$STR_ALIVE_ML_CUSTOM_LAND_TRANSPORT_COMMENT";
+                                control      = "ALiVE_FactionStaticDataChoice_LandTransport";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['customLandTransport', _value];";
+                                defaultValue = """""";
+                        };
+                        class customAirTransport
+                        {
+                                property     = "ALiVE_mil_logistics_customAirTransport";
+                                displayName  = "$STR_ALIVE_ML_CUSTOM_AIR_TRANSPORT";
+                                tooltip      = "$STR_ALIVE_ML_CUSTOM_AIR_TRANSPORT_COMMENT";
+                                control      = "ALiVE_FactionStaticDataChoice_AirTransport";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['customAirTransport', _value];";
+                                defaultValue = """""";
+                        };
+                        class customContainers
+                        {
+                                property     = "ALiVE_mil_logistics_customContainers";
+                                displayName  = "$STR_ALIVE_ML_CUSTOM_CONTAINERS";
+                                tooltip      = "$STR_ALIVE_ML_CUSTOM_CONTAINERS_COMMENT";
+                                control      = "ALiVE_FactionStaticDataChoice_Containers";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['customContainers', _value];";
+                                defaultValue = """""";
                         };
                         // ---- Starting Force Strength ----------------------------------------
                         class HDR_STRENGTH : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_STRENGTH"; displayName = "STARTING FORCE STRENGTH"; };

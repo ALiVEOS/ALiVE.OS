@@ -147,9 +147,17 @@ for "_j" from 1 to _numIEDs do {
                         _clut = createVehicle [(selectRandom _clutter),_IEDpos, [], 40, "NONE"];
                         _clut setvariable [QUOTE(ADDON), true];
 
-                        //Fixme: what happens if clut is nil or null
-                        while {isOnRoad _clut} do {
+                        // Bounded retry: in dense urban areas with
+                        // closely packed roads, the random nudge can
+                        // keep landing on roads and the unbounded
+                        // version hung mission init when a trigger
+                        // fired immediately at startup (player
+                        // spawned inside an IED zone). 10 attempts
+                        // matches the road-clutter loop pattern below.
+                        private _urbanRetry = 0;
+                        while {isOnRoad _clut && _urbanRetry < 10} do {
                             _clut setPos [((position _clut) select 0) - 10 + random 20, ((position _clut) select 1) - 10 + random 20, ((position _clut) select 2)];
+                            _urbanRetry = _urbanRetry + 1;
                         };
                     };
 

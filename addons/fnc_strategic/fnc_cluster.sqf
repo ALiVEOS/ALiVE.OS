@@ -94,6 +94,32 @@ _createMarkers = {
         _priority = [_logic, "priority"] call MAINCLASS;
         _type = [_logic, "type"] call MAINCLASS;
         _id = [_logic, "clusterID", ""] call ALIVE_fnc_hashGet;
+        private _color = [_logic, "debugColor", "ColorYellow"] call ALIVE_fnc_hashGet;
+        // Derive a human-readable cluster sub-type from the debugColor
+        // when the cluster is civilian. Civ generators (auto-gen +
+        // per-map pre-gen + civ_placement_custom) all set debugColor
+        // 1:1 with the civilian sub-type (HQ=Black, Power=Yellow,
+        // Comms=White, Marine=Blue, Rail=Khaki, Fuel=Orange,
+        // Construction=Pink, Settlement=Green, Custom=Red). Reading
+        // the colour at render time avoids touching every per-map
+        // cluster file to thread a separate sub-type field through.
+        // Mil / other cluster types skip the prefix - their colours
+        // don't carry the same convention.
+        private _subType = "";
+        if (_type == "CIV") then {
+            _subType = switch (_color) do {
+                case "ColorBlack":  { "HQ" };
+                case "ColorYellow": { "Power" };
+                case "ColorWhite":  { "Comms" };
+                case "ColorBlue":   { "Marine" };
+                case "ColorKhaki":  { "Rail" };
+                case "ColorOrange": { "Fuel" };
+                case "ColorPink":   { "Construction" };
+                case "ColorGreen":  { "Settlement" };
+                case "ColorRed":    { "Custom" };
+                default             { "" };
+            };
+        };
         // Anchor slot in the shared debug-marker offset registry -
         // other emitters (mil_opcom, fnc_analysis) fan out around the
         // cluster centre so their labels don't overlap this one.
@@ -101,8 +127,12 @@ _createMarkers = {
         _m setMarkerShape "Icon";
         _m setMarkerSize [0.75, 0.75];
         _m setMarkerType "mil_dot";
-        _m setMarkerColor ([_logic, "debugColor","ColorYellow"] call ALIVE_fnc_hashGet);
-        _m setMarkerText format["%1|%2|%3|%4",_id,_type,_priority,floor(_size)];
+        _m setMarkerColor _color;
+        if (_subType == "") then {
+            _m setMarkerText format["%1|%2|%3|%4", _id, _type, _priority, floor _size];
+        } else {
+            _m setMarkerText format["%1: %2|%3|%4|%5", _subType, _id, _type, _priority, floor _size];
+        };
         _markers pushback _m;
 
         _m = createMarker [_m + "_size", _center];

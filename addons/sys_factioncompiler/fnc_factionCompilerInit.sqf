@@ -32,6 +32,10 @@ if (isNil "ALIVE_compiledFactions") then {
 
 private _debug = [(_logic getVariable ["debug", false])] call _parseBool;
 private _deleteTemplates = [(_logic getVariable ["deleteTemplates", true])] call _parseBool;
+private _overrideMode = _logic getVariable ["overrideMode", "NewFaction"];
+if !(_overrideMode isEqualType "") then { _overrideMode = "NewFaction" };
+if !(_overrideMode in ["NewFaction", "OverrideCategories"]) then { _overrideMode = "NewFaction" };
+private _isOverride = _overrideMode isEqualTo "OverrideCategories";
 private _requestedFactionId = _logic getVariable ["factionId", "ALIVE_CUSTOM_FACTION"];
 if !(_requestedFactionId isEqualType "") then {
     _requestedFactionId = str _requestedFactionId;
@@ -110,9 +114,16 @@ if (_collisionReason isEqualTo "" && {!isNil "ALIVE_factionCustomMappings"} && {
     private _mappingOwnedByCurrentModule = _mappingIsCompiled && {(!isNull _existingSourceModule && {_existingSourceModule isEqualTo _logic}) || {(isNull _existingSourceModule) && {_ownsExistingId || {_existingSourceModuleId isEqualTo _moduleSourceId}}}};
 
     if (!_mappingOwnedByCurrentModule) then {
-        _collisionReason = if (_mappingIsCompiled) then {"compiled faction mapping"} else {"custom faction mapping"};
-        _collisionOwner = [_existingMapping, "DisplayName", [_existingMapping, "FactionName", _factionId] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashGet;
-        _collisionSourceId = _existingSourceModuleId;
+        // OverrideCategories mode is the explicit "stack on top of an
+        // existing curated/inferred faction" path - allow it through.
+        // Still reject if a DIFFERENT compiler already overrode the
+        // same id (ambiguous ownership).
+        private _allowOverride = _isOverride && {!_mappingIsCompiled};
+        if (!_allowOverride) then {
+            _collisionReason = if (_mappingIsCompiled) then {"compiled faction mapping"} else {"custom faction mapping"};
+            _collisionOwner = [_existingMapping, "DisplayName", [_existingMapping, "FactionName", _factionId] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashGet;
+            _collisionSourceId = _existingSourceModuleId;
+        };
     };
 };
 
@@ -279,18 +290,54 @@ private _typeMappings = [] call ALIVE_fnc_hashCreate;
     [_typeMappings, _x, _x] call ALIVE_fnc_hashSet;
 } forEach _standardCategories;
 
-private _mapping = [] call ALIVE_fnc_hashCreate;
-[_mapping, "Side", _sideText] call ALIVE_fnc_hashSet;
-[_mapping, "GroupSideName", _sideText] call ALIVE_fnc_hashSet;
-[_mapping, "FactionName", _factionId] call ALIVE_fnc_hashSet;
-[_mapping, "ConfigFactionName", _proxyFaction] call ALIVE_fnc_hashSet;
-[_mapping, "GroupFactionName", _proxyFaction] call ALIVE_fnc_hashSet;
-[_mapping, "GroupFactionTypes", _typeMappings] call ALIVE_fnc_hashSet;
-[_mapping, "Groups", _groupsByCategory] call ALIVE_fnc_hashSet;
-[_mapping, "CompiledFaction", true] call ALIVE_fnc_hashSet;
-[_mapping, "DisplayName", _displayName] call ALIVE_fnc_hashSet;
-[_mapping, "SourceModule", _logic] call ALIVE_fnc_hashSet;
-[_mapping, "SourceModuleId", _moduleSourceId] call ALIVE_fnc_hashSet;
+// Decide whether to write a fresh mapping (NewFaction mode, or
+// OverrideCategories with no existing mapping to merge into) or
+// merge into an existing curated/inferred mapping. In merge mode
+// we mutate the existing mapping in place so categories not
+// touched by this compiler keep their original group lists from
+// the curated config.
+private _existingMapping = if (_isOverride && {!isNil "ALIVE_factionCustomMappings"} && {_factionId in (ALIVE_factionCustomMappings select 1)}) then {
+    [ALIVE_factionCustomMappings, _factionId] call ALIVE_fnc_hashGet
+} else {
+    nil
+};
+
+private _mapping = if (!isNil "_existingMapping") then {
+    // Merge: replace only the categories that have compiled groups,
+    // keep everything else (Inferred flag, GroupFactionTypes, other
+    // categories' group lists, etc.). Set CompiledFaction so the
+    // dispatch in fnc_createProfilesFromGroupConfig routes through
+    // the compiler; non-compiled categories' group classes still
+    // resolve through the standard config path on fallback.
+    private _existingGroups = [_existingMapping, "Groups", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashGet;
+    {
+        private _category = _x;
+        private _categoryGroups = [_groupsByCategory, _category, []] call ALIVE_fnc_hashGet;
+        if (count _categoryGroups > 0) then {
+            [_existingGroups, _category, _categoryGroups] call ALIVE_fnc_hashSet;
+        };
+    } forEach _standardCategories;
+    [_existingMapping, "Groups", _existingGroups] call ALIVE_fnc_hashSet;
+    [_existingMapping, "CompiledFaction", true] call ALIVE_fnc_hashSet;
+    [_existingMapping, "DisplayName", _displayName] call ALIVE_fnc_hashSet;
+    [_existingMapping, "SourceModule", _logic] call ALIVE_fnc_hashSet;
+    [_existingMapping, "SourceModuleId", _moduleSourceId] call ALIVE_fnc_hashSet;
+    _existingMapping
+} else {
+    private _newMapping = [] call ALIVE_fnc_hashCreate;
+    [_newMapping, "Side", _sideText] call ALIVE_fnc_hashSet;
+    [_newMapping, "GroupSideName", _sideText] call ALIVE_fnc_hashSet;
+    [_newMapping, "FactionName", _factionId] call ALIVE_fnc_hashSet;
+    [_newMapping, "ConfigFactionName", _proxyFaction] call ALIVE_fnc_hashSet;
+    [_newMapping, "GroupFactionName", _proxyFaction] call ALIVE_fnc_hashSet;
+    [_newMapping, "GroupFactionTypes", _typeMappings] call ALIVE_fnc_hashSet;
+    [_newMapping, "Groups", _groupsByCategory] call ALIVE_fnc_hashSet;
+    [_newMapping, "CompiledFaction", true] call ALIVE_fnc_hashSet;
+    [_newMapping, "DisplayName", _displayName] call ALIVE_fnc_hashSet;
+    [_newMapping, "SourceModule", _logic] call ALIVE_fnc_hashSet;
+    [_newMapping, "SourceModuleId", _moduleSourceId] call ALIVE_fnc_hashSet;
+    _newMapping
+};
 
 private _factionData = [] call ALIVE_fnc_hashCreate;
 [_factionData, "factionId", _factionId] call ALIVE_fnc_hashSet;
@@ -304,7 +351,11 @@ private _factionData = [] call ALIVE_fnc_hashCreate;
 [_factionData, "sourceModule", _logic] call ALIVE_fnc_hashSet;
 [_factionData, "sourceModuleId", _moduleSourceId] call ALIVE_fnc_hashSet;
 [ALIVE_compiledFactions, _factionId, _factionData] call ALIVE_fnc_hashSet;
-[ALIVE_factionCustomMappings, _factionId, _mapping] call ALIVE_fnc_hashSet;
+// Only write to ALIVE_factionCustomMappings when we built a fresh
+// mapping. In merge mode the existing entry was mutated in place.
+if (isNil "_existingMapping") then {
+    [ALIVE_factionCustomMappings, _factionId, _mapping] call ALIVE_fnc_hashSet;
+};
 
 _logic setVariable ["factionId", _factionId, true];
 _logic setVariable ["compiledFactionId", _factionId, true];
@@ -335,7 +386,8 @@ if (_deleteTemplates) then {
 };
 
 if (_debug) then {
-    ["Faction compiler [%1] registered %2 groups for side %3 using proxy %4", _factionId, _groupIndex, _sideText, _proxyFaction] call ALIVE_fnc_dump;
+    private _modeLabel = if (!isNil "_existingMapping") then {"override-categories (merged into existing mapping)"} else {format ["new-faction (proxy %1)", _proxyFaction]};
+    ["Faction compiler [%1] registered %2 groups for side %3 - mode: %4", _factionId, _groupIndex, _sideText, _modeLabel] call ALIVE_fnc_dump;
 };
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;

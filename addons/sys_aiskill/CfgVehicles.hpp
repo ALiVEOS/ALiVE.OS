@@ -38,68 +38,43 @@ class CfgVehicles {
             };
             // ── SKILL PRESETS BY FACTION ──────────────────────────────────────
             class HDR_PRESETS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_PRESETS"; displayName = "SKILL PRESETS BY FACTION"; };
-            class skillFactionsRecruit
+            // Consolidated skill-tier picker (replaces the previous ten-
+            // attribute layout: per-tier listbox + per-tier Manual edit
+            // + spacer x 5). Stored in structured format
+            // "recruit:Faction1;regular:Faction2,Faction3;veteran:;expert:;custom:Faction4"
+            // via the ALiVE_FactionTierChoice control. The filter cycle
+            // button SWAPS which tier's ticks display - rows themselves
+            // stay constant. Runtime resolver in fnc_aiskill prefers
+            // this attribute; legacy per-tier attrs below remain
+            // defined as hidden back-compat aliases so missions saved
+            // before consolidation still resolve when this key is empty.
+            class skillTierFactions
             {
-                property     = "ALiVE_sys_aiskill_skillFactionsRecruit";
-                displayName  = "$STR_ALIVE_AISKILL_RECRUIT";
-                tooltip      = "$STR_ALIVE_AISKILL_RECRUIT_COMMENT";
-                control      = "ALiVE_FactionChoiceMulti_Military";
+                property     = "ALiVE_sys_aiskill_skillTierFactions";
+                displayName  = "$STR_ALIVE_AISKILL_TIER_FACTIONS";
+                tooltip      = "$STR_ALIVE_AISKILL_TIER_FACTIONS_COMMENT";
+                control      = "ALiVE_FactionTierChoice";
                 typeName     = "STRING";
-                expression   = "_this setVariable ['skillFactionsRecruit', _value];";
-                defaultValue = """[]""";
+                expression   = "_this setVariable ['skillTierFactions', _value];";
+                defaultValue = """""";
             };
-            class skillFactionsRecruitManual : Edit { property = "ALiVE_sys_aiskill_skillFactionsRecruitManual"; displayName = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-            class SPACER_RECRUIT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_SPACER_RECRUIT"; displayName = " "; };
-            class skillFactionsRegular
-            {
-                property     = "ALiVE_sys_aiskill_skillFactionsRegular";
-                displayName  = "$STR_ALIVE_AISKILL_REGULAR";
-                tooltip      = "$STR_ALIVE_AISKILL_REGULAR_COMMENT";
-                control      = "ALiVE_FactionChoiceMulti_Military";
-                typeName     = "STRING";
-                expression   = "_this setVariable ['skillFactionsRegular', _value];";
-                defaultValue = """[]""";
-            };
-            class skillFactionsRegularManual : Edit { property = "ALiVE_sys_aiskill_skillFactionsRegularManual"; displayName = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-            class SPACER_REGULAR : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_SPACER_REGULAR"; displayName = " "; };
-            class skillFactionsVeteran
-            {
-                property     = "ALiVE_sys_aiskill_skillFactionsVeteran";
-                displayName  = "$STR_ALIVE_AISKILL_VETERAN";
-                tooltip      = "$STR_ALIVE_AISKILL_VETERAN_COMMENT";
-                control      = "ALiVE_FactionChoiceMulti_Military";
-                typeName     = "STRING";
-                expression   = "_this setVariable ['skillFactionsVeteran', _value];";
-                defaultValue = """[]""";
-            };
-            class skillFactionsVeteranManual : Edit { property = "ALiVE_sys_aiskill_skillFactionsVeteranManual"; displayName = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-            class SPACER_VETERAN : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_SPACER_VETERAN"; displayName = " "; };
-            class skillFactionsExpert
-            {
-                property     = "ALiVE_sys_aiskill_skillFactionsExpert";
-                displayName  = "$STR_ALIVE_AISKILL_EXPERT";
-                tooltip      = "$STR_ALIVE_AISKILL_EXPERT_COMMENT";
-                control      = "ALiVE_FactionChoiceMulti_Military";
-                typeName     = "STRING";
-                expression   = "_this setVariable ['skillFactionsExpert', _value];";
-                defaultValue = """[]""";
-            };
-            class skillFactionsExpertManual : Edit { property = "ALiVE_sys_aiskill_skillFactionsExpertManual"; displayName = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-            class SPACER_EXPERT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_SPACER_EXPERT"; displayName = " "; };
+            // Hidden legacy aliases - SQM-stored values from missions
+            // saved before the consolidated picker existed are still
+            // pushed onto the logic at scenario init via these
+            // expressions, and the runtime resolver falls back to
+            // them when skillTierFactions is empty.
+            class skillFactionsRecruit         { property = "ALiVE_sys_aiskill_skillFactionsRecruit";         control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['skillFactionsRecruit', _value];";         typeName = "STRING"; displayName = ""; };
+            class skillFactionsRecruitManual   { property = "ALiVE_sys_aiskill_skillFactionsRecruitManual";   control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['skillFactionsRecruitManual', _value];";   typeName = "STRING"; displayName = ""; };
+            class skillFactionsRegular         { property = "ALiVE_sys_aiskill_skillFactionsRegular";         control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['skillFactionsRegular', _value];";         typeName = "STRING"; displayName = ""; };
+            class skillFactionsRegularManual   { property = "ALiVE_sys_aiskill_skillFactionsRegularManual";   control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['skillFactionsRegularManual', _value];";   typeName = "STRING"; displayName = ""; };
+            class skillFactionsVeteran         { property = "ALiVE_sys_aiskill_skillFactionsVeteran";         control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['skillFactionsVeteran', _value];";         typeName = "STRING"; displayName = ""; };
+            class skillFactionsVeteranManual   { property = "ALiVE_sys_aiskill_skillFactionsVeteranManual";   control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['skillFactionsVeteranManual', _value];";   typeName = "STRING"; displayName = ""; };
+            class skillFactionsExpert          { property = "ALiVE_sys_aiskill_skillFactionsExpert";          control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['skillFactionsExpert', _value];";          typeName = "STRING"; displayName = ""; };
+            class skillFactionsExpertManual    { property = "ALiVE_sys_aiskill_skillFactionsExpertManual";    control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['skillFactionsExpertManual', _value];";    typeName = "STRING"; displayName = ""; };
+            class customSkillFactions          { property = "ALiVE_sys_aiskill_customSkillFactions";          control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['customSkillFactions', _value];";          typeName = "STRING"; displayName = ""; };
+            class customSkillFactionsManual    { property = "ALiVE_sys_aiskill_customSkillFactionsManual";    control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['customSkillFactionsManual', _value];";    typeName = "STRING"; displayName = ""; };
             // ── CUSTOM SKILL OVERRIDE ─────────────────────────────────────────
             class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_HDR_CUSTOM"; displayName = "CUSTOM SKILL VALUES"; };
-            class customSkillFactions
-            {
-                property     = "ALiVE_sys_aiskill_customSkillFactions";
-                displayName  = "$STR_ALIVE_AISKILL_CUSTOM";
-                tooltip      = "$STR_ALIVE_AISKILL_CUSTOM_COMMENT";
-                control      = "ALiVE_FactionChoiceMulti_Military";
-                typeName     = "STRING";
-                expression   = "_this setVariable ['customSkillFactions', _value];";
-                defaultValue = """[]""";
-            };
-            class customSkillFactionsManual : Edit { property = "ALiVE_sys_aiskill_customSkillFactionsManual"; displayName = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL"; tooltip = "$STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-            class SPACER_CUSTOM_FACTIONS : ALiVE_ModuleSubTitle { property = "ALiVE_sys_aiskill_SPACER_CUSTOM_FACTIONS"; displayName = " "; };
             class customSkillAbilityMin : Edit { property = "ALiVE_sys_aiskill_customSkillAbilityMin"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN_COMMENT"; defaultValue = """0.2"""; typeName = "NUMBER"; };
             class customSkillAbilityMax : Edit { property = "ALiVE_sys_aiskill_customSkillAbilityMax"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX_COMMENT"; defaultValue = """0.25"""; typeName = "NUMBER"; };
             class customSkillAimAccuracy : Edit { property = "ALiVE_sys_aiskill_customSkillAimAccuracy"; displayName = "$STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY"; tooltip = "$STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY_COMMENT"; defaultValue = """0.3"""; typeName = "NUMBER"; };

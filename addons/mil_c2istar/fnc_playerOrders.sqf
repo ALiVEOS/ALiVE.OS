@@ -606,6 +606,34 @@ switch (_operation) do {
         };
 
         ["notify", [_player, _message]] call MAINCLASS;
+
+        if (!_optedOut && {!isNil "ALIVE_taskHandler"}) then {
+            private _groupData = ["getGroupData", [_player]] call MAINCLASS;
+
+            if !(_groupData isEqualTo []) then {
+                _groupData params [
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "_requestPlayerID",
+                    "",
+                    "_side",
+                    "_faction"
+                ];
+
+                private _sideSettings = ["getSideSettings", [_side]] call MAINCLASS;
+                private _autoGenerate = _sideSettings param [0, "None"];
+
+                if (_autoGenerate == "Constant") then {
+                    private _enemyFaction = _sideSettings param [1, "OPF_F"];
+                    private _generate = [format ["%1_%2", _side, time], _requestPlayerID, _side, _faction, _enemyFaction, _autoGenerate];
+                    [ALIVE_taskHandler, "autoGenerateTasks", _generate] call ALiVE_fnc_taskHandler;
+                };
+            };
+        };
     };
 };
 

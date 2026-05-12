@@ -524,7 +524,7 @@
     <Chinese>平民互動介面:</Chinese>
     <Chinesesimp>平民互动界面:</Chinesesimp>
     <Spanish>Interfaz de interacción civil:</Spanish>
-    <French>Interface d'interaction civile :</French>
+    <French>Interface d'interaction civile:</French>
     <Portuguese>Interface de interação civil:</Portuguese>
     <Russian>Интерфейс взаимодействия с гражданскими:</Russian>
 </Key>
@@ -610,14 +610,14 @@
     <Russian>Фракции повстанцев:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT">
-    <English>Select one or more factions treated as the hostile insurgent force. Civilians will warn players about these factions during interactions, and nearby units of these factions count as insurgents in dialogue responses. Use the manual field below for factions from mods not currently loaded.</English>
+    <English>Select one or more factions treated as the hostile insurgent force. Civilians will warn players about these factions during interactions, and nearby units of these factions count as insurgents in dialogue responses. Use the manual field below for factions from mods not currently loaded. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 
-    <Chinese>選擇一個或多個被視為敵對叛亂勢力的派系。互動時平民會向玩家提及這些派系，附近屬於這些派系的單位在對話回應中會視為叛亂分子。對於目前未載入的模組派系，使用下方手動欄位。</Chinese>
-    <Chinesesimp>选择一个或多个被视为敌对叛乱势力的阵营。互动时平民会向玩家提及这些阵营，附近属于这些阵营的单位在对话回应中会视为叛乱分子。对于当前未加载的模组阵营，使用下方手动字段。</Chinesesimp>
-    <Spanish>Selecciona una o varias facciones tratadas como fuerza insurgente hostil. Los civiles advertirán a los jugadores sobre estas facciones durante las interacciones, y las unidades cercanas de estas facciones cuentan como insurgentes en las respuestas de diálogo. Usa el campo manual de abajo para facciones de mods no cargados actualmente.</Spanish>
-    <French>Sélectionnez une ou plusieurs factions considérées comme force insurgée hostile. Les civils avertiront les joueurs de ces factions lors des interactions, et les unités proches de ces factions comptent comme des insurgés dans les réponses de dialogue. Utilisez le champ manuel ci-dessous pour les factions de mods non chargés.</French>
-    <Portuguese>Selecione uma ou mais facções tratadas como força insurgente hostil. Os civis avisarão os jogadores sobre essas facções durante as interações, e as unidades próximas dessas facções contam como insurgentes nas respostas de diálogo. Use o campo manual abaixo para facções de mods não carregados.</Portuguese>
-    <Russian>Выберите одну или несколько фракций, считаемых враждебными повстанческими силами. Гражданские будут предупреждать игроков об этих фракциях во время взаимодействий, а ближайшие подразделения этих фракций считаются повстанцами в ответах диалогов. Для фракций из незагруженных модов используйте ручное поле ниже.</Russian></Key>
+    <Chinese>選擇一個或多個被視為敵對叛亂勢力的派系。互動時平民會向玩家提及這些派系，附近屬於這些派系的單位在對話回應中會視為叛亂分子。對於目前未載入的模組派系，使用下方手動欄位。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>选择一个或多个被视为敌对叛乱势力的阵营。互动时平民会向玩家提及这些阵营，附近属于这些阵营的单位在对话回应中会视为叛乱分子。对于当前未加载的模组阵营，使用下方手动字段。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Selecciona una o varias facciones tratadas como fuerza insurgente hostil. Los civiles advertirán a los jugadores sobre estas facciones durante las interacciones, y las unidades cercanas de estas facciones cuentan como insurgentes en las respuestas de diálogo. Usa el campo manual de abajo para facciones de mods no cargados actualmente. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Sélectionnez une ou plusieurs factions considérées comme force insurgée hostile. Les civils avertiront les joueurs de ces factions lors des interactions, et les unités proches de ces factions comptent comme des insurgés dans les réponses de dialogue. Utilisez le champ manuel ci-dessous pour les factions de mods non chargés. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Selecione uma ou mais facções tratadas como força insurgente hostil. Os civis avisarão os jogadores sobre essas facções durante as interações, e as unidades próximas dessas facções contam como insurgentes nas respostas de diálogo. Use o campo manual abaixo para facções de mods não carregados. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Выберите одну или несколько фракций, считаемых враждебными повстанческими силами. Гражданские будут предупреждать игроков об этих фракциях во время взаимодействий, а ближайшие подразделения этих фракций считаются повстанцами в ответах диалогов. Для фракций из незагруженных модов используйте ручное поле ниже. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian></Key>
 <Key ID="STR_ALIVE_CIV_POP_FACTIONS_MANUAL">
     <English>Factions (manual override):</English>
     <Chinese>派系（手動覆蓋）:</Chinese>
@@ -632,7 +632,7 @@
     <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
     <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
     <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
-    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format : noms séparés par des virgules, sans espaces ni guillemets.</French>
+    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format: noms séparés par des virgules, sans espaces ni guillemets.</French>
     <Portuguese>Opcional. Digite classnames de facções adicionais para mods não carregados atualmente. Formato: nomes separados por vírgulas, sem espaços ou aspas.</Portuguese>
     <Russian>Необязательно. Введите classnames дополнительных фракций для незагруженных модов. Формат: имена через запятую, без пробелов и кавычек.</Russian>
 </Key>
@@ -852,6 +852,26 @@
     <Chinesesimp>一个平民最多可以得到多少人道主义口粮/水瓶</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS">
+    <English>Humanitarian Items:</English>
+    <Chinese>人道物資:</Chinese>
+    <Chinesesimp>人道物资:</Chinesesimp>
+    <Spanish>Artículos humanitarios:</Spanish>
+    <French>Articles humanitaires:</French>
+    <Portuguese>Itens humanitários:</Portuguese>
+    <Russian>Гуманитарная помощь:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS_COMMENT">
+    <English>Humanitarian item classnames offered to ambient civilians during interaction. Filter cycles between All / Water / Ration; ticks survive cycling so the cumulative selection set is what gets used at runtime. Water items are offered when a civilian asks for water; ration items when they ask for food. Auto-detected entries from loaded mods (gated by CfgALiVEHumanitarianItems registry); deselect any to exclude. The Override Entries field accepts free-text comma-separated class names for mod entries not in the registry; combined with listbox ticks at save time. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range. WARNING: legacy assignments to the underlying Water/Ration item arrays in init.sqf / staticData.sqf execute AFTER module init and silently overwrite this setting. Use either the Eden picker or legacy init-time assignment, not both.</English>
+    <Chinese>互動時提供給環境平民的人道物資類別名稱。篩選器在 全部 / 飲水 / 口糧 之間循環；勾選在切換間保留，所以最終使用的是累積選擇集。當平民要求飲水時提供飲水物資；要求食物時提供口糧物資。從已載入模組自動偵測的條目（由 CfgALiVEHumanitarianItems 登記表把關）；取消勾選以排除。Override Entries 欄位接受逗號分隔的、登記表未包含的模組類別名稱自由文字；保存時與清單勾選合併。多選: 左鍵點擊選擇一行；Ctrl+左鍵切換單行；Shift+左鍵選擇範圍。</Chinese>
+    <Chinesesimp>互动时提供给环境平民的人道物资类别名称。筛选器在 全部 / 饮水 / 口粮 之间循环；勾选在切换间保留，所以最终使用的是累积选择集。当平民要求饮水时提供饮水物资；要求食物时提供口粮物资。从已加载模组自动检测的条目（由 CfgALiVEHumanitarianItems 注册表把关）；取消勾选以排除。Override Entries 字段接受逗号分隔的、注册表未包含的模组类名自由文本；保存时与列表勾选合并。多选: 左键点击选择一行；Ctrl+左键切换单行；Shift+左键选择范围。</Chinesesimp>
+    <Spanish>Classnames de artículos humanitarios ofrecidos a civiles ambientales durante la interacción. El filtro cicla entre Todos / Agua / Ración; los ticks sobreviven al ciclo de filtro, así que el conjunto acumulado es lo que se usa en tiempo de ejecución. Los artículos de agua se ofrecen cuando un civil pide agua; los artículos de ración cuando piden comida. Entradas auto-detectadas de los mods cargados (filtrado por el registro CfgALiVEHumanitarianItems); deselecciona para excluir. El campo Override Entries acepta nombres de clase libres separados por comas para entradas de mod no en el registro; combinados con los ticks del listbox al guardar. Multiselección: clic-izquierdo selecciona una fila; Ctrl+clic-izquierdo alterna filas individuales; Shift+clic-izquierdo selecciona un rango.</Spanish>
+    <French>Classnames d'articles humanitaires offerts aux civils d'ambiance lors de l'interaction. Le filtre cycle entre Tout / Eau / Ration; les coches survivent au cycle de filtre, donc l'ensemble cumulé est ce qui est utilisé à l'exécution. Les articles d'eau sont offerts quand un civil demande de l'eau; les articles de ration quand ils demandent de la nourriture. Entrées auto-détectées des mods chargés (filtrées par le registre CfgALiVEHumanitarianItems); décochez pour exclure. Le champ Override Entries accepte des noms de classe libres séparés par des virgules pour les entrées de mods absents du registre; combinés avec les coches de la listbox à la sauvegarde. Multi-sélection: clic-gauche sélectionne une ligne; Ctrl+clic-gauche bascule des lignes individuelles; Shift+clic-gauche sélectionne une plage.</French>
+    <Portuguese>Classnames de itens humanitários oferecidos a civis ambientes durante a interação. O filtro cicla entre Todos / Água / Ração; as marcações sobrevivem ao ciclo de filtro, portanto o conjunto cumulativo é o que é usado em tempo de execução. Os itens de água são oferecidos quando um civil pede água; os itens de ração quando pedem comida. Entradas auto-detectadas dos mods carregados (filtradas pelo registro CfgALiVEHumanitarianItems); desmarque para excluir. O campo Override Entries aceita nomes de classe livres separados por vírgulas para entradas de mods não no registro; combinados com as marcações do listbox ao salvar. Seleção múltipla: clique-esquerdo seleciona uma linha; Ctrl+clique-esquerdo alterna linhas individuais; Shift+clique-esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Классы гуманитарных предметов, предлагаемых окружающим гражданским при взаимодействии. Фильтр циклически переключается между Все / Вода / Паёк; галочки сохраняются между переключениями, поэтому накопленный набор - это то, что используется во время выполнения. Предметы воды предлагаются, когда гражданин просит воду; предметы пайка - когда они просят еду. Автоматически обнаруженные записи из загруженных модов (отфильтровано через реестр CfgALiVEHumanitarianItems); снимите галочку для исключения. Поле Override Entries принимает имена классов через запятую для записей модов, отсутствующих в реестре; объединяется с галочками в списке при сохранении. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_WATER_ITEMS">
     <English>Custom Water Classes:</English>
 
@@ -863,14 +883,14 @@
     <Russian>Свои классы воды:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_WATER_ITEMS_COMMENT">
-    <English>Select water items civilians may receive as humanitarian aid. The list shows items from loaded mods (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — these are added to ALiVE's built-in defaults. Use the manual field below to include items from mods not currently loaded but expected at mission time.</English>
+    <English>Select water items civilians may receive as humanitarian aid. The list shows items from loaded mods (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — these are added to ALiVE's built-in defaults. Use the manual field below to include items from mods not currently loaded but expected at mission time. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 
-    <Chinese>選擇平民可作為人道援助接收的飲水物品。清單顯示已載入模組（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 這些項目會加到 ALiVE 內建預設之上。對於目前未載入但預期於任務時存在的模組物品，使用下方手動欄位。</Chinese>
-    <Chinesesimp>选择平民可作为人道援助接收的饮水物品。列表显示已加载模组（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 这些项目会加到 ALiVE 内置默认之上。对于当前未加载但预期于任务时存在的模组物品，使用下方手动字段。</Chinesesimp>
-    <Spanish>Selecciona los objetos de agua que los civiles pueden recibir como ayuda humanitaria. La lista muestra objetos de los mods cargados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — se añaden a los predeterminados integrados de ALiVE. Usa el campo manual de abajo para incluir objetos de mods no cargados actualmente pero esperados al momento de la misión.</Spanish>
-    <French>Sélectionnez les objets d'eau que les civils peuvent recevoir comme aide humanitaire. La liste affiche les objets des mods chargés (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — ils s'ajoutent aux valeurs par défaut intégrées d'ALiVE. Utilisez le champ manuel ci-dessous pour inclure des objets de mods non chargés actuellement mais attendus au moment de la mission.</French>
-    <Portuguese>Selecione os itens de água que os civis podem receber como ajuda humanitária. A lista mostra itens dos mods carregados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — estes são adicionados aos padrões integrados do ALiVE. Use o campo manual abaixo para incluir itens de mods não carregados atualmente, mas esperados no momento da missão.</Portuguese>
-    <Russian>Выберите предметы воды, которые гражданские могут получить в качестве гуманитарной помощи. В списке показаны предметы из загруженных модов (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — они добавляются к встроенным по умолчанию ALiVE. Используйте ручное поле ниже, чтобы включить предметы из модов, не загруженных в настоящее время, но ожидаемых во время миссии.</Russian></Key>
+    <Chinese>選擇平民可作為人道援助接收的飲水物品。清單顯示已載入模組（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 這些項目會加到 ALiVE 內建預設之上。對於目前未載入但預期於任務時存在的模組物品，使用下方手動欄位。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>选择平民可作为人道援助接收的饮水物品。列表显示已加载模组（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 这些项目会加到 ALiVE 内置默认之上。对于当前未加载但预期于任务时存在的模组物品，使用下方手动字段。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Selecciona los objetos de agua que los civiles pueden recibir como ayuda humanitaria. La lista muestra objetos de los mods cargados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — se añaden a los predeterminados integrados de ALiVE. Usa el campo manual de abajo para incluir objetos de mods no cargados actualmente pero esperados al momento de la misión. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Sélectionnez les objets d'eau que les civils peuvent recevoir comme aide humanitaire. La liste affiche les objets des mods chargés (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — ils s'ajoutent aux valeurs par défaut intégrées d'ALiVE. Utilisez le champ manuel ci-dessous pour inclure des objets de mods non chargés actuellement mais attendus au moment de la mission. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Selecione os itens de água que os civis podem receber como ajuda humanitária. A lista mostra itens dos mods carregados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — estes são adicionados aos padrões integrados do ALiVE. Use o campo manual abaixo para incluir itens de mods não carregados atualmente, mas esperados no momento da missão. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Выберите предметы воды, которые гражданские могут получить в качестве гуманитарной помощи. В списке показаны предметы из загруженных модов (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — они добавляются к встроенным по умолчанию ALiVE. Используйте ручное поле ниже, чтобы включить предметы из модов, не загруженных в настоящее время, но ожидаемых во время миссии. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HUMRAT_ITEMS">
     <English>Custom Ration Classes:</English>
@@ -883,14 +903,14 @@
     <Russian>Свои классы пайков:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HUMRAT_ITEMS_COMMENT">
-    <English>Select ration items civilians may receive as humanitarian aid. The list shows items from loaded mods (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — these are added to ALiVE's built-in defaults. Use the manual field below to include items from mods not currently loaded but expected at mission time.</English>
+    <English>Select ration items civilians may receive as humanitarian aid. The list shows items from loaded mods (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — these are added to ALiVE's built-in defaults. Use the manual field below to include items from mods not currently loaded but expected at mission time. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 
-    <Chinese>選擇平民可作為人道援助接收的口糧物品。清單顯示已載入模組（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 這些項目會加到 ALiVE 內建預設之上。對於目前未載入但預期於任務時存在的模組物品，使用下方手動欄位。</Chinese>
-    <Chinesesimp>选择平民可作为人道援助接收的口粮物品。列表显示已加载模组（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 这些项目会加到 ALiVE 内置默认之上。对于当前未加载但预期于任务时存在的模组物品，使用下方手动字段。</Chinesesimp>
-    <Spanish>Selecciona los objetos de ración que los civiles pueden recibir como ayuda humanitaria. La lista muestra objetos de los mods cargados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — se añaden a los predeterminados integrados de ALiVE. Usa el campo manual de abajo para incluir objetos de mods no cargados actualmente pero esperados al momento de la misión.</Spanish>
-    <French>Sélectionnez les objets de ration que les civils peuvent recevoir comme aide humanitaire. La liste affiche les objets des mods chargés (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — ils s'ajoutent aux valeurs par défaut intégrées d'ALiVE. Utilisez le champ manuel ci-dessous pour inclure des objets de mods non chargés actuellement mais attendus au moment de la mission.</French>
-    <Portuguese>Selecione os itens de ração que os civis podem receber como ajuda humanitária. A lista mostra itens dos mods carregados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — estes são adicionados aos padrões integrados do ALiVE. Use o campo manual abaixo para incluir itens de mods não carregados atualmente, mas esperados no momento da missão.</Portuguese>
-    <Russian>Выберите предметы пайков, которые гражданские могут получить в качестве гуманитарной помощи. В списке показаны предметы из загруженных модов (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — они добавляются к встроенным по умолчанию ALiVE. Используйте ручное поле ниже, чтобы включить предметы из модов, не загруженных в настоящее время, но ожидаемых во время миссии.</Russian></Key>
+    <Chinese>選擇平民可作為人道援助接收的口糧物品。清單顯示已載入模組（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 這些項目會加到 ALiVE 內建預設之上。對於目前未載入但預期於任務時存在的模組物品，使用下方手動欄位。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>选择平民可作为人道援助接收的口粮物品。列表显示已加载模组（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 这些项目会加到 ALiVE 内置默认之上。对于当前未加载但预期于任务时存在的模组物品，使用下方手动字段。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Selecciona los objetos de ración que los civiles pueden recibir como ayuda humanitaria. La lista muestra objetos de los mods cargados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — se añaden a los predeterminados integrados de ALiVE. Usa el campo manual de abajo para incluir objetos de mods no cargados actualmente pero esperados al momento de la misión. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Sélectionnez les objets de ration que les civils peuvent recevoir comme aide humanitaire. La liste affiche les objets des mods chargés (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — ils s'ajoutent aux valeurs par défaut intégrées d'ALiVE. Utilisez le champ manuel ci-dessous pour inclure des objets de mods non chargés actuellement mais attendus au moment de la mission. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Selecione os itens de ração que os civis podem receber como ajuda humanitária. A lista mostra itens dos mods carregados (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — estes são adicionados aos padrões integrados do ALiVE. Use o campo manual abaixo para incluir itens de mods não carregados atualmente, mas esperados no momento da missão. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Выберите предметы пайков, которые гражданские могут получить в качестве гуманитарной помощи. В списке показаны предметы из загруженных модов (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — они добавляются к встроенным по умолчанию ALiVE. Используйте ручное поле ниже, чтобы включить предметы из модов, не загруженных в настоящее время, но ожидаемых во время миссии. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_ITEMS_MANUAL">
     <English>Classes (manual override):</English>
@@ -1183,9 +1203,9 @@
     <Chinese>有人在向你施壓嗎?</Chinese>
     <Chinesesimp>有人在向你施压吗?</Chinesesimp>
 </Key>
-<!-- ---- Needs responses (no hostile-tier branch needed - the dialog
+<!-- ==== Needs responses (no hostile-tier branch needed - the dialog
      greys the Question listbox at Defiant+; this case only runs at
-     Friendly / Neutral / Wary) ---- -->
+     Friendly / Neutral / Wary) ==== -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_BOTH_1">
     <English>Anything you can spare. We've got nothing - no food, no clean water.</English>
@@ -1306,7 +1326,7 @@
     <Chinese>我們目前夠用了。願神保佑你的好意。</Chinese>
     <Chinesesimp>我们目前够用了。愿神保佑你的好意。</Chinesesimp>
 </Key>
-<!-- ---- Pressure responses ---- -->
+<!-- ==== Pressure responses ==== -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_PRESSURE_NONE_1">
     <English>No, no one has come around. Things have been quiet.</English>
@@ -1367,7 +1387,7 @@
     <Chinese>他們有幾個人來過。拿走了想要的東西,還威脅我們。我們很害怕。</Chinese>
     <Chinesesimp>他们有几个人来过。拿走了想要的东西,还威胁我们。我们很害怕。</Chinesesimp>
 </Key>
-<!-- ---- Hostile-roll responses for Needs / Pressure ---- -->
+<!-- ==== Hostile-roll responses for Needs / Pressure ==== -->
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_INTERACT_NEEDS_HOSTILE_1">
     <English>I don't want anything from you. Just leave.</English>
@@ -4749,6 +4769,26 @@
     <Chinesesimp>启用后,平民会先到建筑内寻求掩蔽,然后再寻找空地。默认:是。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ADVCIV_NIGHT_SLEEP_ANIM">
+    <English>Night Sleep Animation:</English>
+    <Chinese>夜間睡眠動畫:</Chinese>
+    <Chinesesimp>夜间睡眠动画:</Chinesesimp>
+    <Spanish>Animación de sueño nocturno:</Spanish>
+    <French>Animation de sommeil nocturne:</French>
+    <Portuguese>Animação de sono noturno:</Portuguese>
+    <Russian>Анимация ночного сна:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ADVCIV_NIGHT_SLEEP_ANIM_COMMENT">
+    <English>When enabled, civilians at home indoors during night hours (22:00 - 06:00) play a lying-down sleep animation. When disabled, civilians still go indoors and stand idle at night (existing behaviour) but skip the visual sleep pose. Default: Yes.</English>
+    <Chinese>啟用時，夜間時段（22:00 - 06:00）在家室內的平民會播放躺下睡眠動畫。停用時，平民仍會在夜間進入室內並站立閒置（既有行為），但不執行視覺睡眠姿勢。預設: 是。</Chinese>
+    <Chinesesimp>启用时，夜间时段（22:00 - 06:00）在家室内的平民会播放躺下睡眠动画。禁用时，平民仍会在夜间进入室内并站立闲置（既有行为），但不执行视觉睡眠姿势。默认: 是。</Chinesesimp>
+    <Spanish>Cuando está activado, los civiles en casa interior durante las horas nocturnas (22:00 - 06:00) reproducen una animación de sueño tumbado. Cuando está desactivado, los civiles aún entran a casa y permanecen inactivos de pie por la noche (comportamiento existente) pero saltan la postura visual de sueño. Por defecto: Sí.</Spanish>
+    <French>Lorsqu'activé, les civils à la maison à l'intérieur pendant les heures nocturnes (22:00 - 06:00) jouent une animation de sommeil allongé. Lorsque désactivé, les civils rentrent toujours à la maison et restent inactifs debout la nuit (comportement existant) mais sautent la pose visuelle de sommeil. Par défaut: Oui.</French>
+    <Portuguese>Quando ativado, os civis em casa internos durante as horas noturnas (22:00 - 06:00) reproduzem uma animação de sono deitado. Quando desativado, os civis ainda entram em casa e permanecem inativos de pé à noite (comportamento existente) mas pulam a pose visual de sono. Padrão: Sim.</Portuguese>
+    <Russian>Когда включено, гражданские дома в помещениях в ночные часы (22:00 - 06:00) воспроизводят анимацию сна лёжа. Когда отключено, гражданские всё ещё заходят в дом и стоят без дела ночью (существующее поведение), но пропускают визуальную позу сна. По умолчанию: Да.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_VOICE_ENABLED">
     <English>Enable Voice Lines:</English>
     <French>Activer les voix:</French>
@@ -4917,6 +4957,26 @@
     <Spanish>Cuando un jugador hace una senal a un vehiculo conducido por un civil, el conductor obedece: frena, apaga el motor, se baja y se queda junto a la puerta en pose de rendicion para que el jugador pueda interactuar. Dos disparadores: apuntar con un arma alzada al vehiculo (alcance 50 metros) o realizar un gesto de alto / alto el fuego / congelar mientras se mira al vehiculo (alcance 30 metros - senal manual, idonea para misiones COIN). El conductor se niega si esta hostil (hostilidad efectiva de 60 o mas). En vehiculos con varios ocupantes solo el conductor se detiene; los pasajeros se quedan sentados. Predeterminado: Si.</Spanish>
     <Chinese>當玩家對平民駕駛的車輛發出信號時,駕駛會配合:踩煞車、熄火、下車,並以投降姿勢站在車門旁讓玩家進行互動。兩種觸發方式:以舉起的武器瞄準車輛(範圍 50 公尺),或在注視車輛的同時做出停止 / 停火 / 凍結手勢(範圍 30 公尺 — 手勢示意,適合 COIN 任務)。如果駕駛處於敵對狀態(實際敵意 60 或以上)則拒絕。多人載具只有駕駛會停車;乘客留在座位上。預設:是。</Chinese>
     <Chinesesimp>当玩家对平民驾驶的车辆发出信号时,驾驶会配合:踩刹车、熄火、下车,并以投降姿势站在车门旁让玩家进行互动。两种触发方式:以举起的武器瞄准车辆(范围 50 米),或在注视车辆的同时做出停止 / 停火 / 冻结手势(范围 30 米 — 手势示意,适合 COIN 任务)。如果驾驶处于敌对状态(实际敌意 60 或以上)则拒绝。多人载具只有驾驶会停车;乘客留在座位上。默认:是。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_DECAY_RATE">
+    <English>Hostility decay rate (per minute):</English>
+    <Chinese>敵意衰減速率(每分鐘):</Chinese>
+    <Chinesesimp>敌意衰减速率(每分钟):</Chinesesimp>
+    <French>Taux de decroissance de l'hostilite (par minute):</French>
+    <Spanish>Tasa de reduccion de hostilidad (por minuto):</Spanish>
+    <Portuguese>Taxa de reducao da hostilidade (por minuto):</Portuguese>
+    <Russian>Скорость спада враждебности (в минуту):</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_HOSTILITY_DECAY_RATE_COMMENT">
+    <English>How fast individual civilian hostility recovers per minute toward neutral when the civilian isn't being interacted with. Decay applies only to civilians currently in the active world; virtualised civilians reset to default on their next spawn cycle. The side-baseline floor (set by the BLUFOR / OPFOR / Independent Hostility attributes above) still applies at indicator render time. 0 disables decay. Default: 1.</English>
+    <Chinese>當沒有與平民互動時,個別平民的敵意每分鐘朝中立方向恢復的速度。衰減僅適用於當前活躍世界中的平民;虛擬化的平民會在下次生成循環時重置為預設值。陣營基準下限(由上方的 BLUFOR / OPFOR / 獨立陣營敵意屬性設定)在指示器顯示時仍會生效。0 表示停用衰減。預設值:1。</Chinese>
+    <Chinesesimp>当没有与平民互动时,个别平民的敌意每分钟朝中立方向恢复的速度。衰减仅适用于当前活跃世界中的平民;虚拟化的平民会在下次生成循环时重置为默认值。阵营基准下限(由上方的 BLUFOR / OPFOR / 独立阵营敌意属性设定)在指示器显示时仍会生效。0 表示禁用衰减。默认值:1。</Chinesesimp>
+    <French>Vitesse a laquelle l'hostilite individuelle d'un civil revient vers la neutralite par minute lorsqu'aucune interaction n'a lieu. La decroissance ne s'applique qu'aux civils actuellement actifs dans le monde; les civils virtualises sont reinitialises a la valeur par defaut au prochain cycle de spawn. Le seuil minimum par camp (defini par les attributs Hostilite BLUFOR / OPFOR / Independent ci-dessus) reste applique au rendu de l'indicateur. 0 desactive la decroissance. Par defaut: 1.</French>
+    <Spanish>Velocidad con la que la hostilidad individual de un civil se reduce por minuto hacia la neutralidad cuando no se interactua con el civil. La reduccion solo se aplica a civiles actualmente activos en el mundo; los civiles virtualizados se reinician al valor por defecto en su proximo ciclo de aparicion. El minimo por bando (definido por los atributos Hostilidad BLUFOR / OPFOR / Independiente arriba) sigue aplicandose al renderizar el indicador. 0 desactiva la reduccion. Predeterminado: 1.</Spanish>
+    <Portuguese>Velocidade com que a hostilidade individual de um civil diminui por minuto em direcao a neutralidade quando nao ha interacao com o civil. A reducao so se aplica a civis atualmente ativos no mundo; civis virtualizados sao redefinidos para o valor padrao no proximo ciclo de spawn. O minimo por lado (definido pelos atributos Hostilidade BLUFOR / OPFOR / Independente acima) continua a aplicar-se no rendering do indicador. 0 desativa a reducao. Padrao: 1.</Portuguese>
+    <Russian>Скорость, с которой индивидуальная враждебность мирного жителя восстанавливается к нейтральному уровню за минуту, когда с ним не взаимодействуют. Спад действует только на мирных жителей, активных в мире в данный момент; виртуализированные мирные жители сбрасываются к значению по умолчанию при следующем цикле появления. Базовый минимум по стороне (заданный атрибутами враждебности BLUFOR / OPFOR / Independent выше) по-прежнему применяется при отображении индикатора. 0 отключает спад. По умолчанию: 1.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_BUCKET_FRIENDLY">

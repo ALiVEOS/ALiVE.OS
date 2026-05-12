@@ -10,13 +10,25 @@
     <English>Virtual AI System (Profiles)</English>
     <Chinesesimp>虚拟人工智能系统（配置文件）</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG">
     <English>Enable Debug:</English>
+    <Chinese>啟用除錯:</Chinese>
     <Chinesesimp>启用调试:</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
+    <French>Activer le débogage:</French>
+    <Portuguese>Ativar depuração:</Portuguese>
+    <Russian>Включить отладку:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_COMMENT">
-    <English>Enables Module Debug</English>
-    <Chinesesimp>启用模块调试</Chinesesimp>
+    <English>Enables the module's GLOBAL debug-marker stream: every registered profile gets a map marker visible to ALL players in the mission, with side colour and a NATO-style type icon. Useful for development / single-player testing. For an admin-only / Zeus-only equivalent (markers invisible to regular players), use the separate "Debug Virtualised Profiles" attribute below. The two systems overlap when both are on - turn this OFF if you only want the admin-only view.</English>
+    <Chinese>啟用模組的「全域」除錯標記流：每個已註冊的設定檔都會獲得一個地圖標記，所有任務中的玩家都能看到，帶有陣營顏色和北約風格的類型圖示。對於開發/單人測試很有用。如需僅管理員/僅Zeus的等效功能（普通玩家看不到的標記），請使用下方獨立的「除錯虛擬化設定檔」屬性。兩個系統同時啟用時會重疊 - 如果只想要管理員視圖，請關閉此項。</Chinese>
+    <Chinesesimp>启用模块的「全局」调试标记流：每个已注册的配置文件都会获得一个地图标记，所有任务中的玩家都能看到，带有阵营颜色和北约风格的类型图示。对于开发/单人测试很有用。如需仅管理员/仅Zeus的等效功能（普通玩家看不到的标记），请使用下方独立的「调试虚拟化配置文件」属性。两个系统同时启用时会重叠 - 如果只想要管理员视图，请关闭此项。</Chinesesimp>
+    <Spanish>Activa el flujo de marcadores de depuración GLOBAL del módulo: cada perfil registrado obtiene un marcador en el mapa visible para TODOS los jugadores de la misión, con color de bando e icono de tipo estilo OTAN. Útil para desarrollo / pruebas en un jugador. Para un equivalente solo-admin / solo-Zeus (marcadores invisibles para jugadores normales), usa el atributo "Depurar perfiles virtualizados" separado de abajo. Los dos sistemas se superponen cuando ambos están activos - desactiva este si solo quieres la vista de admin.</Spanish>
+    <French>Active le flux de marqueurs de débogage GLOBAL du module: chaque profil enregistré reçoit un marqueur sur la carte visible par TOUS les joueurs de la mission, avec couleur de camp et icône de type style OTAN. Utile pour le développement / tests en solo. Pour un équivalent admin-uniquement / Zeus-uniquement (marqueurs invisibles aux joueurs normaux), utilisez l'attribut séparé "Déboguer profils virtualisés" ci-dessous. Les deux systèmes se chevauchent quand les deux sont activés - désactivez celui-ci si vous voulez seulement la vue admin.</French>
+    <Portuguese>Ativa o fluxo de marcadores de depuração GLOBAL do módulo: cada perfil registado recebe um marcador no mapa visível para TODOS os jogadores na missão, com cor do lado e ícone de tipo estilo OTAN. Útil para desenvolvimento / testes em jogador único. Para um equivalente apenas-admin / apenas-Zeus (marcadores invisíveis para jogadores normais), use o atributo "Depurar perfis virtualizados" separado abaixo. Os dois sistemas sobrepõem-se quando ambos estão ativos - desative este se quiser apenas a vista de admin.</Portuguese>
+    <Russian>Включает поток GLOBAL отладочных маркеров модуля: каждый зарегистрированный профиль получает маркер на карте, видимый ВСЕМ игрокам в миссии, с цветом стороны и значком типа в стиле НАТО. Полезно для разработки / одиночного тестирования. Для эквивалента только-админ / только-Zeus (маркеры невидимые для обычных игроков), используйте отдельный атрибут "Отладка виртуализированных профилей" ниже. Две системы перекрываются, когда обе включены - отключите этот, если хотите только админ-вид.</Russian>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PERSISTENT">
     <English>Persistent:</English>
@@ -252,5 +264,25 @@
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_MID_COMBAT_EXTENSION_COMMENT">
     <English>If a profile within its Post-Death linger window is still in combat when the grace would expire, extend the linger by this many seconds. Repeats while combat continues. Default 60.</English>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_VIRT">
+    <English>Debug Virtualised Profiles:</English>
+    <Chinese>除錯虛擬化設定檔:</Chinese>
+    <Chinesesimp>调试虚拟化配置文件:</Chinesesimp>
+    <Spanish>Depurar perfiles virtualizados:</Spanish>
+    <French>Déboguer profils virtualisés:</French>
+    <Portuguese>Depurar perfis virtualizados:</Portuguese>
+    <Russian>Отладка виртуализированных профилей:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_VIRT_COMMENT">
+    <English>When ON, periodic ADMIN / ZEUS-ONLY map markers show every virtualised + active profile's position with side colour, type icon, and a rich label (active/virtualised state, vehicle vs entity, side, class, waypoint count). Non-admin / non-Zeus players see nothing. Off in production - costs nothing when disabled. 5s refresh. NOTE: this is separate from the "Enable Debug" attribute above, which emits GLOBAL markers visible to all players. If both are on, the two marker sets overlap; turn "Enable Debug" OFF if you only want the admin-only view. Toggle live with: ALiVE_debugVirtualisedProfiles = true; publicVariable "ALiVE_debugVirtualisedProfiles";</English>
+    <Chinese>啟用時，定期的「僅管理員/僅Zeus」地圖標記顯示每個虛擬化+活動設定檔的位置，帶有陣營顏色、類型圖示和豐富標籤（活動/虛擬化狀態、車輛或單位、陣營、類別、航點計數）。非管理員/非Zeus玩家看不到任何內容。生產環境中關閉 - 停用時無任何開銷。5秒重新整理。注意：這與上方的「啟用除錯」屬性分開，後者發出對所有玩家可見的全域標記。如果兩者都啟用，標記集會重疊；如果只想要管理員視圖，請關閉「啟用除錯」。即時切換：ALiVE_debugVirtualisedProfiles = true; publicVariable "ALiVE_debugVirtualisedProfiles";</Chinese>
+    <Chinesesimp>启用时，定期的「仅管理员/仅Zeus」地图标记显示每个虚拟化+活动配置文件的位置，带有阵营颜色、类型图示和丰富标签（活动/虚拟化状态、车辆或单位、阵营、类别、航点计数）。非管理员/非Zeus玩家看不到任何内容。生产环境中关闭 - 禁用时无任何开销。5秒刷新。注意：这与上方的「启用调试」属性分开，后者发出对所有玩家可见的全局标记。如果两者都启用，标记集会重叠；如果只想要管理员视图，请关闭「启用调试」。即时切换：ALiVE_debugVirtualisedProfiles = true; publicVariable "ALiVE_debugVirtualisedProfiles";</Chinesesimp>
+    <Spanish>Cuando está activado, marcadores periódicos en el mapa SOLO PARA ADMIN / ZEUS muestran la posición de cada perfil virtualizado + activo con color de bando, icono de tipo y etiqueta detallada (estado activo/virtualizado, vehículo o unidad, bando, clase, conteo de waypoints). Los jugadores no-admin / no-Zeus no ven nada. Desactivado en producción - sin coste cuando está desactivado. Refresco de 5s. NOTA: esto es independiente del atributo "Activar depuración" de arriba, que emite marcadores GLOBALES visibles para todos los jugadores. Si ambos están activos, los dos conjuntos de marcadores se superponen; desactiva "Activar depuración" si solo quieres la vista de admin. Alternar en vivo con: ALiVE_debugVirtualisedProfiles = true; publicVariable "ALiVE_debugVirtualisedProfiles";</Spanish>
+    <French>Lorsque activé, des marqueurs de carte périodiques RÉSERVÉS ADMIN / ZEUS affichent la position de chaque profil virtualisé + actif avec couleur de camp, icône de type et étiquette riche (état actif/virtualisé, véhicule ou unité, camp, classe, nombre de waypoints). Les joueurs non-admin / non-Zeus ne voient rien. Désactivé en production - aucun coût quand désactivé. Rafraîchissement 5s. NOTE: ceci est distinct de l'attribut "Activer le débogage" ci-dessus, qui émet des marqueurs GLOBAUX visibles par tous les joueurs. Si les deux sont activés, les deux ensembles de marqueurs se chevauchent; désactivez "Activer le débogage" si vous voulez seulement la vue admin. Basculer en direct avec: ALiVE_debugVirtualisedProfiles = true; publicVariable "ALiVE_debugVirtualisedProfiles";</French>
+    <Portuguese>Quando ativado, marcadores periódicos no mapa APENAS PARA ADMIN / ZEUS mostram a posição de cada perfil virtualizado + ativo com cor do lado, ícone de tipo e etiqueta detalhada (estado ativo/virtualizado, veículo ou unidade, lado, classe, contagem de waypoints). Jogadores não-admin / não-Zeus não veem nada. Desativado em produção - sem custo quando desativado. Atualização a cada 5s. NOTA: isto é separado do atributo "Ativar depuração" acima, que emite marcadores GLOBAIS visíveis para todos os jogadores. Se ambos estiverem ativos, os dois conjuntos de marcadores sobrepõem-se; desative "Ativar depuração" se quiser apenas a vista de admin. Alternar em tempo real com: ALiVE_debugVirtualisedProfiles = true; publicVariable "ALiVE_debugVirtualisedProfiles";</Portuguese>
+    <Russian>Когда включено, периодические маркеры на карте ТОЛЬКО ДЛЯ АДМИНОВ / ZEUS показывают позицию каждого виртуализированного + активного профиля с цветом стороны, значком типа и подробной меткой (состояние активный/виртуализированный, транспорт или единица, сторона, класс, количество маршрутных точек). Игроки не-админы / не-Zeus ничего не видят. Отключено в продакшене - не имеет затрат, когда отключено. Обновление каждые 5с. ПРИМЕЧАНИЕ: это отдельно от атрибута "Включить отладку" выше, который испускает ГЛОБАЛЬНЫЕ маркеры, видимые всем игрокам. Если оба включены, два набора маркеров перекрываются; отключите "Включить отладку", если нужен только админ-вид. Переключать вживую: ALiVE_debugVirtualisedProfiles = true; publicVariable "ALiVE_debugVirtualisedProfiles";</Russian>
 </Key>
 </Container></Package></Project>

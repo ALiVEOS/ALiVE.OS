@@ -485,6 +485,24 @@ switch(_operation) do {
 	            // DEBUG -------------------------------------------------------------------------------------
             };
 
+            // Sleep-while-driving: a foot civ borrowed as a vehicle driver
+            // must not be culled by the cluster activator while they are
+            // physically driving the vehicle. The cluster activator sorts
+            // by stale profile position, which doesn't follow a moving
+            // vehicle - without this guard, a driver heading toward a
+            // player can be culled mid-drive and leave the vehicle blocked
+            // on the road. The vehicle's own despawn path will eject the
+            // driver cleanly when it's time for both to go.
+            private _drivingVeh = if (!isNull _unit) then { _unit getVariable ["ALiVE_civDrivingVehicle", objNull] } else { objNull };
+            if (!isNull _drivingVeh && {alive _drivingVeh} && {(driver _drivingVeh) isEqualTo _unit}) exitWith {};
+
+            // Visibility gate: defer despawn while a player can actually
+            // see the unit. Active flag stays true so the cluster activator
+            // re-evaluates next tick - the activator naturally rotates to
+            // an alternate culling target when one agent is gated, so a
+            // permanently-watched agent does not block the cull pipeline.
+            if (!isNull _unit && {alive _unit} && {[_unit, 100] call ALiVE_fnc_anyPlayerCanSee}) exitWith {};
+
             [_logic,"active",false] call ALIVE_fnc_hashSet;
             
             // Save AdvCiv state before despawn (for persistence across virtual/real cycles)

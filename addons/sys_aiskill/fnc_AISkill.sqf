@@ -198,35 +198,72 @@ switch(_operation) do {
         TRACE_1("After module init",_logic);
 
         if (isServer) then {
-            // Union multi-select + manual override for each faction skill field
+            // Resolve per-tier faction lists. Priority cascade:
+            //   1. Consolidated `skillTierFactions` (preferred, written
+            //      by the new ALiVE_FactionTierChoice picker). Structured
+            //      string "recruit:Faction1;regular:Faction2,Faction3;..."
+            //   2. Legacy per-tier attrs union with their Manual partners
+            //      (only consulted when the consolidated key is empty -
+            //      i.e. mission saved before the consolidated picker
+            //      was introduced).
+            private _consolidatedRaw = _logic getVariable ["skillTierFactions", ""];
+            private _consolidatedTiers = createHashMap;
+            if (_consolidatedRaw isEqualType "" && {_consolidatedRaw != ""}) then {
+                {
+                    private _segment = _x;
+                    private _colonIdx = _segment find ":";
+                    if (_colonIdx > 0) then {
+                        private _segKey = toLower (_segment select [0, _colonIdx]);
+                        private _classCsv = _segment select [_colonIdx + 1];
+                        private _arr = _consolidatedTiers getOrDefault [_segKey, []];
+                        {
+                            private _p = _x;
+                            while {count _p > 0 && {(_p select [0,1]) == " "}} do { _p = _p select [1] };
+                            while {count _p > 0 && {(_p select [count _p - 1, 1]) == " "}} do { _p = _p select [0, count _p - 1] };
+                            if (_p != "" && {_p != "NONE"}) then { _arr pushBackUnique _p };
+                        } forEach ([_classCsv, ","] call CBA_fnc_split);
+                        _consolidatedTiers set [_segKey, _arr];
+                    };
+                } forEach ([_consolidatedRaw, ";"] call CBA_fnc_split);
+            };
+
             {
                 private _key       = _x select 0;
                 private _manualKey = _x select 1;
-                private _rawArr    = _logic getVariable [_key, []];
-                private _factionsArr = if (typeName _rawArr == "ARRAY") then {
-                    +_rawArr
-                } else {
-                    if (_rawArr == "") then { [] } else {
-                        [[_rawArr, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
-                    }
-                };
-                private _manualRaw = _logic getVariable [_manualKey, ""];
-                private _manualArr = if (_manualRaw == "") then { [] } else {
-                    [[_manualRaw, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
-                };
+                private _tierKey   = _x select 2;
+
+                // Path 1: consolidated picker output for this tier
+                private _consolidatedBucket = _consolidatedTiers getOrDefault [_tierKey, []];
                 private _merged = [];
-                {
-                    if (typeName _x == "STRING" && {_x != ""} && {_x != "NONE"} && {!(_x in _merged)}) then {
-                        _merged pushBack _x;
+                if (count _consolidatedBucket > 0) then {
+                    _merged = +_consolidatedBucket;
+                } else {
+                    // Path 2: legacy listbox + Manual union (back-compat)
+                    private _rawArr    = _logic getVariable [_key, []];
+                    private _factionsArr = if (typeName _rawArr == "ARRAY") then {
+                        +_rawArr
+                    } else {
+                        if (_rawArr == "") then { [] } else {
+                            [[_rawArr, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+                        }
                     };
-                } forEach (_factionsArr + _manualArr);
+                    private _manualRaw = _logic getVariable [_manualKey, ""];
+                    private _manualArr = if (_manualRaw == "") then { [] } else {
+                        [[_manualRaw, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+                    };
+                    {
+                        if (typeName _x == "STRING" && {_x != ""} && {_x != "NONE"} && {!(_x in _merged)}) then {
+                            _merged pushBack _x;
+                        };
+                    } forEach (_factionsArr + _manualArr);
+                };
                 [_logic, _key, _merged] call MAINCLASS;
             } forEach [
-                ["skillFactionsRecruit",  "skillFactionsRecruitManual"],
-                ["skillFactionsRegular",  "skillFactionsRegularManual"],
-                ["skillFactionsVeteran",  "skillFactionsVeteranManual"],
-                ["skillFactionsExpert",   "skillFactionsExpertManual"],
-                ["customSkillFactions",   "customSkillFactionsManual"]
+                ["skillFactionsRecruit",  "skillFactionsRecruitManual",  "recruit"],
+                ["skillFactionsRegular",  "skillFactionsRegularManual",  "regular"],
+                ["skillFactionsVeteran",  "skillFactionsVeteranManual",  "veteran"],
+                ["skillFactionsExpert",   "skillFactionsExpertManual",   "expert"],
+                ["customSkillFactions",   "customSkillFactionsManual",   "custom"]
             ];
 
             [_logic, "start"] call MAINCLASS;

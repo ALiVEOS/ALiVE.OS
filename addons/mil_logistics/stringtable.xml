@@ -263,6 +263,26 @@
     <Portuguese>Permite reforços de avião</Portuguese>
     <Russian>Разрешает подкрепления на самолётах</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_EXCLUDE_KINDS">
+    <English>Excluded Kinds:</English>
+    <Chinese>排除的類型:</Chinese>
+    <Chinesesimp>排除的类型:</Chinesesimp>
+    <Spanish>Tipos excluidos:</Spanish>
+    <French>Catégories exclues:</French>
+    <Portuguese>Categorias excluídas:</Portuguese>
+    <Russian>Исключённые типы:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_EXCLUDE_KINDS_COMMENT">
+    <English>Comma-separated list of CfgVehicles class names. Each entry can be either a broad parent kind (e.g. "Tank", "Plane", "Helicopter") OR a specific vehicle classname (e.g. "B_MBT_01_TUSK_F"). Any reinforcement group containing a unit whose vehicle matches or inherits from one of the listed classes is excluded from the candidate pool. Mix freely to block whole categories or pick off individual problem vehicles, without disabling the higher-level Allow toggles above. Empty = nothing excluded.</English>
+    <Chinese>以逗號分隔的 CfgVehicles 類別名稱清單。每一項可填入廣泛的父類別 (例如 "Tank"、"Plane"、"Helicopter"),或特定的載具類別名稱 (例如 "B_MBT_01_TUSK_F")。任何增援小組若包含載具符合或繼承自所列類別的單位,將從候選池中排除。可自由混用,以封鎖整個類別或針對個別問題載具,無需停用上方的允許開關。留空 = 不排除任何項目。</Chinese>
+    <Chinesesimp>以逗号分隔的 CfgVehicles 类别名称清单。每一项可填入广泛的父类别 (例如 "Tank"、"Plane"、"Helicopter"),或特定的载具类别名称 (例如 "B_MBT_01_TUSK_F")。任何增援小组若包含载具符合或继承自所列类别的单位,将从候选池中排除。可自由混用,以封锁整个类别或针对个别问题载具,无需停用上方的允许开关。留空 = 不排除任何项目。</Chinesesimp>
+    <Spanish>Lista separada por comas de nombres de clases de CfgVehicles. Cada entrada puede ser una categoría padre amplia (p. ej. "Tank", "Plane", "Helicopter") O un classname de vehículo específico (p. ej. "B_MBT_01_TUSK_F"). Cualquier grupo de refuerzo que contenga una unidad cuyo vehículo coincida o herede de una de las clases listadas queda excluido del conjunto de candidatos. Mezcla libremente para bloquear categorías enteras o vehículos problemáticos individuales, sin desactivar los conmutadores Permitir de arriba. Vacío = nada excluido.</Spanish>
+    <French>Liste séparée par des virgules de noms de classes CfgVehicles. Chaque entrée peut être soit une catégorie parente large (ex. "Tank", "Plane", "Helicopter"), soit un classname de véhicule spécifique (ex. "B_MBT_01_TUSK_F"). Tout groupe de renfort contenant une unité dont le véhicule correspond ou hérite de l'une des classes listées est exclu du vivier de candidats. Mélangez librement pour bloquer des catégories entières ou cibler des véhicules problématiques précis, sans désactiver les bascules Autoriser ci-dessus. Vide = rien d'exclu.</French>
+    <Portuguese>Lista separada por vírgulas de nomes de classes do CfgVehicles. Cada entrada pode ser uma categoria pai ampla (ex. "Tank", "Plane", "Helicopter") OU um classname de veículo específico (ex. "B_MBT_01_TUSK_F"). Qualquer grupo de reforço que contenha uma unidade cujo veículo corresponda ou herde de uma das classes listadas é excluído do conjunto de candidatos. Misture livremente para bloquear categorias inteiras ou alvejar veículos problemáticos específicos, sem desativar os interruptores Permitir acima. Vazio = nada excluído.</Portuguese>
+    <Russian>Список через запятую имён классов CfgVehicles. Каждая запись может быть как широкой родительской категорией (например, "Tank", "Plane", "Helicopter"), так и конкретным именем класса техники (например, "B_MBT_01_TUSK_F"). Любая группа подкрепления, содержащая юнит, чей транспорт совпадает или наследуется от одного из перечисленных классов, исключается из пула кандидатов. Свободно сочетайте, чтобы заблокировать целые категории или отдельные проблемные машины, не отключая переключатели «Разрешить» выше. Пусто = ничего не исключено.</Russian>
+</Key>
 <Key ID="STR_ALIVE_ML_ENABLE_AIR_TRANSPORT">
     <English>Enable Air Transport:</English>
     <Chinese>啟用空中運輸：</Chinese>
@@ -291,7 +311,7 @@
     <Russian>Авиатранспортные средства:</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_LIMIT_COMMENT">
-    <English>Which air transport vehicles the commander can call on. Side and Faction (default) — any helicopter or transport plane belonging to the same side may be used, regardless of faction. Faction Only — restricts the pool to vehicles from the exact same faction as the commander.</English>
+    <English>Which air transport vehicles the commander can call on. Side and Faction (default) — any helicopter or transport plane belonging to the same side may be used, regardless of faction. Faction Only — restricts the pool to vehicles from the exact same faction as the commander. NOTE: this setting only filters the side-default pool. The Override Air Transport list below is faction-keyed, so its entries always apply to that faction regardless of this setting — a Faction Only setup will still see your override classes.</English>
     <Chinese>指揮官可呼叫哪些空中運輸載具。陣營與派系（預設）— 同方任何直升機或運輸機都可使用，不論派系。僅派系 — 池僅限與指揮官相同派系的載具。</Chinese>
     <Chinesesimp>指挥官可呼叫哪些空中运输载具。阵营与派系（默认）— 同方任何直升机或运输机都可使用，不论派系。仅派系 — 池仅限与指挥官相同派系的载具。</Chinesesimp>
     <Spanish>Qué vehículos de transporte aéreo puede convocar el comandante. Bando y facción (predeterminado) — cualquier helicóptero o avión de transporte del mismo bando, independientemente de la facción. Solo facción — restringe el pool a vehículos exactamente de la misma facción que el comandante.</Spanish>
@@ -322,6 +342,86 @@
 </Key>
 <Key ID="STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS_DESC">
     <English>Cargo capacity for the AIRLIFT aircraft, expressed in slot count. Default 0 = auto-calc from the aircraft's transportSoldier config (floor(transportSoldier / 8) -- the 8 troops per slot heuristic). A non-zero value is a manual override and bypasses the transportSoldier read; use it when the auto-calc gives a poor result for a modded aircraft (oversized cargo bay, undersized passenger count, etc.). Slot weights applied at dispatch time: 1 = infantry group, 2 = motorised group, 3 = mechanised group, 4 = armour group. Plane and helicopter categories are not airlifted (they fly themselves). When the requested makeup exceeds capacity the AIRLIFT tier uses a heavy-first greedy fill: armour fills first, then mech, then motorised, then infantry -- AIRLIFT carries what lower tiers (HELI slingload, STANDARD ground convoy) cannot. Examples: Y-32 Xi'an (transportSoldier 30) auto = 3 slots; C-130 (92) auto = 11; MH-9 Hummingbird (4) auto = 0. Capacity 0 (auto or override) suppresses AIRLIFT for this dispatch and falls through to HELI/STANDARD.</English>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_CUSTOM_MODE">
+    <English>Custom Class Mode:</English>
+    <Chinese>自訂類別模式：</Chinese>
+    <Chinesesimp>自定义类别模式：</Chinesesimp>
+    <Spanish>Modo de clases personalizadas:</Spanish>
+    <French>Mode classes personnalisées:</French>
+    <Portuguese>Modo de classes personalizadas:</Portuguese>
+    <Russian>Режим пользовательских классов:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_CUSTOM_MODE_COMMENT">
+    <English>How the custom class lists below merge into the global static-data registry. Replace (default) overwrites each faction's existing entry with the user-supplied list — matches the legacy init.sqf hashSet override pattern. Append keeps the existing entries and adds the user-supplied list on top, deduped — useful when extending stock factions with mod classes without losing the defaults. WARNING: legacy hashSet calls in init.sqf / staticData.sqf execute AFTER module init and silently overwrite this setting. Use either the Eden picker or legacy init-time hashSet for a given faction, not both.</English>
+    <Chinese>下方自訂類別清單如何合併進全域靜態資料表。取代（預設）以使用者提供的清單覆蓋每個派系既有的項目 — 與舊式 init.sqf hashSet 覆寫模式相符。附加保留既有項目，並在其上加入使用者提供的清單並去重 — 適合在擴充原始派系時加入模組類別,而不失去預設值。</Chinese>
+    <Chinesesimp>下方自定义类别清单如何合并进全局静态数据表。取代（默认）以用户提供的清单覆盖每个派系既有的项目 — 与旧式 init.sqf hashSet 覆写模式相符。附加保留既有项目,并在其上加入用户提供的清单并去重 — 适合在扩充原始派系时加入模组类别,而不失去默认值。</Chinesesimp>
+    <Spanish>Cómo se combinan las listas de clases personalizadas con el registro global de datos estáticos. Replace (predeterminado) sobrescribe la entrada existente de cada facción con la lista proporcionada — equivale al patrón heredado de hashSet en init.sqf. Append conserva las entradas existentes y añade encima la lista proporcionada, deduplicada — útil para ampliar facciones estándar con clases de mods sin perder los valores predeterminados.</Spanish>
+    <French>Comment les listes de classes personnalisées ci-dessous fusionnent avec le registre global de données statiques. Replace (par défaut) écrase l'entrée existante de chaque faction avec la liste fournie — équivalent au modèle hashSet hérité dans init.sqf. Append conserve les entrées existantes et ajoute la liste fournie par-dessus, dédupliquée — utile pour étendre les factions standard avec des classes de mods sans perdre les valeurs par défaut.</French>
+    <Portuguese>Como as listas de classes personalizadas abaixo se mesclam com o registro global de dados estáticos. Replace (padrão) sobrescreve a entrada existente de cada facção com a lista fornecida — equivale ao padrão herdado de hashSet em init.sqf. Append mantém as entradas existentes e adiciona a lista fornecida em cima, deduplicada — útil para estender facções padrão com classes de mods sem perder os valores padrão.</Portuguese>
+    <Russian>Как списки пользовательских классов ниже объединяются с глобальным реестром статических данных. Replace (по умолчанию) перезаписывает существующую запись каждой фракции переданным списком — соответствует прежнему шаблону hashSet в init.sqf. Append сохраняет существующие записи и добавляет переданный список сверху с дедупликацией — полезно для расширения стандартных фракций модовыми классами без потери значений по умолчанию.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_CUSTOM_LAND_TRANSPORT">
+    <English>Override Land Transport:</English>
+    <Chinese>覆寫陸運載具：</Chinese>
+    <Chinesesimp>覆写陆运载具：</Chinesesimp>
+    <Spanish>Override transporte terrestre:</Spanish>
+    <French>Override transport terrestre:</French>
+    <Portuguese>Override transporte terrestre:</Portuguese>
+    <Russian>Перекрыть наземный транспорт:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_CUSTOM_LAND_TRANSPORT_COMMENT">
+    <English>Per-faction overrides for the convoy ground-transport pool (ALIVE_factionDefaultTransport). Tick classes from the listbox to keep them; type extra mod classes into the override field below the listbox using FACTION=class1,class2;FACTION2=class3 syntax. Replace mode wipes the faction's stock list with your selection; Append mode adds your selection on top of stock entries. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>對車隊地面運輸池（ALIVE_factionDefaultTransport）進行各派系覆寫。在列表框中勾選要保留的類別；在列表框下方的覆寫欄位使用 FACTION=class1,class2;FACTION2=class3 語法輸入額外的模組類別。取代模式會以您的選擇清除該派系的原始清單；附加模式則在原始項目之上加入您的選擇。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>对车队地面运输池（ALIVE_factionDefaultTransport）进行各派系覆写。在列表框中勾选要保留的类别；在列表框下方的覆写字段使用 FACTION=class1,class2;FACTION2=class3 语法输入额外的模组类别。取代模式会以您的选择清除该派系的原始清单；附加模式则在原始项目之上加入您的选择。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Reemplazos por facción del pool de transporte terrestre de convoyes (ALIVE_factionDefaultTransport). Marca clases en el listbox para conservarlas; introduce clases de mods adicionales en el campo override bajo el listbox con la sintaxis FACTION=class1,class2;FACTION2=class3. El modo Replace borra la lista estándar de la facción con tu selección; el modo Append añade tu selección encima de las entradas estándar. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Surcharges par faction du vivier de transport terrestre des convois (ALIVE_factionDefaultTransport). Cochez des classes dans la liste pour les conserver; saisissez des classes de mods supplémentaires dans le champ override sous la liste avec la syntaxe FACTION=class1,class2;FACTION2=class3. Le mode Replace efface la liste d'origine de la faction et la remplace par votre sélection; le mode Append ajoute votre sélection par-dessus les entrées d'origine. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Substituições por facção do pool de transporte terrestre de comboios (ALIVE_factionDefaultTransport). Marque classes no listbox para mantê-las; insira classes de mods adicionais no campo override abaixo do listbox com a sintaxe FACTION=class1,class2;FACTION2=class3. O modo Replace apaga a lista padrão da facção com a sua seleção; o modo Append adiciona a sua seleção sobre as entradas padrão. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Переопределения по фракциям для пула наземного транспорта конвоев (ALIVE_factionDefaultTransport). Отмечайте классы в списке, чтобы их сохранить; вводите дополнительные модовые классы в поле override под списком, используя синтаксис FACTION=class1,class2;FACTION2=class3. Режим Replace стирает стоковый список фракции и заменяет его вашим выбором; режим Append добавляет ваш выбор поверх стоковых записей. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_CUSTOM_AIR_TRANSPORT">
+    <English>Override Air Transport:</English>
+    <Chinese>覆寫空運載具：</Chinese>
+    <Chinesesimp>覆写空运载具：</Chinesesimp>
+    <Spanish>Override transporte aéreo:</Spanish>
+    <French>Override transport aérien:</French>
+    <Portuguese>Override transporte aéreo:</Portuguese>
+    <Russian>Перекрыть авиатранспорт:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_CUSTOM_AIR_TRANSPORT_COMMENT">
+    <English>Per-faction overrides for the helicopter / VTOL pool used by HELI_INSERT, HELI_PARADROP and slingload deliveries (ALIVE_factionDefaultAirTransport). Same listbox + override-field workflow as the land transport attribute above. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>對 HELI_INSERT、HELI_PARADROP 與吊掛投送所使用的直升機 / VTOL 池（ALIVE_factionDefaultAirTransport）進行各派系覆寫。與上方陸運覆寫相同的列表框 + 覆寫欄位流程。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>对 HELI_INSERT、HELI_PARADROP 与吊挂投送所使用的直升机 / VTOL 池（ALIVE_factionDefaultAirTransport）进行各派系覆写。与上方陆运覆写相同的列表框 + 覆写字段流程。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Reemplazos por facción del pool de helicópteros / VTOL usados por HELI_INSERT, HELI_PARADROP y entregas con eslinga (ALIVE_factionDefaultAirTransport). Mismo flujo de listbox + campo override que el atributo de transporte terrestre de arriba. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Surcharges par faction du vivier d'hélicoptères / VTOL utilisés par HELI_INSERT, HELI_PARADROP et les livraisons en élingue (ALIVE_factionDefaultAirTransport). Même flux liste + champ override que l'attribut de transport terrestre ci-dessus. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Substituições por facção do pool de helicópteros / VTOL usado por HELI_INSERT, HELI_PARADROP e entregas em estropo (ALIVE_factionDefaultAirTransport). Mesmo fluxo de listbox + campo override que o atributo de transporte terrestre acima. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Переопределения по фракциям для пула вертолётов / VTOL, используемых HELI_INSERT, HELI_PARADROP и доставкой на тросе (ALIVE_factionDefaultAirTransport). Такой же процесс списка + поля override, что и у атрибута наземного транспорта выше. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_CUSTOM_CONTAINERS">
+    <English>Override Airdrop Containers:</English>
+    <Chinese>覆寫空投容器：</Chinese>
+    <Chinesesimp>覆写空投容器：</Chinesesimp>
+    <Spanish>Override contenedores de paracaídas:</Spanish>
+    <French>Override conteneurs largués:</French>
+    <Portuguese>Override contêineres de paraquedas:</Portuguese>
+    <Russian>Перекрыть десантные контейнеры:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_CUSTOM_CONTAINERS_COMMENT">
+    <English>Per-faction overrides for the airdrop / slingload container pool (ALIVE_factionDefaultContainers). The listbox surfaces ReammoBox-derived classes, cargo nets and slingload bases declared as belonging to each faction; use the override field for any container classes the listbox doesn't show. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>對空投 / 吊掛容器池（ALIVE_factionDefaultContainers）進行各派系覆寫。列表框會顯示宣告屬於各派系的 ReammoBox 衍生類別、貨網與吊掛底座；列表框未顯示的容器類別可使用覆寫欄位。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>对空投 / 吊挂容器池（ALIVE_factionDefaultContainers）进行各派系覆写。列表框会显示声明属于各派系的 ReammoBox 衍生类别、货网与吊挂底座；列表框未显示的容器类别可使用覆写字段。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Reemplazos por facción del pool de contenedores aerolanzados / con eslinga (ALIVE_factionDefaultContainers). El listbox muestra clases derivadas de ReammoBox, redes de carga y bases de eslinga declaradas como pertenecientes a cada facción; usa el campo override para cualquier clase de contenedor que el listbox no muestre. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Surcharges par faction du vivier de conteneurs largués / en élingue (ALIVE_factionDefaultContainers). La liste affiche les classes dérivées de ReammoBox, les filets de cargaison et les bases d'élingue déclarés comme appartenant à chaque faction; utilisez le champ override pour les classes de conteneurs que la liste ne présente pas. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Substituições por facção do pool de contêineres lançados / em estropo (ALIVE_factionDefaultContainers). O listbox mostra classes derivadas de ReammoBox, redes de carga e bases de estropo declaradas como pertencentes a cada facção; use o campo override para qualquer classe de contêiner que o listbox não exiba. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Переопределения по фракциям для пула десантных / тросовых контейнеров (ALIVE_factionDefaultContainers). В списке отображаются ReammoBox-производные классы, грузовые сети и тросовые базы, объявленные принадлежащими каждой фракции; используйте поле override для классов контейнеров, которые список не показывает. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_USAGE">
     <English>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</English>

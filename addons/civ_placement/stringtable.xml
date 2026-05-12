@@ -659,6 +659,46 @@
     <Portuguese>A proporção da força que estará ativamente em serviço e patrulhando no início da missão. Valores mais baixos deixam mais unidades de reserva.</Portuguese>
     <Russian>Доля сил, которые будут на активном дежурстве и патрулировании при старте миссии. Меньшие значения оставляют больше юнитов в резерве.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CP_HDR_ROADBLOCKS">
+    <English>ROADBLOCKS</English>
+    <Chinese>路障</Chinese>
+    <Chinesesimp>路障</Chinesesimp>
+    <Spanish>BLOQUEOS DE CARRETERA</Spanish>
+    <French>BARRAGES ROUTIERS</French>
+    <Portuguese>BLOQUEIOS DE ESTRADA</Portuguese>
+    <Russian>БЛОКПОСТЫ</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CP_HDR_SEAPATROLS">
+    <English>SEA PATROLS</English>
+    <Chinese>海上巡邏</Chinese>
+    <Chinesesimp>海上巡逻</Chinesesimp>
+    <Spanish>PATRULLAS MARÍTIMAS</Spanish>
+    <French>PATROUILLES MARITIMES</French>
+    <Portuguese>PATRULHAS MARÍTIMAS</Portuguese>
+    <Russian>МОРСКОЕ ПАТРУЛИРОВАНИЕ</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CP_ROADBLOCK_COMPOSITIONS">
+    <English>Roadblock Compositions:</English>
+    <Chinese>路障組合:</Chinese>
+    <Chinesesimp>路障组合:</Chinesesimp>
+    <Spanish>Composiciones de bloqueo:</Spanish>
+    <French>Compositions de barrage:</French>
+    <Portuguese>Composições de bloqueio:</Portuguese>
+    <Russian>Композиции блокпостов:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CP_ROADBLOCK_COMPOSITIONS_COMMENT">
+    <English>Multi-select listbox of compositions sampled when a roadblock spawns. The validator iterates the ticked classes in shuffled order at each candidate road-point and uses the first that fits the snapped road position (slope / surface / clearance / nearby-building checks all sized to the composition's actual envelope, not a fixed 10 m disc). When the picker is empty the runtime falls through to the legacy CheckpointsBarricades / Medium-or-Small category search. The Override field accepts free-text class names for mod compositions the listbox doesn't surface. Spawned compositions get the road's tangent direction (parallel-to-road); compositions designed to sit perpendicular across the road aren't auto-detected yet. Multi-select: Ctrl+click toggles individual rows, Shift+click selects a range, plain click replaces with just that one row.</English>
+    <Chinese>路障生成時取樣的組合多選清單。驗證器在每個候選道路點以洗牌順序遍歷已勾選的類別，使用第一個適合對齊道路位置的組合（坡度／表面／淨空／附近建築檢查皆按組合實際包絡尺寸進行，而非固定 10 米圓盤）。當選擇器為空時，執行時退回到舊版 CheckpointsBarricades / Medium-or-Small 類別搜索。Override 欄位接受逗號分隔的、清單未呈現的模組組合類名自由文字。生成的組合採用道路切線方向（與道路平行）；垂直橫跨道路設計的組合尚未自動檢測。多選: Ctrl+點擊切換單行；Shift+點擊選擇範圍；普通點擊只替換為該行。</Chinese>
+    <Chinesesimp>路障生成时取样的组合多选列表。验证器在每个候选道路点以洗牌顺序遍历已勾选的类别，使用第一个适合对齐道路位置的组合（坡度／表面／净空／附近建筑检查皆按组合实际包络尺寸进行，而非固定 10 米圆盘）。当选择器为空时，运行时退回到旧版 CheckpointsBarricades / Medium-or-Small 类别搜索。Override 字段接受逗号分隔的、列表未呈现的模组组合类名自由文本。生成的组合采用道路切线方向（与道路平行）；垂直横跨道路设计的组合尚未自动检测。多选: Ctrl+点击切换单行；Shift+点击选择范围；普通点击只替换为该行。</Chinesesimp>
+    <Spanish>Listbox multiselección de composiciones muestreadas cuando aparece un bloqueo. El validador itera las clases marcadas en orden barajado en cada punto candidato de carretera y usa la primera que encaja en la posición ajustada a la carretera (pendiente / superficie / despeje / chequeo de edificios cercanos, todo dimensionado según la envoltura real de la composición, no un disco fijo de 10 m). Cuando el selector está vacío el runtime cae de vuelta a la búsqueda heredada por categoría CheckpointsBarricades / Medium-or-Small. El campo Override acepta nombres de clase libres para composiciones de mods que el listbox no muestra. Las composiciones que aparecen toman la dirección tangente de la carretera (paralela a la carretera); las composiciones diseñadas para colocarse perpendicular cruzando la carretera no se auto-detectan todavía. Multiselección: Ctrl+clic alterna filas individuales, Shift+clic selecciona un rango, clic simple reemplaza solo con esa fila.</Spanish>
+    <French>Listbox multi-sélection des compositions échantillonnées quand un barrage apparaît. Le validateur itère les classes cochées dans un ordre mélangé à chaque point de route candidat et utilise la première qui s'adapte à la position alignée sur la route (pente / surface / dégagement / vérification des bâtiments proches, le tout dimensionné selon l'enveloppe réelle de la composition, pas un disque fixe de 10 m). Quand le sélecteur est vide, l'exécution retombe sur la recherche héritée par catégorie CheckpointsBarricades / Medium-or-Small. Le champ Override accepte des noms de classe libres pour les compositions de mods que la listbox n'affiche pas. Les compositions apparues prennent la direction tangente de la route (parallèle à la route); les compositions conçues pour être perpendiculaires en travers de la route ne sont pas auto-détectées pour l'instant. Multi-sélection: Ctrl+clic bascule des lignes individuelles, Shift+clic sélectionne une plage, clic simple remplace par cette seule ligne.</French>
+    <Portuguese>Listbox de seleção múltipla de composições amostradas quando um bloqueio aparece. O validador itera as classes marcadas em ordem embaralhada em cada ponto de estrada candidato e usa a primeira que cabe na posição alinhada à estrada (inclinação / superfície / folga / checagem de edifícios próximos, tudo dimensionado pelo envelope real da composição, não um disco fixo de 10 m). Quando o seletor está vazio o runtime cai de volta à busca legada por categoria CheckpointsBarricades / Medium-or-Small. O campo Override aceita nomes de classe livres para composições de mods que a listbox não mostra. As composições geradas tomam a direção tangente da estrada (paralela à estrada); composições projetadas para ficar perpendiculares cruzando a estrada não são auto-detectadas ainda. Seleção múltipla: Ctrl+clique alterna linhas individuais, Shift+clique seleciona um intervalo, clique simples substitui apenas com essa linha.</Portuguese>
+    <Russian>Список с множественным выбором композиций, отбираемых при появлении блокпоста. Валидатор перебирает отмеченные классы в перемешанном порядке в каждой точке-кандидате на дороге и использует первую, которая подходит к позиции, привязанной к дороге (уклон / поверхность / зазор / проверка соседних зданий - всё масштабируется по реальной оболочке композиции, а не фиксированному диску 10 м). Когда селектор пуст, выполнение возвращается к устаревшему поиску по категории CheckpointsBarricades / Medium-or-Small. Поле Override принимает свободные имена классов для композиций модов, которые список не отображает. Появившиеся композиции принимают тангенциальное направление дороги (параллельно дороге); композиции, разработанные для размещения перпендикулярно поперёк дороги, пока не определяются автоматически. Множественный выбор: Ctrl+клик переключает отдельные строки, Shift+клик выбирает диапазон, простой клик заменяет только этой строкой.</Russian>
+</Key>
 <Key ID="STR_ALIVE_CP_ROADBLOCKS">
     <English>Roadblocks:</English>
     <Chinese>路障：</Chinese>

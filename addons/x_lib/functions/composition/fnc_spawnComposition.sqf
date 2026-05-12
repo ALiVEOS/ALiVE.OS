@@ -34,6 +34,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_config","_position","_azi","_faction"];
@@ -41,6 +42,16 @@ params ["_config","_position","_azi","_faction"];
 private _configFaction = if (!isNil "ALiVE_fnc_factionCompilerGetConfigFaction") then {[_faction] call ALiVE_fnc_factionCompilerGetConfigFaction} else {_faction};
 
 ["Spawning Composition: %1", _this] call ALiVE_fnc_dump;
+
+// #850 diagnostic: confirms spawnComposition was reached at all,
+// before any per-object filter. Useful when COMP-VEHICLE lines are
+// missing - tells whether the composition pipeline is firing or
+// whether the spawn is happening on a different path entirely.
+if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+    diag_log format ["[ALiVE VehSpawn DEBUG] COMP-START config=%1 position=%2 azi=%3 faction=%4",
+        if (typeName _config == "CONFIG") then {configName _config} else {str _config},
+        _position, _azi, _faction];
+};
 
 private ["_posX", "_posY"];
 _posX = _position select 0;
@@ -181,6 +192,61 @@ for "_i" from 0 to ((count _objects) - 1) do {
         _newObj setPos _newPos;
 
         _created pushBack _newObj;
+
+        // Composition-vehicle settle window + clip detection (#850).
+        // Composition objects spawn at config-defined offsets from
+        // the comp centre - we can't reposition them without breaking
+        // the comp's spatial layout, so when the comp lands on
+        // cluttered terrain a parked truck can clip into a wall or
+        // building corner and detonate on the setPos settle.
+        //
+        // Strategy:
+        //   - Suppress damage for 15 s while the engine resolves any
+        //     clip-related physics.
+        //   - At the 15 s mark, check whether the vehicle is still
+        //     in trouble (accumulated damage > 0.1 or moving fast):
+        //       - In trouble  -> freeze it as a decorative static
+        //         (enableSimulationGlobal false). HQ comp vehicles
+        //         are decorative anyway; freezing is preferable to
+        //         letting allowDamage re-engage on a wreck-in-waiting.
+        //       - Stable      -> re-enable damage so players can
+        //         interact normally.
+        //
+        // Excludes furniture (already simulation-disabled above) and
+        // non-vehicle props. Composition-level footprint validation
+        // (Option B in the strategy memo) is the structural fix and
+        // is deferred.
+        if (_newObj isKindOf "AllVehicles" && {!_isFurniture}) then {
+            _newObj allowDamage false;
+
+            // Same debug flag as fnc_findVehicleSpawnPosition. Logs comp-
+            // vehicle spawn position so the source path is identifiable
+            // in the RPT (these spawns won't generate VehSpawn ENTER lines
+            // because they bypass the validator).
+            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+                diag_log format ["[ALiVE VehSpawn DEBUG] COMP-VEHICLE class=%1 pos=%2 dir=%3 (settle window applied, validator bypassed)",
+                    typeOf _newObj, _newPos, _azi + _azimuth];
+            };
+
+            [{
+                params ["_v"];
+                if (isNull _v) exitWith {};
+                private _stillBroken = (damage _v) > 0.1 || {(speed _v) > 1};
+                if (_stillBroken) then {
+                    // Vehicle is still struggling 15 s after spawn -
+                    // almost certainly clipped. Freeze as a static
+                    // decoration instead of letting damage re-engage
+                    // on a wreck-in-waiting.
+                    _v enableSimulationGlobal false;
+                    if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+                        diag_log format ["[ALiVE VehSpawn DEBUG] COMP-VEHICLE FROZEN class=%1 pos=%2 (post-settle clip detected: damage=%3 speed=%4)",
+                            typeOf _v, getPosATL _v, damage _v, speed _v];
+                    };
+                } else {
+                    _v allowDamage true;
+                };
+            }, [_newObj], 15] call CBA_fnc_waitAndExecute;
+        };
 
     	// If vn trapdoor exists, 50% chance of spawning a tunnel. Random params.
     	if (typeOf _newObj == "Land_vn_o_trapdoor_01") then {

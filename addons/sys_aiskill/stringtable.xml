@@ -2,53 +2,155 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL">
     <English>Military AI Skill</English>
 	<Chinesesimp>军事人工智能技能</Chinesesimp>
+    <Chinese>軍事 AI 技能</Chinese>
+    <Spanish>Habilidad IA militar</Spanish>
+    <French>Compétence IA militaire</French>
+    <Portuguese>Habilidade IA militar</Portuguese>
+    <Russian>Военное мастерство ИИ</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_COMMENT">
     <English>Set AI Skill levels per faction by presets or custom settings</English>
 	<Chinesesimp>通过预设或自定义设置设置每个派系的人工智能技能等级</Chinesesimp>
+    <Chinese>依預設或自訂設定為各派系設定 AI 技能等級</Chinese>
+    <Spanish>Establece niveles de habilidad IA por facción mediante presets o ajustes personalizados</Spanish>
+    <French>Définit les niveaux de compétence IA par faction via des préréglages ou des paramètres personnalisés</French>
+    <Portuguese>Define níveis de habilidade IA por facção via presets ou configurações personalizadas</Portuguese>
+    <Russian>Задаёт уровни мастерства ИИ по фракциям через пресеты или пользовательские настройки</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_ERROR1">
     <English>Only one AI SKILL module allowed</English>
 	<Chinesesimp>只允许一个人工智能技能模块</Chinesesimp>
+    <Chinese>僅允許一個 AI 技能模組</Chinese>
+    <Spanish>Solo se permite un módulo de Habilidad IA</Spanish>
+    <French>Un seul module Compétence IA est autorisé</French>
+    <Portuguese>Apenas um módulo de Habilidade IA é permitido</Portuguese>
+    <Russian>Допускается только один модуль «Мастерство ИИ»</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_DEBUG">
     <English>Enable Debug:</English>
 	<Chinesesimp>启用调试：</Chinesesimp>
+    <Chinese>啟用調試：</Chinese>
+    <Spanish>Activar depuración:</Spanish>
+    <French>Activer le débogage:</French>
+    <Portuguese>Ativar depuração:</Portuguese>
+    <Russian>Включить отладку:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_DEBUG_COMMENT">
     <English>Enables AI Skill Module Debug</English>
 	<Chinesesimp>启用人工智能技能模组调试</Chinesesimp>
+    <Chinese>啟用 AI 技能模組調試</Chinese>
+    <Spanish>Activa la depuración del módulo de Habilidad IA</Spanish>
+    <French>Active le débogage du module Compétence IA</French>
+    <Portuguese>Ativa a depuração do módulo de Habilidade IA</Portuguese>
+    <Russian>Включает отладку модуля «Мастерство ИИ»</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AISKILL_TIER_FACTIONS">
+    <English>Skill Tier Factions:</English>
+    <Chinese>技能等級派系:</Chinese>
+    <Chinesesimp>技能等级派系:</Chinesesimp>
+    <Spanish>Facciones por nivel:</Spanish>
+    <French>Factions par niveau:</French>
+    <Portuguese>Facções por nível:</Portuguese>
+    <Russian>Фракции по уровню:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_AISKILL_TIER_FACTIONS_COMMENT">
+    <English>Per-faction AI skill assignment, consolidated. Filter cycle button at top swaps between Recruit / Regular / Veteran / Expert / Custom; ALL military-side factions stay visible across cycles, ticks represent only the active tier. The same faction can be ticked under any tier independently (later tier wins at runtime if duplicated). Recruit / Regular / Veteran / Expert apply fixed preset skill values; Custom applies the Custom Skill Values defined in the section below. The Override Entries field accepts free-text comma-separated faction classnames the registry doesn't surface; entries are tier-scoped (added to the active tier on save). Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>按派系分配 AI 技能,已合併。頂部的篩選循環按鈕在 新兵 / 一般 / 老兵 / 專家 / 自訂 之間切換；所有軍事方派系在所有循環中都保持可見，勾選只代表目前等級。同一派系可獨立勾選於任何等級下（執行時若重複，後一等級勝出）。新兵/一般/老兵/專家套用固定預設技能值；自訂套用下方區段定義的自訂技能值。Override Entries 欄位接受逗號分隔的、登記表未呈現的派系類別名稱自由文字；條目作用於目前活躍等級（保存時加入該等級）。多選: 左鍵點擊選擇一行；Ctrl+左鍵切換單行；Shift+左鍵選擇範圍。</Chinese>
+    <Chinesesimp>按派系分配 AI 技能,已合并。顶部的筛选循环按钮在 新兵 / 一般 / 老兵 / 专家 / 自定义 之间切换；所有军事方派系在所有循环中都保持可见，勾选只代表当前等级。同一派系可独立勾选于任何等级下（运行时若重复，后一等级胜出）。新兵/一般/老兵/专家应用固定预设技能值；自定义应用下方区段定义的自定义技能值。Override Entries 字段接受逗号分隔的、注册表未呈现的派系类名自由文本；条目作用于当前活跃等级（保存时加入该等级）。多选: 左键点击选择一行；Ctrl+左键切换单行；Shift+左键选择范围。</Chinesesimp>
+    <Spanish>Asignación de habilidad de IA por facción, consolidada. El botón de ciclo de filtro en la parte superior alterna entre Recluta / Regular / Veterano / Experto / Personalizado; TODAS las facciones del lado militar permanecen visibles en todos los ciclos, los ticks representan solo el nivel activo. La misma facción puede marcarse bajo cualquier nivel de forma independiente (el nivel posterior gana en tiempo de ejecución si se duplica). Recluta / Regular / Veterano / Experto aplican valores de habilidad de preset fijos; Personalizado aplica los Valores de Habilidad Personalizados definidos en la sección de abajo. El campo Override Entries acepta classnames de facciones libres separados por comas que el registro no muestra; las entradas se asignan al nivel activo (añadidas al nivel activo al guardar). Multiselección: clic-izquierdo selecciona una fila; Ctrl+clic-izquierdo alterna filas individuales; Shift+clic-izquierdo selecciona un rango.</Spanish>
+    <French>Affectation de la compétence IA par faction, consolidée. Le bouton de cycle de filtre en haut alterne entre Recrue / Régulier / Vétéran / Expert / Personnalisé; TOUTES les factions militaires restent visibles à travers les cycles, les coches ne représentent que le niveau actif. La même faction peut être cochée sous n'importe quel niveau indépendamment (le niveau ultérieur l'emporte à l'exécution en cas de doublon). Recrue / Régulier / Vétéran / Expert appliquent des valeurs de compétence prédéfinies; Personnalisé applique les Valeurs de Compétence Personnalisées définies dans la section ci-dessous. Le champ Override Entries accepte des classnames de factions libres séparés par des virgules que le registre n'affiche pas; les entrées sont scopées au niveau (ajoutées au niveau actif à la sauvegarde). Multi-sélection: clic-gauche sélectionne une ligne; Ctrl+clic-gauche bascule des lignes individuelles; Shift+clic-gauche sélectionne une plage.</French>
+    <Portuguese>Atribuição de habilidade de IA por facção, consolidada. O botão de ciclo de filtro no topo alterna entre Recruta / Regular / Veterano / Especialista / Personalizado; TODAS as facções do lado militar permanecem visíveis em todos os ciclos, as marcações representam apenas o nível ativo. A mesma facção pode ser marcada sob qualquer nível independentemente (o nível posterior vence em tempo de execução se duplicado). Recruta / Regular / Veterano / Especialista aplicam valores de habilidade pré-definidos; Personalizado aplica os Valores de Habilidade Personalizados definidos na seção abaixo. O campo Override Entries aceita classnames de facções livres separados por vírgulas que o registro não mostra; as entradas têm escopo de nível (adicionadas ao nível ativo ao salvar). Seleção múltipla: clique-esquerdo seleciona uma linha; Ctrl+clique-esquerdo alterna linhas individuais; Shift+clique-esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Назначение навыков ИИ по фракциям, консолидированное. Кнопка цикла фильтра вверху переключается между Новобранец / Регулярный / Ветеран / Эксперт / Пользовательский; ВСЕ военные фракции остаются видимыми во всех циклах, галочки отражают только активный уровень. Одну и ту же фракцию можно отметить на любом уровне независимо (более поздний уровень побеждает во время выполнения при дублировании). Новобранец / Регулярный / Ветеран / Эксперт применяют фиксированные предустановленные значения навыков; Пользовательский применяет Пользовательские Значения Навыков, определённые в разделе ниже. Поле Override Entries принимает имена классов фракций через запятую, которые реестр не отображает; записи имеют область уровня (добавляются на активный уровень при сохранении). Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_RECRUIT">
     <English>Recruit Factions:</English>
 	<Chinesesimp>招募派系：</Chinesesimp>
+    <Chinese>新兵派系：</Chinese>
+    <Spanish>Facciones de recluta:</Spanish>
+    <French>Factions de recrue:</French>
+    <Portuguese>Facções de recruta:</Portuguese>
+    <Russian>Фракции новобранцев:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_RECRUIT_COMMENT">
-    <English>Units of these factions will use Recruit-tier skill values (low accuracy, slow reactions, short detection range). Lowest preset — use for untrained militia or irregular forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
+    <English>Units of these factions will use Recruit-tier skill values (low accuracy, slow reactions, short detection range). Lowest preset — use for untrained militia or irregular forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>這些派系的單位將使用新兵階技能值（命中率低、反應慢、偵測範圍短）。最低預設 — 適用於未受訓民兵或非正規部隊。預設值固定。若要為派系指定精確的個別參數值,請使用下方的自訂技能值區塊。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>这些派系的单位将使用新兵阶技能值（命中率低、反应慢、侦测范围短）。最低预设 — 适用于未受训民兵或非正规部队。预设值固定。若要为派系指定精确的个别参数值,请使用下方的自定义技能值区块。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Las unidades de estas facciones usarán valores de habilidad de nivel Recluta (baja precisión, reacciones lentas, rango de detección corto). Preset más bajo — úsalo para milicias no entrenadas o fuerzas irregulares. Los valores del preset son fijos. Para asignar valores exactos por parámetro a una facción, usa la sección Valores de Habilidad Personalizados de abajo. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Les unités de ces factions utiliseront des valeurs de compétence de niveau Recrue (faible précision, réactions lentes, courte portée de détection). Préréglage le plus bas — à utiliser pour des milices non formées ou des forces irrégulières. Les valeurs du préréglage sont fixes. Pour attribuer des valeurs exactes par paramètre à une faction, utilisez la section Valeurs de compétence personnalisées ci-dessous. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Unidades destas facções usarão valores de habilidade de nível Recruta (baixa precisão, reações lentas, alcance de detecção curto). Preset mais baixo — use para milícias não treinadas ou forças irregulares. Os valores do preset são fixos. Para atribuir valores exatos por parâmetro a uma facção, use a seção Valores de Habilidade Personalizados abaixo. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Юниты этих фракций будут использовать значения мастерства уровня «Новобранец» (низкая точность, медленные реакции, малая дальность обнаружения). Самый низкий пресет — используйте для необученной милиции или нерегулярных сил. Значения пресета фиксированы. Чтобы задать точные пофайловые значения для фракции, используйте раздел «Пользовательские значения мастерства» ниже. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_REGULAR">
     <English>Regular Factions:</English>
 	<Chinesesimp>常规派系：</Chinesesimp>
+    <Chinese>正規軍派系：</Chinese>
+    <Spanish>Facciones regulares:</Spanish>
+    <French>Factions régulières:</French>
+    <Portuguese>Facções regulares:</Portuguese>
+    <Russian>Регулярные фракции:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_REGULAR_COMMENT">
-    <English>Units of these factions will use Regular-tier skill values (moderate accuracy, average reactions). Baseline preset suitable for most conventional forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
+    <English>Units of these factions will use Regular-tier skill values (moderate accuracy, average reactions). Baseline preset suitable for most conventional forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>這些派系的單位將使用正規階技能值（命中率中等、反應普通）。基準預設,適合大多數常規部隊。預設值固定。若要為派系指定精確的個別參數值,請使用下方的自訂技能值區塊。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>这些派系的单位将使用正规阶技能值（命中率中等、反应普通）。基准预设,适合大多数常规部队。预设值固定。若要为派系指定精确的个别参数值,请使用下方的自定义技能值区块。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Las unidades de estas facciones usarán valores de habilidad de nivel Regular (precisión moderada, reacciones promedio). Preset base adecuado para la mayoría de las fuerzas convencionales. Los valores del preset son fijos. Para asignar valores exactos por parámetro a una facción, usa la sección Valores de Habilidad Personalizados de abajo. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Les unités de ces factions utiliseront des valeurs de compétence de niveau Régulier (précision modérée, réactions moyennes). Préréglage de base adapté à la plupart des forces conventionnelles. Les valeurs du préréglage sont fixes. Pour attribuer des valeurs exactes par paramètre à une faction, utilisez la section Valeurs de compétence personnalisées ci-dessous. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Unidades destas facções usarão valores de habilidade de nível Regular (precisão moderada, reações médias). Preset base adequado para a maioria das forças convencionais. Os valores do preset são fixos. Para atribuir valores exatos por parâmetro a uma facção, use a seção Valores de Habilidade Personalizados abaixo. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Юниты этих фракций будут использовать значения мастерства уровня «Регулярные» (умеренная точность, средние реакции). Базовый пресет для большинства обычных сил. Значения пресета фиксированы. Чтобы задать точные пофайловые значения для фракции, используйте раздел «Пользовательские значения мастерства» ниже. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_VETERAN">
     <English>Veteran Factions:</English>
 	<Chinesesimp>资深派系：</Chinesesimp>
+    <Chinese>老兵派系：</Chinese>
+    <Spanish>Facciones veteranas:</Spanish>
+    <French>Factions vétérans:</French>
+    <Portuguese>Facções veteranas:</Portuguese>
+    <Russian>Ветеранские фракции:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_VETERAN_COMMENT">
-    <English>Units of these factions will use Veteran-tier skill values (good accuracy, faster reactions, better spotting). Use for experienced infantry or special operations forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
+    <English>Units of these factions will use Veteran-tier skill values (good accuracy, faster reactions, better spotting). Use for experienced infantry or special operations forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>這些派系的單位將使用老兵階技能值（命中率良好、反應較快、目視較佳）。適用於有經驗的步兵或特種部隊。預設值固定。若要為派系指定精確的個別參數值,請使用下方的自訂技能值區塊。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>这些派系的单位将使用老兵阶技能值（命中率良好、反应较快、目视较佳）。适用于有经验的步兵或特种部队。预设值固定。若要为派系指定精确的个别参数值,请使用下方的自定义技能值区块。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Las unidades de estas facciones usarán valores de habilidad de nivel Veterano (buena precisión, reacciones más rápidas, mejor avistamiento). Úsalo para infantería experimentada o fuerzas de operaciones especiales. Los valores del preset son fijos. Para asignar valores exactos por parámetro a una facción, usa la sección Valores de Habilidad Personalizados de abajo. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Les unités de ces factions utiliseront des valeurs de compétence de niveau Vétéran (bonne précision, réactions plus rapides, meilleure observation). À utiliser pour de l'infanterie expérimentée ou des forces d'opérations spéciales. Les valeurs du préréglage sont fixes. Pour attribuer des valeurs exactes par paramètre à une faction, utilisez la section Valeurs de compétence personnalisées ci-dessous. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Unidades destas facções usarão valores de habilidade de nível Veterano (boa precisão, reações mais rápidas, melhor observação). Use para infantaria experiente ou forças de operações especiais. Os valores do preset são fixos. Para atribuir valores exatos por parâmetro a uma facção, use a seção Valores de Habilidade Personalizados abaixo. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Юниты этих фракций будут использовать значения мастерства уровня «Ветеран» (хорошая точность, более быстрые реакции, лучшее обнаружение). Используйте для опытной пехоты или сил специальных операций. Значения пресета фиксированы. Чтобы задать точные пофайловые значения для фракции, используйте раздел «Пользовательские значения мастерства» ниже. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_EXPERT">
     <English>Expert Factions:</English>
 	<Chinesesimp>专家派系：</Chinesesimp>
+    <Chinese>專家派系：</Chinese>
+    <Spanish>Facciones expertas:</Spanish>
+    <French>Factions experts:</French>
+    <Portuguese>Facções especialistas:</Portuguese>
+    <Russian>Экспертные фракции:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_EXPERT_COMMENT">
-    <English>Units of these factions will use Expert-tier skill values (high accuracy, fast reactions, long detection range). Highest preset — use for top-tier special forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead.</English>
+    <English>Units of these factions will use Expert-tier skill values (high accuracy, fast reactions, long detection range). Highest preset — use for top-tier special forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>這些派系的單位將使用專家階技能值（命中率高、反應快、偵測範圍長）。最高預設 — 適用於頂級特種部隊。預設值固定。若要為派系指定精確的個別參數值,請使用下方的自訂技能值區塊。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>这些派系的单位将使用专家阶技能值（命中率高、反应快、侦测范围长）。最高预设 — 适用于顶级特种部队。预设值固定。若要为派系指定精确的个别参数值,请使用下方的自定义技能值区块。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Las unidades de estas facciones usarán valores de habilidad de nivel Experto (alta precisión, reacciones rápidas, largo rango de detección). Preset más alto — úsalo para fuerzas especiales de élite. Los valores del preset son fijos. Para asignar valores exactos por parámetro a una facción, usa la sección Valores de Habilidad Personalizados de abajo. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Les unités de ces factions utiliseront des valeurs de compétence de niveau Expert (haute précision, réactions rapides, longue portée de détection). Préréglage le plus élevé — à utiliser pour des forces spéciales d'élite. Les valeurs du préréglage sont fixes. Pour attribuer des valeurs exactes par paramètre à une faction, utilisez la section Valeurs de compétence personnalisées ci-dessous. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Unidades destas facções usarão valores de habilidade de nível Especialista (alta precisão, reações rápidas, longo alcance de detecção). Preset mais alto — use para forças especiais de elite. Os valores do preset são fixos. Para atribuir valores exatos por parâmetro a uma facção, use a seção Valores de Habilidade Personalizados abaixo. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Юниты этих фракций будут использовать значения мастерства уровня «Эксперт» (высокая точность, быстрые реакции, большая дальность обнаружения). Самый высокий пресет — используйте для элитных сил специальных операций. Значения пресета фиксированы. Чтобы задать точные пофайловые значения для фракции, используйте раздел «Пользовательские значения мастерства» ниже. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_FACTIONS_MANUAL">
     <English>Factions (manual override):</English>
@@ -64,113 +166,288 @@
     <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
     <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
     <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
-    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format : noms séparés par des virgules, sans espaces ni guillemets.</French>
+    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format: noms séparés par des virgules, sans espaces ni guillemets.</French>
     <Portuguese>Opcional. Digite classnames de facções adicionais para mods não carregados atualmente. Formato: nomes separados por vírgulas, sem espaços ou aspas.</Portuguese>
     <Russian>Необязательно. Введите classnames дополнительных фракций для незагруженных модов. Формат: имена через запятую, без пробелов и кавычек.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM">
     <English>Factions:</English>
+    <Chinese>派系：</Chinese>
+    <Chinesesimp>派系：</Chinesesimp>
+    <Spanish>Facciones:</Spanish>
+    <French>Factions:</French>
+    <Portuguese>Facções:</Portuguese>
+    <Russian>Фракции:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMENT">
-    <English>Factions whose units will receive the exact skill values you configure below. This section is independent of the preset tiers above — presets use fixed hardcoded values, while this section gives full control over each parameter. If a faction is also assigned to a preset tier, the custom values take precedence. Leave empty to apply no custom values.</English>
+    <English>Factions whose units will receive the exact skill values you configure below. This section is independent of the preset tiers above — presets use fixed hardcoded values, while this section gives full control over each parameter. If a faction is also assigned to a preset tier, the custom values take precedence. Leave empty to apply no custom values. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <Chinese>這些派系的單位將套用您於下方設定的精確技能值。本區塊獨立於上方的預設階級 — 預設使用固定的硬編碼值,本區塊則對每個參數提供完整控制。若派系也被指定到某個預設階級,自訂值將優先生效。留空則不套用自訂值。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
+    <Chinesesimp>这些派系的单位将套用您于下方配置的精确技能值。本区块独立于上方的预设阶级 — 预设使用固定的硬编码值,本区块则对每个参数提供完整控制。若派系也被指定到某个预设阶级,自定义值将优先生效。留空则不套用自定义值。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
+    <Spanish>Facciones cuyas unidades recibirán los valores de habilidad exactos que configures abajo. Esta sección es independiente de los presets de niveles de arriba — los presets usan valores codificados fijos, mientras que esta sección da control total sobre cada parámetro. Si una facción también está asignada a un preset de nivel, los valores personalizados tienen prioridad. Deja vacío para no aplicar valores personalizados. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
+    <French>Factions dont les unités recevront les valeurs de compétence exactes que vous configurez ci-dessous. Cette section est indépendante des préréglages de niveaux ci-dessus — les préréglages utilisent des valeurs fixes codées en dur, tandis que cette section donne un contrôle total sur chaque paramètre. Si une faction est également assignée à un préréglage de niveau, les valeurs personnalisées prennent le pas. Laissez vide pour n'appliquer aucune valeur personnalisée. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
+    <Portuguese>Facções cujas unidades receberão os valores de habilidade exatos que você configurar abaixo. Esta seção é independente dos presets de níveis acima — os presets usam valores codificados fixos, enquanto esta seção dá controle total sobre cada parâmetro. Se uma facção também estiver atribuída a um preset de nível, os valores personalizados têm precedência. Deixe vazio para não aplicar valores personalizados. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
+    <Russian>Фракции, юниты которых получат точные значения мастерства, настроенные ниже. Этот раздел независим от пресетов уровней выше — пресеты используют фиксированные жёстко прописанные значения, а этот раздел даёт полный контроль над каждым параметром. Если фракция также назначена на пресет уровня, пользовательские значения имеют приоритет. Оставьте пустым, чтобы не применять пользовательские значения. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN">
     <English>Minimum Ability:</English>
 	<Chinesesimp>最低能力：</Chinesesimp>
+    <Chinese>最低能力：</Chinese>
+    <Spanish>Habilidad mínima:</Spanish>
+    <French>Compétence minimale:</French>
+    <Portuguese>Habilidade mínima:</Portuguese>
+    <Russian>Минимум общего мастерства:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MIN_COMMENT">
     <English>Minimum general ability (0.0–1.0). Combined with maximum to give each unit a random ability value within the range. Lower = weaker AI overall.</English>
 	<Chinesesimp>最低能力</Chinesesimp>
+    <Chinese>最低整體能力（0.0–1.0）。與最大值搭配,在此範圍內為每個單位產生隨機能力值。較低 = 整體 AI 較弱。</Chinese>
+    <Spanish>Habilidad general mínima (0.0–1.0). Combinada con el máximo para dar a cada unidad un valor aleatorio dentro del rango. Más bajo = IA más débil en general.</Spanish>
+    <French>Compétence générale minimale (0.0–1.0). Combinée au maximum pour donner à chaque unité une valeur de compétence aléatoire dans la plage. Plus bas = IA globalement plus faible.</French>
+    <Portuguese>Habilidade geral mínima (0.0–1.0). Combinada com o máximo para dar a cada unidade um valor de habilidade aleatório dentro do intervalo. Mais baixo = IA geral mais fraca.</Portuguese>
+    <Russian>Минимальный общий уровень мастерства (0.0–1.0). В сочетании с максимумом задаёт случайное значение мастерства каждого юнита в диапазоне. Ниже = слабее ИИ в целом.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX">
     <English>Maximum Ability:</English>
 	<Chinesesimp>最大能力：</Chinesesimp>
+    <Chinese>最高能力：</Chinese>
+    <Spanish>Habilidad máxima:</Spanish>
+    <French>Compétence maximale:</French>
+    <Portuguese>Habilidade máxima:</Portuguese>
+    <Russian>Максимум общего мастерства:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ABILITY_MAX_COMMENT">
     <English>Maximum general ability (0.0–1.0). Combined with minimum to give each unit a random ability value within the range. Higher = stronger AI overall.</English>
 	<Chinesesimp>最大能力</Chinesesimp>
+    <Chinese>最高整體能力（0.0–1.0）。與最小值搭配,在此範圍內為每個單位產生隨機能力值。較高 = 整體 AI 較強。</Chinese>
+    <Spanish>Habilidad general máxima (0.0–1.0). Combinada con el mínimo para dar a cada unidad un valor aleatorio dentro del rango. Más alto = IA más fuerte en general.</Spanish>
+    <French>Compétence générale maximale (0.0–1.0). Combinée au minimum pour donner à chaque unité une valeur de compétence aléatoire dans la plage. Plus haut = IA globalement plus forte.</French>
+    <Portuguese>Habilidade geral máxima (0.0–1.0). Combinada com o mínimo para dar a cada unidade um valor de habilidade aleatório dentro do intervalo. Mais alto = IA geral mais forte.</Portuguese>
+    <Russian>Максимальный общий уровень мастерства (0.0–1.0). В сочетании с минимумом задаёт случайное значение мастерства каждого юнита в диапазоне. Выше = сильнее ИИ в целом.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY">
     <English>Aim Accuracy:</English>
 	<Chinesesimp>瞄准精度：</Chinesesimp>
+    <Chinese>瞄準精度：</Chinese>
+    <Spanish>Precisión de puntería:</Spanish>
+    <French>Précision de visée:</French>
+    <Portuguese>Precisão de mira:</Portuguese>
+    <Russian>Точность прицеливания:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_ACCURACY_COMMENT">
     <English>How accurately the unit aims (0.0–1.0). Lower values cause more scatter. Works alongside Aim Shake and Aim Speed.</English>
 	<Chinesesimp>瞄准精度</Chinesesimp>
+    <Chinese>單位瞄準的精度（0.0–1.0）。較低值會增加散布。與瞄準晃動和瞄準速度搭配運作。</Chinese>
+    <Spanish>Cuán preciso apunta la unidad (0.0–1.0). Valores más bajos provocan más dispersión. Funciona junto a Vibración de Puntería y Velocidad de Puntería.</Spanish>
+    <French>Précision avec laquelle l'unité vise (0.0–1.0). Des valeurs plus basses entraînent plus de dispersion. Fonctionne avec Tremblement de visée et Vitesse de visée.</French>
+    <Portuguese>Quão precisamente a unidade mira (0.0–1.0). Valores mais baixos causam mais dispersão. Funciona junto com Tremor de Mira e Velocidade de Mira.</Portuguese>
+    <Russian>Точность прицеливания юнита (0.0–1.0). Более низкие значения дают больше разброса. Работает вместе с дрожанием прицела и скоростью прицеливания.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SHAKE">
     <English>Aim Shake:</English>
 	<Chinesesimp>瞄准摇晃：</Chinesesimp>
+    <Chinese>瞄準晃動：</Chinese>
+    <Spanish>Vibración de puntería:</Spanish>
+    <French>Tremblement de visée:</French>
+    <Portuguese>Tremor de mira:</Portuguese>
+    <Russian>Дрожание прицела:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SHAKE_COMMENT">
     <English>How much the unit's aim wobbles between shots (0.0–1.0). Higher values increase weapon sway. Works alongside Aim Accuracy.</English>
 	<Chinesesimp>瞄准摇晃</Chinesesimp>
+    <Chinese>單位射擊間瞄準晃動的程度（0.0–1.0）。較高值會增加武器搖晃。與瞄準精度搭配運作。</Chinese>
+    <Spanish>Cuánto vibra la puntería de la unidad entre disparos (0.0–1.0). Valores más altos aumentan el balanceo del arma. Funciona junto a Precisión de Puntería.</Spanish>
+    <French>À quel point la visée de l'unité tremble entre les tirs (0.0–1.0). Des valeurs plus élevées augmentent le balancement de l'arme. Fonctionne avec Précision de visée.</French>
+    <Portuguese>Quanto a mira da unidade balança entre disparos (0.0–1.0). Valores mais altos aumentam o balanço da arma. Funciona junto com Precisão de Mira.</Portuguese>
+    <Russian>Насколько прицел юнита колеблется между выстрелами (0.0–1.0). Более высокие значения усиливают колебание оружия. Работает вместе с точностью прицеливания.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED">
     <English>Aim Speed:</English>
+    <Chinese>瞄準速度：</Chinese>
+    <Chinesesimp>瞄准速度：</Chinesesimp>
+    <Spanish>Velocidad de puntería:</Spanish>
+    <French>Vitesse de visée:</French>
+    <Portuguese>Velocidade de mira:</Portuguese>
+    <Russian>Скорость прицеливания:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_AIM_SPEED_COMMENT">
     <English>How quickly the unit acquires and tracks targets (0.0–1.0). Higher values mean faster target acquisition.</English>
+    <Chinese>單位捕獲與追蹤目標的速度（0.0–1.0）。較高值代表更快的目標獲取。</Chinese>
+    <Chinesesimp>单位捕获与追踪目标的速度（0.0–1.0）。较高值代表更快的目标获取。</Chinesesimp>
+    <Spanish>Cuán rápido la unidad adquiere y sigue objetivos (0.0–1.0). Valores más altos significan adquisición más rápida del objetivo.</Spanish>
+    <French>À quelle vitesse l'unité acquiert et suit les cibles (0.0–1.0). Des valeurs plus élevées signifient une acquisition de cible plus rapide.</French>
+    <Portuguese>Quão rápido a unidade adquire e acompanha alvos (0.0–1.0). Valores mais altos significam aquisição de alvo mais rápida.</Portuguese>
+    <Russian>Как быстро юнит обнаруживает и сопровождает цели (0.0–1.0). Более высокие значения означают более быстрый захват цели.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE">
     <English>Endurance (unused):</English>
+    <Chinese>耐力（未使用）：</Chinese>
+    <Chinesesimp>耐力（未使用）：</Chinesesimp>
+    <Spanish>Resistencia (sin uso):</Spanish>
+    <French>Endurance (inutilisé):</French>
+    <Portuguese>Resistência (não utilizada):</Portuguese>
+    <Russian>Выносливость (не используется):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE_COMMENT">
     <English>No effect in Arma 3 — the endurance sub-skill has been ignored by the engine since early development. Value is accepted but never applied. This field will be removed in a future version.</English>
+    <Chinese>在 Arma 3 中無作用 — 耐力子技能自開發初期起即被引擎忽略。值會被接受但不會生效。此欄位將於未來版本移除。</Chinese>
+    <Chinesesimp>在 Arma 3 中无作用 — 耐力子技能自开发初期起即被引擎忽略。值会被接受但不会生效。此字段将于未来版本移除。</Chinesesimp>
+    <Spanish>Sin efecto en Arma 3 — la sub-habilidad de resistencia ha sido ignorada por el motor desde el desarrollo temprano. El valor se acepta pero nunca se aplica. Este campo se eliminará en una versión futura.</Spanish>
+    <French>Sans effet dans Arma 3 — la sous-compétence d'endurance est ignorée par le moteur depuis le début du développement. La valeur est acceptée mais jamais appliquée. Ce champ sera supprimé dans une version future.</French>
+    <Portuguese>Sem efeito no Arma 3 — a sub-habilidade de resistência tem sido ignorada pelo motor desde o desenvolvimento inicial. O valor é aceito mas nunca aplicado. Este campo será removido em uma versão futura.</Portuguese>
+    <Russian>Не действует в Arma 3 — подмастерство выносливости игнорируется движком с ранних этапов разработки. Значение принимается, но не применяется. Это поле будет удалено в будущей версии.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE">
     <English>Spot Distance:</English>
 	<Chinesesimp>发现距离：</Chinesesimp>
+    <Chinese>目視距離：</Chinese>
+    <Spanish>Distancia de avistamiento:</Spanish>
+    <French>Distance d'observation:</French>
+    <Portuguese>Distância de avistamento:</Portuguese>
+    <Russian>Дальность обнаружения:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_DISTANCE_COMMENT">
     <English>Maximum detection range multiplier (0.0–1.0). Higher values allow the unit to spot enemies at greater distances.</English>
 	<Chinesesimp>发现距离</Chinesesimp>
+    <Chinese>最大偵測範圍倍率（0.0–1.0）。較高值讓單位能在更遠距離發現敵人。</Chinese>
+    <Spanish>Multiplicador de rango máximo de detección (0.0–1.0). Valores más altos permiten a la unidad detectar enemigos a mayores distancias.</Spanish>
+    <French>Multiplicateur de portée de détection maximale (0.0–1.0). Des valeurs plus élevées permettent à l'unité de repérer les ennemis à de plus grandes distances.</French>
+    <Portuguese>Multiplicador de alcance máximo de detecção (0.0–1.0). Valores mais altos permitem que a unidade aviste inimigos a maiores distâncias.</Portuguese>
+    <Russian>Множитель максимальной дальности обнаружения (0.0–1.0). Более высокие значения позволяют юниту замечать врагов на больших расстояниях.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_TIME">
     <English>Spot Time:</English>
 	<Chinesesimp>发现时间：</Chinesesimp>
+    <Chinese>目視時間：</Chinese>
+    <Spanish>Tiempo de avistamiento:</Spanish>
+    <French>Temps d'observation:</French>
+    <Portuguese>Tempo de avistamento:</Portuguese>
+    <Russian>Скорость обнаружения:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_SPOT_TIME_COMMENT">
     <English>How quickly the unit spots a detected enemy (0.0–1.0). Lower values mean the unit is slower to confirm and react to contacts.</English>
 	<Chinesesimp>发现时间</Chinesesimp>
+    <Chinese>單位多快發現偵測到的敵人（0.0–1.0）。較低值代表單位較慢確認與反應接觸。</Chinese>
+    <Spanish>Cuán rápido la unidad avista a un enemigo detectado (0.0–1.0). Valores más bajos significan que la unidad es más lenta en confirmar y reaccionar a contactos.</Spanish>
+    <French>À quelle vitesse l'unité repère un ennemi détecté (0.0–1.0). Des valeurs plus basses signifient que l'unité est plus lente à confirmer et réagir aux contacts.</French>
+    <Portuguese>Quão rápido a unidade avista um inimigo detectado (0.0–1.0). Valores mais baixos significam que a unidade é mais lenta para confirmar e reagir a contatos.</Portuguese>
+    <Russian>Как быстро юнит замечает обнаруженного врага (0.0–1.0). Более низкие значения означают, что юнит медленнее подтверждает и реагирует на контакты.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COURAGE">
     <English>Courage:</English>
 	<Chinesesimp>勇气：</Chinesesimp>
+    <Chinese>勇氣：</Chinese>
+    <Spanish>Valor:</Spanish>
+    <French>Courage:</French>
+    <Portuguese>Coragem:</Portuguese>
+    <Russian>Храбрость:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COURAGE_COMMENT">
     <English>Unit willingness to advance and engage under fire (0.0–1.0). Lower values make units more likely to fall back or suppress rather than assault.</English>
 	<Chinesesimp>勇气</Chinesesimp>
+    <Chinese>單位在火力下推進與交戰的意願（0.0–1.0）。較低值讓單位更傾向於後撤或壓制而非突擊。</Chinese>
+    <Spanish>Disposición de la unidad para avanzar y combatir bajo fuego (0.0–1.0). Valores más bajos hacen que las unidades tiendan más a retroceder o suprimir en lugar de asaltar.</Spanish>
+    <French>Volonté de l'unité à avancer et à engager sous le feu (0.0–1.0). Des valeurs plus basses rendent les unités plus susceptibles de se replier ou de supprimer plutôt que d'assaillir.</French>
+    <Portuguese>Disposição da unidade para avançar e engajar sob fogo (0.0–1.0). Valores mais baixos tornam as unidades mais propensas a recuar ou suprimir em vez de assaltar.</Portuguese>
+    <Russian>Готовность юнита продвигаться и вступать в бой под огнём (0.0–1.0). Более низкие значения повышают вероятность отхода или ведения подавляющего огня вместо штурма.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_FLEEING">
     <English>Cowardice:</English>
 	<Chinesesimp>怯懦：</Chinesesimp>
+    <Chinese>怯懦：</Chinese>
+    <Spanish>Cobardía:</Spanish>
+    <French>Lâcheté:</French>
+    <Portuguese>Covardia:</Portuguese>
+    <Russian>Трусость:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_FLEEING_COMMENT">
     <English>Likelihood that the unit abandons combat and retreats when under fire (0.0–1.0). Higher values make units more prone to fleeing. Lower values keep them engaged longer. Works alongside Courage.</English>
+    <Chinese>單位在火力下放棄戰鬥並撤退的可能性（0.0–1.0）。較高值讓單位更容易逃跑。較低值讓他們交戰更久。與勇氣搭配運作。</Chinese>
+    <Chinesesimp>单位在火力下放弃战斗并撤退的可能性（0.0–1.0）。较高值让单位更容易逃跑。较低值让他们交战更久。与勇气搭配运作。</Chinesesimp>
+    <Spanish>Probabilidad de que la unidad abandone el combate y se retire bajo fuego (0.0–1.0). Valores más altos hacen que las unidades sean más propensas a huir. Valores más bajos las mantienen en combate más tiempo. Funciona junto al Valor.</Spanish>
+    <French>Probabilité que l'unité abandonne le combat et batte en retraite sous le feu (0.0–1.0). Des valeurs plus élevées rendent les unités plus susceptibles de fuir. Des valeurs plus basses les maintiennent en combat plus longtemps. Fonctionne avec Courage.</French>
+    <Portuguese>Probabilidade de a unidade abandonar o combate e recuar sob fogo (0.0–1.0). Valores mais altos tornam as unidades mais propensas a fugir. Valores mais baixos as mantêm engajadas por mais tempo. Funciona junto à Coragem.</Portuguese>
+    <Russian>Вероятность того, что юнит покинет бой и отступит под огнём (0.0–1.0). Более высокие значения повышают вероятность бегства. Более низкие удерживают юнитов в бою дольше. Работает вместе с храбростью.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_RELOAD">
     <English>Reload:</English>
 	<Chinesesimp>装填：</Chinesesimp>
+    <Chinese>重新裝填：</Chinese>
+    <Spanish>Recarga:</Spanish>
+    <French>Rechargement:</French>
+    <Portuguese>Recarregar:</Portuguese>
+    <Russian>Перезарядка:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_RELOAD_COMMENT">
     <English>How quickly the unit attempts to reload after firing (0.0–1.0). Higher values reduce reload time.</English>
 	<Chinesesimp>装填</Chinesesimp>
+    <Chinese>單位射擊後嘗試重新裝填的速度（0.0–1.0）。較高值縮短裝填時間。</Chinese>
+    <Spanish>Cuán rápido la unidad intenta recargar después de disparar (0.0–1.0). Valores más altos reducen el tiempo de recarga.</Spanish>
+    <French>À quelle vitesse l'unité tente de recharger après avoir tiré (0.0–1.0). Des valeurs plus élevées réduisent le temps de rechargement.</French>
+    <Portuguese>Quão rápido a unidade tenta recarregar após disparar (0.0–1.0). Valores mais altos reduzem o tempo de recarga.</Portuguese>
+    <Russian>Как быстро юнит пытается перезарядиться после выстрела (0.0–1.0). Более высокие значения сокращают время перезарядки.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMANDING">
     <English>Commanding:</English>
 	<Chinesesimp>指挥：</Chinesesimp>
+    <Chinese>指揮：</Chinese>
+    <Spanish>Mando:</Spanish>
+    <French>Commandement:</French>
+    <Portuguese>Comando:</Portuguese>
+    <Russian>Командование:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMANDING_COMMENT">
     <English>Quality of the unit's command decisions when acting as a group leader (0.0–1.0). Higher values improve squad-level tactics and target prioritisation.</English>
 	<Chinesesimp>指挥</Chinesesimp>
+    <Chinese>單位擔任小組領導時的指揮決策品質（0.0–1.0）。較高值改善小組層級戰術與目標優先排序。</Chinese>
+    <Spanish>Calidad de las decisiones de mando de la unidad cuando actúa como líder de grupo (0.0–1.0). Valores más altos mejoran las tácticas a nivel de escuadra y la priorización de objetivos.</Spanish>
+    <French>Qualité des décisions de commandement de l'unité lorsqu'elle agit en tant que chef de groupe (0.0–1.0). Des valeurs plus élevées améliorent les tactiques au niveau de la section et la priorisation des cibles.</French>
+    <Portuguese>Qualidade das decisões de comando da unidade ao atuar como líder de grupo (0.0–1.0). Valores mais altos melhoram a tática a nível de esquadra e a priorização de alvos.</Portuguese>
+    <Russian>Качество командных решений юнита в роли лидера группы (0.0–1.0). Более высокие значения улучшают тактику отделения и приоритизацию целей.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_GENERAL">
     <English>General:</English>
 	<Chinesesimp>将军：</Chinesesimp>
+    <Chinese>綜合：</Chinese>
+    <Spanish>General:</Spanish>
+    <French>Général:</French>
+    <Portuguese>Geral:</Portuguese>
+    <Russian>Общее:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_GENERAL_COMMENT">
     <English>Overall AI skill multiplier (0.0–1.0). Acts as a global modifier affecting all other skill traits. Set lower to broadly weaken a faction without adjusting individual values.</English>
 	<Chinesesimp>将军</Chinesesimp>
+    <Chinese>整體 AI 技能倍率（0.0–1.0）。作為全域修飾符影響所有其他技能屬性。設定較低以全面削弱派系而無需調整個別值。</Chinese>
+    <Spanish>Multiplicador global de habilidad IA (0.0–1.0). Actúa como modificador global afectando a todos los demás rasgos de habilidad. Establece más bajo para debilitar ampliamente a una facción sin ajustar valores individuales.</Spanish>
+    <French>Multiplicateur global de compétence IA (0.0–1.0). Agit comme modificateur global affectant toutes les autres caractéristiques de compétence. Réglez plus bas pour affaiblir largement une faction sans ajuster les valeurs individuelles.</French>
+    <Portuguese>Multiplicador global de habilidade IA (0.0–1.0). Atua como modificador global afetando todos os outros traços de habilidade. Defina mais baixo para enfraquecer amplamente uma facção sem ajustar valores individuais.</Portuguese>
+    <Russian>Глобальный множитель мастерства ИИ (0.0–1.0). Действует как глобальный модификатор, влияющий на все остальные параметры мастерства. Установите ниже для широкого ослабления фракции без изменения отдельных значений.</Russian>
 </Key>
 </Container></Package></Project>

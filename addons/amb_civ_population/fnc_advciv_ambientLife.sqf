@@ -68,23 +68,71 @@ private _isMorning = (_hour >= 6  && _hour < 10);
 private _isDay     = (_hour >= 10 && _hour < 18);
 private _isEvening = (_hour >= 18 && _hour <= 22);
 
+// Wake-up: if the unit was sleeping last tick and it's no longer night,
+// clear the locked sleep animation so the normal action selection below
+// can take over. switchMove "" releases any prior locked animation; the
+// engine then resumes natural stance based on setUnitPos preferences.
+// Threat-driven wake (gunfire / explosion / killed civ nearby) is already
+// covered: those handlers transition the civ out of CALM, and the
+// brainTick CALM/ALERT entry block (commit 3b25d99e) clears switchMove
+// when the unit returns to CALM via the autonomous state machine.
+private _previousAction = _unit getVariable ["ALiVE_advciv_actionType", ""];
+if (_previousAction == "SLEEPING" && {!_isNight}) then {
+    [_unit, ""] remoteExec ["switchMove", 0];
+    // Restore stance so the civ stands up rather than staying prone -
+    // setUnitPos "DOWN" was set on sleep entry and persists across the
+    // anim clear. Use "UP" rather than "AUTO" since the civ should
+    // visibly stand up at sunrise, not stay crouched.
+    _unit setUnitPos "UP";
+    _unit setVariable ["ALiVE_advciv_actionType", "WAKING", true];
+    if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Sleep DEBUG] civ=%1 waking up (daytime=%2)", name _unit, _hour]; };
+};
+
 
 // -----------------------------------------------------------------------
-// Night: civilians sleep. If already indoors, stop in place; otherwise
-// find a nearby building and move directly to an interior position.
-// -----------------------------------------------------------------------
+// Night: civilians sleep. If already indoors, settle into the sleep
+// animation in place; otherwise find a nearby building and move to an
+// interior position - the next tick (after _lastAction expiry) will see
+// the unit indoors and play the sleep anim. Uses findHouseProgressive
+// to handle civs stranded in genuinely open terrain at night fall.
+//
+// Animation: AmovPpneMstpSnonWnonDnon is the vanilla A3 base-game prone
+// static for an unarmed unit (PpneM = prone, Snon = no weapon, Dnon =
+// no direction). Always present, guaranteed valid switchMove target.
+// Pair with setUnitPos "DOWN" so the engine commits to the prone state
+// rather than treating the switchMove as a momentary pose. Visually flat
+// lying-down - not a curled-up pillow-sleep, but unambiguously asleep.
+// First attempt used Acts_LyingDown_loop based on training knowledge;
+// the engine no-op'd it (presumably the classname is wrong or
+// campaign-only) so civs stayed in their previous daytime animation.
+// AmovPpne is the reliable fallback.
 if (_isNight) exitWith {
     if (_isIndoors) then {
         doStop _unit;
+        if (ALiVE_advciv_nightSleepAnim) then {
+            _unit setUnitPos "DOWN";
+            [_unit, "AmovPpneMstpSnonWnonDnon"] remoteExec ["switchMove", 0];
+            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Sleep DEBUG] civ=%1 sleeping (indoors at %2)", name _unit, getPos _unit]; };
+        };
         _unit setVariable ["ALiVE_advciv_actionType", "SLEEPING", true];
         _unit setVariable ["ALiVE_advciv_lastAction", time + 120];
     } else {
-        private _houseData = [_unit] call ALiVE_fnc_advciv_findHouse;
+        private _houseData = [_unit] call ALiVE_fnc_advciv_findHouseProgressive;
         _houseData params [["_building", objNull], ["_positions", []]];
         if (!isNull _building && count _positions > 0) then {
             _unit doMove (selectRandom _positions);
-            _unit setVariable ["ALiVE_advciv_actionType", "SLEEPING", true];
+            // SLEEPING_ENROUTE marks "heading home but not yet sleeping" so
+            // the wake-up branch above doesn't false-fire on a daylight tick
+            // that sees actionType SLEEPING without the unit being asleep.
+            _unit setVariable ["ALiVE_advciv_actionType", "SLEEPING_ENROUTE", true];
             _unit setVariable ["ALiVE_advciv_lastAction", time + 120];
+            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Sleep DEBUG] civ=%1 heading home to sleep (dist to building=%2)", name _unit, _unit distance _building]; };
+        } else {
+            // No building reachable even at 3x fleeRadius - civ stays
+            // outdoors at night with no special action. Rare edge case
+            // (genuinely open terrain at night fall).
+            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Sleep DEBUG] civ=%1 no shelter found for night - staying outdoors", name _unit]; };
+            _unit setVariable ["ALiVE_advciv_lastAction", time + 60];
         };
     };
 };

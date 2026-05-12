@@ -71,6 +71,16 @@ class CfgVehicles {
                     class No {name = "No"; value = false;};
                 };
             };
+            class overrideMode : Combo {
+                property = "ALiVE_sys_factioncompiler_overrideMode";
+                displayName = "Faction Override Mode";
+                tooltip = "How the compiled groups integrate with the Faction ID. New faction = compiled groups become a brand-new mission-local faction (default; Faction ID must NOT match an existing faction). Override categories = compiled groups REPLACE the synced categories of the existing Faction ID, leaving other categories untouched (Faction ID must match an existing curated or inferred faction; Proxy Faction is ignored).";
+                defaultValue = """NewFaction""";
+                class Values {
+                    class NewFaction {name = "New faction"; value = "NewFaction"; default = 1;};
+                    class OverrideCategories {name = "Override categories"; value = "OverrideCategories";};
+                };
+            };
             class ModuleDescription : ModuleDescription {};
         };
         class ModuleDescription : ModuleDescription {

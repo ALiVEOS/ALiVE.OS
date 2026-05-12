@@ -124,8 +124,8 @@ switch(_operation) do {
                     //Retrieve module-object variables
                     _customName = _logic getvariable ["customName",""];
                     _type = _logic getvariable ["controltype","invasion"];
-                    _occupation = (parseNumber str (_logic getvariable ["asym_occupation",-100]))/100;
-                    _intelChance = (parseNumber str (_logic getvariable ["intelchance",-100]))/100;
+                    _occupation = (parseNumber format ["%1", _logic getvariable ["asym_occupation",-100]])/100;
+                    _intelChance = (parseNumber format ["%1", _logic getvariable ["intelchance",-100]])/100;
                     // Phase 4: faction sources, all unioned below.
                     //   factions       : multi-select listbox (primary UX,
                     //                    ORIGINAL property so old `factions`
@@ -145,32 +145,32 @@ switch(_operation) do {
                     _faction2 = _logic getvariable ["faction2",""];
                     _faction3 = _logic getvariable ["faction3",""];
                     _faction4 = _logic getvariable ["faction4",""];
-                    _simultanObjectives = parseNumber str (_logic getvariable ["simultanObjectives",10]);
-                    _minAgents = parseNumber str (_logic getvariable ["minAgents",2]);
-                    _asymForceLimit = floor (parseNumber str (_logic getvariable ["asymForceLimit",-1]));
-                    _recruitCycleMin = (parseNumber str (_logic getvariable ["recruitCycleMin",30])) max 0;
-                    _recruitCycleMax = (parseNumber str (_logic getvariable ["recruitCycleMax",60])) max _recruitCycleMin;
-                    _recruitAttemptLimit = floor (parseNumber str (_logic getvariable ["recruitAttemptLimit",0]));
+                    _simultanObjectives = parseNumber format ["%1", _logic getvariable ["simultanObjectives",10]];
+                    _minAgents = parseNumber format ["%1", _logic getvariable ["minAgents",2]];
+                    _asymForceLimit = floor (parseNumber format ["%1", _logic getvariable ["asymForceLimit",-1]]);
+                    _recruitCycleMin = (parseNumber format ["%1", _logic getvariable ["recruitCycleMin",30]]) max 0;
+                    _recruitCycleMax = (parseNumber format ["%1", _logic getvariable ["recruitCycleMax",60]]) max _recruitCycleMin;
+                    _recruitAttemptLimit = floor (parseNumber format ["%1", _logic getvariable ["recruitAttemptLimit",0]]);
                     _recruitAttemptLimit = _recruitAttemptLimit max -1;
-                    _recruitSuccessChance = ((parseNumber str (_logic getvariable ["recruitSuccessChance",50])) max 0) min 100;
-                    _hostilityPresenceMultiplier = (parseNumber str (_logic getvariable ["hostilityPresenceMultiplier",1])) max 0;
-                    _hostilityInstallationMultiplier = (parseNumber str (_logic getvariable ["hostilityInstallationMultiplier",1])) max 0;
-                    _hostilityInstallationInterval = ((parseNumber str (_logic getvariable ["hostilityInstallationInterval",10])) max 0) * 60;
+                    _recruitSuccessChance = ((parseNumber format ["%1", _logic getvariable ["recruitSuccessChance",50]]) max 0) min 100;
+                    _hostilityPresenceMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityPresenceMultiplier",1]]) max 0;
+                    _hostilityInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["hostilityInstallationMultiplier",1]]) max 0;
+                    _hostilityInstallationInterval = ((parseNumber format ["%1", _logic getvariable ["hostilityInstallationInterval",10]]) max 0) * 60;
                     _taskProfileCountOverridesRaw = _logic getvariable ["taskProfileCountOverrides",""];
                     _taskProfileTypeOverridesRaw = _logic getvariable ["taskProfileTypeOverrides",""];
-                    _civicRecruitmentMultiplier = (parseNumber str (_logic getvariable ["civicRecruitmentMultiplier",1])) max 0;
-                    _civicInstallationMultiplier = (parseNumber str (_logic getvariable ["civicInstallationMultiplier",1])) max 0;
-                    private _civicRetaliationChanceRaw = (parseNumber str (_logic getvariable ["civicRetaliationChance",0])) max 0;
+                    _civicRecruitmentMultiplier = (parseNumber format ["%1", _logic getvariable ["civicRecruitmentMultiplier",1]]) max 0;
+                    _civicInstallationMultiplier = (parseNumber format ["%1", _logic getvariable ["civicInstallationMultiplier",1]]) max 0;
+                    private _civicRetaliationChanceRaw = (parseNumber format ["%1", _logic getvariable ["civicRetaliationChance",0]]) max 0;
                     _civicRetaliationChance = if (_civicRetaliationChanceRaw >= 1) then {
                         (_civicRetaliationChanceRaw min 100) / 100
                     } else {
                         _civicRetaliationChanceRaw min 1
                     };
-                    _civicRetaliationIntensity = (parseNumber str (_logic getvariable ["civicRetaliationIntensity",1])) max 0;
+                    _civicRetaliationIntensity = (parseNumber format ["%1", _logic getvariable ["civicRetaliationIntensity",1]]) max 0;
                     _debug = ((_logic getvariable ["debug","false"]) == "true");
                     _persistent = ((_logic getvariable ["persistent","false"]) == "true");
                     _reinforcements = call compile (_logic getvariable ["reinforcements","0.9"]);
-                    _roadblocks = (parseNumber str (_logic getvariable ["roadblocks",1])) > 0;
+                    _roadblocks = (parseNumber format ["%1", _logic getvariable ["roadblocks",1]]) > 0;
                     // #697 Phase 2.1: AI-driven friendly destroy of enemy asymmetric
                     // installations. Read the mode string here; the behavioural
                     // implementation lands in follow-up commits (proximity first,
@@ -906,7 +906,18 @@ switch(_operation) do {
                         } else {
                             {[[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos] call ALiVE_fnc_crossesSea}
                         };
-	                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!(call _isSeaTravel)}}};
+                        // Static AA gate: profiles registered as "static" in
+                        // ALIVE_aaProfileBehaviour (populated by mil_placement
+                        // / mil_placement_custom AA spawn) skip section
+                        // composition - keeps emplaced AA at its spawn point
+                        // instead of being repositioned on attack / defend
+                        // orders. Roaming AA passes through as a normal
+                        // force unit.
+                        private _aaBehVal = if (!isNil "ALIVE_aaProfileBehaviour") then {
+                            [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
+                        } else { nil };
+                        private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
+	                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!(call _isSeaTravel)}}} && {!_isStaticAA};
 
 	                    if (_valid) then {_troopsUnsorted pushBack _profile};
                     };
@@ -1121,7 +1132,15 @@ switch(_operation) do {
                         if !(isnil "_profile") then {
                                _posAttacker = [_profile, "position"] call ALiVE_fnc_HashGet;
 
-                            if (!(isnil "_profile") && {_pos distance _posAttacker < _dist} && {!(_profileID in _reserved)}) then {
+                            // Static AA gate (see "nearestSection" case for
+                            // rationale). Static AA never gets pulled into a
+                            // QRF response - stays at its emplaced spawn.
+                            private _aaBehVal = if (!isNil "ALIVE_aaProfileBehaviour") then {
+                                [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
+                            } else { nil };
+                            private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
+
+                            if (!(isnil "_profile") && {_pos distance _posAttacker < _dist} && {!(_profileID in _reserved)} && {!_isStaticAA}) then {
 
                                 _waypoints = [_profile,"waypoints"] call ALIVE_fnc_hashGet;
 
@@ -1452,16 +1471,19 @@ switch(_operation) do {
                                     private _objectiveID = [_objective,"objectiveID",""] call ALiVE_fnc_HashGet;
                                     private _created = false;
 
+
                                     if (!(_objectiveID in _overrideObjectiveIDs) && {random 1 < _asym_occupation}) then {
                                         private _center = [_objective,"center"] call ALiVE_fnc_HashGet;
                                         private _size = [_objective,"size",-1] call ALiVE_fnc_HashGet;
                                         private _dominantFaction = [_center, _size] call ALiVE_fnc_getDominantFaction;
+
 
                                         if (isnil "_dominantFaction" || {!(([[_dominantFaction call ALiVE_fnc_factionSide] call ALiVE_fnc_SideObjectToNumber] call ALiVE_fnc_SideNumberToText) in _sidesEnemy)}) then {
                                             private _buildingTypes = [];
                                             private _roadTypes = [];
                                             private _availableBuildings = [_center,_size] call ALiVE_fnc_INS_filterObjectiveBuildings;
                                             private _availableRoads = _center nearRoads _size;
+
 
                                             if (count _availableBuildings > 0) then {
                                                 _buildingTypes = ["HQ","depot","factory"];
@@ -1484,6 +1506,7 @@ switch(_operation) do {
                                                 _preferredType = selectRandom _roadTypes;
                                                 _fallbackTypes = (_roadTypes - [_preferredType]) + _buildingTypes;
                                             };
+
 
                                             if (_preferredType != "") then {
                                                 _created = [_logic,"createAsymmetricInstallation",[_preferredType,_center,_preferredType in ["HQ","depot","factory"],_objective]] call ALiVE_fnc_OPCOM;

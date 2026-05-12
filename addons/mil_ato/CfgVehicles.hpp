@@ -117,18 +117,6 @@ class CfgVehicles
                             class No { name = "No"; value = false; default = 1; };
                         };
                 };
-                class placeAA : Combo
-                {
-                        property = "ALiVE_mil_ato_placeAA";
-                        displayName = "$STR_ALIVE_ATO_PLACE_AA";
-                        tooltip = "$STR_ALIVE_ATO_PLACE_AA_COMMENT";
-                        defaultValue = """false""";
-                        class Values
-                        {
-                            class Yes { name = "Yes"; value = true; };
-                            class No { name = "No"; value = false; default = 1; };
-                        };
-                };
                 class generateTasks : Combo
                 {
                         property = "ALiVE_mil_ato_generateTasks";
@@ -176,6 +164,40 @@ class CfgVehicles
                             class Yes { name = "Yes"; value = true; default = 1; };
                             class No { name = "No"; value = false; };
                         };
+                };
+                // ---- Objective Objects (#875) ---------------------------------------
+                class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
+                // Airfield radar arrays are a strong thematic fit for ATO.
+                // AA-style triplet: count Edit + behaviour Combo + picker.
+                class objectiveObjectsCount : Edit
+                {
+                        property     = "ALiVE_mil_ato_objectiveObjectsCount";
+                        displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT";
+                        tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT";
+                        defaultValue = """0""";
+                };
+                class objectiveObjectsBehaviour : Combo
+                {
+                        property     = "ALiVE_mil_ato_objectiveObjectsBehaviour";
+                        displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR";
+                        tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_COMMENT";
+                        defaultValue = """dispersed""";
+                        class Values
+                        {
+                            class CLUSTERED { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_CLUSTERED"; value = "clustered"; };
+                            class DISPERSED { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_DISPERSED"; value = "dispersed"; default = 1; };
+                            class PERIMETER { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_PERIMETER"; value = "perimeter"; };
+                        };
+                };
+                class objectiveObjects
+                {
+                        property     = "ALiVE_mil_ato_objectiveObjects";
+                        displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS";
+                        tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_COMMENT";
+                        control      = "ALiVE_ObjectiveObjectChoice";
+                        typeName     = "STRING";
+                        expression   = "_this setVariable ['objectiveObjects', _value];";
+                        defaultValue = """""";
                 };
                 // ---- Runway Configuration ------------------------------------------
                 class HDR_RUNWAY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_RUNWAY"; displayName = "RUNWAY CONFIGURATION"; };

@@ -54,6 +54,26 @@ if (!isNull _firer && {side _firer == civilian}) exitWith {};   // Ignore civili
 private _range    = if (_hasSuppressor) then { ALiVE_advciv_suppressedRange } else { ALiVE_advciv_unsuppressedRange };
 private _nearCivs = _pos nearEntities ["CAManBase", _range];
 
+// Tag the firer once per shot if ANY valid civilian is within 50 m, so the
+// ALERT / HIDING-exit threat check in brainTick can find them. Hoisted out
+// of the per-civ loop below so a single shot near N civilians produces ONE
+// timestamp write + broadcast, not N redundant ones - the writes are
+// idempotent (same timestamp) but each setVariable broadcast=true fires a
+// publicVariable, so collapsing them is a network-side perf win.
+if (!isNull _firer) then {
+    private _civsWithin50 = _nearCivs select {
+        alive _x
+        && {side _x == civilian}
+        && {!isPlayer _x}
+        && {_x getVariable ["ALiVE_advciv_active", false]}
+        && {(_x distance _pos) < 50}
+    };
+    if (count _civsWithin50 > 0) then {
+        _firer setVariable ["ALiVE_advciv_firedAtCivTime", time, true];
+        if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=FiredNear civsInRange=%4", name _firer, side _firer, time, count _civsWithin50]; };
+    };
+};
+
 {
     private _civ = _x;
 
@@ -70,11 +90,6 @@ private _nearCivs = _pos nearEntities ["CAManBase", _range];
         private _newShots = (_cur + _intensity) min 20;
         _civ setVariable ["ALiVE_advciv_nearShots", _newShots];
         _civ setVariable ["ALiVE_advciv_lastShotTime", time];
-
-        // Tag the firer as hostile so the ALERT threat check in brainTick can find them
-        if (_dist < 50 && {!isNull _firer}) then {
-            _firer setVariable ["ALiVE_advciv_firedAtCiv", true, true];
-        };
 
         if (_order in ["HANDSUP", "GETDOWN", "KNEEL"]) then {
             // Under a restrictive order — extend hide timer but don't break pose
