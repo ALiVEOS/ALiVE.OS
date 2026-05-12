@@ -86,13 +86,14 @@ switch (_taskState) do {
             _crashsite = true;
         };
 
-        // establish the location for the task
-        // get enemy cluster position
-		if (isNil "_taskLocation" || [_taskLocation, _taskPlayers select 0] call ALIVE_fnc_taskGetClosestPlayerDistanceToDestination < 600) then {
-		    _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
-		} else {
-            _targetPosition = _taskLocation;
-        };
+        // Pick the crash-site / target position in ENEMY territory.
+        // Always look up an enemy-side cluster around _taskLocation so
+        // the target isn't accidentally placed on a friendly area when
+        // _taskLocation is itself friendly (#9 follow-up: tasks
+        // spawning in friendly locations). Previous logic short-
+        // circuited this for "player far" cases and used _taskLocation
+        // directly, producing friendly-side targets.
+        _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
 
         if(count _targetPosition == 0) then {
 
@@ -111,41 +112,48 @@ switch (_taskState) do {
 
         _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
 
-        // establish the location for the return task
-        // get friendly cluster
+        // Return location: first try the friendly side's OPCOM main HQ
+        // (the OPCOM module's Eden placement position). When no friendly
+        // OPCOM is placed, fall back to the legacy friendly-cluster ->
+        // random-safe-pos -> spawn-camp chain.
         if (_taskLocationType == "NULL") then {_taskLocationType = "MEDIUM";};
-        _returnPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideCluster;
+        _returnPosition = [_taskSide] call ALIVE_fnc_taskGetReturnPosition;
 
-        if(count _returnPosition == 0) then {
-            // no friendly cluster found
-            // try to get a position containing friendlies
-            _returnPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
+        if (count _returnPosition == 0) then {
+            // legacy fallback - friendly cluster
+            _returnPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideCluster;
 
-            if (count _returnPosition == 0) then {
-                _returnPosition = [
-                    _taskLocation,
-                    50,
-                    500,
-                    1,
-                    0,
-                    0.25,
-                    0,
-                    [],
-                    [_taskLocation]
-                ] call BIS_fnc_findSafePos;
+            if(count _returnPosition == 0) then {
+                // no friendly cluster found
+                // try to get a position containing friendlies
+                _returnPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
+
+                if (count _returnPosition == 0) then {
+                    _returnPosition = [
+                        _taskLocation,
+                        50,
+                        500,
+                        1,
+                        0,
+                        0.25,
+                        0,
+                        [],
+                        [_taskLocation]
+                    ] call BIS_fnc_findSafePos;
+                };
+
+                _returnPosition = [_returnPosition, 250] call ALIVE_fnc_findFlatArea;
+
+                // spawn a populated composition
+                private _compType = "Military";
+                If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                    _compType = "Guerrilla";
+                    _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Comms"];
+                } else {
+                    _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Comms"];
+                };
+                [_returnPosition, _compType, _category, _taskFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
             };
-
-            _returnPosition = [_returnPosition, 250] call ALIVE_fnc_findFlatArea;
-
-            // spawn a populated composition
-            private _compType = "Military";
-            If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                _compType = "Guerrilla";
-                _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Comms"];
-            } else {
-                _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Comms"];
-            };
-            [_returnPosition, _compType, _category, _taskFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         if!(isNil "_targetPosition" || isNil "_returnPosition") then {
@@ -533,7 +541,7 @@ switch (_taskState) do {
 
                             ["chat_update",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-                            [_position,_taskSide,_taskPlayers,_taskID,"csar"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                            [_position,_taskSide,_taskPlayers,_taskID,"csar","",_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
                             _irstrobe = "NVG_TargetW" createVehicle getpos _crew;
                             _irstrobe attachTo [_crew,[0,0,0.2],"neck"];

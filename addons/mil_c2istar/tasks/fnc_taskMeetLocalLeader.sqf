@@ -190,7 +190,7 @@ switch (_taskState) do {
             "_taskSide",
             "_taskPosition",
             "_taskFaction",
-            "",
+            "_taskTitle",
             "",
             "_taskPlayers"
         ];
@@ -231,7 +231,7 @@ switch (_taskState) do {
 
             [_params] call _cleanupObjects;
         } else {
-            [_taskPosition, _taskSide, _taskPlayers, _taskID, "civilian", "Local Leader"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            [_taskPosition, _taskSide, _taskPlayers, _taskID, "civilian", "Local Leader", _taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
             if (_leader getVariable [([_params, "completionVar", ""] call ALIVE_fnc_hashGet), false]) then {
                 [_params, "nextTask", ""] call ALIVE_fnc_hashSet;

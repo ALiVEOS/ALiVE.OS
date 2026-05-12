@@ -129,7 +129,17 @@ switch (_taskState) do {
                     };
                 };
             } else {
-                _targetPosition = [_taskLocation,500] call ALiVE_fnc_findFlatArea;
+                // No OPCOM_instances - attempt enemy-side cluster lookup
+                // around _taskLocation so the target stays in enemy
+                // territory even when no OPCOM is placed. Falls through
+                // to the legacy flat-area-from-_taskLocation pick when
+                // no enemy cluster is found nearby.
+                _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
+                if (count _targetPosition == 0) then {
+                    _targetPosition = [_taskLocation,500] call ALiVE_fnc_findFlatArea;
+                } else {
+                    _targetPosition = [_targetPosition,500] call ALiVE_fnc_findFlatArea;
+                };
             };
         } else {
             _targetPosition = _taskLocation;
@@ -147,41 +157,49 @@ switch (_taskState) do {
             };
         };
 
-        // establish the location for the return task
-        // get friendly cluster
-        _returnPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideCluster;
+        // Return location: first try the friendly side's OPCOM main HQ
+        // (the OPCOM module's Eden placement position). When no friendly
+        // OPCOM is placed in the mission, fall back to the legacy
+        // friendly-cluster -> random-safe-pos -> spawn-camp chain so
+        // missions without OPCOM still get a Return location.
+        _returnPosition = [_taskSide] call ALIVE_fnc_taskGetReturnPosition;
 
-        if(count _returnPosition == 0) then {
-            private ["_category","_compType"];
-            // no enemy occupied cluster found
-            // try to get a position containing enemy
-            _returnPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
+        if (count _returnPosition == 0) then {
+            // legacy fallback - friendly cluster
+            _returnPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideCluster;
 
-            // spawn a populated composition
-            if (count _returnPosition == 0) then {
-                _returnPosition = [
-                    _taskLocation,
-                    50,
-                    1500,
-                    1,
-                    0,
-                    0.25,
-                    0,
-                    [],
-                    [_taskLocation]
-                ] call BIS_fnc_findSafePos;
+            if(count _returnPosition == 0) then {
+                private ["_category","_compType"];
+                // no enemy occupied cluster found
+                // try to get a position containing enemy
+                _returnPosition = [_taskLocation,_taskLocationType,_taskSide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
+
+                // spawn a populated composition
+                if (count _returnPosition == 0) then {
+                    _returnPosition = [
+                        _taskLocation,
+                        50,
+                        1500,
+                        1,
+                        0,
+                        0.25,
+                        0,
+                        [],
+                        [_taskLocation]
+                    ] call BIS_fnc_findSafePos;
+                };
+
+                _returnPosition = [_returnPosition, 250] call ALIVE_fnc_findFlatArea;
+
+                _compType = "Military";
+                If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                    _compType = "Guerrilla";
+                    _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Communications"];
+                } else {
+                    _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Communications"];
+                };
+                [_returnPosition, _compType, _category, _taskFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
             };
-
-            _returnPosition = [_returnPosition, 250] call ALIVE_fnc_findFlatArea;
-
-            _compType = "Military";
-            If (_taskFaction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                _compType = "Guerrilla";
-                _category = ["HQ", "Outposts", "FieldHQ", "Camps","Supports","Communications"];
-            } else {
-                _category = ["Outposts", "FieldHQ", "Camps","Supports","Heliports","Communications"];
-            };
-            [_returnPosition, _compType, _category, _taskFaction, ["Medium","Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
         };
 
         if!(isNil "_targetPosition" || isNil "_returnPosition") then {
@@ -494,7 +512,7 @@ switch (_taskState) do {
 
                         ["chat_update",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-                        [position _hostage,_taskSide,_taskPlayers,_taskID,"hostage"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                        [position _hostage,_taskSide,_taskPlayers,_taskID,"hostage","",_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
                         // store the data on the params
                         [_params, "startTime", time] call ALIVE_fnc_hashSet;

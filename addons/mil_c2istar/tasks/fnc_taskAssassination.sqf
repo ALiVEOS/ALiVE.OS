@@ -160,7 +160,17 @@ switch (_taskState) do {
 
                 };
             } else {
-                _targetPosition = [_taskLocation,500] call ALiVE_fnc_findFlatArea;
+                // No OPCOM_instances - attempt enemy-side cluster lookup
+                // around _taskLocation so the target stays in enemy
+                // territory even when no OPCOM is placed. Falls through
+                // to the legacy flat-area-from-_taskLocation pick when
+                // no enemy cluster is found nearby.
+                _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
+                if (count _targetPosition == 0) then {
+                    _targetPosition = [_taskLocation,500] call ALiVE_fnc_findFlatArea;
+                } else {
+                    _targetPosition = [_targetPosition,500] call ALiVE_fnc_findFlatArea;
+                };
             };
         } else {
             _targetPosition = _taskLocation;

@@ -201,7 +201,7 @@ switch (_taskState) do {
             "_taskSide",
             "_taskPosition",
             "_taskFaction",
-            "",
+            "_taskTitle",
             "",
             "_taskPlayers"
         ];
@@ -240,7 +240,7 @@ switch (_taskState) do {
                 ]
             ] call ALIVE_fnc_taskApplyPopulationEffect;
         } else {
-            [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "critical service"] call ALIVE_fnc_taskCreateMarkersForPlayers;
+            [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "critical service", _taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
             if (_target getVariable [([_params, "completionVar", ""] call ALIVE_fnc_hashGet), false]) then {
                 [_params, "nextTask", ""] call ALIVE_fnc_hashSet;

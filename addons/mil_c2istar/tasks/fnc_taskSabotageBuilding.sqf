@@ -389,7 +389,7 @@ switch (_taskState) do {
 
             {
                 private _objectType = getText (configfile >> "CfgVehicles" >> typeOf _x >> "displayName");
-                [getposATL _x, _taskEnemySide, _taskPlayers, _taskID, "building", _objectType] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                [getposATL _x, _taskEnemySide, _taskPlayers, _taskID, "building", _objectType, _taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
             } forEach _targets;
         };
     };
