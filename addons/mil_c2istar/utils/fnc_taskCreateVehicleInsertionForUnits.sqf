@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 [_this] spawn {
@@ -99,7 +100,26 @@ ARJay
     }else{
         _insertionType = (selectRandom _insertionTypes);
     };
-    
+
+    // Guard against empty class array. The friendly-faction fallback
+    // above can still return zero classes if neither the task faction
+    // nor any friendly side faction has vehicles of _insertionType
+    // configured. Without this guard, `selectRandom <empty>` below
+    // returns nil, `_vehicleClass` ends up undefined and the entire
+    // `createProfilesCrewedVehicle` chain errors (cascades into
+    // profileHandler / configGetVehicleEmptyPositions). Pre-existing
+    // latent bug exposed by Assassination tasks now generating
+    // reliably after the Capture Objective enemy-presence guard.
+    private _classesForType = switch (_insertionType) do {
+        case "Car": {_carClasses};
+        case "Helicopter": {_heliClasses};
+        default {[]};
+    };
+
+    if (count _classesForType == 0) exitWith {
+        ["C2ISTAR - Task InsertionForUnits - No %1 vehicle classes available for faction %2; aborting insertion spawn", _insertionType, _taskFaction] call ALiVE_fnc_Dump;
+    };
+
     private ["_vehicleClass","_profiles","_crewProfile","_crewProfileID","_vehicleProfile","_vehicleProfileID","_profileWaypoint","_transportPosition"];
 
     switch(_insertionType) do {

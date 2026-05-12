@@ -142,24 +142,48 @@ _m setMarkerBrushLocal "SolidBorder";
 // `taskTitle` command isn't recognised in this build, hence the
 // indirection.
 //
-// Suppress the AO sibling text when the task already has a primary
-// marker on the map (fnc_taskCreateMarker registers them in
-// ALIVE_taskMarkers keyed by taskID). The primary marker drops its
-// own black hd_dot sibling 30m east of the icon, so without this
-// gate the title would render twice - once from the primary's
-// sibling, once from the AO's. MilDefence DefenceWave and any other
-// task type that doesn't call taskCreateMarkersForPlayers leaves
-// ALIVE_taskMarkers empty for its taskID, so the AO sibling remains
-// the only label and still shows.
-private _hasPrimaryMarkers = false;
-if (_matchedTaskID != "" && {!isNil "ALIVE_taskMarkers"}) then {
-    private _existingMarkers = [ALIVE_taskMarkers, _matchedTaskID, []] call ALIVE_fnc_hashGet;
-    if (typeName _existingMarkers == "ARRAY" && {count _existingMarkers > 0}) then {
-        _hasPrimaryMarkers = true;
-    };
+// Suppress the AO sibling text when any task's primary sibling text
+// marker would land at the same spot. fnc_taskCreateMarker places its
+// sibling 30m east of the task position; we place the AO sibling 30m
+// east of the AO centre. So if any task's `_taskPosition` is within
+// roughly the AO centre, the two sibling labels overlap at the same
+// screen coordinate (different titles, same pixels). Multi-task
+// families like Secure Community Event (Parent / Setup / Secure all
+// share _taskPosition) trigger this even though the CURRENT task's
+// own taskID may not have a primary marker yet - the sibling sub-task
+// does, and its sibling text lands on top of ours. Walking all
+// entries in ALIVE_taskMarkers covers that case in one shot.
+//
+// Threshold: 50m around the AO sibling text position. Tight enough
+// that genuinely separate tasks don't suppress each other, loose
+// enough that same-family / co-located tasks do.
+//
+// MilDefence DefenceWave and any other task type that doesn't call
+// taskCreateMarkersForPlayers still leaves ALIVE_taskMarkers empty
+// for its family, so the AO sibling remains the only label and shows.
+private _aoTextPos = [(_pos select 0) + 30, _pos select 1, _pos param [2, 0]];
+private _hasNearbyPrimaryText = false;
+if (!isNil "ALIVE_taskMarkers" && {typeName ALIVE_taskMarkers == "ARRAY" && {count ALIVE_taskMarkers > 1}}) then {
+    private _allTaskIDs = ALIVE_taskMarkers select 1;
+    {
+        private _markerNames = [ALIVE_taskMarkers, _x, []] call ALIVE_fnc_hashGet;
+        if (typeName _markerNames == "ARRAY") then {
+            {
+                if (typeName _x == "STRING" && {(_x find "_text") > 0}) then {
+                    private _mPos = getMarkerPos _x;
+                    // getMarkerPos returns [0,0,0] for missing markers; skip
+                    // those by requiring a non-zero position match.
+                    if (count _mPos > 1 && {!(_mPos isEqualTo [0,0,0]) && {_mPos distance2D _aoTextPos < 50}}) exitWith {
+                        _hasNearbyPrimaryText = true;
+                    };
+                };
+            } forEach _markerNames;
+        };
+        if (_hasNearbyPrimaryText) exitWith {};
+    } forEach _allTaskIDs;
 };
 
-if (_matchedTitle != "" && {!_hasPrimaryMarkers}) then {
+if (_matchedTitle != "" && {!_hasNearbyPrimaryText}) then {
     // Offset the sibling text marker 30m east of the AO centre so the
     // title renders clear of BI's engine current-task waypoint icon
     // (which is rendered automatically at taskDestination and carries
@@ -167,8 +191,7 @@ if (_matchedTitle != "" && {!_hasPrimaryMarkers}) then {
     // fnc_taskCreateMarker.sqf applies to its sibling text markers.
     // Without the offset, the title sits right on top of the BI
     // indicator and reads as cramped against the icon.
-    private _textPos = [(_pos select 0) + 30, _pos select 1, _pos param [2, 0]];
-    private _mText = createMarkerLocal [_textMarkerName, _textPos];
+    private _mText = createMarkerLocal [_textMarkerName, _aoTextPos];
     _mText setMarkerShapeLocal "ICON";
     _mText setMarkerTypeLocal "hd_dot";
     _mText setMarkerColorLocal "ColorBlack";
@@ -177,4 +200,4 @@ if (_matchedTitle != "" && {!_hasPrimaryMarkers}) then {
     _mText setMarkerTextLocal _matchedTitle;
 };
 
-diag_log format ["DIAG-STRIP taskRefreshAoMarker: SHOWING AO marker=%1 pos=%2 radius=%3 title='%4' hasPrimary=%5 textMarker=%6", _markerName, _pos, _radius, _matchedTitle, _hasPrimaryMarkers, if (_matchedTitle != "" && {!_hasPrimaryMarkers}) then { _textMarkerName } else { "(none)" }];
+diag_log format ["DIAG-STRIP taskRefreshAoMarker: SHOWING AO marker=%1 pos=%2 radius=%3 title='%4' nearbyPrimary=%5 textMarker=%6", _markerName, _pos, _radius, _matchedTitle, _hasNearbyPrimaryText, if (_matchedTitle != "" && {!_hasNearbyPrimaryText}) then { _textMarkerName } else { "(none)" }];
