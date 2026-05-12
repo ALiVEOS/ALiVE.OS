@@ -150,7 +150,7 @@
     <English>Display Map Intel:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_DISPLAY_INTEL_COMMENT">
-    <English>Displays mission-wide battlefield events (kills, logistics activity, OPCOM state changes) as markers on the player map. Note: in the current build the event listener is registered regardless of this setting; toggling it Off doesn't yet stop the markers from rendering — set Map Intel Visibility to a narrower scope if you need to limit who sees them.</English>
+    <English>Master switch for C2ISTAR map intel. When On, displays mission-wide battlefield events (kills, logistics activity, OPCOM state changes) as markers on the player map. When Off, both intel pipelines shut down — the event listener doesn't register and the OPCOM-side G2 spotrep pump doesn't run, so no markers appear from either source. Combine with Map Intel Visibility to narrow which players see the markers when On.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY">
     <English>Map Intel Visibility:</English>

@@ -401,8 +401,17 @@ switch(_operation) do {
                                     // singleton - the global tracks only the
                                     // last-initialised module and would skip per-
                                     // sync configuration in a multi-C2ISTAR mission.
+                                    private _displayIntel = [_x,"displayIntel"] call ALiVE_fnc_C2ISTAR;
                                     private _opcomIntelSides = [_x,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
-                                    if (_side in _opcomIntelSides) then {
+                                    // Display Map Intel acts as the master switch for
+                                    // all C2ISTAR map markers: when Off, skip the G2
+                                    // spotrep pipeline setup here too (the
+                                    // fnc_militaryIntel listener is independently
+                                    // gated by the same flag at start time). Pairs
+                                    // both intel-producing pipelines under one toggle
+                                    // so mission-makers' expectation that the setting
+                                    // turns off ALL map intel is honoured.
+                                    if (_displayIntel && {_side in _opcomIntelSides}) then {
                                         private _G2 = [nil,"create", [_handler]] call ALiVE_fnc_G2;
                                         [_G2,"start"] call ALiVE_fnc_G2;
                                         [_handler,"G2", _G2] call ALiVE_fnc_hashSet;
