@@ -19,6 +19,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -111,6 +112,20 @@ switch (_taskState) do {
         };
 
         _targetPosition = [_targetPosition, 250] call ALIVE_fnc_findFlatArea;
+
+        // Verify the crash position has enemy presence. CSAR exists
+        // narratively because the downed pilot is in danger - a crash
+        // site in friendly territory defeats the point (the pilot would
+        // be recovered trivially without a c2istar task). The fallback
+        // BIS_fnc_findSafePos branch above can pick anywhere within
+        // 1500m of _taskLocation, which on a small / contested map
+        // routinely lands friendly. Exit cleanly when no enemy near so
+        // the auto-task slot picks a different task type rather than
+        // spawning a no-stakes rescue. Mirrors the Capture-Objective
+        // enemy-presence guard.
+        if (count _targetPosition == 0 || {!([_targetPosition, _taskSide, 500, true] call ALIVE_fnc_isEnemyNear)}) exitWith {
+            ["C2ISTAR - Task CSAR - Crash position %1 has no enemy presence (downed pilot in friendly / cleared territory) - exiting", _targetPosition] call ALiVE_fnc_Dump;
+        };
 
         // Return location: first try the friendly side's OPCOM main HQ
         // (the OPCOM module's Eden placement position). When no friendly

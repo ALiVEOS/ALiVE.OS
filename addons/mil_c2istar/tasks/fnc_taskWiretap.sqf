@@ -20,6 +20,7 @@ See Also:
 Author:
 ARJay
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 params [
 		"_taskState",
@@ -107,13 +108,24 @@ switch (_taskState) do {
 						_player = [_player] call ALIVE_fnc_getPlayerByUID;
 					};
 
-                    private _objectives = [_objectives, [getPosATL _player], {_Input0 distance ([_x, "center"] call ALiVE_fnc_HashGet)}, "ASCEND", {
+                    private _objectives = [_objectives, [getPosATL _player, _taskSide], {_Input0 distance ([_x, "center"] call ALiVE_fnc_HashGet)}, "ASCEND", {
 							private _id = [_x, "opcomID", ""] call ALiVE_fnc_HashGet;
 							private _pos = [_x, "center"] call ALiVE_fnc_HashGet;
 							private _opcom = [objNull, "getOPCOMbyid", _id] call ALiVE_fnc_OPCOM;
 							private _side = [_opcom, "side", ""] call ALiVE_fnc_HashGet;
 
-							!([_pos, _side, 500, true] call ALiVE_fnc_isEnemyNear);
+							// Keep objectives that are (a) not already
+							// friendly-occupied (no enemies of OPCOM side present
+							// - i.e. friendly forces haven't already overrun the
+							// spot) AND (b) have real enemy presence the player
+							// can actually wiretap (enemies of _taskSide
+							// present). Mirrors the enemy-presence guard added
+							// to fnc_taskCaptureObjective; without it the player
+							// could be tasked with wiretapping an empty
+							// objective. _Input1 = _taskSide passed via inputs
+							// since SortBy filters run in SortBy's own scope.
+							!([_pos, _side, 500, true] call ALiVE_fnc_isEnemyNear)
+							&& {[_pos, _Input1, 500, true] call ALiVE_fnc_isEnemyNear};
 						}] call ALiVE_fnc_SortBy;
 
                     private _totalIndexes = (count _objectives)-1;

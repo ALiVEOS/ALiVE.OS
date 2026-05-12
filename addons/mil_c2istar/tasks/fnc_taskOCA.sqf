@@ -18,6 +18,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -132,7 +133,18 @@ switch (_taskState) do {
 						_player = [_player] call ALIVE_fnc_getPlayerByUID;
 					};
 					
-                    private _objectives = [_objectives, [getposATL _player], {_Input0 distance ([_x, "center"] call ALiVE_fnc_HashGet)}, "ASCEND"] call ALiVE_fnc_SortBy;
+                    // Filter: keep only objectives with real enemy presence
+                    // the player can actually attack. Without this, OCA could
+                    // pick an airfield whose enemy garrison has already been
+                    // routed (OPCOM still lists it as "defend"/"idle") and
+                    // the destroy phase would have nothing to fire at.
+                    // Mirrors the Capture-Objective enemy-presence guard.
+                    // _Input1 = _taskSide via inputs since SortBy's filter
+                    // runs in SortBy's own scope.
+                    private _objectives = [_objectives, [getposATL _player, _taskSide], {_Input0 distance ([_x, "center"] call ALiVE_fnc_HashGet)}, "ASCEND", {
+                        private _pos = [_x, "center"] call ALiVE_fnc_HashGet;
+                        [_pos, _Input1, 500, true] call ALiVE_fnc_isEnemyNear;
+                    }] call ALiVE_fnc_SortBy;
 
                     {
                         private _found = false;

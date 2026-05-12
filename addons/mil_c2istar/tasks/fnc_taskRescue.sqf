@@ -19,6 +19,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -101,14 +102,25 @@ switch (_taskState) do {
                 } foreach OPCOM_instances;
 
                 if (count _objectives > 0) then {
-                    private _objectives = [_objectives,[_taskLocation],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND",{
+                    private _objectives = [_objectives,[_taskLocation,_taskSide],{_Input0 distance ([_x,"center"] call ALiVE_fnc_HashGet)},"ASCEND",{
 
                         private _id = [_x,"opcomID",""] call ALiVE_fnc_HashGet;
                         private _pos = [_x,"center"] call ALiVE_fnc_HashGet;
                         private _opcom = [objNull,"getOPCOMbyid",_id] call ALiVE_fnc_OPCOM;
                         private _side = [_opcom,"side",""] call ALiVE_fnc_HashGet;
 
-                        !([_pos,_side,500,true] call ALiVE_fnc_isEnemyNear) && {_pos distance _Input0 > 1200};
+                        // Filter: (a) not already friendly-occupied, (b) at
+                        // least 1200m from _taskLocation so the hostage spawn
+                        // is not in the player's face, AND (c) has real
+                        // enemy presence so there is someone to actually
+                        // rescue the hostage from. The third clause is the
+                        // Capture-Objective-style enemy-presence guard;
+                        // without it the hostage could spawn in territory
+                        // the enemy has already abandoned. _Input1 =
+                        // _taskSide via inputs (SortBy's filter scope).
+                        !([_pos,_side,500,true] call ALiVE_fnc_isEnemyNear)
+                        && {_pos distance _Input0 > 1200}
+                        && {[_pos,_Input1,500,true] call ALiVE_fnc_isEnemyNear};
                     }] call ALiVE_fnc_SortBy;
 
                     _targetPosition = [_objectives select 0,"center"] call ALiVE_fnc_HashGet;
