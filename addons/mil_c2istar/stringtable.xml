@@ -188,6 +188,9 @@
 <Key ID="STR_ALIVE_C2ISTAR_INTEL_CHANCE_COMMENT">
     <English>Amount of intel reports generated</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_INTEL_CHANCE_OFF">
+    <English>Off (0%)</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_INTEL_CHANCE_LOW">
     <English>Low (10%)</English>
 </Key>
@@ -306,6 +309,12 @@
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_VIP_PANIC_TIMEOUT_COMMENT">
     <English>How long, in seconds, a panicked VIP may remain uncontrolled before the VIP Escort task is marked failed.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASK_AO_RADIUS">
+    <English>Task AO Radius (m):</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_TASK_AO_RADIUS_COMMENT">
+    <English>Radius in metres of an optional ellipse marker drawn around each task position to highlight the search area. 0 disables (no circle drawn). Helps players locate task objectives in cluttered terrain where the standard task icon alone is hard to spot. Applies to all auto- and player-generated task markers.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_ENABLED">
     <English>Enable Civic-State COIN Model:</English>

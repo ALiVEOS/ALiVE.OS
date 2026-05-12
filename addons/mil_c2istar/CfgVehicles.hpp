@@ -99,6 +99,14 @@ class CfgVehicles {
                             defaultValue = """180""";
                             typeName = "NUMBER";
                     };
+                    class taskAoRadius : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_taskAoRadius";
+                            displayName = "$STR_ALIVE_C2ISTAR_TASK_AO_RADIUS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_TASK_AO_RADIUS_COMMENT";
+                            defaultValue = """0""";
+                            typeName = "NUMBER";
+                    };
 
                     class SPACER_AUTOTASK_DEFAULTS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_AUTOTASK_DEFAULTS"; displayName = " "; };
                     class autoGenerateBlufor : Combo
@@ -496,6 +504,7 @@ class CfgVehicles {
                             defaultValue = """1""";
                             class Values
                             {
+                                    class OFF       { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_OFF";       value = "0"; };
                                     class LOW       { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_LOW";       value = "0.1"; };
                                     class MEDIUM    { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_MEDIUM";    value = "0.2"; };
                                     class HIGH      { name = "$STR_ALIVE_C2ISTAR_INTEL_CHANCE_HIGH";      value = "0.4"; };

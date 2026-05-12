@@ -68,6 +68,7 @@ Peer Reviewed:
 #define DEFAULT_RUN_EVERY 120
 #define DEFAULT_TASK_MIN_DISTANCE 0
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
+#define DEFAULT_TASK_AO_RADIUS 0
 #define DEFAULT_FILTER_ENEMY_FACTIONS true
 #define DEFAULT_CIVIC_STATE_ENABLED false
 #define DEFAULT_CIVIC_MULTIPLIER 1
@@ -516,6 +517,18 @@ switch(_operation) do {
 
         _result = _logic getVariable ["vipPanicTimeout", DEFAULT_VIP_PANIC_TIMEOUT];
         // Module attribute system may store value as string — coerce to scalar
+        if (typeName _result == "STRING") then { _result = parseNumber _result; };
+    };
+    case "taskAoRadius": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["taskAoRadius", _args];
+        };
+
+        _result = _logic getVariable ["taskAoRadius", DEFAULT_TASK_AO_RADIUS];
         if (typeName _result == "STRING") then { _result = parseNumber _result; };
     };
     case "filterEnemyFactions": {

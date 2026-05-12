@@ -189,6 +189,18 @@ switch(_operation) do {
                 player setCurrentTask _taskObject;
             };
 
+            // Optional AO ellipse marker around the task position (#689).
+            // Shown only when the task is Assigned AND set as the player's
+            // current task; hidden for created-but-not-accepted /
+            // completed / failed / canceled / non-current. Mission-maker
+            // configures the radius via the C2ISTAR "Task AO Radius"
+            // attribute; 0 (default) disables drawing entirely. Hook fires
+            // for every c2istar-routed task (auto-generated, player-
+            // requested via the c2istar menu, civic Hearts-and-Minds).
+// AO refresh is driven by a CBA per-frame handler in XEH_postInit
+// so it picks up current-task changes regardless of source (c2istar
+// menu, BI task UI Assign button, scripted setCurrentTask).
+
             _task set [10,_taskObject];
 
             // store in main tasks hash
@@ -249,6 +261,13 @@ switch(_operation) do {
             if(_current == "Y") then {
                 player setCurrentTask _taskObject;
             };
+
+            // Refresh AO marker against the task's new state - hides
+            // when state moves off Assigned or the task is no longer
+            // current. See registerTask above for the hook details.
+// AO refresh is driven by a CBA per-frame handler in XEH_postInit
+// so it picks up current-task changes regardless of source (c2istar
+// menu, BI task UI Assign button, scripted setCurrentTask).
 
             _updatedTask set [10,_taskObject];
 
