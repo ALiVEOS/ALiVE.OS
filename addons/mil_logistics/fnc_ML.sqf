@@ -5272,10 +5272,11 @@ switch(_operation) do {
                         // Rule 1.5: AIRLIFT gate -- strategic land-and-unload via the
                         // mission-defined airlift aircraft. Conditions: aircraft class set,
                         // valid (kindOf Air + transportSoldier > 0), friendly source airport
-                        // (nearest to LOGCOM HQ), friendly destination airport (within 3000m
-                        // of event position), source != destination, flight distance >= 1500m.
-                        // Works for infantry / vehicles / armour -- cargo arrives at the
-                        // destination airport intact, OPCOM AI takes over for the last mile.
+                        // (furthest from event = rear hub), friendly destination airport
+                        // (within 3000m of event position), source != destination,
+                        // flight distance >= 1500m. Works for infantry / vehicles /
+                        // armour -- cargo arrives at the destination airport intact,
+                        // OPCOM AI takes over for the last mile.
                         // Single-airport case spawns the plane offmap and flies it in.
                         // Aircraft can be plane, VTOL, or helicopter -- the defining feature
                         // is airfield infrastructure, not aircraft type. Helicopters used
@@ -7544,8 +7545,15 @@ switch(_operation) do {
                                         // Add destination waypoint -- straight to the destination
                                         // airport ILS position. landAt will be issued explicitly
                                         // in the opcomAirliftLand state once the plane is close.
+                                        // addWaypointInternal bypasses the experimental sector
+                                        // pathfinder when ALiVE Profile System has it enabled --
+                                        // an AIRLIFT plane needs a direct great-circle flight,
+                                        // not a sector-graph route designed for ground convoys.
+                                        // Cargo profiles unloaded at the destination airport are
+                                        // unaffected and keep using the global pathfinder for
+                                        // their last-mile movement under OPCOM control.
                                         private _wpDest = [_destAirportPos, 200, "MOVE", "FULL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                                        [_crewProfile, "addWaypoint", _wpDest] call ALIVE_fnc_profileEntity;
+                                        [_crewProfile, "addWaypointInternal", _wpDest] call ALIVE_fnc_profileEntity;
 
                                         // Detect vertical-lander aircraft (helicopter or VTOL). Vertical
                                         // landers can't fly the standard fixed-wing ILS approach without
@@ -8612,10 +8620,13 @@ switch(_operation) do {
                         [_crewProfile, "clearWaypoints"] call ALIVE_fnc_profileEntity;
                         // Single MOVE waypoint at source airport, altitude PARADROP_HEIGHT.
                         // AI should taxi if needed and take off cleanly into the route.
+                        // addWaypointInternal bypasses the experimental sector pathfinder
+                        // (matches the outbound dispatch waypoint at opcomAirliftFly setup)
+                        // -- the RTB leg is also a direct flight, no sector graph wanted.
                         private _rtbWPPos = +_sourceAirportPos;
                         _rtbWPPos set [2, PARADROP_HEIGHT];
                         private _wpRTB = [_rtbWPPos, 200, "MOVE", "FULL", 300, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
-                        [_crewProfile, "addWaypoint", _wpRTB] call ALIVE_fnc_profileEntity;
+                        [_crewProfile, "addWaypointInternal", _wpRTB] call ALIVE_fnc_profileEntity;
                     };
 
                     [_event, "airliftTakeoff2Issued", true] call ALIVE_fnc_hashSet;
