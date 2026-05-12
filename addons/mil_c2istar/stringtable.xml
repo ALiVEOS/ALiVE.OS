@@ -379,4 +379,10 @@
 <Key ID="STR_ALIVE_C2ISTAR_CIVIC_DEBUG_INTEL_COMMENT">
     <English>Appends civic-state trust / security / services summaries to the description text of generated Hearts and Minds tasks. Useful for mission-maker tuning; turn off for player-facing missions.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_AUTOGEN_FACTIONS">
+    <English>Auto Task Factions:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_AUTOGEN_FACTIONS_COMMENT">
+    <English>Picks one faction per slot for the six per-side auto-task lanes (BLU Friendly / BLU Enemy / OPF Friendly / OPF Enemy / IND Friendly / IND Enemy). Click Next &gt; on the top filter row to cycle through the slots; the listbox shows the faction currently assigned to that slot. The bottom filter row cycles between Auto (narrows the listbox to the slot's natural side) and All (every military faction visible).</English>
+</Key>
 </Container></Package></Project>

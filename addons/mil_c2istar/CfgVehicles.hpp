@@ -111,20 +111,6 @@ class CfgVehicles {
                                     class Constant  { name = "Constant";  value = "Constant"; };
                             };
                     };
-                    class autoGenerateBluforFaction : Edit
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_autoGenerateBluforFaction";
-                            displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_FACTION";
-                            tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_FACTION_COMMENT";
-                            defaultValue = """BLU_F""";
-                    };
-                    class autoGenerateBluforEnemyFaction : Edit
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_autoGenerateBluforEnemyFaction";
-                            displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_ENEMY_FACTION";
-                            tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR_ENEMY_FACTION_COMMENT";
-                            defaultValue = """OPF_F""";
-                    };
                     class autoGenerateOpfor : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateOpfor";
@@ -137,20 +123,6 @@ class CfgVehicles {
                                     class Strategic { name = "Strategic"; value = "Strategic"; };
                                     class Constant  { name = "Constant";  value = "Constant"; };
                             };
-                    };
-                    class autoGenerateOpforFaction : Edit
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforFaction";
-                            displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION";
-                            tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_FACTION_COMMENT";
-                            defaultValue = """OPF_F""";
-                    };
-                    class autoGenerateOpforEnemyFaction : Edit
-                    {
-                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforEnemyFaction";
-                            displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION";
-                            tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_OPFOR_ENEMY_FACTION_COMMENT";
-                            defaultValue = """BLU_F""";
                     };
                     class autoGenerateIndfor : Combo
                     {
@@ -165,18 +137,72 @@ class CfgVehicles {
                                     class Constant  { name = "Constant";  value = "Constant"; };
                             };
                     };
-                    class autoGenerateIndforFaction : Edit
+                    class autoGenerateFactions
+                    {
+                            property     = "ALiVE_MIL_C2ISTAR_autoGenerateFactions";
+                            displayName  = "$STR_ALIVE_C2ISTAR_AUTOGEN_FACTIONS";
+                            tooltip      = "$STR_ALIVE_C2ISTAR_AUTOGEN_FACTIONS_COMMENT";
+                            control      = "ALiVE_FactionSlotChoice";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['autoGenerateFactions', _value];";
+                            defaultValue = """""";
+                    };
+                    // Legacy per-slot attributes preserved as hidden so the
+                    // runtime path in fnc_C2ISTAR.sqf (which reads each by
+                    // name) keeps working unchanged. The consolidated picker
+                    // above writes to each of these via the SAVE handler.
+                    class autoGenerateBluforFaction
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateBluforFaction";
+                            displayName = "";
+                            control = "ALiVE_HiddenAttribute";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['autoGenerateBluforFaction', _value];";
+                            defaultValue = """BLU_F""";
+                    };
+                    class autoGenerateBluforEnemyFaction
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateBluforEnemyFaction";
+                            displayName = "";
+                            control = "ALiVE_HiddenAttribute";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['autoGenerateBluforEnemyFaction', _value];";
+                            defaultValue = """OPF_F""";
+                    };
+                    class autoGenerateOpforFaction
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforFaction";
+                            displayName = "";
+                            control = "ALiVE_HiddenAttribute";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['autoGenerateOpforFaction', _value];";
+                            defaultValue = """OPF_F""";
+                    };
+                    class autoGenerateOpforEnemyFaction
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_autoGenerateOpforEnemyFaction";
+                            displayName = "";
+                            control = "ALiVE_HiddenAttribute";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['autoGenerateOpforEnemyFaction', _value];";
+                            defaultValue = """BLU_F""";
+                    };
+                    class autoGenerateIndforFaction
                     {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateIndforFaction";
-                            displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_FACTION";
-                            tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_FACTION_COMMENT";
+                            displayName = "";
+                            control = "ALiVE_HiddenAttribute";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['autoGenerateIndforFaction', _value];";
                             defaultValue = """IND_F""";
                     };
-                    class autoGenerateIndforEnemyFaction : Edit
+                    class autoGenerateIndforEnemyFaction
                     {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateIndforEnemyFaction";
-                            displayName = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_ENEMY_FACTION";
-                            tooltip = "$STR_ALIVE_C2ISTAR_AUTOGEN_INDFOR_ENEMY_FACTION_COMMENT";
+                            displayName = "";
+                            control = "ALiVE_HiddenAttribute";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['autoGenerateIndforEnemyFaction', _value];";
                             defaultValue = """OPF_F""";
                     };
 

@@ -878,6 +878,59 @@ class Cfg3DEN
             attributeSave = "[_this, 'skillTierFactions', 'skillFactionsRecruit,skillFactionsRegular,skillFactionsVeteran,skillFactionsExpert,customSkillFactions', 'skillFactionsRecruitManual,skillFactionsRegularManual,skillFactionsVeteranManual,skillFactionsExpertManual,customSkillFactionsManual', 'Recruit,Regular,Veteran,Expert,Custom'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionTierChoiceSave.sqf'";
         };
 
+        // ALiVE_FactionSlotChoice:
+        //   Consolidated single-select picker for the six mil_c2istar
+        //   autoGenerate*Faction attributes (BLU friendly + enemy, OPF
+        //   friendly + enemy, IND friendly + enemy). One listbox of all
+        //   military factions; the FilterNext button (top filter row,
+        //   idc 1210) cycles through six SLOTS (BLU Friendly, BLU Enemy,
+        //   OPF Friendly, OPF Enemy, IND Friendly, IND Enemy). Each slot
+        //   stores ONE faction classname. The SideFilterNext button
+        //   (idc 1211) toggles between Auto (per-slot natural side) and
+        //   All (every military faction visible).
+        //
+        //   Single-select semantics: listbox style overrides
+        //   ALiVE_FilteredMultiSelect_Base's LB_MULTI bit (0x20) to
+        //   ST_FRAME only (16) so the user can only highlight ONE row
+        //   per slot. LBSelChanged in the LOAD handler stores the
+        //   selected row's lbData (faction classname) under the current
+        //   slot key in `alive_slotSelections` on the display namespace.
+        //
+        //   Storage shape: consolidated string "BLU_F|OPF_F|OPF_F|BLU_F|
+        //   IND_F|OPF_F" (six pipe-separated tokens, slot order matches
+        //   the cycle order). SAVE also writes each token to its legacy
+        //   per-slot attribute (autoGenerateBluforFaction etc.) so the
+        //   runtime path in fnc_C2ISTAR.sqf (which reads each by name)
+        //   continues to work unchanged.
+        class ALiVE_FactionSlotChoice: ALiVE_FilteredMultiSelect_Base {
+            class controls: controls {
+                class Title: Title {};
+                class FilterLabel: FilterLabel {};
+                class FilterNext: FilterNext {};
+                class SideFilterLabel: SideFilterLabel {};
+                class SideFilterNext: SideFilterNext {};
+                class List: List {
+                    // Override the inherited LB_MULTI style to single-
+                    // select. ST_FRAME only (16); without LB_MULTI the
+                    // listbox enforces one row per slot at the UI layer,
+                    // matching the semantics that each slot stores one
+                    // faction.
+                    style = 16;
+                    // Constrain to the right column (x=48..130) so the
+                    // listbox aligns with where standard Eden value
+                    // controls sit. Left column (x=0..48) stays clear
+                    // for the Title sub-control above. Width 82 covers
+                    // CfgFactionClasses display names comfortably.
+                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                };
+                class OverrideLabel: OverrideLabel {};
+                class Override: Override {};
+            };
+            attributeLoad = "[_this, 'autoGenerateFactions', 'autoGenerateBluforFaction,autoGenerateBluforEnemyFaction,autoGenerateOpforFaction,autoGenerateOpforEnemyFaction,autoGenerateIndforFaction,autoGenerateIndforEnemyFaction', 'BLU Friendly,BLU Enemy,OPF Friendly,OPF Enemy,IND Friendly,IND Enemy', '1|0,2|0|1,2|2|0,1', 'BLU_F,OPF_F,OPF_F,BLU_F,IND_F,OPF_F', _value, 'Auto Task Factions:'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionSlotChoiceLoad.sqf'";
+            attributeSave = "[_this, 'autoGenerateFactions', 'autoGenerateBluforFaction,autoGenerateBluforEnemyFaction,autoGenerateOpforFaction,autoGenerateOpforEnemyFaction,autoGenerateIndforFaction,autoGenerateIndforEnemyFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionSlotChoiceSave.sqf'";
+        };
+
         // ALiVE_FactionStaticDataChoice family:
         //   Lets a mission-maker override the per-faction static-data
         //   registries (mil_logistics ground / air transport / airdrop
@@ -1178,11 +1231,13 @@ class Cfg3DEN
             y = 0;
             w = "130 * (pixelW * pixelGrid * 0.5)";
             // Layout (grid units, halved):
-            //   y=0  h=5   Title (left col only)
-            //   y=0  h=50  Listbox (right col, single tall column)
-            //   y=52 h=5   Override Label (left) + Override Edit (right)
-            // Total = 57 grid units.
-            h = "57 * (pixelH * pixelGrid * 0.5)";
+            //   y=0   h=5   Title (left col only)
+            //   y=5   h=50  Listbox (full width, pushed below Title row
+            //                so the title text doesn't get overwritten
+            //                by the listbox's first row)
+            //   y=57  h=5   Override Label (left) + Override Edit (right)
+            // Total = 62 grid units.
+            h = "62 * (pixelH * pixelGrid * 0.5)";
             colorBackground[] = {0, 0, 0, 0};
             colorText[]       = {1, 1, 1, 1};
             text   = "";
@@ -1219,8 +1274,11 @@ class Cfg3DEN
                     // Listbox at x=4 w=126 (4-grid left inset so it
                     // doesn't bleed flush to the dialog's left edge);
                     // sibling chrome keeps original 48-grid left margin.
+                    // y=5 so the listbox sits BELOW the Title row at
+                    // y=0..5, avoiding the visual title-overwrite that
+                    // occurs when both share y=0.
                     x = "4 * (pixelW * pixelGrid * 0.5)";
-                    y = 0;
+                    y = "5 * (pixelH * pixelGrid * 0.5)";
                     w = "126 * (pixelW * pixelGrid * 0.5)";
                     h = "50 * (pixelH * pixelGrid * 0.5)";
 
@@ -1267,7 +1325,7 @@ class Cfg3DEN
                     type     = 0;
                     style    = 1;
                     x        = 0;
-                    y        = "52 * (pixelH * pixelGrid * 0.5)";
+                    y        = "57 * (pixelH * pixelGrid * 0.5)";
                     w        = "48 * (pixelW * pixelGrid * 0.5)";
                     h        = "5 * (pixelH * pixelGrid * 0.5)";
                     colorBackground[] = {0, 0, 0, 0};
@@ -1286,7 +1344,7 @@ class Cfg3DEN
                     type     = 2;
                     style    = 0;
                     x        = "48 * (pixelW * pixelGrid * 0.5)";
-                    y        = "52 * (pixelH * pixelGrid * 0.5)";
+                    y        = "57 * (pixelH * pixelGrid * 0.5)";
                     w        = "82 * (pixelW * pixelGrid * 0.5)";
                     h        = "5 * (pixelH * pixelGrid * 0.5)";
                     text     = "";
