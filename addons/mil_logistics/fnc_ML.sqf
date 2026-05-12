@@ -446,17 +446,19 @@ switch(_operation) do {
     case "airliftFleetSize": {
         // Eden-configured aircraft fleet pool for this LOGCOM. String form
         // (parsed to number at MLInit) so Edit attribute pattern matches
-        // airliftAircraftClass / airliftSourceAirportID. Default "999" is
-        // effectively unlimited and preserves existing behaviour for
-        // missions that don't opt into finite tracking. Smaller values
-        // (e.g. "3") model a realistic squadron: each aircraft loss
-        // (profile destroyed) decrements the runtime counter, and AIRLIFT
-        // dispatch is suppressed once the counter hits 0. "0" disables
-        // AIRLIFT from the start.
+        // airliftAircraftClass / airliftSourceAirportID. Default "-1" is
+        // the infinite sentinel and preserves the no-attrition default for
+        // missions that don't opt into finite tracking -- the runtime
+        // counter is seeded to -1 and decrementAirliftFleet treats <0 as
+        // a no-op. Positive values (e.g. "3") model a realistic squadron:
+        // each aircraft loss (profile destroyed) decrements the runtime
+        // counter, and AIRLIFT dispatch is suppressed once the counter
+        // hits 0. "0" disables AIRLIFT from the start. Any negative
+        // string normalises to -1 at parse time.
         if (typeName _args == "STRING") then {
             _logic setVariable ["airliftFleetSize", _args];
         } else {
-            _args = _logic getVariable ["airliftFleetSize", "999"];
+            _args = _logic getVariable ["airliftFleetSize", "-1"];
         };
         ASSERT_TRUE(typeName _args == "STRING",str _args);
 
@@ -466,10 +468,11 @@ switch(_operation) do {
         // Read-only runtime counter of aircraft remaining in the LOGCOM
         // fleet pool. Initialised at MLInit from the parsed airliftFleetSize
         // value; decremented by decrementAirliftFleet on profile-lost exits
-        // (real aircraft losses). Default 999 = effectively unlimited so
-        // missions that never set airliftFleetSize see no behaviour change
-        // even on a stale logic variable read.
-        _result = _logic getVariable ["airliftFleetRemaining", 999];
+        // (real aircraft losses). Default -1 = infinite sentinel so missions
+        // that never set airliftFleetSize see no behaviour change even on a
+        // stale logic variable read; the dispatch gate and decrement helper
+        // both treat negative values as the infinite mode.
+        _result = _logic getVariable ["airliftFleetRemaining", -1];
     };
     case "decrementAirliftFleet": {
         // Apply a single aircraft loss to the runtime fleet counter.
@@ -481,7 +484,13 @@ switch(_operation) do {
         // failures. Min-zero floor protects against double-decrement
         // races (two losses processed in the same monitor tick each
         // call this; floor stops the counter going negative).
-        private _val = _logic getVariable ["airliftFleetRemaining", 999];
+        // Infinite-mode (counter < 0) is a no-op: -1 sentinel means the
+        // mission designer never opted into finite tracking, so attrition
+        // is invisible and the counter stays at -1 forever.
+        private _val = _logic getVariable ["airliftFleetRemaining", -1];
+        if (_val < 0) exitWith {
+            _result = _val;
+        };
         private _newVal = (_val - 1) max 0;
         _logic setVariable ["airliftFleetRemaining", _newVal];
         ["ML - AIRLIFT: aircraft lost. Fleet remaining: %1", _newVal] call ALiVE_fnc_dump;
@@ -2671,13 +2680,15 @@ switch(_operation) do {
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
             _airliftAircraftClass = [_logic, "airliftAircraftClass"] call MAINCLASS;
             _airliftSourceAirportID = [_logic, "airliftSourceAirportID"] call MAINCLASS;
-            // Parse Eden string -> number (Edit attribute pattern). Default 999
-            // = effectively unlimited, preserves current behaviour for missions
-            // that don't opt in to finite fleet tracking.
+            // Parse Eden string -> number (Edit attribute pattern). Default -1
+            // is the infinite sentinel: any negative value (or empty string)
+            // normalises to -1, which the dispatch gate and decrement helper
+            // both treat as no-attrition / never-exhausted mode. Positive
+            // values opt in to finite fleet tracking; "0" disables AIRLIFT.
             private _airliftFleetSizeStr = [_logic, "airliftFleetSize"] call MAINCLASS;
             private _airliftFleetSize = parseNumber _airliftFleetSizeStr;
             if (_airliftFleetSizeStr == "" || {_airliftFleetSize < 0}) then {
-                _airliftFleetSize = 999;
+                _airliftFleetSize = -1;
             };
             // Seed the runtime counter. Reads via airliftFleetRemaining,
             // decrements via decrementAirliftFleet (both are MAINCLASS ops).
@@ -2774,7 +2785,11 @@ switch(_operation) do {
                 } else {
                     ["ML - AIRLIFT airliftSourceAirportID: <empty> = auto-select most rear airport (furthest friendly airport from event position)"] call ALiVE_fnc_dump;
                 };
-                ["ML - AIRLIFT airliftFleetSize: %1 (initial fleet remaining: %1)", _airliftFleetSize] call ALiVE_fnc_dump;
+                if (_airliftFleetSize < 0) then {
+                    ["ML - AIRLIFT airliftFleetSize: -1 (infinite -- no attrition tracking, pool never decrements)"] call ALiVE_fnc_dump;
+                } else {
+                    ["ML - AIRLIFT airliftFleetSize: %1 (initial fleet remaining: %1)", _airliftFleetSize] call ALiVE_fnc_dump;
+                };
                 // Cargo-capacity log: show the Eden override (0 = auto) and
                 // per-candidate effective capacity. With multi-class input the
                 // actual sortie capacity depends on which aircraft selectAirliftAircraft
@@ -5277,14 +5292,17 @@ switch(_operation) do {
                         private _airliftSelectedClass = "";
 
                         if (_airliftAircraftClass != "") then {
-                            // Fleet-pool early gate. Default 999 means effectively
-                            // unlimited (current behaviour preserved); mission designers
-                            // who set airliftFleetSize = 3 get exactly 3 sorties before
-                            // AIRLIFT capability collapses for this LOGCOM. 0 disables
-                            // AIRLIFT immediately. Decrement happens in the 5
-                            // profile-lost state-machine exits, not here.
+                            // Fleet-pool early gate. Default -1 = infinite sentinel
+                            // (no attrition tracking, gate always passes); mission
+                            // designers who set airliftFleetSize = 3 get exactly 3
+                            // sorties before AIRLIFT capability collapses for this
+                            // LOGCOM. 0 disables AIRLIFT immediately. Negative
+                            // (infinite) and positive (finite, > 0) both pass; only
+                            // the literal 0 blocks. Decrement happens in the 5
+                            // profile-lost state-machine exits, not here, and is a
+                            // no-op while the counter is negative.
                             private _fleetRemaining = [_logic, "airliftFleetRemaining"] call MAINCLASS;
-                            if (_fleetRemaining <= 0) exitWith {
+                            if (_fleetRemaining == 0) exitWith {
                                 if (_debug) then {
                                     ["ML - AIRLIFT suppressed: fleet exhausted (0 aircraft remaining for this LOGCOM)"] call ALiVE_fnc_dump;
                                 };

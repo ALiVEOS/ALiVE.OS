@@ -208,7 +208,7 @@ class CfgVehicles
                                 property = "ALiVE_mil_logistics_airliftFleetSize";
                                 displayName = "$STR_ALIVE_ML_AIRLIFT_FLEET_SIZE";
                                 tooltip = "$STR_ALIVE_ML_AIRLIFT_FLEET_SIZE_DESC";
-                                defaultValue = """999""";
+                                defaultValue = """-1""";
                         };
                         class airliftCargoSlots : Edit
                         {
