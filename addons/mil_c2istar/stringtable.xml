@@ -21,10 +21,10 @@
     <English>Enables verbose C2ISTAR diagnostic output to the RPT log plus extra map markers for generated task targets, civic-state evaluations, and intel coverage decisions. Intended for mission-makers troubleshooting task generation or intel pipeline behaviour.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_ALLOW">
-    <English>Required Item:</English>
+    <English>Required Items:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_ALLOW_COMMENT">
-    <English>Classname of the item the player must carry in their inventory to access C2ISTAR functions from the ALiVE Action Menu. Defaults to LaserDesignator. Common alternatives: alive_tablet (carried in standard support crates), Binocular.</English>
+    <English>Pick one or more equipment categories. The player can access C2ISTAR functions if they carry any item from any ticked category (e.g. Laser Designators covers vanilla and mod-supplied designator classes). Categories from unloaded mods drop off the list automatically. Defaults to Laser Designators.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_PERSISTENT">
     <English>Persistent Tasks:</English>

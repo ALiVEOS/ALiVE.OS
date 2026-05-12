@@ -43,12 +43,15 @@ class CfgVehicles {
                                     class No  { name = "No";  value = "false"; };
                             };
                     };
-                    class c2_item : Edit
+                    class c2_item
                     {
-                            property = "ALiVE_MIL_C2ISTAR_c2_item";
-                            displayName = "$STR_ALIVE_C2ISTAR_ALLOW";
-                            tooltip = "$STR_ALIVE_C2ISTAR_ALLOW_COMMENT";
-                            defaultValue = """LaserDesignator""";
+                            property     = "ALiVE_MIL_C2ISTAR_c2_item";
+                            displayName  = "$STR_ALIVE_C2ISTAR_ALLOW";
+                            tooltip      = "$STR_ALIVE_C2ISTAR_ALLOW_COMMENT";
+                            control      = "ALiVE_C2ISTARAccessItemsChoice";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['c2_item', _value];";
+                            defaultValue = """LaserDesignators""";
                     };
 
                     // ---- Faction filters ------------------------------------------------

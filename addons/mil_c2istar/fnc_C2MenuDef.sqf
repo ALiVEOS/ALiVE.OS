@@ -49,6 +49,36 @@ _items = _items apply {tolower _x};
 _userItems = ([MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR) call ALiVE_fnc_stringListToArray;
 _userItems pushback "ALIVE_Tablet";
 _userItems = _userItems apply {tolower _x};
+
+// Expand any token that matches a category from CfgALiVEC2ISTARAccessItems
+// to that category's classnames[]. Tokens that don't match a category
+// stay as-is so a legacy single-classname value (e.g. "LaserDesignator"
+// from a pre-overhaul mission save) still works.
+private _expanded = [];
+{
+    private _tok = _x;
+    private _cfg = configFile >> "CfgALiVEC2ISTARAccessItems" >> _tok;
+    if (isClass _cfg) then {
+        {
+            _expanded pushBack (toLower _x);
+        } forEach (getArray (_cfg >> "classnames"));
+    } else {
+        // Case-insensitive lookup: scan registry for a matching key.
+        private _matched = false;
+        {
+            private _key = configName _x;
+            if ((toLower _key) == _tok) exitWith {
+                {
+                    _expanded pushBack (toLower _x);
+                } forEach (getArray (_x >> "classnames"));
+                _matched = true;
+            };
+        } forEach ("true" configClasses (configFile >> "CfgALiVEC2ISTARAccessItems"));
+        if (!_matched) then { _expanded pushBack _tok; };
+    };
+} forEach _userItems;
+_userItems = _expanded;
+
 //Finds selected userItem-string(s) in assignedItems
 
 private _itemsString = _items joinstring ",";

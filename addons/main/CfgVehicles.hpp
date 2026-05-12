@@ -437,6 +437,39 @@ class Cfg3DEN
         //   (idc 101) so the visible label can be customised per
         //   consuming attribute rather than locked to the parent
         //   substrate's "Override Factions:".
+        // ALiVE_C2ISTARAccessItemsChoice:
+        //   Multi-select listbox of equipment categories that grant
+        //   C2ISTAR access. Used by mil_c2istar's c2_item attribute
+        //   (formerly a single-classname Edit). Each row = one
+        //   category from CfgALiVEC2ISTARAccessItems; categories
+        //   whose cfgPatchesName isn't loaded drop off the listbox.
+        //
+        //   Storage shape: CSV of category keys, e.g. "LaserDesignators,
+        //   Radios,Tablets". Runtime gate in fnc_C2MenuDef.sqf walks
+        //   each category's classnames[] and checks against the
+        //   player's assignedItems + items + backpack. Back-compat
+        //   accepted: legacy stored classname like "LaserDesignator"
+        //   is matched against each category's classnames[] and the
+        //   containing category is ticked.
+        //
+        //   Substrate inherits ALiVE_FactionChoiceMulti_Base with
+        //   geometry overrides (compact 5-row right-column listbox),
+        //   same approach as ALiVE_SideChoiceMulti.
+        class ALiVE_C2ISTARAccessItemsChoice: ALiVE_FactionChoiceMulti_Base {
+            h = "32 * (pixelH * pixelGrid * 0.5)";
+            class controls: controls {
+                class Title: Title {};
+                class List: List {
+                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    y = "5 * (pixelH * pixelGrid * 0.5)";
+                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    h = "26 * (pixelH * pixelGrid * 0.5)";
+                };
+            };
+            attributeLoad = "[_this, 'c2_item', 'Required Items:', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsLoad.sqf'";
+            attributeSave = "[_this, 'c2_item'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsSave.sqf'";
+        };
+
         class ALiVE_SideChoiceMulti: ALiVE_FactionChoiceMulti_Base {
             // Compact 4-row listbox sitting in the normal right column
             // (x=48..130) so the Title sub-control has the left column
