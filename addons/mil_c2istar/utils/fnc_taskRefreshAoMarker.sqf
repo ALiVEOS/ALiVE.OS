@@ -67,6 +67,7 @@ if (isNil "ALIVE_taskHandlerClient") exitWith {
 private _tasks = [ALIVE_taskHandlerClient, "tasks"] call ALIVE_fnc_hashGet;
 private _isC2istarTask = false;
 private _matchedTitle = "";
+private _matchedTaskID = "";
 if (typeName _tasks == "ARRAY" && {count _tasks > 1}) then {
     diag_log format ["DIAG-STRIP taskRefreshAoMarker: ct=%1 typeName=%2 strCt=%3", _ct, typeName _ct, str _ct];
     // CBA hash structure: select 1 is the KEYS array (taskIDs). Walk
@@ -85,6 +86,7 @@ if (typeName _tasks == "ARRAY" && {count _tasks > 1}) then {
             diag_log format ["DIAG-STRIP taskRefreshAoMarker: task[%1]=%2 stored at idx10 = %3 (typeName=%4) - isEqualTo ct = %5", _forEachIndex, _x, _stored, typeName _stored, _stored isEqualTo _ct];
             if (_stored isEqualTo _ct) exitWith {
                 _isC2istarTask = true;
+                _matchedTaskID = _x;
                 private _titleSlot = _taskData select 4;
                 if (typeName _titleSlot == "STRING") then { _matchedTitle = _titleSlot };
             };
@@ -139,8 +141,34 @@ _m setMarkerBrushLocal "SolidBorder";
 // during the is-c2istar-task scan above (index 4). The engine
 // `taskTitle` command isn't recognised in this build, hence the
 // indirection.
-if (_matchedTitle != "") then {
-    private _mText = createMarkerLocal [_textMarkerName, _pos];
+//
+// Suppress the AO sibling text when the task already has a primary
+// marker on the map (fnc_taskCreateMarker registers them in
+// ALIVE_taskMarkers keyed by taskID). The primary marker drops its
+// own black hd_dot sibling 30m east of the icon, so without this
+// gate the title would render twice - once from the primary's
+// sibling, once from the AO's. MilDefence DefenceWave and any other
+// task type that doesn't call taskCreateMarkersForPlayers leaves
+// ALIVE_taskMarkers empty for its taskID, so the AO sibling remains
+// the only label and still shows.
+private _hasPrimaryMarkers = false;
+if (_matchedTaskID != "" && {!isNil "ALIVE_taskMarkers"}) then {
+    private _existingMarkers = [ALIVE_taskMarkers, _matchedTaskID, []] call ALIVE_fnc_hashGet;
+    if (typeName _existingMarkers == "ARRAY" && {count _existingMarkers > 0}) then {
+        _hasPrimaryMarkers = true;
+    };
+};
+
+if (_matchedTitle != "" && {!_hasPrimaryMarkers}) then {
+    // Offset the sibling text marker 30m east of the AO centre so the
+    // title renders clear of BI's engine current-task waypoint icon
+    // (which is rendered automatically at taskDestination and carries
+    // its own small label). Mirrors the +30m east offset that
+    // fnc_taskCreateMarker.sqf applies to its sibling text markers.
+    // Without the offset, the title sits right on top of the BI
+    // indicator and reads as cramped against the icon.
+    private _textPos = [(_pos select 0) + 30, _pos select 1, _pos param [2, 0]];
+    private _mText = createMarkerLocal [_textMarkerName, _textPos];
     _mText setMarkerShapeLocal "ICON";
     _mText setMarkerTypeLocal "hd_dot";
     _mText setMarkerColorLocal "ColorBlack";
@@ -149,4 +177,4 @@ if (_matchedTitle != "") then {
     _mText setMarkerTextLocal _matchedTitle;
 };
 
-diag_log format ["DIAG-STRIP taskRefreshAoMarker: SHOWING AO marker=%1 pos=%2 radius=%3 title='%4' textMarker=%5", _markerName, _pos, _radius, _matchedTitle, if (_matchedTitle != "") then { _textMarkerName } else { "(none)" }];
+diag_log format ["DIAG-STRIP taskRefreshAoMarker: SHOWING AO marker=%1 pos=%2 radius=%3 title='%4' hasPrimary=%5 textMarker=%6", _markerName, _pos, _radius, _matchedTitle, _hasPrimaryMarkers, if (_matchedTitle != "" && {!_hasPrimaryMarkers}) then { _textMarkerName } else { "(none)" }];
