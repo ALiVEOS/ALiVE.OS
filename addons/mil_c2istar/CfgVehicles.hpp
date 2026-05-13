@@ -595,7 +595,9 @@ class CfgVehicles {
                     description[] = {
                             "$STR_ALIVE_C2ISTAR_COMMENT",
                             "",
-                            "$STR_ALIVE_C2ISTAR_USAGE"
+                            "$STR_ALIVE_C2ISTAR_USAGE",
+                            "",
+                            "$STR_ALIVE_C2ISTAR_USAGE_MARKERS"
                     };
                     // OPCOM is read by this module's OPCOM-side code path (fnc_OPCOM.sqf ~328-341
                     // iterates synchronizedObjects looking for ALiVE_mil_C2ISTAR to set up the

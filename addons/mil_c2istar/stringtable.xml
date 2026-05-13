@@ -156,7 +156,7 @@
     <English>Map Intel Visibility:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_COMMENT">
-    <English>Controls which players see C2ISTAR map intel sourced from OPCOM events.\n\n• Same Side — only players on the same side as the reporting OPCOM.\n• Same Faction — only players whose unit faction matches the reporting OPCOM's faction.\n• Friendly Sides — players on any side allied to the reporting OPCOM (side allegiance is per-mission, see sys_aiskill / OPCOM hostility settings).\n• All Players — every player, regardless of side.</English>
+    <English>Controls which players see C2ISTAR map intel. Covers both OPCOM-sourced intel (G2 spotrep events from the OPCOM-side pipeline, gated by Commander Intel Sides) and profile-system events (PROFILE_KILLED, IED detonations, civilian agent kills) which fire independently of OPCOM sync. This is a RECIPIENT filter — composes with Commander Intel Sides (source filter): only intel from the picked OPCOM sides reaches C2ISTAR, then this filter decides which players see those markers.\n\n• Same Side — only players on the same side as the reporting OPCOM.\n• Same Faction — only players whose unit faction matches the reporting OPCOM's faction.\n• Friendly Sides — players on any side allied to the reporting OPCOM (side allegiance is per-mission, see sys_aiskill / OPCOM hostility settings).\n• All Players — every player, regardless of side.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_MAP_INTEL_VISIBILITY_SIDE">
     <English>Same Side</English>
@@ -216,7 +216,7 @@
     <English>Commander Intel Sides:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES_COMMENT">
-    <English>Selects which synced OPCOM modules feed their G2 spotrep pipeline into C2ISTAR. Comma-separated side keywords: East, West, Independent. Leave blank to disable per-OPCOM intel pumping. Map-marker visibility is separately controlled by Display Map Intel and Map Intel Visibility.</English>
+    <English>Selects which synced OPCOM modules feed their G2 spotrep pipeline into C2ISTAR. Tick one or more sides (East, West, Independent); leave all unticked to disable per-OPCOM intel pumping. This is a SOURCE filter — controls which OPCOMs flow intel in. Map-marker visibility (which players see the resulting markers) is separately controlled by Display Map Intel and Map Intel Visibility.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_FRIENDLY_INTEL_RADIUS">
     <English>Friendly Radius (m):</English>
@@ -251,6 +251,9 @@
 <Key ID="STR_ALIVE_C2ISTAR_USAGE">
     <!-- Translations for other languages pending end-of-module-overhaul translation pass; USAGE text was inaccurate prior (told mission-makers not to sync, but the intel / G2 spotrep pipeline requires each intel-consuming OPCOM to be synced to this module). -->
     <English>Place the C2ISTAR module in the editor and sync it to each AI Commander that should receive intel (spotreps, map markers, G2 reports). Commanders whose side appears in the Commander Intel Sides attribute get their intel pipeline initialised through this sync. Players require a laser designator (by default) in their inventory to access the functions from the ALiVE Action Menu. The required item can be changed in the module settings, for example the alive_tablet, which can be found in a standard support crate.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_USAGE_MARKERS">
+    <English>Note on map markers: KIA markers and contact reports can reflect simulated combat between virtualised profiles that never physically spawned. The ALiVE profile simulator resolves engagements off-screen — civilian agents killed by insurgent activity, IED detonations near profile groups, and suicide bombings all surface as map events even when nothing visible is happening in the player's local area. This is expected behaviour, not a bug.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_FILTER_ENEMY_FACTIONS">
     <English>Filter Enemy Factions:</English>
