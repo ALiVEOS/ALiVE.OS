@@ -8193,6 +8193,15 @@ switch(_operation) do {
                     if (count _airliftSrcEvA > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftSrcEvA select 0] call MAINCLASS;
                     };
+                    // Despawn the paired crew profile (preventDespawn was set at dispatch).
+                    private _crewProfIDLost = [_event, "airliftPlanePilotProfileID", ""] call ALIVE_fnc_hashGet;
+                    if (_crewProfIDLost != "") then {
+                        private _cpLost = [ALIVE_profileHandler, "getProfile", _crewProfIDLost] call ALIVE_fnc_profileHandler;
+                        if (!isNil "_cpLost") then {
+                            [_cpLost, "spawnType", []] call ALIVE_fnc_hashSet;
+                            [_cpLost, "despawn"]      call ALIVE_fnc_profileEntity;
+                        };
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -8274,6 +8283,15 @@ switch(_operation) do {
                     private _landIssuedRelB = [_event, "airliftLandIssued", false] call ALIVE_fnc_hashGet;
                     if (_landIssuedRelB && count _airliftDstEv > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftDstEv select 0] call MAINCLASS;
+                    };
+                    // Despawn the paired crew profile (preventDespawn was set at dispatch).
+                    private _crewProfIDLost = [_event, "airliftPlanePilotProfileID", ""] call ALIVE_fnc_hashGet;
+                    if (_crewProfIDLost != "") then {
+                        private _cpLost = [ALIVE_profileHandler, "getProfile", _crewProfIDLost] call ALIVE_fnc_profileHandler;
+                        if (!isNil "_cpLost") then {
+                            [_cpLost, "spawnType", []] call ALIVE_fnc_hashSet;
+                            [_cpLost, "despawn"]      call ALIVE_fnc_profileEntity;
+                        };
                     };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -8592,6 +8610,15 @@ switch(_operation) do {
                     if (count _airliftDstEv > 0) then {
                         [_logic, "unlockAirliftRunway", _airliftDstEv select 0] call MAINCLASS;
                     };
+                    // Despawn the paired crew profile (preventDespawn was set at dispatch).
+                    // _crewProfID is in outer scope (declared at the top of this case).
+                    if (_crewProfID != "") then {
+                        private _cpLost = [ALIVE_profileHandler, "getProfile", _crewProfID] call ALIVE_fnc_profileHandler;
+                        if (!isNil "_cpLost") then {
+                            [_cpLost, "spawnType", []] call ALIVE_fnc_hashSet;
+                            [_cpLost, "despawn"]      call ALIVE_fnc_profileEntity;
+                        };
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -8692,6 +8719,15 @@ switch(_operation) do {
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
                     [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
+                    // Despawn the paired crew profile (preventDespawn was set at dispatch).
+                    private _crewProfIDLost = [_event, "airliftPlanePilotProfileID", ""] call ALIVE_fnc_hashGet;
+                    if (_crewProfIDLost != "") then {
+                        private _cpLost = [ALIVE_profileHandler, "getProfile", _crewProfIDLost] call ALIVE_fnc_profileHandler;
+                        if (!isNil "_cpLost") then {
+                            [_cpLost, "spawnType", []] call ALIVE_fnc_hashSet;
+                            [_cpLost, "despawn"]      call ALIVE_fnc_profileEntity;
+                        };
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
@@ -8749,6 +8785,15 @@ switch(_operation) do {
                         _planeProfID, _eventID] call ALiVE_fnc_dump;
                     [_logic, "decrementAirliftFleet"] call MAINCLASS;
                     [_logic, "unlockAirliftRunway", _airliftSrcEv select 0] call MAINCLASS;
+                    // Despawn the paired crew profile (preventDespawn was set at dispatch).
+                    private _crewProfIDLost = [_event, "airliftPlanePilotProfileID", ""] call ALIVE_fnc_hashGet;
+                    if (_crewProfIDLost != "") then {
+                        private _cpLost = [ALIVE_profileHandler, "getProfile", _crewProfIDLost] call ALIVE_fnc_profileHandler;
+                        if (!isNil "_cpLost") then {
+                            [_cpLost, "spawnType", []] call ALIVE_fnc_hashSet;
+                            [_cpLost, "despawn"]      call ALIVE_fnc_profileEntity;
+                        };
+                    };
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                 };
