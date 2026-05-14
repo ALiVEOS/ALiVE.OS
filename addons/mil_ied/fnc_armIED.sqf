@@ -132,6 +132,17 @@ private _gracePeriod = 15;
         // Per-engineer trip counters, keyed by netId. Lives for the IED's lifetime.
         private _tripMap = createHashMap;
 
+        // DIAG-STRIP: confirm polling-loop entered post-waitUntil-cap.
+        // Eric's RPT (Discord 2026-05-14) shows IEDs arming but no accum
+        // / detonation logs -- distinguishing "loop never ran" from
+        // "player never reached proximity" needs an entry log + a
+        // first-candidate log. Strip once root cause identified.
+        if (_debugLocal) then {
+            diag_log format ["ALIVE-%1 IED DIAG: polling loop entered for IED at %2 (proximity %3, threshold %4)",
+                time, getposATL _ied, _proximity, _threshold toFixed 3];
+        };
+        private _loggedFirstCandidate = false;
+
         while {
             !_detonated &&
             !isNull _ied &&
@@ -172,6 +183,17 @@ private _gracePeriod = 15;
                 _detonateList append (_ied nearEntities ["LandVehicle", _proximity]);
                 _detonateList = _detonateList select {
                     alive _x && ((getposATL (vehicle _x)) select 2 < 8)
+                };
+
+                // DIAG-STRIP: first-candidate visibility per IED. Confirms
+                // a player actually entered this IED's proximity at least
+                // once (companion to the polling-loop entry log above).
+                // Strip once Eric's case is closed.
+                if (_debugLocal && !_loggedFirstCandidate && count _detonateList > 0) then {
+                    private _names = _detonateList apply { format ["%1[%2]", name _x, typeOf _x] };
+                    diag_log format ["ALIVE-%1 IED DIAG: first candidate(s) in proximity of IED at %2: %3",
+                        time, getposATL _ied, _names];
+                    _loggedFirstCandidate = true;
                 };
 
                 private _players       = [] call BIS_fnc_listPlayers;
