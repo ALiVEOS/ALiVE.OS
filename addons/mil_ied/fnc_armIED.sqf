@@ -72,11 +72,29 @@ private _gracePeriod = 15;
 
     if (isNull _ied || !alive _ied) exitWith {};
 
-    // Wait for all players to clear the blast radius + buffer before we arm.
-    // AI are intentionally not held back - they are valid targets once armed.
+    // Wait for all players to clear the blast radius + buffer before we arm,
+    // OR fall through after a hard timeout. AI are intentionally not held back
+    // -- they are valid targets once armed.
+    //
+    // The timeout matters because IEDs spawn when a player triggers the town
+    // EmptyDetector -- so at spawn time there is BY DEFINITION at least one
+    // player inside the town radius. A small town (or a player slot placed
+    // near an IED candidate position) means the player may never naturally
+    // move outside this IED's clear radius, leaving the polling loop below
+    // permanently un-entered. Reported on Discord 2026-05-12 (Eric): stepping
+    // on a placed IED produced no detonation. The behaviour regressed in
+    // commit 707ef292 which added the unbounded wait; before that, arming
+    // happened on a flat 15s sleep regardless of player proximity.
+    //
+    // Cap chosen so a player legitimately trying to clear has time to do so
+    // (typical foot speed: 60s @ ~5 km/h ~= 80m, well beyond _proximity+15),
+    // while a player camping the spot eventually gets the right behaviour
+    // (boom).
     private _clearRadius = _proximity + 15;
+    private _maxWait = diag_tickTime + 60;
     waitUntil {
         if (isNull _ied || !alive _ied) exitWith { true };
+        if (diag_tickTime > _maxWait) exitWith { true };
         sleep 0.5;
         ({(vehicle _x) distance _ied < _clearRadius} count ([] call BIS_fnc_listPlayers)) == 0
     };

@@ -294,14 +294,19 @@ switch(_operation) do {
                     // "edited" = current attribute value differs from compile-time DEFAULT_*.
                     // "candidate integration" = the integration we'd source classes from
                     // regardless of iChoice (for autoDetect=Yes): if iChoice picks a specific
-                    // integration use that; otherwise pick first non-vanilla mine integration
-                    // detected.
+                    // integration use that; otherwise pick the first non-vanilla integration
+                    // eligible for auto-pick (mine-mode by default, plus any alive-mode
+                    // entry that explicitly sets `autoPickEligible = 1` -- see
+                    // Cfg3rdPartyIEDs.hpp ACE_Explosives for the canonical use of that flag).
                     // User's _additional field is ALWAYS appended, de-duplicated.
                     private _candidateIntegration = nil;
                     private _matchIdx = if (_iChoice == "_auto" || _iChoice == "_force_alive") then {
                         _integrations findIf {
                             (_x get "className") != "ALiVE_Vanilla_A3" &&
-                            (_x get "mode") == "mine"
+                            (
+                                (_x get "mode") == "mine" ||
+                                ((_x getOrDefault ["autoPickEligible", 0]) == 1)
+                            )
                         }
                     } else {
                         _integrations findIf { (_x get "className") == _iChoice };
