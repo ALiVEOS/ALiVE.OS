@@ -647,6 +647,7 @@ switch(_operation) do {
         // _args: [friendly airports array, event position]
         private _friendlyAirports = _args select 0;
         private _eventPosition    = _args select 1;
+        private _debug            = _logic getVariable ["debug", false];
 
         // Override path -------------------------------------------------
         private _overrideStr = [_logic, "airliftSourceAirportID"] call MAINCLASS;
@@ -659,8 +660,10 @@ switch(_operation) do {
                 };
             } forEach _friendlyAirports;
             if (count _overrideMatch > 0) exitWith {
-                ["ML - selectAirliftSource: using Eden override airport %1 at %2",
-                    _overrideID, _overrideMatch select 1] call ALiVE_fnc_dump;
+                if (_debug) then {
+                    ["ML - selectAirliftSource: using Eden override airport %1 at %2",
+                        _overrideID, _overrideMatch select 1] call ALiVE_fnc_dump;
+                };
                 _result = _overrideMatch;
             };
             // Override set but airport not in friendly list -- warn and fall
@@ -687,7 +690,7 @@ switch(_operation) do {
             };
         } forEach _friendlyAirports;
 
-        if (count _bestAirport > 0) then {
+        if (count _bestAirport > 0 && _debug) then {
             ["ML - selectAirliftSource: algorithm picked airport %1 at %2 (%3m from event)",
                 _bestAirport select 0, _bestAirport select 1, round _bestDist] call ALiVE_fnc_dump;
         };
