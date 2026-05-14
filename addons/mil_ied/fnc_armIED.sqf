@@ -10,11 +10,17 @@ SCRIPT(armIED);
 //   - Non-engineer units (or vehicle-borne engineers, or AI in aiTriggerable mode
 //     who lack the engineer qualification) trip the IED instantly when inside the
 //     proximity radius.
-//   - Qualifying engineers (mine detector / Explosive Specialist role / CBA "EOD"
-//     trait) build per-engineer-per-IED "trip pressure" each 0.5s poll, modulated
-//     by distance, stance, movement speed and skill. When pressure crosses a
-//     per-IED randomized threshold the IED detonates. Trip pressure decays when
-//     the engineer leaves the radius.
+//   - Qualifying engineers build per-engineer-per-IED "trip pressure" each
+//     0.5s poll, modulated by distance, stance, movement speed and skill. When
+//     pressure crosses a per-IED randomized threshold the IED detonates. Trip
+//     pressure decays when the engineer leaves the radius.
+//
+//     Engineer qualification (any of, while on foot):
+//       - configured IED_Detection_Device (default "MineDetector") in items _u
+//       - CfgVehicles displayName == "Explosive Specialist"
+//       - vehicleVarName matches CBA "EOD" trait via CBA_fnc_find
+//       - engine `getUnitTrait "explosivesSpecialist"` returns true (Ares 2026-05-14)
+//       - ACE_isEngineer module variable > 0 (ACE level 1 or 2; Ares 2026-05-14)
 //
 // Tunables (ADDON getVariable):
 //   IED_Engineer_Trip_Base         - per-tick base increment (default 0.02)
@@ -146,7 +152,9 @@ private _gracePeriod = 15;
                         (
                             (_device in (items _x)) ||
                             (getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName") == "Explosive Specialist") ||
-                            ([vehicleVarName _x, "EOD"] call CBA_fnc_find != -1)
+                            ([vehicleVarName _x, "EOD"] call CBA_fnc_find != -1) ||
+                            (_x getUnitTrait "explosivesSpecialist") ||           // vanilla A3 explosives-specialist trait
+                            ((_x getVariable ["ACE_isEngineer", 0]) > 0)          // ACE engineer level 1 or 2
                         ) &&
                         (if (_aiTriggerable) then { true } else { _x in ([] call BIS_fnc_listPlayers) })
                     };
@@ -216,7 +224,9 @@ private _gracePeriod = 15;
                         private _qualifies = (!_inVehicle) && (
                             (_device in (items _u)) ||
                             (getText (configFile >> "CfgVehicles" >> typeOf _u >> "displayName") == "Explosive Specialist") ||
-                            ([vehicleVarName _u, "EOD"] call CBA_fnc_find != -1)
+                            ([vehicleVarName _u, "EOD"] call CBA_fnc_find != -1) ||
+                            (_u getUnitTrait "explosivesSpecialist") ||           // vanilla A3 explosives-specialist trait
+                            ((_u getVariable ["ACE_isEngineer", 0]) > 0)          // ACE engineer level 1 or 2
                         );
 
                         if (!_qualifies) then {
