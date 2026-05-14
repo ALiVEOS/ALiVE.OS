@@ -249,7 +249,7 @@ switch (_taskState) do {
             {
                 _position = _x select 2 select 2;
                 _objectType = _x select 2 select 6;
-                [_position,_taskEnemySide,_taskPlayers,_taskID,"entity",_objectType] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                [_position,_taskEnemySide,_taskPlayers,_taskID,"entity",_objectType,_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
             } forEach _profiles;
 

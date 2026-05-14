@@ -58,10 +58,14 @@ private _hvtKeywords = ["officer", "commander", "leader", "captain"];
 
 private _candidates = [];
 {
-    private _classStr = toLower _x;
+    private _classname = _x;
+    private _classStr = toLower _classname;
     {
-        if (_classStr find _y >= 0) exitWith {
-            _candidates pushBack _x;
+        // Inner forEach reuses _x for the keyword - capture the
+        // outer class name in _classname above so the keyword loop
+        // body can still reference it without _x shadow confusion.
+        if (_classStr find _x >= 0) exitWith {
+            _candidates pushBack _classname;
         };
     } forEach _hvtKeywords;
 } forEach _allClasses;

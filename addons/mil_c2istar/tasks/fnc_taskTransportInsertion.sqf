@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -102,6 +103,17 @@ switch (_taskState) do {
         // get enemy cluster
 
         _insertionPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideCluster;
+
+        // Verify the cluster centre still has enemy presence. The cluster
+        // list can be stale (units moved out / wiped) and dropping the
+        // team into an empty cluster defeats the point of an insertion
+        // task. If the verification fails, fall through to the
+        // composition-spawn fallback below which guarantees enemies.
+        // Mirrors the Capture-Objective enemy-presence guard.
+        if (count _insertionPosition > 0 && {!([_insertionPosition, _taskSide, 500, true] call ALIVE_fnc_isEnemyNear)}) then {
+            ["C2ISTAR - Task TransportInsertion - Insertion cluster %1 has no verified enemy presence, falling back to composition spawn", _insertionPosition] call ALiVE_fnc_Dump;
+            _insertionPosition = [];
+        };
 
         if(count _insertionPosition == 0) then {
             private ["_category","_compType"];

@@ -1475,15 +1475,35 @@ switch(_operation) do {
         // With a map open the engine re-renders every marker every frame; combined
         // with the marker churn from position/spawn/despawn debug triggers this
         // halves FPS (issue #838). On dedicated server visibleMap is always false,
-        // which is desired — dev testing with debug on happens SP / listen server.
+        // which is desired for the dev-debug call path (toggled via the
+        // profile's "debug" flag) — that testing happens SP / listen server.
+        //
+        // Force-render path (issue #606): the friendly-intel analyzer in
+        // fnc_liveAnalysis runShowFriendliesAnalysis calls this from the
+        // server-side analysis pump where visibleMap is always false. Without
+        // a bypass the markers never get created and "Show friendly units on
+        // map" silently does nothing on dedicated server. The friendly-intel
+        // caller passes [true] (or any truthy first arg) to force the marker
+        // creation; created markers are GLOBAL (createMarker, not Local) so
+        // clients with their map open see them. The #838 optimization stays
+        // intact for the default-args dev-debug call path.
         //
         // Must return [] (not the default _result=true) so callers like
         // fnc_liveAnalysis that concatenate (_markers + _marker) don't crash
         // with "+: Type Bool, expected Number,Array,...".
         // Using if-then-else (not exitWith) to avoid any ambiguity in how the
         // _result assignment propagates out of the exitWith block's scope.
+        private _forceRender = false;
+        if (typeName _args == "ARRAY" && {count _args > 0}) then {
+            private _v = _args select 0;
+            _forceRender = switch (typeName _v) do {
+                case "BOOL":   { _v };
+                case "SCALAR": { _v != 0 };
+                default        { false };
+            };
+        };
         _result = [];
-        if (visibleMap) then {
+        if (visibleMap || _forceRender) then {
 
         private _markers = [];
 

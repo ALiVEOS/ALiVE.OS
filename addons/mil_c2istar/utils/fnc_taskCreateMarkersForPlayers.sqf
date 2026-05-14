@@ -21,7 +21,7 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_taskPosition","_taskSide","_taskID","_taskPlayers","_taskType","_type","_colour","_typePrefix","_icon","_markerDefinition","_player"];
+private ["_taskPosition","_taskSide","_taskID","_taskPlayers","_taskType","_type","_customText","_colour","_typePrefix","_icon","_markerDefinition","_player"];
 
 _taskPosition = _this select 0;
 _taskSide = _this select 1;
@@ -29,6 +29,14 @@ _taskPlayers = _this select 2;
 _taskID = _this select 3;
 _taskType = _this select 4;
 _type = if(count _this > 5) then {_this select 5} else {""};
+// Optional 7th arg: overrides the auto-generated marker text (the
+// "Target X" / "HVT" / etc. label derived from _taskType + _type
+// below). Used by single-marker task callers to surface the task
+// title (e.g. "Repair Sewer Service") instead of the generic
+// "Target critical service" derived label. Multi-marker callers
+// (Assassination Insertion / Extraction / HVT etc.) leave this
+// blank and keep their per-marker semantic labels.
+_customText = if(count _this > 6 && {typeName (_this select 6) == "STRING"}) then {_this select 6} else {""};
 
 if (typeName _taskSide == "STRING") then {
     _taskSide = [_taskSide] call ALiVE_fnc_sideTextToObject;
@@ -125,6 +133,16 @@ switch(_taskType) do {
     default {
         _markerDefinition = [_taskPosition,_taskID,_colour,".","mil_warning",[1,1],1,"ICON"];
     };
+};
+
+// If the caller supplied a custom text override, replace the marker
+// text (4th element of _markerDefinition) with it. Keeps the icon /
+// colour / shape from the switch's per-type selection. Defensive
+// type guard: if a caller accidentally passes nil (e.g. a stale
+// _taskTitle reference), treat as no-override rather than throwing.
+diag_log format ["DIAG-STRIP taskCreateMarkersForPlayers: taskID=%1 type=%2 customText=%3 (typeName=%4)", _taskID, _taskType, _customText, typeName _customText];
+if (typeName _customText == "STRING" && {_customText != ""} && {count _markerDefinition >= 4}) then {
+    _markerDefinition set [3, _customText];
 };
 
 {

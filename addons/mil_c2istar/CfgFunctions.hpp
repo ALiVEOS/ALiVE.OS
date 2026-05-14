@@ -131,6 +131,16 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateMarker.sqf";
                 RECOMPILE;
             };
+            class taskRefreshAoMarker {
+                description = "Show or hide the optional AO ellipse around a task based on its state";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskRefreshAoMarker.sqf";
+                RECOMPILE;
+            };
+            class taskGetReturnPosition {
+                description = "Resolve the friendly OPCOM main HQ position for tasks with a Return subtask";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetReturnPosition.sqf";
+                RECOMPILE;
+            };
             class taskDeleteMarkersForPlayers {
                 description = "Utility delete any markers for players";
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskDeleteMarkersForPlayers.sqf";

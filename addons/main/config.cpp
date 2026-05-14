@@ -10,6 +10,7 @@
 #include "Cfg3rdPartyObjectiveObjects.hpp"
 #include "CfgALiVEHumanitarianItems.hpp"
 #include "CfgALiVEAmbientAnimals.hpp"
+#include "CfgALiVEC2ISTARAccessItems.hpp"
 #include "\x\alive\addons\main\data\ui\main.hpp"
 
 

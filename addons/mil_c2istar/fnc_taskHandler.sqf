@@ -692,12 +692,22 @@ switch (_operation) do {
                 private _sideAutoGeneration = [_autoGenerateSides, _taskSide] call ALIVE_fnc_hashGet;
 
                 if (_sideAutoGeneration select 0 == "Constant") then {
-                    uiSleep 10;
-
+                    // Defer the retry via CBA_fnc_waitAndExecute. The
+                    // original `uiSleep 10` required a scheduled context
+                    // but this handler is called via `call` (unscheduled)
+                    // when a task init returns empty, so the suspend
+                    // threw a runtime error. waitAndExecute preserves the
+                    // 10s retry cadence without needing a scheduled
+                    // caller. Latent until Capture Objective's new
+                    // enemy-presence guard started producing empty
+                    // returns at task-gen time.
                     private _generate = [format ["%1_%2", _taskSide, time + 1], _requestPlayerID, _taskSide, _taskFaction, _taskEnemyFaction, _sideAutoGeneration select 0];
 
                     ["Starting auto tasks for some reason, tasks set to %1", _sideAutoGeneration] call ALiVE_fnc_dump;
-                    [_logic, "autoGenerateTasks", _generate] call MAINCLASS;
+                    [{
+                        params ["_logic", "_generate"];
+                        [_logic, "autoGenerateTasks", _generate] call ALIVE_fnc_taskHandler;
+                    }, [_logic, _generate], 10] call CBA_fnc_waitAndExecute;
                 };
             };
         };

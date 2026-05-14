@@ -111,12 +111,21 @@ if(_taskID in (ALIVE_taskMarkers select 1)) then {
 
     _taskMarkers = [ALIVE_taskMarkers,_taskID] call ALIVE_fnc_hashGet;
 
+    // Match by deterministic marker name rather than markerText so we
+    // catch BOTH the primary marker (text suppressed for the sibling-
+    // overlay strategy, see further down) and the sibling text-only
+    // marker. The previous markerText-based match would leak the
+    // primary when re-creating.
+    private _expectedPrimary = format["%1_%2",_taskID, _markerText];
+    private _expectedSibling = format["%1_%2_text",_taskID, _markerText];
+    private _toRemove = [];
     {
-        if (markerText _x == _markerText) exitWith {
+        if (_x == _expectedPrimary || _x == _expectedSibling) then {
             deleteMarkerLocal _x;
-            _taskMarkers = _taskMarkers - [_x];
+            _toRemove pushBack _x;
         };
     } forEach _taskMarkers;
+    _taskMarkers = _taskMarkers - _toRemove;
 
     [ALIVE_taskMarkers,_taskID,_taskMarkers] call ALIVE_fnc_hashSet;
 
@@ -139,11 +148,50 @@ if(_markerShape == "ICON") then {
     _m setMarkerTypeLocal _markerType;
 };
 
-if(_markerText != "") then {
-    _m setMarkerTextLocal _markerText;
+// For ICON markers with a non-empty text label, suppress the text on
+// the primary (side-coloured) marker and render the text via a sibling
+// overlay marker in black. Arma doesn't support separate text / icon
+// colours on a single marker, so this is the only way to keep the
+// icon side-coloured while making the text readable against the map
+// background regardless of side.
+//
+// The sibling uses a near-zero icon size (hd_dot at 0.0001) so the
+// icon is effectively invisible but the engine still renders the
+// marker text. Both markers get added to the task's marker set so
+// taskDeleteMarkersForPlayers cleans them up together.
+diag_log format ["DIAG-STRIP taskCreateMarker: taskID=%1 markerText='%2' markerShape=%3 markerType=%4", _taskID, _markerText, _markerShape, _markerType];
+private _mText = "";
+if(_markerText != "" && {_markerShape == "ICON"}) then {
+    // Offset the sibling text marker 30m east of the icon so the
+    // text renders to the right of the icon instead of underneath
+    // it (Arma anchors marker text at the marker position; without
+    // the offset, the icon obscures the first 1-2 chars).
+    private _textPos = [(_position select 0) + 30, _position select 1, _position param [2, 0]];
+    _mText = createMarkerLocal [format["%1_%2_text",_taskID, _markerText], _textPos];
+    _mText setMarkerShapeLocal "ICON";
+    _mText setMarkerTypeLocal "hd_dot";
+    _mText setMarkerColorLocal "ColorBlack";
+    // Size 0.5: small enough to be a discreet dot next to the text
+    // but large enough that Arma doesn't cull the marker from render
+    // (sizes around 0.0001 were getting dropped, so the text never
+    // appeared even though the marker existed in the namespace).
+    _mText setMarkerSizeLocal [0.5, 0.5];
+    _mText setMarkerAlphaLocal _markerAlpha;
+    _mText setMarkerTextLocal _markerText;
+    diag_log format ["DIAG-STRIP taskCreateMarker: sibling created name='%1' pos=%2 text='%3' alpha=%4", _mText, _textPos, _markerText, _markerAlpha];
+} else {
+    diag_log format ["DIAG-STRIP taskCreateMarker: sibling SKIPPED taskID=%1 markerText='%2' markerShape=%3 - reason=%4", _taskID, _markerText, _markerShape, if (_markerText == "") then { "empty markerText" } else { format ["non-ICON shape (%1)", _markerShape] }];
+    if(_markerText != "") then {
+        // Non-ICON shape (ELLIPSE / RECTANGLE) - keep text on the
+        // primary since the sibling-overlay trick is icon-specific.
+        _m setMarkerTextLocal _markerText;
+    };
 };
 
 _taskMarkers pushback _m;
+if(typeName _mText != "STRING" || {_mText != ""}) then {
+    _taskMarkers pushback _mText;
+};
 
 // update the clients task markers
 [ALIVE_taskMarkers,_taskID,_taskMarkers] call ALIVE_fnc_hashSet;

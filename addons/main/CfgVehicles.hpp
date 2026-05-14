@@ -406,6 +406,100 @@ class Cfg3DEN
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
+        // ALiVE_SideChoiceMulti:
+        //   Multi-select listbox for sides (EAST / WEST / GUER). Used by
+        //   mil_c2istar's opcomIntelSides attribute, which selects which
+        //   synced OPCOMs feed their G2 spotrep pipeline into C2ISTAR.
+        //   Sides are a fixed three-entry enum so the LOAD handler
+        //   hardcodes the rows - no CfgFactionClasses walk required.
+        //   Civilian (CIV) is omitted because civilians can't run an
+        //   OPCOM commander.
+        //
+        //   Storage shape: CSV string "EAST,WEST" so the existing
+        //   runtime path in fnc_C2ISTAR.sqf (which pipes the value
+        //   through ALiVE_fnc_stringListToArray then uppercases) keeps
+        //   working unchanged. LOAD also accepts SQF array literal,
+        //   single-token, and empty-string forms so missions saved
+        //   with the legacy Edit-field format restore cleanly.
+        //
+        //   Substrate inherited from ALiVE_FactionChoiceMulti_Base -
+        //   same controlsGroup chrome, listbox styling, scrollbars.
+        //   Geometry overrides: outer h compacted to 25 grid units
+        //   (three short rows don't need the parent's 55), inner
+        //   listbox pushed to y=5 so it sits BELOW the Title row
+        //   rather than overlapping it. Without these overrides the
+        //   Title text ("Commander Intel Sides:") sits in the same
+        //   y-band as the listbox's first row and visually clashes -
+        //   tolerable on faction lists where long classnames hide
+        //   the title, ugly with only three short rows.
+        //
+        //   The LOAD handler calls ctrlSetText on the Title sub-control
+        //   (idc 101) so the visible label can be customised per
+        //   consuming attribute rather than locked to the parent
+        //   substrate's "Override Factions:".
+        // ALiVE_C2ISTARAccessItemsChoice:
+        //   Multi-select listbox of equipment categories that grant
+        //   C2ISTAR access. Used by mil_c2istar's c2_item attribute
+        //   (formerly a single-classname Edit). Each row = one
+        //   category from CfgALiVEC2ISTARAccessItems; categories
+        //   whose cfgPatchesName isn't loaded drop off the listbox.
+        //
+        //   Storage shape: CSV of category keys, e.g. "LaserDesignators,
+        //   Radios,Tablets". Runtime gate in fnc_C2MenuDef.sqf walks
+        //   each category's classnames[] and checks against the
+        //   player's assignedItems + items + backpack. Back-compat
+        //   accepted: legacy stored classname like "LaserDesignator"
+        //   is matched against each category's classnames[] and the
+        //   containing category is ticked.
+        //
+        //   Substrate inherits ALiVE_FactionChoiceMulti_Base with
+        //   geometry overrides (compact 5-row right-column listbox),
+        //   same approach as ALiVE_SideChoiceMulti.
+        class ALiVE_C2ISTARAccessItemsChoice: ALiVE_FactionChoiceMulti_Base {
+            h = "32 * (pixelH * pixelGrid * 0.5)";
+            class controls: controls {
+                class Title: Title {};
+                class List: List {
+                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    y = "5 * (pixelH * pixelGrid * 0.5)";
+                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    h = "26 * (pixelH * pixelGrid * 0.5)";
+                };
+            };
+            attributeLoad = "[_this, 'c2_item', 'Required Items:', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsLoad.sqf'";
+            attributeSave = "[_this, 'c2_item'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsSave.sqf'";
+        };
+
+        class ALiVE_SideChoiceMulti: ALiVE_FactionChoiceMulti_Base {
+            // Compact 4-row listbox sitting in the normal right column
+            // (x=48..130) so the Title sub-control has the left column
+            // (x=0..48) to itself without overlap. Outer height covers
+            // Title row (0..5) + Listbox (5..27) + 1 grid unit of bottom
+            // padding.
+            h = "28 * (pixelH * pixelGrid * 0.5)";
+            class controls: controls {
+                // Explicit no-op inheritance to keep the sibling Title
+                // sub-control when overriding List below. Without this,
+                // overriding one nested class via `class List: List {}`
+                // can silently drop the other nested classes from the
+                // resolved controlsGroup config.
+                class Title: Title {};
+                class List: List {
+                    // Style redeclared explicitly so the LB_MULTI bit
+                    // (0x20) survives nested-class inheritance. Without
+                    // it the listbox can silently degrade to single-
+                    // select and persistence reads only the focused row.
+                    style = 16 + 0x20;
+                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    y = "5 * (pixelH * pixelGrid * 0.5)";
+                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                    h = "22 * (pixelH * pixelGrid * 0.5)";
+                };
+            };
+            attributeLoad = "[_this, 'opcomIntelSides', 'Commander Intel Sides:', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'opcomIntelSides'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";
+        };
+
         // ALiVE_ItemChoiceMulti family:
         //   Multi-select listbox of humanitarian items (water or ration)
         //   populated from the CfgALiVEHumanitarianItems registry. Each
@@ -817,6 +911,59 @@ class Cfg3DEN
             attributeSave = "[_this, 'skillTierFactions', 'skillFactionsRecruit,skillFactionsRegular,skillFactionsVeteran,skillFactionsExpert,customSkillFactions', 'skillFactionsRecruitManual,skillFactionsRegularManual,skillFactionsVeteranManual,skillFactionsExpertManual,customSkillFactionsManual', 'Recruit,Regular,Veteran,Expert,Custom'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionTierChoiceSave.sqf'";
         };
 
+        // ALiVE_FactionSlotChoice:
+        //   Consolidated single-select picker for the six mil_c2istar
+        //   autoGenerate*Faction attributes (BLU friendly + enemy, OPF
+        //   friendly + enemy, IND friendly + enemy). One listbox of all
+        //   military factions; the FilterNext button (top filter row,
+        //   idc 1210) cycles through six SLOTS (BLU Friendly, BLU Enemy,
+        //   OPF Friendly, OPF Enemy, IND Friendly, IND Enemy). Each slot
+        //   stores ONE faction classname. The SideFilterNext button
+        //   (idc 1211) toggles between Auto (per-slot natural side) and
+        //   All (every military faction visible).
+        //
+        //   Single-select semantics: listbox style overrides
+        //   ALiVE_FilteredMultiSelect_Base's LB_MULTI bit (0x20) to
+        //   ST_FRAME only (16) so the user can only highlight ONE row
+        //   per slot. LBSelChanged in the LOAD handler stores the
+        //   selected row's lbData (faction classname) under the current
+        //   slot key in `alive_slotSelections` on the display namespace.
+        //
+        //   Storage shape: consolidated string "BLU_F|OPF_F|OPF_F|BLU_F|
+        //   IND_F|OPF_F" (six pipe-separated tokens, slot order matches
+        //   the cycle order). SAVE also writes each token to its legacy
+        //   per-slot attribute (autoGenerateBluforFaction etc.) so the
+        //   runtime path in fnc_C2ISTAR.sqf (which reads each by name)
+        //   continues to work unchanged.
+        class ALiVE_FactionSlotChoice: ALiVE_FilteredMultiSelect_Base {
+            class controls: controls {
+                class Title: Title {};
+                class FilterLabel: FilterLabel {};
+                class FilterNext: FilterNext {};
+                class SideFilterLabel: SideFilterLabel {};
+                class SideFilterNext: SideFilterNext {};
+                class List: List {
+                    // Override the inherited LB_MULTI style to single-
+                    // select. ST_FRAME only (16); without LB_MULTI the
+                    // listbox enforces one row per slot at the UI layer,
+                    // matching the semantics that each slot stores one
+                    // faction.
+                    style = 16;
+                    // Constrain to the right column (x=48..130) so the
+                    // listbox aligns with where standard Eden value
+                    // controls sit. Left column (x=0..48) stays clear
+                    // for the Title sub-control above. Width 82 covers
+                    // CfgFactionClasses display names comfortably.
+                    x = "48 * (pixelW * pixelGrid * 0.5)";
+                    w = "82 * (pixelW * pixelGrid * 0.5)";
+                };
+                class OverrideLabel: OverrideLabel {};
+                class Override: Override {};
+            };
+            attributeLoad = "[_this, 'autoGenerateFactions', 'autoGenerateBluforFaction,autoGenerateBluforEnemyFaction,autoGenerateOpforFaction,autoGenerateOpforEnemyFaction,autoGenerateIndforFaction,autoGenerateIndforEnemyFaction', 'BLU Friendly,BLU Enemy,OPF Friendly,OPF Enemy,IND Friendly,IND Enemy', '1|0,2|0|1,2|2|0,1', 'BLU_F,OPF_F,OPF_F,BLU_F,IND_F,OPF_F', _value, 'Auto Task Factions:'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionSlotChoiceLoad.sqf'";
+            attributeSave = "[_this, 'autoGenerateFactions', 'autoGenerateBluforFaction,autoGenerateBluforEnemyFaction,autoGenerateOpforFaction,autoGenerateOpforEnemyFaction,autoGenerateIndforFaction,autoGenerateIndforEnemyFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionSlotChoiceSave.sqf'";
+        };
+
         // ALiVE_FactionStaticDataChoice family:
         //   Lets a mission-maker override the per-faction static-data
         //   registries (mil_logistics ground / air transport / airdrop
@@ -1117,11 +1264,13 @@ class Cfg3DEN
             y = 0;
             w = "130 * (pixelW * pixelGrid * 0.5)";
             // Layout (grid units, halved):
-            //   y=0  h=5   Title (left col only)
-            //   y=0  h=50  Listbox (right col, single tall column)
-            //   y=52 h=5   Override Label (left) + Override Edit (right)
-            // Total = 57 grid units.
-            h = "57 * (pixelH * pixelGrid * 0.5)";
+            //   y=0   h=5   Title (left col only)
+            //   y=5   h=50  Listbox (full width, pushed below Title row
+            //                so the title text doesn't get overwritten
+            //                by the listbox's first row)
+            //   y=57  h=5   Override Label (left) + Override Edit (right)
+            // Total = 62 grid units.
+            h = "62 * (pixelH * pixelGrid * 0.5)";
             colorBackground[] = {0, 0, 0, 0};
             colorText[]       = {1, 1, 1, 1};
             text   = "";
@@ -1158,8 +1307,11 @@ class Cfg3DEN
                     // Listbox at x=4 w=126 (4-grid left inset so it
                     // doesn't bleed flush to the dialog's left edge);
                     // sibling chrome keeps original 48-grid left margin.
+                    // y=5 so the listbox sits BELOW the Title row at
+                    // y=0..5, avoiding the visual title-overwrite that
+                    // occurs when both share y=0.
                     x = "4 * (pixelW * pixelGrid * 0.5)";
-                    y = 0;
+                    y = "5 * (pixelH * pixelGrid * 0.5)";
                     w = "126 * (pixelW * pixelGrid * 0.5)";
                     h = "50 * (pixelH * pixelGrid * 0.5)";
 
@@ -1206,7 +1358,7 @@ class Cfg3DEN
                     type     = 0;
                     style    = 1;
                     x        = 0;
-                    y        = "52 * (pixelH * pixelGrid * 0.5)";
+                    y        = "57 * (pixelH * pixelGrid * 0.5)";
                     w        = "48 * (pixelW * pixelGrid * 0.5)";
                     h        = "5 * (pixelH * pixelGrid * 0.5)";
                     colorBackground[] = {0, 0, 0, 0};
@@ -1225,7 +1377,7 @@ class Cfg3DEN
                     type     = 2;
                     style    = 0;
                     x        = "48 * (pixelW * pixelGrid * 0.5)";
-                    y        = "52 * (pixelH * pixelGrid * 0.5)";
+                    y        = "57 * (pixelH * pixelGrid * 0.5)";
                     w        = "82 * (pixelW * pixelGrid * 0.5)";
                     h        = "5 * (pixelH * pixelGrid * 0.5)";
                     text     = "";
@@ -1246,6 +1398,16 @@ class Cfg3DEN
         class ALiVE_TaskTypeChoice_AutoGenerated: ALiVE_TaskTypeChoice_Base {
             attributeLoad = "[_this, 'autoGenerated', 'customAutoGeneratedTasks', '$STR_ALIVE_C2_CUSTOM_AUTOGEN_TASKS', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenTaskTypeChoiceLoad.sqf'";
             attributeSave = "[_this, 'customAutoGeneratedTasks'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenTaskTypeChoiceSave.sqf'";
+        };
+
+        // Civic variant. The 'civic' kind populates the listbox from the
+        // closed Hearts-and-Minds task list (no global registry walk)
+        // because civic-enabled tasks are a fixed 10-entry subset of
+        // ALIVE_autoGeneratedTasks. Used by mil_c2istar's
+        // civicEnabledTaskFamilies attribute.
+        class ALiVE_TaskTypeChoice_Civic: ALiVE_TaskTypeChoice_Base {
+            attributeLoad = "[_this, 'civic', 'civicEnabledTaskFamilies', '$STR_ALIVE_C2ISTAR_CIVIC_FAMILIES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenTaskTypeChoiceLoad.sqf'";
+            attributeSave = "[_this, 'civicEnabledTaskFamilies'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenTaskTypeChoiceSave.sqf'";
         };
 
         // ALiVE_CompositionChoice family:

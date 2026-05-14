@@ -29,6 +29,21 @@ PARAMS_1(_logic);
 // Confirm init function available
 ASSERT_DEFINED("ALIVE_fnc_C2ISTAR","Main function missing");
 
+// In normal operation, calling ALiVE_fnc_C2ISTAR with no args produces an
+// empty hash from the default case. If the function has a compilation
+// error it returns nil. Catch that here and release the startupComplete
+// gate so ALiVE_fnc_aliveInit (which waits on every synced module's
+// startupComplete before clearing the loading screen) doesn't hang.
+// Same pattern as mil_opcom's fnc_OPCOMInit.sqf compilation-error guard.
+if (isnil {[] call ALiVE_fnc_C2ISTAR}) exitwith {
+    private _errorMessage = "Compilation error detected in ALiVE_fnc_C2ISTAR";
+
+    ["ALiVE_fnc_C2ISTARInit - %1. Aborting Init", _errorMessage] call ALiVE_fnc_DumpR;
+
+    _logic setvariable ["initError", [_errorMessage]];
+    _logic setvariable ["startupComplete", true, true];
+};
+
 _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;
 
 [_logic, "init"] call ALIVE_fnc_C2ISTAR;

@@ -64,6 +64,19 @@ for "_i" from 0 to (count _registry - 1) do {
             } else {
                 0
             }];
+            // autoPickEligible flag: when 1, this integration is eligible to
+            // be auto-picked by fnc_IED.sqf's resolver under iChoice=_auto
+            // EVEN IF its mode is "alive". The default rule auto-picks only
+            // mine-mode integrations; this flag is the explicit opt-in for
+            // an alive-mode integration whose class pool should override the
+            // ALiVE defaults under Auto (e.g. ACE 3 Explosives, where placing
+            // vanilla A3 IED ammo classes is the whole point of the entry
+            // because ACE's defuse-interaction wheel auto-attaches to them).
+            _record set ["autoPickEligible", if (isNumber (_entry >> "autoPickEligible")) then {
+                getNumber (_entry >> "autoPickEligible")
+            } else {
+                0
+            }];
             _result pushBack _record;
         };
     };

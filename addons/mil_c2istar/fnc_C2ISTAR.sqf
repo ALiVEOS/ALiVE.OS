@@ -70,6 +70,7 @@ Peer Reviewed:
 #define DEFAULT_RUN_EVERY 120
 #define DEFAULT_TASK_MIN_DISTANCE 0
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
+#define DEFAULT_TASK_AO_RADIUS 0
 #define DEFAULT_FILTER_ENEMY_FACTIONS true
 #define DEFAULT_CIVIC_STATE_ENABLED false
 #define DEFAULT_CIVIC_MULTIPLIER 1
@@ -559,6 +560,18 @@ switch(_operation) do {
         // Module attribute system may store value as string — coerce to scalar
         if (typeName _result == "STRING") then { _result = parseNumber _result; };
     };
+    case "taskAoRadius": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["taskAoRadius", _args];
+        };
+
+        _result = _logic getVariable ["taskAoRadius", DEFAULT_TASK_AO_RADIUS];
+        if (typeName _result == "STRING") then { _result = parseNumber _result; };
+    };
     case "filterEnemyFactions": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["filterEnemyFactions", _args];
@@ -751,6 +764,16 @@ switch(_operation) do {
 
         _debug = [_logic, "debug"] call MAINCLASS;
 
+        // Singleton: ALIVE_MIL_C2ISTAR is read by fnc_taskRequest /
+        // fnc_taskHandler / fnc_playerOrders / sys_spotrep and OPCOM's
+        // spotrep block. Multiple C2ISTAR modules in one mission overwrite
+        // each other through this global, so the last-initialised module
+        // silently wins. Warn the mission-maker via RPT so the symptom
+        // (only one C2ISTAR's settings taking effect) is diagnosable
+        // without source diving.
+        if (!isNil "ALIVE_MIL_C2ISTAR" && {!isNull ALIVE_MIL_C2ISTAR} && {ALIVE_MIL_C2ISTAR != _logic}) then {
+            ["ALiVE_fnc_C2ISTAR WARNING: multiple ALiVE_mil_C2ISTAR modules detected. The singleton global ALIVE_MIL_C2ISTAR is being overwritten - only the last-initialised module's configuration will be active. Place a single C2ISTAR module per mission."] call ALiVE_fnc_DumpR;
+        };
         ALIVE_MIL_C2ISTAR = _logic;
 
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;
