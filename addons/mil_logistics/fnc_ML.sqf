@@ -74,6 +74,10 @@ ARJay & Jman
 #define MAX_GROUPS_PER_REQUEST 5
 // OPCOM AIRLIFT delivery constants
 // FRIENDLY_AIRPORT_RADIUS: max distance (m) from a friendly OPCOM-held objective for an airport to count as 'friendly'.
+//   Set to 800 to cover Altis Molos (objective ~486m from ilsPosition) and similar terrain
+//   where the objective marker is offset from the runway. Tighter values (250-500) leave
+//   real airfields excluded; wider values risk pulling enemy-adjacent airfields into the
+//   friendly pool. Tune downward if 800 is too generous for a given terrain.
 // AIRLIFT_DEST_MAX_RADIUS: max distance (m) from the requested destination for a friendly airport to qualify as the destination airport.
 // AIRLIFT_MIN_FLIGHT_DISTANCE: minimum source-to-destination distance (m) below which AIRLIFT is suppressed (heli/ground takes over).
 // AIRLIFT_OFFMAP_BUFFER: distance (m) past the world boundary that the offmap-fallback plane spawns.
@@ -85,7 +89,7 @@ ARJay & Jman
 // AIRLIFT_VTOL_LAND_PROXIMITY: horizontal distance (m) to dest at which land "LAND" command is issued for vertical descent.
 // AIRLIFT_LANDED_AGL_THRESHOLD: AGL (m) below which a vertical lander is considered on the ground.
 // AIRLIFT_LANDED_SPEED_THRESHOLD: speed (km/h) below which a vertical lander is considered stopped.
-#define FRIENDLY_AIRPORT_RADIUS 250
+#define FRIENDLY_AIRPORT_RADIUS 800
 #define AIRLIFT_DEST_MAX_RADIUS 3000
 #define AIRLIFT_MIN_FLIGHT_DISTANCE 1500
 #define AIRLIFT_OFFMAP_BUFFER 500
