@@ -47,6 +47,40 @@ if (isNil "_bomber") then {
 
 if (isNil "_bomber") exitWith {};
 
+// Flag nearby civilians with ALiVE_CivPop_InsurgentContact for the
+// amb_civ_population "Pressure" dialog question (read in
+// fnc_questionHandler.sqf to drive the "yes, someone's been pressuring
+// me" branch). Specific-event slice complementing mil_opcom's
+// installation-ambient sweep (commit 047ec753): mil_opcom flags civs
+// near INS-controlled installations (ambient presence); this flags
+// civs near a discrete bomber event ("a bomber was lurking here just
+// before the strike").
+//
+// 25m sweep matches the typical urban civilian crowd radius. nearEntities
+// returns only physical (spawned) Man entities -- virtualised civilians
+// aren't present in the world and correctly excluded; they didn't
+// witness the bomber.
+//
+// isNil getVariable check preserves the earliest flag-time semantics
+// (no overwrites). public=true so the per-client dialog handler sees
+// the flag.
+private _civFlagged = 0;
+{
+    if (
+        side _x == civilian
+        && {!isPlayer _x}
+        && {!(_x getVariable ["ALiVE_CivPop_InsurgentContact", false])}
+    ) then {
+        _x setVariable ["ALiVE_CivPop_InsurgentContact", true, true];
+        _civFlagged = _civFlagged + 1;
+    };
+} forEach ((getPos _bomber) nearEntities ["CAManBase", 25]);
+
+if (_debug) then {
+    diag_log format ["ALIVE-%1 Suicide Bomber InsurgentContact sweep: %2 civilian(s) flagged within 25m of %3",
+        time, _civFlagged, getPos _bomber];
+};
+
 // Exclude bomber from AdvCiv brain loop so the ambient civilian AI
 // does not override the pursuit behaviour set below.
 // ALiVE_advciv_blacklist is the established mechanism used by both
