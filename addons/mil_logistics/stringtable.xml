@@ -302,26 +302,26 @@
 <Key ID="STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS">
     <English>Strategic Airlift Aircraft Class:</English>
 </Key>
-<Key ID="STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS_DESC">
-    <English>Optional. Aircraft used for OPCOM strategic airlift between friendly airfields. Accepts EITHER a single classname OR an SQF array literal of multiple classnames (mirrors ALiVE multi-class field convention). Examples: single = B_T_VTOL_01_infantry_F. Array = ["B_T_VTOL_01_infantry_F","B_Heli_Transport_01_F","RHS_C130J"]. When multiple aircraft are listed each AIRLIFT sortie picks one via capacity-weighted random selection (bigger transportSoldier = more likely picked, modelling a wing where heavy lifters are favoured for big requests). Plane, VTOL, or helicopter — pick what fits your mission (vanilla, RHS, CUP, mod, etc.). The defining feature of this delivery tier is airfield infrastructure, not aircraft type: AIRLIFT only fires when both source and destination have a friendly airport (within 250m of an OPCOM-held objective) and the route exceeds 1500m. When only one airport is friendly the aircraft spawns offmap and flies in. Each candidate must satisfy isKindOf "Air" and transportSoldier > 0; invalid candidates are silently skipped. Leave blank to disable AIRLIFT and fall back to existing heli/ground delivery. Note: helicopters used here bypass the standard HELI tier's concurrent-mission throttle.</English>
+<Key ID="STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS_COMMENT">
+    <English>Aircraft used for strategic airlift between friendly airfields. Accepts a single classname or an SQF array literal for a multi-class pool (e.g. ["B_T_VTOL_01_infantry_F","B_Heli_Transport_01_F"]). Multi-class picks per sortie via capacity-weighted random. Plane, VTOL or helicopter accepted. Leave blank to disable AIRLIFT.</English>
 </Key>
 <Key ID="STR_ALIVE_ML_AIRLIFT_SOURCE_AIRPORT_ID">
     <English>Airlift Source Airport Override:</English>
 </Key>
-<Key ID="STR_ALIVE_ML_AIRLIFT_SOURCE_AIRPORT_ID_DESC">
-    <English>Optional. Numeric airport ID to pin as the AIRLIFT source (rear hub). Leave blank (default) to auto-select: the algorithm picks the friendly airport furthest from the event position, modelling strategic airlift as rear-to-forward. Set this when the algorithm picks wrong (e.g. a friendly airport across water with no land route, or a specific narrative hub the mission wants to use). Airport ID conventions: 0 = primary map airport, 1..99 = secondary map airports (cfgWorlds SecondaryAirports), 100+ = dynamic / Eden-placed AirportBase compositions and carriers (100 = first ALiVE_Carriers entry, 101 = second, etc.). The override falls back to the algorithm with a warning in the RPT log if the named airport is not in the friendly list (e.g. captured by the enemy mid-mission). The destination airport is always picked by proximity to the event regardless of this setting.</English>
+<Key ID="STR_ALIVE_ML_AIRLIFT_SOURCE_AIRPORT_ID_COMMENT">
+    <English>Numeric airport ID to pin as the AIRLIFT source hub. Leave blank to auto-select the friendly airport furthest from the event (rear-to-forward). 0 = primary airport, 1..99 = secondary airports, 100+ = Eden / carrier airports. Falls back to auto-select if the named airport is unavailable.</English>
 </Key>
 <Key ID="STR_ALIVE_ML_AIRLIFT_FLEET_SIZE">
     <English>Airlift Fleet Size:</English>
 </Key>
-<Key ID="STR_ALIVE_ML_AIRLIFT_FLEET_SIZE_DESC">
-    <English>Number of strategic airlift aircraft this LOGCOM has available across the entire mission. Each aircraft loss (profile destroyed in flight, on the runway, during taxi, on RTB, or on final approach) decrements the pool by one. Successful deliveries that complete RTB do NOT decrement -- the same aircraft is reused. Default -1 = infinite (no opt-in needed; pool is never decremented and AIRLIFT never collapses from attrition). Set a small positive number (e.g. 3) to model a realistic squadron with finite strategic transport assets -- 3 sorties before AIRLIFT capability collapses. Set 0 to disable AIRLIFT from mission start without clearing the aircraft class. Any negative value normalises to -1 (infinite). Hash-corruption error exits (rare, indicates programming bug) do not count as losses.</English>
+<Key ID="STR_ALIVE_ML_AIRLIFT_FLEET_SIZE_COMMENT">
+    <English>Strategic airlift aircraft available across the mission. Each aircraft loss decrements the pool; successful RTBs do not. Default -1 = infinite (no attrition tracked). Set a small positive number for a finite squadron. 0 disables AIRLIFT from start without clearing the aircraft class.</English>
 </Key>
 <Key ID="STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS">
     <English>Airlift Cargo Capacity (slots):</English>
 </Key>
-<Key ID="STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS_DESC">
-    <English>Cargo capacity for the AIRLIFT aircraft, expressed in slot count. Default 0 = auto-calc from the aircraft's transportSoldier config (floor(transportSoldier / 8) -- the 8 troops per slot heuristic). A non-zero value is a manual override and bypasses the transportSoldier read; use it when the auto-calc gives a poor result for a modded aircraft (oversized cargo bay, undersized passenger count, etc.). Slot weights applied at dispatch time: 1 = infantry group, 2 = motorised group, 3 = mechanised group, 4 = armour group. Plane and helicopter categories are not airlifted (they fly themselves). When the requested makeup exceeds capacity the AIRLIFT tier uses a heavy-first greedy fill: armour fills first, then mech, then motorised, then infantry -- AIRLIFT carries what lower tiers (HELI slingload, STANDARD ground convoy) cannot. Examples: Y-32 Xi'an (transportSoldier 30) auto = 3 slots; C-130 (92) auto = 11; MH-9 Hummingbird (4) auto = 0. Capacity 0 (auto or override) suppresses AIRLIFT for this dispatch and falls through to HELI/STANDARD.</English>
+<Key ID="STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS_COMMENT">
+    <English>Cargo capacity in slot count. Default 0 = auto-calc from transportSoldier (floor / 8). Slot weights: infantry=1, motorised=2, mechanised=3, armour=4. Heavy-first fill when request exceeds capacity. Set a non-zero value to override auto-calc for modded aircraft.</English>
 </Key>
 <Key ID="STR_ALIVE_ML_USAGE">
     <English>Place a Military Logistics module to reinforce and resupply factions under control of the synced Military AI Commander module.</English>

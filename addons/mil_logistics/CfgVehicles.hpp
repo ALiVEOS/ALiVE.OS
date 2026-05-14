@@ -193,28 +193,28 @@ class CfgVehicles
                         {
                                 property = "ALiVE_mil_logistics_airliftAircraftClass";
                                 displayName = "$STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS";
-                                tooltip = "$STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS_DESC";
+                                tooltip = "$STR_ALIVE_ML_AIRLIFT_AIRCRAFT_CLASS_COMMENT";
                                 defaultValue = """""";
                         };
                         class airliftSourceAirportID : Edit
                         {
                                 property = "ALiVE_mil_logistics_airliftSourceAirportID";
                                 displayName = "$STR_ALIVE_ML_AIRLIFT_SOURCE_AIRPORT_ID";
-                                tooltip = "$STR_ALIVE_ML_AIRLIFT_SOURCE_AIRPORT_ID_DESC";
+                                tooltip = "$STR_ALIVE_ML_AIRLIFT_SOURCE_AIRPORT_ID_COMMENT";
                                 defaultValue = """""";
                         };
                         class airliftFleetSize : Edit
                         {
                                 property = "ALiVE_mil_logistics_airliftFleetSize";
                                 displayName = "$STR_ALIVE_ML_AIRLIFT_FLEET_SIZE";
-                                tooltip = "$STR_ALIVE_ML_AIRLIFT_FLEET_SIZE_DESC";
+                                tooltip = "$STR_ALIVE_ML_AIRLIFT_FLEET_SIZE_COMMENT";
                                 defaultValue = """-1""";
                         };
                         class airliftCargoSlots : Edit
                         {
                                 property = "ALiVE_mil_logistics_airliftCargoSlots";
                                 displayName = "$STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS";
-                                tooltip = "$STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS_DESC";
+                                tooltip = "$STR_ALIVE_ML_AIRLIFT_CARGO_SLOTS_COMMENT";
                                 defaultValue = """0""";
                         };
                         // ---- Starting Force Strength ----------------------------------------
