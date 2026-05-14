@@ -311,7 +311,19 @@ for "_j" from 1 to _numIEDs do {
         // Mirrored damage handler on the IED (mine) itself. Critical for
         // visible-mine integrations like RHS where the buried charge is out
         // of line-of-sight and a player's bullet hits the mine model first.
-        private _ehIDmine = _IED addEventHandler ["HandleDamage", {
+        //
+        // Gated: vanilla A3 IED ammo classes used by ACE_Explosives integration
+        // (e.g. IEDUrbanSmall_Remote_Ammo) inherit from an ammo-prop base that
+        // doesn't expose the "HandleDamage" EH enum -- attempting to attach it
+        // raises a recurring `Foreign error: Unknown enum value: HandleDamage`
+        // to the RPT and returns -1. ALiVE_IED-derived classes (Thing base)
+        // and MineBase-derived classes (RHS mines) DO support it, so restrict
+        // the attach to those. The charge-side handler above covers the
+        // single-model integrations where there is no separate mine model.
+        private _supportsHandleDamage = ((typeOf _IED) isKindOf "ALiVE_IED") || ((typeOf _IED) isKindOf "MineBase");
+        private _ehIDmine = -1;
+        if (_supportsHandleDamage) then {
+            _ehIDmine = _IED addEventHandler ["HandleDamage", {
             params ["_ied", "", "", "_killer"];
             if (_ied getVariable ["ALiVE_IED_Detonating", false]) exitWith {};
             _ied setVariable ["ALiVE_IED_Detonating", true];
@@ -336,6 +348,7 @@ for "_j" from 1 to _numIEDs do {
                 deleteVehicle _x;
             } foreach _trgr;
         }];
+        };
 
         _IED setVariable ["ehID",_ehID, true];
         _IED setVariable ["ehIDmine",_ehIDmine, true];
