@@ -269,41 +269,125 @@
 <Key ID="STR_ALIVE_C2ISTAR_COP_ENABLE_COMMENT">
     <English>Enables the Common Operational Picture map overlay — a real-time commander-intel layer that complements T.R.A.C.E. The server polls OPCOM data and broadcasts side-filtered enemy intel, friendly force tracking (BFT), commander objectives, and asymmetric activity to clients. Renders on the main map when open. Where T.R.A.C.E simulates ELINT-style potential-presence shading, COP simulates KNOWN intel reports received by the commander from OPCOM.</English>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ENABLE_LEGACY_DEPRECATED">
     <English>DEPRECATED — replaced by Commander Intel Mode. Use the new attribute instead.</English>
+    <Chinese>已棄用 — 由「指揮官情報模式」取代。請改用新屬性。</Chinese>
+    <Chinesesimp>已弃用 — 由「指挥官情报模式」取代。请改用新属性。</Chinesesimp>
+    <Spanish>OBSOLETO — reemplazado por Modo de Inteligencia del Comandante. Use el nuevo atributo en su lugar.</Spanish>
+    <French>OBSOLÈTE — remplacé par le Mode d'Intelligence du Commandant. Utilisez le nouvel attribut à la place.</French>
+    <Portuguese>OBSOLETO — substituído pelo Modo de Inteligência do Comandante. Use o novo atributo.</Portuguese>
+    <Russian>УСТАРЕЛО — заменено на Режим разведданных командира. Используйте новый атрибут.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_MODE">
     <English>Commander Intel Mode (COP):</English>
+    <Chinese>指揮官情報模式 (COP):</Chinese>
+    <Chinesesimp>指挥官情报模式 (COP):</Chinesesimp>
+    <Spanish>Modo de Inteligencia del Comandante (COP):</Spanish>
+    <French>Mode d'Intelligence du Commandant (COP):</French>
+    <Portuguese>Modo de Inteligência do Comandante (COP):</Portuguese>
+    <Russian>Режим разведданных командира (COP):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_MODE_COMMENT">
     <English>Off / Basic / Partial / Full / Advanced. Master tier selector for the Common Operational Picture overlay. Off = no COP code runs. Basic = objective circles only (no enemy intel, no BFT). Partial = enemy clusters + objectives, no BFT, no movement vector. Full = enemies + BFT + objectives with baseline features only (no trail / threat ring / confidence border / composition labels). Advanced = full feature set. Note: if the legacy enableLiveCommanderIntel attribute is set in init.sqf, the Off value is overridden by it — remove the legacy attribute to fully disable COP.</English>
+    <Chinese>關閉 / 基本 / 部分 / 完整 / 進階。共同作戰圖像覆蓋層的主要層級選擇器。關閉 = COP 程式碼不執行。基本 = 僅目標圓圈（無敵情、無 BFT）。部分 = 敵方叢集 + 目標，無 BFT、無移動向量。完整 = 敵方 + BFT + 目標，僅基線功能（無軌跡 / 威脅環 / 信心邊框 / 組成標籤）。進階 = 完整功能集。注意：如果在 init.sqf 中設定了舊版 enableLiveCommanderIntel 屬性，「關閉」值會被它覆寫 — 請移除舊版屬性以完全停用 COP。</Chinese>
+    <Chinesesimp>关闭 / 基本 / 部分 / 完整 / 高级。共同作战图像覆盖层的主要层级选择器。关闭 = COP 代码不运行。基本 = 仅目标圆圈（无敌情、无 BFT）。部分 = 敌方集群 + 目标，无 BFT、无移动矢量。完整 = 敌方 + BFT + 目标，仅基线功能（无轨迹 / 威胁环 / 信心边框 / 组成标签）。高级 = 完整功能集。注意：如果在 init.sqf 中设置了旧版 enableLiveCommanderIntel 属性，「关闭」值会被它覆盖 — 请移除旧版属性以完全禁用 COP。</Chinesesimp>
+    <Spanish>Off / Basic / Partial / Full / Advanced. Selector de nivel maestro para la superposición de Imagen Operativa Común (COP). Off = ningún código COP se ejecuta. Basic = solo círculos de objetivos (sin inteligencia enemiga, sin BFT). Partial = clústeres enemigos + objetivos, sin BFT, sin vector de movimiento. Full = enemigos + BFT + objetivos con solo características básicas (sin rastro / anillo de amenaza / borde de confianza / etiquetas de composición). Advanced = conjunto completo de características. Nota: si el atributo heredado enableLiveCommanderIntel está establecido en init.sqf, el valor Off es anulado por él — elimine el atributo heredado para desactivar COP completamente.</Spanish>
+    <French>Off / Basic / Partial / Full / Advanced. Sélecteur de niveau maître pour la superposition de l'Image Opérationnelle Commune (COP). Off = aucun code COP ne s'exécute. Basic = uniquement les cercles d'objectifs (pas de renseignement ennemi, pas de BFT). Partial = clusters ennemis + objectifs, pas de BFT, pas de vecteur de mouvement. Full = ennemis + BFT + objectifs avec uniquement les fonctionnalités de base (pas de traînée / anneau de menace / bordure de confiance / étiquettes de composition). Advanced = ensemble complet de fonctionnalités. Note: si l'attribut hérité enableLiveCommanderIntel est défini dans init.sqf, la valeur Off est remplacée par celui-ci — supprimez l'attribut hérité pour désactiver complètement COP.</French>
+    <Portuguese>Off / Basic / Partial / Full / Advanced. Seletor de nível mestre para a sobreposição de Imagem Operacional Comum (COP). Off = nenhum código COP é executado. Basic = apenas círculos de objetivos (sem inteligência inimiga, sem BFT). Partial = clusters inimigos + objetivos, sem BFT, sem vetor de movimento. Full = inimigos + BFT + objetivos apenas com recursos básicos (sem rastro / anel de ameaça / borda de confiança / rótulos de composição). Advanced = conjunto completo de recursos. Nota: se o atributo legado enableLiveCommanderIntel estiver definido em init.sqf, o valor Off é substituído por ele — remova o atributo legado para desativar o COP completamente.</Portuguese>
+    <Russian>Off / Basic / Partial / Full / Advanced. Главный селектор уровня для наложения Общей оперативной картины (COP). Off = код COP не выполняется. Basic = только круги задач (без разведданных о противнике, без BFT). Partial = кластеры противника + задачи, без BFT, без вектора движения. Full = противники + BFT + задачи только с базовыми функциями (без следа / кольца угрозы / границы достоверности / меток состава). Advanced = полный набор функций. Примечание: если устаревший атрибут enableLiveCommanderIntel установлен в init.sqf, значение Off переопределяется им — удалите устаревший атрибут, чтобы полностью отключить COP.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_MODE_OFF">
     <English>Off</English>
+    <Chinese>關閉</Chinese>
+    <Chinesesimp>关闭</Chinesesimp>
+    <Spanish>Apagado</Spanish>
+    <French>Désactivé</French>
+    <Portuguese>Desligado</Portuguese>
+    <Russian>Выкл.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_MODE_BASIC">
     <English>Basic</English>
+    <Chinese>基本</Chinese>
+    <Chinesesimp>基本</Chinesesimp>
+    <Spanish>Básico</Spanish>
+    <French>De base</French>
+    <Portuguese>Básico</Portuguese>
+    <Russian>Базовый</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_MODE_PARTIAL">
     <English>Partial</English>
+    <Chinese>部分</Chinese>
+    <Chinesesimp>部分</Chinesesimp>
+    <Spanish>Parcial</Spanish>
+    <French>Partiel</French>
+    <Portuguese>Parcial</Portuguese>
+    <Russian>Частичный</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_MODE_FULL">
     <English>Full</English>
+    <Chinese>完整</Chinese>
+    <Chinesesimp>完整</Chinesesimp>
+    <Spanish>Completo</Spanish>
+    <French>Complet</French>
+    <Portuguese>Completo</Portuguese>
+    <Russian>Полный</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_MODE_ADVANCED">
     <English>Advanced</English>
+    <Chinese>進階</Chinese>
+    <Chinesesimp>高级</Chinesesimp>
+    <Spanish>Avanzado</Spanish>
+    <French>Avancé</French>
+    <Portuguese>Avançado</Portuguese>
+    <Russian>Расширенный</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ASYM">
     <English>Commander Intel — Asymmetric:</English>
+    <Chinese>指揮官情報 — 非對稱:</Chinese>
+    <Chinesesimp>指挥官情报 — 非对称:</Chinesesimp>
+    <Spanish>Inteligencia del Comandante — Asimétrica:</Spanish>
+    <French>Intelligence du Commandant — Asymétrique:</French>
+    <Portuguese>Inteligência do Comandante — Assimétrica:</Portuguese>
+    <Russian>Разведданные командира — Асимметричные:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ASYM_COMMENT">
     <English>When Yes, and Commander Intel Mode is not Off, the asymmetric COP layer (Layer 5) runs — insurgent activity zones, civilian sentiment, and infrastructure markers. When No, Layer 5 is forced off regardless of master defaults. Has no effect when Commander Intel Mode is Off.</English>
+    <Chinese>設為「是」且指揮官情報模式不為「關閉」時，非對稱 COP 層（第 5 層）會執行 — 叛亂活動區域、平民情緒和基礎設施標記。設為「否」時，無論主預設為何，第 5 層都會被強制關閉。指揮官情報模式為「關閉」時無效。</Chinese>
+    <Chinesesimp>设为「是」且指挥官情报模式不为「关闭」时，非对称 COP 层（第 5 层）会执行 — 叛乱活动区域、平民情绪和基础设施标记。设为「否」时，无论主预设为何，第 5 层都会被强制关闭。指挥官情报模式为「关闭」时无效。</Chinesesimp>
+    <Spanish>Cuando se establece en Sí y el Modo de Inteligencia del Comandante no es Off, la capa COP asimétrica (Capa 5) se ejecuta — zonas de actividad insurgente, sentimiento civil y marcadores de infraestructura. Cuando se establece en No, la Capa 5 se desactiva forzosamente independientemente de los valores predeterminados. No tiene efecto cuando el Modo de Inteligencia del Comandante es Off.</Spanish>
+    <French>Lorsqu'il est défini sur Oui et que le Mode d'Intelligence du Commandant n'est pas Off, la couche COP asymétrique (Couche 5) s'exécute — zones d'activité insurgée, sentiment civil et marqueurs d'infrastructure. Lorsqu'il est défini sur Non, la Couche 5 est forcée à off quels que soient les paramètres par défaut. N'a aucun effet lorsque le Mode d'Intelligence du Commandant est Off.</French>
+    <Portuguese>Quando definido como Sim e o Modo de Inteligência do Comandante não for Off, a camada COP assimétrica (Camada 5) é executada — zonas de atividade insurgente, sentimento civil e marcadores de infraestrutura. Quando definido como Não, a Camada 5 é forçadamente desativada independentemente dos padrões mestres. Não tem efeito quando o Modo de Inteligência do Comandante é Off.</Portuguese>
+    <Russian>При значении Да и Режиме разведданных командира, отличном от Off, запускается асимметричный слой COP (Слой 5) — зоны повстанческой активности, гражданские настроения и маркеры инфраструктуры. При значении Нет Слой 5 принудительно отключается независимо от мастер-настроек. Не имеет эффекта, когда Режим разведданных командира установлен в Off.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ASYM_YES">
     <English>Yes</English>
+    <Chinese>是</Chinese>
+    <Chinesesimp>是</Chinesesimp>
+    <Spanish>Sí</Spanish>
+    <French>Oui</French>
+    <Portuguese>Sim</Portuguese>
+    <Russian>Да</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ASYM_NO">
     <English>No</English>
+    <Chinese>否</Chinese>
+    <Chinesesimp>否</Chinesesimp>
+    <Spanish>No</Spanish>
+    <French>Non</French>
+    <Portuguese>Não</Portuguese>
+    <Russian>Нет</Russian>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE">
     <English>COP Anchor Distance:</English>
