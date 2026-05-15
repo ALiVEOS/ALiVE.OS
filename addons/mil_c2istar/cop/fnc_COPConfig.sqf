@@ -80,8 +80,9 @@ if (isNil "ALIVE_COP_INTERVAL_SLOW")       then { ALIVE_COP_INTERVAL_SLOW       
 // ANCHOR DISTANCE (client-side proximity gate — Eden attribute overrides this)
 // ============================================================================
 // Radius around the player within which COP intel is drawn on the map.
-// Overridden at module init by the copAnchorDistance Eden attribute (100/200/
-// 500/1000/3000 m). Stored here as the fallback default.
+// Overridden at module init by the copAnchorDistance Eden attribute (any
+// number ≥ 100 m; values below 100 are clamped to the default by the
+// MAINCLASS shim in fnc_C2ISTAR.sqf). Stored here as the fallback default.
 if (isNil "ALIVE_COP_ANCHOR_DISTANCE")     then { ALIVE_COP_ANCHOR_DISTANCE     = 1000 };
 
 // ============================================================================

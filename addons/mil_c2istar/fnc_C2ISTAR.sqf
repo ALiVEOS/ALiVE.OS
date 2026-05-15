@@ -546,20 +546,22 @@ switch(_operation) do {
         _result = _args;
     };
     case "copAnchorDistance": {
-        // Combo attributes serialize as STRING, not SCALAR. Eden's module
-        // base class stores the raw value (e.g. "1000") on the logic before
-        // this case is first called. Read-else-from-logic so we don't
-        // overwrite that value when _args is nil/"" on a pure read call.
+        // Edit attribute (typeName=NUMBER) normally lands here as SCALAR, but
+        // legacy missions saved with the previous Combo attribute may still
+        // have a STRING value on the logic. The dual-path coercion below
+        // accepts either and caches the SCALAR back so subsequent reads skip
+        // the conversion. Read-else-from-logic preserves the stored value on
+        // pure read calls (when _args is nil/"").
         if (typeName _args == "SCALAR") then {
             _logic setVariable ["copAnchorDistance", _args];
         } else {
             _args = _logic getVariable ["copAnchorDistance", DEFAULT_COP_ANCHOR_DISTANCE];
         };
-        // Convert STRING → SCALAR and cache back so subsequent reads skip this.
         if (typeName _args == "STRING") then {
             _args = parseNumber _args;
             _logic setVariable ["copAnchorDistance", _args];
         };
+        // Floor: anything below 100 m or non-numeric falls back to default.
         if (typeName _args != "SCALAR" || {_args < 100}) then { _args = DEFAULT_COP_ANCHOR_DISTANCE };
         _result = _args;
     };

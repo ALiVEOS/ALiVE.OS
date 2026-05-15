@@ -619,40 +619,13 @@ class CfgVehicles {
                             expression = "_this setVariable ['enableLiveCommanderIntel', _value];";
                             defaultValue = """false""";
                     };
-                    class copAnchorDistance : Combo
+                    class copAnchorDistance : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_copAnchorDistance";
                             displayName = "$STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE";
                             tooltip = "$STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE_COMMENT";
-                            defaultValue = """1000""";
-                            class Values
-                            {
-                                    class m100
-                                    {
-                                            name = "100 m";
-                                            value = "100";
-                                    };
-                                    class m200
-                                    {
-                                            name = "200 m";
-                                            value = "200";
-                                    };
-                                    class m500
-                                    {
-                                            name = "500 m";
-                                            value = "500";
-                                    };
-                                    class m1000
-                                    {
-                                            name = "1000 m";
-                                            value = "1000";
-                                    };
-                                    class m3000
-                                    {
-                                            name = "3000 m";
-                                            value = "3000";
-                                    };
-                            };
+                            defaultValue = "1000";
+                            typeName = "NUMBER";
                     };
                     class runEvery: Edit
                     {
