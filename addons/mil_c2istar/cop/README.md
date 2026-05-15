@@ -284,6 +284,37 @@ If a client reports low FPS with the map open, the first tunables to lower:
 Set `ALIVE_COP_DEBUG_PERF_WARN_MS = N` (default 250) to get a WARN log line when
 any cycle exceeds N milliseconds. Loop A/B/Asym all respect this threshold.
 
+### Deferred optimizations
+
+Two architectural changes were evaluated and intentionally deferred until a
+`diag_codePerformance` profile justifies them:
+
+- **Server-side label pre-formatting.** The 9 per-frame `format[]` calls in
+  `COPDrawEnemyMarker`, `COPDrawBftMarker`, `COPDrawObjective`, and
+  `COPDrawAsymZone` could be moved into the server-cycle broadcast struct.
+  Rejected because label content is gated by client-local toggles
+  (`ALIVE_COP_render_showLabels`, `ALIVE_COP_FEAT_FACTION`, `ALIVE_COP_FEAT_AGE`,
+  `ALIVE_COP_OBJ_SHOW_PRIORITY`); pre-formatting on the server would collapse
+  the per-client tuning surface. Including an age string in the broadcast also
+  flips the `ALIVE_fnc_COPBroadcastIfChanged` hash gate every minute per entity
+  even when tactical data is unchanged — amplifying network traffic for a
+  cosmetic field.
+- **Marker persistence (`createMarker*` materialization).** Same draws could
+  become engine-native markers mutated per cycle. Rejected because
+  `setMarkerColorLocal` consumes CfgMarkerColors names, not RGBA literals
+  (breaks per-entity alpha fade); polyline trails, dashed axis arrows,
+  movement arrowheads, and activity badges don't fit the marker primitive
+  cleanly; and `createMarker` (global) breaks the per-side intel-visibility
+  filter that the `publicVariable` channels already enforce.
+
+Per-frame `format[]` only fires when `ALIVE_COP_render_showLabels` is true
+(zoom-gated) AND the entry passes anchor + viewport gates — typically &lt;30
+markers in view, well under any measurable threshold. If a profile later shows
+label-build time on the hot path, the preferred fix is a per-client label
+cache keyed on `hashValue _entry` (array identity is stable per allocation;
+server rebuilds the broadcast array each cycle, so cache invalidates
+naturally), NOT either of the rejected architectures.
+
 ---
 
 ## Edge cases handled
