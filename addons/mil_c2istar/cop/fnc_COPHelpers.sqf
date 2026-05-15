@@ -96,11 +96,15 @@ ALIVE_fnc_COPGetIconPath = {
     private _cached = ALIVE_COP_ICON_CACHE getOrDefault [_cacheKey, ""];
     if (_cached != "") exitWith { _cached };
 
+    // APP-6 / MIL-STD-2525 affiliation prefix.
+    // b = friend (rectangle), o = hostile (diamond), n = neutral (square),
+    // u = unknown (quatrefoil). Default → u so an unresolved side renders
+    // as the doctrinally correct unknown frame, not mislabelled as neutral.
     private _prefix = switch (toUpper _sideKey) do {
         case "WEST": { "b" };
         case "EAST": { "o" };
         case "GUER": { "n" };
-        default      { "n" };
+        default      { "u" };
     };
 
     // Internal type → Arma's NATO icon suffix
