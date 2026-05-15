@@ -92,18 +92,22 @@ if (count ALIVE_COP_OPCOMS == 0) exitWith {
 
 // ============================================================================
 // INITIALISE BROADCAST CHANNELS (empty arrays for JIP)
+// Third-arg `true` makes these JIP-persistent — a late joiner receives the
+// last broadcast value (initially []), so the Draw EH always finds the
+// variable defined and never reads the missing-variable default. The
+// COPBroadcastIfChanged helper uses the same pattern for cycle updates.
 // ============================================================================
-ALiVE_COP_IntelData_WEST       = []; publicVariable "ALiVE_COP_IntelData_WEST";
-ALiVE_COP_IntelData_EAST       = []; publicVariable "ALiVE_COP_IntelData_EAST";
-ALiVE_COP_IntelData_GUER       = []; publicVariable "ALiVE_COP_IntelData_GUER";
+missionNamespace setVariable ["ALiVE_COP_IntelData_WEST",      [], true];
+missionNamespace setVariable ["ALiVE_COP_IntelData_EAST",      [], true];
+missionNamespace setVariable ["ALiVE_COP_IntelData_GUER",      [], true];
 
-ALiVE_COP_BftData_WEST         = []; publicVariable "ALiVE_COP_BftData_WEST";
-ALiVE_COP_BftData_EAST         = []; publicVariable "ALiVE_COP_BftData_EAST";
-ALiVE_COP_BftData_GUER         = []; publicVariable "ALiVE_COP_BftData_GUER";
+missionNamespace setVariable ["ALiVE_COP_BftData_WEST",        [], true];
+missionNamespace setVariable ["ALiVE_COP_BftData_EAST",        [], true];
+missionNamespace setVariable ["ALiVE_COP_BftData_GUER",        [], true];
 
-ALiVE_COP_ObjectivesData_WEST  = []; publicVariable "ALiVE_COP_ObjectivesData_WEST";
-ALiVE_COP_ObjectivesData_EAST  = []; publicVariable "ALiVE_COP_ObjectivesData_EAST";
-ALiVE_COP_ObjectivesData_GUER  = []; publicVariable "ALiVE_COP_ObjectivesData_GUER";
+missionNamespace setVariable ["ALiVE_COP_ObjectivesData_WEST", [], true];
+missionNamespace setVariable ["ALiVE_COP_ObjectivesData_EAST", [], true];
+missionNamespace setVariable ["ALiVE_COP_ObjectivesData_GUER", [], true];
 
 // ============================================================================
 // INNER HELPERS (globals so spawned loops can call them)

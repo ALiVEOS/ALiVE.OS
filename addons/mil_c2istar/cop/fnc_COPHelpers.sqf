@@ -423,8 +423,10 @@ ALIVE_fnc_COPBroadcastIfChanged = {
     private _lastHash = _hashMap getOrDefault [_varName, ""];
 
     if (_newHash != _lastHash) then {
-        missionNamespace setVariable [_varName, _data];
-        publicVariable _varName;
+        // Third arg `true` = JIP-persistent broadcast: engine queues the latest
+        // value for late joiners, so a player who connects between server cycles
+        // immediately sees the current intel instead of an empty map.
+        missionNamespace setVariable [_varName, _data, true];
         _hashMap set [_varName, _newHash];
         ["debug", "broadcast", "%1 changed (%2 entries) — broadcasting", [_varName, count _data]] call ALIVE_fnc_COPLog;
         true

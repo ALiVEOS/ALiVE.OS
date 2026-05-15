@@ -77,10 +77,13 @@ if (isNil "ALIVE_COP_ASYM_OPCOM") exitWith {
 
 // ============================================================================
 // INITIALISE BROADCAST CHANNELS (empty arrays for JIP)
+// Third-arg `true` makes these JIP-persistent — see fnc_COPServer.sqf for
+// the same pattern. Asym channels are side-agnostic; client-side filtering
+// by ALIVE_COP_playerSideKey happens in fnc_COPRender.sqf.
 // ============================================================================
-ALiVE_COP_AsymActivityData  = []; publicVariable "ALiVE_COP_AsymActivityData";
-ALiVE_COP_AsymHostilityData = []; publicVariable "ALiVE_COP_AsymHostilityData";
-ALiVE_COP_AsymInfraData     = []; publicVariable "ALiVE_COP_AsymInfraData";
+missionNamespace setVariable ["ALiVE_COP_AsymActivityData",  [], true];
+missionNamespace setVariable ["ALiVE_COP_AsymHostilityData", [], true];
+missionNamespace setVariable ["ALiVE_COP_AsymInfraData",     [], true];
 
 if (isNil "ALIVE_COP_LAST_HASH_ASYM") then {
     ALIVE_COP_LAST_HASH_ASYM = createHashMap;

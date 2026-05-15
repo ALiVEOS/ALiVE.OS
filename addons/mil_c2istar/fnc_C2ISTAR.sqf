@@ -1091,8 +1091,10 @@ switch(_operation) do {
                 [_mode] call ALiVE_fnc_COPApplyTier;
 
                 private _anchorDist = [_logic, "copAnchorDistance"] call MAINCLASS;
-                ALIVE_COP_ANCHOR_DISTANCE = _anchorDist;
-                publicVariable "ALIVE_COP_ANCHOR_DISTANCE";
+                // JIP-persistent: a late joiner reads the current anchor
+                // distance immediately, so the very first Draw EH frame
+                // uses the configured radius rather than the 1000 m fallback.
+                missionNamespace setVariable ["ALIVE_COP_ANCHOR_DISTANCE", _anchorDist, true];
 
                 ["startServer"] call ALIVE_fnc_COPInit;
 

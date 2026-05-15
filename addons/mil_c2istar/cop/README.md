@@ -106,7 +106,7 @@ ALiVE OPCOM (knownentities, objectives, hostility)
 fnc_COPServer.sqf  (Loop A: 30 s fast, Loop B: 60 s slow)
 fnc_COPAsym.sqf    (Layer 5: 60 s)
         |
-        v  publicVariable (hash-diff, side-filtered)
+        v  setVariable [..., true]  (hash-diff gated, side-filtered, JIP-persistent)
         |
 ALiVE_COP_IntelData_WEST / _EAST / _GUER       enemy contacts
 ALiVE_COP_BftData_WEST / _EAST / _GUER         friendly clusters
@@ -323,7 +323,7 @@ COP inherits a battle-tested edge-case matrix from the DWA source it was
 ported from. Each of the following scenarios is covered:
 
 1. **ALiVE not yet ready** — server loops `waitUntil` OPCOM_instances populated + 45 s post-detection sleep for first analysis cycle.
-2. **JIP players** — server publicVariables empty arrays on startup so joiners receive current state.
+2. **JIP players** — every broadcast channel uses `setVariable [name, value, true]` (third-arg JIP-persistent), so a late joiner immediately receives the latest intel / BFT / objective / asym structs the server has computed, plus the anchor distance. No waiting for the next server cycle.
 3. **OPCOMs destroyed mid-mission** — profile reads wrapped in `isNil` + count guards.
 4. **Empty knownentities** — handled gracefully, broadcasts empty array.
 5. **Player without a side (sideUnknown)** — waits for resolution before caching; CIV faction resolved to real side via `ALiVE_fnc_factionSide`.
