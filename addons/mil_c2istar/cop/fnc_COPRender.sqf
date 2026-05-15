@@ -273,7 +273,14 @@ ALIVE_fnc_COPDrawBftMarker = {
     _entry params ["_pos", "_type", "_count", "_sizeInd"];
 
     private _baseColor = [_sideKey] call ALIVE_fnc_COPGetSideColor;
-    private _color = [_baseColor select 0, _baseColor select 1, _baseColor select 2, ALIVE_COP_BFT_ALPHA];
+
+    // Copy RGB from caller's side colour; fixed BFT alpha. drawIcon and the
+    // size-indicator both consume the colour synchronously (arma3_reference.md §2.8)
+    // — safe to reuse one scratch across both calls within a single frame.
+    ALIVE_COP_COLOR_BFT_SCRATCH set [0, _baseColor select 0];
+    ALIVE_COP_COLOR_BFT_SCRATCH set [1, _baseColor select 1];
+    ALIVE_COP_COLOR_BFT_SCRATCH set [2, _baseColor select 2];
+    ALIVE_COP_COLOR_BFT_SCRATCH set [3, ALIVE_COP_BFT_ALPHA];
 
     private _iconPath = if (ALIVE_COP_BFT_FEAT_TYPE) then {
         [_sideKey, _type] call ALIVE_fnc_COPGetIconPath
@@ -286,12 +293,12 @@ ALIVE_fnc_COPDrawBftMarker = {
         _label = format ["x%1", _count];
     };
 
-    _mapCtrl drawIcon [_iconPath, _color, _pos,
+    _mapCtrl drawIcon [_iconPath, ALIVE_COP_COLOR_BFT_SCRATCH, _pos,
                        ALIVE_COP_SIZE_BFT, ALIVE_COP_SIZE_BFT, 0,
                        _label, 0, ALIVE_COP_TEXT_SIZE * ALIVE_COP_TEXT_SIZE_BFT_FACTOR, ALIVE_COP_FONT_MAIN, "right"];
 
     if (ALIVE_COP_BFT_FEAT_SIZE && ALIVE_COP_render_showBftDetail) then {
-        [_mapCtrl, _pos, _sizeInd, _color] call ALIVE_fnc_COPDrawSizeIndicator;
+        [_mapCtrl, _pos, _sizeInd, ALIVE_COP_COLOR_BFT_SCRATCH] call ALIVE_fnc_COPDrawSizeIndicator;
     };
 };
 
@@ -371,10 +378,13 @@ ALIVE_fnc_COPDrawAxisArrow = {
     if (_tooClose) exitWith {};
     if (isNil "_nearest") exitWith {};
 
-    private _color = [ALIVE_COP_COLOR_OBJ_ATTACK select 0,
-                      ALIVE_COP_COLOR_OBJ_ATTACK select 1,
-                      ALIVE_COP_COLOR_OBJ_ATTACK select 2,
-                      ALIVE_COP_AXIS_ALPHA];
+    // Copy RGB from ALIVE_COP_COLOR_OBJ_ATTACK; fixed axis-arrow alpha.
+    // drawLine consumes the colour synchronously (arma3_reference.md §2.8)
+    // — safe to reuse one scratch across all dash/head segments in one frame.
+    ALIVE_COP_COLOR_AXIS_SCRATCH set [0, ALIVE_COP_COLOR_OBJ_ATTACK select 0];
+    ALIVE_COP_COLOR_AXIS_SCRATCH set [1, ALIVE_COP_COLOR_OBJ_ATTACK select 1];
+    ALIVE_COP_COLOR_AXIS_SCRATCH set [2, ALIVE_COP_COLOR_OBJ_ATTACK select 2];
+    ALIVE_COP_COLOR_AXIS_SCRATCH set [3, ALIVE_COP_AXIS_ALPHA];
 
     private _dx = (_objPos select 0) - (_nearest select 0);
     private _dy = (_objPos select 1) - (_nearest select 1);
@@ -394,7 +404,7 @@ ALIVE_fnc_COPDrawAxisArrow = {
         private _y1 = (_nearest select 1) + _uy * _dist;
         private _x2 = (_nearest select 0) + _ux * (_dist + _segLen);
         private _y2 = (_nearest select 1) + _uy * (_dist + _segLen);
-        _mapCtrl drawLine [[_x1, _y1, 0], [_x2, _y2, 0], _color];
+        _mapCtrl drawLine [[_x1, _y1, 0], [_x2, _y2, 0], ALIVE_COP_COLOR_AXIS_SCRATCH];
         _dist = _dist + _step;
     };
 
@@ -404,8 +414,8 @@ ALIVE_fnc_COPDrawAxisArrow = {
     private _perpX = -_uy * ALIVE_COP_AXIS_HEAD_WIDTH;
     private _perpY =  _ux * ALIVE_COP_AXIS_HEAD_WIDTH;
 
-    _mapCtrl drawLine [[_ax + _perpX, _ay + _perpY, 0], [_objPos select 0, _objPos select 1, 0], _color];
-    _mapCtrl drawLine [[_ax - _perpX, _ay - _perpY, 0], [_objPos select 0, _objPos select 1, 0], _color];
+    _mapCtrl drawLine [[_ax + _perpX, _ay + _perpY, 0], [_objPos select 0, _objPos select 1, 0], ALIVE_COP_COLOR_AXIS_SCRATCH];
+    _mapCtrl drawLine [[_ax - _perpX, _ay - _perpY, 0], [_objPos select 0, _objPos select 1, 0], ALIVE_COP_COLOR_AXIS_SCRATCH];
 };
 
 // ============================================================================

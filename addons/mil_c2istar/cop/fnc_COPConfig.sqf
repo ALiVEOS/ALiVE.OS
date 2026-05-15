@@ -354,6 +354,17 @@ if (isNil "ALIVE_COP_COLOR_TRAIL_SCRATCH") then { ALIVE_COP_COLOR_TRAIL_SCRATCH 
 // caller's per-marker colour, alpha fixed at ALIVE_COP_CONFIDENCE_RING_ALPHA.
 if (isNil "ALIVE_COP_COLOR_CONFIDENCE_SCRATCH") then { ALIVE_COP_COLOR_CONFIDENCE_SCRATCH = +ALIVE_COP_COLOR_THREAT_RING };
 
+// Per-frame scratch for BFT (friendly force tracking) marker colour — RGB
+// copied from the caller's side colour, alpha fixed at ALIVE_COP_BFT_ALPHA.
+// Kept SEPARATE from the other scratches so the BFT path doesn't share state
+// with intel/asym draws.
+if (isNil "ALIVE_COP_COLOR_BFT_SCRATCH") then { ALIVE_COP_COLOR_BFT_SCRATCH = +ALIVE_COP_COLOR_THREAT_RING };
+
+// Per-frame scratch for objective axis-of-advance arrows — RGB copied from
+// ALIVE_COP_COLOR_OBJ_ATTACK, alpha fixed at ALIVE_COP_AXIS_ALPHA. Kept
+// SEPARATE from the other scratches per the same isolation rule.
+if (isNil "ALIVE_COP_COLOR_AXIS_SCRATCH") then { ALIVE_COP_COLOR_AXIS_SCRATCH = +ALIVE_COP_COLOR_THREAT_RING };
+
 // Civilian sentiment overlay
 if (isNil "ALIVE_COP_COLOR_HOSTILE")      then { ALIVE_COP_COLOR_HOSTILE      = [0.8,  0.4,   0.0,  0.35] };
 if (isNil "ALIVE_COP_COLOR_STRONGHOLD")   then { ALIVE_COP_COLOR_STRONGHOLD   = [0.8,  0.4,   0.0,  0.6] };
