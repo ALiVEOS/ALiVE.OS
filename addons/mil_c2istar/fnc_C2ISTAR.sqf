@@ -489,6 +489,48 @@ switch(_operation) do {
     case "displayTraceGrid": {
         _result = [_logic,_operation,_args,DEFAULT_TRACEFILL] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "commanderIntelMode": {
+        if (typeName _args == "STRING" && {_args != ""}) then {
+            _logic setVariable ["commanderIntelMode", _args];
+        } else {
+            _args = _logic getVariable ["commanderIntelMode", "Off"];
+        };
+
+        // Migration shim: if legacy enableLiveCommanderIntel is set on this logic AND
+        // commanderIntelMode is at default "Off" (or never set), let legacy drive.
+        // KNOWN MIGRATION SURPRISE: explicitly picking "Off" while legacy=true in init.sqf
+        // makes legacy win (looks like default). Remove the legacy attr to use explicit Off.
+        private _legacyRaw = _logic getVariable ["enableLiveCommanderIntel", "__NOT_SET__"];
+        if !(_legacyRaw isEqualTo "__NOT_SET__") then {
+            private _modeRaw = _logic getVariable ["commanderIntelMode", "__NOT_SET__"];
+            if (_modeRaw isEqualTo "__NOT_SET__" || {_modeRaw == "Off"}) then {
+                private _legacyBool = _legacyRaw;
+                if (typeName _legacyBool == "STRING") then {
+                    _legacyBool = (_legacyBool == "true");
+                };
+                _args = if (_legacyBool) then { "Advanced" } else { "Off" };
+                ["info", "init", "commanderIntelMode at default — legacy enableLiveCommanderIntel=%1 → %2", [_legacyBool, _args]] call ALiVE_fnc_COPLog;
+            };
+        };
+
+        ASSERT_TRUE(_args in ["Off","Basic","Partial","Full","Advanced"], str _args);
+        _result = _args;
+    };
+    case "commanderIntelAsymmetric": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["commanderIntelAsymmetric", _args];
+        } else {
+            _args = _logic getVariable ["commanderIntelAsymmetric", false];
+        };
+        if (typeName _args == "STRING") then {
+            if (_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["commanderIntelAsymmetric", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL", str _args);
+
+        _result = _args;
+    };
+    // DEPRECATED — used by shim only
     case "enableLiveCommanderIntel": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["enableLiveCommanderIntel", _args];
@@ -1040,14 +1082,26 @@ switch(_operation) do {
             };
 
             // COP — Common Operational Picture (commander intel overlay)
-            private _enableCOP = [_logic, "enableLiveCommanderIntel"] call MAINCLASS;
-            if (_enableCOP) then {
+            // Tiered mode replaces the legacy enableLiveCommanderIntel bool.
+            // commanderIntelMode ∈ Off / Basic / Partial / Full / Advanced; the
+            // shim inside MAINCLASS auto-promotes a legacy enableLiveCommanderIntel=true
+            // setting to "Advanced" when the new attr is at its default "Off".
+            private _mode = [_logic, "commanderIntelMode"] call MAINCLASS;
+            if (_mode != "Off") then {
+                [_mode] call ALiVE_fnc_COPApplyTier;
+
                 private _anchorDist = [_logic, "copAnchorDistance"] call MAINCLASS;
                 ALIVE_COP_ANCHOR_DISTANCE = _anchorDist;
                 publicVariable "ALIVE_COP_ANCHOR_DISTANCE";
 
                 ["startServer"] call ALIVE_fnc_COPInit;
-                ["startAsym"]   call ALIVE_fnc_COPInit;
+
+                private _asym = [_logic, "commanderIntelAsymmetric"] call MAINCLASS;
+                if (_asym) then {
+                    ["startAsym"] call ALIVE_fnc_COPInit;
+                };
+            } else {
+                ["info", "c2istar", "COP mode=Off — no COP dispatch"] call ALiVE_fnc_dump;
             };
 
             if (_debug) then {
@@ -1102,8 +1156,8 @@ switch(_operation) do {
             // COP — start the client-side Draw EH attachment if enabled.
             // Reads the Eden attribute here (not from the server publicVariable)
             // because each client must resolve its own side independently.
-            private _enableCOP_client = [_logic, "enableLiveCommanderIntel"] call MAINCLASS;
-            if (_enableCOP_client) then {
+            private _mode_client = [_logic, "commanderIntelMode"] call MAINCLASS;
+            if (_mode_client != "Off") then {
                 ["startClient", _sideText] call ALIVE_fnc_COPInit;
             };
 

@@ -269,6 +269,42 @@
 <Key ID="STR_ALIVE_C2ISTAR_COP_ENABLE_COMMENT">
     <English>Enables the Common Operational Picture map overlay — a real-time commander-intel layer that complements T.R.A.C.E. The server polls OPCOM data and broadcasts side-filtered enemy intel, friendly force tracking (BFT), commander objectives, and asymmetric activity to clients. Renders on the main map when open. Where T.R.A.C.E simulates ELINT-style potential-presence shading, COP simulates KNOWN intel reports received by the commander from OPCOM.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ENABLE_LEGACY_DEPRECATED">
+    <English>DEPRECATED — replaced by Commander Intel Mode. Use the new attribute instead.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_MODE">
+    <English>Commander Intel Mode (COP):</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_MODE_COMMENT">
+    <English>Off / Basic / Partial / Full / Advanced. Master tier selector for the Common Operational Picture overlay. Off = no COP code runs. Basic = objective circles only (no enemy intel, no BFT). Partial = enemy clusters + objectives, no BFT, no movement vector. Full = enemies + BFT + objectives with baseline features only (no trail / threat ring / confidence border / composition labels). Advanced = full feature set. Note: if the legacy enableLiveCommanderIntel attribute is set in init.sqf, the Off value is overridden by it — remove the legacy attribute to fully disable COP.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_MODE_OFF">
+    <English>Off</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_MODE_BASIC">
+    <English>Basic</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_MODE_PARTIAL">
+    <English>Partial</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_MODE_FULL">
+    <English>Full</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_MODE_ADVANCED">
+    <English>Advanced</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ASYM">
+    <English>Commander Intel — Asymmetric:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ASYM_COMMENT">
+    <English>When Yes, and Commander Intel Mode is not Off, the asymmetric COP layer (Layer 5) runs — insurgent activity zones, civilian sentiment, and infrastructure markers. When No, Layer 5 is forced off regardless of master defaults. Has no effect when Commander Intel Mode is Off.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ASYM_YES">
+    <English>Yes</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ASYM_NO">
+    <English>No</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE">
     <English>COP Anchor Distance:</English>
 </Key>

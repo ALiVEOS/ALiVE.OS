@@ -470,6 +470,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPConfig.sqf";
                 RECOMPILE;
             };
+            class COPApplyTier {
+                description = "COP tier preset — gates feature/layer flags by commanderIntelMode";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPApplyTier.sqf";
+                RECOMPILE;
+            };
             class COPLog {
                 description = "COP four-tier logging dispatcher";
                 file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPLog.sqf";

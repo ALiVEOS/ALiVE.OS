@@ -148,7 +148,6 @@ ALIVE_fnc_COPDebugForceBroadcast = {
     };
 
     ["COP - Debug: Hash cache cleared — next cycle will broadcast all data"] call ALiVE_fnc_dump;
-    ["COP - Debug: Hash cache cleared — next cycle will broadcast all data"] call ALiVE_fnc_dump;
     if (hasInterface) then { systemChat "[COP] Hash cleared. Wait up to 60s for next broadcast." };
 };
 
@@ -192,7 +191,6 @@ ALIVE_fnc_COPDebugSetLevel = {
     ALIVE_COP_DEBUG_LEVEL = _newLevel;
     private _msg = format ["COP - Debug: level changed %1 -> %2", _oldLevel, _newLevel];
     [_msg] call ALiVE_fnc_dump;
-    [_msg] call ALiVE_fnc_dump;
     if (hasInterface) then { systemChat format ["[COP] Log level: %1 -> %2", _oldLevel, _newLevel] };
 };
 
@@ -222,7 +220,6 @@ ALIVE_fnc_COPDebugToggleCategory = {
     private _new = !_current;
     missionNamespace setVariable [_varName, _new];
     private _msg = format ["COP - Debug: category %1 = %2 (was %3)", _cat, _new, _current];
-    [_msg] call ALiVE_fnc_dump;
     [_msg] call ALiVE_fnc_dump;
     if (hasInterface) then { systemChat format ["[COP] %1: %2 -> %3", _cat, _current, _new] };
 };

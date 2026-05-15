@@ -16,12 +16,52 @@ attribute panel.
 
 ## Eden Attributes
 
-Two new attributes on the `mil_c2istar` module:
+Three attributes on the `mil_c2istar` module drive COP:
 
 | Attribute | Type | Default | Description |
 |---|---|---|---|
-| **Enable Live Commander Intel (COP)** | Yes / No | No | Master toggle. When No, zero COP code runs — no RPT output, no publicVariables, no cost. |
+| **Commander Intel Mode (COP)** | Off / Basic / Partial / Full / Advanced | Off | Master tier selector. When Off, zero COP code runs — no RPT output, no publicVariables, no cost. See the tier table below for what each non-Off tier enables. |
+| **Commander Intel — Asymmetric** | Yes / No | No | When Yes (and mode != Off) the Layer 5 asymmetric loop starts and the asymmetric overlay can render. When No, `ALIVE_COP_LAYER_ASYMMETRIC` is forced false so clients gate it out. |
 | **COP Anchor Distance** | 100 / 200 / 500 / 1000 / 3000 m | 1000 m | Radius around each player within which COP intel renders on the map. Higher values with many objectives or high unit counts may reduce client frame rate with the map open. |
+
+### Commander Intel Mode tiers
+
+Each tier preset applies via `ALiVE_fnc_COPApplyTier` which uses `if (isNil ...)`
+guards — so any `ALIVE_COP_*` override set in your mission's `init.sqf` BEFORE
+module init still wins. Tiers only fill in defaults for unset globals.
+
+| Tier | Layer 2 (Enemy) | Layer 3 (BFT) | Layer 4 (Objectives) | Tier-3 features | Notes |
+|---|---|---|---|---|---|
+| **Off** | — | — | — | — | Kill switch — no COP code runs. |
+| **Basic** | off | off | circles only (no axis arrows) | off | Commander's intent without ground truth. |
+| **Partial** | clusters only (no movement vector) | off | circles only (no axis arrows) | off | Enemy clusters + objectives. |
+| **Full** | clusters + movement + size + age | on | circles only (no axis arrows) | off | All baseline features, no power features. |
+| **Advanced** | full feature set | on | full feature set including axis arrows | on | All defaults from `fnc_COPConfig.sqf` honoured. |
+
+Tier-3 features = TRAIL (movement history), THREAT (priority highlight ring),
+CONFIDENCE (border style by age), COMPOSITION ("MIXED" labels). All Tier-3
+features are individually re-enable-able post-tier via the per-feature globals
+(see "Per-feature toggles" further down).
+
+### Migration from the legacy `enableLiveCommanderIntel` attribute
+
+The legacy `enableLiveCommanderIntel` Yes/No attribute is preserved as a hidden
+Eden attribute for backwards compatibility. A migration shim inside the MAINCLASS
+`commanderIntelMode` case applies the following rule:
+
+1. If `commanderIntelMode` has been explicitly set (any value other than the
+   default `Off`), it wins. Legacy attribute is ignored.
+2. Otherwise, if the legacy `enableLiveCommanderIntel` attribute is present:
+   - `true`  → behave as `commanderIntelMode = "Advanced"`.
+   - `false` → behave as `commanderIntelMode = "Off"`.
+
+**Known migration surprise:** explicitly picking `commanderIntelMode = "Off"` in
+Eden while the legacy `enableLiveCommanderIntel` is also set to `true` on the
+same logic (typical when migrating an older mission) is **indistinguishable from
+the default** — the shim sees mode at default and lets legacy drive, so Off
+becomes Advanced. To fully disable COP on a migrated mission, either delete the
+legacy attribute from the SQM, or leave it set to `false` while picking any
+non-Off tier in Eden.
 
 ---
 
@@ -40,15 +80,16 @@ Two new attributes on the `mil_c2istar` module:
 
 ```
 addons/mil_c2istar/cop/
-├── fnc_COPConfig.sqf   — master configuration (85 tunables)
-├── fnc_COPLog.sqf      — four-tier logging dispatcher
-├── fnc_COPHelpers.sqf  — 18 pure helper globals
-├── fnc_COPServer.sqf   — Loop A (enemies+BFT, 30 s) + Loop B (objectives, 60 s)
-├── fnc_COPAsym.sqf     — Layer 5 loop (60 s)
-├── fnc_COPClient.sqf   — client init + map Draw EH
-├── fnc_COPRender.sqf   — 15 draw functions + top-level dispatcher
-├── fnc_COPDebug.sqf    — 11 admin debug commands
-└── fnc_COPInit.sqf     — entry-point orchestrator (startServer/Asym/Client/stop)
+├── fnc_COPConfig.sqf    — master configuration (163 tunables)
+├── fnc_COPApplyTier.sqf — applies the commanderIntelMode tier preset
+├── fnc_COPLog.sqf       — four-tier logging dispatcher
+├── fnc_COPHelpers.sqf   — 18 pure helper globals
+├── fnc_COPServer.sqf    — Loop A (enemies+BFT, 30 s) + Loop B (objectives, 60 s)
+├── fnc_COPAsym.sqf      — Layer 5 loop (60 s)
+├── fnc_COPClient.sqf    — client init + map Draw EH
+├── fnc_COPRender.sqf    — 15 draw functions + top-level dispatcher
+├── fnc_COPDebug.sqf     — 11 admin debug commands
+└── fnc_COPInit.sqf      — entry-point orchestrator (startServer/Asym/Client/stop)
 ```
 
 All functions are registered under `class C2ISTAR` in
@@ -121,7 +162,7 @@ Per-category booleans (all default `true` except `render` and `profile`):
 `_PERF`, `_BROADCAST`, `_PROFILE`.
 
 Performance warning threshold (auto-logs when a cycle exceeds):
-`ALIVE_COP_DEBUG_PERF_WARN_MS` (default 50 ms).
+`ALIVE_COP_DEBUG_PERF_WARN_MS` (default 250 ms).
 
 ---
 
@@ -152,7 +193,7 @@ call ALIVE_fnc_COPDebugShowStats;            // client only — hint with counts
 
 ## Configuration
 
-All 85 tunables live in `fnc_COPConfig.sqf` as `ALIVE_COP_*` globals seeded
+All 163 tunables live in `fnc_COPConfig.sqf` as `ALIVE_COP_*` globals seeded
 with defensive `if (isNil ...)` guards. Missions override by assigning the
 globals **before** the `mil_c2istar` module initialises (e.g. in the
 mission's `init.sqf`):
@@ -240,7 +281,7 @@ If a client reports low FPS with the map open, the first tunables to lower:
 
 ### Performance-warning log
 
-Set `ALIVE_COP_DEBUG_PERF_WARN_MS = N` (default 50) to get a WARN log line when
+Set `ALIVE_COP_DEBUG_PERF_WARN_MS = N` (default 250) to get a WARN log line when
 any cycle exceeds N milliseconds. Loop A/B/Asym all respect this threshold.
 
 ---
@@ -279,29 +320,6 @@ ported from. Each of the following scenarios is covered:
 27. **Headless client** — `isServer = false, hasInterface = false` means zero COP work runs on HC (every COP operation is gated by one of those).
 28. **Duplicate start dispatch** — `ALIVE_COP_SERVER_RUNNING` and `ALIVE_COP_ASYM_RUNNING` flags guard against double-start on re-init.
 29. **Long-running missions** — `ALIVE_COP_LOC_CACHE` has an explicit 1000-entry cap with oldest-25% eviction to bound memory growth.
-
----
-
-## Edge cases handled
-
-- ALiVE not yet ready → server loops `waitUntil` OPCOM_instances populated.
-- JIP → server publicVariables empty arrays on startup so joiners receive
-  current state on connect.
-- Mission with no conventional OPCOM → Loop A/B skip with a warn; Layer 5
-  still runs independently if an asymmetric OPCOM exists.
-- Mission with no asymmetric OPCOM → Layer 5 silently disables (info log,
-  no error).
-- Player side UNKNOWN at mission start → waits for resolution before
-  caching; CIV side is resolved to a real side via `ALiVE_fnc_factionSide`.
-- Player respawn → a per-player Respawn event handler refreshes the side
-  cache and publicVariable channel names.
-- Module destroyed mid-mission → `"destroy"` case in `fnc_C2ISTAR.sqf`
-  calls `["stop"] call ALIVE_fnc_COPInit`, flipping the `_RUNNING` flags so
-  spawned loops exit on their next cycle.
-- Map closed → Draw EH persists on the map control across close/open; no
-  re-attach needed.
-- Duplicate start dispatch → `ALIVE_COP_SERVER_RUNNING` and
-  `ALIVE_COP_ASYM_RUNNING` flags guard against double-start.
 
 ---
 

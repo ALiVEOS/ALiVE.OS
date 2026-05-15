@@ -578,25 +578,46 @@ class CfgVehicles {
                                     class Cross      { name = "Cross";      value = "Cross"; };
                             };
                     };
-                    class enableLiveCommanderIntel : Combo
+                    class commanderIntelMode : Combo
                     {
-                            property = "ALiVE_MIL_C2ISTAR_enableLiveCommanderIntel";
-                            displayName = "$STR_ALIVE_C2ISTAR_COP_ENABLE";
-                            tooltip = "$STR_ALIVE_C2ISTAR_COP_ENABLE_COMMENT";
+                            property = "ALiVE_MIL_C2ISTAR_commanderIntelMode";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_MODE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_MODE_COMMENT";
+                            defaultValue = """Off""";
+                            class Values
+                            {
+                                    class Off      { name = "$STR_ALIVE_C2ISTAR_COP_MODE_OFF";      value = "Off"; };
+                                    class Basic    { name = "$STR_ALIVE_C2ISTAR_COP_MODE_BASIC";    value = "Basic"; };
+                                    class Partial  { name = "$STR_ALIVE_C2ISTAR_COP_MODE_PARTIAL";  value = "Partial"; };
+                                    class Full     { name = "$STR_ALIVE_C2ISTAR_COP_MODE_FULL";     value = "Full"; };
+                                    class Advanced { name = "$STR_ALIVE_C2ISTAR_COP_MODE_ADVANCED"; value = "Advanced"; };
+                            };
+                    };
+                    class commanderIntelAsymmetric : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_commanderIntelAsymmetric";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_ASYM";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_ASYM_COMMENT";
                             defaultValue = """false""";
                             class Values
                             {
-                                    class Yes
-                                    {
-                                            name = "Yes";
-                                            value = "true";
-                                    };
-                                    class No
-                                    {
-                                            name = "No";
-                                            value = "false";
-                                    };
+                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_ASYM_NO";  value = "false"; };
+                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_ASYM_YES"; value = "true"; };
                             };
+                    };
+                    // Legacy Eden attribute preserved as hidden so the migration shim
+                    // in fnc_C2ISTAR.sqf can still read its value off existing missions
+                    // (a true legacy setting auto-maps to commanderIntelMode="Advanced"
+                    // when the new attribute is at its default "Off"). New missions
+                    // should configure via commanderIntelMode instead.
+                    class enableLiveCommanderIntel
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_enableLiveCommanderIntel";
+                            displayName = "";
+                            control = "ALiVE_HiddenAttribute";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['enableLiveCommanderIntel', _value];";
+                            defaultValue = """false""";
                     };
                     class copAnchorDistance : Combo
                     {

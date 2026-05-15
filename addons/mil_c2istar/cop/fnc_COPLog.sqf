@@ -24,8 +24,11 @@ Description:
              booleans and a master level threshold, applied only to Tier 2
              output. Silence render-spam without killing the whole stream.
 
-    Tier 3 (function traces via CBA TRACE_* macros) is handled inline in
-    each function — not through this dispatcher.
+    Tier 3 — Function entry/exit traces use the CBA TRACE_1 / TRACE_2 macros
+             called inline at each function header — those are NOT routed
+             through this dispatcher. The "trace" severity level accepted by
+             this function below is the Tier 2/4 level-5 verbose tier, which
+             is distinct from the CBA TRACE_* macro path.
 
 Parameters:
     0: STRING - Severity level. One of:

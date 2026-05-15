@@ -8,7 +8,7 @@ Description:
     Entry-point orchestrator for the COP (Common Operational Picture) feature.
     Dispatches start/stop operations for the server, asymmetric, and client
     subsystems. Called from fnc_C2ISTAR.sqf when the Eden attribute
-    "enableLiveCommanderIntel" is set to Yes.
+    "commanderIntelMode" resolves to any non-Off tier.
 
 Parameters:
     0: STRING - Operation: "startServer" | "startAsym" | "startClient" | "stop"
@@ -68,8 +68,8 @@ private _result = switch (_operation) do {
         };
         ALIVE_COP_SERVER_RUNNING = true;
         ["info", "init", "startServer dispatched, anchor distance %1m", [missionNamespace getVariable ["ALIVE_COP_ANCHOR_DISTANCE", 1000]]] call ALIVE_fnc_COPLog;
-        // COPServer waits for OPCOM_instances then spawns Loop A (and Loop B
-        // once Phase 4 lands). Spawn rather than call so Init returns promptly.
+        // COPServer waits for OPCOM_instances then spawns Loop A and Loop B.
+        // Spawn rather than call so Init returns promptly.
         [] spawn ALIVE_fnc_COPServer;
         true
     };
@@ -97,6 +97,11 @@ private _result = switch (_operation) do {
             ["warn", "init", "startClient called on non-interface machine — ignored"] call ALIVE_fnc_COPLog;
             false
         };
+        if (!isNil "ALIVE_COP_CLIENT_RUNNING" && {ALIVE_COP_CLIENT_RUNNING}) exitWith {
+            ["info", "init", "startClient already running — skipping double-start"] call ALIVE_fnc_COPLog;
+            true
+        };
+        ALIVE_COP_CLIENT_RUNNING = true;
         ["info", "init", "startClient dispatched for side %1", [_arg]] call ALIVE_fnc_COPLog;
         // COPClient waits briefly for player then registers a Map mission EH
         // that attaches the Draw EH on first map open. Spawn so Init returns.
@@ -107,6 +112,7 @@ private _result = switch (_operation) do {
     case "stop": {
         ALIVE_COP_SERVER_RUNNING = false;
         ALIVE_COP_ASYM_RUNNING   = false;
+        ALIVE_COP_CLIENT_RUNNING = false;
         ["info", "init", "stop dispatched — server + asym loops will exit on next cycle"] call ALIVE_fnc_COPLog;
         true
     };

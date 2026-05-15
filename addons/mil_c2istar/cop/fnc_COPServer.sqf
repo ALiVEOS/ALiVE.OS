@@ -7,7 +7,7 @@ Function: ALIVE_fnc_COPServer
 Description:
     Server-side COP polling entry point.
 
-    Phase 3 wiring:
+    Wiring:
       1. Wait for OPCOM_instances and ALiVE_ProfileHandler.
       2. Discover one conventional OPCOM per side ("WEST"/"EAST"/"GUER"),
          preferring the one with the most objectives if multiple exist.
@@ -16,7 +16,7 @@ Description:
          COPClusterEnemy, COPBuildBFT, COPDeriveActivity).
       4. Initialise publicVariable channels with empty arrays for JIP.
       5. Spawn Loop A (30 s cycle: enemies + BFT).
-      6. [Phase 4] spawn Loop B (60 s cycle: objectives).
+      6. Spawn Loop B (60 s cycle: objectives).
 
     Graceful shutdown via ALIVE_COP_SERVER_RUNNING flag.
 

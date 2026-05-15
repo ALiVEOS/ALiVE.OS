@@ -139,7 +139,6 @@ if (isNil "ALIVE_COP_BFT_LABEL_MIN_COUNT") then { ALIVE_COP_BFT_LABEL_MIN_COUNT 
 // LAYER 4 — OPCOM OBJECTIVES (Commander's Intent)
 // ============================================================================
 if (isNil "ALIVE_COP_OBJ_SHOW_ATTACK")     then { ALIVE_COP_OBJ_SHOW_ATTACK     = true };
-if (isNil "ALIVE_COP_OBJ_SHOW_CAPTURE")    then { ALIVE_COP_OBJ_SHOW_CAPTURE    = true };
 if (isNil "ALIVE_COP_OBJ_SHOW_DEFEND")     then { ALIVE_COP_OBJ_SHOW_DEFEND     = true };
 if (isNil "ALIVE_COP_OBJ_SHOW_RECON")      then { ALIVE_COP_OBJ_SHOW_RECON      = true };
 if (isNil "ALIVE_COP_OBJ_SHOW_RESERVE")    then { ALIVE_COP_OBJ_SHOW_RESERVE    = false };
@@ -191,7 +190,6 @@ if (isNil "ALIVE_COP_SIZE_ENEMY")          then { ALIVE_COP_SIZE_ENEMY          
 if (isNil "ALIVE_COP_SIZE_BFT")            then { ALIVE_COP_SIZE_BFT            = 24 };
 if (isNil "ALIVE_COP_SIZE_BADGE")          then { ALIVE_COP_SIZE_BADGE          = 14 };
 if (isNil "ALIVE_COP_TEXT_SIZE")           then { ALIVE_COP_TEXT_SIZE           = 0.045 };
-if (isNil "ALIVE_COP_LABEL_OFFSET_X")      then { ALIVE_COP_LABEL_OFFSET_X      = 18 };
 
 // ============================================================================
 // FONTS & TEXT
