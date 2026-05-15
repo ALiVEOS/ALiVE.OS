@@ -365,6 +365,13 @@ if (isNil "ALIVE_COP_COLOR_BFT_SCRATCH") then { ALIVE_COP_COLOR_BFT_SCRATCH = +A
 // SEPARATE from the other scratches per the same isolation rule.
 if (isNil "ALIVE_COP_COLOR_AXIS_SCRATCH") then { ALIVE_COP_COLOR_AXIS_SCRATCH = +ALIVE_COP_COLOR_THREAT_RING };
 
+// Per-frame scratch for enemy intel marker — RGB copied from the side's
+// base colour, alpha = baseAlpha * COPAgeAlpha(_age). Read by Trail,
+// ConfidenceFrame, MovementArrow, SizeIndicator, Composition, and drawIcon
+// downstream; all consumers either copy out synchronously or pass to engine,
+// so a single scratch shared per-entity-per-frame is safe.
+if (isNil "ALIVE_COP_COLOR_ENEMY_SCRATCH") then { ALIVE_COP_COLOR_ENEMY_SCRATCH = +ALIVE_COP_COLOR_THREAT_RING };
+
 // Civilian sentiment overlay
 if (isNil "ALIVE_COP_COLOR_HOSTILE")      then { ALIVE_COP_COLOR_HOSTILE      = [0.8,  0.4,   0.0,  0.35] };
 if (isNil "ALIVE_COP_COLOR_STRONGHOLD")   then { ALIVE_COP_COLOR_STRONGHOLD   = [0.8,  0.4,   0.0,  0.6] };

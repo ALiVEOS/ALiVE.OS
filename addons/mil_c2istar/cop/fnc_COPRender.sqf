@@ -221,7 +221,16 @@ ALIVE_fnc_COPDrawEnemyMarker = {
     private _alpha = [_age] call ALIVE_fnc_COPAgeAlpha;
 
     private _baseColor = [_sideKey] call ALIVE_fnc_COPGetSideColor;
-    private _color = [_baseColor select 0, _baseColor select 1, _baseColor select 2, (_baseColor select 3) * _alpha];
+
+    // Mutate scratch in place to avoid per-entity per-frame RGBA alloc.
+    // Downstream callers (Trail, ConfidenceFrame, MovementArrow, drawIcon,
+    // SizeIndicator, Composition) either deep-copy out into their own scratch
+    // or consume synchronously via the engine — see arma3_reference.md §2.8.
+    ALIVE_COP_COLOR_ENEMY_SCRATCH set [0, _baseColor select 0];
+    ALIVE_COP_COLOR_ENEMY_SCRATCH set [1, _baseColor select 1];
+    ALIVE_COP_COLOR_ENEMY_SCRATCH set [2, _baseColor select 2];
+    ALIVE_COP_COLOR_ENEMY_SCRATCH set [3, (_baseColor select 3) * _alpha];
+    private _color = ALIVE_COP_COLOR_ENEMY_SCRATCH;
 
     // Build label only when zoomed in enough to display it.
     private _displayLabel = "";
