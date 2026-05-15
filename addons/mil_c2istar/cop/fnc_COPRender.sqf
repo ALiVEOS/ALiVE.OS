@@ -141,15 +141,23 @@ ALIVE_fnc_COPDrawTrail = {
     if (!ALIVE_COP_FEAT_TRAIL) exitWith {};
     if (count _trail < 2) exitWith {};
 
+    // Copy RGB once per call; mutate alpha inside the loop.
+    // drawLine consumes the colour synchronously (arma3_reference.md §2.8),
+    // so reusing this scratch across iterations is safe.
+    ALIVE_COP_COLOR_TRAIL_SCRATCH set [0, _color select 0];
+    ALIVE_COP_COLOR_TRAIL_SCRATCH set [1, _color select 1];
+    ALIVE_COP_COLOR_TRAIL_SCRATCH set [2, _color select 2];
+    private _baseAlpha = _color select 3;
+
     private _n = count _trail;
     for "_i" from 0 to (_n - 2) do {
         private _from = _trail select _i;
         private _to = _trail select (_i + 1);
 
         private _alpha = ALIVE_COP_TRAIL_ALPHA_FACTOR * (1 - (_i / _n));
-        private _fadedColor = [_color select 0, _color select 1, _color select 2, (_color select 3) * _alpha];
+        ALIVE_COP_COLOR_TRAIL_SCRATCH set [3, _baseAlpha * _alpha];
 
-        _mapCtrl drawLine [_from, _to, _fadedColor];
+        _mapCtrl drawLine [_from, _to, ALIVE_COP_COLOR_TRAIL_SCRATCH];
     };
 };
 
@@ -176,10 +184,16 @@ ALIVE_fnc_COPDrawConfidenceFrame = {
     private _style = [_age] call ALIVE_fnc_COPConfidenceStyle;
     if (_style == "solid") exitWith {};
 
-    private _ringColor = [_color select 0, _color select 1, _color select 2, ALIVE_COP_CONFIDENCE_RING_ALPHA];
+    // Copy RGB from caller's colour; fixed ring alpha. drawEllipse consumes
+    // the colour synchronously (arma3_reference.md §2.8) — safe to reuse the scratch.
+    ALIVE_COP_COLOR_CONFIDENCE_SCRATCH set [0, _color select 0];
+    ALIVE_COP_COLOR_CONFIDENCE_SCRATCH set [1, _color select 1];
+    ALIVE_COP_COLOR_CONFIDENCE_SCRATCH set [2, _color select 2];
+    ALIVE_COP_COLOR_CONFIDENCE_SCRATCH set [3, ALIVE_COP_CONFIDENCE_RING_ALPHA];
+
     private _radius = if (_style == "dashed") then { ALIVE_COP_CONFIDENCE_RING_DASHED } else { ALIVE_COP_CONFIDENCE_RING_DOTTED };
 
-    _mapCtrl drawEllipse [_pos, _radius, _radius, 0, _ringColor, ""];
+    _mapCtrl drawEllipse [_pos, _radius, _radius, 0, ALIVE_COP_COLOR_CONFIDENCE_SCRATCH, ""];
 };
 
 // "MIXED" label for clusters with multiple unit types.
@@ -488,7 +502,14 @@ ALIVE_fnc_COPDrawAsymInfra = {
     };
     if (!_show) exitWith {};
 
-    private _color = +ALIVE_COP_COLOR_ASYM;
+    // Refresh scratch from base each call. drawIcon consumes the colour
+    // synchronously (arma3_reference.md §2.8) — safe to reuse across calls.
+    // Kept SEPARATE from ALIVE_COP_COLOR_ASYM_SCRATCH (asym-zone alpha-fade
+    // path at line ~410) so the two paths don't share state.
+    ALIVE_COP_COLOR_ASYM_INFRA_SCRATCH set [0, ALIVE_COP_COLOR_ASYM select 0];
+    ALIVE_COP_COLOR_ASYM_INFRA_SCRATCH set [1, ALIVE_COP_COLOR_ASYM select 1];
+    ALIVE_COP_COLOR_ASYM_INFRA_SCRATCH set [2, ALIVE_COP_COLOR_ASYM select 2];
+    ALIVE_COP_COLOR_ASYM_INFRA_SCRATCH set [3, ALIVE_COP_COLOR_ASYM select 3];
 
     private _icon = switch (_type) do {
         case "ied":        { ALIVE_COP_TEX_WARNING };
@@ -503,7 +524,7 @@ ALIVE_fnc_COPDrawAsymInfra = {
 
     private _label = toUpper _type;
 
-    _mapCtrl drawIcon [_icon, _color, _pos,
+    _mapCtrl drawIcon [_icon, ALIVE_COP_COLOR_ASYM_INFRA_SCRATCH, _pos,
                        ALIVE_COP_ASYM_INFRA_ICON_PX, ALIVE_COP_ASYM_INFRA_ICON_PX, 0,
                        _label, 1, ALIVE_COP_TEXT_SIZE_LABEL, ALIVE_COP_FONT_MAIN, "right"];
 };

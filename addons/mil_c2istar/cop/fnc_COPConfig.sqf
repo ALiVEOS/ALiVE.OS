@@ -323,6 +323,11 @@ if (isNil "ALIVE_COP_COLOR_ASYM")         then { ALIVE_COP_COLOR_ASYM         = 
 // Scratch copy for per-frame alpha mutation (avoids array deep-copy per marker)
 if (isNil "ALIVE_COP_COLOR_ASYM_SCRATCH") then { ALIVE_COP_COLOR_ASYM_SCRATCH = +ALIVE_COP_COLOR_ASYM };
 
+// Per-frame scratch for asym-infrastructure leaf draws (factory/cache/HQ/etc).
+// Kept SEPARATE from ALIVE_COP_COLOR_ASYM_SCRATCH (which serves the asym-zone
+// alpha-fade in fnc_COPRender.sqf:410) so the two paths don't share state.
+if (isNil "ALIVE_COP_COLOR_ASYM_INFRA_SCRATCH") then { ALIVE_COP_COLOR_ASYM_INFRA_SCRATCH = +ALIVE_COP_COLOR_ASYM };
+
 // OPCOM objective colours
 if (isNil "ALIVE_COP_COLOR_OBJ_ATTACK")   then { ALIVE_COP_COLOR_OBJ_ATTACK   = [0.8,  0.13,  0.13, 0.8] };
 if (isNil "ALIVE_COP_COLOR_OBJ_DEFEND")   then { ALIVE_COP_COLOR_OBJ_DEFEND   = [0.2,  0.5,   0.9,  0.8] };
@@ -339,6 +344,15 @@ if (isNil "ALIVE_COP_COLOR_ACT_RESERVE")  then { ALIVE_COP_COLOR_ACT_RESERVE  = 
 // Threat priority highlight ring
 if (isNil "ALIVE_COP_COLOR_THREAT_RING")    then { ALIVE_COP_COLOR_THREAT_RING    = [1.0, 0.67, 0.0, 0.9] };
 if (isNil "ALIVE_COP_COLOR_THREAT_SCRATCH") then { ALIVE_COP_COLOR_THREAT_SCRATCH = +ALIVE_COP_COLOR_THREAT_RING };
+
+// Per-frame scratch for fading trail segments — RGB copied from caller's
+// per-marker colour, alpha mutated per segment. If a mission overrides
+// any base colour at runtime, also re-init this scratch via deep-copy.
+if (isNil "ALIVE_COP_COLOR_TRAIL_SCRATCH") then { ALIVE_COP_COLOR_TRAIL_SCRATCH = +ALIVE_COP_COLOR_THREAT_RING };
+
+// Per-frame scratch for the aging-intel confidence ring — RGB copied from
+// caller's per-marker colour, alpha fixed at ALIVE_COP_CONFIDENCE_RING_ALPHA.
+if (isNil "ALIVE_COP_COLOR_CONFIDENCE_SCRATCH") then { ALIVE_COP_COLOR_CONFIDENCE_SCRATCH = +ALIVE_COP_COLOR_THREAT_RING };
 
 // Civilian sentiment overlay
 if (isNil "ALIVE_COP_COLOR_HOSTILE")      then { ALIVE_COP_COLOR_HOSTILE      = [0.8,  0.4,   0.0,  0.35] };
