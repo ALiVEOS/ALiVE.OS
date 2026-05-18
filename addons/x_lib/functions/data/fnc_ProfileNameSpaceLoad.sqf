@@ -29,7 +29,10 @@ if !(isServer) exitwith {};
 
 private _id = _this;
 private _result = false;
-private _mission = format["ALiVE_%1",missionName];
+// Storage key includes `worldName` so copies of `mission.sqm` across
+// map folders don't collide on the same profileNamespace entry. See
+// 4990aaad for the parallel fix in sys_data + sys_player.
+private _mission = format["ALiVE_%1_%2",missionName,worldName];
 
 _data = profileNamespace getVariable _mission;
 
