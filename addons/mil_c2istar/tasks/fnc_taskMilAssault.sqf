@@ -102,11 +102,24 @@ switch (_taskState) do {
 
         if!(isNil "_targetPosition") then {
 
-            private["_stagingPosition","_dialogOptions","_dialogOption"];
+            private["_stagingPosition","_dialogOptions","_dialogOption","_stagingPlayerPos"];
 
             // establish the staging position for the task
-
-            _stagingPosition = [_targetPosition,"overwatch"] call ALIVE_fnc_taskGetSectorPosition;
+            //
+            // Pass the first assigned player's position so the staging
+            // helper can place the marker on the player->objective
+            // approach line (~700m short of the objective) rather than
+            // its legacy "highest elevation in the objective's own
+            // sector" pick, which produced markers 100-300m from the
+            // objective with no tactical value.
+            _stagingPlayerPos = _taskLocation;
+            if (count _taskPlayers > 0 && {count (_taskPlayers select 0) > 0}) then {
+                private _firstPlayer = (_taskPlayers select 0) select 0;
+                if (!isNil "_firstPlayer" && {!isNull _firstPlayer}) then {
+                    _stagingPlayerPos = getPos _firstPlayer;
+                };
+            };
+            _stagingPosition = [_targetPosition,"overwatch",_stagingPlayerPos] call ALIVE_fnc_taskGetSectorPosition;
 
             // select the random text
 

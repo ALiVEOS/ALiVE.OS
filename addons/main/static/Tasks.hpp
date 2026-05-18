@@ -47,9 +47,9 @@
 	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Move to Forming Up Point"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Move to an FUP near %1 in preparation for conducting an assault on the enemy held emplacement."] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","Move to an FUP near %1 and prepare to assault the emplacement, Over"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Move to Staging Area"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Move to the staging area near %1 and position your unit for the assault on the enemy emplacement."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Move to the staging area near %1 and prepare to launch the assault, Over"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Travel",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
