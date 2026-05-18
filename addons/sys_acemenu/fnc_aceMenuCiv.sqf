@@ -71,13 +71,19 @@ if !(_uiMode in ["AUTO", "ACE"]) exitWith {
 };
 
 // Base condition: alive + CONFIG side is civilian (side 3) + not advciv-
-// blacklisted. Config side is used instead of runtime side because Follow
-// and Detain reassign the civilian to the player's group at runtime, which
-// would otherwise hide the branch for that unit on subsequent opens.
+// blacklisted + player passes the `limitInteraction` authorisation gate.
+// Config side is used instead of runtime side because Follow and Detain
+// reassign the civilian to the player's group at runtime, which would
+// otherwise hide the branch for that unit on subsequent opens.
+//
+// The authorisation gate (civAceAuthGate) mirrors the dialog-side check
+// at fnc_civInteract.sqf:155 so the ACE wheel cannot bypass the
+// `limitInteraction` Eden attribute (#895).
 private _baseCond = {
     alive _target &&
     {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
-    {!(_target getVariable ["ALiVE_advciv_blacklist", false])}
+    {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+    {call ALiVE_fnc_civAceAuthGate}
 };
 
 // Hostility-tier gate: hide actions whose effective hostility band has
@@ -95,12 +101,14 @@ private _condBelowDefiant = {
     alive _target &&
     {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
     {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+    {call ALiVE_fnc_civAceAuthGate} &&
     {[_target, 60] call ALiVE_fnc_civAceTierGate}
 };
 private _condBelowHostile = {
     alive _target &&
     {(getNumber (configFile >> "CfgVehicles" >> typeOf _target >> "side")) == 3} &&
     {!(_target getVariable ["ALiVE_advciv_blacklist", false])} &&
+    {call ALiVE_fnc_civAceAuthGate} &&
     {[_target, 80] call ALiVE_fnc_civAceTierGate}
 };
 
