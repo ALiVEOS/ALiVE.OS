@@ -142,6 +142,7 @@ private _gracePeriod = 15;
                 time, getposATL _ied, _proximity, _threshold toFixed 3];
         };
         private _loggedFirstCandidate = false;
+        private _loggedFirstApproach = false;
 
         while {
             !_detonated &&
@@ -183,6 +184,26 @@ private _gracePeriod = 15;
                 _detonateList append (_ied nearEntities ["LandVehicle", _proximity]);
                 _detonateList = _detonateList select {
                     alive _x && ((getposATL (vehicle _x)) select 2 < 8)
+                };
+
+                // DIAG-STRIP: 30m approach detection per IED. Companion to the
+                // first-candidate log below. Eric's #890 retest (2026-05-15)
+                // showed polling loop entered but no first-candidate log --
+                // need to distinguish "player got near the area but missed
+                // the tight 3-11m proximity" from "player never came close
+                // at all". One-shot latch per IED.
+                if (_debugLocal && !_loggedFirstApproach) then {
+                    private _approachList = (_ied nearEntities ["Man", 30]) select {
+                        alive _x && (_x in ([] call BIS_fnc_listPlayers))
+                    };
+                    if (count _approachList > 0) then {
+                        private _details = _approachList apply {
+                            format ["%1[%2]@%3m", name _x, typeOf _x, round (_x distance _ied)]
+                        };
+                        diag_log format ["ALIVE-%1 IED DIAG: player(s) approached within 30m of IED at %2: %3",
+                            time, getposATL _ied, _details];
+                        _loggedFirstApproach = true;
+                    };
                 };
 
                 // DIAG-STRIP: first-candidate visibility per IED. Confirms
