@@ -152,24 +152,37 @@ switch (_taskState) do {
                         private _cluster = [ALiVE_clustersMil, _clusterID] call ALiVE_fnc_HashGet;
 
                         if !(isNil "_cluster") then {
-                            private _size = [_cluster,"size", 150] call ALiVE_fnc_hashGet;
-                            private _buildings = [_cluster,"nodes",[]] call ALiVE_fnc_HashGet;
-                            _targetBuildings = [];
-                            {
-                                if ( (tolower(typeof _x) find "hangar") != -1 || (tolower(typeof _x) find "helipad") != -1) then {
-                                    private _nearBuildings = (position _x) nearObjects ["House", _size/2];
-                                    {
-                                        _targetBuildings pushbackUnique _x;
-                                    } foreach _nearBuildings;
-                                    if (count _targetBuildings > 0) then {
-                                        // ["C2ISTAR - Task OCA - cluster %1 has a %3, found buildings %2",_clusterID, _nearBuildings, _x] call ALiVE_fnc_Dump;
+                            // Gate on the cluster's mil_placement color tag.
+                            // Only fixed-wing airfields (ColorOrange) and
+                            // helipad clusters (ColorYellow) qualify for an
+                            // OCA "Destroy Airfield" task. Without this gate,
+                            // the building-scan below would qualify any MIL
+                            // cluster that happened to contain a single
+                            // hangar-named prop (maintenance hangar in a
+                            // compound, prefab helipad attached to a base,
+                            // etc.) -- producing "Destroy Airfield" tasks on
+                            // hilltop outposts that aren't airfields.
+                            private _clusterColor = [_cluster, "color", ""] call ALIVE_fnc_HashGet;
+                            if (_clusterColor in ["ColorOrange", "ColorYellow"]) then {
+                                private _size = [_cluster,"size", 150] call ALiVE_fnc_hashGet;
+                                private _buildings = [_cluster,"nodes",[]] call ALiVE_fnc_HashGet;
+                                _targetBuildings = [];
+                                {
+                                    if ( (tolower(typeof _x) find "hangar") != -1 || (tolower(typeof _x) find "helipad") != -1) then {
+                                        private _nearBuildings = (position _x) nearObjects ["House", _size/2];
+                                        {
+                                            _targetBuildings pushbackUnique _x;
+                                        } foreach _nearBuildings;
+                                        if (count _targetBuildings > 0) then {
+                                            // ["C2ISTAR - Task OCA - cluster %1 has a %3, found buildings %2",_clusterID, _nearBuildings, _x] call ALiVE_fnc_Dump;
+                                        };
                                     };
-                                };
-                                if (count _targetBuildings > 3) exitWith {
-                                    // ["C2ISTAR - Task OCA - OPCOM objective at cluster %1 target buildings: %2",_clusterID, _targetBuildings] call ALiVE_fnc_Dump;
-                                    _found = true;
-                                };
-                            } foreach _buildings;
+                                    if (count _targetBuildings > 3) exitWith {
+                                        // ["C2ISTAR - Task OCA - OPCOM objective at cluster %1 target buildings: %2",_clusterID, _targetBuildings] call ALiVE_fnc_Dump;
+                                        _found = true;
+                                    };
+                                } foreach _buildings;
+                            };
                         };
                         if (_found) then {
                             ["C2ISTAR - Task OCA - OPCOM objective at cluster %1 has %2 target buildings.",_clusterID, count _targetBuildings] call ALiVE_fnc_Dump;
