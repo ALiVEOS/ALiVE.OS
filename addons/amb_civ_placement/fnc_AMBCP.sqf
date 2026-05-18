@@ -592,10 +592,15 @@ switch(_operation) do {
             //     in open countryside near where farms would live.
             // Resolves #488. Default amount is NONE (opt-in).
             //
-            // Density at each amount level:
-            //   LOW    (0.2): poultry 2 % per civ building; 0-1 herd / cluster.
-            //   MEDIUM (0.6): poultry 6 %;                  1-2 herds / cluster.
-            //   HIGH   (1.0): poultry 10 %;                 2-4 herds / cluster.
+            // Density at each amount level (re-tuned 2026-05-18 per #891 --
+            // previous calibration produced 100s of animals at LOW on
+            // large-cluster terrains because group sizes were tier-blind):
+            //   LOW    (0.2): poultry 1.6% per civ building, 1 bird / group
+            //                 herd 0-1 / cluster, 1-2 / herd
+            //   MEDIUM (0.6): poultry 4.8% per civ building, 1-2 birds / group
+            //                 herd 1-2 / cluster, 2-3 / herd
+            //   HIGH   (1.0): poultry 8% per civ building,   1-3 birds / group
+            //                 herd 3-7 / cluster, 2-5 / herd
             // Each group is homogeneous (one species per group;
             // real-world flocks aren't mixed-species). Animals don't
             // register with the cluster handler or the agent system -
@@ -697,8 +702,15 @@ switch(_operation) do {
                 };
 
                 // ---- Poultry near civilian buildings ----
+                // Tier-scaled both per-building spawn chance AND group size --
+                // previous calibration scaled chance but left group size at a
+                // flat 1-4 regardless of tier, so LOW could still produce
+                // 100s of birds across many clusters (#891).
+                //   LOW    (0.2): 1.6% per civ building, 1 bird / group
+                //   MEDIUM (0.6): 4.8% per civ building, 1-2 birds / group
+                //   HIGH   (1.0): 8% per civ building,   1-3 birds / group
                 if (count _poultryPool > 0) then {
-                    private _poultryChance = 0.10 * _ambientAnimalAmount;
+                    private _poultryChance = 0.08 * _ambientAnimalAmount;
                     {
                         private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
                         private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
@@ -706,7 +718,7 @@ switch(_operation) do {
                             if (random 1 < _poultryChance) then {
                                 private _basePos = _x getRelPos [3 + random 8, random 360];
                                 private _animalClass = selectRandom _poultryPool;
-                                private _groupSize = 1 + floor (random 4);
+                                private _groupSize = 1 + floor (random (1 + _ambientAnimalAmount * 2));
                                 ALiVE_AMBCP_animalRegistry pushBack [_basePos, _animalClass, _groupSize, [], "poultry"];
                                 _countPoultry = _countPoultry + _groupSize;
                             };
@@ -732,17 +744,18 @@ switch(_operation) do {
                         private _clusterSize = [_x, "size"] call ALIVE_fnc_hashGet;
                         if (isNil "_clusterSize" || {_clusterSize isEqualType ""}) then { _clusterSize = 200 };
 
-                        // Per-cluster herd count = base + random bonus,
-                        // both scaled by the amount setting. The base
-                        // guarantees a minimum density at any non-zero
-                        // setting (so HIGH feels like "many"); the
-                        // bonus adds spread.
-                        //   LOW    (0.2): base 1 + 0       = 1 / cluster
-                        //   MEDIUM (0.6): base 2 + 0..2    = 2-4 / cluster
-                        //   HIGH   (1.0): base 3 + 0..4    = 3-7 / cluster
-                        private _herdBase = ceil (_ambientAnimalAmount * 3);
-                        private _herdBonus = floor (random (_ambientAnimalAmount * 5));
-                        private _herdCount = _herdBase + _herdBonus;
+                        // Per-cluster herd count, fully scaled by amount so
+                        // LOW is genuinely "few" (#891). Previous math
+                        // forced 1 herd per cluster at any non-zero tier
+                        // with a fixed 2-5 group size, which produced 100s
+                        // of animals across many clusters even at LOW.
+                        //   LOW    (0.2): 0..1 herds (20% chance per cluster)
+                        //   MEDIUM (0.6): 1..2 herds (60% bonus chance)
+                        //   HIGH   (1.0): 3..7 herds
+                        private _herdBase = floor (_ambientAnimalAmount * 2);
+                        private _herdChance = if (random 1 < _ambientAnimalAmount) then {1} else {0};
+                        private _herdBonus = floor (random (_ambientAnimalAmount * _ambientAnimalAmount * 5));
+                        private _herdCount = _herdBase + _herdChance + _herdBonus;
 
                         for "_h" from 1 to _herdCount do {
                             _herdsTried = _herdsTried + 1;
@@ -764,10 +777,14 @@ switch(_operation) do {
 
                             if !(_herdPos isEqualTo []) then {
                                 private _animalClass = selectRandom _herdPool;
-                                // Herds bigger than poultry groups -
-                                // sheep flocks of 2-5 read more
-                                // naturally than 1-2 lone goats.
-                                private _groupSize = 2 + floor (random 4);
+                                // Group size tier-scaled per #891. Herds
+                                // still read larger than poultry but LOW
+                                // produces small flocks instead of full
+                                // 2-5 ones at every tier.
+                                //   LOW    (0.2): 1-2 / herd
+                                //   MEDIUM (0.6): 2-3 / herd
+                                //   HIGH   (1.0): 2-5 / herd
+                                private _groupSize = 1 + floor (random (1 + _ambientAnimalAmount * 4));
                                 ALiVE_AMBCP_animalRegistry pushBack [_herdPos, _animalClass, _groupSize, [], "herd"];
                                 _countHerd = _countHerd + _groupSize;
                                 _herdsPlaced = _herdsPlaced + 1;
