@@ -84,9 +84,12 @@ switch (_taskState) do {
             //  objective rather than its legacy single-sector pick).
             _stagingPlayerPos = _taskLocation;
             if (count _taskPlayers > 0 && {count (_taskPlayers select 0) > 0}) then {
-                private _firstPlayer = (_taskPlayers select 0) select 0;
-                if (!isNil "_firstPlayer" && {!isNull _firstPlayer}) then {
-                    _stagingPlayerPos = getPos _firstPlayer;
+                private _firstPlayerUID = (_taskPlayers select 0) select 0;
+                if (typeName _firstPlayerUID == "STRING" && {_firstPlayerUID != ""}) then {
+                    private _firstPlayer = [_firstPlayerUID] call ALIVE_fnc_getPlayerByUID;
+                    if (!isNull _firstPlayer) then {
+                        _stagingPlayerPos = getPos _firstPlayer;
+                    };
                 };
             };
             _stagingPosition = [_targetPosition,"overwatch",_stagingPlayerPos] call ALIVE_fnc_taskGetSectorPosition;
