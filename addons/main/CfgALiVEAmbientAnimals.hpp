@@ -59,4 +59,20 @@ class CfgALiVEAmbientAnimals {
         };
     };
 
+    // Western Sahara CDLC (Rotators) -- dromedaries placed in the herd
+    // pool. Sahara-appropriate large flock animals that spawn in open
+    // ground outside town cluster footprints. Four model variants.
+    // Patch detection via `characters_F_lxWS` which always loads when
+    // the CDLC is active.
+    class WS_RotatorsCDLC {
+        cfgPatchesName = "characters_F_lxWS";
+        displayName    = "Western Sahara";
+        class herd {
+            class Dromedary_01_lxWS { displayName = "Dromedary (variant 1)"; };
+            class Dromedary_02_lxWS { displayName = "Dromedary (variant 2)"; };
+            class Dromedary_03_lxWS { displayName = "Dromedary (variant 3)"; };
+            class Dromedary_04_lxWS { displayName = "Dromedary (variant 4)"; };
+        };
+    };
+
 };
