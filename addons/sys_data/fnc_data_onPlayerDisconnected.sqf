@@ -42,7 +42,7 @@ if (_name == "__SERVER__") then {
             [GVAR(mission_data), "date", date] call ALIVE_fnc_hashSet;
             [GVAR(mission_data), "Group", GVAR(GROUP_ID)] call ALIVE_fnc_hashSet;
 
-            _missionName = format["%1_%2", GVAR(GROUP_ID), missionName];
+            _missionName = format["%1_%2_%3", GVAR(GROUP_ID), missionName, worldName];
 
             _result = [GVAR(datahandler), "write", ["sys_data", GVAR(mission_data), false, _missionName] ] call ALIVE_fnc_Data;
 
@@ -64,7 +64,7 @@ if (_name == "__SERVER__") then {
                 [MOD(PCOMPOSITIONS),"roadblock_locs",ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS] call ALiVE_fnc_hashSet;
             };
 
-            _missionName = format["%1_%2_COMPOSITIONS", GVAR(GROUP_ID), missionName];
+            _missionName = format["%1_%2_%3_COMPOSITIONS", GVAR(GROUP_ID), missionName, worldName];
 
             _result = [GVAR(datahandler), "write", ["sys_data", MOD(PCOMPOSITIONS), false, _missionName] ] call ALIVE_fnc_Data;
 
@@ -101,9 +101,9 @@ if (_name == "__SERVER__") then {
                     } else {
                         private ["_dictionaryName"];
                         if (GVAR(hashCount) == 0) then {
-                            _dictionaryName = format["dictionary_%1_%2", GVAR(GROUP_ID), missionName];
+                            _dictionaryName = format["dictionary_%1_%2_%3", GVAR(GROUP_ID), missionName, worldName];
                         } else {
-                            _dictionaryName = format["dictionary_%1_%2_%3", GVAR(GROUP_ID), missionName, GVAR(hashCount)];
+                            _dictionaryName = format["dictionary_%1_%2_%3_%4", GVAR(GROUP_ID), missionName, worldName, GVAR(hashCount)];
                         };
                         if (GVAR(hashCount) < count GVAR(DictionaryRevs)) then {
                             [GVAR(tempHash), "_rev", GVAR(DictionaryRevs) select GVAR(hashCount)] call CBA_fnc_hashSet;
@@ -126,9 +126,9 @@ if (_name == "__SERVER__") then {
             // Save the final dictionary entry
 
             if (GVAR(hashCount) == 0) then {
-                _dictionaryName = format["dictionary_%1_%2", GVAR(GROUP_ID), missionName];
+                _dictionaryName = format["dictionary_%1_%2_%3", GVAR(GROUP_ID), missionName, worldName];
             } else {
-                _dictionaryName = format["dictionary_%1_%2_%3", GVAR(GROUP_ID), missionName, GVAR(hashCount)];
+                _dictionaryName = format["dictionary_%1_%2_%3_%4", GVAR(GROUP_ID), missionName, worldName, GVAR(hashCount)];
             };
             if (GVAR(hashCount) < count GVAR(DictionaryRevs)) then {
                 [GVAR(tempHash), "_rev", GVAR(DictionaryRevs) select GVAR(hashCount)] call CBA_fnc_hashSet;
@@ -142,7 +142,7 @@ if (_name == "__SERVER__") then {
 
         } else {
             private ["_dictionaryName"];
-            _dictionaryName = format["dictionary_%1_%2", GVAR(GROUP_ID), missionName];
+            _dictionaryName = format["dictionary_%1_%2_%3", GVAR(GROUP_ID), missionName, worldName];
 
             _result = [GVAR(datahandler), "write", ["sys_data", ALIVE_DataDictionary, false, _dictionaryName] ] call ALIVE_fnc_Data;
 
