@@ -20,6 +20,7 @@ _player = ["234234"] call ALiVE_fnc_getPlayerByUIDOnConnect
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -39,7 +40,7 @@ _time = time;
 waitUntil {
     sleep 0.3;
 
-    private ["_found","_player","_playerGUID","_currentUID"];
+    private ["_found","_player","_currentUID"];
 
     _found = false;
     private _timeout = time - _time > 5;
@@ -55,6 +56,21 @@ waitUntil {
     } foreach (playableunits + switchableUnits);
 
     _found || {_timeout};
+};
+
+// Inferno #894: if the primary playableUnits + switchableUnits search
+// timed out, fall back to allPlayers (network-wide player object list)
+// before returning objNull. On busy server boots the connecting player
+// can be in allPlayers before their slot has settled into playableUnits;
+// the original code logged "NOT FOUND" and gave up here, leaving the
+// player at default spawn with no save applied. Single forEach is fine
+// once the timeout is reached -- we're past the polling phase.
+if (isNull _unit) then {
+    {
+        if (getPlayerUID _x == _playerUID) exitWith {
+            _unit = _x;
+        };
+    } foreach allPlayers;
 };
 
 _unit
