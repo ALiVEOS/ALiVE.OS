@@ -131,6 +131,10 @@ private _gracePeriod = 15;
         private _detonated    = false;
         // Per-engineer trip counters, keyed by netId. Lives for the IED's lifetime.
         private _tripMap = createHashMap;
+        // Per-engineer "immune log already fired" latch, keyed by netId. Lives
+        // for the IED's lifetime so we don't spam the once-per-0.5s poll. See
+        // the silent-immunity branch below.
+        private _loggedImmune = [];
 
         // DIAG-STRIP: confirm polling-loop entered post-waitUntil-cap.
         // Eric's RPT (Discord 2026-05-14) shows IEDs arming but no accum
@@ -282,6 +286,23 @@ private _gracePeriod = 15;
                             if (!_challengeEnabled) then {
                                 // Master toggle off: qualifying engineer is fully immune (legacy).
                                 // Nothing to do - fall through without accumulating.
+                                //
+                                // DIAG-STRIP: surface this silent-immunity case so
+                                // testers can see WHY a qualifying unit walked
+                                // through proximity without anything happening.
+                                // Ares's #890 dedicated-server RPT (2026-05-18)
+                                // showed candidate-in-proximity but no accum / no
+                                // detonation -- with the engineer-immune branch
+                                // logging nothing, the silence was indistinguish-
+                                // able from the loop having stalled. One log per
+                                // engineer per IED via _loggedImmune (persists
+                                // across the 0.5s poll cycles).
+                                private _key = netId _u;
+                                if (_debugLocal && !(_key in _loggedImmune)) then {
+                                    _loggedImmune pushBack _key;
+                                    diag_log format ["ALIVE-%1 IED: %2 qualifies as engineer AND IED_Engineer_Challenge is disabled -- IED is immune to this unit, will not detonate",
+                                        time, name _u];
+                                };
                             } else {
                             // Engineer: accumulate trip pressure.
                             private _key = netId _u;
