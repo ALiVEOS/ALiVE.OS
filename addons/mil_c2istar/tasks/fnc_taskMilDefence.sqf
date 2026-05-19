@@ -306,14 +306,43 @@ switch (_taskState) do {
             // fnc_taskCheckpointPartnership: drop back to a 450 m offset
             // from the task position so the wave still spawns.
             private _remotePositions = [_taskPosition, 500, 5, true] call ALIVE_fnc_getPositionDistancePlayers;
-            _remotePosition = if (count _remotePositions > 0) then {
-                selectRandom _remotePositions
-            } else {
-                [_taskPosition, 450, random 360] call BIS_fnc_relPos
+
+            // Friendly-distance filter: drop candidate spawn sectors that
+            // sit inside the profile-combat envelope of an existing
+            // same-side (defender) profile. Without this filter, the wave
+            // can spawn within ~250 m of a friendly OPCOM group and lose a
+            // 1-vs-N profile-mode combat in 3 s before the engine ever
+            // sees a unit -- vehicle-mounted squads especially get culled
+            // this way (RPT 2026-05-19 09:08:07 entity_150 / vehicle_105
+            // un-registered 3 s after register via profileSimulator
+            // _toBekilled). 300 m clears the 255 m profile-attack maxRange
+            // with a small margin.
+            _remotePositions = _remotePositions select {
+                private _candidate = _x;
+                private _nearDefenders = [_candidate, 300, [_taskSide, "entity"]] call ALIVE_fnc_getNearProfiles;
+                count _nearDefenders == 0
             };
 
+            // Per-group anchor rotation: cycle through the surviving
+            // remote positions instead of all groups clustering around
+            // one. Reduces the "all wave members fall in the same kill
+            // zone" risk and gives the attack a wider approach arc.
+            private _anchorIdx = 0;
+            private _haveAnchors = count _remotePositions > 0;
+
             {
-                _position = (_remotePosition getPos [(random 200), (random 200)]);
+                // Pick this group's anchor: rotate through filtered
+                // remote positions if we have any; otherwise fall back
+                // to a relPos offset from the task position so the wave
+                // still spawns at all.
+                private _anchor = if (_haveAnchors) then {
+                    _remotePositions select (_anchorIdx mod count _remotePositions)
+                } else {
+                    [_taskPosition, 450, random 360] call BIS_fnc_relPos
+                };
+                _anchorIdx = _anchorIdx + 1;
+
+                _position = (_anchor getPos [(random 200), (random 200)]);
                 _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                 _profileID = _profiles select 0 select 2 select 4;
 
@@ -322,8 +351,11 @@ switch (_taskState) do {
                 // search-and-destroy at the objective itself.
                 // Replaces the single MOVE / SAFE / NO CHANGE
                 // waypoint that had attackers walking in like a
-                // patrol (#848).
-                private _approachPos = _taskPosition getPos [150, _taskPosition getDir _remotePosition];
+                // patrol (#848). Approach bearing is per-group (from
+                // each anchor toward the objective) so groups on
+                // different anchors converge on the objective from
+                // their own sectors rather than a single line.
+                private _approachPos = _taskPosition getPos [150, _taskPosition getDir _anchor];
                 private _attackPos = (_taskPosition getPos [(random 40), (random 40)]);
                 private _approachWP = [_approachPos, 100, "MOVE", "FULL", 50, [], "LINE", "YELLOW", "AWARE"] call ALIVE_fnc_createProfileWaypoint;
                 private _attackWP   = [_attackPos,   100, "SAD",  "FULL", 50, [], "LINE", "RED",    "COMBAT"] call ALIVE_fnc_createProfileWaypoint;
@@ -355,7 +387,20 @@ switch (_taskState) do {
                 //["VEH GROUPS: %1",_groups] call ALIVE_fnc_dump;
 
                 {
-                    _position = (_remotePosition getPos [(random 200), (random 200)]);
+                    // Per-group anchor rotation continues from where the
+                    // infantry loop left off, so the vehicle group lands
+                    // on a different anchor (when multiple survive the
+                    // friendly-distance filter) rather than clustering on
+                    // the same one. Same fallback path as the infantry
+                    // loop for the no-anchors case.
+                    private _anchor = if (_haveAnchors) then {
+                        _remotePositions select (_anchorIdx mod count _remotePositions)
+                    } else {
+                        [_taskPosition, 450, random 360] call BIS_fnc_relPos
+                    };
+                    _anchorIdx = _anchorIdx + 1;
+
+                    _position = (_anchor getPos [(random 200), (random 200)]);
                     _profiles = [_x, _position, random(360), true, _enemyFaction, true] call ALIVE_fnc_createProfilesFromGroupConfig;
                     _profileID = _profiles select 0 select 2 select 4;
 
@@ -365,7 +410,7 @@ switch (_taskState) do {
                     // objective, then SAD / COMBAT / RED at the
                     // objective. Replaces the single MOVE / SAFE
                     // waypoint (#848).
-                    private _approachPos = _taskPosition getPos [150, _taskPosition getDir _remotePosition];
+                    private _approachPos = _taskPosition getPos [150, _taskPosition getDir _anchor];
                     private _attackPos = (_taskPosition getPos [(random 40), (random 40)]);
                     private _approachWP = [_approachPos, 100, "MOVE", "FULL", 50, [], "LINE", "YELLOW", "AWARE"] call ALIVE_fnc_createProfileWaypoint;
                     private _attackWP   = [_attackPos,   100, "SAD",  "FULL", 50, [], "LINE", "RED",    "COMBAT"] call ALIVE_fnc_createProfileWaypoint;
