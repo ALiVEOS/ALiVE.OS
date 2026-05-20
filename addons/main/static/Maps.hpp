@@ -272,3 +272,36 @@ if (!_fileExists) then {
         };
     };
 };
+
+// Universal building-type defaults. Applied AFTER both the per-terrain
+// staticData load AND the family-fallback branch, so every map inherits
+// the common hangar / helipad substrings on top of whatever its own
+// staticData file specified. fnc_findBuildingsInClusterNodes does a
+// substring containment match against the lowercased p3d path, so
+// "hangar" alone catches Land_HangarS / Land_Hangar_F / Land_Hangar_2
+// / ss_hangar etc. across A2 / A3 / CUP / RHS / Apex / GM / SOG / etc.
+//
+// Without these defaults, per-terrain staticData files that wipe the
+// list to [] and then add only a control tower (e.g. cup_chernarus_a3
+// at 2026-05-20 -- file only listed controltower_02_f.p3d) leave
+// mil_placement's hangar-loop with zero matching buildings, so no
+// fixed-wing aircraft spawn even on terrains with real hangars on the
+// airfield. The original indexer's detection gap is captured in
+// strategy_default_building_types.md; this Maps.hpp merge is the
+// systemic fix that covers every terrain at once.
+//
+// Defaults are additive + deduped via arrayIntersect self-intersect.
+// Terrain-specific entries (controltower_02_f.p3d, terrain-specific
+// hangar mods, etc.) remain untouched in the final list.
+private _defaultAirBuildings = [
+    "hangar"
+];
+private _defaultHeliBuildings = [
+    "helipad"
+];
+
+ALIVE_airBuildingTypes = ALIVE_airBuildingTypes + _defaultAirBuildings;
+ALIVE_airBuildingTypes = ALIVE_airBuildingTypes arrayIntersect ALIVE_airBuildingTypes;
+
+ALIVE_heliBuildingTypes = ALIVE_heliBuildingTypes + _defaultHeliBuildings;
+ALIVE_heliBuildingTypes = ALIVE_heliBuildingTypes arrayIntersect ALIVE_heliBuildingTypes;

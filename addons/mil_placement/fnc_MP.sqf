@@ -1241,10 +1241,28 @@ switch(_operation) do {
                 _heliClasses = [0,_faction,"Helicopter"] call ALiVE_fnc_findVehicleType;
                 _heliClasses = _heliClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
+                // DIAG-STRIP: surface what findVehicleType returned for
+                // the faction's Helicopter category + how many heli
+                // clusters are about to be iterated. Mirrors the
+                // hangar-loop entry diag. Strip per
+                // strategy_diag_strip_cleanup_pass.md once the heli
+                // spawn flow is verified across community factions.
+                diag_log format [
+                    "DIAG-STRIP MP helipad-loop entry: faction=%1, heliClasses count=%2, heliClusters=%3",
+                    _faction,
+                    count _heliClasses,
+                    count _heliClusters
+                ];
+
                 if(count _heliClasses > 0) then {
 
                     {
                         private _nodes = [_x, "nodes",[]] call ALIVE_fnc_hashGet;
+                        diag_log format [
+                            "DIAG-STRIP MP helipad-cluster: clusterID=%1, nodeCount=%2",
+                            [_x, "clusterID", ""] call ALIVE_fnc_hashGet,
+                            count _nodes
+                        ];
 
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
@@ -1258,6 +1276,13 @@ switch(_operation) do {
                             // if every candidate failed - skip this node.
                             _vehicleClass = (selectRandom _heliClasses);
                             private _airResult = [_vehicleClass, position _x, 200, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                            diag_log format [
+                                "DIAG-STRIP MP helipad-node: nodeType=%1, nodePos=%2, vehClass=%3, airResultCount=%4",
+                                typeOf _x,
+                                position _x,
+                                _vehicleClass,
+                                count _airResult
+                            ];
                             if (count _airResult >= 2) then {
                                 _position = _airResult select 0;
                                 _direction = _airResult select 1;
@@ -1320,6 +1345,26 @@ switch(_operation) do {
                 // a frequent source of clipping. If the faction has no
                 // planes, leave the hangar empty.
 
+                // DIAG-STRIP: surface what findVehicleType returned for
+                // the faction's Plane category + how many air clusters
+                // are about to be iterated. Useful when a faction-
+                // compiler-driven setup reports "no aircraft at the
+                // airport" -- we can tell whether the compiler's Air
+                // groups are flowing into the Plane filter, whether
+                // the hangar-cluster set is non-empty, and whether
+                // any candidate buildings will be found below.
+                // Strip per strategy_diag_strip_cleanup_pass.md once
+                // the compiler -> findVehicleType -> hangar flow is
+                // verified across community factions.
+                diag_log format [
+                    "DIAG-STRIP MP hangar-loop entry: faction=%1, planeClasses=%2 (count=%3), airClusters=%4, airBuildingTypes=%5",
+                    _faction,
+                    _airClasses,
+                    count _airClasses,
+                    count _airClusters,
+                    ALIVE_airBuildingTypes
+                ];
+
                 if(count _airClasses > 0) then {
 
                     {
@@ -1327,9 +1372,70 @@ switch(_operation) do {
 
                         _buildings = [_nodes, ALIVE_airBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
 
+                        // Runtime hangar-lookup fallback. The static
+                        // data file for some terrains (cup_chernarus_a3
+                        // captured 2026-05-20) indexes only the control
+                        // tower at each airfield -- so the cluster's
+                        // node list resolves to control towers and the
+                        // substring filter happily passes them through
+                        // ALIVE_airBuildingTypes. The hangar loop then
+                        // tries to spawn planes AT the control tower
+                        // position; findAirSpawnPosition either
+                        // rejects or finds a non-hangar spot on the
+                        // tarmac.
+                        //
+                        // If the node-filter didn't produce any
+                        // building whose model contains "hangar",
+                        // search the cluster's surroundings (500 m)
+                        // for actual hangar buildings and use those
+                        // for the spawn loop instead. Covers terrains
+                        // with incomplete static data without
+                        // requiring re-indexing.
+                        private _hasHangarMatch = (_buildings findIf {
+                            private _model = toLower(getText(configFile >> "CfgVehicles" >> (typeOf _x) >> "model"));
+                            [_model, "hangar"] call CBA_fnc_find != -1
+                        }) >= 0;
+                        if (!_hasHangarMatch) then {
+                            private _clusterCenter = [_x, "center", []] call ALIVE_fnc_hashGet;
+                            if (count _clusterCenter >= 2) then {
+                                private _nearby = nearestObjects [_clusterCenter, ["House"], 500];
+                                private _nearbyHangars = _nearby select {
+                                    private _model = toLower(getText(configFile >> "CfgVehicles" >> (typeOf _x) >> "model"));
+                                    [_model, "hangar"] call CBA_fnc_find != -1
+                                };
+                                if (count _nearbyHangars > 0) then {
+                                    _buildings = _nearbyHangars;
+                                    diag_log format [
+                                        "DIAG-STRIP MP hangar-fallback: clusterID=%1, found %2 hangar(s) near center=%3 via nearestObjects (node-filter had no hangar match)",
+                                        [_x, "clusterID", ""] call ALIVE_fnc_hashGet,
+                                        count _nearbyHangars,
+                                        _clusterCenter
+                                    ];
+                                };
+                            };
+                        };
+
+                        // DIAG-STRIP: per-cluster building counts.
+                        // Tells us whether the substring match is
+                        // finding hangars in each air cluster's
+                        // resolved node objects. Strip with the
+                        // entry-line diag above.
+                        diag_log format [
+                            "DIAG-STRIP MP hangar-cluster: clusterID=%1, nodeCount=%2, buildingsMatched=%3",
+                            [_x, "clusterID", ""] call ALIVE_fnc_hashGet,
+                            count _nodes,
+                            count _buildings
+                        ];
+
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
-                            if(random 1 > 0.3) then {
+                            // DIAG-STRIP: per-building visibility into
+                            // the random skip + findAirSpawnPosition
+                            // result. Strip with the entry-line diag.
+                            private _bldType = typeOf _x;
+                            private _bldModel = toLower(getText(configFile >> "CfgVehicles" >> _bldType >> "model"));
+                            private _rollKeep = random 1;
+                            if(_rollKeep > 0.3) then {
                                 _vehicleClass = (selectRandom _airClasses);
 
                                 // Validator handles bbox fit, door
@@ -1344,6 +1450,8 @@ switch(_operation) do {
                                 // the validator. Returns [] when no
                                 // safe spot exists - skip this building.
                                 private _airResult = [_vehicleClass, position _x, 100, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                                diag_log format ["DIAG-STRIP MP hangar-building: faction=%1, bldType=%2, model=%3, vehClass=%4, rollKeep=%5, airResultCount=%6, pos=%7",
+                                    _faction, _bldType, _bldModel, _vehicleClass, _rollKeep, count _airResult, position _x];
                                 if (count _airResult >= 2) then {
                                     _position = _airResult select 0;
                                     _direction = _airResult select 1;
@@ -1362,6 +1470,8 @@ switch(_operation) do {
                                     _countProfiles = _countProfiles + 1;
                                     _countUncrewedAir = _countUncrewedAir + 1;
                                 };
+                            } else {
+                                diag_log format ["DIAG-STRIP MP hangar-building: faction=%1, bldType=%2, model=%3, rollKeep=%4 SKIPPED by random-gate", _faction, _bldType, _bldModel, _rollKeep];
                             };
 
                         } forEach _buildings;

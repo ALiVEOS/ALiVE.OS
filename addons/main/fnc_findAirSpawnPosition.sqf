@@ -278,9 +278,41 @@ private _fnc_hangarBayCentre = {
 // ------------------------------------------------------------------------
 private _fnc_orientHangar = {
     params ["_hangar", "_bayCentre"];
-    private _baseDir = direction _hangar;
 
-    private _rayLen = 30;
+    // Two-stage orient:
+    //
+    //   Stage 1 -- raycast 4 cardinals from bay centre, identify
+    //   which AXIS (pair of cardinals 180 deg apart) is the
+    //   "long" axis by comparing average clear distance. The long
+    //   axis runs through the hangar's open end(s); the short
+    //   axis runs perpendicular into the side walls.
+    //
+    //   Stage 2 -- between the 2 cardinals along the long axis,
+    //   pick whichever is closest to the bearing from bay centre
+    //   to the nearest road / taxiway / apron object within 80 m.
+    //   For one-ended hangars the road is on the apron side -> picks
+    //   the opening end. For two-ended tent hangars (Land_TentHangar_V1_F
+    //   on Stratis) both ends are openings; road bearing picks
+    //   whichever end faces the active taxiway.
+    //
+    // Earlier approaches that failed:
+    //   - "Longest single cardinal" -- broke on SS hangars in tight
+    //     rows where the opening direction was blocked by an
+    //     adjacent hangar at 21 m and the back wall at 24 m won.
+    //   - "Doesn't hit own GEOM" -- A2 hangar GEOM lods returned
+    //     hits on the hangar in all 4 directions for middle hangars.
+    //   - "Road bearing only" -- regressed Stratis tents because
+    //     the road is perpendicular to the long axis, not along it.
+    //
+    // This hybrid uses raycasts for AXIS detection (robust against
+    // adjacent-building contamination because both long-axis ends
+    // get equal contamination, both still beat the side cardinals
+    // which hit walls at ~5-15 m) and road bearing for END
+    // selection (robust against ambiguous tied distances because
+    // the road is an unambiguous external signal).
+    private _baseDir = direction _hangar;
+    private _rayLen = 60;
+
     private _fnc_clearDist = {
         params ["_dir"];
         private _start = _bayCentre vectorAdd [0, 0, 1.5];
@@ -295,66 +327,112 @@ private _fnc_orientHangar = {
         abs (((_a - _b) + 540) mod 360 - 180)
     };
 
-    // 4 cardinals at the building's local axes.
-    private _angles = [_baseDir, _baseDir + 90, _baseDir + 180, _baseDir + 270];
-    private _samples = [];
-    private _bestClear = -1;
-    {
-        private _clear = [_x] call _fnc_clearDist;
-        _samples pushBack [_x, _clear];
-        if (_clear > _bestClear) then { _bestClear = _clear; };
-    } forEach _angles;
+    // Sample all 4 cardinals.
+    private _c0 = _baseDir;
+    private _c1 = _baseDir + 90;
+    private _c2 = _baseDir + 180;
+    private _c3 = _baseDir + 270;
+    private _d0 = [_c0] call _fnc_clearDist;
+    private _d1 = [_c1] call _fnc_clearDist;
+    private _d2 = [_c2] call _fnc_clearDist;
+    private _d3 = [_c3] call _fnc_clearDist;
 
-    // Identify the tied set: cardinals whose clear distance is
-    // within 5 m of the longest. For one-ended hangars there's
-    // only one entry; for both-ends-open tent hangars there are
-    // two; for fully-open pavilions there are up to four.
-    private _tied = _samples select { (_x select 1) >= (_bestClear - 5) };
-
-    private _result = -1;
-    if (count _tied == 1) then {
-        _result = (_tied select 0) select 0;
+    // Identify long axis. Pair A = (baseDir, baseDir+180); pair B =
+    // (baseDir+90, baseDir+270). Whichever pair has the higher
+    // average clear distance is the long axis.
+    private _avgA = (_d0 + _d2) / 2;
+    private _avgB = (_d1 + _d3) / 2;
+    private _longCardinals = if (_avgA >= _avgB) then {
+        [[_c0, _d0], [_c2, _d2]]
+    } else {
+        [[_c1, _d1], [_c3, _d3]]
     };
 
-    // Multiple cardinals tied - apron-facing tiebreaker via road
-    // bearing. Pick the tied cardinal closest to the bearing from
-    // bay centre to the nearest road object (taxiway / apron).
-    if (_result < 0 && count _tied > 1) then {
-        private _nearRoads = _bayCentre nearRoads 80;
-        if (count _nearRoads > 0) then {
-            private _nearestRoad = _nearRoads select 0;
-            {
-                if ((_bayCentre distance2D _x) < (_bayCentre distance2D _nearestRoad)) then {
-                    _nearestRoad = _x;
-                };
-            } forEach _nearRoads;
-            private _roadDir = _bayCentre getDir (position _nearestRoad);
-            private _bestDiff = 360;
-            {
-                private _diff = [_roadDir, _x select 0] call _fnc_angDiff;
-                if (_diff < _bestDiff) then {
-                    _bestDiff = _diff;
-                    _result = _x select 0;
-                };
-            } forEach _tied;
-        };
+    // End selection logic:
+    //   - If both long-axis cardinals have similar clear distance
+    //     (within 15 m -- e.g. two-ended tent hangars where both
+    //     openings are unblocked, or hangars where the GEOM is
+    //     ambiguous), use road bearing as tiebreaker.
+    //   - Otherwise, the cardinal with the greater clear distance
+    //     is the more sensible opening (unobstructed vs partially
+    //     blocked). The 15 m tied tolerance is wide enough that the
+    //     SS-hangar-in-tight-row case (23.9 vs 21.3, diff 2.6 m)
+    //     falls into the "use road bearing" branch -- both ends are
+    //     blocked by neighbours, road bearing picks the apron side.
+    //   - For one-ended hangars with a clearly unblocked opening
+    //     (e.g. ServiceHangars where one end is 60 m clear and the
+    //     other is 15 m), the larger clear distance wins outright
+    //     and road bearing is not consulted.
+    private _d0Long = (_longCardinals select 0) select 1;
+    private _d1Long = (_longCardinals select 1) select 1;
+    private _clearDelta = abs (_d0Long - _d1Long);
+    private _useRoadTiebreaker = _clearDelta < 15;
+
+    // Default = longer-clear long-axis cardinal when we're in the
+    // "clear delta is significant" branch (delta >= 15 m).
+    // Otherwise default to baseDir + 180, the historical convention
+    // for A2-era hangars where one-ended models open opposite their
+    // setDir. Road tiebreaker (below) overrides if a road is found.
+    private _result = if (!_useRoadTiebreaker) then {
+        if (_d0Long >= _d1Long) then {
+            (_longCardinals select 0) select 0
+        } else {
+            (_longCardinals select 1) select 0
+        }
+    } else {
+        // Tied long axis: prefer the cardinal closest to
+        // baseDir+180 (the A2 convention). Falls through to road
+        // tiebreaker below if a road exists.
+        private _convDir = _baseDir + 180;
+        private _convDiff0 = [_convDir, (_longCardinals select 0) select 0] call _fnc_angDiff;
+        private _convDiff1 = [_convDir, (_longCardinals select 1) select 0] call _fnc_angDiff;
+        if (_convDiff0 <= _convDiff1) then {
+            (_longCardinals select 0) select 0
+        } else {
+            (_longCardinals select 1) select 0
+        }
     };
 
-    // No road in range to break the tie - pick the first tied
-    // cardinal deterministically.
-    if (_result < 0 && count _tied > 0) then {
-        _result = (_tied select 0) select 0;
-    };
-
-    // Last-resort override list fallback for total raycast failure.
-    if (_bestClear < 5) then {
-        if (!isNil "ALIVE_problematicHangarBuildings") then {
-            if (typeOf _hangar in ALIVE_problematicHangarBuildings || str(position _hangar) in ALIVE_problematicHangarBuildings) then {
-                _result = _baseDir + 180;
+    // Wider road search than the usual 80 m -- airfields often have
+    // RoadBase objects only along the perimeter / access road, not
+    // along the taxiway itself (the taxiway is a terrain-surface
+    // runway, not a road object). 200 m catches perimeter roads
+    // and access tracks for typical airfields.
+    private _nearRoads = _bayCentre nearRoads 200;
+    private _roadDir = -1;
+    if (_useRoadTiebreaker && {count _nearRoads > 0}) then {
+        private _nearestRoad = _nearRoads select 0;
+        {
+            if ((_bayCentre distance2D _x) < (_bayCentre distance2D _nearestRoad)) then {
+                _nearestRoad = _x;
             };
+        } forEach _nearRoads;
+        _roadDir = _bayCentre getDir (position _nearestRoad);
+
+        private _diff0 = [_roadDir, (_longCardinals select 0) select 0] call _fnc_angDiff;
+        private _diff1 = [_roadDir, (_longCardinals select 1) select 0] call _fnc_angDiff;
+        _result = if (_diff0 <= _diff1) then {
+            (_longCardinals select 0) select 0
+        } else {
+            (_longCardinals select 1) select 0
         };
-        if (_result < 0) then { _result = _baseDir };
     };
+
+    // DIAG-STRIP orient result. Strip per
+    // strategy_diag_strip_cleanup_pass.md.
+    diag_log format [
+        "DIAG-STRIP orientHangar result: type=%1, model=%2, baseDir=%3, samples=[[%4,%5],[%6,%7],[%8,%9],[%10,%11]], longAxis=[%12,%13], clearDelta=%14, useRoad=%15, roadDir=%16, chosenDir=%17 (delta=%18)",
+        typeOf _hangar,
+        toLower(getText(configFile >> "CfgVehicles" >> (typeOf _hangar) >> "model")),
+        _baseDir,
+        _c0, _d0, _c1, _d1, _c2, _d2, _c3, _d3,
+        _d0Long, _d1Long,
+        _clearDelta,
+        _useRoadTiebreaker,
+        _roadDir,
+        _result,
+        ((_result - _baseDir) + 540) mod 360 - 180
+    ];
 
     _result
 };
