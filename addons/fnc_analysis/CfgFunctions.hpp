@@ -141,6 +141,16 @@ class cfgFunctions {
                 file = "\x\alive\addons\fnc_analysis\fnc_gridImportStaticMapAnalysis.sqf";
                 RECOMPILE;
             };
+            class assessIndexViability {
+                description = "assessIndexViability";
+                file = "\x\alive\addons\fnc_analysis\fnc_assessIndexViability.sqf";
+                RECOMPILE;
+            };
+            class indexViabilityEdenCheck {
+                description = "indexViabilityEdenCheck";
+                file = "\x\alive\addons\fnc_analysis\fnc_indexViabilityEdenCheck.sqf";
+                RECOMPILE;
+            };
             class sectorDataSort {
                 description = "sectorDataSort";
                 file = "\x\alive\addons\fnc_analysis\fnc_sectorDataSort.sqf";

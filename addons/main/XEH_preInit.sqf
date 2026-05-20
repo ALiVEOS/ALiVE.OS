@@ -44,7 +44,34 @@ if (is3DEN) then {
     // still registered for completeness / runtime callers.
     ALiVE_edenFactionValidator = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenValidateOpcomFactions.sqf";
     ALiVE_edenValidateFactionCompilerSync = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenValidateFactionCompilerSync.sqf";
-    diag_log format ["ALiVE 3DEN: inline-compiled validators; OPCOM=%1, compilerSync=%2", typeName ALiVE_edenFactionValidator, typeName ALiVE_edenValidateFactionCompilerSync];
+
+    // Viability Eden chain. Inline-compile the helper functions
+    // the assessor reaches transitively, plus the assessor itself,
+    // so the full M1-M5 score block + notification can render in Eden.
+    // CfgFunctions postInit doesn't fire in pure-Eden, so without
+    // these the hashGet/hashSet/etc. helpers would be nil + the
+    // bundled data file (which uses ALIVE_fnc_hashCreate etc.)
+    // couldn't even be loaded. Five helpers needed: hashCreate +
+    // hashSet for loading the data file; hashGet for the assessor
+    // reading it; dump for the assessor's RPT score block; and the
+    // assessor itself. All are leaf functions (no further ALiVE
+    // deps) -- verified by grepping ALI(V|v)E_fnc_ across their
+    // sources.
+    ALIVE_fnc_hashCreate              = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\data\fnc_hashCreate.sqf";
+    ALIVE_fnc_hashSet                 = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\data\fnc_hashSet.sqf";
+    ALIVE_fnc_hashGet                 = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\data\fnc_hashGet.sqf";
+    ALIVE_fnc_dump                    = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\logging\fnc_dump.sqf";
+    ALIVE_fnc_assessIndexViability    = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_assessIndexViability.sqf";
+    ALIVE_fnc_indexViabilityEdenCheck = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_indexViabilityEdenCheck.sqf";
+    diag_log format ["ALiVE 3DEN: inline-compiled validators; OPCOM=%1, compilerSync=%2, hashCreate=%3, hashSet=%4, hashGet=%5, dump=%6, assessor=%7, edenViability=%8",
+        typeName ALiVE_edenFactionValidator,
+        typeName ALiVE_edenValidateFactionCompilerSync,
+        typeName ALIVE_fnc_hashCreate,
+        typeName ALIVE_fnc_hashSet,
+        typeName ALIVE_fnc_hashGet,
+        typeName ALIVE_fnc_dump,
+        typeName ALIVE_fnc_assessIndexViability,
+        typeName ALIVE_fnc_indexViabilityEdenCheck];
 
     // EH callbacks scope validation to the OPCOMs actually affected by
     // each event, then hand off to the debounced validator. Without
@@ -246,5 +273,36 @@ if (is3DEN) then {
         ["preview", []] call ALiVE_edenFactionValidator;
         ["preview", []] call ALiVE_edenValidateFactionCompilerSync;
     }];
-    diag_log "ALiVE 3DEN: faction-sync + compiler-sync validators registered (OnEntityAttributeChanged + OnConnectingEnd + OnMissionPreview)";
+
+    // Index viability check uses a spawn-and-poll rather than a
+    // 3DEN event handler, because the relevant lifecycle events
+    // (OnTerrainNew / OnMissionLoad / OnMissionNew) do NOT fire
+    // when Eden auto-restores the last mission on launch. The
+    // mission-maker case where the notification matters most is "I opened
+    // Eden on a thin terrain" -- and that path triggers no event
+    // we can hook. The spawn loops on a cheap condition until Eden
+    // is fully ready + a real terrain is loaded + the user isn't
+    // currently mid-preview, then fires the check exactly once per
+    // terrain (gated by ALiVE_indexViabilityEdenLatch).
+    //
+    // CBA preInit re-fires on mission load in Eden, so this spawn
+    // may run multiple times per session. The latch dedupes per
+    // terrain. No coupling to is3DENMultiplayer mode -- the notification
+    // is identical whether the maker plans to preview SP or MP.
+    [] spawn {
+        waitUntil {
+            sleep 1;
+            is3DEN && {worldName != ""} && {!is3DENPreview}
+        };
+        // Brief grace so the terrain has fully settled before we
+        // load + read the bundled data.
+        sleep 2;
+        if (!isNil "ALiVE_indexViabilityEdenLatch"
+            && {ALiVE_indexViabilityEdenLatch isEqualTo worldName}
+        ) exitWith {};
+        ALiVE_indexViabilityEdenLatch = worldName;
+        [] call ALIVE_fnc_indexViabilityEdenCheck;
+    };
+
+    diag_log "ALiVE 3DEN: faction-sync + compiler-sync validators registered (OnEntityAttributeChanged + OnConnectingEnd + OnMissionPreview); viability check spawned (latched on worldName)";
 };
