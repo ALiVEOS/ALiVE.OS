@@ -233,28 +233,59 @@ switch(_operation) do {
             };
 
             _taskObject = _task select 10;
-            _taskObject setSimpleTaskDescription [_description,_title,_title];
-            _taskObject setSimpleTaskDestination _position;
-            _taskObject setTaskState _state;
 
-            switch(_state) do {
-                case "Created": {
-                    ["TaskCreated",["",_title]] call BIS_fnc_showNotification;
+            // Read the previously-stored state + position so the update
+            // path can decide whether visible side-effects (notification
+            // toast, BI task-state setter, destination move) need to fire.
+            // The centroid-drift live-tracking in task types like
+            // taskDestroyInfantry fires TASK_UPDATE every ~100m of target
+            // movement; without these guards each update re-fires the
+            // "TaskAssigned" toast and re-calls setTaskState/Destination
+            // which surfaces as notification spam and (suspected) BI
+            // task-marker duplication when timing races trigger a
+            // registerTask fallthrough.
+            private _previousState = _task select 6;
+            private _previousPosition = _task select 3;
+
+            _taskObject setSimpleTaskDescription [_description,_title,_title];
+
+            // Only call setSimpleTaskDestination when the position actually
+            // changed. Cuts the work for centroid-drift updates that didn't
+            // pass the 100 m threshold (defensive — those shouldn't reach
+            // here in the first place) and prevents the BI engine from
+            // briefly re-rendering the pin at every TASK_UPDATE.
+            if (typeName _position == "ARRAY" && {count _position >= 2}) then {
+                if (!(typeName _previousPosition == "ARRAY" && {count _previousPosition >= 2})
+                    || {(_previousPosition distance2D _position) > 0.5}) then {
+                    _taskObject setSimpleTaskDestination _position;
                 };
-                case "Assigned": {
-                    ["TaskAssigned",["",_title]] call BIS_fnc_showNotification;
-                };
-                case "Succeeded": {
-                    ["TaskSucceeded",["",_title]] call BIS_fnc_showNotification;
-                    _current = "N";
-                };
-                case "Failed": {
-                    ["TaskFailed",["",_title]] call BIS_fnc_showNotification;
-                    _current = "N";
-                };
-                case "Canceled": {
-                    ["TaskCanceled",["",_title]] call BIS_fnc_showNotification;
-                    _current = "N";
+            };
+
+            // setTaskState is the BI hook that fires the engine's own
+            // notification + task-list update. Only call it on a state
+            // CHANGE so position-only updates don't re-fire the chain.
+            if (_previousState != _state) then {
+                _taskObject setTaskState _state;
+
+                switch(_state) do {
+                    case "Created": {
+                        ["TaskCreated",["",_title]] call BIS_fnc_showNotification;
+                    };
+                    case "Assigned": {
+                        ["TaskAssigned",["",_title]] call BIS_fnc_showNotification;
+                    };
+                    case "Succeeded": {
+                        ["TaskSucceeded",["",_title]] call BIS_fnc_showNotification;
+                        _current = "N";
+                    };
+                    case "Failed": {
+                        ["TaskFailed",["",_title]] call BIS_fnc_showNotification;
+                        _current = "N";
+                    };
+                    case "Canceled": {
+                        ["TaskCanceled",["",_title]] call BIS_fnc_showNotification;
+                        _current = "N";
+                    };
                 };
             };
 
