@@ -58,9 +58,18 @@ if (isNil "ALIVE_COP_DEBUG_PROFILE")       then { ALIVE_COP_DEBUG_PROFILE       
 // milliseconds. Set against wall-clock (not work time) so it includes inter-phase
 // sleep yields — Arma's scheduler can delay a `sleep 0.01` by 30-100 ms each on a
 // busy server, and Loop A has five such yields per cycle. 250 ms is comfortably
-// above idle baseline (typical idle: 200-300 ms; first-cycle warm-up: 500-1000 ms)
-// but still flags pathological multi-second cycles.
+// above idle baseline (typical idle: 200-300 ms) but still flags pathological
+// multi-second steady-state cycles.
 if (isNil "ALIVE_COP_DEBUG_PERF_WARN_MS")  then { ALIVE_COP_DEBUG_PERF_WARN_MS  = 250 };
+
+// Separate, higher threshold for cycle 1 of each server loop. Cycle 1 pays
+// one-time cold-start costs (compile cache warm-up, spatial-grid bucket
+// population, CfgVehicles config lookups, profile snapshot enumeration).
+// Production missions consistently hit 3-6 seconds on Loop A cycle 1 and
+// 1-2 seconds on Loop B cycle 1; the warn at the regular 250 ms threshold
+// fires every mission load and is pure noise. 10 s gives plenty of headroom
+// for cold-start while still flagging genuinely pathological cycle-1 work.
+if (isNil "ALIVE_COP_DEBUG_PERF_WARN_CYCLE1_MS") then { ALIVE_COP_DEBUG_PERF_WARN_CYCLE1_MS = 10000 };
 
 // ============================================================================
 // MASTER LAYER TOGGLES

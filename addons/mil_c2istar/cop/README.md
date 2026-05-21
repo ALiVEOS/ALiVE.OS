@@ -161,8 +161,10 @@ Per-category booleans (all default `true` except `render` and `profile`):
 `ALIVE_COP_DEBUG_SERVER`, `_OBJECTIVES`, `_ASYM`, `_CLIENT`, `_RENDER`,
 `_PERF`, `_BROADCAST`, `_PROFILE`.
 
-Performance warning threshold (auto-logs when a cycle exceeds):
-`ALIVE_COP_DEBUG_PERF_WARN_MS` (default 250 ms).
+Performance warning thresholds (auto-logs when a cycle exceeds):
+`ALIVE_COP_DEBUG_PERF_WARN_MS` (default 250 ms, steady-state) and
+`ALIVE_COP_DEBUG_PERF_WARN_CYCLE1_MS` (default 10000 ms, cycle 1 only — cold
+start pays one-time compile / spatial-grid / config-lookup costs).
 
 ---
 
@@ -282,7 +284,15 @@ If a client reports low FPS with the map open, the first tunables to lower:
 ### Performance-warning log
 
 Set `ALIVE_COP_DEBUG_PERF_WARN_MS = N` (default 250) to get a WARN log line when
-any cycle exceeds N milliseconds. Loop A/B/Asym all respect this threshold.
+any steady-state cycle exceeds N milliseconds. Loop A/B/Asym all respect this
+threshold.
+
+Cycle 1 of each loop pays one-time cold-start costs (compile cache warm-up,
+spatial-grid bucket population, CfgVehicles config lookups) and is held to a
+separate, higher threshold: `ALIVE_COP_DEBUG_PERF_WARN_CYCLE1_MS` (default
+10000 ms). Production missions typically hit 3-6 s on Loop A cycle 1 and 1-2
+s on Loop B cycle 1; the cycle-1 ceiling exists to flag genuinely pathological
+warm-up while suppressing the expected first-tick noise.
 
 ### Deferred optimizations
 
