@@ -153,6 +153,19 @@ params [
 _result = true;
 
 switch(_operation) do {
+    // Empty-operation short-circuit: ALiVE_fnc_C2ISTARInit probes
+    // for a compilation error by calling `[] call ALiVE_fnc_C2ISTAR`
+    // and treating nil as "compilation failed". Without this case,
+    // the call falls through to SUPERCLASS (ALiVE_fnc_baseClass)
+    // whose default branch logs `class 'ALiVE_fnc_C2ISTAR' does
+    // not support operation '' - <NULL-object>` — cosmetic RPT
+    // noise. The probe still works either way (this case returns
+    // true, matching the prior _result default), but skipping the
+    // delegation keeps the RPT clean. Same probe pattern in
+    // mil_opcom's OPCOMInit doesn't trip the error because its
+    // SUPERCLASS baseClassHash defensively rewrites empty-args
+    // input to a "create" call.
+    case "": { _result = true };
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
     };
