@@ -169,12 +169,16 @@ if(_markerText != "" && {_markerShape == "ICON"}) then {
     private _textPos = [(_position select 0) + 30, _position select 1, _position param [2, 0]];
     _mText = createMarkerLocal [format["%1_%2_text",_taskID, _markerText], _textPos];
     _mText setMarkerShapeLocal "ICON";
-    _mText setMarkerTypeLocal "hd_dot";
+    // EmptyIcon (invisible) rather than hd_dot — earlier versions used
+    // hd_dot at size 0.5 to give Arma a non-culled marker anchor, but
+    // the dot rendered as a leading "bullet" next to the task text
+    // ("•Destroy the infantry"). EmptyIcon has no visual at any size,
+    // so the text renders cleanly. Size 0.5 retained because Arma still
+    // culls markers below ~0.0001 even when the icon is invisible —
+    // the marker text is what we want to keep visible, and culling the
+    // marker drops its text too.
+    _mText setMarkerTypeLocal "EmptyIcon";
     _mText setMarkerColorLocal "ColorBlack";
-    // Size 0.5: small enough to be a discreet dot next to the text
-    // but large enough that Arma doesn't cull the marker from render
-    // (sizes around 0.0001 were getting dropped, so the text never
-    // appeared even though the marker existed in the namespace).
     _mText setMarkerSizeLocal [0.5, 0.5];
     _mText setMarkerAlphaLocal _markerAlpha;
     _mText setMarkerTextLocal _markerText;
