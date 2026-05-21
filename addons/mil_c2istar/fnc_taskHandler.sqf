@@ -1150,6 +1150,22 @@ switch (_operation) do {
 
             _updatedTaskPlayers = _updatedTaskPlayers select 0;
 
+            // Central release of task-bound profile locks on terminal state
+            // transitions. Task types (DestroyInfantry / DestroyVehicles)
+            // call taskLockProfiles on init to flag their targets as busy
+            // so OPCOM's TACOM reassignment skips them. Each task type's
+            // success branch also calls taskReleaseTaskLocks, but the
+            // player-cancel / timeout-fail / scripted-cancel paths exit
+            // without that release — so a manually canceled or failed
+            // destroy task would leave its OPFOR targets permanently
+            // busy. This hook catches every terminal state regardless of
+            // which path closed the task. taskReleaseTaskLocks is
+            // idempotent so the per-task-type success-path call + this
+            // central call don't conflict.
+            if (_taskState in ["Succeeded", "Failed", "Canceled"]) then {
+                [_taskID] call ALIVE_fnc_taskReleaseTaskLocks;
+            };
+
             private _task = [_logic, "getTask", _taskID] call MAINCLASS;
             private _previousTaskPlayers = _task select 7 select 0;
             private _previousTaskApplyType = _task select 9;

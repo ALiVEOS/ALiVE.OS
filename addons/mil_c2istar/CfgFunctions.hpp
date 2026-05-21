@@ -151,6 +151,16 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskDeleteMarkers.sqf";
                 RECOMPILE;
             };
+            class taskLockProfiles {
+                description = "Set busy=true on target profile IDs and register the lock against a taskID";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskLockProfiles.sqf";
+                RECOMPILE;
+            };
+            class taskReleaseTaskLocks {
+                description = "Clear busy=false on every profile locked under a taskID";
+                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskReleaseTaskLocks.sqf";
+                RECOMPILE;
+            };
             class taskCreateRadioBroadcastForPlayers {
                 description = "Utility broadcast radio message for players";
                 file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateRadioBroadcastForPlayers.sqf";
