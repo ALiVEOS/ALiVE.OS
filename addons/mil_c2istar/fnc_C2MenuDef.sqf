@@ -48,6 +48,28 @@ _items = (assignedItems player) + (items player) + ([backpack player]);
 _items = _items apply {tolower _x};
 _userItems = ([MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR) call ALiVE_fnc_stringListToArray;
 _userItems pushback "ALIVE_Tablet";
+
+// Custom Access Items: free-text CSV from the Eden module attribute. Each
+// entry is a raw classname matched literally by the expansion loop below
+// (its "no category match" fallback branch). Allows mission-makers to grant
+// access via custom items that don't belong to a registered category in
+// CfgALiVEC2ISTARAccessItems — see strategy_default_building_types.md
+// pattern for similar "category default + mission override" shape.
+private _customCsv = [MOD(MIL_C2ISTAR),"c2_item_custom"] call ALIVE_fnc_C2ISTAR;
+if (_customCsv isEqualType "" && {_customCsv != ""}) then {
+    private _customItems = _customCsv call ALiVE_fnc_stringListToArray;
+    {
+        private _trimmed = _x;
+        // ALiVE_fnc_stringListToArray already trims, but defensive-strip any
+        // stray spaces in case the user typed "A, B, C" rather than "A,B,C".
+        while {_trimmed select [0,1] == " "} do { _trimmed = _trimmed select [1] };
+        while {count _trimmed > 0 && {_trimmed select [count _trimmed - 1, 1] == " "}} do {
+            _trimmed = _trimmed select [0, count _trimmed - 1];
+        };
+        if (_trimmed != "") then { _userItems pushBack _trimmed };
+    } forEach _customItems;
+};
+
 _userItems = _userItems apply {tolower _x};
 
 // Expand any token that matches a category from CfgALiVEC2ISTARAccessItems

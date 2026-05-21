@@ -36,6 +36,7 @@ Peer Reviewed:
 #define MTEMPLATE "ALiVE_C2_%1"
 #define DEFAULT_DEBUG false
 #define DEFAULT_C2_ITEM "LaserDesignator"
+#define DEFAULT_C2_ITEM_CUSTOM ""
 #define DEFAULT_STATE "INIT"
 #define DEFAULT_SIDE "WEST"
 #define DEFAULT_FACTION "BLU_F"
@@ -191,6 +192,13 @@ switch(_operation) do {
     };
     case "c2_item": {
         _result = [_logic,_operation,_args,DEFAULT_C2_ITEM] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "c2_item_custom": {
+        // Free-text CSV of additional item classnames that grant C2ISTAR
+        // access. Appended to the expanded category-derived classnames at
+        // access-check time in fnc_C2MenuDef.sqf. Empty string = no custom
+        // items (default behaviour, only category items apply).
+        _result = [_logic,_operation,_args,DEFAULT_C2_ITEM_CUSTOM] call ALIVE_fnc_OOsimpleOperation;
     };
     case "autoGenerateBlufor": {
 

@@ -27,7 +27,14 @@ nil
 ---------------------------------------------------------------------------- */
 
 // Define a global var with c2 items once instead of calling the function each time the menu condition is evaluated //
+// Includes the legacy ALIVE_Tablet sentinel and any classnames from the
+// optional Custom Access Items Eden attribute (free-text CSV). The condition
+// below substring-matches each entry against the player's inventory string.
 MOD(MIL_C2ISTAR_Items) = [([MOD(MIL_C2ISTAR), "c2_item"] call ALIVE_fnc_C2ISTAR), "ALIVE_Tablet"];
+private _customCsv = [MOD(MIL_C2ISTAR), "c2_item_custom"] call ALIVE_fnc_C2ISTAR;
+if (_customCsv isEqualType "" && {_customCsv != ""}) then {
+    MOD(MIL_C2ISTAR_Items) pushBack _customCsv;
+};
 
 // Define local menu vars //
 private _menu = "ALiVE_C2ISTAR";

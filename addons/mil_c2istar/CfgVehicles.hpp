@@ -53,6 +53,15 @@ class CfgVehicles {
                             expression   = "_this setVariable ['c2_item', _value];";
                             defaultValue = """LaserDesignators""";
                     };
+                    class c2_item_custom : Edit
+                    {
+                            property     = "ALiVE_MIL_C2ISTAR_c2_item_custom";
+                            displayName  = "$STR_ALIVE_C2ISTAR_CUSTOM_ITEMS";
+                            tooltip      = "$STR_ALIVE_C2ISTAR_CUSTOM_ITEMS_COMMENT";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['c2_item_custom', _value];";
+                            defaultValue = """""";
+                    };
 
                     // ---- Faction filters ------------------------------------------------
                     class HDR_FACTION_FILTERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_FACTION_FILTERS"; displayName = "FACTION FILTERS"; };

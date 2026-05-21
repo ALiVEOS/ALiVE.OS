@@ -21,10 +21,16 @@
     <English>Enables verbose C2ISTAR diagnostic output to the RPT log plus extra map markers for generated task targets, civic-state evaluations, and intel coverage decisions. Intended for mission-makers troubleshooting task generation or intel pipeline behaviour.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_ALLOW">
-    <English>Required Items:</English>
+    <English>Access Item Categories:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_ALLOW_COMMENT">
-    <English>Pick one or more equipment categories. The player can access C2ISTAR functions if they carry any item from any ticked category (e.g. Laser Designators covers vanilla and mod-supplied designator classes). Categories from unloaded mods drop off the list automatically. Defaults to Laser Designators.</English>
+    <English>Pick one or more equipment categories. The player can access C2ISTAR functions if they carry any item from any ticked category (e.g. Laser Designators covers vanilla and mod-supplied designator classes). Categories from unloaded mods drop off the list automatically. Defaults to Laser Designators. For mod-supplied items that don't belong to a registered category, use the Custom Access Items (classnames) field below to add their classnames directly.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_CUSTOM_ITEMS">
+    <English>Custom Access Items (classnames):</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_CUSTOM_ITEMS_COMMENT">
+    <English>Comma-separated list of additional item classnames that should grant C2ISTAR access on top of the Access Item Categories above. Use this for mod-supplied items that don't fit a registered category (e.g. a custom faction's command tablet, a campaign-specific intel device). Classnames are matched literally and case-insensitively against the player's assigned items / uniform / vest / backpack. Example: "MyMod_CommandTablet, AnotherMod_FieldRadio". Leave empty for none.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_PERSISTENT">
     <English>Persistent Tasks:</English>
