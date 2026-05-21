@@ -36,7 +36,7 @@ private _edenValue = _this getVariable "value";
 // BI Combo attribute template exposes its combo control at IDC 100.
 private _ctrl = _this controlsGroupCtrl 100;
 if (isNull _ctrl) exitWith {
-    diag_log "ALIVE MIL_IED EDEN IntegrationChoice LOAD: combo control (IDC 100) not found";
+    ["ALIVE MIL_IED EDEN IntegrationChoice LOAD: combo control (IDC 100) not found"] call ALiVE_fnc_dump;
 };
 
 lbClear _ctrl;

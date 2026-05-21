@@ -63,7 +63,7 @@ if (is3DEN) then {
     ALIVE_fnc_dump                    = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\logging\fnc_dump.sqf";
     ALIVE_fnc_assessIndexViability    = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_assessIndexViability.sqf";
     ALIVE_fnc_indexViabilityEdenCheck = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_indexViabilityEdenCheck.sqf";
-    diag_log format ["ALiVE 3DEN: inline-compiled validators; OPCOM=%1, compilerSync=%2, hashCreate=%3, hashSet=%4, hashGet=%5, dump=%6, assessor=%7, edenViability=%8",
+    ["ALiVE 3DEN: inline-compiled validators; OPCOM=%1, compilerSync=%2, hashCreate=%3, hashSet=%4, hashGet=%5, dump=%6, assessor=%7, edenViability=%8",
         typeName ALiVE_edenFactionValidator,
         typeName ALiVE_edenValidateFactionCompilerSync,
         typeName ALIVE_fnc_hashCreate,
@@ -71,7 +71,7 @@ if (is3DEN) then {
         typeName ALIVE_fnc_hashGet,
         typeName ALIVE_fnc_dump,
         typeName ALIVE_fnc_assessIndexViability,
-        typeName ALIVE_fnc_indexViabilityEdenCheck];
+        typeName ALIVE_fnc_indexViabilityEdenCheck] call ALiVE_fnc_dump;
 
     // EH callbacks scope validation to the OPCOMs actually affected by
     // each event, then hand off to the debounced validator. Without
@@ -244,11 +244,11 @@ if (is3DEN) then {
                         _types joinString ", "
                     ];
                     [_msg, 1, 60] call BIS_fnc_3DENNotification;
-                    diag_log format [
+                    [
                         "ALiVE 3DEN compiler-sync hint: category '%1' synced to non-CAManBase [%2]",
                         _categoryAttr,
                         _types joinString ", "
-                    ];
+                    ] call ALiVE_fnc_dump;
                 } else {
                     // Sync involves a category but all other endpoints
                     // are valid (CAManBase or compiler Logic). Quick
@@ -304,5 +304,5 @@ if (is3DEN) then {
         [] call ALIVE_fnc_indexViabilityEdenCheck;
     };
 
-    diag_log "ALiVE 3DEN: faction-sync + compiler-sync validators registered (OnEntityAttributeChanged + OnConnectingEnd + OnMissionPreview); viability check spawned (latched on worldName)";
+    ["ALiVE 3DEN: faction-sync + compiler-sync validators registered (OnEntityAttributeChanged + OnConnectingEnd + OnMissionPreview); viability check spawned (latched on worldName)"] call ALiVE_fnc_dump;
 };

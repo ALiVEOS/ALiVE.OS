@@ -33,7 +33,7 @@ SCALAR - number of newly-registered inferred mappings
 Examples:
 (begin example)
 _inferred = call ALiVE_fnc_inferFactionMappingsAll;
-diag_log format ["ALiVE inferred %1 faction mappings", _inferred];
+["ALiVE inferred %1 faction mappings", _inferred] call ALiVE_fnc_dump;
 (end)
 
 See Also:
@@ -70,12 +70,12 @@ private _factions = "true" configClasses (configFile >> "CfgFactionClasses");
     };
 } forEach _factions;
 
-diag_log format [
+[
     "ALiVE faction inference (Phase 3c.1 redirect-only): scanned=%1 already_mapped=%2 inferred=%3 skipped(no_units / vanilla / bad_side)=%4",
     count _factions,
     _skippedAlreadyMapped,
     _inferredCount,
     _skippedNoUnits
-];
+] call ALiVE_fnc_dump;
 
 _inferredCount

@@ -15,7 +15,7 @@ SCRIPT(disarmIED);
 
 private ["_debug","_IED","_caller","_id","_IEDCharge"];
 
-if (isDedicated) exitWith {diag_log "disarmIED running on server!";};
+if (isDedicated) exitWith {["disarmIED running on server!"] call ALiVE_fnc_dump;};
 
 _debug = ADDON getVariable ["debug", false];
 

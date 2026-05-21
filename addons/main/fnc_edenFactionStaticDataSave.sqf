@@ -43,7 +43,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE FactionStaticData SAVE: null display";
+    ["ALIVE FactionStaticData SAVE: null display"] call ALiVE_fnc_dump;
     "";
 };
 
@@ -171,6 +171,6 @@ if (count _selected > 0) then {
     (_selected select 0) setVariable [_varName, _value];
 };
 
-diag_log format ["ALIVE FactionStaticData SAVE: varName=%1 value='%2'", _varName, _value];
+["ALIVE FactionStaticData SAVE: varName=%1 value='%2'", _varName, _value] call ALiVE_fnc_dump;
 
 _value

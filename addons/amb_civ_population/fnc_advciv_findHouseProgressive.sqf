@@ -44,16 +44,16 @@ private _result = [objNull, []];
     if (!isNull _bld && {count _positions > 0}) exitWith {
         _result = _h;
         if (ALiVE_advciv_debug) then {
-            diag_log format ["[ALiVE Hide DEBUG] findHouseProgressive civ=%1 FOUND building at radius=%2m (multiplier=%3x) dist=%4", name _unit, _radius, _multiplier, _unit distance _bld];
+            ["[ALiVE Hide DEBUG] findHouseProgressive civ=%1 FOUND building at radius=%2m (multiplier=%3x) dist=%4", name _unit, _radius, _multiplier, _unit distance _bld] call ALiVE_fnc_dump;
         };
     };
     if (ALiVE_advciv_debug) then {
-        diag_log format ["[ALiVE Hide DEBUG] findHouseProgressive civ=%1 radius=%2m (multiplier=%3x) - no usable building, expanding", name _unit, _radius, _multiplier];
+        ["[ALiVE Hide DEBUG] findHouseProgressive civ=%1 radius=%2m (multiplier=%3x) - no usable building, expanding", name _unit, _radius, _multiplier] call ALiVE_fnc_dump;
     };
 } forEach _multipliers;
 
 if (ALiVE_advciv_debug && {isNull (_result select 0)}) then {
-    diag_log format ["[ALiVE Hide DEBUG] findHouseProgressive civ=%1 EXHAUSTED all radii up to %2m - no cover available", name _unit, _baseRadius * 3];
+    ["[ALiVE Hide DEBUG] findHouseProgressive civ=%1 EXHAUSTED all radii up to %2m - no cover available", name _unit, _baseRadius * 3] call ALiVE_fnc_dump;
 };
 
 _result

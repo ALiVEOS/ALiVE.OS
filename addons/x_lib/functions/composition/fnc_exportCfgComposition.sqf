@@ -23,7 +23,7 @@ _size = _this param [1,"Small"];
 _class = _this param [2,"SmallCamp"];
 _name = _this param [3,"Small Camp"];
 
-diag_log "Running ALiVE Composition export";
+["Running ALiVE Composition export"] call ALiVE_fnc_dump;
 
 switch (_size) do {
     case "Small": {
@@ -46,10 +46,10 @@ _objects = player nearObjects _radius;
 
 _objects = _objects - [player];
 
-diag_log format["Found %1 objects for export.", str(count _objects)];
+["Found %1 objects for export.", str(count _objects)] call ALiVE_fnc_dump;
 
 if (count _objects == 0) exitWith {
-	diag_log "No objects found";
+	["No objects found"] call ALiVE_fnc_dump;
 };
 
 _center = (_objects select 0) call bis_fnc_position;

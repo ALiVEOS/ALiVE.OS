@@ -65,7 +65,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE SideChoiceMulti LOAD: null display";
+    ["ALIVE SideChoiceMulti LOAD: null display"] call ALiVE_fnc_dump;
 };
 
 // Stringtable resolution: "$STR_FOO" → localize. Literal strings pass through.
@@ -84,7 +84,7 @@ if (!isNull _titleCtrl) then {
 
 private _listCtrl = _display controlsGroupCtrl 100;
 if (isNull _listCtrl) exitWith {
-    diag_log "ALIVE SideChoiceMulti LOAD: listbox control (idc 100) not found";
+    ["ALIVE SideChoiceMulti LOAD: listbox control (idc 100) not found"] call ALiVE_fnc_dump;
 };
 
 // ------------------------------------------------------------------------
@@ -170,11 +170,11 @@ private _rows = [
     };
 } forEach _rows;
 
-diag_log format [
+[
     "ALIVE SideChoiceMulti LOAD: varName='%1' raw='%2' parsed=%3 rows=%4 ticked=%5",
     _varName,
     _raw,
     str _selected,
     count _rows,
     count (lbSelection _listCtrl)
-];
+] call ALiVE_fnc_dump;

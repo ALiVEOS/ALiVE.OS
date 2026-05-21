@@ -207,7 +207,7 @@ if (count _selectedFactions == 0 && {count _initialDefault > 0}) then {
 // ------------------------------------------------------------------------
 private _ctrl = _display controlsGroupCtrl 100;
 if (isNull _ctrl) exitWith {
-    diag_log "ALIVE FactionChoiceMulti LOAD: listbox control (IDC 100) not found";
+    ["ALIVE FactionChoiceMulti LOAD: listbox control (IDC 100) not found"] call ALiVE_fnc_dump;
 };
 
 lbClear _ctrl;
@@ -381,7 +381,7 @@ private _tickIdxs = +_unrecognisedTickIdxs;
 // Diagnostic logging - same shape as single-select handler. Helps debug
 // "I selected these factions but they didn't stick" issues.
 // ------------------------------------------------------------------------
-diag_log format [
+[
     "ALIVE FactionChoiceMulti LOAD: varName='%1' allowedSides=%2 sqm='%3' resolved='%4' parsed=%5 populated=%6 ticked=%7 (incl %8 unrecognised at top)",
     _varName,
     _allowedSides,
@@ -391,4 +391,4 @@ diag_log format [
     lbSize _ctrl,
     count _tickIdxs,
     count _unrecognisedTickIdxs
-];
+] call ALiVE_fnc_dump;

@@ -100,7 +100,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE FilteredMultiSelect LOAD: null display";
+    ["ALIVE FilteredMultiSelect LOAD: null display"] call ALiVE_fnc_dump;
 };
 
 private _categories = [_categoriesCsv, ","] call CBA_fnc_split;
@@ -112,8 +112,8 @@ private _legacyManualVars = if (_legacyManualVarsCsv != "") then {
 };
 
 if (count _categories == 0 || {count _categories != count _varNames}) exitWith {
-    diag_log format ["ALIVE FilteredMultiSelect LOAD: categories/varNames length mismatch (cat=%1 var=%2)",
-        count _categories, count _varNames];
+    ["ALIVE FilteredMultiSelect LOAD: categories/varNames length mismatch (cat=%1 var=%2)",
+        count _categories, count _varNames] call ALiVE_fnc_dump;
 };
 
 // ---- Title ----------------------------------------------------------------
@@ -355,7 +355,7 @@ if (count _selectedClasses == 0 && {count _initialDefault > 0}) then {
 // ---- Listbox control ------------------------------------------------------
 private _listCtrl = _display controlsGroupCtrl 100;
 if (isNull _listCtrl) exitWith {
-    diag_log "ALIVE FilteredMultiSelect LOAD: listbox (IDC 100) not found";
+    ["ALIVE FilteredMultiSelect LOAD: listbox (IDC 100) not found"] call ALiVE_fnc_dump;
 };
 
 // Filter options: ["All", category1, category2, ...]
@@ -496,10 +496,10 @@ private _populateFn = {
         } forEach _bucket;
     } forEach _modLabels;
 
-    diag_log format [
+    [
         "ALIVE FilteredMultiSelect POPULATE: filter=%1 surfaced=%2 ticked=%3 unrecog=%4",
         _filter, _surfaced, _ticked, count _unrecognisedAdded
-    ];
+    ] call ALiVE_fnc_dump;
     _disp setVariable ["alive_populating", false];
 };
 
@@ -596,8 +596,8 @@ _listCtrl ctrlAddEventHandler ["LBSelChanged", {
     _disp setVariable ["alive_selectedClasses", _sel];
 }];
 
-diag_log format [
+[
     "ALIVE FilteredMultiSelect LOAD: registry=%1 categories=%2 varNames=%3 consolidatedVar='%4' consolidatedRaw='%5' sqm='%6' selected=%7 entries=%8 sources=[%9] legacyManual=%10",
     _registryClass, _categories, _varNames, _consolidatedVar, _consolidatedRaw, _sqmValue,
     count _selectedClasses, count _entries, _sourceCounts joinString ", ", _legacyManualVars
-];
+] call ALiVE_fnc_dump;

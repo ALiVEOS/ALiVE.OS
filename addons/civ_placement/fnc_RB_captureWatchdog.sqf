@@ -82,11 +82,11 @@ params [
 ];
 
 if (count _pos < 2) exitWith {
-    diag_log "ALIVE_fnc_RB_captureWatchdog: invalid position";
+    ["ALIVE_fnc_RB_captureWatchdog: invalid position"] call ALiVE_fnc_dump;
     objNull
 };
 if (_originalFaction == "") exitWith {
-    diag_log "ALIVE_fnc_RB_captureWatchdog: empty faction";
+    ["ALIVE_fnc_RB_captureWatchdog: empty faction"] call ALiVE_fnc_dump;
     objNull
 };
 
@@ -162,10 +162,10 @@ private _handle = [{
     private _attackerCount = count _attackers;
 
     if (_debug) then {
-        diag_log format [
+        [
             "ALIVE_RB watchdog: pos=%1 state=%2 def=%3 att=%4 currSide=%5 radius=%6",
             getPosATL _anchor, _state, _defenderCount, _attackerCount, _currentSide, _radius
-        ];
+        ] call ALiVE_fnc_dump;
     };
 
     switch (_state) do {
@@ -174,7 +174,7 @@ private _handle = [{
                 _anchor setVariable ["ALiVE_RB_state", "contested"];
                 _anchor setVariable ["ALiVE_RB_lastFlap", diag_tickTime];
                 if (_debug) then {
-                    diag_log format ["ALIVE_RB watchdog: -> contested (def=0 att=%1)", _attackerCount];
+                    ["ALIVE_RB watchdog: -> contested (def=0 att=%1)", _attackerCount] call ALiVE_fnc_dump;
                 };
             };
         };
@@ -185,7 +185,7 @@ private _handle = [{
                 // appropriate transition.
                 _anchor setVariable ["ALiVE_RB_state", "defended"];
                 if (_debug) then {
-                    diag_log "ALIVE_RB watchdog: contested -> defended (attackers cleared)";
+                    ["ALIVE_RB watchdog: contested -> defended (attackers cleared)"] call ALiVE_fnc_dump;
                 };
             } else {
                 if ((diag_tickTime - _lastFlap) > 30) then {
@@ -226,7 +226,7 @@ private _handle = [{
                 _anchor setVariable ["ALiVE_RB_state", "contested"];
                 _anchor setVariable ["ALiVE_RB_lastFlap", diag_tickTime];
                 if (_debug) then {
-                    diag_log "ALIVE_RB watchdog: captured -> contested (back-flip pressure)";
+                    ["ALIVE_RB watchdog: captured -> contested (back-flip pressure)"] call ALiVE_fnc_dump;
                 };
             };
         };
@@ -236,10 +236,10 @@ private _handle = [{
 _anchor setVariable ["ALiVE_RB_pfh", _handle];
 
 if (_debug) then {
-    diag_log format [
+    [
         "ALIVE_RB captureWatchdog registered: pos=%1 faction=%2 side=%3 radius=%4 PFH=%5 comp=%6",
         _pos, _originalFaction, _origSide, _radius, _handle, _compClass
-    ];
+    ] call ALiVE_fnc_dump;
 };
 
 _anchor

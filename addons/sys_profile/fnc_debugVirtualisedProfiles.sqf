@@ -97,6 +97,6 @@ ALiVE_debugVirtProfilesPFH = [{
     // Server-side tick-confirm diag. Gated on the same global as the
     // PFH itself; silent in production.
     if (ALiVE_debugVirtualisedProfiles) then {
-        diag_log format ["[ALiVE VirtDebug] server tick: broadcast %1 profiles", count _snapshot];
+        ["[ALiVE VirtDebug] server tick: broadcast %1 profiles", count _snapshot] call ALiVE_fnc_dump;
     };
 }, 5, []] call CBA_fnc_addPerFrameHandler;

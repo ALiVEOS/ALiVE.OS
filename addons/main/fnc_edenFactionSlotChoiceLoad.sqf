@@ -85,7 +85,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE FactionSlotChoice LOAD: null display";
+    ["ALIVE FactionSlotChoice LOAD: null display"] call ALiVE_fnc_dump;
 };
 
 private _legacyVars = if (_legacyVarsCsv != "") then { _legacyVarsCsv splitString "," } else { [] };
@@ -111,10 +111,10 @@ if (_slotSidesStr != "") then {
 };
 
 if (count _slotLabels != 6 || {count _legacyVars != 6} || {count _slotSides != 6} || {count _defaults != 6}) exitWith {
-    diag_log format [
+    [
         "ALIVE FactionSlotChoice LOAD: arg-count mismatch (labels=%1 legacyVars=%2 slotSides=%3 defaults=%4)",
         count _slotLabels, count _legacyVars, count _slotSides, count _defaults
-    ];
+    ] call ALiVE_fnc_dump;
 };
 
 // ---- Title sub-control ----------------------------------------------------
@@ -129,7 +129,7 @@ if (!isNull _titleCtrl) then {
 
 private _listCtrl = _display controlsGroupCtrl 100;
 if (isNull _listCtrl) exitWith {
-    diag_log "ALIVE FactionSlotChoice LOAD: listbox control (idc 100) not found";
+    ["ALIVE FactionSlotChoice LOAD: listbox control (idc 100) not found"] call ALiVE_fnc_dump;
 };
 
 private _filterLabelCtrl     = _display controlsGroupCtrl 1200;
@@ -356,10 +356,10 @@ if (!isNull _sideFilterNextCtrl) then {
     }];
 };
 
-diag_log format [
+[
     "ALIVE FactionSlotChoice LOAD: consolidatedVar='%1' raw='%2' slots=%3 rows=%4",
     _consolidatedVar,
     _raw,
     str _slotSelections,
     count _allRows
-];
+] call ALiVE_fnc_dump;

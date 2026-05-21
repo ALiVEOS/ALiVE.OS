@@ -251,10 +251,10 @@ switch(_operation) do {
                     //logs a warning so the mission-maker can see they need
                     //to populate Factions.
                     if (count _factions == 0) then {
-                        diag_log format [
+                        [
                             "ALiVE OPCOM init WARNING: AI Commander '%1' has no factions configured (Factions multi-select empty AND Factions manual override empty). Defaulting to ['BLU_F']. Pick at least one faction in the Factions multi-select to silence this.",
                             _customName
-                        ];
+                        ] call ALiVE_fnc_dump;
                         _factions pushBack "BLU_F";
                     };
 
@@ -661,13 +661,13 @@ switch(_operation) do {
 
                     private _unmatchedFactions = _factions select {!(_x in _availableFactions)};
                     if (count _unmatchedFactions > 0) then {
-                        diag_log format [
+                        [
                             "ALiVE OPCOM init MISMATCH: AI Commander '%1' has Factions [%2] but synced placement modules only provide factions [%3]. Unmatched: [%4]. Fix: either change the OPCOM Factions multi-select to match a placement module's faction, or add / sync a Mil Placement (or Mil Placement (Civ Obj)) module with the missing faction to this OPCOM.",
                             _customName,
                             _factions joinString ", ",
                             _availableFactions joinString ", ",
                             _unmatchedFactions joinString ", "
-                        ];
+                        ] call ALiVE_fnc_dump;
                     };
 
                     _errorMessage = "There are no groups for OPCOM faction(s) %1! %2";

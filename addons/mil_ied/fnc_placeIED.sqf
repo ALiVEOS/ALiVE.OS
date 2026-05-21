@@ -121,7 +121,7 @@ if (_addroads) then {
     };
 
     if (ADDON getVariable ["debug", false]) then {
-        diag_log format ["ALIVE-IED placeIED: Found %1 chokepoints, using top %2", count _chokepoints, _count];
+        ["ALIVE-IED placeIED: Found %1 chokepoints, using top %2", count _chokepoints, _count] call ALiVE_fnc_dump;
     };
 };
 
@@ -232,13 +232,13 @@ switch (_terrainType) do {
     default {
         _minConcealmentScore = 0; // Unknown terrain: Permissive (safe default)
         if (ADDON getVariable ["debug", false]) then {
-            diag_log format ["ALIVE-IED: Unknown terrain type '%1', using permissive concealment (0)", _terrainType];
+            ["ALIVE-IED: Unknown terrain type '%1', using permissive concealment (0)", _terrainType] call ALiVE_fnc_dump;
         };
     };
 };
 
 if (ADDON getVariable ["debug", false]) then {
-    diag_log format ["ALIVE-IED: Terrain type '%1', minimum concealment score set to %2", _terrainType, _minConcealmentScore];
+    ["ALIVE-IED: Terrain type '%1', minimum concealment score set to %2", _terrainType, _minConcealmentScore] call ALiVE_fnc_dump;
 };
 
 {
@@ -250,7 +250,7 @@ if (ADDON getVariable ["debug", false]) then {
     if (surfaceIsWater _pos) then {
         _isValid = false;
         if (ADDON getVariable ["debug", false]) then {
-            diag_log format ["ALIVE-IED: Position rejected (water) at %1", _pos];
+            ["ALIVE-IED: Position rejected (water) at %1", _pos] call ALiVE_fnc_dump;
         };
     };
 
@@ -261,7 +261,7 @@ if (ADDON getVariable ["debug", false]) then {
     if (_isValid && isOnRoad _pos) then {
         _isValid = false;
         if (ADDON getVariable ["debug", false]) then {
-            diag_log format ["ALIVE-IED: Position rejected (still on road after offset) at %1", _pos];
+            ["ALIVE-IED: Position rejected (still on road after offset) at %1", _pos] call ALiVE_fnc_dump;
         };
     };
 
@@ -273,7 +273,7 @@ if (ADDON getVariable ["debug", false]) then {
         if (_slopeAngle > _maxSlope) then {
             _isValid = false;
             if (ADDON getVariable ["debug", false]) then {
-                diag_log format ["ALIVE-IED: Position rejected (slope %.1f°) at %2", _slopeAngle, _pos];
+                ["ALIVE-IED: Position rejected (slope %.1f°) at %2", _slopeAngle, _pos] call ALiVE_fnc_dump;
             };
         };
     };
@@ -285,7 +285,7 @@ if (ADDON getVariable ["debug", false]) then {
         if (!_isOutside) then {
             _isValid = false;
             if (ADDON getVariable ["debug", false]) then {
-                diag_log format ["ALIVE-IED: Position rejected (inside building) at %1", _pos];
+                ["ALIVE-IED: Position rejected (inside building) at %1", _pos] call ALiVE_fnc_dump;
             };
         };
     };
@@ -298,13 +298,13 @@ if (ADDON getVariable ["debug", false]) then {
         if (_concealmentScore < _minConcealmentScore) then {
             _isValid = false;
             if (ADDON getVariable ["debug", false]) then {
-                diag_log format ["ALIVE-IED: Position rejected (too exposed, score %1) at %2", _concealmentScore, _pos];
+                ["ALIVE-IED: Position rejected (too exposed, score %1) at %2", _concealmentScore, _pos] call ALiVE_fnc_dump;
             };
         } else {
             // Log good concealment
             if (ADDON getVariable ["debug", false]) then {
                 if (_concealmentScore > 50) then {
-                    diag_log format ["ALIVE-IED: Good concealment (score %1) at %2", _concealmentScore, _pos];
+                    ["ALIVE-IED: Good concealment (score %1) at %2", _concealmentScore, _pos] call ALiVE_fnc_dump;
                 };
             };
         };
@@ -316,7 +316,7 @@ if (ADDON getVariable ["debug", false]) then {
             if (_pos distance _x < _minProximity) exitWith {
                 _isValid = false;
                 if (ADDON getVariable ["debug", false]) then {
-                    diag_log format ["ALIVE-IED: Position rejected (too close to existing IED) at %1", _pos];
+                    ["ALIVE-IED: Position rejected (too close to existing IED) at %1", _pos] call ALiVE_fnc_dump;
                 };
             };
         } forEach _goodspots;
@@ -358,15 +358,15 @@ if (ADDON getVariable ["debug", false]) then {
     _chokepointCount = count _chokepointPositions;
     _regularCount = (count _candidateSpots) - (_chokepointCount * 4); // Approximate
     
-    diag_log format ["ALIVE-IED placeIED: Found %1 chokepoints, %2 regular candidates, validated %3 positions", 
+    ["ALIVE-IED placeIED: Found %1 chokepoints, %2 regular candidates, validated %3 positions", 
         _chokepointCount, 
         _regularCount, 
         count _goodspots
-    ];
+    ] call ALiVE_fnc_dump;
     
     // Warn clearly if no candidates were found at all
     if (count _candidateSpots == 0) then {
-        diag_log format ["ALIVE-IED placeIED: WARNING - zero candidate spots found at %1 (no roads/objects/entrances in range?)", _location];
+        ["ALIVE-IED placeIED: WARNING - zero candidate spots found at %1 (no roads/objects/entrances in range?)", _location] call ALiVE_fnc_dump;
     };
     
     // Log top 3 positions with concealment scores
@@ -377,7 +377,7 @@ if (ADDON getVariable ["debug", false]) then {
         _data = _scoredPositions select _i;
         _score = _data select 0;
         _pos = _data select 1;
-        diag_log format ["ALIVE-IED: Top position #%1: Concealment score %2 at %3", _i + 1, _score, _pos];
+        ["ALIVE-IED: Top position #%1: Concealment score %2 at %3", _i + 1, _score, _pos] call ALiVE_fnc_dump;
     };
 };
 

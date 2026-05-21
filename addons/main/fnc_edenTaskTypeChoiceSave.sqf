@@ -38,7 +38,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE TaskTypeChoice SAVE: null display";
+    ["ALIVE TaskTypeChoice SAVE: null display"] call ALiVE_fnc_dump;
     "";
 };
 
@@ -145,6 +145,6 @@ if (!isNull _logicObj) then {
     _logicObj setVariable [_varName, _value];
 };
 
-diag_log format ["ALIVE TaskTypeChoice SAVE: varName=%1 value='%2'", _varName, _value];
+["ALIVE TaskTypeChoice SAVE: varName=%1 value='%2'", _varName, _value] call ALiVE_fnc_dump;
 
 _value

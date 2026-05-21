@@ -106,7 +106,7 @@ switch tolower _mode do {
         setdate [2035,5,28,9,0];
         0 setfog 0.0;
         if (_mode == "json") then {
-            diag_log "{ 'vehicles' : [";
+            ["{ 'vehicles' : ["] call ALiVE_fnc_dump;
         };
         private _ni = 0;
         {
@@ -261,7 +261,7 @@ switch tolower _mode do {
             };
         } foreach _cfgVehicles;
         if (_mode == "json") then {
-            diag_log "]}";
+            ["]}"] call ALiVE_fnc_dump;
         };
         _ni call bis_fnc_log;
         _cam cameraeffect ["terminate","back"];

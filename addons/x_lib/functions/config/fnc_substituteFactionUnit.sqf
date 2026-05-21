@@ -129,10 +129,10 @@ if (isNil "_pool") then {
     {
         _summary pushBack format ["%1=%2", _x, count _y];
     } forEach _pool;
-    diag_log format [
+    [
         "ALiVE substituteFactionUnit: built role pool for '%1' (%2 roles: %3)",
         _targetFaction, count _pool, _summary joinString ", "
-    ];
+    ] call ALiVE_fnc_dump;
 };
 
 // ------------------------------------------------------------------------
@@ -170,10 +170,10 @@ if (isNil "ALiVE_factionSubstitutionSeen") then {
 private _seenKey = format ["%1::%2", _targetFaction, _sourceRole];
 if !(_seenKey in ALiVE_factionSubstitutionSeen) then {
     ALiVE_factionSubstitutionSeen set [_seenKey, true];
-    diag_log format [
+    [
         "ALiVE substituteFactionUnit: '%1' (%2) -> '%3' [faction=%4, pool=%5 candidates]",
         _sourceUnit, _sourceRole, _result, _targetFaction, count _candidates
-    ];
+    ] call ALiVE_fnc_dump;
 };
 
 _result

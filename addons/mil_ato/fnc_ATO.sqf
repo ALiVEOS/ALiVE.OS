@@ -4250,7 +4250,7 @@ switch(_operation) do {
                                     private _position = [_catapult, "position"] call ALiVE_fnc_hashGet;
                                     private _nearbyObj = nearestObjects [_position, ["Plane"], 3];
                                     if (count _nearbyObj > 0) then {
-                                        // diag_log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>. CATAPULT BUSY <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+                                        // [">>>>>>>>>>>>>>>>>>>>>>>>>>>>>. CATAPULT BUSY <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"] call ALiVE_fnc_dump;
                                         _airportBusy = true;
                                     };
                                 };

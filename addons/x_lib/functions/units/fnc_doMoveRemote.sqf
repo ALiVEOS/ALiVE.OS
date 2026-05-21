@@ -29,7 +29,7 @@ params [
     ["_pos", [], [[]]]
 ];
 
-if (!(alive _unit) || {count _pos < 2}) exitwith {diag_log "domoveRemote failed - dead/empty unit"};
+if (!(alive _unit) || {count _pos < 2}) exitwith {["domoveRemote failed - dead/empty unit"] call ALiVE_fnc_dump};
 
 //Flag for usage with ALiVE_fnc_unitReadyRemote
 _unit setvariable [QGVAR(MOVEDESTINATION),_pos];

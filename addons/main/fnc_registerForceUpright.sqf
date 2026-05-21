@@ -86,7 +86,7 @@ ALIVE_forceUprightKeys set [_key, _dir];
 // Opt-in diag: set `ALIVE_forceUpright_debug = true` in console / init.sqf
 // to surface REGISTER + EH-FIRE lines for tilt investigation.
 if (!isNil "ALIVE_forceUpright_debug" && {ALIVE_forceUpright_debug}) then {
-    diag_log format ["[ALiVE forceUpright] REGISTER cls=%1 pos=%2 key=%3 dir=%4 hadObj=%5", _cls, _pos, _key, _dir, !isNull _obj];
+    ["[ALiVE forceUpright] REGISTER cls=%1 pos=%2 key=%3 dir=%4 hadObj=%5", _cls, _pos, _key, _dir, !isNull _obj] call ALiVE_fnc_dump;
 };
 
 // Apply at t=0, then re-apply at t=0.5s and t=1.5s. Single immediate
@@ -151,7 +151,7 @@ if !(_cls in ALIVE_forceUprightRegisteredClasses) then {
         private _eKey = format ["%1|%2|%3", typeOf _e, round ((_ePos select 0) / 3), round ((_ePos select 1) / 3)];
         private _matched = _eKey in ALIVE_forceUprightKeys;
         if (!isNil "ALIVE_forceUpright_debug" && {ALIVE_forceUpright_debug}) then {
-            diag_log format ["[ALiVE forceUpright] EH-FIRE cls=%1 pos=%2 key=%3 matched=%4", typeOf _e, _ePos, _eKey, _matched];
+            ["[ALiVE forceUpright] EH-FIRE cls=%1 pos=%2 key=%3 matched=%4", typeOf _e, _ePos, _eKey, _matched] call ALiVE_fnc_dump;
         };
         if (_matched) then {
             private _eDir = ALIVE_forceUprightKeys get _eKey;

@@ -6,7 +6,7 @@ private ["_suic","_location","_debug"];
 
 _debug = MOD(mil_ied) getVariable ["debug", false];
 
-if !(isServer) exitWith {diag_log "RemoveBomber Not running on server!";};
+if !(isServer) exitWith {["RemoveBomber Not running on server!"] call ALiVE_fnc_dump;};
 
 _location = _this select 0;
 

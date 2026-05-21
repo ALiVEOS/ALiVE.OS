@@ -61,7 +61,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE FactionStaticData LOAD: null display";
+    ["ALIVE FactionStaticData LOAD: null display"] call ALiVE_fnc_dump;
 };
 
 // ------------------------------------------------------------------------
@@ -282,7 +282,7 @@ if (!isNull _logicObj && {count _moduleFactions > 1}) then {
             // are kept so the picker doesn't lose unrecognised entries.
             _facSide == _ownSide || {_facSide < 0}
         };
-        diag_log format ["ALIVE FactionStaticData LOAD: side filter active - own faction=%1 side=%2 - kept %3/%4", _ownFaction, _ownSide, count _filtered, count _moduleFactions];
+        ["ALIVE FactionStaticData LOAD: side filter active - own faction=%1 side=%2 - kept %3/%4", _ownFaction, _ownSide, count _filtered, count _moduleFactions] call ALiVE_fnc_dump;
         _moduleFactions = _filtered;
     };
 };
@@ -472,7 +472,7 @@ if (count _moduleFactions > 0) then {
     if (!isNull _labelCtrl) then { _labelCtrl ctrlSetText "(no factions)"; };
 };
 
-diag_log format [
+[
     "ALIVE FactionStaticData LOAD: kind=%1 varName=%2 sqm='%3' resolved='%4' moduleFactions=%5 storedKeys=%6",
     _kind, _varName, _sqmValue, _value, _moduleFactions, keys _hashByFaction
-];
+] call ALiVE_fnc_dump;

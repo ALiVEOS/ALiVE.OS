@@ -38,7 +38,7 @@ _units =         (units _group);
 } foreach _units;
 
 if (isNil "_gunner" || isNil "_assistant") exitWith {
-    diag_log "Someone from the mortar team died";
+    ["Someone from the mortar team died"] call ALiVE_fnc_dump;
     // reduce mortar count
     _sptCount = _grp getVariable ["supportWeaponCount",3];
     _grp setVariable ["supportWeaponCount", _sptCount - 1];

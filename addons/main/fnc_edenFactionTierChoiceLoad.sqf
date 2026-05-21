@@ -79,7 +79,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE FactionTierChoice LOAD: null display";
+    ["ALIVE FactionTierChoice LOAD: null display"] call ALiVE_fnc_dump;
 };
 
 private _legacyVars       = if (_legacyVarsCsv != "")       then { [_legacyVarsCsv, ","]       call CBA_fnc_split } else { [] };
@@ -89,10 +89,10 @@ private _tierLabels       = [_tierLabelsCsv, ","] call CBA_fnc_split;
 private _tierKeys         = _tierLabels apply { toLower _x };
 
 if (count _tierKeys == 0 || {count _tierKeys != count _legacyVars}) exitWith {
-    diag_log format [
+    [
         "ALIVE FactionTierChoice LOAD: tierKeys/legacyVars length mismatch (tiers=%1 legacy=%2)",
         count _tierKeys, count _legacyVars
-    ];
+    ] call ALiVE_fnc_dump;
 };
 
 // ---- Title ----------------------------------------------------------------
@@ -198,7 +198,7 @@ if (_consolidatedRaw != "") then {
 // ---- Listbox + faction enumeration ---------------------------------------
 private _listCtrl = _display controlsGroupCtrl 100;
 if (isNull _listCtrl) exitWith {
-    diag_log "ALIVE FactionTierChoice LOAD: listbox (IDC 100) not found";
+    ["ALIVE FactionTierChoice LOAD: listbox (IDC 100) not found"] call ALiVE_fnc_dump;
 };
 
 // Same enumeration pattern as fnc_edenFactionChoiceMultiLoad: side filter +
@@ -472,7 +472,7 @@ _listCtrl ctrlAddEventHandler ["LBSelChanged", {
     _per set [_activeTier, _newBucket];
 }];
 
-diag_log format [
+[
     "ALIVE FactionTierChoice LOAD: consolidated='%1' sqm='%2' tiers=%3 perTier=%4 entries=%5 filter=%6",
     _consolidatedRaw, _sqmValue, _tierLabels, _perTier, count _entries, _tierLabels select _filterIdx
-];
+] call ALiVE_fnc_dump;

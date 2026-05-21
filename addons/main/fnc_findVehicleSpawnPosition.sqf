@@ -97,8 +97,8 @@ private _sampleRadius = 0.4;
 private _gap = 0.5;
 
 if (_debug) then {
-    diag_log format ["[ALiVE VehSpawn DEBUG] ENTER class=%1 pos=%2 radius=%3 pref=%4 bbox=[%5,%6]",
-        _vehicleClass, _centerPos, _maxDistance, _preference, _vehLen, _vehWid];
+    ["[ALiVE VehSpawn DEBUG] ENTER class=%1 pos=%2 radius=%3 pref=%4 bbox=[%5,%6]",
+        _vehicleClass, _centerPos, _maxDistance, _preference, _vehLen, _vehWid] call ALiVE_fnc_dump;
 };
 
 // Static obstacle terrain types - the full list, not just BUSH/HIDE.
@@ -275,9 +275,9 @@ private _acceptedStage = "";
 if ([_centerPos, _centerDir] call _fnc_footprintClear) then {
     _found = [_centerPos, _centerDir];
     _acceptedStage = "centre";
-    if (_debug) then { diag_log format ["[ALiVE VehSpawn DEBUG]   STAGE 1 centre - ACCEPT pos=%1", _centerPos]; };
+    if (_debug) then { ["[ALiVE VehSpawn DEBUG]   STAGE 1 centre - ACCEPT pos=%1", _centerPos] call ALiVE_fnc_dump; };
 } else {
-    if (_debug) then { diag_log format ["[ALiVE VehSpawn DEBUG]   STAGE 1 centre - REJECT reason=%1", _lastRejectReason]; };
+    if (_debug) then { ["[ALiVE VehSpawn DEBUG]   STAGE 1 centre - REJECT reason=%1", _lastRejectReason] call ALiVE_fnc_dump; };
 };
 
 // Stage 2: road search (preference road / auto).
@@ -324,7 +324,7 @@ if (count _found == 0 && {_preference in ["road", "auto"]}) then {
     };
 
     if (count _walked == 0) then {
-        if (_debug) then { diag_log format ["[ALiVE VehSpawn DEBUG]   STAGE 2 road - SKIP (no road within %1m)", _maxDistance]; };
+        if (_debug) then { ["[ALiVE VehSpawn DEBUG]   STAGE 2 road - SKIP (no road within %1m)", _maxDistance] call ALiVE_fnc_dump; };
     } else {
         // Sort by distance to centre so closest segments are tried first.
         private _sortedRoads = [_walked, [], { _centerPos distance (getPos _x) }, "ASCEND"] call ALiVE_fnc_sortBy;
@@ -365,7 +365,7 @@ if (count _found == 0 && {_preference in ["road", "auto"]}) then {
                     // Small jitter for visual variety.
                     _found = [_tryPos, _tryDir + (random 10 - 5)];
                     _acceptedStage = "road";
-                    if (_debug) then { diag_log format ["[ALiVE VehSpawn DEBUG]   STAGE 2 road - ACCEPT segment=%1 pos=%2", _segmentsTried, _tryPos]; };
+                    if (_debug) then { ["[ALiVE VehSpawn DEBUG]   STAGE 2 road - ACCEPT segment=%1 pos=%2", _segmentsTried, _tryPos] call ALiVE_fnc_dump; };
                 } else {
                     _sidesRejected = _sidesRejected + 1;
                 };
@@ -376,8 +376,8 @@ if (count _found == 0 && {_preference in ["road", "auto"]}) then {
         } forEach _sortedRoads;
 
         if (_debug && {count _found == 0}) then {
-            diag_log format ["[ALiVE VehSpawn DEBUG]   STAGE 2 road - REJECT (segments=%1, sides=%2, all blocked) lastReason=%3",
-                _segmentsTried, _sidesTried, _lastRejectReason];
+            ["[ALiVE VehSpawn DEBUG]   STAGE 2 road - REJECT (segments=%1, sides=%2, all blocked) lastReason=%3",
+                _segmentsTried, _sidesTried, _lastRejectReason] call ALiVE_fnc_dump;
         };
     };
 };
@@ -424,25 +424,25 @@ if (count _found == 0 && {_preference in ["field", "auto"]}) then {
         if ([_pos, _dir] call _fnc_footprintClear) then {
             _found = [_pos, _dir];
             _acceptedStage = "field";
-            if (_debug) then { diag_log format ["[ALiVE VehSpawn DEBUG]   STAGE 3 field - ACCEPT iteration=%1 pos=%2", _candidatesTried, _pos]; };
+            if (_debug) then { ["[ALiVE VehSpawn DEBUG]   STAGE 3 field - ACCEPT iteration=%1 pos=%2", _candidatesTried, _pos] call ALiVE_fnc_dump; };
         } else {
             _footprintRejects = _footprintRejects + 1;
         };
     };
 
     if (_debug && {count _found == 0}) then {
-        diag_log format ["[ALiVE VehSpawn DEBUG]   STAGE 3 field - REJECT (tried=%1 surfaceRejects=%2 gradientRejects=%3 footprintRejects=%4) lastReason=%5",
-            _candidatesTried, _surfaceRejects, _gradientRejects, _footprintRejects, _lastRejectReason];
+        ["[ALiVE VehSpawn DEBUG]   STAGE 3 field - REJECT (tried=%1 surfaceRejects=%2 gradientRejects=%3 footprintRejects=%4) lastReason=%5",
+            _candidatesTried, _surfaceRejects, _gradientRejects, _footprintRejects, _lastRejectReason] call ALiVE_fnc_dump;
     };
 };
 
 if (_debug) then {
     if (count _found > 0) then {
-        diag_log format ["[ALiVE VehSpawn DEBUG] EXIT class=%1 result=ACCEPT stage=%2 pos=%3 dir=%4",
-            _vehicleClass, _acceptedStage, _found select 0, _found select 1];
+        ["[ALiVE VehSpawn DEBUG] EXIT class=%1 result=ACCEPT stage=%2 pos=%3 dir=%4",
+            _vehicleClass, _acceptedStage, _found select 0, _found select 1] call ALiVE_fnc_dump;
     } else {
-        diag_log format ["[ALiVE VehSpawn DEBUG] EXIT class=%1 result=FAIL (caller falls back to %2)",
-            _vehicleClass, _centerPos];
+        ["[ALiVE VehSpawn DEBUG] EXIT class=%1 result=FAIL (caller falls back to %2)",
+            _vehicleClass, _centerPos] call ALiVE_fnc_dump;
     };
 };
 

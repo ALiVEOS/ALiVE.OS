@@ -524,8 +524,8 @@ switch(_operation) do {
         // bug at the call site instead of crashing the calling thread.
         private _units = _logic select 2 select 21; //[_logic,"units"] call ALIVE_fnc_hashGet;
         if (typeName _units != "ARRAY") exitWith {
-            diag_log format ["ALiVE profileEntity profileWaypointToWaypoint: profile %1 has non-array units (got %2). Likely a vehicle profile routed through entity API at the call site - skipping.",
-                _logic select 2 select 4, typeName _units];
+            ["ALiVE profileEntity profileWaypointToWaypoint: profile %1 has non-array units (got %2). Likely a vehicle profile routed through entity API at the call site - skipping.",
+                _logic select 2 select 4, typeName _units] call ALiVE_fnc_dump;
         };
 
         private _unit = _units select 0;

@@ -35,13 +35,13 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE C2ISTARAccessItems SAVE: null display";
+    ["ALIVE C2ISTARAccessItems SAVE: null display"] call ALiVE_fnc_dump;
     ""
 };
 
 private _listCtrl = _display controlsGroupCtrl 100;
 if (isNull _listCtrl) exitWith {
-    diag_log "ALIVE C2ISTARAccessItems SAVE: listbox control (idc 100) not found";
+    ["ALIVE C2ISTARAccessItems SAVE: listbox control (idc 100) not found"] call ALiVE_fnc_dump;
     ""
 };
 
@@ -67,11 +67,11 @@ _display setVariable ["value", _result];
     _x setVariable [_varName, _result, true];
 } forEach (get3DENSelected "logic");
 
-diag_log format [
+[
     "ALIVE C2ISTARAccessItems SAVE: varName='%1' selected=%2 -> '%3'",
     _varName,
     str _selectedKeys,
     _result
-];
+] call ALiVE_fnc_dump;
 
 _result

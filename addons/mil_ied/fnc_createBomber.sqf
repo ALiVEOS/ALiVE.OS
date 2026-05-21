@@ -4,7 +4,7 @@ SCRIPT(createBomber);
 // Suicide Bomber - create Suicide Bomber at location
 private ["_location","_debug","_victim","_size","_faction","_bomber"];
 
-if !(isServer) exitWith {diag_log "Suicide Bomber Not running on server!";};
+if !(isServer) exitWith {["Suicide Bomber Not running on server!"] call ALiVE_fnc_dump;};
 
 _victim = objNull;
 
@@ -38,11 +38,11 @@ if (isNil "_bomber") then {
     } else {
         _class = (selectRandom (parseSimpleArray (ADDON getVariable "Bomber_Type")));
     };
-    if (isNil "_class") exitWith {diag_log "No bomber class defined."};
+    if (isNil "_class") exitWith {["No bomber class defined."] call ALiVE_fnc_dump};
     _bomber = _grp createUnit [_class, _pos, [], _size, "NONE"];
 
     // ["SURFACE %1, %2", surfaceIsWater (position _bomber), (position _bomber)] call ALiVE_fnc_dump;
-    if (surfaceIsWater (position _bomber)) exitWith { deleteVehicle _bomber; diag_log "Bomber pos was in water, aborting";};
+    if (surfaceIsWater (position _bomber)) exitWith { deleteVehicle _bomber; ["Bomber pos was in water, aborting"] call ALiVE_fnc_dump;};
 };
 
 if (isNil "_bomber") exitWith {};
@@ -77,8 +77,8 @@ private _civFlagged = 0;
 } forEach ((getPos _bomber) nearEntities ["CAManBase", 25]);
 
 if (_debug) then {
-    diag_log format ["ALIVE-%1 Suicide Bomber InsurgentContact sweep: %2 civilian(s) flagged within 25m of %3",
-        time, _civFlagged, getPos _bomber];
+    ["ALIVE-%1 Suicide Bomber InsurgentContact sweep: %2 civilian(s) flagged within 25m of %3",
+        time, _civFlagged, getPos _bomber] call ALiVE_fnc_dump;
 };
 
 // Exclude bomber from AdvCiv brain loop so the ambient civilian AI
@@ -116,7 +116,7 @@ if (isNil "_victim" || {isNull _victim}) exitWith { deleteVehicle _bomber; };
 
 // Add debug marker
 if (_debug) then {
-    diag_log format ["ALIVE-%1 Suicide Bomber: created at %2 going after %3", time, _pos, name _victim];
+    ["ALIVE-%1 Suicide Bomber: created at %2 going after %3", time, _pos, name _victim] call ALiVE_fnc_dump;
 };
 
 [_victim,_bomber, _pos] spawn {
@@ -142,7 +142,7 @@ if (_debug) then {
             // doMove must execute on the machine where the bomber is local.
             // remoteExec ensures the order reaches the correct locality.
             [_bomber, getpos _victim] remoteExecCall ["doMove", _bomber];
-            diag_log format ["ALIVE-%1 Suicide Bomber: moving to %2", time, getpos _victim];
+            ["ALIVE-%1 Suicide Bomber: moving to %2", time, getpos _victim] call ALiVE_fnc_dump;
             if (ADDON getVariable ["debug",false]) then {
                 _marker = _bomber getVariable ["marker", nil];
                 if (isNil "_marker" || {!(_marker in allMapMarkers)}) then {
@@ -194,18 +194,18 @@ if (_debug) then {
         // a bomber who reached the target and armed should always detonate.
         _shell = [["M_Mo_120mm_AT","M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[8,4,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
         _shell createVehicle [(getpos _bomber) select 0, (getpos _bomber) select 1, 0];
-        diag_log format ["ALIVE-%1 Suicide Bomber: DETONATED at %2", time, getpos _bomber];
+        ["ALIVE-%1 Suicide Bomber: DETONATED at %2", time, getpos _bomber] call ALiVE_fnc_dump;
         sleep 0.3;
         deletevehicle _bomber;
 
         if (ADDON getVariable ["debug", false]) then {
-            diag_log format ["BANG! Suicide Bomber %1", _bomber];
+            ["BANG! Suicide Bomber %1", _bomber] call ALiVE_fnc_dump;
             [_marker] call CBA_fnc_deleteEntity;
         };
     } else {
         sleep 1;
         if (ADDON getVariable ["debug", false]) then {
-            diag_log format ["Ending Suicide Bomber %1 as out of time or dead.", _bomber];
+            ["Ending Suicide Bomber %1 as out of time or dead.", _bomber] call ALiVE_fnc_dump;
             _marker = _bomber getVariable ["marker", ""];
             [_marker] call CBA_fnc_deleteEntity;
         };
@@ -213,13 +213,13 @@ if (_debug) then {
             // Dead man switch - bomber timed out or victim died, detonate anyway
             _shell = [["M_Mo_120mm_AT","M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[8,4,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
             _shell createVehicle [(getpos _bomber) select 0, (getpos _bomber) select 1,0];
-            diag_log format ["ALIVE-%1 Suicide Bomber: dead man switch DETONATED at %2", time, getpos _bomber];
+            ["ALIVE-%1 Suicide Bomber: dead man switch DETONATED at %2", time, getpos _bomber] call ALiVE_fnc_dump;
             sleep 0.3;
             deletevehicle _bomber;
         } else {
             // Bomb didn't go off - delete the bomber cleanly rather than
             // leaving an armed civilian unit alive in the world indefinitely
-            diag_log format ["ALIVE-%1 Suicide Bomber: dead man switch FAILED, removing bomber at %2", time, getpos _bomber];
+            ["ALIVE-%1 Suicide Bomber: dead man switch FAILED, removing bomber at %2", time, getpos _bomber] call ALiVE_fnc_dump;
             deletevehicle _bomber;
         };
     };

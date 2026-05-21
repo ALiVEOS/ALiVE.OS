@@ -57,12 +57,12 @@ if (isNil "BIS_fnc_areEqual") then { LOG( "WARNING: BIS_fnc_areEqual is Nil") };
 // the original code's isNil check below handles it. Diag guards the
 // format call or it spams "Undefined variable in expression: _value".
 if (!isNil "ALiVE_DIAG_HASHSET" && {ALiVE_DIAG_HASHSET}) then {
-    diag_log format [
+    [
         "DIAG-STRIP hashSet: key=%1 valueType=%2 value=%3",
         _key,
         if (isNil "_value") then { "nil" } else { typeName _value },
         if (isNil "_value") then { "<nil>" } else { _value }
-    ];
+    ] call ALiVE_fnc_dump;
 };
 
 // Work out whether the new value is the default value for this assoc.

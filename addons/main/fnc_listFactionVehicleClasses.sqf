@@ -81,7 +81,7 @@ private _isVehicleKind = (_kind in ["land", "air", "support"]);
 // completes successfully. The real ALiVE wrappers replace these at
 // mission init when CBA cfgFunctions actually fires.
 if (isNil "ALIVE_factionDefaultTransport" || {isNil "ALIVE_factionDefaultContainers"}) then {
-    diag_log "ALIVE listFactionVehicleClasses: registries not loaded - lazy-loading Placement.hpp + Logistics.hpp";
+    ["ALIVE listFactionVehicleClasses: registries not loaded - lazy-loading Placement.hpp + Logistics.hpp"] call ALiVE_fnc_dump;
     // Force-override the ALiVE hash wrappers - the cfgFunctions-
     // registered originals aren't reliably callable in 3DEN editor
     // context. CBA equivalents are functionally identical for the

@@ -44,8 +44,8 @@ PARAMS_2(_target,_params);
 _menuName = "";
 _menuRsc = "popup";
 
-diag_log ">>>>>>>>>>>>>>>>>>>>>>>MENU<<<<<<<<<<<<<<<<<<<<<<<<<<";
-diag_log format [">>>>>%1<<<<<<<",_this];
+[">>>>>>>>>>>>>>>>>>>>>>>MENU<<<<<<<<<<<<<<<<<<<<<<<<<<"] call ALiVE_fnc_dump;
+[">>>>>%1<<<<<<<",_this] call ALiVE_fnc_dump;
 TRACE_1("sys_xstream",_this);
 
 if (typeName _params == typeName []) then {
@@ -188,7 +188,7 @@ _menuDef = [];
 
 if (count _menuDef == 0) then {
     hintC format ["Error: Menu not found: %1\n%2\n%3", str _menuName, if (_menuName == "") then {_this}else{""}, __FILE__];
-    diag_log format ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__];
+    ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__] call ALiVE_fnc_dump;
 };
 
 _menuDef // return value

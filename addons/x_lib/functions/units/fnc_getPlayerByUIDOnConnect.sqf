@@ -31,7 +31,7 @@ private ["_playerUID","_unit","_time"];
 _playerUID = _this select 0;
 _unit = objNull;
 
-if (_playerUID == "") exitWith {diag_log "Null playerUID sent to getPlayerByUIDOnConnect"; _unit};
+if (_playerUID == "") exitWith {["Null playerUID sent to getPlayerByUIDOnConnect"] call ALiVE_fnc_dump; _unit};
 
 //Is there a special need for a delayed execution (why not only use foreach)?
 //Causes script to hang and never finish under some circumstances (like HC usage).

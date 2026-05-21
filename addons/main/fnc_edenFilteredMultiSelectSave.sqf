@@ -65,10 +65,10 @@ private _legacyManualVars = if (_legacyManualVarsCsv != "") then {
 };
 
 if (count _categories == 0 || {count _categories != count _varNames}) exitWith {
-    diag_log format [
+    [
         "ALIVE FilteredMultiSelect SAVE: categories/varNames length mismatch (cat=%1 var=%2)",
         count _categories, count _varNames
-    ];
+    ] call ALiVE_fnc_dump;
     ""
 };
 
@@ -221,9 +221,9 @@ if (!isNull _logicObj) then {
 // belt-and-braces against differing serialisation paths.
 _display setVariable ["value", _consolidated];
 
-diag_log format [
+[
     "ALIVE FilteredMultiSelect SAVE: registry=%1 categories=%2 selected=%3 buckets=%4 legacyManualCleared=%5 -> '%6'",
     _registryClass, _categories, count _sel, _buckets, _legacyManualVars, _consolidated
-];
+] call ALiVE_fnc_dump;
 
 _consolidated

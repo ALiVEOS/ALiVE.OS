@@ -196,7 +196,7 @@ if (isnil "ALiVE_fnc_BUS_RetVal") then {
 private ["_this","_from","_to","_subject","_body","_id","_data","_status","_entry","_ret","_params","_code","_localExec"];
 
 //Exit if no params are given
-if (isnil {_this select 0}) exitwith {diag_log "No params given for ALIVE_fnc_BUS - exiting..."; if (isnil "ALiVE_BUSEH") then {false} else {true}};
+if (isnil {_this select 0}) exitwith {["No params given for ALIVE_fnc_BUS - exiting..."] call ALiVE_fnc_dump; if (isnil "ALiVE_BUSEH") then {false} else {true}};
 
 _from = if !(isDedicated) then {player} else {"server"};
 _to = _this select 0;

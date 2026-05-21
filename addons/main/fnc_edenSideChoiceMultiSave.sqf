@@ -49,13 +49,13 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE SideChoiceMulti SAVE: null display";
+    ["ALIVE SideChoiceMulti SAVE: null display"] call ALiVE_fnc_dump;
     ""
 };
 
 private _listCtrl = _display controlsGroupCtrl 100;
 if (isNull _listCtrl) exitWith {
-    diag_log "ALIVE SideChoiceMulti SAVE: listbox control (idc 100) not found";
+    ["ALIVE SideChoiceMulti SAVE: listbox control (idc 100) not found"] call ALiVE_fnc_dump;
     ""
 };
 
@@ -90,11 +90,11 @@ _display setVariable ["value", _result];
 // Path 3: mission-start re-apply handled by the attribute's CfgVehicles
 // `expression` slot.
 
-diag_log format [
+[
     "ALIVE SideChoiceMulti SAVE: varName='%1' selected=%2 -> '%3'",
     _varName,
     str _selectedTokens,
     _result
-];
+] call ALiVE_fnc_dump;
 
 _result

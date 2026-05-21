@@ -160,6 +160,6 @@ for "_i" from 0 to ((count _configPath) - 1) do {
 // Sort by class name (first element of each tuple). Stable across re-opens.
 _result sort true;
 
-diag_log format ["ALIVE listFactionCompositions: faction=%1 compType=%2 returned=%3 enemyFactions=%4", _faction, _compType, count _result, count _enemyFactions];
+["ALIVE listFactionCompositions: faction=%1 compType=%2 returned=%3 enemyFactions=%4", _faction, _compType, count _result, count _enemyFactions] call ALiVE_fnc_dump;
 
 _result

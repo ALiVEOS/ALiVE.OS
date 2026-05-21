@@ -57,7 +57,7 @@ private _tierLabels       = if (_tierLabelsCsv != "")       then { [_tierLabelsC
 private _tierKeys         = _tierLabels apply { toLower _x };
 
 if (count _tierKeys == 0) exitWith {
-    diag_log "ALIVE FactionTierChoice SAVE: no tier keys";
+    ["ALIVE FactionTierChoice SAVE: no tier keys"] call ALiVE_fnc_dump;
     ""
 };
 
@@ -132,9 +132,9 @@ if (!isNull _logicObj) then {
 
 _display setVariable ["value", _consolidated];
 
-diag_log format [
+[
     "ALIVE FactionTierChoice SAVE: tiers=%1 perTier=%2 -> '%3' legacyManualCleared=%4",
     _tierLabels, _per, _consolidated, _legacyManualVars
-];
+] call ALiVE_fnc_dump;
 
 _consolidated

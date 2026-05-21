@@ -54,13 +54,13 @@ params [
 
 if (_value == "") exitWith { 0 };
 if (isNil "_hash") exitWith {
-    diag_log "ALIVE resolveFactionStaticChoice: nil registry hash";
+    ["ALIVE resolveFactionStaticChoice: nil registry hash"] call ALiVE_fnc_dump;
     0
 };
 
 _mode = toUpper _mode;
 if !(_mode in ["REPLACE", "APPEND"]) then {
-    diag_log format ["ALIVE resolveFactionStaticChoice: unknown mode '%1', defaulting to REPLACE", _mode];
+    ["ALIVE resolveFactionStaticChoice: unknown mode '%1', defaulting to REPLACE", _mode] call ALiVE_fnc_dump;
     _mode = "REPLACE";
 };
 

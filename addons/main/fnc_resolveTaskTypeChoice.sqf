@@ -52,13 +52,13 @@ params [
 
 if (_value == "") exitWith { 0 };
 if (_registryName == "") exitWith {
-    diag_log "ALIVE resolveTaskTypeChoice: empty registry name";
+    ["ALIVE resolveTaskTypeChoice: empty registry name"] call ALiVE_fnc_dump;
     0
 };
 
 _mode = toUpper _mode;
 if !(_mode in ["REPLACE", "APPEND"]) then {
-    diag_log format ["ALIVE resolveTaskTypeChoice: unknown mode '%1', defaulting to REPLACE", _mode];
+    ["ALIVE resolveTaskTypeChoice: unknown mode '%1', defaulting to REPLACE", _mode] call ALiVE_fnc_dump;
     _mode = "REPLACE";
 };
 

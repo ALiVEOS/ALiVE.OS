@@ -58,7 +58,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE TaskTypeChoice LOAD: null display";
+    ["ALIVE TaskTypeChoice LOAD: null display"] call ALiVE_fnc_dump;
 };
 
 // ------------------------------------------------------------------------
@@ -93,7 +93,7 @@ private _registryName = switch (_kindToken) do {
 // no hash calls, so technically not needed, but defensive).
 // ------------------------------------------------------------------------
 if (_registryName != "" && {isNil _registryName}) then {
-    diag_log format ["ALIVE TaskTypeChoice LOAD: registry %1 not loaded - lazy-loading Tasks.hpp", _registryName];
+    ["ALIVE TaskTypeChoice LOAD: registry %1 not loaded - lazy-loading Tasks.hpp", _registryName] call ALiVE_fnc_dump;
     if (isNil "ALIVE_fnc_hashCreate") then { ALIVE_fnc_hashCreate = CBA_fnc_hashCreate; };
     if (isNil "ALIVE_fnc_hashSet")    then { ALIVE_fnc_hashSet    = CBA_fnc_hashSet; };
     if (isNil "ALIVE_fnc_hashGet")    then { ALIVE_fnc_hashGet    = CBA_fnc_hashGet; };
@@ -146,7 +146,7 @@ if (_value != "") then {
 // ------------------------------------------------------------------------
 private _ctrl = _display controlsGroupCtrl 100;
 if (isNull _ctrl) exitWith {
-    diag_log "ALIVE TaskTypeChoice LOAD: listbox control (IDC 100) not found";
+    ["ALIVE TaskTypeChoice LOAD: listbox control (IDC 100) not found"] call ALiVE_fnc_dump;
 };
 lbClear _ctrl;
 
@@ -303,7 +303,7 @@ if (!isNull _editCtrl) then {
     _editCtrl ctrlSetText (_missing joinString ",");
 };
 
-diag_log format [
+[
     "ALIVE TaskTypeChoice LOAD: kind=%1 varName=%2 sqm='%3' resolved='%4' registry=%5 listboxRows=%6 ticked=%7 missing=%8",
     _kindToken, _varName, _sqmValue, _value, _registryName, lbSize _ctrl, count _selectedTasks - count _missing, count _missing
-];
+] call ALiVE_fnc_dump;

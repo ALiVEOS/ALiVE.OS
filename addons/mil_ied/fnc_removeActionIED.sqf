@@ -11,7 +11,7 @@ if (!(hasInterface)) exitWith {};
 // Add action to IED
 private _debug = (ADDON getVariable ["debug", false]);
 
-if (_debug) then {diag_log "removeActionIED running.";};
+if (_debug) then {["removeActionIED running."] call ALiVE_fnc_dump;};
 
 _object removeAction _actionID;
 

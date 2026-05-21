@@ -54,7 +54,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE AAUnitChoice LOAD: null display";
+    ["ALIVE AAUnitChoice LOAD: null display"] call ALiVE_fnc_dump;
 };
 
 // Title
@@ -146,7 +146,7 @@ if (!isNull _filterLabel) then {
 
 private _listCtrl = _display controlsGroupCtrl 100;
 if (isNull _listCtrl) exitWith {
-    diag_log "ALIVE AAUnitChoice LOAD: listbox (IDC 100) not found";
+    ["ALIVE AAUnitChoice LOAD: listbox (IDC 100) not found"] call ALiVE_fnc_dump;
 };
 
 // Populate function (closes over _display)
@@ -311,7 +311,7 @@ _listCtrl ctrlAddEventHandler ["LBSelChanged", {
     _disp setVariable ["alive_selectedClasses", _sel];
 }];
 
-diag_log format [
+[
     "ALIVE AAUnitChoice LOAD: varName='%1' faction='%2' sqm='%3' aaUnits=%4 selected=%5",
     _varName, _faction, _sqmValue, count _aaUnits, count _selectedClasses
-];
+] call ALiVE_fnc_dump;

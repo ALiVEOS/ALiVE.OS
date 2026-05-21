@@ -210,8 +210,8 @@ switch(_operation) do {
                         };
                         if (!isNil "_migrated") then {
                             _logic setVariable ["integrationChoice", _migrated];
-                            diag_log format ["ALIVE-%1 MIL_IED: legacy integration setting migrated to integrationChoice='%2' (from thirdParty=%3, integrationMode=%4)",
-                                time, _migrated, _legacyTp, _legacyIMode];
+                            ["ALIVE-%1 MIL_IED: legacy integration setting migrated to integrationChoice='%2' (from thirdParty=%3, integrationMode=%4)",
+                                time, _migrated, _legacyTp, _legacyIMode] call ALiVE_fnc_dump;
                         };
                     };
                     [ADDON, "integrationChoice", _logic getVariable ["integrationChoice", "_auto"]] call MAINCLASS;
@@ -272,7 +272,7 @@ switch(_operation) do {
                             if (_match >= 0) then {
                                 (_integrations select _match) get "mode"
                             } else {
-                                diag_log format ["ALIVE-%1 MIL_IED WARNING: integrationChoice='%2' is not a currently loaded integration; falling back to Auto", time, _iChoice];
+                                ["ALIVE-%1 MIL_IED WARNING: integrationChoice='%2' is not a currently loaded integration; falling back to Auto", time, _iChoice] call ALiVE_fnc_dump;
                                 call _fnAutoResolve
                             };
                         };
@@ -402,23 +402,23 @@ switch(_operation) do {
                     ADDON setVariable ["resolvedStompRadius", _resolvedStompRadius, true];
 
                     if (ADDON getVariable ["debug", false]) then {
-                        diag_log format ["ALIVE-%1 MIL_IED Phase 3c: candidate=%2, road=%3 (autoDetect=%4) urban=%5 (autoDetect=%6) clutter=%7 (autoDetect=%8)",
+                        ["ALIVE-%1 MIL_IED Phase 3c: candidate=%2, road=%3 (autoDetect=%4) urban=%5 (autoDetect=%6) clutter=%7 (autoDetect=%8)",
                             time,
                             if (isNil "_candidateIntegration") then { "(none)" } else { _candidateIntegration get "displayName" },
                             count (ADDON getVariable "resolvedRoadIEDClasses"),  ADDON getVariable ["roadIEDClasses_autoDetect", 0],
                             count (ADDON getVariable "resolvedUrbanIEDClasses"), ADDON getVariable ["urbanIEDClasses_autoDetect", 0],
-                            count (ADDON getVariable "resolvedClutterClasses"),  ADDON getVariable ["clutterClasses_autoDetect", 0]];
+                            count (ADDON getVariable "resolvedClutterClasses"),  ADDON getVariable ["clutterClasses_autoDetect", 0]] call ALiVE_fnc_dump;
                     };
 
                     if (count _integrations == 0) then {
-                        diag_log format ["ALIVE-%1 MIL_IED: no 3rd-party IED integrations detected; resolved mode=%2 (choice='%3')",
-                            time, _resolved, _iChoice];
+                        ["ALIVE-%1 MIL_IED: no 3rd-party IED integrations detected; resolved mode=%2 (choice='%3')",
+                            time, _resolved, _iChoice] call ALiVE_fnc_dump;
                     } else {
                         private _summary = _integrations apply {
                             format ["%1 (mode=%2)", _x get "displayName", _x get "mode"]
                         };
-                        diag_log format ["ALIVE-%1 MIL_IED: %2 integration(s) detected: %3 - resolved mode=%4 (choice='%5')",
-                            time, count _integrations, _summary joinString ", ", _resolved, _iChoice];
+                        ["ALIVE-%1 MIL_IED: %2 integration(s) detected: %3 - resolved mode=%4 (choice='%5')",
+                            time, count _integrations, _summary joinString ", ", _resolved, _iChoice] call ALiVE_fnc_dump;
                     };
 
                     _debug = [_logic, "debug"] call MAINCLASS;
@@ -561,7 +561,7 @@ switch(_operation) do {
                         // Convert to the same [pos, size, label] tuple shape so
                         // downstream code can stay uniform.
                         if (_debug) then {
-                            diag_log "ALIVE IED - cluster building-types unpopulated for this terrain; falling back to engine nearestLocations";
+                            ["ALIVE IED - cluster building-types unpopulated for this terrain; falling back to engine nearestLocations"] call ALiVE_fnc_dump;
                         };
                         private _engineLocs = nearestLocations [_center, ["NameCityCapital","NameCity","NameVillage","Strategic"], _radius];
                         _locations = _engineLocs apply {
@@ -573,7 +573,7 @@ switch(_operation) do {
                     };
 
                     if (_debug) then {
-                        diag_log format ["ALIVE IED - location source returned %1 population centres", count _locations];
+                        ["ALIVE IED - location source returned %1 population centres", count _locations] call ALiVE_fnc_dump;
                     };
 
                     // TAOR / blacklist filtering. The legacy `validateLocations`
@@ -720,7 +720,7 @@ switch(_operation) do {
                 _label = _x select 2;
 
                 if (_debug) then {
-                    diag_log format ["town is %1 at %2. %3m in size", _label, _pos, _size];
+                    ["town is %1 at %2. %3m in size", _label, _pos, _size] call ALiVE_fnc_dump;
                 };
 
                 // Place triggers if not within distance of players
@@ -789,7 +789,7 @@ switch(_operation) do {
                         _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, _faction], ""];
 
                         if (_debug) then {
-                            diag_log format ["ALIVE-%1 Suicide Bomber Trigger: created at %2 (%3)", time, _label, mapgridposition _pos];
+                            ["ALIVE-%1 Suicide Bomber Trigger: created at %2 (%3)", time, _label, mapgridposition _pos] call ALiVE_fnc_dump;
                         };
 
                         call _storeLocationFn;
@@ -807,7 +807,7 @@ switch(_operation) do {
                         _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [getpos thisTrigger,%1] call ALIVE_fnc_placeVBIED",_size], ""];
 
                         if (_debug) then {
-                            diag_log format ["ALIVE-%1 VBIED Trigger: created at %2 (%3)", time, _label, mapgridposition _pos];
+                            ["ALIVE-%1 VBIED Trigger: created at %2 (%3)", time, _label, mapgridposition _pos] call ALiVE_fnc_dump;
                         };
 
                         call _storeLocationFn;
@@ -836,7 +836,7 @@ switch(_operation) do {
                         };
 
                         if (_debug) then {
-                            diag_log format ["ALIVE-%1 IED Trigger: created at %2 (%3)", time, _label, mapgridposition _pos];
+                            ["ALIVE-%1 IED Trigger: created at %2 (%3)", time, _label, mapgridposition _pos] call ALiVE_fnc_dump;
                         };
                     };
 

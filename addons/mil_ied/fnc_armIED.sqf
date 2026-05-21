@@ -31,7 +31,7 @@ SCRIPT(armIED);
 
 private ["_IED","_type","_shell","_proximity","_debug"];
 
-if !(isServer) exitWith {diag_log "ArmIED Not running on server!";};
+if !(isServer) exitWith {["ArmIED Not running on server!"] call ALiVE_fnc_dump;};
 
 _debug     = ADDON getVariable ["debug", false];
 _detection = ADDON getVariable ["IED_Detection", 1];
@@ -60,8 +60,8 @@ private _tripThreshold    = _tripThresholdMin + random (_tripThresholdMax - _tri
 _IED setVariable ["ALiVE_IED_TripThreshold", _tripThreshold];
 
 if (_debug) then {
-    diag_log format ["ALIVE-%1 IED: arming IED at %2 of %3 as %4 with proximity %5, trip threshold %6",
-        time, getposATL _IED, _type, _shell, _proximity, _tripThreshold];
+    ["ALIVE-%1 IED: arming IED at %2 of %3 as %4 with proximity %5, trip threshold %6",
+        time, getposATL _IED, _type, _shell, _proximity, _tripThreshold] call ALiVE_fnc_dump;
 };
 
 _IED remoteExec ["ALiVE_fnc_addActionIED", 0, true];
@@ -142,8 +142,8 @@ private _gracePeriod = 15;
         // "player never reached proximity" needs an entry log + a
         // first-candidate log. Strip once root cause identified.
         if (_debugLocal) then {
-            diag_log format ["ALIVE-%1 IED DIAG: polling loop entered for IED at %2 (proximity %3, threshold %4)",
-                time, getposATL _ied, _proximity, _threshold toFixed 3];
+            ["ALIVE-%1 IED DIAG: polling loop entered for IED at %2 (proximity %3, threshold %4)",
+                time, getposATL _ied, _proximity, _threshold toFixed 3] call ALiVE_fnc_dump;
         };
         private _loggedFirstCandidate = false;
         private _loggedFirstApproach = false;
@@ -204,8 +204,8 @@ private _gracePeriod = 15;
                         private _details = _approachList apply {
                             format ["%1[%2]@%3m", name _x, typeOf _x, round (_x distance _ied)]
                         };
-                        diag_log format ["ALIVE-%1 IED DIAG: player(s) approached within 30m of IED at %2: %3",
-                            time, getposATL _ied, _details];
+                        ["ALIVE-%1 IED DIAG: player(s) approached within 30m of IED at %2: %3",
+                            time, getposATL _ied, _details] call ALiVE_fnc_dump;
                         _loggedFirstApproach = true;
                     };
                 };
@@ -216,8 +216,8 @@ private _gracePeriod = 15;
                 // Strip once Eric's case is closed.
                 if (_debugLocal && !_loggedFirstCandidate && count _detonateList > 0) then {
                     private _names = _detonateList apply { format ["%1[%2]", name _x, typeOf _x] };
-                    diag_log format ["ALIVE-%1 IED DIAG: first candidate(s) in proximity of IED at %2: %3",
-                        time, getposATL _ied, _names];
+                    ["ALIVE-%1 IED DIAG: first candidate(s) in proximity of IED at %2: %3",
+                        time, getposATL _ied, _names] call ALiVE_fnc_dump;
                     _loggedFirstCandidate = true;
                 };
 
@@ -253,8 +253,8 @@ private _gracePeriod = 15;
                     if (count _stompList > 0) then {
                         _shouldDetonate = true;
                         if (_debugLocal) then {
-                            diag_log format ["ALIVE-%1 IED stomp: detonating, %2 unit(s) within 2D %3m of mine at %4",
-                                time, count _stompList, _stompRadius, getposATL _ied];
+                            ["ALIVE-%1 IED stomp: detonating, %2 unit(s) within 2D %3m of mine at %4",
+                                time, count _stompList, _stompRadius, getposATL _ied] call ALiVE_fnc_dump;
                         };
                     };
                 };
@@ -300,8 +300,8 @@ private _gracePeriod = 15;
                                 private _key = netId _u;
                                 if (_debugLocal && !(_key in _loggedImmune)) then {
                                     _loggedImmune pushBack _key;
-                                    diag_log format ["ALIVE-%1 IED: %2 qualifies as engineer AND IED_Engineer_Challenge is disabled -- IED is immune to this unit, will not detonate",
-                                        time, name _u];
+                                    ["ALIVE-%1 IED: %2 qualifies as engineer AND IED_Engineer_Challenge is disabled -- IED is immune to this unit, will not detonate",
+                                        time, name _u] call ALiVE_fnc_dump;
                                 };
                             } else {
                             // Engineer: accumulate trip pressure.
@@ -343,9 +343,9 @@ private _gracePeriod = 15;
                             _tripMap set [_key, _trip];
 
                             if (_debugLocal) then {
-                                diag_log format ["ALIVE-%1 IED accum: %2 trip=%3/%4 (d=%5 st=%6 sp=%7 sk=%8)",
+                                ["ALIVE-%1 IED accum: %2 trip=%3/%4 (d=%5 st=%6 sp=%7 sk=%8)",
                                     time, name _u, _trip toFixed 3, _threshold toFixed 3,
-                                    _distFactor toFixed 2, _stanceFactor, _speedFactor, _skillFactor toFixed 2];
+                                    _distFactor toFixed 2, _stanceFactor, _speedFactor, _skillFactor toFixed 2] call ALiVE_fnc_dump;
                             };
 
                             if (_trip >= _threshold) then {

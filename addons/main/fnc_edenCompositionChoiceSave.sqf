@@ -44,7 +44,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE CompositionChoice SAVE: null display";
+    ["ALIVE CompositionChoice SAVE: null display"] call ALiVE_fnc_dump;
     ""
 };
 
@@ -88,6 +88,6 @@ private _filterPrefix = format ["[F:%1,%2,%3,%4]", _sideIdx, _sizeIdx, _category
 
 private _result = _filterPrefix + (_classes joinString ",");
 
-diag_log format ["ALIVE CompositionChoice SAVE: varName=%1 filters=%2 selectedClasses=%3 overrideAdded=%4 result='%5'", _varName, _filterPrefix, count _selectedClasses, count _classes - count _selectedClasses, _result];
+["ALIVE CompositionChoice SAVE: varName=%1 filters=%2 selectedClasses=%3 overrideAdded=%4 result='%5'", _varName, _filterPrefix, count _selectedClasses, count _classes - count _selectedClasses, _result] call ALiVE_fnc_dump;
 
 _result

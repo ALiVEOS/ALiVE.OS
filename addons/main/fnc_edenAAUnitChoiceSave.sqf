@@ -79,9 +79,9 @@ _display setVariable ["value", _result];
     _x setVariable [_varName, _result, true];
 } forEach (get3DENSelected "logic");
 
-diag_log format [
+[
     "ALIVE AAUnitChoice SAVE: varName='%1' selected=%2 -> '%3'",
     _varName, count _sel, _result
-];
+] call ALiVE_fnc_dump;
 
 _result

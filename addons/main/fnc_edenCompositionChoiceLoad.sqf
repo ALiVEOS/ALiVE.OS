@@ -87,7 +87,7 @@ if (typeName _this == "ARRAY") then {
 if (_categoryDisplayLabel == "") then { _categoryDisplayLabel = _categoryPatterns };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE CompositionChoice LOAD: null display";
+    ["ALIVE CompositionChoice LOAD: null display"] call ALiVE_fnc_dump;
 };
 
 // Title text (left-col).
@@ -195,7 +195,7 @@ if (_categoryPatterns != "") then {
         if (_matched) then { _filtered pushBack _comp };
     } forEach _allComps;
     _allComps = _filtered;
-    diag_log format ["ALIVE CompositionChoice CategoryFilter: patterns=%1 preCount=%2 postCount=%3 categoriesSeen=%4", _patterns, _preCount, count _allComps, _categoriesSeen];
+    ["ALIVE CompositionChoice CategoryFilter: patterns=%1 preCount=%2 postCount=%3 categoriesSeen=%4", _patterns, _preCount, count _allComps, _categoriesSeen] call ALiVE_fnc_dump;
 };
 
 // Auto-upgrade legacy class-only entries in _selectedClasses to fully
@@ -435,7 +435,7 @@ private _populateFn = {
         };
     } forEach _all;
 
-    diag_log format ["ALIVE CompositionChoice POPULATE: side=%1 size=%2 category=%3 source=%4 surfaced=%5 ticked=%6", _sFilt, _zFilt, _cFilt, _mFilt, _surfaced, _ticked];
+    ["ALIVE CompositionChoice POPULATE: side=%1 size=%2 category=%3 source=%4 surfaced=%5 ticked=%6", _sFilt, _zFilt, _cFilt, _mFilt, _surfaced, _ticked] call ALiVE_fnc_dump;
     // Re-open the LBSelChanged gate. From here on, any selection
     // change is a genuine user click and SHOULD mutate _sel.
     _disp setVariable ["alive_populating", false];
@@ -581,11 +581,11 @@ if (!isNull _list) then {
             };
         };
         _disp setVariable ["alive_selectedClasses", _sel];
-        diag_log format ["ALIVE CompositionChoice LBSelChanged: visible=%1 selectedRows=%2 cumulative=%3", lbSize _lb, count _selIdx, count _sel];
+        ["ALIVE CompositionChoice LBSelChanged: visible=%1 selectedRows=%2 cumulative=%3", lbSize _lb, count _selIdx, count _sel] call ALiVE_fnc_dump;
     }];
 };
 
-diag_log format [
+[
     "ALIVE CompositionChoice LOAD: varName=%1 faction=%2 sqm='%3' resolved='%4' allComps=%5 sides=%6 sizes=%7 categories=%8 sources=%9 selected=%10 missing=%11",
     _varName, _faction, _sqmValue, _value, count _allComps, count _sideOptions - 1, count _sizeOptions - 1, count _categoryOptions - 1, count _sourceOptions - 1, count _selectedClasses, count _missing
-];
+] call ALiVE_fnc_dump;

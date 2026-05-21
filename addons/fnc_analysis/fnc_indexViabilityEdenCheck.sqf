@@ -44,7 +44,7 @@ Jman
 ---------------------------------------------------------------------------- */
 
 if (!is3DEN) exitWith {
-    diag_log "ALiVE Eden Viability check: not in 3DEN, exiting.";
+    ["ALiVE Eden Viability check: not in 3DEN, exiting."] call ALiVE_fnc_dump;
 };
 
 // Reset state so the Eden check + the runtime gridImport in a
@@ -61,7 +61,7 @@ ALiVE_indexViabilityTier     = nil;
 private _worldLower = toLower worldName;
 private _filePath = format ["\x\alive\addons\fnc_analysis\data\data.%1.sqf", _worldLower];
 
-diag_log format ["ALiVE Eden Viability check: entered. worldName='%1', loading file '%2'.", worldName, _filePath];
+["ALiVE Eden Viability check: entered. worldName='%1', loading file '%2'.", worldName, _filePath] call ALiVE_fnc_dump;
 
 // Inline-load the bundled static index data for the current world.
 // The data file is just SQF that mutates ALIVE_gridData via
@@ -82,7 +82,7 @@ if (isNil "ALIVE_gridData") then {
 [] call ALIVE_fnc_assessIndexViability;
 
 if (isNil "ALiVE_indexViabilityScore") exitWith {
-    diag_log "ALiVE Eden Viability check: assessor returned no score, exiting silently.";
+    ["ALiVE Eden Viability check: assessor returned no score, exiting silently."] call ALiVE_fnc_dump;
 };
 
 // Surface a notification for every tier. BIS_fnc_3DENNotification only
@@ -114,5 +114,5 @@ private _msg = format [
     _detail
 ];
 [_msg, _severity, 20] call BIS_fnc_3DENNotification;
-diag_log format ["ALiVE Eden Viability check: score=%1 (%2) -- 3DEN notification fired (severity %3).",
-    round ALiVE_indexViabilityScore, _tier, _severity];
+["ALiVE Eden Viability check: score=%1 (%2) -- 3DEN notification fired (severity %3).",
+    round ALiVE_indexViabilityScore, _tier, _severity] call ALiVE_fnc_dump;

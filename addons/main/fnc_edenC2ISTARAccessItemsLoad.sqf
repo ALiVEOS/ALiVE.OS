@@ -56,7 +56,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE C2ISTARAccessItems LOAD: null display";
+    ["ALIVE C2ISTARAccessItems LOAD: null display"] call ALiVE_fnc_dump;
 };
 
 // Stringtable resolution: "$STR_FOO" → localize. Literal strings pass through.
@@ -72,7 +72,7 @@ if (!isNull _titleCtrl) then { _titleCtrl ctrlSetText _titleResolved; };
 
 private _listCtrl = _display controlsGroupCtrl 100;
 if (isNull _listCtrl) exitWith {
-    diag_log "ALIVE C2ISTARAccessItems LOAD: listbox control (idc 100) not found";
+    ["ALIVE C2ISTARAccessItems LOAD: listbox control (idc 100) not found"] call ALiVE_fnc_dump;
 };
 
 // ---- Walk the registry, collect categories with their classnames -----------
@@ -154,11 +154,11 @@ lbClear _listCtrl;
     };
 } forEach _allRows;
 
-diag_log format [
+[
     "ALIVE C2ISTARAccessItems LOAD: varName='%1' raw='%2' parsed=%3 rows=%4 ticked=%5",
     _varName,
     _raw,
     str _selected,
     count _allRows,
     count (lbSelection _listCtrl)
-];
+] call ALiVE_fnc_dump;

@@ -148,7 +148,7 @@ GVAR(Camera) = [player,false,"HIGH"] call ALIVE_fnc_addCamera;
 private _handle = [player, "Starting ALiVE xStream System", 500, 250, 75, 1, [], 0, true] spawn BIS_fnc_establishingShot;
 waitUntil { scriptDone _handle };
 
-diag_log "Starting camera";
+["Starting camera"] call ALiVE_fnc_dump;
 [GVAR(Camera),true] call ALIVE_fnc_startCinematic;
 
 // Establishing Shot
@@ -157,7 +157,7 @@ diag_log "Starting camera";
 // Loop through series of scenes
 while { ((count subjects + count infantry) > 0) && GVAR(cameraStarted)} do {
 
-    diag_log "Looping camera shot selection";
+    ["Looping camera shot selection"] call ALiVE_fnc_dump;
     private _timely = 0;
     private _shotTime = 0;
     private _cameraTarget = subjects select 0;

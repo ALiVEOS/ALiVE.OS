@@ -578,10 +578,10 @@ switch (_operation) do {
                 // mode just to discover it would make the failure invisible
                 // to most users. Includes side / taskID / taskType / locType
                 // so the cause can be correlated against module config.
-                diag_log format [
+                [
                     "ALiVE C2ISTAR generateTask: ABORTED task generation for side '%1' (taskID=%2, type=%3, locType=%4) - no playable units available to anchor the task position. Likely cause: 'Constant' auto-task mode firing while no players on this side are present (all spectators / side empty / players left mid-mission). Task will retry on next auto-generation cycle when players become available.",
                     _taskSide, _taskID, _taskType, _taskLocationType
-                ];
+                ] call ALiVE_fnc_dump;
             };
 
             private _strategicObjectivePosition = [];

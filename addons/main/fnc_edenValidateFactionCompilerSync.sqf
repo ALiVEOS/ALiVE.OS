@@ -125,17 +125,17 @@ ALIVE_edenCompilerSyncValidatorPending = [_trigger, _scope] spawn {
             ];
             // type 1 = Red warning, duration 60 seconds.
             [_msg, 1, 60] call BIS_fnc_3DENNotification;
-            diag_log format [
+            [
                 "ALiVE 3DEN compiler-sync check: category '%1' has non-CAManBase peers=[%2]",
                 _categoryAttr,
                 _types joinString ", "
-            ];
+            ] call ALiVE_fnc_dump;
             _warnings = _warnings + 1;
         };
     } forEach _toCheck;
 
     if (_warnings == 0) then {
-        diag_log format ["ALiVE 3DEN compiler-sync check: OK (checked=%1)", _checked];
+        ["ALiVE 3DEN compiler-sync check: OK (checked=%1)", _checked] call ALiVE_fnc_dump;
 
         // Positive confirmation toast on sync/attr triggers. Preview
         // skips the green toast - user is about to launch the mission

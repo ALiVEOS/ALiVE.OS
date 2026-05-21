@@ -56,7 +56,7 @@ if (typeName _this == "ARRAY") then {
 };
 
 if (isNull _display) exitWith {
-    diag_log "ALIVE FactionSlotChoice SAVE: null display";
+    ["ALIVE FactionSlotChoice SAVE: null display"] call ALiVE_fnc_dump;
     ""
 };
 
@@ -94,11 +94,11 @@ if (count _legacyVars == count _slotSelections) then {
     } forEach _legacyVars;
 };
 
-diag_log format [
+[
     "ALIVE FactionSlotChoice SAVE: consolidatedVar='%1' slots=%2 -> '%3'",
     _consolidatedVar,
     str _slotSelections,
     _result
-];
+] call ALiVE_fnc_dump;
 
 _result

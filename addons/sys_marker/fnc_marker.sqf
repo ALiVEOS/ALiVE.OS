@@ -401,7 +401,7 @@ switch (_operation) do {
                             if (str _display == "Display #12") then {
                                 _ok = createDialog "RscDisplayALiVEAdvancedMarker";
                                 if !(_ok) then {
-                                    diag_log "Could not open Marker Dialog!";
+                                    ["Could not open Marker Dialog!"] call ALiVE_fnc_dump;
                                 };
                             } else {
                                 private "_tcontrol";

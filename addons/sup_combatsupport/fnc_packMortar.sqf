@@ -35,7 +35,7 @@ if (_weapon == objNull || isNil "_weapon" || _group == grpNull || _leader == obj
     };
 } foreach _units;
 
-// diag_log format ["%1, %2, %3, %4, %5, %6, %7", _group, _weapon, _position, _leader, _gunner, _assistant, _type];
+// ["%1, %2, %3, %4, %5, %6, %7", _group, _weapon, _position, _leader, _gunner, _assistant, _type] call ALiVE_fnc_dump;
 
 _gunner leaveVehicle _weapon;
 
@@ -117,5 +117,5 @@ _gunner action ["Disassemble",_weapon];
     _weapon setVariable ["packed",true];
 
 
-//    diag_log format ["%1 packed up!",_weapon];
+//    ["%1 packed up!",_weapon] call ALiVE_fnc_dump;
 };

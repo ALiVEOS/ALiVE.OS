@@ -53,7 +53,7 @@ if (!_isHost && {!_isAdmin} && {!_isZeus}) exitWith {};
 // Diag so users can confirm the receiver fired when troubleshooting.
 // Gated on the same global as the PFH; off by default = silent.
 if (!isNil "ALiVE_debugVirtualisedProfiles" && {ALiVE_debugVirtualisedProfiles}) then {
-    diag_log format ["[ALiVE VirtDebug] client recv: count=%1 host=%2 admin=%3 zeus=%4", count _snapshot, _isHost, _isAdmin, _isZeus];
+    ["[ALiVE VirtDebug] client recv: count=%1 host=%2 admin=%3 zeus=%4", count _snapshot, _isHost, _isAdmin, _isZeus] call ALiVE_fnc_dump;
 };
 
 // Delete prior markers via the tracked name list. We don't enumerate

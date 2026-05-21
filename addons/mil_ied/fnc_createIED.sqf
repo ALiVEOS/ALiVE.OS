@@ -10,7 +10,7 @@ SCRIPT(createIED);
 // IED - create IED(s) at location
 private ["_position","_town","_debug","_numIEDs","_j","_size","_posloc","_IEDs","_threat","_IEDData","_IEDcount", "_dud"];
 
-if !(isServer) exitWith {diag_log "IED Not running on server!";};
+if !(isServer) exitWith {["IED Not running on server!"] call ALiVE_fnc_dump;};
 
 TRACE_1("IED",_this);
 
@@ -55,13 +55,13 @@ _IEDcount = count (_IEDs select 1);
 
 // IF first time creating IEDs for location go work out how many IEDs
 if (_IEDcount == 0) then {
-    diag_log format ["ALIVE-%1 IED: creating %2 IEDs at %5 (%3) - size %4", time, _numIEDs, mapgridposition  _position, _size, _town];
+    ["ALIVE-%1 IED: creating %2 IEDs at %5 (%3) - size %4", time, _numIEDs, mapgridposition  _position, _size, _town] call ALiVE_fnc_dump;
 
     // Find positions in area
     _posloc = [];
     _posloc = [_position, true, true, true, _size] call ALIVE_fnc_placeIED;
     if (_debug) then {
-        diag_log format ["ALIVE-%1 IED: Found %2 spots for IEDs",time, count _posloc];
+        ["ALIVE-%1 IED: Found %2 spots for IEDs",time, count _posloc] call ALiVE_fnc_dump;
     };
 
     // Clamp numIEDs to available positions.
@@ -73,7 +73,7 @@ if (_IEDcount == 0) then {
 
     // Bail out early with a clear debug message if there are no valid positions
     if (_numIEDs == 0) exitWith {
-        diag_log format ["ALIVE-%1 IED: No valid positions found for IEDs at %2 - skipping", time, _town];
+        ["ALIVE-%1 IED: No valid positions found for IEDs at %2 - skipping", time, _town] call ALiVE_fnc_dump;
     };
 
     _IEDData = [] call ALiVE_fnc_hashCreate;
@@ -109,18 +109,18 @@ for "_j" from 1 to _numIEDs do {
 
         // Exit THIS ITERATION if other IEDs are found or position is on water
         if (count _near > 0) then {
-            diag_log format ["ALIVE-%1 IED: skipping - other IEDs found %2",time,_near]; 
+            ["ALIVE-%1 IED: skipping - other IEDs found %2",time,_near] call ALiVE_fnc_dump; 
             _error = true;
         };
         if (surfaceIsWater _IEDpos) then {
-            diag_log format ["ALIVE-%1 IED: skipping - pos was on water.",time]; 
+            ["ALIVE-%1 IED: skipping - pos was on water.",time] call ALiVE_fnc_dump; 
             _error = true;
         };
 
         // Check not placed near a player
         // Skip THIS ITERATION if position is too close to a player
         if ({(getpos _x distance _IEDpos) < 75} count ([] call BIS_fnc_listPlayers) > 0) then {
-            diag_log format ["ALIVE-%1 IED: skipping - placement too close to player.",time]; 
+            ["ALIVE-%1 IED: skipping - placement too close to player.",time] call ALiVE_fnc_dump; 
             _error = true;
         };
 
@@ -162,7 +162,7 @@ for "_j" from 1 to _numIEDs do {
                     };
 
                     /* if (_debug) then {
-                        diag_log format ["ALIVE-%1 IED: Planting clutter (%2) at %3.", time, typeOf _clut, position _clut];
+                        ["ALIVE-%1 IED: Planting clutter (%2) at %3.", time, typeOf _clut, position _clut] call ALiVE_fnc_dump;
                         //Mark clutter position
                         _t = format["cl_r%1", floor (random 1000)];
                         _clutm = [_t, position _clut, "Icon", [1,1], "TEXT:", "", "TYPE:", "mil_dot", "COLOR:", "ColorGreen", "GLOBAL"] call CBA_fnc_createMarker;
@@ -208,7 +208,7 @@ for "_j" from 1 to _numIEDs do {
         // rather than feeding nil to createVehicle.
         if (count _IEDskins == 0) exitWith {
             _error = true;
-            diag_log format ["ALIVE-%1 MIL_IED: empty class pool, skipping placement (check integrationChoice + <cat>_additional fields)", time];
+            ["ALIVE-%1 MIL_IED: empty class pool, skipping placement (check integrationChoice + <cat>_additional fields)", time] call ALiVE_fnc_dump;
         };
 
         // Apply per-integration vertical offset. Default -0.1 (ALiVE classic
@@ -257,8 +257,8 @@ for "_j" from 1 to _numIEDs do {
         // (or wherever attachTo objNull places it) and ACE would see a loose
         // explosive with no parent mine - the "lone charge" symptom.
         if (isNull _IED) then {
-            diag_log format ["ALIVE-%1 MIL_IED arm/charge SKIPPED for null _IED (skin=%2 pos=%3) - this would have produced an orphaned charge",
-                time, _IEDskin, _IEDpos];
+            ["ALIVE-%1 MIL_IED arm/charge SKIPPED for null _IED (skin=%2 pos=%3) - this would have produced an orphaned charge",
+                time, _IEDskin, _IEDpos] call ALiVE_fnc_dump;
         } else {
         _IED setvariable ["ID", _ID];
     _IED setvariable ["town", _town];
@@ -290,7 +290,7 @@ for "_j" from 1 to _numIEDs do {
 
             if (isPlayer _killer) then {
                 if (ADDON getVariable "debug") then {
-                    diag_log format ["ALIVE-%1 IED: %2 explodes due to damage by %3 (via charge)", time, _IED, _killer];
+                    ["ALIVE-%1 IED: %2 explodes due to damage by %3 (via charge)", time, _IED, _killer] call ALiVE_fnc_dump;
                     [_IED getvariable "Marker"] call cba_fnc_deleteEntity;
                 };
                 [position _IED, [str(side (group _killer))], +10] call ALiVE_fnc_updateSectorHostility;
@@ -332,7 +332,7 @@ for "_j" from 1 to _numIEDs do {
 
             if (isPlayer _killer) then {
                 if (ADDON getVariable "debug") then {
-                    diag_log format ["ALIVE-%1 IED: %2 explodes due to damage by %3 (via mine)", time, _ied, _killer];
+                    ["ALIVE-%1 IED: %2 explodes due to damage by %3 (via mine)", time, _ied, _killer] call ALiVE_fnc_dump;
                     [_ied getvariable "Marker"] call cba_fnc_deleteEntity;
                 };
                 [position _ied, [str(side (group _killer))], +10] call ALiVE_fnc_updateSectorHostility;

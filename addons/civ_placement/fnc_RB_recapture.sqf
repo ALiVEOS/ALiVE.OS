@@ -61,11 +61,11 @@ params [
 ];
 
 if (isNull _anchor) exitWith {
-    diag_log "ALIVE_fnc_RB_recapture: null anchor";
+    ["ALIVE_fnc_RB_recapture: null anchor"] call ALiVE_fnc_dump;
     false
 };
 if (_newFaction == "") exitWith {
-    diag_log "ALIVE_fnc_RB_recapture: empty faction";
+    ["ALIVE_fnc_RB_recapture: empty faction"] call ALiVE_fnc_dump;
     false
 };
 
@@ -76,10 +76,10 @@ private _debug       = _anchor getVariable ["ALiVE_RB_debug", false];
 private _newSide     = _newFaction call ALiVE_fnc_factionSide;
 
 if (_debug) then {
-    diag_log format [
+    [
         "ALIVE_RB_recapture: %1 (%2) -> %3 (%4) at %5",
         _oldFaction, _oldSide, _newFaction, _newSide, _pos
-    ];
+    ] call ALiVE_fnc_dump;
 };
 
 // Spawn new garrison off-camera. Issue #883 reported "friendly AI
@@ -114,10 +114,10 @@ if (_debug) then {
     };
 
     if (isNull _a) exitWith {
-        if (_d) then { diag_log "ALIVE_RB_recapture: anchor deleted before deferred spawn" };
+        if (_d) then { ["ALIVE_RB_recapture: anchor deleted before deferred spawn"] call ALiVE_fnc_dump };
     };
     if ((_a getVariable ["ALiVE_RB_currentFaction", ""]) != _f) exitWith {
-        if (_d) then { diag_log format ["ALIVE_RB_recapture: %1 ownership flipped before deferred spawn, abandoning", _f] };
+        if (_d) then { ["ALIVE_RB_recapture: %1 ownership flipped before deferred spawn, abandoning", _f] call ALiVE_fnc_dump };
     };
 
     if !(isnil "ALiVE_ProfileHandler") then {
@@ -136,11 +136,11 @@ if (_debug) then {
                 };
             } forEach _guards;
             if (_d) then {
-                diag_log format ["ALIVE_RB_recapture: deferred profile spawn %1 guards for %2", count _guards, _f];
+                ["ALIVE_RB_recapture: deferred profile spawn %1 guards for %2", count _guards, _f] call ALiVE_fnc_dump;
             };
         } else {
             if (_d) then {
-                diag_log format ["ALIVE_RB_recapture: no Infantry group config for faction %1, skipping garrison", _f];
+                ["ALIVE_RB_recapture: no Infantry group config for faction %1, skipping garrison", _f] call ALiVE_fnc_dump;
             };
         };
     } else {
@@ -148,7 +148,7 @@ if (_debug) then {
         sleep 1;
         [_blockers, _p, 100, true, false, 1, nil, 50] call ALIVE_fnc_groupGarrison;
         if (_d) then {
-            diag_log format ["ALIVE_RB_recapture: deferred real-AI spawn for faction %1", _f];
+            ["ALIVE_RB_recapture: deferred real-AI spawn for faction %1", _f] call ALiVE_fnc_dump;
         };
     };
 };
