@@ -136,11 +136,11 @@ _m setMarkerBrushLocal "SolidBorder";
 // occluded by SolidBorder fill / overlapping markers, and engine
 // behaviour varies). The sibling-overlay pattern is the same one
 // fnc_taskCreateMarker.sqf uses for ICON markers with text: a tiny
-// hd_dot ICON marker at the same position, with the title as its
-// text label. Title comes from the c2istar task hash entry captured
-// during the is-c2istar-task scan above (index 4). The engine
-// `taskTitle` command isn't recognised in this build, hence the
-// indirection.
+// EmptyIcon ICON marker at the offset position, with the title as
+// its text label. Title comes from the c2istar task hash entry
+// captured during the is-c2istar-task scan above (index 4). The
+// engine `taskTitle` command isn't recognised in this build, hence
+// the indirection.
 //
 // Suppress the AO sibling text when any task's primary sibling text
 // marker would land at the same spot. fnc_taskCreateMarker places its
@@ -193,7 +193,13 @@ if (_matchedTitle != "" && {!_hasNearbyPrimaryText}) then {
     // indicator and reads as cramped against the icon.
     private _mText = createMarkerLocal [_textMarkerName, _aoTextPos];
     _mText setMarkerShapeLocal "ICON";
-    _mText setMarkerTypeLocal "hd_dot";
+    // EmptyIcon (invisible) rather than hd_dot — same fix as
+    // fnc_taskCreateMarker.sqf (ebe78ad0). hd_dot rendered as a
+    // leading "bullet" next to the task title; EmptyIcon has no
+    // visual at any size while still keeping the marker text
+    // visible. Size 0.5 retained because Arma still culls markers
+    // below ~0.0001 even when the icon is invisible.
+    _mText setMarkerTypeLocal "EmptyIcon";
     _mText setMarkerColorLocal "ColorBlack";
     _mText setMarkerSizeLocal [0.5, 0.5];
     _mText setMarkerAlphaLocal 1;
