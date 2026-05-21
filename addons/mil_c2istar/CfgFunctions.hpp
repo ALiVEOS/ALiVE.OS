@@ -471,6 +471,60 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_C2ISTAR\fnc_taskRequest.sqf";
                 RECOMPILE;
             };
+
+            // ================================================================
+            // COP — Common Operational Picture (commander intel map overlay)
+            // ================================================================
+            class COPConfig {
+                description = "COP master configuration (tunable globals)";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPConfig.sqf";
+                RECOMPILE;
+            };
+            class COPApplyTier {
+                description = "COP tier preset — gates feature/layer flags by commanderIntelMode";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPApplyTier.sqf";
+                RECOMPILE;
+            };
+            class COPLog {
+                description = "COP four-tier logging dispatcher";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPLog.sqf";
+                RECOMPILE;
+            };
+            class COPHelpers {
+                description = "COP pure helper functions";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPHelpers.sqf";
+                RECOMPILE;
+            };
+            class COPServer {
+                description = "COP server-side polling loops (enemies + BFT + objectives)";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPServer.sqf";
+                RECOMPILE;
+            };
+            class COPAsym {
+                description = "COP asymmetric-layer polling loop";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPAsym.sqf";
+                RECOMPILE;
+            };
+            class COPClient {
+                description = "COP client init and map Draw EH attach";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPClient.sqf";
+                RECOMPILE;
+            };
+            class COPRender {
+                description = "COP client-side rendering functions";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPRender.sqf";
+                RECOMPILE;
+            };
+            class COPDebug {
+                description = "COP debug command router";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPDebug.sqf";
+                RECOMPILE;
+            };
+            class COPInit {
+                description = "COP entry-point orchestrator";
+                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPInit.sqf";
+                RECOMPILE;
+            };
         };
     };
 };

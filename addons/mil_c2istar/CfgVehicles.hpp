@@ -448,8 +448,15 @@ class CfgVehicles {
                             };
                     };
 
-                    // ---- Global intel ---------------------------------------------------
-                    class HDR_GLOBAL_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_GLOBAL_INTEL"; displayName = "GLOBAL INTEL"; };
+                    // ---- Map intel (SQM-marker spotreps + diary entries + sector overlays) -----
+                    // Persistent SQM markers + diary entries created by `ALIVE_fnc_militaryIntel`
+                    // and the G2 spotrep pump. Coexists with COP (further down) — when COP is
+                    // enabled, the basic NATO chevron spotrep markers are auto-suppressed to
+                    // avoid duplicating COP's per-frame enemy rendering, but the TACOM Recon /
+                    // Capture blocking-line markers (FLOT rectangles + advance arrows) still
+                    // render alongside COP. Set Display Map Intel = No to disable this layer
+                    // entirely.
+                    class HDR_MAP_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_MAP_INTEL"; displayName = "MAP INTEL — SPOTREPS, DIARY & SECTORS"; };
                     class opcomIntelSides
                     {
                             property     = "ALiVE_MIL_C2ISTAR_opcomIntelSides";
@@ -570,6 +577,24 @@ class CfgVehicles {
                                     class No  { name = "No";  value = "false"; };
                             };
                     };
+                    // Refresh interval for the legacy sector / friendly / military / spotrep
+                    // map markers driven by `ALIVE_fnc_militaryIntel`. Has no effect on the
+                    // COP overlay further below — COP has its own internal Loop A (30s) and
+                    // Loop B (60s) intervals defined in `cop/fnc_COPConfig.sqf`.
+                    class runEvery: Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_runEvery";
+                            displayName = "$STR_ALIVE_C2ISTAR_RUN_EVERY";
+                            tooltip = "$STR_ALIVE_C2ISTAR_RUN_EVERY_COMMENT";
+                            defaultValue = "2";
+                            typeName = "NUMBER";
+                    };
+
+                    // ---- T.R.A.C.E. (probability shading overlay) ----------------------
+                    // ELINT-style probability shading of likely enemy presence based on
+                    // OPCOM activity patterns. Separate code path from both legacy
+                    // spotreps and the COP overlay.
+                    class HDR_TRACE : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_TRACE"; displayName = "T.R.A.C.E. (PROBABILITY SHADING)"; };
                     class displayTraceGrid : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_displayTraceGrid";
@@ -587,13 +612,105 @@ class CfgVehicles {
                                     class Cross      { name = "Cross";      value = "Cross"; };
                             };
                     };
-                    class runEvery: Edit
+                    // ---- COP (Common Operational Picture) ------------------------------
+                    // Per-frame map-overlay rendering of commander intel: enemy clusters,
+                    // BFT (friendly profile positions), objective control state, and
+                    // asymmetric activity zones. Data feed comes from each side's OPCOM
+                    // module — place a `mil_opcom` for every side you want intel from.
+                    // Independent of the legacy spotrep / diary / sector toggles above.
+                    class HDR_COP : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_COP"; displayName = "COP (COMMON OPERATIONAL PICTURE)"; };
+                    class commanderIntelMode : Combo
                     {
-                            property = "ALiVE_MIL_C2ISTAR_runEvery";
-                            displayName = "$STR_ALIVE_C2ISTAR_RUN_EVERY";
-                            tooltip = "$STR_ALIVE_C2ISTAR_RUN_EVERY_COMMENT";
-                            defaultValue = "2";
+                            property = "ALiVE_MIL_C2ISTAR_commanderIntelMode";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_MODE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_MODE_COMMENT";
+                            defaultValue = """Off""";
+                            class Values
+                            {
+                                    class Off      { name = "$STR_ALIVE_C2ISTAR_COP_MODE_OFF";      value = "Off"; };
+                                    class Basic    { name = "$STR_ALIVE_C2ISTAR_COP_MODE_BASIC";    value = "Basic"; };
+                                    class Partial  { name = "$STR_ALIVE_C2ISTAR_COP_MODE_PARTIAL";  value = "Partial"; };
+                                    class Full     { name = "$STR_ALIVE_C2ISTAR_COP_MODE_FULL";     value = "Full"; };
+                                    class Advanced { name = "$STR_ALIVE_C2ISTAR_COP_MODE_ADVANCED"; value = "Advanced"; };
+                            };
+                    };
+                    class copDisplaySides
+                    {
+                            property      = "ALiVE_MIL_C2ISTAR_copDisplaySides";
+                            displayName   = "$STR_ALIVE_C2ISTAR_COP_DISPLAY_SIDES";
+                            tooltip       = "$STR_ALIVE_C2ISTAR_COP_DISPLAY_SIDES_COMMENT";
+                            control       = "ALiVE_SideChoiceMulti";
+                            typeName      = "STRING";
+                            expression    = "_this setVariable ['copDisplaySides', _value];";
+                            defaultValue  = """""";
+                            // attributeLoad / attributeSave overrides re-target the
+                            // SideChoiceMulti substrate (whose own callbacks hardcode
+                            // 'opcomIntelSides') at this attribute's logic variable
+                            // and display label — same pattern as the FactionChoiceMulti
+                            // variants. Without these overrides the picker would read /
+                            // write opcomIntelSides instead of copDisplaySides.
+                            attributeLoad = "[_this, 'copDisplaySides', '$STR_ALIVE_C2ISTAR_COP_DISPLAY_SIDES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiLoad.sqf'";
+                            attributeSave = "[_this, 'copDisplaySides'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";
+                    };
+                    class commanderIntelAsymmetric : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_commanderIntelAsymmetric";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_ASYM";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_ASYM_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_ASYM_NO";  value = "false"; };
+                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_ASYM_YES"; value = "true"; };
+                            };
+                    };
+                    class copShowBft : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copShowBft";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_COMMENT";
+                            defaultValue = """true""";
+                            class Values
+                            {
+                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_YES"; value = "true";  default = 1; };
+                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_NO";  value = "false"; };
+                            };
+                    };
+                    // Legacy Eden attribute preserved as hidden so the migration shim
+                    // in fnc_C2ISTAR.sqf can still read its value off existing missions
+                    // (a true legacy setting auto-maps to commanderIntelMode="Advanced"
+                    // when the new attribute is at its default "Off"). New missions
+                    // should configure via commanderIntelMode instead.
+                    class enableLiveCommanderIntel
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_enableLiveCommanderIntel";
+                            displayName = "";
+                            control = "ALiVE_HiddenAttribute";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['enableLiveCommanderIntel', _value];";
+                            defaultValue = """false""";
+                    };
+                    class copAnchorDistance : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copAnchorDistance";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE_COMMENT";
+                            defaultValue = "1000";
                             typeName = "NUMBER";
+                    };
+                    class copUpdateInterval : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copUpdateInterval";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_UPDATE_INTERVAL";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_UPDATE_INTERVAL_COMMENT";
+                            defaultValue = """60""";
+                            class Values
+                            {
+                                    class Fast     { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_FAST";     value = "15"; };
+                                    class Standard { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_STANDARD"; value = "30"; };
+                                    class Balanced { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_BALANCED"; value = "60"; default = 1; };
+                                    class Economy  { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_ECONOMY";  value = "120"; };
+                            };
                     };
                     class ModuleDescription: ModuleDescription{};
                 };

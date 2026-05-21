@@ -1,0 +1,9 @@
+Added: COP (Common Operational Picture) — opt-in commander-intel map
+overlay. Complement to T.R.A.C.E. Runs inside mil_c2istar as a new feature;
+Eden module attributes commanderIntelMode (Off / Basic / Partial / Full /
+Advanced), commanderIntelAsymmetric (Yes/No, gates Layer 5), and
+copAnchorDistance (free-form metres, default 1000, 100 m floor). The
+legacy enableLiveCommanderIntel attribute is preserved for backwards
+compatibility and auto-promotes to Advanced when set. Consumer of
+existing OPCOM data — no new authoring surface, no mission-side
+scripting required. See cop/README.md for full details.

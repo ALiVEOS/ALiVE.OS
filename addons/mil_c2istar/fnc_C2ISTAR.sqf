@@ -66,6 +66,9 @@ Peer Reviewed:
 #define DEFAULT_DISPLAY_PLAYER_SECTORS false
 #define DEFAULT_DISPLAY_MIL_SECTORS false
 #define DEFAULT_TRACEFILL "None"
+#define DEFAULT_ENABLE_COP false
+#define DEFAULT_COP_ANCHOR_DISTANCE 1000
+#define DEFAULT_COP_UPDATE_INTERVAL 60
 #define DEFAULT_RUN_EVERY 120
 #define DEFAULT_TASK_MIN_DISTANCE 0
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
@@ -155,6 +158,13 @@ switch(_operation) do {
     };
     case "destroy": {
         if (isServer) then {
+            // Stop COP server/asym loops cleanly when the module is destroyed
+            // so spawned `while` threads exit on their next cycle rather than
+            // polling a deleted logic indefinitely.
+            if (!isNil "ALIVE_fnc_COPInit") then {
+                ["stop"] call ALIVE_fnc_COPInit;
+            };
+
             // if server
             _logic setVariable ["super", nil];
             _logic setVariable ["class", nil];
@@ -487,6 +497,147 @@ switch(_operation) do {
     };
     case "displayTraceGrid": {
         _result = [_logic,_operation,_args,DEFAULT_TRACEFILL] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "commanderIntelMode": {
+        if (typeName _args == "STRING" && {_args != ""}) then {
+            _logic setVariable ["commanderIntelMode", _args];
+        } else {
+            _args = _logic getVariable ["commanderIntelMode", "Off"];
+        };
+
+        // Migration shim: if legacy enableLiveCommanderIntel is set on this logic AND
+        // commanderIntelMode is at default "Off" (or never set), let legacy drive.
+        // KNOWN MIGRATION SURPRISE: explicitly picking "Off" while legacy=true in init.sqf
+        // makes legacy win (looks like default). Remove the legacy attr to use explicit Off.
+        private _legacyRaw = _logic getVariable ["enableLiveCommanderIntel", "__NOT_SET__"];
+        if !(_legacyRaw isEqualTo "__NOT_SET__") then {
+            private _modeRaw = _logic getVariable ["commanderIntelMode", "__NOT_SET__"];
+            if (_modeRaw isEqualTo "__NOT_SET__" || {_modeRaw == "Off"}) then {
+                private _legacyBool = _legacyRaw;
+                if (typeName _legacyBool == "STRING") then {
+                    _legacyBool = (_legacyBool == "true");
+                };
+                _args = if (_legacyBool) then { "Advanced" } else { "Off" };
+                ["info", "init", "commanderIntelMode at default — legacy enableLiveCommanderIntel=%1 → %2", [_legacyBool, _args]] call ALiVE_fnc_COPLog;
+            };
+        };
+
+        private _validModes = ["Off","Basic","Partial","Full","Advanced"];
+        ASSERT_TRUE(_args in _validModes, str _args);
+        _result = _args;
+    };
+    case "copDisplaySides": {
+        // CSV string of side keys (WEST/EAST/GUER/CIV) selecting which sides'
+        // COP data feeds get rendered. Empty = default (player's own side
+        // only). Read-or-store pattern matches case "opcomIntelSides".
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["copDisplaySides", _args];
+        } else {
+            _args = _logic getVariable ["copDisplaySides", ""];
+        };
+        _result = _args;
+    };
+    case "copShowBft": {
+        // Direct BOOL toggle for the friendly BFT layer in COP. Overrides
+        // the Commander Intel Mode tier's BFT default — mission-maker can
+        // force BFT on at Partial tier (which normally disables it) or
+        // force off at Full / Advanced (which normally enables it). Read
+        // before COPApplyTier in the init block so the tier preset's
+        // `if (isNil ALIVE_COP_LAYER_BFT)` guard preserves the explicit
+        // setting.
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["copShowBft", _args];
+        } else {
+            _args = _logic getVariable ["copShowBft", true];
+        };
+        if (typeName _args == "STRING") then {
+            _args = (_args == "true");
+            _logic setVariable ["copShowBft", _args];
+        };
+        if (typeName _args != "BOOL") then { _args = true };
+        _result = _args;
+    };
+    case "commanderIntelAsymmetric": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["commanderIntelAsymmetric", _args];
+        } else {
+            _args = _logic getVariable ["commanderIntelAsymmetric", false];
+        };
+        if (typeName _args == "STRING") then {
+            if (_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["commanderIntelAsymmetric", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL", str _args);
+
+        _result = _args;
+    };
+    // DEPRECATED — used by shim only
+    case "enableLiveCommanderIntel": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["enableLiveCommanderIntel", _args];
+        } else {
+            _args = _logic getVariable ["enableLiveCommanderIntel", DEFAULT_ENABLE_COP];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["enableLiveCommanderIntel", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    case "copUpdateInterval": {
+        // Loop A (enemies + BFT) refresh interval in seconds. Loop B (objectives)
+        // runs at 2x this value. Combo presets: Fast=15, Standard=30,
+        // Balanced=60 (default), Economy=120. Eden Combo controls write their
+        // value="N" as a STRING, so the stored value on the logic is a STRING
+        // — getter path must parseNumber it before the SCALAR-bounds check
+        // or the bounds check sees STRING and reverts to default. Floor /
+        // ceiling are defensive against direct SQM edits or legacy values
+        // outside the preset range.
+        if (typeName _args == "STRING" && {_args != ""}) then {
+            // Setter (caller passed a string, e.g. from Eden expression).
+            _args = parseNumber _args;
+            _logic setVariable ["copUpdateInterval", _args];
+        } else {
+            if (typeName _args == "SCALAR") then {
+                // Setter (caller passed a number).
+                _logic setVariable ["copUpdateInterval", _args];
+            } else {
+                // Getter — read stored value off the logic.
+                _args = _logic getVariable ["copUpdateInterval", DEFAULT_COP_UPDATE_INTERVAL];
+                // Stored value from a Combo write is STRING — coerce to SCALAR
+                // so the bounds check below treats it as a valid number.
+                if (typeName _args == "STRING") then {
+                    _args = parseNumber _args;
+                };
+            };
+        };
+        // Floor 10 s, ceiling 600 s — anything outside this range either
+        // wastes CPU (below) or defeats the live-intel purpose (above).
+        if (typeName _args != "SCALAR" || {_args < 10}) then { _args = DEFAULT_COP_UPDATE_INTERVAL };
+        if (_args > 600) then { _args = 600 };
+        _result = _args;
+    };
+    case "copAnchorDistance": {
+        // Edit attribute (typeName=NUMBER) normally lands here as SCALAR, but
+        // legacy missions saved with the previous Combo attribute may still
+        // have a STRING value on the logic. The dual-path coercion below
+        // accepts either and caches the SCALAR back so subsequent reads skip
+        // the conversion. Read-else-from-logic preserves the stored value on
+        // pure read calls (when _args is nil/"").
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["copAnchorDistance", _args];
+        } else {
+            _args = _logic getVariable ["copAnchorDistance", DEFAULT_COP_ANCHOR_DISTANCE];
+        };
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+            _logic setVariable ["copAnchorDistance", _args];
+        };
+        // Floor: anything below 100 m or non-numeric falls back to default.
+        if (typeName _args != "SCALAR" || {_args < 100}) then { _args = DEFAULT_COP_ANCHOR_DISTANCE };
+        _result = _args;
     };
     case "runEvery": {
         if(typeName _args == "STRING") then {
@@ -1006,6 +1157,70 @@ switch(_operation) do {
                 _logic setvariable ["grid",nil];
             };
 
+            // COP — Common Operational Picture (commander intel overlay)
+            // Tiered mode replaces the legacy enableLiveCommanderIntel bool.
+            // commanderIntelMode ∈ Off / Basic / Partial / Full / Advanced; the
+            // shim inside MAINCLASS auto-promotes a legacy enableLiveCommanderIntel=true
+            // setting to "Advanced" when the new attr is at its default "Off".
+            private _mode = [_logic, "commanderIntelMode"] call MAINCLASS;
+            if (_mode != "Off") then {
+                // Apply the configurable Loop A interval BEFORE COPInit
+                // dispatches. COPConfig uses isNil guards, so writing the
+                // globals here overrides its defaults. Loop B (objectives,
+                // cheaper) runs at 2x Loop A.
+                private _updateInterval = [_logic, "copUpdateInterval"] call MAINCLASS;
+                ALIVE_COP_INTERVAL_FAST = _updateInterval;
+                ALIVE_COP_INTERVAL_SLOW = _updateInterval * 2;
+
+                // Friendly BFT layer toggle — set BEFORE COPApplyTier so the
+                // tier preset's `if (isNil ALIVE_COP_LAYER_BFT)` guard
+                // preserves the mission-maker's explicit choice. Lets the
+                // operator force BFT on at Partial tier (which normally
+                // kills it) or force off at Full / Advanced.
+                private _showBft = [_logic, "copShowBft"] call MAINCLASS;
+                ALIVE_COP_LAYER_BFT = _showBft;
+
+                [_mode] call ALiVE_fnc_COPApplyTier;
+
+                private _anchorDist = [_logic, "copAnchorDistance"] call MAINCLASS;
+                // JIP-persistent: a late joiner reads the current anchor
+                // distance immediately, so the very first Draw EH frame
+                // uses the configured radius rather than the 1000 m fallback.
+                missionNamespace setVariable ["ALIVE_COP_ANCHOR_DISTANCE", _anchorDist, true];
+
+                // Mission-maker side filter — which sides' data feeds the
+                // player's COP renderer combines. Empty = client falls back
+                // to player's own side only (default). Published JIP-
+                // persistent so late joiners get the filter without waiting
+                // for a server re-publish.
+                private _displaySidesCsv = [_logic, "copDisplaySides"] call MAINCLASS;
+                missionNamespace setVariable ["ALIVE_COP_DISPLAY_SIDES_CSV", _displaySidesCsv, true];
+
+                // COP-active flag — read by mil_intelligence/fnc_G2.sqf's
+                // onCreateMAP "spotrep" case to suppress the legacy NATO
+                // chevron + movement-arrow SQM markers when COP is rendering
+                // the same intel via its Draw EH (avoids visual duplication
+                // on every contact). The TACOM Recon / Capture blocking-line
+                // markers stay live — Jman's design intent is to keep those
+                // FLOT-style rectangles + advance arrows even when COP is on.
+                missionNamespace setVariable ["ALIVE_COP_ACTIVE", true, true];
+
+                ["startServer"] call ALIVE_fnc_COPInit;
+
+                private _asym = [_logic, "commanderIntelAsymmetric"] call MAINCLASS;
+                if (_asym) then {
+                    ["startAsym"] call ALIVE_fnc_COPInit;
+                };
+            } else {
+                // Mode=Off — make sure the suppression flag isn't lingering
+                // from a previous COP-on session of this mission. mil_intelligence
+                // checks this flag at marker-creation time, so a stale `true`
+                // would silently suppress legacy spotrep markers while COP no
+                // longer runs.
+                missionNamespace setVariable ["ALIVE_COP_ACTIVE", false, true];
+                ["info", "c2istar", "COP mode=Off — no COP dispatch"] call ALiVE_fnc_dump;
+            };
+
             if (_debug) then {
                 ["---------------------------- C2ISTAR %1 - Initial Settings ---------------------------------", _logic] call ALiVE_fnc_dump;
                 private _settings = allVariables _logic;
@@ -1054,6 +1269,14 @@ switch(_operation) do {
             };
 
             [_logic,"side",_sideText] call MAINCLASS;
+
+            // COP — start the client-side Draw EH attachment if enabled.
+            // Reads the Eden attribute here (not from the server publicVariable)
+            // because each client must resolve its own side independently.
+            private _mode_client = [_logic, "commanderIntelMode"] call MAINCLASS;
+            if (_mode_client != "Off") then {
+                ["startClient", _sideText] call ALIVE_fnc_COPInit;
+            };
 
 
             // set the player faction
