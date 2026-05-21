@@ -105,7 +105,9 @@ switch (_taskState) do {
             // fair sweep.
             private _verifyRadius = (_candidateSize min 500) max 200;
             private _enemyPresent = [_candidatePos, _taskSide, _verifyRadius, true] call ALIVE_fnc_isEnemyNear;
-            diag_log format ["DIAG-STRIP taskCaptureObjective: candidate idx=%1 pos=%2 size=%3 verifyRadius=%4 enemyPresent=%5", _forEachIndex, _candidatePos, _candidateSize, _verifyRadius, _enemyPresent];
+            if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+                ["DIAG-STRIP taskCaptureObjective: candidate idx=%1 pos=%2 size=%3 verifyRadius=%4 enemyPresent=%5", _forEachIndex, _candidatePos, _candidateSize, _verifyRadius, _enemyPresent] call ALiVE_fnc_dump;
+            };
             if (_enemyPresent) exitWith {
                 _size = _candidateSize;
                 _targetPosition = _candidatePos;

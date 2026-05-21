@@ -38,13 +38,17 @@ private _textMarkerName = "ALiVE_C2ISTAR_currentTaskAO_text";
 
 private _ct = currentTask player;
 if (isNull _ct) exitWith {
-    diag_log "DIAG-STRIP taskRefreshAoMarker: currentTask is null - hiding AO";
+    if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+        ["DIAG-STRIP taskRefreshAoMarker: currentTask is null - hiding AO"] call ALiVE_fnc_dump;
+    };
     deleteMarkerLocal _markerName;
     deleteMarkerLocal _textMarkerName;
 };
 
 if (toUpper (taskState _ct) != "ASSIGNED") exitWith {
-    diag_log format ["DIAG-STRIP taskRefreshAoMarker: state='%1' (not ASSIGNED) - hiding AO", taskState _ct];
+    if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+        ["DIAG-STRIP taskRefreshAoMarker: state='%1' (not ASSIGNED) - hiding AO", taskState _ct] call ALiVE_fnc_dump;
+    };
     deleteMarkerLocal _markerName;
     deleteMarkerLocal _textMarkerName;
 };
@@ -69,7 +73,9 @@ private _isC2istarTask = false;
 private _matchedTitle = "";
 private _matchedTaskID = "";
 if (typeName _tasks == "ARRAY" && {count _tasks > 1}) then {
-    diag_log format ["DIAG-STRIP taskRefreshAoMarker: ct=%1 typeName=%2 strCt=%3", _ct, typeName _ct, str _ct];
+    if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+        ["DIAG-STRIP taskRefreshAoMarker: ct=%1 typeName=%2 strCt=%3", _ct, typeName _ct, str _ct] call ALiVE_fnc_dump;
+    };
     // CBA hash structure: select 1 is the KEYS array (taskIDs). Walk
     // keys and hashGet each task data to access the task object at
     // index 10. Iterating select 1 directly would loop over strings,
@@ -83,7 +89,9 @@ if (typeName _tasks == "ARRAY" && {count _tasks > 1}) then {
         private _taskData = [_tasks, _x] call ALIVE_fnc_hashGet;
         if (typeName _taskData == "ARRAY" && {count _taskData > 10}) then {
             private _stored = _taskData select 10;
-            diag_log format ["DIAG-STRIP taskRefreshAoMarker: task[%1]=%2 stored at idx10 = %3 (typeName=%4) - isEqualTo ct = %5", _forEachIndex, _x, _stored, typeName _stored, _stored isEqualTo _ct];
+            if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+                ["DIAG-STRIP taskRefreshAoMarker: task[%1]=%2 stored at idx10 = %3 (typeName=%4) - isEqualTo ct = %5", _forEachIndex, _x, _stored, typeName _stored, _stored isEqualTo _ct] call ALiVE_fnc_dump;
+            };
             if (_stored isEqualTo _ct) exitWith {
                 _isC2istarTask = true;
                 _matchedTaskID = _x;
@@ -91,12 +99,16 @@ if (typeName _tasks == "ARRAY" && {count _tasks > 1}) then {
                 if (typeName _titleSlot == "STRING") then { _matchedTitle = _titleSlot };
             };
         } else {
-            diag_log format ["DIAG-STRIP taskRefreshAoMarker: task[%1]=%2 unexpected shape - typeName=%3 count=%4", _forEachIndex, _x, typeName _taskData, if (typeName _taskData == "ARRAY") then { count _taskData } else { -1 }];
+            if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+                ["DIAG-STRIP taskRefreshAoMarker: task[%1]=%2 unexpected shape - typeName=%3 count=%4", _forEachIndex, _x, typeName _taskData, if (typeName _taskData == "ARRAY") then { count _taskData } else { -1 }] call ALiVE_fnc_dump;
+            };
         };
     } forEach _keys;
 };
 if (!_isC2istarTask) exitWith {
-    diag_log format ["DIAG-STRIP taskRefreshAoMarker: currentTask not in c2istar tasks hash (hash count=%1) - hiding AO", if (typeName _tasks == "ARRAY" && {count _tasks > 1}) then { count (_tasks select 1) } else { -1 }];
+    if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+        ["DIAG-STRIP taskRefreshAoMarker: currentTask not in c2istar tasks hash (hash count=%1) - hiding AO", if (typeName _tasks == "ARRAY" && {count _tasks > 1}) then { count (_tasks select 1) } else { -1 }] call ALiVE_fnc_dump;
+    };
     deleteMarkerLocal _markerName;
     deleteMarkerLocal _textMarkerName;
 };
@@ -107,7 +119,9 @@ if (!_isC2istarTask) exitWith {
 // than hashGet, so the logic object is the right input type here.
 private _radius = [ALIVE_MIL_C2ISTAR, "taskAoRadius"] call ALIVE_fnc_C2ISTAR;
 if (typeName _radius != "SCALAR" || {_radius <= 0}) exitWith {
-    diag_log format ["DIAG-STRIP taskRefreshAoMarker: radius=%1 (typeName=%2) - hiding AO", _radius, typeName _radius];
+    if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+        ["DIAG-STRIP taskRefreshAoMarker: radius=%1 (typeName=%2) - hiding AO", _radius, typeName _radius] call ALiVE_fnc_dump;
+    };
     deleteMarkerLocal _markerName;
     deleteMarkerLocal _textMarkerName;
 };
@@ -206,4 +220,6 @@ if (_matchedTitle != "" && {!_hasNearbyPrimaryText}) then {
     _mText setMarkerTextLocal _matchedTitle;
 };
 
-diag_log format ["DIAG-STRIP taskRefreshAoMarker: SHOWING AO marker=%1 pos=%2 radius=%3 title='%4' nearbyPrimary=%5 textMarker=%6", _markerName, _pos, _radius, _matchedTitle, _hasNearbyPrimaryText, if (_matchedTitle != "" && {!_hasNearbyPrimaryText}) then { _textMarkerName } else { "(none)" }];
+if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+    ["DIAG-STRIP taskRefreshAoMarker: SHOWING AO marker=%1 pos=%2 radius=%3 title='%4' nearbyPrimary=%5 textMarker=%6", _markerName, _pos, _radius, _matchedTitle, _hasNearbyPrimaryText, if (_matchedTitle != "" && {!_hasNearbyPrimaryText}) then { _textMarkerName } else { "(none)" }] call ALiVE_fnc_dump;
+};

@@ -611,33 +611,36 @@ switch (_operation) do {
             if (_reserveLockFlag && _crewCount == 0) then {
                 _vehicle lock 2;
             };
-            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
-                diag_log format ["[ALiVE VehSpawn DEBUG] LOCK-CHECK class=%1 pos=%2 reserveLockFlag=%3 crewCount=%4 action=%5 lockedNow=%6 nearestLocation=%7",
+            if ((!isNil "ALiVE_sys_profile_debug" && {ALiVE_sys_profile_debug})
+                && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                ["[ALiVE VehSpawn DEBUG] LOCK-CHECK class=%1 pos=%2 reserveLockFlag=%3 crewCount=%4 action=%5 lockedNow=%6 nearestLocation=%7",
                     _vehicleClass, getPosATL _vehicle, _reserveLockFlag,
                     _crewCount,
                     if (_reserveLockFlag && _crewCount == 0) then {"applied lock 2"} else {"no change"},
                     locked _vehicle,
-                    text (nearestLocation [getPos _vehicle, ""])];
+                    text (nearestLocation [getPos _vehicle, ""])] call ALiVE_fnc_dump;
             };
 
-            // #850 diagnostic. When ALiVE_vehicleSpawn_debug is on, tag the
-            // vehicle with its spawn time and attach Killed/HandleDamage
-            // handlers + a periodic state monitor. The monitor exists because
+            // #850 diagnostic. When both ALiVE_sys_profile_debug and
+            // ALiVE_vehicleSpawn_debug are on, tag the vehicle with its
+            // spawn time and attach Killed/HandleDamage handlers + a
+            // periodic state monitor. The monitor exists because
             // earlier testing showed vehicles dying INSIDE the allowDamage
             // false window without the HandleDamage EH firing - meaning
             // something is bypassing both allowDamage and the damage event
             // chain (engine-level destruction from terrain clip / out-of-
             // bounds is the leading hypothesis). The 1 s tick logs damage /
             // alive / position so the exact transition can be pinpointed.
-            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+            if ((!isNil "ALiVE_sys_profile_debug" && {ALiVE_sys_profile_debug})
+                && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
                 _vehicle setVariable ["ALiVE_spawnTime", time];
                 _vehicle setVariable ["ALiVE_spawnPos", _position];
                 _vehicle addEventHandler ["Killed", {
                     params ["_unit"];
                     private _spawnTime = _unit getVariable ["ALiVE_spawnTime", -1];
                     private _spawnPos = _unit getVariable ["ALiVE_spawnPos", [0,0,0]];
-                    diag_log format ["[ALiVE VehSpawn DEBUG] KILLED class=%1 spawnPos=%2 deathPos=%3 elapsed=%4s",
-                        typeOf _unit, _spawnPos, getPosATL _unit, (if (_spawnTime >= 0) then {time - _spawnTime} else {-1})];
+                    ["[ALiVE VehSpawn DEBUG] KILLED class=%1 spawnPos=%2 deathPos=%3 elapsed=%4s",
+                        typeOf _unit, _spawnPos, getPosATL _unit, (if (_spawnTime >= 0) then {time - _spawnTime} else {-1})] call ALiVE_fnc_dump;
                 }];
                 _vehicle addEventHandler ["HandleDamage", {
                     params ["_unit", "", "_damage"];
@@ -645,9 +648,9 @@ switch (_operation) do {
                     if (_damage > 0.05 && {(time - _spawnTime) < 60}) then {
                         if !(_unit getVariable ["ALiVE_firstDamageLogged", false]) then {
                             _unit setVariable ["ALiVE_firstDamageLogged", true];
-                            diag_log format ["[ALiVE VehSpawn DEBUG] DAMAGED class=%1 spawnPos=%2 currentPos=%3 damage=%4 elapsed=%5s",
+                            ["[ALiVE VehSpawn DEBUG] DAMAGED class=%1 spawnPos=%2 currentPos=%3 damage=%4 elapsed=%5s",
                                 typeOf _unit, _unit getVariable ["ALiVE_spawnPos", [0,0,0]],
-                                getPosATL _unit, _damage, time - _spawnTime];
+                                getPosATL _unit, _damage, time - _spawnTime] call ALiVE_fnc_dump;
                         };
                     };
                     _damage
@@ -664,9 +667,9 @@ switch (_operation) do {
                     private _spawnTime = _v getVariable ["ALiVE_spawnTime", time];
                     private _tick = _v getVariable ["ALiVE_monitorTick", 0];
                     private _elapsed = time - _spawnTime;
-                    diag_log format ["[ALiVE VehSpawn DEBUG] MONITOR class=%1 tick=%2 elapsed=%3s alive=%4 damage=%5 pos=%6 vel=%7",
+                    ["[ALiVE VehSpawn DEBUG] MONITOR class=%1 tick=%2 elapsed=%3s alive=%4 damage=%5 pos=%6 vel=%7",
                         typeOf _v, _tick, _elapsed, alive _v, damage _v,
-                        getPosATL _v, vectorMagnitude (velocity _v)];
+                        getPosATL _v, vectorMagnitude (velocity _v)] call ALiVE_fnc_dump;
                     _v setVariable ["ALiVE_monitorTick", _tick + 1];
                     if (_elapsed > 30 || {!alive _v}) then {
                         [_handle] call CBA_fnc_removePerFrameHandler;
@@ -945,9 +948,10 @@ switch (_operation) do {
                     // Spawn-clip resolution failed - freeze instead of
                     // letting damage re-engage on a wreck-in-waiting.
                     _v enableSimulationGlobal false;
-                    if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
-                        diag_log format ["[ALiVE VehSpawn DEBUG] FROZEN class=%1 pos=%2 spawnPos=%3 damage=%4 drift=%5 speed=%6 belowTerrain=%7 (post-settle clip detected, scheduling despawn)",
-                            typeOf _v, getPosATL _v, _spawnPos, damage _v, _drift, _speed, _belowTerrain];
+                    if ((!isNil "ALiVE_sys_profile_debug" && {ALiVE_sys_profile_debug})
+                        && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                        ["[ALiVE VehSpawn DEBUG] FROZEN class=%1 pos=%2 spawnPos=%3 damage=%4 drift=%5 speed=%6 belowTerrain=%7 (post-settle clip detected, scheduling despawn)",
+                            typeOf _v, getPosATL _v, _spawnPos, damage _v, _drift, _speed, _belowTerrain] call ALiVE_fnc_dump;
                     };
                     // Frozen vehicles are visually-only; no physics, no
                     // gameplay value. Delete after 5 min so the world
@@ -960,9 +964,10 @@ switch (_operation) do {
                     [{
                         params ["_v2"];
                         if (!isNull _v2) then {
-                            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
-                                diag_log format ["[ALiVE VehSpawn DEBUG] DESPAWN-FROZEN class=%1 pos=%2 (5 min cleanup)",
-                                    typeOf _v2, getPosATL _v2];
+                            if ((!isNil "ALiVE_sys_profile_debug" && {ALiVE_sys_profile_debug})
+                                && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                ["[ALiVE VehSpawn DEBUG] DESPAWN-FROZEN class=%1 pos=%2 (5 min cleanup)",
+                                    typeOf _v2, getPosATL _v2] call ALiVE_fnc_dump;
                             };
                             deleteVehicle _v2;
                         };

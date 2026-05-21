@@ -994,7 +994,10 @@ switch(_operation) do {
                             if (surfaceIsWater _vehiclePos) then {
                                 _vehiclePos = (position _logic) getPos [50, random 360];
                             };
-                            diag_log format ["[ALiVE Reserve DEBUG] CMP-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)];
+                            if ((!isNil "ALiVE_mil_placement_custom_debug" && {ALiVE_mil_placement_custom_debug})
+                                && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                ["[ALiVE Reserve DEBUG] CMP-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
+                            };
 
                             private _emptyProfiles = [_vehicleReserveClass, _side, _faction, _vehiclePos, _vehicleDir, false, _faction] call ALIVE_fnc_createProfilesUnCrewedVehicle;
                             private _profileEntity = _emptyProfiles select 0;
@@ -1048,8 +1051,10 @@ switch(_operation) do {
                         if !(surfaceIsWater _position) then {
                             private _profiles = [_group, _position, _activeDir, false, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
-                            if (_isVehicle) then {
-                                diag_log format ["[ALiVE Reserve DEBUG] CMP-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)];
+                            if (_isVehicle
+                                && {!isNil "ALiVE_mil_placement_custom_debug" && {ALiVE_mil_placement_custom_debug}}
+                                && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                ["[ALiVE Reserve DEBUG] CMP-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)] call ALiVE_fnc_dump;
                             };
 
                             {
@@ -1411,10 +1416,11 @@ switch(_operation) do {
                             private _atoActive = count (allMissionObjects "ALiVE_mil_ato") > 0;
                             private _diceRoll = random 1;
                             private _crewed = _atoActive && {_diceRoll <= 0.2};
-                            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
-                                diag_log format ["[ALiVE VehSpawn DEBUG] HELI-PLACEMENT module=mil_placement_custom faction=%1 class=%2 pos=%3 atoActive=%4 dice=%5 threshold=0.2 result=%6",
+                            if ((!isNil "ALiVE_mil_placement_custom_debug" && {ALiVE_mil_placement_custom_debug})
+                                && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                ["[ALiVE VehSpawn DEBUG] HELI-PLACEMENT module=mil_placement_custom faction=%1 class=%2 pos=%3 atoActive=%4 dice=%5 threshold=0.2 result=%6",
                                     _faction, _vehicleClass, _position, _atoActive, _diceRoll,
-                                    if (_crewed) then {"CREWED"} else {"UNCREWED"}];
+                                    if (_crewed) then {"CREWED"} else {"UNCREWED"}] call ALiVE_fnc_dump;
                             };
 
                             if !(_crewed) then {

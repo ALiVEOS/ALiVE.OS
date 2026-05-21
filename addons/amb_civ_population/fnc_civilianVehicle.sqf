@@ -363,15 +363,16 @@ switch(_operation) do {
             // #850 diagnostic. Mirrors the sys_profile path - tag with spawn
             // time/pos and attach Killed/HandleDamage handlers so the RPT can
             // correlate visible wrecks with their validator ENTER lines.
-            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+            if ((!isNil "ALiVE_amb_civ_population_debug" && {ALiVE_amb_civ_population_debug})
+                && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
                 _unit setVariable ["ALiVE_spawnTime", time];
                 _unit setVariable ["ALiVE_spawnPos", _position];
                 _unit addEventHandler ["Killed", {
                     params ["_v"];
                     private _spawnTime = _v getVariable ["ALiVE_spawnTime", -1];
-                    diag_log format ["[ALiVE VehSpawn DEBUG] KILLED class=%1 spawnPos=%2 deathPos=%3 elapsed=%4s",
+                    ["[ALiVE VehSpawn DEBUG] KILLED class=%1 spawnPos=%2 deathPos=%3 elapsed=%4s",
                         typeOf _v, _v getVariable ["ALiVE_spawnPos", [0,0,0]],
-                        getPosATL _v, (if (_spawnTime >= 0) then {time - _spawnTime} else {-1})];
+                        getPosATL _v, (if (_spawnTime >= 0) then {time - _spawnTime} else {-1})] call ALiVE_fnc_dump;
                 }];
                 _unit addEventHandler ["HandleDamage", {
                     params ["_v", "", "_damage"];
@@ -379,9 +380,9 @@ switch(_operation) do {
                     if (_damage > 0.05 && {(time - _spawnTime) < 60}) then {
                         if !(_v getVariable ["ALiVE_firstDamageLogged", false]) then {
                             _v setVariable ["ALiVE_firstDamageLogged", true];
-                            diag_log format ["[ALiVE VehSpawn DEBUG] DAMAGED class=%1 spawnPos=%2 currentPos=%3 damage=%4 elapsed=%5s",
+                            ["[ALiVE VehSpawn DEBUG] DAMAGED class=%1 spawnPos=%2 currentPos=%3 damage=%4 elapsed=%5s",
                                 typeOf _v, _v getVariable ["ALiVE_spawnPos", [0,0,0]],
-                                getPosATL _v, _damage, time - _spawnTime];
+                                getPosATL _v, _damage, time - _spawnTime] call ALiVE_fnc_dump;
                         };
                     };
                     _damage

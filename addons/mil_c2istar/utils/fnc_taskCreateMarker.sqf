@@ -159,7 +159,9 @@ if(_markerShape == "ICON") then {
 // icon is effectively invisible but the engine still renders the
 // marker text. Both markers get added to the task's marker set so
 // taskDeleteMarkersForPlayers cleans them up together.
-diag_log format ["DIAG-STRIP taskCreateMarker: taskID=%1 markerText='%2' markerShape=%3 markerType=%4", _taskID, _markerText, _markerShape, _markerType];
+if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+    ["DIAG-STRIP taskCreateMarker: taskID=%1 markerText='%2' markerShape=%3 markerType=%4", _taskID, _markerText, _markerShape, _markerType] call ALiVE_fnc_dump;
+};
 private _mText = "";
 if(_markerText != "" && {_markerShape == "ICON"}) then {
     // Offset the sibling text marker 30m east of the icon so the
@@ -182,9 +184,13 @@ if(_markerText != "" && {_markerShape == "ICON"}) then {
     _mText setMarkerSizeLocal [0.5, 0.5];
     _mText setMarkerAlphaLocal _markerAlpha;
     _mText setMarkerTextLocal _markerText;
-    diag_log format ["DIAG-STRIP taskCreateMarker: sibling created name='%1' pos=%2 text='%3' alpha=%4", _mText, _textPos, _markerText, _markerAlpha];
+    if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+        ["DIAG-STRIP taskCreateMarker: sibling created name='%1' pos=%2 text='%3' alpha=%4", _mText, _textPos, _markerText, _markerAlpha] call ALiVE_fnc_dump;
+    };
 } else {
-    diag_log format ["DIAG-STRIP taskCreateMarker: sibling SKIPPED taskID=%1 markerText='%2' markerShape=%3 - reason=%4", _taskID, _markerText, _markerShape, if (_markerText == "") then { "empty markerText" } else { format ["non-ICON shape (%1)", _markerShape] }];
+    if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+        ["DIAG-STRIP taskCreateMarker: sibling SKIPPED taskID=%1 markerText='%2' markerShape=%3 - reason=%4", _taskID, _markerText, _markerShape, if (_markerText == "") then { "empty markerText" } else { format ["non-ICON shape (%1)", _markerShape] }] call ALiVE_fnc_dump;
+    };
     if(_markerText != "") then {
         // Non-ICON shape (ELLIPSE / RECTANGLE) - keep text on the
         // primary since the sibling-overlay trick is icon-specific.

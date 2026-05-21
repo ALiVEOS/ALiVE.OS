@@ -1247,22 +1247,26 @@ switch(_operation) do {
                 // hangar-loop entry diag. Strip per
                 // strategy_diag_strip_cleanup_pass.md once the heli
                 // spawn flow is verified across community factions.
-                diag_log format [
-                    "DIAG-STRIP MP helipad-loop entry: faction=%1, heliClasses count=%2, heliClusters=%3",
-                    _faction,
-                    count _heliClasses,
-                    count _heliClusters
-                ];
+                if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
+                    [
+                        "DIAG-STRIP MP helipad-loop entry: faction=%1, heliClasses count=%2, heliClusters=%3",
+                        _faction,
+                        count _heliClasses,
+                        count _heliClusters
+                    ] call ALiVE_fnc_dump;
+                };
 
                 if(count _heliClasses > 0) then {
 
                     {
                         private _nodes = [_x, "nodes",[]] call ALIVE_fnc_hashGet;
-                        diag_log format [
-                            "DIAG-STRIP MP helipad-cluster: clusterID=%1, nodeCount=%2",
-                            [_x, "clusterID", ""] call ALIVE_fnc_hashGet,
-                            count _nodes
-                        ];
+                        if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
+                            [
+                                "DIAG-STRIP MP helipad-cluster: clusterID=%1, nodeCount=%2",
+                                [_x, "clusterID", ""] call ALIVE_fnc_hashGet,
+                                count _nodes
+                            ] call ALiVE_fnc_dump;
+                        };
 
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
@@ -1276,13 +1280,15 @@ switch(_operation) do {
                             // if every candidate failed - skip this node.
                             _vehicleClass = (selectRandom _heliClasses);
                             private _airResult = [_vehicleClass, position _x, 200, "auto"] call ALiVE_fnc_findAirSpawnPosition;
-                            diag_log format [
-                                "DIAG-STRIP MP helipad-node: nodeType=%1, nodePos=%2, vehClass=%3, airResultCount=%4",
-                                typeOf _x,
-                                position _x,
-                                _vehicleClass,
-                                count _airResult
-                            ];
+                            if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
+                                [
+                                    "DIAG-STRIP MP helipad-node: nodeType=%1, nodePos=%2, vehClass=%3, airResultCount=%4",
+                                    typeOf _x,
+                                    position _x,
+                                    _vehicleClass,
+                                    count _airResult
+                                ] call ALiVE_fnc_dump;
+                            };
                             if (count _airResult >= 2) then {
                                 _position = _airResult select 0;
                                 _direction = _airResult select 1;
@@ -1296,10 +1302,11 @@ switch(_operation) do {
                                 private _atoActive = count (allMissionObjects "ALiVE_mil_ato") > 0;
                                 private _diceRoll = random 1;
                                 private _crewed = _atoActive && {_diceRoll <= 0.2};
-                                if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
-                                    diag_log format ["[ALiVE VehSpawn DEBUG] HELI-PLACEMENT module=mil_placement faction=%1 class=%2 pos=%3 atoActive=%4 dice=%5 threshold=0.2 result=%6",
+                                if ((!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug})
+                                    && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                    ["[ALiVE VehSpawn DEBUG] HELI-PLACEMENT module=mil_placement faction=%1 class=%2 pos=%3 atoActive=%4 dice=%5 threshold=0.2 result=%6",
                                         _faction, _vehicleClass, _position, _atoActive, _diceRoll,
-                                        if (_crewed) then {"CREWED"} else {"UNCREWED"}];
+                                        if (_crewed) then {"CREWED"} else {"UNCREWED"}] call ALiVE_fnc_dump;
                                 };
 
                                 if !(_crewed) then {
@@ -1356,14 +1363,16 @@ switch(_operation) do {
                 // Strip per strategy_diag_strip_cleanup_pass.md once
                 // the compiler -> findVehicleType -> hangar flow is
                 // verified across community factions.
-                diag_log format [
-                    "DIAG-STRIP MP hangar-loop entry: faction=%1, planeClasses=%2 (count=%3), airClusters=%4, airBuildingTypes=%5",
-                    _faction,
-                    _airClasses,
-                    count _airClasses,
-                    count _airClusters,
-                    ALIVE_airBuildingTypes
-                ];
+                if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
+                    [
+                        "DIAG-STRIP MP hangar-loop entry: faction=%1, planeClasses=%2 (count=%3), airClusters=%4, airBuildingTypes=%5",
+                        _faction,
+                        _airClasses,
+                        count _airClasses,
+                        count _airClusters,
+                        ALIVE_airBuildingTypes
+                    ] call ALiVE_fnc_dump;
+                };
 
                 if(count _airClasses > 0) then {
 
@@ -1405,12 +1414,14 @@ switch(_operation) do {
                                 };
                                 if (count _nearbyHangars > 0) then {
                                     _buildings = _nearbyHangars;
-                                    diag_log format [
-                                        "DIAG-STRIP MP hangar-fallback: clusterID=%1, found %2 hangar(s) near center=%3 via nearestObjects (node-filter had no hangar match)",
-                                        [_x, "clusterID", ""] call ALIVE_fnc_hashGet,
-                                        count _nearbyHangars,
-                                        _clusterCenter
-                                    ];
+                                    if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
+                                        [
+                                            "DIAG-STRIP MP hangar-fallback: clusterID=%1, found %2 hangar(s) near center=%3 via nearestObjects (node-filter had no hangar match)",
+                                            [_x, "clusterID", ""] call ALIVE_fnc_hashGet,
+                                            count _nearbyHangars,
+                                            _clusterCenter
+                                        ] call ALiVE_fnc_dump;
+                                    };
                                 };
                             };
                         };
@@ -1420,12 +1431,14 @@ switch(_operation) do {
                         // finding hangars in each air cluster's
                         // resolved node objects. Strip with the
                         // entry-line diag above.
-                        diag_log format [
-                            "DIAG-STRIP MP hangar-cluster: clusterID=%1, nodeCount=%2, buildingsMatched=%3",
-                            [_x, "clusterID", ""] call ALIVE_fnc_hashGet,
-                            count _nodes,
-                            count _buildings
-                        ];
+                        if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
+                            [
+                                "DIAG-STRIP MP hangar-cluster: clusterID=%1, nodeCount=%2, buildingsMatched=%3",
+                                [_x, "clusterID", ""] call ALIVE_fnc_hashGet,
+                                count _nodes,
+                                count _buildings
+                            ] call ALiVE_fnc_dump;
+                        };
 
                         //[_x, "debug", true] call ALIVE_fnc_cluster;
                         {
@@ -1450,8 +1463,10 @@ switch(_operation) do {
                                 // the validator. Returns [] when no
                                 // safe spot exists - skip this building.
                                 private _airResult = [_vehicleClass, position _x, 100, "auto"] call ALiVE_fnc_findAirSpawnPosition;
-                                diag_log format ["DIAG-STRIP MP hangar-building: faction=%1, bldType=%2, model=%3, vehClass=%4, rollKeep=%5, airResultCount=%6, pos=%7",
-                                    _faction, _bldType, _bldModel, _vehicleClass, _rollKeep, count _airResult, position _x];
+                                if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
+                                    ["DIAG-STRIP MP hangar-building: faction=%1, bldType=%2, model=%3, vehClass=%4, rollKeep=%5, airResultCount=%6, pos=%7",
+                                        _faction, _bldType, _bldModel, _vehicleClass, _rollKeep, count _airResult, position _x] call ALiVE_fnc_dump;
+                                };
                                 if (count _airResult >= 2) then {
                                     _position = _airResult select 0;
                                     _direction = _airResult select 1;
@@ -1461,9 +1476,10 @@ switch(_operation) do {
                                     // variant), but logging the placement gives
                                     // visibility into faction / class / hangar
                                     // positions for debugging.
-                                    if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
-                                        diag_log format ["[ALiVE VehSpawn DEBUG] HELI-PLACEMENT module=mil_placement source=hangar faction=%1 class=%2 pos=%3 result=UNCREWED",
-                                            _faction, _vehicleClass, _position];
+                                    if ((!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug})
+                                        && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                        ["[ALiVE VehSpawn DEBUG] HELI-PLACEMENT module=mil_placement source=hangar faction=%1 class=%2 pos=%3 result=UNCREWED",
+                                            _faction, _vehicleClass, _position] call ALiVE_fnc_dump;
                                     };
 
                                     [_vehicleClass,_side,_faction,_position,_direction,false,_faction] call ALIVE_fnc_createProfileVehicle;
@@ -1471,7 +1487,9 @@ switch(_operation) do {
                                     _countUncrewedAir = _countUncrewedAir + 1;
                                 };
                             } else {
-                                diag_log format ["DIAG-STRIP MP hangar-building: faction=%1, bldType=%2, model=%3, rollKeep=%4 SKIPPED by random-gate", _faction, _bldType, _bldModel, _rollKeep];
+                                if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
+                                    ["DIAG-STRIP MP hangar-building: faction=%1, bldType=%2, model=%3, rollKeep=%4 SKIPPED by random-gate", _faction, _bldType, _bldModel, _rollKeep] call ALiVE_fnc_dump;
+                                };
                             };
 
                         } forEach _buildings;
@@ -2442,13 +2460,10 @@ switch(_operation) do {
                                         if (surfaceIsWater _vehiclePos) then {
                                             _vehiclePos = _center getPos [50, random 360];
                                         };
-                                        // Always logged - placement-time only fires
-                                        // briefly during INIT and the volume is bounded
-                                        // by group count. Lets diagnostics survive
-                                        // missions where the debug flag isn't set
-                                        // before module dispatch (init.sqf timing on
-                                        // some MP setups runs after ALiVE postInit).
-                                        diag_log format ["[ALiVE Reserve DEBUG] M-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)];
+                                        if ((!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug})
+                                            && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                            ["[ALiVE Reserve DEBUG] M-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
+                                        };
                                         private _emptyProfiles = [_vehicleReserveClass, _side, _faction, _vehiclePos, _vehicleDir, false, _faction] call ALIVE_fnc_createProfilesUnCrewedVehicle;
                                         private _profileEntity = _emptyProfiles select 0;
                                         private _profileVehicle = _emptyProfiles select 1;
@@ -2540,8 +2555,10 @@ switch(_operation) do {
                                     if!(surfaceIsWater _position) then {
                                         _profiles = [_group, _position, _activeDir, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
-                                        if (_isVehicle) then {
-                                            diag_log format ["[ALiVE Reserve DEBUG] M-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)];
+                                        if (_isVehicle
+                                            && {!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}}
+                                            && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                            ["[ALiVE Reserve DEBUG] M-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)] call ALiVE_fnc_dump;
                                         };
 
                                         // Garrison & Patrols instead of the static garrison.
@@ -2613,7 +2630,10 @@ switch(_operation) do {
                                     if (surfaceIsWater _vehiclePos) then {
                                         _vehiclePos = _center getPos [50, random 360];
                                     };
-                                    diag_log format ["[ALiVE Reserve DEBUG] S-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)];
+                                    if ((!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug})
+                                        && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                        ["[ALiVE Reserve DEBUG] S-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
+                                    };
                                     private _emptyProfiles = [_vehicleReserveClass, _side, _faction, _vehiclePos, _vehicleDir, false, _faction] call ALIVE_fnc_createProfilesUnCrewedVehicle;
                                     private _profileEntity = _emptyProfiles select 0;
                                     private _profileVehicle = _emptyProfiles select 1;
@@ -2683,8 +2703,10 @@ switch(_operation) do {
                                 if!(surfaceIsWater _position) then {
                                     _profiles = [_group, _position, _activeDir, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
-                                    if (_isVehicle) then {
-                                        diag_log format ["[ALiVE Reserve DEBUG] S-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)];
+                                    if (_isVehicle
+                                        && {!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}}
+                                        && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                        ["[ALiVE Reserve DEBUG] S-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)] call ALiVE_fnc_dump;
                                     };
 
                                     // Garrison & Patrols instead of the static garrison.
@@ -2753,13 +2775,14 @@ switch(_operation) do {
                 } forEach _clusters;
                 private _hasReserves = _totalReserves > 0;
 
-                if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
-                    diag_log format ["[ALiVE Reserve DEBUG] PLACEMENT-SUMMARY faction=%1 totalClusters=%2 clustersWithReserves=%3 totalReserves=%4 (vehicle=%5 infantry=%6) readinessLevel=%7 activePatrolPercent=%8 infantryRange=[%9..%10) totalGroups=%11 PFH=%12",
+                if ((!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug})
+                    && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                    ["[ALiVE Reserve DEBUG] PLACEMENT-SUMMARY faction=%1 totalClusters=%2 clustersWithReserves=%3 totalReserves=%4 (vehicle=%5 infantry=%6) readinessLevel=%7 activePatrolPercent=%8 infantryRange=[%9..%10) totalGroups=%11 PFH=%12",
                         _faction, count _clusters, _clustersWithReserves, _totalReserves,
                         _totalVehicleReserves, _totalInfantryReserves,
                         _readinessLevel, _activePatrolPercent,
                         _infantryGroupStart, _infantryGroupEnd, _groupCount,
-                        if (_hasReserves) then {"started"} else {"skipped"}];
+                        if (_hasReserves) then {"started"} else {"skipped"}] call ALiVE_fnc_dump;
                 };
 
                 if (_hasReserves) then {

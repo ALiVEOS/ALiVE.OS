@@ -101,10 +101,12 @@ private _heartsAndMindsTaskTypes = [
                 // carries the corrupt centroid. Strip per
                 // strategy_diag_strip_cleanup_pass.md once the
                 // source is fixed.
-                diag_log format [
-                    "DIAG-STRIP taskGetCivilianCluster: skipping cluster '%1' with off-map center=%2 (worldSize=%3)",
-                    _x, _center, worldSize
-                ];
+                if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+                    [
+                        "DIAG-STRIP taskGetCivilianCluster: skipping cluster '%1' with off-map center=%2 (worldSize=%3)",
+                        _x, _center, worldSize
+                    ] call ALiVE_fnc_dump;
+                };
             };
 
             if (_onMap) then {
@@ -163,16 +165,18 @@ private _heartsAndMindsTaskTypes = [
 // Strip per strategy_diag_strip_cleanup_pass.md once we have
 // confidence the picker is healthy across cup_chernarus_a3 +
 // other community Chernarus variants.
-diag_log format [
-    "DIAG-STRIP taskGetCivilianCluster: clusterIDs=%1, eligible=%2, preferred=%3, sideText=%4, minHostility=%5, maxHostility=%6, locationType=%7",
-    count _clusterIDs,
-    count _eligibleClusters,
-    count _preferredClusters,
-    _sideText,
-    _minHostility,
-    _maxHostility,
-    _taskLocationType
-];
+if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+    [
+        "DIAG-STRIP taskGetCivilianCluster: clusterIDs=%1, eligible=%2, preferred=%3, sideText=%4, minHostility=%5, maxHostility=%6, locationType=%7",
+        count _clusterIDs,
+        count _eligibleClusters,
+        count _preferredClusters,
+        _sideText,
+        _minHostility,
+        _maxHostility,
+        _taskLocationType
+    ] call ALiVE_fnc_dump;
+};
 
 private _preferredClustersAvailable = _preferredClusters select {!(_x select 3)};
 private _eligibleClustersAvailable = _eligibleClusters select {!(_x select 3)};
@@ -184,10 +188,12 @@ private _candidates = switch (true) do {
     default {[]};
 };
 if (_candidates isEqualTo []) exitWith {
-    diag_log format ["DIAG-STRIP taskGetCivilianCluster: no candidates -- preferredAvailable=%1, eligibleAvailable=%2, allowCooldownFallback=%3",
-        count _preferredClustersAvailable,
-        count _eligibleClustersAvailable,
-        _allowCooldownFallback];
+    if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+        ["DIAG-STRIP taskGetCivilianCluster: no candidates -- preferredAvailable=%1, eligibleAvailable=%2, allowCooldownFallback=%3",
+            count _preferredClustersAvailable,
+            count _eligibleClustersAvailable,
+            _allowCooldownFallback] call ALiVE_fnc_dump;
+    };
     []
 };
 

@@ -130,7 +130,7 @@ if !(_mode in ["field", "military", "civilian", "roadblock", "ato"]) then {
 private _debug = _callerDebug || (!isNil "ALiVE_compSpawn_debug" && {ALiVE_compSpawn_debug});
 
 if (_debug) then {
-    diag_log format ["[ALiVE CompSpawn] ENTER pos=%1 radius=%2 envelope=%3 mode=%4", _centerPos, _radius, _envelope, _mode];
+    ["[ALiVE CompSpawn] ENTER pos=%1 radius=%2 envelope=%3 mode=%4", _centerPos, _radius, _envelope, _mode] call ALiVE_fnc_dump;
 };
 
 // ------------------------------------------------------------------------
@@ -187,7 +187,7 @@ _airfield params ["_runwaySegments", "_taxiwaySegments", ["_airfieldZones", []]]
 private _excludeAirfieldArea = !(_mode in ["ato"]);
 
 if (_debug && {count _runwaySegments + count _taxiwaySegments + count _airfieldZones > 0}) then {
-    diag_log format ["[ALiVE CompSpawn]   airfield: %1 runway seg, %2 taxiway seg, %3 airport zone(s)", count _runwaySegments, count _taxiwaySegments, count _airfieldZones];
+    ["[ALiVE CompSpawn]   airfield: %1 runway seg, %2 taxiway seg, %3 airport zone(s)", count _runwaySegments, count _taxiwaySegments, count _airfieldZones] call ALiVE_fnc_dump;
 };
 
 // ------------------------------------------------------------------------
@@ -268,7 +268,7 @@ private _candidateClear = {
         ((_p select 0) < 0) || {(_p select 0) > _wsz} ||
         {(_p select 1) < 0} || {(_p select 1) > _wsz}
     ) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: outside world bounds (worldSize=%2)", _p, _wsz] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: outside world bounds (worldSize=%2)", _p, _wsz] call ALiVE_fnc_dump };
         false
     };
 
@@ -288,19 +288,19 @@ private _candidateClear = {
     // mil_ato AA passes ~0.6 to allow placement on tight airfields where
     // the strict rule would skip the spawn entirely.
     if (_excludeRunways && {[_p, _env * _runwayClearanceMul] call _onAirfieldSurface}) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: airfield surface (clearance=%2m, mul=%3)", _p, _env * _runwayClearanceMul, _runwayClearanceMul] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: airfield surface (clearance=%2m, mul=%3)", _p, _env * _runwayClearanceMul, _runwayClearanceMul] call ALiVE_fnc_dump };
         false
     };
 
     // 2. Helipad exclusion (any HeliH within envelope)
     if (_excludeHelipads && {count (_p nearObjects ["HeliH", _env + 10]) > 0}) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: helipad nearby", _p] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: helipad nearby", _p] call ALiVE_fnc_dump };
         false
     };
 
     // 3. Road exclusion (field mode only)
     if (_excludeRoads && {count (_p nearRoads (_env + 5)) > 0}) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: road nearby (field mode)", _p] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: road nearby (field mode)", _p] call ALiVE_fnc_dump };
         false
     };
 
@@ -360,7 +360,7 @@ private _candidateClear = {
         };
     };
     if (count _buildingIntruders > 0) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: %2 obstacle bbox(s) intersect envelope: first=%3", _p, count _buildingIntruders, typeOf (_buildingIntruders select 0)] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: %2 obstacle bbox(s) intersect envelope: first=%3", _p, count _buildingIntruders, typeOf (_buildingIntruders select 0)] call ALiVE_fnc_dump };
         false
     };
 
@@ -380,11 +380,11 @@ private _candidateClear = {
         };
     };
     if (_waterCentre) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: water surface", _p] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: water surface", _p] call ALiVE_fnc_dump };
         false
     };
     if (_waterEdge) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: water within envelope perimeter", _p] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: water within envelope perimeter", _p] call ALiVE_fnc_dump };
         false
     };
 
@@ -413,7 +413,7 @@ private _candidateClear = {
     private _normal = surfaceNormal _p;
     private _normalZ = _normal select 2;
     if (_normalZ < _normalZMin) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: surfaceNormal Z %2 < %3 (mode %4)", _p, _normalZ, _normalZMin, _mode] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: surfaceNormal Z %2 < %3 (mode %4)", _p, _normalZ, _normalZMin, _mode] call ALiVE_fnc_dump };
         false
     };
 
@@ -449,7 +449,7 @@ private _candidateClear = {
     private _innerHi = selectMax _innerSamples;
     private _innerLo = selectMin _innerSamples;
     if (_innerHi - _innerLo > _maxDelta) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: composition slope-delta %2m > %3m max at %4m radius (mode %5)", _p, _innerHi - _innerLo, _maxDelta, _innerRadius, _mode] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: composition slope-delta %2m > %3m max at %4m radius (mode %5)", _p, _innerHi - _innerLo, _maxDelta, _innerRadius, _mode] call ALiVE_fnc_dump };
         false
     };
 
@@ -458,18 +458,18 @@ private _candidateClear = {
     private _outerHi = selectMax _outerSamples;
     private _outerLo = selectMin _outerSamples;
     if (_outerHi - _outerLo > _neighbourhoodMaxDelta) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: neighbourhood slope-delta %2m > %3m max at %4m radius (mode %5)", _p, _outerHi - _outerLo, _neighbourhoodMaxDelta, _outerRadius, _mode] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: neighbourhood slope-delta %2m > %3m max at %4m radius (mode %5)", _p, _outerHi - _outerLo, _neighbourhoodMaxDelta, _outerRadius, _mode] call ALiVE_fnc_dump };
         false
     };
 
     // 7. Surface-type filter - reject sand / mud / seabed.
     private _surface = surfaceType _p;
     if (_surface in ["#GdtBeach", "#GdtMud", "#GdtSeabed", "#GdtStratisBeach", "#GdtStratisMud", "#GdtStratisSeabed"]) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn]   reject %1: surface %2", _p, _surface] };
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: surface %2", _p, _surface] call ALiVE_fnc_dump };
         false
     };
 
-    if (_debug) then { diag_log format ["[ALiVE CompSpawn]   accept %1", _p] };
+    if (_debug) then { ["[ALiVE CompSpawn]   accept %1", _p] call ALiVE_fnc_dump };
     true
 };
 
@@ -506,7 +506,7 @@ private _findRoadCandidate = {
 // ------------------------------------------------------------------------
 if (_mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear}) exitWith {
     private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
-    if (_debug) then { diag_log format ["[ALiVE CompSpawn] EXIT centre dir=%1", _dir] };
+    if (_debug) then { ["[ALiVE CompSpawn] EXIT centre dir=%1", _dir] call ALiVE_fnc_dump };
     [_centerPos, _dir]
 };
 
@@ -514,12 +514,12 @@ if (_mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear}) exit
 if (_mode == "roadblock") exitWith {
     private _result = [_centerPos, _radius] call _findRoadCandidate;
     if (count _result == 0) exitWith {
-        if (_debug) then { diag_log "[ALiVE CompSpawn] EXIT FAIL: no road in radius (roadblock mode)" };
+        if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: no road in radius (roadblock mode)"] call ALiVE_fnc_dump };
         []
     };
     _result params ["_rPos", "_rDir"];
     if !([_rPos, _envelope] call _candidateClear) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn] EXIT FAIL: road candidate %1 fails clearance", _rPos] };
+        if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: road candidate %1 fails clearance", _rPos] call ALiVE_fnc_dump };
         []
     };
     // Extra perpendicular-to-road slope check. Roads themselves are
@@ -556,10 +556,10 @@ if (_mode == "roadblock") exitWith {
     // steeper and the outermost wing tilts off the verge.
     private _perpBudget = _envelope * 0.08;
     if (_maxPerpDelta > _perpBudget) exitWith {
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn] EXIT FAIL: road candidate %1 perpendicular slope-delta %2m > %3m budget (roadDir %4, envelope %5)", _rPos, _maxPerpDelta, _perpBudget, _rDir, _envelope] };
+        if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: road candidate %1 perpendicular slope-delta %2m > %3m budget (roadDir %4, envelope %5)", _rPos, _maxPerpDelta, _perpBudget, _rDir, _envelope] call ALiVE_fnc_dump };
         []
     };
-    if (_debug) then { diag_log format ["[ALiVE CompSpawn] EXIT roadblock pos=%1 dir=%2 perpDelta=%3m budget=%4m", _rPos, _rDir, _maxPerpDelta, _perpBudget] };
+    if (_debug) then { ["[ALiVE CompSpawn] EXIT roadblock pos=%1 dir=%2 perpDelta=%3m budget=%4m", _rPos, _rDir, _maxPerpDelta, _perpBudget] call ALiVE_fnc_dump };
     [_rPos, _rDir]
 };
 
@@ -582,12 +582,12 @@ for "_i" from 1 to _maxAttempts do {
     if ([_candidate, _envelope] call _candidateClear) exitWith {
         private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
         _result = [_candidate, _dir];
-        if (_debug) then { diag_log format ["[ALiVE CompSpawn] EXIT sample[%1] pos=%2 dir=%3", _i, _candidate, _dir] };
+        if (_debug) then { ["[ALiVE CompSpawn] EXIT sample[%1] pos=%2 dir=%3", _i, _candidate, _dir] call ALiVE_fnc_dump };
     };
 };
 
-if (count _result == 0) then {
-    diag_log format ["[ALiVE CompSpawn] EXIT FAIL: %1 attempts exhausted (envelope=%2 mode=%3 radius=%4 centre=%5)", _maxAttempts, _envelope, _mode, _radius, _centerPos];
+if (count _result == 0 && _debug) then {
+    ["[ALiVE CompSpawn] EXIT FAIL: %1 attempts exhausted (envelope=%2 mode=%3 radius=%4 centre=%5)", _maxAttempts, _envelope, _mode, _radius, _centerPos] call ALiVE_fnc_dump;
 };
 
 _result

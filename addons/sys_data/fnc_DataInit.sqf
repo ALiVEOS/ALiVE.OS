@@ -134,8 +134,10 @@ if (isDedicated || (isServer && _pns)) then {
     // once the fix is verified.
     private _legacyKey = format["%1_%2", GVAR(GROUP_ID), missionName];
     private _legacyHit = !(isNil {profileNameSpace getVariable _legacyKey});
-    diag_log format ["ALIVE DATA DIAG: missionName=%1 worldName=%2 -> newKey=%3 legacyKey=%4 legacyHit=%5",
-        missionName, worldName, _missionName, _legacyKey, _legacyHit];
+    if (!isNil "ALiVE_sys_data_debug" && {ALiVE_sys_data_debug}) then {
+        ["ALIVE DATA DIAG: missionName=%1 worldName=%2 -> newKey=%3 legacyKey=%4 legacyHit=%5",
+            missionName, worldName, _missionName, _legacyKey, _legacyHit] call ALiVE_fnc_dump;
+    };
     if (!(isNil {profileNameSpace getvariable _missionName}) && _pns) then {
 
         [

@@ -140,7 +140,9 @@ switch(_taskType) do {
 // colour / shape from the switch's per-type selection. Defensive
 // type guard: if a caller accidentally passes nil (e.g. a stale
 // _taskTitle reference), treat as no-override rather than throwing.
-diag_log format ["DIAG-STRIP taskCreateMarkersForPlayers: taskID=%1 type=%2 customText=%3 (typeName=%4)", _taskID, _taskType, _customText, typeName _customText];
+if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+    ["DIAG-STRIP taskCreateMarkersForPlayers: taskID=%1 type=%2 customText=%3 (typeName=%4)", _taskID, _taskType, _customText, typeName _customText] call ALiVE_fnc_dump;
+};
 if (typeName _customText == "STRING" && {_customText != ""} && {count _markerDefinition >= 4}) then {
     _markerDefinition set [3, _customText];
 };

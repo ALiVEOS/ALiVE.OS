@@ -420,19 +420,21 @@ private _fnc_orientHangar = {
 
     // DIAG-STRIP orient result. Strip per
     // strategy_diag_strip_cleanup_pass.md.
-    diag_log format [
-        "DIAG-STRIP orientHangar result: type=%1, model=%2, baseDir=%3, samples=[[%4,%5],[%6,%7],[%8,%9],[%10,%11]], longAxis=[%12,%13], clearDelta=%14, useRoad=%15, roadDir=%16, chosenDir=%17 (delta=%18)",
-        typeOf _hangar,
-        toLower(getText(configFile >> "CfgVehicles" >> (typeOf _hangar) >> "model")),
-        _baseDir,
-        _c0, _d0, _c1, _d1, _c2, _d2, _c3, _d3,
-        _d0Long, _d1Long,
-        _clearDelta,
-        _useRoadTiebreaker,
-        _roadDir,
-        _result,
-        ((_result - _baseDir) + 540) mod 360 - 180
-    ];
+    if (!isNil "ALiVE_airSpawn_debug" && {ALiVE_airSpawn_debug}) then {
+        [
+            "DIAG-STRIP orientHangar result: type=%1, model=%2, baseDir=%3, samples=[[%4,%5],[%6,%7],[%8,%9],[%10,%11]], longAxis=[%12,%13], clearDelta=%14, useRoad=%15, roadDir=%16, chosenDir=%17 (delta=%18)",
+            typeOf _hangar,
+            toLower(getText(configFile >> "CfgVehicles" >> (typeOf _hangar) >> "model")),
+            _baseDir,
+            _c0, _d0, _c1, _d1, _c2, _d2, _c3, _d3,
+            _d0Long, _d1Long,
+            _clearDelta,
+            _useRoadTiebreaker,
+            _roadDir,
+            _result,
+            ((_result - _baseDir) + 540) mod 360 - 180
+        ] call ALiVE_fnc_dump;
+    };
 
     _result
 };

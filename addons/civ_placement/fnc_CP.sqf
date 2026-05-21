@@ -1308,7 +1308,10 @@ switch(_operation) do {
                                 if (surfaceIsWater _vehiclePos) then {
                                     _vehiclePos = _center getPos [50, random 360];
                                 };
-                                diag_log format ["[ALiVE Reserve DEBUG] CP-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)];
+                                if ((!isNil "ALiVE_civ_placement_debug" && {ALiVE_civ_placement_debug})
+                                    && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                    ["[ALiVE Reserve DEBUG] CP-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
+                                };
 
                                 private _emptyProfiles = [_vehicleReserveClass, _sideCP, _faction, _vehiclePos, _vehicleDir, false, _faction] call ALIVE_fnc_createProfilesUnCrewedVehicle;
                                 private _profileEntity = _emptyProfiles select 0;
@@ -1367,8 +1370,10 @@ switch(_operation) do {
                             if !(surfaceIsWater _position) then {
                                 _profiles = [_group, _position, _activeDir, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
-                                if (_isVehicle) then {
-                                    diag_log format ["[ALiVE Reserve DEBUG] CP-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)];
+                                if (_isVehicle
+                                    && {!isNil "ALiVE_civ_placement_debug" && {ALiVE_civ_placement_debug}}
+                                    && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                    ["[ALiVE Reserve DEBUG] CP-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)] call ALiVE_fnc_dump;
                                 };
 
                                 {
