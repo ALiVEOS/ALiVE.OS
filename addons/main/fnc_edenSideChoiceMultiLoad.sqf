@@ -27,7 +27,12 @@ Parameters:
     _varName    : STRING  - logic variable name. Defaults to
                             "opcomIntelSides".
     _titleText  : STRING  - label rendered on the Title sub-control.
-                            Defaults to "Commander Intel Sides:".
+                            Pass either a literal English string OR a
+                            stringtable key prefixed with "$" (e.g.
+                            "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES") — the
+                            "$" form is resolved via `localize` so
+                            translations live in stringtable.xml. Defaults
+                            to STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES.
     _sqmValue   : STRING  - engine-auto-populated SQM value passed
                             via Cfg3DEN's `_value` magic. Highest-
                             priority source - lets the listbox ticks
@@ -41,7 +46,7 @@ Author:
 
 private _display   = controlNull;
 private _varName   = "opcomIntelSides";
-private _titleText = "Commander Intel Sides:";
+private _titleText = "$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES";
 private _sqmValue  = "";
 
 if (typeName _this == "ARRAY") then {
@@ -63,10 +68,18 @@ if (isNull _display) exitWith {
     diag_log "ALIVE SideChoiceMulti LOAD: null display";
 };
 
+// Stringtable resolution: "$STR_FOO" → localize. Literal strings pass through.
+// Matches the pattern in fnc_edenAAUnitChoiceLoad / fnc_edenFilteredMultiSelectLoad
+// so all module-attribute labels flow through stringtable.xml.
+private _titleResolved = _titleText;
+if (_titleText != "" && {(_titleText select [0,1]) == "$"}) then {
+    _titleResolved = localize (_titleText select [1]);
+};
+
 // Override the inherited Title sub-control text.
 private _titleCtrl = _display controlsGroupCtrl 101;
 if (!isNull _titleCtrl) then {
-    _titleCtrl ctrlSetText _titleText;
+    _titleCtrl ctrlSetText _titleResolved;
 };
 
 private _listCtrl = _display controlsGroupCtrl 100;

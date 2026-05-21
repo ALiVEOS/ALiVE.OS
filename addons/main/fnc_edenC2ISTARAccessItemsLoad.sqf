@@ -22,7 +22,12 @@ Parameters:
     _display    : DISPLAY - controlsGroup display
     _varName    : STRING  - logic variable name. Defaults to "c2_item".
     _titleText  : STRING  - label rendered on the Title sub-control.
-                            Defaults to "Required Items:".
+                            Pass either a literal English string OR a
+                            stringtable key prefixed with "$" (e.g.
+                            "$STR_ALIVE_C2ISTAR_ALLOW") — the "$" form is
+                            resolved via `localize` so translations live in
+                            stringtable.xml. Defaults to the localized
+                            STR_ALIVE_C2ISTAR_ALLOW key.
     _sqmValue   : STRING  - engine-auto-populated SQM value (Cfg3DEN's
                             `_value` magic). Highest-priority source.
 
@@ -32,7 +37,7 @@ Author:
 
 private _display   = controlNull;
 private _varName   = "c2_item";
-private _titleText = "Required Items:";
+private _titleText = "$STR_ALIVE_C2ISTAR_ALLOW";
 private _sqmValue  = "";
 
 if (typeName _this == "ARRAY") then {
@@ -54,8 +59,16 @@ if (isNull _display) exitWith {
     diag_log "ALIVE C2ISTARAccessItems LOAD: null display";
 };
 
+// Stringtable resolution: "$STR_FOO" → localize. Literal strings pass through.
+// Matches the pattern in fnc_edenAAUnitChoiceLoad / fnc_edenFilteredMultiSelectLoad
+// so all module-attribute labels flow through stringtable.xml.
+private _titleResolved = _titleText;
+if (_titleText != "" && {(_titleText select [0,1]) == "$"}) then {
+    _titleResolved = localize (_titleText select [1]);
+};
+
 private _titleCtrl = _display controlsGroupCtrl 101;
-if (!isNull _titleCtrl) then { _titleCtrl ctrlSetText _titleText; };
+if (!isNull _titleCtrl) then { _titleCtrl ctrlSetText _titleResolved; };
 
 private _listCtrl = _display controlsGroupCtrl 100;
 if (isNull _listCtrl) exitWith {

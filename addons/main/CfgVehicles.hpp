@@ -466,7 +466,7 @@ class Cfg3DEN
                     h = "26 * (pixelH * pixelGrid * 0.5)";
                 };
             };
-            attributeLoad = "[_this, 'c2_item', 'Required Items:', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsLoad.sqf'";
+            attributeLoad = "[_this, 'c2_item', '$STR_ALIVE_C2ISTAR_ALLOW', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsLoad.sqf'";
             attributeSave = "[_this, 'c2_item'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsSave.sqf'";
         };
 
@@ -496,7 +496,7 @@ class Cfg3DEN
                     h = "22 * (pixelH * pixelGrid * 0.5)";
                 };
             };
-            attributeLoad = "[_this, 'opcomIntelSides', 'Commander Intel Sides:', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiLoad.sqf'";
+            attributeLoad = "[_this, 'opcomIntelSides', '$STR_ALIVE_C2ISTAR_OPCOM_INTEL_SIDES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'opcomIntelSides'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";
         };
 
