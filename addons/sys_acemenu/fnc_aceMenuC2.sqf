@@ -103,6 +103,32 @@ private _action = [
 
 [player, 1, _menupath, _action] call ace_interact_menu_fnc_addActionToObject;
 
+// Command View toggle item — only surfaces when the mission-maker opted
+// in via copCommandViewEnabled AND the player carries a c2_item. The
+// in-game HUD label rendered by COPRender provides ON/OFF feedback so a
+// static menu label is sufficient. Condition inlines the c2_item check
+// rather than re-using `_c2Cond` because the latter goes out of scope
+// before ACE evaluates the condition.
+private _cvCond = {
+    (missionNamespace getVariable ["ALIVE_COP_CommandViewEnabled", false])
+    && {
+        ({
+            ([(toLower(str((assignedItems player) + (uniformItems player) + (backpackItems player) + (vestItems player)))), toLower(_x)] call CBA_fnc_find) > -1
+        } count MOD(MIL_C2ISTAR_Items)) > 0
+    }
+};
+private _action = [
+    "C2_CommandView",
+    "Toggle Command View",
+    QMENUICON2(c2,ops),
+    {
+        ALIVE_COP_CommandViewOn = !(missionNamespace getVariable ["ALIVE_COP_CommandViewOn", false]);
+    },
+    _cvCond
+] call ace_interact_menu_fnc_createAction;
+
+[player, 1, _menupath, _action] call ace_interact_menu_fnc_addActionToObject;
+
 
 // ##### Start of Reporting submenu section ##### //
 

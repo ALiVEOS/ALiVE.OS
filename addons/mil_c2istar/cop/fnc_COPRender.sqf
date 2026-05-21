@@ -588,6 +588,19 @@ ALIVE_fnc_COPDrawAll = {
     private _anchor = getPos player;
     private _anchorDist = missionNamespace getVariable ["ALIVE_COP_ANCHOR_DISTANCE", 1000];
 
+    // Command View bypass — when true, the anchor-distance gate below
+    // is OR'd to true, so every layer renders across the full map
+    // instead of within the player's anchor radius. Two gates must
+    // align: the mission-maker's Eden opt-in (`ALIVE_COP_CommandViewEnabled`)
+    // and the player's own toggle (`ALIVE_COP_CommandViewOn`). The
+    // c2_item eligibility is enforced at toggle-set time in the c2istar
+    // menus, not re-checked per frame here — keeps DrawAll's hot path
+    // a cheap boolean rather than an inventory scan + classname
+    // expansion. Viewport culling still applies — without it the
+    // per-frame draw cost at full zoom-out becomes punishing.
+    private _bypassAnchor = (missionNamespace getVariable ["ALIVE_COP_CommandViewEnabled", false])
+                         && {missionNamespace getVariable ["ALIVE_COP_CommandViewOn", false]};
+
     // Zoom level (0.05 = max zoom in, 1.0 = max zoom out).
     private _zoom = ctrlMapScale _mapCtrl;
 
@@ -646,7 +659,7 @@ ALIVE_fnc_COPDrawAll = {
         {
             private _entryPos  = _x select 0;
             private _entrySize = _x select 1;
-            if ((_entryPos distance2D _anchor) <= _anchorDist) then {
+            if (_bypassAnchor || {(_entryPos distance2D _anchor) <= _anchorDist}) then {
                 private _ex = _entryPos select 0;
                 private _ey = _entryPos select 1;
                 if (_ex >= (_viewMinX - _entrySize) && {_ex <= (_viewMaxX + _entrySize)}
@@ -664,7 +677,7 @@ ALIVE_fnc_COPDrawAll = {
             private _entryPos  = _entry select 0;
             private _entrySize = _entry select 1;
 
-            if ((_entryPos distance2D _anchor) <= _anchorDist) then {
+            if (_bypassAnchor || {(_entryPos distance2D _anchor) <= _anchorDist}) then {
                 private _ex = _entryPos select 0;
                 private _ey = _entryPos select 1;
                 if (_ex >= (_viewMinX - _entrySize) && {_ex <= (_viewMaxX + _entrySize)}
@@ -684,7 +697,7 @@ ALIVE_fnc_COPDrawAll = {
         {
             private _entryPos  = _x select 1;
             private _entrySize = _x select 2;
-            if ((_entryPos distance2D _anchor) <= _anchorDist) then {
+            if (_bypassAnchor || {(_entryPos distance2D _anchor) <= _anchorDist}) then {
                 private _ex = _entryPos select 0;
                 private _ey = _entryPos select 1;
                 if (_ex >= (_viewMinX - _entrySize) && {_ex <= (_viewMaxX + _entrySize)}
@@ -699,7 +712,7 @@ ALIVE_fnc_COPDrawAll = {
     if (ALIVE_COP_LAYER_ASYMMETRIC) then {
         {
             private _entryPos = _x select 1;
-            if ((_entryPos distance2D _anchor) <= _anchorDist) then {
+            if (_bypassAnchor || {(_entryPos distance2D _anchor) <= _anchorDist}) then {
                 private _ex = _entryPos select 0;
                 private _ey = _entryPos select 1;
                 if (_ex >= (_viewMinX - 200) && {_ex <= (_viewMaxX + 200)}
@@ -714,7 +727,7 @@ ALIVE_fnc_COPDrawAll = {
     if (ALIVE_COP_LAYER_BFT) then {
         {
             private _entryPos = _x select 0;
-            if ((_entryPos distance2D _anchor) <= _anchorDist) then {
+            if (_bypassAnchor || {(_entryPos distance2D _anchor) <= _anchorDist}) then {
                 private _ex = _entryPos select 0;
                 private _ey = _entryPos select 1;
                 if (_ex >= (_viewMinX - 200) && {_ex <= (_viewMaxX + 200)}
@@ -745,7 +758,7 @@ ALIVE_fnc_COPDrawAll = {
             // COPClusterEnemy's reduce step).
             if ((_x select 1) != ALIVE_COP_playerSideKey) then {
                 private _entryPos = _x select 0;
-                if ((_entryPos distance2D _anchor) <= _anchorDist) then {
+                if (_bypassAnchor || {(_entryPos distance2D _anchor) <= _anchorDist}) then {
                     private _ex = _entryPos select 0;
                     private _ey = _entryPos select 1;
                     if (_ex >= (_viewMinX - 200) && {_ex <= (_viewMaxX + 200)}
@@ -755,6 +768,54 @@ ALIVE_fnc_COPDrawAll = {
                 };
             };
         } forEach _intel;
+    };
+
+    // ----- Command View HUD indicator -----
+    // Rendered last so it sits above any markers that would otherwise sit
+    // under the bottom-left corner of the map. Anchored against the
+    // viewport corners already cached above — those represent the
+    // genuinely VISIBLE world rect. The map control's own ctrlPosition
+    // is a much larger draggable surface; using it puts the HUD off-screen.
+    // Position passed as an explicit 3D triple to match every other
+    // drawIcon caller in this file.
+    if (_bypassAnchor) then {
+        // Anchor near the viewport's bottom-left corner so the HUD tracks
+        // the visible area at any zoom or pan. Cannot use the cached
+        // _viewMin/Max above — that cache refreshes only on zoom change,
+        // so the HUD would freeze in world-space when the player pans.
+        // Recompute fresh per frame from the current screen-to-world
+        // transform; two extra ctrlMapScreenToWorld calls are negligible.
+        // Clamps:
+        //   - `max 0` keeps the anchor inside the playable world bounds
+        //     when the viewport extends into the negative-coord gray
+        //     border (drawIcon won't render at off-world positions —
+        //     confirmed via earlier RPT diag).
+        //   - `min worldSize` is the symmetric ceiling for eastern /
+        //     northern over-extent.
+        private _liveTL = _mapCtrl ctrlMapScreenToWorld [safezoneX, safezoneY];
+        private _liveBR = _mapCtrl ctrlMapScreenToWorld [safezoneX + safezoneW, safezoneY + safezoneH];
+        private _liveMinX = _liveTL select 0;
+        private _liveMaxX = _liveBR select 0;
+        private _liveMinY = _liveBR select 1;
+        private _worldSize = worldSize;
+        private _hudX = ((_liveMinX + ((_liveMaxX - _liveMinX) * 0.05)) max 0) min _worldSize;
+        private _hudY = ((_liveMinY + (((_liveTL select 1) - _liveMinY) * 0.05)) max 0) min _worldSize;
+        private _hudPos = [_hudX, _hudY, 0];
+
+        // Use a transparent procedural texture with non-zero icon
+        // dimensions — Goldwep's existing empty-texture / zero-dim
+        // text-only pattern (e.g. line 134 activity badge) does not
+        // render reliably; the probe test confirmed even at the player's
+        // own in-world position nothing drew. Icon dimensions in map
+        // units (metres); 50m at standard zoom is invisibly small but
+        // gives the text rendering path something to anchor to.
+        // Black, no shadow, small text — clean unobtrusive HUD.
+        _mapCtrl drawIcon [
+            "#(argb,8,8,3)color(0,0,0,0)", [0, 0, 0, 1], _hudPos,
+            50, 50, 0,
+            localize "STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_HUD",
+            0, ALIVE_COP_TEXT_SIZE_BADGE * 1.5, ALIVE_COP_FONT_BOLD, "right"
+        ];
     };
 };
 

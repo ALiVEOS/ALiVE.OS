@@ -537,6 +537,25 @@ switch(_operation) do {
         };
         _result = _args;
     };
+    case "copCommandViewEnabled": {
+        // Mission-maker opt-in BOOL: when true, the c2istar tablet + ACE
+        // menus surface a "Command View" toggle that lets a player bypass
+        // the COP anchor-distance filter and see the full side-wide intel
+        // pool. Eligibility additionally requires the player to hold a
+        // c2_item; the menu entry is hidden otherwise. Default false —
+        // the toggle is hidden, standard per-player anchor radius applies.
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["copCommandViewEnabled", _args];
+        } else {
+            _args = _logic getVariable ["copCommandViewEnabled", false];
+        };
+        if (typeName _args == "STRING") then {
+            _args = (_args == "true");
+            _logic setVariable ["copCommandViewEnabled", _args];
+        };
+        if (typeName _args != "BOOL") then { _args = false };
+        _result = _args;
+    };
     case "copShowBft": {
         // Direct BOOL toggle for the friendly BFT layer in COP. Overrides
         // the Commander Intel Mode tier's BFT default — mission-maker can
@@ -1205,6 +1224,17 @@ switch(_operation) do {
                 // FLOT-style rectangles + advance arrows even when COP is on.
                 missionNamespace setVariable ["ALIVE_COP_ACTIVE", true, true];
 
+                // Command View mission-maker gate — read by the c2istar
+                // menus to show/hide the per-player toggle entry, and by
+                // the COP renderer to permit the anchor-distance bypass.
+                // Default false means the toggle never surfaces; missions
+                // that want a Game Master role flip this Yes and players
+                // holding their c2_item can then toggle CV on via the
+                // tablet / ACE menu. JIP-persistent so late joiners see
+                // the gate immediately.
+                private _cvEnabled = [_logic, "copCommandViewEnabled"] call MAINCLASS;
+                missionNamespace setVariable ["ALIVE_COP_CommandViewEnabled", _cvEnabled, true];
+
                 ["startServer"] call ALIVE_fnc_COPInit;
 
                 private _asym = [_logic, "commanderIntelAsymmetric"] call MAINCLASS;
@@ -1216,8 +1246,11 @@ switch(_operation) do {
                 // from a previous COP-on session of this mission. mil_intelligence
                 // checks this flag at marker-creation time, so a stale `true`
                 // would silently suppress legacy spotrep markers while COP no
-                // longer runs.
+                // longer runs. Same defensive clear for the Command View
+                // mission-maker gate so the menu doesn't surface a toggle
+                // for a feature whose render path isn't running.
                 missionNamespace setVariable ["ALIVE_COP_ACTIVE", false, true];
+                missionNamespace setVariable ["ALIVE_COP_CommandViewEnabled", false, true];
                 ["info", "c2istar", "COP mode=Off — no COP dispatch"] call ALiVE_fnc_dump;
             };
 

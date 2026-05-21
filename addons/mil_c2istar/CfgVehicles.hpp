@@ -676,6 +676,18 @@ class CfgVehicles {
                                     class No  { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_NO";  value = "false"; };
                             };
                     };
+                    class copCommandViewEnabled : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copCommandViewEnabled";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_NO";  value = "false"; default = 1; };
+                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_YES"; value = "true"; };
+                            };
+                    };
                     // Legacy Eden attribute preserved as hidden so the migration shim
                     // in fnc_C2ISTAR.sqf can still read its value off existing missions
                     // (a true legacy setting auto-maps to commanderIntelMode="Advanced"

@@ -92,6 +92,19 @@ ALIVE_COP_intelVars_intelList = _displaySides apply { format ["ALiVE_COP_IntelDa
 ALIVE_COP_intelVars_bftList   = _displaySides apply { format ["ALiVE_COP_BftData_%1",        _x] };
 ALIVE_COP_intelVars_objList   = _displaySides apply { format ["ALiVE_COP_ObjectivesData_%1", _x] };
 
+// Command View toggle state — per-client, defaults to mirror the Eden
+// gate (`ALIVE_COP_CommandViewEnabled`) so a mission-maker setting
+// "Yes" gives players the wide view straight away rather than asking
+// them to flip a toggle on every spawn. Players can still turn it OFF
+// locally via the ALiVE menu if they want a tighter view; the toggle
+// state persists across respawn (the isNil guard preserves whatever
+// the player last chose) but resets on a fresh mission load. c2_item
+// eligibility and the Eden gate are re-checked at menu-render time
+// upstream of this flag.
+if (isNil "ALIVE_COP_CommandViewOn") then {
+    ALIVE_COP_CommandViewOn = missionNamespace getVariable ["ALIVE_COP_CommandViewEnabled", false];
+};
+
 ["info", "client", "Player side cached: %1 (player: %2) | display sides: %3",
     [ALIVE_COP_playerSideKey, name player, _displaySides]] call ALIVE_fnc_COPLog;
 

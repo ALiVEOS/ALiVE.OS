@@ -231,6 +231,25 @@ if (_menuName == "C2ISTAR") then {
                      true,
                      _result
                 ],
+                [
+                    // Caption reflects current state — flexi menu re-runs
+                    // C2MenuDef on each open, so the label flips correctly
+                    // after a toggle.
+                    if (missionNamespace getVariable ["ALIVE_COP_CommandViewOn", false])
+                        then {localize "STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_MENU_ON"}
+                        else {localize "STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_MENU_OFF"},
+                    {
+                        ALIVE_COP_CommandViewOn = !(missionNamespace getVariable ["ALIVE_COP_CommandViewOn", false]);
+                    },
+                    "",
+                    localize "STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_COMMENT",
+                     "",
+                     -1,
+                     true,
+                     // Visible only when the mission-maker opted in via the
+                     // Eden attribute AND the player carries a c2_item.
+                     (missionNamespace getVariable ["ALIVE_COP_CommandViewEnabled", false]) && {_result}
+                ],
                 ["OPCOM Orders >",
                     "",
                     "",

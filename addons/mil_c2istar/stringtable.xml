@@ -357,13 +357,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ASYM">
-    <English>Commander Intel — Asymmetric:</English>
-    <Chinese>指揮官情報 — 非對稱:</Chinese>
-    <Chinesesimp>指挥官情报 — 非对称:</Chinesesimp>
-    <Spanish>Inteligencia del Comandante — Asimétrica:</Spanish>
-    <French>Intelligence du Commandant — Asymétrique:</French>
-    <Portuguese>Inteligência do Comandante — Assimétrica:</Portuguese>
-    <Russian>Разведданные командира — Асимметричные:</Russian>
+    <English>Commander Intel Asymmetric:</English>
+    <Chinese>指揮官情報 非對稱:</Chinese>
+    <Chinesesimp>指挥官情报 非对称:</Chinesesimp>
+    <Spanish>Inteligencia del Comandante Asimétrica:</Spanish>
+    <French>Intelligence du Commandant Asymétrique:</French>
+    <Portuguese>Inteligência do Comandante Assimétrica:</Portuguese>
+    <Russian>Разведданные командира Асимметричные:</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_COP_ASYM_COMMENT">
@@ -420,7 +420,7 @@
     <English>Which sides' COP data feeds get rendered on the player's map. Leave EMPTY for the default (player's own side only). Tick additional sides to merge their intel + BFT + objectives into the player's view — useful for a Game Master / commander / observer role who wants to monitor multiple sides at once. Each ticked side requires a placed mil_opcom for its data to populate. Each player still sees only what their own client is configured for; this is a mission-maker filter, not a per-player switch. Independent of Commander Intel Sides above, which gates the legacy spotrep / diary intel.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_BFT">
-    <English>COP — Friendly BFT:</English>
+    <English>COP Friendly BFT:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_BFT_COMMENT">
     <English>Toggle the friendly Blue Force Tracker layer in the COP overlay independently of the Commander Intel Mode tier. Yes (default) renders friendly profile-managed forces as side-coloured chevrons within the anchor radius — useful for cooperative play and command overview. No suppresses BFT regardless of tier, even when Commander Intel Mode is Full / Advanced — useful for tighter operational security simulations where players should not see automatic friendly positions on the map. Independent of the Map Intel "Friendly Coverage" setting above, which drives the legacy global SQM friendly markers.</English>
@@ -430,6 +430,27 @@
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_BFT_NO">
     <English>No</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW">
+    <English>COP Command View:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_COMMENT">
+    <English>Enables the per-player Command View toggle in the c2istar tablet menu. When toggled ON by a player holding their c2_item, COP renders the full side-wide intel pool across the entire map — bypassing the COP Anchor Distance filter. Useful for a Game Master / commander / observer role who needs the full battlespace view. Default No (the toggle is hidden and the standard per-player anchor radius applies to everyone). Players still need to carry a valid c2_item to access the toggle; pairs naturally with COP Display Sides for a multi-side overview. Toggle state resets on respawn — players re-toggle if they want it back on.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_YES">
+    <English>Yes</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_NO">
+    <English>No</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_MENU_ON">
+    <English>Command View: ON</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_MENU_OFF">
+    <English>Command View: OFF</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_HUD">
+    <English>C2ISTAR COMMAND VIEW MODE</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE">
     <English>COP Anchor Distance:</English>
