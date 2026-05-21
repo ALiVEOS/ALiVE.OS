@@ -508,6 +508,28 @@ switch(_operation) do {
         private _reportType = _report get "type";
         switch (_reportType) do {
             case "spotrep": {
+                // COP suppression: when mil_c2istar's commanderIntelMode is
+                // not Off, COP's per-frame Draw EH renders the same enemy
+                // contacts richer (TYPE xN [FACTION] (Nm), trail, size
+                // indicator, threat ring, etc.). The legacy SQM chevron +
+                // movement-arrow markers below would visually duplicate every
+                // contact. The TACOM Recon / Capture cases below (FLOT
+                // rectangles + advance arrows) intentionally still render —
+                // COP doesn't yet reproduce those, and Jman's design intent
+                // is to keep them visible alongside COP.
+                //
+                // The empty-markers seed before exitWith keeps the report's
+                // shape consistent with non-suppressed cases — onRemoveMAP
+                // reads `_report get "markers"` to feed deleteMarkersLocally,
+                // and the original suppression skipped the `_report set
+                // ["markers", ...]` step, leaving the field nil. That nil
+                // propagated as "Undefined variable in expression: _reportMarkers"
+                // at fnc_G2.sqf:754 every cleanup cycle. Setting [] up front
+                // makes the cleanup path a safe no-op.
+                if (missionNamespace getVariable ["ALIVE_COP_ACTIVE", false]) exitWith {
+                    _report set ["markers", []];
+                };
+
                 private _reportID = _report get "id";
                 private _groupSide = _report get "side";
                 private _groupFaction = _report get "faction";
