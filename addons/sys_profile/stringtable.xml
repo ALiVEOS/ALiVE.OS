@@ -63,7 +63,7 @@
     <Chinesesimp>虚拟化除同步单位外的所有编辑器放置单位</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS">
-    <English>Spawn Radius:</English>
+    <English>Spawn Radius (m):</English>
     <Chinesesimp>生成半径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS_COMMENT">
@@ -87,7 +87,7 @@
     <Chinesesimp>如果启用,活动的宙斯实体将在范围内生成虚拟组</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS">
-    <English>Spawn planes radius:</English>
+    <English>Spawn Planes Radius (m):</English>
     <Chinesesimp>平面生成半径</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT">
@@ -95,7 +95,7 @@
     <Chinesesimp>玩家在平面上生成AI的半径。设置为0可禁用在平面中生成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS">
-    <English>Spawn heli radius:</English>
+    <English>Spawn Heli Radius (m):</English>
     <Chinesesimp>直升机生成半径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS_COMMENT">
@@ -103,7 +103,7 @@
     <Chinesesimp>玩家在直升机上生成人工智能的半径。设置为0可在直升机中禁用生成</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS">
-    <English>Spawn UAV radius:</English>
+    <English>Spawn UAV Radius (m):</English>
     <Chinesesimp>无人机生成半径:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT">
