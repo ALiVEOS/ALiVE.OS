@@ -27,6 +27,7 @@ class CfgVehicles {
             class spawnRadius : Edit { property = "ALiVE_amb_civ_population_spawnRadius"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_RADIUS_COMMENT"; defaultValue = """1500"""; };
             class spawnTypeHeliRadius : Edit { property = "ALiVE_amb_civ_population_spawnTypeHeliRadius"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_HELI_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_HELI_RADIUS_COMMENT"; defaultValue = """1500"""; };
             class spawnTypeJetRadius : Edit { property = "ALiVE_amb_civ_population_spawnTypeJetRadius"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_JET_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_JET_RADIUS_COMMENT"; defaultValue = """0"""; };
+            class spawnRadiusUAV : Edit { property = "ALiVE_amb_civ_population_spawnRadiusUAV"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS_COMMENT"; defaultValue = """-1"""; };
             class activeLimiter : Edit { property = "ALiVE_amb_civ_population_activeLimiter"; displayName = "$STR_ALIVE_CIV_POP_ACTIVE_LIMITER"; tooltip = "$STR_ALIVE_CIV_POP_ACTIVE_LIMITER_COMMENT"; defaultValue = """30"""; };
 
             // ---- Hostility ------------------------------------------------------

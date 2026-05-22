@@ -35,6 +35,11 @@ if(isServer) then {
     private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
     private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
+    // spawnRadiusUAV: -1 sentinel resolves to spawnRadius + 800, matching the
+    // sys_profile semantic. 0 means disabled (no civ spawning around connected
+    // UAVs). Positive numbers used verbatim.
+    private _spawnRadiusUAV = parseNumber (_logic getVariable ["spawnRadiusUAV","-1"]);
+    if (_spawnRadiusUAV == -1) then { _spawnRadiusUAV = _spawnRadius + 800; };
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
     private _hostilityWest = parseNumber (_logic getVariable ["hostilityWest","0"]);
     private _hostilityEast = parseNumber (_logic getVariable ["hostilityEast","0"]);
@@ -338,6 +343,7 @@ if(isServer) then {
     [ALIVE_civilianPopulationSystem, "spawnRadius", _spawnRadius] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "spawnTypeJetRadius", _spawnTypeJetRadius] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "spawnTypeHeliRadius", _spawnTypeHeliRadius] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "spawnRadiusUAV", _spawnRadiusUAV] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCivilianRoles", _ambientCivilianRoles] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCrowdSpawn", _ambientCrowdSpawn] call ALIVE_fnc_civilianPopulationSystem;

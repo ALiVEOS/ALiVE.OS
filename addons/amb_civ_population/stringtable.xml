@@ -122,6 +122,12 @@
     <Chinese>玩家搭乘直升機時生成平民的半徑。設為 0 則在直升機中停用生成</Chinese>
     <Chinesesimp>玩家在直升机周围生成平民的半径。设置为0将禁用在直升机中生成</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS">
+    <English>Spawn UAV Radius (m):</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS_COMMENT">
+    <English>The radius around a player-controlled UAV at which civilians spawn. Set to 0 to disable civilian spawning while controlling a UAV. Set to -1 to default to (foot/ground) Spawn Radius + 800.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST">
     <English>BLUFOR Hostility:</English>

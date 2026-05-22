@@ -196,7 +196,7 @@ class FSM
     class INIT
     {
       name = "INIT";
-      init = /*%FSM<STATEINIT""">*/"private [""_civPopSystem"",""_spawnDistance"",""_spawnTypeJetRadius"",""_spawnTypeHeliRadius"",""_spawnCycleTime"",""_activeLimiter"",""_lastSpawnTime"",""_doSpawn"",""_destroy"",""_pause"",""_debug""];" \n
+      init = /*%FSM<STATEINIT""">*/"private [""_civPopSystem"",""_spawnDistance"",""_spawnTypeJetRadius"",""_spawnTypeHeliRadius"",""_spawnRadiusUAV"",""_spawnCycleTime"",""_activeLimiter"",""_lastSpawnTime"",""_doSpawn"",""_destroy"",""_pause"",""_debug""];" \n
        "" \n
        "_civPopSystem = _this select 0;" \n
        "_spawnDistance = _this select 1;" \n
@@ -204,6 +204,7 @@ class FSM
        "_spawnTypeHeliRadius = _this select 3;" \n
        "_spawnCycleTime = if(count _this > 4) then {_this select 4} else {1};" \n
        "_activeLimiter = if(count _this > 5) then {_this select 5} else {25};" \n
+       "_spawnRadiusUAV = if(count _this > 6) then {_this select 6} else {0};" \n
        "" \n
        "_lastSpawnTime = time -_spawnCycleTime; // to prevent delay at mission start" \n
        "" \n
@@ -523,7 +524,7 @@ class FSM
        "        _size = _cluster select 2 select 3;" \n
        "	 private _clusterID = _cluster select 2 select 1;" \n
        "" \n
-       "        if ([_position, (_spawnDistance + _size), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "        if ([_position, (_spawnDistance + _size), _spawnTypeJetRadius, _spawnTypeHeliRadius, _spawnRadiusUAV] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
        "            _toSpawn set [count _toSpawn, _cluster];" \n
        "				if(_debug) then {" \n
        "   				 	[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
@@ -621,11 +622,11 @@ class FSM
        "	/*" \n
        "	if(_debug) then {" \n
        "    		[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "   		 [""Cluster activator - inactive agent position: %1: %2 is in range of players %3"",_agentID, _position, ( ([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) ||  ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) )] call ALiVE_fnc_dump;" \n
+       "   		 [""Cluster activator - inactive agent position: %1: %2 is in range of players %3"",_agentID, _position, ( ([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius, _spawnRadiusUAV] call ALiVE_fnc_anyPlayersInRangeIncludeAir) ||  ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) )] call ALiVE_fnc_dump;" \n
        "	};" \n
        "	*/" \n
        "" \n
-       "        if ( ([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) ||  ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) ) then {" \n
+       "        if ( ([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius, _spawnRadiusUAV] call ALiVE_fnc_anyPlayersInRangeIncludeAir) ||  ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) ) then {" \n
        "                _agentsToSpawn pushback _agent;" \n
        "        };" \n
        "    };" \n
@@ -796,7 +797,7 @@ class FSM
        "        _unit = _agent select 2 select 5;" \n
        "        _position = getposATL _unit;" \n
        "" \n
-       "        if !([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "        if !([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius, _spawnRadiusUAV] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
        "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
        "                       _toDespawn set [count _toDespawn, _agent];" \n
        "            };" \n
@@ -1008,7 +1009,7 @@ class FSM
        "        _size = _cluster select 2 select 3;" \n
        "	 private _clusterID = _cluster select 2 select 1;" \n
        "" \n
-       "        if !([_position, (_spawnDistance + (_size * 1.1)), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "        if !([_position, (_spawnDistance + (_size * 1.1)), _spawnTypeJetRadius, _spawnTypeHeliRadius, _spawnRadiusUAV] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
        "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
        "                       _toDespawn set [count _toDespawn, _cluster];" \n
        "				if(_debug) then {" \n
@@ -1347,11 +1348,11 @@ class FSM
        "	/*" \n
        "	if(_debug) then {" \n
        "    		[""----------------------------------------------------------------------------------------""] call ALIVE_fnc_dump;" \n
-       "   		 [""Cluster activator - inactive agent position: %1: %2 is in range of players %3"",_agentID, _position, ( ([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) ||  ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) )] call ALiVE_fnc_dump;" \n
+       "   		 [""Cluster activator - inactive agent position: %1: %2 is in range of players %3"",_agentID, _position, ( ([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius, _spawnRadiusUAV] call ALiVE_fnc_anyPlayersInRangeIncludeAir) ||  ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) )] call ALiVE_fnc_dump;" \n
        "	};" \n
        "	*/" \n
        "" \n
-       "        if ( ([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius] call ALiVE_fnc_anyPlayersInRangeIncludeAir) ||  ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) ) then {" \n
+       "        if ( ([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius, _spawnRadiusUAV] call ALiVE_fnc_anyPlayersInRangeIncludeAir) ||  ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange > 0) ) then {" \n
        "                _agentsToSpawn pushback _agent;" \n
        "        };" \n
        "    };" \n
