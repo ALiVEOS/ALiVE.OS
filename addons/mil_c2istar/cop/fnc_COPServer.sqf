@@ -28,6 +28,7 @@ Returns:
 
 Author:
     Goldwep (ALiVE Mod Team)
+    Jman
 ---------------------------------------------------------------------------- */
 
 TRACE_1("COPServer - input",_this);
@@ -745,9 +746,21 @@ ALIVE_fnc_COPDeriveActivity = {
                                 default           { _state };
                             };
 
+                            // Held-objective flag (same predicate mil_logistics
+                            // HELI_INSERT routing uses, so the COP visual matches
+                            // the routing decision). Only worth predicating the
+                            // reserve bucket - the held predicate's first check is
+                            // tacom_state="reserve", so other normStates are an
+                            // early-out anyway, but skipping the call entirely on
+                            // non-reserve avoids the dispatch overhead per cycle.
+                            private _held = false;
+                            if (_normState == "reserve") then {
+                                _held = [_x, _sideKey] call ALiVE_fnc_isHeldObjective;
+                            };
+
                             // Defer location name lookup until after capping —
                             // saves nearestLocation calls on discarded objectives.
-                            private _entry = [_priority, _center, _size, _normState];
+                            private _entry = [_priority, _center, _size, _normState, _held];
 
                             switch (_normState) do {
                                 case "attack":  { _bucketAttack  pushBack _entry };
@@ -785,9 +798,9 @@ ALIVE_fnc_COPDeriveActivity = {
                 private _matchedThisOpcom = 0;
                 {
                     {
-                        _x params ["_priority", "_center", "_size", "_normState"];
+                        _x params ["_priority", "_center", "_size", "_normState", "_held"];
                         private _locName = [_center] call ALIVE_fnc_COPGetLocationName;
-                        _outArr pushBack [_center, _size, _normState, _locName, _priority];
+                        _outArr pushBack [_center, _size, _normState, _locName, _priority, _held];
                         _matchedThisOpcom = _matchedThisOpcom + 1;
                     } forEach _x;
                 } forEach [_bucketAttack, _bucketDefend, _bucketRecon, _bucketReserve];
