@@ -231,6 +231,7 @@ class CfgVehicles {
 
             // ---- Advanced Civilians - Vehicle ------------------------------------
             class HDR_ADVCIV_VEHICLE : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_VEHICLE"; displayName = "ADVANCED CIVILIANS - VEHICLE"; };
+            class ambVehCivDriverChance : Edit { property = "ALiVE_amb_civ_population_ambVehCivDriverChance"; displayName = "$STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE"; tooltip = "$STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE_COMMENT"; defaultValue = """0.15"""; };
             class advciv_vehicleEscape : Combo { property = "ALiVE_amb_civ_population_advciv_vehicleEscape"; displayName = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE"; tooltip = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
             class advciv_vehicleEscapeChance : Edit { property = "ALiVE_amb_civ_population_advciv_vehicleEscapeChance"; displayName = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_CHANCE_COMMENT"; defaultValue = """0.3"""; };
             class advciv_noStealMilitary : Combo { property = "ALiVE_amb_civ_population_advciv_noStealMilitary"; displayName = "$STR_ALIVE_ADVCIV_NO_STEAL_MILITARY"; tooltip = "$STR_ALIVE_ADVCIV_NO_STEAL_MILITARY_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };

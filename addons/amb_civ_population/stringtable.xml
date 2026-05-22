@@ -5099,6 +5099,12 @@
     <Chinese>恐慌中的平民嘗試以車輛逃離(而非徒步)的機率。預設值:0.3。</Chinese>
     <Chinesesimp>恐慌中的平民尝试乘载具逃跑而非徒步逃跑的机率。默认:0.3。</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE">
+    <English>Ambient Vehicle Civ Driver Chance (0-1):</English>
+</Key>
+<Key ID="STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE_COMMENT">
+    <English>Probability that an "ambient" parked civilian vehicle borrows a nearby civilian as a static driver when it spawns. 0 = always empty (true ambient parked cars). 0.15 (default) = roughly 1 in 7 spawns get a sitting driver, giving towns some life without filling every car. 1 = every spawn with a nearby civ gets a driver. The driver does not drive — they sit in the seat with the engine off.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_NO_STEAL_MILITARY">
     <English>No Military Vehicle Theft:</English>

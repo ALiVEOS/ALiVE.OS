@@ -170,6 +170,11 @@ if(isServer) then {
 
     private _advciv_vehicleEscape       = (_logic getVariable ["advciv_vehicleEscape",       "true"])  isEqualTo "true";
     private _advciv_vehicleEscapeChance = parseNumber (_logic getVariable ["advciv_vehicleEscapeChance", "0.3"]);
+    // Ambient civilian-vehicle "static driver" chance (#901). When an
+    // ambient parked car spawns it can borrow a nearby civilian as a
+    // sitting driver. 0.15 default is intentionally low — old hardcoded
+    // 0.45 produced too many static-but-manned cars that confused players.
+    private _ambVehCivDriverChance = parseNumber (_logic getVariable ["ambVehCivDriverChance", "0.15"]);
     private _advciv_noStealMilitary     = (_logic getVariable ["advciv_noStealMilitary",     "true"])  isEqualTo "true";
     private _advciv_noStealUsed         = (_logic getVariable ["advciv_noStealUsed",         "true"])  isEqualTo "true";
     private _advciv_noStealLoaded       = (_logic getVariable ["advciv_noStealLoaded",       "true"])  isEqualTo "true";
@@ -225,6 +230,7 @@ if(isServer) then {
 
     ALiVE_advciv_vehicleEscape       = _advciv_vehicleEscape;       publicVariable "ALiVE_advciv_vehicleEscape";
     ALiVE_advciv_vehicleEscapeChance = _advciv_vehicleEscapeChance; publicVariable "ALiVE_advciv_vehicleEscapeChance";
+    ALiVE_amb_civ_population_ambVehCivDriverChance = _ambVehCivDriverChance; publicVariable "ALiVE_amb_civ_population_ambVehCivDriverChance";
     ALiVE_advciv_noStealMilitary     = _advciv_noStealMilitary;     publicVariable "ALiVE_advciv_noStealMilitary";
     ALiVE_advciv_noStealUsed         = _advciv_noStealUsed;         publicVariable "ALiVE_advciv_noStealUsed";
     ALiVE_advciv_noStealLoaded       = _advciv_noStealLoaded;       publicVariable "ALiVE_advciv_noStealLoaded";
