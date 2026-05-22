@@ -5403,87 +5403,16 @@ switch(_operation) do {
                                 _allObjectives = _allObjectives select 0;
                             };
 
-                            // Validate held objectives using multiple criteria:
-                            // 1. tacom_state must be "reserve" (OPCOM assignment)
-                            // 2. At least one assigned section profile must still exist
-                            //    (confirms OPCOM units haven't been wiped out)
-                            // 3. No more than 3 enemy units within 300m
-                            //    (confirms not currently enemy-occupied)
-                            private _heldObjectives = [];
-                            {
-                                private _obj = _x;
-                                private _objState = "";
-                                if ("tacom_state" in (_obj select 1)) then {
-                                    _objState = [_obj, "tacom_state", "none"] call ALIVE_fnc_hashGet;
-                                };
-
-                                if (_objState == "reserve") then {
-
-                                    // Check section profiles - at least one must still be registered
-                                    private _section = [_obj, "section", []] call ALIVE_fnc_hashGet;
-                                    private _hasAliveProfiles = false;
-                                    if (count _section > 0) then {
-                                        {
-                                            private _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                                            if (!isNil "_profile") exitWith { _hasAliveProfiles = true; };
-                                        } forEach _section;
-                                    } else {
-                                        // No section assigned yet - trust tacom_state alone
-                                        _hasAliveProfiles = true;
-                                    };
-
-                                    if (_hasAliveProfiles) then {
-
-                                        // Check for enemy presence near the objective.
-                                        //
-                                        // Two-source check (#mil_logistics 2026-05-01 fix):
-                                        //   1. nearEntities catches SPAWNED units (players nearby).
-                                        //   2. ALiVE_fnc_getNearProfiles catches VIRTUALISED enemy
-                                        //      profiles (no players nearby - the common case for
-                                        //      contested objectives away from the player's AO).
-                                        //
-                                        // Without (2), an enemy-occupied objective whose units are
-                                        // virtualised looks "empty" to nearEntities, the validation
-                                        // passes, and HELI_INSERT routes reinforcements straight
-                                        // into hostile territory. Symptom: paradrop reinforcements
-                                        // landed at an enemy-held objective whose attackers were
-                                        // virtualised, so nearEntities returned 0 there.
-                                        private _objPos = [_obj, "center"] call ALIVE_fnc_hashGet;
-                                        private _sideObj = [_side] call ALIVE_fnc_sideTextToObject;
-                                        private _nearUnits = _objPos nearEntities [["Man","Car","Tank"], 300];
-                                        private _enemyNear = _nearUnits select { side _x != _sideObj && side _x != civilian };
-
-                                        // Build enemy-side string list for the profile lookup.
-                                        // getNearProfiles' categorySide takes side text strings
-                                        // ("EAST"/"WEST"/"GUER"), not side objects.
-                                        private _enemySides = ["EAST","WEST","GUER"] - [_side];
-                                        private _enemyProfiles = [_objPos, 300, [_enemySides, "entity"], true] call ALIVE_fnc_getNearProfiles;
-                                        // Filter out civilian-side profiles defensively in case
-                                        // a faction registry quirk leaves a civ profile flagged
-                                        // as a non-friendly side.
-                                        _enemyProfiles = _enemyProfiles select {
-                                            ((_x select 2 select 3) != "CIV") && {(_x select 2 select 3) != "CIVILIAN"}
-                                        };
-
-                                        private _enemyTotal = (count _enemyNear) + (count _enemyProfiles);
-
-                                        if (_enemyTotal < 3) then {
-                                            _heldObjectives pushback _obj;
-                                        } else {
-                                            if (_debug) then {
-                                                ["ML - HELI_INSERT: Objective at %1 has tacom_state=reserve but %2 enemy units within 300m (entities=%3 profiles=%4) - treating as lost",
-                                                    _objPos, _enemyTotal, count _enemyNear, count _enemyProfiles] call ALiVE_fnc_dump;
-                                            };
-                                        };
-
-                                    } else {
-                                        if (_debug) then {
-                                            ["ML - HELI_INSERT: Objective at %1 has tacom_state=reserve but all section profiles gone - treating as lost",
-                                                [_obj, "center"] call ALIVE_fnc_hashGet] call ALiVE_fnc_dump;
-                                        };
-                                    };
-                                };
-                            } forEach _allObjectives;
+                            // Validate held objectives via the shared
+                            // ALiVE_fnc_isHeldObjective predicate so the
+                            // mil_c2istar COP overlay surfaces the same
+                            // set of held anchors HELI_INSERT will route to
+                            // (no drift between visual + delivery decisions).
+                            // Predicate: tacom_state=reserve + section
+                            // profiles alive + <3 enemy units within 300m.
+                            private _heldObjectives = _allObjectives select {
+                                [_x, _side] call ALiVE_fnc_isHeldObjective
+                            };
 
                             if (_debug) then {
                                 ["ML - HELI_INSERT: Found %1 validated friendly held objectives (tacom_state=reserve, profiles alive, no enemy presence):",
@@ -5495,21 +5424,6 @@ switch(_operation) do {
                                     private _nearLocName = [_objPos] call ALIVE_fnc_taskGetNearestLocationName;
                                     ["ML - HELI_INSERT: Friendly-held objective %1 near %2 at %3 tacom_state=%4",
                                         _objID, _nearLocName, _objPos, _objState] call ALiVE_fnc_dump;
-
-                                    // Temporary marker - auto-deletes after 3 minutes
-                                    [_objPos, _objID] spawn {
-                                        private _pos   = _this select 0;
-                                        private _id    = _this select 1;
-                                        private _mName = format ["ML_HELD_%1_%2", _id, time];
-                                        private _m = createMarker [_mName, _pos];
-                                        _m setMarkerShape "ICON";
-                                        _m setMarkerType "mil_flag";
-                                        _m setMarkerColor "ColorGreen";
-                                        _m setMarkerSize [0.6, 0.6];
-                                        _m setMarkerText format ["HELD: %1", _id];
-                                        sleep 180;
-                                        deleteMarker _mName;
-                                    };
                                 } forEach _heldObjectives;
                             };
 

@@ -163,6 +163,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_anyPlayerCanSee.sqf";
                 RECOMPILE;
             };
+            class isHeldObjective {
+                description = "True if an OPCOM objective hash counts as a friendly-held reserve right now (tacom_state=reserve + section profiles alive + <3 enemy units within radius). Shared by mil_logistics HELI_INSERT routing and mil_c2istar COP overlay so visual + routing decisions agree.";
+                file = "\x\alive\addons\main\fnc_isHeldObjective.sqf";
+                RECOMPILE;
+            };
             class listFactionVehicleClasses {
                 description = "Feeder for ALiVE_FactionStaticDataChoice - returns kind-filtered CfgVehicles classes per faction";
                 file = "\x\alive\addons\main\fnc_listFactionVehicleClasses.sqf";
