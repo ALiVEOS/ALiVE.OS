@@ -1254,48 +1254,38 @@ switch(_operation) do {
         _result = _nodeResult;
     };
 
-    // ============================================================
-    // Rear-airfield source picking for HELI delivery
-    // ------------------------------------------------------------
-    // Pure resolver functions used by the HELI_INSERT / HELI_PARADROP
-    // dispatch to anchor the departure position at the furthest
-    // friendly airfield from the event, rather than the supply network
-    // node closest to the destination. Gives rear-area airfields a
-    // gameplay purpose: resupply visibly comes from the rear and flies
-    // forward to the objective.
-    // No state mutation, no side effects.
-    // ============================================================
+    // Rear-airfield source picking for HELI_INSERT departure.
+    // Pure resolver cases.
     case "getAllAirports": {
         // Returns [[airportID, position], ...] for every airport ALiVE
-        // knows about: primary cfgWorlds airport (id 0), secondary
-        // airports (id 1..N), and dynamic runways such as carriers or
-        // Eden-placed airbase compositions (id 100+).
-        // Positions are normalised to 3D [x,y,z] -- cfgWorlds ilsPosition
-        // returns 2D [x,y], which would spawn underground / underwater
-        // when consumed downstream as a position vector.
-        private _airports = [];
-
-        // Primary airport (id 0)
-        private _primaryPos = getArray (configFile >> "cfgWorlds" >> WorldName >> "ilsPosition");
-        if (count _primaryPos >= 2) then {
-            if (count _primaryPos < 3) then { _primaryPos = _primaryPos + [0]; };
-            _airports pushBack [0, _primaryPos];
-        };
-
-        // Secondary airports (ids 1..N)
-        private _secondary = configFile >> "cfgWorlds" >> WorldName >> "SecondaryAirports";
-        for "_i" from 0 to ((count _secondary) - 1) do {
-            private _ilsPos = getArray ((_secondary select _i) >> "ilsPosition");
-            if (count _ilsPos >= 2) then {
-                if (count _ilsPos < 3) then { _ilsPos = _ilsPos + [0]; };
-                _airports pushBack [_i + 1, _ilsPos];
+        // knows about. Static list (primary + secondary cfgWorlds entries)
+        // is cached once; dynamic runways (carriers, Eden airbases) are
+        // checked per call because carriers can be destroyed mid-mission.
+        // Positions are normalised to 3D so 2D ilsPosition entries don't
+        // produce z=0 spawns underwater on coastal airfields.
+        if (isNil "ALIVE_ML_staticAirports") then {
+            private _staticList = [];
+            private _primaryPos = getArray (configFile >> "cfgWorlds" >> WorldName >> "ilsPosition");
+            if (count _primaryPos >= 2) then {
+                if (count _primaryPos < 3) then { _primaryPos = _primaryPos + [0]; };
+                _staticList pushBack [0, _primaryPos];
             };
+            private _secondary = configFile >> "cfgWorlds" >> WorldName >> "SecondaryAirports";
+            for "_i" from 0 to ((count _secondary) - 1) do {
+                private _ilsPos = getArray ((_secondary select _i) >> "ilsPosition");
+                if (count _ilsPos >= 2) then {
+                    if (count _ilsPos < 3) then { _ilsPos = _ilsPos + [0]; };
+                    _staticList pushBack [_i + 1, _ilsPos];
+                };
+            };
+            ALIVE_ML_staticAirports = _staticList;
         };
+        private _airports = +ALIVE_ML_staticAirports;
 
-        // Dynamic runways (ids 100+) -- cached on first call.
-        // Skip destroyed / null entries so a sunk carrier doesn't return
-        // [0,0,0] (which would otherwise beat real inland airports on
-        // distance2D from a coastal event).
+        // Dynamic runways (ids 100+). ALiVE_Carriers is a snapshot taken
+        // on first call -- carriers placed after this point won't appear.
+        // The !isNull/alive filter prevents a sunk carrier from returning
+        // [0,0,0] and beating real inland airports on distance2D.
         if (isNil "ALiVE_Carriers") then {
             ALiVE_Carriers = (allAirports select 1);
         };
@@ -1308,24 +1298,29 @@ switch(_operation) do {
         _result = _airports;
     };
     case "getFriendlyOpcomObjectivePositions": {
-        // Returns positions of held (defend / reserve) OPCOM objectives
-        // where the OPCOM considers the requested side friendly.
-        // Iterates OPCOM_instances directly -- each entry is the OPCOM
-        // hash, not a Logic with a "handler" variable.
-        // _args: side string ("WEST" / "EAST" / "GUER" / "CIV")
+        // Returns positions of held OPCOM objectives where the OPCOM
+        // considers the requested side friendly. State filter matches the
+        // existing pattern at fnc_ML.sqf:3146 -- tacom-managed "reserve"
+        // is the primary friendly-held marker; opcom.fsm's "defending" /
+        // "reserving" gerunds are not currently in the filter (consistent
+        // with the upstream resolver). Defaults to [] for nil / non-string
+        // input so callers always get a usable list.
+        if (isNil "_args" || {!(_args isEqualType "")}) exitWith { _result = []; };
         private _eventSide = _args;
         private _positions = [];
 
         {
-            if (_x isEqualType []) then {
-                private _sidesFriendly = [_x, "sidesfriendly", []] call ALIVE_fnc_hashGet;
+            private _opcom = _x;
+            if (_opcom isEqualType []) then {
+                private _sidesFriendly = [_opcom, "sidesfriendly", []] call ALIVE_fnc_hashGet;
                 if (_eventSide in _sidesFriendly) then {
-                    private _objectives = [_x, "objectives", []] call ALIVE_fnc_hashGet;
+                    private _objectives = [_opcom, "objectives", []] call ALIVE_fnc_hashGet;
                     {
-                        if (_x isEqualType []) then {
-                            private _objState = [_x, "opcom_state", "none"] call ALIVE_fnc_hashGet;
+                        private _obj = _x;
+                        if (_obj isEqualType []) then {
+                            private _objState = [_obj, "opcom_state", "none"] call ALIVE_fnc_hashGet;
                             if (_objState in ["defend", "reserve"]) then {
-                                private _objPos = [_x, "center", []] call ALIVE_fnc_hashGet;
+                                private _objPos = [_obj, "center", []] call ALIVE_fnc_hashGet;
                                 if (_objPos isEqualType [] && {count _objPos >= 2}) then {
                                     _positions pushBack _objPos;
                                 };
@@ -1341,10 +1336,8 @@ switch(_operation) do {
     case "getFriendlyAirports": {
         // Returns [[airportID, position], ...] of airports within
         // FRIENDLY_AIRPORT_RADIUS of any held friendly OPCOM objective
-        // for the given side. Loose proximity filter accommodates maps
-        // where the airport ILS position is offset from the OPCOM
-        // objective centre (Altis Molos: ~486m offset).
-        // _args: side string
+        // for the given side.
+        if (isNil "_args" || {!(_args isEqualType "")}) exitWith { _result = []; };
         private _eventSide = _args;
         private _allAirports = [_logic, "getAllAirports"] call MAINCLASS;
         private _friendlyObjs = [_logic, "getFriendlyOpcomObjectivePositions", _eventSide] call MAINCLASS;
@@ -1352,13 +1345,7 @@ switch(_operation) do {
 
         {
             private _airportPos = _x select 1;
-            private _isFriendly = false;
-            {
-                if ((_x distance2D _airportPos) < FRIENDLY_AIRPORT_RADIUS) exitWith {
-                    _isFriendly = true;
-                };
-            } forEach _friendlyObjs;
-            if (_isFriendly) then {
+            if ((_friendlyObjs findIf {(_x distance2D _airportPos) < FRIENDLY_AIRPORT_RADIUS}) >= 0) then {
                 _friendlyAirports pushBack _x;
             };
         } forEach _allAirports;
@@ -1367,19 +1354,14 @@ switch(_operation) do {
     };
     case "selectRearAirfieldSource": {
         // Picks the friendly airport furthest from the event position.
-        // Models heli resupply as REAR -> FORWARD: the destination is
-        // forward (event = where reinforcements are needed), so the
-        // most rear airfield is the supply hub.
-        // Returns [airportID, position] or [] if no candidates.
-        //
-        // _args: [friendly airports array, event position]
+        // _bestDist starts at -1 so the first iteration always wins,
+        // even for the degenerate case of a single airport sitting at
+        // the event position (distance 0).
+        if (isNil "_args" || {!(_args isEqualType []) || count _args < 2}) exitWith { _result = []; };
         private _friendlyAirports = _args select 0;
         private _eventPosition    = _args select 1;
         private _debug            = _logic getVariable ["debug", false];
 
-        // _bestDist initialised to -1 so the first iteration always sets
-        // _bestAirport, even when distance happens to be 0 (degenerate
-        // case of a single friendly airport sitting at the event position).
         private _bestAirport = [];
         private _bestDist = -1;
         {
