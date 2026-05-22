@@ -264,6 +264,24 @@ private _gracePeriod = 15;
                     private _isPlayer = (_u in _players) || (vehicle _u in _players);
                     private _relevant = _aiTriggerable || _isPlayer;
 
+                    // DIAG-STRIP: per-iteration body-entry trace. #890 retest
+                    // (Ares, 2026-05-20) showed first-candidate log firing for
+                    // Ares but neither the silent-immunity, accumulator, nor
+                    // detonation logs followed — i.e. the for-each body below
+                    // either didn't run, or ran without reaching any branch.
+                    // Ares's 2026-05-21 follow-up confirms stripped loadout,
+                    // no engineer flag anywhere, no MineDetector — so the
+                    // !_qualifies branch should have detonated immediately.
+                    // It didn't, which points at dedi locality: `_u in _players`
+                    // (where _players = BIS_fnc_listPlayers) may be failing
+                    // even though `isPlayer _u` evaluates true server-side.
+                    // Log BOTH so the next RPT names the closing gate
+                    // directly. Strip once root cause identified.
+                    if (_debugLocal) then {
+                        ["ALIVE-%1 IED DIAG: forEach _u=%2[%3] inPlayers=%4 isPlayerCmd=%5 _aiTriggerable=%6 _relevant=%7 _shouldDetonate=%8 _playersCount=%9",
+                            time, name _u, typeOf _u, (_u in _players), isPlayer _u, _aiTriggerable, _relevant, _shouldDetonate, count _players] call ALiVE_fnc_dump;
+                    };
+
                     if (_relevant && !_shouldDetonate) then {
                         private _inVehicle = (vehicle _u) != _u;
 
@@ -278,6 +296,20 @@ private _gracePeriod = 15;
                             ((_u getVariable ["ACE_isEngineer", 0]) > 0) ||       // ACE engineer level 1 or 2
                             (_u getVariable ["ACE_isEOD", false])                 // ACE EOD specialist (explosives role)
                         );
+
+                        // DIAG-STRIP: companion to the forEach entry trace.
+                        // Once body is entered for a player, log the
+                        // qualification breakdown. Strip with the entry log.
+                        if (_debugLocal) then {
+                            ["ALIVE-%1 IED DIAG: qualifying %2 _inVehicle=%3 _qualifies=%4 _challengeEnabled=%5 (device=%6 displayName=%7 vvn=%8 trait=%9 ace_eng=%10 ace_eod=%11)",
+                                time, name _u, _inVehicle, _qualifies, _challengeEnabled,
+                                (_device in (items _u)),
+                                getText (configFile >> "CfgVehicles" >> typeOf _u >> "displayName"),
+                                vehicleVarName _u,
+                                _u getUnitTrait "explosivesSpecialist",
+                                _u getVariable ["ACE_isEngineer", 0],
+                                _u getVariable ["ACE_isEOD", false]] call ALiVE_fnc_dump;
+                        };
 
                         if (!_qualifies) then {
                             // Non-engineer or vehicle-borne: instant detonation (legacy behaviour).
