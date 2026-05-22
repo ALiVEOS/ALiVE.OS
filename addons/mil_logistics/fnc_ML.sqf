@@ -1270,11 +1270,15 @@ switch(_operation) do {
         // knows about: primary cfgWorlds airport (id 0), secondary
         // airports (id 1..N), and dynamic runways such as carriers or
         // Eden-placed airbase compositions (id 100+).
+        // Positions are normalised to 3D [x,y,z] -- cfgWorlds ilsPosition
+        // returns 2D [x,y], which would spawn underground / underwater
+        // when consumed downstream as a position vector.
         private _airports = [];
 
         // Primary airport (id 0)
         private _primaryPos = getArray (configFile >> "cfgWorlds" >> WorldName >> "ilsPosition");
         if (count _primaryPos >= 2) then {
+            if (count _primaryPos < 3) then { _primaryPos = _primaryPos + [0]; };
             _airports pushBack [0, _primaryPos];
         };
 
@@ -1283,16 +1287,22 @@ switch(_operation) do {
         for "_i" from 0 to ((count _secondary) - 1) do {
             private _ilsPos = getArray ((_secondary select _i) >> "ilsPosition");
             if (count _ilsPos >= 2) then {
+                if (count _ilsPos < 3) then { _ilsPos = _ilsPos + [0]; };
                 _airports pushBack [_i + 1, _ilsPos];
             };
         };
 
         // Dynamic runways (ids 100+) -- cached on first call.
+        // Skip destroyed / null entries so a sunk carrier doesn't return
+        // [0,0,0] (which would otherwise beat real inland airports on
+        // distance2D from a coastal event).
         if (isNil "ALiVE_Carriers") then {
             ALiVE_Carriers = (allAirports select 1);
         };
         {
-            _airports pushBack [100 + _forEachIndex, position _x];
+            if (!isNull _x && {alive _x}) then {
+                _airports pushBack [100 + _forEachIndex, position _x];
+            };
         } forEach ALiVE_Carriers;
 
         _result = _airports;
@@ -5490,29 +5500,6 @@ switch(_operation) do {
 
                         }; // end if (count _testFromPos == 0) -- supply network anchor
 
-                        // HELI delivery: prefer the furthest friendly airfield as the
-                        // departure position rather than the supply-network node closest
-                        // to the destination. Gives rear-area airfields a gameplay
-                        // purpose and makes resupply visibly come from the rear.
-                        // Falls back to the supply network result when no friendly
-                        // airfield is available (no airports on the map, all enemy-held,
-                        // or no held OPCOM objectives near an airport).
-                        if (_eventType in ["HELI_INSERT", "HELI_PARADROP"] && count _testFromPos == 0) then {
-                            private _friendlyAirports = [_logic, "getFriendlyAirports", _side] call MAINCLASS;
-                            if (count _friendlyAirports > 0) then {
-                                private _rearAirfield = [_logic, "selectRearAirfieldSource",
-                                    [_friendlyAirports, _eventPosition]] call MAINCLASS;
-                                if (count _rearAirfield > 0) then {
-                                    _reinforcementPosition = _rearAirfield select 1;
-                                    if (_debug) then {
-                                        ["ML - %1 departure: rear airfield %2 at %3 (%4m from event)",
-                                            _eventType, _rearAirfield select 0, _rearAirfield select 1,
-                                            round ((_rearAirfield select 1) distance2D _eventPosition)] call ALiVE_fnc_dump;
-                                    };
-                                };
-                            };
-                        };
-
                         ["AI LOGCOM Side: %1 Type: %2 From: %3 To: %4 Dist: %5m Water: %6 Heavy: %7",
                             _side, _eventType, _reinforcementPosition, _eventPosition,
                             round _routeDistance, _water, !_noHeavy] call ALiVE_fnc_dump;
@@ -5882,8 +5869,32 @@ switch(_operation) do {
                                         };
                                     };
 
-                                    // Set departure base and find spawn LZ
+                                    // Set departure base and find spawn LZ.
                                     _reinforcementPosition = _departurePos;
+
+                                    // Rear-airfield override: when a friendly airfield is held
+                                    // (within FRIENDLY_AIRPORT_RADIUS of any defend/reserve OPCOM
+                                    // objective for this side), anchor the heli departure at the
+                                    // airfield furthest from the event instead of the held-objective
+                                    // departure. Gives rear-area airfields a gameplay purpose so
+                                    // resupply visibly flies in from the rear rather than appearing
+                                    // at a held objective adjacent to the front.
+                                    // Falls back to _departurePos when no airports, all enemy-held,
+                                    // or no held objective is within range of any airport.
+                                    private _friendlyAirports = [_logic, "getFriendlyAirports", _eventSide] call MAINCLASS;
+                                    if (count _friendlyAirports > 0) then {
+                                        private _rearAirfield = [_logic, "selectRearAirfieldSource",
+                                            [_friendlyAirports, _eventPosition]] call MAINCLASS;
+                                        if (count _rearAirfield > 0) then {
+                                            _reinforcementPosition = _rearAirfield select 1;
+                                            if (_debug) then {
+                                                ["ML - HELI_INSERT departure: rear airfield %1 at %2 (%3m from event)",
+                                                    _rearAirfield select 0, _rearAirfield select 1,
+                                                    round ((_rearAirfield select 1) distance2D _eventPosition)] call ALiVE_fnc_dump;
+                                            };
+                                        };
+                                    };
+
                                     _remotePosition = [_logic, "prepareHelicopterLZ", [
                                         _reinforcementPosition getPos [random 200, random 360], 100
                                     ]] call MAINCLASS;
