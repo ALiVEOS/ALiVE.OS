@@ -27,6 +27,7 @@ Examples:
 
 Author:
     Goldwep (ALiVE Mod Team)
+    Jman
 ---------------------------------------------------------------------------- */
 
 TRACE_1("COPConfig - input",_this);
@@ -152,6 +153,13 @@ if (isNil "ALIVE_COP_OBJ_SHOW_ATTACK")     then { ALIVE_COP_OBJ_SHOW_ATTACK     
 if (isNil "ALIVE_COP_OBJ_SHOW_DEFEND")     then { ALIVE_COP_OBJ_SHOW_DEFEND     = true };
 if (isNil "ALIVE_COP_OBJ_SHOW_RECON")      then { ALIVE_COP_OBJ_SHOW_RECON      = true };
 if (isNil "ALIVE_COP_OBJ_SHOW_RESERVE")    then { ALIVE_COP_OBJ_SHOW_RESERVE    = false };
+// Held-objective flag overlay - drawn when ALiVE_fnc_isHeldObjective passes
+// for an objective in the Reserve bucket (tacom_state=reserve + section
+// profiles alive + <3 enemies within 300m). Visible regardless of the
+// Reserve circle toggle since held is the more tactically-useful signal
+// (commander knows this anchor is currently friendly).
+if (isNil "ALIVE_COP_OBJ_SHOW_HELD")       then { ALIVE_COP_OBJ_SHOW_HELD       = true };
+if (isNil "ALIVE_COP_OBJ_HELD_ICON_SIZE")  then { ALIVE_COP_OBJ_HELD_ICON_SIZE  = 24 };
 if (isNil "ALIVE_COP_OBJ_AXIS_ARROWS")     then { ALIVE_COP_OBJ_AXIS_ARROWS     = true };
 if (isNil "ALIVE_COP_OBJ_LABEL_LOCATIONS") then { ALIVE_COP_OBJ_LABEL_LOCATIONS = true };
 if (isNil "ALIVE_COP_OBJ_SHOW_PRIORITY")   then { ALIVE_COP_OBJ_SHOW_PRIORITY   = true };
@@ -343,6 +351,7 @@ if (isNil "ALIVE_COP_COLOR_OBJ_ATTACK")   then { ALIVE_COP_COLOR_OBJ_ATTACK   = 
 if (isNil "ALIVE_COP_COLOR_OBJ_DEFEND")   then { ALIVE_COP_COLOR_OBJ_DEFEND   = [0.2,  0.5,   0.9,  0.8] };
 if (isNil "ALIVE_COP_COLOR_OBJ_RECON")    then { ALIVE_COP_COLOR_OBJ_RECON    = [0.96, 0.79,  0.36, 0.8] };
 if (isNil "ALIVE_COP_COLOR_OBJ_RESERVE")  then { ALIVE_COP_COLOR_OBJ_RESERVE  = [0.53, 0.53,  0.53, 0.8] };
+if (isNil "ALIVE_COP_COLOR_OBJ_HELD")     then { ALIVE_COP_COLOR_OBJ_HELD     = [0.10, 0.78,  0.20, 0.95] };
 
 // Activity badge colours
 if (isNil "ALIVE_COP_COLOR_ACT_ATTACK")   then { ALIVE_COP_COLOR_ACT_ATTACK   = [0.8,  0.13,  0.13, 1.0] };

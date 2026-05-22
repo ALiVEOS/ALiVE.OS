@@ -41,6 +41,7 @@ Returns:
 
 Author:
     Goldwep (ALiVE Mod Team)
+    Jman
 ---------------------------------------------------------------------------- */
 
 TRACE_1("COPRender - input",_this);
@@ -328,7 +329,7 @@ ALIVE_fnc_COPDrawBftMarker = {
 ALIVE_fnc_COPDrawObjective = {
     params ["_mapCtrl", "_entry"];
 
-    _entry params ["_pos", "_size", "_state", "_locName", "_priority"];
+    _entry params ["_pos", "_size", "_state", "_locName", "_priority", ["_held", false]];
 
     private _show = switch (_state) do {
         case "attack":  { ALIVE_COP_OBJ_SHOW_ATTACK };
@@ -337,40 +338,69 @@ ALIVE_fnc_COPDrawObjective = {
         case "reserve": { ALIVE_COP_OBJ_SHOW_RESERVE };
         default         { false };
     };
-    if (!_show) exitWith {};
+    private _showHeldFlag = (_held && ALIVE_COP_OBJ_SHOW_HELD);
 
-    private _color = switch (_state) do {
-        case "attack":  { ALIVE_COP_COLOR_OBJ_ATTACK };
-        case "defend":  { ALIVE_COP_COLOR_OBJ_DEFEND };
-        case "recon":   { ALIVE_COP_COLOR_OBJ_RECON };
-        case "reserve": { ALIVE_COP_COLOR_OBJ_RESERVE };
-        default         { [1, 1, 1, 0.5] };
+    // Bail only if neither the state circle nor the held flag will draw.
+    if (!_show && !_showHeldFlag) exitWith {};
+
+    if (_show) then {
+        private _color = switch (_state) do {
+            case "attack":  { ALIVE_COP_COLOR_OBJ_ATTACK };
+            case "defend":  { ALIVE_COP_COLOR_OBJ_DEFEND };
+            case "recon":   { ALIVE_COP_COLOR_OBJ_RECON };
+            case "reserve": { ALIVE_COP_COLOR_OBJ_RESERVE };
+            default         { [1, 1, 1, 0.5] };
+        };
+
+        _mapCtrl drawEllipse [_pos, _size, _size, 0, _color, ""];
+
+        if (ALIVE_COP_render_showLabels) then {
+            private _stateLabel = switch (_state) do {
+                case "attack":  { "ATK" };
+                case "defend":  { "DEF" };
+                case "recon":   { "RCN" };
+                case "reserve": { "RSV" };
+                default         { toUpper _state };
+            };
+
+            private _locPart = if (ALIVE_COP_OBJ_LABEL_LOCATIONS && {_locName != ""}) then {
+                format [" - %1", _locName]
+            } else { "" };
+
+            private _prioPart = if (ALIVE_COP_OBJ_SHOW_PRIORITY && {_priority > 0}) then {
+                format [" - P%1", _priority]
+            } else { "" };
+
+            private _label = format ["%1%2%3", _stateLabel, _locPart, _prioPart];
+
+            private _labelPos = [_pos select 0, (_pos select 1) + _size + ALIVE_COP_OBJ_LABEL_OFFSET_Y, 0];
+            _mapCtrl drawIcon ["", _color, _labelPos, 0, 0, 0, _label, 1, ALIVE_COP_TEXT_SIZE_LABEL, ALIVE_COP_FONT_MAIN, "center"];
+        };
     };
 
-    _mapCtrl drawEllipse [_pos, _size, _size, 0, _color, ""];
-
-    if (!ALIVE_COP_render_showLabels) exitWith {};
-
-    private _stateLabel = switch (_state) do {
-        case "attack":  { "ATK" };
-        case "defend":  { "DEF" };
-        case "recon":   { "RCN" };
-        case "reserve": { "RSV" };
-        default         { toUpper _state };
+    // Held-objective flag overlay (replaces the old mil_logistics debug
+    // createMarker block - same predicate, surfaced as a persistent COP
+    // layer commanders + heli-insert routing both consult).
+    if (_showHeldFlag) then {
+        private _heldLabel = if (ALIVE_COP_render_showLabels) then {
+            private _heldLocPart = if (ALIVE_COP_OBJ_LABEL_LOCATIONS && {_locName != ""}) then {
+                format [" - %1", _locName]
+            } else { "" };
+            format ["HELD%1", _heldLocPart]
+        } else { "" };
+        _mapCtrl drawIcon [
+            ALIVE_COP_TEX_OBJECTIVE,
+            ALIVE_COP_COLOR_OBJ_HELD,
+            _pos,
+            ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE,
+            0,
+            _heldLabel,
+            1,
+            ALIVE_COP_TEXT_SIZE_LABEL,
+            ALIVE_COP_FONT_MAIN,
+            "right"
+        ];
     };
-
-    private _locPart = if (ALIVE_COP_OBJ_LABEL_LOCATIONS && {_locName != ""}) then {
-        format [" - %1", _locName]
-    } else { "" };
-
-    private _prioPart = if (ALIVE_COP_OBJ_SHOW_PRIORITY && {_priority > 0}) then {
-        format [" - P%1", _priority]
-    } else { "" };
-
-    private _label = format ["%1%2%3", _stateLabel, _locPart, _prioPart];
-
-    private _labelPos = [_pos select 0, (_pos select 1) + _size + ALIVE_COP_OBJ_LABEL_OFFSET_Y, 0];
-    _mapCtrl drawIcon ["", _color, _labelPos, 0, 0, 0, _label, 1, ALIVE_COP_TEXT_SIZE_LABEL, ALIVE_COP_FONT_MAIN, "center"];
 };
 
 // Dashed axis-of-advance arrow from nearest friendly cluster to an attack objective.
