@@ -39,7 +39,11 @@ class CfgVehicles {
                 property     = "ALiVE_amb_civ_population_insurgentFaction";
                 displayName  = "$STR_ALIVE_CIV_POP_INSURGENT_FACTION";
                 tooltip      = "$STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT";
-                control      = "ALiVE_FactionChoiceMulti_Military";
+                // Per-consumer variant of FactionChoiceMulti_Military.
+                // Visible Title "Insurgent Faction(s):" plus tooltip
+                // $STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT set by
+                // the LOAD handler on idc 101.
+                control      = "ALiVE_FactionChoiceMulti_Military_InsurgentFactions";
                 typeName     = "STRING";
                 expression   = "_this setVariable ['insurgentFaction', _value];";
                 defaultValue = """[]""";
