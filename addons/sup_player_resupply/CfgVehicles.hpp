@@ -55,7 +55,11 @@ class CfgVehicles {
                         property     = "ALiVE_sup_player_resupply_pr_factionWhitelist";
                         displayName  = "$STR_ALIVE_PR_FACTION_WHITELIST";
                         tooltip      = "$STR_ALIVE_PR_FACTION_WHITELIST_COMMENT";
-                        control      = "ALiVE_FactionChoiceMulti_Military";
+                        // Per-consumer variant of FactionChoiceMulti_Military.
+                        // Visible Title "Faction Whitelist:" plus tooltip
+                        // $STR_ALIVE_PR_FACTION_WHITELIST_COMMENT set by
+                        // the LOAD handler on idc 101.
+                        control      = "ALiVE_FactionChoiceMulti_Military_FactionWhitelist";
                         typeName     = "STRING";
                         expression   = "_this setVariable ['pr_factionWhitelist', _value];";
                         defaultValue = """[]""";

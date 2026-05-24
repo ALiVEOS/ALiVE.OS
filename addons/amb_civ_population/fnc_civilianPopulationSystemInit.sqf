@@ -35,6 +35,11 @@ if(isServer) then {
     private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
     private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
+    // spawnRadiusUAV: -1 sentinel resolves to spawnRadius + 800, matching the
+    // sys_profile semantic. 0 means disabled (no civ spawning around connected
+    // UAVs). Positive numbers used verbatim.
+    private _spawnRadiusUAV = parseNumber (_logic getVariable ["spawnRadiusUAV","-1"]);
+    if (_spawnRadiusUAV == -1) then { _spawnRadiusUAV = _spawnRadius + 800; };
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
     private _hostilityWest = parseNumber (_logic getVariable ["hostilityWest","0"]);
     private _hostilityEast = parseNumber (_logic getVariable ["hostilityEast","0"]);
@@ -170,6 +175,11 @@ if(isServer) then {
 
     private _advciv_vehicleEscape       = (_logic getVariable ["advciv_vehicleEscape",       "true"])  isEqualTo "true";
     private _advciv_vehicleEscapeChance = parseNumber (_logic getVariable ["advciv_vehicleEscapeChance", "0.3"]);
+    // Ambient civilian-vehicle "static driver" chance (#901). When an
+    // ambient parked car spawns it can borrow a nearby civilian as a
+    // sitting driver. 0.15 default is intentionally low — old hardcoded
+    // 0.45 produced too many static-but-manned cars that confused players.
+    private _ambVehCivDriverChance = parseNumber (_logic getVariable ["ambVehCivDriverChance", "0.15"]);
     private _advciv_noStealMilitary     = (_logic getVariable ["advciv_noStealMilitary",     "true"])  isEqualTo "true";
     private _advciv_noStealUsed         = (_logic getVariable ["advciv_noStealUsed",         "true"])  isEqualTo "true";
     private _advciv_noStealLoaded       = (_logic getVariable ["advciv_noStealLoaded",       "true"])  isEqualTo "true";
@@ -225,6 +235,7 @@ if(isServer) then {
 
     ALiVE_advciv_vehicleEscape       = _advciv_vehicleEscape;       publicVariable "ALiVE_advciv_vehicleEscape";
     ALiVE_advciv_vehicleEscapeChance = _advciv_vehicleEscapeChance; publicVariable "ALiVE_advciv_vehicleEscapeChance";
+    ALiVE_amb_civ_population_ambVehCivDriverChance = _ambVehCivDriverChance; publicVariable "ALiVE_amb_civ_population_ambVehCivDriverChance";
     ALiVE_advciv_noStealMilitary     = _advciv_noStealMilitary;     publicVariable "ALiVE_advciv_noStealMilitary";
     ALiVE_advciv_noStealUsed         = _advciv_noStealUsed;         publicVariable "ALiVE_advciv_noStealUsed";
     ALiVE_advciv_noStealLoaded       = _advciv_noStealLoaded;       publicVariable "ALiVE_advciv_noStealLoaded";
@@ -332,6 +343,7 @@ if(isServer) then {
     [ALIVE_civilianPopulationSystem, "spawnRadius", _spawnRadius] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "spawnTypeJetRadius", _spawnTypeJetRadius] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "spawnTypeHeliRadius", _spawnTypeHeliRadius] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "spawnRadiusUAV", _spawnRadiusUAV] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCivilianRoles", _ambientCivilianRoles] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCrowdSpawn", _ambientCrowdSpawn] call ALIVE_fnc_civilianPopulationSystem;

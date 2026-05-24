@@ -418,9 +418,15 @@ switch(_operation) do {
 			        } forEach _thislist;
 			       // ["_nearcivs: %1",_nearcivs] call ALIVE_fnc_dump;
 			       if (count _nearcivs > 0) then {
-			       	
+
+                // Chance of borrowing a nearby civilian as a static driver.
+                // Tunable via the amb_civ_population module Eden attribute
+                // "Ambient Vehicle Civ Driver Chance" (#901). Default 0.15
+                // — old hardcoded 0.45 produced too many static-but-manned
+                // ambient cars in player testing.
                 _diceRoll = random 1;
-                if(_diceRoll < 0.45) then {
+                private _driverChance = missionNamespace getVariable ["ALiVE_amb_civ_population_ambVehCivDriverChance", 0.15];
+                if(_diceRoll < _driverChance) then {
                  private _civDriver = _nearcivs select 0;
                  _civDriver moveInDriver _unit;
                  _civDriver assignAsDriver _unit;
@@ -431,7 +437,7 @@ switch(_operation) do {
                  _unit setVariable ["ALiVE_civDriverUnit", _civDriver, true];
                  ["civilian driver: %1",_civDriver] call ALIVE_fnc_dump;
                 };
-			       }; 
+			       };
              // END Civ Drivers
 						
             // set profile as active and store a reference to the unit on the profile

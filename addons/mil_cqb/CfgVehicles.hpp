@@ -168,7 +168,12 @@ class CfgVehicles {
                                 property     = "ALiVE_mil_cqb_CQB_FACTIONS";
                                 displayName  = "$STR_ALIVE_CQB_FACTIONS";
                                 tooltip      = "$STR_ALIVE_CQB_FACTIONS_COMMENT";
-                                control      = "ALiVE_FactionChoiceMulti_Military";
+                                // CQB-specific variant of FactionChoiceMulti_Military.
+                                // Visible Title text "Factions:" plus the per-attribute
+                                // tooltip $STR_ALIVE_CQB_FACTIONS_COMMENT are set by
+                                // the LOAD handler via ctrlSetText / ctrlSetTooltip
+                                // on idc 101.
+                                control      = "ALiVE_FactionChoiceMulti_Military_CQB";
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['CQB_FACTIONS', _value];";
                                 defaultValue = """[]""";

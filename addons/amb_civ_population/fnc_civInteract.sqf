@@ -92,17 +92,28 @@ switch (_operation) do {
 			// Merge insurgentFaction multi-select array + insurgentFactionManual
 			// comma-separated string into a deduped array. Backward-compat
 			// with legacy SQMs that stored insurgentFaction as a single string.
+			// Accepts ARRAY, bare CSV "a,b,c", or SQF array literal STRING
+			// '["a","b"]' (canonical form emitted by fnc_edenFactionChoiceMultiSave).
+			// Same strip-then-split pattern mil_opcom's `case "convert"` uses.
 			private _factionEnemyRaw    = _logic getVariable ["insurgentFaction", []];
 			private _factionEnemyManual = _logic getVariable ["insurgentFactionManual", ""];
 			private _factionsArr = if (typeName _factionEnemyRaw == "ARRAY") then {
 				+_factionEnemyRaw
 			} else {
 				if (_factionEnemyRaw == "") then { [] } else {
-					[[_factionEnemyRaw, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+					private _stripped = [_factionEnemyRaw, " ", ""] call CBA_fnc_replace;
+					_stripped = [_stripped, "[", ""] call CBA_fnc_replace;
+					_stripped = [_stripped, "]", ""] call CBA_fnc_replace;
+					_stripped = [_stripped, """", ""] call CBA_fnc_replace;
+					[_stripped, ","] call CBA_fnc_split
 				}
 			};
 			private _manualArr = if (_factionEnemyManual == "") then { [] } else {
-				[[_factionEnemyManual, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+				private _strippedManual = [_factionEnemyManual, " ", ""] call CBA_fnc_replace;
+				_strippedManual = [_strippedManual, "[", ""] call CBA_fnc_replace;
+				_strippedManual = [_strippedManual, "]", ""] call CBA_fnc_replace;
+				_strippedManual = [_strippedManual, """", ""] call CBA_fnc_replace;
+				[_strippedManual, ","] call CBA_fnc_split
 			};
 			_factionEnemy = [];
 			{

@@ -224,9 +224,12 @@ class Cfg3DEN
             // Outer width spans the full standard Eden attribute row
             // so children can align with where other attributes' labels
             // and value controls sit.
-            // Outer height includes 5 grid units of bottom padding so
-            // the next attribute below has breathing room without an
-            // excessive gap.
+            // Layout (grid units, halved):
+            //   y=0   h=5   Title (left col, x=0..48, right-aligned)
+            //   y=5   h=50  Listbox (full width, x=4..130; pushed below
+            //                Title row so title text isn't overwritten
+            //                by the listbox's first row)
+            // Total = 55 grid units.
             w = "130 * (pixelW * pixelGrid * 0.5)";
             h = "55 * (pixelH * pixelGrid * 0.5)";
             colorBackground[] = {0, 0, 0, 0};
@@ -242,31 +245,34 @@ class Cfg3DEN
             class HScrollbar {};
 
             class controls {
-                // Title (field label) - sits in the left column of
-                // the row, vertically centred against the listbox to
-                // its right. Right-aligned text matches Eden's
-                // convention for attribute labels (style = 1 = ST_RIGHT).
-                // Tooltip on hover with explicit colors so it's
-                // legible (Eden's default attribute tooltip is too
-                // transparent).
+                // Title sub-control sits LEFT-aligned at the listbox's
+                // left edge (x=4, matching the listbox's 4-grid left
+                // inset) at y=0..5, ABOVE the listbox row that starts
+                // at y=5. Text is set per-attribute by the LOAD handler
+                // via ctrlSetText on idc 101, matching the pattern used
+                // by ALiVE_TaskTypeChoice_Base / ALiVE_SideChoiceMulti /
+                // ALiVE_C2ISTARAccessItemsChoice. Pre-fix the listbox
+                // sat at y=0 covering this row, so the title text bled
+                // through the translucent listbox background and
+                // appeared as a misplaced overlay on the listbox's
+                // first row. Left-aligned (style=0) since the listbox
+                // is full-width — the label sits flush above the
+                // listbox content rather than in a separate left
+                // label column.
                 class Title: ctrlStatic {
                     idc      = 101;
                     type     = 0;
-                    style    = 1;
-                    x        = 0;
+                    style    = 0;
+                    x        = "4 * (pixelW * pixelGrid * 0.5)";
                     y        = 0;
-                    w        = "48 * (pixelW * pixelGrid * 0.5)";
+                    w        = "126 * (pixelW * pixelGrid * 0.5)";
                     h        = "5 * (pixelH * pixelGrid * 0.5)";
                     colorBackground[] = {0, 0, 0, 0};
                     colorText[]       = {1, 1, 1, 0.9};
-                    text     = "Override Factions:";
+                    text     = "";
                     font     = "RobotoCondensed";
-                    // Match the 2.2 sizeEx used by sibling attribute
-                    // row labels (Combo / Edit titles) so the Factions
-                    // label isn't visibly smaller than the rows above
-                    // and below it in the module dialog.
                     sizeEx   = "pixelH * pixelGrid * 2.2";
-                    tooltip  = "Pick one or more factions for this AI Commander to control. Left-click = replace selection. Ctrl+click = toggle individual item (multi-select). Shift+click = select range.";
+                    tooltip  = "Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.";
                     tooltipColorShade[] = {0, 0, 0, 1};
                     tooltipColorText[]  = {1, 1, 1, 1};
                     tooltipColorBox[]   = {0, 0, 0, 1};
@@ -283,9 +289,11 @@ class Cfg3DEN
                     // left-margin layout - same asymmetric pattern as the
                     // FilteredMultiSelect_Base substrate. 4-grid left inset
                     // so the listbox doesn't bleed flush to the dialog's
-                    // left edge.
+                    // left edge. y=5 so the listbox sits BELOW the Title
+                    // row at y=0..5, avoiding the title-overwrite that
+                    // occurs when both share y=0.
                     x = "4 * (pixelW * pixelGrid * 0.5)";
-                    y = 0;
+                    y = "5 * (pixelH * pixelGrid * 0.5)";
                     w = "126 * (pixelW * pixelGrid * 0.5)";
                     h = "50 * (pixelH * pixelGrid * 0.5)";
 
@@ -365,17 +373,17 @@ class Cfg3DEN
         };
 
         class ALiVE_FactionChoiceMulti: ALiVE_FactionChoiceMulti_Base {
-            attributeLoad = "[_this, [0,1,2,3], 'factions', [], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeLoad = "[_this, [0,1,2,3], 'factions', [], _value, 'Factions:'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
         class ALiVE_FactionChoiceMulti_Military: ALiVE_FactionChoiceMulti_Base {
-            attributeLoad = "[_this, [0,1,2], 'factions', [], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeLoad = "[_this, [0,1,2], 'factions', [], _value, 'Factions:'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
         class ALiVE_FactionChoiceMulti_Civilian: ALiVE_FactionChoiceMulti_Base {
-            attributeLoad = "[_this, [3], 'factions', [], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeLoad = "[_this, [3], 'factions', [], _value, 'Factions:'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
@@ -402,7 +410,34 @@ class Cfg3DEN
         // empty default is semantic opt-in, not a broken-state
         // placeholder.
         class ALiVE_FactionChoiceMulti_Military_Default_BLU_F: ALiVE_FactionChoiceMulti_Base {
-            attributeLoad = "[_this, [0,1,2], 'factions', ['BLU_F'], _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeLoad = "[_this, [0,1,2], 'factions', ['BLU_F'], _value, '$STR_ALIVE_OPCOM_FACTIONS', '$STR_ALIVE_OPCOM_FACTIONS_COMMENT'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
+        };
+
+        // Per-consumer variant for mil_cqb's CQB_FACTIONS picker.
+        // Title text + tooltip pulled from the mil_cqb stringtable so
+        // the visible label / hover text match the attribute's
+        // displayName / tooltip config.
+        class ALiVE_FactionChoiceMulti_Military_CQB: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, [0,1,2], 'factions', [], _value, '$STR_ALIVE_CQB_FACTIONS', '$STR_ALIVE_CQB_FACTIONS_COMMENT'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
+        };
+
+        // Per-consumer variant for amb_civ_population's insurgent
+        // faction picker. Title text + tooltip pulled from the
+        // amb_civ_population stringtable. The displayName key
+        // resolves to "Insurgent Faction(s):" - the parenthetical
+        // plural clarifies that multi-select is supported.
+        class ALiVE_FactionChoiceMulti_Military_InsurgentFactions: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, [0,1,2], 'factions', [], _value, '$STR_ALIVE_CIV_POP_INSURGENT_FACTION', '$STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
+        };
+
+        // Per-consumer variant for sup_player_resupply's faction
+        // whitelist picker. Title text + tooltip pulled from the
+        // sup_player_resupply stringtable.
+        class ALiVE_FactionChoiceMulti_Military_FactionWhitelist: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, [0,1,2], 'factions', [], _value, '$STR_ALIVE_PR_FACTION_WHITELIST', '$STR_ALIVE_PR_FACTION_WHITELIST_COMMENT'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
@@ -458,7 +493,17 @@ class Cfg3DEN
         class ALiVE_C2ISTARAccessItemsChoice: ALiVE_FactionChoiceMulti_Base {
             h = "32 * (pixelH * pixelGrid * 0.5)";
             class controls: controls {
-                class Title: Title {};
+                // Compact variant restores Title to the LEFT column
+                // (x=0..48, right-aligned) — its listbox sits in the
+                // RIGHT column (x=48..130) for a side-by-side layout.
+                // The faction-consumer Base substrate uses a full-width
+                // left-aligned Title above a full-width listbox, which
+                // would clash with this variant's side-by-side intent.
+                class Title: Title {
+                    x     = 0;
+                    w     = "48 * (pixelW * pixelGrid * 0.5)";
+                    style = 1;
+                };
                 class List: List {
                     x = "48 * (pixelW * pixelGrid * 0.5)";
                     y = "5 * (pixelH * pixelGrid * 0.5)";
@@ -478,12 +523,22 @@ class Cfg3DEN
             // padding.
             h = "28 * (pixelH * pixelGrid * 0.5)";
             class controls: controls {
-                // Explicit no-op inheritance to keep the sibling Title
-                // sub-control when overriding List below. Without this,
-                // overriding one nested class via `class List: List {}`
-                // can silently drop the other nested classes from the
-                // resolved controlsGroup config.
-                class Title: Title {};
+                // Compact variant restores Title to the LEFT column
+                // (x=0..48, right-aligned) — its listbox sits in the
+                // RIGHT column (x=48..130) for a side-by-side layout.
+                // The faction-consumer Base substrate uses a full-width
+                // left-aligned Title above a full-width listbox, which
+                // would clash with this variant's side-by-side intent.
+                //
+                // Explicit no-op inheritance also keeps the sibling
+                // Title sub-control when overriding List below -
+                // without it, overriding one nested class via
+                // `class List: List {}` can silently drop the others.
+                class Title: Title {
+                    x     = 0;
+                    w     = "48 * (pixelW * pixelGrid * 0.5)";
+                    style = 1;
+                };
                 class List: List {
                     // Style redeclared explicitly so the LB_MULTI bit
                     // (0x20) survives nested-class inheritance. Without

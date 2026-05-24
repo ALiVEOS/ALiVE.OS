@@ -27,6 +27,7 @@ class CfgVehicles {
             class spawnRadius : Edit { property = "ALiVE_amb_civ_population_spawnRadius"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_RADIUS_COMMENT"; defaultValue = """1500"""; };
             class spawnTypeHeliRadius : Edit { property = "ALiVE_amb_civ_population_spawnTypeHeliRadius"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_HELI_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_HELI_RADIUS_COMMENT"; defaultValue = """1500"""; };
             class spawnTypeJetRadius : Edit { property = "ALiVE_amb_civ_population_spawnTypeJetRadius"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_JET_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_JET_RADIUS_COMMENT"; defaultValue = """0"""; };
+            class spawnRadiusUAV : Edit { property = "ALiVE_amb_civ_population_spawnRadiusUAV"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS_COMMENT"; defaultValue = """-1"""; };
             class activeLimiter : Edit { property = "ALiVE_amb_civ_population_activeLimiter"; displayName = "$STR_ALIVE_CIV_POP_ACTIVE_LIMITER"; tooltip = "$STR_ALIVE_CIV_POP_ACTIVE_LIMITER_COMMENT"; defaultValue = """30"""; };
 
             // ---- Hostility ------------------------------------------------------
@@ -39,7 +40,11 @@ class CfgVehicles {
                 property     = "ALiVE_amb_civ_population_insurgentFaction";
                 displayName  = "$STR_ALIVE_CIV_POP_INSURGENT_FACTION";
                 tooltip      = "$STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT";
-                control      = "ALiVE_FactionChoiceMulti_Military";
+                // Per-consumer variant of FactionChoiceMulti_Military.
+                // Visible Title "Insurgent Faction(s):" plus tooltip
+                // $STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT set by
+                // the LOAD handler on idc 101.
+                control      = "ALiVE_FactionChoiceMulti_Military_InsurgentFactions";
                 typeName     = "STRING";
                 expression   = "_this setVariable ['insurgentFaction', _value];";
                 defaultValue = """[]""";
@@ -231,6 +236,7 @@ class CfgVehicles {
 
             // ---- Advanced Civilians - Vehicle ------------------------------------
             class HDR_ADVCIV_VEHICLE : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_VEHICLE"; displayName = "ADVANCED CIVILIANS - VEHICLE"; };
+            class ambVehCivDriverChance : Edit { property = "ALiVE_amb_civ_population_ambVehCivDriverChance"; displayName = "$STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE"; tooltip = "$STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE_COMMENT"; defaultValue = """0.15"""; };
             class advciv_vehicleEscape : Combo { property = "ALiVE_amb_civ_population_advciv_vehicleEscape"; displayName = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE"; tooltip = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
             class advciv_vehicleEscapeChance : Edit { property = "ALiVE_amb_civ_population_advciv_vehicleEscapeChance"; displayName = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_CHANCE_COMMENT"; defaultValue = """0.3"""; };
             class advciv_noStealMilitary : Combo { property = "ALiVE_amb_civ_population_advciv_noStealMilitary"; displayName = "$STR_ALIVE_ADVCIV_NO_STEAL_MILITARY"; tooltip = "$STR_ALIVE_ADVCIV_NO_STEAL_MILITARY_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };

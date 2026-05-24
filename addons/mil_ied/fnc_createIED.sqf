@@ -244,9 +244,24 @@ for "_j" from 1 to _numIEDs do {
         _ID = (_IEDs select 1) select (_j-1);
         _data = [_IEDs, _ID] call ALiVE_fnc_hashGet;
         _dud = [_data, "IEDDud"] call ALiVE_fnc_hashGet;
-        _IED = createVehicle [[_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet, [_data, "IEDpos",[0,0,0]] call ALiVE_fnc_hashGet, [], 0, "NONE"];
-        if (_thirdParty) then {
-            _IED setpos [(position _IED) select 0, (position _IED) select 1, 0.15];
+        private _storedPos = [_data, "IEDpos", [0,0,0]] call ALiVE_fnc_hashGet;
+
+        // Player-distance guard on store replay. mil_ied uses repeating
+        // triggers (size+250m) per IED town; first-time placement (above)
+        // checks 75m to any player before spawning, but the replay branch
+        // previously did not — so a player camping or walking onto a
+        // stored IED position when the trigger refired would see the IED
+        // pop out of the ground under their feet (#899). Defer THIS
+        // iteration if a player is within 75m; the trigger will fire
+        // again as players move and the IED will reappear when clear.
+        if ({(getpos _x distance _storedPos) < 75} count ([] call BIS_fnc_listPlayers) > 0) then {
+            ["ALIVE-%1 IED: store-replay skipped - player within 75m of stored pos %2", time, _storedPos] call ALiVE_fnc_dump;
+            _error = true;
+        } else {
+            _IED = createVehicle [[_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet, _storedPos, [], 0, "NONE"];
+            if (_thirdParty) then {
+                _IED setpos [(position _IED) select 0, (position _IED) select 1, 0.15];
+            };
         };
     };
 
