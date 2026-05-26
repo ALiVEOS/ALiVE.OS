@@ -184,10 +184,30 @@ private _gracePeriod = 15;
 
                 // --- Detonation / accumulator check ---
                 // Candidate pool: men + ground vehicles within proximity, alive, ground level.
-                private _detonateList = _ied nearEntities ["Man", _proximity];
-                _detonateList append (_ied nearEntities ["LandVehicle", _proximity]);
+                //
+                // Velocity-anticipation: scan a wider radius (_proximity + 5m)
+                // and accept candidates whose projected position one poll
+                // cycle from now is inside _proximity. Buffers against
+                // scheduler drift on low-FPS dedis where the 0.5s sleep can
+                // stretch to 1-2s, causing a walking player to clear the
+                // small proximity radius between polls. Stationary
+                // candidates (velocity 0) behave identically to the prior
+                // tight-radius check. Anticipated displacement is capped at
+                // 5m so fast vehicles don't trigger at long range. Reported
+                // 2026-05-24 (Ares #890): "no luck at all" on a retest with
+                // server FPS <25 - the polling loop was missing his passes
+                // through tight proximity radii.
+                private _anticipateMax = 5;     // metres - cap on look-ahead distance
+                private _pollLookahead = 0.5;   // seconds - matches the loop's sleep above
+                private _detonateList = _ied nearEntities ["Man", _proximity + _anticipateMax];
+                _detonateList append (_ied nearEntities ["LandVehicle", _proximity + _anticipateMax]);
                 _detonateList = _detonateList select {
-                    alive _x && ((getposATL (vehicle _x)) select 2 < 8)
+                    alive _x && ((getposATL (vehicle _x)) select 2 < 8) &&
+                    {
+                        private _speedMs    = vectorMagnitude (velocity (vehicle _x));
+                        private _anticipate = (_speedMs * _pollLookahead) min _anticipateMax;
+                        ((_x distance _ied) - _anticipate) <= _proximity
+                    }
                 };
 
                 // DIAG-STRIP: 30m approach detection per IED. Companion to the
@@ -402,11 +422,24 @@ private _gracePeriod = 15;
                 } forEach (+(keys _tripMap));
 
                 if (_shouldDetonate) then {
+                    private _iedPos = getpos _ied;
                     deletevehicle (_ied getVariable ["Detect_Trigger", objNull]);
                     deletevehicle (_ied getVariable ["Det_Trigger",    objNull]);
                     deletevehicle (_ied getVariable ["Trigger",        objNull]);
                     [ALiVE_mil_ied, "removeIED", _ied] call ALiVE_fnc_IED;
-                    _shell createVehicle [(getpos _ied) select 0, (getpos _ied) select 1, 0];
+                    private _explosionPos = [_iedPos select 0, _iedPos select 1, 0];
+                    private _explosionVehicle = _shell createVehicle _explosionPos;
+                    // DIAG-STRIP: detonation-block visibility. #890 retest
+                    // (Ares 2026-05-24) showed qualifying branch reached but
+                    // ear-ringing-only outcomes - we couldn't tell from RPT
+                    // whether _shell was right, where createVehicle placed
+                    // it, or if createVehicle returned objNull entirely.
+                    // Strip once the variance between integration choices
+                    // is fully accounted for.
+                    if (_debugLocal) then {
+                        ["ALIVE-%1 IED DIAG: detonating IED at %2 with _shell=%3 -> createVehicle=%4 (null=%5)",
+                            time, _iedPos, _shell, _explosionVehicle, isNull _explosionVehicle] call ALiVE_fnc_dump;
+                    };
                     deletevehicle _ied;
                     _detonated = true;
                 };

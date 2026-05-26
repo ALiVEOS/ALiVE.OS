@@ -17,7 +17,16 @@ private ["_debug","_IED","_caller","_id","_IEDCharge"];
 
 if (isDedicated) exitWith {["disarmIED running on server!"] call ALiVE_fnc_dump;};
 
-_debug = ADDON getVariable ["debug", false];
+// ADDON expands to the global ALiVE_mil_ied (the mil_ied module logic,
+// broadcast publicVariable-style from the server). If the broadcast
+// hasn't arrived on this client yet, the global is nil and any
+// `ADDON getVariable [...]` below would throw a Generic-error popup.
+// Reported 2026-05-24 (Ares #890) with the popup pointing at line 91.
+// objNull's getVariable returns the supplied default cleanly, so the
+// function degrades to the legacy defaults instead of crashing.
+private _addonLogic = if (isNil QUOTE(ADDON)) then { objNull } else { ADDON };
+
+_debug = _addonLogic getVariable ["debug", false];
 
 _IED    = _this select 0;
 _caller = _this select 1;
@@ -33,8 +42,8 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
 
 // Everything below needs scheduled context (sleep / waitUntil). addAction
 // callbacks are unscheduled, so spawn a fresh thread.
-[_IED, _caller, _id, _IEDCharge] spawn {
-    params ["_IED", "_caller", "_id", "_IEDCharge"];
+[_IED, _caller, _id, _IEDCharge, _addonLogic] spawn {
+    params ["_IED", "_caller", "_id", "_IEDCharge", "_addonLogic"];
 
     // Nested fn: complete a successful disarm. Keeps the container intact,
     // strips the charge from it, and hands the demo charge to the disarmer's
@@ -88,12 +97,12 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
     };
 
     private _skill             = _caller skillFinal "commanding";
-    private _challengeEnabled  = (ADDON getVariable ["IED_Engineer_Challenge", 1]) == 1;
+    private _challengeEnabled  = (_addonLogic getVariable ["IED_Engineer_Challenge", 1]) == 1;
 
     // Skill-scaled disarm time. Skill 1.0 -> baseTime, skill 0 -> 1.5x baseTime,
     // floored at 50% of baseTime. If the Engineer Challenge master toggle is
     // off, fall back to legacy instant disarm.
-    private _baseTime   = ADDON getVariable ["IED_Engineer_Disarm_BaseTime", 60];
+    private _baseTime   = _addonLogic getVariable ["IED_Engineer_Disarm_BaseTime", 60];
     private _disarmTime = if (_challengeEnabled) then {
         ((_baseTime * (1.5 - 0.5 * _skill)) max (_baseTime * 0.5))
     } else {
@@ -121,7 +130,7 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
 
     // New-device chance. Skill-scaled when Challenge is enabled, flat 10% legacy otherwise.
     private _newDeviceThreshold = if (_challengeEnabled) then {
-        private _base = ADDON getVariable ["IED_Engineer_Disarm_NewDeviceBase", 0.75];
+        private _base = _addonLogic getVariable ["IED_Engineer_Disarm_NewDeviceBase", 0.75];
         ((_base + 0.15 * _skill) min 0.90) max 0.70
     } else {
         0.90
