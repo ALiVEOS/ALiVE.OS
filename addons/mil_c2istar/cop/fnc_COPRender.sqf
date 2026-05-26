@@ -388,6 +388,24 @@ ALIVE_fnc_COPDrawObjective = {
             } else { "" };
             format ["HELD%1", _heldLocPart]
         } else { "" };
+
+        // Backdrop halo: a dark filled dot slightly larger than the icon
+        // frames the cross-in-circle against terrain (the icon's thin
+        // lines lose contrast on grass / vegetation without it).
+        _mapCtrl drawIcon [
+            ALIVE_COP_TEX_DOT,
+            ALIVE_COP_COLOR_OBJ_HELD_BACKDROP,
+            _pos,
+            ALIVE_COP_OBJ_HELD_BACKDROP_SIZE, ALIVE_COP_OBJ_HELD_BACKDROP_SIZE,
+            0,
+            "",
+            0,
+            ALIVE_COP_TEXT_SIZE_LABEL,
+            ALIVE_COP_FONT_MAIN,
+            "center"
+        ];
+
+        // Icon + label on top.
         _mapCtrl drawIcon [
             ALIVE_COP_TEX_OBJECTIVE,
             ALIVE_COP_COLOR_OBJ_HELD,

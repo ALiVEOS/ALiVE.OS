@@ -728,8 +728,19 @@ ALIVE_fnc_COPDeriveActivity = {
                 private _bucketReserve = [];
 
                 {
+                    // Held-objective flag (same predicate mil_logistics
+                    // HELI_INSERT routing uses, so the COP visual matches
+                    // the routing decision). Computed BEFORE the
+                    // _validStates gate because tacom_state is an
+                    // independent state machine from opcom_state (set in
+                    // mil_opcom/tacom.fsm:402 vs :726): reserve anchors
+                    // typically have opcom_state="idle" which doesn't
+                    // appear in _validStates, so the gate would otherwise
+                    // drop them before the held check ever runs.
+                    private _isHeld = [_x, _sideKey] call ALiVE_fnc_isHeldObjective;
+
                     private _state = [_x, "opcom_state", ""] call ALiVE_fnc_HashGet;
-                    if (_state in _validStates) then {
+                    if (_state in _validStates || _isHeld) then {
                         private _center = [_x, "center", [0,0,0]] call ALiVE_fnc_HashGet;
                         // Skip placeholder positions (uncaptured/uninitialised objectives).
                         if ((_center distance2D [0,0,0]) > 100) then {
@@ -737,30 +748,24 @@ ALIVE_fnc_COPDeriveActivity = {
                             if (_size < ALIVE_COP_OBJ_MIN_RADIUS) then { _size = ALIVE_COP_OBJ_MIN_RADIUS };
                             private _priority = [_x, "priority", 0] call ALiVE_fnc_HashGet;
 
-                            // Normalise state.
+                            // Normalise state. Held objectives whose
+                            // opcom_state falls outside the standard set
+                            // (typically "idle") get remapped to "reserve"
+                            // so the existing bucketing + render path
+                            // handles them correctly.
                             private _normState = switch (toLower _state) do {
                                 case "attacking";
                                 case "capture":   { "attack" };
                                 case "defending": { "defend" };
                                 case "reserving": { "reserve" };
-                                default           { _state };
-                            };
-
-                            // Held-objective flag (same predicate mil_logistics
-                            // HELI_INSERT routing uses, so the COP visual matches
-                            // the routing decision). Only worth predicating the
-                            // reserve bucket - the held predicate's first check is
-                            // tacom_state="reserve", so other normStates are an
-                            // early-out anyway, but skipping the call entirely on
-                            // non-reserve avoids the dispatch overhead per cycle.
-                            private _held = false;
-                            if (_normState == "reserve") then {
-                                _held = [_x, _sideKey] call ALiVE_fnc_isHeldObjective;
+                                default {
+                                    if (_isHeld) then { "reserve" } else { _state }
+                                };
                             };
 
                             // Defer location name lookup until after capping —
                             // saves nearestLocation calls on discarded objectives.
-                            private _entry = [_priority, _center, _size, _normState, _held];
+                            private _entry = [_priority, _center, _size, _normState, _isHeld];
 
                             switch (_normState) do {
                                 case "attack":  { _bucketAttack  pushBack _entry };
@@ -832,12 +837,31 @@ ALIVE_fnc_COPDeriveActivity = {
 
         private _cycleMs = round ((diag_tickTime - _tStart) * 1000);
 
+        // Held-count snapshot per side (each entry's 6th field is the
+        // held flag). Surfaced in the cycle summary so testers can
+        // sanity-check the predicate is matching anything.
+        private _heldW = count (_objW select { (_x select 5) });
+        private _heldE = count (_objE select { (_x select 5) });
+        private _heldG = count (_objG select { (_x select 5) });
+
         ["info", "objectives",
-            "[Cycle %1] objs scanned: %2 | matched: %3 | placeholder: %4 | per side: W=%5 E=%6 G=%7 | broadcasts: %8/3 | %9ms",
+            "[Cycle %1] objs scanned: %2 | matched: %3 | placeholder: %4 | per side: W=%5 E=%6 G=%7 | held: W=%8 E=%9 G=%10 | broadcasts: %11/3 | %12ms",
             [_cycleCount, _totalObjScanned, _totalObjMatched, _totalObjPlaceholder,
              count _objW, count _objE, count _objG,
+             _heldW, _heldE, _heldG,
              _broadcastCount, _cycleMs]
         ] call ALIVE_fnc_COPLog;
+
+        // DIAG-STRIP held-count visibility log (always logged via
+        // ALiVE_fnc_dump independent of ALIVE_COP_DEBUG_LEVEL, gated by
+        // mil_c2istar's debug attribute). Helps testers confirm the
+        // predicate is firing without bumping COP debug level. Sweep
+        // out alongside the other DIAG-STRIP entries during the
+        // end-of-overhauls cleanup pass.
+        if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+            ["ALIVE-%1 COP DIAG-STRIP - held count [Cycle %2] W=%3 E=%4 G=%5 (objs scanned %6, matched %7)",
+                time, _cycleCount, _heldW, _heldE, _heldG, _totalObjScanned, _totalObjMatched] call ALiVE_fnc_dump;
+        };
 
         // Cycle 1 cold-start exemption (same rationale as Loop A).
         private _warnThreshold = if (_cycleCount == 1) then { ALIVE_COP_DEBUG_PERF_WARN_CYCLE1_MS } else { ALIVE_COP_DEBUG_PERF_WARN_MS };

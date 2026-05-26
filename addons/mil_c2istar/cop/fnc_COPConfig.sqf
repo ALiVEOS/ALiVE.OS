@@ -158,8 +158,12 @@ if (isNil "ALIVE_COP_OBJ_SHOW_RESERVE")    then { ALIVE_COP_OBJ_SHOW_RESERVE    
 // profiles alive + <3 enemies within 300m). Visible regardless of the
 // Reserve circle toggle since held is the more tactically-useful signal
 // (commander knows this anchor is currently friendly).
-if (isNil "ALIVE_COP_OBJ_SHOW_HELD")       then { ALIVE_COP_OBJ_SHOW_HELD       = true };
-if (isNil "ALIVE_COP_OBJ_HELD_ICON_SIZE")  then { ALIVE_COP_OBJ_HELD_ICON_SIZE  = 24 };
+if (isNil "ALIVE_COP_OBJ_SHOW_HELD")              then { ALIVE_COP_OBJ_SHOW_HELD              = true };
+if (isNil "ALIVE_COP_OBJ_HELD_ICON_SIZE")         then { ALIVE_COP_OBJ_HELD_ICON_SIZE         = 24 };
+// Backdrop halo behind the held icon - filled dot at 1.4x icon size in a
+// dark colour to frame the cross-in-circle against terrain. Without it
+// the green icon's thin lines lose contrast on grass / vegetation.
+if (isNil "ALIVE_COP_OBJ_HELD_BACKDROP_SIZE")     then { ALIVE_COP_OBJ_HELD_BACKDROP_SIZE     = 34 };
 if (isNil "ALIVE_COP_OBJ_AXIS_ARROWS")     then { ALIVE_COP_OBJ_AXIS_ARROWS     = true };
 if (isNil "ALIVE_COP_OBJ_LABEL_LOCATIONS") then { ALIVE_COP_OBJ_LABEL_LOCATIONS = true };
 if (isNil "ALIVE_COP_OBJ_SHOW_PRIORITY")   then { ALIVE_COP_OBJ_SHOW_PRIORITY   = true };
@@ -352,6 +356,8 @@ if (isNil "ALIVE_COP_COLOR_OBJ_DEFEND")   then { ALIVE_COP_COLOR_OBJ_DEFEND   = 
 if (isNil "ALIVE_COP_COLOR_OBJ_RECON")    then { ALIVE_COP_COLOR_OBJ_RECON    = [0.96, 0.79,  0.36, 0.8] };
 if (isNil "ALIVE_COP_COLOR_OBJ_RESERVE")  then { ALIVE_COP_COLOR_OBJ_RESERVE  = [0.53, 0.53,  0.53, 0.8] };
 if (isNil "ALIVE_COP_COLOR_OBJ_HELD")     then { ALIVE_COP_COLOR_OBJ_HELD     = [0.10, 0.78,  0.20, 0.95] };
+// Backdrop halo - dark fill to frame the green icon against terrain.
+if (isNil "ALIVE_COP_COLOR_OBJ_HELD_BACKDROP") then { ALIVE_COP_COLOR_OBJ_HELD_BACKDROP = [0,0,0,0.7] };
 
 // Activity badge colours
 if (isNil "ALIVE_COP_COLOR_ACT_ATTACK")   then { ALIVE_COP_COLOR_ACT_ATTACK   = [0.8,  0.13,  0.13, 1.0] };
