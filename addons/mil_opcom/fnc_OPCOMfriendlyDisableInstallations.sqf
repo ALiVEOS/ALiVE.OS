@@ -184,9 +184,21 @@ private _processedBuildings = [];
             // Only run if capture hasn't already triggered (saves a
             // nearEntities call in the common "both" case where capture
             // fires first).
+            //
+            // AI-only filter: groups containing any player (the player
+            // themselves OR an AI squadmate under player command, both
+            // sharing the same group) are excluded. Players are
+            // expected to use the hold-action UI on the installation
+            // to dismantle - the passive proximity disable is for
+            // OPCOM friendly forces taking ground, not for a lone
+            // player walking past. Reported as #903 (Ljas, 2026-05-23):
+            // a solo player in SP or playable in MP could disable an
+            // installation just by being near it.
             if (!_triggered && {_proximityEnabled}) then {
                 private _nearbyEnemies = (_building nearEntities [["Man","Car","Tank","Air","Ship"], _PROXIMITY_RADIUS]) select {
-                    alive _x && {(side (group _x)) in _sideObjectsEnemy}
+                    alive _x
+                    && {(side (group _x)) in _sideObjectsEnemy}
+                    && {({isPlayer _x} count (units (group _x))) == 0}
                 };
                 if (count _nearbyEnemies > 0) then {
                     _triggered = true;
