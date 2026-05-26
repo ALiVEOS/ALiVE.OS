@@ -1094,7 +1094,7 @@ class FSM
                          "      private _pos = position (_this select 0);" \n
                          "      {" \n
                          "          _value = _value min (_x distance _pos);" \n
-                         "      } foreach (allPlayers + allCurators);" \n
+                         "      } foreach (allPlayers + (if (!isnil ""ALIVE_profileSystem"" && { [ALIVE_profileSystem,""zeusSpawn""] call ALiVE_fnc_hashGet }) then { allCurators } else { [] }));" \n
                          "      _value" \n
                          "  };" \n
                          "  _toSpawn = [_toSpawn, _sortCode] call ALiVE_fnc_shellSort;" \n
@@ -1763,7 +1763,7 @@ class FSM
                          "                       };" \n
                          "              } foreach _buildings;" \n
                          "	};" \n
-                         "  } foreach (allPlayers + allCurators);" \n
+                         "  } foreach (allPlayers + (if (!isnil ""ALIVE_profileSystem"" && { [ALIVE_profileSystem,""zeusSpawn""] call ALiVE_fnc_hashGet }) then { allCurators } else { [] }));" \n
                          "" \n
                          "  _countNewBuildings = count _newBuildings;" \n
                          "};" \n

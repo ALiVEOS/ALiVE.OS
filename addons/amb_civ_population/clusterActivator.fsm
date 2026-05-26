@@ -657,7 +657,7 @@ class FSM
        "		private _pos = _this select 2 select 2;" \n
        "		{" \n
        "			_value = _value min (_x distance _pos);" \n
-       "		} foreach (allPlayers + allCurators);" \n
+       "		} foreach (allPlayers + (if (!isnil ""ALIVE_profileSystem"" && { [ALIVE_profileSystem,""zeusSpawn""] call ALiVE_fnc_hashGet }) then { allCurators } else { [] }));" \n
        "		_value" \n
        "	};" \n
        "	_agentsToSpawn = [_agentsToSpawn, _sortCode] call ALiVE_fnc_shellSort;" \n
@@ -1383,7 +1383,7 @@ class FSM
        "		private _pos = _this select 2 select 2;" \n
        "		{" \n
        "			_value = _value min (_x distance _pos);" \n
-       "		} foreach (allPlayers + allCurators);" \n
+       "		} foreach (allPlayers + (if (!isnil ""ALIVE_profileSystem"" && { [ALIVE_profileSystem,""zeusSpawn""] call ALiVE_fnc_hashGet }) then { allCurators } else { [] }));" \n
        "		_value" \n
        "	};" \n
        "	_agentsToSpawn = [_agentsToSpawn, _sortCode] call ALiVE_fnc_shellSort;" \n
@@ -1540,7 +1540,7 @@ class FSM
        "		private _pos = _this select 2 select 2;" \n
        "		{" \n
        "			_value = _value min (_x distance _pos);" \n
-       "		} foreach (allPlayers + allCurators);" \n
+       "		} foreach (allPlayers + (if (!isnil ""ALIVE_profileSystem"" && { [ALIVE_profileSystem,""zeusSpawn""] call ALiVE_fnc_hashGet }) then { allCurators } else { [] }));" \n
        "		_value" \n
        "	};" \n
        "	_agentsToSpawn = [_agentsToSpawn, _sortCode] call ALiVE_fnc_shellSort;" \n
