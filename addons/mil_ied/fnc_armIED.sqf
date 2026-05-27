@@ -45,7 +45,12 @@ _type = _this select 1;
 if (count _this > 2) then {
     _shell = _this select 2;
 } else {
-    _shell = [["M_Mo_120mm_AT","M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[4,8,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
+    // M_Mo_120mm_AT removed from the pool 2026-05-27: Ares #890 retest
+    // RPT showed the top-down-attack variant returns objNull from
+    // createVehicle ~1/4 detonations, leaving the IED silently inert.
+    // Weight shifted onto its LG cousin. Fallback below also catches
+    // any future unspawnable class.
+    _shell = [["M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[12,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
 };
 
 _proximity = 2 + floor(random 10);
@@ -429,13 +434,17 @@ private _gracePeriod = 15;
                     [ALiVE_mil_ied, "removeIED", _ied] call ALiVE_fnc_IED;
                     private _explosionPos = [_iedPos select 0, _iedPos select 1, 0];
                     private _explosionVehicle = _shell createVehicle _explosionPos;
-                    // DIAG-STRIP: detonation-block visibility. #890 retest
-                    // (Ares 2026-05-24) showed qualifying branch reached but
-                    // ear-ringing-only outcomes - we couldn't tell from RPT
-                    // whether _shell was right, where createVehicle placed
-                    // it, or if createVehicle returned objNull entirely.
-                    // Strip once the variance between integration choices
-                    // is fully accounted for.
+                    // Fallback: defensive guard for any future ammo class
+                    // that silently returns objNull from createVehicle the
+                    // way M_Mo_120mm_AT does. R_60mm_HE is in the pool
+                    // above and verified spawnable on the Ares retest.
+                    if (isNull _explosionVehicle) then {
+                        _explosionVehicle = "R_60mm_HE" createVehicle _explosionPos;
+                    };
+                    // DIAG-STRIP: detonation-block visibility. Kept one
+                    // more build to verify zero null=true outcomes after
+                    // the pool change. Strip with the next DIAG-STRIP
+                    // cleanup pass.
                     if (_debugLocal) then {
                         ["ALIVE-%1 IED DIAG: detonating IED at %2 with _shell=%3 -> createVehicle=%4 (null=%5)",
                             time, _iedPos, _shell, _explosionVehicle, isNull _explosionVehicle] call ALiVE_fnc_dump;

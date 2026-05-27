@@ -310,7 +310,7 @@ for "_j" from 1 to _numIEDs do {
                 };
                 [position _IED, [str(side (group _killer))], +10] call ALiVE_fnc_updateSectorHostility;
                 _pos set [2,0];
-                "M_Mo_120mm_AT" createVehicle _pos;
+                "M_Mo_120mm_AT_LG" createVehicle _pos;
             };
 
             [ADDON, "removeIED", _IED] call ALiVE_fnc_IED;
@@ -352,7 +352,7 @@ for "_j" from 1 to _numIEDs do {
                 };
                 [position _ied, [str(side (group _killer))], +10] call ALiVE_fnc_updateSectorHostility;
                 _pos set [2,0];
-                "M_Mo_120mm_AT" createVehicle _pos;
+                "M_Mo_120mm_AT_LG" createVehicle _pos;
             };
 
             [ADDON, "removeIED", _ied] call ALiVE_fnc_IED;

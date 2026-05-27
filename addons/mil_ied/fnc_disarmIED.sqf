@@ -157,7 +157,8 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
             [_IED, _caller, _id, _IEDCharge, "You guessed correct! IED disarmed."] call _fnDisarmSuccess;
         } else {
             // Wrong wire - detonate.
-            private _shell = [["M_Mo_120mm_AT","M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[4,8,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
+            // M_Mo_120mm_AT removed 2026-05-27 -- unspawnable, weight shifted onto LG (see fnc_armIED.sqf:48).
+            private _shell = [["M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[12,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
             _shell createVehicle getposATL _IED;
 
             private _trgr = (position _IED) nearObjects ["EmptyDetector", 3];

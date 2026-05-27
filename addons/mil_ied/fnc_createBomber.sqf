@@ -192,7 +192,8 @@ if (_debug) then {
         // Detonate regardless - the vest has already been stripped so
         // there is nothing to confiscate. The 10% dud chance is removed:
         // a bomber who reached the target and armed should always detonate.
-        _shell = [["M_Mo_120mm_AT","M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[8,4,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
+        // M_Mo_120mm_AT removed 2026-05-27 -- unspawnable, weight shifted onto LG (see fnc_armIED.sqf:48).
+        _shell = [["M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[12,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
         _shell createVehicle [(getpos _bomber) select 0, (getpos _bomber) select 1, 0];
         ["ALIVE-%1 Suicide Bomber: DETONATED at %2", time, getpos _bomber] call ALiVE_fnc_dump;
         sleep 0.3;
@@ -211,7 +212,8 @@ if (_debug) then {
         };
         if ((random 100) > 50) then {
             // Dead man switch - bomber timed out or victim died, detonate anyway
-            _shell = [["M_Mo_120mm_AT","M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[8,4,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
+            // M_Mo_120mm_AT removed 2026-05-27 -- unspawnable, weight shifted onto LG (see fnc_armIED.sqf:48).
+        _shell = [["M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[12,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
             _shell createVehicle [(getpos _bomber) select 0, (getpos _bomber) select 1,0];
             ["ALIVE-%1 Suicide Bomber: dead man switch DETONATED at %2", time, getpos _bomber] call ALiVE_fnc_dump;
             sleep 0.3;
