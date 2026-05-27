@@ -86,7 +86,17 @@ switch (_state) do {
 
         if(_agent call ALiVE_fnc_unitReadyRemote) then {
 
-            private _fire = "FirePlace_burning_F" createVehicle (position _agent);
+            // Spawn the fire ~2m in front of the civilian, not at their
+            // exact position. The SITDOWN animation below keeps the
+            // civilian standing/sitting where they are - if the fire is
+            // at their feet, they end up inside its damage radius and
+            // burn to death over the 60-300s wait. Reported as #906
+            // (UnRealxInferno, 2026-05-26) - civilians self-immolating
+            // at night-spawned (invisible-looking) campfires.
+            private _agentPos = position _agent;
+            private _agentDir = direction _agent;
+            private _firePos = _agentPos vectorAdd [sin(_agentDir) * 2, cos(_agentDir) * 2, 0];
+            private _fire = "FirePlace_burning_F" createVehicle _firePos;
 
             _agent lookAt _fire;
 
