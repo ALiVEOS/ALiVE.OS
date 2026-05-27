@@ -687,11 +687,18 @@ switch(_operation) do {
                     // Any alive unit or vehicle crew at low altitude — players AND AI
                     "({alive _x && ((getposATL (vehicle _x)) select 2 < 25)} count thislist > 0)"
                 } else {
-                    // Players only: check the person object is in thislist (not vehicle _x,
-                    // which is never in thislist for EmptyDetector triggers and would cause
-                    // the condition to always evaluate false for players inside vehicles,
-                    // immediately firing the exit/despawn code after IEDs spawn).
-                    "({_x in thisList && ((getposATL (vehicle _x)) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)"
+                    // Players only: accept either the person object OR their
+                    // current vehicle in thisList. When a player boards a
+                    // vehicle, the engine stops listing them as a separate
+                    // crew entity in the EmptyDetector's thisList - only
+                    // the vehicle remains. Checking the person object alone
+                    // flips the condition false on boarding, fires the
+                    // deactivation handler, and removes the IEDs. Reported
+                    // by HepatitisC.TnB on Discord 2026-05-26: "IEDs
+                    // disappear when I get in and out of a vehicle". RPT
+                    // confirmed the 11s gap between vehicle entry and the
+                    // trigger's removeIED dispatch.
+                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)"
                 };
 
 
@@ -1345,7 +1352,10 @@ switch(_operation) do {
                 private _restoredCond = if ([_logic, "aiTriggerable"] call MAINCLASS) then {
                     "({alive _x && ((getposATL (vehicle _x)) select 2 < 25)} count thislist > 0)"
                 } else {
-                    "({_x in thisList && ((getposATL (vehicle _x)) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)"
+                    // Accept person OR vehicle in thisList - see the
+                    // matching comment in case "start" (search for
+                    // HepatitisC.TnB) for the vehicle-board issue.
+                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)"
                 };
 
                 if (_num > 0) then {
