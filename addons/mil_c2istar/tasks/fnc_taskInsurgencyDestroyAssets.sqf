@@ -252,6 +252,28 @@ switch (_taskState) do {
         _targetsState = [_targets] call ALIVE_fnc_taskGetStateOfObjects;
         _allDestroyed = [_targetsState,"allDestroyed"] call ALIVE_fnc_hashGet;
 
+        // Treat an OPCOM-disabled installation as "done" too. Both the
+        // player hold-action UI (fnc_INS_helpers.sqf:1689) and the AI
+        // friendly-disable proximity path (#697) call
+        // fnc_INS_disableBuildingInstallations, which sets the
+        // ALIVE_MIL_OPCOM_*_DISABLED flag on the building but leaves the
+        // building object alive. taskGetStateOfObjects only checks
+        // `alive _target`, so without this extension the task stays
+        // open forever once the target is disabled (player can't
+        // "destroy" something the installation references have already
+        // been stripped from). Reported as #905 (Ljas, 2026-05-26).
+        if (!_allDestroyed) then {
+            private _allDone = true;
+            {
+                if (alive _x
+                    && !(_x getVariable ["ALIVE_MIL_OPCOM_HQ_DISABLED",      false])
+                    && !(_x getVariable ["ALIVE_MIL_OPCOM_FACTORY_DISABLED", false])
+                    && !(_x getVariable ["ALIVE_MIL_OPCOM_DEPOT_DISABLED",   false])
+                ) exitWith { _allDone = false };
+            } forEach _targets;
+            _allDestroyed = _allDone;
+        };
+
         if(_allDestroyed) then {
 
             [_params,"nextTask",""] call ALIVE_fnc_hashSet;
