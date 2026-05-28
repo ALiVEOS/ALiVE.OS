@@ -698,7 +698,12 @@ switch(_operation) do {
                     // disappear when I get in and out of a vehicle". RPT
                     // confirmed the 11s gap between vehicle entry and the
                     // trigger's removeIED dispatch.
-                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)"
+                    // Curator-controlled players (Zeus hosts) are excluded:
+                    // BIS_fnc_listPlayers includes a player who's in Zeus, so
+                    // without this filter the bomber / IED trigger arms on a
+                    // hovering curator and the bomber chases the Zeus camera.
+                    // Jman 2026-05-28 Zeus-host test.
+                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count (([] call BIS_fnc_listPlayers) select {isNull (getAssignedCuratorLogic _x)}) > 0)"
                 };
 
 
@@ -1355,7 +1360,12 @@ switch(_operation) do {
                     // Accept person OR vehicle in thisList - see the
                     // matching comment in case "start" (search for
                     // HepatitisC.TnB) for the vehicle-board issue.
-                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)"
+                    // Curator-controlled players (Zeus hosts) are excluded:
+                    // BIS_fnc_listPlayers includes a player who's in Zeus, so
+                    // without this filter the bomber / IED trigger arms on a
+                    // hovering curator and the bomber chases the Zeus camera.
+                    // Jman 2026-05-28 Zeus-host test.
+                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count (([] call BIS_fnc_listPlayers) select {isNull (getAssignedCuratorLogic _x)}) > 0)"
                 };
 
                 if (_num > 0) then {

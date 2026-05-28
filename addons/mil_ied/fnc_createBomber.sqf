@@ -16,7 +16,15 @@ if (typeName (_this select 0) == "ARRAY") then {
     _bomber = _this select 0;
 };
 
-_victim = (_this select 1) select 0;
+// Pick the first valid target from the trigger's thisList, excluding
+// any player who currently holds a Zeus curator. Without this filter a
+// Zeus host near the area gets chosen and the bomber chases the curator
+// camera (erratic, elevated positions) instead of a real target.
+// Jman 2026-05-28 Zeus-host test.
+_victim = ((_this select 1) select {
+    private _person = if (vehicle _x != _x) then { driver (vehicle _x) } else { _x };
+    !isNull _person && {isNull (getAssignedCuratorLogic _person)}
+}) param [0, objNull];
 
 _debug = ADDON getVariable ["debug", false];
 
