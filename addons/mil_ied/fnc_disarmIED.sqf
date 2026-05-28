@@ -97,12 +97,22 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
     };
 
     private _skill             = _caller skillFinal "commanding";
-    private _challengeEnabled  = (_addonLogic getVariable ["IED_Engineer_Challenge", 1]) == 1;
+
+    // This function runs client-side. Eden Combo attributes are stored on
+    // the module logic as STRINGS, and the server's init-time numeric
+    // coercion (fnc_IED.sqf case handlers) isn't broadcast to clients --
+    // so these reads can come back as "1" / "60" / "0.75". Comparing or
+    // doing arithmetic on a string throws a Generic error (#890, Ares
+    // 2026-05-27 client RPT, line 100). Coerce each defensively.
+    private _challengeRaw = _addonLogic getVariable ["IED_Engineer_Challenge", 1];
+    if (_challengeRaw isEqualType "") then { _challengeRaw = parseNumber _challengeRaw };
+    private _challengeEnabled = (_challengeRaw == 1);
 
     // Skill-scaled disarm time. Skill 1.0 -> baseTime, skill 0 -> 1.5x baseTime,
     // floored at 50% of baseTime. If the Engineer Challenge master toggle is
     // off, fall back to legacy instant disarm.
     private _baseTime   = _addonLogic getVariable ["IED_Engineer_Disarm_BaseTime", 60];
+    if (_baseTime isEqualType "") then { _baseTime = parseNumber _baseTime };
     private _disarmTime = if (_challengeEnabled) then {
         ((_baseTime * (1.5 - 0.5 * _skill)) max (_baseTime * 0.5))
     } else {
@@ -131,6 +141,7 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
     // New-device chance. Skill-scaled when Challenge is enabled, flat 10% legacy otherwise.
     private _newDeviceThreshold = if (_challengeEnabled) then {
         private _base = _addonLogic getVariable ["IED_Engineer_Disarm_NewDeviceBase", 0.75];
+        if (_base isEqualType "") then { _base = parseNumber _base };
         ((_base + 0.15 * _skill) min 0.90) max 0.70
     } else {
         0.90

@@ -22,6 +22,7 @@ ALiVE_fnc_addActionIED
 
 Author:
 Whigital
+Jman
 
 Peer reviewed:
 nil
@@ -60,12 +61,19 @@ private _actCode = {
 };
 
 // Add "Disarm IED" item to object //
+// Condition: only offer the disarm to qualifying engineers / EOD
+// specialists, and hide it once the IED is already disarmed. Mirrors
+// the vanilla addAction gate in ALiVE_fnc_addActionIED. _player is the
+// interacting unit; ALiVE_mil_ied carries the configured device.
 private _action = [
     "ALiVE_DisarmIED",
     "Disarm IED",
     QMENUICON(ied),
     _actCode,
-    {true}
+    {
+        !(_target getVariable ["ALiVE_IED_Disarmed", false]) &&
+        {[_player, (ALiVE_mil_ied getVariable ["IED_Detection_Device", "MineDetector"])] call ALiVE_fnc_iedUnitQualifies}
+    }
 ] call ace_interact_menu_fnc_createAction;
 
 [_object, 0, ["ACE_MainActions"], _action] call ace_interact_menu_fnc_addActionToObject;

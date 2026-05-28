@@ -312,15 +312,9 @@ private _gracePeriod = 15;
 
                         // Engineer qualification applies to dismounted units only.
                         // Vehicle-borne engineers lose the exemption - vehicles aren't
-                        // "carefully approaching".
-                        private _qualifies = (!_inVehicle) && (
-                            (_device in (items _u)) ||
-                            (getText (configFile >> "CfgVehicles" >> typeOf _u >> "displayName") == "Explosive Specialist") ||
-                            ([vehicleVarName _u, "EOD"] call CBA_fnc_find != -1) ||
-                            (_u getUnitTrait "explosivesSpecialist") ||           // vanilla A3 explosives-specialist trait
-                            ((_u getVariable ["ACE_isEngineer", 0]) > 0) ||       // ACE engineer level 1 or 2
-                            (_u getVariable ["ACE_isEOD", false])                 // ACE EOD specialist (explosives role)
-                        );
+                        // "carefully approaching". Shared with the disarm-action gate
+                        // via ALiVE_fnc_iedUnitQualifies (which also enforces dismounted).
+                        private _qualifies = [_u, _device] call ALiVE_fnc_iedUnitQualifies;
 
                         // DIAG-STRIP: companion to the forEach entry trace.
                         // Once body is entered for a player, log the
