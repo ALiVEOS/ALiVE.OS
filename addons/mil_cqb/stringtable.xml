@@ -360,6 +360,46 @@
     <Russian>Процентная вероятность того, что юниты будут патрулировать вокруг точки появления.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CQB_PATROLBEHAVIOUR">
+    <English>Patrol behaviour:</English>
+    <Chinesesimp>巡逻行为：</Chinesesimp>
+    <Chinese>巡邏行為：</Chinese>
+    <Spanish>Comportamiento de patrulla:</Spanish>
+    <French>Comportement de patrouille :</French>
+    <Portuguese>Comportamento de patrulha:</Portuguese>
+    <Russian>Поведение патруля:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CQB_PATROLBEHAVIOUR_COMMENT">
+    <English>Combat behaviour for garrison patrols when no enemy is in sight. Defaults to Safe (walking). Groups still automatically switch to alert when they spot an enemy.</English>
+    <Chinesesimp>驻军巡逻在未发现敌人时的战斗行为。默认为安全（步行）。发现敌人时小组仍会自动转为警戒。</Chinesesimp>
+    <Chinese>駐軍巡邏在未發現敵人時的戰鬥行為。預設為安全（步行）。發現敵人時小組仍會自動轉為警戒。</Chinese>
+    <Spanish>Comportamiento de combate de las patrullas de guarnición cuando no hay enemigos a la vista. Por defecto es Seguro (caminando). Los grupos siguen pasando a alerta automáticamente al detectar a un enemigo.</Spanish>
+    <French>Comportement de combat des patrouilles de garnison lorsqu'aucun ennemi n'est en vue. Par défaut : Tranquille (marche). Les groupes passent toujours automatiquement en alerte lorsqu'ils repèrent un ennemi.</French>
+    <Portuguese>Comportamento de combate das patrulhas de guarnição quando não há inimigos à vista. Predefinição: Seguro (a andar). Os grupos continuam a mudar automaticamente para alerta ao avistar um inimigo.</Portuguese>
+    <Russian>Боевое поведение гарнизонных патрулей, когда враг не виден. По умолчанию — «Безопасно» (шагом). Группы всё равно автоматически переходят в боевую готовность, заметив противника.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CQB_PATROLSPEED">
+    <English>Patrol speed:</English>
+    <Chinesesimp>巡逻速度：</Chinesesimp>
+    <Chinese>巡邏速度：</Chinese>
+    <Spanish>Velocidad de patrulla:</Spanish>
+    <French>Vitesse de patrouille :</French>
+    <Portuguese>Velocidade de patrulha:</Portuguese>
+    <Russian>Скорость патруля:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CQB_PATROLSPEED_COMMENT">
+    <English>Movement speed for garrison patrols when no enemy is in sight. Defaults to Limited (walking).</English>
+    <Chinesesimp>驻军巡逻在未发现敌人时的移动速度。默认为受限（步行）。</Chinesesimp>
+    <Chinese>駐軍巡邏在未發現敵人時的移動速度。預設為受限（步行）。</Chinese>
+    <Spanish>Velocidad de movimiento de las patrullas de guarnición cuando no hay enemigos a la vista. Por defecto es Limitada (caminando).</Spanish>
+    <French>Vitesse de déplacement des patrouilles de garnison lorsqu'aucun ennemi n'est en vue. Par défaut : Limitée (marche).</French>
+    <Portuguese>Velocidade de movimento das patrulhas de guarnição quando não há inimigos à vista. Predefinição: Limitada (a andar).</Portuguese>
+    <Russian>Скорость передвижения гарнизонных патрулей, когда враг не виден. По умолчанию — «Ограниченная» (шагом).</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLSEARCHCHANCE">
     <English>Patrol search chance:</English>
     <Chinesesimp>巡逻搜查几率</Chinesesimp>

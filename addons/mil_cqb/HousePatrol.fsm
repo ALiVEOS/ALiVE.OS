@@ -125,6 +125,11 @@ class FSM
        "_spawnHeli = _logic getVariable [""spawnDistanceHeli"", 0];" \n
        "_spawnJet = _logic getVariable [""spawnDistanceJet"", 0];" \n
        "" \n
+       "// Patrol disposition (Dutch request 2026-05). Used by the garrison" \n
+       "// and move-home states; enemy-contact escalation stays AWARE/FULL." \n
+       "_patrolBehaviour = _logic getVariable [""CQB_patrol_behaviour"", ""SAFE""];" \n
+       "_patrolSpeed = _logic getVariable [""CQB_patrol_speed"", ""LIMITED""];" \n
+       "" \n
        "// add static weapon distance to spawn distance" \n
        "_staticRange = 0;" \n
        "if (!isNil {(_leader getVariable ""house"") getVariable ""staticWeapons""}) then {" \n
@@ -281,8 +286,8 @@ class FSM
       name = "Garrison_Buildings";
       init = /*%FSM<STATEINIT""">*/"_timeout = time;" \n
        "" \n
-       "_grp setbehaviour ""SAFE"";" \n
-       "_grp setSpeedMode ""LIMITED"";" \n
+       "_grp setbehaviour _patrolBehaviour;" \n
+       "_grp setSpeedMode _patrolSpeed;" \n
        "_grp setCombatMode ""YELLOW"";" \n
        "" \n
        "_staticWeaponsCopy = +_staticWeapons;" \n
@@ -524,8 +529,8 @@ class FSM
        "    if (isnil ""_pos"") then {_pos = (selectRandom _bldgpos)};" \n
        "    _timeout = time;" \n
        "" \n
-       "    _unit setSpeedMode ""FULL"";" \n
-       "    _unit setbehaviour ""AWARE"";" \n
+       "    _unit setSpeedMode _patrolSpeed;" \n
+       "    _unit setbehaviour _patrolBehaviour;" \n
        "" \n
        "	unassignVehicle _unit ;" \n
        "    [_unit] orderGetIn false;" \n

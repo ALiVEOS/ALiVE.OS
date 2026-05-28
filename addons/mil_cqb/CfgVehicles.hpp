@@ -197,6 +197,34 @@ class CfgVehicles {
                         class CQB_spawndistanceJet : Edit { property = "ALiVE_mil_cqb_CQB_spawndistanceJet"; displayName = "$STR_ALIVE_CQB_SPAWNDISTANCEJET"; tooltip = "$STR_ALIVE_CQB_SPAWNDISTANCEJET_COMMENT"; defaultValue = """0"""; };
                         // ---- Patrol Behaviour -----------------------------------------------
                         class HDR_PATROL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_cqb_HDR_PATROL"; displayName = "PATROL BEHAVIOUR"; };
+                        class CQB_patrol_behaviour : Combo
+                        {
+                                property = "ALiVE_mil_cqb_CQB_patrol_behaviour";
+                                displayName = "$STR_ALIVE_CQB_PATROLBEHAVIOUR";
+                                tooltip = "$STR_ALIVE_CQB_PATROLBEHAVIOUR_COMMENT";
+                                defaultValue = """SAFE""";
+                                class Values
+                                {
+                                    class Careless { name = "Careless"; value = "CARELESS"; };
+                                    class Safe { name = "Safe"; value = "SAFE"; default = 1; };
+                                    class Aware { name = "Aware"; value = "AWARE"; };
+                                    class Combat { name = "Combat"; value = "COMBAT"; };
+                                    class Stealth { name = "Stealth"; value = "STEALTH"; };
+                                };
+                        };
+                        class CQB_patrol_speed : Combo
+                        {
+                                property = "ALiVE_mil_cqb_CQB_patrol_speed";
+                                displayName = "$STR_ALIVE_CQB_PATROLSPEED";
+                                tooltip = "$STR_ALIVE_CQB_PATROLSPEED_COMMENT";
+                                defaultValue = """LIMITED""";
+                                class Values
+                                {
+                                    class Limited { name = "Limited (walk)"; value = "LIMITED"; default = 1; };
+                                    class Normal { name = "Normal (jog)"; value = "NORMAL"; };
+                                    class Full { name = "Full (run)"; value = "FULL"; };
+                                };
+                        };
                         class CQB_patrol_chance : Combo
                         {
                                 property = "ALiVE_mil_cqb_CQB_patrol_chance";
