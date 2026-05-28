@@ -51,6 +51,11 @@ class FSM
                          "_unit = _this select 1;" \n
                          "_buildings = _this select 2;" \n
                          "_debug = _this select 3;" \n
+                         "// Patrol disposition (default Safe/walking). Set up front so" \n
+                         "// the patrol moves calmly from its first leg instead of" \n
+                         "// inheriting the spawn stance until the first search completes." \n
+                         "_behaviour = _this param [4, ""SAFE""];" \n
+                         "_speed = _this param [5, ""LIMITED""];" \n
                          "" \n
                          "_startWait = 0;" \n
                          "_waitTime = random [10,30,60];" \n
@@ -58,6 +63,8 @@ class FSM
                          "_destroy = false;" \n
                          "" \n
                          "dostop _unit;" \n
+                         "_unit setBehaviour _behaviour;" \n
+                         "_unit setSpeedMode _speed;" \n
                          "_startWait = time;" \n
                          "// debug ---------------------------------------" \n
                          "if(_debug) then { [""Executed FSM Command - [buildingPatrol.fsm] called _unit: %1, _waitTime: %2 mins"",_unit, _waitTime/60] call ALiVE_fnc_dump; };" \n
@@ -176,7 +183,8 @@ class FSM
                                         action=/*%FSM<ACTION""">*/"// debug ---------------------------------------" \n
                                          "if(_debug) then { [""Executed FSM Command - [buildingPatrol.fsm] CBA_fnc_searchNearby completed _unit: %1"",_unit] call ALiVE_fnc_dump; };" \n
                                          "// debug ---------------------------------------" \n
-                                         "_unit setBehaviour ""SAFE"";" \n
+                                         "_unit setBehaviour _behaviour;" \n
+                                         "_unit setSpeedMode _speed;" \n
                                          "// [_group] call CBA_fnc_clearWaypoints;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/

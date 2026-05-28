@@ -24,7 +24,7 @@ Author:
 Highhead, Jman
 ---------------------------------------------------------------------------- */
 
-private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group","_profileType","_profileCount","_guardPatrolPercentage"];
+private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group","_profileType","_profileCount","_guardPatrolPercentage","_patrolBehaviour","_patrolSpeed"];
 
 _profile = _this param [0, ["",[],[],nil], [[]]];
 _args = _this param [1, 200, [-1,[]]];
@@ -38,6 +38,8 @@ _onlyProfiles = true;
 _profileType = "";
 _profileCount = 0;
 _guardPatrolPercentage = 50;
+_patrolBehaviour = "SAFE";
+_patrolSpeed = "LIMITED";
 
 
 if (_args isEqualType []) then {
@@ -46,6 +48,11 @@ if (_args isEqualType []) then {
     _profileType = _args param [3, ""];
     _profileCount = _args param [4, 0];
     _guardPatrolPercentage = _args param [5, 50];
+    // Patrol disposition for the garrison building-patrol leg. Defaults
+    // preserve every existing caller (incl. roadblocks) that pass a
+    // 6-element args array.
+    _patrolBehaviour = _args param [6, "SAFE", [""]];
+    _patrolSpeed = _args param [7, "LIMITED", [""]];
     // DEBUG -------------------------------------------------------------------------------------
     if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
      ["ALIVE_fnc_garrison - _profileType: %1, _profileCount: %2, _guardPatrolPercentage: %3", _profileType, _profileCount, _guardPatrolPercentage] call ALiVE_fnc_dump;
@@ -95,7 +102,7 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
        ["ALIVE_fnc_garrison - calling ALIVE_fnc_groupGarrison - _radius: %4,  _profileID: %3, _profileType: %1, _group: %2, _guardPatrolPercentage: %5", _profileType, _group, _id, _radius, _guardPatrolPercentage] call ALiVE_fnc_dump;
       };
       // DEBUG -------------------------------------------------------------------------------------
-     [_group, _pos, _radius, true, _onlyProfiles, _profileCount, _id, _guardPatrolPercentage] call ALIVE_fnc_groupGarrison;
+     [_group, _pos, _radius, true, _onlyProfiles, _profileCount, _id, _guardPatrolPercentage, _patrolBehaviour, _patrolSpeed] call ALIVE_fnc_groupGarrison;
     };
 
 };

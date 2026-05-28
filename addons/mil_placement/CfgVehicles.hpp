@@ -167,6 +167,34 @@ class CfgVehicles {
                                 property = "ALiVE_mil_placement_guardPatrolPercentage"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_PATROL_PERCENT_COMMENT"; defaultValue = """50""";
                                 class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_NONE";value="0";}; class LOW{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_LOW";value="25";}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_MEDIUM";value="50";default=1;}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_HIGH";value="75";}; class ALL{name="$STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_ALL";value="100";}; };
                         };
+                        class garrisonPatrolBehaviour : Combo
+                        {
+                                property = "ALiVE_mil_placement_garrisonPatrolBehaviour";
+                                displayName = "$STR_ALIVE_MP_GARRISON_PATROL_BEHAVIOUR";
+                                tooltip = "$STR_ALIVE_MP_GARRISON_PATROL_BEHAVIOUR_COMMENT";
+                                defaultValue = """SAFE""";
+                                class Values
+                                {
+                                    class Careless { name = "Careless"; value = "CARELESS"; };
+                                    class Safe { name = "Safe"; value = "SAFE"; default = 1; };
+                                    class Aware { name = "Aware"; value = "AWARE"; };
+                                    class Combat { name = "Combat"; value = "COMBAT"; };
+                                    class Stealth { name = "Stealth"; value = "STEALTH"; };
+                                };
+                        };
+                        class garrisonPatrolSpeed : Combo
+                        {
+                                property = "ALiVE_mil_placement_garrisonPatrolSpeed";
+                                displayName = "$STR_ALIVE_MP_GARRISON_PATROL_SPEED";
+                                tooltip = "$STR_ALIVE_MP_GARRISON_PATROL_SPEED_COMMENT";
+                                defaultValue = """LIMITED""";
+                                class Values
+                                {
+                                    class Limited { name = "Limited (walk)"; value = "LIMITED"; default = 1; };
+                                    class Normal { name = "Normal (jog)"; value = "NORMAL"; };
+                                    class Full { name = "Full (run)"; value = "FULL"; };
+                                };
+                        };
                         class createHQ : Combo { property = "ALiVE_mil_placement_createHQ"; displayName = "$STR_ALIVE_MP_CREATE_HQ"; tooltip = "$STR_ALIVE_MP_CREATE_HQ_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class createFieldHQ : Combo { property = "ALiVE_mil_placement_createFieldHQ"; displayName = "$STR_ALIVE_MP_CREATE_FIELDHQ"; tooltip = "$STR_ALIVE_MP_CREATE_FIELDHQ_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class placeHelis : Combo { property = "ALiVE_mil_placement_placeHelis"; displayName = "$STR_ALIVE_MP_PLACE_HELI"; tooltip = "$STR_ALIVE_MP_PLACE_HELI_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };

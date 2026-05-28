@@ -185,6 +185,12 @@ switch (_operation) do {
     case "guardPatrolPercentage": {
         _result = [_logic, _operation, _args, DEFAULT_AMBIENT_GUARD_PATROL_PERCENT] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "garrisonPatrolBehaviour": {
+        _result = [_logic, _operation, _args, "SAFE"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "garrisonPatrolSpeed": {
+        _result = [_logic, _operation, _args, "LIMITED"] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "readinessLevel": {
         _result = [_logic, _operation, _args, DEFAULT_READINESS_LEVEL] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -711,6 +717,8 @@ switch (_operation) do {
                 private _clusterSize = [_x, "size"] call ALIVE_fnc_hashGet;
                 private _guardRadius = parseNumber ([_logic, "guardRadius"] call MAINCLASS);
                 private _guardPatrolPercentage = parseNumber ([_logic, "guardPatrolPercentage"] call MAINCLASS);
+                private _garrisonPatrolBehaviour = toUpper ([_logic, "garrisonPatrolBehaviour"] call MAINCLASS);
+                private _garrisonPatrolSpeed = toUpper ([_logic, "garrisonPatrolSpeed"] call MAINCLASS);
                 private _guardDistance = _clusterSize;
                 private _cluster = _x;
 
@@ -735,7 +743,7 @@ switch (_operation) do {
                         private _guards = [_guardGroup, _guardPos, random 360, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
                         {
                             if (([_x, "type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", _guardProbabilityCount, _guardPatrolPercentage]]] call ALIVE_fnc_profileEntity;
+                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", _guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
                             };
                         } forEach _guards;
                         _countProfiles = _countProfiles + count _guards;
@@ -809,7 +817,7 @@ switch (_operation) do {
                             if (_isInfantry && {_infantryActivePlacedCount < _garrisonCount}) then {
                                 _command = "ALIVE_fnc_garrison";
                                 _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                _radius = [_guardRadius, "true", [0,0,0], "", _guardProbabilityCount, _guardPatrolPercentage];
+                                _radius = [_guardRadius, "true", [0,0,0], "", _guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed];
                             } else {
                                 _command = "ALIVE_fnc_ambientMovement";
                                 _radius = [_guardRadius, "SAFE", [0,0,0]];

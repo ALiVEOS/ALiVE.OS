@@ -161,6 +161,14 @@ private _entryType = if (count _reserveEntry > 0 && {(_reserveEntry select 0) is
 
 private _guardRadius = parseNumber ([_logic, "guardRadius"] call _modClass);
 private _guardPatrolPercentage = parseNumber ([_logic, "guardPatrolPercentage"] call _modClass);
+// Garrison patrol disposition (default Safe/walking). Read via the owning
+// module class; guarded so a module without the option still resolves.
+private _garrisonPatrolBehaviour = [_logic, "garrisonPatrolBehaviour"] call _modClass;
+if (isNil "_garrisonPatrolBehaviour" || {!(_garrisonPatrolBehaviour isEqualType "")}) then { _garrisonPatrolBehaviour = "SAFE" };
+_garrisonPatrolBehaviour = toUpper _garrisonPatrolBehaviour;
+private _garrisonPatrolSpeed = [_logic, "garrisonPatrolSpeed"] call _modClass;
+if (isNil "_garrisonPatrolSpeed" || {!(_garrisonPatrolSpeed isEqualType "")}) then { _garrisonPatrolSpeed = "LIMITED" };
+_garrisonPatrolSpeed = toUpper _garrisonPatrolSpeed;
 private _activated = false;
 
 // Helper: orphaned-crew → infantry fallback. Activates as if INFANTRY,
@@ -219,7 +227,7 @@ private _fnc_activateAsInfantry = {
             // the candidate building waiting for OPCOM. OPCOM tasks
             // on its own cadence (busy=false at activation), so the
             // patrol stage is just "stay useful in the meantime".
-            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", 1, 1]]] call ALIVE_fnc_profileEntity;
+            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", 1, 1, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
             [_x, "homeCluster", _cluster] call ALiVE_fnc_hashSet;
             _activeIDs pushBack ([_x, "profileID"] call ALiVE_fnc_hashGet);
         };

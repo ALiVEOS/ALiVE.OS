@@ -225,6 +225,34 @@ class CfgVehicles {
                                     class ALL { name = "$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_ALL"; value = "100"; };
                                 };
                         };
+                        class garrisonPatrolBehaviour : Combo
+                        {
+                                property = "ALiVE_civ_placement_garrisonPatrolBehaviour";
+                                displayName = "$STR_ALIVE_CP_GARRISON_PATROL_BEHAVIOUR";
+                                tooltip = "$STR_ALIVE_CP_GARRISON_PATROL_BEHAVIOUR_COMMENT";
+                                defaultValue = """SAFE""";
+                                class Values
+                                {
+                                    class Careless { name = "Careless"; value = "CARELESS"; };
+                                    class Safe { name = "Safe"; value = "SAFE"; default = 1; };
+                                    class Aware { name = "Aware"; value = "AWARE"; };
+                                    class Combat { name = "Combat"; value = "COMBAT"; };
+                                    class Stealth { name = "Stealth"; value = "STEALTH"; };
+                                };
+                        };
+                        class garrisonPatrolSpeed : Combo
+                        {
+                                property = "ALiVE_civ_placement_garrisonPatrolSpeed";
+                                displayName = "$STR_ALIVE_CP_GARRISON_PATROL_SPEED";
+                                tooltip = "$STR_ALIVE_CP_GARRISON_PATROL_SPEED_COMMENT";
+                                defaultValue = """LIMITED""";
+                                class Values
+                                {
+                                    class Limited { name = "Limited (walk)"; value = "LIMITED"; default = 1; };
+                                    class Normal { name = "Normal (jog)"; value = "NORMAL"; };
+                                    class Full { name = "Full (run)"; value = "FULL"; };
+                                };
+                        };
 
                         // ---- Roadblocks -----------------------------------------------------
                         class HDR_ROADBLOCKS : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_ROADBLOCKS"; displayName = "$STR_ALIVE_CP_HDR_ROADBLOCKS"; };
