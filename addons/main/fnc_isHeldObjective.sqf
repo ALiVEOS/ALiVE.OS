@@ -17,6 +17,11 @@ Predicate (three conjunctive checks):
      already flagged this objective as a held reserve in its own state
      machine. Any other tacom_state (assault / defend / patrol / none /
      etc.) disqualifies regardless of the other two checks.
+     SKIPPED when `_requireReserve` is false ("controlled" mode): then any
+     objective the side actually controls (checks 2+3) counts as held,
+     even if OPCOM hasn't designated it a reserve. mil_logistics heli-insert
+     routing uses the strict default (true); the COP overlay passes false so
+     it surfaces every objective a side holds, not just reserve anchors.
 
   2. At least one section profile is still registered with
      ALIVE_profileHandler — confirms the OPCOM units originally assigned
@@ -41,6 +46,9 @@ Parameters:
                 by ALiVE_fnc_OPCOM `case "createobjective"`).
     1: STRING - Friendly side text: "WEST" / "EAST" / "GUER".
     2: NUMBER - Optional. Enemy-presence radius in metres. Default 300.
+    3: BOOL   - Optional. Require tacom_state "reserve" (check 1). Default
+                true (strict reserve-anchor predicate). Pass false for
+                "controlled" mode (COP overlay) to drop check 1.
 
 Returns:
     BOOL - true iff the objective passes all three checks.
@@ -58,17 +66,28 @@ ARJay, Jman
 params [
     ["_obj",         objNull, [objNull, []]],
     ["_side",        "",      [""]],
-    ["_enemyRadius", 300,     [0]]
+    ["_enemyRadius", 300,     [0]],
+    ["_requireReserve", true, [true]]
 ];
 
 if (isNil "_obj") exitWith { false };
 
-// ----- Check 1: tacom_state == "reserve" -------------------------------------
-private _objState = "";
-if ("tacom_state" in (_obj select 1)) then {
-    _objState = [_obj, "tacom_state", "none"] call ALIVE_fnc_hashGet;
+// ----- Check 1: tacom_state == "reserve" (skipped in controlled mode) --------
+// Strict (default): the objective must be an OPCOM-designated reserve anchor —
+// what mil_logistics heli-insert routing needs. Controlled mode
+// (_requireReserve false, COP overlay): skip this gate so any objective the
+// side actually holds (checks 2+3) counts. Routed through a top-level sentinel
+// so the function-level exitWith stays at function scope — an exitWith inside
+// the then-block would only exit the block, not the function.
+private _reserveOk = true;
+if (_requireReserve) then {
+    private _objState = "";
+    if ("tacom_state" in (_obj select 1)) then {
+        _objState = [_obj, "tacom_state", "none"] call ALIVE_fnc_hashGet;
+    };
+    _reserveOk = (_objState == "reserve");
 };
-if (_objState != "reserve") exitWith { false };
+if (!_reserveOk) exitWith { false };
 
 // ----- Check 2: at least one section profile still alive ---------------------
 private _section = [_obj, "section", []] call ALIVE_fnc_hashGet;

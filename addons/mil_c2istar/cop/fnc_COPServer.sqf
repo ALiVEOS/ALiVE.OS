@@ -722,10 +722,14 @@ ALIVE_fnc_COPDeriveActivity = {
                 _totalObjScanned = _totalObjScanned + count _objectives;
 
                 // Bucket by state so we can sort + cap each independently.
+                // Held objectives get their own bucket (own generous cap) so a
+                // side that holds many objectives doesn't lose most of them to
+                // the small per-state reserve cap.
                 private _bucketAttack  = [];
                 private _bucketDefend  = [];
                 private _bucketRecon   = [];
                 private _bucketReserve = [];
+                private _bucketHeld    = [];
 
                 {
                     // Held-objective flag (same predicate mil_logistics
@@ -737,9 +741,13 @@ ALIVE_fnc_COPDeriveActivity = {
                     // typically have opcom_state="idle" which doesn't
                     // appear in _validStates, so the gate would otherwise
                     // drop them before the held check ever runs.
-                    private _isHeld = [_x, _sideKey] call ALiVE_fnc_isHeldObjective;
+                    // requireReserve=false — "controlled" mode: COP surfaces
+                    // every objective the side holds, not just OPCOM reserve
+                    // anchors (heli-insert routing keeps the strict default).
+                    private _isHeld = [_x, _sideKey, 300, false] call ALiVE_fnc_isHeldObjective;
 
                     private _state = [_x, "opcom_state", ""] call ALiVE_fnc_HashGet;
+
                     if (_state in _validStates || _isHeld) then {
                         private _center = [_x, "center", [0,0,0]] call ALiVE_fnc_HashGet;
                         // Skip placeholder positions (uncaptured/uninitialised objectives).
@@ -748,18 +756,22 @@ ALIVE_fnc_COPDeriveActivity = {
                             if (_size < ALIVE_COP_OBJ_MIN_RADIUS) then { _size = ALIVE_COP_OBJ_MIN_RADIUS };
                             private _priority = [_x, "priority", 0] call ALiVE_fnc_HashGet;
 
-                            // Normalise state. Held objectives whose
-                            // opcom_state falls outside the standard set
-                            // (typically "idle") get remapped to "reserve"
-                            // so the existing bucketing + render path
-                            // handles them correctly.
-                            private _normState = switch (toLower _state) do {
-                                case "attacking";
-                                case "capture":   { "attack" };
-                                case "defending": { "defend" };
-                                case "reserving": { "reserve" };
-                                default {
-                                    if (_isHeld) then { "reserve" } else { _state }
+                            // Normalise state. A held objective is always shown
+                            // as a reserve, whatever its opcom_state says — the
+                            // holding side isn't attacking or defending ground it
+                            // already holds quietly. opcom_state lags tacom_state
+                            // (it stays "attacking" right after a successful
+                            // capture, since it's set from the OPCOM order and not
+                            // reset on capture), so held has to take precedence or
+                            // a just-captured objective reads "<side> Attacking"
+                            // on ground that side now holds.
+                            private _normState = if (_isHeld) then { "reserve" } else {
+                                switch (toLower _state) do {
+                                    case "attacking";
+                                    case "capture":   { "attack" };
+                                    case "defending": { "defend" };
+                                    case "reserving": { "reserve" };
+                                    default           { _state };
                                 };
                             };
 
@@ -767,11 +779,20 @@ ALIVE_fnc_COPDeriveActivity = {
                             // saves nearestLocation calls on discarded objectives.
                             private _entry = [_priority, _center, _size, _normState, _isHeld];
 
-                            switch (_normState) do {
-                                case "attack":  { _bucketAttack  pushBack _entry };
-                                case "defend":  { _bucketDefend  pushBack _entry };
-                                case "recon":   { _bucketRecon   pushBack _entry };
-                                case "reserve": { _bucketReserve pushBack _entry };
+                            // Held objectives → their own bucket (own cap), so a
+                            // side holding many objectives doesn't lose them to the
+                            // small per-state reserve cap. They keep "reserve"
+                            // normState so no stale attack/defend ring draws — only
+                            // the HELD flag. Non-held objectives bucket by state.
+                            if (_isHeld) then {
+                                _bucketHeld pushBack _entry;
+                            } else {
+                                switch (_normState) do {
+                                    case "attack":  { _bucketAttack  pushBack _entry };
+                                    case "defend":  { _bucketDefend  pushBack _entry };
+                                    case "recon":   { _bucketRecon   pushBack _entry };
+                                    case "reserve": { _bucketReserve pushBack _entry };
+                                };
                             };
                         } else {
                             _totalObjPlaceholder = _totalObjPlaceholder + 1;
@@ -791,6 +812,7 @@ ALIVE_fnc_COPDeriveActivity = {
                 _bucketDefend  = [_bucketDefend,  ALIVE_COP_OBJ_MAX_DEFEND]  call _sortByPriority;
                 _bucketRecon   = [_bucketRecon,   ALIVE_COP_OBJ_MAX_RECON]   call _sortByPriority;
                 _bucketReserve = [_bucketReserve, ALIVE_COP_OBJ_MAX_RESERVE] call _sortByPriority;
+                _bucketHeld    = [_bucketHeld,    ALIVE_COP_OBJ_MAX_HELD]    call _sortByPriority;
 
                 // Resolve location names only for survivors; append to this side's array.
                 private _outArr = switch (toUpper _sideKey) do {
@@ -808,7 +830,7 @@ ALIVE_fnc_COPDeriveActivity = {
                         _outArr pushBack [_center, _size, _normState, _locName, _priority, _held];
                         _matchedThisOpcom = _matchedThisOpcom + 1;
                     } forEach _x;
-                } forEach [_bucketAttack, _bucketDefend, _bucketRecon, _bucketReserve];
+                } forEach [_bucketAttack, _bucketDefend, _bucketRecon, _bucketReserve, _bucketHeld];
 
                 _totalObjMatched = _totalObjMatched + _matchedThisOpcom;
                 ["debug", "objectives",

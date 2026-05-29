@@ -170,6 +170,10 @@ if (isNil "ALIVE_COP_OBJ_MAX_ATTACK")      then { ALIVE_COP_OBJ_MAX_ATTACK      
 if (isNil "ALIVE_COP_OBJ_MAX_DEFEND")      then { ALIVE_COP_OBJ_MAX_DEFEND      = 10 };
 if (isNil "ALIVE_COP_OBJ_MAX_RECON")       then { ALIVE_COP_OBJ_MAX_RECON       = 5 };
 if (isNil "ALIVE_COP_OBJ_MAX_RESERVE")     then { ALIVE_COP_OBJ_MAX_RESERVE     = 5 };
+// Held objectives use their own bucket + cap (separate from the reserve-state
+// ring cap above) so a side that holds many objectives shows them all, not just
+// the top 5. Generous default; raise/lower for very large holdings vs clutter.
+if (isNil "ALIVE_COP_OBJ_MAX_HELD")        then { ALIVE_COP_OBJ_MAX_HELD        = 30 };
 
 // Zoom-aware cutoffs (map scale: 0.05 = max zoom in, 1.0 = max zoom out)
 if (isNil "ALIVE_COP_ZOOM_LABEL_MAX")      then { ALIVE_COP_ZOOM_LABEL_MAX      = 0.5 };
