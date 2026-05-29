@@ -980,6 +980,32 @@ switch(_operation) do {
         // the server-side COP loop honours it too.
         ALiVE_mil_c2istar_debug = _debug;
 
+        // Distribute the consolidated auto-task faction picker into the six
+        // per-slot vars the auto-task generator reads (autoGenerateBluforFaction
+        // / ...EnemyFaction / OPF / IND). The Eden SAVE handler can't persist
+        // these directly: each hidden per-slot attribute has its own expression
+        // that re-applies the attribute DEFAULT at mission start, clobbering the
+        // SAVE's setVariable — so the auto-task path would otherwise always read
+        // the defaults (BLUFOR enemy = OPF_F), ignoring the picker. Split here,
+        // after init (so it runs after those expressions), with the consolidated
+        // value as the source of truth. Guarded on a full 6-token split so a
+        // blank slot (splitString drops empties) falls back to defaults rather
+        // than misaligning the pairs.
+        private _autoGenFactions = _logic getVariable ["autoGenerateFactions", ""];
+        if (_autoGenFactions isEqualType "" && {_autoGenFactions != ""}) then {
+            private _slots = _autoGenFactions splitString "|";
+            private _slotVars = ["autoGenerateBluforFaction","autoGenerateBluforEnemyFaction","autoGenerateOpforFaction","autoGenerateOpforEnemyFaction","autoGenerateIndforFaction","autoGenerateIndforEnemyFaction"];
+            if (count _slots == count _slotVars) then {
+                {
+                    private _tok = _slots select _forEachIndex;
+                    if (_tok != "") then { _logic setVariable [_x, _tok]; };
+                } forEach _slotVars;
+                if (_debug) then {
+                    ["C2ISTAR auto-task factions resolved from picker: %1", _slots] call ALiVE_fnc_dump;
+                };
+            };
+        };
+
         // Singleton: ALIVE_MIL_C2ISTAR is read by fnc_taskRequest /
         // fnc_taskHandler / fnc_playerOrders / sys_spotrep and OPCOM's
         // spotrep block. Multiple C2ISTAR modules in one mission overwrite
