@@ -126,8 +126,25 @@ if (_index >= 0) then
     // Ignore values that are the same as the default.
     if (not _isDefault) then
     {
-        PUSH(_hash select HASH_KEYS,_key);
-        PUSH(_hash select HASH_VALUES,_value);
+        // Root-cause guard (Jman 2026-05-29): keep HASH_KEYS and HASH_VALUES
+        // in lock-step on insert. `pushBack nil` is a silent no-op, so a nil
+        // _value here pushes the key but NOT the value, leaving keys one longer
+        // than values (nK = nV + 1) -- the desync the removal branch later trips
+        // the "Zero divisor" on. The nil check above can also miss this: a nil
+        // _value is routed through BIS_fnc_areEqual inside a [nil, ...] array,
+        // and SQF drops nils from array literals, so _isDefault isn't reliable
+        // for the nil case. A nil/absent value means "no entry" anyway (hashGet
+        // returns the default for a missing key), so push only when the value is
+        // real, and push both together. Observed: profiles registered before
+        // their position is set (fnc_profileHandler position index).
+        if (!isNil "_value") then {
+            PUSH(_hash select HASH_KEYS,_key);
+            PUSH(_hash select HASH_VALUES,_value);
+        } else {
+            if (!isNil "ALiVE_DIAG_HASHSET" && {ALiVE_DIAG_HASHSET}) then {
+                ["DIAG-STRIP hashSet: skipped nil-value insert for new key=%1 (would desync keys/values)", _key] call ALiVE_fnc_dump;
+            };
+        };
     };
 };
 
