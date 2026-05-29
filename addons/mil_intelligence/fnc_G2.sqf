@@ -719,10 +719,12 @@ switch(_operation) do {
                     ["color", "ColorBlufor"]
                 ];
 
-                // Gated with the friendly OPCOM order markers — the C2ISTAR COP
-                // "Show Friendly Order Markers" toggle hides these blocking-line
-                // + arrow markers too, so COP is the single source of intent.
-                if (missionNamespace getVariable ["ALIVE_COP_SHOW_FRIENDLY_ORDERS", true]) then {
+                // TACOM recon/capture blocking lines have their OWN COP toggle
+                // (Show Blocking Line Markers, default on) — separate from the
+                // OPCOM attack/defend order-markers toggle, since COP doesn't
+                // draw these FLOT rectangles / advance arrows. Default true when
+                // unset (no C2ISTAR module) preserves the legacy always-on look.
+                if (missionNamespace getVariable ["ALIVE_COP_SHOW_BLOCKING_LINES", true]) then {
                     _report set ["markers", [_lineMarker get "id", _arrowMarker get "id"]];
                     [nil,"createMarkersLocally", [_lineMarker, _arrowMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
                 } else {
@@ -775,10 +777,12 @@ switch(_operation) do {
                     ["color", "ColorBlufor"]
                 ];
 
-                // Gated with the friendly OPCOM order markers — the C2ISTAR COP
-                // "Show Friendly Order Markers" toggle hides these blocking-line
-                // + arrow markers too, so COP is the single source of intent.
-                if (missionNamespace getVariable ["ALIVE_COP_SHOW_FRIENDLY_ORDERS", true]) then {
+                // TACOM recon/capture blocking lines have their OWN COP toggle
+                // (Show Blocking Line Markers, default on) — separate from the
+                // OPCOM attack/defend order-markers toggle, since COP doesn't
+                // draw these FLOT rectangles / advance arrows. Default true when
+                // unset (no C2ISTAR module) preserves the legacy always-on look.
+                if (missionNamespace getVariable ["ALIVE_COP_SHOW_BLOCKING_LINES", true]) then {
                     _report set ["markers", [_lineMarker get "id", _arrowMarker get "id"]];
                     [nil,"createMarkersLocally", [_lineMarker, _arrowMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
                 } else {

@@ -731,6 +731,24 @@ class CfgVehicles {
                                     class No  { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_NO";  value = "false"; default = 1; };
                             };
                     };
+                    // TACOM recon / capture blocking lines (FLOT rectangles +
+                    // advance arrows). Separate from the order-markers toggle
+                    // above because COP doesn't draw these, so they're useful
+                    // even with COP on. Default Yes.
+                    class copShowBlockingLines : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copShowBlockingLines";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_BLOCKING_LINES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_BLOCKING_LINES_COMMENT";
+                            defaultValue = """true""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copShowBlockingLines', _value];";
+                            class Values
+                            {
+                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_YES"; value = "true"; default = 1; };
+                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_NO";  value = "false"; };
+                            };
+                    };
                     // Per-layer visibility overrides. Each is Auto / On / Off:
                     //   Auto = follow the COP Mode preset (default, behaviour unchanged)
                     //   On / Off = override the preset for just this one layer.

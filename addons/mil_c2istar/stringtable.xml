@@ -468,7 +468,13 @@
     <English>Show Friendly Order Markers:</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_COP_FRIENDLY_ORDERS_COMMENT">
-    <English>Show or hide the friendly OPCOM / TACOM order markers — the attack / defend objective circle and state label ("Attacking" / "Defending"), the recon / capture blocking lines, and the order arrows drawn by the military intel (G2) pipeline. No (default) hides them so the COP overlay is the single source of objective intent (its own Attack / Defend objective rings show the same orders). Yes shows them. This is independent of the Map Intel display settings above: those still decide whether the intel is generated — this only controls whether these particular markers are drawn. Applies whether or not Commander Intel Mode is on.</English>
+    <English>Show or hide the friendly OPCOM attack / defend order markers — the objective circle, state label ("Attacking" / "Defending") and order arrow drawn by the military intel (G2) pipeline. No (default) hides them so the COP overlay is the single source of objective intent (its own Attack / Defend rings show the same orders). Yes shows them. The TACOM recon / capture blocking lines have their own toggle below and are not affected by this. This is independent of the Map Intel display settings above: those decide whether the intel is generated — this only controls whether these markers are drawn. Applies whether or not Commander Intel Mode is on.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_BLOCKING_LINES">
+    <English>Show Blocking Line Markers:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_BLOCKING_LINES_COMMENT">
+    <English>Show or hide the TACOM recon / capture blocking-line markers — the FLOT-style rectangles and advance arrows drawn by the military intel (G2) pipeline to show a sector being secured. Yes (default) shows them. These are kept separate from the order markers above because the COP overlay does not draw them, so they stay useful even with COP on. Independent of the Map Intel display settings, which decide whether the intel is generated. Applies whether or not Commander Intel Mode is on.</English>
 </Key>
 <Key ID="STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW">
     <English>COP Command View:</English>

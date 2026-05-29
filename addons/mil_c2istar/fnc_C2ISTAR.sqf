@@ -599,6 +599,7 @@ switch(_operation) do {
     // Show/hide the mil_intelligence G2 friendly OPCOM order markers so COP can
     // be the single source of objective intent. String "true"/"false".
     case "copShowFriendlyOrders": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowFriendlyOrders", _args]; } else { _args = _logic getVariable ["copShowFriendlyOrders", "false"]; }; _result = _args; };
+    case "copShowBlockingLines":  { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowBlockingLines", _args]; }  else { _args = _logic getVariable ["copShowBlockingLines", "true"]; };   _result = _args; };
     case "commanderIntelAsymmetric": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["commanderIntelAsymmetric", _args];
@@ -1269,6 +1270,12 @@ switch(_operation) do {
             // the Map Intel display settings, which still drive the intel.
             private _showFriendlyOrders = [_logic, "copShowFriendlyOrders"] call MAINCLASS;
             missionNamespace setVariable ["ALIVE_COP_SHOW_FRIENDLY_ORDERS", (_showFriendlyOrders == "true"), true];
+
+            // TACOM recon/capture blocking lines — own toggle (default Yes), as
+            // COP doesn't draw these FLOT rectangles / advance arrows. Same
+            // server-set + JIP-broadcast as above; fnc_G2.sqf reads this flag.
+            private _showBlockingLines = [_logic, "copShowBlockingLines"] call MAINCLASS;
+            missionNamespace setVariable ["ALIVE_COP_SHOW_BLOCKING_LINES", (_showBlockingLines == "true"), true];
 
             if (_mode != "Off") then {
                 // Apply the configurable Loop A interval BEFORE COPInit
