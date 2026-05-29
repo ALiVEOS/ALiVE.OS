@@ -702,26 +702,359 @@ class CfgVehicles {
                             expression = "_this setVariable ['enableLiveCommanderIntel', _value];";
                             defaultValue = """false""";
                     };
-                    class copAnchorDistance : Edit
+                    // ---- Objective Markers ----------------------------------
+                    // Per-state Show toggles for the OPCOM objective overlay
+                    // (Attack / Defend / Recon / Reserve / Held). These mirror
+                    // OPCOM's opcom_state / tacom_state; COP renders them. Held
+                    // additionally gets colour + icon styling below (its colour
+                    // values are Arma CfgMarkerColors class names).
+                    class HDR_OBJ_MARKERS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_HDR_OBJ_MARKERS"; displayName = "OBJECTIVE MARKERS"; };
+                    class copShowAttack : Combo
                     {
-                            property = "ALiVE_MIL_C2ISTAR_copAnchorDistance";
-                            displayName = "$STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE";
-                            tooltip = "$STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE_COMMENT";
-                            defaultValue = "1000";
-                            typeName = "NUMBER";
+                            property = "ALiVE_MIL_C2ISTAR_copShowAttack";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_SHOW_ATTACK";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_SHOW_ATTACK_COMMENT";
+                            defaultValue = """true""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copShowAttack', _value];";
+                            class Values { class Yes { name = "Yes"; value = "true"; default = 1; }; class No { name = "No"; value = "false"; }; };
                     };
-                    class copUpdateInterval : Combo
+                    class copAttackColour : Combo
                     {
-                            property = "ALiVE_MIL_C2ISTAR_copUpdateInterval";
-                            displayName = "$STR_ALIVE_C2ISTAR_COP_UPDATE_INTERVAL";
-                            tooltip = "$STR_ALIVE_C2ISTAR_COP_UPDATE_INTERVAL_COMMENT";
-                            defaultValue = """60""";
+                            property = "ALiVE_MIL_C2ISTAR_copAttackColour";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_ATTACK_COLOUR";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_ATTACK_COLOUR_COMMENT";
+                            defaultValue = """ColorRed""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copAttackColour', _value];";
                             class Values
                             {
-                                    class Fast     { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_FAST";     value = "15"; };
-                                    class Standard { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_STANDARD"; value = "30"; };
-                                    class Balanced { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_BALANCED"; value = "60"; default = 1; };
-                                    class Economy  { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_ECONOMY";  value = "120"; };
+                                    class Black       { name = "Black";        value = "ColorBlack"; };
+                                    class Grey        { name = "Grey";         value = "ColorGrey"; };
+                                    class Red         { name = "Red";          value = "ColorRed"; default = 1; };
+                                    class Brown       { name = "Brown";        value = "ColorBrown"; };
+                                    class Orange      { name = "Orange";       value = "ColorOrange"; };
+                                    class Yellow      { name = "Yellow";       value = "ColorYellow"; };
+                                    class Khaki       { name = "Khaki";        value = "ColorKhaki"; };
+                                    class Green       { name = "Green";        value = "ColorGreen"; };
+                                    class Blue        { name = "Blue";         value = "ColorBlue"; };
+                                    class Pink        { name = "Pink";         value = "ColorPink"; };
+                                    class White       { name = "White";        value = "ColorWhite"; };
+                                    class BLUFOR      { name = "BLUFOR";       value = "ColorWEST"; };
+                                    class OPFOR       { name = "OPFOR";        value = "ColorEAST"; };
+                                    class Independent { name = "Independent";  value = "ColorGUER"; };
+                                    class Civilian    { name = "Civilian";     value = "ColorCIV"; };
+                                    class Unknown     { name = "Unknown side"; value = "ColorUNKNOWN"; };
+                            };
+                    };
+                    class copAttackIcon : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copAttackIcon";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_ATTACK_ICON";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_ATTACK_ICON_COMMENT";
+                            defaultValue = """none""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copAttackIcon', _value];";
+                            class Values
+                            {
+                                    class None         { name = "None";            value = "none"; default = 1; };
+                                    class Objective    { name = "Cross-in-circle"; value = "objective"; };
+                                    class Dot          { name = "Dot";             value = "dot"; };
+                                    class Flag         { name = "Flag";            value = "flag"; };
+                                    class Box          { name = "Box";             value = "box"; };
+                                    class Installation { name = "Installation";    value = "install"; };
+                                    class Warning      { name = "Warning";         value = "warning"; };
+                            };
+                    };
+                    class copShowDefend : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copShowDefend";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_SHOW_DEFEND";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_SHOW_DEFEND_COMMENT";
+                            defaultValue = """true""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copShowDefend', _value];";
+                            class Values { class Yes { name = "Yes"; value = "true"; default = 1; }; class No { name = "No"; value = "false"; }; };
+                    };
+                    class copDefendColour : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copDefendColour";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_DEFEND_COLOUR";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_DEFEND_COLOUR_COMMENT";
+                            defaultValue = """ColorBrown""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copDefendColour', _value];";
+                            class Values
+                            {
+                                    class Black       { name = "Black";        value = "ColorBlack"; };
+                                    class Grey        { name = "Grey";         value = "ColorGrey"; };
+                                    class Red         { name = "Red";          value = "ColorRed"; };
+                                    class Brown       { name = "Brown";        value = "ColorBrown"; default = 1; };
+                                    class Orange      { name = "Orange";       value = "ColorOrange"; };
+                                    class Yellow      { name = "Yellow";       value = "ColorYellow"; };
+                                    class Khaki       { name = "Khaki";        value = "ColorKhaki"; };
+                                    class Green       { name = "Green";        value = "ColorGreen"; };
+                                    class Blue        { name = "Blue";         value = "ColorBlue"; };
+                                    class Pink        { name = "Pink";         value = "ColorPink"; };
+                                    class White       { name = "White";        value = "ColorWhite"; };
+                                    class BLUFOR      { name = "BLUFOR";       value = "ColorWEST"; };
+                                    class OPFOR       { name = "OPFOR";        value = "ColorEAST"; };
+                                    class Independent { name = "Independent";  value = "ColorGUER"; };
+                                    class Civilian    { name = "Civilian";     value = "ColorCIV"; };
+                                    class Unknown     { name = "Unknown side"; value = "ColorUNKNOWN"; };
+                            };
+                    };
+                    class copDefendIcon : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copDefendIcon";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_DEFEND_ICON";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_DEFEND_ICON_COMMENT";
+                            defaultValue = """none""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copDefendIcon', _value];";
+                            class Values
+                            {
+                                    class None         { name = "None";            value = "none"; default = 1; };
+                                    class Objective    { name = "Cross-in-circle"; value = "objective"; };
+                                    class Dot          { name = "Dot";             value = "dot"; };
+                                    class Flag         { name = "Flag";            value = "flag"; };
+                                    class Box          { name = "Box";             value = "box"; };
+                                    class Installation { name = "Installation";    value = "install"; };
+                                    class Warning      { name = "Warning";         value = "warning"; };
+                            };
+                    };
+                    class copShowRecon : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copShowRecon";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_SHOW_RECON";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_SHOW_RECON_COMMENT";
+                            defaultValue = """true""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copShowRecon', _value];";
+                            class Values { class Yes { name = "Yes"; value = "true"; default = 1; }; class No { name = "No"; value = "false"; }; };
+                    };
+                    class copReconColour : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copReconColour";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_RECON_COLOUR";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_RECON_COLOUR_COMMENT";
+                            defaultValue = """ColorYellow""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copReconColour', _value];";
+                            class Values
+                            {
+                                    class Black       { name = "Black";        value = "ColorBlack"; };
+                                    class Grey        { name = "Grey";         value = "ColorGrey"; };
+                                    class Red         { name = "Red";          value = "ColorRed"; };
+                                    class Brown       { name = "Brown";        value = "ColorBrown"; };
+                                    class Orange      { name = "Orange";       value = "ColorOrange"; };
+                                    class Yellow      { name = "Yellow";       value = "ColorYellow"; default = 1; };
+                                    class Khaki       { name = "Khaki";        value = "ColorKhaki"; };
+                                    class Green       { name = "Green";        value = "ColorGreen"; };
+                                    class Blue        { name = "Blue";         value = "ColorBlue"; };
+                                    class Pink        { name = "Pink";         value = "ColorPink"; };
+                                    class White       { name = "White";        value = "ColorWhite"; };
+                                    class BLUFOR      { name = "BLUFOR";       value = "ColorWEST"; };
+                                    class OPFOR       { name = "OPFOR";        value = "ColorEAST"; };
+                                    class Independent { name = "Independent";  value = "ColorGUER"; };
+                                    class Civilian    { name = "Civilian";     value = "ColorCIV"; };
+                                    class Unknown     { name = "Unknown side"; value = "ColorUNKNOWN"; };
+                            };
+                    };
+                    class copReconIcon : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copReconIcon";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_RECON_ICON";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_RECON_ICON_COMMENT";
+                            defaultValue = """none""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copReconIcon', _value];";
+                            class Values
+                            {
+                                    class None         { name = "None";            value = "none"; default = 1; };
+                                    class Objective    { name = "Cross-in-circle"; value = "objective"; };
+                                    class Dot          { name = "Dot";             value = "dot"; };
+                                    class Flag         { name = "Flag";            value = "flag"; };
+                                    class Box          { name = "Box";             value = "box"; };
+                                    class Installation { name = "Installation";    value = "install"; };
+                                    class Warning      { name = "Warning";         value = "warning"; };
+                            };
+                    };
+                    class copShowReserve : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copShowReserve";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_SHOW_RESERVE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_SHOW_RESERVE_COMMENT";
+                            defaultValue = """false""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copShowReserve', _value];";
+                            class Values { class Yes { name = "Yes"; value = "true"; }; class No { name = "No"; value = "false"; default = 1; }; };
+                    };
+                    class copReserveColour : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copReserveColour";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_RESERVE_COLOUR";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_RESERVE_COLOUR_COMMENT";
+                            defaultValue = """ColorGrey""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copReserveColour', _value];";
+                            class Values
+                            {
+                                    class Black       { name = "Black";        value = "ColorBlack"; };
+                                    class Grey        { name = "Grey";         value = "ColorGrey"; default = 1; };
+                                    class Red         { name = "Red";          value = "ColorRed"; };
+                                    class Brown       { name = "Brown";        value = "ColorBrown"; };
+                                    class Orange      { name = "Orange";       value = "ColorOrange"; };
+                                    class Yellow      { name = "Yellow";       value = "ColorYellow"; };
+                                    class Khaki       { name = "Khaki";        value = "ColorKhaki"; };
+                                    class Green       { name = "Green";        value = "ColorGreen"; };
+                                    class Blue        { name = "Blue";         value = "ColorBlue"; };
+                                    class Pink        { name = "Pink";         value = "ColorPink"; };
+                                    class White       { name = "White";        value = "ColorWhite"; };
+                                    class BLUFOR      { name = "BLUFOR";       value = "ColorWEST"; };
+                                    class OPFOR       { name = "OPFOR";        value = "ColorEAST"; };
+                                    class Independent { name = "Independent";  value = "ColorGUER"; };
+                                    class Civilian    { name = "Civilian";     value = "ColorCIV"; };
+                                    class Unknown     { name = "Unknown side"; value = "ColorUNKNOWN"; };
+                            };
+                    };
+                    class copReserveIcon : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copReserveIcon";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_RESERVE_ICON";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_RESERVE_ICON_COMMENT";
+                            defaultValue = """none""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copReserveIcon', _value];";
+                            class Values
+                            {
+                                    class None         { name = "None";            value = "none"; default = 1; };
+                                    class Objective    { name = "Cross-in-circle"; value = "objective"; };
+                                    class Dot          { name = "Dot";             value = "dot"; };
+                                    class Flag         { name = "Flag";            value = "flag"; };
+                                    class Box          { name = "Box";             value = "box"; };
+                                    class Installation { name = "Installation";    value = "install"; };
+                                    class Warning      { name = "Warning";         value = "warning"; };
+                            };
+                    };
+                    class copShowHeld : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copShowHeld";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_SHOW_HELD";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_SHOW_HELD_COMMENT";
+                            defaultValue = """true""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copShowHeld', _value];";
+                            class Values
+                            {
+                                    class Yes { name = "Yes"; value = "true"; default = 1; };
+                                    class No  { name = "No";  value = "false"; };
+                            };
+                    };
+                    // Held colour is split per holding side so friendly /
+                    // enemy / independent held objectives are distinguishable.
+                    // Absolute side colours: Blufor-held always draws in the
+                    // Blufor colour regardless of who is viewing the COP.
+                    class copHeldColourWest : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copHeldColourWest";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_WEST";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_WEST_COMMENT";
+                            defaultValue = """ColorWEST""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copHeldColourWest', _value];";
+                            class Values
+                            {
+                                    class Black       { name = "Black";        value = "ColorBlack"; };
+                                    class Grey        { name = "Grey";         value = "ColorGrey"; };
+                                    class Red         { name = "Red";          value = "ColorRed"; };
+                                    class Brown       { name = "Brown";        value = "ColorBrown"; };
+                                    class Orange      { name = "Orange";       value = "ColorOrange"; };
+                                    class Yellow      { name = "Yellow";       value = "ColorYellow"; };
+                                    class Khaki       { name = "Khaki";        value = "ColorKhaki"; };
+                                    class Green       { name = "Green";        value = "ColorGreen"; };
+                                    class Blue        { name = "Blue";         value = "ColorBlue"; };
+                                    class Pink        { name = "Pink";         value = "ColorPink"; };
+                                    class White       { name = "White";        value = "ColorWhite"; };
+                                    class BLUFOR      { name = "BLUFOR";       value = "ColorWEST"; default = 1; };
+                                    class OPFOR       { name = "OPFOR";        value = "ColorEAST"; };
+                                    class Independent { name = "Independent";  value = "ColorGUER"; };
+                                    class Civilian    { name = "Civilian";     value = "ColorCIV"; };
+                                    class Unknown     { name = "Unknown side"; value = "ColorUNKNOWN"; };
+                            };
+                    };
+                    class copHeldColourEast : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copHeldColourEast";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_EAST";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_EAST_COMMENT";
+                            defaultValue = """ColorEAST""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copHeldColourEast', _value];";
+                            class Values
+                            {
+                                    class Black       { name = "Black";        value = "ColorBlack"; };
+                                    class Grey        { name = "Grey";         value = "ColorGrey"; };
+                                    class Red         { name = "Red";          value = "ColorRed"; };
+                                    class Brown       { name = "Brown";        value = "ColorBrown"; };
+                                    class Orange      { name = "Orange";       value = "ColorOrange"; };
+                                    class Yellow      { name = "Yellow";       value = "ColorYellow"; };
+                                    class Khaki       { name = "Khaki";        value = "ColorKhaki"; };
+                                    class Green       { name = "Green";        value = "ColorGreen"; };
+                                    class Blue        { name = "Blue";         value = "ColorBlue"; };
+                                    class Pink        { name = "Pink";         value = "ColorPink"; };
+                                    class White       { name = "White";        value = "ColorWhite"; };
+                                    class BLUFOR      { name = "BLUFOR";       value = "ColorWEST"; };
+                                    class OPFOR       { name = "OPFOR";        value = "ColorEAST"; default = 1; };
+                                    class Independent { name = "Independent";  value = "ColorGUER"; };
+                                    class Civilian    { name = "Civilian";     value = "ColorCIV"; };
+                                    class Unknown     { name = "Unknown side"; value = "ColorUNKNOWN"; };
+                            };
+                    };
+                    class copHeldColourGuer : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copHeldColourGuer";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_GUER";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_GUER_COMMENT";
+                            defaultValue = """ColorGUER""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copHeldColourGuer', _value];";
+                            class Values
+                            {
+                                    class Black       { name = "Black";        value = "ColorBlack"; };
+                                    class Grey        { name = "Grey";         value = "ColorGrey"; };
+                                    class Red         { name = "Red";          value = "ColorRed"; };
+                                    class Brown       { name = "Brown";        value = "ColorBrown"; };
+                                    class Orange      { name = "Orange";       value = "ColorOrange"; };
+                                    class Yellow      { name = "Yellow";       value = "ColorYellow"; };
+                                    class Khaki       { name = "Khaki";        value = "ColorKhaki"; };
+                                    class Green       { name = "Green";        value = "ColorGreen"; };
+                                    class Blue        { name = "Blue";         value = "ColorBlue"; };
+                                    class Pink        { name = "Pink";         value = "ColorPink"; };
+                                    class White       { name = "White";        value = "ColorWhite"; };
+                                    class BLUFOR      { name = "BLUFOR";       value = "ColorWEST"; };
+                                    class OPFOR       { name = "OPFOR";        value = "ColorEAST"; };
+                                    class Independent { name = "Independent";  value = "ColorGUER"; default = 1; };
+                                    class Civilian    { name = "Civilian";     value = "ColorCIV"; };
+                                    class Unknown     { name = "Unknown side"; value = "ColorUNKNOWN"; };
+                            };
+                    };
+                    class copHeldIcon : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copHeldIcon";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_HELD_ICON";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_HELD_ICON_COMMENT";
+                            defaultValue = """dot""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copHeldIcon', _value];";
+                            class Values
+                            {
+                                    class Objective    { name = "Cross-in-circle"; value = "objective"; };
+                                    class Dot          { name = "Dot";             value = "dot"; default = 1; };
+                                    class Flag         { name = "Flag";            value = "flag"; };
+                                    class Box          { name = "Box";             value = "box"; };
+                                    class Installation { name = "Installation";    value = "install"; };
+                                    class Warning      { name = "Warning";         value = "warning"; };
                             };
                     };
                     class ModuleDescription: ModuleDescription{};

@@ -458,6 +458,108 @@
 <Key ID="STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE_COMMENT">
     <English>Radius around each player within which COP intel (enemies, BFT, objectives, asymmetric) is displayed on the map. The anchor is the player — this distance determines how far from the player's position intel appears. This is a RENDER-side setting only; it does not change what intel OPCOM gathers, only what portion of it gets drawn on your map. WARNING: high distances (1000 m or more) combined with many objectives or high unit counts can cause COP to take longer to display information and may reduce client frame rate with the map open.</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_ATTACK">
+    <English>Show Attack Markers:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_ATTACK_COMMENT">
+    <English>Draw markers for objectives OPCOM is attacking on the COP overlay. Default Yes.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_DEFEND">
+    <English>Show Defend Markers:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_DEFEND_COMMENT">
+    <English>Draw markers for objectives OPCOM is defending on the COP overlay. Default Yes.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_RECON">
+    <English>Show Recon Markers:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_RECON_COMMENT">
+    <English>Draw markers for objectives OPCOM is reconnoitring on the COP overlay. Default Yes.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_RESERVE">
+    <English>Show Reserve Markers:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_RESERVE_COMMENT">
+    <English>Draw markers for objectives OPCOM is holding in reserve on the COP overlay. Default No.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_HELD">
+    <English>Show Held Markers:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_HELD_COMMENT">
+    <English>Draw the held-objective markers on the COP overlay (the friendly reserve anchors currently under your control). Set to No to hide them entirely. Default Yes.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ATTACK_COLOUR">
+    <English>Attack Marker Colour:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ATTACK_COLOUR_COMMENT">
+    <English>Colour of the Attack objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Red.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ATTACK_ICON">
+    <English>Attack Marker Icon:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_ATTACK_ICON_COMMENT">
+    <English>Optional icon drawn at the centre of the Attack objective ring. Default None (ring + label only).</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_DEFEND_COLOUR">
+    <English>Defend Marker Colour:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_DEFEND_COLOUR_COMMENT">
+    <English>Colour of the Defend objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Brown.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_DEFEND_ICON">
+    <English>Defend Marker Icon:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_DEFEND_ICON_COMMENT">
+    <English>Optional icon drawn at the centre of the Defend objective ring. Default None (ring + label only).</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_RECON_COLOUR">
+    <English>Recon Marker Colour:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_RECON_COLOUR_COMMENT">
+    <English>Colour of the Recon objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Yellow.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_RECON_ICON">
+    <English>Recon Marker Icon:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_RECON_ICON_COMMENT">
+    <English>Optional icon drawn at the centre of the Recon objective ring. Default None (ring + label only).</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_RESERVE_COLOUR">
+    <English>Reserve Marker Colour:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_RESERVE_COLOUR_COMMENT">
+    <English>Colour of the Reserve objective ring on the COP overlay. Uses the standard Arma marker-colour palette. Default Grey.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_RESERVE_ICON">
+    <English>Reserve Marker Icon:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_RESERVE_ICON_COMMENT">
+    <English>Optional icon drawn at the centre of the Reserve objective ring. Default None (ring + label only).</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_WEST">
+    <English>Held Colour (Blufor):</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_WEST_COMMENT">
+    <English>Colour of held-objective markers held by Blufor (West) on the COP overlay. Uses the standard Arma marker-colour palette. Default Blufor blue.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_EAST">
+    <English>Held Colour (Opfor):</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_EAST_COMMENT">
+    <English>Colour of held-objective markers held by Opfor (East) on the COP overlay. Uses the standard Arma marker-colour palette. Default Opfor red.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_GUER">
+    <English>Held Colour (Independent):</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_HELD_COLOUR_GUER_COMMENT">
+    <English>Colour of held-objective markers held by Independent (Guerrilla) on the COP overlay. Uses the standard Arma marker-colour palette. Default Independent green.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_HELD_ICON">
+    <English>Held Marker Icon:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_HELD_ICON_COMMENT">
+    <English>Icon used for the held-objective marker on the COP overlay. Default Dot.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_RUN_EVERY">
     <English>Sector Update Time (mins):</English>
 </Key>

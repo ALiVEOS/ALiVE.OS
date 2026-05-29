@@ -160,10 +160,6 @@ if (isNil "ALIVE_COP_OBJ_SHOW_RESERVE")    then { ALIVE_COP_OBJ_SHOW_RESERVE    
 // (commander knows this anchor is currently friendly).
 if (isNil "ALIVE_COP_OBJ_SHOW_HELD")              then { ALIVE_COP_OBJ_SHOW_HELD              = true };
 if (isNil "ALIVE_COP_OBJ_HELD_ICON_SIZE")         then { ALIVE_COP_OBJ_HELD_ICON_SIZE         = 24 };
-// Backdrop halo behind the held icon - filled dot at 1.4x icon size in a
-// dark colour to frame the cross-in-circle against terrain. Without it
-// the green icon's thin lines lose contrast on grass / vegetation.
-if (isNil "ALIVE_COP_OBJ_HELD_BACKDROP_SIZE")     then { ALIVE_COP_OBJ_HELD_BACKDROP_SIZE     = 34 };
 if (isNil "ALIVE_COP_OBJ_AXIS_ARROWS")     then { ALIVE_COP_OBJ_AXIS_ARROWS     = true };
 if (isNil "ALIVE_COP_OBJ_LABEL_LOCATIONS") then { ALIVE_COP_OBJ_LABEL_LOCATIONS = true };
 if (isNil "ALIVE_COP_OBJ_SHOW_PRIORITY")   then { ALIVE_COP_OBJ_SHOW_PRIORITY   = true };
@@ -326,6 +322,16 @@ if (isNil "ALIVE_COP_TEX_BOX")        then { ALIVE_COP_TEX_BOX        = "\A3\ui_
 if (isNil "ALIVE_COP_TEX_FLAG")       then { ALIVE_COP_TEX_FLAG       = "\A3\ui_f\data\map\markers\military\flag_ca.paa" };
 if (isNil "ALIVE_COP_TEX_OBJECTIVE")  then { ALIVE_COP_TEX_OBJECTIVE  = "\A3\ui_f\data\map\markers\military\objective_ca.paa" };
 if (isNil "ALIVE_COP_TEX_UNKNOWN")    then { ALIVE_COP_TEX_UNKNOWN    = "\A3\ui_f\data\map\markers\military\unknown_ca.paa" };
+// Held-objective icon. Defaults to the cross-in-circle; the mil_c2istar
+// copHeldIcon Eden attribute overrides this (JIP-persistent) at module init.
+if (isNil "ALIVE_COP_TEX_HELD")       then { ALIVE_COP_TEX_HELD       = ALIVE_COP_TEX_DOT };
+// Objective centre icons (Attack/Defend/Recon/Reserve). Default "" = no
+// centre icon (ring + label only); the mil_c2istar cop*Icon Eden attributes
+// override these JIP-persistent at module init.
+if (isNil "ALIVE_COP_TEX_OBJ_ATTACK")  then { ALIVE_COP_TEX_OBJ_ATTACK  = "" };
+if (isNil "ALIVE_COP_TEX_OBJ_DEFEND")  then { ALIVE_COP_TEX_OBJ_DEFEND  = "" };
+if (isNil "ALIVE_COP_TEX_OBJ_RECON")   then { ALIVE_COP_TEX_OBJ_RECON   = "" };
+if (isNil "ALIVE_COP_TEX_OBJ_RESERVE") then { ALIVE_COP_TEX_OBJ_RESERVE = "" };
 
 // Procedural white fill (tintable by colour param) for sentiment heat shading
 if (isNil "ALIVE_COP_TEX_FILL_WHITE") then { ALIVE_COP_TEX_FILL_WHITE = "#(rgb,8,8,3)color(1,1,1,1)" };
@@ -352,12 +358,16 @@ if (isNil "ALIVE_COP_COLOR_ASYM_INFRA_SCRATCH") then { ALIVE_COP_COLOR_ASYM_INFR
 
 // OPCOM objective colours
 if (isNil "ALIVE_COP_COLOR_OBJ_ATTACK")   then { ALIVE_COP_COLOR_OBJ_ATTACK   = [0.8,  0.13,  0.13, 0.8] };
-if (isNil "ALIVE_COP_COLOR_OBJ_DEFEND")   then { ALIVE_COP_COLOR_OBJ_DEFEND   = [0.2,  0.5,   0.9,  0.8] };
+if (isNil "ALIVE_COP_COLOR_OBJ_DEFEND")   then { ALIVE_COP_COLOR_OBJ_DEFEND   = [0.4,  0.2,   0.0,  0.8] };
 if (isNil "ALIVE_COP_COLOR_OBJ_RECON")    then { ALIVE_COP_COLOR_OBJ_RECON    = [0.96, 0.79,  0.36, 0.8] };
 if (isNil "ALIVE_COP_COLOR_OBJ_RESERVE")  then { ALIVE_COP_COLOR_OBJ_RESERVE  = [0.53, 0.53,  0.53, 0.8] };
-if (isNil "ALIVE_COP_COLOR_OBJ_HELD")     then { ALIVE_COP_COLOR_OBJ_HELD     = [0.10, 0.78,  0.20, 0.95] };
-// Backdrop halo - dark fill to frame the green icon against terrain.
-if (isNil "ALIVE_COP_COLOR_OBJ_HELD_BACKDROP") then { ALIVE_COP_COLOR_OBJ_HELD_BACKDROP = [0,0,0,0.7] };
+// Held colour per holding side (Blufor / Opfor / Independent) so friendly,
+// enemy and neutral held objectives read apart. The cop*ColourWest/East/Guer
+// Eden attributes override these (JIP-persistent) at module init. Defaults are
+// the standard side colours at the shared 0.8 translucent alpha.
+if (isNil "ALIVE_COP_COLOR_OBJ_HELD_WEST") then { ALIVE_COP_COLOR_OBJ_HELD_WEST = [0,   0.3, 0.6, 0.8] };
+if (isNil "ALIVE_COP_COLOR_OBJ_HELD_EAST") then { ALIVE_COP_COLOR_OBJ_HELD_EAST = [0.5, 0,   0,   0.8] };
+if (isNil "ALIVE_COP_COLOR_OBJ_HELD_GUER") then { ALIVE_COP_COLOR_OBJ_HELD_GUER = [0,   0.5, 0,   0.8] };
 
 // Activity badge colours
 if (isNil "ALIVE_COP_COLOR_ACT_ATTACK")   then { ALIVE_COP_COLOR_ACT_ATTACK   = [0.8,  0.13,  0.13, 1.0] };

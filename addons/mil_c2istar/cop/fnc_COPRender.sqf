@@ -329,7 +329,7 @@ ALIVE_fnc_COPDrawBftMarker = {
 ALIVE_fnc_COPDrawObjective = {
     params ["_mapCtrl", "_entry"];
 
-    _entry params ["_pos", "_size", "_state", "_locName", "_priority", ["_held", false]];
+    _entry params ["_pos", "_size", "_state", "_locName", "_priority", ["_held", false], ["_sideKey", ""]];
 
     private _show = switch (_state) do {
         case "attack":  { ALIVE_COP_OBJ_SHOW_ATTACK };
@@ -354,61 +354,90 @@ ALIVE_fnc_COPDrawObjective = {
 
         _mapCtrl drawEllipse [_pos, _size, _size, 0, _color, ""];
 
-        if (ALIVE_COP_render_showLabels) then {
-            private _stateLabel = switch (_state) do {
-                case "attack":  { "ATK" };
-                case "defend":  { "DEF" };
-                case "recon":   { "RCN" };
-                case "reserve": { "RSV" };
-                default         { toUpper _state };
-            };
-
-            private _locPart = if (ALIVE_COP_OBJ_LABEL_LOCATIONS && {_locName != ""}) then {
-                format [" - %1", _locName]
-            } else { "" };
-
-            private _prioPart = if (ALIVE_COP_OBJ_SHOW_PRIORITY && {_priority > 0}) then {
-                format [" - P%1", _priority]
-            } else { "" };
-
-            private _label = format ["%1%2%3", _stateLabel, _locPart, _prioPart];
-
-            private _labelPos = [_pos select 0, (_pos select 1) + _size + ALIVE_COP_OBJ_LABEL_OFFSET_Y, 0];
-            _mapCtrl drawIcon ["", _color, _labelPos, 0, 0, 0, _label, 1, ALIVE_COP_TEXT_SIZE_LABEL, ALIVE_COP_FONT_MAIN, "center"];
+        // Optional centre icon (configurable per state; "" = none, the
+        // default, so missions see the plain ring).
+        private _centreIcon = switch (_state) do {
+            case "attack":  { ALIVE_COP_TEX_OBJ_ATTACK };
+            case "defend":  { ALIVE_COP_TEX_OBJ_DEFEND };
+            case "recon":   { ALIVE_COP_TEX_OBJ_RECON };
+            case "reserve": { ALIVE_COP_TEX_OBJ_RESERVE };
+            default         { "" };
         };
+
+        // Full word, not abbreviated.
+        private _stateText = switch (_state) do {
+            case "attack":  { "Attacking" };
+            case "defend":  { "Defending" };
+            case "recon":   { "Recon" };
+            case "reserve": { "Reserve" };
+            default         { _state };
+        };
+
+        // Which side is performing this action — the holding/acting side keyed
+        // on the entry (the per-side objective array this came from). Named to
+        // match the Eden colour dropdowns (BLUFOR / OPFOR / Independent).
+        private _sideLabel = switch (_sideKey) do {
+            case "WEST": { "BLUFOR" };
+            case "EAST": { "OPFOR" };
+            case "GUER": { "Independent" };
+            default      { "" };
+        };
+        private _statePart = if (_sideLabel != "") then {
+            format ["%1 %2", _sideLabel, _stateText]
+        } else { _stateText };
+
+        private _locPart = if (ALIVE_COP_OBJ_LABEL_LOCATIONS && {_locName != ""}) then {
+            format [" - %1", _locName]
+        } else { "" };
+
+        private _prioPart = if (ALIVE_COP_OBJ_SHOW_PRIORITY && {_priority > 0}) then {
+            format [" - P%1", _priority]
+        } else { "" };
+
+        private _label = format ["%1%2%3", _statePart, _locPart, _prioPart];
+
+        // Centre icon + label drawn together on the marker centre, the same
+        // on-marker layout the held flag uses (which renders reliably). The
+        // label was previously offset north by the full objective radius,
+        // which pushed the text off larger rings so it read as "no label" --
+        // riding it on the centre point keeps it on the marker. Always shown
+        // for these commander's-intent markers (not zoom-gated like tactical
+        // contacts) so they stay readable at the strategic zoom-out. An empty
+        // texture still draws the text, so "none" centre icons keep their
+        // label. Aligned "left" (text extends RIGHT of the point) -- the held
+        // flag aligns "right" (text extends LEFT), so on objectives that are
+        // both held and in a ring state the two labels split to opposite sides
+        // of the centre instead of overlapping, at any zoom.
+        _mapCtrl drawIcon [_centreIcon, _color, _pos, ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE, 0, _label, 1, ALIVE_COP_TEXT_SIZE_LABEL, ALIVE_COP_FONT_MAIN, "left"];
     };
 
     // Held-objective flag overlay (replaces the old mil_logistics debug
     // createMarker block - same predicate, surfaced as a persistent COP
     // layer commanders + heli-insert routing both consult).
     if (_showHeldFlag) then {
-        private _heldLabel = if (ALIVE_COP_render_showLabels) then {
-            private _heldLocPart = if (ALIVE_COP_OBJ_LABEL_LOCATIONS && {_locName != ""}) then {
-                format [" - %1", _locName]
-            } else { "" };
-            format ["HELD%1", _heldLocPart]
+        // Colour by the side that holds the objective so friendly / enemy /
+        // neutral held positions read apart (the entry's 7th field carries the
+        // holding side key, tagged in the Draw EH gather loop).
+        private _heldColor = switch (_sideKey) do {
+            case "WEST": { ALIVE_COP_COLOR_OBJ_HELD_WEST };
+            case "EAST": { ALIVE_COP_COLOR_OBJ_HELD_EAST };
+            case "GUER": { ALIVE_COP_COLOR_OBJ_HELD_GUER };
+            default      { ALIVE_COP_COLOR_OBJ_HELD_WEST };
+        };
+
+        // Always shown (not zoom-gated) to match the ring labels above --
+        // these commander's-intent markers stay labelled at the strategic
+        // zoom-out commanders work at.
+        private _heldLocPart = if (ALIVE_COP_OBJ_LABEL_LOCATIONS && {_locName != ""}) then {
+            format [" - %1", _locName]
         } else { "" };
+        private _heldLabel = format ["HELD%1", _heldLocPart];
 
-        // Backdrop halo: a dark filled dot slightly larger than the icon
-        // frames the cross-in-circle against terrain (the icon's thin
-        // lines lose contrast on grass / vegetation without it).
+        // Icon + label (backdrop halo removed 2026-05-28 -- the configurable
+        // held colour gives enough contrast on its own).
         _mapCtrl drawIcon [
-            ALIVE_COP_TEX_DOT,
-            ALIVE_COP_COLOR_OBJ_HELD_BACKDROP,
-            _pos,
-            ALIVE_COP_OBJ_HELD_BACKDROP_SIZE, ALIVE_COP_OBJ_HELD_BACKDROP_SIZE,
-            0,
-            "",
-            0,
-            ALIVE_COP_TEXT_SIZE_LABEL,
-            ALIVE_COP_FONT_MAIN,
-            "center"
-        ];
-
-        // Icon + label on top.
-        _mapCtrl drawIcon [
-            ALIVE_COP_TEX_OBJECTIVE,
-            ALIVE_COP_COLOR_OBJ_HELD,
+            ALIVE_COP_TEX_HELD,
+            _heldColor,
             _pos,
             ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE,
             0,
@@ -688,7 +717,15 @@ ALIVE_fnc_COPDrawAll = {
         _bft append (missionNamespace getVariable [_x, []]);
     } forEach ALIVE_COP_intelVars_bftList;
     {
-        _obj append (missionNamespace getVariable [_x, []]);
+        // Tag each objective with its holding side (the var-name suffix:
+        // ALiVE_COP_ObjectivesData_WEST/EAST/GUER) so held markers can be
+        // coloured per side. Appended as the 7th element; existing 6-field
+        // consumers (the ring draw, axis arrows) are unaffected.
+        private _toks = _x splitString "_";
+        private _sideKey = _toks select (count _toks - 1);
+        {
+            _obj pushBack (_x + [_sideKey]);
+        } forEach (missionNamespace getVariable [_x, []]);
     } forEach ALIVE_COP_intelVars_objList;
 
     private _asymAct   = missionNamespace getVariable ["ALiVE_COP_AsymActivityData", []];

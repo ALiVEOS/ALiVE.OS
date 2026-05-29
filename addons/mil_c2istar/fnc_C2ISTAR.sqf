@@ -671,6 +671,54 @@ switch(_operation) do {
         if (typeName _args != "SCALAR" || {_args < 100}) then { _args = DEFAULT_COP_ANCHOR_DISTANCE };
         _result = _args;
     };
+    case "copShowAttack": {
+        if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowAttack", _args]; } else { _args = _logic getVariable ["copShowAttack", "true"]; };
+        _result = _args;
+    };
+    case "copShowDefend": {
+        if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowDefend", _args]; } else { _args = _logic getVariable ["copShowDefend", "true"]; };
+        _result = _args;
+    };
+    case "copShowRecon": {
+        if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowRecon", _args]; } else { _args = _logic getVariable ["copShowRecon", "true"]; };
+        _result = _args;
+    };
+    case "copShowReserve": {
+        if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowReserve", _args]; } else { _args = _logic getVariable ["copShowReserve", "false"]; };
+        _result = _args;
+    };
+    case "copShowHeld": {
+        // String passthrough ("true"/"false"). Coerced to bool + broadcast
+        // as ALIVE_COP_OBJ_SHOW_HELD in the COP-on apply block below.
+        if (_args isEqualType "" && {_args != ""}) then {
+            _logic setVariable ["copShowHeld", _args];
+        } else {
+            _args = _logic getVariable ["copShowHeld", "true"];
+        };
+        _result = _args;
+    };
+    case "copAttackColour":  { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copAttackColour", _args]; }  else { _args = _logic getVariable ["copAttackColour", "ColorRed"]; };     _result = _args; };
+    case "copAttackIcon":    { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copAttackIcon", _args]; }    else { _args = _logic getVariable ["copAttackIcon", "none"]; };          _result = _args; };
+    case "copDefendColour":  { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copDefendColour", _args]; }  else { _args = _logic getVariable ["copDefendColour", "ColorBrown"]; };   _result = _args; };
+    case "copDefendIcon":    { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copDefendIcon", _args]; }    else { _args = _logic getVariable ["copDefendIcon", "none"]; };          _result = _args; };
+    case "copReconColour":   { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copReconColour", _args]; }   else { _args = _logic getVariable ["copReconColour", "ColorYellow"]; };   _result = _args; };
+    case "copReconIcon":     { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copReconIcon", _args]; }     else { _args = _logic getVariable ["copReconIcon", "none"]; };           _result = _args; };
+    case "copReserveColour": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copReserveColour", _args]; } else { _args = _logic getVariable ["copReserveColour", "ColorGrey"]; }; _result = _args; };
+    case "copReserveIcon":   { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copReserveIcon", _args]; }   else { _args = _logic getVariable ["copReserveIcon", "none"]; };         _result = _args; };
+    // Held colour per holding side — string passthrough of a CfgMarkerColors
+    // class name, mapped to RGBA at module init (see the COP-on apply block).
+    case "copHeldColourWest": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copHeldColourWest", _args]; } else { _args = _logic getVariable ["copHeldColourWest", "ColorWEST"]; }; _result = _args; };
+    case "copHeldColourEast": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copHeldColourEast", _args]; } else { _args = _logic getVariable ["copHeldColourEast", "ColorEAST"]; }; _result = _args; };
+    case "copHeldColourGuer": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copHeldColourGuer", _args]; } else { _args = _logic getVariable ["copHeldColourGuer", "ColorGUER"]; }; _result = _args; };
+    case "copHeldIcon": {
+        // String passthrough — an icon key resolved to a .paa path at init.
+        if (_args isEqualType "" && {_args != ""}) then {
+            _logic setVariable ["copHeldIcon", _args];
+        } else {
+            _args = _logic getVariable ["copHeldIcon", "dot"];
+        };
+        _result = _args;
+    };
     case "runEvery": {
         if(typeName _args == "STRING") then {
             _args = parseNumber(_args);
@@ -1219,6 +1267,88 @@ switch(_operation) do {
                 // distance immediately, so the very first Draw EH frame
                 // uses the configured radius rather than the 1000 m fallback.
                 missionNamespace setVariable ["ALIVE_COP_ANCHOR_DISTANCE", _anchorDist, true];
+
+                // Held-objective marker overlay. Master toggle + styling.
+                // Colour is read straight from CfgMarkerColors so it matches
+                // Eden's marker palette exactly; icon key resolves to a vanilla
+                // map-marker texture. All broadcast JIP-persistent so late
+                // joiners render correctly.
+                private _showAttack  = [_logic, "copShowAttack"]  call MAINCLASS;
+                private _showDefend  = [_logic, "copShowDefend"]  call MAINCLASS;
+                private _showRecon   = [_logic, "copShowRecon"]   call MAINCLASS;
+                private _showReserve = [_logic, "copShowReserve"] call MAINCLASS;
+                private _showHeld    = [_logic, "copShowHeld"]    call MAINCLASS;
+                missionNamespace setVariable ["ALIVE_COP_OBJ_SHOW_ATTACK",  (_showAttack  == "true"), true];
+                missionNamespace setVariable ["ALIVE_COP_OBJ_SHOW_DEFEND",  (_showDefend  == "true"), true];
+                missionNamespace setVariable ["ALIVE_COP_OBJ_SHOW_RECON",   (_showRecon   == "true"), true];
+                missionNamespace setVariable ["ALIVE_COP_OBJ_SHOW_RESERVE", (_showReserve == "true"), true];
+                missionNamespace setVariable ["ALIVE_COP_OBJ_SHOW_HELD",    (_showHeld    == "true"), true];
+
+                // Marker-palette RGBA keyed by CfgMarkerColors class name. Hardcoded
+                // because the config colour data isn't a plain numeric array (the
+                // runtime read returned empty for the side colours). Values match
+                // Arma's standard marker palette shown in the Eden picker.
+                private _palette = createHashMapFromArray [
+                    ["ColorBlack",   [0,0,0,1]],
+                    ["ColorGrey",    [0.45,0.45,0.45,1]],
+                    ["ColorRed",     [0.64,0.11,0.11,1]],
+                    ["ColorBrown",   [0.4,0.2,0,1]],
+                    ["ColorOrange",  [0.95,0.43,0,1]],
+                    ["ColorYellow",  [0.95,0.95,0,1]],
+                    ["ColorKhaki",   [0.59,0.56,0.4,1]],
+                    ["ColorGreen",   [0,0.55,0,1]],
+                    ["ColorBlue",    [0,0,1,1]],
+                    ["ColorPink",    [1,0.37,0.78,1]],
+                    ["ColorWhite",   [1,1,1,1]],
+                    ["ColorWEST",    [0,0.3,0.6,1]],
+                    ["ColorEAST",    [0.5,0,0,1]],
+                    ["ColorGUER",    [0,0.5,0,1]],
+                    ["ColorCIV",     [0.4,0,0.5,1]],
+                    ["ColorUNKNOWN", [0.7,0.6,0,1]]
+                ];
+                // Icon key -> map-marker texture path. "none" = no centre icon.
+                private _resolveIcon = {
+                    switch (toLower _this) do {
+                        case "dot":       { "\A3\ui_f\data\map\markers\military\dot_ca.paa" };
+                        case "flag":      { "\A3\ui_f\data\map\markers\military\flag_ca.paa" };
+                        case "box":       { "\A3\ui_f\data\map\markers\military\box_ca.paa" };
+                        case "install":   { "\A3\ui_f\data\map\markers\military\install_ca.paa" };
+                        case "warning":   { "\A3\ui_f\data\map\markers\military\warning_ca.paa" };
+                        case "objective": { "\A3\ui_f\data\map\markers\military\objective_ca.paa" };
+                        case "none":      { "" };
+                        default           { "\A3\ui_f\data\map\markers\military\objective_ca.paa" };
+                    };
+                };
+
+                // Marker colour: palette RGB stamped at 0.8 alpha (translucent),
+                // so every objective marker (rings AND the held icon) keeps the
+                // original see-through look. Copy before mutating so the shared
+                // palette array isn't altered.
+                private _markerColour = {
+                    private _rgba = +(_palette getOrDefault [_this, [0.5,0.5,0.5,1]]);
+                    _rgba set [3, 0.8];
+                    _rgba
+                };
+
+                // Attack / Defend / Recon / Reserve: ring colour + optional centre icon.
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_ATTACK",  (([_logic,"copAttackColour"]  call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_TEX_OBJ_ATTACK",    (([_logic,"copAttackIcon"]  call MAINCLASS) call _resolveIcon), true];
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_DEFEND",  (([_logic,"copDefendColour"]  call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_TEX_OBJ_DEFEND",    (([_logic,"copDefendIcon"]  call MAINCLASS) call _resolveIcon), true];
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_RECON",   (([_logic,"copReconColour"]   call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_TEX_OBJ_RECON",     (([_logic,"copReconIcon"]   call MAINCLASS) call _resolveIcon), true];
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_RESERVE", (([_logic,"copReserveColour"] call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_TEX_OBJ_RESERVE",   (([_logic,"copReserveIcon"] call MAINCLASS) call _resolveIcon), true];
+
+                // Held: colour per holding side (Blufor / Opfor / Independent,
+                // so friendly vs enemy vs neutral held objectives read apart),
+                // plus a single shared icon (always an icon, so "none" never
+                // applies). The render picks the colour by the side that holds
+                // each objective.
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_HELD_WEST", (([_logic,"copHeldColourWest"] call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_HELD_EAST", (([_logic,"copHeldColourEast"] call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_HELD_GUER", (([_logic,"copHeldColourGuer"] call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_TEX_HELD", (([_logic,"copHeldIcon"] call MAINCLASS) call _resolveIcon), true];
 
                 // Mission-maker side filter — which sides' data feeds the
                 // player's COP renderer combines. Empty = client falls back
