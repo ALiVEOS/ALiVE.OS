@@ -634,6 +634,40 @@ class CfgVehicles {
                                     class Advanced { name = "$STR_ALIVE_C2ISTAR_COP_MODE_ADVANCED"; value = "Advanced"; };
                             };
                     };
+                    class copCommandViewEnabled : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copCommandViewEnabled";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_NO";  value = "false"; default = 1; };
+                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_YES"; value = "true"; };
+                            };
+                    };
+                    class copAnchorDistance : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copAnchorDistance";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_ANCHOR_DISTANCE_COMMENT";
+                            defaultValue = "1000";
+                            typeName = "NUMBER";
+                    };
+                    class copUpdateInterval : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copUpdateInterval";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_UPDATE_INTERVAL";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_UPDATE_INTERVAL_COMMENT";
+                            defaultValue = """60""";
+                            class Values
+                            {
+                                    class Fast     { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_FAST";     value = "15"; };
+                                    class Standard { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_STANDARD"; value = "30"; };
+                                    class Balanced { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_BALANCED"; value = "60"; default = 1; };
+                                    class Economy  { name = "$STR_ALIVE_C2ISTAR_COP_UPDATE_ECONOMY";  value = "120"; };
+                            };
+                    };
                     class copDisplaySides
                     {
                             property      = "ALiVE_MIL_C2ISTAR_copDisplaySides";
@@ -676,16 +710,89 @@ class CfgVehicles {
                                     class No  { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_NO";  value = "false"; };
                             };
                     };
-                    class copCommandViewEnabled : Combo
+                    // Hide the friendly OPCOM / TACOM order markers — the attack /
+                    // defend objective ellipse + state label, the recon / capture
+                    // blocking lines, and the order arrows drawn by the
+                    // mil_intelligence G2 pipeline — so the COP overlay can be the
+                    // single source of objective intent. Independent of the Map
+                    // Intel display settings, which still drive whether the intel
+                    // is generated at all. Off by default.
+                    class copShowFriendlyOrders : Combo
                     {
-                            property = "ALiVE_MIL_C2ISTAR_copCommandViewEnabled";
-                            displayName = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW";
-                            tooltip = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_COMMENT";
+                            property = "ALiVE_MIL_C2ISTAR_copShowFriendlyOrders";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_FRIENDLY_ORDERS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_FRIENDLY_ORDERS_COMMENT";
                             defaultValue = """false""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copShowFriendlyOrders', _value];";
                             class Values
                             {
-                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_NO";  value = "false"; default = 1; };
-                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_YES"; value = "true"; };
+                                    class Yes { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_YES"; value = "true"; };
+                                    class No  { name = "$STR_ALIVE_C2ISTAR_COP_SHOW_BFT_NO";  value = "false"; default = 1; };
+                            };
+                    };
+                    // Per-layer visibility overrides. Each is Auto / On / Off:
+                    //   Auto = follow the COP Mode preset (default, behaviour unchanged)
+                    //   On / Off = override the preset for just this one layer.
+                    // COP Mode "Off" still disables the whole overlay regardless.
+                    class copLayerEnemies : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copLayerEnemies";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_LAYER_ENEMIES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_LAYER_ENEMIES_COMMENT";
+                            defaultValue = """auto""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copLayerEnemies', _value];";
+                            class Values
+                            {
+                                    class Auto { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_AUTO"; value = "auto"; default = 1; };
+                                    class On   { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_ON";   value = "on"; };
+                                    class Off  { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_OFF";  value = "off"; };
+                            };
+                    };
+                    class copLayerAxisArrows : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copLayerAxisArrows";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_LAYER_AXIS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_LAYER_AXIS_COMMENT";
+                            defaultValue = """auto""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copLayerAxisArrows', _value];";
+                            class Values
+                            {
+                                    class Auto { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_AUTO"; value = "auto"; default = 1; };
+                                    class On   { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_ON";   value = "on"; };
+                                    class Off  { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_OFF";  value = "off"; };
+                            };
+                    };
+                    class copLayerSentiment : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copLayerSentiment";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_LAYER_SENTIMENT";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_LAYER_SENTIMENT_COMMENT";
+                            defaultValue = """auto""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copLayerSentiment', _value];";
+                            class Values
+                            {
+                                    class Auto { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_AUTO"; value = "auto"; default = 1; };
+                                    class On   { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_ON";   value = "on"; };
+                                    class Off  { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_OFF";  value = "off"; };
+                            };
+                    };
+                    class copLayerActivity : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_copLayerActivity";
+                            displayName = "$STR_ALIVE_C2ISTAR_COP_LAYER_ACTIVITY";
+                            tooltip = "$STR_ALIVE_C2ISTAR_COP_LAYER_ACTIVITY_COMMENT";
+                            defaultValue = """auto""";
+                            typeName = "STRING";
+                            expression = "_this setVariable ['copLayerActivity', _value];";
+                            class Values
+                            {
+                                    class Auto { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_AUTO"; value = "auto"; default = 1; };
+                                    class On   { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_ON";   value = "on"; };
+                                    class Off  { name = "$STR_ALIVE_C2ISTAR_COP_LAYER_OFF";  value = "off"; };
                             };
                     };
                     // Legacy Eden attribute preserved as hidden so the migration shim

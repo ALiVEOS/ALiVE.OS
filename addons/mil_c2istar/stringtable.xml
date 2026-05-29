@@ -431,6 +431,45 @@
 <Key ID="STR_ALIVE_C2ISTAR_COP_SHOW_BFT_NO">
     <English>No</English>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_AUTO">
+    <English>Auto (follow COP Mode)</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_ON">
+    <English>On</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_OFF">
+    <English>Off</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_ENEMIES">
+    <English>COP Layer: Enemy Contacts</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_ENEMIES_COMMENT">
+    <English>Per-layer override for the enemy intel contacts layer (the spotted-enemy markers). Commander Intel Mode (COP) above is the master switch and the overall preset — it decides which layers are on at each tier and, when set to Off, disables the whole COP overlay. This setting only fine-tunes this one layer on top of that preset. Auto (default) follows whatever Commander Intel Mode selects. On forces the layer visible even at a tier that would normally drop it; Off hides it even at a tier that would normally show it. Has no effect when Commander Intel Mode is Off.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_AXIS">
+    <English>COP Layer: Axis-of-Advance Arrows</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_AXIS_COMMENT">
+    <English>Per-layer override for the dashed axis-of-advance arrows drawn from the nearest friendly cluster to attack objectives. Commander Intel Mode (COP) above is the master switch and the overall preset; this setting only fine-tunes this one element on top of it. Auto (default) follows the Commander Intel Mode preset. On forces the arrows on even at a tier that normally drops them (Full / Partial / Basic); Off hides them even at Advanced. Has no effect when Commander Intel Mode is Off.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_SENTIMENT">
+    <English>COP Layer: Civilian Sentiment Heat</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_SENTIMENT_COMMENT">
+    <English>Per-layer override for the civilian sentiment heat-map (part of the asymmetric layer). Commander Intel Mode (COP) above is the master switch and overall preset; this setting only fine-tunes this one element. Auto (default) follows the preset. On forces the heat-map on; Off hides it. Requires the asymmetric layer to be active — set Commander Intel Asymmetric to Yes. Has no effect when Commander Intel Mode is Off or the asymmetric layer is disabled.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_ACTIVITY">
+    <English>COP Layer: Asymmetric Activity Zones</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_LAYER_ACTIVITY_COMMENT">
+    <English>Per-layer override for the asymmetric activity zones (insurgent activity areas, part of the asymmetric layer). Commander Intel Mode (COP) above is the master switch and overall preset; this setting only fine-tunes this one element. Auto (default) follows the preset. On forces the zones on; Off hides them. Requires the asymmetric layer to be active — set Commander Intel Asymmetric to Yes. Has no effect when Commander Intel Mode is Off or the asymmetric layer is disabled.</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_FRIENDLY_ORDERS">
+    <English>Show Friendly Order Markers:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_COP_FRIENDLY_ORDERS_COMMENT">
+    <English>Show or hide the friendly OPCOM / TACOM order markers — the attack / defend objective circle and state label ("Attacking" / "Defending"), the recon / capture blocking lines, and the order arrows drawn by the military intel (G2) pipeline. No (default) hides them so the COP overlay is the single source of objective intent (its own Attack / Defend objective rings show the same orders). Yes shows them. This is independent of the Map Intel display settings above: those still decide whether the intel is generated — this only controls whether these particular markers are drawn. Applies whether or not Commander Intel Mode is on.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW">
     <English>COP Command View:</English>
 </Key>

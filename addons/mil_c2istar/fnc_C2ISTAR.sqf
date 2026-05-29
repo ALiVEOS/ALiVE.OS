@@ -589,6 +589,16 @@ switch(_operation) do {
         if (typeName _args != "BOOL") then { _args = true };
         _result = _args;
     };
+    // Per-layer visibility overrides — string passthrough of "auto"/"on"/"off".
+    // Resolved to the runtime layer flags in the COP-on apply block (before
+    // COPApplyTier so the tier's isNil guard preserves an explicit On/Off).
+    case "copLayerEnemies":    { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copLayerEnemies", _args]; }    else { _args = _logic getVariable ["copLayerEnemies", "auto"]; };    _result = _args; };
+    case "copLayerAxisArrows": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copLayerAxisArrows", _args]; } else { _args = _logic getVariable ["copLayerAxisArrows", "auto"]; }; _result = _args; };
+    case "copLayerSentiment":  { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copLayerSentiment", _args]; }  else { _args = _logic getVariable ["copLayerSentiment", "auto"]; };  _result = _args; };
+    case "copLayerActivity":   { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copLayerActivity", _args]; }   else { _args = _logic getVariable ["copLayerActivity", "auto"]; };   _result = _args; };
+    // Show/hide the mil_intelligence G2 friendly OPCOM order markers so COP can
+    // be the single source of objective intent. String "true"/"false".
+    case "copShowFriendlyOrders": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowFriendlyOrders", _args]; } else { _args = _logic getVariable ["copShowFriendlyOrders", "false"]; }; _result = _args; };
     case "commanderIntelAsymmetric": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["commanderIntelAsymmetric", _args];
@@ -962,6 +972,13 @@ switch(_operation) do {
 
         _debug = [_logic, "debug"] call MAINCLASS;
 
+        // Mirror the module Debug attribute into the module-wide debug flag the
+        // DIAG-STRIP traces gate on (COP server/render loops, task utils). That
+        // flag had no setter — it was console-only — so enabling Debug in Eden
+        // never surfaced those traces. Set per machine (init runs everywhere), so
+        // the server-side COP loop honours it too.
+        ALiVE_mil_c2istar_debug = _debug;
+
         // Singleton: ALIVE_MIL_C2ISTAR is read by fnc_taskRequest /
         // fnc_taskHandler / fnc_playerOrders / sys_spotrep and OPCOM's
         // spotrep block. Multiple C2ISTAR modules in one mission overwrite
@@ -1243,6 +1260,16 @@ switch(_operation) do {
             // shim inside MAINCLASS auto-promotes a legacy enableLiveCommanderIntel=true
             // setting to "Advanced" when the new attr is at its default "Off".
             private _mode = [_logic, "commanderIntelMode"] call MAINCLASS;
+
+            // Friendly OPCOM order markers (mil_intelligence G2): the attack /
+            // defend objective ellipse + state label + order arrow. COP can hide
+            // them so it's the single source of objective intent. Set regardless
+            // of COP mode and broadcast JIP-persistent — the markers are built
+            // server-side in fnc_G2.sqf, which reads this flag. Independent of
+            // the Map Intel display settings, which still drive the intel.
+            private _showFriendlyOrders = [_logic, "copShowFriendlyOrders"] call MAINCLASS;
+            missionNamespace setVariable ["ALIVE_COP_SHOW_FRIENDLY_ORDERS", (_showFriendlyOrders == "true"), true];
+
             if (_mode != "Off") then {
                 // Apply the configurable Loop A interval BEFORE COPInit
                 // dispatches. COPConfig uses isNil guards, so writing the
@@ -1259,6 +1286,26 @@ switch(_operation) do {
                 // kills it) or force off at Full / Advanced.
                 private _showBft = [_logic, "copShowBft"] call MAINCLASS;
                 ALIVE_COP_LAYER_BFT = _showBft;
+
+                // Per-layer visibility overrides. Set BEFORE COPApplyTier so the
+                // tier's `if (isNil ...)` guards (and COPConfig's) preserve an
+                // explicit On/Off; "auto" leaves the flag unset so the COP Mode
+                // preset/tier decides. The resolved values are broadcast to
+                // clients after COPConfig has run (below) — the tier only runs
+                // server-side, and some of these flags are read in the client
+                // Draw EH (axis arrows are pure client-render).
+                private _applyLayerOverride = {
+                    params ["_attr", "_globalName"];
+                    switch (toLower ([_logic, _attr] call MAINCLASS)) do {
+                        case "on":  { missionNamespace setVariable [_globalName, true] };
+                        case "off": { missionNamespace setVariable [_globalName, false] };
+                        // "auto" — leave unset; tier/config resolves it.
+                    };
+                };
+                ["copLayerEnemies",    "ALIVE_COP_LAYER_ENEMIES"]      call _applyLayerOverride;
+                ["copLayerAxisArrows", "ALIVE_COP_OBJ_AXIS_ARROWS"]    call _applyLayerOverride;
+                ["copLayerSentiment",  "ALIVE_COP_ASYM_SHOW_HOSTILITY"] call _applyLayerOverride;
+                ["copLayerActivity",   "ALIVE_COP_ASYM_SHOW_ACTIVITY"]  call _applyLayerOverride;
 
                 [_mode] call ALiVE_fnc_COPApplyTier;
 
@@ -1379,6 +1426,22 @@ switch(_operation) do {
                 missionNamespace setVariable ["ALIVE_COP_CommandViewEnabled", _cvEnabled, true];
 
                 ["startServer"] call ALIVE_fnc_COPInit;
+
+                // Broadcast the resolved per-layer flags so clients honour them.
+                // startServer's first dispatch runs COPConfig synchronously, so
+                // by here every flag is resolved (explicit On/Off, tier, or
+                // COPConfig default). The tier itself runs server-only and these
+                // flags are read in the client Draw EH (axis arrows especially),
+                // so without this broadcast clients would fall back to COPConfig
+                // defaults. JIP-persistent so late joiners inherit the visibility.
+                {
+                    missionNamespace setVariable [_x, missionNamespace getVariable [_x, true], true];
+                } forEach [
+                    "ALIVE_COP_LAYER_ENEMIES",
+                    "ALIVE_COP_OBJ_AXIS_ARROWS",
+                    "ALIVE_COP_ASYM_SHOW_HOSTILITY",
+                    "ALIVE_COP_ASYM_SHOW_ACTIVITY"
+                ];
 
                 private _asym = [_logic, "commanderIntelAsymmetric"] call MAINCLASS;
                 if (_asym) then {
