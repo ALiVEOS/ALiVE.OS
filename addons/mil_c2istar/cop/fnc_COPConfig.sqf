@@ -208,7 +208,7 @@ if (isNil "ALIVE_COP_ASYM_SHOW_ROADBLOCK") then { ALIVE_COP_ASYM_SHOW_ROADBLOCK 
 // ============================================================================
 // SIZING — marker pixel sizes
 // ============================================================================
-if (isNil "ALIVE_COP_SIZE_ENEMY")          then { ALIVE_COP_SIZE_ENEMY          = 36 };
+if (isNil "ALIVE_COP_SIZE_ENEMY")          then { ALIVE_COP_SIZE_ENEMY          = 24 };
 if (isNil "ALIVE_COP_SIZE_BFT")            then { ALIVE_COP_SIZE_BFT            = 24 };
 if (isNil "ALIVE_COP_SIZE_BADGE")          then { ALIVE_COP_SIZE_BADGE          = 14 };
 if (isNil "ALIVE_COP_TEXT_SIZE")           then { ALIVE_COP_TEXT_SIZE           = 0.045 };

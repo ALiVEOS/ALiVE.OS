@@ -265,9 +265,11 @@ ALIVE_fnc_COPDrawEnemyMarker = {
 
     // Main NATO icon.
     private _iconPath = [_sideKey, _type] call ALIVE_fnc_COPGetIconPath;
+    // Shadow param 0 (no drop-shadow text fx) to match the BFT marker below
+    // and read clean; icon size now matches BFT via ALIVE_COP_SIZE_ENEMY.
     _mapCtrl drawIcon [_iconPath, _color, _pos,
                        ALIVE_COP_SIZE_ENEMY, ALIVE_COP_SIZE_ENEMY, 0,
-                       _displayLabel, 1, ALIVE_COP_TEXT_SIZE, ALIVE_COP_FONT_MAIN, "right"];
+                       _displayLabel, 0, ALIVE_COP_TEXT_SIZE, ALIVE_COP_FONT_MAIN, "right"];
 
     if (ALIVE_COP_render_showIntelDetail) then {
         [_mapCtrl, _pos, _sizeInd, _color] call ALIVE_fnc_COPDrawSizeIndicator;
@@ -327,9 +329,24 @@ ALIVE_fnc_COPDrawBftMarker = {
 
 // OPCOM objective circle (commander's intent).
 ALIVE_fnc_COPDrawObjective = {
-    params ["_mapCtrl", "_entry"];
+    params ["_mapCtrl", "_entry", ["_stack", 0]];
 
     _entry params ["_pos", "_size", "_state", "_locName", "_priority", ["_held", false], ["_sideKey", ""]];
+
+    // When several displayed sides track the same objective, their labels would
+    // overprint at the shared point. The ring/icon stay on the true position;
+    // the LABEL is nudged south by _stack lines (screen-space line height in
+    // world units, set per frame) so contested objectives read as a tidy stack.
+    private _labelPos = _pos;
+    if (_stack > 0) then {
+        // 2D form — drawIcon takes Position2D, and dropping z avoids a nil-z
+        // crash ("Type Any, expected Number") when an objective centre is
+        // stored 2D ([x,y] with no z element).
+        _labelPos = [
+            _pos select 0,
+            (_pos select 1) - (_stack * (missionNamespace getVariable ["ALIVE_COP_render_labelLineWorld", 0]))
+        ];
+    };
 
     private _show = switch (_state) do {
         case "attack":  { ALIVE_COP_OBJ_SHOW_ATTACK };
@@ -408,7 +425,7 @@ ALIVE_fnc_COPDrawObjective = {
         // flag aligns "right" (text extends LEFT), so on objectives that are
         // both held and in a ring state the two labels split to opposite sides
         // of the centre instead of overlapping, at any zoom.
-        _mapCtrl drawIcon [_centreIcon, _color, _pos, ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE, 0, _label, 1, ALIVE_COP_TEXT_SIZE_LABEL, ALIVE_COP_FONT_MAIN, "left"];
+        _mapCtrl drawIcon [_centreIcon, _color, _labelPos, ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE, 0, _label, 1, ALIVE_COP_TEXT_SIZE_LABEL, ALIVE_COP_FONT_MAIN, "left"];
     };
 
     // Held-objective flag overlay (replaces the old mil_logistics debug
@@ -438,7 +455,7 @@ ALIVE_fnc_COPDrawObjective = {
         _mapCtrl drawIcon [
             ALIVE_COP_TEX_HELD,
             _heldColor,
-            _pos,
+            _labelPos,
             ALIVE_COP_OBJ_HELD_ICON_SIZE, ALIVE_COP_OBJ_HELD_ICON_SIZE,
             0,
             _heldLabel,
@@ -739,6 +756,15 @@ ALIVE_fnc_COPDrawAll = {
     ALIVE_COP_render_showBftDetail   = _zoom <= ALIVE_COP_ZOOM_BFT_MAX;
     ALIVE_COP_render_showIntelDetail = _zoom <= ALIVE_COP_ZOOM_INTEL_DETAIL;
 
+    // World-Y distance of one label line, derived from screen space so it holds
+    // at any zoom. Used to stack the labels of coincident objectives (a
+    // contested objective tracked by several displayed sides) instead of
+    // overprinting them.
+    ALIVE_COP_render_labelLineWorld = (
+        ((_mapCtrl ctrlMapScreenToWorld [0.5, 0.5]) select 1)
+        - ((_mapCtrl ctrlMapScreenToWorld [0.5, 0.5 + (ALIVE_COP_TEXT_SIZE_LABEL * 1.3)]) select 1)
+    ) max 0;
+
     // ----- Layer 5 (back): civilian sentiment heat map -----
     if (ALIVE_COP_LAYER_ASYMMETRIC && ALIVE_COP_ASYM_SHOW_HOSTILITY) then {
         {
@@ -757,6 +783,7 @@ ALIVE_fnc_COPDrawAll = {
 
     // ----- Layer 4: OPCOM objectives + axis arrows -----
     if (ALIVE_COP_LAYER_OBJECTIVES) then {
+        private _objSeen = createHashMap;   // rounded-pos key -> labels already stacked there
         {
             private _entry     = _x;
             private _entryPos  = _entry select 0;
@@ -767,7 +794,12 @@ ALIVE_fnc_COPDrawAll = {
                 private _ey = _entryPos select 1;
                 if (_ex >= (_viewMinX - _entrySize) && {_ex <= (_viewMaxX + _entrySize)}
                     && {_ey >= (_viewMinY - _entrySize) && {_ey <= (_viewMaxY + _entrySize)}}) then {
-                    [_mapCtrl, _entry] call ALIVE_fnc_COPDrawObjective;
+                    // Stack labels of objectives sharing a spot (rounded to a
+                    // 50 m cell) so contested objectives don't overprint.
+                    private _pk = format ["%1x%2", round (_ex / 50), round (_ey / 50)];
+                    private _stack = _objSeen getOrDefault [_pk, 0];
+                    _objSeen set [_pk, _stack + 1];
+                    [_mapCtrl, _entry, _stack] call ALIVE_fnc_COPDrawObjective;
 
                     if (ALIVE_COP_render_showArrows && {(_entry select 2) == "attack"} && ALIVE_COP_OBJ_AXIS_ARROWS) then {
                         [_mapCtrl, _entryPos, _bft] call ALIVE_fnc_COPDrawAxisArrow;
