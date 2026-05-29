@@ -25,6 +25,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_hash","_key","_value","_index","_isDefault"];
@@ -84,11 +85,39 @@ if (_index >= 0) then
         _values = _hash select HASH_VALUES;
         _last = (count _keys) - 1;
 
-        _keys set [_index, _keys select _last];
-        _keys resize _last;
+        // Defensive guard (Jman 2026-05-28): a malformed hash reaching this
+        // swap-and-shrink removal branch threw "Zero divisor" at the
+        // `_values select _last` step -- _keys was a sane array but _values
+        // was nil / wrong-type / shorter than _keys (HASH_VALUES out of sync
+        // with HASH_KEYS). Verify the structure is consistent before
+        // mutating; if not, log the offending state once and leave the hash
+        // untouched rather than crash. Captured during military-placement
+        // spawn (not the civilian transition the memo first hypothesised).
+        if (!(_keys isEqualType []) || !(_values isEqualType [])
+            || {_last < 0} || {_index > _last}
+            || {count _values != count _keys}) then {
+            // Malformed hash — leave it untouched instead of running the
+            // swap-and-shrink, which would throw "Zero divisor" on the
+            // out-of-range select. The skipped key holds the default value
+            // anyway, so keeping it is functionally harmless (just one
+            // redundant entry). Trace gated behind the same flag as the
+            // canary above (default off; set ALiVE_DIAG_HASHSET = true to
+            // surface), via ALiVE_fnc_dump for the standard prefix. DIAG-STRIP.
+            if (!isNil "ALiVE_DIAG_HASHSET" && {ALiVE_DIAG_HASHSET}) then {
+                [
+                    "DIAG-STRIP hashSet: skipped malformed removal key=%1 idx=%2 last=%3 keysT=%4 valuesT=%5 nK=%6 nV=%7",
+                    _key, _index, _last, typeName _keys, typeName _values,
+                    if (_keys isEqualType []) then { count _keys } else { -1 },
+                    if (_values isEqualType []) then { count _values } else { -1 }
+                ] call ALiVE_fnc_dump;
+            };
+        } else {
+            _keys set [_index, _keys select _last];
+            _keys resize _last;
 
-        _values set [_index, _values select _last];
-        _values resize _last;
+            _values set [_index, _values select _last];
+            _values resize _last;
+        };
     } else {
         // Replace the original value for this key.
         (_hash select HASH_VALUES) set [_index, _value];
