@@ -406,6 +406,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskWiretap.sqf";
                 RECOMPILE;
             };
+            class taskRemoveIED {
+                description = "Task IED Disposal (EOD)";
+                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskRemoveIED.sqf";
+                RECOMPILE;
+            };
             class taskAidDelivery {
                 description = "Task Aid Delivery";
                 file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskAidDelivery.sqf";
