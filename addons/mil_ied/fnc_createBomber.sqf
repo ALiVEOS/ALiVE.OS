@@ -16,11 +16,15 @@ if (typeName (_this select 0) == "ARRAY") then {
     _bomber = _this select 0;
 };
 
-// Pick the first valid target from the trigger's thisList, excluding
-// any player who currently holds a Zeus curator. Without this filter a
-// Zeus host near the area gets chosen and the bomber chases the curator
-// camera (erratic, elevated positions) instead of a real target.
-// Jman 2026-05-28 Zeus-host test.
+// Pick the first valid target from the trigger's thisList, excluding any
+// player who has a Zeus curator assigned. This is the real fix for the
+// bomber chasing the Zeus camera: victim SELECTION is where it matters, so
+// even if a curator armed the trigger the bomber can't lock onto the camera.
+// Deliberately kept here (not on the trigger-arming condition in fnc_IED):
+// the engine offers no reliable server-side "in Zeus camera vs on the
+// ground" test, and applying this same filter to trigger arming suppressed
+// IED spawning for every GM-hosted mission. Skipping a Zeus-assigned GM as a
+// bomber victim is an acceptable trade. Jman 2026-05-28 / refined 2026-05-30.
 _victim = ((_this select 1) select {
     private _person = if (vehicle _x != _x) then { driver (vehicle _x) } else { _x };
     !isNull _person && {isNull (getAssignedCuratorLogic _person)}
