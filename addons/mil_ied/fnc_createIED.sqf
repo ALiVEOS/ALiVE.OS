@@ -10,7 +10,7 @@ SCRIPT(createIED);
 // IED - create IED(s) at location
 private ["_position","_town","_debug","_numIEDs","_j","_size","_posloc","_IEDs","_threat","_IEDData","_IEDcount", "_dud"];
 
-if !(isServer) exitWith {diag_log "IED Not running on server!";};
+if !(isServer) exitWith {["IED Not running on server!"] call ALiVE_fnc_dump;};
 
 TRACE_1("IED",_this);
 
@@ -55,13 +55,13 @@ _IEDcount = count (_IEDs select 1);
 
 // IF first time creating IEDs for location go work out how many IEDs
 if (_IEDcount == 0) then {
-    diag_log format ["ALIVE-%1 IED: creating %2 IEDs at %5 (%3) - size %4", time, _numIEDs, mapgridposition  _position, _size, _town];
+    ["ALIVE-%1 IED: creating %2 IEDs at %5 (%3) - size %4", time, _numIEDs, mapgridposition  _position, _size, _town] call ALiVE_fnc_dump;
 
     // Find positions in area
     _posloc = [];
     _posloc = [_position, true, true, true, _size] call ALIVE_fnc_placeIED;
     if (_debug) then {
-        diag_log format ["ALIVE-%1 IED: Found %2 spots for IEDs",time, count _posloc];
+        ["ALIVE-%1 IED: Found %2 spots for IEDs",time, count _posloc] call ALiVE_fnc_dump;
     };
 
     // Clamp numIEDs to available positions.
@@ -73,7 +73,7 @@ if (_IEDcount == 0) then {
 
     // Bail out early with a clear debug message if there are no valid positions
     if (_numIEDs == 0) exitWith {
-        diag_log format ["ALIVE-%1 IED: No valid positions found for IEDs at %2 - skipping", time, _town];
+        ["ALIVE-%1 IED: No valid positions found for IEDs at %2 - skipping", time, _town] call ALiVE_fnc_dump;
     };
 
     _IEDData = [] call ALiVE_fnc_hashCreate;
@@ -109,18 +109,18 @@ for "_j" from 1 to _numIEDs do {
 
         // Exit THIS ITERATION if other IEDs are found or position is on water
         if (count _near > 0) then {
-            diag_log format ["ALIVE-%1 IED: skipping - other IEDs found %2",time,_near]; 
+            ["ALIVE-%1 IED: skipping - other IEDs found %2",time,_near] call ALiVE_fnc_dump; 
             _error = true;
         };
         if (surfaceIsWater _IEDpos) then {
-            diag_log format ["ALIVE-%1 IED: skipping - pos was on water.",time]; 
+            ["ALIVE-%1 IED: skipping - pos was on water.",time] call ALiVE_fnc_dump; 
             _error = true;
         };
 
         // Check not placed near a player
         // Skip THIS ITERATION if position is too close to a player
         if ({(getpos _x distance _IEDpos) < 75} count ([] call BIS_fnc_listPlayers) > 0) then {
-            diag_log format ["ALIVE-%1 IED: skipping - placement too close to player.",time]; 
+            ["ALIVE-%1 IED: skipping - placement too close to player.",time] call ALiVE_fnc_dump; 
             _error = true;
         };
 
@@ -147,14 +147,22 @@ for "_j" from 1 to _numIEDs do {
                         _clut = createVehicle [(selectRandom _clutter),_IEDpos, [], 40, "NONE"];
                         _clut setvariable [QUOTE(ADDON), true];
 
-                        //Fixme: what happens if clut is nil or null
-                        while {isOnRoad _clut} do {
+                        // Bounded retry: in dense urban areas with
+                        // closely packed roads, the random nudge can
+                        // keep landing on roads and the unbounded
+                        // version hung mission init when a trigger
+                        // fired immediately at startup (player
+                        // spawned inside an IED zone). 10 attempts
+                        // matches the road-clutter loop pattern below.
+                        private _urbanRetry = 0;
+                        while {isOnRoad _clut && _urbanRetry < 10} do {
                             _clut setPos [((position _clut) select 0) - 10 + random 20, ((position _clut) select 1) - 10 + random 20, ((position _clut) select 2)];
+                            _urbanRetry = _urbanRetry + 1;
                         };
                     };
 
                     /* if (_debug) then {
-                        diag_log format ["ALIVE-%1 IED: Planting clutter (%2) at %3.", time, typeOf _clut, position _clut];
+                        ["ALIVE-%1 IED: Planting clutter (%2) at %3.", time, typeOf _clut, position _clut] call ALiVE_fnc_dump;
                         //Mark clutter position
                         _t = format["cl_r%1", floor (random 1000)];
                         _clutm = [_t, position _clut, "Icon", [1,1], "TEXT:", "", "TYPE:", "mil_dot", "COLOR:", "ColorGreen", "GLOBAL"] call CBA_fnc_createMarker;
@@ -200,7 +208,7 @@ for "_j" from 1 to _numIEDs do {
         // rather than feeding nil to createVehicle.
         if (count _IEDskins == 0) exitWith {
             _error = true;
-            diag_log format ["ALIVE-%1 MIL_IED: empty class pool, skipping placement (check integrationChoice + <cat>_additional fields)", time];
+            ["ALIVE-%1 MIL_IED: empty class pool, skipping placement (check integrationChoice + <cat>_additional fields)", time] call ALiVE_fnc_dump;
         };
 
         // Apply per-integration vertical offset. Default -0.1 (ALiVE classic
@@ -236,9 +244,24 @@ for "_j" from 1 to _numIEDs do {
         _ID = (_IEDs select 1) select (_j-1);
         _data = [_IEDs, _ID] call ALiVE_fnc_hashGet;
         _dud = [_data, "IEDDud"] call ALiVE_fnc_hashGet;
-        _IED = createVehicle [[_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet, [_data, "IEDpos",[0,0,0]] call ALiVE_fnc_hashGet, [], 0, "NONE"];
-        if (_thirdParty) then {
-            _IED setpos [(position _IED) select 0, (position _IED) select 1, 0.15];
+        private _storedPos = [_data, "IEDpos", [0,0,0]] call ALiVE_fnc_hashGet;
+
+        // Player-distance guard on store replay. mil_ied uses repeating
+        // triggers (size+250m) per IED town; first-time placement (above)
+        // checks 75m to any player before spawning, but the replay branch
+        // previously did not — so a player camping or walking onto a
+        // stored IED position when the trigger refired would see the IED
+        // pop out of the ground under their feet (#899). Defer THIS
+        // iteration if a player is within 75m; the trigger will fire
+        // again as players move and the IED will reappear when clear.
+        if ({(getpos _x distance _storedPos) < 75} count ([] call BIS_fnc_listPlayers) > 0) then {
+            ["ALIVE-%1 IED: store-replay skipped - player within 75m of stored pos %2", time, _storedPos] call ALiVE_fnc_dump;
+            _error = true;
+        } else {
+            _IED = createVehicle [[_data, "IEDskin", "ALIVE_IEDUrbanSmall_Remote_Ammo"] call ALiVE_fnc_hashGet, _storedPos, [], 0, "NONE"];
+            if (_thirdParty) then {
+                _IED setpos [(position _IED) select 0, (position _IED) select 1, 0.15];
+            };
         };
     };
 
@@ -249,8 +272,8 @@ for "_j" from 1 to _numIEDs do {
         // (or wherever attachTo objNull places it) and ACE would see a loose
         // explosive with no parent mine - the "lone charge" symptom.
         if (isNull _IED) then {
-            diag_log format ["ALIVE-%1 MIL_IED arm/charge SKIPPED for null _IED (skin=%2 pos=%3) - this would have produced an orphaned charge",
-                time, _IEDskin, _IEDpos];
+            ["ALIVE-%1 MIL_IED arm/charge SKIPPED for null _IED (skin=%2 pos=%3) - this would have produced an orphaned charge",
+                time, _IEDskin, _IEDpos] call ALiVE_fnc_dump;
         } else {
         _IED setvariable ["ID", _ID];
     _IED setvariable ["town", _town];
@@ -282,12 +305,12 @@ for "_j" from 1 to _numIEDs do {
 
             if (isPlayer _killer) then {
                 if (ADDON getVariable "debug") then {
-                    diag_log format ["ALIVE-%1 IED: %2 explodes due to damage by %3 (via charge)", time, _IED, _killer];
+                    ["ALIVE-%1 IED: %2 explodes due to damage by %3 (via charge)", time, _IED, _killer] call ALiVE_fnc_dump;
                     [_IED getvariable "Marker"] call cba_fnc_deleteEntity;
                 };
                 [position _IED, [str(side (group _killer))], +10] call ALiVE_fnc_updateSectorHostility;
                 _pos set [2,0];
-                "M_Mo_120mm_AT" createVehicle _pos;
+                "M_Mo_120mm_AT_LG" createVehicle _pos;
             };
 
             [ADDON, "removeIED", _IED] call ALiVE_fnc_IED;
@@ -303,7 +326,19 @@ for "_j" from 1 to _numIEDs do {
         // Mirrored damage handler on the IED (mine) itself. Critical for
         // visible-mine integrations like RHS where the buried charge is out
         // of line-of-sight and a player's bullet hits the mine model first.
-        private _ehIDmine = _IED addEventHandler ["HandleDamage", {
+        //
+        // Gated: vanilla A3 IED ammo classes used by ACE_Explosives integration
+        // (e.g. IEDUrbanSmall_Remote_Ammo) inherit from an ammo-prop base that
+        // doesn't expose the "HandleDamage" EH enum -- attempting to attach it
+        // raises a recurring `Foreign error: Unknown enum value: HandleDamage`
+        // to the RPT and returns -1. ALiVE_IED-derived classes (Thing base)
+        // and MineBase-derived classes (RHS mines) DO support it, so restrict
+        // the attach to those. The charge-side handler above covers the
+        // single-model integrations where there is no separate mine model.
+        private _supportsHandleDamage = ((typeOf _IED) isKindOf "ALiVE_IED") || ((typeOf _IED) isKindOf "MineBase");
+        private _ehIDmine = -1;
+        if (_supportsHandleDamage) then {
+            _ehIDmine = _IED addEventHandler ["HandleDamage", {
             params ["_ied", "", "", "_killer"];
             if (_ied getVariable ["ALiVE_IED_Detonating", false]) exitWith {};
             _ied setVariable ["ALiVE_IED_Detonating", true];
@@ -312,12 +347,12 @@ for "_j" from 1 to _numIEDs do {
 
             if (isPlayer _killer) then {
                 if (ADDON getVariable "debug") then {
-                    diag_log format ["ALIVE-%1 IED: %2 explodes due to damage by %3 (via mine)", time, _ied, _killer];
+                    ["ALIVE-%1 IED: %2 explodes due to damage by %3 (via mine)", time, _ied, _killer] call ALiVE_fnc_dump;
                     [_ied getvariable "Marker"] call cba_fnc_deleteEntity;
                 };
                 [position _ied, [str(side (group _killer))], +10] call ALiVE_fnc_updateSectorHostility;
                 _pos set [2,0];
-                "M_Mo_120mm_AT" createVehicle _pos;
+                "M_Mo_120mm_AT_LG" createVehicle _pos;
             };
 
             [ADDON, "removeIED", _ied] call ALiVE_fnc_IED;
@@ -328,6 +363,7 @@ for "_j" from 1 to _numIEDs do {
                 deleteVehicle _x;
             } foreach _trgr;
         }];
+        };
 
         _IED setVariable ["ehID",_ehID, true];
         _IED setVariable ["ehIDmine",_ehIDmine, true];

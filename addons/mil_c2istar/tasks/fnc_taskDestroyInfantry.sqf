@@ -104,6 +104,16 @@ switch (_taskState) do {
             _entityPosition = _targetEntity select 2 select 2;
             _entityID = _targetEntity select 2 select 4;
 
+            // Task-bound lock: flag the target as busy so OPCOM's TACOM
+            // reassignment skips it. mil_opcom/fnc_OPCOM.sqf:935 already
+            // gates troop selection on `!busy`, so setting this here is
+            // sufficient to keep the targeted enemy from being moved to
+            // other objectives mid-task. The taskHandler's central
+            // terminal-state hook releases the lock on Succeeded /
+            // Failed / Canceled — no per-state cleanup needed in this
+            // file beyond the success branch below.
+            [_taskID, [_entityID]] call ALIVE_fnc_taskLockProfiles;
+
             private["_stagingPosition","_dialogOptions","_dialogOption"];
 
             // select the random text
@@ -233,6 +243,15 @@ switch (_taskState) do {
 
             [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
+            // Release the task-bound lock so any surviving profile (in
+            // theory none here since _allDestroyed implies all units of
+            // the target group are dead, but defensive against partial-
+            // group survivors) returns to OPCOM's normal control. The
+            // taskHandler's terminal-state hook would also catch this
+            // on the upcoming TASK_UPDATE — calling here too is safe
+            // because taskReleaseTaskLocks is idempotent.
+            [_taskID] call ALIVE_fnc_taskReleaseTaskLocks;
+
             ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
             [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
@@ -249,7 +268,7 @@ switch (_taskState) do {
             {
                 _position = _x select 2 select 2;
                 _objectType = _x select 2 select 6;
-                [_position,_taskEnemySide,_taskPlayers,_taskID,"entity",_objectType] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                [_position,_taskEnemySide,_taskPlayers,_taskID,"entity",_objectType,_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
             } forEach _profiles;
 

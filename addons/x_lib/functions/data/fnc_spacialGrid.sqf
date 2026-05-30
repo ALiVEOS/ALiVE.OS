@@ -198,17 +198,47 @@ switch (_operation) do {
         private _filter2D = _args param [2, false];
         private _returnItem = _args param [3, false];
 
-        private _minCoords = [_logic, (_center select 0) - _radius, (_center select 1) - _radius] call _pos2cord;
-        private _maxCoords = [_logic, (_center select 0) + _radius, (_center select 1) + _radius] call _pos2cord;
-
+        private _gridOrigin = _logic select 2 select 0;
+        private _sectorSize = _logic select 2 select 1;
         private _maxSector = _logic select 2 select 4;
         private _sectors = _logic select 2 select 5;
 
+        // Clamp the search-box corners to grid bounds BEFORE passing to
+        // _pos2cord. _pos2cord returns the sentinel [-1,-1] for any position
+        // outside the grid — and the prior post-clamp (`_x max 0` / `_x min
+        // maxSector`) only fixed the low-side case (-1 max 0 = 0). For the
+        // high-side overflow case `-1 min 15 = -1` stays at -1, leaving the
+        // iteration `for from N to -1` to silently do nothing.
+        //
+        // Pre-clamping the search-box corners means _pos2cord always
+        // receives in-grid positions and returns valid cell coords. Symptom
+        // before fix: getNearProfiles queries whose radius extended past
+        // the grid's high edge returned ZERO results (BFT showed 0 profiles
+        // despite hundreds being indexed; affected every module using
+        // ALiVE_fnc_getNearProfiles — mil_opcom, mil_ato, mil_logistics,
+        // mil_c2istar tasks, mil_ied, fnc_analysis, etc).
+        private _originX = _gridOrigin select 0;
+        private _originY = _gridOrigin select 1;
+        private _maxBoundX = _originX + (_sectorSize * (_maxSector select 0));
+        private _maxBoundY = _originY + (_sectorSize * (_maxSector select 1));
+
+        private _minQX = ((_center select 0) - _radius) max _originX;
+        private _minQY = ((_center select 1) - _radius) max _originY;
+        // -1 on the max bound so the position lies strictly within
+        // [originX, originX + N*sectorSize) — _pos2cord's check is `<`
+        // not `<=`, and an exactly-at-boundary value rejects.
+        private _maxQX = ((_center select 0) + _radius) min (_maxBoundX - 1);
+        private _maxQY = ((_center select 1) + _radius) min (_maxBoundY - 1);
+
+        private _minCoords = [_logic, _minQX, _minQY] call _pos2cord;
+        private _maxCoords = [_logic, _maxQX, _maxQY] call _pos2cord;
+
         _result = [];
 
-        // constrict sector indexes to grid bounds
-        _minCoords = _minCoords apply {_x max 0};
-        _maxCoords = _maxCoords apply {_x min (_maxSector select 0)};
+        // Defensive: if either corner still resolved to [-1,-1] (shouldn't
+        // happen after the pre-clamp, but radius could be zero or grid
+        // could be in a degenerate state), bail with empty.
+        if (_minCoords isEqualTo [-1,-1] || {_maxCoords isEqualTo [-1,-1]}) exitWith {};
 
         for "_y" from (_minCoords select 1) to (_maxCoords select 1) do {
             for "_x" from (_minCoords select 0) to (_maxCoords select 0) do {

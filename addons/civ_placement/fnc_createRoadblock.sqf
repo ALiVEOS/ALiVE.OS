@@ -4,27 +4,57 @@ SCRIPT(createRoadBlock);
 Function: ALIVE_fnc_createRoadBlock
 
 Description:
-Generates a RoadBlock
+    Generates a RoadBlock at one or more road points within radius.
+
+    Per roadpoint the function:
+        1. Skips dead-ends and points within 100 m of an existing roadblock
+        2. Resolves a composition from the multi-class picker pool, the
+           legacy ALiVE_compositions_roadblocks global override, or the
+           category-based fallback (CheckpointsBarricades + Medium/Small)
+        3. Runs the chosen composition (or each in shuffled order when the
+           picker has multiple ticks) through ALiVE_fnc_findCompositionSpawnPosition
+           in mode="roadblock". The validator snaps to the road centreline,
+           reports the road tangent as the spawn direction, and rejects the
+           candidate if the composition's bbox-sized footprint clips into a
+           building / static / sloped surface / sand or mud surface
+        4. Spawns the first composition that fits; skips the roadpoint
+           entirely when nothing fits
+
+    Validator wiring replaces the old inline checks (fixed 10 m isFlatEmpty
+    + 20 m nearestBuilding test) which underestimated the footprint of
+    larger checkpoint compositions and could spawn them clipping into
+    buildings or onto verges.
+
+    Spawn direction = road tangent (parallel-to-road). Compositions
+    designed to sit perpendicular across a road are not auto-detected
+    yet - see strategy_roadblock_orientation_autodetect.md.
 
 Parameters:
-Array - position
-Scalar - radius
-Scalar - roadblock count
-(Bool - Debugmode)
+    Array  - centre position
+    Scalar - search radius
+    Scalar - roadblock count (capped at 5)
+    Bool   - debug
+    String - optional. Picker pool: comma-separated class CSV, with optional
+             [F:s,z,c,m] filter prefix from the Eden picker. Empty string =
+             fall through to the legacy global / category fallback
 
 Returns:
-Array of road positions where roadblocks have been created
+    Array of road positions where roadblocks have been created
 
 Examples:
-(begin example)
-[getPos player, 100, 2] call ALiVE_fnc_createRoadblock;
-(end)
+    (begin example)
+    [getPos player, 100, 2] call ALiVE_fnc_createRoadblock;
+    [getPos player, 200, 1, true, "RoadBlock_BLU_F,Mil_Concrete_Walls"] call ALiVE_fnc_createRoadblock;
+    (end)
 
 See Also:
+    ALiVE_fnc_findCompositionSpawnPosition
+    ALiVE_fnc_getCompositionRadius
 
 Author:
-Tupolov
-shukari
+    Tupolov
+    shukari
+    Jman
 ---------------------------------------------------------------------------- */
 
 private [
@@ -37,7 +67,8 @@ params [
     ["_pos", [0,0,0], [[]]],
     ["_radius", 500, [-1]],
     ["_num", 1, [-1]],
-    ["_debug", false, [true]]
+    ["_debug", false, [true]],
+    ["_compClasses", "", [""]]
 ];
 
 private _result = [];
@@ -83,98 +114,200 @@ for "_i" from 1 to _num do {
     _roadpoints pushback _roadsel;
 };
 
+// Composition type for the dominant faction. Determined once outside the
+// per-roadpoint loop because it doesn't vary by position.
+private _compType = "Military";
+if (_fac call ALiVE_fnc_factionSide == RESISTANCE) then {
+    _compType = "Guerrilla";
+};
+
+// Resolve the picker pool. Cascade:
+//   1. Picker (Eden multi-select)        - _compClasses param, after stripping [F:..] prefix
+//   2. Legacy global override            - ALiVE_compositions_roadblocks
+//   3. Category fallback                 - CheckpointsBarricades / Medium-or-Small
+// Picker classes are validated against the composition registry; misspelt
+// or absent classes are silently dropped (the user's Override Edit is the
+// place to add mod compositions the listbox doesn't surface).
+private _pickerPool = [];
+private _pickerForParse = _compClasses;
+if (count _pickerForParse > 3 && {(_pickerForParse select [0, 3]) == "[F:"}) then {
+    private _closeIdx = _pickerForParse find "]";
+    if (_closeIdx > 3) then { _pickerForParse = _pickerForParse select [_closeIdx + 1] };
+};
+if (typeName _pickerForParse == "STRING" && {_pickerForParse != ""} && {_pickerForParse != "false"}) then {
+    {
+        private _t = _x;
+        while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+        while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do { _t = _t select [0, count _t - 1] };
+        if (_t != "") then { _pickerPool pushBackUnique _t };
+    } forEach ([_pickerForParse, ","] call CBA_fnc_split);
+};
+
 for "_j" from 1 to (count _roadpoints) do {
 
     _roadpos = _roadpoints select (_j - 1);
     _vehicle = objNull;
 
-    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["Roadblock %1 to close to another! Not created...",_roadpos] call ALiVE_fnc_dump};
-
-    // check for non road position (should be obsolete due to filtering at the beginning)
-    if (!isOnRoad _roadpos) exitWith {["Roadblock %1 is not on a road %2! Not created...",_roadpos, position _roadpos] call ALiVE_fnc_dump};
+    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["Roadblock %1 too close to another! Not created...",_roadpos] call ALiVE_fnc_dump};
 
     _roadConnectedTo = roadsConnectedTo _roadpos;
 
     if (count _roadConnectedTo == 0) exitWith {["Selected road %1 for roadblock is a dead end! Not created...",_roadpos] call ALiVE_fnc_dump};
 
-    // DEBUG -------------------------------------------------------------------------------------
-    if(_debug) then {
-     ["Roadblock %1 nearestBuilding: %2", _roadpos, ((nearestBuilding position _roadpos) distance2D position _roadpos)] call ALiVE_fnc_dump;
-    };        
-    // DEBUG -------------------------------------------------------------------------------------
-    if (((nearestBuilding position _roadpos) distance2D position _roadpos) < 20) exitWith {["Roadblock %1 too close (20m) to building. Not created...", _roadpos] call ALiVE_fnc_dump; _result; };
-    
-    
-    // DEBUG -------------------------------------------------------------------------------------
-    if(_debug) then {
-     ["Roadblock %1 not flat: %2", _roadpos, position _roadpos isFlatEmpty [-1, -1, 0.3, 10, -1] isEqualTo []] call ALiVE_fnc_dump;
-    };        
-    // DEBUG -------------------------------------------------------------------------------------
-    if (position _roadpos isFlatEmpty [-1, -1, 0.3, 10, -1] isEqualTo []) exitWith {["Roadblock %1 is not on flat area. Not created...", _roadpos] call ALiVE_fnc_dump; _result; };
-    
-		
-    GVAR(ROADBLOCKS) pushBack (position _roadpos);
+    // Build the candidate-composition pool for THIS roadpoint. Picker
+    // wins; legacy global next; category fallback last. Picker entries are
+    // resolved against the live composition registry so an entry the user
+    // saved against one mission's mod loadout silently no-ops if that mod
+    // isn't loaded this session.
+    //
+    // Picker entries can be qualified `class|category|size` (new format,
+    // disambiguates size variants of the same class) or legacy `class`
+    // (old saves + Override Edit free-text). Qualified entries use the
+    // size hint to pull the exact variant via getCompositions; legacy
+    // entries fall back to findComposition's first-match.
+    private _candidates = [];   // array of [_class, _compConfig]
+    if (count _pickerPool > 0) then {
+        {
+            private _entry = _x;
+            private _class = _entry;
+            private _entrySize = "";
+            private _entryCat = "";
+            private _pipeIdx = _entry find "|";
+            if (_pipeIdx > 0) then {
+                _class = _entry select [0, _pipeIdx];
+                private _rest = _entry select [_pipeIdx + 1];
+                private _pipe2 = _rest find "|";
+                if (_pipe2 > 0) then {
+                    _entryCat  = _rest select [0, _pipe2];
+                    _entrySize = _rest select [_pipe2 + 1];
+                } else {
+                    _entryCat = _rest;
+                };
+            };
+            private _comp = [];
+            if (_entrySize != "" && {_entrySize != "Unspecified"}) then {
+                // Qualified path: pull only compositions matching class +
+                // size. Lets BIS Checkpoint_BLU_F (Large) and (Medium) be
+                // chosen independently rather than collapsing to a random
+                // size.
+                private _compDef = ([_compType, [_class], [_entrySize], _fac] call ALiVE_fnc_getCompositions);
+                if (count _compDef > 0) then { _comp = selectRandom _compDef };
+            };
+            if (count _comp == 0) then {
+                _comp = [_class, _compType] call ALIVE_fnc_findComposition;
+            };
+            if (count _comp == 0) then {
+                private _compDef = ([_compType, [_class], [], _fac] call ALiVE_fnc_getCompositions);
+                if (count _compDef > 0) then { _comp = selectRandom _compDef };
+            };
+            if (count _comp > 0) then { _candidates pushBack [_class, _comp] };
+        } forEach _pickerPool;
+    };
+    if (count _candidates == 0 && {!isNil "ALiVE_compositions_roadblocks"}) then {
+        // Legacy mission-init override - one random pick from the global,
+        // resolved via findComposition (matches original behaviour).
+        private _class = selectRandom ALiVE_compositions_roadblocks;
+        private _comp = [_class, _compType] call ALiVE_fnc_findComposition;
+        if (count _comp > 0) then { _candidates pushBack [_class, _comp] };
+    };
+    if (count _candidates == 0) then {
+        // Category fallback. Pull up to 3 random Medium/Small CheckpointsBarricades
+        // entries so the validator has alternates to try if the closest
+        // road point doesn't suit the first pick.
+        private _pool = [_compType, ["CheckpointsBarricades"], ["Medium","Small"], _fac] call ALiVE_fnc_getCompositions;
+        if (count _pool > 0) then {
+            private _shuffled = +_pool;
+            private _take = (count _shuffled) min 3;
+            for "_k" from 1 to _take do {
+                private _c = _shuffled deleteAt (floor random count _shuffled);
+                _candidates pushBack [configName _c, _c];
+            };
+        };
+    };
 
-    _connectedRoad = _roadConnectedTo select 0;
-    _direction = (_roadpos getDir _connectedRoad);
+    if (count _candidates == 0) exitWith {
+        ["CMP createRoadblock - no candidate compositions for faction %1 (%2) at %3", _fac, _compType, _roadpos] call ALiVE_fnc_dump;
+    };
 
-    if (_direction < 181) then {_direction = _direction + 180} else {_direction = _direction - 180;};
+    // Multi-class fitment search. Shuffle once and iterate; first that
+    // passes the validator wins. Validator handles snap-to-road, slope,
+    // surface, static-obstacle, building-footprint and clearance using
+    // the composition's own envelope (from getCompositionRadius). Search
+    // radius 60 m matches the existing roadpoint spacing - we want the
+    // validator to tolerate a small offset along the road but not jump
+    // to a totally different stretch.
+    private _shuffled = +_candidates;
+    private _spawnedComp = configNull;
+    private _spawnedClass = "";
+    private _spawnedSafePos = position _roadpos;
+    private _spawnedSafeDir = 0;
+    while {count _shuffled > 0 && {isNull _spawnedComp}} do {
+        private _pick = _shuffled deleteAt (floor random count _shuffled);
+        _pick params ["_class", "_comp"];
+        private _envelope = ([_comp] call ALiVE_fnc_getCompositionRadius) max 15;
+        private _validatorResult = [position _roadpos, 60, _envelope, "roadblock", -1, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+        if (count _validatorResult > 0) then {
+            _validatorResult params ["_sp", "_sd"];
+            _spawnedComp     = _comp;
+            _spawnedClass    = _class;
+            _spawnedSafePos  = _sp;
+            _spawnedSafeDir  = _sd;
+        };
+    };
+
+    if (isNull _spawnedComp) exitWith {
+        ["CMP createRoadblock [%1] - no candidate fit at roadpoint %2 (%3 candidates tried, validator rejected all - slope / clearance / building footprint)", _fac, _roadpos, count _candidates] call ALiVE_fnc_dump;
+    };
+
+    GVAR(ROADBLOCKS) pushBack _spawnedSafePos;
 
     if (_debug) then {
-        private ["_id"];
-
-        _id = str(floor((getpos _roadpos) select 0)) + str(floor((getpos _roadpos) select 1));
-
-        ["Position of Road Block is %1, dir %2", getpos _roadpos, _direction] call ALiVE_fnc_dump;
-
-        [format["roadblock_%1", _id], _roadpos, "Icon", [1,1], "TYPE:", "mil_dot", "TEXT:", "RoadBlock",  "GLOBAL"] call CBA_fnc_createMarker;
+        ["CMP createRoadblock [%1] - %2 spawned at %3 dir %4 (envelope=%5)", _fac, _spawnedClass, _spawnedSafePos, _spawnedSafeDir, ([_spawnedComp] call ALiVE_fnc_getCompositionRadius)] call ALiVE_fnc_dump;
+        // Delete the cluster's queue marker (and its anchor) now that the
+        // actual roadblock has spawned. CP / CPC name the queue marker
+        // deterministically against the cluster centre so we can target
+        // it from here without threading the name through the call args.
+        // _pos is the cluster centre (param #1); matching format keeps
+        // the two sites in lock-step.
+        private _qName = format ["ALiVE_RB_Q_%1_%2", floor (_pos select 0), floor (_pos select 1)];
+        deleteMarker _qName;
+        deleteMarker (_qName + "_anchor");
+        // ColorBrown to distinguish from the civilian cluster palette
+        // (HQ=Black, Power=Yellow, Comms=White, Marine=Blue, Rail=Khaki,
+        // Fuel=Orange, Construction=Pink, Settlement=Green) and from
+        // the per-module placement markers (mil_placement = blue,
+        // mil_placement_custom = orange). No emitter id - roadblocks
+        // land at unique road points so the compass-slot offset doesn't
+        // apply. Deterministic name lets fnc_RB_recapture replace the
+        // marker on capture rather than stack a second one over it.
+        private _rbMarkerName = format ["ALiVE_RB_M_%1_%2", floor (_spawnedSafePos select 0), floor (_spawnedSafePos select 1)];
+        [_spawnedSafePos, 1, format ["RoadBlock - %1 (%2)", _fac, _spawnedClass], "ColorBrown", "", _rbMarkerName] call ALiVE_fnc_placeDebugMarker;
     };
 
-    // Get a composition
-    private _compType = "Military";
-
-    if (_fac call ALiVE_fnc_factionSide == RESISTANCE) then {
-        _compType = "Guerrilla";
+    // Walk the composition class list - used downstream by getParkingPosition
+    // to avoid parking the road-side vehicle on top of one of its own statics.
+    _checkpoint     = _spawnedComp;
+    _checkpointComp = _spawnedComp;
+    private _config = _checkpoint;
+    if (typeName _checkpoint == "ARRAY") then {
+        _config = [_checkpoint, configFile] call BIS_fnc_configPath;
     };
-
-    if (!isNil "ALiVE_compositions_roadblocks") then {
-        _checkpoint = [(selectRandom ALiVE_compositions_roadblocks), _compType] call ALiVE_fnc_findComposition;
-    } else {
-        private ["_cat","_size"];
-        _cat = ["CheckpointsBarricades"];
-        _size = ["Medium","Small"];
-        _checkpoint = (selectRandom ([_compType, _cat, _size] call ALiVE_fnc_getCompositions));
+    private _compClassnames = [];
+    private _objects = [];
+    for "_i" from 0 to ((count _config) - 1) do {
+        private _item = _config select _i;
+        if (isClass _item) then {
+            _objects pushback (getText(_item >> "vehicle"));
+        };
     };
+    {
+        if !(_x in _compClassnames) then { _compClassnames pushback _x };
+    } forEach _objects;
 
-      
-      private _config = _checkpoint;
-      if (typename _checkpoint == "ARRAY") then {
-     	 _config = [_checkpoint, configFile] call BIS_fnc_configPath;
-      };
-      private _compClassnames = [];
-      private _objects = [];
-      for "_i" from 0 to ((count _config) - 1) do {
-     	 private _item = _config select _i;
-     	 if (isClass _item) then {
-     	  	_objects pushback (getText(_item >> "vehicle"));
-     	 };
-      };
-      for "_i" from 0 to ((count _objects) - 1) do {
-     	 private _object = _objects select _i;
-     	
-     	 if !(_object in _compClassnames) then {
-     		 _compClassnames pushback _object;
-     	 };
-      };
-      // DEBUG -------------------------------------------------------------------------------------
-      if(_debug) then {
-        ["ALIVE_fnc_createRoadBlock  _compClassnames: %1", _compClassnames] call ALiVE_fnc_dump;
-      };        
-      // DEBUG -------------------------------------------------------------------------------------
+    _direction = _spawnedSafeDir;
 
-
-    // Spawn compositions
-    [_checkpoint,_roadpos,_direction,_fac] spawn {[_this select 0, position (_this select 1), _this select 2, _this select 3] call ALiVE_fnc_spawnComposition};
+    // Spawn composition
+    [_checkpoint,_spawnedSafePos,_direction,_fac] spawn {[_this select 0, _this select 1, _this select 2, _this select 3] call ALiVE_fnc_spawnComposition};
 
     _result pushback _roadpos;
 
@@ -219,11 +352,9 @@ for "_j" from 1 to (count _roadpoints) do {
                         _vehicle allowDamage false;
                         [{_this allowDamage true;}, _vehicle, 15] call CBA_fnc_waitAndExecute;
                     };
-                    // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
                         ["ALIVE_fnc_createRoadBlock _vehicleClass: %1, _parkPosition: %2, _parkDirection: %3", _vehtype, _parkPosition, _parkDirection] call ALiVE_fnc_dump;
                     };
-                    // DEBUG -------------------------------------------------------------------------------------
                 };
             };
         };
@@ -232,17 +363,12 @@ for "_j" from 1 to (count _roadpoints) do {
     // Spawn static virtual group if Profile System is loaded and get them to defend
     if !(isnil "ALiVE_ProfileHandler") then {
         private _group = ["Infantry",_fac] call ALIVE_fnc_configGetRandomGroup;
-        private _guards = [_group, position _roadpos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
+        private _guards = [_group, _spawnedSafePos, random(360), true, _fac, true] call ALIVE_fnc_createProfilesFromGroupConfig;
 
-           // DEBUG -------------------------------------------------------------------------------------
-           // if(_debug) then {
-                ["ALIVE_fnc_createRoadBlock [%1] - Calling ALIVE_fnc_configGetRandomGroup", _fac] call ALiVE_fnc_dump;
-           // };        
-           // DEBUG -------------------------------------------------------------------------------------
+        ["ALIVE_fnc_createRoadBlock [%1] - Calling ALIVE_fnc_configGetRandomGroup", _fac] call ALiVE_fnc_dump;
 
         {
             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                //[_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0]]]] call ALIVE_fnc_profileEntity;
                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
                 [_x,"busy",true] call ALIVE_fnc_hashSet;
             };
@@ -250,7 +376,7 @@ for "_j" from 1 to (count _roadpoints) do {
 
     // else spawn real AI and get them to defend
     } else {
-        [_vehicle, _roadpos, _fac] spawn {
+        [_vehicle, _spawnedSafePos, _fac] spawn {
             private["_roadpos","_fac","_vehicle","_side","_blockers"];
 
             _vehicle = _this select 0;
@@ -259,23 +385,26 @@ for "_j" from 1 to (count _roadpoints) do {
             _side = _fac call ALiVE_fnc_factionSide;
 
             // Spawn group and get them to defend
-            _blockers = [getpos _roadpos, _side, "Infantry", _fac] call ALiVE_fnc_randomGroupByType;
+            _blockers = [_roadpos, _side, "Infantry", _fac] call ALiVE_fnc_randomGroupByType;
             if !(isNull _vehicle) then {
                 _blockers addVehicle _vehicle;
             };
 
             sleep 1;
-            
-           // DEBUG -------------------------------------------------------------------------------------
-           // if(_debug) then {
-                ["ALIVE_fnc_createRoadBlock [%1] - Calling ALIVE_fnc_groupGarrison", _fac] call ALiVE_fnc_dump;    
-           // };        
-           // DEBUG -------------------------------------------------------------------------------------
-                  
-           // [_blockers, getpos _roadpos, 100, true] call ALiVE_fnc_groupGarrison;
-            [_blockers, getpos _roadpos, 100, true, false, 1, nil, 50] call ALIVE_fnc_groupGarrison;
+
+            ["ALIVE_fnc_createRoadBlock [%1] - Calling ALIVE_fnc_groupGarrison", _fac] call ALiVE_fnc_dump;
+
+            [_blockers, _roadpos, 100, true, false, 1, nil, 50] call ALIVE_fnc_groupGarrison;
         };
     };
+
+    // Register the capture watchdog. Tracks defender vs attacker presence
+    // in the composition's envelope; if defenders die and attackers hold
+    // for 30s, dominant attacker faction takes over via fnc_RB_recapture.
+    // Anchor state stored on an invisible Logic object at the spawn pos.
+    private _watchdogEnv = ([_spawnedComp] call ALiVE_fnc_getCompositionRadius) max 15;
+    [_spawnedSafePos, _fac, _spawnedClass, _watchdogEnv, _debug]
+        call ALIVE_fnc_RB_captureWatchdog;
 
 };
 

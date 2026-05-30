@@ -40,6 +40,18 @@ ARJay
 
 Command and control
 
+#================#
+| Sub-features   |
+#================#
+
+COP (Common Operational Picture) — see cop/README.md
+  Opt-in live commander-intel map overlay. Complement to T.R.A.C.E:
+  T.R.A.C.E simulates ELINT-style potential-presence shading, COP
+  simulates confirmed KNOWN intel reports received from OPCOM.
+  Two Eden module attributes:
+    - Enable Live Commander Intel (COP): Yes/No (default No)
+    - COP Anchor Distance: 100/200/500/1000/3000 m (default 1000 m)
+
 #=================#
 | Contact details |
 #=================#

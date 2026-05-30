@@ -6,7 +6,7 @@ SCRIPT(removeIED);
 // Remove IED
 private ["_IEDs","_town","_position","_size","_j","_nodel","_debug"];
 
-if !(isServer) exitWith {diag_log "RemoveIED Not running on server!";};
+if !(isServer) exitWith {["RemoveIED Not running on server!"] call ALiVE_fnc_dump;};
 
 _position = _this select 0;
 _town = _this select 1;

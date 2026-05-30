@@ -20,7 +20,7 @@ if (_vehicle getVariable [QUOTE(ADDON(VBIED)),false]) exitWith {};
 _fate = random 100;
 
 if (_debug) then {
-    diag_log format ["Threat: %1, Fate: %4, Side: %2, VBIED: %3", _threat, _side, (_vehicle getvariable [QUOTE(ADDON(VBIED)), false]), _fate];
+    ["Threat: %1, Fate: %4, Side: %2, VBIED: %3", _threat, _side, (_vehicle getvariable [QUOTE(ADDON(VBIED)), false]), _fate] call ALiVE_fnc_dump;
 };
 
 if (_fate > _threat || str(side _vehicle) != _side || (_vehicle isKindOf "Quadbike_01_base_F") ) exitWith {};
@@ -103,11 +103,14 @@ _ehID = _IED addeventhandler ["HandleDamage",{
 //    diag_log str(_this);
 
     if (MOD(mil_IED) getVariable "debug") then {
-        diag_log format ["ALIVE-%1 IED: %2 explodes due to damage by %3", time, (_this select 0), (_this select 3)];
+        ["ALIVE-%1 IED: %2 explodes due to damage by %3", time, (_this select 0), (_this select 3)] call ALiVE_fnc_dump;
         [(_this select 0) getvariable "Marker"] call cba_fnc_deleteEntity;
     };
 
-    "M_Mo_120mm_AT" createVehicle [(getpos (_this select 0)) select 0, (getpos (_this select 0)) select 1,0];
+    // M_Mo_120mm_AT replaced with LG variant 2026-05-27 -- the no-_LG
+    // class silently returns objNull from createVehicle, leaving the
+    // VBIED inert. Caught via Ares #890 retest DIAG-STRIP log.
+    "M_Mo_120mm_AT_LG" createVehicle [(getpos (_this select 0)) select 0, (getpos (_this select 0)) select 1,0];
 
     _trgr = (position (_this select 0)) nearObjects ["EmptyDetector", 3];
     {
@@ -124,7 +127,7 @@ _IED setVariable ["ehID",_ehID, true];
 _IED setvariable ["charge", _vehicle, true]; // store the host vehicle for cleanup
 
 if (_debug) then {
-    diag_log format ["ALIVE-%1 IED: Creating VB-IED for %2 at %3", time, typeof _vehicle, getposATL _vehicle];
+    ["ALIVE-%1 IED: Creating VB-IED for %2 at %3", time, typeof _vehicle, getposATL _vehicle] call ALiVE_fnc_dump;
 };
 
 _vehicle setVariable [QUOTE(ADDON(VBIED)),true];

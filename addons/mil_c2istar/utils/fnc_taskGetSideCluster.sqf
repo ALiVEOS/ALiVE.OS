@@ -96,7 +96,18 @@ if(count _sideClusters > 0) then {
     };
 
 } else {
-	_targetPosition = [99999,99999,99999];
+	// Empty result, not a 99999 sentinel. The sentinel propagated as a real
+	// task position across most callers (fnc_taskCivAssault / taskMilAssault
+	// / taskMilDefence / taskAssassination / taskCSAR / taskTransportInsertion
+	// / taskRescue / taskDestroyBuilding) because they only checked
+	// `count _targetPosition == 0` — the sentinel has count 3 so the fallback
+	// path never engaged and the task marker landed at [99999,99999] off-map.
+	// Only fnc_taskAidDelivery.sqf:108 had a defensive `>90000` patch for it.
+	// Returning [] makes every caller's count==0 check route correctly into
+	// its fallback chain (BIS_fnc_findSafePos / sectorCompositionPosition).
+	// Symptom before fix: tasks like "Clear the town" appearing in the tasks
+	// list but with no map marker because the marker was drawn at [99999,99999].
+	_targetPosition = [];
 };
 
 _targetPosition

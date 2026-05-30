@@ -41,11 +41,58 @@ _landElevation = [_sectorData,"elevationSamplesLand"] call ALIVE_fnc_hashGet;
 switch(_positionType) do {
     case "overwatch": {
 
-        private["_sortedElevations","_highestElevation"];
+        // Pre-assault staging position. Picked along the line from the
+        // assigned player toward the objective, at a calibrated offset
+        // from the objective:
+        //   - Far enough that the AI defenders don't trigger on the
+        //     staging position itself (~700m -- comfortably outside
+        //     typical AI detection of 200-400m).
+        //   - Close enough that the objective is inside ALiVE's
+        //     profile spawn radius (default ~1500m), so defenders are
+        //     real units by the time players arrive at the staging
+        //     area and can press the assault without an extra
+        //     spawn-in delay.
+        //
+        // Falls back to a point halfway between player and objective
+        // if the player is already closer than the desired offset, or
+        // to the objective itself if the caller didn't supply a player
+        // position.
+        //
+        // Previous implementation picked the highest-elevation point in
+        // the same ~500m sector as the objective, which produced
+        // staging markers 100-300m from the objective -- visibly wrong
+        // on the player's map and with no tactical value.
+        private _desiredOffset = 700;
+        private _stagingPos = _taskLocation;
+        private _playerPos = if (count _this > 2) then { _this select 2 } else { [] };
 
-        _sortedElevations = [_landElevation,[],{_x select 1},"ASCEND"] call ALiVE_fnc_SortBy;
-        _highestElevation = _sortedElevations select (count (_sortedElevations)-1);
-        _targetPosition = [_highestElevation select 0 select 0, _highestElevation select 0 select 1, 0];
+        if (typeName _playerPos == "ARRAY" && {count _playerPos >= 2}) then {
+            private _distToTarget = _playerPos distance _taskLocation;
+            if (_distToTarget > _desiredOffset + 200) then {
+                // Player far enough that the offset fits on the line
+                private _dirToPlayer = _taskLocation getDir _playerPos;
+                _stagingPos = _taskLocation getPos [_desiredOffset, _dirToPlayer];
+            } else {
+                // Player closer than desired offset -- midpoint between
+                // them so the staging marker doesn't overshoot the
+                // player position.
+                _stagingPos = [
+                    ((_playerPos select 0) + (_taskLocation select 0)) / 2,
+                    ((_playerPos select 1) + (_taskLocation select 1)) / 2,
+                    0
+                ];
+            };
+        };
+
+        // Water-avoidance: if the picked spot is on water (or in a
+        // building footprint), nudge to nearest valid land via
+        // BIS_fnc_findSafePos. 300m search keeps the position close
+        // to the intended approach line.
+        if (surfaceIsWater _stagingPos) then {
+            _stagingPos = [_stagingPos, 0, 300, 1, 0, 0.25, 0, [], [_stagingPos]] call BIS_fnc_findSafePos;
+        };
+
+        _targetPosition = _stagingPos;
 
     };
 };

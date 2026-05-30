@@ -179,6 +179,18 @@ switch(_operation) do {
             if (_CQB_patrolMaxWaitTime isequaltype "") then {_CQB_patrolMaxWaitTime = call compile _CQB_patrolMaxWaitTime};
             _logic setVariable ["CQB_patrol_maxwaittime", _CQB_patrolMaxWaitTime];
 
+            // Patrol disposition for non-combat garrison patrols (Dutch request,
+            // 2026-05). Stored as uppercase behaviour/speed tokens consumed by
+            // the taskPatrol branch below and HousePatrol.fsm. Enemy-contact
+            // escalation in the FSM stays hardwired so QRF reaction is intact.
+            private _CQB_patrolBehaviour = _logic getvariable ["CQB_patrol_behaviour","SAFE"];
+            if (_CQB_patrolBehaviour isequaltype "") then {_CQB_patrolBehaviour = toUpper _CQB_patrolBehaviour};
+            _logic setVariable ["CQB_patrol_behaviour", _CQB_patrolBehaviour];
+
+            private _CQB_patrolSpeed = _logic getvariable ["CQB_patrol_speed","LIMITED"];
+            if (_CQB_patrolSpeed isequaltype "") then {_CQB_patrolSpeed = toUpper _CQB_patrolSpeed};
+            _logic setVariable ["CQB_patrol_speed", _CQB_patrolSpeed];
+
             private _spawn = _logic getvariable ["CQB_spawndistance","700"];
             if (_spawn isequaltype "") then {_spawn = call compile _spawn};
             _logic setVariable ["spawnDistance", _spawn];
@@ -217,15 +229,26 @@ switch(_operation) do {
             // Union multi-select list + manual override field; dedup and drop empties
             private _factionsRaw    = _logic getVariable ["CQB_FACTIONS",       []];
             private _factionsManual = _logic getVariable ["CQB_FACTIONS_manual", ""];
+            // Accepts ARRAY, bare CSV "a,b,c", or SQF array literal STRING
+            // '["a","b"]' (canonical form emitted by fnc_edenFactionChoiceMultiSave).
+            // Same strip-then-split pattern mil_opcom's `case "convert"` uses.
             private _factionsArr = if (typeName _factionsRaw == "ARRAY") then {
                 +_factionsRaw
             } else {
                 if (_factionsRaw == "") then { [] } else {
-                    [[_factionsRaw, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+                    private _stripped = [_factionsRaw, " ", ""] call CBA_fnc_replace;
+                    _stripped = [_stripped, "[", ""] call CBA_fnc_replace;
+                    _stripped = [_stripped, "]", ""] call CBA_fnc_replace;
+                    _stripped = [_stripped, """", ""] call CBA_fnc_replace;
+                    [_stripped, ","] call CBA_fnc_split
                 }
             };
             private _manualArr = if (_factionsManual == "") then { [] } else {
-                [[_factionsManual, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+                private _strippedManual = [_factionsManual, " ", ""] call CBA_fnc_replace;
+                _strippedManual = [_strippedManual, "[", ""] call CBA_fnc_replace;
+                _strippedManual = [_strippedManual, "]", ""] call CBA_fnc_replace;
+                _strippedManual = [_strippedManual, """", ""] call CBA_fnc_replace;
+                [_strippedManual, ","] call CBA_fnc_split
             };
             private _merged = [];
             {
@@ -1348,12 +1371,14 @@ switch(_operation) do {
             private _CQB_patrolMinWaitTime = _logic getvariable ["CQB_patrol_minwaittime","0"];
             private _CQB_patrolMidWaitTime = _logic getvariable ["CQB_patrol_midwaittime","15"];
             private _CQB_patrolMaxWaitTime = _logic getvariable ["CQB_patrol_maxwaittime","30"];
+            private _CQB_patrolBehaviour = _logic getvariable ["CQB_patrol_behaviour","SAFE"];
+            private _CQB_patrolSpeed = _logic getvariable ["CQB_patrol_speed","LIMITED"];
             {
              private _unit = _x;
              _unit setVariable ["ALIVE_cqb_instance", _logic, true];
             } forEach (units _grp);
             if (random 1 <= _CQB_patrolChance) then {
-                [_grp, getpos (leader _grp), _CQB_patrolMinDist + random (_CQB_patrolMaxDist - _CQB_patrolMinDist), [3,7] call BIS_fnc_randomInt, "MOVE", "SAFE", "YELLOW", "LIMITED", "STAG COLUMN", 
+                [_grp, getpos (leader _grp), _CQB_patrolMinDist + random (_CQB_patrolMaxDist - _CQB_patrolMinDist), [3,7] call BIS_fnc_randomInt, "MOVE", _CQB_patrolBehaviour, "YELLOW", _CQB_patrolSpeed, "STAG COLUMN",
                 "
                 _module = this getVariable ['ALIVE_cqb_instance', objNull];
                 _CQB_patrolSearchChance = 0.3;

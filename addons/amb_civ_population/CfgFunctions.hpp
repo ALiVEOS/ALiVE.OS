@@ -226,6 +226,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\amb_civ_population\fnc_civAceTierGate.sqf";
                 RECOMPILE;
             };
+            class civAceAuthGate {
+                description = "Authorisation-gate predicate for ACE civilian interact menu entries (limitInteraction parity)";
+                file = "\x\alive\addons\amb_civ_population\fnc_civAceAuthGate.sqf";
+                RECOMPILE;
+            };
             class advciv_convertAgentAndFollow {
                 description = "AdvCiv server-side agent-to-unit conversion for FOLLOW order";
                 file = "\x\alive\addons\amb_civ_population\fnc_advciv_convertAgentAndFollow.sqf";

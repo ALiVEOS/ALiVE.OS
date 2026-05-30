@@ -41,16 +41,18 @@ params ["_config","_position","_azi","_faction"];
 
 private _configFaction = if (!isNil "ALiVE_fnc_factionCompilerGetConfigFaction") then {[_faction] call ALiVE_fnc_factionCompilerGetConfigFaction} else {_faction};
 
-["Spawning Composition: %1", _this] call ALiVE_fnc_dump;
+if (!isNil "ALiVE_compSpawn_debug" && {ALiVE_compSpawn_debug}) then {
+    ["Spawning Composition: %1", _this] call ALiVE_fnc_dump;
+};
 
 // #850 diagnostic: confirms spawnComposition was reached at all,
 // before any per-object filter. Useful when COMP-VEHICLE lines are
 // missing - tells whether the composition pipeline is firing or
 // whether the spawn is happening on a different path entirely.
 if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
-    diag_log format ["[ALiVE VehSpawn DEBUG] COMP-START config=%1 position=%2 azi=%3 faction=%4",
+    ["[ALiVE VehSpawn DEBUG] COMP-START config=%1 position=%2 azi=%3 faction=%4",
         if (typeName _config == "CONFIG") then {configName _config} else {str _config},
-        _position, _azi, _faction];
+        _position, _azi, _faction] call ALiVE_fnc_dump;
 };
 
 private ["_posX", "_posY"];
@@ -102,8 +104,10 @@ private _hidingCode = switch (true) do
     if (_x == 1) then
     {
         private _found = nearestTerrainObjects [_position,CATEGORY_COMP select _forEachIndex,_radius,false,true];
-        ["Removing objects: %1", CATEGORY_COMP select _forEachIndex] call ALiVE_fnc_dump;
-        _found call ALiVE_fnc_inspectArray;
+        if (!isNil "ALiVE_compSpawn_debug" && {ALiVE_compSpawn_debug}) then {
+            ["Removing objects: %1", CATEGORY_COMP select _forEachIndex] call ALiVE_fnc_dump;
+            _found call ALiVE_fnc_inspectArray;
+        };
         _hidingCode forEach (_found inAreaArray [_position, _radius, _radius]);
     };
 }
@@ -224,8 +228,8 @@ for "_i" from 0 to ((count _objects) - 1) do {
             // in the RPT (these spawns won't generate VehSpawn ENTER lines
             // because they bypass the validator).
             if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
-                diag_log format ["[ALiVE VehSpawn DEBUG] COMP-VEHICLE class=%1 pos=%2 dir=%3 (settle window applied, validator bypassed)",
-                    typeOf _newObj, _newPos, _azi + _azimuth];
+                ["[ALiVE VehSpawn DEBUG] COMP-VEHICLE class=%1 pos=%2 dir=%3 (settle window applied, validator bypassed)",
+                    typeOf _newObj, _newPos, _azi + _azimuth] call ALiVE_fnc_dump;
             };
 
             [{
@@ -239,8 +243,8 @@ for "_i" from 0 to ((count _objects) - 1) do {
                     // on a wreck-in-waiting.
                     _v enableSimulationGlobal false;
                     if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
-                        diag_log format ["[ALiVE VehSpawn DEBUG] COMP-VEHICLE FROZEN class=%1 pos=%2 (post-settle clip detected: damage=%3 speed=%4)",
-                            typeOf _v, getPosATL _v, damage _v, speed _v];
+                        ["[ALiVE VehSpawn DEBUG] COMP-VEHICLE FROZEN class=%1 pos=%2 (post-settle clip detected: damage=%3 speed=%4)",
+                            typeOf _v, getPosATL _v, damage _v, speed _v] call ALiVE_fnc_dump;
                     };
                 } else {
                     _v allowDamage true;

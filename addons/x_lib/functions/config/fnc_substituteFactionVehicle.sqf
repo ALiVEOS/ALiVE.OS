@@ -233,10 +233,10 @@ if (isNil "_pool") then {
     {
         _summary pushBack format ["%1=%2", _x, count _y];
     } forEach _pool;
-    diag_log format [
+    [
         "ALiVE substituteFactionVehicle: built vehicle pool for '%1' (%2 buckets: %3)",
         _targetFaction, count _pool, _summary joinString ", "
-    ];
+    ] call ALiVE_fnc_dump;
 };
 
 // ------------------------------------------------------------------------
@@ -268,10 +268,10 @@ if (isNil "ALiVE_factionVehicleSubstitutionSeen") then {
 private _seenKey = format ["%1::%2", _targetFaction, _sourceKind];
 if !(_seenKey in ALiVE_factionVehicleSubstitutionSeen) then {
     ALiVE_factionVehicleSubstitutionSeen set [_seenKey, true];
-    diag_log format [
+    [
         "ALiVE substituteFactionVehicle: '%1' (%2) -> '%3' [faction=%4, pool=%5 candidates]",
         _sourceVehicle, _sourceKind, _result, _targetFaction, count _candidates
-    ];
+    ] call ALiVE_fnc_dump;
 };
 
 _result

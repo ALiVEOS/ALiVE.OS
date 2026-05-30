@@ -343,7 +343,7 @@ switch(_operation) do {
 
                     // ["attack","defend"]
                     if (_operation in ["attack"]) then {
-                        [_logic,"createFriendlyOPCOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
+                        [_logic,"createFriendlyOPCOMOrder", [_opcomID,_target,_operation,_side]] call MAINCLASS;
                     };
                 };
                 case "TACOM_ORDER_ISSUED": {
@@ -360,7 +360,15 @@ switch(_operation) do {
                     if (_operation in ["recon","capture"]) then {
                         [_logic,"removeFriendlyTACOMOrder", [_opcomID,_target,_operation]] call MAINCLASS;
 
-                        if (!_success) then {
+                        // Tear down the parent OPCOM "attack" order marker when
+                        // the attack concludes:
+                        //  - a successful capture means the objective is taken and
+                        //    now held — the "Attacking" order is fulfilled (this was
+                        //    previously left drawing a stale marker on held ground);
+                        //  - any failed sub-order means the attack is aborted.
+                        // A successful recon is NOT a conclusion — the attack
+                        // proceeds to its capture phase, so the marker stays.
+                        if (!_success || {_operation == "capture"}) then {
                             [_logic,"removeFriendlyOPCOMOrder", [_opcomID, _target]] call MAINCLASS;
                         };
                     };
@@ -370,7 +378,7 @@ switch(_operation) do {
     };
 
     case "createFriendlyOPCOMOrder": {
-        _args params ["_opcomID","_target","_operation"];
+        _args params ["_opcomID","_target","_operation",["_side",""]];
 
         private _objectiveID = [_target,"objectiveID"] call ALiVE_fnc_hashGet;
         private _objectiveIntelKey = [_opcomID, _objectiveID];
@@ -392,7 +400,8 @@ switch(_operation) do {
             ["type", "friendlyOPCOMOrder"],
             ["opcomID", _opcomID],
             ["objective", _target],
-            ["order", _operation]
+            ["order", _operation],
+            ["side", _side]
         ];
 
         private _reportID = [_logic,"storeIntelReport", _opcomOrderIntel] call MAINCLASS;
@@ -508,6 +517,28 @@ switch(_operation) do {
         private _reportType = _report get "type";
         switch (_reportType) do {
             case "spotrep": {
+                // COP suppression: when mil_c2istar's commanderIntelMode is
+                // not Off, COP's per-frame Draw EH renders the same enemy
+                // contacts richer (TYPE xN [FACTION] (Nm), trail, size
+                // indicator, threat ring, etc.). The legacy SQM chevron +
+                // movement-arrow markers below would visually duplicate every
+                // contact. The TACOM Recon / Capture cases below (FLOT
+                // rectangles + advance arrows) intentionally still render —
+                // COP doesn't yet reproduce those, and Jman's design intent
+                // is to keep them visible alongside COP.
+                //
+                // The empty-markers seed before exitWith keeps the report's
+                // shape consistent with non-suppressed cases — onRemoveMAP
+                // reads `_report get "markers"` to feed deleteMarkersLocally,
+                // and the original suppression skipped the `_report set
+                // ["markers", ...]` step, leaving the field nil. That nil
+                // propagated as "Undefined variable in expression: _reportMarkers"
+                // at fnc_G2.sqf:754 every cleanup cycle. Setting [] up front
+                // makes the cleanup path a safe no-op.
+                if (missionNamespace getVariable ["ALIVE_COP_ACTIVE", false]) exitWith {
+                    _report set ["markers", []];
+                };
+
                 private _reportID = _report get "id";
                 private _groupSide = _report get "side";
                 private _groupFaction = _report get "faction";
@@ -587,6 +618,20 @@ switch(_operation) do {
                     };
                 };
 
+                // Prefix the acting side, matching the COP overlay labels
+                // (BLUFOR / OPFOR / Independent) so the order marker reads e.g.
+                // "BLUFOR Attacking". Side is the OPCOM's side key carried on the
+                // report; blank prefix if absent (older reports / unknown).
+                private _sideLabel = switch (_report getOrDefault ["side", ""]) do {
+                    case "WEST": { "BLUFOR" };
+                    case "EAST": { "OPFOR" };
+                    case "GUER": { "Independent" };
+                    default      { "" };
+                };
+                if (_sideLabel != "") then {
+                    _markerText = format ["%1 %2", _sideLabel, _markerText];
+                };
+
                 private _circleMarker = createHashMapFromArray [
                     ["id", format [MTEMPLATE, _opcomID, _reportID, 1]],
                     ["position", _objectivePosition],
@@ -608,9 +653,19 @@ switch(_operation) do {
                     ["text", _markerText]
                 ];
 
-                _report set ["markers", [_circleMarker get "id", _textMarker get "id"]];
-
-                [nil,"createMarkersLocally", [_circleMarker, _textMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
+                // The C2ISTAR COP overlay can suppress these friendly order
+                // markers so it stays the single source of objective intent.
+                // When hidden, build nothing on screen but keep an empty marker
+                // list on the report so downstream cleanup stays happy. The flag
+                // is independent of the Map Intel display settings, which still
+                // drive whether this report is generated at all. Defaults to
+                // shown when unset (no COP module / older missions).
+                if (missionNamespace getVariable ["ALIVE_COP_SHOW_FRIENDLY_ORDERS", true]) then {
+                    _report set ["markers", [_circleMarker get "id", _textMarker get "id"]];
+                    [nil,"createMarkersLocally", [_circleMarker, _textMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
+                } else {
+                    _report set ["markers", []];
+                };
             };
 
             case "friendlyTACOMRecon": {
@@ -664,9 +719,17 @@ switch(_operation) do {
                     ["color", "ColorBlufor"]
                 ];
 
-                _report set ["markers", [_lineMarker get "id", _arrowMarker get "id"]];
-
-                [nil,"createMarkersLocally", [_lineMarker, _arrowMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
+                // TACOM recon/capture blocking lines have their OWN COP toggle
+                // (Show Blocking Line Markers, default on) — separate from the
+                // OPCOM attack/defend order-markers toggle, since COP doesn't
+                // draw these FLOT rectangles / advance arrows. Default true when
+                // unset (no C2ISTAR module) preserves the legacy always-on look.
+                if (missionNamespace getVariable ["ALIVE_COP_SHOW_BLOCKING_LINES", true]) then {
+                    _report set ["markers", [_lineMarker get "id", _arrowMarker get "id"]];
+                    [nil,"createMarkersLocally", [_lineMarker, _arrowMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
+                } else {
+                    _report set ["markers", []];
+                };
             };
 
             case "friendlyTACOMCapture": {
@@ -714,9 +777,17 @@ switch(_operation) do {
                     ["color", "ColorBlufor"]
                 ];
 
-                _report set ["markers", [_lineMarker get "id", _arrowMarker get "id"]];
-
-                [nil,"createMarkersLocally", [_lineMarker, _arrowMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
+                // TACOM recon/capture blocking lines have their OWN COP toggle
+                // (Show Blocking Line Markers, default on) — separate from the
+                // OPCOM attack/defend order-markers toggle, since COP doesn't
+                // draw these FLOT rectangles / advance arrows. Default true when
+                // unset (no C2ISTAR module) preserves the legacy always-on look.
+                if (missionNamespace getVariable ["ALIVE_COP_SHOW_BLOCKING_LINES", true]) then {
+                    _report set ["markers", [_lineMarker get "id", _arrowMarker get "id"]];
+                    [nil,"createMarkersLocally", [_lineMarker, _arrowMarker]] remoteExecCall ["ALiVE_fnc_G2", _playersToSendMarkerTo];
+                } else {
+                    _report set ["markers", []];
+                };
             };
         };
     };

@@ -70,7 +70,7 @@ if (!isNull _firer) then {
     };
     if (count _civsWithin50 > 0) then {
         _firer setVariable ["ALiVE_advciv_firedAtCivTime", time, true];
-        if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=FiredNear civsInRange=%4", name _firer, side _firer, time, count _civsWithin50]; };
+        if (ALiVE_advciv_debug) then { ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=FiredNear civsInRange=%4", name _firer, side _firer, time, count _civsWithin50] call ALiVE_fnc_dump; };
     };
 };
 

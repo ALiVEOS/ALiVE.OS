@@ -20,6 +20,7 @@ See Also:
 Author:
 ARJay
 shukari
+Jman
 ---------------------------------------------------------------------------- */
 params [
 		"_taskState",
@@ -104,13 +105,23 @@ switch (_taskState) do {
 						_player = [_player] call ALIVE_fnc_getPlayerByUID;
 					};
 					
-                    private _objectives = [_objectives, [getPosATL _player], {_Input0 distance ([_x, "center"] call ALiVE_fnc_HashGet)}, "ASCEND", {
+                    private _objectives = [_objectives, [getPosATL _player, _taskSide], {_Input0 distance ([_x, "center"] call ALiVE_fnc_HashGet)}, "ASCEND", {
 							private _id = [_x, "opcomID", ""] call ALiVE_fnc_HashGet;
 							private _pos = [_x, "center"] call ALiVE_fnc_HashGet;
 							private _opcom = [objNull, "getOPCOMbyid", _id] call ALiVE_fnc_OPCOM;
 							private _side = [_opcom, "side", ""] call ALiVE_fnc_HashGet;
 
-							!([_pos, _side, 500, true] call ALiVE_fnc_isEnemyNear);
+							// Keep objectives that are (a) not already
+							// friendly-occupied AND (b) have real enemy
+							// presence the player can actually sabotage
+							// (enemies of _taskSide present). Mirrors the
+							// Capture-Objective enemy-presence guard;
+							// without it the player could be tasked with
+							// sabotaging an empty objective. _Input1 =
+							// _taskSide via inputs since SortBy's filter
+							// runs in SortBy's own scope.
+							!([_pos, _side, 500, true] call ALiVE_fnc_isEnemyNear)
+							&& {[_pos, _Input1, 500, true] call ALiVE_fnc_isEnemyNear};
 						}] call ALiVE_fnc_SortBy;
 
                     private _totalIndexes = (count _objectives)-1;
@@ -389,7 +400,7 @@ switch (_taskState) do {
 
             {
                 private _objectType = getText (configfile >> "CfgVehicles" >> typeOf _x >> "displayName");
-                [getposATL _x, _taskEnemySide, _taskPlayers, _taskID, "building", _objectType] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                [getposATL _x, _taskEnemySide, _taskPlayers, _taskID, "building", _objectType, _taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
             } forEach _targets;
         };
     };

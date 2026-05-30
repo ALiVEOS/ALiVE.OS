@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -102,6 +103,17 @@ switch (_taskState) do {
         // get enemy cluster
 
         _insertionPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideCluster;
+
+        // Verify the cluster centre still has enemy presence. The cluster
+        // list can be stale (units moved out / wiped) and dropping the
+        // team into an empty cluster defeats the point of an insertion
+        // task. If the verification fails, fall through to the
+        // composition-spawn fallback below which guarantees enemies.
+        // Mirrors the Capture-Objective enemy-presence guard.
+        if (count _insertionPosition > 0 && {!([_insertionPosition, _taskSide, 500, true] call ALIVE_fnc_isEnemyNear)}) then {
+            ["C2ISTAR - Task TransportInsertion - Insertion cluster %1 has no verified enemy presence, falling back to composition spawn", _insertionPosition] call ALiVE_fnc_Dump;
+            _insertionPosition = [];
+        };
 
         if(count _insertionPosition == 0) then {
             private ["_category","_compType"];
@@ -269,6 +281,7 @@ switch (_taskState) do {
             [_taskParams,"pickupReached",false] call ALIVE_fnc_hashSet;
             [_taskParams,"pickupMarkerCreated",false] call ALIVE_fnc_hashSet;
             [_taskParams,"insertionReached",false] call ALIVE_fnc_hashSet;
+            [_taskParams,"mountUpPrompted",false] call ALIVE_fnc_hashSet;
             [_taskParams,"lastState",""] call ALIVE_fnc_hashSet;
 
             // return the created tasks and params
@@ -284,7 +297,7 @@ switch (_taskState) do {
     case "Pickup":{
 
         private["_taskID","_requestPlayerID","_taskSide","_taskPosition","_taskFaction","_taskTitle","_taskDescription","_taskPlayers",
-        "_taskIDs","_lastState","_taskDialog","_profileID","_currentTaskDialog","_pickupReached","_pickupMarkerCreated"];
+        "_taskIDs","_lastState","_taskDialog","_profileID","_currentTaskDialog","_pickupReached","_pickupMarkerCreated","_mountUpPrompted"];
 
         _taskID = _task select 0;
         _requestPlayerID = _task select 1;
@@ -300,6 +313,7 @@ switch (_taskState) do {
         _profileID = [_params,"profileID"] call ALIVE_fnc_hashGet;
         _pickupReached = [_params,"pickupReached"] call ALIVE_fnc_hashGet;
         _pickupMarkerCreated = [_params,"pickupMarkerCreated"] call ALIVE_fnc_hashGet;
+        _mountUpPrompted = [_params,"mountUpPrompted"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
 
         // first run of this task
@@ -394,23 +408,19 @@ switch (_taskState) do {
 
                             }else{
 
-                                // no player vehicles have any room - fail
-
-                                [_infantryProfile,"busy",false] call ALIVE_fnc_profileEntity;
-
-                                [_params,"nextTask",""] call ALIVE_fnc_hashSet;
-
-                                // Mission Over in first state - if dead or timeout update the parent-task instead of the child so all children get updated
-                                _parent = _task select 11;
-                                _parent = if (_parent == "None") then {_taskID} else {_parent};
-                                _parentTask = [ALiVE_TaskHandler,"getTask",_parent] call ALiVE_fnc_TaskHandler;
-
-                                _parentTask set [8,"Failed"];
-                                _parentTask set [10,"N"];
-                                
-                                [ALiVE_TaskHandler,"TASK_UPDATE",_parentTask] call ALiVE_fnc_TaskHandler;
-
-                                ["chat_failed",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                                // No player vehicles with any room at the
+                                // pickup point. Don't fail -- the player
+                                // may have arrived on foot and just needs
+                                // to grab a transport. Broadcast a
+                                // mount-up prompt once and let the state
+                                // machine keep ticking; once the player
+                                // is back at the pickup in a vehicle with
+                                // seats the assignment path above takes
+                                // over.
+                                if !(_mountUpPrompted) then {
+                                    ["chat_mount_up",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                                    [_params,"mountUpPrompted",true] call ALIVE_fnc_hashSet;
+                                };
 
                             };
                         };

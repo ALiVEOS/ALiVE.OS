@@ -36,6 +36,7 @@ Peer Reviewed:
 #define MTEMPLATE "ALiVE_C2_%1"
 #define DEFAULT_DEBUG false
 #define DEFAULT_C2_ITEM "LaserDesignator"
+#define DEFAULT_C2_ITEM_CUSTOM ""
 #define DEFAULT_STATE "INIT"
 #define DEFAULT_SIDE "WEST"
 #define DEFAULT_FACTION "BLU_F"
@@ -65,9 +66,13 @@ Peer Reviewed:
 #define DEFAULT_DISPLAY_PLAYER_SECTORS false
 #define DEFAULT_DISPLAY_MIL_SECTORS false
 #define DEFAULT_TRACEFILL "None"
+#define DEFAULT_ENABLE_COP false
+#define DEFAULT_COP_ANCHOR_DISTANCE 1000
+#define DEFAULT_COP_UPDATE_INTERVAL 60
 #define DEFAULT_RUN_EVERY 120
 #define DEFAULT_TASK_MIN_DISTANCE 0
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
+#define DEFAULT_TASK_AO_RADIUS 0
 #define DEFAULT_FILTER_ENEMY_FACTIONS true
 #define DEFAULT_CIVIC_STATE_ENABLED false
 #define DEFAULT_CIVIC_MULTIPLIER 1
@@ -148,11 +153,31 @@ params [
 _result = true;
 
 switch(_operation) do {
+    // Empty-operation short-circuit: ALiVE_fnc_C2ISTARInit probes
+    // for a compilation error by calling `[] call ALiVE_fnc_C2ISTAR`
+    // and treating nil as "compilation failed". Without this case,
+    // the call falls through to SUPERCLASS (ALiVE_fnc_baseClass)
+    // whose default branch logs `class 'ALiVE_fnc_C2ISTAR' does
+    // not support operation '' - <NULL-object>` — cosmetic RPT
+    // noise. The probe still works either way (this case returns
+    // true, matching the prior _result default), but skipping the
+    // delegation keeps the RPT clean. Same probe pattern in
+    // mil_opcom's OPCOMInit doesn't trip the error because its
+    // SUPERCLASS baseClassHash defensively rewrites empty-args
+    // input to a "create" call.
+    case "": { _result = true };
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
     };
     case "destroy": {
         if (isServer) then {
+            // Stop COP server/asym loops cleanly when the module is destroyed
+            // so spawned `while` threads exit on their next cycle rather than
+            // polling a deleted logic indefinitely.
+            if (!isNil "ALIVE_fnc_COPInit") then {
+                ["stop"] call ALIVE_fnc_COPInit;
+            };
+
             // if server
             _logic setVariable ["super", nil];
             _logic setVariable ["class", nil];
@@ -190,6 +215,13 @@ switch(_operation) do {
     };
     case "c2_item": {
         _result = [_logic,_operation,_args,DEFAULT_C2_ITEM] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "c2_item_custom": {
+        // Free-text CSV of additional item classnames that grant C2ISTAR
+        // access. Appended to the expanded category-derived classnames at
+        // access-check time in fnc_C2MenuDef.sqf. Empty string = no custom
+        // items (default behaviour, only category items apply).
+        _result = [_logic,_operation,_args,DEFAULT_C2_ITEM_CUSTOM] call ALIVE_fnc_OOsimpleOperation;
     };
     case "autoGenerateBlufor": {
 
@@ -479,6 +511,225 @@ switch(_operation) do {
     case "displayTraceGrid": {
         _result = [_logic,_operation,_args,DEFAULT_TRACEFILL] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "commanderIntelMode": {
+        if (typeName _args == "STRING" && {_args != ""}) then {
+            _logic setVariable ["commanderIntelMode", _args];
+        } else {
+            _args = _logic getVariable ["commanderIntelMode", "Off"];
+        };
+
+        // Migration shim: if legacy enableLiveCommanderIntel is set on this logic AND
+        // commanderIntelMode is at default "Off" (or never set), let legacy drive.
+        // KNOWN MIGRATION SURPRISE: explicitly picking "Off" while legacy=true in init.sqf
+        // makes legacy win (looks like default). Remove the legacy attr to use explicit Off.
+        private _legacyRaw = _logic getVariable ["enableLiveCommanderIntel", "__NOT_SET__"];
+        if !(_legacyRaw isEqualTo "__NOT_SET__") then {
+            private _modeRaw = _logic getVariable ["commanderIntelMode", "__NOT_SET__"];
+            if (_modeRaw isEqualTo "__NOT_SET__" || {_modeRaw == "Off"}) then {
+                private _legacyBool = _legacyRaw;
+                if (typeName _legacyBool == "STRING") then {
+                    _legacyBool = (_legacyBool == "true");
+                };
+                _args = if (_legacyBool) then { "Advanced" } else { "Off" };
+                ["info", "init", "commanderIntelMode at default — legacy enableLiveCommanderIntel=%1 → %2", [_legacyBool, _args]] call ALiVE_fnc_COPLog;
+            };
+        };
+
+        private _validModes = ["Off","Basic","Partial","Full","Advanced"];
+        ASSERT_TRUE(_args in _validModes, str _args);
+        _result = _args;
+    };
+    case "copDisplaySides": {
+        // CSV string of side keys (WEST/EAST/GUER/CIV) selecting which sides'
+        // COP data feeds get rendered. Empty = default (player's own side
+        // only). Read-or-store pattern matches case "opcomIntelSides".
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["copDisplaySides", _args];
+        } else {
+            _args = _logic getVariable ["copDisplaySides", ""];
+        };
+        _result = _args;
+    };
+    case "copCommandViewEnabled": {
+        // Mission-maker opt-in BOOL: when true, the c2istar tablet + ACE
+        // menus surface a "Command View" toggle that lets a player bypass
+        // the COP anchor-distance filter and see the full side-wide intel
+        // pool. Eligibility additionally requires the player to hold a
+        // c2_item; the menu entry is hidden otherwise. Default false —
+        // the toggle is hidden, standard per-player anchor radius applies.
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["copCommandViewEnabled", _args];
+        } else {
+            _args = _logic getVariable ["copCommandViewEnabled", false];
+        };
+        if (typeName _args == "STRING") then {
+            _args = (_args == "true");
+            _logic setVariable ["copCommandViewEnabled", _args];
+        };
+        if (typeName _args != "BOOL") then { _args = false };
+        _result = _args;
+    };
+    case "copShowBft": {
+        // Direct BOOL toggle for the friendly BFT layer in COP. Overrides
+        // the Commander Intel Mode tier's BFT default — mission-maker can
+        // force BFT on at Partial tier (which normally disables it) or
+        // force off at Full / Advanced (which normally enables it). Read
+        // before COPApplyTier in the init block so the tier preset's
+        // `if (isNil ALIVE_COP_LAYER_BFT)` guard preserves the explicit
+        // setting.
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["copShowBft", _args];
+        } else {
+            _args = _logic getVariable ["copShowBft", true];
+        };
+        if (typeName _args == "STRING") then {
+            _args = (_args == "true");
+            _logic setVariable ["copShowBft", _args];
+        };
+        if (typeName _args != "BOOL") then { _args = true };
+        _result = _args;
+    };
+    // Per-layer visibility overrides — string passthrough of "auto"/"on"/"off".
+    // Resolved to the runtime layer flags in the COP-on apply block (before
+    // COPApplyTier so the tier's isNil guard preserves an explicit On/Off).
+    case "copLayerEnemies":    { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copLayerEnemies", _args]; }    else { _args = _logic getVariable ["copLayerEnemies", "auto"]; };    _result = _args; };
+    case "copLayerAxisArrows": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copLayerAxisArrows", _args]; } else { _args = _logic getVariable ["copLayerAxisArrows", "auto"]; }; _result = _args; };
+    case "copLayerSentiment":  { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copLayerSentiment", _args]; }  else { _args = _logic getVariable ["copLayerSentiment", "auto"]; };  _result = _args; };
+    case "copLayerActivity":   { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copLayerActivity", _args]; }   else { _args = _logic getVariable ["copLayerActivity", "auto"]; };   _result = _args; };
+    // Show/hide the mil_intelligence G2 friendly OPCOM order markers so COP can
+    // be the single source of objective intent. String "true"/"false".
+    case "copShowFriendlyOrders": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowFriendlyOrders", _args]; } else { _args = _logic getVariable ["copShowFriendlyOrders", "false"]; }; _result = _args; };
+    case "copShowBlockingLines":  { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowBlockingLines", _args]; }  else { _args = _logic getVariable ["copShowBlockingLines", "true"]; };   _result = _args; };
+    case "commanderIntelAsymmetric": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["commanderIntelAsymmetric", _args];
+        } else {
+            _args = _logic getVariable ["commanderIntelAsymmetric", false];
+        };
+        if (typeName _args == "STRING") then {
+            if (_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["commanderIntelAsymmetric", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL", str _args);
+
+        _result = _args;
+    };
+    // DEPRECATED — used by shim only
+    case "enableLiveCommanderIntel": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["enableLiveCommanderIntel", _args];
+        } else {
+            _args = _logic getVariable ["enableLiveCommanderIntel", DEFAULT_ENABLE_COP];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["enableLiveCommanderIntel", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    case "copUpdateInterval": {
+        // Loop A (enemies + BFT) refresh interval in seconds. Loop B (objectives)
+        // runs at 2x this value. Combo presets: Fast=15, Standard=30,
+        // Balanced=60 (default), Economy=120. Eden Combo controls write their
+        // value="N" as a STRING, so the stored value on the logic is a STRING
+        // — getter path must parseNumber it before the SCALAR-bounds check
+        // or the bounds check sees STRING and reverts to default. Floor /
+        // ceiling are defensive against direct SQM edits or legacy values
+        // outside the preset range.
+        if (typeName _args == "STRING" && {_args != ""}) then {
+            // Setter (caller passed a string, e.g. from Eden expression).
+            _args = parseNumber _args;
+            _logic setVariable ["copUpdateInterval", _args];
+        } else {
+            if (typeName _args == "SCALAR") then {
+                // Setter (caller passed a number).
+                _logic setVariable ["copUpdateInterval", _args];
+            } else {
+                // Getter — read stored value off the logic.
+                _args = _logic getVariable ["copUpdateInterval", DEFAULT_COP_UPDATE_INTERVAL];
+                // Stored value from a Combo write is STRING — coerce to SCALAR
+                // so the bounds check below treats it as a valid number.
+                if (typeName _args == "STRING") then {
+                    _args = parseNumber _args;
+                };
+            };
+        };
+        // Floor 10 s, ceiling 600 s — anything outside this range either
+        // wastes CPU (below) or defeats the live-intel purpose (above).
+        if (typeName _args != "SCALAR" || {_args < 10}) then { _args = DEFAULT_COP_UPDATE_INTERVAL };
+        if (_args > 600) then { _args = 600 };
+        _result = _args;
+    };
+    case "copAnchorDistance": {
+        // Edit attribute (typeName=NUMBER) normally lands here as SCALAR, but
+        // legacy missions saved with the previous Combo attribute may still
+        // have a STRING value on the logic. The dual-path coercion below
+        // accepts either and caches the SCALAR back so subsequent reads skip
+        // the conversion. Read-else-from-logic preserves the stored value on
+        // pure read calls (when _args is nil/"").
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["copAnchorDistance", _args];
+        } else {
+            _args = _logic getVariable ["copAnchorDistance", DEFAULT_COP_ANCHOR_DISTANCE];
+        };
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+            _logic setVariable ["copAnchorDistance", _args];
+        };
+        // Floor: anything below 100 m or non-numeric falls back to default.
+        if (typeName _args != "SCALAR" || {_args < 100}) then { _args = DEFAULT_COP_ANCHOR_DISTANCE };
+        _result = _args;
+    };
+    case "copShowAttack": {
+        if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowAttack", _args]; } else { _args = _logic getVariable ["copShowAttack", "true"]; };
+        _result = _args;
+    };
+    case "copShowDefend": {
+        if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowDefend", _args]; } else { _args = _logic getVariable ["copShowDefend", "true"]; };
+        _result = _args;
+    };
+    case "copShowRecon": {
+        if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowRecon", _args]; } else { _args = _logic getVariable ["copShowRecon", "true"]; };
+        _result = _args;
+    };
+    case "copShowReserve": {
+        if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copShowReserve", _args]; } else { _args = _logic getVariable ["copShowReserve", "false"]; };
+        _result = _args;
+    };
+    case "copShowHeld": {
+        // String passthrough ("true"/"false"). Coerced to bool + broadcast
+        // as ALIVE_COP_OBJ_SHOW_HELD in the COP-on apply block below.
+        if (_args isEqualType "" && {_args != ""}) then {
+            _logic setVariable ["copShowHeld", _args];
+        } else {
+            _args = _logic getVariable ["copShowHeld", "true"];
+        };
+        _result = _args;
+    };
+    case "copAttackColour":  { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copAttackColour", _args]; }  else { _args = _logic getVariable ["copAttackColour", "ColorRed"]; };     _result = _args; };
+    case "copAttackIcon":    { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copAttackIcon", _args]; }    else { _args = _logic getVariable ["copAttackIcon", "none"]; };          _result = _args; };
+    case "copDefendColour":  { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copDefendColour", _args]; }  else { _args = _logic getVariable ["copDefendColour", "ColorBrown"]; };   _result = _args; };
+    case "copDefendIcon":    { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copDefendIcon", _args]; }    else { _args = _logic getVariable ["copDefendIcon", "none"]; };          _result = _args; };
+    case "copReconColour":   { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copReconColour", _args]; }   else { _args = _logic getVariable ["copReconColour", "ColorYellow"]; };   _result = _args; };
+    case "copReconIcon":     { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copReconIcon", _args]; }     else { _args = _logic getVariable ["copReconIcon", "none"]; };           _result = _args; };
+    case "copReserveColour": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copReserveColour", _args]; } else { _args = _logic getVariable ["copReserveColour", "ColorGrey"]; }; _result = _args; };
+    case "copReserveIcon":   { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copReserveIcon", _args]; }   else { _args = _logic getVariable ["copReserveIcon", "none"]; };         _result = _args; };
+    // Held colour per holding side — string passthrough of a CfgMarkerColors
+    // class name, mapped to RGBA at module init (see the COP-on apply block).
+    case "copHeldColourWest": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copHeldColourWest", _args]; } else { _args = _logic getVariable ["copHeldColourWest", "ColorWEST"]; }; _result = _args; };
+    case "copHeldColourEast": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copHeldColourEast", _args]; } else { _args = _logic getVariable ["copHeldColourEast", "ColorEAST"]; }; _result = _args; };
+    case "copHeldColourGuer": { if (_args isEqualType "" && {_args != ""}) then { _logic setVariable ["copHeldColourGuer", _args]; } else { _args = _logic getVariable ["copHeldColourGuer", "ColorGUER"]; }; _result = _args; };
+    case "copHeldIcon": {
+        // String passthrough — an icon key resolved to a .paa path at init.
+        if (_args isEqualType "" && {_args != ""}) then {
+            _logic setVariable ["copHeldIcon", _args];
+        } else {
+            _args = _logic getVariable ["copHeldIcon", "dot"];
+        };
+        _result = _args;
+    };
     case "runEvery": {
         if(typeName _args == "STRING") then {
             _args = parseNumber(_args);
@@ -516,6 +767,18 @@ switch(_operation) do {
 
         _result = _logic getVariable ["vipPanicTimeout", DEFAULT_VIP_PANIC_TIMEOUT];
         // Module attribute system may store value as string — coerce to scalar
+        if (typeName _result == "STRING") then { _result = parseNumber _result; };
+    };
+    case "taskAoRadius": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["taskAoRadius", _args];
+        };
+
+        _result = _logic getVariable ["taskAoRadius", DEFAULT_TASK_AO_RADIUS];
         if (typeName _result == "STRING") then { _result = parseNumber _result; };
     };
     case "filterEnemyFactions": {
@@ -710,6 +973,49 @@ switch(_operation) do {
 
         _debug = [_logic, "debug"] call MAINCLASS;
 
+        // Mirror the module Debug attribute into the module-wide debug flag the
+        // DIAG-STRIP traces gate on (COP server/render loops, task utils). That
+        // flag had no setter — it was console-only — so enabling Debug in Eden
+        // never surfaced those traces. Set per machine (init runs everywhere), so
+        // the server-side COP loop honours it too.
+        ALiVE_mil_c2istar_debug = _debug;
+
+        // Distribute the consolidated auto-task faction picker into the six
+        // per-slot vars the auto-task generator reads (autoGenerateBluforFaction
+        // / ...EnemyFaction / OPF / IND). The Eden SAVE handler can't persist
+        // these directly: each hidden per-slot attribute has its own expression
+        // that re-applies the attribute DEFAULT at mission start, clobbering the
+        // SAVE's setVariable — so the auto-task path would otherwise always read
+        // the defaults (BLUFOR enemy = OPF_F), ignoring the picker. Split here,
+        // after init (so it runs after those expressions), with the consolidated
+        // value as the source of truth. Guarded on a full 6-token split so a
+        // blank slot (splitString drops empties) falls back to defaults rather
+        // than misaligning the pairs.
+        private _autoGenFactions = _logic getVariable ["autoGenerateFactions", ""];
+        if (_autoGenFactions isEqualType "" && {_autoGenFactions != ""}) then {
+            private _slots = _autoGenFactions splitString "|";
+            private _slotVars = ["autoGenerateBluforFaction","autoGenerateBluforEnemyFaction","autoGenerateOpforFaction","autoGenerateOpforEnemyFaction","autoGenerateIndforFaction","autoGenerateIndforEnemyFaction"];
+            if (count _slots == count _slotVars) then {
+                {
+                    private _tok = _slots select _forEachIndex;
+                    if (_tok != "") then { _logic setVariable [_x, _tok]; };
+                } forEach _slotVars;
+                if (_debug) then {
+                    ["C2ISTAR auto-task factions resolved from picker: %1", _slots] call ALiVE_fnc_dump;
+                };
+            };
+        };
+
+        // Singleton: ALIVE_MIL_C2ISTAR is read by fnc_taskRequest /
+        // fnc_taskHandler / fnc_playerOrders / sys_spotrep and OPCOM's
+        // spotrep block. Multiple C2ISTAR modules in one mission overwrite
+        // each other through this global, so the last-initialised module
+        // silently wins. Warn the mission-maker via RPT so the symptom
+        // (only one C2ISTAR's settings taking effect) is diagnosable
+        // without source diving.
+        if (!isNil "ALIVE_MIL_C2ISTAR" && {!isNull ALIVE_MIL_C2ISTAR} && {ALIVE_MIL_C2ISTAR != _logic}) then {
+            ["ALiVE_fnc_C2ISTAR WARNING: multiple ALiVE_mil_C2ISTAR modules detected. The singleton global ALIVE_MIL_C2ISTAR is being overwritten - only the last-initialised module's configuration will be active. Place a single C2ISTAR module per mission."] call ALiVE_fnc_DumpR;
+        };
         ALIVE_MIL_C2ISTAR = _logic;
 
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;
@@ -823,6 +1129,20 @@ switch(_operation) do {
             private["_persistent"];
 
             _persistent = [_logic,"persistent"] call MAINCLASS;
+
+            // Apply the custom-tasks override to ALIVE_autoGeneratedTasks
+            // before the task handler starts using it. The attribute is a
+            // canonical Task1,Task2,Task3 string parsed by
+            // fnc_resolveTaskTypeChoice. Mode toggles between full replace
+            // (default; matches the legacy init.sqf assignment override
+            // pattern) and append (extend defaults with mod task types
+            // without dropping the stock list).
+            private _customTasksMode  = _logic getVariable ["customStaticDataMode", "REPLACE"];
+            private _customTasksValue = _logic getVariable ["customAutoGeneratedTasks", ""];
+            private _touchedTasks = [_customTasksValue, "ALIVE_autoGeneratedTasks", _customTasksMode] call ALIVE_fnc_resolveTaskTypeChoice;
+            if (_debug) then {
+                ["C2ISTAR - Custom auto-generated tasks: mode=%1 entries=%2", _customTasksMode, _touchedTasks] call ALiVE_fnc_dump;
+            };
 
             // create the task handler
             ALIVE_taskHandler = [] call ALiVE_fnc_HashCreate;
@@ -961,6 +1281,218 @@ switch(_operation) do {
                 _logic setvariable ["grid",nil];
             };
 
+            // COP — Common Operational Picture (commander intel overlay)
+            // Tiered mode replaces the legacy enableLiveCommanderIntel bool.
+            // commanderIntelMode ∈ Off / Basic / Partial / Full / Advanced; the
+            // shim inside MAINCLASS auto-promotes a legacy enableLiveCommanderIntel=true
+            // setting to "Advanced" when the new attr is at its default "Off".
+            private _mode = [_logic, "commanderIntelMode"] call MAINCLASS;
+
+            // Friendly OPCOM order markers (mil_intelligence G2): the attack /
+            // defend objective ellipse + state label + order arrow. COP can hide
+            // them so it's the single source of objective intent. Set regardless
+            // of COP mode and broadcast JIP-persistent — the markers are built
+            // server-side in fnc_G2.sqf, which reads this flag. Independent of
+            // the Map Intel display settings, which still drive the intel.
+            private _showFriendlyOrders = [_logic, "copShowFriendlyOrders"] call MAINCLASS;
+            missionNamespace setVariable ["ALIVE_COP_SHOW_FRIENDLY_ORDERS", (_showFriendlyOrders == "true"), true];
+
+            // TACOM recon/capture blocking lines — own toggle (default Yes), as
+            // COP doesn't draw these FLOT rectangles / advance arrows. Same
+            // server-set + JIP-broadcast as above; fnc_G2.sqf reads this flag.
+            private _showBlockingLines = [_logic, "copShowBlockingLines"] call MAINCLASS;
+            missionNamespace setVariable ["ALIVE_COP_SHOW_BLOCKING_LINES", (_showBlockingLines == "true"), true];
+
+            if (_mode != "Off") then {
+                // Apply the configurable Loop A interval BEFORE COPInit
+                // dispatches. COPConfig uses isNil guards, so writing the
+                // globals here overrides its defaults. Loop B (objectives,
+                // cheaper) runs at 2x Loop A.
+                private _updateInterval = [_logic, "copUpdateInterval"] call MAINCLASS;
+                ALIVE_COP_INTERVAL_FAST = _updateInterval;
+                ALIVE_COP_INTERVAL_SLOW = _updateInterval * 2;
+
+                // Friendly BFT layer toggle — set BEFORE COPApplyTier so the
+                // tier preset's `if (isNil ALIVE_COP_LAYER_BFT)` guard
+                // preserves the mission-maker's explicit choice. Lets the
+                // operator force BFT on at Partial tier (which normally
+                // kills it) or force off at Full / Advanced.
+                private _showBft = [_logic, "copShowBft"] call MAINCLASS;
+                ALIVE_COP_LAYER_BFT = _showBft;
+
+                // Per-layer visibility overrides. Set BEFORE COPApplyTier so the
+                // tier's `if (isNil ...)` guards (and COPConfig's) preserve an
+                // explicit On/Off; "auto" leaves the flag unset so the COP Mode
+                // preset/tier decides. The resolved values are broadcast to
+                // clients after COPConfig has run (below) — the tier only runs
+                // server-side, and some of these flags are read in the client
+                // Draw EH (axis arrows are pure client-render).
+                private _applyLayerOverride = {
+                    params ["_attr", "_globalName"];
+                    switch (toLower ([_logic, _attr] call MAINCLASS)) do {
+                        case "on":  { missionNamespace setVariable [_globalName, true] };
+                        case "off": { missionNamespace setVariable [_globalName, false] };
+                        // "auto" — leave unset; tier/config resolves it.
+                    };
+                };
+                ["copLayerEnemies",    "ALIVE_COP_LAYER_ENEMIES"]      call _applyLayerOverride;
+                ["copLayerAxisArrows", "ALIVE_COP_OBJ_AXIS_ARROWS"]    call _applyLayerOverride;
+                ["copLayerSentiment",  "ALIVE_COP_ASYM_SHOW_HOSTILITY"] call _applyLayerOverride;
+                ["copLayerActivity",   "ALIVE_COP_ASYM_SHOW_ACTIVITY"]  call _applyLayerOverride;
+
+                [_mode] call ALiVE_fnc_COPApplyTier;
+
+                private _anchorDist = [_logic, "copAnchorDistance"] call MAINCLASS;
+                // JIP-persistent: a late joiner reads the current anchor
+                // distance immediately, so the very first Draw EH frame
+                // uses the configured radius rather than the 1000 m fallback.
+                missionNamespace setVariable ["ALIVE_COP_ANCHOR_DISTANCE", _anchorDist, true];
+
+                // Held-objective marker overlay. Master toggle + styling.
+                // Colour is read straight from CfgMarkerColors so it matches
+                // Eden's marker palette exactly; icon key resolves to a vanilla
+                // map-marker texture. All broadcast JIP-persistent so late
+                // joiners render correctly.
+                private _showAttack  = [_logic, "copShowAttack"]  call MAINCLASS;
+                private _showDefend  = [_logic, "copShowDefend"]  call MAINCLASS;
+                private _showRecon   = [_logic, "copShowRecon"]   call MAINCLASS;
+                private _showReserve = [_logic, "copShowReserve"] call MAINCLASS;
+                private _showHeld    = [_logic, "copShowHeld"]    call MAINCLASS;
+                missionNamespace setVariable ["ALIVE_COP_OBJ_SHOW_ATTACK",  (_showAttack  == "true"), true];
+                missionNamespace setVariable ["ALIVE_COP_OBJ_SHOW_DEFEND",  (_showDefend  == "true"), true];
+                missionNamespace setVariable ["ALIVE_COP_OBJ_SHOW_RECON",   (_showRecon   == "true"), true];
+                missionNamespace setVariable ["ALIVE_COP_OBJ_SHOW_RESERVE", (_showReserve == "true"), true];
+                missionNamespace setVariable ["ALIVE_COP_OBJ_SHOW_HELD",    (_showHeld    == "true"), true];
+
+                // Marker-palette RGBA keyed by CfgMarkerColors class name. Hardcoded
+                // because the config colour data isn't a plain numeric array (the
+                // runtime read returned empty for the side colours). Values match
+                // Arma's standard marker palette shown in the Eden picker.
+                private _palette = createHashMapFromArray [
+                    ["ColorBlack",   [0,0,0,1]],
+                    ["ColorGrey",    [0.45,0.45,0.45,1]],
+                    ["ColorRed",     [0.64,0.11,0.11,1]],
+                    ["ColorBrown",   [0.4,0.2,0,1]],
+                    ["ColorOrange",  [0.95,0.43,0,1]],
+                    ["ColorYellow",  [0.95,0.95,0,1]],
+                    ["ColorKhaki",   [0.59,0.56,0.4,1]],
+                    ["ColorGreen",   [0,0.55,0,1]],
+                    ["ColorBlue",    [0,0,1,1]],
+                    ["ColorPink",    [1,0.37,0.78,1]],
+                    ["ColorWhite",   [1,1,1,1]],
+                    ["ColorWEST",    [0,0.3,0.6,1]],
+                    ["ColorEAST",    [0.5,0,0,1]],
+                    ["ColorGUER",    [0,0.5,0,1]],
+                    ["ColorCIV",     [0.4,0,0.5,1]],
+                    ["ColorUNKNOWN", [0.7,0.6,0,1]]
+                ];
+                // Icon key -> map-marker texture path. "none" = no centre icon.
+                private _resolveIcon = {
+                    switch (toLower _this) do {
+                        case "dot":       { "\A3\ui_f\data\map\markers\military\dot_ca.paa" };
+                        case "flag":      { "\A3\ui_f\data\map\markers\military\flag_ca.paa" };
+                        case "box":       { "\A3\ui_f\data\map\markers\military\box_ca.paa" };
+                        case "install":   { "\A3\ui_f\data\map\markers\military\install_ca.paa" };
+                        case "warning":   { "\A3\ui_f\data\map\markers\military\warning_ca.paa" };
+                        case "objective": { "\A3\ui_f\data\map\markers\military\objective_ca.paa" };
+                        case "none":      { "" };
+                        default           { "\A3\ui_f\data\map\markers\military\objective_ca.paa" };
+                    };
+                };
+
+                // Marker colour: palette RGB stamped at 0.8 alpha (translucent),
+                // so every objective marker (rings AND the held icon) keeps the
+                // original see-through look. Copy before mutating so the shared
+                // palette array isn't altered.
+                private _markerColour = {
+                    private _rgba = +(_palette getOrDefault [_this, [0.5,0.5,0.5,1]]);
+                    _rgba set [3, 0.8];
+                    _rgba
+                };
+
+                // Attack / Defend / Recon / Reserve: ring colour + optional centre icon.
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_ATTACK",  (([_logic,"copAttackColour"]  call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_TEX_OBJ_ATTACK",    (([_logic,"copAttackIcon"]  call MAINCLASS) call _resolveIcon), true];
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_DEFEND",  (([_logic,"copDefendColour"]  call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_TEX_OBJ_DEFEND",    (([_logic,"copDefendIcon"]  call MAINCLASS) call _resolveIcon), true];
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_RECON",   (([_logic,"copReconColour"]   call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_TEX_OBJ_RECON",     (([_logic,"copReconIcon"]   call MAINCLASS) call _resolveIcon), true];
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_RESERVE", (([_logic,"copReserveColour"] call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_TEX_OBJ_RESERVE",   (([_logic,"copReserveIcon"] call MAINCLASS) call _resolveIcon), true];
+
+                // Held: colour per holding side (Blufor / Opfor / Independent,
+                // so friendly vs enemy vs neutral held objectives read apart),
+                // plus a single shared icon (always an icon, so "none" never
+                // applies). The render picks the colour by the side that holds
+                // each objective.
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_HELD_WEST", (([_logic,"copHeldColourWest"] call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_HELD_EAST", (([_logic,"copHeldColourEast"] call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_COLOR_OBJ_HELD_GUER", (([_logic,"copHeldColourGuer"] call MAINCLASS) call _markerColour), true];
+                missionNamespace setVariable ["ALIVE_COP_TEX_HELD", (([_logic,"copHeldIcon"] call MAINCLASS) call _resolveIcon), true];
+
+                // Mission-maker side filter — which sides' data feeds the
+                // player's COP renderer combines. Empty = client falls back
+                // to player's own side only (default). Published JIP-
+                // persistent so late joiners get the filter without waiting
+                // for a server re-publish.
+                private _displaySidesCsv = [_logic, "copDisplaySides"] call MAINCLASS;
+                missionNamespace setVariable ["ALIVE_COP_DISPLAY_SIDES_CSV", _displaySidesCsv, true];
+
+                // COP-active flag — read by mil_intelligence/fnc_G2.sqf's
+                // onCreateMAP "spotrep" case to suppress the legacy NATO
+                // chevron + movement-arrow SQM markers when COP is rendering
+                // the same intel via its Draw EH (avoids visual duplication
+                // on every contact). The TACOM Recon / Capture blocking-line
+                // markers stay live — Jman's design intent is to keep those
+                // FLOT-style rectangles + advance arrows even when COP is on.
+                missionNamespace setVariable ["ALIVE_COP_ACTIVE", true, true];
+
+                // Command View mission-maker gate — read by the c2istar
+                // menus to show/hide the per-player toggle entry, and by
+                // the COP renderer to permit the anchor-distance bypass.
+                // Default false means the toggle never surfaces; missions
+                // that want a Game Master role flip this Yes and players
+                // holding their c2_item can then toggle CV on via the
+                // tablet / ACE menu. JIP-persistent so late joiners see
+                // the gate immediately.
+                private _cvEnabled = [_logic, "copCommandViewEnabled"] call MAINCLASS;
+                missionNamespace setVariable ["ALIVE_COP_CommandViewEnabled", _cvEnabled, true];
+
+                ["startServer"] call ALIVE_fnc_COPInit;
+
+                // Broadcast the resolved per-layer flags so clients honour them.
+                // startServer's first dispatch runs COPConfig synchronously, so
+                // by here every flag is resolved (explicit On/Off, tier, or
+                // COPConfig default). The tier itself runs server-only and these
+                // flags are read in the client Draw EH (axis arrows especially),
+                // so without this broadcast clients would fall back to COPConfig
+                // defaults. JIP-persistent so late joiners inherit the visibility.
+                {
+                    missionNamespace setVariable [_x, missionNamespace getVariable [_x, true], true];
+                } forEach [
+                    "ALIVE_COP_LAYER_ENEMIES",
+                    "ALIVE_COP_OBJ_AXIS_ARROWS",
+                    "ALIVE_COP_ASYM_SHOW_HOSTILITY",
+                    "ALIVE_COP_ASYM_SHOW_ACTIVITY"
+                ];
+
+                private _asym = [_logic, "commanderIntelAsymmetric"] call MAINCLASS;
+                if (_asym) then {
+                    ["startAsym"] call ALIVE_fnc_COPInit;
+                };
+            } else {
+                // Mode=Off — make sure the suppression flag isn't lingering
+                // from a previous COP-on session of this mission. mil_intelligence
+                // checks this flag at marker-creation time, so a stale `true`
+                // would silently suppress legacy spotrep markers while COP no
+                // longer runs. Same defensive clear for the Command View
+                // mission-maker gate so the menu doesn't surface a toggle
+                // for a feature whose render path isn't running.
+                missionNamespace setVariable ["ALIVE_COP_ACTIVE", false, true];
+                missionNamespace setVariable ["ALIVE_COP_CommandViewEnabled", false, true];
+                ["info", "c2istar", "COP mode=Off — no COP dispatch"] call ALiVE_fnc_dump;
+            };
+
             if (_debug) then {
                 ["---------------------------- C2ISTAR %1 - Initial Settings ---------------------------------", _logic] call ALiVE_fnc_dump;
                 private _settings = allVariables _logic;
@@ -1009,6 +1541,14 @@ switch(_operation) do {
             };
 
             [_logic,"side",_sideText] call MAINCLASS;
+
+            // COP — start the client-side Draw EH attachment if enabled.
+            // Reads the Eden attribute here (not from the server publicVariable)
+            // because each client must resolve its own side independently.
+            private _mode_client = [_logic, "commanderIntelMode"] call MAINCLASS;
+            if (_mode_client != "Off") then {
+                ["startClient", _sideText] call ALIVE_fnc_COPInit;
+            };
 
 
             // set the player faction

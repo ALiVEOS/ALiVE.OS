@@ -7,6 +7,7 @@
  *
  * Created by Tupolov
  * Creation date: 06/08/2013
+ * Modified by Jman
  *
  * */
 
@@ -69,6 +70,19 @@ if (!isNil QMOD(sys_player) && isServer) then {
         TRACE_1("Playable Units", playableUnits);
 
         _unit = [_uid] call ALIVE_fnc_getPlayerByUIDOnConnect;
+
+        // Inferno #894: if the first lookup timed out, sleep briefly and
+        // try once more. Players who load in during the sys_player init
+        // window can pass the wait gates above before their slot has
+        // settled on the server's player-list view, and the lookup's own
+        // 5 s timeout returns objNull. A single retry after another wait
+        // buys the slot enough time to register, restoring saves for the
+        // fast-loaders. Matches the "5-10 second gap" the issue describes.
+        if (isNull _unit) then {
+            diag_log[format["SYS_PLAYER: PLAYER UNIT not yet visible, retrying once (%1)",_name]];
+            sleep 5;
+            _unit = [_uid] call ALIVE_fnc_getPlayerByUIDOnConnect;
+        };
 
         if (isNull _unit) then {
             diag_log[format["SYS_PLAYER: PLAYER UNIT NOT FOUND IN PLAYABLEUNITS(%1)",_name]];

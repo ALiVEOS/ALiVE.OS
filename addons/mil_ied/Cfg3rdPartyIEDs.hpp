@@ -151,10 +151,13 @@ class Cfg3rdPartyIEDs {
     //                     (pressure) for foot traffic
     // All are placeable entities (no _module / _used / _mag suffix).
     //
-    // Note: ACE is also loaded as mode=mine; my resolver picks the FIRST
-    // mine-mode match under Auto. Since RHS is mode=alive, Auto won't pick
-    // it as a candidate even when iChoice=_auto. Use the dropdown's
-    // "Defer to: RHS: AFRF" to explicitly select this entry.
+    // Note: under iChoice=_auto, the resolver auto-picks either mine-mode
+    // integrations or alive-mode entries that explicitly set
+    // autoPickEligible=1 (ACE_Explosives is the canonical example -- it
+    // wants its class pool applied transparently). RHS_AFRF deliberately
+    // omits that flag because its visible-pressure-mine placement is a
+    // significant visual + behavioural change that should require the user
+    // to opt in via the "Defer to: RHS: AFRF" dropdown.
     class RHS_AFRF {
         cfgPatchesName = "rhs_main";
         displayName    = "RHS: AFRF";
@@ -436,23 +439,40 @@ class Cfg3rdPartyIEDs {
     // RHS:AFRF coverage via that entry. Don't waste time hunting for SAF mine
     // classes - none exist as of this commit.
 
-    // ACE 3 Explosives - IED/mine classes and detonation use ACE's explosives
-    // framework (triggers, range cards, defuse interaction wheel) which maps
-    // better to Arma's mineActive semantics than to ALiVE's
-    // proximity-accumulator pipeline.
+    // ACE 3 Explosives - place vanilla A3 IED ammo classes (rather than
+    // ALiVE's own ALIVE_IED* classes) so that ACE's defuse-interaction
+    // wheel auto-attaches to them. ACE adds those handlers to the vanilla
+    // IED ammo classes when `ace_explosives` is loaded; it doesn't ship
+    // its own ACE_IED_* class hierarchy. ALiVE's ALIVE_IED* inherit from
+    // Thing, not MineBase, and don't get the ACE interaction wheel.
     //
-    // ACE 3 doesn't define its own ACE_IED_* classes; instead it adds
-    // interaction-wheel handlers to the vanilla A3 IED ammo classes when
-    // `ace_explosives` is loaded. So we populate the pools with the vanilla
-    // A3 IED classes - placing those means ACE's defuse UI will fire on them.
+    // Mode is "alive" (not "mine") so ALiVE's full pipeline (armIED +
+    // polling-loop proximity detonation + addAction Disarm) runs on the
+    // placed IEDs. Both systems coexist on the same object: ACE provides
+    // the defuse-interaction wheel for skilled / careful players, ALiVE
+    // provides the step-on-it detonation for the careless. Earlier this
+    // block used mode="mine" on the assumption that ACE's framework
+    // replaced detonation entirely, but ACE only adds defuse-interaction
+    // -- nothing in ACE pressure-triggers vanilla IED ammo, so mode="mine"
+    // left the IEDs unarmed (community report 2026-05-13).
     //
-    // (ALiVE's own ALIVE_IED* classes inherit from Thing, not from MineBase,
-    // so they wouldn't trigger ACE's mine interactions even with this entry
-    // loaded. That's why this entry uses the vanilla A3 names instead.)
+    // chargeOffsetZ stays 0 (charge inside the trash-pile model so it
+    // doesn't visibly sit above ground when armIED attaches it).
+    //
+    // autoPickEligible = 1: under iChoice=_auto the resolver normally only
+    // auto-picks mine-mode integrations as candidates (so RHS/CUP/etc. with
+    // mode="alive" require an explicit "Defer to" dropdown selection). This
+    // flag is the ACE-specific opt-in to also be auto-picked despite being
+    // mode="alive", because ACE's defuse-interaction wheel auto-attaches to
+    // the vanilla A3 IED ammo classes specified below -- placing those
+    // classes is the whole point of this integration entry, so we want the
+    // class pool applied under Auto without requiring users to know about
+    // the dropdown.
     class ACE_Explosives {
         cfgPatchesName = "ace_explosives";
         displayName    = "ACE 3 Explosives";
-        mode           = "mine";
+        mode           = "alive";
+        autoPickEligible = 1;
         roadIEDClasses[] = {
             "IEDLandSmall_Remote_Ammo",
             "IEDLandBig_Remote_Ammo"
@@ -465,7 +485,7 @@ class Cfg3rdPartyIEDs {
         detonator[]       = {};
         placementZ        = -0.1; // bury slightly (vanilla A3 IED visuals are trash piles)
         chargeOffsetZ     = 0;    // charge inside the trash-pile model
-        stompRadius       = 0;    // command-detonated, no pressure trigger
+        stompRadius       = 0;    // ALiVE accumulator handles proximity; no pressure shortcut
     };
 
     // ------------------------------------------------------------------------

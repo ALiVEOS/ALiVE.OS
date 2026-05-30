@@ -135,7 +135,7 @@ if (
 // ------------------------------------------------------------------------
 private _ctrl = _display controlsGroupCtrl 100;
 if (isNull _ctrl) exitWith {
-    diag_log "ALIVE FactionChoice LOAD: combo control (IDC 100) not found";
+    ["ALIVE FactionChoice LOAD: combo control (IDC 100) not found"] call ALiVE_fnc_dump;
 };
 
 lbClear _ctrl;
@@ -411,7 +411,7 @@ _ctrl lbSetCurSel _foundIdx;
 //  - the stored value being matched against
 //  - match outcome (index + resolved lbData, or "(added as unrecognised)")
 // ------------------------------------------------------------------------
-diag_log format [
+[
     "ALIVE FactionChoice LOAD: allowedSides=%1 scanned=%2 dropped(bad side)=%3 dropped(side filter)=%4 dropped(no CfgGroups)=%5 dropped(registry excluded)=%6 populated=%7 stored='%8' selected=%9 (lbData='%10')",
     _allowedSides,
     _totalScanned,
@@ -423,4 +423,4 @@ diag_log format [
     _value,
     _foundIdx,
     if (_foundIdx >= 0 && _foundIdx < lbSize _ctrl) then { _ctrl lbData _foundIdx } else { "(none)" }
-];
+] call ALiVE_fnc_dump;

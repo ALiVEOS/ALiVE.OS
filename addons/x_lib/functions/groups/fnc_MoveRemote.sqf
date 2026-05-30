@@ -29,7 +29,7 @@ params [
     ["_pos", [], [[]]]
 ];
 
-if (!({alive _x} count (units _group) > 0) || {count _pos < 2}) exitwith {diag_log "moveRemote failed - invalid inputs"};
+if (!({alive _x} count (units _group) > 0) || {count _pos < 2}) exitwith {["moveRemote failed - invalid inputs"] call ALiVE_fnc_dump};
 
 //Flag group with destination
 _group setvariable [QGVAR(MOVEDESTINATION),_pos];

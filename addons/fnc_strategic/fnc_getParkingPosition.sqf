@@ -70,7 +70,7 @@ _longest = _maxWidth max _maxLength;
 
 if(_debug) then {
     [_position] call ALIVE_fnc_spawnDebugMarker;
-    [_position] call ALIVE_fnc_placeDebugMarker;
+    [_position, 0, format ["Parking - search start (%1)", _vehicleClass], "ColorGrey", "placement.parking"] call ALIVE_fnc_placeDebugMarker;
 };
 
 _excludedObject = true;
@@ -104,7 +104,17 @@ for "_i" from 1 to 4 do {
    _x0 = (_position) select 0;
    _y0 = (_position) select 1;
    _distanceFromCenterLineOfRoad = abs((_y2 - _y1) * _x0 - (_x2 - _x1) * _y0 + (_x2 * _y1) - (_y2 * _x1)) / (_P1 distance2D _P2);
-	 _nearbyObjects = (nearestObjects [_position, ["house","Wreck_Base","Ruins","Building","land_vn_cave_base","Car", "Truck", "Tank", "Plane", "Helicopter"], _nearbyObjectdistance]) + (nearestTerrainObjects [_position, ["BUILDING","BUNKER", "BUSH","BUSSTOP","CHAPEL","CHURCH","CROSS","FENCE","FOREST BORDER","FOREST SQUARE","FOREST TRIANGLE","FOREST","FORTRESS","FOUNTAIN","FUELSTATION","HIDE","HOSPITAL","HOUSE","LIGHTHOUSE","POWER LINES","POWERSOLAR","POWERWAVE","POWERWIND","QUAY","RAILWAY","ROCK","ROCKS","RUIN","SHIPWRECK","SMALL TREE","STACK", "TOURISM", "TRANSMITTER", "TREE","VIEW-TOWER", "WALL", "WATERTOWER","Wreck_Base"],_vehicleMapSize + _nearbyObjectdistance]);
+	 // Sweep radius for the OBJECT pass scales with vehicle mapSize the
+	 // same way the TERRAIN pass already does. Original code used a flat
+	 // 15m for objects; for long vehicles (HEMTT mapSize 10, MTVR mapSize
+	 // 8) that misses mission-placed buildings / walls / wrecks whose
+	 // origins sit 16-25m from the candidate but whose bbox reaches
+	 // inward into the vehicle's footprint. Symptom: vehicle spawns
+	 // clipped to a structure, engine resolves with explosion. The
+	 // terrain pass already uses _vehicleMapSize + _nearbyObjectdistance;
+	 // mirroring that on the object pass closes the gap for the most
+	 // common cluttered-town spawn cases.
+	 _nearbyObjects = (nearestObjects [_position, ["house","Wreck_Base","Ruins","Building","land_vn_cave_base","Car", "Truck", "Tank", "Plane", "Helicopter"], _vehicleMapSize + _nearbyObjectdistance]) + (nearestTerrainObjects [_position, ["BUILDING","BUNKER", "BUSH","BUSSTOP","CHAPEL","CHURCH","CROSS","FENCE","FOREST BORDER","FOREST SQUARE","FOREST TRIANGLE","FOREST","FORTRESS","FOUNTAIN","FUELSTATION","HIDE","HOSPITAL","HOUSE","LIGHTHOUSE","POWER LINES","POWERSOLAR","POWERWAVE","POWERWIND","QUAY","RAILWAY","ROCK","ROCKS","RUIN","SHIPWRECK","SMALL TREE","STACK", "TOURISM", "TRANSMITTER", "TREE","VIEW-TOWER", "WALL", "WATERTOWER","Wreck_Base"],_vehicleMapSize + _nearbyObjectdistance]);
 	 if (count _blacklist == 0) then {_blacklist = ["Land_BarGate_F"];};
 	 { 
 		 _excludedObject = (typeOf _x) in _blacklist;
@@ -122,7 +132,31 @@ for "_i" from 1 to 4 do {
 		 };
 		 [];
 	 };
-	
+
+	 // Overhead-obstacle guard. The 2D nearbyObjects sweep above misses
+	 // structures whose footprint centre is outside the 20m radius but
+	 // whose roof extends over the candidate position - open sheds,
+	 // fuel-station canopies, awnings, hangar interiors. Without this,
+	 // the vehicle spawns at z=1m with its body protruding into the
+	 // roof's collision volume; engine resolves spawn-inside-collision
+	 // by exploding the vehicle. Cast an upward ray from the candidate
+	 // to the vehicle's bbox height (+0.5m margin) and reject if
+	 // anything is in the way - the for loop tries the next road
+	 // segment, falling through to no-vehicle if all 4 attempts fail.
+	 private _vehBox = [_vehicleClass] call ALIVE_fnc_getVehicleBoundingBox;
+	 private _vehHeight = (_vehBox param [2, 2.5]) max 1.5;
+	 private _overheadHits = lineIntersectsObjs [
+		 AGLToASL [_position#0, _position#1, 0.5],
+		 AGLToASL [_position#0, _position#1, _vehHeight + 0.5],
+		 objNull, objNull, true, 1, "GEOM"
+	 ];
+	 if (count _overheadHits > 0) exitWith {
+		 if(_debug) then {
+			 ["Overhead obstacle, exiting (%1)", typeOf (_overheadHits#0)] call ALiVE_fnc_dump;
+		 };
+		 [];
+	 };
+
 	 if (_distanceFromCenterLineOfRoad < _minDistanceFromCenterLineOfRoad) exitWith {
 		 if(_debug) then {
 			 ["Too close to the center line, exiting"] call ALiVE_fnc_dump;
@@ -214,7 +248,7 @@ for "_i" from 1 to 4 do {
 	 if(_debug) then {
 		 ["getParkingPosition result is _pos %1 | _dir %2", _position, _direction] call ALiVE_fnc_dump;
 		 [_position, 1] call ALIVE_fnc_spawnDebugMarker;
-		 [_position, 1] call ALIVE_fnc_placeDebugMarker;
+		 [_position, 1, format ["Parking - picked (%1)", _vehicleClass], "ColorGrey", "placement.parking"] call ALIVE_fnc_placeDebugMarker;
 	 };
 
   } else {

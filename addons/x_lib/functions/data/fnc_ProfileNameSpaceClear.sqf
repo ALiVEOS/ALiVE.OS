@@ -27,11 +27,14 @@ Highhead
 
 if !(isServer) exitwith {};
 
-private _mission = format["ALiVE_%1",missionName];
+// Storage key includes `worldName` so copies of `mission.sqm` across
+// map folders don't collide on the same profileNamespace entry. See
+// 4990aaad for the parallel fix in sys_data + sys_player.
+private _mission = format["ALiVE_%1_%2",missionName,worldName];
 
 if (count (profileNamespace getVariable [_mission,[]]) == 0) then {
 	_mission = [missionName,"%20","-"] call CBA_fnc_replace;
-	_mission = format["ALiVE_%1",_mission];
+	_mission = format["ALiVE_%1_%2",_mission,worldName];
 };
 
 private _missionCompositions = format["%1_compositions",_mission];

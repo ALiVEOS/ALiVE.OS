@@ -210,8 +210,8 @@ switch(_operation) do {
                         };
                         if (!isNil "_migrated") then {
                             _logic setVariable ["integrationChoice", _migrated];
-                            diag_log format ["ALIVE-%1 MIL_IED: legacy integration setting migrated to integrationChoice='%2' (from thirdParty=%3, integrationMode=%4)",
-                                time, _migrated, _legacyTp, _legacyIMode];
+                            ["ALIVE-%1 MIL_IED: legacy integration setting migrated to integrationChoice='%2' (from thirdParty=%3, integrationMode=%4)",
+                                time, _migrated, _legacyTp, _legacyIMode] call ALiVE_fnc_dump;
                         };
                     };
                     [ADDON, "integrationChoice", _logic getVariable ["integrationChoice", "_auto"]] call MAINCLASS;
@@ -272,7 +272,7 @@ switch(_operation) do {
                             if (_match >= 0) then {
                                 (_integrations select _match) get "mode"
                             } else {
-                                diag_log format ["ALIVE-%1 MIL_IED WARNING: integrationChoice='%2' is not a currently loaded integration; falling back to Auto", time, _iChoice];
+                                ["ALIVE-%1 MIL_IED WARNING: integrationChoice='%2' is not a currently loaded integration; falling back to Auto", time, _iChoice] call ALiVE_fnc_dump;
                                 call _fnAutoResolve
                             };
                         };
@@ -294,14 +294,19 @@ switch(_operation) do {
                     // "edited" = current attribute value differs from compile-time DEFAULT_*.
                     // "candidate integration" = the integration we'd source classes from
                     // regardless of iChoice (for autoDetect=Yes): if iChoice picks a specific
-                    // integration use that; otherwise pick first non-vanilla mine integration
-                    // detected.
+                    // integration use that; otherwise pick the first non-vanilla integration
+                    // eligible for auto-pick (mine-mode by default, plus any alive-mode
+                    // entry that explicitly sets `autoPickEligible = 1` -- see
+                    // Cfg3rdPartyIEDs.hpp ACE_Explosives for the canonical use of that flag).
                     // User's _additional field is ALWAYS appended, de-duplicated.
                     private _candidateIntegration = nil;
                     private _matchIdx = if (_iChoice == "_auto" || _iChoice == "_force_alive") then {
                         _integrations findIf {
                             (_x get "className") != "ALiVE_Vanilla_A3" &&
-                            (_x get "mode") == "mine"
+                            (
+                                (_x get "mode") == "mine" ||
+                                ((_x getOrDefault ["autoPickEligible", 0]) == 1)
+                            )
                         }
                     } else {
                         _integrations findIf { (_x get "className") == _iChoice };
@@ -397,23 +402,23 @@ switch(_operation) do {
                     ADDON setVariable ["resolvedStompRadius", _resolvedStompRadius, true];
 
                     if (ADDON getVariable ["debug", false]) then {
-                        diag_log format ["ALIVE-%1 MIL_IED Phase 3c: candidate=%2, road=%3 (autoDetect=%4) urban=%5 (autoDetect=%6) clutter=%7 (autoDetect=%8)",
+                        ["ALIVE-%1 MIL_IED Phase 3c: candidate=%2, road=%3 (autoDetect=%4) urban=%5 (autoDetect=%6) clutter=%7 (autoDetect=%8)",
                             time,
                             if (isNil "_candidateIntegration") then { "(none)" } else { _candidateIntegration get "displayName" },
                             count (ADDON getVariable "resolvedRoadIEDClasses"),  ADDON getVariable ["roadIEDClasses_autoDetect", 0],
                             count (ADDON getVariable "resolvedUrbanIEDClasses"), ADDON getVariable ["urbanIEDClasses_autoDetect", 0],
-                            count (ADDON getVariable "resolvedClutterClasses"),  ADDON getVariable ["clutterClasses_autoDetect", 0]];
+                            count (ADDON getVariable "resolvedClutterClasses"),  ADDON getVariable ["clutterClasses_autoDetect", 0]] call ALiVE_fnc_dump;
                     };
 
                     if (count _integrations == 0) then {
-                        diag_log format ["ALIVE-%1 MIL_IED: no 3rd-party IED integrations detected; resolved mode=%2 (choice='%3')",
-                            time, _resolved, _iChoice];
+                        ["ALIVE-%1 MIL_IED: no 3rd-party IED integrations detected; resolved mode=%2 (choice='%3')",
+                            time, _resolved, _iChoice] call ALiVE_fnc_dump;
                     } else {
                         private _summary = _integrations apply {
                             format ["%1 (mode=%2)", _x get "displayName", _x get "mode"]
                         };
-                        diag_log format ["ALIVE-%1 MIL_IED: %2 integration(s) detected: %3 - resolved mode=%4 (choice='%5')",
-                            time, count _integrations, _summary joinString ", ", _resolved, _iChoice];
+                        ["ALIVE-%1 MIL_IED: %2 integration(s) detected: %3 - resolved mode=%4 (choice='%5')",
+                            time, count _integrations, _summary joinString ", ", _resolved, _iChoice] call ALiVE_fnc_dump;
                     };
 
                     _debug = [_logic, "debug"] call MAINCLASS;
@@ -498,21 +503,94 @@ switch(_operation) do {
 
                 if !(GVAR(Loaded)) then {
                     // Initialise Locations
-                    _mapInfo = [] call ALIVE_fnc_getMapInfo;
+                    //
+                    // Discover population centres via building-presence clustering
+                    // rather than engine `nearestLocations`. The legacy path filtered
+                    // on `NameCityCapital`/`NameCity`/`NameVillage`/`Strategic`, which
+                    // missed any town the terrain author didn't tag with those
+                    // standard classes (e.g. Niakala registers ~3 villages despite
+                    // ~25 visible town names — community report 2026-05-13).
+                    //
+                    // Clustering uses civilian settlement building types — the same
+                    // primitive mil_placement and civ_placement use for their own
+                    // area discovery, so behaviour stays consistent with what users
+                    // see for those modules.
+                    //
+                    // Each entry in `_locations` is now a tuple [pos, size, label]
+                    // rather than an engine LOCATION handle. The downstream
+                    // setupTriggers loop and persistence path consume the tuple
+                    // shape directly. Best-effort label resolves from a nearby
+                    // engine Name* entry if one exists within 200m, else falls
+                    // back to a grid-coord synthetic name.
+                    //
+                    // Cluster discovery depends on `ALIVE_civilianSettlementBuildingTypes`
+                    // being populated for the current terrain — done by
+                    // staticDataHandler (per-terrain staticData file under
+                    // `addons/main/static/`, or hardcoded blocks in Maps.hpp
+                    // for known world names). If neither path populated the
+                    // list (rare: a terrain entirely unknown to ALiVE), fall
+                    // back to the legacy engine `nearestLocations` source so
+                    // the module doesn't leave the mission with zero IEDs.
+                    private _mapInfo = [] call ALIVE_fnc_getMapInfo;
                     _center = _mapInfo select 0;
-                    _radius = _mapInfo select 2;
+                    private _radius = _mapInfo select 2;
 
-                    _locations = nearestLocations [_center, ["NameCityCapital","NameCity","NameVillage","Strategic"],_radius];
+                    call ALiVE_fnc_staticDataHandler;
 
-                    // check markers for existance
-                    private ["_marker","_counter"];
-                    if(count _blacklist > 0) then {
-                        _locations = [_blacklist, _locations, false] call ALiVE_fnc_validateLocations;
+                    private _clusters = [];
+                    if (!isNil "ALIVE_civilianSettlementBuildingTypes" && {count ALIVE_civilianSettlementBuildingTypes > 0}) then {
+                        _clusters = [ALIVE_civilianSettlementBuildingTypes] call ALIVE_fnc_findTargets;
+                        _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
                     };
 
-                    if(count _taor > 0) then {
-                        _locations = [_taor, _locations, true] call ALiVE_fnc_validateLocations;
+                    if (count _clusters > 0) then {
+                        _locations = _clusters apply {
+                            private _pos = [_x, "center"] call ALIVE_fnc_cluster;
+                            private _size = [_x, "size"] call ALIVE_fnc_cluster;
+                            if (_size < 250) then { _size = 250 };
+                            private _nearLoc = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"], 200]) select 0;
+                            private _label = if (!isNil "_nearLoc" && {!(_nearLoc isEqualTo locationNull)}) then {
+                                text _nearLoc
+                            } else {
+                                format ["Area_%1", mapGridPosition _pos]
+                            };
+                            [_pos, _size, _label]
+                        };
+                    } else {
+                        // Fallback: legacy engine nearestLocations source.
+                        // Convert to the same [pos, size, label] tuple shape so
+                        // downstream code can stay uniform.
+                        if (_debug) then {
+                            ["ALIVE IED - cluster building-types unpopulated for this terrain; falling back to engine nearestLocations"] call ALiVE_fnc_dump;
+                        };
+                        private _engineLocs = nearestLocations [_center, ["NameCityCapital","NameCity","NameVillage","Strategic"], _radius];
+                        _locations = _engineLocs apply {
+                            private _pos = position _x;
+                            private _size = (size _x) select 0;
+                            if (_size < 250) then { _size = 250 };
+                            [_pos, _size, text _x]
+                        };
+                    };
 
+                    if (_debug) then {
+                        ["ALIVE IED - location source returned %1 population centres", count _locations] call ALiVE_fnc_dump;
+                    };
+
+                    // TAOR / blacklist filtering. The legacy `validateLocations`
+                    // helper is built for engine LOCATION / OBJECT inputs; the
+                    // tuple shape is simpler to filter inline via `inArea` on the
+                    // tuple's position element.
+                    if (count _blacklist > 0) then {
+                        _locations = _locations select {
+                            private _pos = _x select 0;
+                            ({ [_pos, _x] call ALiVE_fnc_inArea } count _blacklist) == 0
+                        };
+                    };
+                    if (count _taor > 0) then {
+                        _locations = _locations select {
+                            private _pos = _x select 0;
+                            ({ [_pos, _x] call ALiVE_fnc_inArea } count _taor) > 0
+                        };
                     };
 
                     if (count synchronizedObjects _logic > 0) then {
@@ -534,8 +612,28 @@ switch(_operation) do {
                         _locations = [];
                         _locs = {
                             if (_key == "_id" || _key == "_rev") exitWith {};
-                            _loc = [_logic, "convertLocations", [[_value, "LocationObj"] call ALiVE_fnc_hashGet]] call MAINCLASS;
-                            _locations pushBack _loc;
+                            // New-format save: read tuple directly from LocationPos
+                            // + LocationLabel keys. Old-format save (pre-cluster-
+                            // restructure): legacy LocationObj key held just the
+                            // position array; synthesise size/label so the loaded
+                            // tuple shape matches the new pipeline.
+                            private _locPos = [_value, "LocationPos", []] call ALiVE_fnc_hashGet;
+                            private _locLabel = [_value, "LocationLabel", ""] call ALiVE_fnc_hashGet;
+                            if (count _locPos == 0) then {
+                                // Back-compat: fall back to legacy LocationObj
+                                private _legacyPos = [_value, "LocationObj", []] call ALiVE_fnc_hashGet;
+                                if (count _legacyPos >= 2) then {
+                                    _locPos = (+_legacyPos);
+                                    if (count _locPos == 2) then { _locPos pushBack 0 };
+                                    _locPos pushBack 250;  // default size
+                                    _locLabel = format ["Area_%1", mapGridPosition _legacyPos];
+                                };
+                            };
+                            if (count _locPos >= 4) then {
+                                private _pos = [_locPos select 0, _locPos select 1, _locPos select 2];
+                                private _size = _locPos select 3;
+                                _locations pushBack [_pos, _size, _locLabel];
+                            };
                         };
 
                         [[GVAR(STORE), "locations"] call ALiVE_fnc_hashGet, _locs] call CBA_fnc_hashEachPair;
@@ -589,11 +687,23 @@ switch(_operation) do {
                     // Any alive unit or vehicle crew at low altitude — players AND AI
                     "({alive _x && ((getposATL (vehicle _x)) select 2 < 25)} count thislist > 0)"
                 } else {
-                    // Players only: check the person object is in thislist (not vehicle _x,
-                    // which is never in thislist for EmptyDetector triggers and would cause
-                    // the condition to always evaluate false for players inside vehicles,
-                    // immediately firing the exit/despawn code after IEDs spawn).
-                    "({_x in thisList && ((getposATL (vehicle _x)) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)"
+                    // Players only: accept either the person object OR their
+                    // current vehicle in thisList. When a player boards a
+                    // vehicle, the engine stops listing them as a separate
+                    // crew entity in the EmptyDetector's thisList - only
+                    // the vehicle remains. Checking the person object alone
+                    // flips the condition false on boarding, fires the
+                    // deactivation handler, and removes the IEDs. Reported
+                    // by HepatitisC.TnB on Discord 2026-05-26: "IEDs
+                    // disappear when I get in and out of a vehicle". RPT
+                    // confirmed the 11s gap between vehicle entry and the
+                    // trigger's removeIED dispatch.
+                    // Curator-controlled players (Zeus hosts) are excluded:
+                    // BIS_fnc_listPlayers includes a player who's in Zeus, so
+                    // without this filter the bomber / IED trigger arms on a
+                    // hovering curator and the bomber chases the Zeus camera.
+                    // Jman 2026-05-28 Zeus-host test.
+                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count (([] call BIS_fnc_listPlayers) select {isNull (getAssignedCuratorLogic _x)}) > 0)"
                 };
 
 
@@ -609,17 +719,20 @@ switch(_operation) do {
             };
 
             // Set up Bombers and IED triggers at each location (except any player starting location)
+            //
+            // Each `_x` is a [pos, size, label] tuple produced by the cluster
+            // discovery in case "start" (or rebuilt from persistence in the
+            // GVAR(Loaded) branch). Legacy engine LOCATION handles are no
+            // longer used here — see the rationale comment in case "start".
             {
-                private ["_fate","_pos","_trg","_twn"];
+                private ["_fate","_pos","_size","_label","_trg"];
 
-                //Get the location object
-                _pos = position _x;
-                _twn = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"],200]) select 0;
-                _size = (size _twn) select 0;
-                if (_size < 250) then {_size = 250;};
+                _pos   = _x select 0;
+                _size  = _x select 1;
+                _label = _x select 2;
 
                 if (_debug) then {
-                    diag_log format ["town is %1 at %2. %3m in size and type %4", text _twn, position _twn, _size, type _twn];
+                    ["town is %1 at %2. %3m in size", _label, _pos, _size] call ALiVE_fnc_dump;
                 };
 
                 // Place triggers if not within distance of players
@@ -659,12 +772,28 @@ switch(_operation) do {
                         _fate = random 100;
                     };
 
+                    // Per-location persistence record shared by Bombers / VBIEDs /
+                    // IEDs. Replaces legacy `LocationObj` (engine LOCATION via
+                    // convertLocations getPos) with a [x,y,z,size] numeric array
+                    // (convertString-safe) plus a separate label string key.
+                    private _storeLocationFn = {
+                        if (GVAR(Loaded)) exitWith {};
+                        private ["_locs", "_data", "_locPos"];
+                        _locs = [GVAR(STORE), "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
+                        _data = [] call ALiVE_fnc_hashCreate;
+                        _locPos = [_pos select 0, _pos select 1, _pos select 2, _size];
+                        [_data, "LocationPos",   _locPos] call ALiVE_fnc_hashSet;
+                        [_data, "LocationLabel", _label]  call ALiVE_fnc_hashSet;
+                        [_locs, _label, _data] call ALiVE_fnc_hashSet;
+                        [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
+                    };
+
                     // Bombers
                     if (_fate < _logic getvariable ["Bomber_Threat", DEFAULT_BOMBER_THREAT] && !(_startupIED)) then {
 
                         // Place Suicide Bomber trigger
 
-                        _trg = createTrigger["EmptyDetector",getpos _twn];
+                        _trg = createTrigger["EmptyDetector", _pos];
 
                         _trg setTriggerArea[(_size+250),(_size+250),0,false];
 
@@ -672,27 +801,17 @@ switch(_operation) do {
                         _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [[getpos thisTrigger,%1,'%2'],thisList] call ALIVE_fnc_createBomber", _size, _faction], ""];
 
                         if (_debug) then {
-                            diag_log format ["ALIVE-%1 Suicide Bomber Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
+                            ["ALIVE-%1 Suicide Bomber Trigger: created at %2 (%3)", time, _label, mapgridposition _pos] call ALiVE_fnc_dump;
                         };
 
-                        if !(GVAR(Loaded)) then {
-                            private ["_locs", "_data"];
-                            // Set location in store
-                            _locs = [GVAR(STORE), "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
-
-                            _data = [] call ALiVE_fnc_hashCreate;
-                            [_data, "LocationObj", [_logic, "convertLocations", [_x]] call MAINCLASS] call ALiVE_fnc_hashSet;
-                            [_locs, text _x, _data] call ALiVE_fnc_hashSet;
-
-                            [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
-                        };
+                        call _storeLocationFn;
                     };
 
                     // VBIEDs
                     if (_fate < _logic getvariable ["VB_IED_Threat", DEFAULT_VB_IED_THREAT] && !(_startupIED)) then {
 
                         // Place VBIED
-                        _trg = createTrigger["EmptyDetector",getpos _twn];
+                        _trg = createTrigger["EmptyDetector", _pos];
 
                         _trg setTriggerArea[(_size+250),(_size+250),0,false];
 
@@ -700,26 +819,16 @@ switch(_operation) do {
                         _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [getpos thisTrigger,%1] call ALIVE_fnc_placeVBIED",_size], ""];
 
                         if (_debug) then {
-                            diag_log format ["ALIVE-%1 VBIED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
+                            ["ALIVE-%1 VBIED Trigger: created at %2 (%3)", time, _label, mapgridposition _pos] call ALiVE_fnc_dump;
                         };
 
-                        if !(GVAR(Loaded)) then {
-                            private ["_locs", "_data"];
-                            // Set location in store
-                            _locs = [GVAR(STORE), "locations", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
-
-                            _data = [] call ALiVE_fnc_hashCreate;
-                            [_data, "LocationObj", [_logic, "convertLocations", [_x]] call MAINCLASS] call ALiVE_fnc_hashSet;
-                            [_locs, text _x, _data] call ALiVE_fnc_hashSet;
-
-                            [GVAR(STORE), "locations", _locs] call ALiVE_fnc_hashSet;
-                        };
+                        call _storeLocationFn;
                     };
 
                     // IEDS
                     if (_fate < _iedThreat && !(_noIED)) then {
                         // Place IED trigger
-                        _trg = createTrigger["EmptyDetector",getpos _twn];
+                        _trg = createTrigger["EmptyDetector", _pos];
 
                         _trg setTriggerArea[(_size+250), (_size+250),0,false];
 
@@ -730,16 +839,16 @@ switch(_operation) do {
                             // Ensure minimum of 1 IED if threat > 0
                             if (_num < 1 && _iedThreat > 0) then {_num = 1;};
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
-                            _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [getpos thisTrigger,%1,""%2"",%3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",text _twn]];
-                            [_logic, "storeTrigger", [_size,text _twn,getPos _twn, false,"IED",_num]] call MAINCLASS;
+                            _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [getpos thisTrigger,%1,""%2"",%3] call ALIVE_fnc_createIED",_size, _label, _num], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",_label]];
+                            [_logic, "storeTrigger", [_size,_label,_pos, false,"IED",_num]] call MAINCLASS;
                         } else {
                             _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
-                            _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [getpos thisTrigger,%1,""%2""] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED", text _twn]];
-                            [_logic, "storeTrigger", [_size,text _twn,getPos _twn, false, "IED"]] call MAINCLASS;
+                            _trg setTriggerStatements[format["this && %1", _trgCondPresence], format ["null = [getpos thisTrigger,%1,""%2""] call ALIVE_fnc_createIED",_size, _label], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED", _label]];
+                            [_logic, "storeTrigger", [_size,_label,_pos, false, "IED"]] call MAINCLASS;
                         };
 
                         if (_debug) then {
-                            diag_log format ["ALIVE-%1 IED Trigger: created at %2 (%3)", time, text _twn, mapgridposition  (getpos _twn)];
+                            ["ALIVE-%1 IED Trigger: created at %2 (%3)", time, _label, mapgridposition _pos] call ALiVE_fnc_dump;
                         };
                     };
 
@@ -1112,11 +1221,16 @@ switch(_operation) do {
             _markers = [];
 
             _generateMarkers = {
-                private ["_pos","_twn","_size","_t","_m","_ieds", "_isObj"];
+                private ["_pos","_label","_size","_t","_m","_ieds", "_isObj"];
                 if (_key == "_id" || _key == "_rev") exitWith {};
 
                 _isObj = [_logic, "convertString", [_value, "TrgObj"] call ALiVE_fnc_hashGet] call MAINCLASS;
                 _pos = [_value, "TrgPos"] call ALiVE_fnc_hashGet;
+                // `_label` reads explicit TrgLabel (added by storeTrigger).
+                // Legacy saves get `_key` as fallback — same string the old
+                // path used when the nearestLocations lookup returned no hit.
+                _label = [_value, "TrgLabel", _key] call ALiVE_fnc_hashGet;
+
                 if (_isObj) then {
                     _size = [_value, "TrgSize"] call ALiVE_fnc_hashGet;
 
@@ -1129,17 +1243,16 @@ switch(_operation) do {
                     _ieds = [[GVAR(STORE), "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, _key, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
 
                 } else {
-                    _twn = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"],200]) select 0;
-                    _size = (size _twn) select 0;
+                    _size = [_value, "TrgSize"] call ALiVE_fnc_hashGet;
                     if (_size < 250) then {_size = 250;};
 
                     // Mark Locations
                     _t = format["loc_t%1", random 1000];
-                    _m = [_t, getpos _twn, "Ellipse", [_size+250,_size+250], "TEXT:", text _twn, "COLOR:", "ColorRed", "BRUSH:", "Border", "GLOBAL"] call CBA_fnc_createMarker;
+                    _m = [_t, _pos, "Ellipse", [_size+250,_size+250], "TEXT:", _label, "COLOR:", "ColorRed", "BRUSH:", "Border", "GLOBAL"] call CBA_fnc_createMarker;
                     _markers pushback _m;
 
                     // Mark IEDs
-                    _ieds = [[GVAR(STORE), "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, text _twn, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
+                    _ieds = [[GVAR(STORE), "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet, _label, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
 
                 };
 
@@ -1191,6 +1304,11 @@ switch(_operation) do {
 
         case "storeTrigger": {
             private ["_num", "_data"];
+            // `_twn` here is the location label (was engine-location text;
+            // now the cluster tuple's label string). Persisted explicitly as
+            // TrgLabel so the restore + debug-marker paths can read it back
+            // without re-running `nearestLocations` on the stored position,
+            // which fails on terrains with sparse Name* configs (Niakala).
             _args params ["_size", "_twn", "_pos", "_isObj","_type"];
 
             if (count _args > 5) then {
@@ -1205,6 +1323,7 @@ switch(_operation) do {
             [_data, "TrgNum", _num] call ALiVE_fnc_hashSet;
             [_data, "TrgType", _type] call ALiVE_fnc_hashSet;
             [_data, "TrgObj", _isObj] call ALiVE_fnc_hashSet;
+            [_data, "TrgLabel", _twn] call ALiVE_fnc_hashSet;
 
             [[GVAR(STORE), "triggers"] call ALiVE_fnc_hashGet, format["%1-%2",_twn,_type], _data] call ALiVE_fnc_hashSet;
 
@@ -1215,13 +1334,17 @@ switch(_operation) do {
 
         case "restoreTriggers": {
             _restoreTriggers = {
-                private ["_data", "_twn", "_size", "_num", "_trg"];
+                private ["_data", "_label", "_size", "_num", "_trg"];
                 if (_key == "_id" || _key == "_rev") exitWith {};
-                
-                // Get data
+
+                // Get data. `_label` reads the explicit TrgLabel key stored
+                // by storeTrigger. Falls back to `_key` (the hash key, of
+                // shape "<label>-<type>") for legacy saves that pre-date
+                // TrgLabel — same fallback the previous nearestLocations
+                // path used when no engine location was found near _pos.
                 _type = [_value, "TrgType"] call ALiVE_fnc_hashGet;
                 _pos = [_value, "TrgPos"] call ALiVE_fnc_hashGet;
-                _twn = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"],5]) select 0;
+                _label = [_value, "TrgLabel", _key] call ALiVE_fnc_hashGet;
                 _size = [_value, "TrgSize"] call ALiVE_fnc_hashGet;
                 _num = [_value, "TrgNum"] call ALiVE_fnc_hashGet;
 
@@ -1230,26 +1353,29 @@ switch(_operation) do {
                 _trg setTriggerArea[(_size+250), (_size+250),0,false];
                 _trg setTriggerActivation["ANY","PRESENT",true]; // true = repeated
 
-                // Restore OPCOM Objectives that aren't in a town
-                if (isNil "_twn") then {
-                    _twn = _key;
-                };
-
                 // Respect AI_Triggerable setting when rebuilding persisted triggers
                 private _restoredCond = if ([_logic, "aiTriggerable"] call MAINCLASS) then {
                     "({alive _x && ((getposATL (vehicle _x)) select 2 < 25)} count thislist > 0)"
                 } else {
-                    "({_x in thisList && ((getposATL (vehicle _x)) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)"
+                    // Accept person OR vehicle in thisList - see the
+                    // matching comment in case "start" (search for
+                    // HepatitisC.TnB) for the vehicle-board issue.
+                    // Curator-controlled players (Zeus hosts) are excluded:
+                    // BIS_fnc_listPlayers includes a player who's in Zeus, so
+                    // without this filter the bomber / IED trigger arms on a
+                    // hovering curator and the bomber chases the Zeus camera.
+                    // Jman 2026-05-28 Zeus-host test.
+                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count (([] call BIS_fnc_listPlayers) select {isNull (getAssignedCuratorLogic _x)}) > 0)"
                 };
 
                 if (_num > 0) then {
-                    _trg setTriggerStatements[format["this && %1", _restoredCond], format ["null = [getpos thisTrigger,%1,""%2"", %3] call ALIVE_fnc_createIED",_size, text _twn, _num], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",text _twn]];
+                    _trg setTriggerStatements[format["this && %1", _restoredCond], format ["null = [getpos thisTrigger,%1,""%2"", %3] call ALIVE_fnc_createIED",_size, _label, _num], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",_label]];
                 } else {
-                    _trg setTriggerStatements[format["this && %1", _restoredCond], format ["null = [getpos thisTrigger,%1,""%2""] call ALIVE_fnc_createIED",_size, text _twn], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",text _twn]];
+                    _trg setTriggerStatements[format["this && %1", _restoredCond], format ["null = [getpos thisTrigger,%1,""%2""] call ALIVE_fnc_createIED",_size, _label], format ["null = [getpos thisTrigger,""%1""] call ALIVE_fnc_removeIED",_label]];
                 };
 
                 if (_logic getVariable["debug",false]) then {
-                    ["ALIVE IED - Restoring %1 trigger in %2",_type,str(_twn)] call ALiVE_fnc_dump;
+                    ["ALIVE IED - Restoring %1 trigger in %2",_type,str(_label)] call ALiVE_fnc_dump;
                 };
 
             };
@@ -1273,7 +1399,13 @@ switch(_operation) do {
         };
 
         case "convertLocations": {
-            // Convert between Positions (ARRAY) & Locations (LOCATION)
+            // DEPRECATED. mil_ied's location source switched from engine
+            // `nearestLocations` to building-cluster discovery, so the
+            // ARRAY<->LOCATION conversion this case provided is no longer
+            // needed by the internal call sites. Kept for back-compat in
+            // case external code (other addons / mission scripts) still
+            // calls `[_logic, "convertLocations", ...] call ALIVE_fnc_ied`.
+            // See case "start" for the new pipeline.
             private ["_data"];
 
             _data = _args select 0;
@@ -1338,11 +1470,28 @@ switch(_operation) do {
             _ieds = [_data, "IEDs", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet;
 
             _convertLocations = {
+                // Convert CouchDB stringified numerics back to SCALAR for the
+                // location-position keys. New format: `LocationPos` holds a
+                // 4-element [x, y, z, size] numeric array; `LocationLabel`
+                // holds a string and needs no conversion. Legacy format:
+                // `LocationObj` held a 3-element position array — convert
+                // that too so old persisted saves still load (the GVAR(Loaded)
+                // branch in case "start" applies a synthesised size + label
+                // when only the legacy key is present).
                 private ["_loc"];
                 if (_key == "_id" || _key == "_rev") exitWith {};
 
-                _loc = [_logic, "convertString", [_value, "LocationObj"] call ALiVE_fnc_hashGet] call MAINCLASS;
-                [_value, "LocationObj", _loc] call ALiVE_fnc_hashSet;
+                private _newPos = [_value, "LocationPos", []] call ALiVE_fnc_hashGet;
+                if (count _newPos > 0) then {
+                    _loc = [_logic, "convertString", _newPos] call MAINCLASS;
+                    [_value, "LocationPos", _loc] call ALiVE_fnc_hashSet;
+                };
+
+                private _legacyPos = [_value, "LocationObj", []] call ALiVE_fnc_hashGet;
+                if (count _legacyPos > 0) then {
+                    _loc = [_logic, "convertString", _legacyPos] call MAINCLASS;
+                    [_value, "LocationObj", _loc] call ALiVE_fnc_hashSet;
+                };
             };
 
             _convertTriggers = {

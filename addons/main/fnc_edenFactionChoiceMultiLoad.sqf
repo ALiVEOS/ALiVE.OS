@@ -44,7 +44,7 @@ opt-in for them. Encoded as if the user had explicitly stored that list,
 so it goes through the same parse/populate path as a real saved value.
 
 Parameters:
-    [_display, _allowedSides, _varName, _initialDefault, _sqmValue]
+    [_display, _allowedSides, _varName, _initialDefault, _sqmValue, _titleStr]
     _display        : DISPLAY - Eden attribute display. ListBox control IDC 100.
     _allowedSides   : ARRAY of NUMBERs - sides to include. Defaults [0,1,2,3].
     _varName        : STRING - name of the logic variable storing the value.
@@ -65,6 +65,19 @@ Parameters:
                       / pr_factionWhitelist / skillFactions* etc.). Optional;
                       callers that don't pass it get the legacy logic-var /
                       display.value resolution path.
+    _titleStr       : STRING - localised title text or $STR_ key applied to
+                      the controlsGroup's Title sub-control (idc 101).
+                      Defaults to "Factions:". Each variant's attributeLoad
+                      expression passes its own value so the visible label
+                      reflects the consuming attribute.
+    _tooltipStr     : STRING - localised tooltip text or $STR_ key applied
+                      to the Title sub-control's tooltip via ctrlSetTooltip
+                      (idc 101). Each variant passes its consuming
+                      attribute's $STR_..._COMMENT so hovering the label
+                      surfaces the per-attribute description rather than
+                      the generic multi-select UX hint inherited from the
+                      Base substrate. Optional - empty defers to the
+                      Base's hardcoded tooltip.
 
 Author:
 Jman
@@ -72,7 +85,7 @@ Jman
 
 // ------------------------------------------------------------------------
 // Unpack invocation. Variant control classes call:
-//   [_display, _allowedSides, _varName, _initialDefault, _value] ...
+//   [_display, _allowedSides, _varName, _initialDefault, _value, _title, _tooltip] ...
 // (where _value is the engine-auto-populated SQM value for the attribute).
 // Legacy direct call (just the display) kept compatible.
 // ------------------------------------------------------------------------
@@ -81,6 +94,8 @@ private _allowedSides = [0,1,2,3];
 private _varName = "factions";
 private _initialDefault = [];
 private _sqmValue = "";
+private _titleStr = "Factions:";
+private _tooltipStr = "";
 if (typeName _this == "ARRAY") then {
     _display = _this select 0;
     if (count _this > 1 && {typeName (_this select 1) == "ARRAY"}) then {
@@ -95,8 +110,36 @@ if (typeName _this == "ARRAY") then {
     if (count _this > 4 && {typeName (_this select 4) == "STRING"}) then {
         _sqmValue = _this select 4;
     };
+    if (count _this > 5 && {typeName (_this select 5) == "STRING"} && {(_this select 5) != ""}) then {
+        _titleStr = _this select 5;
+    };
+    if (count _this > 6 && {typeName (_this select 6) == "STRING"}) then {
+        _tooltipStr = _this select 6;
+    };
 } else {
     _display = _this;
+};
+
+// ------------------------------------------------------------------------
+// Title text + tooltip. Resolves $STR_ keys via localize. Pattern matches
+// fnc_edenTaskTypeChoiceLoad / fnc_edenSideChoiceMultiLoad - the LOAD
+// handler sets Title.text + Title.tooltip at runtime so per-attribute
+// labels and descriptions survive without per-attribute control variants.
+// ------------------------------------------------------------------------
+private _titleResolved = _titleStr;
+if (count _titleStr > 0 && {(_titleStr select [0, 1]) == "$"}) then {
+    _titleResolved = localize (_titleStr select [1]);
+};
+private _tooltipResolved = _tooltipStr;
+if (count _tooltipStr > 0 && {(_tooltipStr select [0, 1]) == "$"}) then {
+    _tooltipResolved = localize (_tooltipStr select [1]);
+};
+if (!isNull _display) then {
+    private _titleCtrl = _display controlsGroupCtrl 101;
+    if (!isNull _titleCtrl) then {
+        _titleCtrl ctrlSetText _titleResolved;
+        if (_tooltipResolved != "") then { _titleCtrl ctrlSetTooltip _tooltipResolved; };
+    };
 };
 
 // ------------------------------------------------------------------------
@@ -207,7 +250,7 @@ if (count _selectedFactions == 0 && {count _initialDefault > 0}) then {
 // ------------------------------------------------------------------------
 private _ctrl = _display controlsGroupCtrl 100;
 if (isNull _ctrl) exitWith {
-    diag_log "ALIVE FactionChoiceMulti LOAD: listbox control (IDC 100) not found";
+    ["ALIVE FactionChoiceMulti LOAD: listbox control (IDC 100) not found"] call ALiVE_fnc_dump;
 };
 
 lbClear _ctrl;
@@ -381,7 +424,7 @@ private _tickIdxs = +_unrecognisedTickIdxs;
 // Diagnostic logging - same shape as single-select handler. Helps debug
 // "I selected these factions but they didn't stick" issues.
 // ------------------------------------------------------------------------
-diag_log format [
+[
     "ALIVE FactionChoiceMulti LOAD: varName='%1' allowedSides=%2 sqm='%3' resolved='%4' parsed=%5 populated=%6 ticked=%7 (incl %8 unrecognised at top)",
     _varName,
     _allowedSides,
@@ -391,4 +434,4 @@ diag_log format [
     lbSize _ctrl,
     count _tickIdxs,
     count _unrecognisedTickIdxs
-];
+] call ALiVE_fnc_dump;

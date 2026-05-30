@@ -560,20 +560,6 @@ switch(_operation) do {
 
         _result = _args;
     };
-    case "placeAA": {
-        if (_args isEqualType true) then {
-            _logic setVariable ["placeAA", _args];
-        } else {
-            _args = _logic getVariable ["placeAA", false];
-        };
-        if (_args isEqualType "") then {
-            if(_args == "true") then {_args = true;} else {_args = false;};
-            _logic setVariable ["placeAA", _args];
-        };
-        ASSERT_TRUE(_args isEqualType true,str _args);
-
-        _result = _args;
-    };
     case "placeAir": {
         if (_args isEqualType true) then {
             _logic setVariable ["placeAir", _args];
@@ -709,6 +695,16 @@ switch(_operation) do {
     };
     case "side": {
         _result = [_logic,_operation,_args,DEFAULT_SIDE] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // #875 - objective scenery objects: AA-style triplet.
+    case "objectiveObjects": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "objectiveObjectsCount": {
+        _result = [_logic, _operation, _args, "0"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "objectiveObjectsBehaviour": {
+        _result = [_logic, _operation, _args, "dispersed"] call ALIVE_fnc_OOsimpleOperation;
     };
     case "HQBuilding": {
         _result = [_logic,_operation,_args,objNull] call ALIVE_fnc_OOsimpleOperation;
@@ -1445,7 +1441,6 @@ switch(_operation) do {
                 ["ATO - Factions: %1",[_logic, "factions"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Persistent: %1",[_logic, "persistent"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Create HQ: %1",[_logic, "createHQ"] call MAINCLASS] call ALiVE_fnc_dump;
-                ["ATO - Place Anti-Air: %1",[_logic, "placeAA"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Place Air Assets: %1",[_logic, "placeAir"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Generate Tasks: %1",[_logic, "generateTasks"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Generate SEAD Tasks: %1",[_logic, "generateSEADTasks"] call MAINCLASS] call ALiVE_fnc_dump;
@@ -1592,7 +1587,9 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        [position _hqBuilding, 4] call ALIVE_fnc_placeDebugMarker;
+                        private _atoSide = getNumber ((_faction call ALiVE_fnc_configGetFactionClass) >> "side") call ALIVE_fnc_sideNumberToText;
+                        [position _hqBuilding, 4, format ["%1 - ATO HQ Building (%2)", _atoSide, _faction], "ColorPink", "placement.ato"] call ALIVE_fnc_placeDebugMarker;
+                        ["ATO [%1] - HQ Building placed at %2 - building %3", _faction, position _hqBuilding, typeOf _hqBuilding] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
 
@@ -1618,43 +1615,64 @@ switch(_operation) do {
                     // Spawn a field HQ
                     private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
                     private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
-                    private _HQ = nil;
-                    // private _flatPos = [_pos,_size,45] call ALiVE_fnc_findFlatArea;
+                    // Debug-only runway marker visualisation. The unified
+                    // composition-spawn validator handles runway / taxiway /
+                    // helipad rejection natively via getAirfieldGeometry; the
+                    // marker overlay is kept just for the visible runway
+                    // outline during debug previews.
                     private _runwayMarkers = [_pos,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
-                    private _flatPos = [_runwayMarkers,_pos,_size] call ALiVE_fnc_CheckSpawnInMarkerArea;
-                    
+
+                    // Composition selection - hoisted outside the
+                    // !COMPOSITIONS_LOADED branch so the validator below can
+                    // size its envelope to the actual layout. Falls back to
+                    // generic HQ / FieldHQ / Communications when no
+                    // Airports / Heliports composition exists for the faction.
+                    private _compType = "Military";
+                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                        _compType = "Guerrilla";
+                    };
+                    private _HQ = selectRandom ([_compType, ["Airports","Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
+                    if (isNil "_HQ") then {
+                        _HQ = selectRandom ([_compType, ["HQ","FieldHQ","Communications"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
+                    };
+
+                    if (isNil "_HQ") exitWith {
+                        ["ATO [%1] - Field ATO: no Airport / Heliport / HQ composition available for faction (compType %2) - skipped", _faction, _compType] call ALiVE_fnc_dump;
+                    };
+
+                    // Road-tangent preferred direction (airports tend to align
+                    // with the nearest road's heading in built-up areas).
+                    // Computed against cluster centre (validator hasn't run
+                    // yet - was incorrectly using uninitialised _flatPos in
+                    // the legacy path).
+                    private _nearRoad = [_pos, 750, true] call ALiVE_fnc_getClosestRoad;
+                    private _direction = if (_nearRoad distance _pos > 5) then {
+                        private _road = roadat _nearRoad;
+                        private _roadConnectedTo = roadsConnectedTo _road;
+                        if (count _roadConnectedTo > 0) then {
+                            private _connectedRoad = _roadConnectedTo select 0;
+                            (_road getDir _connectedRoad)
+                        } else {
+                            90
+                        };
+                    } else {
+                        0
+                    };
+
+                    // Validator wiring. Replaces the legacy CheckSpawnInMarkerArea
+                    // + findFlatArea path. Mode "military" excludes runways /
+                    // helipads / buildings / sloped surface / water natively;
+                    // the marker-based runway exclusion the legacy helper did
+                    // is now redundant.
+                    private _envelope = [_HQ] call ALiVE_fnc_getCompositionRadius;
+                    private _result = [_pos, _size, _envelope, "military", _direction, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+                    if (count _result == 0) exitWith {
+                        ["ATO [%1] - Field ATO: validator found no clear spawn position within %2m of %3 (envelope %4m) - skipped", _faction, _size, _pos, _envelope] call ALiVE_fnc_dump;
+                    };
+                    _result params ["_flatPos", "_safeDir"];
 
                     if (isNil QMOD(COMPOSITIONS_LOADED)) then {
-
-                        // Get a composition
-                        private _compType = "Military";
-                        If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                            _compType = "Guerrilla";
-                        };
-                        _HQ = selectRandom ([_compType, ["Airports","Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
-
-                        if (isNil "_HQ") then {
-                            _HQ = selectRandom ([_compType, ["HQ","FieldHQ","Communications"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
-                        };
-
-                        private _nearRoad = [_flatpos, 750, true] call ALiVE_fnc_getClosestRoad;
-
-                        private _direction = if (_nearRoad distance _flatpos > 5) then {
-                            private _road = roadat _nearRoad;
-                            private _roadConnectedTo = roadsConnectedTo _road;
-                            if (count _roadConnectedTo > 0) then {
-                                private _connectedRoad = _roadConnectedTo select 0;
-                                (_road getDir _connectedRoad)
-                            } else {
-                                90
-                            };
-                        } else {
-                            0
-                        };
-
-                        // [_logic,"createMarker",[_nearRoad,"WEST","HQ " + str(_direction),0]] call MAINCLASS;
-
-                        [_HQ, _flatPos, _direction, _faction] call ALiVE_fnc_spawnComposition;
+                        [_HQ, _flatPos, _safeDir, _faction] call ALiVE_fnc_spawnComposition;
                     };
 
                     [_logic, "HQBuilding", nearestObject [_flatPos, "building"]] call MAINCLASS;
@@ -1672,9 +1690,10 @@ switch(_operation) do {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
-                        [_flatPos, 4] call ALIVE_fnc_placeDebugMarker;
+                        private _atoSide = getNumber ((_faction call ALiVE_fnc_configGetFactionClass) >> "side") call ALIVE_fnc_sideNumberToText;
+                        [_flatPos, 4, format ["%1 - Field ATO (%2)", _atoSide, _faction], "ColorPink", "placement.ato"] call ALIVE_fnc_placeDebugMarker;
 
-                        ["ATO %1 - Field ATO created: %2 - %3", _logic, configName _HQ, [_logic, "HQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
+                        ["ATO [%1] - Field ATO created at %2 - composition %3 - building %4 (envelope=%5m, dir=%6)", _faction, _flatPos, configName _HQ, [_logic, "HQBuilding"] call MAINCLASS, _envelope, _safeDir] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
                 };
@@ -1712,7 +1731,8 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
-                    [position _hqBuilding, 4] call ALIVE_fnc_placeDebugMarker;
+                    private _atoSide = getNumber ((_faction call ALiVE_fnc_configGetFactionClass) >> "side") call ALIVE_fnc_sideNumberToText;
+                    [position _hqBuilding, 4, format ["%1 - ATO Building (%2)", _atoSide, _faction], "ColorPink", "placement.ato"] call ALIVE_fnc_placeDebugMarker;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
 
@@ -1720,86 +1740,6 @@ switch(_operation) do {
 
                 if (_debug) then {
                     ["ATO %1 - ATO building selected: %2", _logic, [_logic, "HQBuilding"] call MAINCLASS] call ALiVE_fnc_dump;
-                };
-            };
-
-            // Establish Anti-Air Defenses
-            private _placeAA = [_logic, "placeAA"] call MAINCLASS;
-            If (_placeAA) then {
-                // Dedicated AA protecting your ATO base
-
-                // Get static AA for faction
-
-                // If available, place 1 AA composition or static AA by HQ
-
-                if (isNil QMOD(COMPOSITIONS_LOADED)) then {
-
-                    // Spawn a AA composition
-                    private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
-                    private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
-                    // private _flatPos = [_pos,(_size*4),70] call ALiVE_fnc_findFlatArea;
-                    private _runwayMarkers = [_pos,"COLORRED"] call ALiVE_fnc_DrawRunwayBlacklistMarkers;
-                    private _flatPos = [_runwayMarkers,_pos,_size] call ALiVE_fnc_CheckSpawnInMarkerArea;
-        
-                    private _AA = nil;
-
-                    private _searchString = ["AA_Bunker","SAM_Site","SAM_Bunker","AA_Site"];
-
-                    // Get a composition
-                    private _compType = "Military";
-                    If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                        _compType = "Guerrilla";
-                    };
-
-                    // Find an Anti Air site or SAM Site
-                    _AA = selectRandom ([_compType, ["fort"], [], _faction, false, _searchString] call ALiVE_fnc_getCompositions);
-
-                    if (isNil "_AA") then { // Look for smaller AA bunker
-                        _AA = selectRandom ([_compType, ["fort"], [], _faction, false, ["AntiAirBunker"]] call ALiVE_fnc_getCompositions);
-                        _searchString = ["AntiAirBunker"];
-                    };
-
-                    if !(isNil "_AA") then {
-                        private _nearRoad = [_flatpos, 750, true] call ALiVE_fnc_getClosestRoad;
-
-                        private _direction = if (_nearRoad distance _flatpos > 5) then {
-                            private _road = roadat _nearRoad;
-                            private _roadConnectedTo = roadsConnectedTo _road;
-                            if (count _roadConnectedTo > 0) then {
-                                private _connectedRoad = _roadConnectedTo select 0;
-                                (_road getDir _connectedRoad)
-                            } else {
-                                90
-                            };
-                        } else {
-                            0
-                        };
-
-                        [_flatPos, _compType, ["fort"], _faction, [], 2, 0, 0, 0, 0, false, _searchString, _direction] call ALiVE_fnc_spawnRandomPopulatedComposition;
-
-                        if (_debug) then {
-                            ["ATO %1 - Placing %4 AA: %2 at %3", _logic, _AA, _flatpos, _faction] call ALiVE_fnc_dump;
-                        };
-                    } else {
-                        // Spawn Static AA
-
-                    };
-
-                    // Add crew to SAM or AA or man static (crew are not stored as part of composition)
-                    if !(isNil "_AA") then {
-                        private _vehicles = nearestObjects [_flatpos, ["AAA_System_01_base_F","SAM_System_01_base_F","SAM_System_02_base_F"], 70];
-
-                        {
-                            // Create profiles that are not despawned? This ensures they are put back after restart
-                            createVehicleCrew _x;
-                            if (side _x == WEST) then {
-                                [_x, "Green", [], false] call BIS_fnc_initVehicle;
-                            };
-
-                        } forEach _vehicles;
-                    } else {
-                        // Man Statics
-                    };
                 };
             };
 
@@ -1827,6 +1767,17 @@ switch(_operation) do {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
+
+            // #875 - objective scenery objects (AA-style triplet).
+            // 350m default radius for the airfield area.
+            private _objCountStr_ATO = [_logic, "objectiveObjectsCount"] call MAINCLASS;
+            private _objCount_ATO = if (typeName _objCountStr_ATO == "STRING" && {_objCountStr_ATO != ""}) then { parseNumber _objCountStr_ATO } else { 0 };
+            private _objBehaviour_ATO = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
+            private _countObjectiveObjects_ATO = [_logic, position _logic, 350, _objCount_ATO, _objBehaviour_ATO, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            if (_debug) then {
+                ["ATO %1 - Objective objects placed: %2 of %3 (behaviour=%4)",
+                    _logic, _countObjectiveObjects_ATO, _objCount_ATO, _objBehaviour_ATO] call ALiVE_fnc_dump;
+            };
 
             _logic setVariable ["startupComplete", true];
 
@@ -2053,48 +2004,52 @@ switch(_operation) do {
                         // IF there are no helipads available, we want atleast 1 chopper. Spawn a composition
                         if (count _aprofiles == 0) then {
                             // Spawn a heliport
-                            private _validPos = true;
                             private _pos = [_baseCluster,"center"] call ALiVE_fnc_HashGet;
-
                             private _size = [_baseCluster,"size",150] call ALiVE_fnc_HashGet;
-                            private _heliport = nil;
-                            private _flatPos = [_pos,_size,30] call ALiVE_fnc_findFlatArea;
 
-                            private _position = _flatpos;
-
-                            if (str(_flatPos) == "[0,0,0]") then {
-                                _validPos = false;
+                            // Composition selection - hoisted outside the
+                            // !COMPOSITIONS_LOADED branch so the validator
+                            // below can size its envelope to the actual layout.
+                            private _compType = "Military";
+                            If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
+                                _compType = "Guerrilla";
                             };
+                            private _heliport = selectRandom ([_compType, ["Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
 
-                            if (isNil QMOD(COMPOSITIONS_LOADED) && _validPos) then {
+                            if !(isNil "_heliport") then {
 
-                                // Get a composition
-                                private _compType = "Military";
-                                If (_faction call ALiVE_fnc_factionSide == RESISTANCE) then {
-                                    _compType = "Guerrilla";
+                                // Road-tangent preferred direction. Computed
+                                // against cluster centre (validator hasn't
+                                // run yet).
+                                private _nearRoad = [_pos, 750, true] call ALiVE_fnc_getClosestRoad;
+                                private _direct = if (_nearRoad distance _pos > 5) then {
+                                    private _road = roadat _nearRoad;
+                                    private _roadConnectedTo = roadsConnectedTo _road;
+                                    if (count _roadConnectedTo > 0) then {
+                                        private _connectedRoad = _roadConnectedTo select 0;
+                                        (_road getDir _connectedRoad)
+                                    } else {
+                                        90
+                                    };
+                                } else {
+                                    0
                                 };
 
-                                _heliport = selectRandom ([_compType, ["Heliports"], [], _faction] call ALiVE_fnc_getCompositions);
+                                // Validator wiring. Mode "military" excludes
+                                // existing helipads from the footprint
+                                // (`_excludeHelipads`) so a new Heliport
+                                // composition won't overlap an existing one.
+                                private _envelope = [_heliport] call ALiVE_fnc_getCompositionRadius;
+                                private _result = [_pos, _size, _envelope, "military", _direct, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+                                if (count _result == 0) exitWith {
+                                    ["ATO [%1] - Heliport: validator found no clear spawn position within %2m of %3 (envelope %4m) - skipped", _faction, _size, _pos, _envelope] call ALiVE_fnc_dump;
+                                };
+                                _result params ["_flatPos", "_safeDir"];
+                                _direct = _safeDir;
+                                private _position = _flatPos;
 
-                                if !(isNil "_heliport") then {
-                                    private _nearRoad = [_flatpos,750,true] call ALiVE_fnc_getClosestRoad;
-
-                                    private _direct = if (_nearRoad distance _flatpos > 5) then {
-                                        private _road = roadat _nearRoad;
-                                        private _roadConnectedTo = roadsConnectedTo _road;
-                                        if (count _roadConnectedTo > 0) then {
-                                            private _connectedRoad = _roadConnectedTo select 0;
-                                            (_road getDir _connectedRoad)
-                                        } else {
-                                            90
-                                        };
-                                    } else {
-                                        0
-                                    };
-
-                                    // [_logic,"createMarker",[_nearRoad,_side,str(_direct),0]] call MAINCLASS;
-
-                                    [_heliport, _flatPos, _direct, _faction] call ALiVE_fnc_spawnComposition;
+                                if (isNil QMOD(COMPOSITIONS_LOADED)) then {
+                                    [_heliport, _flatPos, _safeDir, _faction] call ALiVE_fnc_spawnComposition;
 
                                     private _helipad = nearestObject [_flatpos, "HeliH"];
 
@@ -2246,8 +2201,27 @@ switch(_operation) do {
 
                                             private _hangar = selectRandom ([_compType, ["Airports"], ["Medium"], _faction] call ALiVE_fnc_getCompositions);
                                             if !(isNil "_hangar") then {
-                                                private _flatPos = [position _x,150,50] call ALiVE_fnc_findFlatArea;
-                                                [_hangar, _flatPos, direction _x, _faction] call ALiVE_fnc_spawnComposition;
+                                                // Validator wiring. Search
+                                                // anchored on the existing
+                                                // airport building (`_x` in
+                                                // the surrounding foreach);
+                                                // direction inherits from
+                                                // the building so the new
+                                                // hangar aligns with the
+                                                // airfield's primary axis.
+                                                private _envelope = [_hangar] call ALiVE_fnc_getCompositionRadius;
+                                                private _result = [position _x, 150, _envelope, "military", direction _x, _debug] call ALiVE_fnc_findCompositionSpawnPosition;
+                                                if (count _result > 0) then {
+                                                    _result params ["_flatPos", "_safeDir"];
+                                                    [_hangar, _flatPos, _safeDir, _faction] call ALiVE_fnc_spawnComposition;
+                                                    if (_debug) then {
+                                                        ["ATO [%1] - Hangar: %2 spawned at %3 (envelope=%4m, dir=%5)", _faction, configName _hangar, _flatPos, _envelope, _safeDir] call ALiVE_fnc_dump;
+                                                    };
+                                                } else {
+                                                    if (_debug) then {
+                                                        ["ATO [%1] - Hangar: validator found no clear spawn position within 150m of %2 (envelope %3m) - skipped", _faction, position _x, _envelope] call ALiVE_fnc_dump;
+                                                    };
+                                                };
                                             };
                                             };
                                         };
@@ -4276,7 +4250,7 @@ switch(_operation) do {
                                     private _position = [_catapult, "position"] call ALiVE_fnc_hashGet;
                                     private _nearbyObj = nearestObjects [_position, ["Plane"], 3];
                                     if (count _nearbyObj > 0) then {
-                                        // diag_log ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>. CATAPULT BUSY <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+                                        // [">>>>>>>>>>>>>>>>>>>>>>>>>>>>>. CATAPULT BUSY <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"] call ALiVE_fnc_dump;
                                         _airportBusy = true;
                                     };
                                 };
@@ -4318,6 +4292,194 @@ switch(_operation) do {
                                             _taxiDir = [(direction _part) + 180 - _taxiDir] call ALiVE_fnc_modDegrees;
 
                                             [_aircraft,"catapult",_catapult] call ALiVE_fnc_hashSet;
+                                        };
+                                    };
+                                };
+
+                                // Continuous taxi/takeoff path watchdog. The
+                                // aircraft taxis along an unpredictable path
+                                // (apron -> taxiway -> runway -> roll), and
+                                // AI may walk into that path mid-taxi. A
+                                // one-shot sweep at takeoff start can't
+                                // catch that. This spawns an async loop
+                                // that:
+                                //
+                                //   1. Waits up to 30s for the aircraft
+                                //      profile to spawn its real vehicle
+                                //      object (the spawn happens further
+                                //      down this same code path - watchdog
+                                //      starts watching only after the
+                                //      vehicle exists).
+                                //   2. Tick every 1s. Scan a 100m radius
+                                //      around the aircraft. Filter to AI
+                                //      within a forward cone (+/-60 deg of
+                                //      aircraft facing) - those are the
+                                //      ones in the taxi/takeoff path.
+                                //   3. Teleport any matching AI 80m off
+                                //      perpendicular to the side. setPos
+                                //      bypasses BIS AI orders entirely.
+                                //   4. Exit when aircraft is airborne (Z >
+                                //      50m), destroyed/null, or 120s
+                                //      timeout (worst case).
+                                //
+                                // Excludes pilots (kindOf Pilot - aircraft
+                                // crew), players, and empty vehicles.
+                                if (_isPlane) then {
+                                    [_profileID, _vehicleClass, _airportID, _debug] spawn {
+                                        params ["_profileID", "_vehicleClass", "_airportID", "_debug"];
+
+                                        // Look up profile (scoped local;
+                                        // _profile in outer scope isn't
+                                        // defined yet at this insertion
+                                        // point - it's set further down
+                                        // in fnc_ATO).
+                                        private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+                                        if (isNil "_profile") exitWith {
+                                            if (_debug) then {
+                                                ["ATO sweep watchdog [%1]: profile %2 lookup failed - exit", _vehicleClass, _profileID] call ALiVE_fnc_dump;
+                                            };
+                                        };
+
+                                        // Wait for aircraft vehicle to spawn
+                                        private _vehicleObj = objNull;
+                                        private _waitStart = diag_tickTime;
+                                        while {
+                                            isNull _vehicleObj
+                                            && {(diag_tickTime - _waitStart) < 30}
+                                        } do {
+                                            _vehicleObj = [_profile, "vehicle", objNull] call ALiVE_fnc_hashGet;
+                                            sleep 0.5;
+                                        };
+
+                                        if (isNull _vehicleObj) exitWith {
+                                            if (_debug) then {
+                                                ["ATO sweep watchdog [%1, airport %2]: aircraft never spawned within 30s - exit", _vehicleClass, _airportID] call ALiVE_fnc_dump;
+                                            };
+                                        };
+
+                                        if (_debug) then {
+                                            ["ATO sweep watchdog [%1, airport %2]: tracking %3", _vehicleClass, _airportID, _vehicleObj] call ALiVE_fnc_dump;
+                                        };
+
+                                        // Track until airborne / dead / timeout
+                                        private _trackStart = diag_tickTime;
+                                        private _totalDoMove = 0;
+                                        private _totalTeleport = 0;
+                                        while {
+                                            !isNull _vehicleObj
+                                            && {alive _vehicleObj}
+                                            && {(getPosATL _vehicleObj) select 2 < 50}
+                                            && {(diag_tickTime - _trackStart) < 120}
+                                        } do {
+                                            private _pos = getPosATL _vehicleObj;
+                                            private _dir = direction _vehicleObj;
+                                            {
+                                                private _u = _x;
+                                                // Pilot exclusion: kindOf "Pilot"
+                                                // catches BIS variants but RHS
+                                                // pilots may not inherit the
+                                                // base class. Also substring-
+                                                // match typeOf for "pilot" /
+                                                // "crew" to catch mod-defined
+                                                // crew classes.
+                                                private _typeLower = toLower (typeOf _u);
+                                                private _isCrewLike = (_u isKindOf "Pilot")
+                                                    || {_typeLower find "pilot" >= 0}
+                                                    || {_typeLower find "crew" >= 0};
+                                                // Aircraft proximity exclusion:
+                                                // anything within 30m of the
+                                                // aircraft is likely its own
+                                                // crew about to board. The
+                                                // forward-cone scan starts at
+                                                // the aircraft so this protects
+                                                // boarding crew from being
+                                                // teleported away.
+                                                private _distFromAircraft = _u distance _vehicleObj;
+                                                if (
+                                                    alive _u
+                                                    && {_u != _vehicleObj}
+                                                    && {!isPlayer (effectiveCommander _u)}
+                                                    && {!_isCrewLike}
+                                                    && {_distFromAircraft > 30}
+                                                ) then {
+                                                    private _hasLiveCrew = if (_u isKindOf "CAManBase") then {
+                                                        true
+                                                    } else {
+                                                        ({alive _x} count (crew _u)) > 0
+                                                    };
+                                                    if (_hasLiveCrew) then {
+                                                        // Forward cone gate: only
+                                                        // sweep units in the path
+                                                        // ahead of the aircraft.
+                                                        private _bearing = _pos getDir _u;
+                                                        private _angleDelta = abs ((_bearing - _dir + 540) mod 360 - 180);
+                                                        if (_angleDelta < 60) then {
+                                                            // Sweep target: 80m
+                                                            // perpendicular to the
+                                                            // forward axis. Random
+                                                            // side so units don't
+                                                            // pile up on one flank.
+                                                            private _sideDir = _dir + (selectRandom [-90, 90]);
+                                                            private _clearPos = _pos getPos [80, _sideDir];
+
+                                                            // Two-stage move: first
+                                                            // try doMove + commandMove
+                                                            // (graceful, AI walks off);
+                                                            // 5s grace period; if unit
+                                                            // hasn't moved 3m+ from
+                                                            // warn position by then,
+                                                            // teleport. State per-unit
+                                                            // via setVariable.
+                                                            private _unitPos = getPosATL _u;
+                                                            private _warnTime = _u getVariable ["ALiVE_ATO_sweep_warnTime", -1];
+                                                            if (_warnTime < 0) then {
+                                                                // First sighting -
+                                                                // issue doMove, mark.
+                                                                private _grp = group _u;
+                                                                _grp setBehaviour "AWARE";
+                                                                _grp setSpeedMode "NORMAL";
+                                                                _u enableAI "MOVE";
+                                                                _u enableAI "PATH";
+                                                                _u doMove _clearPos;
+                                                                _u commandMove _clearPos;
+                                                                _u setVariable ["ALiVE_ATO_sweep_warnTime", diag_tickTime];
+                                                                _u setVariable ["ALiVE_ATO_sweep_warnPos", _unitPos];
+                                                                _u setVariable ["ALiVE_ATO_sweep_clearPos", _clearPos];
+                                                                _totalDoMove = _totalDoMove + 1;
+                                                            } else {
+                                                                private _warnPos = _u getVariable ["ALiVE_ATO_sweep_warnPos", _unitPos];
+                                                                private _moved = _unitPos distance _warnPos;
+                                                                private _elapsed = diag_tickTime - _warnTime;
+                                                                if (_moved > 10) then {
+                                                                    // Successfully
+                                                                    // moved away,
+                                                                    // reset state in
+                                                                    // case they
+                                                                    // wander back.
+                                                                    _u setVariable ["ALiVE_ATO_sweep_warnTime", -1];
+                                                                } else {
+                                                                    if (_elapsed > 5) then {
+                                                                        // 5s grace
+                                                                        // expired, no
+                                                                        // movement -
+                                                                        // teleport.
+                                                                        private _tgt = _u getVariable ["ALiVE_ATO_sweep_clearPos", _clearPos];
+                                                                        _u setPosATL _tgt;
+                                                                        _u setVariable ["ALiVE_ATO_sweep_warnTime", -1];
+                                                                        _totalTeleport = _totalTeleport + 1;
+                                                                    };
+                                                                };
+                                                            };
+                                                        };
+                                                    };
+                                                };
+                                            } forEach (nearestObjects [_pos, ["CAManBase","Car","Tank","Truck_F"], 100]);
+                                            sleep 1;
+                                        };
+
+                                        if (_debug) then {
+                                            private _z = if (!isNull _vehicleObj) then { (getPosATL _vehicleObj) select 2 } else { -1 };
+                                            ["ATO sweep watchdog [%1]: ended after %2s, doMove issued=%3 teleport fallback=%4 (aircraftZ=%5 alive=%6)", _vehicleClass, round (diag_tickTime - _trackStart), _totalDoMove, _totalTeleport, _z, !isNull _vehicleObj && {alive _vehicleObj}] call ALiVE_fnc_dump;
                                         };
                                     };
                                 };

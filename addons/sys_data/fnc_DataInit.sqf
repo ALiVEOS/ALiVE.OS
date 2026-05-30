@@ -117,7 +117,27 @@ if (isDedicated || (isServer && _pns)) then {
 
     // Load PNS mission data
     // Indicate to mission maker (editor), single player or MP-host that the mission is persistent and formerly stored data has been loaded!
-    private _missionName = format["%1_%2", GVAR(GROUP_ID), missionName];
+
+    // Storage-key construction includes `worldName` to prevent
+    // cross-mission bleed when a user copies their `mission.sqm`
+    // between map folders. Engine's `missionName` command returns the
+    // folder name without the world suffix (`MyMission.Stratis` and
+    // `MyMission.Tanoa` both report `missionName = "MyMission"`), so
+    // the prior `<GROUP_ID>_<missionName>` key collided across
+    // copies and stale data from the original map bled into the new
+    // mission. Reported by Eric / SpyderBlack 2026-05-18.
+    private _missionName = format["%1_%2_%3", GVAR(GROUP_ID), missionName, worldName];
+
+    // DIAG-STRIP: confirms the new key format AND surfaces any legacy
+    // (pre-fix, missionName-only) key in profileNamespace so we can
+    // see whether the bleed condition was present on this run. Strip
+    // once the fix is verified.
+    private _legacyKey = format["%1_%2", GVAR(GROUP_ID), missionName];
+    private _legacyHit = !(isNil {profileNameSpace getVariable _legacyKey});
+    if (!isNil "ALiVE_sys_data_debug" && {ALiVE_sys_data_debug}) then {
+        ["ALIVE DATA DIAG: missionName=%1 worldName=%2 -> newKey=%3 legacyKey=%4 legacyHit=%5",
+            missionName, worldName, _missionName, _legacyKey, _legacyHit] call ALiVE_fnc_dump;
+    };
     if (!(isNil {profileNameSpace getvariable _missionName}) && _pns) then {
 
         [
@@ -232,7 +252,7 @@ if (isDedicated || (isServer && _pns)) then {
     };
 
     // Set dictionary name
-    _dictionaryName = format["dictionary_%1_%2", GVAR(GROUP_ID), missionName];
+    _dictionaryName = format["dictionary_%1_%2_%3", GVAR(GROUP_ID), missionName, worldName];
 
     if (!_pns) then {
         // Try loading dictionary from cloud db
@@ -248,7 +268,7 @@ if (isDedicated || (isServer && _pns)) then {
             // Try loading more dictionary entries
             private ["_i","_newresponse","_addResponse"];
             _i = 1;
-            while {_dictionaryName = format["dictionary_%1_%2_%3", GVAR(GROUP_ID), missionName, _i]; _newresponse = [GVAR(datahandler), "read", ["sys_data", [], _dictionaryName]] call ALIVE_fnc_Data; typeName _newresponse != "STRING"} do {
+            while {_dictionaryName = format["dictionary_%1_%2_%3_%4", GVAR(GROUP_ID), missionName, worldName, _i]; _newresponse = [GVAR(datahandler), "read", ["sys_data", [], _dictionaryName]] call ALIVE_fnc_Data; typeName _newresponse != "STRING"} do {
 
                 _addResponse = {
                     [ALIVE_DataDictionary, _key, _value] call CBA_fnc_hashSet;
@@ -288,7 +308,7 @@ if (isDedicated || (isServer && _pns)) then {
         private ["_missionName","_response"];
         // Read in date/time for mission
         ["SYS_DATA - Loading basic mission data."] call ALIVE_fnc_dump;
-        _missionName = format["%1_%2", GVAR(GROUP_ID), missionName];
+        _missionName = format["%1_%2_%3", GVAR(GROUP_ID), missionName, worldName];
         _response = [GVAR(datahandler), "read", ["sys_data", [], _missionName]] call ALIVE_fnc_Data;
         if ( typeName _response != "STRING") then {
             GVAR(mission_data) = _response;
@@ -319,7 +339,7 @@ if (isDedicated || (isServer && _pns)) then {
         private ["_missionName","_response"];
         // Read in compositions for mission
         ["SYS_DATA - Loading mission compositions data."] call ALIVE_fnc_dump;
-        _missionName = format["%1_%2_COMPOSITIONS", GVAR(GROUP_ID), missionName];
+        _missionName = format["%1_%2_%3_COMPOSITIONS", GVAR(GROUP_ID), missionName, worldName];
         _response = [GVAR(datahandler), "read", ["sys_data", [], _missionName]] call ALIVE_fnc_Data;
         if ( typeName _response != "STRING") then {
             MOD(PCOMPOSITIONS) = _response;
@@ -426,7 +446,7 @@ if (isDedicated || (isServer && _pns)) then {
 
                 private _lastSave = diag_tickTime;
                 private _missionName = [GVAR(operation), "%20","-"] call CBA_fnc_replace;
-                _missionName = format["%1_%2", GVAR(GROUP_ID), _missionName];
+                _missionName = format["%1_%2_%3", GVAR(GROUP_ID), _missionName, worldName];
 
                 while {MOD(sys_data) getVariable ["disableAAR","false"] == "false"} do {
 

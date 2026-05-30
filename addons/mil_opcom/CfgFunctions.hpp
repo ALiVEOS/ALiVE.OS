@@ -56,6 +56,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_opcom\fnc_INS_helpers.sqf";
                                 RECOMPILE;
                         };
+                        class INS_disableBuildingInstallations {
+                                description = "Disables asymmetric installations registered on a building";
+                                file = "\x\alive\addons\mil_opcom\fnc_INS_disableBuildingInstallations.sqf";
+                                RECOMPILE;
+                        };
                         class OPCOMDropIntel {
                                 description = "Drops Intel by chance";
                                 file = "\x\alive\addons\mil_opcom\fnc_OPCOMDropIntel.sqf";

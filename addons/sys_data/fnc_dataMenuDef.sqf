@@ -96,7 +96,7 @@ if (_menuName == "dataConfirmClear") then {
             [
                 [localize "STR_ALIVE_DATA_CLEAR_CONFIRM_YES",
                     {
-                        diag_log format ["[ALiVE Data] Admin %1 (UID %2) clearing current mission's profileNamespace data via admin menu.", name player, getPlayerUID player];
+                        ["[ALiVE Data] Admin %1 (UID %2) clearing current mission's profileNamespace data via admin menu.", name player, getPlayerUID player] call ALiVE_fnc_dump;
                         [] remoteExec ["ALiVE_fnc_ProfileNameSpaceClear", 2];
                         [localize "STR_ALIVE_DATA_CLEAR_DONE"] call CBA_fnc_notify;
                     },
@@ -128,7 +128,7 @@ if (_menuName == "dataConfirmWipe") then {
             [
                 [localize "STR_ALIVE_DATA_WIPE_CONFIRM_YES",
                     {
-                        diag_log format ["[ALiVE Data] Admin %1 (UID %2) wiping ALL ALiVE profileNamespace data via admin menu.", name player, getPlayerUID player];
+                        ["[ALiVE Data] Admin %1 (UID %2) wiping ALL ALiVE profileNamespace data via admin menu.", name player, getPlayerUID player] call ALiVE_fnc_dump;
                         [] remoteExec ["ALiVE_fnc_ProfileNameSpaceWipe", 2];
                         [localize "STR_ALIVE_DATA_WIPE_DONE"] call CBA_fnc_notify;
                     },
@@ -164,7 +164,7 @@ private _menuDef = [];
 
 if (count _menuDef == 0) then {
     hintC format ["Error: Menu not found: %1\n%2\n%3", str _menuName, if (_menuName == "") then {_this}else{""}, __FILE__];
-    diag_log format ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__];
+    ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__] call ALiVE_fnc_dump;
 };
 
 _menuDef

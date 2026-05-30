@@ -21,7 +21,7 @@ ARJay, Highhead, Jman
 ---------------------------------------------------------------------------- */
 #define RND(var) random 1 > var
 
-params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50]];
+params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50], ["_patrolBehaviour","SAFE"], ["_patrolSpeed","LIMITED"]];
 
 private _units = units _group;
 private _unitPercentCount = ((count _units) * _guardPatrolPercentage) / 100;
@@ -177,7 +177,7 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
             	 if (_unitPercentCount > 0 ) then {
                  // Patrol the buildings
                  [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
-                 [_group, _unit, _buildings, ALiVE_SYS_PROFILE_DEBUG_ON] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+                 [_group, _unit, _buildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
                  _unitPercentCount = _unitPercentCount -1;
                };
             }; 

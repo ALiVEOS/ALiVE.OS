@@ -46,6 +46,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_ied\fnc_armIED.sqf";
                                 RECOMPILE;
                         };
+                        class iedUnitQualifies {
+                                description = "Shared engineer/EOD qualification predicate";
+                                file = "\x\alive\addons\mil_ied\fnc_iedUnitQualifies.sqf";
+                                RECOMPILE;
+                        };
                         class createVBIED {
                                 description = "Create a VB-IED";
                                 file = "\x\alive\addons\mil_ied\fnc_createVBIED.sqf";

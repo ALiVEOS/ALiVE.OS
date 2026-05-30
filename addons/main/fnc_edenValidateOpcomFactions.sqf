@@ -85,7 +85,7 @@ if (!isNil "ALIVE_edenFactionValidatorPending") then {
 ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
     params ["_trigger", "_scope"];
     sleep 0.5;
-    diag_log format ["ALiVE 3DEN faction-source check: running (trigger=%1 scope=%2)", _trigger, count _scope];
+    ["ALiVE 3DEN faction-source check: running (trigger=%1 scope=%2)", _trigger, count _scope] call ALiVE_fnc_dump;
 
     private _OPCOM_CLASSES = ["ALiVE_mil_OPCOM"];
     private _PLACEMENT_CLASSES = [
@@ -287,11 +287,11 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
                 ];
                 // type 1 = Red warning, duration 60 seconds.
                 [_msg, 1, 60] call BIS_fnc_3DENNotification;
-                diag_log format [
+                [
                     "ALiVE 3DEN faction-source check: AI Commander '%1' has OPCOM-to-OPCOM sync peer(s)=[%2]",
                     _name,
                     _peerNames joinString ", "
-                ];
+                ] call ALiVE_fnc_dump;
                 _warnings = _warnings + 1;
             };
         };
@@ -375,12 +375,12 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
             // to read and act before the toast fades.
             // type 1 = Red warning, duration 60 seconds.
             [_msg, 1, 60] call BIS_fnc_3DENNotification;
-            diag_log format [
+            [
                 "ALiVE 3DEN faction-source check: AI Commander '%1' unmatched=[%2] globalSources=[%3]",
                 _name,
                 _unmatched joinString ", ",
                 _globalSourceFactions joinString ", "
-            ];
+            ] call ALiVE_fnc_dump;
             _warnings = _warnings + 1;
         };
     } forEach _opcomsToValidate;
@@ -388,7 +388,7 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
     // One-line "all clear" log so mission-makers + debug builds see
     // the validator actually ran.
     if (_warnings == 0) then {
-        diag_log format ["ALiVE 3DEN faction-source check: OK (checked=%1 totalPlacements=%2)", _opcomsChecked, _totalPlacements];
+        ["ALiVE 3DEN faction-source check: OK (checked=%1 totalPlacements=%2)", _opcomsChecked, _totalPlacements] call ALiVE_fnc_dump;
 
         // Positive confirmation toast only on sync/attr triggers AND
         // only if at least one OPCOM actually got past the mission-

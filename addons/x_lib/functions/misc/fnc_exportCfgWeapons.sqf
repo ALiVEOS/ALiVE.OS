@@ -110,7 +110,7 @@ if (_screenshots) then {
     0 setfog 0.2;
 };
 if (_mode == "json") then {
-    diag_log "{ 'weapons' : [";
+    ["{ 'weapons' : ["] call ALiVE_fnc_dump;
 };
 {
 
@@ -368,7 +368,7 @@ if (_mode == "json") then {
     // progressloadingscreen (_foreachindex / _cfgWeaponsCount);
 } foreach _cfgWeapons;
 if (_mode == "json") then {
-    diag_log "]}";
+    ["]}"] call ALiVE_fnc_dump;
 };
 if (_screenshots) then {
     _cam cameraeffect ["terminate","back"];

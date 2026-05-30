@@ -119,9 +119,9 @@ private _cooldown = parseNumber ([_logic, "reserveActivationCooldown"] call _mod
 private _lastWake = [_cluster, "lastReserveWake", -999] call ALiVE_fnc_hashGet;
 if ((serverTime - _lastWake) < _cooldown) exitWith {
     if (_debug) then {
-        diag_log format ["[ALiVE Reserve DEBUG] SKIP cluster=%1 reason=cooldown waiting=%2s remaining=%3s reserves=%4 activeAlive=%5/%6",
+        ["[ALiVE Reserve DEBUG] SKIP cluster=%1 reason=cooldown waiting=%2s remaining=%3s reserves=%4 activeAlive=%5/%6",
             _clusterLabel, _cooldown, round (_cooldown - (serverTime - _lastWake)),
-            count _reservePool, _aliveCount, _activeAtSpawn];
+            count _reservePool, _aliveCount, _activeAtSpawn] call ALiVE_fnc_dump;
     };
     false
 };
@@ -139,8 +139,8 @@ private _playersInArea = (allPlayers - entities "HeadlessClient_F")
     select { (_x distance2D _center) < _engagementRadius };
 if (_playersInArea isEqualTo []) exitWith {
     if (_debug) then {
-        diag_log format ["[ALiVE Reserve DEBUG] SKIP cluster=%1 reason=no-player-in-area engagementRadius=%2 reserves=%3 activeAlive=%4/%5",
-            _clusterLabel, _engagementRadius, count _reservePool, _aliveCount, _activeAtSpawn];
+        ["[ALiVE Reserve DEBUG] SKIP cluster=%1 reason=no-player-in-area engagementRadius=%2 reserves=%3 activeAlive=%4/%5",
+            _clusterLabel, _engagementRadius, count _reservePool, _aliveCount, _activeAtSpawn] call ALiVE_fnc_dump;
     };
     false
 };
@@ -161,6 +161,14 @@ private _entryType = if (count _reserveEntry > 0 && {(_reserveEntry select 0) is
 
 private _guardRadius = parseNumber ([_logic, "guardRadius"] call _modClass);
 private _guardPatrolPercentage = parseNumber ([_logic, "guardPatrolPercentage"] call _modClass);
+// Garrison patrol disposition (default Safe/walking). Read via the owning
+// module class; guarded so a module without the option still resolves.
+private _garrisonPatrolBehaviour = [_logic, "garrisonPatrolBehaviour"] call _modClass;
+if (isNil "_garrisonPatrolBehaviour" || {!(_garrisonPatrolBehaviour isEqualType "")}) then { _garrisonPatrolBehaviour = "SAFE" };
+_garrisonPatrolBehaviour = toUpper _garrisonPatrolBehaviour;
+private _garrisonPatrolSpeed = [_logic, "garrisonPatrolSpeed"] call _modClass;
+if (isNil "_garrisonPatrolSpeed" || {!(_garrisonPatrolSpeed isEqualType "")}) then { _garrisonPatrolSpeed = "LIMITED" };
+_garrisonPatrolSpeed = toUpper _garrisonPatrolSpeed;
 private _activated = false;
 
 // Helper: orphaned-crew → infantry fallback. Activates as if INFANTRY,
@@ -202,8 +210,8 @@ private _fnc_activateAsInfantry = {
 
     if (isNull _candidateBuilding) exitWith {
         if (_debug) then {
-            diag_log format ["[ALiVE Reserve DEBUG] SKIP cluster=%1 reason=no-safe-building reserves=%2 activeAlive=%3/%4",
-                _clusterLabel, count _reservePool, _aliveCount, _activeAtSpawn];
+            ["[ALiVE Reserve DEBUG] SKIP cluster=%1 reason=no-safe-building reserves=%2 activeAlive=%3/%4",
+                _clusterLabel, count _reservePool, _aliveCount, _activeAtSpawn] call ALiVE_fnc_dump;
         };
         false
     };
@@ -219,16 +227,16 @@ private _fnc_activateAsInfantry = {
             // the candidate building waiting for OPCOM. OPCOM tasks
             // on its own cadence (busy=false at activation), so the
             // patrol stage is just "stay useful in the meantime".
-            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", 1, 1]]] call ALIVE_fnc_profileEntity;
+            [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", 1, 1, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
             [_x, "homeCluster", _cluster] call ALiVE_fnc_hashSet;
             _activeIDs pushBack ([_x, "profileID"] call ALiVE_fnc_hashGet);
         };
     } forEach _profiles;
 
     if (_debug) then {
-        diag_log format ["[ALiVE Reserve DEBUG] ACTIVATE-INFANTRY faction=%1 cluster=%2 building=%3 activeAlive=%4/%5 reservesRemaining=%6",
+        ["[ALiVE Reserve DEBUG] ACTIVATE-INFANTRY faction=%1 cluster=%2 building=%3 activeAlive=%4/%5 reservesRemaining=%6",
             _faction, _clusterLabel, typeOf _candidateBuilding,
-            _aliveCount, _activeAtSpawn, count _reservePool - 1];
+            _aliveCount, _activeAtSpawn, count _reservePool - 1] call ALiVE_fnc_dump;
     };
 
     true
@@ -263,8 +271,8 @@ if (_entryType == "VEHICLE") then {
 
         if (_orphanBehaviour == "Drop") then {
             if (_debug) then {
-                diag_log format ["[ALiVE Reserve DEBUG] DROP-ORPHAN cluster=%1 vehicleClass=%2 reservesRemaining=%3",
-                    _clusterLabel, [_profileVehicle, "vehicleClass", "?"] call ALiVE_fnc_hashGet, count _reservePool];
+                ["[ALiVE Reserve DEBUG] DROP-ORPHAN cluster=%1 vehicleClass=%2 reservesRemaining=%3",
+                    _clusterLabel, [_profileVehicle, "vehicleClass", "?"] call ALiVE_fnc_hashGet, count _reservePool] call ALiVE_fnc_dump;
             };
             // Activated=false (no real activation), but still update
             // lastReserveWake so we don't spin every tick burning CPU on
@@ -324,10 +332,10 @@ if (_entryType == "VEHICLE") then {
             private _vehicleObj = [_profileVehicle, "vehicle", objNull] call ALiVE_fnc_hashGet;
             private _ea = [_profileEntity, "vehicleAssignments"] call ALiVE_fnc_hashGet;
             private _va = [_profileVehicle, "vehicleAssignments"] call ALiVE_fnc_hashGet;
-            diag_log format ["[ALiVE Reserve DEBUG] PRE-SPAWN class=%1 entityActive=%2 entityLocked=%3 vehicleActive=%4 vehicleObj=%5 vehicleLocked=%6 unitClasses=%7 entityAssignmentValues=%8 vehicleAssignmentValues=%9",
+            ["[ALiVE Reserve DEBUG] PRE-SPAWN class=%1 entityActive=%2 entityLocked=%3 vehicleActive=%4 vehicleObj=%5 vehicleLocked=%6 unitClasses=%7 entityAssignmentValues=%8 vehicleAssignmentValues=%9",
                 _vehicleClass, _entityActive, _entityLocked, _vehicleActive, _vehicleObj,
                 if (!isNull _vehicleObj) then {locked _vehicleObj} else {-1},
-                _unitClasses, _ea select 2, _va select 2];
+                _unitClasses, _ea select 2, _va select 2] call ALiVE_fnc_dump;
         };
 
         // Clear busy flags - OPCOM picks them up next tick.
@@ -418,9 +426,9 @@ if (_entryType == "VEHICLE") then {
                 sleep 4;
                 private _unitCount = [_pe, "unitCount"] call ALIVE_fnc_profileEntity;
                 private _entityActive = [_pe, "active", false] call ALiVE_fnc_hashGet;
-                diag_log format ["[ALiVE Reserve DEBUG] POST-SPAWN class=%1 vehicle=%2 entityActive=%3 unitCount=%4 unitsInWorld=%5 crewInVehicle=%6 vehiclePos=%7 vehicleLocked=%8",
+                ["[ALiVE Reserve DEBUG] POST-SPAWN class=%1 vehicle=%2 entityActive=%3 unitCount=%4 unitsInWorld=%5 crewInVehicle=%6 vehiclePos=%7 vehicleLocked=%8",
                     _vc, _veh, _entityActive, _unitCount, count _units, count crew _veh, getPosATL _veh,
-                    if (!isNull _veh) then {locked _veh} else {-1}];
+                    if (!isNull _veh) then {locked _veh} else {-1}] call ALiVE_fnc_dump;
             };
         };
 
@@ -437,9 +445,9 @@ if (_entryType == "VEHICLE") then {
             // chain in some attribute-reading paths; guard so the log
             // is readable rather than chasing the underlying type bug.
             private _thresholdStr = if (_threshold > 0 && _threshold <= 1) then { str (round (_threshold * 100)) } else { "?" };
-            diag_log format ["[ALiVE Reserve DEBUG] ACTIVATE-VEHICLE faction=%1 cluster=%2 vehicleClass=%3 crewCount=%4 activeAlive=%5/%6 threshold=%7%% reservesRemaining=%8",
+            ["[ALiVE Reserve DEBUG] ACTIVATE-VEHICLE faction=%1 cluster=%2 vehicleClass=%3 crewCount=%4 activeAlive=%5/%6 threshold=%7%% reservesRemaining=%8",
                 _entryFaction, _clusterLabel, _vehicleClass, _countCrewPositions,
-                _aliveCount, _activeAtSpawn, _thresholdStr, count _reservePool];
+                _aliveCount, _activeAtSpawn, _thresholdStr, count _reservePool] call ALiVE_fnc_dump;
         };
     };
 } else {

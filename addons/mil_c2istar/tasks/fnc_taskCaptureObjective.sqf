@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -78,27 +79,69 @@ switch (_taskState) do {
         // Get the nearest objective that OPCOM is attacking
         private _objectives = +([_opcom,"nearestObjectives",[_taskLocation,"attacking"]] call ALiVE_fnc_OPCOM);
 
-        // Exit if no objectives are being attacked 
+        // Exit if no objectives are being attacked
         if (isNil "_objectives" || {count _objectives == 0}) exitwith {
             ["C2ISTAR - Task CaptureObjective - No objectives are being attacked! Exiting!",_taskFaction] call ALiVE_fnc_Dump;
         };
 
         /////////////////////////
         // Start mission
-        
-        private _objective = _objectives select 0;
-        private _size = [_objective, "size", 200] call ALiVE_fnc_hashGet;
-        _targetPosition = [_objective, "center", _taskLocation] call ALiVE_fnc_hashGet;
+
+        // Iterate the OPCOM "attacking" list and pick the first
+        // objective that still has live enemy presence (real units
+        // OR virtualised profiles). OPCOM's "attacking" state lags
+        // behind ground truth - an objective marked attacking can
+        // already be cleared, in which case the area-clear check on
+        // the Destroy sub-task succeeds on first tick and the task
+        // ends instantly with no fight. Verify before issuing.
+        private _size = 200;
+        _targetPosition = [];
+        {
+            private _candidatePos = [_x, "center", _taskLocation] call ALiVE_fnc_hashGet;
+            private _candidateSize = [_x, "size", 200] call ALiVE_fnc_hashGet;
+            // Use the OPCOM objective size where available, capped
+            // at 500 m so the enemy-presence search stays bounded on
+            // large objectives, floored at 200 m so small ones get a
+            // fair sweep.
+            private _verifyRadius = (_candidateSize min 500) max 200;
+            private _enemyPresent = [_candidatePos, _taskSide, _verifyRadius, true] call ALIVE_fnc_isEnemyNear;
+            if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+                ["DIAG-STRIP taskCaptureObjective: candidate idx=%1 pos=%2 size=%3 verifyRadius=%4 enemyPresent=%5", _forEachIndex, _candidatePos, _candidateSize, _verifyRadius, _enemyPresent] call ALiVE_fnc_dump;
+            };
+            if (_enemyPresent) exitWith {
+                _size = _candidateSize;
+                _targetPosition = _candidatePos;
+            };
+        } forEach _objectives;
+
+        // Exit if no objective in the attacking list still has
+        // verifiable enemy presence (everything OPCOM thinks it is
+        // attacking has already been cleared).
+        if (count _targetPosition == 0) exitwith {
+            ["C2ISTAR - Task CaptureObjective - No attacking objective has verified enemy presence! Exiting!"] call ALiVE_fnc_Dump;
+        };
 
         // ["pl %1 tar %2", getpos player, _targetPosition] call ALiVE_fnc_DumpR;
 
         if!(isNil "_targetPosition") then {
 
-            private["_stagingPosition","_dialogOptions","_dialogOption"];
+            private["_stagingPosition","_dialogOptions","_dialogOption","_stagingPlayerPos"];
 
             // establish the staging position for the task
-
-            _stagingPosition = [_targetPosition,"overwatch"] call ALIVE_fnc_taskGetSectorPosition;
+            // (pass the first assigned player's position so the helper
+            //  picks a point on the approach line ~700m short of the
+            //  objective rather than its legacy single-sector pick).
+            _stagingPlayerPos = _taskLocation;
+            if (count _taskPlayers > 0 && {count (_taskPlayers select 0) > 0}) then {
+                private _firstPlayerUID = (_taskPlayers select 0) select 0;
+                if (typeName _firstPlayerUID == "STRING" && {_firstPlayerUID != ""}) then {
+                    private _firstPlayer = [_firstPlayerUID] call ALIVE_fnc_getPlayerByUID;
+                    if (!isNull _firstPlayer) then {
+                        _stagingPlayerPos = getPos _firstPlayer;
+                    };
+                };
+            };
+            _stagingPosition = [_targetPosition,"overwatch",_stagingPlayerPos] call ALIVE_fnc_taskGetSectorPosition;
 
             // select the random text
 

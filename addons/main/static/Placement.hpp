@@ -1382,5 +1382,27 @@ ALIVE_factionDefaultSupplies = [] call ALIVE_fnc_hashCreate;
 [ALIVE_factionDefaultSupplies, "SPE_FFI", ["SPE_Hay_WeaponCache_FFI"]] call ALIVE_fnc_hashSet;
 
 
+/*
+ * AA force-composition default class lists per faction. Used by
+ * mil_placement / mil_placement_custom when the customAACount > 0
+ * and the aaClasses picker is empty. Each faction gets 1-3 functional
+ * crewed AA classes (mobile AAA, SAM systems, AA APCs). Mod factions
+ * not listed here yield no AA fallback - mission-makers configure
+ * the picker explicitly OR the runtime skips AA spawn for that faction.
+ */
+
+ALIVE_factionDefaultAA = [] call ALIVE_fnc_hashCreate;
+
+// Stock A3 + APEX
+[ALIVE_factionDefaultAA, "BLU_F",     ["B_APC_Tracked_01_AA_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAA, "BLU_T_F",   ["B_T_APC_Tracked_01_AA_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAA, "BLU_CTRG_F",["B_T_APC_Tracked_01_AA_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAA, "OPF_F",     ["O_APC_Tracked_02_AA_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAA, "OPF_T_F",   ["O_T_APC_Tracked_02_AA_ghex_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAA, "IND_F",     ["I_APC_Wheeled_03_cannon_F"]] call ALIVE_fnc_hashSet;
+[ALIVE_factionDefaultAA, "IND_C_F",   ["I_APC_Wheeled_03_cannon_F"]] call ALIVE_fnc_hashSet;
+
+
+
 
 

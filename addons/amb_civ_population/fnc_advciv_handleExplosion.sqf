@@ -60,7 +60,7 @@ private _nearCivs = _pos nearEntities ["CAManBase", _range];
         // Tag the source object as having caused harm near a civilian
         if (!isNull _source) then {
             _source setVariable ["ALiVE_advciv_firedAtCivTime", time, true];
-            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=Explosion", name _source, side _source, time]; };
+            if (ALiVE_advciv_debug) then { ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=Explosion", name _source, side _source, time] call ALiVE_fnc_dump; };
         };
 
         if (_order in ["HANDSUP", "GETDOWN", "KNEEL"]) then {

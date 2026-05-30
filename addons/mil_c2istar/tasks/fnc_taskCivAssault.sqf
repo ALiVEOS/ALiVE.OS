@@ -99,11 +99,23 @@ switch (_taskState) do {
 
         if!(isNil "_targetPosition") then {
 
-            private["_stagingPosition","_dialogOptions","_dialogOption"];
+            private["_stagingPosition","_dialogOptions","_dialogOption","_stagingPlayerPos"];
 
             // establish the staging position for the task
-
-            _stagingPosition = [_targetPosition,"overwatch"] call ALIVE_fnc_taskGetSectorPosition;
+            // (pass the first assigned player's position so the helper
+            //  picks a point on the approach line ~700m short of the
+            //  objective rather than its legacy single-sector pick).
+            _stagingPlayerPos = _taskLocation;
+            if (count _taskPlayers > 0 && {count (_taskPlayers select 0) > 0}) then {
+                private _firstPlayerUID = (_taskPlayers select 0) select 0;
+                if (typeName _firstPlayerUID == "STRING" && {_firstPlayerUID != ""}) then {
+                    private _firstPlayer = [_firstPlayerUID] call ALIVE_fnc_getPlayerByUID;
+                    if (!isNull _firstPlayer) then {
+                        _stagingPlayerPos = getPos _firstPlayer;
+                    };
+                };
+            };
+            _stagingPosition = [_targetPosition,"overwatch",_stagingPlayerPos] call ALIVE_fnc_taskGetSectorPosition;
 
             // select the random text
 

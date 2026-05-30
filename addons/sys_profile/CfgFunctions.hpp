@@ -276,6 +276,16 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_findFilteredSafePos.sqf";
                 RECOMPILE;
             };
+            class debugVirtualisedProfiles {
+                description = "Server-side PFH that periodically snapshots ALIVE_profileHandler profile state and broadcasts to admin / Zeus clients for live virtualised-profile map visibility (#863)";
+                file = "\x\alive\addons\sys_profile\fnc_debugVirtualisedProfiles.sqf";
+                RECOMPILE;
+            };
+            class debugVirtualisedProfilesClient {
+                description = "Client-side receiver for the virtualised-profiles snapshot; admin / Zeus gate + per-profile local map marker render (#863)";
+                file = "\x\alive\addons\sys_profile\fnc_debugVirtualisedProfilesClient.sqf";
+                RECOMPILE;
+            };
         };
     };
 };

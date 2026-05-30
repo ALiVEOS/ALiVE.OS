@@ -56,10 +56,10 @@ if(_entityID in (_vehicleAssignments select 1)) then {
 
             [_vehicleAssignment, _vehicle] call ALIVE_fnc_vehicleDismount;
         } else {
-            diag_log format [
+            [
                 "ALiVE fnc_removeProfileVehicleAssignment: skipping dismount, entity-side assignment missing (entity=%1 vehicle=%2). Cleanup continues.",
                 _entityID, _vehicleID
-            ];
+            ] call ALiVE_fnc_dump;
         };
     };
 

@@ -379,9 +379,16 @@ switch (_operation) do {
                 {
                     if (typeof _x == "ALiVE_mil_C2ISTAR") then {
                         waituntil {_x getVariable ["startupComplete",false]};
-
-                        private _opcomIntelSides = [ALiVE_mil_C2ISTAR,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
-                        if (_side in _opcomIntelSides) then {
+                        
+                        // Read opcomIntelSides from the SPECIFIC C2ISTAR
+                        // that's synced to this OPCOM (the foreach
+                        // iteration variable), not the global ALIVE_MIL_C2ISTAR
+                        // singleton - the global tracks only the
+                        // last-initialised module and would skip per-
+                        // sync configuration in a multi-C2ISTAR mission.
+                        private _displayIntel = [_x,"displayIntel"] call ALiVE_fnc_C2ISTAR;
+                        private _opcomIntelSides = [_x,"opcomIntelSides"] call ALiVE_fnc_C2ISTAR;
+                        if (_displayIntel && {_side in _opcomIntelSides}) then {
                             private _G2 = [nil,"create", [_handler]] call ALiVE_fnc_G2;
                             [_G2,"start"] call ALiVE_fnc_G2;
                             [_handler,"G2", _G2] call ALiVE_fnc_hashSet;
@@ -786,7 +793,19 @@ switch (_operation) do {
                     } else {
                         {[[_profile,"position",[0,0,0]] call ALiVE_fnc_HashGet,_pos] call ALiVE_fnc_crossesSea}
                     };
-                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!(call _isSeaTravel)}}};
+                    
+                    // Static AA gate: profiles registered as "static" in
+                    // ALIVE_aaProfileBehaviour (populated by mil_placement
+                    // / mil_placement_custom AA spawn) skip section
+                    // composition - keeps emplaced AA at its spawn point
+                    // instead of being repositioned on attack / defend
+                    // orders. Roaming AA passes through as a normal
+                    // force unit.
+                    private _aaBehVal = if (!isNil "ALIVE_aaProfileBehaviour") then {
+                        [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
+                    } else { nil };
+                    private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
+                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!(call _isSeaTravel)}}} && {!_isStaticAA};
 
                     if (_valid) then {_troopsUnsorted pushBack _profile};
                 };
@@ -1001,7 +1020,15 @@ switch (_operation) do {
                     if !(isnil "_profile") then {
                             _posAttacker = [_profile, "position"] call ALiVE_fnc_HashGet;
 
-                        if (!(isnil "_profile") && {_pos distance _posAttacker < _dist} && {!(_profileID in _reserved)}) then {
+                        // Static AA gate (see "nearestSection" case for
+                        // rationale). Static AA never gets pulled into a
+                        // QRF response - stays at its emplaced spawn.
+                        private _aaBehVal = if (!isNil "ALIVE_aaProfileBehaviour") then {
+                            [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
+                        } else { nil };
+                        private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
+
+                        if (!(isnil "_profile") && {_pos distance _posAttacker < _dist} && {!(_profileID in _reserved)} && {!_isStaticAA}) then {
 
                             _waypoints = [_profile,"waypoints"] call ALIVE_fnc_hashGet;
 

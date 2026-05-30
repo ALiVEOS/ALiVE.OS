@@ -363,15 +363,16 @@ switch(_operation) do {
             // #850 diagnostic. Mirrors the sys_profile path - tag with spawn
             // time/pos and attach Killed/HandleDamage handlers so the RPT can
             // correlate visible wrecks with their validator ENTER lines.
-            if (!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}) then {
+            if ((!isNil "ALiVE_amb_civ_population_debug" && {ALiVE_amb_civ_population_debug})
+                && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
                 _unit setVariable ["ALiVE_spawnTime", time];
                 _unit setVariable ["ALiVE_spawnPos", _position];
                 _unit addEventHandler ["Killed", {
                     params ["_v"];
                     private _spawnTime = _v getVariable ["ALiVE_spawnTime", -1];
-                    diag_log format ["[ALiVE VehSpawn DEBUG] KILLED class=%1 spawnPos=%2 deathPos=%3 elapsed=%4s",
+                    ["[ALiVE VehSpawn DEBUG] KILLED class=%1 spawnPos=%2 deathPos=%3 elapsed=%4s",
                         typeOf _v, _v getVariable ["ALiVE_spawnPos", [0,0,0]],
-                        getPosATL _v, (if (_spawnTime >= 0) then {time - _spawnTime} else {-1})];
+                        getPosATL _v, (if (_spawnTime >= 0) then {time - _spawnTime} else {-1})] call ALiVE_fnc_dump;
                 }];
                 _unit addEventHandler ["HandleDamage", {
                     params ["_v", "", "_damage"];
@@ -379,9 +380,9 @@ switch(_operation) do {
                     if (_damage > 0.05 && {(time - _spawnTime) < 60}) then {
                         if !(_v getVariable ["ALiVE_firstDamageLogged", false]) then {
                             _v setVariable ["ALiVE_firstDamageLogged", true];
-                            diag_log format ["[ALiVE VehSpawn DEBUG] DAMAGED class=%1 spawnPos=%2 currentPos=%3 damage=%4 elapsed=%5s",
+                            ["[ALiVE VehSpawn DEBUG] DAMAGED class=%1 spawnPos=%2 currentPos=%3 damage=%4 elapsed=%5s",
                                 typeOf _v, _v getVariable ["ALiVE_spawnPos", [0,0,0]],
-                                getPosATL _v, _damage, time - _spawnTime];
+                                getPosATL _v, _damage, time - _spawnTime] call ALiVE_fnc_dump;
                         };
                     };
                     _damage
@@ -417,9 +418,15 @@ switch(_operation) do {
 			        } forEach _thislist;
 			       // ["_nearcivs: %1",_nearcivs] call ALIVE_fnc_dump;
 			       if (count _nearcivs > 0) then {
-			       	
+
+                // Chance of borrowing a nearby civilian as a static driver.
+                // Tunable via the amb_civ_population module Eden attribute
+                // "Ambient Vehicle Civ Driver Chance" (#901). Default 0.15
+                // — old hardcoded 0.45 produced too many static-but-manned
+                // ambient cars in player testing.
                 _diceRoll = random 1;
-                if(_diceRoll < 0.45) then {
+                private _driverChance = missionNamespace getVariable ["ALiVE_amb_civ_population_ambVehCivDriverChance", 0.15];
+                if(_diceRoll < _driverChance) then {
                  private _civDriver = _nearcivs select 0;
                  _civDriver moveInDriver _unit;
                  _civDriver assignAsDriver _unit;
@@ -430,7 +437,7 @@ switch(_operation) do {
                  _unit setVariable ["ALiVE_civDriverUnit", _civDriver, true];
                  ["civilian driver: %1",_civDriver] call ALIVE_fnc_dump;
                 };
-			       }; 
+			       };
              // END Civ Drivers
 						
             // set profile as active and store a reference to the unit on the profile

@@ -200,6 +200,15 @@ switch (_taskState) do {
             [_taskParams,"vehicleProfileIDs",_targetVehicles] call ALIVE_fnc_hashSet;
             [_taskParams,"lastState",""] call ALIVE_fnc_hashSet;
 
+            // Task-bound lock: flag the target vehicles' crew entities
+            // as busy so OPCOM's TACOM reassignment skips them. The
+            // utility expands vehicle profile IDs into their crew entity
+            // profile IDs (entitiesInCommandOf + entitiesInCargoOf) and
+            // sets busy on each — OPCOM gates troop selection on the
+            // entity's busy flag, not the vehicle's. Released centrally
+            // on Succeeded / Failed / Canceled via the taskHandler hook.
+            [_newTaskID, _targetVehicles] call ALIVE_fnc_taskLockProfiles;
+
             // return the created tasks and params
 
             _result = [_tasks,_taskParams];
@@ -261,6 +270,11 @@ switch (_taskState) do {
 
             [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
 
+            // Release the task-bound lock. taskHandler's terminal-state
+            // hook will also catch this — idempotent so calling here
+            // first is safe.
+            [_taskID] call ALIVE_fnc_taskReleaseTaskLocks;
+
             ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
             [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
@@ -277,7 +291,7 @@ switch (_taskState) do {
             {
                 _position = _x select 2 select 2;
                 _objectType = _x select 2 select 6;
-                [_position,_taskEnemySide,_taskPlayers,_taskID,"vehicle",_objectType] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                [_position,_taskEnemySide,_taskPlayers,_taskID,"vehicle",_objectType,_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
             } forEach _profiles;
 

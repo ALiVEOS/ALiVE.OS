@@ -47,12 +47,12 @@ private _result = false;
 // Create function call
 private _cmd = format ["GetWeatherLocation [""%1""]", _location];
 
-// diag_log format ["cmd: %1",_cmd];
+// ["cmd: %1",_cmd] call ALiVE_fnc_dump;
 
 // Send command to plugin
 private _newLoc = [_cmd] call ALIVE_fnc_sendToPlugin;
 
-// diag_log format ["WEATHER LOCATION JSON: %1",_newloc];
+// ["WEATHER LOCATION JSON: %1",_newloc] call ALiVE_fnc_dump;
 
 if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
 
@@ -60,7 +60,7 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
     _newloc = [nil,"decode",_newLoc] call ALiVE_fnc_json;
     _newLoc = [_newLoc select 3,"get",["l"]] call ALiVE_fnc_json;
 
-    diag_log format ["WEATHER LOCATION: %1 = %2",_location, _newloc];
+    ["WEATHER LOCATION: %1 = %2",_location, _newloc] call ALiVE_fnc_dump;
 
     private _year = _date select 0;
     private _mon = _date select 1;
@@ -106,7 +106,7 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
     // Create function call
     _cmd = format ["GetWeather ['%1','%2','%3','%4','%5']", _date select 0, _date select 1, _date select 2, _date select 3, _newloc];
 
-    diag_log format ["weather cmd: %1",_cmd];
+    ["weather cmd: %1",_cmd] call ALiVE_fnc_dump;
 
     // Send command to plugin (Dedicated Server only atm)
     //if (isDedicated) then {
@@ -115,7 +115,7 @@ if ([tolower(_newloc), "error"] call CBA_fnc_find == -1) then {
     //    _response = "ALiVEClient" callExtension _cmd;
     // };
 
-    //diag_log format ["WEATHER JSON: %1",_response];
+    //["WEATHER JSON: %1",_response] call ALiVE_fnc_dump;
 
     // Check response for error or no data
     // TO DO

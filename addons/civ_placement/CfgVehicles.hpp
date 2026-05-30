@@ -195,38 +195,6 @@ class CfgVehicles {
 
                         // ---- Ambient Presence -----------------------------------------------
                         class HDR_AMBIENT : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_AMBIENT"; displayName = "AMBIENT PRESENCE"; };
-                        class roadblocks : Combo
-                        {
-                                property = "ALiVE_civ_placement_roadblocks";
-                                displayName = "$STR_ALIVE_CP_ROADBLOCKS";
-                                tooltip = "$STR_ALIVE_CP_ROADBLOCKS_COMMENT";
-                                defaultValue = """0""";
-                                class Values
-                                {
-                                    class NONE { name = "None"; value = "0"; default = 1; };
-                                    class All { name = "All"; value = "100"; };
-                                    class EXTREME { name = "Extreme"; value = "75"; };
-                                    class HIGH { name = "High"; value = "50"; };
-                                    class MEDIUM { name = "Medium"; value = "35"; };
-                                    class LOW { name = "Low"; value = "15"; };
-                                };
-                        };
-                        class placeSeaPatrols : Combo
-                        {
-                                property = "ALiVE_civ_placement_placeSeaPatrols";
-                                displayName = "$STR_ALIVE_CP_PLACE_SEAPATROLS";
-                                tooltip = "$STR_ALIVE_CP_PLACE_SEAPATROLS_COMMENT";
-                                defaultValue = """0""";
-                                class Values
-                                {
-                                    class NONE { name = "None"; value = 0; default = 1; };
-                                    class All { name = "All"; value = 1; };
-                                    class EXTREME { name = "Extreme"; value = 0.75; };
-                                    class HIGH { name = "High"; value = 0.55; };
-                                    class MEDIUM { name = "Medium"; value = 0.33; };
-                                    class LOW { name = "Low"; value = 0.2; };
-                                };
-                        };
                         class guardProbability : Combo
                         {
                                 property = "ALiVE_civ_placement_guardProbability";
@@ -255,6 +223,116 @@ class CfgVehicles {
                                     class MEDIUM { name = "$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_MEDIUM"; value = "50"; default = 1; };
                                     class HIGH { name = "$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_HIGH"; value = "75"; };
                                     class ALL { name = "$STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_ALL"; value = "100"; };
+                                };
+                        };
+                        class garrisonPatrolBehaviour : Combo
+                        {
+                                property = "ALiVE_civ_placement_garrisonPatrolBehaviour";
+                                displayName = "$STR_ALIVE_CP_GARRISON_PATROL_BEHAVIOUR";
+                                tooltip = "$STR_ALIVE_CP_GARRISON_PATROL_BEHAVIOUR_COMMENT";
+                                defaultValue = """SAFE""";
+                                class Values
+                                {
+                                    class Careless { name = "Careless"; value = "CARELESS"; };
+                                    class Safe { name = "Safe"; value = "SAFE"; default = 1; };
+                                    class Aware { name = "Aware"; value = "AWARE"; };
+                                    class Combat { name = "Combat"; value = "COMBAT"; };
+                                    class Stealth { name = "Stealth"; value = "STEALTH"; };
+                                };
+                        };
+                        class garrisonPatrolSpeed : Combo
+                        {
+                                property = "ALiVE_civ_placement_garrisonPatrolSpeed";
+                                displayName = "$STR_ALIVE_CP_GARRISON_PATROL_SPEED";
+                                tooltip = "$STR_ALIVE_CP_GARRISON_PATROL_SPEED_COMMENT";
+                                defaultValue = """LIMITED""";
+                                class Values
+                                {
+                                    class Limited { name = "Limited (walk)"; value = "LIMITED"; default = 1; };
+                                    class Normal { name = "Normal (jog)"; value = "NORMAL"; };
+                                    class Full { name = "Full (run)"; value = "FULL"; };
+                                };
+                        };
+
+                        // ---- Roadblocks -----------------------------------------------------
+                        class HDR_ROADBLOCKS : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_ROADBLOCKS"; displayName = "$STR_ALIVE_CP_HDR_ROADBLOCKS"; };
+                        class roadblocks : Combo
+                        {
+                                property = "ALiVE_civ_placement_roadblocks";
+                                displayName = "$STR_ALIVE_CP_ROADBLOCKS";
+                                tooltip = "$STR_ALIVE_CP_ROADBLOCKS_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class NONE { name = "None"; value = "0"; default = 1; };
+                                    class All { name = "All"; value = "100"; };
+                                    class EXTREME { name = "Extreme"; value = "75"; };
+                                    class HIGH { name = "High"; value = "50"; };
+                                    class MEDIUM { name = "Medium"; value = "35"; };
+                                    class LOW { name = "Low"; value = "15"; };
+                                };
+                        };
+                        class roadblockCompositions
+                        {
+                                property     = "ALiVE_civ_placement_roadblockCompositions";
+                                displayName  = "$STR_ALIVE_CP_ROADBLOCK_COMPOSITIONS";
+                                tooltip      = "$STR_ALIVE_CP_ROADBLOCK_COMPOSITIONS_COMMENT";
+                                control      = "ALiVE_CompositionChoice_CivRoadblock";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['roadblockCompositions', _value];";
+                                defaultValue = """""";
+                        };
+
+                        // ---- Objective Objects (#875) ---------------------------------------
+                        class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
+                        // AA-style triplet: count Edit + behaviour Combo + picker.
+                        class objectiveObjectsCount : Edit
+                        {
+                                property     = "ALiVE_civ_placement_objectiveObjectsCount";
+                                displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT";
+                                tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT";
+                                defaultValue = """0""";
+                        };
+                        class objectiveObjectsBehaviour : Combo
+                        {
+                                property     = "ALiVE_civ_placement_objectiveObjectsBehaviour";
+                                displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR";
+                                tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_COMMENT";
+                                defaultValue = """dispersed""";
+                                class Values
+                                {
+                                    class CLUSTERED { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_CLUSTERED"; value = "clustered"; };
+                                    class DISPERSED { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_DISPERSED"; value = "dispersed"; default = 1; };
+                                    class PERIMETER { name = "$STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR_PERIMETER"; value = "perimeter"; };
+                                };
+                        };
+                        class objectiveObjects
+                        {
+                                property     = "ALiVE_civ_placement_objectiveObjects";
+                                displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS";
+                                tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_COMMENT";
+                                control      = "ALiVE_ObjectiveObjectChoice";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['objectiveObjects', _value];";
+                                defaultValue = """""";
+                        };
+
+                        // ---- Sea Patrols ----------------------------------------------------
+                        class HDR_SEAPATROLS : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_SEAPATROLS"; displayName = "$STR_ALIVE_CP_HDR_SEAPATROLS"; };
+                        class placeSeaPatrols : Combo
+                        {
+                                property = "ALiVE_civ_placement_placeSeaPatrols";
+                                displayName = "$STR_ALIVE_CP_PLACE_SEAPATROLS";
+                                tooltip = "$STR_ALIVE_CP_PLACE_SEAPATROLS_COMMENT";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class NONE { name = "None"; value = 0; default = 1; };
+                                    class All { name = "All"; value = 1; };
+                                    class EXTREME { name = "Extreme"; value = 0.75; };
+                                    class HIGH { name = "High"; value = 0.55; };
+                                    class MEDIUM { name = "Medium"; value = 0.33; };
+                                    class LOW { name = "Low"; value = 0.2; };
                                 };
                         };
 

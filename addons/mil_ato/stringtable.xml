@@ -102,14 +102,6 @@
     <English>Selects HQ objective close to the module or spawns an appropriate composition</English>
     <Chinesesimp>选择模块附近的总部目标或生成适当的组成</Chinesesimp>
 </Key>
-<Key ID="STR_ALIVE_ATO_PLACE_AA">
-    <English>Place Anti-Air:</English>
-    <Chinesesimp>放置防空</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_ATO_PLACE_AA_COMMENT">
-    <English>Places Ground Based Air Defenses around the existing MACC HQ</English>
-    <Chinesesimp>在现有MACC总部周围部署地面防空</Chinesesimp>
-</Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AIR">
     <English>Place Air Assets:</English>
     <Chinesesimp>放置飞行载具</Chinesesimp>

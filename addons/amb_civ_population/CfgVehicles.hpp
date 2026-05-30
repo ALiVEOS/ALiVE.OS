@@ -27,6 +27,7 @@ class CfgVehicles {
             class spawnRadius : Edit { property = "ALiVE_amb_civ_population_spawnRadius"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_RADIUS_COMMENT"; defaultValue = """1500"""; };
             class spawnTypeHeliRadius : Edit { property = "ALiVE_amb_civ_population_spawnTypeHeliRadius"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_HELI_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_HELI_RADIUS_COMMENT"; defaultValue = """1500"""; };
             class spawnTypeJetRadius : Edit { property = "ALiVE_amb_civ_population_spawnTypeJetRadius"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_JET_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_JET_RADIUS_COMMENT"; defaultValue = """0"""; };
+            class spawnRadiusUAV : Edit { property = "ALiVE_amb_civ_population_spawnRadiusUAV"; displayName = "$STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS"; tooltip = "$STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS_COMMENT"; defaultValue = """-1"""; };
             class activeLimiter : Edit { property = "ALiVE_amb_civ_population_activeLimiter"; displayName = "$STR_ALIVE_CIV_POP_ACTIVE_LIMITER"; tooltip = "$STR_ALIVE_CIV_POP_ACTIVE_LIMITER_COMMENT"; defaultValue = """30"""; };
 
             // ---- Hostility ------------------------------------------------------
@@ -39,7 +40,11 @@ class CfgVehicles {
                 property     = "ALiVE_amb_civ_population_insurgentFaction";
                 displayName  = "$STR_ALIVE_CIV_POP_INSURGENT_FACTION";
                 tooltip      = "$STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT";
-                control      = "ALiVE_FactionChoiceMulti_Military";
+                // Per-consumer variant of FactionChoiceMulti_Military.
+                // Visible Title "Insurgent Faction(s):" plus tooltip
+                // $STR_ALIVE_CIV_POP_INSURGENT_FACTION_COMMENT set by
+                // the LOAD handler on idc 101.
+                control      = "ALiVE_FactionChoiceMulti_Military_InsurgentFactions";
                 typeName     = "STRING";
                 expression   = "_this setVariable ['insurgentFaction', _value];";
                 defaultValue = """[]""";
@@ -164,30 +169,35 @@ class CfgVehicles {
             class HDR_HUMANITARIAN : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_HUMANITARIAN"; displayName = "HUMANITARIAN"; };
             class humanitarianHostilityChance : Combo { property = "ALiVE_amb_civ_population_humanitarianHostilityChance"; displayName = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE"; tooltip = "$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT"; defaultValue = """20"""; class Values { class LOW{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_LOW";value="20";default=1;}; class MEDIUM{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_MEDIUM";value="40";}; class HIGH{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_HIGH";value="60";}; class EXTREME{name="$STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_EXTREME";value="80";}; }; };
             class maxAllowAid : Edit { property = "ALiVE_amb_civ_population_maxAllowAid"; displayName = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID"; tooltip = "$STR_ALIVE_CIV_POP_MAX_ALLOWED_AID_COMMENT"; defaultValue = """3"""; };
-            class customWaterItems
+            // Consolidated Humanitarian Items picker (replaces the
+            // previous four-attribute layout: per-category listbox +
+            // per-category Manual edit + spacer). Stored in structured
+            // format "water:Class1,Class2;ration:Class3,Class4" via
+            // the ALiVE_ItemChoiceMulti_Filtered control. Runtime
+            // resolver in fnc_civilianPopulationSystemInit.sqf prefers
+            // this attribute; legacy per-category attrs below remain
+            // defined as hidden back-compat aliases so missions saved
+            // before consolidation still resolve via their existing
+            // logic vars when the consolidated key is empty.
+            class customHumanitarianItems
             {
-                property     = "ALiVE_amb_civ_population_customWaterItems";
-                displayName  = "$STR_ALIVE_CIV_POP_WATER_ITEMS";
-                tooltip      = "$STR_ALIVE_CIV_POP_WATER_ITEMS_COMMENT";
-                control      = "ALiVE_ItemChoiceMulti_Water";
+                property     = "ALiVE_amb_civ_population_customHumanitarianItems";
+                displayName  = "$STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS";
+                tooltip      = "$STR_ALIVE_CIV_POP_HUMANITARIAN_ITEMS_COMMENT";
+                control      = "ALiVE_ItemChoiceMulti_Filtered";
                 typeName     = "STRING";
-                expression   = "_this setVariable ['customWaterItems', _value];";
-                defaultValue = """[]""";
+                expression   = "_this setVariable ['customHumanitarianItems', _value];";
+                defaultValue = """""";
             };
-            class customWaterItemsManual : Edit { property = "ALiVE_amb_civ_population_customWaterItemsManual"; displayName = "$STR_ALIVE_CIV_POP_ITEMS_MANUAL"; tooltip = "$STR_ALIVE_CIV_POP_ITEMS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-            class SPACER_CUSTOM_WATER : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_SPACER_CUSTOM_WATER"; displayName = " "; };
-            class customHumRatItems
-            {
-                property     = "ALiVE_amb_civ_population_customHumRatItems";
-                displayName  = "$STR_ALIVE_CIV_POP_HUMRAT_ITEMS";
-                tooltip      = "$STR_ALIVE_CIV_POP_HUMRAT_ITEMS_COMMENT";
-                control      = "ALiVE_ItemChoiceMulti_Ration";
-                typeName     = "STRING";
-                expression   = "_this setVariable ['customHumRatItems', _value];";
-                defaultValue = """[]""";
-            };
-            class customHumRatItemsManual : Edit { property = "ALiVE_amb_civ_population_customHumRatItemsManual"; displayName = "$STR_ALIVE_CIV_POP_ITEMS_MANUAL"; tooltip = "$STR_ALIVE_CIV_POP_ITEMS_MANUAL_COMMENT"; defaultValue = """"""; typeName = "STRING"; };
-            class SPACER_CUSTOM_HUMRAT : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_SPACER_CUSTOM_HUMRAT"; displayName = " "; };
+            // Hidden legacy aliases - SQM-stored values from missions
+            // saved before the consolidated picker existed are still
+            // pushed onto the logic at scenario init via these
+            // expressions, and the runtime resolver falls back to
+            // them when customHumanitarianItems is empty.
+            class customWaterItems        { property = "ALiVE_amb_civ_population_customWaterItems";        control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['customWaterItems', _value];";        typeName = "STRING"; displayName = ""; };
+            class customWaterItemsManual  { property = "ALiVE_amb_civ_population_customWaterItemsManual";  control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['customWaterItemsManual', _value];";  typeName = "STRING"; displayName = ""; };
+            class customHumRatItems       { property = "ALiVE_amb_civ_population_customHumRatItems";       control = "ALiVE_HiddenAttribute"; defaultValue = """[]"""; expression = "_this setVariable ['customHumRatItems', _value];";       typeName = "STRING"; displayName = ""; };
+            class customHumRatItemsManual { property = "ALiVE_amb_civ_population_customHumRatItemsManual"; control = "ALiVE_HiddenAttribute"; defaultValue = """""";   expression = "_this setVariable ['customHumRatItemsManual', _value];"; typeName = "STRING"; displayName = ""; };
 
             // ---- Advanced Civilians - General -----------------------------------
             class HDR_ADVCIV : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV"; displayName = "ADVANCED CIVILIANS - GENERAL"; };
@@ -226,6 +236,7 @@ class CfgVehicles {
 
             // ---- Advanced Civilians - Vehicle ------------------------------------
             class HDR_ADVCIV_VEHICLE : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_population_HDR_ADVCIV_VEHICLE"; displayName = "ADVANCED CIVILIANS - VEHICLE"; };
+            class ambVehCivDriverChance : Edit { property = "ALiVE_amb_civ_population_ambVehCivDriverChance"; displayName = "$STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE"; tooltip = "$STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE_COMMENT"; defaultValue = """0.15"""; };
             class advciv_vehicleEscape : Combo { property = "ALiVE_amb_civ_population_advciv_vehicleEscape"; displayName = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE"; tooltip = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
             class advciv_vehicleEscapeChance : Edit { property = "ALiVE_amb_civ_population_advciv_vehicleEscapeChance"; displayName = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_CHANCE"; tooltip = "$STR_ALIVE_ADVCIV_VEHICLE_ESCAPE_CHANCE_COMMENT"; defaultValue = """0.3"""; };
             class advciv_noStealMilitary : Combo { property = "ALiVE_amb_civ_population_advciv_noStealMilitary"; displayName = "$STR_ALIVE_ADVCIV_NO_STEAL_MILITARY"; tooltip = "$STR_ALIVE_ADVCIV_NO_STEAL_MILITARY_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };

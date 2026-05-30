@@ -170,7 +170,7 @@ if (isServer) then {
         if (_attackerUnit == _killed) exitWith {};
         if (side _attackerUnit == civilian) exitWith {};
         _attackerUnit setVariable ["ALiVE_advciv_firedAtCivTime", time, true];
-        if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=XEH_EntityKilled", name _attackerUnit, side _attackerUnit, time]; };
+        if (ALiVE_advciv_debug) then { ["[ALiVE Threat DEBUG] firedAtCivTime SET unit=%1 side=%2 time=%3 origin=XEH_EntityKilled", name _attackerUnit, side _attackerUnit, time] call ALiVE_fnc_dump; };
         {
             if (alive _x && {side _x == civilian} && {!isPlayer _x} && {_x != _killed} && {_x getVariable ["ALiVE_advciv_active", false]}) then {
                 _x setVariable ["ALiVE_advciv_state", "PANIC", true];

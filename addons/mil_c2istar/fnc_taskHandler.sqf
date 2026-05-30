@@ -578,10 +578,10 @@ switch (_operation) do {
                 // mode just to discover it would make the failure invisible
                 // to most users. Includes side / taskID / taskType / locType
                 // so the cause can be correlated against module config.
-                diag_log format [
+                [
                     "ALiVE C2ISTAR generateTask: ABORTED task generation for side '%1' (taskID=%2, type=%3, locType=%4) - no playable units available to anchor the task position. Likely cause: 'Constant' auto-task mode firing while no players on this side are present (all spectators / side empty / players left mid-mission). Task will retry on next auto-generation cycle when players become available.",
                     _taskSide, _taskID, _taskType, _taskLocationType
-                ];
+                ] call ALiVE_fnc_dump;
             };
 
             private _strategicObjectivePosition = [];
@@ -692,12 +692,22 @@ switch (_operation) do {
                 private _sideAutoGeneration = [_autoGenerateSides, _taskSide] call ALIVE_fnc_hashGet;
 
                 if (_sideAutoGeneration select 0 == "Constant") then {
-                    uiSleep 10;
-
+                    // Defer the retry via CBA_fnc_waitAndExecute. The
+                    // original `uiSleep 10` required a scheduled context
+                    // but this handler is called via `call` (unscheduled)
+                    // when a task init returns empty, so the suspend
+                    // threw a runtime error. waitAndExecute preserves the
+                    // 10s retry cadence without needing a scheduled
+                    // caller. Latent until Capture Objective's new
+                    // enemy-presence guard started producing empty
+                    // returns at task-gen time.
                     private _generate = [format ["%1_%2", _taskSide, time + 1], _requestPlayerID, _taskSide, _taskFaction, _taskEnemyFaction, _sideAutoGeneration select 0];
 
                     ["Starting auto tasks for some reason, tasks set to %1", _sideAutoGeneration] call ALiVE_fnc_dump;
-                    [_logic, "autoGenerateTasks", _generate] call MAINCLASS;
+                    [{
+                        params ["_logic", "_generate"];
+                        [_logic, "autoGenerateTasks", _generate] call ALIVE_fnc_taskHandler;
+                    }, [_logic, _generate], 10] call CBA_fnc_waitAndExecute;
                 };
             };
         };
@@ -1139,6 +1149,22 @@ switch (_operation) do {
 				];
 
             _updatedTaskPlayers = _updatedTaskPlayers select 0;
+
+            // Central release of task-bound profile locks on terminal state
+            // transitions. Task types (DestroyInfantry / DestroyVehicles)
+            // call taskLockProfiles on init to flag their targets as busy
+            // so OPCOM's TACOM reassignment skips them. Each task type's
+            // success branch also calls taskReleaseTaskLocks, but the
+            // player-cancel / timeout-fail / scripted-cancel paths exit
+            // without that release — so a manually canceled or failed
+            // destroy task would leave its OPFOR targets permanently
+            // busy. This hook catches every terminal state regardless of
+            // which path closed the task. taskReleaseTaskLocks is
+            // idempotent so the per-task-type success-path call + this
+            // central call don't conflict.
+            if (_taskState in ["Succeeded", "Failed", "Canceled"]) then {
+                [_taskID] call ALIVE_fnc_taskReleaseTaskLocks;
+            };
 
             private _task = [_logic, "getTask", _taskID] call MAINCLASS;
             private _previousTaskPlayers = _task select 7 select 0;

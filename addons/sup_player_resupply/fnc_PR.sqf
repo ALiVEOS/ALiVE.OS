@@ -440,15 +440,26 @@ switch(_operation) do {
         // Union multi-select list + manual override field; dedup and drop empties
         private _factionsRaw    = _logic getVariable ["pr_factionWhitelist",       []];
         private _factionsManual = _logic getVariable ["pr_factionWhitelistManual", ""];
+        // Accepts ARRAY, bare CSV "a,b,c", or SQF array literal STRING
+        // '["a","b"]' (canonical form emitted by fnc_edenFactionChoiceMultiSave).
+        // Same strip-then-split pattern mil_opcom's `case "convert"` uses.
         private _factionsArr = if (typeName _factionsRaw == "ARRAY") then {
             +_factionsRaw
         } else {
             if (_factionsRaw == "") then { [] } else {
-                [[_factionsRaw, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+                private _stripped = [_factionsRaw, " ", ""] call CBA_fnc_replace;
+                _stripped = [_stripped, "[", ""] call CBA_fnc_replace;
+                _stripped = [_stripped, "]", ""] call CBA_fnc_replace;
+                _stripped = [_stripped, """", ""] call CBA_fnc_replace;
+                [_stripped, ","] call CBA_fnc_split
             }
         };
         private _manualArr = if (_factionsManual == "") then { [] } else {
-            [[_factionsManual, " ", ""] call CBA_fnc_replace, ","] call CBA_fnc_split
+            private _strippedManual = [_factionsManual, " ", ""] call CBA_fnc_replace;
+            _strippedManual = [_strippedManual, "[", ""] call CBA_fnc_replace;
+            _strippedManual = [_strippedManual, "]", ""] call CBA_fnc_replace;
+            _strippedManual = [_strippedManual, """", ""] call CBA_fnc_replace;
+            [_strippedManual, ","] call CBA_fnc_split
         };
         private _merged = [];
         {

@@ -48,7 +48,59 @@ _items = (assignedItems player) + (items player) + ([backpack player]);
 _items = _items apply {tolower _x};
 _userItems = ([MOD(MIL_C2ISTAR),"c2_item"] call ALIVE_fnc_C2ISTAR) call ALiVE_fnc_stringListToArray;
 _userItems pushback "ALIVE_Tablet";
+
+// Custom Access Items: free-text CSV from the Eden module attribute. Each
+// entry is a raw classname matched literally by the expansion loop below
+// (its "no category match" fallback branch). Allows mission-makers to grant
+// access via custom items that don't belong to a registered category in
+// CfgALiVEC2ISTARAccessItems — see strategy_default_building_types.md
+// pattern for similar "category default + mission override" shape.
+private _customCsv = [MOD(MIL_C2ISTAR),"c2_item_custom"] call ALIVE_fnc_C2ISTAR;
+if (_customCsv isEqualType "" && {_customCsv != ""}) then {
+    private _customItems = _customCsv call ALiVE_fnc_stringListToArray;
+    {
+        private _trimmed = _x;
+        // ALiVE_fnc_stringListToArray already trims, but defensive-strip any
+        // stray spaces in case the user typed "A, B, C" rather than "A,B,C".
+        while {_trimmed select [0,1] == " "} do { _trimmed = _trimmed select [1] };
+        while {count _trimmed > 0 && {_trimmed select [count _trimmed - 1, 1] == " "}} do {
+            _trimmed = _trimmed select [0, count _trimmed - 1];
+        };
+        if (_trimmed != "") then { _userItems pushBack _trimmed };
+    } forEach _customItems;
+};
+
 _userItems = _userItems apply {tolower _x};
+
+// Expand any token that matches a category from CfgALiVEC2ISTARAccessItems
+// to that category's classnames[]. Tokens that don't match a category
+// stay as-is so a legacy single-classname value (e.g. "LaserDesignator"
+// from a pre-overhaul mission save) still works.
+private _expanded = [];
+{
+    private _tok = _x;
+    private _cfg = configFile >> "CfgALiVEC2ISTARAccessItems" >> _tok;
+    if (isClass _cfg) then {
+        {
+            _expanded pushBack (toLower _x);
+        } forEach (getArray (_cfg >> "classnames"));
+    } else {
+        // Case-insensitive lookup: scan registry for a matching key.
+        private _matched = false;
+        {
+            private _key = configName _x;
+            if ((toLower _key) == _tok) exitWith {
+                {
+                    _expanded pushBack (toLower _x);
+                } forEach (getArray (_x >> "classnames"));
+                _matched = true;
+            };
+        } forEach ("true" configClasses (configFile >> "CfgALiVEC2ISTARAccessItems"));
+        if (!_matched) then { _expanded pushBack _tok; };
+    };
+} forEach _userItems;
+_userItems = _expanded;
+
 //Finds selected userItem-string(s) in assignedItems
 
 private _itemsString = _items joinstring ",";
@@ -178,6 +230,25 @@ if (_menuName == "C2ISTAR") then {
                      -1,
                      true,
                      _result
+                ],
+                [
+                    // Caption reflects current state — flexi menu re-runs
+                    // C2MenuDef on each open, so the label flips correctly
+                    // after a toggle.
+                    if (missionNamespace getVariable ["ALIVE_COP_CommandViewOn", false])
+                        then {localize "STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_MENU_ON"}
+                        else {localize "STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_MENU_OFF"},
+                    {
+                        ALIVE_COP_CommandViewOn = !(missionNamespace getVariable ["ALIVE_COP_CommandViewOn", false]);
+                    },
+                    "",
+                    localize "STR_ALIVE_C2ISTAR_COP_COMMAND_VIEW_COMMENT",
+                     "",
+                     -1,
+                     true,
+                     // Visible only when the mission-maker opted in via the
+                     // Eden attribute AND the player carries a c2_item.
+                     (missionNamespace getVariable ["ALIVE_COP_CommandViewEnabled", false]) && {_result}
                 ],
                 ["OPCOM Orders >",
                     "",
@@ -330,7 +401,7 @@ _menuDef = [];
 
 if (count _menuDef == 0) then {
     hintC format ["Error: Menu not found: %1\n%2\n%3", str _menuName, if (_menuName == "") then {_this}else{""}, __FILE__];
-    diag_log format ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__];
+    ["Error: Menu not found: %1, %2, %3", str _menuName, _this, __FILE__] call ALiVE_fnc_dump;
 };
 
 _menuDef // return value

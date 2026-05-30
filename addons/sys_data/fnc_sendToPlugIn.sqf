@@ -33,7 +33,7 @@ TRACE_1("SEND TO PLUGIN CMD: ", _cmd);
 
 _response = "ALiVEPlugIn" callExtension _cmd;
 
-// diag_log format ["RESPONSE: %2:%1", _response, typeName _response];
+// ["RESPONSE: %2:%1", _response, typeName _response] call ALiVE_fnc_dump;
 
 // If null response return error
 if (isNil "_response" || _response == "") exitWith {

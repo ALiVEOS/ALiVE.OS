@@ -35,6 +35,11 @@ if(isServer) then {
     private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
     private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
+    // spawnRadiusUAV: -1 sentinel resolves to spawnRadius + 800, matching the
+    // sys_profile semantic. 0 means disabled (no civ spawning around connected
+    // UAVs). Positive numbers used verbatim.
+    private _spawnRadiusUAV = parseNumber (_logic getVariable ["spawnRadiusUAV","-1"]);
+    if (_spawnRadiusUAV == -1) then { _spawnRadiusUAV = _spawnRadius + 800; };
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
     private _hostilityWest = parseNumber (_logic getVariable ["hostilityWest","0"]);
     private _hostilityEast = parseNumber (_logic getVariable ["hostilityEast","0"]);
@@ -45,17 +50,49 @@ if(isServer) then {
     private _ambientCrowdLimit = parseNumber (_logic getVariable ["ambientCrowdLimit","50"]);
     private _ambientCrowdFaction = (_logic getVariable ["ambientCrowdFaction",""]);
 
-    // Custom water / ration item classnames. Merge the multi-select
-    // (ALiVE_ItemChoiceMulti_Water/_Ration) array with the manual-
-    // override Edit sibling (comma-separated string) into a deduped
-    // array. Backward-compat with legacy SQMs that stored the value as
-    // a single comma-separated string, an SQF array literal, or a bare
-    // classname. Also fixes a pre-existing variable-name mismatch on
-    // the ration field: CfgVehicles property is customHumRatItems but
-    // this file previously read customRationItems, so the attribute
-    // never reached the runtime.
+    // Custom water / ration item classnames. Resolution priority:
+    //   1. Consolidated `customHumanitarianItems` (preferred, written
+    //      by the ALiVE_ItemChoiceMulti_Filtered picker). Structured
+    //      string "water:Class1,Class2;ration:Class3,Class4" with one
+    //      segment per category.
+    //   2. Legacy per-category attrs (customWaterItems / customHumRatItems)
+    //      union with their Manual back-compat partners. Only consulted
+    //      when the consolidated key is empty - i.e. mission saved
+    //      before the consolidated picker was introduced.
+    //
+    // Backward-compat parsing on the legacy path accepts SQF array
+    // literal, comma-separated string, or bare classname. A pre-existing
+    // variable-name mismatch on the ration field (read customRationItems
+    // instead of customHumRatItems, so the attribute never reached
+    // the runtime) was fixed alongside the legacy reader.
+    private _consolidatedRaw = _logic getVariable ["customHumanitarianItems", ""];
+    private _consolidatedBuckets = createHashMap;
+    if (_consolidatedRaw isEqualType "" && {_consolidatedRaw != ""}) then {
+        {
+            private _segment = _x;
+            private _colonIdx = _segment find ":";
+            if (_colonIdx > 0) then {
+                private _segCat = toLower (_segment select [0, _colonIdx]);
+                private _classCsv = _segment select [_colonIdx + 1];
+                private _arr = _consolidatedBuckets getOrDefault [_segCat, []];
+                {
+                    private _p = _x;
+                    while {count _p > 0 && {(_p select [0,1]) == " "}} do { _p = _p select [1] };
+                    while {count _p > 0 && {(_p select [count _p - 1, 1]) == " "}} do { _p = _p select [0, count _p - 1] };
+                    if (_p != "") then { _arr pushBackUnique _p };
+                } forEach ([_classCsv, ","] call CBA_fnc_split);
+                _consolidatedBuckets set [_segCat, _arr];
+            };
+        } forEach ([_consolidatedRaw, ";"] call CBA_fnc_split);
+    };
+
     private _mergeItems = {
-        params ["_primaryKey", "_manualKey"];
+        params ["_category", "_primaryKey", "_manualKey"];
+        // Path 1: consolidated picker output for this category
+        private _consolidatedBucket = _consolidatedBuckets getOrDefault [toLower _category, []];
+        if (count _consolidatedBucket > 0) exitWith { +_consolidatedBucket };
+
+        // Path 2: legacy listbox + Manual union (back-compat)
         private _raw    = _logic getVariable [_primaryKey, []];
         private _manual = _logic getVariable [_manualKey, ""];
         private _arr = if (typeName _raw == "ARRAY") then {
@@ -82,8 +119,8 @@ if(isServer) then {
         } forEach (_arr + _manualArr);
         _merged
     };
-    private _customWaterItems  = ["customWaterItems",  "customWaterItemsManual"]  call _mergeItems;
-    private _customRationItems = ["customHumRatItems", "customHumRatItemsManual"] call _mergeItems;
+    private _customWaterItems  = ["water",  "customWaterItems",  "customWaterItemsManual"]  call _mergeItems;
+    private _customRationItems = ["ration", "customHumRatItems", "customHumRatItemsManual"] call _mergeItems;
 
     // Publish the disable-ambient-sounds toggle as a mission-namespace global
     // so the per-building sound functions (fnc_addAmbientRoomMusic,
@@ -138,6 +175,11 @@ if(isServer) then {
 
     private _advciv_vehicleEscape       = (_logic getVariable ["advciv_vehicleEscape",       "true"])  isEqualTo "true";
     private _advciv_vehicleEscapeChance = parseNumber (_logic getVariable ["advciv_vehicleEscapeChance", "0.3"]);
+    // Ambient civilian-vehicle "static driver" chance (#901). When an
+    // ambient parked car spawns it can borrow a nearby civilian as a
+    // sitting driver. 0.15 default is intentionally low — old hardcoded
+    // 0.45 produced too many static-but-manned cars that confused players.
+    private _ambVehCivDriverChance = parseNumber (_logic getVariable ["ambVehCivDriverChance", "0.15"]);
     private _advciv_noStealMilitary     = (_logic getVariable ["advciv_noStealMilitary",     "true"])  isEqualTo "true";
     private _advciv_noStealUsed         = (_logic getVariable ["advciv_noStealUsed",         "true"])  isEqualTo "true";
     private _advciv_noStealLoaded       = (_logic getVariable ["advciv_noStealLoaded",       "true"])  isEqualTo "true";
@@ -193,6 +235,7 @@ if(isServer) then {
 
     ALiVE_advciv_vehicleEscape       = _advciv_vehicleEscape;       publicVariable "ALiVE_advciv_vehicleEscape";
     ALiVE_advciv_vehicleEscapeChance = _advciv_vehicleEscapeChance; publicVariable "ALiVE_advciv_vehicleEscapeChance";
+    ALiVE_amb_civ_population_ambVehCivDriverChance = _ambVehCivDriverChance; publicVariable "ALiVE_amb_civ_population_ambVehCivDriverChance";
     ALiVE_advciv_noStealMilitary     = _advciv_noStealMilitary;     publicVariable "ALiVE_advciv_noStealMilitary";
     ALiVE_advciv_noStealUsed         = _advciv_noStealUsed;         publicVariable "ALiVE_advciv_noStealUsed";
     ALiVE_advciv_noStealLoaded       = _advciv_noStealLoaded;       publicVariable "ALiVE_advciv_noStealLoaded";
@@ -300,6 +343,7 @@ if(isServer) then {
     [ALIVE_civilianPopulationSystem, "spawnRadius", _spawnRadius] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "spawnTypeJetRadius", _spawnTypeJetRadius] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "spawnTypeHeliRadius", _spawnTypeHeliRadius] call ALIVE_fnc_civilianPopulationSystem;
+    [ALIVE_civilianPopulationSystem, "spawnRadiusUAV", _spawnRadiusUAV] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCivilianRoles", _ambientCivilianRoles] call ALIVE_fnc_civilianPopulationSystem;
     [ALIVE_civilianPopulationSystem, "ambientCrowdSpawn", _ambientCrowdSpawn] call ALIVE_fnc_civilianPopulationSystem;

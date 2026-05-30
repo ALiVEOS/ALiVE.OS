@@ -85,7 +85,7 @@ if (_previousAction == "SLEEPING" && {!_isNight}) then {
     // visibly stand up at sunrise, not stay crouched.
     _unit setUnitPos "UP";
     _unit setVariable ["ALiVE_advciv_actionType", "WAKING", true];
-    if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Sleep DEBUG] civ=%1 waking up (daytime=%2)", name _unit, _hour]; };
+    if (ALiVE_advciv_debug) then { ["[ALiVE Sleep DEBUG] civ=%1 waking up (daytime=%2)", name _unit, _hour] call ALiVE_fnc_dump; };
 };
 
 
@@ -112,7 +112,7 @@ if (_isNight) exitWith {
         if (ALiVE_advciv_nightSleepAnim) then {
             _unit setUnitPos "DOWN";
             [_unit, "AmovPpneMstpSnonWnonDnon"] remoteExec ["switchMove", 0];
-            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Sleep DEBUG] civ=%1 sleeping (indoors at %2)", name _unit, getPos _unit]; };
+            if (ALiVE_advciv_debug) then { ["[ALiVE Sleep DEBUG] civ=%1 sleeping (indoors at %2)", name _unit, getPos _unit] call ALiVE_fnc_dump; };
         };
         _unit setVariable ["ALiVE_advciv_actionType", "SLEEPING", true];
         _unit setVariable ["ALiVE_advciv_lastAction", time + 120];
@@ -126,12 +126,12 @@ if (_isNight) exitWith {
             // that sees actionType SLEEPING without the unit being asleep.
             _unit setVariable ["ALiVE_advciv_actionType", "SLEEPING_ENROUTE", true];
             _unit setVariable ["ALiVE_advciv_lastAction", time + 120];
-            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Sleep DEBUG] civ=%1 heading home to sleep (dist to building=%2)", name _unit, _unit distance _building]; };
+            if (ALiVE_advciv_debug) then { ["[ALiVE Sleep DEBUG] civ=%1 heading home to sleep (dist to building=%2)", name _unit, _unit distance _building] call ALiVE_fnc_dump; };
         } else {
             // No building reachable even at 3x fleeRadius - civ stays
             // outdoors at night with no special action. Rare edge case
             // (genuinely open terrain at night fall).
-            if (ALiVE_advciv_debug) then { diag_log format ["[ALiVE Sleep DEBUG] civ=%1 no shelter found for night - staying outdoors", name _unit]; };
+            if (ALiVE_advciv_debug) then { ["[ALiVE Sleep DEBUG] civ=%1 no shelter found for night - staying outdoors", name _unit] call ALiVE_fnc_dump; };
             _unit setVariable ["ALiVE_advciv_lastAction", time + 60];
         };
     };

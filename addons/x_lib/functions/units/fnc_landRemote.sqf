@@ -29,7 +29,7 @@ params [
     ["_args", "Land", [""]]
 ];
 
-if !(alive _unit) exitwith {diag_log "landRemote failed - dead/empty unit"};
+if !(alive _unit) exitwith {["landRemote failed - dead/empty unit"] call ALiVE_fnc_dump};
 
 //Flag for usage with ALiVE_fnc_unitReadyRemote
 _unit setvariable [QGVAR(MOVEDESTINATION),getpos _unit];

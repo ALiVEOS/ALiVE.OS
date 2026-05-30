@@ -146,7 +146,7 @@ if (count _selectedItems == 0 && {count _initialDefault > 0}) then {
 // ---- 3. Locate the ListBox control (IDC 100) -----------------------
 private _ctrl = _display controlsGroupCtrl 100;
 if (isNull _ctrl) exitWith {
-    diag_log "ALIVE AnimalChoiceMulti LOAD: listbox control (IDC 100) not found";
+    ["ALIVE AnimalChoiceMulti LOAD: listbox control (IDC 100) not found"] call ALiVE_fnc_dump;
 };
 
 lbClear _ctrl;
@@ -232,8 +232,8 @@ private _tickIdxs = +_unrecognisedTickIdxs;
 // ---- 7. Apply selection --------------------------------------------
 { _ctrl lbSetSelected [_x, true] } forEach _tickIdxs;
 
-diag_log format [
+[
     "ALIVE AnimalChoiceMulti LOAD: varName='%1' category='%2' sqm='%3' resolved='%4' parsed=%5 populated=%6 ticked=%7 (incl %8 unrecognised at top)",
     _varName, _category, _sqmValue, _value, _selectedItems,
     lbSize _ctrl, count _tickIdxs, count _unrecognisedTickIdxs
-];
+] call ALiVE_fnc_dump;

@@ -47,9 +47,9 @@
 	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
-	[_taskData,"title","Move to Forming Up Point"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Move to an FUP near %1 in preparation for conducting an assault on the enemy held emplacement."] call ALIVE_fnc_hashSet;
-	[_taskData,"chat_start",[["HQ","Move to an FUP near %1 and prepare to assault the emplacement, Over"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"title","Move to Staging Area"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Move to the staging area near %1 and position your unit for the assault on the enemy emplacement."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Move to the staging area near %1 and prepare to launch the assault, Over"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Travel",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
@@ -331,6 +331,7 @@
 	[_taskData,"title","Pick up the troops"] call ALIVE_fnc_hashSet;
 	[_taskData,"description","Move to the Pick Up Point near %1."] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","Move to the Pick Up Point near %1 in a vehicle with sufficient cargo capacity!"],["PLAYERS","Roger that"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_mount_up",[["HQ","Troops are waiting at the pick up point. Mount up in a transport with cargo space and they will board, Over"],["PLAYERS","Roger, finding a ride, Out"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_failed",[["HQ","Local commander reports insufficient load capacity, RTB and standby for further tasking"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_cancelled",[["HQ","Contact lost with ground forces, assume location is compromised. RTB immediately, Over"],["PLAYERS","Roger Out"]]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Pickup",_taskData] call ALIVE_fnc_hashSet;
@@ -893,7 +894,7 @@
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Local Liaison in %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Protect a local liaison meeting in %1 and keep partner personnel alive while you hold the site."] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Protect a local liaison meeting in %1 and keep partner personnel alive through the timed security hold."] call ALIVE_fnc_hashSet;
 	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
@@ -905,7 +906,7 @@
 
 	_taskData = [] call ALIVE_fnc_hashCreate;
 	[_taskData,"title","Secure liaison in %1"] call ALIVE_fnc_hashSet;
-	[_taskData,"description","Maintain security at the liaison meeting in %1, repel hostile disruption, and keep the partner team alive."] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Maintain security at the liaison meeting in %1 for roughly nine minutes, repel hostile disruption, and keep the partner team alive."] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","Partner personnel are on station in %1. Secure the meeting and protect the local team, Over."],["PLAYERS","Roger, meeting security is established."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","Liaison meeting in %1 concluded successfully, Over."],["HQ","Roger. That should improve local confidence in the security forces, Out."]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_failed",[["HQ","The liaison meeting in %1 collapsed under hostile pressure. Break contact and report, Over."],["PLAYERS","Roger, meeting lost."]]] call ALIVE_fnc_hashSet;

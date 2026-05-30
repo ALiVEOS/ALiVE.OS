@@ -942,7 +942,7 @@ if (!_simAttacks) then {
                     } foreach _x;
                 } foreach _unitAssignments;
             } else {
-                diag_log "FIXME: _vehAssignments is empty while we expect it not to be?!";
+                ["FIXME: _vehAssignments is empty while we expect it not to be?!"] call ALiVE_fnc_dump;
             };
 
             // unassign vehicle from entity

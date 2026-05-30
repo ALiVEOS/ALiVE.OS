@@ -59,7 +59,7 @@ if (typeName _this == "ARRAY") then {
 
 private _ctrl = (_display controlsGroupCtrl 100);
 if (isNull _ctrl) exitWith {
-    diag_log "ALIVE FactionChoiceMulti SAVE: listbox control (IDC 100) not found";
+    ["ALIVE FactionChoiceMulti SAVE: listbox control (IDC 100) not found"] call ALiVE_fnc_dump;
     "[]"
 };
 
@@ -101,12 +101,12 @@ _display setVariable ["value", _result];
 // declared in each consuming module's CfgVehicles.hpp.
 
 // Diagnostic - mirror of the load handler's logging.
-diag_log format [
+[
     "ALIVE FactionChoiceMulti SAVE: varName='%1' selected=%2 (%3 items) -> '%4'",
     _varName,
     _selectedFactions,
     count _selectedFactions,
     _result
-];
+] call ALiVE_fnc_dump;
 
 _result

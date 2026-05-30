@@ -149,6 +149,16 @@ switch (_operation) do {
     case "asymmetricInstallationCountOverrides": {
         _result = [_logic, _operation, _args, DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
+    // #875 - objective scenery objects: AA-style triplet.
+    case "objectiveObjects": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "objectiveObjectsCount": {
+        _result = [_logic, _operation, _args, "0"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "objectiveObjectsBehaviour": {
+        _result = [_logic, _operation, _args, "dispersed"] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "onEachSpawn": {
         _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -174,6 +184,12 @@ switch (_operation) do {
     };
     case "guardPatrolPercentage": {
         _result = [_logic, _operation, _args, DEFAULT_AMBIENT_GUARD_PATROL_PERCENT] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "garrisonPatrolBehaviour": {
+        _result = [_logic, _operation, _args, "SAFE"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "garrisonPatrolSpeed": {
+        _result = [_logic, _operation, _args, "LIMITED"] call ALIVE_fnc_OOsimpleOperation;
     };
     case "readinessLevel": {
         _result = [_logic, _operation, _args, DEFAULT_READINESS_LEVEL] call ALIVE_fnc_OOsimpleOperation;
@@ -220,6 +236,9 @@ switch (_operation) do {
     };
     case "roadBlocks": {
         _result = [_logic, _operation, _args, DEFAULT_RB] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "roadblockCompositions": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
     case "init": {
         if (isServer) then {
@@ -272,6 +291,14 @@ switch (_operation) do {
             [_cluster, "size", _objectiveSize] call ALIVE_fnc_hashSet;
             [_cluster, "type", "CIV"] call ALIVE_fnc_hashSet;
             [_cluster, "priority", _priority] call ALIVE_fnc_hashSet;
+            // ColorRed marks user-placed custom civilian objectives
+            // distinct from the auto-gen civ palette (HQ=Black,
+            // Power=Yellow, Comms=White, Marine=Blue, Rail=Khaki,
+            // Fuel=Orange, Construction=Pink, Settlement=Green). The
+            // shared cluster-marker renderer in fnc_strategic/fnc_cluster.sqf
+            // reads this colour, maps it to the "Custom" sub-type label
+            // and prepends it so the map shows "Custom: <id>|CIV|<pri>|<size>".
+            [_cluster, "debugColor", "ColorRed"] call ALIVE_fnc_hashSet;
             [_cluster, "debug", _debug] call ALIVE_fnc_cluster;
 
             [_logic, "objectives", [_cluster]] call MAINCLASS;
@@ -280,6 +307,14 @@ switch (_operation) do {
 
             if (_debug) then {
                 ["CPC created custom civilian objective %1", _objectiveName] call ALiVE_fnc_dump;
+                // Outline circle showing the configured Objective Size
+                // radius. Mirrors the mil_ied debug-marker pattern -
+                // Ellipse shape with Border brush so the area is
+                // visible without obscuring map detail. ColorRed
+                // matches the cluster's debugColor for visual
+                // continuity with the cluster's anchor marker.
+                private _circleName = format ["alive_cpc_objsize_%1", _objectiveName];
+                [_circleName, _position, "Ellipse", [_objectiveSize, _objectiveSize], "TEXT:", format ["Objective Size (%1m)", _objectiveSize], "COLOR:", "ColorRed", "BRUSH:", "Border", "GLOBAL"] call CBA_fnc_createMarker;
             };
 
             if (_withPlacement) then {
@@ -322,6 +357,9 @@ switch (_operation) do {
 
                         private _roadBlocks = parseNumber([_logic, "roadBlocks"] call MAINCLASS);
                         private _debug = [_logic, "debug"] call MAINCLASS;
+                        // Picker pool threaded into each createRoadblock call -
+                        // see civ_placement/fnc_CP.sqf for the pattern.
+                        private _roadblockComps = [_logic, "roadblockCompositions"] call MAINCLASS;
                         private _maxRoadblockSpawnAttempts = 10;
                         private _lastRoadblockDebug = -30;
 
@@ -346,7 +384,7 @@ switch (_operation) do {
                                     if (_spawn) then {
                                         _spawnChecks = _spawnChecks + 1;
 
-                                        private _roadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug] call ALiVE_fnc_createRoadblock;
+                                        private _roadblockResult = [_position, _size + 150, ceil(_roadBlocks / 30), _debug, _roadblockComps] call ALiVE_fnc_createRoadblock;
                                         private _roadblockLocation = [_position, _size];
 
                                         if (count _roadblockResult > 0) then {
@@ -679,6 +717,8 @@ switch (_operation) do {
                 private _clusterSize = [_x, "size"] call ALIVE_fnc_hashGet;
                 private _guardRadius = parseNumber ([_logic, "guardRadius"] call MAINCLASS);
                 private _guardPatrolPercentage = parseNumber ([_logic, "guardPatrolPercentage"] call MAINCLASS);
+                private _garrisonPatrolBehaviour = toUpper ([_logic, "garrisonPatrolBehaviour"] call MAINCLASS);
+                private _garrisonPatrolSpeed = toUpper ([_logic, "garrisonPatrolSpeed"] call MAINCLASS);
                 private _guardDistance = _clusterSize;
                 private _cluster = _x;
 
@@ -693,10 +733,17 @@ switch (_operation) do {
                 if (count _infantryGroups > 0 && {_guardProbabilityCount > 0}) then {
                     for "_i" from 0 to _guardProbabilityCount - 1 do {
                         private _guardGroup = selectRandom _infantryGroups;
-                        private _guards = [_guardGroup, [_center, _guardDistance] call CBA_fnc_RandPos, random 360, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                        // Water-aware random pick - up to 10 retries before
+                        // falling back to _center.
+                        private _guardPos = _center;
+                        for "_try" from 1 to 10 do {
+                            private _candidate = [_center, _guardDistance] call CBA_fnc_RandPos;
+                            if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
+                        };
+                        private _guards = [_guardGroup, _guardPos, random 360, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
                         {
                             if (([_x, "type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", _guardProbabilityCount, _guardPatrolPercentage]]] call ALIVE_fnc_profileEntity;
+                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", _guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
                             };
                         } forEach _guards;
                         _countProfiles = _countProfiles + count _guards;
@@ -728,7 +775,10 @@ switch (_operation) do {
                             if (surfaceIsWater _vehiclePos) then {
                                 _vehiclePos = _center getPos [50, random 360];
                             };
-                            diag_log format ["[ALiVE Reserve DEBUG] CPC-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)];
+                            if ((!isNil "ALiVE_civ_placement_custom_debug" && {ALiVE_civ_placement_custom_debug})
+                                && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                ["[ALiVE Reserve DEBUG] CPC-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
+                            };
 
                             private _emptyProfiles = [_vehicleReserveClass, _sideCPC, _faction, _vehiclePos, _vehicleDir, false, _faction] call ALIVE_fnc_createProfilesUnCrewedVehicle;
                             private _profileEntity = _emptyProfiles select 0;
@@ -767,7 +817,7 @@ switch (_operation) do {
                             if (_isInfantry && {_infantryActivePlacedCount < _garrisonCount}) then {
                                 _command = "ALIVE_fnc_garrison";
                                 _garrisonPos = [_center, 50] call CBA_fnc_RandPos;
-                                _radius = [_guardRadius, "true", [0,0,0], "", _guardProbabilityCount, _guardPatrolPercentage];
+                                _radius = [_guardRadius, "true", [0,0,0], "", _guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed];
                             } else {
                                 _command = "ALIVE_fnc_ambientMovement";
                                 _radius = [_guardRadius, "SAFE", [0,0,0]];
@@ -785,8 +835,10 @@ switch (_operation) do {
                         if !(surfaceIsWater _position) then {
                             private _profiles = [_group, _position, _activeDir, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
-                            if (_isVehicle) then {
-                                diag_log format ["[ALiVE Reserve DEBUG] CPC-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)];
+                            if (_isVehicle
+                                && {!isNil "ALiVE_civ_placement_custom_debug" && {ALiVE_civ_placement_custom_debug}}
+                                && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
+                                ["[ALiVE Reserve DEBUG] CPC-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)] call ALiVE_fnc_dump;
                             };
 
                             {
@@ -842,6 +894,17 @@ switch (_operation) do {
                     if ((ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS findIf {_x isEqualTo _roadblockLocation}) < 0) then {
                         ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS pushBack _roadblockLocation;
                     };
+
+                    // Debug-mode preview marker - see comment in
+                    // civ_placement/fnc_CP.sqf where the same pattern lands.
+                    // Cluster-centre brown mil_box at queue time; the actual
+                    // spawned roadblock gets its own brown mil_dot at the
+                    // snapped road position via fnc_createRoadblock.
+                    if (_debug) then {
+                        // Deterministic marker name - see CP's matching call.
+                        private _qName = format ["ALiVE_RB_Q_%1_%2", floor (_center select 0), floor (_center select 1)];
+                        [_center, 2, format ["RoadBlock Q (%1m)", _clusterSize], "ColorBrown", "placement.cp.roadblock_q", _qName] call ALIVE_fnc_placeDebugMarker;
+                    };
                 };
             } forEach _clusters;
 
@@ -866,6 +929,17 @@ switch (_operation) do {
                 ["CPC - Placement completed"] call ALiVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
+            };
+
+            // #875 - objective scenery objects (AA-style triplet).
+            private _objSizeRadius_CPC = if (!isNil "_objectiveSize" && {_objectiveSize > 0}) then { _objectiveSize } else { 150 };
+            private _objCountStr_CPC = [_logic, "objectiveObjectsCount"] call MAINCLASS;
+            private _objCount_CPC = if (typeName _objCountStr_CPC == "STRING" && {_objCountStr_CPC != ""}) then { parseNumber _objCountStr_CPC } else { 0 };
+            private _objBehaviour_CPC = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
+            private _countObjectiveObjects_CPC = [_logic, _position, _objSizeRadius_CPC, _objCount_CPC, _objBehaviour_CPC, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            if (_debug) then {
+                ["CPC - Objective objects placed: %1 of %2 (radius=%3 behaviour=%4)",
+                    _countObjectiveObjects_CPC, _objCount_CPC, _objSizeRadius_CPC, _objBehaviour_CPC] call ALiVE_fnc_dump;
             };
 
             _logic setVariable ["startupComplete", true];

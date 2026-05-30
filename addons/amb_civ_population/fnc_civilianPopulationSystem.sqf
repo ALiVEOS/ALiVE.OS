@@ -27,6 +27,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -62,6 +63,7 @@ switch(_operation) do {
                 [_logic,"spawnRadius",1000] call ALIVE_fnc_hashSet;
                 [_logic,"spawnTypeJetRadius",1000] call ALIVE_fnc_hashSet;
                 [_logic,"spawnTypeHeliRadius",1000] call ALIVE_fnc_hashSet;
+                [_logic,"spawnRadiusUAV",1800] call ALIVE_fnc_hashSet;
                 [_logic,"activeLimiter",30] call ALIVE_fnc_hashSet;
                 [_logic,"spawnCycleTime",5] call ALIVE_fnc_hashSet;
                 [_logic,"despawnCycleTime",1] call ALIVE_fnc_hashSet;
@@ -81,6 +83,7 @@ switch(_operation) do {
             private _spawnRadius = [_logic,"spawnRadius"] call ALIVE_fnc_hashGet;
             private _spawnTypeJetRadius = [_logic,"spawnTypeJetRadius"] call ALIVE_fnc_hashGet;
             private _spawnTypeHeliRadius = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
+            private _spawnRadiusUAV = [_logic,"spawnRadiusUAV"] call ALIVE_fnc_hashGet;
             private _activeLimiter = [_logic,"activeLimiter"] call ALIVE_fnc_hashGet;
             private _spawnCycleTime = [_logic,"spawnCycleTime"] call ALIVE_fnc_hashGet;
             private _despawnCycleTime = [_logic,"despawnCycleTime"] call ALIVE_fnc_hashGet;
@@ -123,6 +126,7 @@ switch(_operation) do {
                 ["Spawn Radius: %1", _spawnRadius] call ALiVE_fnc_dump;
                 ["Spawn in Jet Radius: %1",_spawnTypeJetRadius] call ALiVE_fnc_dump;
                 ["Spawn in Heli Radius: %1",_spawnTypeHeliRadius] call ALiVE_fnc_dump;
+                ["Spawn UAV Radius: %1",_spawnRadiusUAV] call ALiVE_fnc_dump;
                 ["Spawn Cycle Time: %1", _spawnCycleTime] call ALiVE_fnc_dump;
                 ["Initial civilian hostility settings:"] call ALiVE_fnc_dump;
                 ALIVE_civilianHostility call ALIVE_fnc_inspectHash;
@@ -135,7 +139,7 @@ switch(_operation) do {
             [_logic,"startupComplete",true] call ALIVE_fnc_hashSet;
 
             // start the cluster activator
-            private _clusterActivatorFSM = [_logic,_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter] execFSM "\x\alive\addons\amb_civ_population\clusterActivator.fsm";
+            private _clusterActivatorFSM = [_logic,_spawnRadius,_spawnTypeJetRadius,_spawnTypeHeliRadius,_spawnCycleTime,_activeLimiter,_spawnRadiusUAV] execFSM "\x\alive\addons\amb_civ_population\clusterActivator.fsm";
             [_logic,"activator_FSM",_clusterActivatorFSM] call ALIVE_fnc_hashSet;
 
             if (_ambientCrowdSpawn > 0) then {
@@ -343,6 +347,17 @@ switch(_operation) do {
         };
 
         _result = [_logic,"spawnTypeHeliRadius"] call ALIVE_fnc_hashGet;
+
+    };
+
+    case "spawnRadiusUAV": {
+
+        if(_args isEqualType 0) then {
+            [_logic,"spawnRadiusUAV",_args] call ALIVE_fnc_hashSet;
+            ALIVE_spawnRadiusCivUAV = _args;
+        };
+
+        _result = [_logic,"spawnRadiusUAV"] call ALIVE_fnc_hashGet;
 
     };
 

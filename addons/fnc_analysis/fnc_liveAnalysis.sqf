@@ -1366,7 +1366,13 @@ switch(_operation) do {
                                         _position = _profile select 2 select 2;
 
                                         if!(surfaceIsWater _position) then {
-                                            _marker = [_profile, "createDebugMarkers", [1]] call ALIVE_fnc_profileEntity;
+                                            // Pass [true] to force-render so the server-side analysis pump
+                                            // creates markers regardless of the server's visibleMap state
+                                            // (issue #606 — friendly-intel was silently no-op on dedicated
+                                            // server because the server never has a map open). See the
+                                            // matching comment in sys_profile/fnc_profileEntity.sqf
+                                            // case "createDebugMarkers".
+                                            _marker = [_profile, "createDebugMarkers", [true]] call ALIVE_fnc_profileEntity;
                                             _markers = _markers + _marker;
                                             _profiles pushback _profile;
                                         };
