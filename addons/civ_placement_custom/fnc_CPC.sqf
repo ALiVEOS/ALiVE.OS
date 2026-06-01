@@ -170,7 +170,7 @@ switch (_operation) do {
     };
 
     case "faction": {
-        _result = [_logic, _operation, _args, DEFAULT_FACTION, [] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic, _operation, _args, DEFAULT_FACTION, [""] + ([] call ALiVE_fnc_configGetFactions)] call ALIVE_fnc_OOsimpleOperation;
 
         if !(_args isEqualType "") then {
             private _compiledFaction = [_logic] call ALiVE_fnc_factionCompilerResolveForModule;
@@ -513,8 +513,8 @@ switch (_operation) do {
 
             private _type = [_logic, "type"] call MAINCLASS;
             private _factions = [_logic getVariable ["factions", ""]] call _fnc_parseFactions;
-            // Read the raw hidden legacy value. MAINCLASS applies DEFAULT_FACTION
-            // and would make a new empty multi-select look like saved BLU_F.
+            // Read the raw hidden legacy value so only an explicitly stored
+            // legacy faction blocks OPCOM inheritance.
             private _legacyFactions = [_logic getVariable ["faction", ""]] call _fnc_parseFactions;
 
             if (count _factions == 0) then {
