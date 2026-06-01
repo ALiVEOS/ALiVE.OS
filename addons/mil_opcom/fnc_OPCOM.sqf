@@ -647,22 +647,58 @@ switch(_operation) do {
                     //but the synced Mil Placement was left on its OPF_F
                     //default, so there are zero profiles for X and OPCOM
                     //silently refuses to run.
+                    private _parsePlacementFactions = {
+                        params ["_value"];
+                        private _parsed = [];
+                        if (_value isEqualType []) exitWith {
+                            {
+                                if (_x isEqualType "" && {_x != ""} && {_x != "NONE"} && {!(_x in _parsed)}) then {
+                                    _parsed pushBack _x;
+                                };
+                            } forEach _value;
+                            _parsed
+                        };
+                        if !(_value isEqualType "") exitWith { [] };
+                        if (_value == "") exitWith { [] };
+                        private _s = _value;
+                        _s = [_s, " ", ""] call CBA_fnc_replace;
+                        _s = [_s, "[", ""] call CBA_fnc_replace;
+                        _s = [_s, "]", ""] call CBA_fnc_replace;
+                        _s = [_s, """", ""] call CBA_fnc_replace;
+                        {
+                            if (_x != "" && {_x != "NONE"} && {!(_x in _parsed)}) then {
+                                _parsed pushBack _x;
+                            };
+                        } forEach ([_s, ","] call CBA_fnc_split);
+                        _parsed
+                    };
+
                     private _availableFactions = [];
+                    private _customPlacementClasses = ["ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"];
                     {
                         // mil_placement_spe omitted - see rationale at the placement-class
                         // iteration above.
-                        if ((typeOf _x) in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
-                            private _fac = _x getVariable ["faction", ""];
-                            if (_fac != "" && {!(_fac in _availableFactions)}) then {
-                                _availableFactions pushBack _fac;
+                        private _placementType = typeOf _x;
+                        if (_placementType in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
+                            private _placementFactions = [_x getVariable ["factions", ""]] call _parsePlacementFactions;
+                            if ((count _placementFactions == 0) && {_placementType in _customPlacementClasses}) then {
+                                _placementFactions = +_factions;
                             };
+                            if (count _placementFactions == 0) then {
+                                _placementFactions = [_x getVariable ["faction", ""]] call _parsePlacementFactions;
+                            };
+                            {
+                                if (!(_x in _availableFactions)) then {
+                                    _availableFactions pushBack _x;
+                                };
+                            } forEach _placementFactions;
                         };
                     } forEach (synchronizedObjects _logic);
 
                     private _unmatchedFactions = _factions select {!(_x in _availableFactions)};
                     if (count _unmatchedFactions > 0) then {
                         [
-                            "ALiVE OPCOM init MISMATCH: AI Commander '%1' has Factions [%2] but synced placement modules only provide factions [%3]. Unmatched: [%4]. Fix: either change the OPCOM Factions multi-select to match a placement module's faction, or add / sync a Mil Placement (or Mil Placement (Civ Obj)) module with the missing faction to this OPCOM.",
+                            "ALiVE OPCOM init MISMATCH: AI Commander '%1' has Factions [%2] but synced placement modules only provide factions [%3]. Unmatched: [%4]. Fix: change the OPCOM Factions multi-select to match a placement module, add / sync a placement with the missing faction, or leave a custom objective's Force Factions empty so it inherits this Commander.",
                             _customName,
                             _factions joinString ", ",
                             _availableFactions joinString ", ",

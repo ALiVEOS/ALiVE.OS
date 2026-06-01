@@ -24,13 +24,24 @@ class CfgVehicles {
                         // ---- General --------------------------------------------------------
                         class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_GENERAL"; displayName = "GENERAL"; };
                         class debug : Combo { property = "ALiVE_mil_placement_custom_debug"; displayName = "$STR_ALIVE_CMP_DEBUG"; tooltip = "$STR_ALIVE_CMP_DEBUG_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
-                        // Shared ALiVE_FactionChoice dropdown - see addons/main/CfgVehicles.hpp.
+                        class factions
+                        {
+                                property     = "ALiVE_mil_placement_custom_factions";
+                                displayName  = "Force Factions:";
+                                tooltip      = "Optional. Pick one or more factions for this custom objective to spawn. Leave empty to inherit factions from a synced AI Commander. If no Commander factions are available, the legacy Force Faction fallback is used.";
+                                control      = "ALiVE_FactionChoiceMulti_Military_CustomObjectives";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['factions', _value];";
+                                defaultValue = """[]""";
+                        };
+                        // Legacy single-faction slot. Hidden for new missions
+                        // but kept so existing SQMs still load.
                         class faction
                         {
                                 property     = "ALiVE_mil_placement_custom_faction";
-                                displayName  = "$STR_ALIVE_CMP_FACTION";
-                                tooltip      = "$STR_ALIVE_CMP_FACTION_COMMENT";
-                                control      = "ALiVE_FactionChoice_Military";
+                                displayName  = "";
+                                tooltip      = "";
+                                control      = "ALiVE_HiddenAttribute";
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['faction', _value];";
                                 defaultValue = """BLU_F""";
