@@ -595,9 +595,10 @@ switch(_operation) do {
             private _previousWaypoint = if (_countPendingWaypoints == 1) then {nil} else {(_pendingWaypoints select (_countPendingWaypoints - 2)) select 3};
             private _startPosition = if (isnil "_previousWaypoint" || _insertionMethod == "insertWaypoint") then { [_logic,"position"] call ALiVE_fnc_hashGet } else {[_previousWaypoint,"position"] call Alive_fnc_hashGet;};
             private _profileID = [_logic,"profileID"] call ALiVE_fnc_hashGet;
+            private _profileSide = [_logic,"side"] call ALiVE_fnc_hashGet;   // for side-coloured debug-draw of the route
             private _pathfindingProcedure = [_logic] call ALiVE_fnc_profileGetPathfindingProcedure;
 
-            [ALiVE_Pathfinder,"findPath",[_startPosition, _pathFindingProcedure, _waypoint, _previousWaypoint, [_profileID,_pendingPath],{
+            [ALiVE_Pathfinder,"findPath",[_startPosition, _pathFindingProcedure, _waypoint, _previousWaypoint, [_profileID,_pendingPath,_profileSide],{
                 params ["_callbackArgs","_path"];
 
                 _callbackArgs params ["_profileID","_pendingPath"];

@@ -138,6 +138,25 @@ class CfgVehicles {
                                 class AutoLow { name = "Auto - Performance"; value = "low"; };
                             };
                     };
+                    // Debug-draw toggles (independent of the module Debug flag).
+                    // Both can also be flipped live by a logged-in admin via the
+                    // ALiVE menu (Admin Options -> Profile System).
+                    class pathfindingDrawGrid : Combo
+                    {
+                            property = "ALiVE_sys_profile_pathfindingDrawGrid";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_COMMENT";
+                            defaultValue = """false""";
+                            class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; };
+                    };
+                    class pathfindingDrawPaths : Combo
+                    {
+                            property = "ALiVE_sys_profile_pathfindingDrawPaths";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_COMMENT";
+                            defaultValue = """false""";
+                            class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; };
+                    };
                     class seaTransport : Combo { property = "ALiVE_sys_profile_seaTransport"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; }; };
 
                     class ModuleDescription : ModuleDescription {};

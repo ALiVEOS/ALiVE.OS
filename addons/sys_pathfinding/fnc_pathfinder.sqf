@@ -131,7 +131,8 @@ switch (_operation) do {
             ["pathfindingProcedures", [] call ALiVE_fnc_hashCreate],
             ["currentJobData", []],
             ["pathJobs", []],
-            ["pathDebugMarkers", []]
+            ["pathDebugMarkers", []],
+            ["pathDrawMarkers", []]
         ]] call ALiVE_fnc_hashCreate;
 
         [_logic,"addPathfindingProcedure", ["default",["Man", [true, true, true, true, false], [0.7, 30], [-0.1, 0.6, -0.1, -0.1]]]] call MAINCLASS;
@@ -147,6 +148,34 @@ switch (_operation) do {
 
         _result = _logic;
 
+    };
+
+    ////////// DEBUG-DRAW CONTROL //////////
+    // Toggle the terrain-grid sector overlay on/off. Sets the global the Eden
+    // param / admin menu read, and drives the grid's own enableDebugMarkers op
+    // (which builds the coloured sector rectangles, or tears them down).
+    // (#pathfinding-draw 2026-06-01)
+    case "setDrawGrid": {
+        private _enable = if (_args isEqualType true) then { _args } else { false };
+        missionNamespace setVariable ["ALiVE_pathfinding_drawGrid", _enable];
+        private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
+        if (!isNil "_terrainGrid") then {
+            [_terrainGrid, "enableDebugMarkers", [_enable]] call ALiVE_fnc_pathfindingGrid;
+        };
+        _result = _enable;
+    };
+
+    // Toggle the computed-path overlay on/off. Off also clears any path markers
+    // already drawn so the map doesn't keep stale routes.
+    case "setDrawPaths": {
+        private _enable = if (_args isEqualType true) then { _args } else { false };
+        missionNamespace setVariable ["ALiVE_pathfinding_drawPaths", _enable];
+        if (!_enable) then {
+            private _pathMarkers = [_logic, "pathDrawMarkers", []] call ALiVE_fnc_hashGet;
+            { deleteMarker _x } forEach _pathMarkers;
+            [_logic, "pathDrawMarkers", []] call ALiVE_fnc_hashSet;
+        };
+        _result = _enable;
     };
 
     ////////// PROCEDURE FUNCTIONS //////////
@@ -879,6 +908,55 @@ switch (_operation) do {
 
         if (_jobComplete) then {
             if (isNil {_result select 0;}) then {["Error - Undefined value in path: %1 \n%2", _layer2, _result] call Alive_fnc_Dump;};
+
+            // Optional debug draw of the final computed route (gated by the
+            // "Draw Paths" toggle - Eden param ALiVE_sys_profile_pathfindingDrawPaths
+            // or the live admin-menu toggle, both set the global below). Off by
+            // default = zero cost (the flag short-circuits before any marker is
+            // made). Each path's markers are tagged with a per-call id so the next
+            // draw doesn't collide. (#pathfinding-draw 2026-06-01)
+            if (missionNamespace getVariable ["ALiVE_pathfinding_drawPaths", false] && {_result isEqualType []} && {count _result > 0}) then {
+                private _pathMarkers = [_logic, "pathDrawMarkers", []] call ALiVE_fnc_hashGet;
+                // Colour the route by the requesting profile's side (threaded as
+                // the 3rd callbackArgs element from fnc_profileEntity's findPath
+                // call). Standard A3 side marker colours; unknown -> ColorUNKNOWN.
+                private _drawColor = switch (toUpper (_callbackArgs param [2, "UNKNOWN"])) do {
+                    case "WEST": { "ColorWEST" };   // BLUFOR
+                    case "EAST": { "ColorEAST" };   // OPFOR
+                    case "GUER": { "ColorGUER" };   // Independent
+                    case "CIV":  { "ColorCIV"  };   // Civilian
+                    default      { "ColorUNKNOWN" };
+                };
+                private _tag = format ["ALiVE_pf_path_%1_%2", diag_frameNo, count _pathMarkers];
+                // Drop a dot at each node and collect a flat [x1,y1,x2,y2,...]
+                // coordinate list for the connecting polyline.
+                private _line = [];
+                {
+                    private _mName = format ["%1_%2", _tag, _forEachIndex];
+                    private _m = createMarker [_mName, _x];
+                    _m setMarkerShape "ICON";
+                    _m setMarkerType "hd_dot";
+                    _m setMarkerSize [0.5, 0.5];
+                    _m setMarkerColor _drawColor;
+                    _m setMarkerAlpha 0.7;
+                    _pathMarkers pushBack _mName;
+                    _line pushBack (_x select 0);
+                    _line pushBack (_x select 1);
+                } forEach _result;
+                // Link the nodes with a single polyline marker so the route reads
+                // as a line rather than a scatter of dots. setMarkerPolyline needs
+                // a flat, even-length array of >= 2 points (>= 4 numbers).
+                if (count _line >= 4) then {
+                    private _plName = format ["%1_line", _tag];
+                    createMarker [_plName, _result select 0];
+                    _plName setMarkerShape "POLYLINE";
+                    _plName setMarkerPolyline _line;
+                    _plName setMarkerColor _drawColor;
+                    _plName setMarkerAlpha 0.8;
+                    _pathMarkers pushBack _plName;
+                };
+                [_logic, "pathDrawMarkers", _pathMarkers] call ALiVE_fnc_hashSet;
+            };
 
             [_callbackArgs,_result] spawn _callback;
 

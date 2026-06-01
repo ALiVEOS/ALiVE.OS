@@ -200,22 +200,26 @@ switch (_operation) do {
 
     case "enableDebugMarkers": {
         _args params ["_enable"];
-        _debugMarkers = [_logic,"debugMarkers"] call ALiVE_fnc_hashGet;
+        private _debugMarkers = [_logic,"debugMarkers"] call ALiVE_fnc_hashGet;
 
-        if ((count _debugMarkers > 0) && _enable) exitwith {_result = _enable;};
-        if ((count _debugMarkers > 0) && !_enable) exitwith {
-            {deleteMarker _x} foreach _debugMarkers;
-            _result = _enable;
-        };
+        // Enable: if not already drawn, build the coloured sector overlay and
+        // store the created marker names. (sectors is a HashMap, so forEach gives
+        // key=_x, value=_y - pass the sector value _y to the marker builder.)
         if (_enable) exitwith {
+            if (count _debugMarkers > 0) exitWith { _result = true; };   // already drawn
             private _sectors = [_logic, "sectors"] call Alive_fnc_hashGet;
-            //_sectors = [_sectors] call CBA_fnc_hashValues;
             private _size = [_logic,"sectorSize"] call Alive_fnc_hashGet;
-            {_debugMarkers append ([nil, "createSectorDebugMarker", [_y,_size]] call Alive_fnc_pathfindingSector);} foreach _sectors;
-            _result = _enable;
+            { _debugMarkers append ([nil, "createSectorDebugMarker", [_y,_size]] call Alive_fnc_pathfindingSector); } foreach _sectors;
+            [_logic,"debugMarkers",_debugMarkers] call ALiVE_fnc_hashSet;
+            _result = true;
         };
 
-        _result = _enable;
+        // Disable: delete every drawn marker and clear the store so a later
+        // enable will redraw (the previous version left stale names in the store,
+        // which blocked re-enabling).
+        { deleteMarker _x } forEach _debugMarkers;
+        [_logic,"debugMarkers",[]] call ALiVE_fnc_hashSet;
+        _result = false;
     };
 
 };

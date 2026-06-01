@@ -61,6 +61,12 @@ if(isServer) then {
     // (The old code parseSimpleArray'd this unconditionally, which errored on the
     // new string tokens and on an empty/missing value.)
     private _pathfindingSize = _logic getVariable ["pathfindingSize", "auto"];
+    // Debug-draw toggles (independent of the module Debug flag). Same string
+    // "true"/"false" combo shape as pathfinding/seaTransport above. These MUST be
+    // forwarded to the profile system or the create block can't read them back and
+    // the grid/route overlay never activates from the Eden defaults.
+    private _pathfindingDrawGrid  = (_logic getVariable ["pathfindingDrawGrid",  "false"]) == "true";
+    private _pathfindingDrawPaths = (_logic getVariable ["pathfindingDrawPaths", "false"]) == "true";
     private _seaTransport = (_logic getVariable ["seaTransport", "false"]) == "true";
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
     private _vehicleSpawnSettleSeconds = parseNumber (_logic getVariable ["vehicleSpawnSettleSeconds", "15"]);
@@ -89,6 +95,8 @@ if(isServer) then {
     [ALIVE_profileSystem, "combatRange", _virtualCombatRangeModifier] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "pathfinding", _pathfinding] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "pathfindingSize", _pathfindingSize] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "pathfindingDrawGrid",  _pathfindingDrawGrid]  call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "pathfindingDrawPaths", _pathfindingDrawPaths] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "seaTransport", _seaTransport] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "smoothSpawn", _smoothSpawn] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "vehicleSpawnSettleSeconds", _vehicleSpawnSettleSeconds] call ALIVE_fnc_profileSystem;

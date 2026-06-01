@@ -165,6 +165,30 @@
     <English>Controls the resolution of the pathfinding grid.\n\nAuto (recommended) sizes the grid to this map automatically - no need to match a map size by hand. High detail / Balanced / Performance trade path accuracy against server load. (An exact grid size can still be forced from init.sqf if ever needed.)</English>
     <Chinesesimp>实验的!\n这项功能是高度实验性的,可能会破坏任务.\n如果发现任何问题,请禁用.\n配置文件将使用智能路径到达目的地.</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID">
+    <English>Draw Pathfinding Grid:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_COMMENT">
+    <English>Debug: draw the pathfinding terrain grid on the map - coloured sectors showing how the map is classified (land / water / coast / bridge). Independent of the module Debug setting. A logged-in admin can also toggle this live from the ALiVE menu (Admin Options - Profile System). Default No.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS">
+    <English>Draw Pathfinding Routes:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_COMMENT">
+    <English>Debug: draw each computed route on the map as a connected line through its nodes, as profiles request paths. Lines are coloured by the requesting side (BLUFOR blue, OPFOR red, Independent green, Civilian purple). Independent of the module Debug setting. A logged-in admin can also toggle this live from the ALiVE menu (Admin Options - Profile System). Default No.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_ENABLE">
+    <English>Activate Pathfinding Grid Drawing</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_DISABLE">
+    <English>Deactivate Pathfinding Grid Drawing</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_ENABLE">
+    <English>Activate Pathfinding Routes Drawing</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_DISABLE">
+    <English>Deactivate Pathfinding Routes Drawing</English>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
     <English>Infantry sea transport:</English>
     <Chinesesimp>步兵海上运输：</Chinesesimp>
