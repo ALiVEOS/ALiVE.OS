@@ -681,11 +681,20 @@ switch(_operation) do {
                         private _placementType = typeOf _x;
                         if (_placementType in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
                             private _placementFactions = [_x getVariable ["factions", ""]] call _parsePlacementFactions;
+                            private _legacyPlacementFactions = [];
                             if (count _placementFactions == 0) then {
-                                _placementFactions = [_x getVariable ["faction", ""]] call _parsePlacementFactions;
+                                _legacyPlacementFactions = [_x getVariable ["faction", ""]] call _parsePlacementFactions;
+                                private _legacyIsDefault = (count _legacyPlacementFactions == 1) && {(_legacyPlacementFactions select 0) == "BLU_F"};
+                                private _legacyBlocksInheritance = (_placementType in _customPlacementClasses) && {_legacyIsDefault};
+                                if (!_legacyBlocksInheritance) then {
+                                    _placementFactions = +_legacyPlacementFactions;
+                                };
                             };
                             if ((count _placementFactions == 0) && {_placementType in _customPlacementClasses}) then {
                                 _placementFactions = +_factions;
+                            };
+                            if ((count _placementFactions == 0) && {count _legacyPlacementFactions > 0}) then {
+                                _placementFactions = +_legacyPlacementFactions;
                             };
                             {
                                 if (!(_x in _availableFactions)) then {

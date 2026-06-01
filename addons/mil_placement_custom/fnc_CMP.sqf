@@ -528,10 +528,13 @@ switch(_operation) do {
             };
 
             private _factions = [_logic getVariable ["factions", ""]] call _fnc_parseFactions;
-            // Read the raw hidden legacy value so only an explicitly stored
-            // legacy faction blocks OPCOM inheritance.
+            // Read the raw hidden legacy value so only a non-default legacy
+            // faction blocks OPCOM inheritance.
             private _legacyFactions = [_logic getVariable ["faction", ""]] call _fnc_parseFactions;
-            if (count _factions == 0) then {
+            // Old SQMs often carry the former BLU_F default in the now-hidden
+            // field; don't let that stale default block commander inheritance.
+            private _legacyIsDefault = (count _legacyFactions == 1) && {(_legacyFactions select 0) == DEFAULT_FACTION};
+            if ((count _factions == 0) && {count _legacyFactions > 0} && {!_legacyIsDefault}) then {
                 _factions = +_legacyFactions;
             };
             if (count _factions == 0) then {
@@ -542,6 +545,9 @@ switch(_operation) do {
                         } forEach ([_x] call _fnc_getOpcomFactions);
                     };
                 } forEach (synchronizedObjects _logic);
+            };
+            if ((count _factions == 0) && {count _legacyFactions > 0}) then {
+                _factions = +_legacyFactions;
             };
             if (count _factions == 0) then { _factions = [DEFAULT_FACTION] };
 
