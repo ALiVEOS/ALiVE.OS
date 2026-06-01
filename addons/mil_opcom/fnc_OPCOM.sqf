@@ -681,11 +681,11 @@ switch(_operation) do {
                         private _placementType = typeOf _x;
                         if (_placementType in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
                             private _placementFactions = [_x getVariable ["factions", ""]] call _parsePlacementFactions;
-                            if ((count _placementFactions == 0) && {_placementType in _customPlacementClasses}) then {
-                                _placementFactions = +_factions;
-                            };
                             if (count _placementFactions == 0) then {
                                 _placementFactions = [_x getVariable ["faction", ""]] call _parsePlacementFactions;
+                            };
+                            if ((count _placementFactions == 0) && {_placementType in _customPlacementClasses}) then {
+                                _placementFactions = +_factions;
                             };
                             {
                                 if (!(_x in _availableFactions)) then {

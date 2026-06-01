@@ -528,6 +528,12 @@ switch(_operation) do {
             };
 
             private _factions = [_logic getVariable ["factions", ""]] call _fnc_parseFactions;
+            // Read the raw hidden legacy value. MAINCLASS applies DEFAULT_FACTION
+            // and would make a new empty multi-select look like saved BLU_F.
+            private _legacyFactions = [_logic getVariable ["faction", ""]] call _fnc_parseFactions;
+            if (count _factions == 0) then {
+                _factions = +_legacyFactions;
+            };
             if (count _factions == 0) then {
                 {
                     if ((typeOf _x) isEqualTo "ALiVE_mil_OPCOM") then {
@@ -536,9 +542,6 @@ switch(_operation) do {
                         } forEach ([_x] call _fnc_getOpcomFactions);
                     };
                 } forEach (synchronizedObjects _logic);
-            };
-            if (count _factions == 0) then {
-                _factions = [[_logic, "faction"] call MAINCLASS] call _fnc_parseFactions;
             };
             if (count _factions == 0) then { _factions = [DEFAULT_FACTION] };
 

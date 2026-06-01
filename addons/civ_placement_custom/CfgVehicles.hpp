@@ -34,6 +34,7 @@ class CfgVehicles {
             };
             // Legacy single-faction slot. Hidden for new missions but kept so
             // existing SQMs using ALiVE_civ_placement_custom_faction still load.
+            // Empty default lets unsaved legacy values inherit synced OPCOM factions.
             class faction
             {
                     property     = "ALiVE_civ_placement_custom_faction";
@@ -42,7 +43,7 @@ class CfgVehicles {
                     control      = "ALiVE_HiddenAttribute";
                     typeName     = "STRING";
                     expression   = "_this setVariable ['faction', _value];";
-                    defaultValue = """BLU_F""";
+                    defaultValue = """""";
             };
             class priority : Edit { property = "ALiVE_civ_placement_custom_priority"; displayName = "$STR_ALIVE_CPC_PRIORITY"; tooltip = "$STR_ALIVE_CPC_PRIORITY_COMMENT"; defaultValue = """50"""; };
             class objectiveSize : Edit { property = "ALiVE_civ_placement_custom_objectiveSize"; displayName = "$STR_ALIVE_CPC_OBJECTIVE_SIZE"; tooltip = "$STR_ALIVE_CPC_OBJECTIVE_SIZE_COMMENT"; defaultValue = """200"""; };

@@ -170,6 +170,11 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
         params ["_mod"];
         private _type = typeOf _mod;
         private _factions = [_mod getVariable ["factions", ""]] call _parseFactions;
+        private _legacyFactions = [_mod getVariable ["faction", ""]] call _parseFactions;
+
+        if (count _factions == 0) then {
+            _factions = +_legacyFactions;
+        };
 
         if ((count _factions == 0) && {_type in _CUSTOM_PLACEMENT_CLASSES}) then {
             private _syncPeers = (get3DENConnections _mod select {(_x select 0) == "Sync"}) apply {_x select 1};
@@ -185,9 +190,6 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
             } forEach _syncPeers;
         };
 
-        if (count _factions == 0) then {
-            _factions = [_mod getVariable ["faction", ""]] call _parseFactions;
-        };
         if (count _factions > 0) exitWith { _factions };
 
         // defaultValue in CfgVehicles is stored as a quoted-string literal
@@ -195,7 +197,9 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
         // classname.
         private _cfgDefault = getText (configFile >> "CfgVehicles" >> (typeOf _mod) >> "Attributes" >> "faction" >> "defaultValue");
         _cfgDefault = [_cfgDefault, """", ""] call CBA_fnc_replace;
-        [_cfgDefault] call _parseFactions
+        private _defaultFactions = [_cfgDefault] call _parseFactions;
+        if ((count _defaultFactions == 0) && {_type in _CUSTOM_PLACEMENT_CLASSES}) exitWith { ["BLU_F"] };
+        _defaultFactions
     };
 
     // Determine whether a placement module will actually spawn forces
