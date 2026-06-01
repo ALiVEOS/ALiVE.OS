@@ -58,9 +58,72 @@ private _fnc_getDistanceFromLayer = {
 switch (_operation) do {
 
     case "create": {
-        PRIVATE _pathfindingSize = [ALIVE_profileSystem,"pathfindingSize"] call ALIVE_fnc_profileSystem;
+        private _pathfindingSizeRaw = [ALIVE_profileSystem,"pathfindingSize"] call ALIVE_fnc_profileSystem;
+
+        // Resolve the configured grid size to a [sectorSize, subSectorSize] pair.
+        //
+        //   ARRAY            -> a literal [sector, sub] pair. Used as-is (a direct
+        //                       init.sqf override).
+        //   STRING "[x,y]"    -> a stringified pair from the Eden "Manual:" combo
+        //                       entries (Eden saves the combo value as a STRING).
+        //                       Parsed back to a pair and used as-is. Covers legacy
+        //                       missions that picked a fixed km tier.
+        //   STRING token      -> an auto-size token: "auto" / "high" / "med" /
+        //                       "low". The grid is sized from the map's own
+        //                       worldSize instead of the mission-maker matching a
+        //                       km tier by hand. The map is rounded UP to the
+        //                       nearest existing tier (10/20/30/40 km) so coverage
+        //                       is always guaranteed, and the exact hand-tuned
+        //                       sector sizes for that tier are reused - so auto
+        //                       reproduces the old manual tiers precisely, with no
+        //                       pathing change and no preprocessing regression.
+        //                       "auto" == "med" (balanced).
+        //
+        // Tier table rows are [maxWorldSize, [highPair, medPair, lowPair]] using
+        // the same numbers as the sys_profile pathfindingSize Eden combo.
+        private _resolvePathfindingSize = {
+            params ["_raw"];
+            // A valid explicit pair = a 2-element array of positive numbers
+            // (init.sqf override). An EMPTY or malformed array (e.g. the hashGet
+            // miss default []) must NOT be used literally - it produced a [] grid
+            // and cascaded "Undefined _sectorSize" errors through the A* search.
+            // Fall through to auto in that case.
+            private _validPair = {
+                params ["_p"];
+                (_p isEqualType []) && {count _p == 2}
+                    && {(_p select 0) isEqualType 0} && {(_p select 0) > 0}
+                    && {(_p select 1) isEqualType 0} && {(_p select 1) > 0}
+            };
+            if ([_raw] call _validPair) exitWith { _raw };        // explicit pair
+            if (_raw isEqualType "" && {_raw != ""} && {(_raw select [0,1]) == "["}) exitWith {
+                private _parsed = parseSimpleArray _raw;          // stringified manual pair "[x,y]"
+                if ([_parsed] call _validPair) exitWith { _parsed };
+                [250,50]                                          // malformed -> safe 10km-Med
+            };
+            private _q = if (_raw isEqualType "") then { toLower _raw } else { "auto" };
+            private _qIdx = switch (_q) do {
+                case "high": { 0 };
+                case "low":  { 2 };
+                default      { 1 };                               // "auto" / "med" / unknown -> balanced
+            };
+            private _tiers = [
+                [10000, [[200,40],[250,50],[300,60]]],
+                [20000, [[400,50],[480,60],[600,75]]],
+                [30000, [[640,80],[720,90],[800,100]]],
+                [40000, [[800,100],[1000,125],[1200,150]]]
+            ];
+            // First tier whose extent covers worldSize (round UP). findIf returns
+            // -1 when the map is bigger than every tier (>40km) - fall back to the
+            // LARGEST tier (last row), never the smallest.
+            private _tierIdx = _tiers findIf { worldSize <= (_x select 0) };
+            if (_tierIdx < 0) then { _tierIdx = (count _tiers) - 1; };
+            ((_tiers select _tierIdx) select 1) select _qIdx
+        };
+        private _pathfindingSize = [_pathfindingSizeRaw] call _resolvePathfindingSize;
+
         private _sectorSize = _pathfindingSize select 0;
         private _subSectorSize = _pathfindingSize select 1;
+        ["Exp Pathfinding: grid size resolved to %1 (configured: %2, worldSize %3)", _pathfindingSize, _pathfindingSizeRaw, worldSize] call Alive_fnc_Dump;
         private _terrainGrid = [nil,"create", _pathfindingSize] call ALiVE_fnc_pathfindingGrid;
 
         _logic = [[

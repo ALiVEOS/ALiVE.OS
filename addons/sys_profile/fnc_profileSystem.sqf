@@ -27,6 +27,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -358,7 +359,10 @@ switch(_operation) do {
             _result = _args;
     };
     case "pathfindingSize": {
-            if(typeName _args == "ARRAY") then {
+            // Accept either an explicit [sectorSize, subSectorSize] ARRAY (legacy
+            // SQM / init.sqf override) or an auto-size STRING token
+            // ("auto"/"high"/"med"/"low") resolved from worldSize at grid create.
+            if(typeName _args == "ARRAY" || typeName _args == "STRING") then {
                    [_logic,"pathfindingSize",_args] call ALIVE_fnc_hashSet;
             };
             _result = [_logic,"pathfindingSize"] call ALIVE_fnc_hashGet;

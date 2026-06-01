@@ -151,18 +151,18 @@
     <Chinesesimp>以米为单位设置虚拟战斗的范围</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
-    <English>Experimental Pathfinding:</English>
+    <English>Pathfinding:</English>
     <Chinesesimp>实验路径查找：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT">
-    <English>Experimental!\nThis feature is highly experimental and could break missions.\n Please disable if you notice any issues.\nProfiles will use intelligent pathing to reach their destinations.</English>
+    <English>Profiles use intelligent pathing to reach their destinations, routing around terrain, water and dense areas instead of travelling in straight lines.\nEnabled by default. Set to No to fall back to straight-line movement if you prefer, or if you encounter an issue.</English>
     <Chinesesimp>实验的!\n这项功能是高度实验性的,可能会破坏任务.\n如果发现任何问题,请禁用.\n配置文件将使用智能路径到达目的地.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID">
     <English>Pathfinding Grid Size/Resolution:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID_COMMENT">
-    <English>Experimental!\nThis feature is highly experimental and could break missions.\n Please disable if you notice any issues.\nProfiles will use intelligent pathing to reach their destinations.</English>
+    <English>Controls the resolution of the pathfinding grid.\n\nAuto (recommended) sizes the grid to this map automatically - no need to match a map size by hand. High detail / Balanced / Performance trade path accuracy against server load. (An exact grid size can still be forced from init.sqf if ever needed.)</English>
     <Chinesesimp>实验的!\n这项功能是高度实验性的,可能会破坏任务.\n如果发现任何问题,请禁用.\n配置文件将使用智能路径到达目的地.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">

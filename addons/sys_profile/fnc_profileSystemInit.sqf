@@ -16,6 +16,7 @@ See Also:
 
 Author:
 ARjay
+Jman
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -53,7 +54,13 @@ if(isServer) then {
     private _virtualCombatSpeedModifier = parseNumber (_logic getVariable ["virtualcombat_speedmodifier", "1"]);
     private _virtualCombatRangeModifier = parseNumber (_logic getVariable ["virtualcombat_rangemodifier", "255"]);
     private _pathfinding = (_logic getVariable ["pathfinding", "false"]) == "true";
-    private _pathfindingSize = parseSimpleArray (_logic getVariable ["pathfindingSize", "[1000.100]"]);
+    // Pass the configured grid setting through RAW (no parse here). It may be an
+    // auto-size token ("auto"/"high"/"med"/"low"), a stringified pair "[x,y]" from
+    // a saved mission, or a legacy [x,y] array - the resolver in fnc_pathfinder
+    // ("create") handles all shapes and falls back to auto on anything invalid.
+    // (The old code parseSimpleArray'd this unconditionally, which errored on the
+    // new string tokens and on an empty/missing value.)
+    private _pathfindingSize = _logic getVariable ["pathfindingSize", "auto"];
     private _seaTransport = (_logic getVariable ["seaTransport", "false"]) == "true";
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
     private _vehicleSpawnSettleSeconds = parseNumber (_logic getVariable ["vehicleSpawnSettleSeconds", "15"]);
