@@ -171,8 +171,10 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
         private _type = typeOf _mod;
         private _factions = [_mod getVariable ["factions", ""]] call _parseFactions;
         private _legacyFactions = [_mod getVariable ["faction", ""]] call _parseFactions;
+        private _legacyIsDefault = (count _legacyFactions == 1) && {(_legacyFactions select 0) == "BLU_F"};
+        private _legacyBlocksInheritance = (_type in _CUSTOM_PLACEMENT_CLASSES) && {_legacyIsDefault};
 
-        if (count _factions == 0) then {
+        if ((count _factions == 0) && {count _legacyFactions > 0} && {!_legacyBlocksInheritance}) then {
             _factions = +_legacyFactions;
         };
 
@@ -188,6 +190,10 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
                     } forEach ([_peer] call _resolveOpcomFactions);
                 };
             } forEach _syncPeers;
+        };
+
+        if ((count _factions == 0) && {count _legacyFactions > 0}) then {
+            _factions = +_legacyFactions;
         };
 
         if (count _factions > 0) exitWith { _factions };
