@@ -310,9 +310,14 @@ switch (_operation) do {
         private _startSector = [_terrainGrid,"positionToSector", _startPos] call ALiVE_fnc_pathfindingGrid;
         private _goalSector = [_terrainGrid,"positionToSector", _endPos] call ALiVE_fnc_pathfindingGrid;
 
-        private _cameFromMapLayer1 = call CBA_fnc_createNamespace;
-        private _costSoFarMapLayer1 = call CBA_fnc_createNamespace;
-        _costSoFarMapLayer1 setvariable [str(_startSector select 0),0];
+        // Cost / came-from maps use native HashMaps keyed by the sector index
+        // array [x,y] directly (Array is a supported HashMap key type, deep-
+        // copied on insertion). Replaces the previous CBA namespaces keyed by
+        // str(index) - removes the per-node stringify + CBA call overhead in the
+        // hot A* loop. (#pathfinding-opt 2026-06-01)
+        private _cameFromMapLayer1 = createHashMap;
+        private _costSoFarMapLayer1 = createHashMap;
+        _costSoFarMapLayer1 set [_startSector select 0, 0];
         private _frontierLayer1 = [[0,_startSector]];
         private _layer1Complete = false;
         private _sectorIterations = 0;
@@ -424,9 +429,9 @@ switch (_operation) do {
         while { !((_currentSector select 0) isequalto _end) } do {            
             if (isNil "_procedure" || {count _pathLayer < 1}) then {
                 _pathLayer pushback (_currentSector select 2);
-                _currentSector = _cameFromMap getVariable str(_currentSector select 0);
+                _currentSector = _cameFromMap get (_currentSector select 0);
             } else {
-                private _nextSector = _cameFromMap getvariable str(_currentSector select 0);
+                private _nextSector = _cameFromMap get (_currentSector select 0);
                 private _nextPos = _nextSector select 2;
                 private _prevPos = _pathLayer select ((count _pathLayer)-1); 
                 _pathLayer pushback ([nil, "findOptimalPos", [_currentSector, _sectorSize, _procedure, _nextPos, _prevPos]] call MAINCLASS);
@@ -502,15 +507,15 @@ switch (_operation) do {
         private _size = _heuristicParams select 4;
         private _moveCost = ([nil,"getMovementCost", [_cameFromSector,_sector,_size]] call MAINCLASS); 
         private _priority = ([nil,"heuristic", _heuristicParams] call MAINCLASS);
-        private _newCostSoFar = _moveCost + (_costSoFarMap getvariable str(_cameFromSector select 0));
-        private _sectorCostSoFar = _costSoFarMap getvariable str(_sector select 0);
+        private _newCostSoFar = _moveCost + (_costSoFarMap get (_cameFromSector select 0));
+        private _sectorCostSoFar = _costSoFarMap get (_sector select 0);
 
         if (isnil "_sectorCostSoFar" || { _newCostSoFar < _sectorCostSoFar }) then {
-            _costSoFarMap setvariable [str (_sector select 0), _newCostSoFar]; 
+            _costSoFarMap set [_sector select 0, _newCostSoFar];
             [nil,"priorityAdd", [_frontier, _distanceToGoal + _priority + _moveCost/*_newCostSoFar*/, _sector]] call MAINCLASS;
             //["[d:%1] [p:%2] [nc:%3] -- total[%4] ",_distanceToGoal , _priority , _newCostSoFar,_distanceToGoal + _priority + _newCostSoFar] call Alive_fnc_Dump;
-            _cameFromMap setVariable [str(_sector select 0),_cameFromSector];            
-        };       
+            _cameFromMap set [_sector select 0, _cameFromSector];
+        };
     };
 
     ////////// JOB FUNCTIONS //////////
@@ -553,24 +558,25 @@ switch (_operation) do {
             private _startSubSector = [_terrainGrid,"positionToSubSector", _startPos] call ALiVE_fnc_pathfindingGrid;
             private _goalSubSector = [_terrainGrid,"positionToSubSector", _endPos] call ALiVE_fnc_pathfindingGrid;
 
-            // Setup Layer 1
-            private _cameFromMapLayer1 = call CBA_fnc_createNamespace;
-            private _costSoFarMapLayer1 = call CBA_fnc_createNamespace;
+            // Setup Layer 1 — native HashMaps keyed by index array (see
+            // setNodeToFrontier / layer1SeaTravelCheck note). (#pathfinding-opt)
+            private _cameFromMapLayer1 = createHashMap;
+            private _costSoFarMapLayer1 = createHashMap;
             private _frontierLayer1 = [[0,_startSector]];
             private _pathLayer1 = [];
             private _closestSector = [(_startSector select 2) distance (_goalSector select 2),_startSector];
 
             // Setup Layer 2
-            private _cameFromMapLayer2 = call CBA_fnc_createNamespace;
-            private _costSoFarMapLayer2 = call CBA_fnc_createNamespace;
+            private _cameFromMapLayer2 = createHashMap;
+            private _costSoFarMapLayer2 = createHashMap;
             private _frontierLayer2 = [[0,_startSubSector]];
             private _pathLayer2 = [];
             private _closestSubSector = [(_startSubSector select 2) distance (_goalSubSector select 2),_startSubSector];
             private _itersSinceClosest = 0;
 
             // Init Layers
-            _costSoFarMapLayer1 setvariable [str(_startSector select 0),0];
-            _costSoFarMapLayer2 setvariable [str(_startSubSector select 0),0];
+            _costSoFarMapLayer1 set [_startSector select 0, 0];
+            _costSoFarMapLayer2 set [_startSubSector select 0, 0];
 
             private _layer1Data = [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _pathLayer1, _closestSector];
             private _layer2Data = [_cameFromMapLayer2, _costSoFarMapLayer2, _frontierLayer2, _pathLayer2, _closestSubSector, _itersSinceClosest];
@@ -813,12 +819,11 @@ switch (_operation) do {
 
             [_callbackArgs,_result] spawn _callback;
 
-            // remove job from queue and clean up the mess we made
+            // remove job from queue and clean up the mess we made. The cost /
+            // came-from HashMaps are released by garbage collection once the job
+            // data holding them is cleared below - no explicit delete needed
+            // (unlike the CBA namespaces these replaced). (#pathfinding-opt)
             _pathJobs deleteat 0;
-            _cameFromMapLayer1 call CBA_fnc_deleteNamespace;
-            _costSoFarMapLayer1 call CBA_fnc_deleteNamespace;
-            _cameFromMapLayer2 call CBA_fnc_deleteNamespace;
-            _costSoFarMapLayer2 call CBA_fnc_deleteNamespace;
             _currentJobData resize 0;
             _currentJob resize 0;
             // {deleteMarker _x} foreach _debugMarkers;
