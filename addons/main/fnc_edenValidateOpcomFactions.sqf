@@ -95,6 +95,7 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
         "ALiVE_mil_placement_custom",
         "ALiVE_mil_placement_spe"
     ];
+    private _CUSTOM_PLACEMENT_CLASSES = ["ALiVE_civ_placement_custom", "ALiVE_mil_placement_custom"];
     // Placement classes that expose a withPlacement toggle (Yes/No:
     // "Place Units" vs "Objectives Only"). When set to "false", the
     // placement registers objectives only - no profiles spawn, so the
@@ -113,7 +114,15 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
     // or single classname "a". Empty string / nil -> [].
     private _parseFactions = {
         params ["_str"];
-        if (_str isEqualType []) exitWith { +_str };
+        private _parsed = [];
+        if (_str isEqualType []) exitWith {
+            {
+                if (_x isEqualType "" && {_x != ""} && {_x != "NONE"} && {!(_x in _parsed)}) then {
+                    _parsed pushBack _x;
+                };
+            } forEach _str;
+            _parsed
+        };
         if !(_str isEqualType "") exitWith { [] };
         if (_str == "") exitWith { [] };
         private _s = _str;
@@ -121,23 +130,76 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
         _s = [_s, "[", ""] call CBA_fnc_replace;
         _s = [_s, "]", ""] call CBA_fnc_replace;
         _s = [_s, """", ""] call CBA_fnc_replace;
-        [_s, ","] call CBA_fnc_split
+        {
+            if (_x != "" && {_x != "NONE"} && {!(_x in _parsed)}) then {
+                _parsed pushBack _x;
+            };
+        } forEach ([_s, ","] call CBA_fnc_split);
+        _parsed
     };
 
-    // Resolve a placement module's faction - prefer the user-set value,
-    // fall back to the attribute's CfgVehicles defaultValue so an
-    // untouched placement ("OPF_F" default) still counts as providing
-    // OPF_F to the mission.
-    private _resolvePlacementFaction = {
+    private _resolveOpcomFactions = {
+        params ["_opcom"];
+        private _primary = ([_opcom getVariable ["factions", ""]] call _parseFactions) + ([_opcom getVariable ["factionsManual", ""]] call _parseFactions);
+        private _primaryNonEmpty = (count _primary) > 0;
+        private _sources = if (_primaryNonEmpty) then {
+            _primary
+        } else {
+            [
+                _opcom getVariable ["faction1", ""],
+                _opcom getVariable ["faction2", ""],
+                _opcom getVariable ["faction3", ""],
+                _opcom getVariable ["faction4", ""]
+            ]
+        };
+        private _factions = [];
+        {
+            if (_x isEqualType "" && {_x != ""} && {_x != "NONE"} && {!(_x in _factions)}) then {
+                _factions pushBack _x;
+            };
+        } forEach _sources;
+        if (count _factions == 0) then { _factions = ["BLU_F"] };
+        _factions
+    };
+
+    // Resolve a placement module's faction sources. Custom objectives may
+    // explicitly set multiple factions, or leave the list empty to inherit
+    // factions from synced OPCOMs. Legacy single-faction values and config
+    // defaults are retained for older missions and non-custom placements.
+    private _resolvePlacementFactions = {
         params ["_mod"];
-        private _f = _mod getVariable ["faction", ""];
-        if (_f != "") exitWith { _f };
+        private _type = typeOf _mod;
+        private _factions = [_mod getVariable ["factions", ""]] call _parseFactions;
+        private _legacyFactions = [_mod getVariable ["faction", ""]] call _parseFactions;
+
+        if (count _factions == 0) then {
+            _factions = +_legacyFactions;
+        };
+
+        if ((count _factions == 0) && {_type in _CUSTOM_PLACEMENT_CLASSES}) then {
+            private _syncPeers = (get3DENConnections _mod select {(_x select 0) == "Sync"}) apply {_x select 1};
+            {
+                private _peer = _x;
+                if (!isNil "_peer" && {_peer isEqualType objNull} && {!isNull _peer} && {(typeOf _peer) in _OPCOM_CLASSES}) then {
+                    {
+                        if (!(_x in _factions)) then {
+                            _factions pushBack _x;
+                        };
+                    } forEach ([_peer] call _resolveOpcomFactions);
+                };
+            } forEach _syncPeers;
+        };
+
+        if (count _factions > 0) exitWith { _factions };
+
         // defaultValue in CfgVehicles is stored as a quoted-string literal
         // e.g. """OPF_F""" -> strip surrounding quotes to get the bare
         // classname.
         private _cfgDefault = getText (configFile >> "CfgVehicles" >> (typeOf _mod) >> "Attributes" >> "faction" >> "defaultValue");
         _cfgDefault = [_cfgDefault, """", ""] call CBA_fnc_replace;
-        _cfgDefault
+        private _defaultFactions = [_cfgDefault] call _parseFactions;
+        if ((count _defaultFactions == 0) && {_type in _CUSTOM_PLACEMENT_CLASSES}) exitWith { ["BLU_F"] };
+        _defaultFactions
     };
 
     // Determine whether a placement module will actually spawn forces
@@ -188,10 +250,11 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
                 if (_t in _PLACEMENT_CLASSES) then {
                     _totalPlacements = _totalPlacements + 1;
                     if ([_x] call _placementSpawns) then {
-                        private _f = [_x] call _resolvePlacementFaction;
-                        if (_f != "" && {!(_f in _globalSourceFactions)}) then {
-                            _globalSourceFactions pushBack _f;
-                        };
+                        {
+                            if (!(_x in _globalSourceFactions)) then {
+                                _globalSourceFactions pushBack _x;
+                            };
+                        } forEach ([_x] call _resolvePlacementFactions);
                     };
                 };
             };
@@ -296,30 +359,7 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
             };
         };
 
-        private _factionsVal       = _opcom getVariable ["factions",       ""];
-        private _factionsManualVal = _opcom getVariable ["factionsManual", ""];
-
-        private _opcomFactions = [_factionsVal]       call _parseFactions;
-        _opcomFactions = _opcomFactions + ([_factionsManualVal] call _parseFactions);
-
-        // Dedup + drop empties / sentinel
-        private _dedup = [];
-        {
-            if (_x isEqualType "" && {_x != ""} && {_x != "NONE"} && {!(_x in _dedup)}) then {
-                _dedup pushBack _x;
-            };
-        } forEach _opcomFactions;
-        _opcomFactions = _dedup;
-
-        // Mirror the runtime fallback in fnc_OPCOM.sqf:203-209: when
-        // both multi-select and manual overrides are empty, OPCOM
-        // runtime defaults to ["BLU_F"]. Validate against that fallback
-        // so a mission-maker with an OPCOM at its out-of-box defaults
-        // (no factions picked) still sees "no BLU_F source" if that's
-        // the case.
-        if (count _opcomFactions == 0) then {
-            _opcomFactions = ["BLU_F"];
-        };
+        private _opcomFactions = [_opcom] call _resolveOpcomFactions;
 
         // Mission-building gate: if there are zero placement modules
         // in the entire scene, the mission-maker is still setting up
@@ -362,7 +402,7 @@ ALIVE_edenFactionValidatorPending = [_trigger, _scope] spawn {
                 _unmatched
             };
             private _msg = format [
-                "ALiVE: AI Commander '%1' has faction(s) [%2] with no matching profile-spawning placement in the mission. At runtime this Commander will fail with 'no groups for faction' and refuse to run. Fix by placing a Mil Placement (or similar) module with a matching faction in Place Units mode, or change the Commander's Factions to match an existing placement.",
+                "ALiVE: AI Commander '%1' has faction(s) [%2] with no matching profile-spawning placement in the mission. At runtime this Commander will fail with 'no groups for faction' and refuse to run. Fix by placing a Mil Placement (or similar) module with a matching faction in Place Units mode, selecting matching Force Factions on a custom objective, or leaving a synced custom objective's Force Factions empty to inherit this Commander.",
                 _name,
                 _truncated joinString ", "
             ];
