@@ -85,12 +85,19 @@ private _fnc_getHeightWaterModifier = {
     //Check for Water in multiple positions from center
     private _sOffset = _radius * 0.7;
     private _sPositions = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+    private _seaLevel = missionNamespace getVariable ["ALiVE_pathfinding_seaLevel", 0];
     {
         private _testPos = [
             (_sPos select 0) + ((_x select 0 ) * _sOffset),
             (_sPos select 1) + ((_x select 1 ) * _sOffset)
             ];
-        if (getTerrainHeightASL _testPos < -0.3) then {_subHasWater = true;_subWaterModifier = _subWaterModifier + 1;} else {_subIsEntirelyWater = false;};
+        // Water = terrain below the map's sea level (getTerrainInfo[4], cached at
+        // pathfinder create). Heightmap-based, so reliable during this one-time
+        // grid classification - unlike surfaceIsWater, which only sees inland pond
+        // OBJECTS once loaded in view distance and so missed distant ponds at create.
+        // Threshold at sea level (was -0.3m) catches the shore shallows that routed
+        // infantry into the water edge, while keeping flats at/above sea level walkable.
+        if (getTerrainHeightASL _testPos < _seaLevel) then {_subHasWater = true;_subWaterModifier = _subWaterModifier + 1;} else {_subIsEntirelyWater = false;};
 
     } foreach _sPositions;
     

@@ -16,14 +16,19 @@ private _fnc_checkCoastTravelForWater = {
     private _dist = _sectorAPos distance _sectorBPos;
     private _inc = ceil(_dist / 15);
     private _waterDistance = 0;
+    private _seaLevel = missionNamespace getVariable ["ALiVE_pathfinding_seaLevel", 0];
     _a = ((_sectorBPos select 0) - (_sectorAPos select 0))/_inc;
     _b = ((_sectorBPos select 1) - (_sectorAPos select 1))/_inc;
 
     for "_i" from 0 to _inc do {
-        _heightASL = getTerrainHeightASL [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)];
-        if (_heightASL < -0.3) then {
+        if (getTerrainHeightASL [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)] < _seaLevel) then {
             _waterTravel = true;
-            _waterDistance = _waterDistance + _inc;
+            // Accumulate the WATER SPAN in metres - each underwater sample covers
+            // one step of ~_dist/_inc m (~15 m). (Was "+ _inc", the step COUNT not
+            // a length, which made _waterDistance far too small at subsector scale
+            // and defeated the "_waterDistance < 100" ford limit - letting land
+            // units cross wide open water.)
+            _waterDistance = _waterDistance + (_dist / _inc);
         };
 
         // // _debugMarkers = [_logic , "pathDebugMarkers"] call Alive_fnc_hashGet;
@@ -124,6 +129,12 @@ switch (_operation) do {
         private _sectorSize = _pathfindingSize select 0;
         private _subSectorSize = _pathfindingSize select 1;
         ["Exp Pathfinding: grid size resolved to %1 (configured: %2, worldSize %3)", _pathfindingSize, _pathfindingSizeRaw, worldSize] call Alive_fnc_Dump;
+        // Cache the map's sea level once (getTerrainInfo select 4) for the water
+        // tests in grid classification + the A* coast checks. Heightmap-based water
+        // detection is reliable at grid-create time; surfaceIsWater only sees inland
+        // pond OBJECTS once they're loaded within view distance, so it silently
+        // misses distant ponds during the one-time grid classification.
+        ALiVE_pathfinding_seaLevel = (getTerrainInfo select 4);
         private _terrainGrid = [nil,"create", _pathfindingSize] call ALiVE_fnc_pathfindingGrid;
 
         _logic = [[
@@ -351,10 +362,17 @@ switch (_operation) do {
                     };
                     case "BRIDGE": {_canTraverse = true;};
                     case "COAST": {
-                        _canTraverse = _canTraverseWater;
+                        // A coast sector mixes land + water. Pure-water units (Naval,
+                        // !land) cross it on water-capability; LAND units (incl. the
+                        // water-capable "Man") must have a road/trail OR be mostly land
+                        // (_waterModifier < 0.4, the _hasDeepWater threshold). Without
+                        // the water gate a flat, empty, mostly-water coast sector wrongly
+                        // passes the density/slope land check and infantry walk onto open
+                        // water.
+                        _canTraverse = _canTraverseWater && !(_canTraverseLand);
                         if (_canTraverseRoads && _hasRoads) then {_canTraverse = true;};
                         if (_canTraverseTrails && _hasTrails) then {_canTraverse = true;};
-                        if (_canTraverseLand && _maxDensity !=0 && (_density < _maxDensity) && ((abs(_height - _prevHeight)/_size) < _maxSlope)) then {
+                        if (_canTraverseLand && _waterModifier < 0.4 && _maxDensity !=0 && (_density < _maxDensity) && ((abs(_height - _prevHeight)/_size) < _maxSlope)) then {
                             _canTraverse = true;
                         };
                     };
@@ -493,7 +511,7 @@ switch (_operation) do {
                     private _distR2 = _prevPos distance _result;
                     private _distS1 = _nextPos distance _x;
                     private _distS2 = _prevPos distance _x;
-                    if (((_distS1+_distS2) < (_distR1+_distR2)) && (getTerrainHeightASL _x > -0.3)) then {_result = _x;};
+                    if (((_distS1+_distS2) < (_distR1+_distR2)) && (getTerrainHeightASL _x >= (missionNamespace getVariable ["ALiVE_pathfinding_seaLevel", 0]))) then {_result = _x;};
                 } foreach _subPositions;
             };
             private _useRoads = (_roadWeight < 0);
