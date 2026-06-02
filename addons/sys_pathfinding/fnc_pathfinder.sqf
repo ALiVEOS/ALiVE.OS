@@ -128,13 +128,24 @@ switch (_operation) do {
 
         private _sectorSize = _pathfindingSize select 0;
         private _subSectorSize = _pathfindingSize select 1;
-        ["Exp Pathfinding: grid size resolved to %1 (configured: %2, worldSize %3)", _pathfindingSize, _pathfindingSizeRaw, worldSize] call Alive_fnc_Dump;
+        ["Pathfinding: grid size resolved to %1 (configured: %2, worldSize %3)", _pathfindingSize, _pathfindingSizeRaw, worldSize] call Alive_fnc_Dump;
         // Cache the map's sea level once (getTerrainInfo select 4) for the water
         // tests in grid classification + the A* coast checks. Heightmap-based water
         // detection is reliable at grid-create time; surfaceIsWater only sees inland
         // pond OBJECTS once they're loaded within view distance, so it silently
         // misses distant ponds during the one-time grid classification.
         ALiVE_pathfinding_seaLevel = (getTerrainInfo select 4);
+        // Deep-water margin (metres below sea level) past which terrain counts as real
+        // sea for the goal-snap + water diagnostics - anything shallower is walkable
+        // beach/surf and must NOT be treated as water. isNil-guarded so a console
+        // override (e.g. ALiVE_pathfinding_waterMargin = 0.5) survives a mission restart.
+        if (isNil "ALiVE_pathfinding_waterMargin") then { ALiVE_pathfinding_waterMargin = 1.0 };
+        // DIAG-STRIP: pathfinding-opt counters. Read in the debug console after a run
+        // to confirm the candidate-E single-subsector early-out fires and gauge its
+        // rate. earlyOuts = jobs short-circuited before the A* setup; jobsRun = jobs
+        // that ran the full two-layer search. Reset on each grid create.
+        ALiVE_pathfinding_earlyOuts = 0;
+        ALiVE_pathfinding_jobsRun = 0;
         private _terrainGrid = [nil,"create", _pathfindingSize] call ALiVE_fnc_pathfindingGrid;
 
         _logic = [[
@@ -337,8 +348,18 @@ switch (_operation) do {
             private _isCoastTravel = (_typeTo == "COAST" || _typeFrom == "COAST");
             private _isMovingToFromBridge = (_typeTo == "BRIDGE" || _typeFrom == "BRIDGE") && (_roadWeight < 0);
             private _hasDeepWater = (_waterModifier > 0.4) || (_prevWaterModifier > 0.4);
-            // Land Unit Check
-            if (_isCoastTravel && !(_isMovingToFromBridge) && _canTraverseLand && _hasDeepWater) then {
+            // Land Unit Check. The endpoint gate (_isCoastTravel + _hasDeepWater) only
+            // fires when a FROM/TO cell is itself coast/water - it misses a dry-land ->
+            // dry-land segment that crosses water BETWEEN the cells (a narrow bay/inlet
+            // spanned in one step, which is how land routes were cutting across bays).
+            // The lazy midpoint probe catches that: if the segment midpoint is over deep
+            // water, run the span check so the <100m ford limit can block it. The probe
+            // is short-circuited by the cheap endpoint gate, so inland segments pay at
+            // most one extra terrain lookup. (#pathfinding-water)
+            if (!(_isMovingToFromBridge) && _canTraverseLand && (
+                    (_isCoastTravel && _hasDeepWater)
+                    || {(getTerrainHeightASL [((_centerPosFrom select 0)+(_centerPosTo select 0))/2, ((_centerPosFrom select 1)+(_centerPosTo select 1))/2]) < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)}
+                )) then {
                 private _waterData = [_centerPosFrom,_centerPosTo] call _fnc_checkCoastTravelForWater;
                 _isWaterCrossing = _waterData select 0;
                 _waterDistance = _waterData select 1;
@@ -386,6 +407,16 @@ switch (_operation) do {
             };
         } else {
             _canTraverse = true;
+        };
+
+        // Hard guard (#pathfinding-water): a land unit may never END a step in a cell whose
+        // CENTRE is genuinely deep water. This overrides the WATER/COAST switch AND the
+        // <100m ford branch above - the loophole that let infantry wade across a bay one
+        // sub-100m step at a time (route WATER cells showed paths running through
+        // ["WATER",-13] and submerged ["COAST",-3] nodes). Air is excluded; pure-naval
+        // (!_canTraverseLand) still crosses water freely.
+        if (!_canTraverseAir && _canTraverseLand && {(getTerrainHeightASL _centerPosTo) < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)}) then {
+            if (_canTraverse isEqualType []) then { _canTraverse set [0, false]; } else { _canTraverse = false; };
         };
 
         _result = _canTraverse;
@@ -663,10 +694,61 @@ switch (_operation) do {
             
             private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
 
+            // Goal-snap (#pathfinding-water): a land-capable group must never be routed
+            // into open sea. When the goal resolves over water - an objective/waypoint
+            // placed offshore (see the route WATER diag) - retarget to the nearest land
+            // so the route ends at the shore, not in the sea. Fires only for land
+            // procedures with a water goal; a land goal is untouched, and a goal on an
+            // island stays as-is (the A* still returns the closest reachable node).
+            // getTerrainHeightASL < seaLevel matches the grid's own water classification
+            // and is reliable at any range (unlike surfaceIsWater). Ring-search outward
+            // in subsector steps for the nearest land point.
+            private _canLand = (_procedure select 1) select 0;   // capabilities select 0 = canTraverseLand
+            if (_canLand && {(getTerrainHeightASL [_endPos select 0, _endPos select 1]) < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)}) then {
+                private _step = ([_terrainGrid,"subSectorSize"] call ALiVE_fnc_hashGet) max 25;
+                private _origEnd = _endPos;
+                private _found = false;
+                for "_ring" from 1 to 30 do {
+                    if (!_found) then {
+                        private _r = _ring * _step;
+                        {
+                            private _p = [(_origEnd select 0) + _r * cos _x, (_origEnd select 1) + _r * sin _x];
+                            if (!_found && {(getTerrainHeightASL _p) >= ALiVE_pathfinding_seaLevel}) then {
+                                _endPos = [_p select 0, _p select 1, 0];
+                                _found = true;
+                            };
+                        } forEach [0,45,90,135,180,225,270,315];
+                    };
+                };
+                if (_found) then {
+                    // DIAG-STRIP: confirm the snap fired + show before/after.
+                    ["Pathfinding goal-snap: water goal %1 -> land %2 (side=%3)", _origEnd, _endPos, _callbackArgs param [2,"?"]] call Alive_fnc_Dump;
+                };
+            };
+
             private _startSector = [_terrainGrid,"positionToSector", _startPos] call ALiVE_fnc_pathfindingGrid;
             private _goalSector = [_terrainGrid,"positionToSector", _endPos] call ALiVE_fnc_pathfindingGrid;
             private _startSubSector = [_terrainGrid,"positionToSubSector", _startPos] call ALiVE_fnc_pathfindingGrid;
             private _goalSubSector = [_terrainGrid,"positionToSubSector", _endPos] call ALiVE_fnc_pathfindingGrid;
+
+            // Single-subsector early-out (#pathfinding-opt, candidate E): when start
+            // and goal land in the same subsector, the A* only ever yields a 1-node
+            // no-op path - the same check onFrame's init already makes (~line 745).
+            // Doing it HERE, before the A* setup, skips 4 createHashMaps + the
+            // frontier / currentJobData allocation AND a whole onFrame round-trip,
+            // for ~59% of requests (measured 257/433). Mirror onFrame's completion:
+            // fire the callback with the goal subsector centre, drop the job, load
+            // the next (recurses through any further leading no-ops - queue depth is
+            // small). Checked here, not in findPath, so the previousWaypoint position
+            // re-read above is final - no false early-out from a stale queued start.
+            // (Leaves onFrame's line-745 check as a now-redundant safety net.)
+            if (_startSubSector isEqualTo _goalSubSector) exitWith {
+                ALiVE_pathfinding_earlyOuts = ALiVE_pathfinding_earlyOuts + 1;   // DIAG-STRIP
+                [_callbackArgs, [_goalSubSector select 2]] spawn _callback;
+                _pathJobs deleteAt 0;
+                [_logic,"loadCurrentJobData"] call MAINCLASS;
+            };
+            ALiVE_pathfinding_jobsRun = ALiVE_pathfinding_jobsRun + 1;   // DIAG-STRIP (full A* job)
 
             // Setup Layer 1 — native HashMaps keyed by index array (see
             // setNodeToFrontier / layer1SeaTravelCheck note). (#pathfinding-opt)
@@ -984,15 +1066,37 @@ switch (_operation) do {
                 // between non-adjacent nodes. (#pathfinding-draw diag)
                 private _side = _callbackArgs param [2, "UNKNOWN"];
                 private _len = 0; private _maxSeg = 0; private _waterSegs = 0;
+                private _deep = ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin;   // below = real sea (beach/shallows excluded)
                 for "_i" from 1 to (count _result - 1) do {
                     private _pA = _result select (_i-1);
                     private _pB = _result select _i;
                     private _seg = _pB distance2D _pA;
                     _len = _len + _seg;
                     if (_seg > _maxSeg) then { _maxSeg = _seg; };
-                    if (surfaceIsWater [((_pA select 0)+(_pB select 0))/2, ((_pA select 1)+(_pB select 1))/2]) then { _waterSegs = _waterSegs + 1; };
+                    if ((getTerrainHeightASL [((_pA select 0)+(_pB select 0))/2, ((_pA select 1)+(_pB select 1))/2]) < _deep) then { _waterSegs = _waterSegs + 1; };
                 };
-                ["Exp Pathfinding route: side=%1 nodes=%2 len=%3m maxSeg=%4m waterSegs=%5", _side, count _result, round _len, round _maxSeg, _waterSegs] call Alive_fnc_Dump;
+                ["Pathfinding route: side=%1 nodes=%2 len=%3m maxSeg=%4m waterSegs=%5", _side, count _result, round _len, round _maxSeg, _waterSegs] call Alive_fnc_Dump;
+                // DIAG-STRIP: for water-touching routes, log the endpoints + which end
+                // is over water + every over-water node. Distinguishes the START being
+                // in water (a profile sitting in the sea) from the GOAL being in water
+                // (an objective resolved offshore) from a mid-route crossing - which
+                // decides the fix. Grep "route WATER:".
+                if (_waterSegs > 0) then {
+                    private _s = _result select 0;
+                    private _g = _result select (count _result - 1);
+                    private _wNodes = _result select { (getTerrainHeightASL [_x select 0, _x select 1]) < _deep };
+                    ["Pathfinding route WATER: side=%1 startW=%2 goalW=%3 waterNodes=%4 of %5 | start=%6 goal=%7 | waterPos=%8",
+                        _side, (getTerrainHeightASL [_s select 0, _s select 1]) < _deep, (getTerrainHeightASL [_g select 0, _g select 1]) < _deep,
+                        count _wNodes, count _result, _s, _g, _wNodes] call Alive_fnc_Dump;
+                    // DIAG-STRIP: per-node [cell type, terrain depth] so we can see how
+                    // the crossed bay cells are actually classified (LAND/COAST/WATER)
+                    // and how deep - tells us why the A* steps through them.
+                    private _nodeCells = _result apply {
+                        private _ss = [_terrainGrid, "positionToSubSector", _x] call ALiVE_fnc_pathfindingGrid;
+                        [_ss select 3, round (getTerrainHeightASL [_x select 0, _x select 1])]
+                    };
+                    ["Pathfinding route WATER cells (type/depth): side=%1 %2", _side, _nodeCells] call Alive_fnc_Dump;
+                };
                 [_logic, "pathDrawMarkers", _pathMarkers] call ALiVE_fnc_hashSet;
             };
 

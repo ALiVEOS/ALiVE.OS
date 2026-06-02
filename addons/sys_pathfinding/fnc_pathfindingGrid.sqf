@@ -58,7 +58,7 @@ switch (_operation) do {
             ["debugMarkers", []]
         ]] call ALiVE_fnc_hashCreate;
         _stop = diag_tickTime;
-        ["Exp Pathfinding Grid Creation Time:%1",_stop-_start] call Alive_fnc_Dump;
+        ["Pathfinding Grid Creation Time:%1",_stop-_start] call Alive_fnc_Dump;
         _result = _logic;
 
     };
