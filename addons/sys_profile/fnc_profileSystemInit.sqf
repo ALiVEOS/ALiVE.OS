@@ -67,7 +67,15 @@ if(isServer) then {
     // the grid/route overlay never activates from the Eden defaults.
     private _pathfindingDrawGrid  = (_logic getVariable ["pathfindingDrawGrid",  "false"]) == "true";
     private _pathfindingDrawPaths = (_logic getVariable ["pathfindingDrawPaths", "false"]) == "true";
-    private _seaTransport = (_logic getVariable ["seaTransport", "false"]) == "true";
+    // Sea-transport mode: Auto / Always / Never. Legacy missions stored the old
+    // Yes/No combo as "true"/"false" - map those to always/never.
+    private _seaTransport = switch (toLower (_logic getVariable ["seaTransport", "auto"])) do {
+        case "always": { "always" };
+        case "never":  { "never" };
+        case "true":   { "always" };
+        case "false":  { "never" };
+        default        { "auto" };
+    };
     private _smoothSpawn = parseNumber (_logic getVariable ["smoothSpawn", "0.3"]);
     private _vehicleSpawnSettleSeconds = parseNumber (_logic getVariable ["vehicleSpawnSettleSeconds", "15"]);
 

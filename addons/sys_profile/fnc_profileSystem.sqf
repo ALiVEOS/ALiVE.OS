@@ -388,14 +388,13 @@ switch(_operation) do {
             _result = [_logic,"pathfindingDrawPaths",false] call ALIVE_fnc_hashGet;
     };
     case "seaTransport": {
-            if(typeName _args != "BOOL") then {
-                    _args = [_logic,"seaTransport"] call ALIVE_fnc_hashGet;
-            } else {
+            // Sea-transport mode: "auto" / "always" / "never" (STRING). Legacy
+            // "true"/"false" are normalised to always/never in profileSystemInit
+            // before reaching here.
+            if(typeName _args == "STRING") then {
                     [_logic,"seaTransport",_args] call ALIVE_fnc_hashSet;
             };
-            ASSERT_TRUE(typeName _args == "BOOL",str _args);
-
-            _result = _args;
+            _result = [_logic,"seaTransport","auto"] call ALIVE_fnc_hashGet;
     };
     case "plotSectors": {
             if(typeName _args != "BOOL") then {

@@ -157,7 +157,20 @@ class CfgVehicles {
                             defaultValue = """false""";
                             class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; };
                     };
-                    class seaTransport : Combo { property = "ALiVE_sys_profile_seaTransport"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; }; };
+                    class seaTransport : Combo
+                    {
+                            property = "ALiVE_sys_profile_seaTransport";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT";
+                            typeName = "STRING";
+                            defaultValue = """auto""";
+                            class Values
+                            {
+                                class Auto   { name = "Auto (faction boats only)";     value = "auto"; default = 1; };
+                                class Always { name = "Always (generic boat fallback)"; value = "always"; };
+                                class Never  { name = "Never (infantry stay on land)";  value = "never"; };
+                            };
+                    };
 
                     class ModuleDescription : ModuleDescription {};
                 };

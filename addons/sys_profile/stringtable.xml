@@ -190,12 +190,11 @@
     <English>Deactivate Pathfinding Routes Drawing</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
-    <English>Infantry sea transport:</English>
+    <English>Infantry Sea Transport:</English>
     <Chinesesimp>步兵海上运输：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT">
-    <English>Experimental!\nAdds a boat to a virtual infantry entity that tries to cross water!</English>
-    <Chinesesimp>实验的!\n将一艘船添加到一个试图穿越水面的虚拟步兵实体!</Chinesesimp>
+    <English>Lets virtualised infantry cross open water by boat when there is no land route to their objective. Auto: use a boat only if the group's faction fields one. Always: otherwise fall back to a generic boat. Never: keep infantry on land and route around water. Default Auto.</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN">
     <English>Smooth Spawn:</English>
