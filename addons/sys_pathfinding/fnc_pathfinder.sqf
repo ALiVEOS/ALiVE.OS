@@ -933,7 +933,10 @@ switch (_operation) do {
             // default = zero cost (the flag short-circuits before any marker is
             // made). Each path's markers are tagged with a per-call id so the next
             // draw doesn't collide. (#pathfinding-draw 2026-06-01)
-            if (missionNamespace getVariable ["ALiVE_pathfinding_drawPaths", false] && {_result isEqualType []} && {count _result > 0}) then {
+            // Only draw/log actual routes (>= 2 nodes). A 1-node "path" means start
+            // and goal share a subsector (len 0) - drawing it leaves an orphaned dot
+            // with no line, and it's the bulk of completed paths (log noise too).
+            if (missionNamespace getVariable ["ALiVE_pathfinding_drawPaths", false] && {_result isEqualType []} && {count _result > 1}) then {
                 private _pathMarkers = [_logic, "pathDrawMarkers", []] call ALiVE_fnc_hashGet;
                 // Colour the route by the requesting profile's side (threaded as
                 // the 3rd callbackArgs element from fnc_profileEntity's findPath
@@ -973,6 +976,23 @@ switch (_operation) do {
                     _plName setMarkerAlpha 0.8;
                     _pathMarkers pushBack _plName;
                 };
+                // Diag (gated by the same draw-paths flag): characterise the route
+                // so a water-crossing path is identifiable in the RPT - requesting
+                // side, node count, total + longest segment length, and how many
+                // segment midpoints sit over water. A long route with water
+                // segments = the path crosses water; a large maxSeg = a jump
+                // between non-adjacent nodes. (#pathfinding-draw diag)
+                private _side = _callbackArgs param [2, "UNKNOWN"];
+                private _len = 0; private _maxSeg = 0; private _waterSegs = 0;
+                for "_i" from 1 to (count _result - 1) do {
+                    private _pA = _result select (_i-1);
+                    private _pB = _result select _i;
+                    private _seg = _pB distance2D _pA;
+                    _len = _len + _seg;
+                    if (_seg > _maxSeg) then { _maxSeg = _seg; };
+                    if (surfaceIsWater [((_pA select 0)+(_pB select 0))/2, ((_pA select 1)+(_pB select 1))/2]) then { _waterSegs = _waterSegs + 1; };
+                };
+                ["Exp Pathfinding route: side=%1 nodes=%2 len=%3m maxSeg=%4m waterSegs=%5", _side, count _result, round _len, round _maxSeg, _waterSegs] call Alive_fnc_Dump;
                 [_logic, "pathDrawMarkers", _pathMarkers] call ALiVE_fnc_hashSet;
             };
 
