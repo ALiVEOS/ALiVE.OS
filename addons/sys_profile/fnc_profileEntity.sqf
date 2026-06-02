@@ -635,7 +635,7 @@ switch(_operation) do {
         private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
 
         //Since this gets called multiple times per "addWaypoint" lets try avoiding a race condition and only execute when all are Ready
-        if ((count _pendingWaypoints > 0) && (_pendingWaypoints select (count _pendingWaypoInts - 1)) select 0) then {
+        if ((count _pendingWaypoints > 0) && (_pendingWaypoints select (count _pendingWaypoints - 1)) select 0) then {
 
             private _firstPending = _pendingWaypoints select 0;
             while {!isnil "_firstPending" && {_firstPending select 0}} do {
