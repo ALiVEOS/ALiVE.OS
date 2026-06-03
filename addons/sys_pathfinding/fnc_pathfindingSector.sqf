@@ -104,6 +104,7 @@ private _fnc_getHeightWaterModifier = {
     _subWaterModifier = _subWaterModifier / 8;
     _subWater pushback _subHasWater;
     _subWater pushback _subWaterModifier;
+    _subWater pushback _subHeightASL;   // CANDIDATE C2: centre height, so the water guard reads it instead of a per-step terrain lookup
     (_subSector select 4) pushback _subWater;
     (_subSector select 4) pushback _subHeightASL;
     private _hasBridge = (((_subSector select 4) select 0) select 2);
@@ -220,7 +221,7 @@ switch (_operation) do {
         private _isEntirelyWater = true;
 
         //// WATER - Grid Compression - use single array ref for 'Water' sectors to compress memory
-        _waterSectorArray = [[-1,-1], [-1,-1], [-1,-1], "WATER",[[false,false,false,0],[true,1],-99,0]];
+        _waterSectorArray = [[-1,-1], [-1,-1], [-1,-1], "WATER",[[false,false,false,0],[true,1,-99],-99,0]];   // water sub 3rd = centre height (CANDIDATE C2): -99 = always deep
         ////
 
         {
@@ -245,7 +246,7 @@ switch (_operation) do {
         // for compression
         if (_isEntirelyWater) exitwith { _sector = [_index,_waterSectorArray]; _result = [_sector, _subSectors]; };
  
-        private _waterModData = [_hasWater, _sumWaterModifier/_numWaterAreas];
+        private _waterModData = [_hasWater, _sumWaterModifier/_numWaterAreas, getTerrainHeightASL _posCenter];   // 3rd = sector centre height (CANDIDATE C2: water guard)
         _modifiers pushback _waterModData;
         _modifiers pushback (_sumHeightASL/(count _subsectors)); //Height Data
 

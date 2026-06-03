@@ -255,7 +255,7 @@ private _fnc_canTraverse = {
     _sectorFrom params ["_indxFrom", "_posFrom", "_centerPosFrom", "_typeFrom", "_modifiersFrom"];
     _modifiersTo params ["_road","_water","_height","_density"];
     _road params ["_hasRoads","_hasTrails","_hasBridge","_roadModifier"];
-    _water params ["_hasWater","_waterModifier"];
+    _water params ["_hasWater","_waterModifier","_centreHeightTo"];   // CANDIDATE C2: precomputed TO-cell centre height (was a runtime getTerrainHeightASL in the guard below)
     _modifiersFrom params ["_prevRoad", "_prevWater", "_prevHeight", "_prevDensity"];
     _prevWater params ["_prevHasWater","_prevWaterModifier"];
 
@@ -332,7 +332,7 @@ private _fnc_canTraverse = {
     // <100m ford branch above - the loophole that let infantry wade across a bay one
     // sub-100m step at a time. Air is excluded; pure-naval (!_canTraverseLand) still
     // crosses water freely.
-    if (!_canTraverseAir && _canTraverseLand && {(getTerrainHeightASL _centerPosTo) < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)}) then {
+    if (!_canTraverseAir && _canTraverseLand && {_centreHeightTo < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)}) then {
         if (_canTraverse isEqualType []) then { _canTraverse set [0, false]; } else { _canTraverse = false; };
     };
 
