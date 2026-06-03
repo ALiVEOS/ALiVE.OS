@@ -83,21 +83,52 @@ private _fnc_getMovementCost = {
 };
 
 private _fnc_priorityAdd = {
+    // CANDIDATE B: binary min-heap insert (sift-up), O(log n) - replaces the old
+    // linear scan + array insert (O(n)). The frontier is now heap-ordered (root = min),
+    // not fully sorted; priorityPull still returns the minimum. Push the new node at the
+    // tail, then walk it up while it outranks its parent (smaller priority = higher).
     private _args = _this;
     _args params ["_queue","_priority","_item"];
-    private _queueSize = count _queue;
-    private _i = 0;
-    while {_i <= _queueSize - 1 && { _priority > ((_queue select _i) select 0) }} do {
-        _i = _i + 1;
+    private _node = [_priority, _item];
+    _queue pushBack _node;
+    private _i = (count _queue) - 1;
+    while {_i > 0} do {
+        private _parent = floor ((_i - 1) / 2);
+        if (((_queue select _parent) select 0) <= _priority) exitWith {};
+        _queue set [_i, _queue select _parent];   // pull the parent down into the hole
+        _i = _parent;
     };
-    _queue insert [_i, [[_priority, _item]] ];
+    _queue set [_i, _node];                        // drop the new node in its slot
 };
 
 private _fnc_priorityPull = {
+    // CANDIDATE B: binary min-heap extract-min (sift-down), O(log n) - replaces the old
+    // deleteAt 0 (O(n) shift of the whole queue). Return the root's item, move the tail
+    // into the root hole, then walk it down past the smaller of its two children until
+    // the heap order is restored.
     private _queue = _this;
     private "_result";
-    if (count _queue > 0) then {
-        _result = (_queue deleteat 0) select 1;
+    private _n = count _queue;
+    if (_n > 0) then {
+        _result = (_queue select 0) select 1;        // the minimum's item
+        private _last = _queue deleteAt (_n - 1);     // pop the tail
+        private _m = _n - 1;                           // heap size after the pop
+        if (_m > 0) then {
+            private _i = 0;
+            private _pri = _last select 0;
+            while {true} do {
+                private _l = 2*_i + 1;
+                private _r = 2*_i + 2;
+                private _smallest = _i;
+                private _smPri = _pri;
+                if (_l < _m && {((_queue select _l) select 0) < _smPri}) then { _smallest = _l; _smPri = ((_queue select _l) select 0); };
+                if (_r < _m && {((_queue select _r) select 0) < _smPri}) then { _smallest = _r; };
+                if (_smallest == _i) exitWith {};
+                _queue set [_i, _queue select _smallest];   // pull the smaller child up
+                _i = _smallest;
+            };
+            _queue set [_i, _last];                  // drop the tail in its slot
+        };
     };
     _result
 };
