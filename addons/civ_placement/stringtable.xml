@@ -363,7 +363,7 @@
     <Russian>Размер сил:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_COMMENT">
-    <English>Total number of virtual unit slots to fill across all matched objectives. Distributed proportionally between objectives based on their size and priority.</English>
+    <English>Scaling value used to calculate group profile counts from the selected Weighting. This is not a soldier count or hard cap: e.g. Company x2 (200) is converted into infantry, motorised, mechanised, armour, spec ops and air group counts, then spread across matched objectives. Garrisoned Infantry Groups are added per objective and can raise the final unit total significantly.</English>
     <Chinese>跨所有匹配目標填充的虛擬單位槽位總數。根據目標的大小和優先級按比例分配。</Chinese>
     <Chinesesimp>跨所有匹配目标填充的虚拟单位槽位总数。根据目标的大小和优先级按比例分配。</Chinesesimp>
     <Spanish>Número total de plazas de unidad virtual a rellenar entre todos los objetivos coincidentes. Se distribuyen proporcionalmente entre los objetivos según su tamaño y prioridad.</Spanish>
@@ -736,7 +736,7 @@
     <Russian>Вероятность того, что военно-морские юниты будут патрулировать рядом с морскими объектами. Нет = выкл., Низко = 20%, Средне = 33%, Высоко = 55%, Экстрим = 75%, Все = каждый морской объект получает патруль.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT">
-    <English>Garrisoned Infantry Groups:</English>
+    <English>Garrisoned Infantry Groups Per Objective:</English>
     <Chinese>駐防步兵組：</Chinese>
     <Chinesesimp>驻防步兵组：</Chinesesimp>
     <Spanish>Grupos de infantería de guarnición:</Spanish>
@@ -745,7 +745,7 @@
     <Russian>Группы пехоты гарнизона:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_COMMENT">
-    <English>Number of infantry groups assigned to garrison and patrol buildings within each objective. Has no effect if no infantry groups are spawned.</English>
+    <English>Additional infantry groups spawned at each objective to garrison and patrol buildings. Low/Medium/High resolve to roughly 1-2, 3-4 or 5-6 groups per objective when enough infantry groups exist. These are not a Force Size cap and can multiply the final unit count across many objectives.</English>
     <Chinese>分配到每個目標內駐防和巡邏建築物的步兵組數量。如果沒有生成步兵組，則沒有效果。</Chinese>
     <Chinesesimp>分配到每个目标内驻防和巡逻建筑物的步兵组数量。如果没有生成步兵组，则没有效果。</Chinesesimp>
     <Spanish>Número de grupos de infantería asignados a guarnecer y patrullar edificios dentro de cada objetivo. No tiene efecto si no se generan grupos de infantería.</Spanish>
