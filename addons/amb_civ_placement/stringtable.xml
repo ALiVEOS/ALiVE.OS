@@ -252,6 +252,13 @@
     <Portuguese>Apenas objetivos de alta prioridade</Portuguese>
     <Russian>Только объекты высокого приоритета</Russian>
 </Key>
+<!-- English-only; translations welcome -->
+<Key ID="STR_ALIVE_AMBCP_INCLUDE_CUSTOM_OBJECTIVES">
+    <English>Include Custom Civ Objectives:</English>
+</Key>
+<Key ID="STR_ALIVE_AMBCP_INCLUDE_CUSTOM_OBJECTIVES_COMMENT">
+    <English>Add Custom Civ Objective modules to the civilian population placement pool. Civilians spawn only when valid civilian buildings are found inside the custom objective radius. Custom objectives use priority, TAOR and blacklist filters, but not the indexed-settlement size filter.</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_FACTION">
     <English>Civilian Faction:</English>
