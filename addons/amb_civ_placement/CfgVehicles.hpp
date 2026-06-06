@@ -60,6 +60,18 @@ class CfgVehicles {
                                     class HIGH { name = "$STR_ALIVE_AMBCP_PRIORITY_FILTER_HIGH"; value = "40"; };
                                 };
                         };
+                        class includeCustomObjectives : Combo
+                        {
+                                property = "ALiVE_amb_civ_placement_includeCustomObjectives";
+                                displayName = "$STR_ALIVE_AMBCP_INCLUDE_CUSTOM_OBJECTIVES";
+                                tooltip = "$STR_ALIVE_AMBCP_INCLUDE_CUSTOM_OBJECTIVES_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                    class No { name = "No"; value = false; default = 1; };
+                                    class Yes { name = "Yes"; value = true; };
+                                };
+                        };
                         class HDR_PLACEMENT : ALiVE_ModuleSubTitle { property = "ALiVE_amb_civ_placement_HDR_PLACEMENT"; displayName = "CIVILIAN PLACEMENT"; };
                         // Shared ALiVE_FactionChoice dropdown - see addons/main/CfgVehicles.hpp.
                         // Ambient Civilian Population module defaults to CIV_F (vanilla A3

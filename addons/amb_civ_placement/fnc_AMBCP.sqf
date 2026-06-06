@@ -46,6 +46,7 @@ Jman
 #define DEFAULT_AMBIENT_VEHICLE_AMOUNT "0.2"
 #define DEFAULT_AMBIENT_ANIMAL_AMOUNT "0"
 #define DEFAULT_PLACEMENT_MULTIPLIER "0.5"
+#define DEFAULT_INCLUDE_CUSTOM_OBJECTIVES false
 
 private ["_result"];
 
@@ -111,6 +112,7 @@ switch(_operation) do {
             "blacklist",
             "sizeFilter",
             "priorityFilter",
+            "includeCustomObjectives",
             "faction",
             "placementMultiplier",
             "ambientVehicleAmount",
@@ -202,6 +204,22 @@ switch(_operation) do {
     // Return the Priority filter
     case "priorityFilter": {
         _result = [_logic,_operation,_args,DEFAULT_PRIORITY_FILTER] call ALIVE_fnc_OOsimpleOperation;
+    };
+
+    // Include hand-placed Custom Civ Objectives in the CivPop placement pool
+    case "includeCustomObjectives": {
+        if (_args isEqualType true) then {
+            _logic setVariable ["includeCustomObjectives", _args];
+        } else {
+            _args = _logic getVariable ["includeCustomObjectives", DEFAULT_INCLUDE_CUSTOM_OBJECTIVES];
+        };
+        if (_args isEqualType "") then {
+            _args = (_args == "true");
+            _logic setVariable ["includeCustomObjectives", _args];
+        };
+        ASSERT_TRUE(_args isEqualType true,str _args);
+
+        _result = _args;
     };
 
     // Return the Placement Multiplier
@@ -310,6 +328,27 @@ switch(_operation) do {
             waituntil {!(isnil "ALiVE_ProfileHandler") && {[ALiVE_ProfileSystem,"startupComplete",false] call ALIVE_fnc_hashGet}};
             waituntil {!(isnil "ALIVE_clusterHandler")};
 
+            private _includeCustomObjectives = [_logic, "includeCustomObjectives"] call MAINCLASS;
+
+            if (_includeCustomObjectives) then {
+                private _customObjectiveModules = allMissionObjects "ALiVE_civ_placement_custom";
+
+                if (count _customObjectiveModules > 0) then {
+                    private _customObjectiveWaitUntil = diag_tickTime + 60;
+                    waitUntil {
+                        (({
+                            (count (_x getVariable ["objectives", []]) > 0) ||
+                            {_x getVariable ["startupComplete", false]}
+                        } count _customObjectiveModules) == count _customObjectiveModules) ||
+                        {diag_tickTime > _customObjectiveWaitUntil}
+                    };
+
+                    if (_debug && {diag_tickTime > _customObjectiveWaitUntil}) then {
+                        ["AMBCP - Timed out waiting for custom civilian objectives; using currently registered custom clusters"] call ALiVE_fnc_dump;
+                    };
+                };
+            };
+
             if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
                 private _worldName = toLower(worldName);
                 private _file = format["x\alive\addons\civ_placement\clusters\clusters.%1_civ.sqf", _worldName];
@@ -318,7 +357,7 @@ switch(_operation) do {
             };
             waituntil {!(isnil "ALIVE_loadedCIVClusters") && {ALIVE_loadedCIVClusters}};
 
-            if (isnil "ALIVE_clustersCivSettlement") exitwith {
+            if (isnil "ALIVE_clustersCivSettlement" && {!_includeCustomObjectives}) exitwith {
                 ["AMBCP - Exiting because of lack of civilian settlements..."] call ALiVE_fnc_dump;
                 _logic setVariable ["startupComplete", true];
             };
@@ -351,6 +390,7 @@ switch(_operation) do {
                 private _blacklist = [_logic, "blacklist"] call MAINCLASS;
                 private _sizeFilter = parseNumber([_logic, "sizeFilter"] call MAINCLASS);
                 private _priorityFilter = parseNumber([_logic, "priorityFilter"] call MAINCLASS);
+                private _customClusterCount = 0;
 
                 // drop any TAOR / blacklist markers that no longer exist
                 // (mission save may have outlived a marker the author removed)
@@ -360,21 +400,51 @@ switch(_operation) do {
                 private _clusters = DEFAULT_OBJECTIVES;
 
                 if !(isnil "ALIVE_clustersCivSettlement") then {
+                     private _settlementClusters = ALIVE_clustersCivSettlement select 2;
+                     _clusters append ([_settlementClusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters);
+                };
 
-                     _clusters = ALIVE_clustersCivSettlement select 2;
-                     _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
-                     _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
-                     _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
-                     {
-                          [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
-                     } forEach _clusters;
-                     [_logic, "objectives", _clusters] call MAINCLASS;
+                if (_includeCustomObjectives && {!(isnil "ALIVE_clustersCivCustom")}) then {
+                    private _customClusters = ALIVE_clustersCivCustom select 2;
+                    _customClusterCount = count _customClusters;
+                    _clusters append ([_customClusters,0,_priorityFilter] call ALIVE_fnc_copyClusters);
+                };
+
+                if (count _clusters > 0) then {
+                    if (_includeCustomObjectives) then {
+                        {
+                            private _clusterID = [_x, "clusterID", ""] call ALIVE_fnc_hashGet;
+                            if (([_clusterID, "CUSTOM_CIV_"] call CBA_fnc_find) == 0) then {
+                                private _center = [_x, "center", []] call ALIVE_fnc_hashGet;
+                                private _size = [_x, "size", 200] call ALIVE_fnc_hashGet;
+                                if (_size isEqualType "") then {_size = parseNumber _size};
+                                if ((_center isEqualType []) && {_size isEqualType 0}) then {
+                                    private _nodes = +([_x, "nodes", []] call ALIVE_fnc_hashGet);
+                                    private _buildings = nearestObjects [_center, ["House", "Building"], _size];
+                                    {
+                                        _nodes pushBackUnique _x;
+                                    } forEach _buildings;
+                                    [_x, "nodes", _nodes] call ALIVE_fnc_hashSet;
+                                };
+                            };
+                        } forEach _clusters;
+                    };
+
+                    _clusters = [_clusters, _taor] call ALIVE_fnc_clustersInsideMarker;
+                    _clusters = [_clusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+                    {
+                         [_x, "debug", [_logic, "debug"] call MAINCLASS] call ALIVE_fnc_cluster;
+                    } forEach _clusters;
+                    [_logic, "objectives", _clusters] call MAINCLASS;
                 };
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
                     ["AMBCP - Startup completed"] call ALiVE_fnc_dump;
                     ["AMBCP - Count clusters %1",count _clusters] call ALiVE_fnc_dump;
+                    if (_includeCustomObjectives) then {
+                        ["AMBCP - Custom civilian objective clusters available: %1", _customClusterCount] call ALiVE_fnc_dump;
+                    };
                     [] call ALIVE_fnc_timer;
                 };
                 // DEBUG -------------------------------------------------------------------------------------
@@ -449,6 +519,7 @@ switch(_operation) do {
         if (isServer) then {
 
             private _debug = [_logic, "debug"] call MAINCLASS;
+            private _includeCustomObjectives = [_logic, "includeCustomObjectives"] call MAINCLASS;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
@@ -488,6 +559,29 @@ switch(_operation) do {
 
             // Load static data
             call ALiVE_fnc_staticDataHandler;
+            private _civilianPopulationBuildingTypes = +ALIVE_civilianPopulationBuildingTypes;
+
+            if (_includeCustomObjectives && {count _civilianPopulationBuildingTypes == 0}) then {
+                _civilianPopulationBuildingTypes = [
+                    "house",
+                    "hut",
+                    "slum",
+                    "shop",
+                    "store",
+                    "garage",
+                    "hospital",
+                    "church",
+                    "chapel",
+                    "mosque",
+                    "school",
+                    "market",
+                    "stall"
+                ];
+
+                if (_debug) then {
+                    ["AMBCP - No civilian population building static data found; using generic custom-objective building fallback"] call ALiVE_fnc_dump;
+                };
+            };
 
             // Place ambient vehicles
 
@@ -529,7 +623,7 @@ switch(_operation) do {
 
                         //["NODES: %1",_nodes] call ALIVE_fnc_dump;
 
-                        private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                        private _buildings = [_nodes, _civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
 
                         //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
@@ -713,7 +807,7 @@ switch(_operation) do {
                     private _poultryChance = 0.08 * _ambientAnimalAmount;
                     {
                         private _nodes = [_x, "nodes"] call ALIVE_fnc_hashGet;
-                        private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                        private _buildings = [_nodes, _civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
                         {
                             if (random 1 < _poultryChance) then {
                                 private _basePos = _x getRelPos [3 + random 8, random 360];
@@ -892,7 +986,7 @@ switch(_operation) do {
 
                     //["NODES: %1",_nodes] call ALIVE_fnc_dump;
 
-                    private _buildings = [_nodes, ALIVE_civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
+                    private _buildings = [_nodes, _civilianPopulationBuildingTypes] call ALIVE_fnc_findBuildingsInClusterNodes;
 
                     //["BUILDINGS: %1",_buildings] call ALIVE_fnc_dump;
 
