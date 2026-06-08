@@ -1488,7 +1488,9 @@ switch(_operation) do {
             private _objCountStr_CP = [_logic, "objectiveObjectsCount"] call MAINCLASS;
             private _objCount_CP = if (typeName _objCountStr_CP == "STRING" && {_objCountStr_CP != ""}) then { parseNumber _objCountStr_CP } else { 0 };
             private _objBehaviour_CP = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
-            private _countObjectiveObjects_CP = [_logic, position _logic, 250, _objCount_CP, _objBehaviour_CP, _debugCP] call ALiVE_fnc_spawnObjectiveObjects;
+            private _objChanceStr_CP = [_logic, "objectiveObjectsChance"] call MAINCLASS;
+            private _objChance_CP = if (typeName _objChanceStr_CP == "STRING" && {_objChanceStr_CP != ""}) then { parseNumber _objChanceStr_CP } else { 100 };
+            private _countObjectiveObjects_CP = [_logic, position _logic, 250, _objCount_CP, _objBehaviour_CP, _objChance_CP, _debugCP] call ALiVE_fnc_spawnObjectiveObjects;
             if (_debugCP) then {
                 ["CP - Objective objects placed: %1 of %2 (behaviour=%3)",
                     _countObjectiveObjects_CP, _objCount_CP, _objBehaviour_CP] call ALiVE_fnc_dump;

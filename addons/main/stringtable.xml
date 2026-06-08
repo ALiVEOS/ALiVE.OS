@@ -162,6 +162,26 @@
     <Russian>Сколько декоративных объектов создать на цели, выбранных случайно из пула селектора Объектов цели. По умолчанию 0 (отключено - декорации не создаются). Выборка с возвратом, поэтому маленький пул с большим количеством означает появление дубликатов.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE">
+    <English>Objective Spawn Chance %</English>
+    <Chinese>目標生成機率 %</Chinese>
+    <Chinesesimp>目标生成几率 %</Chinesesimp>
+    <Spanish>Probabilidad de aparición del objetivo %</Spanish>
+    <French>Chance d'apparition de l'objectif %</French>
+    <Portuguese>Chance de aparição do objetivo %</Portuguese>
+    <Russian>Шанс появления на цели %</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE_COMMENT">
+    <English>Percentage chance (0-100) that this objective spawns its objective objects at all. Rolled once per objective: on success the full Spawn Objective Units count is placed; on failure none are. Default 100 (always spawn). Independent of the count and picker settings.</English>
+    <Chinese>此目標生成其目標物件的百分比機率（0-100）。每個目標擲骰一次：成功時放置完整的生成目標單位數量；失敗時不放置任何物件。預設為100（總是生成）。與數量和選擇器設定無關。</Chinese>
+    <Chinesesimp>此目标生成其目标物件的百分比几率（0-100）。每个目标掷骰一次：成功时放置完整的生成目标单位数量；失败时不放置任何物件。默认为100（总是生成）。与数量和选择器设定无关。</Chinesesimp>
+    <Spanish>Probabilidad porcentual (0-100) de que este objetivo genere sus objetos del objetivo. Se tira una vez por objetivo: si tiene éxito se coloca el conteo completo de Generar unidades del objetivo; si falla no se coloca ninguno. Por defecto 100 (siempre generar). Independiente de los ajustes de conteo y selector.</Spanish>
+    <French>Probabilité en pourcentage (0-100) que cet objectif génère ses objets d'objectif. Tirée une fois par objectif : en cas de succès, le nombre complet d'Apparition unités d'objectif est placé ; en cas d'échec, aucun. Par défaut 100 (toujours générer). Indépendant des réglages de nombre et du sélecteur.</French>
+    <Portuguese>Chance percentual (0-100) de este objetivo gerar seus objetos do objetivo. Sorteada uma vez por objetivo: em caso de sucesso, a contagem completa de Gerar unidades do objetivo é colocada; em caso de falha, nenhuma. Padrão 100 (sempre gerar). Independente das configurações de contagem e seletor.</Portuguese>
+    <Russian>Процентный шанс (0-100), что эта цель вообще создаст свои объекты цели. Бросок один раз на цель: при успехе размещается полное количество Создать единицы цели; при неудаче - ни одного. По умолчанию 100 (всегда создавать). Независимо от настроек количества и селектора.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_BEHAVIOUR">
     <English>Objective Behaviour</English>
     <Chinese>目標行為</Chinese>
