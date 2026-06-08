@@ -1039,7 +1039,9 @@ switch(_operation) do {
             private _objCountStr_MP = [_logic, "objectiveObjectsCount"] call MAINCLASS;
             private _objCount_MP = if (typeName _objCountStr_MP == "STRING" && {_objCountStr_MP != ""}) then { parseNumber _objCountStr_MP } else { 0 };
             private _objBehaviour_MP = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
-            private _countObjectiveObjects_MP = [_logic, position _logic, 250, _objCount_MP, _objBehaviour_MP, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            private _objChanceStr_MP = [_logic, "objectiveObjectsChance"] call MAINCLASS;
+            private _objChance_MP = if (typeName _objChanceStr_MP == "STRING" && {_objChanceStr_MP != ""}) then { parseNumber _objChanceStr_MP } else { 100 };
+            private _countObjectiveObjects_MP = [_logic, position _logic, 250, _objCount_MP, _objBehaviour_MP, _objChance_MP, _debug] call ALiVE_fnc_spawnObjectiveObjects;
             if (_debug) then {
                 ["MP [%1] - Objective objects placed: %2 of %3 (behaviour=%4)",
                     _faction, _countObjectiveObjects_MP, _objCount_MP, _objBehaviour_MP] call ALiVE_fnc_dump;

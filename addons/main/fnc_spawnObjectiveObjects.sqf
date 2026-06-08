@@ -53,6 +53,12 @@ Parameters:
     _count       : SCALAR - how many objects to spawn. <=0 = skip.
     _behaviour   : STRING - "clustered" / "dispersed" / "perimeter".
                             Empty / unrecognised falls back to "dispersed".
+    _chance      : SCALAR - per-objective spawn chance, 0-100. One roll
+                            decides whether THIS objective gets its objective
+                            objects at all: pass = spawn the full _count,
+                            fail = spawn nothing. >=100 always passes (default
+                            / redundancy for modules that never set it); <=0
+                            never spawns.
     _debug       : BOOL   - whether to log spawn results via ALiVE_fnc_dump
 
 Returns:
@@ -68,11 +74,23 @@ params [
     ["_baseRadius", 150, [0]],
     ["_count", 0, [0]],
     ["_behaviour", "dispersed", [""]],
+    ["_chance", 100, [0]],
     ["_debug", false, [false]]
 ];
 
 if (isNull _logic) exitWith { 0 };
 if (_count <= 0) exitWith { 0 };
+
+// #875 - per-objective spawn gate. One roll decides whether THIS objective
+// gets its objective objects at all. _chance >= 100 short-circuits the RNG so
+// behaviour is identical to the pre-gate code path (default / redundancy for
+// modules that never set the attribute). _chance <= 0 never spawns.
+if (_chance <= 0 || {_chance < 100 && {random 100 >= _chance}}) exitWith {
+    if (_debug) then {
+        ["ALiVE_fnc_spawnObjectiveObjects: objective skipped by chance gate (chance=%1%%)", _chance] call ALiVE_fnc_dump;
+    };
+    0
+};
 
 private _raw = _logic getVariable ["objectiveObjects", ""];
 if (typeName _raw != "STRING" || {_raw == ""}) exitWith { 0 };
