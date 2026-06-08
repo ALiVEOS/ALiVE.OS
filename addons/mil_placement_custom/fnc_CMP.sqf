@@ -1476,7 +1476,9 @@ switch(_operation) do {
             private _objCountStr = [_logic, "objectiveObjectsCount"] call MAINCLASS;
             private _objCount = if (typeName _objCountStr == "STRING" && {_objCountStr != ""}) then { parseNumber _objCountStr } else { 0 };
             private _objBehaviour = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
-            private _countObjectiveObjects = [_logic, _position, _objSizeRadius, _objCount, _objBehaviour, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            private _objChanceStr = [_logic, "objectiveObjectsChance"] call MAINCLASS;
+            private _objChance = if (typeName _objChanceStr == "STRING" && {_objChanceStr != ""}) then { parseNumber _objChanceStr } else { 100 };
+            private _countObjectiveObjects = [_logic, _position, _objSizeRadius, _objCount, _objBehaviour, _objChance, _debug] call ALiVE_fnc_spawnObjectiveObjects;
             if (_debug) then {
                 ["CMP [%1] - Objective objects placed: %2 of %3 (radius=%4 behaviour=%5)",
                     _faction, _countObjectiveObjects, _objCount, _objSizeRadius, _objBehaviour] call ALiVE_fnc_dump;

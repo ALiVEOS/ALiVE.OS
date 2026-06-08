@@ -1773,7 +1773,9 @@ switch(_operation) do {
             private _objCountStr_ATO = [_logic, "objectiveObjectsCount"] call MAINCLASS;
             private _objCount_ATO = if (typeName _objCountStr_ATO == "STRING" && {_objCountStr_ATO != ""}) then { parseNumber _objCountStr_ATO } else { 0 };
             private _objBehaviour_ATO = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
-            private _countObjectiveObjects_ATO = [_logic, position _logic, 350, _objCount_ATO, _objBehaviour_ATO, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            private _objChanceStr_ATO = [_logic, "objectiveObjectsChance"] call MAINCLASS;
+            private _objChance_ATO = if (typeName _objChanceStr_ATO == "STRING" && {_objChanceStr_ATO != ""}) then { parseNumber _objChanceStr_ATO } else { 100 };
+            private _countObjectiveObjects_ATO = [_logic, position _logic, 350, _objCount_ATO, _objBehaviour_ATO, _objChance_ATO, _debug] call ALiVE_fnc_spawnObjectiveObjects;
             if (_debug) then {
                 ["ATO %1 - Objective objects placed: %2 of %3 (behaviour=%4)",
                     _logic, _countObjectiveObjects_ATO, _objCount_ATO, _objBehaviour_ATO] call ALiVE_fnc_dump;
