@@ -444,6 +444,26 @@ ALiVE_fnc_CheckSpawnInMarkerArea = {
 
 private _result = true;
 
+// Safe reposition for recycled / aborted aircraft: stops the airframe detonating
+// when it is teleported back into its hangar slot (the spawn position sits inside
+// the hangar shell). If a sibling already occupies the slot, drop into a clear
+// nearby spot instead of stacking. Damage is disabled across the move and
+// re-enabled (with the maintenance repair applied) once the engine has settled
+// any overlap - setDamage is blocked while allowDamage is false.
+private _fnc_safeReposition = {
+    params ["_veh", "_pos", ["_dir", -1]];
+    private _target = _pos;
+    if (count ((_target nearEntities [["Air"], 12]) - [_veh]) > 0) then {
+        private _alt = _target findEmptyPosition [10, 80, typeOf _veh];
+        if (count _alt > 0) then { _target = [_alt select 0, _alt select 1, _target select 2]; };
+    };
+    _veh allowDamage false;
+    if (_dir >= 0) then { _veh setDir _dir; };
+    _veh setPosATL _target;
+    _veh setVelocity [0,0,0];
+    [_veh] spawn { params ["_v"]; sleep 5; if (!isNull _v && {alive _v}) then { _v allowDamage true; _v setDamage 0; }; };
+};
+
 switch(_operation) do {
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
@@ -4966,12 +4986,12 @@ switch(_operation) do {
                                 };
                                 // DEBUG -------------------------------------------------------------------------------------
 
-                                //Move back to original position
-                                _vehicle setDir ([_aircraft,"startDir"] call ALiVE_fnc_hashGet);
-
+                                //Move back to original position (safe reposition - guards against hangar detonation)
+                                private _startDir = [_aircraft,"startDir"] call ALiVE_fnc_hashGet;
                                 if !(_isOnCarrier) then {
-                                    _vehicle setpos _startPosition;
+                                    [_vehicle, _startPosition, _startDir] call _fnc_safeReposition;
                                 } else {
+                                    _vehicle setDir _startDir;
                                     _vehicle setposATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
                                 };
 
@@ -5655,11 +5675,12 @@ switch(_operation) do {
                     // Turn off engine
                     _vehicle engineOn false;
 
-                    //Move back to original position
-                    _vehicle setDir ([_aircraft,"startDir"] call ALiVE_fnc_hashGet);
-
+                    //Move back to original position (safe reposition - guards against hangar detonation)
+                    private _startDir = [_aircraft,"startDir"] call ALiVE_fnc_hashGet;
                     if !(_isOnCarrier) then {
-                        _vehicle setposATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
+                        [_vehicle, [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1], _startDir] call _fnc_safeReposition;
+                    } else {
+                        _vehicle setDir _startDir;
                     };
 
                     // Airport is no longer busy
