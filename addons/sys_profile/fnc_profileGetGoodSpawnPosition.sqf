@@ -22,6 +22,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 
@@ -304,6 +305,25 @@ switch(_type) do {
                     [_profile,"mergePositions"] call ALIVE_fnc_profileEntity;
 
                     //[_spawnPosition,"LAND",_profileID] call _createMarker;
+                } else {
+
+                    // Foot infantry have no spawn-position validator (vehicles use
+                    // findVehicleSpawnPosition). An anchor in an A3 rock cluster puts
+                    // the whole group inside the geometry (#913 / sys_profile Item 1).
+                    // Rocks are terrain objects, so detect with nearestTerrainObjects
+                    // (findSafePos / isFlatEmpty miss map rocks) and step out to the
+                    // nearest rock-free, dry spot. Rock-free anchors skip this.
+                    if !((nearestTerrainObjects [_position, ["ROCK","ROCKS"], 6]) isEqualTo []) then {
+                        private _nudged = [];
+                        {
+                            private _cand = _position getPos _x;
+                            if (((nearestTerrainObjects [_cand, ["ROCK","ROCKS"], 6]) isEqualTo []) && {!surfaceIsWater _cand}) exitWith { _nudged = _cand; };
+                        } forEach [[12,0],[12,90],[12,180],[12,270],[24,45],[24,135],[24,225],[24,315],[40,0],[40,120],[40,240]];
+                        if (count _nudged > 0) then {
+                            [_profile,"position",_nudged] call ALIVE_fnc_profileEntity;
+                            [_profile,"mergePositions"] call ALIVE_fnc_profileEntity;
+                        };
+                    };
                 };
             };
 
