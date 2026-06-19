@@ -469,6 +469,17 @@ private _candidateClear = {
         false
     };
 
+    // 8. Rock terrain objects inside the footprint. The solid-obstacle check (4)
+    //    uses nearestObjects + boundingBoxReal, but A3 rocks report a tiny/zero
+    //    bbox and slip the volume filter, and a rock on flat ground doesn't trip
+    //    the slope check (6) either - so AI compositions end up sitting in the
+    //    rocks (#913). Query the terrain-object layer directly, which DOES return
+    //    rocks by type. Heightmap cliffs stay covered by the slope check.
+    if (count (nearestTerrainObjects [_p, ["ROCK", "ROCKS"], _envHalf, false]) > 0) exitWith {
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: rock terrain-object in footprint", _p] call ALiVE_fnc_dump };
+        false
+    };
+
     if (_debug) then { ["[ALiVE CompSpawn]   accept %1", _p] call ALiVE_fnc_dump };
     true
 };
