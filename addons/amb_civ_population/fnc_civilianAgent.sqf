@@ -354,7 +354,20 @@ switch(_operation) do {
 
         private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
 
-        if !(_active) then {
+        // Don't recruit structure-spawner proxy classes (e.g. POOK RADOME
+        // spawners) as civilians: they build a structure on spawn and the
+        // proxies pile up because they aren't normal civilians the system culls.
+        // isNil-guarded default so a mission init.sqf can override or extend
+        // ALiVE_CivPop_excludeClassPatterns; each entry matches as a substring
+        // of the class name.
+        if (isNil "ALiVE_CivPop_excludeClassPatterns") then { ALiVE_CivPop_excludeClassPatterns = ["RADOME_Spawner"]; };
+        private _excluded = (ALiVE_CivPop_excludeClassPatterns findIf {(_agentClass find _x) > -1}) > -1;
+        if (_excluded) then {
+            // Retire the agent so the cluster activator stops re-selecting it.
+            [ALIVE_agentHandler, "unregisterAgent", _logic] call ALIVE_fnc_agentHandler;
+        };
+
+        if (!(_active) && {!_excluded}) then {
 
             /*
 			// Causes units to return to group leader and pile up there - #277)
