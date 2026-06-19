@@ -35,6 +35,7 @@ Author:
 ARJay
 Highhead
 SpyderBlack723
+Jman
 ---------------------------------------------------------------------------- */
 
 if (ALiVE_gamePaused) exitwith {
@@ -66,7 +67,8 @@ if (_profilesToSim isEqualTo []) then {
 if (!_simAttacks) then {
 
     private _speedModifier = [MOD(profileSystem),"speedModifier", 1] call ALiVE_fnc_HashGet;
-    private _boatsEnabled = [MOD(profileSystem),"seaTransport", false] call ALiVE_fnc_HashGet;
+    private _seaTransportMode = toLower ([MOD(profileSystem),"seaTransport", "auto"] call ALiVE_fnc_HashGet);
+    private _boatsEnabled = _seaTransportMode != "never";
     private _pathfindingEnabled = [MOD(profileSystem),"pathfinding", false] call ALiVE_fnc_hashGet;
 
     // find profile to sim
@@ -315,26 +317,41 @@ if (!_simAttacks) then {
                                         };
                                         if (_boatsEnabled && {surfaceIsWater _profilePosition} && {surfaceIsWater _newPosition} && {call _isSeaTravel}) then {
                                             if (isnil {[_profile,"boat"] call ALiVE_fnc_hashGet}) then {
-                                                if (_debug) then {["Profile Simulator is adding a boat to entity profile %1",_profileID] call ALiVE_fnc_dump};
-
                                                 private _unitPositions = _profile select 2 select 18;
                                                 private _faction = [_profile, "faction"] call ALiVE_fnc_hashGet;
                                                 private _side = _profile select 2 select 3;
 
+                                                // Boats that can seat the group are filtered upstream by
+                                                // findVehicleType (TransportSoldier >= group-1), so this just
+                                                // randomises among already-capable faction boats. The generic
+                                                // civilian boat is a fallback ONLY when the faction fields none:
+                                                // allowed for everyone in Always mode, but in Auto mode only for
+                                                // civilian groups - so a military faction with no boats in its
+                                                // ORBAT gets none and stays on land.
                                                 private _boatTypes = [(count _unitPositions) - 1, [_faction],"SHIP"] call ALiVE_fnc_findVehicleType;
-                                                private _boatType = if (count _boatTypes > 0) then {selectRandom _boatTypes} else {"C_Boat_Transport_02_F"};
-
-                                                private _boatProfile = [_boatType,_side,_faction,_newPosition,0,false,_faction,[]] call ALiVE_fnc_createProfileVehicle;
-                                                [_profile,_boatProfile] call ALiVE_fnc_createProfileVehicleAssignment;
-
-                                                // create waypoint to nearest shore point
-                                                private _shore = [_newPosition,_destination] call ALiVE_fnc_findNearestShore;
-                                                if !(_shore isEqualTo [0,0,0]) then {
-                                                    private _shoreWaypoint = [_shore, 10] call ALiVE_fnc_createProfileWaypoint;
-                                                    [_profile,"insertWaypoint", _shoreWaypoint] call ALiVE_fnc_profileEntity;
+                                                private _boatType = "";
+                                                if (count _boatTypes > 0) then {
+                                                    _boatType = selectRandom _boatTypes;
+                                                } else {
+                                                    if (_seaTransportMode == "always" || {(toUpper _side) == "CIV"}) then {
+                                                        _boatType = "C_Boat_Transport_02_F";
+                                                    };
                                                 };
 
-                                                [_profile, "boat", [[_boatProfile,"profileID"] call ALiVE_fnc_HashGet, _newPosition]] call ALiVE_fnc_hashSet;
+                                                if (_boatType != "") then {
+                                                    if (_debug) then {["Profile Simulator is adding a %1 boat to entity profile %2",_boatType,_profileID] call ALiVE_fnc_dump};
+                                                    private _boatProfile = [_boatType,_side,_faction,_newPosition,0,false,_faction,[]] call ALiVE_fnc_createProfileVehicle;
+                                                    [_profile,_boatProfile] call ALiVE_fnc_createProfileVehicleAssignment;
+
+                                                    // create waypoint to nearest shore point
+                                                    private _shore = [_newPosition,_destination] call ALiVE_fnc_findNearestShore;
+                                                    if !(_shore isEqualTo [0,0,0]) then {
+                                                        private _shoreWaypoint = [_shore, 10] call ALiVE_fnc_createProfileWaypoint;
+                                                        [_profile,"insertWaypoint", _shoreWaypoint] call ALiVE_fnc_profileEntity;
+                                                    };
+
+                                                    [_profile, "boat", [[_boatProfile,"profileID"] call ALiVE_fnc_HashGet, _newPosition]] call ALiVE_fnc_hashSet;
+                                                };
                                             };
                                         } else {
                                             // Remove boat if not on water anymore

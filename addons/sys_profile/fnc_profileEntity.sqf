@@ -595,9 +595,10 @@ switch(_operation) do {
             private _previousWaypoint = if (_countPendingWaypoints == 1) then {nil} else {(_pendingWaypoints select (_countPendingWaypoints - 2)) select 3};
             private _startPosition = if (isnil "_previousWaypoint" || _insertionMethod == "insertWaypoint") then { [_logic,"position"] call ALiVE_fnc_hashGet } else {[_previousWaypoint,"position"] call Alive_fnc_hashGet;};
             private _profileID = [_logic,"profileID"] call ALiVE_fnc_hashGet;
+            private _profileSide = [_logic,"side"] call ALiVE_fnc_hashGet;   // for side-coloured debug-draw of the route
             private _pathfindingProcedure = [_logic] call ALiVE_fnc_profileGetPathfindingProcedure;
 
-            [ALiVE_Pathfinder,"findPath",[_startPosition, _pathFindingProcedure, _waypoint, _previousWaypoint, [_profileID,_pendingPath],{
+            [ALiVE_Pathfinder,"findPath",[_startPosition, _pathFindingProcedure, _waypoint, _previousWaypoint, [_profileID,_pendingPath,_profileSide],{
                 params ["_callbackArgs","_path"];
 
                 _callbackArgs params ["_profileID","_pendingPath"];
@@ -634,7 +635,7 @@ switch(_operation) do {
         private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
 
         //Since this gets called multiple times per "addWaypoint" lets try avoiding a race condition and only execute when all are Ready
-        if ((count _pendingWaypoints > 0) && (_pendingWaypoints select (count _pendingWaypoInts - 1)) select 0) then {
+        if ((count _pendingWaypoints > 0) && (_pendingWaypoints select (count _pendingWaypoints - 1)) select 0) then {
 
             private _firstPending = _pendingWaypoints select 0;
             while {!isnil "_firstPending" && {_firstPending select 0}} do {
@@ -826,7 +827,15 @@ switch(_operation) do {
     };
 
     case "addUnit": {
-        if (_args isEqualType []) then {
+        // Guard (Jman 2026-06-03): addUnit validated _args but not _logic. A malformed
+        // or real-Object _logic - or one whose element-2 data array is an Object - threw
+        // "select Type Object" at the unitClasses read below (was spamming ~5s). NOT the
+        // hashSet aliasing (Zero divisor 0); a profile-lifecycle corruption (the
+        // virtual->real transition is the prime suspect) exposed by default-on
+        // pathfinding churn. Skip the offender, and log it ONCE so the producing caller
+        // can be traced. Lazy && so `_logic select 2` is only read when _logic IS an array.
+        private _profileOk = (_logic isEqualType []) && {(_logic select 2) isEqualType []};
+        if (_args isEqualType [] && _profileOk) then {
             _args params [
                 "_class",
                 ["_position", [0,0,0], [[]]],
@@ -842,6 +851,18 @@ switch(_operation) do {
             _positions pushback _position;
             _damages pushback _damage;
             _ranks pushback _rank;
+        } else {
+            // DIAG-STRIP: only the malformed-profile case (args ok, _logic bad). Log the
+            // offender's type + identity + element-2 type ONCE to point at the caller.
+            if (_args isEqualType [] && {!_profileOk} && {isNil "ALiVE_DIAG_addUnitBadProfile"}) then {
+                ALiVE_DIAG_addUnitBadProfile = true;
+                ["DIAG-STRIP addUnit: malformed profile skipped (first hit) - logicType=%1 logic=%2 el2Type=%3 args=%4",
+                    typeName _logic,
+                    if (_logic isEqualType []) then { "array" } else { str _logic },
+                    if (_logic isEqualType []) then { typeName (_logic select 2) } else { "n/a" },
+                    _args
+                ] call ALiVE_fnc_dump;
+            };
         };
     };
 

@@ -151,27 +151,50 @@
     <Chinesesimp>以米为单位设置虚拟战斗的范围</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING">
-    <English>Experimental Pathfinding:</English>
+    <English>Pathfinding:</English>
     <Chinesesimp>实验路径查找：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT">
-    <English>Experimental!\nThis feature is highly experimental and could break missions.\n Please disable if you notice any issues.\nProfiles will use intelligent pathing to reach their destinations.</English>
+    <English>Profiles use intelligent pathing to reach their destinations, routing around terrain, water and dense areas instead of travelling in straight lines.\nEnabled by default. Set to No to fall back to straight-line movement if you prefer, or if you encounter an issue.</English>
     <Chinesesimp>实验的!\n这项功能是高度实验性的,可能会破坏任务.\n如果发现任何问题,请禁用.\n配置文件将使用智能路径到达目的地.</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID">
     <English>Pathfinding Grid Size/Resolution:</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID_COMMENT">
-    <English>Experimental!\nThis feature is highly experimental and could break missions.\n Please disable if you notice any issues.\nProfiles will use intelligent pathing to reach their destinations.</English>
+    <English>Controls the resolution of the pathfinding grid.\n\nAuto (recommended) sizes the grid to this map automatically - no need to match a map size by hand. High detail / Balanced / Performance trade path accuracy against server load. (An exact grid size can still be forced from init.sqf if ever needed.)</English>
     <Chinesesimp>实验的!\n这项功能是高度实验性的,可能会破坏任务.\n如果发现任何问题,请禁用.\n配置文件将使用智能路径到达目的地.</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID">
+    <English>Draw Pathfinding Grid:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_COMMENT">
+    <English>Debug: draw the pathfinding terrain grid on the map - coloured sectors showing how the map is classified (land / water / coast / bridge). Independent of the module Debug setting. A logged-in admin can also toggle this live from the ALiVE menu (Admin Options - Profile System). Default No.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS">
+    <English>Draw Pathfinding Routes:</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_COMMENT">
+    <English>Debug: draw each computed route on the map as a connected line through its nodes, as profiles request paths. Lines are coloured by the requesting side (BLUFOR blue, OPFOR red, Independent green, Civilian purple). Independent of the module Debug setting. A logged-in admin can also toggle this live from the ALiVE menu (Admin Options - Profile System). Default No.</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_ENABLE">
+    <English>Activate Pathfinding Grid Drawing</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_DISABLE">
+    <English>Deactivate Pathfinding Grid Drawing</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_ENABLE">
+    <English>Activate Pathfinding Routes Drawing</English>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_DISABLE">
+    <English>Deactivate Pathfinding Routes Drawing</English>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
-    <English>Infantry sea transport:</English>
+    <English>Infantry Sea Transport:</English>
     <Chinesesimp>步兵海上运输：</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT">
-    <English>Experimental!\nAdds a boat to a virtual infantry entity that tries to cross water!</English>
-    <Chinesesimp>实验的!\n将一艘船添加到一个试图穿越水面的虚拟步兵实体!</Chinesesimp>
+    <English>Lets virtualised infantry cross open water by boat when there is no land route to their objective. Auto: use a boat only if the group's faction fields one. Always: otherwise fall back to a generic boat. Never: keep infantry on land and route around water. Default Auto.</English>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN">
     <English>Smooth Spawn:</English>

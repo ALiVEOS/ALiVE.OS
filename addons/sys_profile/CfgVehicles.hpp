@@ -112,30 +112,65 @@ class CfgVehicles {
 
                     // ---- Pathfinding ----------------------------------------------------
                     class HDR_PATH : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_PATH"; displayName = "PATHFINDING"; };
-                    class pathfinding : Combo { property = "ALiVE_sys_profile_pathfinding"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; }; };
+                    class pathfinding : Combo { property = "ALiVE_sys_profile_pathfinding"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_COMMENT"; defaultValue = """true"""; class Values { class No{name="No";value=false;}; class Yes{name="Yes";value=true;default=1;}; }; };
                     class pathfindingSize : Combo
                     {
                             property = "ALiVE_sys_profile_pathfindingSize";
                             displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID";
                             tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID_COMMENT";
-                            defaultValue = """[600,75]""";
+                            // Auto-size tokens (STRING) size the grid from the map's
+                            // own worldSize at grid-create, so there's no need to
+                            // match a km tier by hand. Default "auto" (balanced).
+                            // The 12 hand-tuned km tiers were removed - Auto picks
+                            // the right one automatically and the quality levels
+                            // cover the only real choice (accuracy vs CPU). A power
+                            // user can still force an exact grid from init.sqf via
+                            //   [<logic>, "pathfindingSize", [sectorSize, subSize]] call ALiVE_fnc_profileSystem;
+                            // the resolver in fnc_pathfinder still accepts an explicit
+                            // pair, so older missions that saved one keep working.
+                            typeName = "STRING";
+                            defaultValue = """auto""";
                             class Values
                             {
-                                class SmallHighRes { name = "10km - High - (200 x 40)"; value = [200,40]; };
-                                class SmallMedRes { name = "10km - Med - (250 x 50)"; value = [250,50]; };
-                                class SmallLowRes { name = "10km - Low - (300 x 60)"; value = [300,60]; };
-                                class MedHighRes { name = "20km - High - (400 x 50)"; value = [400,50]; };
-                                class MedMedRes { name = "20km - Med - (480 x 60)"; value = [480,60]; };
-                                class MedLowRes { name = "20km - Low - (600 x 75)"; value = [600,75]; default = 1; };
-                                class HighHighRes { name = "30km - High - (640 x 80)"; value = [640,80]; };
-                                class HighMedRes { name = "30km - Med - 720 x 90)"; value = [720,90]; };
-                                class HighLowRes { name = "30km - Low - (800 x 100)"; value = [800,100]; };
-                                class UltraHighHighRes { name = "40km - High - (800 x 100)"; value = [800,100]; };
-                                class UltraHighMedRes { name = "40km - Med - (1000 x 125)"; value = [1000,125]; };
-                                class UltraHighLowRes { name = "40km - Low - (1200 x 150)"; value = [1200,150]; };
+                                class Auto { name = "Auto (size to map - recommended)"; value = "auto"; default = 1; };
+                                class AutoHigh { name = "Auto - High detail"; value = "high"; };
+                                class AutoMed { name = "Auto - Balanced"; value = "med"; };
+                                class AutoLow { name = "Auto - Performance"; value = "low"; };
                             };
                     };
-                    class seaTransport : Combo { property = "ALiVE_sys_profile_seaTransport"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT"; defaultValue = """false"""; class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; }; };
+                    // Debug-draw toggles (independent of the module Debug flag).
+                    // Both can also be flipped live by a logged-in admin via the
+                    // ALiVE menu (Admin Options -> Profile System).
+                    class pathfindingDrawGrid : Combo
+                    {
+                            property = "ALiVE_sys_profile_pathfindingDrawGrid";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_COMMENT";
+                            defaultValue = """false""";
+                            class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; };
+                    };
+                    class pathfindingDrawPaths : Combo
+                    {
+                            property = "ALiVE_sys_profile_pathfindingDrawPaths";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_COMMENT";
+                            defaultValue = """false""";
+                            class Values { class No{name="No";value=false;default=1;}; class Yes{name="Yes";value=true;}; };
+                    };
+                    class seaTransport : Combo
+                    {
+                            property = "ALiVE_sys_profile_seaTransport";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT";
+                            typeName = "STRING";
+                            defaultValue = """auto""";
+                            class Values
+                            {
+                                class Auto   { name = "Auto (faction boats only)";     value = "auto"; default = 1; };
+                                class Always { name = "Always (generic boat fallback)"; value = "always"; };
+                                class Never  { name = "Never (infantry stay on land)";  value = "never"; };
+                            };
+                    };
 
                     class ModuleDescription : ModuleDescription {};
                 };

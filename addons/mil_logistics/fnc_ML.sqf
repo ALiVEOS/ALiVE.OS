@@ -90,6 +90,26 @@ params [
 ];
 _result = true;
 
+// Reinforcement-in-water fix (#11/#15): snap a position to the nearest land via a ring
+// search outward. Used so air-crew spawns and the heli LZ fallback don't strand over the
+// sea when a coastal objective's insertion point + random offset land offshore. Returns
+// _pos unchanged if it is already on land, or if no land is found within _max metres.
+private _fnc_snapToLand = {
+    params ["_pos", ["_max", 800]];
+    if (!surfaceIsWater _pos) exitWith { _pos };
+    private _land = _pos;
+    private _done = false;
+    for "_r" from 100 to _max step 100 do {
+        for "_a" from 0 to 330 step 30 do {
+            private _p = _pos getPos [_r, _a];
+            if (!surfaceIsWater _p) then { _land = _p; _done = true; };
+            if (_done) exitWith {};
+        };
+        if (_done) exitWith {};
+    };
+    _land
+};
+
 switch(_operation) do {
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
@@ -554,9 +574,12 @@ switch(_operation) do {
         };
 
         if (count _clearPos == 0) then {
-            _clearPos = _centerPos;
-            ["ML - prepareHelicopterLZ: WARNING - No clear LZ found after %1 attempts, using original pos %2",
-                LZ_MAX_SEARCH_ATTEMPTS, _centerPos] call ALiVE_fnc_dump;
+            // FIX (reinforcement-in-water): the search exhausted; on a coastal/offshore
+            // insertion the raw centre sits in the sea and the heli would hover there
+            // until the fuel watchdog despawns it. Snap to nearest land (within ~1.2km).
+            _clearPos = [_centerPos, 1200] call _fnc_snapToLand;
+            ["ML - prepareHelicopterLZ: WARNING - No clear LZ found after %1 attempts, using %2 (was-water: %3)",
+                LZ_MAX_SEARCH_ATTEMPTS, _clearPos, surfaceIsWater _centerPos] call ALiVE_fnc_dump;
         };
 
         // Move blocking infantry clear of the chosen LZ
@@ -6806,6 +6829,7 @@ switch(_operation) do {
                                 _position = [_logic, "findHelicopterLandingPos", [
                                     _remotePosition, 50, 250
                                 ]] call MAINCLASS;
+                                _position = [_position] call _fnc_snapToLand;   // FIX: keep air-crew spawn off the sea
                                 _position set [2,1000];
 
                                 if(count _planeClasses > 0) then {
@@ -6865,7 +6889,7 @@ switch(_operation) do {
 
                             for "_i" from 0 to _eventForceHeli -1 do {
 
-                                _position = _remotePosition getPos [random(200), random(360)];
+                                _position = [_remotePosition getPos [random(200), random(360)]] call _fnc_snapToLand;   // FIX: keep air-crew spawn off the sea
                                 _position set [2,1000];
 
                                 if(count _heliClasses > 0) then {
@@ -10089,7 +10113,7 @@ switch(_operation) do {
                                             };
                                         };
                                         case "Air": {
-                                            _position = _remotePosition getPos [random(200), random(360)];
+                                            _position = [_remotePosition getPos [random(200), random(360)]] call _fnc_snapToLand;   // FIX: keep air-crew spawn off the sea
                                             _position set [2,1000];
                                         };
                                         default {
