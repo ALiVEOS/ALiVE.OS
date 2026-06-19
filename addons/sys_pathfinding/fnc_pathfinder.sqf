@@ -417,16 +417,10 @@ switch (_operation) do {
         // misses distant ponds during the one-time grid classification.
         ALiVE_pathfinding_seaLevel = (getTerrainInfo select 4);
         // Deep-water margin (metres below sea level) past which terrain counts as real
-        // sea for the goal-snap + water diagnostics - anything shallower is walkable
+        // sea for the goal-snap + the A* deep-water traverse checks - anything shallower is walkable
         // beach/surf and must NOT be treated as water. isNil-guarded so a console
         // override (e.g. ALiVE_pathfinding_waterMargin = 0.5) survives a mission restart.
         if (isNil "ALiVE_pathfinding_waterMargin") then { ALiVE_pathfinding_waterMargin = 1.0 };
-        // DIAG-STRIP: pathfinding-opt counters. Read in the debug console after a run
-        // to confirm the candidate-E single-subsector early-out fires and gauge its
-        // rate. earlyOuts = jobs short-circuited before the A* setup; jobsRun = jobs
-        // that ran the full two-layer search. Reset on each grid create.
-        ALiVE_pathfinding_earlyOuts = 0;
-        ALiVE_pathfinding_jobsRun = 0;
         private _terrainGrid = [nil,"create", _pathfindingSize] call ALiVE_fnc_pathfindingGrid;
 
         _logic = [[
@@ -784,10 +778,6 @@ switch (_operation) do {
                         } forEach [0,45,90,135,180,225,270,315];
                     };
                 };
-                if (_found) then {
-                    // DIAG-STRIP: confirm the snap fired + show before/after.
-                    ["Pathfinding goal-snap: water goal %1 -> land %2 (side=%3)", _origEnd, _endPos, _callbackArgs param [2,"?"]] call Alive_fnc_Dump;
-                };
             };
 
             private _startSector = [_terrainGrid,"positionToSector", _startPos] call ALiVE_fnc_pathfindingGrid;
@@ -807,12 +797,10 @@ switch (_operation) do {
             // re-read above is final - no false early-out from a stale queued start.
             // (Leaves onFrame's line-745 check as a now-redundant safety net.)
             if (_startSubSector isEqualTo _goalSubSector) exitWith {
-                ALiVE_pathfinding_earlyOuts = ALiVE_pathfinding_earlyOuts + 1;   // DIAG-STRIP
                 [_callbackArgs, [_goalSubSector select 2]] spawn _callback;
                 _pathJobs deleteAt 0;
                 [_logic,"loadCurrentJobData"] call MAINCLASS;
             };
-            ALiVE_pathfinding_jobsRun = ALiVE_pathfinding_jobsRun + 1;   // DIAG-STRIP (full A* job)
 
             // Setup Layer 1 — native HashMaps keyed by index array (see
             // setNodeToFrontier / layer1SeaTravelCheck note). (#pathfinding-opt)
@@ -1121,55 +1109,6 @@ switch (_operation) do {
                     _plName setMarkerColor _drawColor;
                     _plName setMarkerAlpha 0.8;
                     _pathMarkers pushBack _plName;
-                };
-                // Diag (gated by the same draw-paths flag): characterise the route
-                // so a water-crossing path is identifiable in the RPT - requesting
-                // side, node count, total + longest segment length, and how many
-                // segment midpoints sit over water. A long route with water
-                // segments = the path crosses water; a large maxSeg = a jump
-                // between non-adjacent nodes. (#pathfinding-draw diag)
-                private _side = _callbackArgs param [2, "UNKNOWN"];
-                private _len = 0; private _maxSeg = 0; private _waterSegs = 0;
-                private _deep = ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin;   // below = real sea (beach/shallows excluded)
-                for "_i" from 1 to (count _result - 1) do {
-                    private _pA = _result select (_i-1);
-                    private _pB = _result select _i;
-                    private _seg = _pB distance2D _pA;
-                    _len = _len + _seg;
-                    if (_seg > _maxSeg) then { _maxSeg = _seg; };
-                    if ((getTerrainHeightASL [((_pA select 0)+(_pB select 0))/2, ((_pA select 1)+(_pB select 1))/2]) < _deep) then { _waterSegs = _waterSegs + 1; };
-                };
-                ["Pathfinding route: side=%1 nodes=%2 len=%3m maxSeg=%4m waterSegs=%5", _side, count _result, round _len, round _maxSeg, _waterSegs] call Alive_fnc_Dump;
-                // DIAG-STRIP (candidate D profile): A* search effort for this path -
-                // expansions (came-from map size = nodes reached, ~= nodes expanded) and
-                // the final open-set size, per layer. Picks the optimisation target: a
-                // large frontier means the O(n^2) linear open-set (candidate B) is the
-                // cost; high expansions with a small frontier means the per-node
-                // call-MAINCLASS dispatch tax (candidate A), which pays ~40-50 dispatches
-                // PER expansion. Grep "Pathfinding perf:".
-                ["Pathfinding perf: nodes=%1 expL1=%2 expL2=%3 frontierL1=%4 frontierL2=%5",
-                    count _result, count (_layer1 select 0), count (_layer2 select 0),
-                    count (_layer1 select 2), count (_layer2 select 2)] call Alive_fnc_Dump;
-                // DIAG-STRIP: for water-touching routes, log the endpoints + which end
-                // is over water + every over-water node. Distinguishes the START being
-                // in water (a profile sitting in the sea) from the GOAL being in water
-                // (an objective resolved offshore) from a mid-route crossing - which
-                // decides the fix. Grep "route WATER:".
-                if (_waterSegs > 0) then {
-                    private _s = _result select 0;
-                    private _g = _result select (count _result - 1);
-                    private _wNodes = _result select { (getTerrainHeightASL [_x select 0, _x select 1]) < _deep };
-                    ["Pathfinding route WATER: side=%1 startW=%2 goalW=%3 waterNodes=%4 of %5 | start=%6 goal=%7 | waterPos=%8 | profileID=%9",
-                        _side, (getTerrainHeightASL [_s select 0, _s select 1]) < _deep, (getTerrainHeightASL [_g select 0, _g select 1]) < _deep,
-                        count _wNodes, count _result, _s, _g, _wNodes, _callbackArgs param [0, "?"]] call Alive_fnc_Dump;
-                    // DIAG-STRIP: per-node [cell type, terrain depth] so we can see how
-                    // the crossed bay cells are actually classified (LAND/COAST/WATER)
-                    // and how deep - tells us why the A* steps through them.
-                    private _nodeCells = _result apply {
-                        private _ss = [_terrainGrid, "positionToSubSector", _x] call ALiVE_fnc_pathfindingGrid;
-                        [_ss select 3, round (getTerrainHeightASL [_x select 0, _x select 1])]
-                    };
-                    ["Pathfinding route WATER cells (type/depth): side=%1 %2", _side, _nodeCells] call Alive_fnc_Dump;
                 };
                 [_logic, "pathDrawMarkers", _pathMarkers] call ALiVE_fnc_hashSet;
             };
