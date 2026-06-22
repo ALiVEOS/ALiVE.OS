@@ -3284,6 +3284,33 @@ switch(_operation) do {
                 _wp setWaypointSpeed "FULL";
                 _wp setWaypointBehaviour "SAFE";
 
+                // Pathfinding: when ALiVE's pathfinder is available, route the truck
+                // on a road-preferring, water-avoiding path instead of the engine's
+                // straight-line AI route. The direct waypoint above is the immediate
+                // route + fallback; the pathfinder result (async) replaces it with
+                // road/water-aware waypoints when it arrives a moment later.
+                if (!isNil "ALiVE_Pathfinder") then {
+                    private _proc = [ALiVE_Pathfinder, "getPathfindingProcedure", ["LandRoad", "default"]] call ALiVE_fnc_pathfinder;
+                    if (!isNil "_proc") then {
+                        private _wpHash = [] call ALiVE_fnc_hashCreate;
+                        [_wpHash, "position", _targetPos] call ALiVE_fnc_hashSet;
+                        private "_prevWp";   // nil: no previous pathfinding waypoint
+                        [ALiVE_Pathfinder, "findPath", [getPosATL _truck, _proc, _wpHash, _prevWp, [_truckGrp], {
+                            params ["_cbArgs", "_path"];
+                            _cbArgs params ["_grp"];
+                            if (!isNull _grp && {count _path > 1}) then {
+                                while {count (waypoints _grp) > 1} do { deleteWaypoint ((waypoints _grp) select 1); };
+                                {
+                                    private _pw = _grp addWaypoint [_x, 10];
+                                    _pw setWaypointType "MOVE";
+                                    _pw setWaypointSpeed "FULL";
+                                    _pw setWaypointBehaviour "SAFE";
+                                } forEach _path;
+                            };
+                        }]] call ALiVE_fnc_pathfinder;
+                    };
+                };
+
                 // Store reference on target vehicle for marker display.
                 _targetVeh setVariable ["ALIVE_resupply_vehicle", _truck, true];
 
