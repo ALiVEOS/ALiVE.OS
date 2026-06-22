@@ -25,6 +25,7 @@ See Also:
 
 Author:
 SpyderBlack723
+Jman
 ---------------------------------------------------------------------------- */
 
 if (ALiVE_gamePaused) exitwith {};
@@ -149,7 +150,7 @@ if (_spawnSources isEqualTo []) then {
                         	_isWater = false;
                        };
                   };		 
-                	if (_isWater && !_isShip) exitWith { 
+                	if (_isWater && !_isShip && {(([_x,"vehiclesInCommandOf",[]] call ALiVE_fnc_hashGet) isEqualTo []) && {([_x,"vehiclesInCargoOf",[]] call ALiVE_fnc_hashGet) isEqualTo []}}) exitWith {  // #923: don't skip boat crews/passengers - they spawn into the vehicle, not the sea 
                 		// ["Profile Spawner - Profile in Water & Not a Ship : Don't Spawn!. _type: %4, _isWater: %5, _faction %1, _profileID: %2, _objectType: %3", _faction, _profileID, _objectType, _type, _isWater] call ALiVE_fnc_dump;   
                 	};
 
