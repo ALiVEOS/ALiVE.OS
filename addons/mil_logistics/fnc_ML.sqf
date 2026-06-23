@@ -1471,7 +1471,12 @@ switch(_operation) do {
                             // pointless 5-minute round trip; the cargo profile remains as
                             // a virtual profile for ALiVE patrol / OPCOM logic to pick up.
                             private _slingValidated = _heli getVariable ["alive_ml_slingvalidated", false];
-                            if (!_slingValidated) then {
+                            // #909: only sling-validate helis that are actually slinging a cargo
+                            // (present in the global sling-cargo map). A troop transport's
+                            // getSlingLoad is always null, so without this gate the watchdog wrongly
+                            // declares it a failed sling and despawns the individuals' carrier.
+                            private _isSlingHeli = (!isNil "ALIVE_ML_slingCargo") && {count (ALIVE_ML_slingCargo getOrDefault [_vProfID, []]) > 0};
+                            if (!_slingValidated && _isSlingHeli) then {
                                 if (!isNull (getSlingLoad _heli)) then {
                                     _heli setVariable ["alive_ml_slingvalidated", true];
                                 } else {
@@ -1496,17 +1501,15 @@ switch(_operation) do {
                                             ["ML - heliDeliveryWatchdog: %1 added '%2' to ALIVE_ML_slingFailedClasses; future slingload picks will skip this class. Blacklist now: %3",
                                                 _tProfID, _failedClass, ALIVE_ML_slingFailedClasses] call ALiVE_fnc_dump;
                                         };
-                                        // Clean up heli + crew
+                                        // Read the heli vehicle profile (+ its slung-truck backref and
+                                        // drop, consumed below) BEFORE deleting the heli + crew: the
+                                        // deletion unregisters the profile, after which getProfile
+                                        // returns nil and the whole cargo-recovery block is skipped.
+                                        // This silently broke recovery for every sling type (#909).
+                                        private _vProfFail = [ALIVE_profileHandler, "getProfile", _vProfID] call ALIVE_fnc_profileHandler;
+                                        // Clean up heli + crew (after the profile read above)
                                         { if (alive _x) then { deleteVehicle _x } } forEach (crew _heli);
                                         if (!isNull _heli) then { deleteVehicle _heli };
-                                        // Clear preventDespawn on heli vehicle + pilot entity
-                                        // profiles so ALiVE doesn't try to re-spawn the heli.
-                                        // Read the slung-truck backref off the heli vehicle
-                                        // profile BEFORE clearing preventDespawn (cosmetic --
-                                        // the order doesn't matter since both reads operate
-                                        // on the same profile object, but keeps the cleanup
-                                        // sequence "read all refs, then mutate / delete").
-                                        private _vProfFail = [ALIVE_profileHandler, "getProfile", _vProfID] call ALIVE_fnc_profileHandler;
                                         if (!isNil "_vProfFail") then {
                                             // Trash the failed cargo: the would-have-been-slung
                                             // truck either spawned physically (still on ground at
@@ -1517,15 +1520,35 @@ switch(_operation) do {
                                             // spawn point with abandoned vehicles. Delete the
                                             // physical truck if any and remove the profile
                                             // entirely so ALiVE doesn't try to manage it later.
-                                            private _truckProfID = [_vProfFail, "alive_ml_sling_truck_profile_id", ""] call ALIVE_fnc_hashGet;
+                                            // #909: cargo link via the spawn-proof global map (keyed by
+                                            // heli vehicle profile id), not the per-profile backref -
+                                            // that doesn't survive the profile rebuild on spawn.
+                                            private _slingEntry = [];
+                                            if (!isNil "ALIVE_ML_slingCargo") then { _slingEntry = ALIVE_ML_slingCargo getOrDefault [_vProfID, []]; };
+                                            private _truckProfID = _slingEntry param [0, ""];
                                             if (_truckProfID != "") then {
                                                 private _truckProf = [ALIVE_profileHandler, "getProfile", _truckProfID] call ALIVE_fnc_profileHandler;
                                                 if (!isNil "_truckProf") then {
-                                                    private _truckObj = _truckProf select 2 select 10;
-                                                    if (!isNull _truckObj) then { deleteVehicle _truckObj };
-                                                    [ALIVE_profileHandler, "removeProfile", _truckProfID] call ALIVE_fnc_profileHandler;
-                                                    ["ML - heliDeliveryWatchdog: %1 trashed failed cargo: removed truck profile %2 (object deleted=%3).",
-                                                        _tProfID, _truckProfID, !isNull _truckObj] call ALiVE_fnc_dump;
+                                                    // #909 Part B: if the delivery stashed a drop position (PR
+                                                    // empty-vehicle slings do), the heli just couldn't sling this
+                                                    // cargo - deliver it to the drop instead of trashing it, so the
+                                                    // player still gets their vehicle. Clearing preventDespawn lets
+                                                    // the profile system manage it normally at the drop.
+                                                    private _dropPos = _slingEntry param [1, []];
+                                                    if (count _dropPos > 0) then {
+                                                        private _truckObj = _truckProf select 2 select 10;
+                                                        if (!isNull _truckObj) then { _truckObj setPosATL _dropPos };
+                                                        [_truckProf, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                                                        [_truckProf, "position", _dropPos] call ALIVE_fnc_profileVehicle;
+                                                        ["ML - heliDeliveryWatchdog: %1 sling failed - delivered cargo %2 to drop %3 instead of trashing.",
+                                                            _tProfID, _truckProfID, _dropPos] call ALiVE_fnc_dump;
+                                                    } else {
+                                                        private _truckObj = _truckProf select 2 select 10;
+                                                        if (!isNull _truckObj) then { deleteVehicle _truckObj };
+                                                        [ALIVE_profileHandler, "removeProfile", _truckProfID] call ALIVE_fnc_profileHandler;
+                                                        ["ML - heliDeliveryWatchdog: %1 trashed failed cargo: removed truck profile %2 (object deleted=%3).",
+                                                            _tProfID, _truckProfID, !isNull _truckObj] call ALiVE_fnc_dump;
+                                                    };
                                                 };
                                             };
 
@@ -6190,13 +6213,11 @@ switch(_operation) do {
                                             // (vehicle object may be null before ALiVE activates the profile).
                                             [_heliVehicleProf, "alive_ml_pilot_entity_id",
                                                 _heliEntityProf select 2 select 4] call ALIVE_fnc_hashSet;
-                                            // Backref: heli vehicle profile -> slung truck profile ID. Used by
-                                            // heliDeliveryWatchdog's sling-validation FAIL block to trash the
-                                            // orphaned cargo when setSlingLoad never attached. Without this
-                                            // backref the watchdog has no path from the heli profile to the
-                                            // truck profile -- they share the "slung" relation only on the
-                                            // truck profile side, not symmetrically.
-                                            [_heliVehicleProf, "alive_ml_sling_truck_profile_id", _x] call ALIVE_fnc_hashSet;
+                                            // #909: spawn-proof heli->cargo link (replaces the per-profile
+                                            // backref, which doesn't survive the spawn rebuild). Keyed by heli
+                                            // vehicle profile id, read by heliDeliveryWatchdog.
+                                            if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
+                                            ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), _eventPosition]];
                                             if (_debug) then {
                                                 ["ML - HELI_INSERT slingload: preventDespawn set on pilot %1 heli %2 truck %3",
                                                     _profiles select 0 select 2 select 4,
@@ -6807,7 +6828,10 @@ switch(_operation) do {
                                                 (_profiles select 0) select 2 select 4] call ALIVE_fnc_hashSet;
                                             // Backref to slung truck profile for sling-validation FAIL cleanup
                                             // (mirrors the motorised slingload site).
-                                            [_profiles select 1, "alive_ml_sling_truck_profile_id", _x] call ALIVE_fnc_hashSet;
+                                            // #909: spawn-proof heli->cargo link (replaces the per-profile
+                                            // backref, which doesn't survive the spawn rebuild).
+                                            if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
+                                            ALIVE_ML_slingCargo set [((_profiles select 1) select 2 select 4), [(_slingLoadProfile select 2 select 4), _eventPosition]];
 
                                             // Same fix as motorised: waypoint to _eventPosition not
                                             // _reinforcementPosition to prevent immediate profile despawn.
@@ -9817,7 +9841,11 @@ switch(_operation) do {
 
                         } forEach _emptyVehicles;
 
-                        // set up slingload for empty vehicles
+                        // Sling the ordered empty vehicles (e.g. a car) in alongside the inserted
+                        // individuals. Player heli orders keep _eventType == "PR_HELI_INSERT"
+                        // through the whole playerRequested path (only the OPCOM path remaps to
+                        // "HELI_INSERT"), so this gate must test the PR_ value - testing
+                        // "HELI_INSERT" here left ordered vehicles undelivered (#909).
                         if(_eventType == "PR_HELI_INSERT" && {_x select 1 select 1 != "Air"} count _emptyVehicles > 0) then {
 
                             // create heli transport vehicles for the empty vehicles
@@ -9828,6 +9856,14 @@ switch(_operation) do {
 
                             if(count _transportGroups == 0) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                            };
+
+                            // #909: skip heli classes that failed sling-validation this session
+                            // (mirrors the motorised/mechanised slingload pre-filters) so the empty-
+                            // vehicle order picks a working alternative; if all are blacklisted the
+                            // no-heli fallback below repositions the package at the destination.
+                            if (!isNil "ALIVE_ML_slingFailedClasses" && {count ALIVE_ML_slingFailedClasses > 0}) then {
+                                _transportGroups = _transportGroups select { !(_x in ALIVE_ML_slingFailedClasses) };
                             };
 
                             if(count _transportGroups > 0) then {
@@ -9921,6 +9957,25 @@ switch(_operation) do {
                                         _profile = _profiles select 0;
                                         [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
+                                        // #909 Part B: this branch was missing the slingload profile
+                                        // management the motorised branch sets (~:6175-6204). Without
+                                        // preventDespawn the profile system garbage-collects the heli +
+                                        // slung car mid-flight; the pilot/truck backref + dropPos let
+                                        // heliDeliveryWatchdog drop the car at the destination if the heli
+                                        // can't actually sling it.
+                                        private _heliEntityProf  = _profiles select 0;
+                                        private _heliVehicleProf = _profiles select 1;
+                                        [_heliEntityProf,  "spawnType", ["preventDespawn"]] call ALIVE_fnc_hashSet;
+                                        [_heliVehicleProf, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                                        [_slingloadProfile, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                                        [_heliVehicleProf, "alive_ml_pilot_entity_id", _heliEntityProf select 2 select 4] call ALIVE_fnc_hashSet;
+                                        // #909: spawn-proof heli->cargo link (replaces the per-profile
+                                        // backref, which doesn't survive the spawn rebuild). Keyed by heli
+                                        // vehicle profile id, read by heliDeliveryWatchdog.
+                                        if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
+                                        ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), _eventPosition]];
+                                        [_heliVehicleProf, "alive_ml_sling_dropPos", _prDestPos] call ALIVE_fnc_hashSet;
+
                                         if (_debug) then {
                                             ["ML - PR_HELI_INSERT [%1] dest waypoint: %2", _forEachIndex + 1, _prDestPos] call ALiVE_fnc_dump;
                                         };
@@ -9938,7 +9993,21 @@ switch(_operation) do {
                                 } foreach _emptyVehicleProfiles;
 
                             } else {
-                                ["WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
+                                // #909: no sling-capable heli available (none configured for the
+                                // faction, or all blacklisted for failed sling-validation this
+                                // session). Don't abandon the cargo - drop each empty vehicle at
+                                // the destination (the same Option-A teleport the per-vehicle
+                                // no-lift fallback uses) so the player still gets their vehicle.
+                                ["ML - PR_HELI_INSERT: no sling-capable heli for %1 (none/all blacklisted) - teleporting %2 empty vehicle(s) to destination %3.",
+                                    _eventFaction, count _emptyVehicleProfiles, _eventPosition] call ALIVE_fnc_dump;
+                                {
+                                    private _evID = _x select 0;
+                                    private _evProfile = [ALiVE_ProfileHandler, "getProfile", _evID] call ALIVE_fnc_profileHandler;
+                                    if (!isNil "_evProfile") then {
+                                        [_evProfile, "position", _eventPosition] call ALIVE_fnc_profileVehicle;
+                                        _payloadGroupProfiles pushback [_evID];
+                                    };
+                                } forEach _emptyVehicleProfiles;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
@@ -10419,9 +10488,26 @@ switch(_operation) do {
                                             // Create slingloading heli (slingloading another profile!)
                                             _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x], []]] call ALIVE_fnc_createProfilesCrewedVehicle;
 
-                                            ["HELI PROFILE FOR SLINGLOADING: %1",_profiles select 1 select 2 select 4] call ALiVE_fnc_dump;
                                             // Set slingloaded profile
                                             [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
+
+                                            // #909: this grouped-vehicle sling (the branch the PR car
+                                            // actually uses) was missing the slingload profile management
+                                            // the watchdog needs: preventDespawn so it isn't GC'd in flight,
+                                            // and the pilot/truck backref + dropPos so the watchdog can
+                                            // recover the cargo to the destination if the heli can't sling.
+                                            // cargo id via _slingloadProfile (the nested forEach below
+                                            // reassigns _x, so _x select 0 would be garbage here).
+                                            private _heliEntityProf  = _profiles select 0;
+                                            private _heliVehicleProf = _profiles select 1;
+                                            [_heliEntityProf,  "spawnType", ["preventDespawn"]] call ALIVE_fnc_hashSet;
+                                            [_heliVehicleProf, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                                            [_slingloadProfile, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                                            [_heliVehicleProf, "alive_ml_pilot_entity_id", _heliEntityProf select 2 select 4] call ALIVE_fnc_hashSet;
+                                            // #909: spawn-proof heli->cargo link (replaces the per-profile
+                                            // backref + dropPos, which don't survive the spawn rebuild).
+                                            if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
+                                            ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), _eventPosition]];
 
                                             _transportProfiles pushback (_profiles select 0 select 2 select 4);
                                             _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
@@ -10914,9 +11000,10 @@ switch(_operation) do {
                                                             [_slingLoadProfile, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
                                                             [_heliVehicleProf, "alive_ml_pilot_entity_id",
                                                                 _heliEntityProf select 2 select 4] call ALIVE_fnc_hashSet;
-                                                            // Backref to slung truck profile for sling-validation FAIL cleanup
-                                                            // (mirrors the motorised + mechanised slingload sites).
-                                                            [_heliVehicleProf, "alive_ml_sling_truck_profile_id", _x] call ALIVE_fnc_hashSet;
+                                                            // #909: spawn-proof heli->cargo link (replaces the per-profile
+                                                            // backref, which doesn't survive the spawn rebuild).
+                                                            if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
+                                                            ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingLoadProfile select 2 select 4), _eventPosition]];
 
                                                             if (_debug) then {
                                                                 ["ML - PR_AIRDROP slingload: preventDespawn set on pilot %1 heli %2 truck %3",
