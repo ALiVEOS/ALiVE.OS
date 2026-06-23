@@ -1898,14 +1898,31 @@ switch(_operation) do {
                                 if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 RTB phase, waypoints issued.", _tProfID] call ALiVE_fnc_dump; };
 
                             } else {
-                                if (_phaseTimer > 60) then {
-                                    // Timeout: sling never attached or unload thread never started.
-                                    // Force RTB regardless so the heli doesn't hover indefinitely.
-                                    ["ML - heliDeliveryWatchdog: %1 UNLOAD timeout (slungAttached=%2 unloadActive=%3) class=%4 side=%5 near=%6 AGL=%7m spd=%8km/h pos=%9, forcing RTB.",
-                                        _tProfID, _slungAttached, _unloadActive,
-                                        typeOf _heli, str side (driver _heli),
-                                        ([getPos _heli] call ALIVE_fnc_taskGetNearestLocationName),
-                                        round _heliAGLu, _heliSpdU, getPosATL _heli] call ALiVE_fnc_dump;
+                                // #909 follow-up: separate troop transports from slingers here. A troop
+                                // transport isn't in the sling-cargo map, so getSlingLoad stays null and
+                                // alive_ml_sling_unload_active is never set - it can never satisfy the
+                                // sling-release gate above and used to sit in UNLOAD until the 60s timeout,
+                                // logging a misleading "UNLOAD timeout" even though the troops deployed
+                                // fine. RTB as soon as the troops are physically out of the cargo seats
+                                // (unloadTransportHelicopter ejects them on its own thread after landing),
+                                // with the 60s as a backstop. A genuine sling that failed to attach (in
+                                // the map but getSlingLoad still null) still times out at 60s.
+                                private _isSlingHeli = (!isNil "ALIVE_ML_slingCargo") && {count (ALIVE_ML_slingCargo getOrDefault [_vProfID, []]) > 0};
+                                private _troopsClear = (!_isSlingHeli) && {(count (fullCrew [_heli, "cargo", false])) == 0};
+                                if (_troopsClear || _phaseTimer > 60) then {
+                                    if (_isSlingHeli) then {
+                                        // Timeout: sling never attached or unload thread never started.
+                                        // Force RTB regardless so the heli doesn't hover indefinitely.
+                                        ["ML - heliDeliveryWatchdog: %1 UNLOAD timeout (slungAttached=%2 unloadActive=%3) class=%4 side=%5 near=%6 AGL=%7m spd=%8km/h pos=%9, forcing RTB.",
+                                            _tProfID, _slungAttached, _unloadActive,
+                                            typeOf _heli, str side (driver _heli),
+                                            ([getPos _heli] call ALIVE_fnc_taskGetNearestLocationName),
+                                            round _heliAGLu, _heliSpdU, getPosATL _heli] call ALiVE_fnc_dump;
+                                    } else {
+                                        if (_dbg) then {
+                                            ["ML - heliDeliveryWatchdog: %1 troops disembarked (cargo seats clear at t=%2s), RTB.", _tProfID, _phaseTimer] call ALiVE_fnc_dump;
+                                        };
+                                    };
 
                                     // If the sling is still attached, release it directly here.
                                     // unloadTransportHelicopter cannot reach the vehicle object
@@ -9974,7 +9991,6 @@ switch(_operation) do {
                                         // vehicle profile id, read by heliDeliveryWatchdog.
                                         if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
                                         ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), _eventPosition]];
-                                        [_heliVehicleProf, "alive_ml_sling_dropPos", _prDestPos] call ALIVE_fnc_hashSet;
 
                                         if (_debug) then {
                                             ["ML - PR_HELI_INSERT [%1] dest waypoint: %2", _forEachIndex + 1, _prDestPos] call ALiVE_fnc_dump;
