@@ -1431,13 +1431,15 @@ switch(_operation) do {
                             private _slungDisabled = _slungT getVariable ["alive_ml_slung_combat_disabled", false];
                             if (!_slungDisabled) then {
                                 _slungT setVariable ["alive_ml_slung_combat_disabled", true];
+                                if (_dbg) then {
                                 ["[ML-DIAG-SlungCrew] applied combat-disable to slung-truck group: heli=%1 slung=%2 grp=%3 unitCount=%4",
                                     _heli, _slungT, _slungGrp, count (units _slungGrp)] call ALiVE_fnc_dump;
+                                };
                             };
                         };
 
                         // Always log if anyone has bailed; otherwise log every 15s for baseline.
-                        if (count _bailedCrew > 0 || _phaseTimer mod 15 == 0) then {
+                        if (_dbg && {count _bailedCrew > 0 || _phaseTimer mod 15 == 0}) then {
                             ["[ML-DIAG-SlungCrew] heli=%1 phase=%2 t=%3s slung=%4 totalCrew=%5 inside=%6 bailed=%7 driverCmd=%8 grpBehaviour=%9 grpCombatMode=%10",
                                 _heli, _phase, _phaseTimer, _slungT,
                                 count _slungCrew, count _insideCrew, count _bailedCrew,
@@ -1623,8 +1625,10 @@ switch(_operation) do {
                                 { _x disableAI "AUTOTARGET"; _x disableAI "TARGET"; _x disableAI "AUTOCOMBAT"; _x setSkill ["courage", 1]; } forEach (units _grpTER);
 
                                 _heli setVariable ["alive_ml_rtbdepart_pos", getPosATL _heli];
+                                if (_dbg) then {
                                 ["[ML-DIAG-RTBDepart] %1 RTB-issue (TRANSIT early-release) pos=%2 AGL=%3m spd=%4km/h returnPos=%5",
                                     _tProfID, getPosATL _heli, round _heliAGLt, _heliSpdT, _returnPos] call ALiVE_fnc_dump;
+                                };
 
                                 _phase = 3; _phaseTimer = 0;
                                 _heli setVariable ["alive_ml_watchdog_phase", _phase];
@@ -1855,8 +1859,10 @@ switch(_operation) do {
                                 _heli move _returnPos;
 
                                 _heli setVariable ["alive_ml_rtbdepart_pos", getPosATL _heli];
+                                if (_dbg) then {
                                 ["[ML-DIAG-RTBDepart] %1 RTB-issue (early-release) pos=%2 AGL=%3m spd=%4km/h returnPos=%5",
                                     _tProfID, getPosATL _heli, round _heliAGLu, _heliSpdU, _returnPos] call ALiVE_fnc_dump;
+                                };
 
                                 _phase = 3; _phaseTimer = 0;
                                 _heli setVariable ["alive_ml_watchdog_phase", _phase];
@@ -1885,8 +1891,10 @@ switch(_operation) do {
                                 // whether the heli physically departs at watchdog-RTB-time or
                                 // stalls at the LZ until heliTransportReturn fires for all helis.
                                 _heli setVariable ["alive_ml_rtbdepart_pos", getPosATL _heli];
+                                if (_dbg) then {
                                 ["[ML-DIAG-RTBDepart] %1 RTB-issue pos=%2 AGL=%3m spd=%4km/h returnPos=%5",
                                     _tProfID, getPosATL _heli, round _heightAGL, round (speed _heli), _returnPos] call ALiVE_fnc_dump;
+                                };
 
                                 _phase = 3; _phaseTimer = 0;
                                 _heli setVariable ["alive_ml_watchdog_phase", _phase];
@@ -1984,8 +1992,10 @@ switch(_operation) do {
                                     // [ML-DIAG-RTBDepart] capture transition pos for distance-traveled
                                     // tracking (timeout-path twin of the normal phase-2->3 entry).
                                     _heli setVariable ["alive_ml_rtbdepart_pos", getPosATL _heli];
+                                    if (_dbg) then {
                                     ["[ML-DIAG-RTBDepart] %1 RTB-issue (timeout-path) pos=%2 AGL=%3m spd=%4km/h returnPos=%5",
                                         _tProfID, getPosATL _heli, round _heliAGLu, _heliSpdU, _returnPos] call ALiVE_fnc_dump;
+                                    };
 
                                     _phase = 3; _phaseTimer = 0;
                                     _heli setVariable ["alive_ml_watchdog_phase", _phase];
@@ -2029,6 +2039,7 @@ switch(_operation) do {
                             // alongside the per-tick forceSpeed/setSpeedMode calls above.
                             // Confirms whether speed-spam is fighting engine route-finding.
                             private _expectedDest = expectedDestination (driver _heli);
+                            if (_dbg) then {
                             ["[ML-DIAG-Climb] %1 t=%2s dist=%3m AGL=%4m spd=%5km/h behaviour=%6 combatBehaviour=%7 currentCommand=%8 expectedDest=%9 returnPos=%10",
                                 _tProfID, _phaseTimer,
                                 round _distFromDest, round _heliAGLr, _heliSpdR,
@@ -2036,12 +2047,13 @@ switch(_operation) do {
                                 combatBehaviour (group (driver _heli)),
                                 currentCommand (driver _heli),
                                 _expectedDest, _returnPos] call ALiVE_fnc_dump;
+                            };
                             // [ML-DIAG-RTBDepart] distance traveled from the RTB-issue position.
                             // If this stays near zero through phase 3 the heli is stalling at the
                             // LZ until heliTransportReturn fires for all helis; if it grows, the
                             // heli is departing independently per its own watchdog.
                             private _rtbIssuePos = _heli getVariable ["alive_ml_rtbdepart_pos", []];
-                            if (count _rtbIssuePos > 1) then {
+                            if (_dbg && {count _rtbIssuePos > 1}) then {
                                 private _distFromIssue = (getPosATL _heli) distance2D _rtbIssuePos;
                                 ["[ML-DIAG-RTBDepart] %1 t=%2s distFromIssue=%3m distFromDest=%4m AGL=%5m spd=%6km/h",
                                     _tProfID, _phaseTimer, round _distFromIssue,
@@ -2060,8 +2072,10 @@ switch(_operation) do {
                                 // fnc_profileEntity moveOut's crew before deleteVehicle - this catches
                                 // the actual sequence.
                                 private _diagCrew0 = +(crew _heli);
+                                if (_dbg) then {
                                 ["[ML-DIAG-RTBDespawn] %1 pre-clear crew=%2 heliPos=%3 heliAGL=%4m",
                                     _tProfID, _diagCrew0, getPosATL _heli, round _heliAGLr] call ALiVE_fnc_dump;
+                                };
 
                                 // Issue #2 fix: pre-emptively delete all crew AND the heli vehicle
                                 // before clearing preventDespawn. ALiVE virtualisation only moveOut's
@@ -2084,8 +2098,11 @@ switch(_operation) do {
                                 if (!isNull _heli) then {
                                     deleteVehicle _heli;
                                 };
+                                if (_dbg) then {
                                 ["[ML-DIAG-RTBDespawn] %1 deleted %2 of %3 crew + heli before preventDespawn-clear",
                                     _tProfID, _crewDeleted, count _diagCrew0] call ALiVE_fnc_dump;
+                                };
+                                if (_dbg) then {
                                 [_tProfID, _heli, _diagCrew0] spawn {
                                     private _id    = _this select 0;
                                     private _h     = _this select 1;
@@ -2109,6 +2126,7 @@ switch(_operation) do {
                                     };
                                     ["[ML-DIAG-RTBDespawn] %1 watcher exit at t=%2s heliAlive=%3 heliNull=%4",
                                         _id, _t, !isNull _h && {alive _h}, isNull _h] call ALiVE_fnc_dump;
+                                };
                                 };
 
                                 // Clear preventDespawn on heli vehicle and pilot entity profiles.
@@ -7524,9 +7542,11 @@ switch(_operation) do {
                             // clean.
                             if (!_alreadyDelivered) then {
                                 // [ML-DIAG-DupSpawn] capture caller context for the unload trigger
+                                if (_debug) then {
                                 ["[ML-DIAG-DupSpawn] heliTransport(transportProfiles) calling unloadTransportHelicopter for %1 alreadyDelivered=%2 slingReady=%3 iter=%4 heliObjNull=%5",
                                     _x, _alreadyDelivered, _slingReady, _waitIterations,
                                     isNull (_profile select 2 select 10)] call ALiVE_fnc_dump;
+                                };
                                 [_logic,"unloadTransportHelicopter",[_event,_profile]] call MAINCLASS;
                             };
                         } else {
@@ -7643,9 +7663,11 @@ switch(_operation) do {
                             // successful delivery. Same rationale as _transportProfiles.
                             if (!_alreadyDelivered) then {
                                 // [ML-DIAG-DupSpawn] capture caller context for the unload trigger
+                                if (_debug) then {
                                 ["[ML-DIAG-DupSpawn] heliTransport(heliProfiles) calling unloadTransportHelicopter for %1 alreadyDelivered=%2 slingReadyH=%3 iter=%4 heliObjNull=%5",
                                     _x, _alreadyDelivered, _slingReadyH, _waitIterations,
                                     isNull (_profile select 2 select 10)] call ALiVE_fnc_dump;
+                                };
                                 [_logic,"unloadTransportHelicopter",[_event,_profile]] call MAINCLASS;
                             };
                         } else {
@@ -12053,21 +12075,24 @@ switch(_operation) do {
 
                         // Pass _logic into spawn so findHelicopterLandingPos can be called
                         // for drop position retries (_logic is out of scope inside spawn blocks)
-                        [_vehicle, _slingloading, _position, _eventPosition, _logic] spawn {
+                        [_vehicle, _slingloading, _position, _eventPosition, _logic, _debug] spawn {
 
                             private _vehicle      = _this select 0;
                             private _slingloading = _this select 1;
                             private _position     = _this select 2;
                             private _eventPosition = _this select 3;
                             private _logic        = _this select 4;
+                            private _dbg          = _this select 5;
 
                             // [ML-DIAG-Stall] entry: capture spawn time + slingload flag + initial unitReady
                             private _diagT0 = diag_tickTime;
+                            if (_dbg) then {
                             ["[ML-DIAG-Stall] spawn-entry %1 sling=%2 unitReady=%3 slungAttached=%4 AGL=%5m spd=%6km/h pos=%7",
                                 _vehicle, _slingloading, unitReady _vehicle,
                                 !isNull (getSlingLoad _vehicle),
                                 round ((getPosATL _vehicle) select 2),
                                 round (speed _vehicle), getPosATL _vehicle] call ALiVE_fnc_dump;
+                            };
 
                             // [ML-DIAG-DupSpawn] flag duplicate unload spawns for the same vehicle.
                             // Increments a per-vehicle counter; logs DUPLICATE on count > 1
@@ -12076,7 +12101,7 @@ switch(_operation) do {
                             _vehicle setVariable ["alive_ml_diag_unload_spawncount", _spawnCount];
                             private _prevSpawnT = _vehicle getVariable ["alive_ml_diag_unload_spawnT", -1];
                             _vehicle setVariable ["alive_ml_diag_unload_spawnT", _diagT0];
-                            if (_spawnCount > 1) then {
+                            if (_dbg && {_spawnCount > 1}) then {
                                 ["[ML-DIAG-DupSpawn] %1 spawnCount=%2 elapsedSincePrev=%3s sling=%4 slungAttached=%5 profileID=%6 unloadActive=%7 slingReleased=%8",
                                     _vehicle, _spawnCount,
                                     (if (_prevSpawnT > 0) then { round (_diagT0 - _prevSpawnT) } else { -1 }),
@@ -12093,7 +12118,7 @@ switch(_operation) do {
                             private _readyTimer = 0;
                             while { alive _vehicle && !(unitReady _vehicle) && _readyTimer < 60 } do {
                                 // [ML-DIAG-Stall] every 10s: log unitReady + AI state during the wait
-                                if (_readyTimer mod 10 == 0) then {
+                                if (_dbg && {_readyTimer mod 10 == 0}) then {
                                     ["[ML-DIAG-Stall] waiting %1 t=%2s unitReady=%3 behaviour=%4 currentCommand=%5 slungAttached=%6 AGL=%7m spd=%8km/h",
                                         _vehicle, _readyTimer, unitReady _vehicle,
                                         behaviour (driver _vehicle),
@@ -12108,11 +12133,13 @@ switch(_operation) do {
                             // [ML-DIAG-Stall] wait-exit: capture exit reason + total time
                             private _diagExitReason = if (!alive _vehicle) then { "heli-dead" }
                                 else { if (_readyTimer >= 60) then { "timeout" } else { "unitReady-true" } };
+                            if (_dbg) then {
                             ["[ML-DIAG-Stall] wait-exit %1 reason=%2 readyTimer=%3s elapsed=%4s slungAttached=%5 AGL=%6m",
                                 _vehicle, _diagExitReason, _readyTimer,
                                 round (diag_tickTime - _diagT0),
                                 !isNull (getSlingLoad _vehicle),
                                 round ((getPosATL _vehicle) select 2)] call ALiVE_fnc_dump;
+                            };
 
                             if (alive _vehicle) then {
                                 if (_slingLoading) then {
