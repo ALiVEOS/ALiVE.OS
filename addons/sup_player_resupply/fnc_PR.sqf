@@ -961,6 +961,30 @@ switch(_operation) do {
             // start listening for logcom events
             [_logic,"listen"] call MAINCLASS;
 
+            // Player resupply delivers via LOGCOM (the Military Logistics module)
+            // and has no delivery pipeline of its own: a request raised with no
+            // mil_logistics module placed is never answered and silently hangs.
+            // Warn the mission maker. ALIVE_MLGlobalRegistry is created by
+            // mil_logistics init, so poll for it (module load order isn't
+            // guaranteed) and only warn once it's clear none will register -
+            // otherwise this would false-alarm when PR happens to start first.
+            [] spawn {
+                private _tries = 0;
+                private _haveLogcom = false;
+                waitUntil {
+                    uiSleep 5;
+                    _tries = _tries + 1;
+                    if (!isNil "ALIVE_MLGlobalRegistry") then {
+                        private _mods = [ALIVE_MLGlobalRegistry, "getModules"] call ALIVE_fnc_MLGlobalRegistry;
+                        _haveLogcom = !isNil "_mods" && {count (_mods select 1) > 0};
+                    };
+                    _haveLogcom || (_tries >= 24)  // ~120s grace for module registration
+                };
+                if (!_haveLogcom) then {
+                    ["ALiVE Player Combat Logistics: no Military Logistics (LOGCOM) module found - player resupply requests cannot be fulfilled. Place a Military Logistics module for the players' side and faction."] call ALIVE_fnc_dumpR;
+                };
+            };
+
         };
 
     };
