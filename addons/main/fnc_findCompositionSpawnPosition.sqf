@@ -327,14 +327,25 @@ private _candidateClear = {
     //    and check it at function-top-level so the exitWith-at-true-scope
     //    actually returns false from _candidateClear.
     private _buildingIntruders = [];
-    if (_excludeBuildings) then {
+    // Roadblock mode normally skips this check (urban tolerance - see the
+    // _excludeBuildings note above), but a road point sitting under a building
+    // footprint spawns the checkpoint inside the building. So roadblock runs a
+    // narrowed version: only actual buildings (House class), and only when their
+    // footprint covers the composition core (a tight radius), so flanking
+    // buildings lining the street are still tolerated.
+    private _isRoadblock = (_mode == "roadblock");
+    if (_excludeBuildings || _isRoadblock) then {
         // Same envelope-vs-envHalf rationale as the runway / helipad
         // exclusions above: composition objects extend to FULL envelope
         // from the anchor, so any building whose bbox sits within `_env`
         // of `_p` could be clipped by an outer composition object. The
         // +15 padding on the search radius is to catch building CENTRES
         // outside the envelope but with bboxes that extend inside.
-        private _buildingCheckRadius = (_env + 15) max 25;
+        // Roadblock narrows the intrusion radius to the composition core but
+        // searches a fixed 35m so large buildings whose footprint reaches the
+        // road point are still caught.
+        private _intrudeRadius       = if (_isRoadblock) then { 6 } else { _env };
+        private _buildingCheckRadius = if (_isRoadblock) then { 35 } else { (_env + 15) max 25 };
         private _allHits = nearestObjects [_p, [], _buildingCheckRadius];
 
         _buildingIntruders = _allHits select {
@@ -348,13 +359,17 @@ private _candidateClear = {
                 private _w = (_bMax select 0) - (_bMin select 0);
                 private _l = (_bMax select 1) - (_bMin select 1);
                 private _h = (_bMax select 2) - (_bMin select 2);
-                (_w * _l * _h > 30) && {
+                // Non-roadblock: any solid object over 30 m3. Roadblock: only
+                // actual buildings (House), so street walls / fences / clutter
+                // don't reject an otherwise-good urban checkpoint.
+                private _qualifies = if (_isRoadblock) then { _x isKindOf "House" } else { (_w * _l * _h) > 30 };
+                _qualifies && {
                     private _pLocal = _x worldToModel _p;
                     private _cx = ((_pLocal select 0) max (_bMin select 0)) min (_bMax select 0);
                     private _cy = ((_pLocal select 1) max (_bMin select 1)) min (_bMax select 1);
                     private _dx = (_pLocal select 0) - _cx;
                     private _dy = (_pLocal select 1) - _cy;
-                    sqrt ((_dx * _dx) + (_dy * _dy)) < _env
+                    sqrt ((_dx * _dx) + (_dy * _dy)) < _intrudeRadius
                 }
             }
         };
@@ -405,7 +420,7 @@ private _candidateClear = {
         case "field":     {[0.07, 0.970]};   // ~4.0 deg delta + ~14 deg normal-Z
         case "military":  {[0.10, 0.950]};   // ~5.7 deg delta + ~18 deg
         case "civilian":  {[0.12, 0.930]};   // ~6.8 deg delta + ~22 deg
-        case "roadblock": {[0.12, 0.930]};   // road heading dominates anyway
+        case "roadblock": {[0.10, 0.950]};   // tightened from [0.12, 0.930]: a tilted checkpoint reads as broken even on a graded road
         default           {[0.10, 0.950]};
     };
     _slopeRules params ["_deltaRatio", "_normalZMin"];
@@ -560,12 +575,13 @@ if (_mode == "roadblock") exitWith {
         } forEach _perpDistances;
     } forEach _perpAngles;
     private _maxPerpDelta = selectMax _perpDeltas;
-    // Budget: 8% slope max measured to envelope radius. Tighter than
+    // Budget: 5% slope max measured to envelope radius. Tighter than
     // the general envelope slope check because verge-edge objects
     // tilt visibly on slopes the road centreline itself handles
-    // cleanly. For env=35m this allows 2.8m drop at 35m perp - any
-    // steeper and the outermost wing tilts off the verge.
-    private _perpBudget = _envelope * 0.08;
+    // cleanly. For env=35m this allows ~1.75m drop at 35m perp - any
+    // steeper and the outermost wing tilts off the verge. Tightened
+    // from 8%, which still let checkpoints perch on sloped verges.
+    private _perpBudget = _envelope * 0.05;
     if (_maxPerpDelta > _perpBudget) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: road candidate %1 perpendicular slope-delta %2m > %3m budget (roadDir %4, envelope %5)", _rPos, _maxPerpDelta, _perpBudget, _rDir, _envelope] call ALiVE_fnc_dump };
         []
