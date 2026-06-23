@@ -22,6 +22,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 params [
@@ -35,6 +36,11 @@ if (!(alive _unit) || {count _pos < 2}) exitwith {["domoveRemote failed - dead/e
 _unit setvariable [QGVAR(MOVEDESTINATION),_pos];
 
 if (local _unit) exitwith {
+    // #921: Combat Support transport helis park with the engine off between orders;
+    // the move order alone doesn't reliably restart it (reproduces on CBA+ALiVE - ACE
+    // happened to mask it by starting engines), so the pilot takes the MOVE command but
+    // sits with the engine off and never lifts. Force the engine on for CS helis.
+    if (_unit getVariable ["ALIVE_CombatSupport", false]) then { _unit engineOn true; };
     _unit doMove _pos;
 };
 
