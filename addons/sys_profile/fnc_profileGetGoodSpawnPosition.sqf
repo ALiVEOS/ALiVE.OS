@@ -310,18 +310,36 @@ switch(_type) do {
                     // Foot infantry have no spawn-position validator (vehicles use
                     // findVehicleSpawnPosition). An anchor in an A3 rock cluster puts
                     // the whole group inside the geometry (#913 / sys_profile Item 1).
-                    // Rocks are terrain objects, so detect with nearestTerrainObjects
-                    // (findSafePos / isFlatEmpty miss map rocks) and step out to the
-                    // nearest rock-free, dry spot. Rock-free anchors skip this.
-                    if !((nearestTerrainObjects [_position, ["ROCK","ROCKS"], 6]) isEqualTo []) then {
-                        private _nudged = [];
-                        {
-                            private _cand = _position getPos _x;
-                            if (((nearestTerrainObjects [_cand, ["ROCK","ROCKS"], 6]) isEqualTo []) && {!surfaceIsWater _cand}) exitWith { _nudged = _cand; };
-                        } forEach [[12,0],[12,90],[12,180],[12,270],[24,45],[24,135],[24,225],[24,315],[40,0],[40,120],[40,240]];
-                        if (count _nudged > 0) then {
-                            [_profile,"position",_nudged] call ALIVE_fnc_profileEntity;
-                            [_profile,"mergePositions"] call ALIVE_fnc_profileEntity;
+                    // Rocks are terrain objects (findSafePos / isFlatEmpty miss them),
+                    // but a flat proximity radius missed large formations - a unit on a
+                    // 20m+ boulder sits well over 6m from that rock's origin, so a small
+                    // radius never detects it. Test against each rock's actual footprint
+                    // (boundingBoxReal half-extent + body margin) within a generous find
+                    // radius, then step out to the nearest clear, dry spot.
+                    private _nearRocks = nearestTerrainObjects [_position, ["ROCK","ROCKS"], 80];
+                    if !(_nearRocks isEqualTo []) then {
+                        // precompute each rock's horizontal half-footprint (+ body margin) once
+                        private _rockReach = _nearRocks apply {
+                            private _bb = boundingBoxReal _x;
+                            private _p0 = _bb select 0;
+                            private _p1 = _bb select 1;
+                            [_x, (((abs (_p0 select 0)) max (abs (_p1 select 0))) max ((abs (_p0 select 1)) max (abs (_p1 select 1)))) + 1.5]
+                        };
+                        // true if _pos lies within any nearby rock's footprint
+                        private _fnc_inRock = {
+                            params ["_pos", "_reach"];
+                            _reach findIf { (_pos distance2D (_x select 0)) < (_x select 1) } >= 0
+                        };
+                        if ([_position, _rockReach] call _fnc_inRock) then {
+                            private _nudged = [];
+                            {
+                                private _cand = _position getPos _x;
+                                if (!([_cand, _rockReach] call _fnc_inRock) && {!surfaceIsWater _cand}) exitWith { _nudged = _cand; };
+                            } forEach [[15,0],[15,72],[15,144],[15,216],[15,288],[30,36],[30,108],[30,180],[30,252],[30,324],[50,0],[50,60],[50,120],[50,180],[50,240],[50,300]];
+                            if (count _nudged > 0) then {
+                                [_profile,"position",_nudged] call ALIVE_fnc_profileEntity;
+                                [_profile,"mergePositions"] call ALIVE_fnc_profileEntity;
+                            };
                         };
                     };
                 };
