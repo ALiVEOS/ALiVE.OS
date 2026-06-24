@@ -148,8 +148,18 @@ switch (_taskState) do {
         };
         _aidVehiclePosition set [2, 0];
 
+        // #925: place the rally NPC a footprint-clear distance from the van. Both
+        // were anchored to _sourceContactPosition (the van is searched within 80 m
+        // of it), so they routinely spawned on the exact same spot and the NPC was
+        // run over the instant the player drove the van off at the Rally step.
+        private _sourceContactSpawnPos = [_aidVehiclePosition, 6, 12, 1, 0, 0.3, 0] call BIS_fnc_findSafePos;
+        if (_sourceContactSpawnPos isEqualTo []) then {
+            _sourceContactSpawnPos = [_aidVehiclePosition, 8, _aidVehicleDir + 90] call BIS_fnc_relPos;
+        };
+        _sourceContactSpawnPos set [2, 0];
+
         private _sourceContactGroup = createGroup [civilian, true];
-        private _sourceContact = _sourceContactGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _sourceContactPosition, [], 0, "NONE"];
+        private _sourceContact = _sourceContactGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _sourceContactSpawnPos, [], 0, "NONE"];
         removeAllWeapons _sourceContact;
         _sourceContact disableAI "AUTOTARGET";
         _sourceContact disableAI "TARGET";
