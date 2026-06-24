@@ -467,4 +467,102 @@ class CfgVehicles
         faction = "CIV_F_TANOA";
     };
 
+    // CIV_F_WSAHARA (Western Sahara CDLC -- lxWS; Sefrou-Ramal villagers, #926)
+
+    class C_Tak_01_A_lxWS;
+    class C_Tak_01_A_lxWS_ALIVE : C_Tak_01_A_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Tak_01_B_lxWS;
+    class C_Tak_01_B_lxWS_ALIVE : C_Tak_01_B_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Tak_01_C_lxWS;
+    class C_Tak_01_C_lxWS_ALIVE : C_Tak_01_C_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Tak_02_A_lxWS;
+    class C_Tak_02_A_lxWS_ALIVE : C_Tak_02_A_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Tak_02_B_lxWS;
+    class C_Tak_02_B_lxWS_ALIVE : C_Tak_02_B_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Tak_02_C_lxWS;
+    class C_Tak_02_C_lxWS_ALIVE : C_Tak_02_C_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Tak_03_A_lxWS;
+    class C_Tak_03_A_lxWS_ALIVE : C_Tak_03_A_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Tak_03_B_lxWS;
+    class C_Tak_03_B_lxWS_ALIVE : C_Tak_03_B_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Tak_03_C_lxWS;
+    class C_Tak_03_C_lxWS_ALIVE : C_Tak_03_C_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Djella_01_lxWS;
+    class C_Djella_01_lxWS_ALIVE : C_Djella_01_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Djella_02a_lxWS;
+    class C_Djella_02a_lxWS_ALIVE : C_Djella_02a_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Djella_03_lxWS;
+    class C_Djella_03_lxWS_ALIVE : C_Djella_03_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Djella_04_lxWS;
+    class C_Djella_04_lxWS_ALIVE : C_Djella_04_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Djella_05_lxWS;
+    class C_Djella_05_lxWS_ALIVE : C_Djella_05_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Djella_06_lxWS;
+    class C_Djella_06_lxWS_ALIVE : C_Djella_06_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
+    class C_Djella_07_lxWS;
+    class C_Djella_07_lxWS_ALIVE : C_Djella_07_lxWS {
+        scope = 1;
+        faction = "CIV_F_WSAHARA";
+    };
+
 };
