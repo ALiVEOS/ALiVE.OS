@@ -414,7 +414,7 @@ switch(_operation) do {
              // ["_thislist: %1",_thislist] call ALIVE_fnc_dump;
  						 _nearcivs = [];
 			        {
-			         if (side _x  == civilian) then {_nearcivs pushBack _x};
+			         if (side _x == civilian && !(isAgent (teamMember _x))) then {_nearcivs pushBack _x};
 			        } forEach _thislist;
 			       // ["_nearcivs: %1",_nearcivs] call ALIVE_fnc_dump;
 			       if (count _nearcivs > 0) then {
