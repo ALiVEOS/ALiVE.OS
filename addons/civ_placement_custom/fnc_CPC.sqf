@@ -330,7 +330,8 @@ switch (_operation) do {
                 if !(ALIVE_loadProfilesPersistent) then {
                     [_logic, "placement"] call MAINCLASS;
                 } else {
-                    if (_roadBlocks > 0) then {
+                    if (_roadBlocks > 0 && isNil QMOD(COMPOSITIONS_LOADED)) then {
+                        // #922: when COMPOSITIONS_LOADED is set, sys_data has already restored these roadblocks this load - re-seeding here would duplicate them. (The queue inited above stays [], so the spawn loop is still safe.)
                         private _restoredRoadblocks = 0;
                         private _savedRoadblockLocations = if (isNil "ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS") then {[]} else {+ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS};
 
@@ -976,7 +977,7 @@ switch (_operation) do {
                     };
                 };
 
-                if (!isNil "ALIVE_fnc_createRoadblock" && isNil QMOD(COMPOSITIONS_LOADED) && {random 100 < _roadBlocks}) then {
+                if (!isNil "ALIVE_fnc_createRoadblock" && {random 100 < _roadBlocks}) then {
                     private _roadblockLocation = [_center, _clusterSize];
                     GVAR(ROADBLOCK_LOCATIONS) pushBack _roadblockLocation;
 
