@@ -27,6 +27,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer Reviewed:
 ---------------------------------------------------------------------------- */
@@ -69,7 +70,8 @@ Peer Reviewed:
 #define DEFAULT_ENABLE_COP false
 #define DEFAULT_COP_ANCHOR_DISTANCE 1000
 #define DEFAULT_COP_UPDATE_INTERVAL 60
-#define DEFAULT_RUN_EVERY 120
+// Default sector-update interval, in MINUTES (case "runEvery" multiplies by 60 to seconds)
+#define DEFAULT_RUN_EVERY 2
 #define DEFAULT_TASK_MIN_DISTANCE 0
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
 #define DEFAULT_TASK_AO_RADIUS 0
@@ -735,13 +737,14 @@ switch(_operation) do {
             _args = parseNumber(_args);
         };
         if(typeName _args == "SCALAR") then {
-            _args = floor(_args * 60);
+            // store the raw value (minutes); the getter below converts to seconds
             _logic setVariable ["runEvery", _args];
         };
         _result = _logic getVariable ["runEvery", DEFAULT_RUN_EVERY];
-        if(_result < 10) then {
-            _result = floor(_result * 60);
-        };
+        // value is in minutes (per the "Sector Update Time (mins)" label); always convert
+        // to seconds. Previously this only converted when < 10, so any interval of 10+
+        // minutes was wrongly used as seconds.
+        _result = floor(_result * 60);
     };
     case "taskMinDistance": {
         if (typeName _args == "STRING") then {
