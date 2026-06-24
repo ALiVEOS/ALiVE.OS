@@ -110,7 +110,7 @@ if (_debug) then {
         isNull _a ||
         {(_a getVariable ["ALiVE_RB_currentFaction", ""]) != _f} ||
         {diag_tickTime > _safetyTimeout} ||
-        {({(_x distance2D _p) < 300} count allPlayers) == 0}
+        {({(_x distance2D _p) < 300} count (allPlayers - entities "HeadlessClient_F")) == 0}
     };
 
     if (isNull _a) exitWith {

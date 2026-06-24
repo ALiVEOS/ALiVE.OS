@@ -922,8 +922,8 @@ switch(_operation) do {
                     ALiVE_AMBCP_fnc_animalUpdate = {
                         {
                             _x params ["_pos", "_class", "_count", "_units", "_kind"];
-                            private _activate   = (allPlayers findIf { alive _x && {(_x distance _pos) < 1500} }) >= 0;
-                            private _deactivate = (allPlayers findIf { alive _x && {(_x distance _pos) < 2000} }) <  0;
+                            private _activate   = ((allPlayers - entities "HeadlessClient_F") findIf { alive _x && {(_x distance _pos) < 1500} }) >= 0;
+                            private _deactivate = ((allPlayers - entities "HeadlessClient_F") findIf { alive _x && {(_x distance _pos) < 2000} }) <  0;
 
                             if (_activate && {count _units == 0}) then {
                                 // createAgent is lighter than createUnit:
