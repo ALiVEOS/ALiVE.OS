@@ -709,13 +709,13 @@
     <Russian>Блокпосты:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_ROADBLOCKS_COMMENT">
-    <English>Density of static roadblocks placed on routes between objectives. None = off, Low = 15%, Medium = 35%, High = 50%, Extreme = 75%, All = every candidate position used.</English>
-    <Chinese>在目標之間的路線上放置靜態路障的密度。無 = 關閉，低 = 15%，中 = 35%，高 = 50%，極高 = 75%，全部 = 使用每個候選位置。</Chinese>
-    <Chinesesimp>在目标之间的路线上放置静态路障的密度。无 = 关闭，低 = 15%，中 = 35%，高 = 50%，极高 = 75%，全部 = 使用每个候选位置。</Chinesesimp>
-    <Spanish>Densidad de controles de carretera estáticos colocados en las rutas entre objetivos. Ninguno = desactivado, Bajo = 15%, Medio = 35%, Alto = 50%, Extremo = 75%, Todos = todas las posiciones candidatas usadas.</Spanish>
-    <French>Densité des barrages routiers statiques placés sur les routes entre les objectifs. Aucun = désactivé, Faible = 15 %, Moyen = 35 %, Élevé = 50 %, Extrême = 75 %, Tous = toutes les positions candidates utilisées.</French>
-    <Portuguese>Densidade dos bloqueios de estrada estáticos colocados nas rotas entre objetivos. Nenhum = desativado, Baixo = 15%, Médio = 35%, Alto = 50%, Extremo = 75%, Todos = todas as posições candidatas utilizadas.</Portuguese>
-    <Russian>Плотность статических блокпостов на маршрутах между объектами. Нет = выкл., Низко = 15%, Средне = 35%, Высоко = 50%, Экстрим = 75%, Все = используются все возможные позиции.</Russian>
+    <English>Density of static roadblocks placed on routes between objectives. None = off, Low = 15%, Medium = 35%, High = 50%, Extreme = 75%, All = every candidate position used. Independent of the OPCOM commander type.</English>
+    <Chinese>在目標之間的路線上放置靜態路障的密度。無 = 關閉，低 = 15%，中 = 35%，高 = 50%，極高 = 75%，全部 = 使用每個候選位置。與 OPCOM 指揮官類型無關。</Chinese>
+    <Chinesesimp>在目标之间的路线上放置静态路障的密度。无 = 关闭，低 = 15%，中 = 35%，高 = 50%，极高 = 75%，全部 = 使用每个候选位置。与 OPCOM 指挥官类型无关。</Chinesesimp>
+    <Spanish>Densidad de controles de carretera estáticos colocados en las rutas entre objetivos. Ninguno = desactivado, Bajo = 15%, Medio = 35%, Alto = 50%, Extremo = 75%, Todos = todas las posiciones candidatas usadas. Independiente del tipo de comandante de OPCOM.</Spanish>
+    <French>Densité des barrages routiers statiques placés sur les routes entre les objectifs. Aucun = désactivé, Faible = 15 %, Moyen = 35 %, Élevé = 50 %, Extrême = 75 %, Tous = toutes les positions candidates utilisées. Indépendant du type de commandant OPCOM.</French>
+    <Portuguese>Densidade dos bloqueios de estrada estáticos colocados nas rotas entre objetivos. Nenhum = desativado, Baixo = 15%, Médio = 35%, Alto = 50%, Extremo = 75%, Todos = todas as posições candidatas utilizadas. Independente do tipo de comandante do OPCOM.</Portuguese>
+    <Russian>Плотность статических блокпостов на маршрутах между объектами. Нет = выкл., Низко = 15%, Средне = 35%, Высоко = 50%, Экстрим = 75%, Все = используются все возможные позиции. Не зависит от типа командира OPCOM.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACE_SEAPATROLS">
     <English>Sea Patrols:</English>
