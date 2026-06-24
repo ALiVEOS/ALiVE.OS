@@ -976,7 +976,7 @@ switch (_operation) do {
                     };
                 };
 
-                if (!isNil "ALIVE_fnc_createRoadblock" && isNil QGVAR(COMPOSITIONS_LOADED) && {random 100 < _roadBlocks}) then {
+                if (!isNil "ALIVE_fnc_createRoadblock" && isNil QMOD(COMPOSITIONS_LOADED) && {random 100 < _roadBlocks}) then {
                     private _roadblockLocation = [_center, _clusterSize];
                     GVAR(ROADBLOCK_LOCATIONS) pushBack _roadblockLocation;
 

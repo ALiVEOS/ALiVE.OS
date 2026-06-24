@@ -1425,7 +1425,7 @@ switch(_operation) do {
                     };
                 };
 
-                if (!isnil "ALIVE_fnc_createRoadblock" && isNil QGVAR(COMPOSITIONS_LOADED) && {random 100 < _roadBlocks} ) then {
+                if (!isnil "ALIVE_fnc_createRoadblock" && isNil QMOD(COMPOSITIONS_LOADED) && {random 100 < _roadBlocks} ) then {
 
                     private ["_rb"];
 
