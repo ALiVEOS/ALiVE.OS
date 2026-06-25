@@ -93,7 +93,10 @@ private _trim = {
 };
 
 if (!isNull _logicObj) then {
-    private _csEnabledVar = _logicObj getVariable ["civicStateEnabled", false];
+    // civicStateEnabled isn't a logic var at 3DEN edit time (its expression
+    // runs at mission start), so read the attribute directly.
+    private _csArr = _logicObj get3DENAttribute "ALiVE_MIL_C2ISTAR_civicStateEnabled";
+    private _csEnabledVar = if (_csArr isEqualType [] && {count _csArr > 0}) then { _csArr select 0 } else { "false" };
     private _csEnabled = switch (typeName _csEnabledVar) do {
         case "BOOL":   { _csEnabledVar };
         case "STRING": { (toLower _csEnabledVar) == "true" };
@@ -107,8 +110,11 @@ if (!isNull _logicObj) then {
     {
         {
             if (_x isEqualType objNull && {!isNull _x} && {(typeOf _x) == "ALiVE_mil_OPCOM"}) then {
-                private _ct = _x getVariable ["controltype", ""];
-                if (typeName _ct == "STRING" && {(toLower _ct) == "asymmetric"}) exitWith {
+                // controltype isn't a logic var at 3DEN edit time (its expression
+                // runs at mission start), so read the attribute directly.
+                private _ctArr = _x get3DENAttribute "ALiVE_mil_opcom_controltype";
+                private _ct = if (_ctArr isEqualType [] && {count _ctArr > 0}) then { _ctArr select 0 } else { "" };
+                if (_ct isEqualType "" && {(toLower _ct) == "asymmetric"}) exitWith {
                     _hasAsymmetricOpcom = true;
                 };
             };
