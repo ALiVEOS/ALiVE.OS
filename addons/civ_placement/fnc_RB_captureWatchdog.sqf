@@ -191,13 +191,19 @@ private _handle = [{
                 if ((diag_tickTime - _lastFlap) > 30) then {
                     // Pick dominant attacker faction. Tie-break: first
                     // hit wins by virtue of insertion order in the hash.
+                    // #928: tally the dominant attacker faction from AI attackers
+                    // only -- a player-driven assault (incl. player-led AI) must NOT
+                    // seed a garrison, else it spawns the players' own faction at the
+                    // captured checkpoint even with no commander for that side.
                     private _factionCounts = createHashMap;
                     {
-                        private _f = faction _x;
-                        _factionCounts set [
-                            _f,
-                            (_factionCounts getOrDefault [_f, 0]) + 1
-                        ];
+                        if (!isPlayer (effectiveCommander _x)) then {
+                            private _f = faction _x;
+                            _factionCounts set [
+                                _f,
+                                (_factionCounts getOrDefault [_f, 0]) + 1
+                            ];
+                        };
                     } forEach _attackers;
                     private _topFaction = "";
                     private _topCount = 0;
