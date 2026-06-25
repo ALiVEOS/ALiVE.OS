@@ -977,7 +977,7 @@ switch(_operation) do {
                             [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
                         } else { nil };
                         private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
-	                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!(call _isSeaTravel)}}} && {!_isStaticAA};
+	                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!(call _isSeaTravel)}}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})};
 
 	                    if (_valid) then {_troopsUnsorted pushBack _profile};
                     };
@@ -1200,7 +1200,7 @@ switch(_operation) do {
                             } else { nil };
                             private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
 
-                            if (!(isnil "_profile") && {_pos distance _posAttacker < _dist} && {!(_profileID in _reserved)} && {!_isStaticAA}) then {
+                            if (!(isnil "_profile") && {_pos distance _posAttacker < _dist} && {!(_profileID in _reserved)} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})}) then {
 
                                 _waypoints = [_profile,"waypoints"] call ALIVE_fnc_hashGet;
 
@@ -3436,7 +3436,8 @@ switch(_operation) do {
                             if (
                                 count _assignments == 0 && // entity is not assigned to a vehicle
                                 {!([_profile,"isPlayer",false] call ALIVE_fnc_hashGet)} && // not a player
-                                {{[toLower _x, "pilot"] call CBA_fnc_find != -1} count _unitClasses == 0} // no pilots in entity
+                                {{[toLower _x, "pilot"] call CBA_fnc_find != -1} count _unitClasses == 0} && // no pilots in entity
+                                {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _x, false] call ALIVE_fnc_hashGet})} // not a held roadblock / stationary garrison
                                ) then {
                                 _inf pushback _x;
                             };
