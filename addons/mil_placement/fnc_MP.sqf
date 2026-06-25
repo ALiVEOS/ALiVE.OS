@@ -1064,7 +1064,7 @@ switch(_operation) do {
                             _composition = (selectRandom ([_compType, ["Camps","Outposts"], ["Medium","Small"], _faction] call ALiVE_fnc_getCompositions));
                         };
 
-                        if(count _composition > 0) then {
+                        if(!isNil "_composition" && {count _composition > 0}) then {
                             // Validate spawn position. Field mode rejects runways,
                             // taxiways, helipads, all roads, buildings / walls /
                             // fences inside the envelope, water, steep slopes, and
