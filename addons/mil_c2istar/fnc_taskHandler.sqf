@@ -641,6 +641,10 @@ switch (_operation) do {
 
 
             if (!isNil "_taskSet" && {_taskSet isEqualType [] && !(_taskSet isEqualTo [])}) then {
+                // Generation succeeded -- reset this side's Constant-mode retry
+                // backoff so the next dry spell starts from the 10s base again.
+                private _retryDelays = [_logic, "autoGenRetryDelay", []] call ALIVE_fnc_hashGet;
+                if !(_retryDelays isEqualTo []) then { [_retryDelays, _taskSide, 10] call ALIVE_fnc_hashSet; };
 				private _managedTaskParams = [_logic, "managedTaskParams"] call ALIVE_fnc_hashGet;
 
 				if !(_taskID in (_managedTaskParams select 1)) then {
@@ -692,22 +696,29 @@ switch (_operation) do {
                 private _sideAutoGeneration = [_autoGenerateSides, _taskSide] call ALIVE_fnc_hashGet;
 
                 if (_sideAutoGeneration select 0 == "Constant") then {
-                    // Defer the retry via CBA_fnc_waitAndExecute. The
-                    // original `uiSleep 10` required a scheduled context
-                    // but this handler is called via `call` (unscheduled)
-                    // when a task init returns empty, so the suspend
-                    // threw a runtime error. waitAndExecute preserves the
-                    // 10s retry cadence without needing a scheduled
-                    // caller. Latent until Capture Objective's new
-                    // enemy-presence guard started producing empty
-                    // returns at task-gen time.
+                    // Defer the retry via CBA_fnc_waitAndExecute (this handler is
+                    // called unscheduled when a task init returns empty, so a direct
+                    // suspend would throw). Back the retry off rather than hammering a
+                    // fixed 10s: an enabled auto-task type that can never generate
+                    // (e.g. Insurgency Patrol with no insurgency targets on the map)
+                    // used to churn and spam the RPT every 10s for the whole mission.
+                    // Exponential backoff per side (10s base, doubling, capped 120s);
+                    // reset to base on the next successful generation.
+                    private _retryDelays = [_logic, "autoGenRetryDelay", []] call ALIVE_fnc_hashGet;
+                    if (_retryDelays isEqualTo []) then {
+                        _retryDelays = [] call ALIVE_fnc_hashCreate;
+                        [_logic, "autoGenRetryDelay", _retryDelays] call ALIVE_fnc_hashSet;
+                    };
+                    private _delay = [_retryDelays, _taskSide, 10] call ALIVE_fnc_hashGet;
+                    [_retryDelays, _taskSide, (_delay * 2) min 120] call ALIVE_fnc_hashSet;
+
                     private _generate = [format ["%1_%2", _taskSide, time + 1], _requestPlayerID, _taskSide, _taskFaction, _taskEnemyFaction, _sideAutoGeneration select 0];
 
-                    ["Starting auto tasks for some reason, tasks set to %1", _sideAutoGeneration] call ALiVE_fnc_dump;
+                    if (_debug) then { ["Task Handler - %1 Constant auto-task generated nothing; retrying in %2s", _taskSide, _delay] call ALiVE_fnc_dump; };
                     [{
                         params ["_logic", "_generate"];
                         [_logic, "autoGenerateTasks", _generate] call ALIVE_fnc_taskHandler;
-                    }, [_logic, _generate], 10] call CBA_fnc_waitAndExecute;
+                    }, [_logic, _generate], _delay] call CBA_fnc_waitAndExecute;
                 };
             };
         };
