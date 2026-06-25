@@ -1388,7 +1388,7 @@ switch(_operation) do {
                 if (random 1 <= _CQB_patrolSearchChance) then {
                     private _group = group this;
                     if (!isNull this && {alive this} && {_group != grpNull} && {count (units _group) > 0}) then {
-                        [this] call CBA_fnc_searchNearby;
+                        [_group] call CBA_fnc_searchNearby;
                     };
                 };
                 "
