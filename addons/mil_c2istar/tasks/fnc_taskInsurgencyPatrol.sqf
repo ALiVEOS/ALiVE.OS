@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -216,15 +217,19 @@ switch (_taskState) do {
         _taskDescription = _task select 6;
         _taskPlayers = _task select 7 select 0;
 
-        _lastState = [_params,"lastState"] call ALIVE_fnc_hashGet;
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
 
-        if(_lastState != "Travel") then {
+        // Fire the "go to the staging area" chatter exactly once. A single shared
+        // lastState field can't gate the two broadcasting stages (Travel + Patrol)
+        // independently -- once Patrol had run, lastState was no longer "Travel",
+        // so the next Travel tick re-broadcast, and the two stages ping-ponged the
+        // chatter forever (#931). A per-stage done flag, once set, never reverts.
+        if !([_params,"chatStartDone_Travel",false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","Travel"] call ALIVE_fnc_hashSet;
+            [_params,"chatStartDone_Travel",true] call ALIVE_fnc_hashSet;
         };
 
         _destinationReached = [_taskPosition,_taskPlayers,500] call ALIVE_fnc_taskHavePlayersReachedDestination;
@@ -255,16 +260,17 @@ switch (_taskState) do {
         _taskDescription = _task select 6;
         _taskPlayers = _task select 7 select 0;
 
-        _lastState = [_params,"lastState"] call ALIVE_fnc_hashGet;
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
         _supriseCreated = [_params,"supriseCreated"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
 
-        if(_lastState != "Patrol") then {
+        // Per-stage one-shot guard for the "insurgency confirmed" chatter -- see
+        // the Travel state above (#931).
+        if !([_params,"chatStartDone_Patrol",false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","Patrol"] call ALIVE_fnc_hashSet;
+            [_params,"chatStartDone_Patrol",true] call ALIVE_fnc_hashSet;
         };
 
         _areaClear = [_taskPosition,_taskPlayers,_taskSide,500] call ALIVE_fnc_taskIsAreaClearOfEnemies;
