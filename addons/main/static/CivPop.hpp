@@ -38,6 +38,29 @@ ALIVE_civilianWeapons = [] call ALIVE_fnc_hashCreate;
 [ALIVE_civilianWeapons, "gm_fc_gc_civ", [["gm_p210_blk","gm_magazineWell_9x19mm_p210"],["gm_p1_blk","gm_magazineWell_9x19mm_p1"],["gm_pm63_blk","gm_magazineWell_9x18mm_pm63"],["gm_hk512_ris_wud","gm_magazineWell_12ga_7rnd"],["gm_mp5a2_blk","gm_magazineWell_9x19mm_mp5"],["gm_mp2a1_blk","gm_magazineWell_9x19mm_mp2"]]] call ALIVE_fnc_hashSet;
 [ALIVE_civilianWeapons, "gm_fc_ge_civ", [["gm_p210_blk","gm_magazineWell_9x19mm_p210"],["gm_p1_blk","gm_magazineWell_9x19mm_p1"],["gm_pm63_blk","gm_magazineWell_9x18mm_pm63"],["gm_hk512_ris_wud","gm_magazineWell_12ga_7rnd"],["gm_mp5a2_blk","gm_magazineWell_9x19mm_mp5"],["gm_mp2a1_blk","gm_magazineWell_9x19mm_mp2"]]] call ALIVE_fnc_hashSet;
 
+// Western Sahara (lxWS) Sefrou-Ramal villagers -> CIV_F_WSAHARA (#926; runtime
+// re-do after the #930 config-error revert -- see the note below).
+// Runtime cache seed: the 16 class strings live ONLY in this SQF array, never
+// in always-loaded config, so the engine never resolves their .scope at
+// config-read time (that was the #930 "No entry C_Tak_01_A_lxWS.scope" error).
+// Gated on the WS CDLC being loaded; factionCompilerFindVehicleType also
+// isClass-guards each class, so the faction simply spawns nothing without the
+// DLC. Feeds ambient civilians (AMBCP via findVehicleType), like CIV_F_AFRICA.
+if (isClass (configFile >> "CfgVehicles" >> "C_Tak_01_A_lxWS")) then {
+    if (isNil "ALIVE_compiledFactions") then { ALIVE_compiledFactions = [] call ALIVE_fnc_hashCreate; };
+    private _wsVillagers = [
+        "C_Tak_01_A_lxWS","C_Tak_01_B_lxWS","C_Tak_01_C_lxWS",
+        "C_Tak_02_A_lxWS","C_Tak_02_B_lxWS","C_Tak_02_C_lxWS",
+        "C_Tak_03_A_lxWS","C_Tak_03_B_lxWS","C_Tak_03_C_lxWS",
+        "C_Djella_01_lxWS","C_Djella_02a_lxWS","C_Djella_03_lxWS",
+        "C_Djella_04_lxWS","C_Djella_05_lxWS","C_Djella_06_lxWS","C_Djella_07_lxWS"
+    ];
+    private _wsFactionData = [] call ALIVE_fnc_hashCreate;
+    [_wsFactionData, "unitClasses", _wsVillagers] call ALIVE_fnc_hashSet;
+    [_wsFactionData, "vehicleClasses", []] call ALIVE_fnc_hashSet;
+    [ALIVE_compiledFactions, "CIV_F_WSAHARA", _wsFactionData] call ALIVE_fnc_hashSet;
+};
+
 
 // Civ Pop Interaction — items recognised as "water"/"ration" for
 // civilian humanitarian aid interactions (fnc_civInteract.sqf giveItem

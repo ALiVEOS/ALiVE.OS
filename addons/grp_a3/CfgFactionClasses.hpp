@@ -26,4 +26,9 @@ class CfgFactionClasses {
         priority = 4;
         side = 3;
     };
+    class CIV_F_WSAHARA : CIV_F {
+        displayName = "Civilians (Western Sahara)";
+        priority = 2;
+        side = 3;
+    };
 };
