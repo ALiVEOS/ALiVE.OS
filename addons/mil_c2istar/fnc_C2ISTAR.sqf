@@ -1568,12 +1568,40 @@ switch(_operation) do {
             _generateOptions = [];
             _generateValues = [];
 
+            // Hide the insurgency task types from the manual generate list when no
+            // asymmetric OPCOM is running an insurgency on this map. Those tasks
+            // resolve their targets against an asymmetric commander's installations
+            // (fnc_taskGetInsurgencyLocation filters controltype == "asymmetric");
+            // with none present they fail with "No targets found". controltype is
+            // broadcast public on the OPCOM module at mission init, so it reads
+            // correctly here even though this tablet UI runs client-side.
+            private _hiddenTaskTypes = [];
+            private _hasAsymmetricOpcom = false;
+            {
+                private _ct = _x getVariable ["controltype", ""];
+                if (_ct isEqualType "" && {(toLower _ct) == "asymmetric"}) exitWith { _hasAsymmetricOpcom = true; };
+            } forEach (allMissionObjects "ALiVE_mil_OPCOM");
+            if (!_hasAsymmetricOpcom) then { _hiddenTaskTypes = ["InsurgencyPatrol", "InsurgencyDestroyAssets"]; };
+
             if (!isnil "ALIVE_generatedTasks" && {count ALIVE_generatedTasks > 2}) then {
 	            {
 	                _task = [ALIVE_generatedTasks,_x] call ALIVE_fnc_hashGet;
 	                _generateOptions pushback (_task select 0);
 	                _generateValues pushback _x;
 	            } forEach (ALIVE_generatedTasks select 1);
+            };
+
+            if (count _hiddenTaskTypes > 0) then {
+                private _keptOptions = [];
+                private _keptValues = [];
+                {
+                    if !(_x in _hiddenTaskTypes) then {
+                        _keptOptions pushBack (_generateOptions select _forEachIndex);
+                        _keptValues pushBack _x;
+                    };
+                } forEach _generateValues;
+                _generateOptions = _keptOptions;
+                _generateValues = _keptValues;
             };
 
             private ["_taskingState","_playerListOptions","_playerListValues","_factionsDataSource"];
