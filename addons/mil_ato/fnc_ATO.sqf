@@ -4797,19 +4797,24 @@ switch(_operation) do {
                             };
                             if !(isNil "_eventTargets") then {
                                 {
-                                    if (isNull _x) then {
+                                    if (!(_x isEqualType objNull) || {isNull _x}) then {
+                                        // _eventTargets mixes resolved target objects with profile-id
+                                        // strings; resolve any non-object slot to its profile's object,
+                                        // else objNull -- never leave a string here, so the downstream
+                                        // isNull checks on _eventTargets (waypoint / CAS / validity) stay
+                                        // type-safe.
+                                        private _vehicle = objNull;
                                         private _profileID = _eventEnemyProfiles select _forEachIndex;
                                         private _targetProfile = [ALiVE_profileHandler, "getProfile", _profileID] call ALiVE_fnc_ProfileHandler;
                                         if !(isNil "_targetProfile") then {
                                             private _type = [_targetProfile,"type"] call ALiVE_fnc_hashGet;
-                                            private _vehicle = objNull;
                                             if (_type == "entity") then {
                                                 _vehicle = [_targetProfile,"leader"] call ALiVE_fnc_hashGet;
                                             } else {
                                                 _vehicle = [_targetProfile,"vehicle"] call ALiVE_fnc_hashGet;
                                             };
-                                            _eventTargets set [_forEachIndex, _vehicle];
                                         };
+                                        _eventTargets set [_forEachIndex, _vehicle];
                                     };
                                 } forEach _eventTargets;
                             };
