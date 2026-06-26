@@ -611,21 +611,17 @@ switch(_operation) do {
                 };
             }]] call ALiVE_fnc_pathfinder;
 
-            // if we're inserting into the front
-            // we need to generate new paths for the existing waypoints
-            if (_insertionMethod == "insertWaypoint") then {
-                private _newPendingWaypoints = [_pendingWaypoints select 0];
-
-                private _existingWaypoints = [_logic,"waypoints"] call ALiVE_fnc_hashGet;
-                private _existingWaypointJobs = _existingWaypoints apply { [false,"addWaypoint",[],_x] }; 
-
-                private _existingPendingWaypoints = _pendingWaypoints select [1, _countPendingWaypoints - 1];
-
-                _newPendingWaypoints append _existingWaypointJobs;
-                _newPendingWaypoints append _existingPendingWaypoints;
-
-                [_logic,"pendingWaypointPaths", _newPendingWaypoints] call ALiVE_fnc_hashSet;
-            };
+            // Front-insert used to rebuild every stored route point here as a
+            // not-ready "addWaypoint" job, meaning to re-path the existing legs from
+            // the new waypoint. But no findPath was ever dispatched for them, so they
+            // could never go ready: the drain stalled on the first one and anything
+            // queued behind it (later OPCOM orders, sea-travel legs) silently stopped
+            // applying. The existing route stays applied regardless -- insertWaypointInternal
+            // prepends, it never clears -- so re-queueing it was unnecessary as well as
+            // broken. Dropped; the new insert job is already queued and pathed above.
+            // Properly re-routing the existing legs from the new waypoint is separate
+            // scope (the stored "waypoints" array holds expanded path points, so it
+            // needs a designed + tested chained-findPath pass, not this). (#936)
         };
       };
         _result = _pendingPath;
