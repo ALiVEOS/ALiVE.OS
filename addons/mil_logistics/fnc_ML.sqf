@@ -78,6 +78,11 @@ ARJay & Jman
 // Slingload safe-drop constants
 #define SLINGLOAD_DROP_HEIGHT  3    // metres AGL at which slung load is released (safe fall distance)
 #define SLINGLOAD_DROP_TIMEOUT 180  // seconds to wait for heli to descend before forcing release
+// Rear-airfield source picking for HELI delivery.
+// FRIENDLY_AIRPORT_RADIUS: max distance (m) from a held friendly OPCOM objective for an airport to count as 'friendly'.
+//   800m covers Altis Molos (objective ~486m from runway ilsPosition) and similar terrain
+//   where the objective marker is offset from the runway.
+#define FRIENDLY_AIRPORT_RADIUS 800
 
 private ["_result"];
 
@@ -1271,8 +1276,6 @@ switch(_operation) do {
         // Assign to file-level _result so the MAINCLASS caller receives it.
         _result = _nodeResult;
     };
-
-
 
     // ============================================================
     // spawnHeliDeliveryWatchdog
@@ -5743,8 +5746,59 @@ switch(_operation) do {
                                         };
                                     };
 
-                                    // Set departure base and find spawn LZ
+                                    // Set departure base and find spawn LZ.
                                     _reinforcementPosition = _departurePos;
+
+                                    // Rear-airfield override: if a friendly airfield is held
+                                    // (within FRIENDLY_AIRPORT_RADIUS of a defend/reserve OPCOM
+                                    // objective for this side), depart from the airfield furthest
+                                    // from the event. Falls back to _departurePos otherwise.
+                                    private _heldFriendlyObjs = [];
+                                    {
+                                        if (_x isEqualType [] && { _eventSide in ([_x, "sidesfriendly", []] call ALIVE_fnc_hashGet) }) then {
+                                            {
+                                                if (_x isEqualType [] && { ([_x, "opcom_state", "none"] call ALIVE_fnc_hashGet) in ["defend", "reserve"] }) then {
+                                                    private _p = [_x, "center", []] call ALIVE_fnc_hashGet;
+                                                    if (_p isEqualType [] && {count _p >= 2}) then { _heldFriendlyObjs pushBack _p; };
+                                                };
+                                            } forEach ([_x, "objectives", []] call ALIVE_fnc_hashGet);
+                                        };
+                                    } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+
+                                    if (count _heldFriendlyObjs > 0) then {
+                                        // Build airport set: primary (id 0), secondary (1..N),
+                                        // dynamic runways (carriers + Eden airbases, ids 100+).
+                                        // 2D ilsPosition entries padded to 3D to avoid z=0 spawn.
+                                        private _airports = [];
+                                        private _primary = getArray (configFile >> "cfgWorlds" >> WorldName >> "ilsPosition");
+                                        if (count _primary >= 2) then { _airports pushBack (if (count _primary >= 3) then { _primary } else { _primary + [0] }); };
+                                        private _secondary = configFile >> "cfgWorlds" >> WorldName >> "SecondaryAirports";
+                                        for "_i" from 0 to ((count _secondary) - 1) do {
+                                            private _ils = getArray ((_secondary select _i) >> "ilsPosition");
+                                            if (count _ils >= 2) then { _airports pushBack (if (count _ils >= 3) then { _ils } else { _ils + [0] }); };
+                                        };
+                                        if (isNil "ALiVE_Carriers") then { ALiVE_Carriers = (allAirports select 1); };
+                                        { if (!isNull _x && {alive _x}) then { _airports pushBack (position _x); }; } forEach ALiVE_Carriers;
+
+                                        // Pick the airport furthest from event that is within
+                                        // FRIENDLY_AIRPORT_RADIUS of a held friendly objective.
+                                        // _bestDist=-1 ensures the first iteration always wins.
+                                        private _bestPos = [];
+                                        private _bestDist = -1;
+                                        {
+                                            private _apos = _x;
+                                            if ((_heldFriendlyObjs findIf {_x distance2D _apos < FRIENDLY_AIRPORT_RADIUS}) >= 0) then {
+                                                private _d = _apos distance2D _eventPosition;
+                                                if (_d > _bestDist) then { _bestDist = _d; _bestPos = _apos; };
+                                            };
+                                        } forEach _airports;
+
+                                        if (count _bestPos > 0) then {
+                                            _reinforcementPosition = _bestPos;
+                                            if (_debug) then { ["ML - HELI_INSERT rear airfield departure: %1 (%2m from event)", _bestPos, round _bestDist] call ALiVE_fnc_dump; };
+                                        };
+                                    };
+
                                     _remotePosition = [_logic, "prepareHelicopterLZ", [
                                         _reinforcementPosition getPos [random 200, random 360], 100
                                     ]] call MAINCLASS;
