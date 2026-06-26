@@ -1357,9 +1357,24 @@ switch (_operation) do {
 
 
 		_civ setVariable[QGVAR(consumedItems), (_consumed + 1)];
-		[_civ] spawn {
-			params ["_civ"];
+		// The "putdown" hand-over gesture raises the player's weapon at its end, so
+		// a player who interacted with the weapon lowered ends up aiming at the civ
+		// -- unwanted tension (and it can trip the weapon-aim civ reaction). The
+		// "WeaponOnBack" action TOGGLES the weapon raised/lowered (it does NOT put it
+		// on the back), so re-lower a relaxed player by firing it -- but only while
+		// the weapon is up, or the toggle would raise it again. The action is ignored
+		// mid-gesture, so wait for the raise, then retry the guarded toggle until the
+		// weapon is down. (#932)
+		private _wasLowered = weaponLowered player;
+		[_civ, _wasLowered] spawn {
+			params ["_civ", "_wasLowered"];
 			player playAction "putdown"; sleep 0.2; _civ playAction "putdown";
+			if (_wasLowered && {currentWeapon player != ""}) then {
+				private _t0 = time;
+				waitUntil { sleep 0.25; (!weaponLowered player) || (time - _t0 > 5) };
+				private _t1 = time;
+				waitUntil { sleep 0.3; if (!weaponLowered player) then { player action ["WeaponOnBack", player] }; (weaponLowered player) || (time - _t1 > 4) };
+			};
 		};
 
 		if (_decreaseChance > random 100) then {
