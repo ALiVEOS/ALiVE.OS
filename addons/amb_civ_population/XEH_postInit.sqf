@@ -30,7 +30,10 @@ if (isServer) then {
             private _type = _logic select 2 select 4;
             if (_type isEqualTo "vehicle") then {
                 private _unit = _logic select 2 select 5; // unit
-                if (!isNull _unit && {alive _unit} && {(_unit isKindOf "LandVehicle" || {_unit isKindOf "Air" || {_unit isKindOf "Ship"}})}) then {
+                // Only cull cars that were spawned WITH a driver (ALiVE_civVehicleHadDriver)
+                // and have since lost it. Intentionally-empty ambient cars are parked decor
+                // culled by distance, not orphans -- skipping them stops the #933 FOV flicker.
+                if (!isNull _unit && {alive _unit} && {_unit getVariable ["ALiVE_civVehicleHadDriver", false]} && {(_unit isKindOf "LandVehicle" || {_unit isKindOf "Air" || {_unit isKindOf "Ship"}})}) then {
                     private _crewAlive = ({alive _x} count (crew _unit)) > 0;
                     if (_crewAlive) then {
                         // Reset orphan timer when a living crew is present

@@ -435,6 +435,11 @@ switch(_operation) do {
                  // and the orphan-vehicle cleanup knows who the driver is.
                  _civDriver setVariable ["ALiVE_civDrivingVehicle", _unit, true];
                  _unit setVariable ["ALiVE_civDriverUnit", _civDriver, true];
+                 // Stable marker that this car was spawned WITH a driver, so the
+                 // orphan-vehicle cleanup only culls cars that actually lost their
+                 // driver -- not the ~85% intentionally-empty ambient cars, which
+                 // would otherwise look-away-despawn / look-back-respawn (#933).
+                 _unit setVariable ["ALiVE_civVehicleHadDriver", true, true];
                  ["civilian driver: %1",_civDriver] call ALIVE_fnc_dump;
                 };
 			       };
