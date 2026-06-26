@@ -634,8 +634,13 @@ switch(_operation) do {
     case "advancePendingWaypoints": {
         private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
 
-        //Since this gets called multiple times per "addWaypoint" lets try avoiding a race condition and only execute when all are Ready
-        if ((count _pendingWaypoints > 0) && (_pendingWaypoints select (count _pendingWaypoints - 1)) select 0) then {
+        // Drain READY entries from the front in order (the loop below stops at the first
+        // not-ready one). This was gated on the LAST entry being ready, but an
+        // insertWaypoint reorder parks a permanently-not-ready rebuilt addWaypoint job at
+        // the tail -- so a completed front path (e.g. a boat / near-shore route) never
+        // flushed: path drawn, unit never moved (#936). The lazy {} also avoids a
+        // select -1 when the queue is empty.
+        if ((count _pendingWaypoints > 0) && {(_pendingWaypoints select 0) select 0}) then {
 
             private _firstPending = _pendingWaypoints select 0;
             while {!isnil "_firstPending" && {_firstPending select 0}} do {
