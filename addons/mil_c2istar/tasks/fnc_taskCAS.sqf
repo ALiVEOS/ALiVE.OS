@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -287,11 +288,11 @@ switch (_taskState) do {
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
 
-        if(_lastState != "Travel") then {
+        if !([_params,"chatStartDone_Travel",false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","Travel"] call ALIVE_fnc_hashSet;
+            [_params,"chatStartDone_Travel",true] call ALIVE_fnc_hashSet;
         };
 
         _destinationReached = [_taskPosition,_taskPlayers,1000] call ALIVE_fnc_taskHavePlayersReachedDestination;
@@ -326,11 +327,11 @@ switch (_taskState) do {
         _supriseCreated = [_params,"supriseCreated"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
 
-        if(_lastState != "CAS") then {
+        if !([_params,"chatStartDone_CAS",false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","CAS"] call ALIVE_fnc_hashSet;
+            [_params,"chatStartDone_CAS",true] call ALIVE_fnc_hashSet;
         };
 
         private _enemyNear = [_taskPosition, _taskSide, 1000, true] call ALIVE_fnc_isEnemyNear;

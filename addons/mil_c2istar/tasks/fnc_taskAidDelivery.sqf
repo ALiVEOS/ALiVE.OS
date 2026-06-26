@@ -365,9 +365,9 @@ switch (_taskState) do {
         private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
         private _aidVehicle = _targets param [0, objNull, [objNull]];
 
-        if (_lastState != "Rally") then {
+        if !([_params, "chatStartDone_Rally", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Rally"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Rally", true] call ALIVE_fnc_hashSet;
         };
 
         if (isNull _aidVehicle || {!alive _aidVehicle}) then {
@@ -422,9 +422,9 @@ switch (_taskState) do {
         private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
         private _aidVehicle = _targets param [0, objNull, [objNull]];
 
-        if (_lastState != "Move") then {
+        if !([_params, "chatStartDone_Move", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Move"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Move", true] call ALIVE_fnc_hashSet;
         };
 
         if (isNull _aidVehicle || {!alive _aidVehicle}) then {
@@ -484,9 +484,9 @@ switch (_taskState) do {
         private _aidVehicle = _targets param [0, objNull, [objNull]];
         private _completionVar = [_params, "completionVar", ""] call ALIVE_fnc_hashGet;
 
-        if (_lastState != "Deliver") then {
+        if !([_params, "chatStartDone_Deliver", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Deliver"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Deliver", true] call ALIVE_fnc_hashSet;
         };
 
         if (isNull _aidVehicle || {!alive _aidVehicle}) then {

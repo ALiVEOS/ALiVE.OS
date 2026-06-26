@@ -416,11 +416,11 @@ switch (_taskState) do {
         _crewFound = [_params,"crewFound",false] call ALIVE_fnc_hashGet;
         _irstrobe = [_params,"irstrobe"] call ALIVE_fnc_hashGet;
 
-        if(_lastState != "Rescue") then {
+        if !([_params, "chatStartDone_Rescue", false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","Rescue"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Rescue", true] call ALIVE_fnc_hashSet;
         };
 
         if!(_crewSpawned) then {
@@ -637,7 +637,7 @@ switch (_taskState) do {
         _defend = [_params,"defend"] call ALIVE_fnc_hashGet;
         _firstCheck = [_params,"firstCheck",true] call ALIVE_fnc_hashGet;
 
-        if(_lastState != "DefenceWave") then {
+        if !([_params,"chatStartDone_DefenceWave",false] call ALIVE_fnc_hashGet) then {
 
             _defend = (random 1) > 0.5;
 
@@ -650,7 +650,7 @@ switch (_taskState) do {
                 };
             };
 
-            [_params,"lastState","DefenceWave"] call ALIVE_fnc_hashSet;
+            [_params,"chatStartDone_DefenceWave",true] call ALIVE_fnc_hashSet;
             [_params,"defend",_defend] call ALIVE_fnc_hashSet;
 
             _result = _task;
@@ -849,11 +849,11 @@ switch (_taskState) do {
         _startTime = [_params,"startTime"] call ALIVE_fnc_hashGet;
 
         // first run of this task
-        if(_lastState != "Return") then {
+        if !([_params, "chatStartDone_Return", false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","Return"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Return", true] call ALIVE_fnc_hashSet;
         };
 
         // the players have not yet reached the

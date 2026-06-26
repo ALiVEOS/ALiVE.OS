@@ -416,11 +416,11 @@ switch (_taskState) do {
         _targetPosition = [_params,"targetPosition"] call ALIVE_fnc_hashGet;
         private _unitDetails = [_params,"unit"] call ALIVE_fnc_hashGet;
 
-        if(_lastState != "Rescue") then {
+        if !([_params, "chatStartDone_Rescue", false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","Rescue"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Rescue", true] call ALIVE_fnc_hashSet;
         };
 
         if!(_hostageSpawned) then {
@@ -655,11 +655,11 @@ switch (_taskState) do {
         _startTime = [_params,"startTime"] call ALIVE_fnc_hashGet;
 
         // first run of this task
-        if(_lastState != "Return") then {
+        if !([_params, "chatStartDone_Return", false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","Return"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Return", true] call ALIVE_fnc_hashSet;
         };
 
         // the players have not yet reached the

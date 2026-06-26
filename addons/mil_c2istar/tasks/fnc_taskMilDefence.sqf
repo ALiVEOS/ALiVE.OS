@@ -222,11 +222,11 @@ switch (_taskState) do {
         _taskDialog = [_params,"dialog"] call ALIVE_fnc_hashGet;
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
 
-        if(_lastState != "Travel") then {
+        if !([_params,"chatStartDone_Travel",false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","Travel"] call ALIVE_fnc_hashSet;
+            [_params,"chatStartDone_Travel",true] call ALIVE_fnc_hashSet;
         };
 
         _destinationReached = [_taskPosition,_taskPlayers,50] call ALIVE_fnc_taskHavePlayersReachedDestination;
@@ -270,11 +270,11 @@ switch (_taskState) do {
         _entityProfileIDs = [_params,"entityProfileIDs"] call ALIVE_fnc_hashGet;
         _cleanupObjects = [_params,"cleanupObjects"] call ALIVE_fnc_hashGet;
 
-        if(_lastState != "DefenceWave") then {
+        if !([_params,"chatStartDone_DefenceWave",false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","DefenceWave"] call ALIVE_fnc_hashSet;
+            [_params,"chatStartDone_DefenceWave",true] call ALIVE_fnc_hashSet;
         };
 
         if(_currentWave > _lastWave) then {
