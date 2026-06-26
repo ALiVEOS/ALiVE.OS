@@ -550,6 +550,12 @@ switch (_operation) do {
         _costSoFarMapLayer1 set [_startSector select 0, 0];
         private _frontierLayer1 = [[0,_startSector]];
         private _layer1Complete = false;
+        // Distinguish a genuine land-block (frontier exhausted, or the goal sector
+        // itself untraversable -> really needs sea travel) from simply running out of
+        // the iteration budget on a far but land-reachable goal. Only the former is
+        // sea travel; budget exhaustion is inconclusive and must not drop the group
+        // from OPCOM sections (#936 -- far land commanders were wrongly excluded).
+        private _genuinelyBlocked = false;
         private _sectorIterations = 0;
 
         scopeName "Main";
@@ -580,18 +586,22 @@ switch (_operation) do {
                         [nil,"setNodeToFrontier",[_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams]] call MAINCLASS;
                     } else {
                         if (_neighSector isEqualTo _goalSector) exitwith {
-                            // Unable to complete path to goal
+                            // Goal sector itself is untraversable by land -> genuine sea travel
+                            _genuinelyBlocked = true;
                             breakTo "Main"
                         };
                     };
                 } foreach ([_terrainGrid, "getNeighborSectors", _indxCS] call Alive_fnc_pathfindingGrid);
 
-                if (count _frontierLayer1 == 0) exitwith {breakTo "Main";};
+                if (count _frontierLayer1 == 0) exitwith {_genuinelyBlocked = true; breakTo "Main";};
             };
         };
 
         // ["layer1SeaCheck: results c:%1 , SI:%2 , FL:%3",_layer1Complete,_sectorIterations, count _frontierLayer1] call Alive_fnc_Dump;
-        _result = !_layer1Complete;
+        // Sea travel only when genuinely land-blocked. An iteration-budget timeout
+        // (goal not reached but the frontier still had nodes) is inconclusive and
+        // returns false, so a far but land-reachable group is not wrongly excluded (#936).
+        _result = _genuinelyBlocked;
     };
 
     ////////// PATHING FUNCTIONS //////////
