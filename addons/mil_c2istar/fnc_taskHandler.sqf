@@ -1753,6 +1753,10 @@ switch (_operation) do {
                     {
                         private _taskID = _x;
                         private _mainTask = [_logic, "getTask", _taskID] call MAINCLASS;
+                        // Skip a managed entry whose task no longer exists (e.g. torn
+                        // down earlier this cycle). getTask returns nil for a missing
+                        // ID and the reads below assume an array.
+                        if (isNil "_mainTask" || {!(_mainTask isEqualType [])}) then { continue };
                         private _taskSide = _mainTask select 2;
                         private _parsedTaskSource = [_logic, "parseTaskSource", _mainTask select 12] call MAINCLASS;
                         _parsedTaskSource params ["_rootTaskID", "_taskType", "_taskStage"];
@@ -1792,6 +1796,16 @@ switch (_operation) do {
 
                                 [_logic, "updateTask", _task] call MAINCLASS;
                                 [_logic, "updateTaskState", _task] call MAINCLASS;
+
+                                // Tear down the finished managed task and its subtasks.
+                                // Without this the root + children stay in activeTasks and
+                                // the manager re-runs their stage functions every cycle --
+                                // reassigning then failing them against already-cleaned-up
+                                // targets, re-broadcasting stage chatter, and never clearing
+                                // them from the client task menu (#934). TASK_DELETE
+                                // unregisters the root + all children, releases the managed
+                                // task params, and dispatches the removal to clients.
+                                [_logic, "TASK_DELETE", [_rootTaskID, (_task select 1), _taskSide]] call MAINCLASS;
 
                                 private _autoGenerateSides = [_logic,"autoGenerateSides"] call ALIVE_fnc_hashGet;
                                 private _sideAutoGeneration = [_autoGenerateSides,_taskSide] call ALIVE_fnc_hashGet;
