@@ -1826,12 +1826,14 @@ switch (_operation) do {
                 } else {
                     private _autoGenerateSides = [_logic, "autoGenerateSides", ["", [], [], ""]] call ALIVE_fnc_hashGet;
                     private _generatedTasks = 0;
+                    private _anyConstant = false;
 
                     {
                         private _taskSide = _x;
                         private _taskSideData = [_autoGenerateSides, _taskSide] call ALiVE_fnc_HashGet;
 
                         if (_taskSideData select 0 == "Constant") then {
+                            _anyConstant = true;
 
                             private _taskPlayers = ["getAutoOrderSidePlayers", [_taskSide]] call ALiVE_fnc_playerOrders;
                             private _taskPlayerIDs = _taskPlayers param [0, []];
@@ -1849,7 +1851,13 @@ switch (_operation) do {
                         };
                     } foreach (_autoGenerateSides select 1);
 
-                    if (_generatedTasks == 0) then {
+                    // Only stop the manager when nothing is on Constant auto-gen. A
+                    // Constant side must keep the thread alive to retry generation on a
+                    // later cycle (players may be absent this instant); otherwise the
+                    // first task ending permanently kills tasking for the session, since
+                    // nothing re-spawns the manager (#942). The uiSleep below throttles
+                    // the idle retry.
+                    if (_generatedTasks == 0 && {!_anyConstant}) then {
                         [_logic, "stopManagement"] call MAINCLASS;
                     };
                 };
