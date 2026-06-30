@@ -360,6 +360,12 @@ if(isServer) then {
 
     [ALIVE_civilianPopulationSystem,"start"] call ALIVE_fnc_civilianPopulationSystem;
 
+    // Broadcast the module logic so JIP / late-join clients can rebuild the civilian
+    // interaction handler -- it's only built during the one-shot module-init pass on
+    // machines present at mission start. The client fallback in XEH_postInit reads this. (#937)
+    ALiVE_CivInteract_Logic = _logic;
+    publicVariable "ALiVE_CivInteract_Logic";
+
 };
 
 [_logic] call ALiVE_fnc_civInteractInit;
