@@ -621,31 +621,21 @@ switch(_operation) do {
             _deliveryListOptions = [];
             _deliveryListValues = [];
 
-            // PR_AIRDROP delivery option hidden from the player UI 
-            //
-            // Rationale: the current PR_AIRDROP FSM draws transports from the same
-            // ALIVE_factionDefaultAirTransport / ALIVE_sideDefaultAirTransport pool as
-            // PR_HELI_INSERT, so in practice both spawn rotary-wing transports. The only
-            // behavioural difference is that AIRDROP paradrops infantry mid-air whereas
-            // HELI_INSERT lands and dismounts -- not enough of a distinction to justify
-            // presenting the player with what looks like two near-identical choices.
-            //
-            // The FSM itself (airdropStart / Fly / Return / ReturnWait in fnc_ML.sqf) is
-            // kept intact so AI-internal AIRDROP usage continues to work, and so Option 1
-            // (introduce a dedicated fixed-wing ALIVE_factionDefaultParaTransport hash and
-            // re-expose AIRDROP as a genuinely distinct C-130-style drop) can be picked
-            // up later without re-implementing the pipeline.
-            //
-            // To re-enable the option, uncomment the block below.
-            /*
+            // PR_AIRDROP is a genuinely distinct delivery: the transport paradrops
+            // infantry mid-air and parachutes cargo, reaching destinations with no safe
+            // landing zone, whereas PR_HELI_INSERT lands to unload. Both currently draw
+            // from the same rotary-wing transport pool (ALIVE_factionDefaultAirTransport /
+            // ALIVE_sideDefaultAirTransport), so they share an aircraft; a dedicated
+            // fixed-wing C-130-style para-transport is a separate piece of work. The
+            // delivery FSM (airdropStart / Fly / Return / ReturnWait in fnc_ML.sqf) is
+            // reached only via this player option. (#944)
             if(_restrictionTypeAirDrop) then {
-                _deliveryListOptions pushback ("Airdrop  -  Assets parachuted from transport aircraft");
+                _deliveryListOptions pushback ("Airdrop  -  Parachuted in; no landing zone needed");
                 _deliveryListValues pushback "PR_AIRDROP";
             };
-            */
 
             if(_restrictionTypeHeliInsert) then {
-                _deliveryListOptions pushback ("Helicopter  -  Assets delivered by rotary wing or VTOL");
+                _deliveryListOptions pushback ("Helicopter  -  Lands to unload (rotary wing or VTOL)");
                 _deliveryListValues pushback "PR_HELI_INSERT";
             };
 
