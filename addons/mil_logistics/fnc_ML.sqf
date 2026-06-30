@@ -2586,7 +2586,13 @@ switch(_operation) do {
                             // so ALiVE will spawn them (out-of-range spawn silently fails),
                             // then physically place them in parachutes.
                             // -------------------------------------------------------
-                            private _heliPos = getPos _heli2;  // ground-level x,y beneath heli
+                            // Spawn the infantry profile at GROUND level beneath the heli. getPos
+                            // returns AGL (~350m at drop height); a spawn Z >300m makes the profile
+                            // system fire its OWN native paradrop (fnc_profileEntity.sqf:1071), and
+                            // the moveInDriver loop below then re-chutes the unit -- leaving the
+                            // native chute empty (the stray no-unit chutes the tester saw). (#944)
+                            private _heliPos = getPos _heli2;
+                            _heliPos set [2, 0];
                             [_infProfile, "position", _heliPos] call ALIVE_fnc_profileEntity;
 
                             // Remove vehicle assignment before spawning. Infantry profiles
@@ -8102,7 +8108,12 @@ switch(_operation) do {
 
                         // Send REQUEST_DELIVERED to the requesting player
                         if (_playerRequested) then {
-                            private _logEvent2 = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_DELIVERED"] call ALIVE_fnc_event;
+                            // Match the HELI_INSERT / STANDARD payload shape: the player tablet's
+                            // REQUEST_DELIVERED handler reads index 2 (destination) and 3 (isWaiting).
+                            // Sending only [requestID, playerID] left those nil -> "Zero divisor" and
+                            // no completion radio / destination marker / tablet reset for airdrops. (#944)
+                            private _finalDestination = [_event, "finalDestination", []] call ALIVE_fnc_hashGet;
+                            private _logEvent2 = ['LOGCOM_RESPONSE', [_requestID,_playerID,_finalDestination,true],"Logistics","REQUEST_DELIVERED"] call ALIVE_fnc_event;
                             [ALIVE_eventLog, "addEvent", _logEvent2] call ALIVE_fnc_eventLog;
                             if (_debug) then {
                                 ["ML - airdropReturnWait: REQUEST_DELIVERED sent to player %1 for request %2",

@@ -1152,8 +1152,10 @@ switch(_operation) do {
 
                     private ["_position","_isWaiting","_marker","_markers","_markerLabel"];
 
-                    _position = _eventData select 2;
-                    _isWaiting = _eventData select 3;
+                    // param (not select) so a short payload can't throw -- airdrop deliveries
+                    // historically sent a 2-element payload and crashed this handler. (#944)
+                    _position = _eventData param [2, []];
+                    _isWaiting = _eventData param [3, false];
                     _markerLabel = "";
 
                     if (_audio) then {
