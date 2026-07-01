@@ -21,6 +21,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_entityCount","_vehicleCount","_createModeGroups","_createModeVehicles",
@@ -171,16 +172,6 @@ if(_debug) then {
 
             [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
 
-            _waypoints = waypoints _group;
-
-            if(currentWaypoint _group < count _waypoints) then {
-                for "_i" from (currentWaypoint _group) to (count _waypoints)-1 do
-                {
-                    _profileWaypoint = [(_waypoints select _i)] call ALIVE_fnc_waypointToProfileWaypoint;
-                    [_profileEntity, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
-                };
-            };
-
             {
                 if (!(vehicle _x == _x)) then {
 
@@ -239,6 +230,21 @@ if(_debug) then {
                     };
                 };
             } foreach (_units);
+
+            // Waypoints are added AFTER the vehicle-assignment loop so the profile's
+            // vehiclesInCommandOf slot is populated when addWaypoint resolves the
+            // pathfinding procedure. A boat then correctly resolves to "Naval" instead
+            // of the "Man" land default, so it gets a usable virtual water route and
+            // moves while still virtual (not only once de-virtualized). (#943)
+            _waypoints = waypoints _group;
+
+            if(currentWaypoint _group < count _waypoints) then {
+                for "_i" from (currentWaypoint _group) to (count _waypoints)-1 do
+                {
+                    _profileWaypoint = [(_waypoints select _i)] call ALIVE_fnc_waypointToProfileWaypoint;
+                    [_profileEntity, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+                };
+            };
 
             _entityCount = _entityCount + 1;
 
