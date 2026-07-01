@@ -630,9 +630,35 @@ switch (_operation) do {
         } foreach [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
 
         if (_canTraverseWater && !(_canTraverseLand) && (_type != "LAND")) then { 
-            {
-                if ((getTerrainHeightASL _x) < (getTerrainheightASL _result)) then {_result = _x;};
-            } foreach _subPositions;
+            // Boats: pick the probe that keeps the route straightest (min
+            // prev->node->next detour) while staying in water, so adjacent naval
+            // waypoints track a centreline instead of each lurching to the deepest
+            // nearby pocket. Depth only breaks near-straight ties. (#943)
+            if !((isNil "_prevPos") || (isNil "_nextPos")) then {
+                private _seaLvl = missionNamespace getVariable ["ALiVE_pathfinding_seaLevel", 0];
+                private _bestDetour = (_nextPos distance _result) + (_prevPos distance _result);
+                private _bestDepth = getTerrainHeightASL _result;
+                {
+                    private _detour = (_nextPos distance _x) + (_prevPos distance _x);
+                    private _depth = getTerrainHeightASL _x;
+                    if ((_depth < _seaLvl) && {(_detour < _bestDetour) || ((_detour < _bestDetour + 30) && (_depth < _bestDepth))}) then {
+                        _result = _x;
+                        _bestDetour = _detour;
+                        _bestDepth = _depth;
+                    };
+                } foreach _subPositions;
+                // Never leave a naval waypoint on dry land: if nothing straighter and
+                // wet was found, fall back to the deepest-water probe (original snap).
+                if ((getTerrainHeightASL _result) >= _seaLvl) then {
+                    {
+                        if ((getTerrainHeightASL _x) < (getTerrainheightASL _result)) then {_result = _x;};
+                    } foreach _subPositions;
+                };
+            } else {
+                {
+                    if ((getTerrainHeightASL _x) < (getTerrainheightASL _result)) then {_result = _x;};
+                } foreach _subPositions;
+            };
         };
         if (_canTraverseLand) then {
             if !((isNil "_prevPos") || (isNil "_nextPos")) then {
