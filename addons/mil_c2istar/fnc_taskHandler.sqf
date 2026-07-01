@@ -504,7 +504,7 @@ switch (_operation) do {
                 // type. generateTask consumes the flag synchronously; this MUST stay a
                 // direct call with no suspension between here and that consume, or the
                 // flag could leak into a later player-order generateTask call. (#942)
-                _logic setVariable ["autoTaskRetryEligible", true];
+                [_logic, "autoTaskRetryEligible", true] call ALIVE_fnc_hashSet;
                 [_logic, "generateTask", _task] call MAINCLASS;
             } else {
                 // DEBUG -------------------------------------------------------------------------------------
@@ -562,8 +562,8 @@ switch (_operation) do {
             // createGeneratedTaskForGroup) must keep the exact type they requested.
             // Consume the one-shot flag immediately so a mid-call error can never leave
             // it set for the next (player) generateTask call. (#942)
-            private _autoGenRetry = _logic getVariable ["autoTaskRetryEligible", false];
-            _logic setVariable ["autoTaskRetryEligible", false];
+            private _autoGenRetry = [_logic, "autoTaskRetryEligible", false] call ALIVE_fnc_hashGet;
+            [_logic, "autoTaskRetryEligible", false] call ALIVE_fnc_hashSet;
 
             private _abortNoPlayer = false;
 
