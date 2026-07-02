@@ -327,6 +327,15 @@ switch (_taskState) do {
 
         private _unitDetails = [_params,"unit"] call ALIVE_fnc_hashGet;
 
+        // DIAG-STRIP #942: log the assassination completion gates each management tick so a
+        // reporter RPT shows whether the assigned-player list is empty (-> the HVT never
+        // spawns and the task can never complete), or the HVT is spawned but the kill is
+        // not being detected (see the taskGetState DIAG for the target's active/alive state).
+        if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+            private _diagReach = if (_HVTSpawned) then { "already-spawned" } else { str ([_taskPosition,_taskPlayers,1000] call ALIVE_fnc_taskHavePlayersReachedDestination) };
+            ["[C2ISTAR #942 DIAG] Assassination %1: players=%2 HVTSpawned=%3 reachTest(<1000m)=%4", _taskID, _taskPlayers, _HVTSpawned, _diagReach] call ALIVE_fnc_dump;
+        };
+
         if(_lastState != "Destroy") then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;

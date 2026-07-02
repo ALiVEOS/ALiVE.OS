@@ -577,6 +577,20 @@ switch (_taskState) do {
 
                     _active = _profile select 2 select 1;
 
+                    // DIAG-STRIP #942: log the rescue completion gates per hostage profile so a
+                    // reporter RPT shows whether step 1 fails because the hostage is virtualised
+                    // (active=false), the "rescued" flag never propagated, or no player is found near.
+                    if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                        private _diagRescued = false;
+                        private _diagClosest = objNull;
+                        if (_active) then {
+                            private _diagHostage = leader (_profile select 2 select 13);
+                            _diagRescued = _diagHostage getVariable ["rescued", false];
+                            _diagClosest = [getPos _diagHostage, _taskPlayers] call ALIVE_fnc_taskGetClosestPlayerToPosition;
+                        };
+                        ["[C2ISTAR #942 DIAG] Rescue %1: players=%2 profileActive=%3 rescuedFlag=%4 playerNearHostage=%5", _taskID, _taskPlayers, _active, _diagRescued, (!isNull _diagClosest)] call ALIVE_fnc_dump;
+                    };
+
                     if(_active) then {
                         private "_hostage";
 
