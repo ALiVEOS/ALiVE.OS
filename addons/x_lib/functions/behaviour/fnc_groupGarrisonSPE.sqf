@@ -71,35 +71,8 @@ if (count _staticWeapons > 0) then
 
 if (count _units == 0) exitwith {};
 
-// Garrison any remaining units onto CBA AI Building Positions (CBA_buildingPos objects)
-// when the mission-maker has placed them, so a Garrison Objective mans custom positions
-// such as trench slots. Uses each object's own facing; falls through harmlessly when none
-// are present. (#945)
-// Sweep the whole objective for CBA positions (radius = the objective's Size, passed by the
-// caller), not just the 50 m static-weapon search above -- a trench / defensive line can span
-// well beyond it.
-private _cbaObjects = nearestObjects [_position, ["CBA_buildingPos"], _cbaSearchRadius];
-
-{
-    if (count _units == 0) exitWith {};
-
-    private _unit = _units select 0;
-    private _cbaPos = getPosATL _x;
-    private _cbaDir = getDir _x;
-
-    if (_moveInstantly) then {
-        _unit setPosATL _cbaPos;
-        _unit setDir _cbaDir;
-        doStop _unit;
-    } else {
-        [_unit, _cbaPos, _cbaDir] spawn {
-            params ["_unit", "_cbaPos", "_cbaDir"];
-            [_unit, _cbaPos] call ALiVE_fnc_doMoveRemote;
-            waitUntil {sleep 1; _unit call ALiVE_fnc_unitReadyRemote};
-            _unit setDir _cbaDir;
-            doStop _unit;
-        };
-    };
-
-    _units deleteAt 0;
-} forEach _cbaObjects;
+// Garrison any remaining units onto CBA AI Building Positions (CBA_buildingPos objects) when
+// the mission-maker has placed them, so a Garrison Objective mans custom positions such as
+// trench slots. Sweep the whole objective (radius = the objective's Size, passed in), not just
+// the 50 m static-weapon search above -- a trench / defensive line can span well beyond it. (#945)
+[_units, _position, _cbaSearchRadius, _moveInstantly] call ALIVE_fnc_garrisonUnitsOnCBAPositions;

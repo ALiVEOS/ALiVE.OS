@@ -153,6 +153,13 @@ class groupGarrisonSPE
 	RECOMPILE;
 };
 
+class garrisonUnitsOnCBAPositions
+{
+	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_garrisonUnitsOnCBAPositions.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class infantryGuardProbabilityCount
 {
 	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_infantryGuardProbabilityCount.sqf";
