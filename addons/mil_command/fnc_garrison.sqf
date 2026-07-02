@@ -47,7 +47,10 @@ _cbaRadius = 300;
 if (_args isEqualType []) then {
     _radius = _args param [0, 200, [-1]];
     _onlyProfiles = (_args param [1, "false", [""]]) == "true";
-    _cbaRadius = _args param [2, 300, [0]];
+    // [2] is a legacy position slot that non-SPE callers fill with [0,0,0]; the SPE placer
+    // overloads it with the objective Size. Take a Number if present, else keep the default 300.
+    _cbaRadius = _args param [2, 300];
+    if !(_cbaRadius isEqualType 0) then { _cbaRadius = 300; };
     _profileType = _args param [3, ""];
     _profileCount = _args param [4, 0];
     _guardPatrolPercentage = _args param [5, 50];
