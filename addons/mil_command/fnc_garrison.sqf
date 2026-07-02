@@ -24,7 +24,7 @@ Author:
 Highhead, Jman
 ---------------------------------------------------------------------------- */
 
-private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group","_profileType","_profileCount","_guardPatrolPercentage","_patrolBehaviour","_patrolSpeed"];
+private ["_type","_waypoints","_unit","_profile","_active","_args","_pos","_radius","_onlyProfiles","_assignments","_group","_profileType","_profileCount","_guardPatrolPercentage","_patrolBehaviour","_patrolSpeed","_cbaRadius"];
 
 _profile = _this param [0, ["",[],[],nil], [[]]];
 _args = _this param [1, 200, [-1,[]]];
@@ -40,11 +40,14 @@ _profileCount = 0;
 _guardPatrolPercentage = 50;
 _patrolBehaviour = "SAFE";
 _patrolSpeed = "LIMITED";
+// SPE garrison: radius to sweep for CBA AI Building Positions (the objective's Size). (#945)
+_cbaRadius = 300;
 
 
 if (_args isEqualType []) then {
     _radius = _args param [0, 200, [-1]];
     _onlyProfiles = (_args param [1, "false", [""]]) == "true";
+    _cbaRadius = _args param [2, 300, [0]];
     _profileType = _args param [3, ""];
     _profileCount = _args param [4, 0];
     _guardPatrolPercentage = _args param [5, 50];
@@ -95,7 +98,7 @@ if (_type == "entity" && {count (_assignments select 1) == 0}) then {
        ["ALIVE_fnc_garrison - calling ALIVE_fnc_groupGarrisonSPE - _profileType: %1",_profileType] call ALiVE_fnc_dump;
       };
       // DEBUG -------------------------------------------------------------------------------------
-     [_group, _pos, _radius, true, _onlyProfiles] call ALIVE_fnc_groupGarrisonSPE;
+     [_group, _pos, _radius, true, _onlyProfiles, _cbaRadius] call ALIVE_fnc_groupGarrisonSPE;
     } else {
     	// DEBUG -------------------------------------------------------------------------------------
     	if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
