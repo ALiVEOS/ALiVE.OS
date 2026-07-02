@@ -90,4 +90,13 @@
     <English>Place Module and set the settings accordingly! Sync to a SUP CAS or SUP Transport Module!</English>
     <Chinesesimp>放置模块并相应设置！同步到空对地支援或运输支援模块！</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_CS_SINGLEOP">
+    <English>Support Access:</English>
+</Key>
+<Key ID="STR_ALIVE_CS_SINGLEOP_COMMENT">
+    <English>Who may call combat support from the tablet. 'First player only' (default) restricts it to a single operator per side; if that player leaves the game, the slot passes to another player automatically. 'All players' gives every player the support tablet.</English>
+</Key>
+<Key ID="STR_ALIVE_CS_NOTOPERATOR">
+    <English>You are not the assigned Combat Support operator.</English>
+</Key>
 </Container></Package></Project>

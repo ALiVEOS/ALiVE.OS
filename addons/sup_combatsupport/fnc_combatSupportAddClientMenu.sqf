@@ -31,6 +31,11 @@ if (!hasInterface) exitWith {};
 if (!isNil "ALiVE_CS_menuInstalled" && {ALiVE_CS_menuInstalled}) exitWith {};
 if (isNil "NEO_radioLogic") exitWith {};
 
+// #940 follow-up: publish this client's fixed slot side to the server so the
+// single-operator slot (fnc_combatSupport) is keyed by the same playerSide the
+// client reads, immune to a transient captive/renegade side flip.
+player setVariable ["ALiVE_CS_playerSide", playerSide, true];
+
 waituntil {!isnull player};
 
 NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",

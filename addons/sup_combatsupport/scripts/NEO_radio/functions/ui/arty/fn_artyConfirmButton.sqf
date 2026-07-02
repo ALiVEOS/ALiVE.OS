@@ -4,6 +4,8 @@ private
     "_artyRoundCountLb", "_artyDispersionSlider", "_artyRateDelaySlider", "_battery", "_status", "_supportMarker",
     "_pos", "_type", "_ord", "_rate", "_count", "_dispersion", "_coord"
 ];
+// #940 follow-up: in "first player only" mode, only the current operator may dispatch.
+if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { hint localize "STR_ALIVE_CS_NOTOPERATOR"; };
 _display = findDisplay 655555;
 
   	    _has_SPE_leFH18 = false;

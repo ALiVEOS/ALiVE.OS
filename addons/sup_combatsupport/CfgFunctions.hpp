@@ -31,6 +31,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sup_combatsupport\fnc_combatSupportAddClientMenu.sqf";
                                 RECOMPILE;
                         };
+                        class combatSupportIsOperator {
+                                description = "Returns whether the local player may operate Combat Support (all-players mode, or holds the per-side operator slot)";
+                                file = "\x\alive\addons\sup_combatsupport\fnc_combatSupportIsOperator.sqf";
+                                RECOMPILE;
+                        };
                         class packMortar {
                                 description = "Enables a group to pack a mortar";
                                 file = "\x\alive\addons\sup_combatsupport\fnc_packMortar.sqf";

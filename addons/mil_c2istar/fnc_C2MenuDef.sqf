@@ -275,7 +275,7 @@ if (_menuName == "C2ISTAR") then {
                      "",
                      -1,
                      true,
-                     [QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable && {_csResult}
+                     [QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable && {_csResult} && {call ALIVE_fnc_combatSupportIsOperator}
                 ],
                 ["Send SITREP",
                     {

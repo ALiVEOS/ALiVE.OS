@@ -51,6 +51,18 @@ class CfgVehicles {
                                     class false { name="No"; value = 0; };
                                 };
                         };
+                        class combatsupport_singleoperator : Combo
+                        {
+                                property = "ALiVE_sup_combatsupport_combatsupport_singleoperator";
+                                displayName = "$STR_ALIVE_CS_SINGLEOP";
+                                tooltip = "$STR_ALIVE_CS_SINGLEOP_COMMENT";
+                                defaultValue = """1""";
+                                class Values
+                                {
+                                    class all { name="All players"; value = 0; };
+                                    class first { name="First player only"; value = 1; default = 1; };
+                                };
+                        };
                         class ModuleDescription : ModuleDescription {};
                 };
                 class ModuleDescription

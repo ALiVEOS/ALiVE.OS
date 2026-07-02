@@ -98,6 +98,41 @@ switch(_operation) do {
                         if !(_audio isEqualType true) then { _audio = parseNumber format ["%1", _audio] > 0; };
                         NEO_radioLogic setVariable ["combatsupport_audio", _audio, true];
 
+                        // #940 follow-up: "Support Access" attribute. Default "First player only"
+                        // restricts support-calling to one operator per side; "All players" is the
+                        // opt-out (the post-#940 every-tablet-holder-can-call behaviour). Normalise
+                        // like audio (bool when binarised, "0"/"1" string on -packonly builds) and PV.
+                        private _singleOperator = NEO_radioLogic getVariable ["combatsupport_singleoperator", true];
+                        if !(_singleOperator isEqualType true) then { _singleOperator = parseNumber format ["%1", _singleOperator] > 0; };
+                        NEO_radioLogic setVariable ["combatsupport_singleoperator", _singleOperator, true];
+
+                        // When restricted, the SERVER owns a single operator slot per side and keeps
+                        // it filled: if the slot is empty or its holder has left, hand it to another
+                        // connected same-side player. This auto-fills at start (the first ready player
+                        // becomes the operator) and reopens the slot when the operator disconnects.
+                        if (_singleOperator) then {
+                            private _csOperatorMaintenance = {
+                                {
+                                    private _side = _x;
+                                    private _key = format ["CS_operatorUID_%1", _side];
+                                    private _ownerUID = NEO_radioLogic getVariable [_key, ""];
+                                    // Bucket by the client-published playerSide (stable slot side) so the slot key
+                                    // matches the client's read and survives a captive/renegade side flip; fall back
+                                    // to the live side until a client has published it (fnc_combatSupportAddClientMenu).
+                                    private _sidePlayers = (allPlayers - entities "HeadlessClient_F") select {(_x getVariable ["ALiVE_CS_playerSide", side _x]) == _side};
+                                    private _ownerHere = (_sidePlayers findIf {getPlayerUID _x == _ownerUID}) != -1;
+                                    if (!_ownerHere) then {
+                                        private _newUID = if (count _sidePlayers > 0) then { getPlayerUID (_sidePlayers select 0) } else { "" };
+                                        if (_newUID != _ownerUID) then {
+                                            NEO_radioLogic setVariable [_key, _newUID, true];
+                                        };
+                                    };
+                                } forEach [WEST, EAST, RESISTANCE, CIVILIAN];
+                            };
+                            call _csOperatorMaintenance;
+                            [_csOperatorMaintenance, 3] call CBA_fnc_addPerFrameHandler;
+                        };
+
                         _transportArrays = [];
                         _casArrays = [];
                         _artyArrays = [];
