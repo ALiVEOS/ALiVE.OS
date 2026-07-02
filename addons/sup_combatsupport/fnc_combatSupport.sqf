@@ -983,78 +983,11 @@ switch(_operation) do {
                 */
                 //if there is a real screen it must be a player so hand out the actions and menu items
                 if (hasInterface) then {    
-                    //Initialise Functions and add respawn eventhandler
-                    waituntil {!isnull player};
-
-                    NEO_radioLogic setVariable ["NEO_radioPlayerActionArray",
-                        [
-                            [
-                                ("<t color=""#700000"">" + ("Talk To Pilot") + "</t>"),
-                                {
-                                    private _caller = _this select 1;
-                                    private _vehicle = nil;
-
-                                    if (vehicle _caller != _caller) then {
-                                        _vehicle = vehicle _caller;
-                                    }
-                                    else {
-                                        _vehicle = cursorTarget;
-                                    };
-
-                                    ["talk"] call ALIVE_fnc_radioAction;
-                                    NEO_radioLogic setVariable ["NEO_radioTalkWithPilot", _vehicle];
-                                },
-                                "talk",
-                                -1,
-                                false,
-                                true,
-                                "",
-                                "
-                                    private _vehicle = nil;
-                                    private _vehicle_found = false;
-
-                                    {
-                                        if (_x select 0 == cursorTarget && {_this distance cursorTarget <= 50}) exitWith {
-                                            _vehicle = _x select 0;
-                                        };
-
-                                        if (_x select 0 == vehicle _this) exitWith {
-                                            _vehicle = _x select 0;
-                                        };
-
-                                    } forEach (NEO_radioLogic getVariable [format [""NEO_radioTrasportArray_%1"", playerSide], []]);
-
-                                    if (!isNil ""_vehicle"" && {alive (driver _vehicle)}) then {
-                                        _vehicle_found = true;
-                                    };
-
-                                    _vehicle_found;
-                                "
-                            ]
-                        ]
-                    ];
-
-                    //Add Neo actions
-                    {player addAction _x} foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray");
-                    player addEventHandler ["Respawn", { {(_this select 0) addAction _x } foreach (NEO_radioLogic getVariable "NEO_radioPlayerActionArray") }];
-
-                    if (isNil "SELF_INTERACTION_KEY") then {SELF_INTERACTION_KEY = [221,[false,false,false]]};
-
-                    // if A2 - ACE spectator enabled, seto to allow exit
-                    if(!isNil "ace_fnc_startSpectator") then {ace_sys_spectator_can_exit_spectator = true};
-
-                    // check if player has item defined in module TODO!
-
-                    // initialise main menu
-                    [
-                            "player",
-                            [((["ALiVE", "openMenu"] call cba_fnc_getKeybind) select 5) select 0],
-                            -9500,
-                            [
-                                    "call ALIVE_fnc_CombatSupportMenuDef",
-                                    ["main", "alive_flexiMenu_rscPopup"]
-                            ]
-                    ] call CBA_fnc_flexiMenu_Add;
+                    // Client interface install moved to ALIVE_fnc_combatSupportAddClientMenu
+                    // so JIP / late-join clients (which never run this one-shot module pass)
+                    // can install it too via XEH_postInit -- otherwise only players present
+                    // at mission start get the support tablet menu (#940).
+                    call ALIVE_fnc_combatSupportAddClientMenu;
                 };
             };
         case "destroy": {
