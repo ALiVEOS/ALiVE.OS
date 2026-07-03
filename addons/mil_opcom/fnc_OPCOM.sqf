@@ -977,7 +977,7 @@ switch(_operation) do {
                             [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
                         } else { nil };
                         private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
-	                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!(call _isSeaTravel)}}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})};
+	                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {if (_profileID in ([_logic,"sea",[]] call ALiVE_fnc_HashGet)) then {call _isSeaTravel} else {!(call _isSeaTravel)}}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})};
 
 	                    if (_valid) then {_troopsUnsorted pushBack _profile};
                     };
