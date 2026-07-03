@@ -2867,6 +2867,16 @@ switch(_operation) do {
             // between full replace (default; matches the legacy init.sqf
             // hashSet override pattern) and append (extend stock factions
             // with mod classes without dropping existing entries).
+            // The custom-transport overrides below merge into the static-data registries
+            // (ALIVE_factionDefaultTransport / ...AirTransport / ...Containers). Those registries are
+            // created + populated by staticData.sqf (Logistics.hpp), loaded lazily via
+            // ALiVE_fnc_staticDataHandler by whichever registry-using module inits first. mil_logistics
+            // never triggered that load itself, so on an unlucky init order it could reach the override
+            // before the registry existed -> resolveFactionStaticChoice hit its nil-registry guard and
+            // the override silently no-op'd (empty air/land pools despite a valid customAirTransport).
+            // Load-and-wait here first, exactly as mil_placement / sys_logistics / mil_c2istar do.
+            call ALiVE_fnc_staticDataHandler;
+
             private _customMode = _logic getVariable ["customStaticDataMode", "REPLACE"];
             private _customLand = _logic getVariable ["customLandTransport", ""];
             private _customAir  = _logic getVariable ["customAirTransport", ""];
@@ -5964,7 +5974,10 @@ switch(_operation) do {
                                     ["ML - HELI_INSERT motorised pickup LZ prepared at %1", _position] call ALiVE_fnc_dump;
                                 };
                             } else {
-                                _position = _reinforcementPosition getPos [random(200), random(360)];
+                                // STANDARD spawn: route the base point through the clear-spot finder so units aren't placed on hangars/buildings.
+                                _position = [_logic, "prepareHelicopterLZ", [
+                                    _reinforcementPosition getPos [random(200), random(360)], 80
+                                ]] call MAINCLASS;
                                 if (_paraDrop && _eventType != "HELI_INSERT") then {
                                     _position set [2,PARADROP_HEIGHT];
                                 };
@@ -6012,7 +6025,10 @@ switch(_operation) do {
                                     ["ML - HELI_INSERT motorised pickup LZ prepared at %1", _position] call ALiVE_fnc_dump;
                                 };
                             } else {
-                                _position = _reinforcementPosition getPos [random(200), random(360)];
+                                // STANDARD spawn: route the base point through the clear-spot finder so units aren't placed on hangars/buildings.
+                                _position = [_logic, "prepareHelicopterLZ", [
+                                    _reinforcementPosition getPos [random(200), random(360)], 80
+                                ]] call MAINCLASS;
                                 if (_paraDrop && _eventType != "HELI_INSERT") then {
                                     _position set [2,PARADROP_HEIGHT];
                                 };
@@ -6350,7 +6366,10 @@ switch(_operation) do {
                                     // to the specific pickup LZ during heli assignment below
                                     _position = _remotePosition;
                                 } else {
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    // STANDARD spawn: route the base point through the clear-spot finder so infantry aren't placed on hangars/buildings.
+                                    _position = [_logic, "prepareHelicopterLZ", [
+                                        _reinforcementPosition getPos [random(200), random(360)], 80
+                                    ]] call MAINCLASS;
                                 };
                             };
 
@@ -6633,7 +6652,10 @@ switch(_operation) do {
                             if(count _transportGroups > 0) then {
                                 for "_i" from 0 to _groupCount -1 do {
 
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    // STANDARD spawn: route the base point through the clear-spot finder so the trucks aren't placed on hangars/buildings.
+                                    _position = [_logic, "prepareHelicopterLZ", [
+                                        _reinforcementPosition getPos [random(200), random(360)], 80
+                                    ]] call MAINCLASS;
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
@@ -6680,7 +6702,10 @@ switch(_operation) do {
 
                             _group = _armourGroups select _i;
 
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
+                            // STANDARD spawn: route the base point through the clear-spot finder so armour isn't placed on hangars/buildings.
+                            _position = [_logic, "prepareHelicopterLZ", [
+                                _reinforcementPosition getPos [random(200), random(360)], 80
+                            ]] call MAINCLASS;
 
                             if(_paraDrop) then {
                                 _position set [2,PARADROP_HEIGHT];
@@ -6731,7 +6756,10 @@ switch(_operation) do {
 
                             _group = _mechanisedGroups select _i;
 
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
+                            // STANDARD spawn: route the base point through the clear-spot finder so mechanised units aren't placed on hangars/buildings.
+                            _position = [_logic, "prepareHelicopterLZ", [
+                                _reinforcementPosition getPos [random(200), random(360)], 80
+                            ]] call MAINCLASS;
 
                             if!(surfaceIsWater _position) then {
 
