@@ -452,16 +452,64 @@ private _result = true;
 // any overlap - setDamage is blocked while allowDamage is false.
 private _fnc_safeReposition = {
     params ["_veh", "_pos", ["_dir", -1]];
+    // Null-safe: de-virtualized / destroyed profiles yield objNull here (the RPT `type= empty` no-op).
+    if (isNull _veh || {!alive _veh}) exitWith {};
+    // mil_ato item6 -- INTERIM detonation fix (2026-07-03). This is the ONLY route that teleports a
+    // LIVE airframe onto its hangar startPos (the slot IS the hangar interior by design). The detonation
+    // fuse was the settle re-arming damage on a still-clipping frame: because `allowDamage false`
+    // SUPPRESSES damage, the old `damage > 0.1` guard read 0 and always re-armed -> the pending overlap
+    // resolved into a one-shot kill at ~t+8s (RPT KILLED sinceReposition~8). Interim fix keeps it
+    // minimal: gate the settle on GEOMETRY, and if the frame is still clipping keep it INVULNERABLE
+    // (allowDamage false) instead of re-arming -- no detonation, the hangar survives, and the airframe
+    // stays sim-ON + parked at startPos so the ATO pool can still reuse it. Clean relocate-to-clear-apron
+    // + pool-health (mirror fnc_profileVehicle.sqf:922-978) is OVERHAUL-SCOPE. findAirSpawnPosition is
+    // still called below (harmless -- it also opens the hangar doors).
     private _target = _pos;
-    if (count ((_target nearEntities [["Air"], 12]) - [_veh]) > 0) then {
-        private _alt = _target findEmptyPosition [10, 80, typeOf _veh];
-        if (count _alt > 0) then { _target = [_alt select 0, _alt select 1, _target select 2]; };
+    private _air = [typeOf _veh, _target, 200, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+    // ATO_HANGAR_DBG (DIAG-STRIP): raw findAirSpawnPosition return -- shows whether it gave [] (no relocation, target stays the in-geometry hangar point) or an actual clear point.
+    diag_log format ["ATO_HANGAR_DBG FASP type=%1 reqPos=%2 count=%3 return=%4", typeOf _veh, _target, count _air, _air];
+    if (count _air >= 2) then {
+        _target = _air select 0;
+        if (_dir < 0) then { _dir = _air select 1; };
     };
+    // Ground the frame: a hangar-parked profile stores the hangar BUILDING's elevated origin z (~5 m on
+    // the RHS open hangar), so setPosATL at that z floats the plane up in the roof (and that 5 m roof-clip
+    // WAS the detonation). Force terrain level so it sits on the apron -- boardable and clear of the roof.
+    _target set [2, 0];
     _veh allowDamage false;
     if (_dir >= 0) then { _veh setDir _dir; };
     _veh setPosATL _target;
+    _veh setVectorUp [0,0,1];
     _veh setVelocity [0,0,0];
-    [_veh] spawn { params ["_v"]; sleep 5; if (!isNull _v && {alive _v}) then { _v allowDamage true; _v setDamage 0; }; };
+    // ATO_HANGAR_DBG (DIAG-STRIP)
+    diag_log format ["ATO_HANGAR_DBG safeReposition type=%1 target=%2 insideBldg=%3", typeOf _veh, _target, (count (nearestObjects [_target, ["House","Building"], 6]) > 0)];
+    _veh setVariable ["ATO_reposT", time];
+    _veh addEventHandler ["Killed", { params ["_u"]; diag_log format ["ATO_HANGAR_DBG KILLED type=%1 at=%2 sinceReposition=%3", typeOf _u, getPosATL _u, (time - (_u getVariable ["ATO_reposT", time]))]; }];
+    [_veh, _target] spawn {
+        params ["_v", "_tgt"];
+        sleep 8;
+        if (isNull _v || {!alive _v}) exitWith {};
+        // The clip signal is the SETTLED HEIGHT, not damage (allowDamage false suppresses damage -> reads 0)
+        // and not building-proximity (the hangar origin sits ~5 m up, inside any proximity radius even when
+        // the plane is correctly grounded). A frame grounded on the apron settles at z~0-2; a frame still
+        // clipping geometry is shoved UP by the physics separation (or was never dropped), so an elevated
+        // settled z is the reliable tell.
+        private _p = getPosATL _v;
+        private _z = _p select 2;
+        private _clip = _z > 3.5;
+        // ATO_HANGAR_DBG (DIAG-STRIP): state at settle-end BEFORE deciding.
+        diag_log format ["ATO_HANGAR_DBG settleEnd type=%1 dmg=%2 z=%3 insideBldg=%4", typeOf _v, damage _v, _z, _clip];
+        if (_clip) then {
+            // Still elevated/clipping -- NEVER re-arm damage (re-arming resolves the overlap into a one-shot
+            // kill). Keep it invulnerable + intact + sim-ON, parked so the ATO pool can still reuse it.
+            _v allowDamage false;
+            diag_log format ["ATO_HANGAR_DBG settleClip type=%1 at=%2 -- still elevated (z=%3), kept invulnerable (no re-arm)", typeOf _v, _p, _z];
+        } else {
+            // Grounded and clear -- safe to re-arm damage and apply the maintenance repair.
+            _v allowDamage true;
+            _v setDamage 0;
+        };
+    };
 };
 
 switch(_operation) do {
@@ -2251,6 +2299,8 @@ switch(_operation) do {
                                         // Place a hangar
 
                                         // Place Aircraft
+                                        // ATO_HANGAR_DBG (DIAG-STRIP): initial airframe placement. _posi is the hangar building position, reused later as the profile startPos by _fnc_safeReposition on return. PASSIVE log only -- deliberately does NOT call findAirSpawnPosition here (it opens hangar doors + reserves a 60s anti-race slot, which would perturb the real spawn); the FASP return is captured at reposition instead.
+                                        diag_log format ["ATO_HANGAR_DBG SPAWN class=%1 pos=%2 insideBldg=%3 bldgTypes=%4", _vehicleClass, _posi, (count (nearestObjects [_posi, ["House","Building"], 6]) > 0), (nearestObjects [_posi, ["House","Building"], 6] apply {typeOf _x})];
                                         private _tmp = [_vehicleClass,_side,_faction,_posi,_dire,false,_faction] call ALIVE_fnc_createProfileVehicle;
                                         // _tmp call ALIVE_fnc_inspectHash;
                                         _aprofiles pushback ([_tmp, "profileID"] call ALIVE_fnc_hashGet);
