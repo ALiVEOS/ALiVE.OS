@@ -145,28 +145,34 @@ switch (_taskState) do {
                         && {[_pos,_Input1,500,true] call ALiVE_fnc_isEnemyNear};
                     }] call ALiVE_fnc_SortBy;
 
-                    _targetPosition = [_objectives select 0,"center"] call ALiVE_fnc_HashGet;
+                    // SortBy can reject every objective (friendly-occupied, too near the
+                    // player, or no enemy presence). Guard the select 0 so we don't read a
+                    // nil position off an empty result; the nil-target fallback below then
+                    // supplies a target instead of silently generating nothing (#942).
+                    if (count _objectives > 0) then {
+                        _targetPosition = [_objectives select 0,"center"] call ALiVE_fnc_HashGet;
 
-                    // Check for buildings before spawning a composition
-                    private _targetBuildings = nearestObjects [_targetPosition, ["House", "Building"], 300];
+                        // Check for buildings before spawning a composition
+                        private _targetBuildings = nearestObjects [_targetPosition, ["House", "Building"], 300];
 
-                    if (count _targetBuildings < 2) then {
-                        _targetPosition = [_targetPosition,500] call ALiVE_fnc_findFlatArea;
+                        if (count _targetBuildings < 2) then {
+                            _targetPosition = [_targetPosition,500] call ALiVE_fnc_findFlatArea;
 
-                        private ["_category","_compType"];
-                        _compType = "Military";
-                        If (_taskEnemySide == "GUER") then {
-                            _compType = "Guerrilla";
+                            private ["_category","_compType"];
+                            _compType = "Military";
+                            If (_taskEnemySide == "GUER") then {
+                                _compType = "Guerrilla";
+                            };
+                            _category = (selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"]);
+
+                            [_targetPosition, _compType, _category, _taskEnemyFaction, "Small", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+                            private ["_category","_compType"];
+                            _compType = "Military";
+                            If (_taskEnemySide == "GUER") then {
+                                _compType = "Guerrilla";
+                            };
+                            [_targetPosition, _compType, ["HQ", "Outposts", "FieldHQ", "Camps"], _taskEnemyFaction, ["Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
                         };
-                        _category = (selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"]);
-
-                        [_targetPosition, _compType, _category, _taskEnemyFaction, "Small", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
-                        private ["_category","_compType"];
-                        _compType = "Military";
-                        If (_taskEnemySide == "GUER") then {
-                            _compType = "Guerrilla";
-                        };
-                        [_targetPosition, _compType, ["HQ", "Outposts", "FieldHQ", "Camps"], _taskEnemyFaction, ["Small"], 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
                     };
 
                 };
@@ -197,6 +203,19 @@ switch (_taskState) do {
                 };
                 _category = (selectRandom ["HQ", "Outposts", "FieldHQ", "Camps"]);
                 [_targetPosition, _compType, _category, _taskEnemyFaction, "Small", 2] call ALIVE_fnc_spawnRandomPopulatedComposition;
+            };
+        };
+
+        // If no eligible OPCOM objective survived the state / SortBy filters (common on a
+        // Constant-mode regen right after a kill, when the player is on the just-cleared
+        // objective), fall back to an enemy-side sector position so generation still yields
+        // a target rather than silently producing nothing (#942).
+        if (isNil "_targetPosition") then {
+            _targetPosition = [_taskLocation,_taskLocationType,_taskEnemySide] call ALIVE_fnc_taskGetSideSectorCompositionPosition;
+            if (count _targetPosition == 0) then {
+                _targetPosition = [_taskLocation,500] call ALiVE_fnc_findFlatArea;
+            } else {
+                _targetPosition = [_targetPosition,500] call ALiVE_fnc_findFlatArea;
             };
         };
 
