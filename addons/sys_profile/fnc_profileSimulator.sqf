@@ -311,9 +311,17 @@ if (!_simAttacks) then {
                                         // assign a boat to entities if on water
 
                                         private _isSeaTravel = if (_pathfindingEnabled) then {
-                                            {[Alive_pathfinder,"layer1SeaTravelCheck",[_position,_destination]] call Alive_fnc_pathfinder;}
+                                            // layer1SeaTravelCheck returns false on a land-search budget timeout (#936,
+                                            // 4736c6ef); on a large landmass that hides a genuine cross-water objective, so
+                                            // OR-in the straight-line crossesSea fallback. Origin is _profilePosition (the
+                                            // group's real position -- the prior undefined _position defaulted the check to
+                                            // map corner [0,0,0]). (#943)
+                                            {
+                                                ([Alive_pathfinder,"layer1SeaTravelCheck",[_profilePosition,_destination]] call Alive_fnc_pathfinder)
+                                                || {[_profilePosition,_destination] call ALiVE_fnc_crossesSea}
+                                            }
                                         } else {
-                                            {[_position,_destination] call ALiVE_fnc_crossesSea;}
+                                            {[_profilePosition,_destination] call ALiVE_fnc_crossesSea;}
                                         };
                                         if (_boatsEnabled && {surfaceIsWater _profilePosition} && {surfaceIsWater _newPosition} && {call _isSeaTravel}) then {
                                             if (isnil {[_profile,"boat"] call ALiVE_fnc_hashGet}) then {
@@ -471,9 +479,17 @@ if (!_simAttacks) then {
 
                                             private _deepEnough = ((ATLtoASL _newPosition) select 2) < 1 && {(_newPosition select 2) > 4};
                                             private _isSeaTravel = if (_pathfindingEnabled) then {
-                                                {[Alive_pathfinder,"layer1SeaTravelCheck",[_position,_destination]] call Alive_fnc_pathfinder;}
+                                                // layer1SeaTravelCheck returns false on a land-search budget timeout (#936,
+                                                // 4736c6ef); on a large landmass that hides a genuine cross-water objective, so
+                                                // OR-in the straight-line crossesSea fallback. Origin is _profilePosition (the
+                                                // group's real position -- the prior undefined _position defaulted the check to
+                                                // map corner [0,0,0]). (#943)
+                                                {
+                                                    ([Alive_pathfinder,"layer1SeaTravelCheck",[_profilePosition,_destination]] call Alive_fnc_pathfinder)
+                                                    || {[_profilePosition,_destination] call ALiVE_fnc_crossesSea}
+                                                }
                                             } else {
-                                                {[_position,_destination] call ALiVE_fnc_crossesSea;}
+                                                {[_profilePosition,_destination] call ALiVE_fnc_crossesSea;}
                                             };
 
                                             // Assign a boat to entities if on water
@@ -513,7 +529,7 @@ if (!_simAttacks) then {
                                         };
                                     };
                                 } else {
-                                    if (_debug) then {["Profile-Simulator corrupted spawned profile detected %1: _newPosition %2 _position %3",_profileID,_newPosition,_position] call ALiVE_fnc_dump};
+                                    if (_debug) then {["Profile-Simulator corrupted spawned profile detected %1: _newPosition %2 _profilePosition %3",_profileID,_newPosition,_profilePosition] call ALiVE_fnc_dump};
                                 };
 
                             };
