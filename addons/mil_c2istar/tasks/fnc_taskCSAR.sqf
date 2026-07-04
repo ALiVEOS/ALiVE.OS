@@ -461,6 +461,15 @@ switch (_taskState) do {
                             ["chat_cancelled",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
                         };
 
+                        // Keep the crew real once spawned. The rescued pilot joins the
+                        // players' group, which empties the profile's own group and
+                        // freezes its stored position at the crash site -- the profile
+                        // system would despawn him mid-escort (deleting him out of the
+                        // player group) and respawn a fresh pilot with no rescue state,
+                        // making the pilot handover impossible (#942). Same protection
+                        // as the hostage in taskRescue.
+                        [_crewProfile1,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileEntity;
+
                         waitUntil {
                             sleep 1;
                             _crew1Active = _crewProfile1 select 2 select 1;
