@@ -301,7 +301,7 @@ switch (_operation) do {
                             _display = findDisplay _display;
                             _control = _display displayCtrl MAP_CONTROL;
                             _control ctrlAddEventHandler ["MouseButtonClick", "[ALiVE_SYS_marker,'mouseButton',[player, _this]] call ALiVE_fnc_marker;"];
-                            _control ctrlAddEventHandler ["MouseButtonDblClick", "if !(ALIVE_SYS_MARKER_HINT) then { hintSilent 'Only ALIVE Advanced Markers will be stored when persistent saving. Default BIS markers will not be stored by ALIVE. CTRL-ALT-LEFT MOUSE BUTTON to create an Advanced Marker. CTRL-ALT-RIGHT MOUSE BUTTON to delete an Advanced Marker.'; ALIVE_SYS_MARKER_HINT = true;};"];
+                            _control ctrlAddEventHandler ["MouseButtonDblClick", "if (isNil 'ALIVE_SYS_MARKER_HINT') then { hintSilent 'Only ALIVE Advanced Markers will be stored when persistent saving. Default BIS markers will not be stored by ALIVE. CTRL-ALT-LEFT MOUSE BUTTON to create an Advanced Marker. CTRL-ALT-RIGHT MOUSE BUTTON to delete an Advanced Marker.'; ALIVE_SYS_MARKER_HINT = true;};"];
                             _control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
                             _control ctrlAddEventHandler ["MouseMoving", {[ALiVE_SYS_marker,"mouseMoving",[player, _this]] call ALiVE_fnc_marker;}];
 
@@ -342,7 +342,7 @@ switch (_operation) do {
 
                     _control = _display displayCtrl MAP_CONTROL;
                     _control ctrlAddEventHandler ["MouseButtonClick", "[ALiVE_SYS_marker,'mouseButton',[player, _this]] call ALiVE_fnc_marker;"];
-                    _control ctrlAddEventHandler ["MouseButtonDblClick", "if !(ALIVE_SYS_MARKER_HINT) then { hintSilent 'Only ALIVE Advanced Markers will be stored when persistent saving. Default BIS markers will not be stored by ALIVE. CTRL-ALT-LEFT MOUSE BUTTON to create an Advanced Marker. CTRL-ALT-RIGHT MOUSE BUTTON to delete an Advanced Marker.'; ALIVE_SYS_MARKER_HINT = true;};"];
+                    _control ctrlAddEventHandler ["MouseButtonDblClick", "if (isNil 'ALIVE_SYS_MARKER_HINT') then { hintSilent 'Only ALIVE Advanced Markers will be stored when persistent saving. Default BIS markers will not be stored by ALIVE. CTRL-ALT-LEFT MOUSE BUTTON to create an Advanced Marker. CTRL-ALT-RIGHT MOUSE BUTTON to delete an Advanced Marker.'; ALIVE_SYS_MARKER_HINT = true;};"];
                     _control ctrlAddEventHandler ["draw", "[ALiVE_SYS_marker,'draw',[player, _this]] call ALiVE_fnc_marker;"];
                     _control ctrlAddEventHandler ["MouseMoving", {[ALiVE_SYS_marker,"mouseMoving",[player, _this]] call ALiVE_fnc_marker;}];
 
