@@ -2770,6 +2770,25 @@ switch(_operation) do {
                         };
                     };
                 } forEach _infantryIDs;
+
+                // Post-drop egress: both drop paths can leave a SPAWNED carrier with no
+                // movement order (the active path's last order is the overshoot point,
+                // the force-spawn path never issues one). It then hovers motionless in
+                // player view until heliParadropReturn's RTB waypoints land 20-30s+
+                // later (10s monitor ticks + async pathfinding). Issue an interim move
+                // toward the return base so the carrier is always flying;
+                // heliParadropReturn overwrites it with the proper egress route.
+                private _vpEnd = if (_vProfID != "") then {
+                    [ALIVE_profileHandler, "getProfile", _vProfID] call ALIVE_fnc_profileHandler
+                } else { nil };
+                private _heliEnd = if (!isNil "_vpEnd") then { _vpEnd select 2 select 10 } else { objNull };
+                if (!isNull _heliEnd && {alive _heliEnd} && {!isNil "_returnPos"} && {count _returnPos > 1}) then {
+                    _heliEnd flyInHeight PARADROP_HEIGHT;
+                    _heliEnd move _returnPos;
+                    ["ML - heliParadropWatchdog: %1 post-drop egress move toward %2 issued.",
+                        _tProfID, _returnPos] call ALiVE_fnc_dump;
+                };
+
                 _dropped = true;
                 ["ML - heliParadropWatchdog: %1 drop phase complete. dropped=%2 groups=%3",
                     _tProfID, _dropped, count _infantryIDs] call ALiVE_fnc_dump;
@@ -5498,6 +5517,17 @@ switch(_operation) do {
                         if(_playersInRange > 0) then {
                             _paraDrop = true;
                             _remotePosition = [_reinforcementPosition, 2000] call ALIVE_fnc_getPositionDistancePlayers;
+                            // getPositionDistancePlayers can return [] (no player-free sector
+                            // found) or a water sector centre (no land filter by default).
+                            // Either would break the STANDARD remote ground spawn below --
+                            // the surfaceIsWater guards at the spawn sites would silently
+                            // skip whole groups. Retry land-only, then fall back to the base.
+                            if (count _remotePosition < 2 || {surfaceIsWater _remotePosition}) then {
+                                _remotePosition = [_reinforcementPosition, 2000, 1, true] call ALIVE_fnc_getPositionDistancePlayers;
+                            };
+                            if (count _remotePosition < 2) then {
+                                _remotePosition = _reinforcementPosition;
+                            };
                         };
 
                         // -----------------------------------------------------------------
@@ -5747,14 +5777,34 @@ switch(_operation) do {
                                     if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) then {
                                         ["ML - TEST BYPASS: Preserving eventType=%1, skipping PARADROP/INSERT enemy score check.", _eventType] call ALiVE_fnc_dump;
                                     } else {
-                                        if (_scoredEnemyCount > 0 || _scoredObjState in ["attack","capture"]) then {
+                                        // Virtual-aware enemy count at the FINAL destination.
+                                        // findBestDeliveryObjective's count uses nearEntities and
+                                        // is blind to virtualised profiles, and tacom_state
+                                        // "attack"/"capture" only means friendly TACOM is sending
+                                        // units there, not that enemies hold it -- that proxy fired
+                                        // combat drops into genuinely clear LZs. Count spawned
+                                        // units AND virtual profiles instead (same two-source idiom
+                                        // as ALiVE_fnc_isHeldObjective). Also covers the <=2 held
+                                        // objectives path where scoring never runs.
+                                        private _sideObjDZ = [_side] call ALIVE_fnc_sideTextToObject;
+                                        private _dzNearUnits = _destPos nearEntities [["Man","Car","Tank"], 500];
+                                        private _dzEnemyNear = _dzNearUnits select { side _x != _sideObjDZ && side _x != civilian };
+                                        // getNearProfiles' categorySide takes side text strings ("EAST"/"WEST"/"GUER"), not side objects.
+                                        private _dzEnemySides = ["EAST","WEST","GUER"] - [_side];
+                                        private _dzEnemyProfiles = [_destPos, 500, [_dzEnemySides, "entity"], true] call ALIVE_fnc_getNearProfiles;
+                                        _dzEnemyProfiles = _dzEnemyProfiles select {
+                                            ((_x select 2 select 3) != "CIV") && {(_x select 2 select 3) != "CIVILIAN"}
+                                        };
+                                        private _dzEnemyCount = (count _dzEnemyNear) + (count _dzEnemyProfiles);
+
+                                        if (_scoredEnemyCount > 0 || _dzEnemyCount > 0) then {
                                             _eventType = "HELI_PARADROP";
-                                            ["ML - HELI_PARADROP selected: enemy=%1 objState=%2 at destination.",
-                                                _scoredEnemyCount, _scoredObjState] call ALiVE_fnc_dump;
+                                            ["ML - HELI_PARADROP selected: enemy=%1 dzEnemy=%2 objState=%3 at destination.",
+                                                _scoredEnemyCount, _dzEnemyCount, _scoredObjState] call ALiVE_fnc_dump;
                                         } else {
                                             if (_debug) then {
-                                                ["ML - HELI_INSERT confirmed: enemy=%1 objState=%2 at destination. LZ clear.",
-                                                    _scoredEnemyCount, _scoredObjState] call ALiVE_fnc_dump;
+                                                ["ML - HELI_INSERT confirmed: enemy=%1 dzEnemy=%2 objState=%3 at destination. LZ clear.",
+                                                    _scoredEnemyCount, _dzEnemyCount, _scoredObjState] call ALiVE_fnc_dump;
                                             };
                                         };
                                     };
@@ -5815,6 +5865,19 @@ switch(_operation) do {
                             if (!_paraDrop) then {
                                 _remotePosition = _reinforcementPosition;
                             };
+                        };
+
+                        // Nil guard: the HELI_INSERT->STANDARD timeout fallbacks above can
+                        // exit without assigning _remotePosition when !_paraDrop. The
+                        // dedicated plane/heli asset spawns and the remote ground spawn
+                        // below read it unconditionally.
+                        if (isNil "_remotePosition") then {
+                            _remotePosition = _reinforcementPosition;
+                        };
+
+                        if (_paraDrop && _eventType == "STANDARD") then {
+                            ["ML - STANDARD delivery: players within 500m of departure. Ground-spawning out of sight at remote anchor %1 (base %2). No paradrop.",
+                                _remotePosition, _reinforcementPosition] call ALiVE_fnc_dump;
                         };
                         // -----------------------------------------------------------------
 
@@ -5975,10 +6038,16 @@ switch(_operation) do {
                                 };
                             } else {
                                 // STANDARD spawn: route the base point through the clear-spot finder so units aren't placed on hangars/buildings.
+                                // _paraDrop (players watching the base): seed from the out-of-sight
+                                // remote anchor at ground level -- no carrierless chute drop.
+                                private _spawnSeed = _reinforcementPosition;
+                                if (_paraDrop && _eventType == "STANDARD" && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
+                                    _spawnSeed = _remotePosition;
+                                };
                                 _position = [_logic, "prepareHelicopterLZ", [
-                                    _reinforcementPosition getPos [random(200), random(360)], 80
+                                    _spawnSeed getPos [random(200), random(360)], 80
                                 ]] call MAINCLASS;
-                                if (_paraDrop && _eventType != "HELI_INSERT") then {
+                                if (_paraDrop && _eventType != "HELI_INSERT" && _eventType != "STANDARD") then {
                                     _position set [2,PARADROP_HEIGHT];
                                 };
                             };
@@ -6026,10 +6095,16 @@ switch(_operation) do {
                                 };
                             } else {
                                 // STANDARD spawn: route the base point through the clear-spot finder so units aren't placed on hangars/buildings.
+                                // _paraDrop (players watching the base): seed from the out-of-sight
+                                // remote anchor at ground level -- no carrierless chute drop.
+                                private _spawnSeed = _reinforcementPosition;
+                                if (_paraDrop && _eventType == "STANDARD" && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
+                                    _spawnSeed = _remotePosition;
+                                };
                                 _position = [_logic, "prepareHelicopterLZ", [
-                                    _reinforcementPosition getPos [random(200), random(360)], 80
+                                    _spawnSeed getPos [random(200), random(360)], 80
                                 ]] call MAINCLASS;
-                                if (_paraDrop && _eventType != "HELI_INSERT") then {
+                                if (_paraDrop && _eventType != "HELI_INSERT" && _eventType != "STANDARD") then {
                                     _position set [2,PARADROP_HEIGHT];
                                 };
                             };
@@ -6357,8 +6432,16 @@ switch(_operation) do {
                                 if(_eventType == "HELI_INSERT" || _eventType == "HELI_PARADROP") then {
                                     _position = _remotePosition;
                                 }else{
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
-                                    _position set [2,PARADROP_HEIGHT];
+                                    // STANDARD with players watching the base: ground-spawn out
+                                    // of sight at the remote anchor via the clear-spot finder --
+                                    // no carrierless chute drop over the friendly base.
+                                    private _spawnSeed = _reinforcementPosition;
+                                    if (!isNil "_remotePosition" && {count _remotePosition > 1}) then {
+                                        _spawnSeed = _remotePosition;
+                                    };
+                                    _position = [_logic, "prepareHelicopterLZ", [
+                                        _spawnSeed getPos [random(200), random(360)], 80
+                                    ]] call MAINCLASS;
                                 };
                             } else {
                                 if (_eventType == "HELI_INSERT" || _eventType == "HELI_PARADROP") then {
@@ -6653,13 +6736,16 @@ switch(_operation) do {
                                 for "_i" from 0 to _groupCount -1 do {
 
                                     // STANDARD spawn: route the base point through the clear-spot finder so the trucks aren't placed on hangars/buildings.
-                                    _position = [_logic, "prepareHelicopterLZ", [
-                                        _reinforcementPosition getPos [random(200), random(360)], 80
-                                    ]] call MAINCLASS;
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
+                                    // _paraDrop: seed from the same remote anchor as the cargo
+                                    // groups (boarding is physical when spawned -- keep trucks
+                                    // and infantry co-located), ground level, no chute drop.
+                                    private _spawnSeed = _reinforcementPosition;
+                                    if (_paraDrop && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
+                                        _spawnSeed = _remotePosition;
                                     };
+                                    _position = [_logic, "prepareHelicopterLZ", [
+                                        _spawnSeed getPos [random(200), random(360)], 80
+                                    ]] call MAINCLASS;
 
                                     if(count _transportGroups > 0) then {
 
@@ -6703,13 +6789,16 @@ switch(_operation) do {
                             _group = _armourGroups select _i;
 
                             // STANDARD spawn: route the base point through the clear-spot finder so armour isn't placed on hangars/buildings.
-                            _position = [_logic, "prepareHelicopterLZ", [
-                                _reinforcementPosition getPos [random(200), random(360)], 80
-                            ]] call MAINCLASS;
-
-                            if(_paraDrop) then {
-                                _position set [2,PARADROP_HEIGHT];
+                            // _paraDrop: ground-spawn at the remote anchor -- no tanks under
+                            // chutes over the friendly base. Armour is STANDARD-only (zeroed
+                            // for heli deliveries above).
+                            private _spawnSeed = _reinforcementPosition;
+                            if (_paraDrop && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
+                                _spawnSeed = _remotePosition;
                             };
+                            _position = [_logic, "prepareHelicopterLZ", [
+                                _spawnSeed getPos [random(200), random(360)], 80
+                            ]] call MAINCLASS;
 
                             if!(surfaceIsWater _position) then {
 
@@ -6757,8 +6846,14 @@ switch(_operation) do {
                             _group = _mechanisedGroups select _i;
 
                             // STANDARD spawn: route the base point through the clear-spot finder so mechanised units aren't placed on hangars/buildings.
+                            // _paraDrop on STANDARD: ground-spawn at the remote anchor instead
+                            // of popping in at the base in player view.
+                            private _spawnSeed = _reinforcementPosition;
+                            if (_paraDrop && _eventType == "STANDARD" && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
+                                _spawnSeed = _remotePosition;
+                            };
                             _position = [_logic, "prepareHelicopterLZ", [
-                                _reinforcementPosition getPos [random(200), random(360)], 80
+                                _spawnSeed getPos [random(200), random(360)], 80
                             ]] call MAINCLASS;
 
                             if!(surfaceIsWater _position) then {
@@ -9591,6 +9686,21 @@ switch(_operation) do {
                                     _tProfile select 2 select 2
                                 };
                                 _farEnough = _checkPos distance2D _finalDest > 1500;
+                                // Never land-and-remove a carrier players can see: an active
+                                // (= observed) heli stopping mid-air, or hovering over water
+                                // where isTouchingGround never fires, then detonating looks
+                                // broken. Defer and let it keep flying its RTB waypoints --
+                                // the _waitTotalIterations timeout below still bounds its
+                                // lifetime regardless. Gate on the live heli spawn radius so
+                                // missions with a raised spawn envelope are covered too.
+                                private _dzGuardRadius = (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500;
+                                if (_farEnough && {([_checkPos, _dzGuardRadius] call ALiVE_fnc_anyPlayersInRange) > 0}) then {
+                                    _farEnough = false;
+                                    if (_debug) then {
+                                        ["ML - heliParadropReturnWait: carrier %1 far enough for removal but players within %2m -- deferring land-and-remove. Event: %3",
+                                            _x, _dzGuardRadius, _eventID] call ALiVE_fnc_dump;
+                                    };
+                                };
                             };
 
                             if (_waitIterations > _waitTotalIterations || _farEnough) then {
