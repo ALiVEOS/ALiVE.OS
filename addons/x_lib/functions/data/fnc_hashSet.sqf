@@ -102,14 +102,17 @@ if (_index >= 0) then
         // (same array => equal counts), but `_keys resize _last` then shrinks the
         // shared array, so `_values select _last` runs out of range -> the throw,
         // which abandons the hash half-resized and corrupts it (the garbage [0,0,0]
-        // profiles + the addUnit "Type Object" error downstream). `_keys isEqualTo
-        // _values` catches the alias - real hashes have string keys != mixed
-        // values, so only an empty or aliased pair compares equal, and empty is
-        // already caught by `_last < 0`. If bad, log once and leave untouched.
+        // profiles + the addUnit "Type Object" error downstream). `_keys isEqualRef
+        // _values` catches the alias by REFERENCE. The original by-VALUE compare
+        // (isEqualTo) also tripped on every hash that stores each key as its own
+        // value (the C2ISTAR task index hashes store [taskID, taskID]), which
+        // turned every remove-by-default into a silent no-op and wedged the task
+        // manager once the first auto task completed (#942). If bad, log once
+        // and leave untouched.
         if (!(_keys isEqualType []) || !(_values isEqualType [])
             || {_last < 0} || {_index > _last}
             || {count _values != count _keys}
-            || {_keys isEqualTo _values}) then {
+            || {_keys isEqualRef _values}) then {
             // Malformed hash — leave it untouched instead of running the
             // swap-and-shrink, which would throw "Zero divisor" on the
             // out-of-range select. The skipped key holds the default value
