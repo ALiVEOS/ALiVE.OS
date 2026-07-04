@@ -4654,7 +4654,65 @@ switch(_operation) do {
                                             _vehicleObj setFuel 0;
 
                                         } else {
+                                            // Occupancy guard: ilsTaxiIn resolves to ONE fixed engine point per airport and
+                                            // this teleport had no occupancy check - two near-simultaneous taskings (an
+                                            // unowned runway unlock in between) placed both planes on the same spot and they
+                                            // detonated on contact. Keep the exact point when clear (single-tasking flow
+                                            // unchanged); if a live airframe already sits there, relocate to a clear spot and
+                                            // keep damage off until the frame has settled - never re-arm while overlapping.
+                                            if (count _taxiPosition < 3) then { _taxiPosition pushBack 0; };
+                                            private _requestedPos = +_taxiPosition;
+                                            private _bbr = boundingBoxReal _vehicleObj;
+                                            private _sep = ((((_bbr select 1) select 0) - ((_bbr select 0) select 0)) max (((_bbr select 1) select 1) - ((_bbr select 0) select 1))) + 6;
+                                            private _fnc_taxiOccupied = {
+                                                count ((nearestObjects [_taxiPosition, ["Air"], _sep]) select {alive _x && {!(_x isEqualTo _vehicleObj)}}) > 0
+                                            };
+                                            private _occupiedOffset = call _fnc_taxiOccupied;
+                                            if (_occupiedOffset) then {
+                                                // findAirSpawnPosition: 60s anti-race registry hands concurrent callers
+                                                // distinct spots (same validator the fresh-spawn path uses)
+                                                private _clearSpot = [_vehicleClass, _taxiPosition, 200, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                                                if (count _clearSpot >= 2) then {
+                                                    _taxiPosition = +(_clearSpot select 0);
+                                                    // Ground the frame - hangar-tier spots carry the building's elevated origin z
+                                                    _taxiPosition set [2, 0];
+                                                    // Face the validated direction (nose-out of a hangar / along the apron),
+                                                    // not the taxi heading - fit was only checked for the validated attitude
+                                                    _taxiDir = _clearSpot select 1;
+                                                };
+                                                // The validator's hangar tier is registry-only (no live-vehicle sweep at the
+                                                // bay centre), so re-verify the spot against live occupants; sidestep
+                                                // perpendicular to the taxi direction until genuinely clear.
+                                                if (call _fnc_taxiOccupied) then {
+                                                    private _try = 1;
+                                                    while {(call _fnc_taxiOccupied) && {_try <= 8}} do {
+                                                        _taxiPosition = [(_requestedPos select 0) + (_sep * _try) * sin (_taxiDir + 90), (_requestedPos select 1) + (_sep * _try) * cos (_taxiDir + 90), 0];
+                                                        _try = _try + 1;
+                                                    };
+                                                };
+                                                _vehicleObj allowDamage false;
+                                            };
                                             _vehicleObj setPos _taxiPosition;
+                                            // ATO_HANGAR_DBG (DIAG-STRIP): outbound await-pilot placement decision - this path had no diag before
+                                            diag_log format ["ATO_HANGAR_DBG OUTBOUND type=%1 reqPos=%2 finalPos=%3 occupiedOffset=%4", _vehicleClass, _requestedPos, _taxiPosition, _occupiedOffset];
+                                            if (_occupiedOffset) then {
+                                                _vehicleObj setVelocity [0,0,0];
+                                                [_vehicleObj] spawn {
+                                                    params ["_v"];
+                                                    sleep 8;
+                                                    if (isNull _v || {!alive _v}) exitWith {};
+                                                    // Settled-height gate (mirrors _fnc_safeReposition): re-arm damage only once
+                                                    // the frame sits grounded and clear - an elevated settle means it is still
+                                                    // clipping and re-arming would resolve the overlap into a one-shot kill.
+                                                    if (((getPosATL _v) select 2) > 3.5) then {
+                                                        _v allowDamage false;
+                                                        // ATO_HANGAR_DBG (DIAG-STRIP)
+                                                        diag_log format ["ATO_HANGAR_DBG OUTBOUND settleClip type=%1 at=%2 -- kept invulnerable (no re-arm)", typeOf _v, getPosATL _v];
+                                                    } else {
+                                                        _v allowDamage true;
+                                                    };
+                                                };
+                                            };
                                         };
                                         _vehicleObj setDir _taxiDir;
                                     };
@@ -4732,6 +4790,22 @@ switch(_operation) do {
                                 if (surfaceIsWater _taxiPosition) then {
                                     _taxiPosition set [2, 600];
                                 };
+
+                                // Concurrent-launch separation: ilsTaxiOff is ONE fixed point per airport and this
+                                // flying-start branch has no runway-busy gate - two taskings in the same monitor
+                                // pass would spawn both aircraft inside each other at the same [x,y,300] point.
+                                // Sidestep laterally while another live airframe is near the spawn point (ground
+                                // traffic 300m below is outside the 3D radius).
+                                private _requestedPos = +_taxiPosition;
+                                private _occupiedOffset = false;
+                                private _launchTry = 1;
+                                while {(count ((nearestObjects [_taxiPosition, ["Air"], 150]) select {alive _x})) > 0 && {_launchTry <= 8}} do {
+                                    _occupiedOffset = true;
+                                    _taxiPosition = [(_requestedPos select 0) + (200 * _launchTry) * sin (_taxiDir + 90), (_requestedPos select 1) + (200 * _launchTry) * cos (_taxiDir + 90), _requestedPos select 2];
+                                    _launchTry = _launchTry + 1;
+                                };
+                                // ATO_HANGAR_DBG (DIAG-STRIP): outbound flying-start placement decision
+                                diag_log format ["ATO_HANGAR_DBG OUTBOUND flyStart type=%1 reqPos=%2 finalPos=%3 occupiedOffset=%4", _vehicleClass, _requestedPos, _taxiPosition, _occupiedOffset];
 
                                 // Set profile information
                                 [_profile,"engineOn",true] call ALiVE_fnc_profileVehicle;
@@ -5455,9 +5529,11 @@ switch(_operation) do {
 
                             if !(_airportBusy) then {
 
-                                // Mark airport as busy for landing
+                                // Mark airport as busy for landing, and remember THIS landing took the lock
+                                // (the no-players quick-land path never locks - its completion must not unlock)
                                 [_airports, _airportID, true] call ALiVE_fnc_hashSet;
                                 [_logic,"runways",_airports] call MAINCLASS;
+                                _vehicle setVariable [QGVAR(LANDINGLOCK), true];
 
                                 if (_airportID < 100) then {
                                     _vehicle landAt _airportID;
@@ -5738,12 +5814,17 @@ switch(_operation) do {
                         _vehicle setDir _startDir;
                     };
 
-                    // Airport is no longer busy
-                    if (_isPlane ) then {
+                    // Airport is no longer busy - but only release the lock THIS landing took.
+                    // The no-players quick-land path (LANDED set without locking) used to fall
+                    // through here and unconditionally unlock, releasing a lock still held by an
+                    // OUTBOUND plane waiting at ilsTaxiIn for its pilot - the next tasking then
+                    // passed the busy gate and teleported a second airframe onto it.
+                    if (_isPlane && {_vehicle getVariable [QGVAR(LANDINGLOCK), false]}) then {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                         // Mark airport as not busy
                         [_logic, "unlockRunway", _airportID] call MAINCLASS;
                     };
+                    _vehicle setVariable [QGVAR(LANDINGLOCK), false];
 
                     // Reset landing values
                     _vehicle setVariable [QGVAR(LANDED),false];
