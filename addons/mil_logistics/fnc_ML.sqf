@@ -9932,7 +9932,10 @@ switch(_operation) do {
                             _transportProfiles = [];
                             _transportVehicleProfiles = [];
 
-                            if(count _transportGroups == 0) then {
+                            // #947: only fall back to side-default aircraft when transports are
+                            // not faction-limited; the no-heli else below already teleports
+                            // the ordered vehicles to the destination when the pool stays empty
+                            if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
                             };
 
@@ -10420,7 +10423,9 @@ switch(_operation) do {
                             _transportProfiles = [];
                             _transportVehicleProfiles = [];
 
-                            if(count _transportGroups == 0) then {
+                            // #947: only fall back to side-default aircraft when transports are
+                            // not faction-limited (same rule as the analysis path)
+                            if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
                             };
 
@@ -10478,7 +10483,39 @@ switch(_operation) do {
                                 };
 
                             } else {
-                                ["ML - WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
+                                // #947: no faction transport heli (Faction Only or none configured).
+                                // Deliver the infantry carrierless instead of stranding them at the
+                                // departure: chute-height reposition when players can see the DZ,
+                                // silent ground teleport otherwise (same fallback as PR_AIRDROP).
+                                private _playersNearDZ = ([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0;
+                                ["ML - PR_HELI_INSERT: No %1 transport heli (limitToFaction=%2). Carrierless %3 at destination %4.",
+                                    _eventFaction, _limitTransportToFaction,
+                                    ["ground delivery","paradrop"] select _playersNearDZ, _eventPosition] call ALiVE_fnc_dump;
+                                {
+                                    private _dropPos = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
+                                    if (surfaceIsWater _dropPos) then { _dropPos = +_eventPosition; };
+                                    if (_playersNearDZ) then { _dropPos set [2, PARADROP_HEIGHT]; };
+                                    {
+                                        private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                        if (!isNil "_p") then {
+                                            if ([_x,"vehicle"] call CBA_fnc_find != -1) then {
+                                                [_p, "position", _dropPos] call ALIVE_fnc_profileVehicle;
+                                                [_p, "despawnPosition", _dropPos] call ALIVE_fnc_profileVehicle;
+                                            } else {
+                                                [_p, "position", _dropPos] call ALIVE_fnc_profileEntity;
+                                                [_p, "mergePositions"] call ALIVE_fnc_profileEntity;
+                                                // move order only on the ground branch -- a chuted profile must
+                                                // keep an empty waypoint list or the virtual mover flattens the
+                                                // drop height before the spawner hands out parachutes
+                                                if (!_playersNearDZ) then {
+                                                    private _wpDZ = [_eventPosition, 100, "MOVE", "NORMAL", 60, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                                                    [_p, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                                                    [_p, "addWaypoint", _wpDZ] call ALIVE_fnc_profileEntity;
+                                                };
+                                            };
+                                        };
+                                    } forEach _x;
+                                } forEach _infantryProfiles;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
@@ -10499,7 +10536,9 @@ switch(_operation) do {
                             _transportProfiles = [];
                             _transportVehicleProfiles = [];
 
-                            if(count _transportGroups == 0) then {
+                            // #947: only fall back to side-default aircraft when transports are
+                            // not faction-limited (same rule as the analysis path)
+                            if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
                             };
 
@@ -10610,7 +10649,28 @@ switch(_operation) do {
                                 } foreach _groupProfiles;
 
                             } else {
-                                ["WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
+                                // #947: no faction sling heli (Faction Only or none configured) --
+                                // deliver the groups with the same ground teleport the too-heavy
+                                // fallback above uses so they are not stranded at the departure.
+                                // Ground, not chute: a slung vehicle and the crew that must mount
+                                // it are safer delivered together at ground level.
+                                ["ML - PR_HELI_INSERT: no sling heli for faction=%1 (limitToFaction=%2). Teleporting group profiles to destination %3.",
+                                    _eventFaction, _limitTransportToFaction, _eventPosition] call ALiVE_fnc_dump;
+                                {
+                                    {
+                                        private _gp = [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                        if (!isNil "_gp") then {
+                                            if ([_x,"vehicle"] call CBA_fnc_find != -1) then {
+                                                [_gp, "position", _eventPosition] call ALIVE_fnc_profileVehicle;
+                                                [_gp, "despawnPosition", _eventPosition] call ALIVE_fnc_profileVehicle;
+                                                _payloadGroupProfiles pushback [_x];
+                                            } else {
+                                                [_gp, "position", _eventPosition] call ALIVE_fnc_profileEntity;
+                                                [_gp, "mergePositions"] call ALIVE_fnc_profileEntity;
+                                            };
+                                        };
+                                    } forEach _x;
+                                } forEach _groupProfiles;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
@@ -10699,7 +10759,10 @@ switch(_operation) do {
                                 _transportProfiles = [];
                                 _transportVehicleProfiles = [];
 
-                                if(count _transportGroups == 0) then {
+                                // #947: only fall back to side-default aircraft when transports are
+                                // not faction-limited; with the pool left empty the payload falls
+                                // through to the carrierless container drop below
+                                if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                     _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
                                 };
 
@@ -10811,9 +10874,11 @@ switch(_operation) do {
                                     _profile = _profiles select 0;
                                     [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
-                                };
+                                    // #947: book the delivery only when a transport heli was actually
+                                    // created -- the carrierless container fallback books its own
+                                    _totalCount = _totalCount + 1;
 
-                                _totalCount = _totalCount + 1;
+                                };
 
                                 _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
                                 _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
@@ -10822,7 +10887,10 @@ switch(_operation) do {
 
                             private ["_containers","_vehicle","_parachute","_soundFlyover"];
 
-                            if(_eventType == "PR_AIRDROP") then {
+                            // #947: a PR_HELI_INSERT payload with no available transport heli
+                            // (Faction Only + heli-less faction) falls through to the same
+                            // carrierless container drop PR_AIRDROP uses.
+                            if(_eventType == "PR_AIRDROP" || {_eventType == "PR_HELI_INSERT" && {count _transportGroups == 0}}) then {
 
                                 _containers = [ALIVE_factionDefaultContainers,_eventFaction,[]] call ALIVE_fnc_hashGet;
 
@@ -10832,7 +10900,13 @@ switch(_operation) do {
 
                                 if(count _containers > 0) then {
 
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    // #947: anchor the container to the requested drop position, not the
+                                    // supply-node departure, and chute it when players can see the DZ.
+                                    // _paraDrop watched the departure area; nothing reads it after this
+                                    // block so it is safe to rebase it on the destination here.
+                                    _paraDrop = ([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0;
+                                    _position = _eventPosition getPos [random(200), random(360)];
+                                    if (surfaceIsWater _position) then { _position = +_eventPosition; };
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
@@ -10964,7 +11038,17 @@ switch(_operation) do {
 
                                     // update the state of the event
                                     // next state is transport load
-                                    [_event, "state", "heliTransportStart"] call ALIVE_fnc_hashSet;
+                                    // #947: carrierless delivery (Faction Only + heli-less faction)
+                                    // created no transports -- the cargo is already placed at the
+                                    // destination, so skip the flight states. heliTransport would
+                                    // read zero transport waypoints as "destroyed enroute" and send
+                                    // a false loss report; eventComplete sends the single correct
+                                    // delivered notification instead.
+                                    if (count _eventTransportProfiles == 0) then {
+                                        [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                                    } else {
+                                        [_event, "state", "heliTransportStart"] call ALIVE_fnc_hashSet;
+                                    };
 
                                     // dispatch event
                                     _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
@@ -10994,8 +11078,18 @@ switch(_operation) do {
                                     private _airdropInfTransportProfID = "";
 
                                     private _airdropTransportGroups = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
-                                    if (count _airdropTransportGroups == 0 || !_limitTransportToFaction) then {
+                                    // #947: append side defaults ONLY when transports are not faction-limited.
+                                    // The old `count == 0 ||` also refilled an EMPTY faction pool from the side
+                                    // registry, so Faction Only + a heli-less faction (WW2 mods) still spawned
+                                    // a vanilla side aircraft. A faction-limited heli-less pool must stay empty
+                                    // so the carrierless fallback below delivers the drop instead.
+                                    if (!_limitTransportToFaction) then {
                                         _airdropTransportGroups append ([ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet);
+                                    };
+
+                                    if (_debug) then {
+                                        ["ML - PR_AIRDROP transport pool: faction=%1 limitToFaction=%2 pool=%3",
+                                            _eventFaction, _limitTransportToFaction, _airdropTransportGroups] call ALiVE_fnc_dump;
                                     };
 
                                     // Filter out classes that have failed sling-validation in
@@ -11163,14 +11257,50 @@ switch(_operation) do {
                                         _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _airdropTransportVehicleProfiles;
 
                                     } else {
-                                        ["ML - PR_AIRDROP: No air transport assets found for faction=%1 side=%2. Falling back to teleport -- profiles placed at destination.",
-                                            _eventFaction, _side] call ALiVE_fnc_dump;
-                                        // Fallback: teleport all cargo profiles to destination
+                                        // #947: carrierless delivery. With Faction Only air transport and a
+                                        // heli-less faction the pool is legitimately empty -- spawn NO aircraft.
+                                        // If players can see the DZ, park the payload profiles above the drop
+                                        // position at PARADROP_HEIGHT: the profile system's native parachute
+                                        // spawn (entities z>300 -> Steerable_Parachute_F, ground vehicles
+                                        // z>300 -> B_Parachute_02_F) floats them down onto the destination.
+                                        // With nobody near the DZ keep the silent ground teleport.
+                                        private _playersNearDZ = ([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0;
+                                        ["ML - PR_AIRDROP: No air transport assets found for faction=%1 side=%2 (limitToFaction=%3). Carrierless %4 at destination %5.",
+                                            _eventFaction, _side, _limitTransportToFaction,
+                                            ["ground delivery","paradrop"] select _playersNearDZ, _eventPosition] call ALiVE_fnc_dump;
                                         {
+                                            private _dropPos = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
+                                            if (surfaceIsWater _dropPos) then { _dropPos = +_eventPosition; };
+                                            if (_playersNearDZ) then { _dropPos set [2, PARADROP_HEIGHT]; };
                                             {
                                                 private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                                                 if (!isNil "_p") then {
-                                                    [_p, "position", _eventPosition] call ALIVE_fnc_profileEntity;
+                                                    if ([_x,"vehicle"] call CBA_fnc_find != -1) then {
+                                                        // vehicle profile: despawnPosition must move too or the
+                                                        // spawner snaps the vehicle back to its stored ground pos
+                                                        [_p, "position", _dropPos] call ALIVE_fnc_profileVehicle;
+                                                        [_p, "despawnPosition", _dropPos] call ALIVE_fnc_profileVehicle;
+                                                    } else {
+                                                        [_p, "position", _dropPos] call ALIVE_fnc_profileEntity;
+                                                        // per-unit positions still hold the departure coords and
+                                                        // the spawner prefers them over the profile position
+                                                        [_p, "mergePositions"] call ALIVE_fnc_profileEntity;
+                                                        // Move order ONLY on the ground branch: a chuted profile
+                                                        // must keep an EMPTY waypoint list -- the virtual mover
+                                                        // repositions any waypointed profile at ground level and
+                                                        // would flatten the drop height before the spawner hands
+                                                        // out parachutes. Chuted units land within
+                                                        // DESTINATION_VARIANCE and the delivery completion joins/
+                                                        // garrisons them at the drop position anyway.
+                                                        if (!_playersNearDZ) then {
+                                                            private _wpDZ = [_eventPosition, 100, "MOVE", "NORMAL", 60, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                                                            [_p, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                                                            [_p, "addWaypoint", _wpDZ] call ALIVE_fnc_profileEntity;
+                                                        };
+                                                    };
+                                                    if (_debug) then {
+                                                        ["ML - PR_AIRDROP carrierless: profile %1 repositioned to %2", _x, _dropPos] call ALiVE_fnc_dump;
+                                                    };
                                                 };
                                             } forEach _x;
                                         } forEach (_infantryProfiles + _motorisedProfiles + _mechanisedProfiles);
