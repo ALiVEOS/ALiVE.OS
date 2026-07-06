@@ -1247,6 +1247,13 @@ switch(_operation) do {
 
             [_logic,"groups",[_grp],true,true] call BIS_fnc_variableSpaceRemove;
 
+            // Clear pending waypoints BEFORE deleting units - CBA patrol/search
+            // follow-up waypoint statements otherwise fire against a half-deleted
+            // group and spam undefined-variable errors from CBA's internals
+            for "_i" from (count waypoints _grp) - 1 to 0 step -1 do {
+                deleteWaypoint [_grp, _i];
+            };
+
             {deleteVehicle _x} forEach units _grp;
 
             // FIX YOUR FUCKING CODES BIS. FINALLY. AFTER 239475987 gazillion years
@@ -1327,8 +1334,35 @@ switch(_operation) do {
                 [_logic, "delGroup", _grp] call ALiVE_fnc_CQB;
             };
 
-            // position AI
-            _positions = [[_house] call ALiVE_fnc_getBuildingPositions, true] call CBA_fnc_shuffle;
+            // position AI - engine building positions, plus CBA AI Building Positions when the mission has any
+            if (isNil QGVAR(HASCBAPOSITIONS)) then {
+                GVAR(HASCBAPOSITIONS) = !((allMissionObjects "CBA_buildingPos") isEqualTo []);
+            };
+
+            private _housePositions = [_house] call ALiVE_fnc_getBuildingPositions;
+
+            if (GVAR(HASCBAPOSITIONS) && {!(_house isKindOf "CBA_buildingPos")}) then {
+                // CBA_fnc_buildingPositions returns engine buildingPos plus any CBA position
+                // helper objects inside this building's bounding box, in the same world
+                // position space. Additive-only merge: seed with the engine list and add only
+                // genuinely new spots, so an engine position can never be dropped and a helper
+                // placed on top of an engine slot cannot double-book it. Recomputed per spawn
+                // (like the engine list) so a destroyed building never serves stale positions.
+                private _cbaAdded = 0;
+                {
+                    private _candidate = _x;
+                    if ((_housePositions findIf {_x distance _candidate < 0.5}) == -1) then {
+                        _housePositions pushBack _candidate;
+                        _cbaAdded = _cbaAdded + 1;
+                    };
+                } forEach ([_house] call CBA_fnc_buildingPositions);
+
+                if (_cbaAdded > 0 && {_debug}) then {
+                    ["CQB Population: House %1 building positions: %2 engine + %3 CBA AI Building Positions", typeof _house, (count _housePositions) - _cbaAdded, _cbaAdded] call ALiVE_fnc_Dump;
+                };
+            };
+
+            _positions = [_housePositions, true] call CBA_fnc_shuffle;
 
             if (count _positions == 0) exitwith {_args = _grp};
 
@@ -1351,21 +1385,20 @@ switch(_operation) do {
                 } forEach (units _grp);
             };
 
-            {
-                private _unit = _x;
-
+            // Each unit takes its own position from the shuffled list (wrapping when
+            // the group outnumbers the positions). The old loop walked every unit
+            // through ALL positions, stacking the whole group on the last one.
+            private _usablePositions = _positions;
+            if (_strategicPlatforms find (typeof _house) != -1) then {
+                // strategic platforms: only elevated positions qualify
+                _usablePositions = _positions select {(_x select 2) > 1};
+            };
+            if (count _usablePositions > 0) then {
                 {
-                    private _pos = _x;
-                    if (_strategicPlatforms find (typeof _house) != -1) then {  
-                      if (_pos select 2 > 1) then {
-                       _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
-                      }
-                    } else {
-                      _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
-                    };    
-                } foreach _positions;
-
-            } forEach (units _grp);
+                    private _pos = _usablePositions select (_forEachIndex % (count _usablePositions));
+                    _x setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
+                } forEach (units _grp);
+            };
 
 
             // TODO Notify controller to start directing
