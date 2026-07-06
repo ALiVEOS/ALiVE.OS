@@ -1,5 +1,5 @@
 //#define DEBUG_MODE_FULL
-#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\x\alive\addons\mil_c2istar\script_component.hpp"
 SCRIPT(C2ISTAR);
 
 /* ----------------------------------------------------------------------------
@@ -1017,7 +1017,7 @@ switch(_operation) do {
         // (only one C2ISTAR's settings taking effect) is diagnosable
         // without source diving.
         if (!isNil "ALIVE_MIL_C2ISTAR" && {!isNull ALIVE_MIL_C2ISTAR} && {ALIVE_MIL_C2ISTAR != _logic}) then {
-            ["ALiVE_fnc_C2ISTAR WARNING: multiple ALiVE_mil_C2ISTAR modules detected. The singleton global ALIVE_MIL_C2ISTAR is being overwritten - only the last-initialised module's configuration will be active. Place a single C2ISTAR module per mission."] call ALiVE_fnc_DumpR;
+            ["ALiVE_fnc_C2ISTAR WARNING: multiple ALiVE_mil_c2istar modules detected. The singleton global ALIVE_MIL_C2ISTAR is being overwritten - only the last-initialised module's configuration will be active. Place a single C2ISTAR module per mission."] call ALiVE_fnc_DumpR;
         };
         ALIVE_MIL_C2ISTAR = _logic;
 

@@ -3502,7 +3502,7 @@ switch(_operation) do {
                 private _generateTasks = [_logic,"generateTasks"] call MAINCLASS;
                 private _generateSEADTasks = [_logic,"generateSEADTasks"] call MAINCLASS;
                 // Check to see if C2ISTAR is available
-                private _C2ISTARisAvailable = ["ALiVE_mil_C2ISTAR"] call ALiVE_fnc_isModuleAvailable;
+                private _C2ISTARisAvailable = ["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable;
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if(_debug) then {
@@ -3724,7 +3724,7 @@ switch(_operation) do {
         // Check to see if generateTasks
         private _generateTasks = [_logic,"generateTasks"] call MAINCLASS;
         // Check to see if C2ISTAR is available
-        private _C2ISTARisAvailable = ["ALiVE_mil_C2ISTAR"] call ALiVE_fnc_isModuleAvailable;
+        private _C2ISTARisAvailable = ["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable;
 
         // For radio broadcasts
         private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
@@ -5959,7 +5959,7 @@ switch(_operation) do {
                     // Check to see if generateTasks
                     private _generateTasks = [_logic,"generateTasks"] call MAINCLASS;
                     // Check to see if C2ISTAR is available
-                    private _C2ISTARisAvailable = ["ALiVE_mil_C2ISTAR"] call ALiVE_fnc_isModuleAvailable;
+                    private _C2ISTARisAvailable = ["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable;
                     // Send CSAR request
                     if (_generateTasks && _C2ISTARisAvailable) then {
                         [_logic, "requestCSARPlayerTask", _asset] call MAINCLASS;

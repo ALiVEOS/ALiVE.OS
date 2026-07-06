@@ -1,4 +1,4 @@
-#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\x\alive\addons\mil_c2istar\script_component.hpp"
 SCRIPT(taskHandler);
 
 /* ----------------------------------------------------------------------------
@@ -101,9 +101,9 @@ switch (_operation) do {
             [_logic,"tasksBySide",_tasksBySide] call ALIVE_fnc_hashSet;
 
             _autoGenerateSides = [] call ALIVE_fnc_hashCreate;
-            [_autoGenerateSides, "EAST", [[ALiVE_mil_C2ISTAR, "autoGenerateOpfor"] call ALIVE_fnc_C2ISTAR,[ALiVE_mil_C2ISTAR, "autoGenerateOpforEnemyFaction"] call ALIVE_fnc_C2ISTAR]] call ALIVE_fnc_hashSet;
-            [_autoGenerateSides, "WEST", [[ALiVE_mil_C2ISTAR, "autoGenerateBlufor"] call ALIVE_fnc_C2ISTAR,[ALiVE_mil_C2ISTAR, "autoGenerateBluforEnemyFaction"] call ALIVE_fnc_C2ISTAR]] call ALIVE_fnc_hashSet;
-            [_autoGenerateSides, "GUER", [[ALiVE_mil_C2ISTAR, "autoGenerateIndfor"] call ALIVE_fnc_C2ISTAR,[ALiVE_mil_C2ISTAR, "autoGenerateIndforEnemyFaction"] call ALIVE_fnc_C2ISTAR]] call ALIVE_fnc_hashSet;
+            [_autoGenerateSides, "EAST", [[ALiVE_mil_c2istar, "autoGenerateOpfor"] call ALIVE_fnc_C2ISTAR,[ALiVE_mil_c2istar, "autoGenerateOpforEnemyFaction"] call ALIVE_fnc_C2ISTAR]] call ALIVE_fnc_hashSet;
+            [_autoGenerateSides, "WEST", [[ALiVE_mil_c2istar, "autoGenerateBlufor"] call ALIVE_fnc_C2ISTAR,[ALiVE_mil_c2istar, "autoGenerateBluforEnemyFaction"] call ALIVE_fnc_C2ISTAR]] call ALIVE_fnc_hashSet;
+            [_autoGenerateSides, "GUER", [[ALiVE_mil_c2istar, "autoGenerateIndfor"] call ALIVE_fnc_C2ISTAR,[ALiVE_mil_c2istar, "autoGenerateIndforEnemyFaction"] call ALIVE_fnc_C2ISTAR]] call ALIVE_fnc_hashSet;
             [_autoGenerateSides, "CIV", ["None",""]] call ALIVE_fnc_hashSet;
             [_logic,"autoGenerateSides",_autoGenerateSides] call ALIVE_fnc_hashSet;
 

@@ -372,7 +372,7 @@ switch(_operation) do {
                     } else {
                         [_handler, "name",_customName] call ALiVE_fnc_HashSet;
 					};
-                    if (["ALiVE_mil_C2ISTAR"] call ALIVE_fnc_isModuleAvailable) then {
+                    if (["ALiVE_mil_c2istar"] call ALIVE_fnc_isModuleAvailable) then {
                         // G2 intel pipeline setup for each synced C2ISTAR.
                         // Wrapped in a spawn because the waituntil on the
                         // C2ISTAR's startupComplete flag otherwise blocks
@@ -393,7 +393,7 @@ switch(_operation) do {
                         [_logic, _handler, _side] spawn {
                             params ["_logic", "_handler", "_side"];
                             {
-                                if (typeof _x == "ALiVE_mil_C2ISTAR") then {
+                                if (typeof _x == "ALiVE_mil_c2istar") then {
                                     waituntil {_x getVariable ["startupComplete",false]};
                                     // Read opcomIntelSides from the SPECIFIC C2ISTAR
                                     // that's synced to this OPCOM (the foreach

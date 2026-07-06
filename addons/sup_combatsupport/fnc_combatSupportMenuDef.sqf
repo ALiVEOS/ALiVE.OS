@@ -100,7 +100,7 @@ _menus =
                  "",
                  -1,
                  1,
-                 !([QMOD(mil_C2ISTAR)] call ALiVE_fnc_isModuleAvailable) && {_result}
+                 !([QMOD(mil_c2istar)] call ALiVE_fnc_isModuleAvailable) && {_result}
             ]
         ]
     ]

@@ -3,477 +3,477 @@ class CfgFunctions {
         class COMPONENT {
             class C2ISTAR {
                 description = "The main class";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_C2ISTAR.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_C2ISTAR.sqf";
                 RECOMPILE;
             };
             class C2ISTARInit {
                 description = "The module initialisation function";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_C2ISTARInit.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_C2ISTARInit.sqf";
                 RECOMPILE;
             };
             class C2MenuDef {
                 description = "The module menu definition";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_C2MenuDef.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_C2MenuDef.sqf";
                 RECOMPILE;
             };
             class C2TabletOnAction {
                 description = "The module Radio Action function";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_C2TabletOnAction.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_C2TabletOnAction.sqf";
                 RECOMPILE;
             };
             class C2TabletOnLoad {
                 description = "The module tablet on load function";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_C2TabletOnLoad.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_C2TabletOnLoad.sqf";
                 RECOMPILE;
             };
             class C2TabletOnUnLoad {
                 description = "The module tablet on unload function";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_C2TabletOnUnLoad.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_C2TabletOnUnLoad.sqf";
                 RECOMPILE;
             };
             class C2TabletEventToClient {
                 description = "Call the tablet on the client from the server";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_C2TabletEventToClient.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_C2TabletEventToClient.sqf";
                 RECOMPILE;
             };
             class C2OnPlayerConnected {
                 description = "On player connected handler";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_C2OnPlayerConnected.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_C2OnPlayerConnected.sqf";
                 RECOMPILE;
             };
             class taskHandler {
                 description = "Task Handler";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_taskHandler.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_taskHandler.sqf";
                 RECOMPILE;
             };
             class taskHandlerClient {
                 description = "Task Handler Client";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_taskHandlerClient.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_taskHandlerClient.sqf";
                 RECOMPILE;
             };
             class taskHandlerEventToClient {
                 description = "Task Handler Event To Client";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_taskHandlerEventToClient.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_taskHandlerEventToClient.sqf";
                 RECOMPILE;
             };
             class taskHandlerLoadData {
                 description = "Task Handler Load Data";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_taskHandlerLoadData.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_taskHandlerLoadData.sqf";
                 RECOMPILE;
             };
             class taskHandlerSaveData {
                 description = "Task Handler Save Data";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_taskHandlerSaveData.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_taskHandlerSaveData.sqf";
                 RECOMPILE;
             };
             class taskGetSideCluster {
                 description = "Utility get side cluster for tasks";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetSideCluster.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetSideCluster.sqf";
                 RECOMPILE;
             };
             class taskGetSideSectorCompositionPosition {
                 description = "Utility get side sector for tasks";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetSideSectorCompositionPosition.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetSideSectorCompositionPosition.sqf";
                 RECOMPILE;
             };
             class taskGetSideSectorVehicles {
                 description = "Utility get side sector that contains vehicles";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetSideSectorVehicles.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetSideSectorVehicles.sqf";
                 RECOMPILE;
             };
             class taskGetRandomSideVehicleFromSector {
                 description = "Utility get a random vehicle for a side from a sector";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetRandomSideVehicleFromSector.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetRandomSideVehicleFromSector.sqf";
                 RECOMPILE;
             };
             class taskGetSideSectorEntities {
                 description = "Utility get side sector that contains entities";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetSideSectorEntities.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetSideSectorEntities.sqf";
                 RECOMPILE;
             };
             class taskGetRandomSideEntityFromSector {
                 description = "Utility get a random vehicle for a side from a sector";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetRandomSideEntityFromSector.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetRandomSideEntityFromSector.sqf";
                 RECOMPILE;
             };
             class taskGetSectorPosition {
                 description = "Utility get position based on sector data";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetSectorPosition.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetSectorPosition.sqf";
                 RECOMPILE;
             };
             class taskHavePlayersReachedDestination {
                 description = "Utility check if players have reached the destination";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskHavePlayersReachedDestination.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskHavePlayersReachedDestination.sqf";
                 RECOMPILE;
             };
             class taskGetClosestPlayerDistanceToDestination {
                 description = "Utility get the distance of the closest player to the destination";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetClosestPlayerDistanceToDestination.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetClosestPlayerDistanceToDestination.sqf";
                 RECOMPILE;
             };
             class taskGetClosestPlayerToPosition {
                 description = "Utility get the closest player to the position";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetClosestPlayerToPosition.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetClosestPlayerToPosition.sqf";
                 RECOMPILE;
             };
             class taskIsAreaClearOfEnemies {
                 description = "Utility check if there are any enemies in the area";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskIsAreaClearOfEnemies.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskIsAreaClearOfEnemies.sqf";
                 RECOMPILE;
             };
             class taskCreateMarkersForPlayers {
                 description = "Utility mark target position on map";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateMarkersForPlayers.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCreateMarkersForPlayers.sqf";
                 RECOMPILE;
             };
             class taskCreateMarker {
                 description = "Utility create a local marker";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateMarker.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCreateMarker.sqf";
                 RECOMPILE;
             };
             class taskRefreshAoMarker {
                 description = "Show or hide the optional AO ellipse around a task based on its state";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskRefreshAoMarker.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskRefreshAoMarker.sqf";
                 RECOMPILE;
             };
             class taskGetReturnPosition {
                 description = "Resolve the friendly OPCOM main HQ position for tasks with a Return subtask";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetReturnPosition.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetReturnPosition.sqf";
                 RECOMPILE;
             };
             class taskDeleteMarkersForPlayers {
                 description = "Utility delete any markers for players";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskDeleteMarkersForPlayers.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskDeleteMarkersForPlayers.sqf";
                 RECOMPILE;
             };
             class taskDeleteMarkers {
                 description = "Utility delete local markers";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskDeleteMarkers.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskDeleteMarkers.sqf";
                 RECOMPILE;
             };
             class taskLockProfiles {
                 description = "Set busy=true on target profile IDs and register the lock against a taskID";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskLockProfiles.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskLockProfiles.sqf";
                 RECOMPILE;
             };
             class taskReleaseTaskLocks {
                 description = "Clear busy=false on every profile locked under a taskID";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskReleaseTaskLocks.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskReleaseTaskLocks.sqf";
                 RECOMPILE;
             };
             class taskCreateRadioBroadcastForPlayers {
                 description = "Utility broadcast radio message for players";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateRadioBroadcastForPlayers.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCreateRadioBroadcastForPlayers.sqf";
                 RECOMPILE;
             };
             class taskGetNearestLocationName {
                 description = "Utility get the nearest location name";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetNearestLocationName.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetNearestLocationName.sqf";
                 RECOMPILE;
             };
             class taskCreateRandomMilLogisticsEvent {
                 description = "Utility call in a random mil logistics event";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateRandomMilLogisticsEvent.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCreateRandomMilLogisticsEvent.sqf";
                 RECOMPILE;
             };
             class taskCreateVehicleInsertionForUnits {
                 description = "Utility create an insertion vehicle for units";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateVehicleInsertionForUnits.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCreateVehicleInsertionForUnits.sqf";
                 RECOMPILE;
             };
             class taskCreateVehicleExtractionForUnits {
                 description = "Utility create an extraction vehicle for units";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateVehicleExtractionForUnits.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCreateVehicleExtractionForUnits.sqf";
                 RECOMPILE;
             };
             class taskCreateExplosiveProjectile {
                 description = "Utility create an explosive projectile orientate towards an object";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateExplosiveProjectile.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCreateExplosiveProjectile.sqf";
                 RECOMPILE;
             };
             class taskCreateBombardment {
                 description = "Utility create a bombardment of explosives";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateBombardment.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCreateBombardment.sqf";
                 RECOMPILE;
             };
             class taskSpawnOnTopOf {
                 description = "Utility spawn an object on top of another object";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskSpawnOnTopOf.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskSpawnOnTopOf.sqf";
                 RECOMPILE;
             };
             class taskGetNearPlayerVehicles {
                 description = "Utility get near player vehicles";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetNearPlayerVehicles.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetNearPlayerVehicles.sqf";
                 RECOMPILE;
             };
             class taskDoVehiclesHaveRoomForGroup {
                 description = "Utility does any vehicle in an array of vehicles have room for a group";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskDoVehiclesHaveRoomForGroup.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskDoVehiclesHaveRoomForGroup.sqf";
                 RECOMPILE;
             };
             class taskGetVehicleWithMaxRoom {
                 description = "Utility get the vehicle with the biggest amount of room for passengers";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetVehicleWithMaxRoom.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetVehicleWithMaxRoom.sqf";
                 RECOMPILE;
             };
             class taskHaveUnitsLoadedInVehicle {
                 description = "Utility have all the units loaded into the vehicle";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskHaveUnitsLoadedInVehicle.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskHaveUnitsLoadedInVehicle.sqf";
                 RECOMPILE;
             };
             class taskHaveUnitsUnloadedFromVehicle {
                 description = "Utility have all the units unloaded from the vehicle";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskHaveUnitsUnloadedFromVehicle.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskHaveUnitsUnloadedFromVehicle.sqf";
                 RECOMPILE;
             };
             class taskGetStateOfVehicleProfiles {
                 description = "Utility have all the vehicle profiles been destroyed";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetStateOfVehicleProfiles.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetStateOfVehicleProfiles.sqf";
                 RECOMPILE;
             };
             class taskGetStateOfEntityProfiles {
                 description = "Utility have all the entity profiles been destroyed";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetStateOfEntityProfiles.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetStateOfEntityProfiles.sqf";
                 RECOMPILE;
             };
             class taskDestroyEntityProfiles {
                 description = "Utility destroy task-owned entity profiles";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskDestroyEntityProfiles.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskDestroyEntityProfiles.sqf";
                 RECOMPILE;
             };
             class taskGetStateOfObjects {
                 description = "Utility have all the entity profiles been destroyed";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetStateOfObjects.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetStateOfObjects.sqf";
                 RECOMPILE;
             };
             class taskCreateReward {
                 description = "Utility create a reward for task completion";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskCreateReward.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskCreateReward.sqf";
                 RECOMPILE;
             };
             class taskApplyPopulationEffect {
                 description = "Utility apply civilian hostility changes for Hearts and Minds tasks";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskApplyPopulationEffect.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskApplyPopulationEffect.sqf";
                 RECOMPILE;
             };
             class taskGetCivilianSupportState {
                 description = "Utility get or create persistent civilian support state for a settlement";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetCivilianSupportState.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetCivilianSupportState.sqf";
                 RECOMPILE;
             };
             class taskGetCivilianCluster {
                 description = "Utility get a civilian settlement cluster for Hearts and Minds tasking";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetCivilianCluster.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetCivilianCluster.sqf";
                 RECOMPILE;
             };
             class taskSelectAutoGeneratedType {
                 description = "Utility select an autogenerated task type with Hearts and Minds phase awareness";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskSelectAutoGeneratedType.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskSelectAutoGeneratedType.sqf";
                 RECOMPILE;
             };
             class taskGetCivilianClasses {
                 description = "Utility return civilian unit classnames matching the configured Civilian Population faction (with vanilla CIV_F fallback) for Hearts and Minds spawn lists";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetCivilianClasses.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetCivilianClasses.sqf";
                 RECOMPILE;
             };
             class taskGetHVTUnits {
                 description = "Utility return HVT-grade unit classnames (officer / commander / leader / captain) from a faction, with chooseRandomUnits fallback";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetHVTUnits.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetHVTUnits.sqf";
                 RECOMPILE;
             };
             class taskUpdateCivilianSupportState {
                 description = "Utility update persistent civilian support state for Hearts and Minds tasks";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskUpdateCivilianSupportState.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskUpdateCivilianSupportState.sqf";
                 RECOMPILE;
             };
             class taskGetCivicTaskProfile {
                 description = "Utility get civic-state metadata for Hearts and Minds tasks";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetCivicTaskProfile.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetCivicTaskProfile.sqf";
                 RECOMPILE;
             };
             class taskRefreshCivilianSupportState {
                 description = "Utility derive compatibility support fields from the civic-state model";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskRefreshCivilianSupportState.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskRefreshCivilianSupportState.sqf";
                 RECOMPILE;
             };
             class taskGetCivicDebugDescription {
                 description = "Utility build a civic-state debug summary for task descriptions";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetCivicDebugDescription.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetCivicDebugDescription.sqf";
                 RECOMPILE;
             };
             class taskMaybeTriggerRetaliation {
                 description = "Utility apply insurgent backlash against improving settlements";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskMaybeTriggerRetaliation.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskMaybeTriggerRetaliation.sqf";
                 RECOMPILE;
             };
             class taskGetInsurgencyLocation {
                 description = "Utility to find insurgency location from asymetrical opcoms";
-                file = "\x\alive\addons\mil_C2ISTAR\utils\fnc_taskGetInsurgencyLocation.sqf";
+                file = "\x\alive\addons\mil_c2istar\utils\fnc_taskGetInsurgencyLocation.sqf";
                 RECOMPILE;
             };
             class taskMilAssault {
                 description = "Task Mil Assault";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskMilAssault.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskMilAssault.sqf";
                 RECOMPILE;
             };
             class taskCaptureObjective {
                 description = "Task Capture Objective";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskCaptureObjective.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskCaptureObjective.sqf";
                 RECOMPILE;
             };
             class taskMilDefence {
                 description = "Task Mil Defence";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskMilDefence.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskMilDefence.sqf";
                 RECOMPILE;
             };
             class taskCivAssault {
                 description = "Task Civ Assault";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskCivAssault.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskCivAssault.sqf";
                 RECOMPILE;
             };
             class taskAssassination {
                 description = "Task Assassination";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskAssassination.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskAssassination.sqf";
                 RECOMPILE;
             };
             class taskTransportInsertion {
                 description = "Task Transport Insertion";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskTransportInsertion.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskTransportInsertion.sqf";
                 RECOMPILE;
             };
             class taskRescue {
                 description = "Task Rescue";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskRescue.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskRescue.sqf";
                 RECOMPILE;
             };
             class taskCSAR {
                 description = "Task Combat Search and Rescue";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskCSAR.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskCSAR.sqf";
                 RECOMPILE;
             };
             class taskDCA {
                 description = "Task Defensive Counter Air";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskDCA.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskDCA.sqf";
                 RECOMPILE;
             };
             class taskSEAD {
                 description = "Task Suppression of Enemy Air Defenses";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskSEAD.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskSEAD.sqf";
                 RECOMPILE;
             };
             class taskCAS {
                 description = "Task Close Air Support";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskCAS.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskCAS.sqf";
                 RECOMPILE;
             };
             class taskDestroyVehicles {
                 description = "Task Destroy Vehicles";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskDestroyVehicles.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyVehicles.sqf";
                 RECOMPILE;
             };
             class taskDestroyBuilding {
                 description = "Task Destroy Building";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskDestroyBuilding.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyBuilding.sqf";
                 RECOMPILE;
             };
             class taskDestroyInfantry {
                 description = "Task Destroy Infantry";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskDestroyInfantry.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyInfantry.sqf";
                 RECOMPILE;
             };
             class taskSabotageBuilding {
                 description = "Task Destroy Infantry";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskSabotageBuilding.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskSabotageBuilding.sqf";
                 RECOMPILE;
             };
             class taskInsurgencyPatrol {
                 description = "Task Insurgency Patrol";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskInsurgencyPatrol.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskInsurgencyPatrol.sqf";
                 RECOMPILE;
             };
             class taskInsurgencyDestroyAssets {
                 description = "Task Insurgency Destroy Assets";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskInsurgencyDestroyAssets.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskInsurgencyDestroyAssets.sqf";
                 RECOMPILE;
             };
             class taskOCA {
                 description = "Task Offensive Counter Air";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskOCA.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskOCA.sqf";
                 RECOMPILE;
             };
             class taskWiretap {
                 description = "Task Wiretap";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskWiretap.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskWiretap.sqf";
                 RECOMPILE;
             };
             class taskRemoveIED {
                 description = "Task IED Disposal (EOD)";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskRemoveIED.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskRemoveIED.sqf";
                 RECOMPILE;
             };
             class taskAidDelivery {
                 description = "Task Aid Delivery";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskAidDelivery.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskAidDelivery.sqf";
                 RECOMPILE;
             };
             class taskSupplyConvoy {
                 description = "Task Supply Convoy";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskSupplyConvoy.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskSupplyConvoy.sqf";
                 RECOMPILE;
             };
             class taskMeetLocalLeader {
                 description = "Task Meet Local Leader";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskMeetLocalLeader.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskMeetLocalLeader.sqf";
                 RECOMPILE;
             };
             class taskRepairCriticalService {
                 description = "Task Repair Critical Service";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskRepairCriticalService.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskRepairCriticalService.sqf";
                 RECOMPILE;
             };
             class taskMedicalOutreach {
                 description = "Task Medical Outreach";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskMedicalOutreach.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskMedicalOutreach.sqf";
                 RECOMPILE;
             };
             class taskCheckpointPartnership {
                 description = "Task Checkpoint Partnership";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskCheckpointPartnership.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskCheckpointPartnership.sqf";
                 RECOMPILE;
             };
             class taskInformantExfiltration {
                 description = "Task Informant Exfiltration";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskInformantExfiltration.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskInformantExfiltration.sqf";
                 RECOMPILE;
             };
             class taskMarketReopening {
                 description = "Task Market Reopening";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskMarketReopening.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskMarketReopening.sqf";
                 RECOMPILE;
             };
             class taskVIPEscort {
                 description = "Task VIP Escort";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskVIPEscort.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskVIPEscort.sqf";
                 RECOMPILE;
             };
             class taskSecureCommunityEvent {
                 description = "Task Secure Community Event";
-                file = "\x\alive\addons\mil_C2ISTAR\tasks\fnc_taskSecureCommunityEvent.sqf";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskSecureCommunityEvent.sqf";
                 RECOMPILE;
             };
             class taskDisable {
                 description = "Disables generated and/or autogenerated tasks";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_taskDisable.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_taskDisable.sqf";
                 RECOMPILE;
             };
             class playerOrders {
                 description = "Player group OPCOM order helpers";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_playerOrders.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_playerOrders.sqf";
                 RECOMPILE;
             };
             class taskRequest {
                 description = "Requests an autogenerated task";
-                file = "\x\alive\addons\mil_C2ISTAR\fnc_taskRequest.sqf";
+                file = "\x\alive\addons\mil_c2istar\fnc_taskRequest.sqf";
                 RECOMPILE;
             };
 
@@ -482,52 +482,52 @@ class CfgFunctions {
             // ================================================================
             class COPConfig {
                 description = "COP master configuration (tunable globals)";
-                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPConfig.sqf";
+                file = "\x\alive\addons\mil_c2istar\cop\fnc_COPConfig.sqf";
                 RECOMPILE;
             };
             class COPApplyTier {
                 description = "COP tier preset — gates feature/layer flags by commanderIntelMode";
-                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPApplyTier.sqf";
+                file = "\x\alive\addons\mil_c2istar\cop\fnc_COPApplyTier.sqf";
                 RECOMPILE;
             };
             class COPLog {
                 description = "COP four-tier logging dispatcher";
-                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPLog.sqf";
+                file = "\x\alive\addons\mil_c2istar\cop\fnc_COPLog.sqf";
                 RECOMPILE;
             };
             class COPHelpers {
                 description = "COP pure helper functions";
-                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPHelpers.sqf";
+                file = "\x\alive\addons\mil_c2istar\cop\fnc_COPHelpers.sqf";
                 RECOMPILE;
             };
             class COPServer {
                 description = "COP server-side polling loops (enemies + BFT + objectives)";
-                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPServer.sqf";
+                file = "\x\alive\addons\mil_c2istar\cop\fnc_COPServer.sqf";
                 RECOMPILE;
             };
             class COPAsym {
                 description = "COP asymmetric-layer polling loop";
-                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPAsym.sqf";
+                file = "\x\alive\addons\mil_c2istar\cop\fnc_COPAsym.sqf";
                 RECOMPILE;
             };
             class COPClient {
                 description = "COP client init and map Draw EH attach";
-                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPClient.sqf";
+                file = "\x\alive\addons\mil_c2istar\cop\fnc_COPClient.sqf";
                 RECOMPILE;
             };
             class COPRender {
                 description = "COP client-side rendering functions";
-                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPRender.sqf";
+                file = "\x\alive\addons\mil_c2istar\cop\fnc_COPRender.sqf";
                 RECOMPILE;
             };
             class COPDebug {
                 description = "COP debug command router";
-                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPDebug.sqf";
+                file = "\x\alive\addons\mil_c2istar\cop\fnc_COPDebug.sqf";
                 RECOMPILE;
             };
             class COPInit {
                 description = "COP entry-point orchestrator";
-                file = "\x\alive\addons\mil_C2ISTAR\cop\fnc_COPInit.sqf";
+                file = "\x\alive\addons\mil_c2istar\cop\fnc_COPInit.sqf";
                 RECOMPILE;
             };
         };
