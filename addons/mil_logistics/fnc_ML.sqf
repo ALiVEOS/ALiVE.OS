@@ -78,6 +78,8 @@ ARJay & Jman
 // Slingload safe-drop constants
 #define SLINGLOAD_DROP_HEIGHT  3    // metres AGL at which slung load is released (safe fall distance)
 #define SLINGLOAD_DROP_TIMEOUT 180  // seconds to wait for heli to descend before forcing release
+// Airfield departure: a held objective within this range of a fixed runway ILS point qualifies as an airfield departure base
+#define AIRFIELD_OBJECTIVE_RADIUS 1000
 
 private ["_result"];
 
@@ -383,6 +385,20 @@ switch(_operation) do {
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
             _logic setVariable ["limitTransportToFaction", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    case "heliDepartFromAirfield": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["heliDepartFromAirfield", _args];
+        } else {
+            _args = _logic getVariable ["heliDepartFromAirfield", false];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["heliDepartFromAirfield", _args];
         };
         ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
@@ -1270,6 +1286,79 @@ switch(_operation) do {
 
         // Assign to file-level _result so the MAINCLASS caller receives it.
         _result = _nodeResult;
+    };
+
+
+
+    // ============================================================
+    // findNearestFriendlyAirfieldObjective
+    // Finds the held objective sitting on a fixed airfield for use
+    // as a helicopter departure base. Candidate airfields are the
+    // map's primary runway (cfgWorlds ilsPosition) plus every
+    // SecondaryAirports entry; dynamic airports (carriers) are
+    // deliberately excluded and water candidates are skipped. An
+    // objective qualifies when its center is within
+    // AIRFIELD_OBJECTIVE_RADIUS of a candidate runway AND more
+    // than 500m from the delivery destination. Of the qualifiers
+    // the one nearest (2D) the destination is returned.
+    //
+    // Args: [_heldObjectives, _destinationPos]
+    // Returns: [objective, objectiveCenter] or [] if none qualify
+    // ============================================================
+    case "findNearestFriendlyAirfieldObjective": {
+
+        private _heldObjectives = _args select 0;
+        private _destinationPos = _args select 1;
+
+        private _airfieldResult = [];
+
+        // Fixed runway ILS points, padded to 3D
+        private _candidatePositions = [];
+        private _primaryILS = getArray (configFile >> "CfgWorlds" >> worldName >> "ilsPosition");
+        if (count _primaryILS >= 2) then {
+            if (count _primaryILS < 3) then { _primaryILS = _primaryILS + [0]; };
+            _candidatePositions pushBack _primaryILS;
+        };
+        private _secondaryAirports = (configFile >> "CfgWorlds" >> worldName >> "SecondaryAirports");
+        for "_i" from 0 to ((count _secondaryAirports) - 1) do {
+            private _ils = getArray ((_secondaryAirports select _i) >> "ilsPosition");
+            if (count _ils >= 2) then {
+                if (count _ils < 3) then { _ils = _ils + [0]; };
+                _candidatePositions pushBack _ils;
+            };
+        };
+
+        // Skip runway points in the water (broken configs, seaplane bases)
+        _candidatePositions = _candidatePositions select { !surfaceIsWater _x };
+
+        private _bestObjective = nil;
+        private _bestCenter = [];
+        private _bestDist = 1e10;
+
+        {
+            private _objective = _x;
+            private _objCenter = [_objective, "center"] call ALIVE_fnc_hashGet;
+
+            private _onAirfield = false;
+            {
+                if (_objCenter distance2D _x <= AIRFIELD_OBJECTIVE_RADIUS) exitWith { _onAirfield = true; };
+            } forEach _candidatePositions;
+
+            if (_onAirfield && { _objCenter distance2D _destinationPos > 500 }) then {
+                private _dist = _objCenter distance2D _destinationPos;
+                if (_dist < _bestDist) then {
+                    _bestDist      = _dist;
+                    _bestObjective = _objective;
+                    _bestCenter    = _objCenter;
+                };
+            };
+        } forEach _heldObjectives;
+
+        if (!isNil "_bestObjective") then {
+            _airfieldResult = [_bestObjective, _bestCenter];
+        };
+
+        _result = _airfieldResult;
     };
 
 
@@ -2850,6 +2939,7 @@ switch(_operation) do {
 
             _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
+            _heliDepartFromAirfield = [_logic, "heliDepartFromAirfield"] call MAINCLASS;
 
             _startForceStrengthIncrement = [_logic, "startForceStrengthInc"] call MAINCLASS;
             _startForceStrengthIncrementFactor = parseNumber([_logic, "startForceStrengthIncFactor"] call MAINCLASS);
@@ -2871,6 +2961,7 @@ switch(_operation) do {
                 ["ML - Excluded kinds: %1",_excludeKinds] call ALiVE_fnc_dump;
                 ["ML - Enable air transport: %1",_enableAirTransport] call ALiVE_fnc_dump;
                 ["ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALiVE_fnc_dump;
+                ["ML - Helicopters depart from airfields: %1",_heliDepartFromAirfield] call ALiVE_fnc_dump;
                 ["ML - Enable incremental force strength on objective capture: %1",_startForceStrengthIncrement] call ALiVE_fnc_dump;
                 ["ML - Incremental force strength factor: %1",_startForceStrengthIncrementFactor] call ALiVE_fnc_dump;
                 ["ML - Enable decremental force strength on objective loss: %1",_startForceStrengthDecrement] call ALiVE_fnc_dump;
@@ -5227,6 +5318,7 @@ switch(_operation) do {
 
         private _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
         private _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
+        private _heliDepartFromAirfield = [_logic, "heliDepartFromAirfield"] call MAINCLASS;
 
         private _eventID = [_event, "id"] call ALIVE_fnc_hashGet;
         private _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
@@ -5546,6 +5638,12 @@ switch(_operation) do {
                         // 4. Override the delivery destination with the best scored
                         //    objective from findBestDeliveryObjective.
                         // -----------------------------------------------------------------
+                        // Airfield departure override bookkeeping. Declared at this scope
+                        // so the HELI->STANDARD downgrade sites further down can restore
+                        // the baseline departure when the airfield swap was applied.
+                        private _fallbackDeparturePos = [];
+                        private _airfieldDepartureApplied = false;
+
                         // TEST BYPASS: if positions are pinned skip the entire HELI_INSERT
                         // departure base selection and destination scoring block. Positions
                         // are already fixed; running this would override them.
@@ -5809,6 +5907,36 @@ switch(_operation) do {
                                         };
                                     };
 
+                                    // Airfield departure override: launch this insertion from
+                                    // the held objective sitting on a fixed airfield (primary
+                                    // or secondary runway) instead of the supply-line departure
+                                    // base. Combat paradrops keep the default departure.
+                                    if (_heliDepartFromAirfield && _eventType == "HELI_INSERT") then {
+                                        private _airfieldPick = [_logic, "findNearestFriendlyAirfieldObjective", [
+                                            _heldObjectives,
+                                            _destPos
+                                        ]] call MAINCLASS;
+                                        if (count _airfieldPick > 0) then {
+                                            _fallbackDeparturePos = _departurePos;
+                                            _airfieldDepartureApplied = true;
+                                            _departurePos = _airfieldPick select 1;
+                                            // Record the departure on the event so heliTransportReturn
+                                            // sends the helis home to the airfield they launched from.
+                                            [_event, "departurePosition", _departurePos] call ALIVE_fnc_hashSet;
+                                            if (_debug) then {
+                                                ["ML - HELI departure airfield pick: %1 (baseline departure %2), %3m from destination %4",
+                                                    _departurePos, _fallbackDeparturePos, round (_departurePos distance2D _destPos), _destPos] call ALiVE_fnc_dump;
+                                            };
+                                        } else {
+                                            // Clear any pick persisted on an earlier deferred cycle so a
+                                            // baseline departure cannot RTB to a stale airfield.
+                                            [_event, "departurePosition"] call ALIVE_fnc_hashRem;
+                                            if (_debug) then {
+                                                ["ML - HELI departure: airfield attr on, no qualifying airfield objective -- baseline departure kept."] call ALiVE_fnc_dump;
+                                            };
+                                        };
+                                    };
+
                                     // Set departure base and find spawn LZ
                                     _reinforcementPosition = _departurePos;
                                     _remotePosition = [_logic, "prepareHelicopterLZ", [
@@ -5973,7 +6101,12 @@ switch(_operation) do {
                                 _eventForceMotorised  = 0;
                                 _eventForceMechanised = 0;
                                 // If no infantry either, fall back to pure STANDARD
-                                if (_eventForceInfantry == 0) then { _eventType = "STANDARD"; };
+                                if (_eventForceInfantry == 0) then {
+                                    _eventType = "STANDARD";
+                                    // Undo the airfield departure swap so the ground path
+                                    // stages from the baseline supply-line departure.
+                                    if (_airfieldDepartureApplied) then { _reinforcementPosition = _fallbackDeparturePos; };
+                                };
                                 if (_debug) then {
                                     ["ML - Slingload throttle: %1 active slingload ops (max %2). Vehicle groups deferred to ground convoy. Event: %3",
                                         _activeSlingloads, MAX_SLINGLOAD_CONCURRENT, _eventID] call ALiVE_fnc_dump;
@@ -6241,6 +6374,11 @@ switch(_operation) do {
                                         };
                                     };
                                     _eventType = "STANDARD";
+                                    // Undo the airfield departure swap for the ground fallback.
+                                    // Motorised pickup groups were already placed near the
+                                    // departure above and convoy from there; infantry spawned
+                                    // below stages from the baseline departure again.
+                                    if (_airfieldDepartureApplied) then { _reinforcementPosition = _fallbackDeparturePos; };
                                 };
 
                                 // For each group - create helis to carry their vehicles.
@@ -6395,6 +6533,8 @@ switch(_operation) do {
                                 // and are therefore completely unaffected.
                                 ["ML - HELI_INSERT slingload: No air transport assets found for faction=%1 side=%2 (limitToFaction=%3). Check ALIVE_factionDefaultAirTransport / ALIVE_sideDefaultAirTransport registration. Falling back to STANDARD for event %4.", _eventFaction, _side, _limitTransportToFaction, _eventID] call ALiVE_fnc_dump;
                                 _eventType = "STANDARD";
+                                // Undo the airfield departure swap for the ground fallback.
+                                if (_airfieldDepartureApplied) then { _reinforcementPosition = _fallbackDeparturePos; };
                             };
                             _eventTransportProfiles = _transportProfiles;
                             _eventTransportVehiclesProfiles = _transportVehicleProfiles;
@@ -7877,7 +8017,12 @@ switch(_operation) do {
                     // egress in opposite direction of ingress to avoid AI fun time
 
                     private _eventDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
-                    private _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
+                    // Airfield-launched helis RTB to the departure recorded on the
+                    // event; events without the key keep the original derivation.
+                    private _reinforcementPosition = [_event, "departurePosition", []] call ALIVE_fnc_hashGet;
+                    if (count _reinforcementPosition < 2) then {
+                        _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
+                    };
                     // Guard against empty finalDestination
                     private _returnDest = if (count _eventDestination > 1) then {
                         // Bearing FROM destination TOWARD reinforcement position = egress direction
