@@ -101,18 +101,14 @@ class CfgVehicles {
                                 defaultValue = """0.01""";
                                 class Values
                                 {
+                                    // Trimmed from 13 steps to 7 (2026-07-06 audit). Old in-between
+                                    // values still work at runtime; they just have no Eden label.
                                     class CQB_spawn_1 { name = "1%"; value = 0.01; default = 1; };
-                                    class CQB_spawn_2 { name = "2%"; value = 0.02; };
                                     class CQB_spawn_5 { name = "5%"; value = 0.05; };
                                     class CQB_spawn_10 { name = "10%"; value = 0.1; };
-                                    class CQB_spawn_20 { name = "20%"; value = 0.2; };
-                                    class CQB_spawn_30 { name = "30%"; value = 0.3; };
-                                    class CQB_spawn_40 { name = "40%"; value = 0.4; };
+                                    class CQB_spawn_25 { name = "25%"; value = 0.25; };
                                     class CQB_spawn_50 { name = "50%"; value = 0.5; };
-                                    class CQB_spawn_60 { name = "60%"; value = 0.6; };
-                                    class CQB_spawn_70 { name = "70%"; value = 0.7; };
-                                    class CQB_spawn_80 { name = "80%"; value = 0.8; };
-                                    class CQB_spawn_90 { name = "90%"; value = 0.9; };
+                                    class CQB_spawn_75 { name = "75%"; value = 0.75; };
                                     class CQB_spawn_100 { name = "100%"; value = 1; };
                                 };
                         };
@@ -124,11 +120,13 @@ class CfgVehicles {
                                 defaultValue = """99999""";
                                 class Values
                                 {
-                                    class CQB_DENSITY_0 { name = "off"; value = 99999; default = 1; };
-                                    class CQB_DENSITY_2 { name = "very high"; value = 300; };
-                                    class CQB_DENSITY_5 { name = "high"; value = 700; };
-                                    class CQB_DENSITY_10 { name = "medium"; value = 1000; };
-                                    class CQB_DENSITY_20 { name = "low"; value = 2000; };
+                                    // Value = the guaranteed-garrison spacing in metres (see tooltip);
+                                    // 99999 disables the spacing skeleton so Probability governs alone
+                                    class CQB_DENSITY_0 { name = "None - probability only"; value = 99999; default = 1; };
+                                    class CQB_DENSITY_20 { name = "Sparse - roughly every 2000m"; value = 2000; };
+                                    class CQB_DENSITY_10 { name = "Medium - roughly every 1000m"; value = 1000; };
+                                    class CQB_DENSITY_5 { name = "Dense - roughly every 700m"; value = 700; };
+                                    class CQB_DENSITY_2 { name = "Very dense - roughly every 300m"; value = 300; };
                                 };
                         };
                         class CQB_amount : Combo
@@ -142,6 +140,8 @@ class CfgVehicles {
                                     class Solo     { name = "Solo (1)";        value = 1; };
                                     class Pair     { name = "Pair (1-2)";      value = 2; default = 1; };
                                     class Fireteam { name = "Fireteam (1-4)";  value = 4; };
+                                    class Squad    { name = "Squad (1-6)";     value = 6; };
+                                    class Section  { name = "Section (1-8)";   value = 8; };
                                 };
                         };
                         // ---- Filters --------------------------------------------------------
