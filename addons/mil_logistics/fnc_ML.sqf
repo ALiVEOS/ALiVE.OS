@@ -9908,6 +9908,16 @@ switch(_operation) do {
                             _paraDrop = true;
                             // remote position should probably be spawn range - risk of heli getting shot down though too...
                             _remotePosition = [_reinforcementPosition, 1600] call ALIVE_fnc_getPositionDistancePlayers;
+                            // getPositionDistancePlayers can return [] (no player-free sector) or a
+                            // water sector centre -- retry land-only, then fall back to the base
+                            // (same guard as the reinforcement path) so the remote ground spawns
+                            // below always have a usable anchor.
+                            if (count _remotePosition < 2 || {surfaceIsWater _remotePosition}) then {
+                                _remotePosition = [_reinforcementPosition, 1600, 1, true] call ALIVE_fnc_getPositionDistancePlayers;
+                            };
+                            if (count _remotePosition < 2) then {
+                                _remotePosition = _reinforcementPosition;
+                            };
                         }else{
                             _remotePosition = _reinforcementPosition;
                         };
@@ -9952,13 +9962,31 @@ switch(_operation) do {
 
                                 switch(_itemCategory) do {
                                     case "Car":{
+                                        // Ground delivery with players near the departure: spawn the
+                                        // ordered vehicle out of sight instead of chuting it at the
+                                        // base -- via the clear-spot finder (the surfaceIsWater gate
+                                        // above ran on the pre-reassignment base scatter, so a coastal
+                                        // remote anchor needs the finder's own water/clearance checks).
+                                        // Heli-insert keeps the boost (sling pickup runs later).
                                         if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
+                                            if (_eventType == "PR_STANDARD") then {
+                                                _position = [_logic, "prepareHelicopterLZ", [
+                                                    _remotePosition getPos [random(150), random(360)], 80
+                                                ]] call MAINCLASS;
+                                            } else {
+                                                _position set [2,PARADROP_HEIGHT];
+                                            };
                                         };
                                     };
                                     case "Armored":{
                                         if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
+                                            if (_eventType == "PR_STANDARD") then {
+                                                _position = [_logic, "prepareHelicopterLZ", [
+                                                    _remotePosition getPos [random(150), random(360)], 80
+                                                ]] call MAINCLASS;
+                                            } else {
+                                                _position set [2,PARADROP_HEIGHT];
+                                            };
                                         };
                                     };
                                     case "Ship":{
@@ -10222,7 +10250,17 @@ switch(_operation) do {
                                 if(_eventType == "PR_HELI_INSERT") then {
                                     _position = _remotePosition;
                                 }else{
-                                    _position set [2,PARADROP_HEIGHT];
+                                    if (_eventType == "PR_STANDARD") then {
+                                        // Ground delivery with players near the departure: ground-spawn
+                                        // out of sight at the remote anchor via the clear-spot finder --
+                                        // no chute drop at the watched base. Airdrop keeps the boost
+                                        // (those units are repositioned to their carrier later).
+                                        _position = [_logic, "prepareHelicopterLZ", [
+                                            _remotePosition getPos [random(150), random(360)], 80
+                                        ]] call MAINCLASS;
+                                    } else {
+                                        _position set [2,PARADROP_HEIGHT];
+                                    };
                                 };
                             };
 
@@ -10257,7 +10295,17 @@ switch(_operation) do {
                                 if(_eventType == "PR_HELI_INSERT") then {
                                     _position = _remotePosition;
                                 }else{
-                                    _position set [2,PARADROP_HEIGHT];
+                                    if (_eventType == "PR_STANDARD") then {
+                                        // Ground delivery with players near the departure: ground-spawn
+                                        // out of sight at the remote anchor via the clear-spot finder --
+                                        // no chute drop at the watched base. Airdrop keeps the boost
+                                        // (those units are repositioned to their carrier later).
+                                        _position = [_logic, "prepareHelicopterLZ", [
+                                            _remotePosition getPos [random(150), random(360)], 80
+                                        ]] call MAINCLASS;
+                                    } else {
+                                        _position set [2,PARADROP_HEIGHT];
+                                    };
                                 };
                             };
 
@@ -10291,7 +10339,17 @@ switch(_operation) do {
                                 if(_eventType == "PR_HELI_INSERT") then {
                                     _position = _remotePosition;
                                 }else{
-                                    _position set [2,PARADROP_HEIGHT];
+                                    if (_eventType == "PR_STANDARD") then {
+                                        // Ground delivery with players near the departure: ground-spawn
+                                        // out of sight at the remote anchor via the clear-spot finder --
+                                        // no chute drop at the watched base. Airdrop keeps the boost
+                                        // (those units are repositioned to their carrier later).
+                                        _position = [_logic, "prepareHelicopterLZ", [
+                                            _remotePosition getPos [random(150), random(360)], 80
+                                        ]] call MAINCLASS;
+                                    } else {
+                                        _position set [2,PARADROP_HEIGHT];
+                                    };
                                 };
                             };
 
@@ -10498,10 +10556,15 @@ switch(_operation) do {
                             if(count _transportGroups > 0) then {
                                 for "_i" from 0 to (count _infantryProfiles) -1 do {
 
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
+                                    // Players near the departure: spawn the transport out of sight at
+                                    // the same remote anchor as its passengers (boarding is physical
+                                    // when spawned) -- no truck chuting at the watched base.
+                                    if (_paraDrop) then {
+                                        _position = [_logic, "prepareHelicopterLZ", [
+                                            _remotePosition getPos [random(150), random(360)], 80
+                                        ]] call MAINCLASS;
+                                    } else {
+                                        _position = _reinforcementPosition getPos [random(200), random(360)];
                                     };
 
                                     if(count _transportGroups > 0) then {
@@ -10829,10 +10892,14 @@ switch(_operation) do {
 
                                 if(count _transportGroups > 0) then {
 
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
+                                    // Players near the departure: spawn the payload transport out of
+                                    // sight at the remote anchor -- no truck chuting at the watched base.
+                                    if (_paraDrop) then {
+                                        _position = [_logic, "prepareHelicopterLZ", [
+                                            _remotePosition getPos [random(150), random(360)], 80
+                                        ]] call MAINCLASS;
+                                    } else {
+                                        _position = _reinforcementPosition getPos [random(200), random(360)];
                                     };
 
                                     _vehicleClass = selectRandom _transportGroups;
