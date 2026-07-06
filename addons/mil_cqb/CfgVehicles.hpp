@@ -281,7 +281,8 @@ class CfgVehicles {
                                 property = "ALiVE_mil_cqb_CQB_staticWeapons";
                                 displayName = "$STR_ALIVE_CQB_STATICWEAPONS";
                                 tooltip = "$STR_ALIVE_CQB_STATICWEAPONS_COMMENT";
-                                defaultValue = """""";
+                                // "0" = None; an empty default compiled to nil at init and errored
+                                defaultValue = """0""";
                                 class Values
                                 {
                                     class VeryHigh { name = "Very High"; Value = 2; };
