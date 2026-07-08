@@ -3325,6 +3325,18 @@ switch(_operation) do {
                 missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
             };
 
+            // A ground resupply truck can only service a PARKED aircraft. If the asset is an
+            // aircraft that is airborne or taxiing/moving, don't send a truck to chase it -
+            // defer; the resupply watchdog re-triggers once it is back on the ground and still.
+            if (_targetVeh isKindOf "Air" && {((getPosATL _targetVeh) select 2 > 5) || {abs (speed _targetVeh) > 15}}) exitWith {
+                ["LOGCOM_RESUPPLY: %1 is airborne/moving, deferring ground resupply until parked", _callsign] call ALiVE_fnc_dump;
+                _targetVeh setVariable ["ALIVE_resupply_state", "deferred", true];
+                _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
+                _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
+                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+            };
+
             // Multi-ML routing: every ML module receives every LOGCOM_RESUPPLY event.
             // Only the module matching this event's side should handle it. Silent exit for others
             // (matches upstream LOGCOM_REQUEST routing; no activeCount touch - the owning module
@@ -3478,8 +3490,11 @@ switch(_operation) do {
                     if (!isNil "_proc") then {
                         private _wpHash = [] call ALiVE_fnc_hashCreate;
                         [_wpHash, "position", _targetPos] call ALiVE_fnc_hashSet;
-                        private "_prevWp";   // nil: no previous pathfinding waypoint
-                        [ALiVE_Pathfinder, "findPath", [getPosATL _truck, _proc, _wpHash, _prevWp, [_truckGrp], {
+                        // no previous waypoint on this fresh resupply leg. Pass the nil KEYWORD
+                        // directly for the _previousWaypoint slot: a nil-valued variable reference
+                        // there logs a harmless but noisy "Undefined variable _prevWp" every dispatch
+                        // (the pathfinder checks isNil on the slot, so the route is correct either way).
+                        [ALiVE_Pathfinder, "findPath", [getPosATL _truck, _proc, _wpHash, nil, [_truckGrp], {
                             params ["_cbArgs", "_path"];
                             _cbArgs params ["_grp"];
                             if (!isNull _grp && {count _path > 1}) then {
@@ -3525,6 +3540,20 @@ switch(_operation) do {
                             ["LOGCOM_RESUPPLY: Target %1 destroyed, aborting truck", _callsign] call ALiVE_fnc_dump;
                             {deleteVehicle _x} forEach (crew _truck);
                             deleteVehicle _truck;
+                            private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                            missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                        };
+
+                        // Protection: aircraft taxiing / took off en route. A ground truck cannot
+                        // rearm a moving or airborne plane, so abort the chase rather than grind
+                        // after it down the runway (re-triggers via the watchdog once it's parked).
+                        if (_targetVeh isKindOf "Air" && {((getPosATL _targetVeh) select 2 > 5) || {abs (speed _targetVeh) > 15}}) exitWith {
+                            ["LOGCOM_RESUPPLY: %1 airborne/moving, cancelling truck chase", _callsign] call ALiVE_fnc_dump;
+                            {deleteVehicle _x} forEach (crew _truck);
+                            deleteVehicle _truck;
+                            _targetVeh setVariable ["ALIVE_resupply_state", "cancelled", true];
+                            _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
+                            _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
                             private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
                             missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
                         };
