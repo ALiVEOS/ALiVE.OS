@@ -32,6 +32,15 @@ class CfgVehicles {
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['cas_type', _value];";
                                 defaultValue = """B_Heli_Attack_01_F""";
+                        };
+                        class cas_type_custom : Edit
+                        {
+                                property     = "ALiVE_sup_cas_cas_type_custom";
+                                displayName  = "$STR_ALIVE_CAS_TYPE_CUSTOM";
+                                tooltip      = "$STR_ALIVE_CAS_TYPE_CUSTOM_DESC";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['cas_type_custom', _value];";
+                                defaultValue = """""";
                         };
                         class cas_height : Edit { property = "ALiVE_sup_cas_cas_height"; displayName = "$STR_ALIVE_CAS_HEIGHT"; tooltip = "$STR_ALIVE_CAS_HEIGHT_DESC"; defaultValue = """0"""; };
                         class cas_code : Edit { property = "ALiVE_sup_cas_cas_code"; displayName = "$STR_ALIVE_CAS_CODE"; tooltip = "$STR_ALIVE_CAS_CODE_DESC"; defaultValue = """"""; };

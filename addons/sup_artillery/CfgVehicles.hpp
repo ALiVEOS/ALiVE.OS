@@ -32,6 +32,15 @@ class CfgVehicles {
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['artillery_type', _value];";
                                 defaultValue = """B_MBT_01_arty_F""";
+                        };
+                        class artillery_type_custom : Edit
+                        {
+                                property     = "ALiVE_sup_artillery_artillery_type_custom";
+                                displayName  = "$STR_ALIVE_ARTILLERY_TYPE_CUSTOM";
+                                tooltip      = "$STR_ALIVE_ARTILLERY_TYPE_CUSTOM_DESC";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['artillery_type_custom', _value];";
+                                defaultValue = """""";
                         };
                         class HDR_ROUNDS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_artillery_HDR_ROUNDS"; displayName = "ROUNDS"; };
                         class artillery_he : Edit { property = "ALiVE_sup_artillery_artillery_he"; displayName = "$STR_ALIVE_ARTILLERY_HE"; tooltip = "$STR_ALIVE_ARTILLERY_HE_DESC"; defaultValue = """30"""; };

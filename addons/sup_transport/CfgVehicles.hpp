@@ -32,6 +32,15 @@ class CfgVehicles {
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['transport_type', _value];";
                                 defaultValue = """B_Heli_Transport_01_camo_F""";
+                        };
+                        class transport_type_custom : Edit
+                        {
+                                property     = "ALiVE_sup_transport_transport_type_custom";
+                                displayName  = "$STR_ALIVE_TRANSPORT_TYPE_CUSTOM";
+                                tooltip      = "$STR_ALIVE_TRANSPORT_TYPE_CUSTOM_DESC";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['transport_type_custom', _value];";
+                                defaultValue = """""";
                         };
                         class transport_height : Edit { property = "ALiVE_sup_transport_transport_height"; displayName = "$STR_ALIVE_TRANSPORT_HEIGHT"; tooltip = "$STR_ALIVE_TRANSPORT_HEIGHT_DESC"; defaultValue = """0"""; };
                         class transport_code : Edit { property = "ALiVE_sup_transport_transport_code"; displayName = "$STR_ALIVE_TRANSPORT_CODE"; tooltip = "$STR_ALIVE_TRANSPORT_CODE_DESC"; defaultValue = """"""; };

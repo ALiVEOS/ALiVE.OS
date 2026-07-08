@@ -28,6 +28,12 @@
 <Key ID="STR_ALIVE_CAS_TYPE_DESC">
     <English>Pick the vehicle from the list of suitable classes across all loaded factions (use the Side button to narrow the list). Type a classname into the Override field for vehicles the list doesn't show.</English>
 </Key>
+<Key ID="STR_ALIVE_CAS_TYPE_CUSTOM">
+    <English>Custom Vehicle Classname:</English>
+</Key>
+<Key ID="STR_ALIVE_CAS_TYPE_CUSTOM_DESC">
+    <English>Optional override. Type any vehicle classname to use instead of the selection above - when filled it always wins. Use this for vehicles the list doesn't show. Leave empty to use the selection.</English>
+</Key>
 <Key ID="STR_ALIVE_CAS_HEIGHT">
     <English>Spawn Height (m ASL)</English>
 </Key>

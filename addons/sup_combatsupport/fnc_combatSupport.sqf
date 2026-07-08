@@ -289,6 +289,9 @@ switch(_operation) do {
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
                                     _callsign = ((synchronizedObjects _logic) select _i) getvariable ["cas_callsign","EAGLE ONE"];
                                     _type = ((synchronizedObjects _logic) select _i) getvariable ["cas_type","B_Heli_Attack_01_F"];
+                                    // custom classname override always wins when filled
+                                    private _typeCustom = [((synchronizedObjects _logic) select _i) getvariable ["cas_type_custom",""], " ", ""] call CBA_fnc_replace;
+                                    if (_typeCustom != "") then { _type = _typeCustom };
                                     _heightset = ((synchronizedObjects _logic) select _i) getvariable ["cas_height","0"];
                                     _direction =  getDir ((synchronizedObjects _logic) select _i);
                                     _id = [_position] call ALiVE_fnc_getNearestAirportID;
@@ -314,6 +317,9 @@ switch(_operation) do {
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
                                     _callsign = ((synchronizedObjects _logic) select _i) getvariable ["transport_callsign","RODEO TWO"];
                                     _type = ((synchronizedObjects _logic) select _i) getvariable ["transport_type","B_Heli_Transport_01_camo_F"];
+                                    // custom classname override always wins when filled
+                                    private _typeCustom = [((synchronizedObjects _logic) select _i) getvariable ["transport_type_custom",""], " ", ""] call CBA_fnc_replace;
+                                    if (_typeCustom != "") then { _type = _typeCustom };
                                     _heightset = ((synchronizedObjects _logic) select _i) getvariable ["transport_height","0"];
                                     _height = parsenumber(_heightset);
                                     _direction =  getDir ((synchronizedObjects _logic) select _i);
@@ -364,6 +370,9 @@ switch(_operation) do {
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
                                     _callsign = ((synchronizedObjects _logic) select _i) getvariable ["artillery_callsign","FOX SEVEN"];
                                     _class = ((synchronizedObjects _logic) select _i) getvariable ["artillery_type","B_Mortar_01_F"];
+                                    // custom classname override always wins when filled
+                                    private _classCustom = [((synchronizedObjects _logic) select _i) getvariable ["artillery_type_custom",""], " ", ""] call CBA_fnc_replace;
+                                    if (_classCustom != "") then { _class = _classCustom };
                                     _setherounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_he","30"];
                                     _setillumrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_illum","30"];
                                     _setsmokerounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_smoke","30"];
