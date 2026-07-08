@@ -41,8 +41,12 @@ _targets = _pos nearEntities [_classList, _radius];
 } forEach _targets;
 
 // Check to see if weapon is unguided bomb, if so then add a lasertarget to help AI Pilots fire at something...
-if (!(_target isKindOf "LaserTargetBase") && getNumber(configFile >> "CfgWeapon" >> _weapon >> "canLock") == 0 && getText(configFile >> "CfgWeapon" >> _weapon >> "cursorAim") == "bomb" ) then {
-    private _laser = "LaserTargetBase" createVehicle [getpos _target select 0,getpos _target select 1,0];
+// Only auto-lase when a real target was found, and use a laser class the shooter's side can actually see
+if (!isNull _target && {!(_target isKindOf "LaserTargetBase")} && {getNumber(configFile >> "CfgWeapons" >> _weapon >> "canLock") == 0 && getText(configFile >> "CfgWeapons" >> _weapon >> "cursorAim") == "bomb"} ) then {
+    private _lazor = "LaserTargetE";
+    if (side _veh getFriend WEST > 0.6) then {_lazor = "LaserTargetW"};
+    private _laser = _lazor createVehicle [getpos _target select 0,getpos _target select 1,0];
+    _laser setVariable ["NEO_radioAutoLase", true];
     _laser attachto [_target,[0,0,4]];
     _target = _laser;
 };
