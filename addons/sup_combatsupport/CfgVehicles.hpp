@@ -21,10 +21,40 @@ class CfgVehicles {
                 picture = "x\alive\addons\sup_combatsupport\icon_sup_combatsupport.paa";
                 class Attributes : AttributesBase
                 {
-                        class combatsupport_item : Edit { property = "ALiVE_sup_combatsupport_combatsupport_item"; displayName = "$STR_ALIVE_CS_ALLOW"; tooltip = "$STR_ALIVE_CS_ALLOW_COMMENT"; defaultValue = """LaserDesignator"""; };
-                        class combatsupport_casrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_casrespawnlimit"; displayName = "$STR_ALIVE_CAS_LIMIT"; tooltip = "$STR_ALIVE_CAS_LIMIT_COMMENT"; defaultValue = """3"""; };
-                        class combatsupport_transportrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_transportrespawnlimit"; displayName = "$STR_ALIVE_TRANS_LIMIT"; tooltip = "$STR_ALIVE_TRANS_LIMIT_COMMENT"; defaultValue = """3"""; };
-                        class combatsupport_artyrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_artyrespawnlimit"; displayName = "$STR_ALIVE_ARTY_LIMIT"; tooltip = "$STR_ALIVE_ARTY_LIMIT_COMMENT"; defaultValue = """3"""; };
+                        // ---- Access (who can call in support) ----
+                        class combatsupport_item
+                        {
+                                property     = "ALiVE_sup_combatsupport_combatsupport_item";
+                                displayName  = "$STR_ALIVE_CS_ALLOW";
+                                tooltip      = "$STR_ALIVE_CS_ALLOW_COMMENT";
+                                control      = "ALiVE_CSAccessItemsChoice";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['combatsupport_item', _value];";
+                                defaultValue = """LaserDesignators""";
+                        };
+                        class combatsupport_item_custom : Edit
+                        {
+                                property     = "ALiVE_sup_combatsupport_combatsupport_item_custom";
+                                displayName  = "$STR_ALIVE_CS_CUSTOM_ITEMS";
+                                tooltip      = "$STR_ALIVE_CS_CUSTOM_ITEMS_COMMENT";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['combatsupport_item_custom', _value];";
+                                defaultValue = """""";
+                        };
+                        class combatsupport_singleoperator : Combo
+                        {
+                                property = "ALiVE_sup_combatsupport_combatsupport_singleoperator";
+                                displayName = "$STR_ALIVE_CS_SINGLEOP";
+                                tooltip = "$STR_ALIVE_CS_SINGLEOP_COMMENT";
+                                defaultValue = """1""";
+                                class Values
+                                {
+                                    class all { name="All players"; value = 0; };
+                                    class first { name="First player only"; value = 1; default = 1; };
+                                };
+                        };
+
+                        // ---- Asset replacement ----
                         class combatsupport_respawn : Combo
                         {
                                 property = "ALiVE_sup_combatsupport_combatsupport_respawn";
@@ -39,6 +69,11 @@ class CfgVehicles {
                                     class RESPAWN_30 { name="30 Mins"; value = 1800; };
                                 };
                         };
+                        class combatsupport_casrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_casrespawnlimit"; displayName = "$STR_ALIVE_CAS_LIMIT"; tooltip = "$STR_ALIVE_CAS_LIMIT_COMMENT"; defaultValue = """3"""; };
+                        class combatsupport_transportrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_transportrespawnlimit"; displayName = "$STR_ALIVE_TRANS_LIMIT"; tooltip = "$STR_ALIVE_TRANS_LIMIT_COMMENT"; defaultValue = """3"""; };
+                        class combatsupport_artyrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_artyrespawnlimit"; displayName = "$STR_ALIVE_ARTY_LIMIT"; tooltip = "$STR_ALIVE_ARTY_LIMIT_COMMENT"; defaultValue = """3"""; };
+
+                        // ---- Misc ----
                         class combatsupport_audio : Combo
                         {
                                 property = "ALiVE_sup_combatsupport_combatsupport_audio";
@@ -49,18 +84,6 @@ class CfgVehicles {
                                 {
                                     class true { name="Yes"; value = 1; default = 1; };
                                     class false { name="No"; value = 0; };
-                                };
-                        };
-                        class combatsupport_singleoperator : Combo
-                        {
-                                property = "ALiVE_sup_combatsupport_combatsupport_singleoperator";
-                                displayName = "$STR_ALIVE_CS_SINGLEOP";
-                                tooltip = "$STR_ALIVE_CS_SINGLEOP_COMMENT";
-                                defaultValue = """1""";
-                                class Values
-                                {
-                                    class all { name="All players"; value = 0; };
-                                    class first { name="First player only"; value = 1; default = 1; };
                                 };
                         };
                         class ModuleDescription : ModuleDescription {};

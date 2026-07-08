@@ -11,28 +11,29 @@
     <Chinesesimp>现役作战支持系统（空对地/火炮/运输）</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CS_ALLOW">
-    <English>Call in Combat Support with:</English>
-    <Chinesesimp>呼叫作战支援</Chinesesimp>
+    <English>Access Item Categories:</English>
+</Key>
+<Key ID="STR_ALIVE_CS_CUSTOM_ITEMS">
+    <English>Custom Access Items (classnames):</English>
+</Key>
+<Key ID="STR_ALIVE_CS_CUSTOM_ITEMS_COMMENT">
+    <English>Comma-separated list of additional item classnames that should grant Combat Support access on top of the Access Item Categories above. Use this for mod-supplied items that don't fit a registered category (e.g. a custom faction's command tablet, a campaign-specific radio). Classnames are matched literally and case-insensitively against the player's assigned items / uniform / vest / backpack. Example: "MyMod_CommandTablet, AnotherMod_FieldRadio". Leave empty for none.</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_LIMIT_COMMENT">
-    <English>Set the number of times CAS Asssets can be replenished</English>
-    <Chinesesimp>设置可以补充空中支援的次数</Chinesesimp>
+    <English>Total number of times destroyed CAS aircraft can be replaced, shared across all CAS assets. 0 disables replacement.</English>
 </Key>
 <Key ID="STR_ALIVE_CAS_LIMIT">
     <English>CAS Respawn Limit:</English>
     <Chinesesimp>空中支援限额</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TRANS_LIMIT_COMMENT">
-    <English>Set the number of times Transport Asssets can be replenished</English>
-    <Chinesesimp>设置可补充运输支援的次数</Chinesesimp>
+    <English>Total number of times destroyed transport aircraft can be replaced, shared across all transport assets. 0 disables replacement.</English>
 </Key>
 <Key ID="STR_ALIVE_ARTY_LIMIT">
-    <English>Arty Respawn Limit:</English>
-    <Chinesesimp>火炮支援限额</Chinesesimp>
+    <English>Artillery Respawn Limit:</English>
 </Key>
 <Key ID="STR_ALIVE_ARTY_LIMIT_COMMENT">
-    <English>Set the number of times Arty Asssets can be replenished</English>
-    <Chinesesimp>设置Arty可以补充载具的次数</Chinesesimp>
+    <English>Total number of times destroyed artillery batteries can be replaced, shared across all artillery assets. 0 disables replacement.</English>
 </Key>
 <Key ID="STR_ALIVE_CS_AUDIO">
     <English>Radio Messages (Audio):</English>
@@ -47,48 +48,21 @@
     <Chinesesimp>运输支援限额</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CS_RESPAWN_COMMENT">
-    <English>Set the amount of time before the CS Asset is replenished</English>
-    <Chinesesimp>设置运输支援补充前的时间</Chinesesimp>
+    <English>Time before a destroyed CAS, Transport or Artillery asset is replaced.</English>
 </Key>
 <Key ID="STR_ALIVE_CS_RESPAWN">
     <English>Respawn Time:</English>
     <Chinesesimp>支援间隔时间</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CS_ALLOW_COMMENT">
-    <English>Define the item the player must have to be able to use Combat Support i.e "LaserDesignator"</English>
-    <Chinesesimp>定义玩家必须能够使用战斗支援的物品，即“激光指示器”</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_CS_ENABLE">
-    <English>Enable Combat Support</English>
-    <Chinesesimp>启用作战支持</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_CS_ENABLE_COMMENT">
-    <English>Enables the use of Combat Support in Game</English>
-    <Chinesesimp>在游戏中启用作战支持</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_CS_DISABLE">
-    <English>Disable Combat Support</English>
-    <Chinesesimp>禁用作战支持</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_CS_SIDE">
-    <English>Select Side for Combat Support</English>
-    <Chinesesimp>选择战斗支援阵营</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_CS_SIDE_COMMENT">
-    <English>Select Side for Combat Support</English>
-    <Chinesesimp>择战斗支援阵营</Chinesesimp>
-</Key>
-<Key ID="STR_ALIVE_CS_DISABLE_COMMENT">
-    <English>Disable Combat Support in Game</English>
-    <Chinesesimp>在游戏中禁用战斗支持</Chinesesimp>
+    <English>Pick one or more equipment categories. The player can call in Combat Support if they carry any item from any ticked category (e.g. Laser Designators covers vanilla and mod-supplied designator classes). Categories from unloaded mods drop off the list automatically. Defaults to Laser Designators. For mod-supplied items that don't belong to a registered category, use the Custom Access Items (classnames) field below to add their classnames directly.</English>
 </Key>
 <Key ID="STR_ALIVE_CS_ERROR1">
     <English>Only one Combat Support module can be used</English>
     <Chinesesimp>只能使用一个作战支持模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_CS_USAGE">
-    <English>Place Module and set the settings accordingly! Sync to a SUP CAS or SUP Transport Module!</English>
-    <Chinesesimp>放置模块并相应设置！同步到空对地支援或运输支援模块！</Chinesesimp>
+    <English>Place the module and sync it to SUP CAS, SUP Transport and/or SUP Artillery modules.</English>
 </Key>
 <Key ID="STR_ALIVE_CS_SINGLEOP">
     <English>Support Access:</English>

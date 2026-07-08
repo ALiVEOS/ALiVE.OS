@@ -80,7 +80,9 @@ switch(_operation) do {
                         //not publicVariable to clients yet to let it init before
                         NEO_radioLogic = _logic;
 
-                        _CS_Set_Respawn = NEO_radioLogic getvariable ["combatsupport_respawn","3"];
+                        // fallback matches the Eden default (600s = 10 mins) - the old "3" fallback made
+                        // script-created modules respawn destroyed assets after 3 SECONDS
+                        _CS_Set_Respawn = NEO_radioLogic getvariable ["combatsupport_respawn","600"];
                         CS_RESPAWN = parsenumber(_CS_Set_Respawn);
                         _CAS_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_casrespawnlimit","3"];
                         CAS_RESPAWN_LIMIT = parsenumber(_CAS_SET_RESPAWN_LIMIT);
