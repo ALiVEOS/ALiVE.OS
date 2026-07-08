@@ -1,6 +1,6 @@
-//����������������������
+//----------------------
 //Misc
-//����������������������
+//----------------------
 NEO_fnc_smokeColor = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_smokeColor.sqf";
 NEO_fnc_messageBroadcast = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_messageBroadcast.sqf";
 NEO_fnc_callsignFix = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_callsignFix.sqf";
@@ -21,9 +21,9 @@ ALIVE_fnc_RespawnTransportAsset = compile preprocessFileLineNumbers "x\alive\add
 
 ALIVE_fnc_RespawnCASAsset = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_RespawnCASAsset.sqf";
 
-//����������������������
+//----------------------
 //UI
-//����������������������
+//----------------------
 NEO_fnc_radioOnLoad = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\fn_radioOnLoad.sqf";
 NEO_fnc_radioOnUnload = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\fn_radioOnUnload.sqf";
 NEO_fnc_radioLbSelChanged = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\fn_radioLbSelChanged.sqf";
