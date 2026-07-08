@@ -1,4 +1,4 @@
-#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\x\alive\addons\mil_c2istar\script_component.hpp"
 SCRIPT(taskGetStateOfEntityProfiles);
 
 /* ----------------------------------------------------------------------------
@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskProfiles","_profiles","_state","_entityProfile","_active","_vehicle","_units"];
@@ -37,6 +38,14 @@ _state = [] call ALIVE_fnc_hashCreate;
         _active = _entityProfile select 2 select 1;
 
         _profiles pushback _entityProfile;
+
+        // DIAG-STRIP #942: log each checked profile's active/virtual + alive state so a
+        // reporter RPT shows whether a kill is missed because the target is virtualised
+        // (active=false forces allDestroyed=false) or the units are genuinely still alive.
+        if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+            private _diagAlive = if (_active) then { {alive _x} count (_entityProfile select 2 select 21) } else { -1 };
+            ["[C2ISTAR #942 DIAG] taskGetState profile=%1 active=%2 aliveUnits=%3 (-1 = profile virtual)", _x, _active, _diagAlive] call ALIVE_fnc_dump;
+        };
 
         if(_active) then {
 

@@ -40,6 +40,11 @@ ARJay
 
 Selects clusters to be used for civilian population
 
+Optional support for Custom Civ Objective modules lets mission makers use
+hand-placed civilian objectives as civilian-population anchors. This is intended
+for custom-built settlements and unindexed terrains; civilians still require
+valid civilian buildings inside the custom objective radius.
+
 #=================#
 | Contact details |
 #=================#

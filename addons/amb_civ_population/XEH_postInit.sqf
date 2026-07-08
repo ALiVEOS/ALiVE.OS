@@ -30,7 +30,10 @@ if (isServer) then {
             private _type = _logic select 2 select 4;
             if (_type isEqualTo "vehicle") then {
                 private _unit = _logic select 2 select 5; // unit
-                if (!isNull _unit && {alive _unit} && {(_unit isKindOf "LandVehicle" || {_unit isKindOf "Air" || {_unit isKindOf "Ship"}})}) then {
+                // Only cull cars that were spawned WITH a driver (ALiVE_civVehicleHadDriver)
+                // and have since lost it. Intentionally-empty ambient cars are parked decor
+                // culled by distance, not orphans -- skipping them stops the #933 FOV flicker.
+                if (!isNull _unit && {alive _unit} && {_unit getVariable ["ALiVE_civVehicleHadDriver", false]} && {(_unit isKindOf "LandVehicle" || {_unit isKindOf "Air" || {_unit isKindOf "Ship"}})}) then {
                     private _crewAlive = ({alive _x} count (crew _unit)) > 0;
                     if (_crewAlive) then {
                         // Reset orphan timer when a living crew is present
@@ -311,6 +314,25 @@ if (isServer) then {
 //  CLIENT INITIALIZATION
 // ==============================================
 if (hasInterface) then {
+    // JIP / late-join client fallback for the civilian interaction handler.
+    // ALiVE_civInteractHandler is built only inside the civ-population module's function=
+    // body, which BIS_fnc_initModules runs in a one-shot mission-init pass; a client that
+    // joins after (or races) that pass never builds it, so the per-civilian "Talk to
+    // Civilian" addAction wait times out and non-host players get no interaction option
+    // (#937). Rebuild it here from the server-broadcast module logic. Spawned so
+    // fnc_civInteract "init"'s waitUntil {waterItems} can suspend; idempotent via the isNil
+    // guard here plus fnc_civInteract "init"'s own isNil gate (a clean co-join that already
+    // built the handler simply skips the rebuild).
+    if (isNil "ALiVE_civInteractHandler") then {
+        [] spawn {
+            private _waitStart = diag_tickTime;
+            waitUntil { sleep 1; (!isNil "ALiVE_civInteractHandler") || {!isNil "ALiVE_CivInteract_Logic"} || {diag_tickTime - _waitStart > 180} };
+            if (isNil "ALiVE_civInteractHandler" && {!isNil "ALiVE_CivInteract_Logic"}) then {
+                [ALiVE_CivInteract_Logic] call ALiVE_fnc_civInteractInit;
+            };
+        };
+    };
+
     // Stop-on-approach: freeze any nearby civilian and wave once when the
     // local player closes within 2 m, so the scroll-wheel / ACE interact
     // menu can lock on without the civ drifting out of range. Release

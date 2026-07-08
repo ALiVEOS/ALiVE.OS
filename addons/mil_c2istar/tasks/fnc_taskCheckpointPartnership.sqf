@@ -1,4 +1,4 @@
-#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\x\alive\addons\mil_c2istar\script_component.hpp"
 SCRIPT(taskCheckpointPartnership);
 
 /* ----------------------------------------------------------------------------
@@ -385,9 +385,9 @@ switch (_taskState) do {
         private _currentTaskDialog = [_taskDialog, "Setup"] call ALIVE_fnc_hashGet;
         private _losses = [_params] call _getEventLosses;
 
-        if (_lastState != "Setup") then {
+        if !([_params, "chatStartDone_Setup", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Setup"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Setup", true] call ALIVE_fnc_hashSet;
         };
 
         if ((_losses select 0) > 0) then {
@@ -462,9 +462,9 @@ switch (_taskState) do {
         private _vipLosses = _losses select 0;
         private _crowdLosses = _losses select 1;
 
-        if (_lastState != "Secure") then {
+        if !([_params, "chatStartDone_Secure", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Secure"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Secure", true] call ALIVE_fnc_hashSet;
         };
 
         [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "liaison meeting"] call ALIVE_fnc_taskCreateMarkersForPlayers;

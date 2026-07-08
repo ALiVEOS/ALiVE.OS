@@ -4,6 +4,8 @@ private
     "_grp", "_callsign", "_callSignPlayer", "_task", "_marker", "_isPlane", "_pos", "_radius", "_flyInHeight",
     "_Coord","_weapon"
 ];
+// #940 follow-up: in "first player only" mode, only the current operator may dispatch.
+if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { hint localize "STR_ALIVE_CS_NOTOPERATOR"; };
 _display = findDisplay 655555;
 _casUnitLb = _display displayCtrl 655582;
 _casTaskLb = _display displayCtrl 655587;

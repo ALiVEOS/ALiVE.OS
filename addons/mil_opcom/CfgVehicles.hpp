@@ -412,7 +412,7 @@ class CfgVehicles {
                         "ALiVE_mil_placement",
                         "ALiVE_mil_placement_custom",
                         "ALiVE_mil_cqb",
-                        "ALiVE_mil_C2ISTAR",
+                        "ALiVE_mil_c2istar",
                         "ALiVE_mil_ato",
                         "ALiVE_mil_ied",
                         "ALiVE_mil_logistics"
@@ -422,7 +422,7 @@ class CfgVehicles {
                     class ALiVE_mil_placement { description[] = {"$STR_ALIVE_MP_COMMENT","","$STR_ALIVE_MP_USAGE"}; position=0; direction=0; optional=1; duplicate=1; };
                     class ALiVE_mil_placement_custom { description[] = {"$STR_ALIVE_CMP_COMMENT","","$STR_ALIVE_CMP_USAGE"}; position=0; direction=0; optional=1; duplicate=1; };
                     class ALiVE_mil_cqb { description[] = {"$STR_ALIVE_CQB_COMMENT","","$STR_ALIVE_CQB_USAGE"}; position=0; direction=0; optional=1; duplicate=1; };
-                    class ALiVE_mil_C2ISTAR { description[] = {"$STR_ALIVE_C2ISTAR_COMMENT","","$STR_ALIVE_C2ISTAR_USAGE"}; position=0; direction=0; optional=1; duplicate=1; };
+                    class ALiVE_mil_c2istar { description[] = {"$STR_ALIVE_C2ISTAR_COMMENT","","$STR_ALIVE_C2ISTAR_USAGE"}; position=0; direction=0; optional=1; duplicate=1; };
                     class ALiVE_mil_ato { description[] = {"$STR_ALIVE_ATO_COMMENT","","$STR_ALIVE_ATO_USAGE"}; position=0; direction=0; optional=1; duplicate=1; };
                     class ALiVE_mil_ied { description[] = {"$STR_ALIVE_IED_COMMENT","","$STR_ALIVE_IED_USAGE"}; position=0; direction=0; optional=1; duplicate=1; };
                     class ALiVE_mil_logistics { description[] = {"$STR_ALIVE_ML_COMMENT","","$STR_ALIVE_ML_USAGE"}; position=0; direction=0; optional=1; duplicate=1; };

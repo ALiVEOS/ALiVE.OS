@@ -122,8 +122,8 @@ class FSM
                          "_sectionsamount_reserve = [_OPCOM_HANDLER,""sectionsamount_reserve"",1] call ALiVE_fnc_HashGet;" \n
                          "_sectionsamount_defend = [_OPCOM_HANDLER,""sectionsamount_defend"",2] call ALiVE_fnc_HashGet;" \n
                          "_attackSectionTypes = [_OPCOM_HANDLER,""getTaskProfileTypes"",[""attack"",[""infantry"",""motorized"",""mechanized"",""armored""]]] call ALiVE_fnc_OPCOM;" \n
-                         "_defendSectionTypes = [_OPCOM_HANDLER,""getTaskProfileTypes"",[""defend"",[""infantry"",""motorized"",""mechanized"",""armored""]]] call ALiVE_fnc_OPCOM;" \n
-                         "_reserveSectionTypes = [_OPCOM_HANDLER,""getTaskProfileTypes"",[""reserve"",[""infantry"",""motorized"",""mechanized"",""armored""]]] call ALiVE_fnc_OPCOM;" \n
+                         "_defendSectionTypes = [_OPCOM_HANDLER,""getTaskProfileTypes"",[""defend"",[""infantry"",""motorized"",""mechanized"",""armored"",""sea""]]] call ALiVE_fnc_OPCOM;" \n
+                         "_reserveSectionTypes = [_OPCOM_HANDLER,""getTaskProfileTypes"",[""reserve"",[""infantry"",""motorized"",""mechanized"",""armored"",""sea""]]] call ALiVE_fnc_OPCOM;" \n
                          "" \n
                          "_colorside = ""ColorRed"";" \n
                          "switch (_side) do {" \n

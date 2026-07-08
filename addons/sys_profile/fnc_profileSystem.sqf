@@ -27,6 +27,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -160,6 +161,14 @@ switch(_operation) do {
                 [{
                     alive_pathfinder = [nil,"create"] call ALiVE_fnc_pathfinder;
                 },[]] call CBA_fnc_directCall;
+
+                // Apply the Eden debug-draw toggles once the pathfinder exists.
+                // Both default No; drawn routes are coloured per the requesting
+                // profile's side. The admin menu can flip the toggles live.
+                private _drawGrid  = [_logic,"pathfindingDrawGrid"]  call ALIVE_fnc_profileSystem;
+                private _drawPaths = [_logic,"pathfindingDrawPaths"] call ALIVE_fnc_profileSystem;
+                if (_drawPaths) then { [alive_pathfinder,"setDrawPaths",true] call ALiVE_fnc_pathfinder; };
+                if (_drawGrid)  then { [alive_pathfinder,"setDrawGrid", true] call ALiVE_fnc_pathfinder; };
             };
 
             // create the profile handler
@@ -358,20 +367,34 @@ switch(_operation) do {
             _result = _args;
     };
     case "pathfindingSize": {
-            if(typeName _args == "ARRAY") then {
+            // Accept either an explicit [sectorSize, subSectorSize] ARRAY (legacy
+            // SQM / init.sqf override) or an auto-size STRING token
+            // ("auto"/"high"/"med"/"low") resolved from worldSize at grid create.
+            if(typeName _args == "ARRAY" || typeName _args == "STRING") then {
                    [_logic,"pathfindingSize",_args] call ALIVE_fnc_hashSet;
             };
             _result = [_logic,"pathfindingSize"] call ALIVE_fnc_hashGet;
     };
+    case "pathfindingDrawGrid": {
+            if(typeName _args == "BOOL") then {
+                   [_logic,"pathfindingDrawGrid",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"pathfindingDrawGrid",false] call ALIVE_fnc_hashGet;
+    };
+    case "pathfindingDrawPaths": {
+            if(typeName _args == "BOOL") then {
+                   [_logic,"pathfindingDrawPaths",_args] call ALIVE_fnc_hashSet;
+            };
+            _result = [_logic,"pathfindingDrawPaths",false] call ALIVE_fnc_hashGet;
+    };
     case "seaTransport": {
-            if(typeName _args != "BOOL") then {
-                    _args = [_logic,"seaTransport"] call ALIVE_fnc_hashGet;
-            } else {
+            // Sea-transport mode: "auto" / "always" / "never" (STRING). Legacy
+            // "true"/"false" are normalised to always/never in profileSystemInit
+            // before reaching here.
+            if(typeName _args == "STRING") then {
                     [_logic,"seaTransport",_args] call ALIVE_fnc_hashSet;
             };
-            ASSERT_TRUE(typeName _args == "BOOL",str _args);
-
-            _result = _args;
+            _result = [_logic,"seaTransport","auto"] call ALIVE_fnc_hashGet;
     };
     case "plotSectors": {
             if(typeName _args != "BOOL") then {

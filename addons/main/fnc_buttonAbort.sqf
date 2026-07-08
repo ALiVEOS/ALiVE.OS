@@ -401,7 +401,7 @@ _saveServer = {
         };
     };
 
-    if (["ALiVE_mil_C2ISTAR"] call ALiVE_fnc_isModuleAvailable) then {
+    if (["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) then {
 
         private ["_results","_result","_messages"];
 

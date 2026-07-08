@@ -45,12 +45,16 @@ _type = _this select 1;
 if (count _this > 2) then {
     _shell = _this select 2;
 } else {
-    // M_Mo_120mm_AT removed from the pool 2026-05-27: Ares #890 retest
-    // RPT showed the top-down-attack variant returns objNull from
-    // createVehicle ~1/4 detonations, leaving the IED silently inert.
-    // Weight shifted onto its LG cousin. Fallback below also catches
-    // any future unspawnable class.
-    _shell = [["M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[12,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
+    // Pool of ammo classes that DETONATE when spawned static at rest via
+    // createVehicle (#890). The M_Mo_*_AT / _AT_LG mortar rounds the previous
+    // fix used spawn fine (non-null) but are guided/ballistic ammo that just
+    // sits inert with no velocity or lock -> the IED did no damage. Confirmed
+    // by in-game test 2026-05-30: only R_60mm_HE + Bomb_03_F + Bomb_04_F
+    // actually explode on creation; Sh_*_AMOS, G_40mm_HE and all M_Mo_*_AT*
+    // spawn inert. Weighted toward the smaller R_60mm_HE for the common case,
+    // with the two larger bombs rarer. Fallback below still catches any class
+    // that returns objNull.
+    _shell = [["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted;
 };
 
 _proximity = 2 + floor(random 10);
@@ -434,14 +438,6 @@ private _gracePeriod = 15;
                     // above and verified spawnable on the Ares retest.
                     if (isNull _explosionVehicle) then {
                         _explosionVehicle = "R_60mm_HE" createVehicle _explosionPos;
-                    };
-                    // DIAG-STRIP: detonation-block visibility. Kept one
-                    // more build to verify zero null=true outcomes after
-                    // the pool change. Strip with the next DIAG-STRIP
-                    // cleanup pass.
-                    if (_debugLocal) then {
-                        ["ALIVE-%1 IED DIAG: detonating IED at %2 with _shell=%3 -> createVehicle=%4 (null=%5)",
-                            time, _iedPos, _shell, _explosionVehicle, isNull _explosionVehicle] call ALiVE_fnc_dump;
                     };
                     deletevehicle _ied;
                     _detonated = true;

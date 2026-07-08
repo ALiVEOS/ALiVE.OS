@@ -70,9 +70,30 @@ private _selectedLogic = get3DENSelected "logic";
 private _logicObj = if (count _selectedLogic > 0) then { _selectedLogic select 0 } else { objNull };
 
 private _faction = "";
-if (!isNull _logicObj && {_factionVar != ""}) then {
-    private _f = _logicObj getVariable [_factionVar, ""];
-    if (typeName _f == "STRING") then { _faction = _f };
+if (!isNull _logicObj) then {
+    // #917: resolve the module faction for the AA list. mil_placement_custom keeps its
+    // live faction in the multi-select "factions" var ("faction" there is an empty
+    // hidden-legacy slot), so read "factions" first - taking the first faction, the same
+    // one fnc_CMP spawns at runtime - then fall back to the control-supplied single-faction
+    // var (mil_placement uses "faction"). Either may hold a classname or a stringified
+    // array. Previously only _factionVar was read, so mil_placement_custom always fell
+    // through to the BLU_F default below and listed only BLUFOR AA.
+    private _resolveFaction = {
+        params ["_raw"];
+        if (typeName _raw != "STRING" || {_raw == ""}) exitWith { "" };
+        private _s = _raw;
+        _s = [_s, " ", ""] call CBA_fnc_replace;
+        _s = [_s, "[", ""] call CBA_fnc_replace;
+        _s = [_s, "]", ""] call CBA_fnc_replace;
+        _s = [_s, """", ""] call CBA_fnc_replace;
+        private _first = "";
+        { if (_x != "" && {_x != "NONE"}) exitWith { _first = _x } } forEach ([_s, ","] call CBA_fnc_split);
+        _first
+    };
+    _faction = [_logicObj getVariable ["factions", ""]] call _resolveFaction;
+    if (_faction == "" && {_factionVar != ""}) then {
+        _faction = [_logicObj getVariable [_factionVar, ""]] call _resolveFaction;
+    };
 };
 if (_faction == "") then { _faction = "BLU_F" };
 

@@ -8,7 +8,9 @@ Description:
 Returns the list of players within range of a position, including any in planes
 or helicopters. Optionally also includes player-controlled UAVs whose UAV
 position is within a UAV-specific spawn radius (each such UAV is appended
-to the returned list as a spawn-source entity).
+to the returned list as a spawn-source entity). Zeus curators count as
+spawn sources only when the Profile System's "Zeus Spawn Virtual Groups"
+option is enabled; headless clients are never counted.
 
 Parameters:
 Array - Position measuring from
@@ -42,9 +44,16 @@ DEFAULT_PARAM(2,_jetSpawnDistance,0);
 DEFAULT_PARAM(3,_helicopterSpawnDistance,1500);
 DEFAULT_PARAM(4,_uavSpawnDistance,0);
 
-//Change that function below when ZEUS is stable
-_players = allPlayers + allCurators;
-//_players = allPlayers;
+// #918: drop headless clients (they sit in allPlayers) so an HC doesn't trigger spawning
+_players = allPlayers - entities "HeadlessClient_F";
+// Zeus curators count as spawn sources only when the Profile System's
+// "Zeus Spawn Virtual Groups" option is enabled - same gate as
+// ALiVE_fnc_anyPlayersInRangeIncludeAir, so CQB activation and the
+// despawn checks read the same option. No Profile System module placed
+// -> ALIVE_profileSystem is nil -> curators not counted (lazy-eval safe).
+if (!isnil "ALIVE_profileSystem" && { [ALIVE_profileSystem,"zeusSpawn"] call ALiVE_fnc_hashGet }) then {
+    _players append allCurators;
+};
 _InRange = [];
 
 {

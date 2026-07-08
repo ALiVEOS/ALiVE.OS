@@ -145,7 +145,7 @@ ALiVE_SYS_DATA_PNS_AUTOSAVE = _interval spawn {
 			    [] call ALiVE_fnc_MLSaveData;
 			};
 
-			if (["ALiVE_mil_C2ISTAR"] call ALiVE_fnc_isModuleAvailable) then {
+			if (["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) then {
 			    ["SYS DATA PNS Autosave - Server Save Task State"] call ALiVE_fnc_dump;
 			    [] call ALiVE_fnc_taskHandlerSaveData;
 			};

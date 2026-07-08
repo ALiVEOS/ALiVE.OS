@@ -78,6 +78,8 @@ ARJay & Jman
 // Slingload safe-drop constants
 #define SLINGLOAD_DROP_HEIGHT  3    // metres AGL at which slung load is released (safe fall distance)
 #define SLINGLOAD_DROP_TIMEOUT 180  // seconds to wait for heli to descend before forcing release
+// Airfield departure: a held objective within this range of a fixed runway ILS point qualifies as an airfield departure base
+#define AIRFIELD_OBJECTIVE_RADIUS 1000
 
 private ["_result"];
 
@@ -89,6 +91,26 @@ params [
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
 _result = true;
+
+// Reinforcement-in-water fix (#11/#15): snap a position to the nearest land via a ring
+// search outward. Used so air-crew spawns and the heli LZ fallback don't strand over the
+// sea when a coastal objective's insertion point + random offset land offshore. Returns
+// _pos unchanged if it is already on land, or if no land is found within _max metres.
+private _fnc_snapToLand = {
+    params ["_pos", ["_max", 800]];
+    if (!surfaceIsWater _pos) exitWith { _pos };
+    private _land = _pos;
+    private _done = false;
+    for "_r" from 100 to _max step 100 do {
+        for "_a" from 0 to 330 step 30 do {
+            private _p = _pos getPos [_r, _a];
+            if (!surfaceIsWater _p) then { _land = _p; _done = true; };
+            if (_done) exitWith {};
+        };
+        if (_done) exitWith {};
+    };
+    _land
+};
 
 switch(_operation) do {
     default {
@@ -368,6 +390,20 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "heliDepartFromAirfield": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["heliDepartFromAirfield", _args];
+        } else {
+            _args = _logic getVariable ["heliDepartFromAirfield", false];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["heliDepartFromAirfield", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
     case "type": {
         if(typeName _args == "STRING") then {
             _logic setVariable [_operation, parseNumber _args];
@@ -554,9 +590,12 @@ switch(_operation) do {
         };
 
         if (count _clearPos == 0) then {
-            _clearPos = _centerPos;
-            ["ML - prepareHelicopterLZ: WARNING - No clear LZ found after %1 attempts, using original pos %2",
-                LZ_MAX_SEARCH_ATTEMPTS, _centerPos] call ALiVE_fnc_dump;
+            // FIX (reinforcement-in-water): the search exhausted; on a coastal/offshore
+            // insertion the raw centre sits in the sea and the heli would hover there
+            // until the fuel watchdog despawns it. Snap to nearest land (within ~1.2km).
+            _clearPos = [_centerPos, 1200] call _fnc_snapToLand;
+            ["ML - prepareHelicopterLZ: WARNING - No clear LZ found after %1 attempts, using %2 (was-water: %3)",
+                LZ_MAX_SEARCH_ATTEMPTS, _clearPos, surfaceIsWater _centerPos] call ALiVE_fnc_dump;
         };
 
         // Move blocking infantry clear of the chosen LZ
@@ -1252,6 +1291,79 @@ switch(_operation) do {
 
 
     // ============================================================
+    // findNearestFriendlyAirfieldObjective
+    // Finds the held objective sitting on a fixed airfield for use
+    // as a helicopter departure base. Candidate airfields are the
+    // map's primary runway (cfgWorlds ilsPosition) plus every
+    // SecondaryAirports entry; dynamic airports (carriers) are
+    // deliberately excluded and water candidates are skipped. An
+    // objective qualifies when its center is within
+    // AIRFIELD_OBJECTIVE_RADIUS of a candidate runway AND more
+    // than 500m from the delivery destination. Of the qualifiers
+    // the one nearest (2D) the destination is returned.
+    //
+    // Args: [_heldObjectives, _destinationPos]
+    // Returns: [objective, objectiveCenter] or [] if none qualify
+    // ============================================================
+    case "findNearestFriendlyAirfieldObjective": {
+
+        private _heldObjectives = _args select 0;
+        private _destinationPos = _args select 1;
+
+        private _airfieldResult = [];
+
+        // Fixed runway ILS points, padded to 3D
+        private _candidatePositions = [];
+        private _primaryILS = getArray (configFile >> "CfgWorlds" >> worldName >> "ilsPosition");
+        if (count _primaryILS >= 2) then {
+            if (count _primaryILS < 3) then { _primaryILS = _primaryILS + [0]; };
+            _candidatePositions pushBack _primaryILS;
+        };
+        private _secondaryAirports = (configFile >> "CfgWorlds" >> worldName >> "SecondaryAirports");
+        for "_i" from 0 to ((count _secondaryAirports) - 1) do {
+            private _ils = getArray ((_secondaryAirports select _i) >> "ilsPosition");
+            if (count _ils >= 2) then {
+                if (count _ils < 3) then { _ils = _ils + [0]; };
+                _candidatePositions pushBack _ils;
+            };
+        };
+
+        // Skip runway points in the water (broken configs, seaplane bases)
+        _candidatePositions = _candidatePositions select { !surfaceIsWater _x };
+
+        private _bestObjective = nil;
+        private _bestCenter = [];
+        private _bestDist = 1e10;
+
+        {
+            private _objective = _x;
+            private _objCenter = [_objective, "center"] call ALIVE_fnc_hashGet;
+
+            private _onAirfield = false;
+            {
+                if (_objCenter distance2D _x <= AIRFIELD_OBJECTIVE_RADIUS) exitWith { _onAirfield = true; };
+            } forEach _candidatePositions;
+
+            if (_onAirfield && { _objCenter distance2D _destinationPos > 500 }) then {
+                private _dist = _objCenter distance2D _destinationPos;
+                if (_dist < _bestDist) then {
+                    _bestDist      = _dist;
+                    _bestObjective = _objective;
+                    _bestCenter    = _objCenter;
+                };
+            };
+        } forEach _heldObjectives;
+
+        if (!isNil "_bestObjective") then {
+            _airfieldResult = [_bestObjective, _bestCenter];
+        };
+
+        _result = _airfieldResult;
+    };
+
+
+
+    // ============================================================
     // spawnHeliDeliveryWatchdog
     // Monitors a transport heli through its delivery cycle.
     // Only acts when the heli is ACTIVE (spawned near players).
@@ -1408,13 +1520,15 @@ switch(_operation) do {
                             private _slungDisabled = _slungT getVariable ["alive_ml_slung_combat_disabled", false];
                             if (!_slungDisabled) then {
                                 _slungT setVariable ["alive_ml_slung_combat_disabled", true];
+                                if (_dbg) then {
                                 ["[ML-DIAG-SlungCrew] applied combat-disable to slung-truck group: heli=%1 slung=%2 grp=%3 unitCount=%4",
                                     _heli, _slungT, _slungGrp, count (units _slungGrp)] call ALiVE_fnc_dump;
+                                };
                             };
                         };
 
                         // Always log if anyone has bailed; otherwise log every 15s for baseline.
-                        if (count _bailedCrew > 0 || _phaseTimer mod 15 == 0) then {
+                        if (_dbg && {count _bailedCrew > 0 || _phaseTimer mod 15 == 0}) then {
                             ["[ML-DIAG-SlungCrew] heli=%1 phase=%2 t=%3s slung=%4 totalCrew=%5 inside=%6 bailed=%7 driverCmd=%8 grpBehaviour=%9 grpCombatMode=%10",
                                 _heli, _phase, _phaseTimer, _slungT,
                                 count _slungCrew, count _insideCrew, count _bailedCrew,
@@ -1448,7 +1562,12 @@ switch(_operation) do {
                             // pointless 5-minute round trip; the cargo profile remains as
                             // a virtual profile for ALiVE patrol / OPCOM logic to pick up.
                             private _slingValidated = _heli getVariable ["alive_ml_slingvalidated", false];
-                            if (!_slingValidated) then {
+                            // #909: only sling-validate helis that are actually slinging a cargo
+                            // (present in the global sling-cargo map). A troop transport's
+                            // getSlingLoad is always null, so without this gate the watchdog wrongly
+                            // declares it a failed sling and despawns the individuals' carrier.
+                            private _isSlingHeli = (!isNil "ALIVE_ML_slingCargo") && {count (ALIVE_ML_slingCargo getOrDefault [_vProfID, []]) > 0};
+                            if (!_slingValidated && _isSlingHeli) then {
                                 if (!isNull (getSlingLoad _heli)) then {
                                     _heli setVariable ["alive_ml_slingvalidated", true];
                                 } else {
@@ -1473,17 +1592,15 @@ switch(_operation) do {
                                             ["ML - heliDeliveryWatchdog: %1 added '%2' to ALIVE_ML_slingFailedClasses; future slingload picks will skip this class. Blacklist now: %3",
                                                 _tProfID, _failedClass, ALIVE_ML_slingFailedClasses] call ALiVE_fnc_dump;
                                         };
-                                        // Clean up heli + crew
+                                        // Read the heli vehicle profile (+ its slung-truck backref and
+                                        // drop, consumed below) BEFORE deleting the heli + crew: the
+                                        // deletion unregisters the profile, after which getProfile
+                                        // returns nil and the whole cargo-recovery block is skipped.
+                                        // This silently broke recovery for every sling type (#909).
+                                        private _vProfFail = [ALIVE_profileHandler, "getProfile", _vProfID] call ALIVE_fnc_profileHandler;
+                                        // Clean up heli + crew (after the profile read above)
                                         { if (alive _x) then { deleteVehicle _x } } forEach (crew _heli);
                                         if (!isNull _heli) then { deleteVehicle _heli };
-                                        // Clear preventDespawn on heli vehicle + pilot entity
-                                        // profiles so ALiVE doesn't try to re-spawn the heli.
-                                        // Read the slung-truck backref off the heli vehicle
-                                        // profile BEFORE clearing preventDespawn (cosmetic --
-                                        // the order doesn't matter since both reads operate
-                                        // on the same profile object, but keeps the cleanup
-                                        // sequence "read all refs, then mutate / delete").
-                                        private _vProfFail = [ALIVE_profileHandler, "getProfile", _vProfID] call ALIVE_fnc_profileHandler;
                                         if (!isNil "_vProfFail") then {
                                             // Trash the failed cargo: the would-have-been-slung
                                             // truck either spawned physically (still on ground at
@@ -1494,15 +1611,35 @@ switch(_operation) do {
                                             // spawn point with abandoned vehicles. Delete the
                                             // physical truck if any and remove the profile
                                             // entirely so ALiVE doesn't try to manage it later.
-                                            private _truckProfID = [_vProfFail, "alive_ml_sling_truck_profile_id", ""] call ALIVE_fnc_hashGet;
+                                            // #909: cargo link via the spawn-proof global map (keyed by
+                                            // heli vehicle profile id), not the per-profile backref -
+                                            // that doesn't survive the profile rebuild on spawn.
+                                            private _slingEntry = [];
+                                            if (!isNil "ALIVE_ML_slingCargo") then { _slingEntry = ALIVE_ML_slingCargo getOrDefault [_vProfID, []]; };
+                                            private _truckProfID = _slingEntry param [0, ""];
                                             if (_truckProfID != "") then {
                                                 private _truckProf = [ALIVE_profileHandler, "getProfile", _truckProfID] call ALIVE_fnc_profileHandler;
                                                 if (!isNil "_truckProf") then {
-                                                    private _truckObj = _truckProf select 2 select 10;
-                                                    if (!isNull _truckObj) then { deleteVehicle _truckObj };
-                                                    [ALIVE_profileHandler, "removeProfile", _truckProfID] call ALIVE_fnc_profileHandler;
-                                                    ["ML - heliDeliveryWatchdog: %1 trashed failed cargo: removed truck profile %2 (object deleted=%3).",
-                                                        _tProfID, _truckProfID, !isNull _truckObj] call ALiVE_fnc_dump;
+                                                    // #909 Part B: if the delivery stashed a drop position (PR
+                                                    // empty-vehicle slings do), the heli just couldn't sling this
+                                                    // cargo - deliver it to the drop instead of trashing it, so the
+                                                    // player still gets their vehicle. Clearing preventDespawn lets
+                                                    // the profile system manage it normally at the drop.
+                                                    private _dropPos = _slingEntry param [1, []];
+                                                    if (count _dropPos > 0) then {
+                                                        private _truckObj = _truckProf select 2 select 10;
+                                                        if (!isNull _truckObj) then { _truckObj setPosATL _dropPos };
+                                                        [_truckProf, "spawnType", []] call ALIVE_fnc_profileVehicle;
+                                                        [_truckProf, "position", _dropPos] call ALIVE_fnc_profileVehicle;
+                                                        ["ML - heliDeliveryWatchdog: %1 sling failed - delivered cargo %2 to drop %3 instead of trashing.",
+                                                            _tProfID, _truckProfID, _dropPos] call ALiVE_fnc_dump;
+                                                    } else {
+                                                        private _truckObj = _truckProf select 2 select 10;
+                                                        if (!isNull _truckObj) then { deleteVehicle _truckObj };
+                                                        [ALIVE_profileHandler, "removeProfile", _truckProfID] call ALIVE_fnc_profileHandler;
+                                                        ["ML - heliDeliveryWatchdog: %1 trashed failed cargo: removed truck profile %2 (object deleted=%3).",
+                                                            _tProfID, _truckProfID, !isNull _truckObj] call ALiVE_fnc_dump;
+                                                    };
                                                 };
                                             };
 
@@ -1577,8 +1714,10 @@ switch(_operation) do {
                                 { _x disableAI "AUTOTARGET"; _x disableAI "TARGET"; _x disableAI "AUTOCOMBAT"; _x setSkill ["courage", 1]; } forEach (units _grpTER);
 
                                 _heli setVariable ["alive_ml_rtbdepart_pos", getPosATL _heli];
+                                if (_dbg) then {
                                 ["[ML-DIAG-RTBDepart] %1 RTB-issue (TRANSIT early-release) pos=%2 AGL=%3m spd=%4km/h returnPos=%5",
                                     _tProfID, getPosATL _heli, round _heliAGLt, _heliSpdT, _returnPos] call ALiVE_fnc_dump;
+                                };
 
                                 _phase = 3; _phaseTimer = 0;
                                 _heli setVariable ["alive_ml_watchdog_phase", _phase];
@@ -1809,8 +1948,10 @@ switch(_operation) do {
                                 _heli move _returnPos;
 
                                 _heli setVariable ["alive_ml_rtbdepart_pos", getPosATL _heli];
+                                if (_dbg) then {
                                 ["[ML-DIAG-RTBDepart] %1 RTB-issue (early-release) pos=%2 AGL=%3m spd=%4km/h returnPos=%5",
                                     _tProfID, getPosATL _heli, round _heliAGLu, _heliSpdU, _returnPos] call ALiVE_fnc_dump;
+                                };
 
                                 _phase = 3; _phaseTimer = 0;
                                 _heli setVariable ["alive_ml_watchdog_phase", _phase];
@@ -1839,8 +1980,10 @@ switch(_operation) do {
                                 // whether the heli physically departs at watchdog-RTB-time or
                                 // stalls at the LZ until heliTransportReturn fires for all helis.
                                 _heli setVariable ["alive_ml_rtbdepart_pos", getPosATL _heli];
+                                if (_dbg) then {
                                 ["[ML-DIAG-RTBDepart] %1 RTB-issue pos=%2 AGL=%3m spd=%4km/h returnPos=%5",
                                     _tProfID, getPosATL _heli, round _heightAGL, round (speed _heli), _returnPos] call ALiVE_fnc_dump;
+                                };
 
                                 _phase = 3; _phaseTimer = 0;
                                 _heli setVariable ["alive_ml_watchdog_phase", _phase];
@@ -1852,14 +1995,31 @@ switch(_operation) do {
                                 if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 RTB phase, waypoints issued.", _tProfID] call ALiVE_fnc_dump; };
 
                             } else {
-                                if (_phaseTimer > 60) then {
-                                    // Timeout: sling never attached or unload thread never started.
-                                    // Force RTB regardless so the heli doesn't hover indefinitely.
-                                    ["ML - heliDeliveryWatchdog: %1 UNLOAD timeout (slungAttached=%2 unloadActive=%3) class=%4 side=%5 near=%6 AGL=%7m spd=%8km/h pos=%9, forcing RTB.",
-                                        _tProfID, _slungAttached, _unloadActive,
-                                        typeOf _heli, str side (driver _heli),
-                                        ([getPos _heli] call ALIVE_fnc_taskGetNearestLocationName),
-                                        round _heliAGLu, _heliSpdU, getPosATL _heli] call ALiVE_fnc_dump;
+                                // #909 follow-up: separate troop transports from slingers here. A troop
+                                // transport isn't in the sling-cargo map, so getSlingLoad stays null and
+                                // alive_ml_sling_unload_active is never set - it can never satisfy the
+                                // sling-release gate above and used to sit in UNLOAD until the 60s timeout,
+                                // logging a misleading "UNLOAD timeout" even though the troops deployed
+                                // fine. RTB as soon as the troops are physically out of the cargo seats
+                                // (unloadTransportHelicopter ejects them on its own thread after landing),
+                                // with the 60s as a backstop. A genuine sling that failed to attach (in
+                                // the map but getSlingLoad still null) still times out at 60s.
+                                private _isSlingHeli = (!isNil "ALIVE_ML_slingCargo") && {count (ALIVE_ML_slingCargo getOrDefault [_vProfID, []]) > 0};
+                                private _troopsClear = (!_isSlingHeli) && {(count (fullCrew [_heli, "cargo", false])) == 0};
+                                if (_troopsClear || _phaseTimer > 60) then {
+                                    if (_isSlingHeli) then {
+                                        // Timeout: sling never attached or unload thread never started.
+                                        // Force RTB regardless so the heli doesn't hover indefinitely.
+                                        ["ML - heliDeliveryWatchdog: %1 UNLOAD timeout (slungAttached=%2 unloadActive=%3) class=%4 side=%5 near=%6 AGL=%7m spd=%8km/h pos=%9, forcing RTB.",
+                                            _tProfID, _slungAttached, _unloadActive,
+                                            typeOf _heli, str side (driver _heli),
+                                            ([getPos _heli] call ALIVE_fnc_taskGetNearestLocationName),
+                                            round _heliAGLu, _heliSpdU, getPosATL _heli] call ALiVE_fnc_dump;
+                                    } else {
+                                        if (_dbg) then {
+                                            ["ML - heliDeliveryWatchdog: %1 troops disembarked (cargo seats clear at t=%2s), RTB.", _tProfID, _phaseTimer] call ALiVE_fnc_dump;
+                                        };
+                                    };
 
                                     // If the sling is still attached, release it directly here.
                                     // unloadTransportHelicopter cannot reach the vehicle object
@@ -1921,8 +2081,10 @@ switch(_operation) do {
                                     // [ML-DIAG-RTBDepart] capture transition pos for distance-traveled
                                     // tracking (timeout-path twin of the normal phase-2->3 entry).
                                     _heli setVariable ["alive_ml_rtbdepart_pos", getPosATL _heli];
+                                    if (_dbg) then {
                                     ["[ML-DIAG-RTBDepart] %1 RTB-issue (timeout-path) pos=%2 AGL=%3m spd=%4km/h returnPos=%5",
                                         _tProfID, getPosATL _heli, round _heliAGLu, _heliSpdU, _returnPos] call ALiVE_fnc_dump;
+                                    };
 
                                     _phase = 3; _phaseTimer = 0;
                                     _heli setVariable ["alive_ml_watchdog_phase", _phase];
@@ -1966,6 +2128,7 @@ switch(_operation) do {
                             // alongside the per-tick forceSpeed/setSpeedMode calls above.
                             // Confirms whether speed-spam is fighting engine route-finding.
                             private _expectedDest = expectedDestination (driver _heli);
+                            if (_dbg) then {
                             ["[ML-DIAG-Climb] %1 t=%2s dist=%3m AGL=%4m spd=%5km/h behaviour=%6 combatBehaviour=%7 currentCommand=%8 expectedDest=%9 returnPos=%10",
                                 _tProfID, _phaseTimer,
                                 round _distFromDest, round _heliAGLr, _heliSpdR,
@@ -1973,12 +2136,13 @@ switch(_operation) do {
                                 combatBehaviour (group (driver _heli)),
                                 currentCommand (driver _heli),
                                 _expectedDest, _returnPos] call ALiVE_fnc_dump;
+                            };
                             // [ML-DIAG-RTBDepart] distance traveled from the RTB-issue position.
                             // If this stays near zero through phase 3 the heli is stalling at the
                             // LZ until heliTransportReturn fires for all helis; if it grows, the
                             // heli is departing independently per its own watchdog.
                             private _rtbIssuePos = _heli getVariable ["alive_ml_rtbdepart_pos", []];
-                            if (count _rtbIssuePos > 1) then {
+                            if (_dbg && {count _rtbIssuePos > 1}) then {
                                 private _distFromIssue = (getPosATL _heli) distance2D _rtbIssuePos;
                                 ["[ML-DIAG-RTBDepart] %1 t=%2s distFromIssue=%3m distFromDest=%4m AGL=%5m spd=%6km/h",
                                     _tProfID, _phaseTimer, round _distFromIssue,
@@ -1997,8 +2161,10 @@ switch(_operation) do {
                                 // fnc_profileEntity moveOut's crew before deleteVehicle - this catches
                                 // the actual sequence.
                                 private _diagCrew0 = +(crew _heli);
+                                if (_dbg) then {
                                 ["[ML-DIAG-RTBDespawn] %1 pre-clear crew=%2 heliPos=%3 heliAGL=%4m",
                                     _tProfID, _diagCrew0, getPosATL _heli, round _heliAGLr] call ALiVE_fnc_dump;
+                                };
 
                                 // Issue #2 fix: pre-emptively delete all crew AND the heli vehicle
                                 // before clearing preventDespawn. ALiVE virtualisation only moveOut's
@@ -2021,8 +2187,11 @@ switch(_operation) do {
                                 if (!isNull _heli) then {
                                     deleteVehicle _heli;
                                 };
+                                if (_dbg) then {
                                 ["[ML-DIAG-RTBDespawn] %1 deleted %2 of %3 crew + heli before preventDespawn-clear",
                                     _tProfID, _crewDeleted, count _diagCrew0] call ALiVE_fnc_dump;
+                                };
+                                if (_dbg) then {
                                 [_tProfID, _heli, _diagCrew0] spawn {
                                     private _id    = _this select 0;
                                     private _h     = _this select 1;
@@ -2046,6 +2215,7 @@ switch(_operation) do {
                                     };
                                     ["[ML-DIAG-RTBDespawn] %1 watcher exit at t=%2s heliAlive=%3 heliNull=%4",
                                         _id, _t, !isNull _h && {alive _h}, isNull _h] call ALiVE_fnc_dump;
+                                };
                                 };
 
                                 // Clear preventDespawn on heli vehicle and pilot entity profiles.
@@ -2505,7 +2675,13 @@ switch(_operation) do {
                             // so ALiVE will spawn them (out-of-range spawn silently fails),
                             // then physically place them in parachutes.
                             // -------------------------------------------------------
-                            private _heliPos = getPos _heli2;  // ground-level x,y beneath heli
+                            // Spawn the infantry profile at GROUND level beneath the heli. getPos
+                            // returns AGL (~350m at drop height); a spawn Z >300m makes the profile
+                            // system fire its OWN native paradrop (fnc_profileEntity.sqf:1071), and
+                            // the moveInDriver loop below then re-chutes the unit -- leaving the
+                            // native chute empty (the stray no-unit chutes the tester saw). (#944)
+                            private _heliPos = getPos _heli2;
+                            _heliPos set [2, 0];
                             [_infProfile, "position", _heliPos] call ALIVE_fnc_profileEntity;
 
                             // Remove vehicle assignment before spawning. Infantry profiles
@@ -2683,6 +2859,25 @@ switch(_operation) do {
                         };
                     };
                 } forEach _infantryIDs;
+
+                // Post-drop egress: both drop paths can leave a SPAWNED carrier with no
+                // movement order (the active path's last order is the overshoot point,
+                // the force-spawn path never issues one). It then hovers motionless in
+                // player view until heliParadropReturn's RTB waypoints land 20-30s+
+                // later (10s monitor ticks + async pathfinding). Issue an interim move
+                // toward the return base so the carrier is always flying;
+                // heliParadropReturn overwrites it with the proper egress route.
+                private _vpEnd = if (_vProfID != "") then {
+                    [ALIVE_profileHandler, "getProfile", _vProfID] call ALIVE_fnc_profileHandler
+                } else { nil };
+                private _heliEnd = if (!isNil "_vpEnd") then { _vpEnd select 2 select 10 } else { objNull };
+                if (!isNull _heliEnd && {alive _heliEnd} && {!isNil "_returnPos"} && {count _returnPos > 1}) then {
+                    _heliEnd flyInHeight PARADROP_HEIGHT;
+                    _heliEnd move _returnPos;
+                    ["ML - heliParadropWatchdog: %1 post-drop egress move toward %2 issued.",
+                        _tProfID, _returnPos] call ALiVE_fnc_dump;
+                };
+
                 _dropped = true;
                 ["ML - heliParadropWatchdog: %1 drop phase complete. dropped=%2 groups=%3",
                     _tProfID, _dropped, count _infantryIDs] call ALiVE_fnc_dump;
@@ -2744,6 +2939,7 @@ switch(_operation) do {
 
             _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
             _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
+            _heliDepartFromAirfield = [_logic, "heliDepartFromAirfield"] call MAINCLASS;
 
             _startForceStrengthIncrement = [_logic, "startForceStrengthInc"] call MAINCLASS;
             _startForceStrengthIncrementFactor = parseNumber([_logic, "startForceStrengthIncFactor"] call MAINCLASS);
@@ -2765,6 +2961,7 @@ switch(_operation) do {
                 ["ML - Excluded kinds: %1",_excludeKinds] call ALiVE_fnc_dump;
                 ["ML - Enable air transport: %1",_enableAirTransport] call ALiVE_fnc_dump;
                 ["ML - Limit air assets to faction only: %1",_limitTransportToFaction] call ALiVE_fnc_dump;
+                ["ML - Helicopters depart from airfields: %1",_heliDepartFromAirfield] call ALiVE_fnc_dump;
                 ["ML - Enable incremental force strength on objective capture: %1",_startForceStrengthIncrement] call ALiVE_fnc_dump;
                 ["ML - Incremental force strength factor: %1",_startForceStrengthIncrementFactor] call ALiVE_fnc_dump;
                 ["ML - Enable decremental force strength on objective loss: %1",_startForceStrengthDecrement] call ALiVE_fnc_dump;
@@ -2780,6 +2977,16 @@ switch(_operation) do {
             // between full replace (default; matches the legacy init.sqf
             // hashSet override pattern) and append (extend stock factions
             // with mod classes without dropping existing entries).
+            // The custom-transport overrides below merge into the static-data registries
+            // (ALIVE_factionDefaultTransport / ...AirTransport / ...Containers). Those registries are
+            // created + populated by staticData.sqf (Logistics.hpp), loaded lazily via
+            // ALiVE_fnc_staticDataHandler by whichever registry-using module inits first. mil_logistics
+            // never triggered that load itself, so on an unlucky init order it could reach the override
+            // before the registry existed -> resolveFactionStaticChoice hit its nil-registry guard and
+            // the override silently no-op'd (empty air/land pools despite a valid customAirTransport).
+            // Load-and-wait here first, exactly as mil_placement / sys_logistics / mil_c2istar do.
+            call ALiVE_fnc_staticDataHandler;
+
             private _customMode = _logic getVariable ["customStaticDataMode", "REPLACE"];
             private _customLand = _logic getVariable ["customLandTransport", ""];
             private _customAir  = _logic getVariable ["customAirTransport", ""];
@@ -3260,6 +3467,33 @@ switch(_operation) do {
                 _wp setWaypointType "MOVE";
                 _wp setWaypointSpeed "FULL";
                 _wp setWaypointBehaviour "SAFE";
+
+                // Pathfinding: when ALiVE's pathfinder is available, route the truck
+                // on a road-preferring, water-avoiding path instead of the engine's
+                // straight-line AI route. The direct waypoint above is the immediate
+                // route + fallback; the pathfinder result (async) replaces it with
+                // road/water-aware waypoints when it arrives a moment later.
+                if (!isNil "ALiVE_Pathfinder") then {
+                    private _proc = [ALiVE_Pathfinder, "getPathfindingProcedure", ["LandRoad", "default"]] call ALiVE_fnc_pathfinder;
+                    if (!isNil "_proc") then {
+                        private _wpHash = [] call ALiVE_fnc_hashCreate;
+                        [_wpHash, "position", _targetPos] call ALiVE_fnc_hashSet;
+                        private "_prevWp";   // nil: no previous pathfinding waypoint
+                        [ALiVE_Pathfinder, "findPath", [getPosATL _truck, _proc, _wpHash, _prevWp, [_truckGrp], {
+                            params ["_cbArgs", "_path"];
+                            _cbArgs params ["_grp"];
+                            if (!isNull _grp && {count _path > 1}) then {
+                                while {count (waypoints _grp) > 1} do { deleteWaypoint ((waypoints _grp) select 1); };
+                                {
+                                    private _pw = _grp addWaypoint [_x, 10];
+                                    _pw setWaypointType "MOVE";
+                                    _pw setWaypointSpeed "FULL";
+                                    _pw setWaypointBehaviour "SAFE";
+                                } forEach _path;
+                            };
+                        }]] call ALiVE_fnc_pathfinder;
+                    };
+                };
 
                 // Store reference on target vehicle for marker display.
                 _targetVeh setVariable ["ALIVE_resupply_vehicle", _truck, true];
@@ -5084,6 +5318,7 @@ switch(_operation) do {
 
         private _enableAirTransport = [_logic, "enableAirTransport"] call MAINCLASS;
         private _limitTransportToFaction = [_logic, "limitTransportToFaction"] call MAINCLASS;
+        private _heliDepartFromAirfield = [_logic, "heliDepartFromAirfield"] call MAINCLASS;
 
         private _eventID = [_event, "id"] call ALIVE_fnc_hashGet;
         private _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
@@ -5374,6 +5609,17 @@ switch(_operation) do {
                         if(_playersInRange > 0) then {
                             _paraDrop = true;
                             _remotePosition = [_reinforcementPosition, 2000] call ALIVE_fnc_getPositionDistancePlayers;
+                            // getPositionDistancePlayers can return [] (no player-free sector
+                            // found) or a water sector centre (no land filter by default).
+                            // Either would break the STANDARD remote ground spawn below --
+                            // the surfaceIsWater guards at the spawn sites would silently
+                            // skip whole groups. Retry land-only, then fall back to the base.
+                            if (count _remotePosition < 2 || {surfaceIsWater _remotePosition}) then {
+                                _remotePosition = [_reinforcementPosition, 2000, 1, true] call ALIVE_fnc_getPositionDistancePlayers;
+                            };
+                            if (count _remotePosition < 2) then {
+                                _remotePosition = _reinforcementPosition;
+                            };
                         };
 
                         // -----------------------------------------------------------------
@@ -5392,6 +5638,12 @@ switch(_operation) do {
                         // 4. Override the delivery destination with the best scored
                         //    objective from findBestDeliveryObjective.
                         // -----------------------------------------------------------------
+                        // Airfield departure override bookkeeping. Declared at this scope
+                        // so the HELI->STANDARD downgrade sites further down can restore
+                        // the baseline departure when the airfield swap was applied.
+                        private _fallbackDeparturePos = [];
+                        private _airfieldDepartureApplied = false;
+
                         // TEST BYPASS: if positions are pinned skip the entire HELI_INSERT
                         // departure base selection and destination scoring block. Positions
                         // are already fixed; running this would override them.
@@ -5623,14 +5875,64 @@ switch(_operation) do {
                                     if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) then {
                                         ["ML - TEST BYPASS: Preserving eventType=%1, skipping PARADROP/INSERT enemy score check.", _eventType] call ALiVE_fnc_dump;
                                     } else {
-                                        if (_scoredEnemyCount > 0 || _scoredObjState in ["attack","capture"]) then {
+                                        // Virtual-aware enemy count at the FINAL destination.
+                                        // findBestDeliveryObjective's count uses nearEntities and
+                                        // is blind to virtualised profiles, and tacom_state
+                                        // "attack"/"capture" only means friendly TACOM is sending
+                                        // units there, not that enemies hold it -- that proxy fired
+                                        // combat drops into genuinely clear LZs. Count spawned
+                                        // units AND virtual profiles instead (same two-source idiom
+                                        // as ALiVE_fnc_isHeldObjective). Also covers the <=2 held
+                                        // objectives path where scoring never runs.
+                                        private _sideObjDZ = [_side] call ALIVE_fnc_sideTextToObject;
+                                        private _dzNearUnits = _destPos nearEntities [["Man","Car","Tank"], 500];
+                                        private _dzEnemyNear = _dzNearUnits select { side _x != _sideObjDZ && side _x != civilian };
+                                        // getNearProfiles' categorySide takes side text strings ("EAST"/"WEST"/"GUER"), not side objects.
+                                        private _dzEnemySides = ["EAST","WEST","GUER"] - [_side];
+                                        private _dzEnemyProfiles = [_destPos, 500, [_dzEnemySides, "entity"], true] call ALIVE_fnc_getNearProfiles;
+                                        _dzEnemyProfiles = _dzEnemyProfiles select {
+                                            ((_x select 2 select 3) != "CIV") && {(_x select 2 select 3) != "CIVILIAN"}
+                                        };
+                                        private _dzEnemyCount = (count _dzEnemyNear) + (count _dzEnemyProfiles);
+
+                                        if (_scoredEnemyCount > 0 || _dzEnemyCount > 0) then {
                                             _eventType = "HELI_PARADROP";
-                                            ["ML - HELI_PARADROP selected: enemy=%1 objState=%2 at destination.",
-                                                _scoredEnemyCount, _scoredObjState] call ALiVE_fnc_dump;
+                                            ["ML - HELI_PARADROP selected: enemy=%1 dzEnemy=%2 objState=%3 at destination.",
+                                                _scoredEnemyCount, _dzEnemyCount, _scoredObjState] call ALiVE_fnc_dump;
                                         } else {
                                             if (_debug) then {
-                                                ["ML - HELI_INSERT confirmed: enemy=%1 objState=%2 at destination. LZ clear.",
-                                                    _scoredEnemyCount, _scoredObjState] call ALiVE_fnc_dump;
+                                                ["ML - HELI_INSERT confirmed: enemy=%1 dzEnemy=%2 objState=%3 at destination. LZ clear.",
+                                                    _scoredEnemyCount, _dzEnemyCount, _scoredObjState] call ALiVE_fnc_dump;
+                                            };
+                                        };
+                                    };
+
+                                    // Airfield departure override: launch this insertion from
+                                    // the held objective sitting on a fixed airfield (primary
+                                    // or secondary runway) instead of the supply-line departure
+                                    // base. Combat paradrops keep the default departure.
+                                    if (_heliDepartFromAirfield && _eventType == "HELI_INSERT") then {
+                                        private _airfieldPick = [_logic, "findNearestFriendlyAirfieldObjective", [
+                                            _heldObjectives,
+                                            _destPos
+                                        ]] call MAINCLASS;
+                                        if (count _airfieldPick > 0) then {
+                                            _fallbackDeparturePos = _departurePos;
+                                            _airfieldDepartureApplied = true;
+                                            _departurePos = _airfieldPick select 1;
+                                            // Record the departure on the event so heliTransportReturn
+                                            // sends the helis home to the airfield they launched from.
+                                            [_event, "departurePosition", _departurePos] call ALIVE_fnc_hashSet;
+                                            if (_debug) then {
+                                                ["ML - HELI departure airfield pick: %1 (baseline departure %2), %3m from destination %4",
+                                                    _departurePos, _fallbackDeparturePos, round (_departurePos distance2D _destPos), _destPos] call ALiVE_fnc_dump;
+                                            };
+                                        } else {
+                                            // Clear any pick persisted on an earlier deferred cycle so a
+                                            // baseline departure cannot RTB to a stale airfield.
+                                            [_event, "departurePosition"] call ALIVE_fnc_hashRem;
+                                            if (_debug) then {
+                                                ["ML - HELI departure: airfield attr on, no qualifying airfield objective -- baseline departure kept."] call ALiVE_fnc_dump;
                                             };
                                         };
                                     };
@@ -5691,6 +5993,19 @@ switch(_operation) do {
                             if (!_paraDrop) then {
                                 _remotePosition = _reinforcementPosition;
                             };
+                        };
+
+                        // Nil guard: the HELI_INSERT->STANDARD timeout fallbacks above can
+                        // exit without assigning _remotePosition when !_paraDrop. The
+                        // dedicated plane/heli asset spawns and the remote ground spawn
+                        // below read it unconditionally.
+                        if (isNil "_remotePosition") then {
+                            _remotePosition = _reinforcementPosition;
+                        };
+
+                        if (_paraDrop && _eventType == "STANDARD") then {
+                            ["ML - STANDARD delivery: players within 500m of departure. Ground-spawning out of sight at remote anchor %1 (base %2). No paradrop.",
+                                _remotePosition, _reinforcementPosition] call ALiVE_fnc_dump;
                         };
                         // -----------------------------------------------------------------
 
@@ -5786,7 +6101,12 @@ switch(_operation) do {
                                 _eventForceMotorised  = 0;
                                 _eventForceMechanised = 0;
                                 // If no infantry either, fall back to pure STANDARD
-                                if (_eventForceInfantry == 0) then { _eventType = "STANDARD"; };
+                                if (_eventForceInfantry == 0) then {
+                                    _eventType = "STANDARD";
+                                    // Undo the airfield departure swap so the ground path
+                                    // stages from the baseline supply-line departure.
+                                    if (_airfieldDepartureApplied) then { _reinforcementPosition = _fallbackDeparturePos; };
+                                };
                                 if (_debug) then {
                                     ["ML - Slingload throttle: %1 active slingload ops (max %2). Vehicle groups deferred to ground convoy. Event: %3",
                                         _activeSlingloads, MAX_SLINGLOAD_CONCURRENT, _eventID] call ALiVE_fnc_dump;
@@ -5850,8 +6170,17 @@ switch(_operation) do {
                                     ["ML - HELI_INSERT motorised pickup LZ prepared at %1", _position] call ALiVE_fnc_dump;
                                 };
                             } else {
-                                _position = _reinforcementPosition getPos [random(200), random(360)];
-                                if (_paraDrop && _eventType != "HELI_INSERT") then {
+                                // STANDARD spawn: route the base point through the clear-spot finder so units aren't placed on hangars/buildings.
+                                // _paraDrop (players watching the base): seed from the out-of-sight
+                                // remote anchor at ground level -- no carrierless chute drop.
+                                private _spawnSeed = _reinforcementPosition;
+                                if (_paraDrop && _eventType == "STANDARD" && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
+                                    _spawnSeed = _remotePosition;
+                                };
+                                _position = [_logic, "prepareHelicopterLZ", [
+                                    _spawnSeed getPos [random(200), random(360)], 80
+                                ]] call MAINCLASS;
+                                if (_paraDrop && _eventType != "HELI_INSERT" && _eventType != "STANDARD") then {
                                     _position set [2,PARADROP_HEIGHT];
                                 };
                             };
@@ -5898,8 +6227,17 @@ switch(_operation) do {
                                     ["ML - HELI_INSERT motorised pickup LZ prepared at %1", _position] call ALiVE_fnc_dump;
                                 };
                             } else {
-                                _position = _reinforcementPosition getPos [random(200), random(360)];
-                                if (_paraDrop && _eventType != "HELI_INSERT") then {
+                                // STANDARD spawn: route the base point through the clear-spot finder so units aren't placed on hangars/buildings.
+                                // _paraDrop (players watching the base): seed from the out-of-sight
+                                // remote anchor at ground level -- no carrierless chute drop.
+                                private _spawnSeed = _reinforcementPosition;
+                                if (_paraDrop && _eventType == "STANDARD" && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
+                                    _spawnSeed = _remotePosition;
+                                };
+                                _position = [_logic, "prepareHelicopterLZ", [
+                                    _spawnSeed getPos [random(200), random(360)], 80
+                                ]] call MAINCLASS;
+                                if (_paraDrop && _eventType != "HELI_INSERT" && _eventType != "STANDARD") then {
                                     _position set [2,PARADROP_HEIGHT];
                                 };
                             };
@@ -6036,6 +6374,11 @@ switch(_operation) do {
                                         };
                                     };
                                     _eventType = "STANDARD";
+                                    // Undo the airfield departure swap for the ground fallback.
+                                    // Motorised pickup groups were already placed near the
+                                    // departure above and convoy from there; infantry spawned
+                                    // below stages from the baseline departure again.
+                                    if (_airfieldDepartureApplied) then { _reinforcementPosition = _fallbackDeparturePos; };
                                 };
 
                                 // For each group - create helis to carry their vehicles.
@@ -6140,13 +6483,11 @@ switch(_operation) do {
                                             // (vehicle object may be null before ALiVE activates the profile).
                                             [_heliVehicleProf, "alive_ml_pilot_entity_id",
                                                 _heliEntityProf select 2 select 4] call ALIVE_fnc_hashSet;
-                                            // Backref: heli vehicle profile -> slung truck profile ID. Used by
-                                            // heliDeliveryWatchdog's sling-validation FAIL block to trash the
-                                            // orphaned cargo when setSlingLoad never attached. Without this
-                                            // backref the watchdog has no path from the heli profile to the
-                                            // truck profile -- they share the "slung" relation only on the
-                                            // truck profile side, not symmetrically.
-                                            [_heliVehicleProf, "alive_ml_sling_truck_profile_id", _x] call ALIVE_fnc_hashSet;
+                                            // #909: spawn-proof heli->cargo link (replaces the per-profile
+                                            // backref, which doesn't survive the spawn rebuild). Keyed by heli
+                                            // vehicle profile id, read by heliDeliveryWatchdog.
+                                            if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
+                                            ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), _eventPosition]];
                                             if (_debug) then {
                                                 ["ML - HELI_INSERT slingload: preventDespawn set on pilot %1 heli %2 truck %3",
                                                     _profiles select 0 select 2 select 4,
@@ -6192,6 +6533,8 @@ switch(_operation) do {
                                 // and are therefore completely unaffected.
                                 ["ML - HELI_INSERT slingload: No air transport assets found for faction=%1 side=%2 (limitToFaction=%3). Check ALIVE_factionDefaultAirTransport / ALIVE_sideDefaultAirTransport registration. Falling back to STANDARD for event %4.", _eventFaction, _side, _limitTransportToFaction, _eventID] call ALiVE_fnc_dump;
                                 _eventType = "STANDARD";
+                                // Undo the airfield departure swap for the ground fallback.
+                                if (_airfieldDepartureApplied) then { _reinforcementPosition = _fallbackDeparturePos; };
                             };
                             _eventTransportProfiles = _transportProfiles;
                             _eventTransportVehiclesProfiles = _transportVehicleProfiles;
@@ -6229,8 +6572,16 @@ switch(_operation) do {
                                 if(_eventType == "HELI_INSERT" || _eventType == "HELI_PARADROP") then {
                                     _position = _remotePosition;
                                 }else{
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
-                                    _position set [2,PARADROP_HEIGHT];
+                                    // STANDARD with players watching the base: ground-spawn out
+                                    // of sight at the remote anchor via the clear-spot finder --
+                                    // no carrierless chute drop over the friendly base.
+                                    private _spawnSeed = _reinforcementPosition;
+                                    if (!isNil "_remotePosition" && {count _remotePosition > 1}) then {
+                                        _spawnSeed = _remotePosition;
+                                    };
+                                    _position = [_logic, "prepareHelicopterLZ", [
+                                        _spawnSeed getPos [random(200), random(360)], 80
+                                    ]] call MAINCLASS;
                                 };
                             } else {
                                 if (_eventType == "HELI_INSERT" || _eventType == "HELI_PARADROP") then {
@@ -6238,7 +6589,10 @@ switch(_operation) do {
                                     // to the specific pickup LZ during heli assignment below
                                     _position = _remotePosition;
                                 } else {
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    // STANDARD spawn: route the base point through the clear-spot finder so infantry aren't placed on hangars/buildings.
+                                    _position = [_logic, "prepareHelicopterLZ", [
+                                        _reinforcementPosition getPos [random(200), random(360)], 80
+                                    ]] call MAINCLASS;
                                 };
                             };
 
@@ -6521,11 +6875,17 @@ switch(_operation) do {
                             if(count _transportGroups > 0) then {
                                 for "_i" from 0 to _groupCount -1 do {
 
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
+                                    // STANDARD spawn: route the base point through the clear-spot finder so the trucks aren't placed on hangars/buildings.
+                                    // _paraDrop: seed from the same remote anchor as the cargo
+                                    // groups (boarding is physical when spawned -- keep trucks
+                                    // and infantry co-located), ground level, no chute drop.
+                                    private _spawnSeed = _reinforcementPosition;
+                                    if (_paraDrop && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
+                                        _spawnSeed = _remotePosition;
                                     };
+                                    _position = [_logic, "prepareHelicopterLZ", [
+                                        _spawnSeed getPos [random(200), random(360)], 80
+                                    ]] call MAINCLASS;
 
                                     if(count _transportGroups > 0) then {
 
@@ -6568,11 +6928,17 @@ switch(_operation) do {
 
                             _group = _armourGroups select _i;
 
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                            if(_paraDrop) then {
-                                _position set [2,PARADROP_HEIGHT];
+                            // STANDARD spawn: route the base point through the clear-spot finder so armour isn't placed on hangars/buildings.
+                            // _paraDrop: ground-spawn at the remote anchor -- no tanks under
+                            // chutes over the friendly base. Armour is STANDARD-only (zeroed
+                            // for heli deliveries above).
+                            private _spawnSeed = _reinforcementPosition;
+                            if (_paraDrop && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
+                                _spawnSeed = _remotePosition;
                             };
+                            _position = [_logic, "prepareHelicopterLZ", [
+                                _spawnSeed getPos [random(200), random(360)], 80
+                            ]] call MAINCLASS;
 
                             if!(surfaceIsWater _position) then {
 
@@ -6619,7 +6985,16 @@ switch(_operation) do {
 
                             _group = _mechanisedGroups select _i;
 
-                            _position = _reinforcementPosition getPos [random(200), random(360)];
+                            // STANDARD spawn: route the base point through the clear-spot finder so mechanised units aren't placed on hangars/buildings.
+                            // _paraDrop on STANDARD: ground-spawn at the remote anchor instead
+                            // of popping in at the base in player view.
+                            private _spawnSeed = _reinforcementPosition;
+                            if (_paraDrop && _eventType == "STANDARD" && {!isNil "_remotePosition"} && {count _remotePosition > 1}) then {
+                                _spawnSeed = _remotePosition;
+                            };
+                            _position = [_logic, "prepareHelicopterLZ", [
+                                _spawnSeed getPos [random(200), random(360)], 80
+                            ]] call MAINCLASS;
 
                             if!(surfaceIsWater _position) then {
 
@@ -6757,7 +7132,10 @@ switch(_operation) do {
                                                 (_profiles select 0) select 2 select 4] call ALIVE_fnc_hashSet;
                                             // Backref to slung truck profile for sling-validation FAIL cleanup
                                             // (mirrors the motorised slingload site).
-                                            [_profiles select 1, "alive_ml_sling_truck_profile_id", _x] call ALIVE_fnc_hashSet;
+                                            // #909: spawn-proof heli->cargo link (replaces the per-profile
+                                            // backref, which doesn't survive the spawn rebuild).
+                                            if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
+                                            ALIVE_ML_slingCargo set [((_profiles select 1) select 2 select 4), [(_slingLoadProfile select 2 select 4), _eventPosition]];
 
                                             // Same fix as motorised: waypoint to _eventPosition not
                                             // _reinforcementPosition to prevent immediate profile despawn.
@@ -6806,6 +7184,7 @@ switch(_operation) do {
                                 _position = [_logic, "findHelicopterLandingPos", [
                                     _remotePosition, 50, 250
                                 ]] call MAINCLASS;
+                                _position = [_position] call _fnc_snapToLand;   // FIX: keep air-crew spawn off the sea
                                 _position set [2,1000];
 
                                 if(count _planeClasses > 0) then {
@@ -6865,7 +7244,7 @@ switch(_operation) do {
 
                             for "_i" from 0 to _eventForceHeli -1 do {
 
-                                _position = _remotePosition getPos [random(200), random(360)];
+                                _position = [_remotePosition getPos [random(200), random(360)]] call _fnc_snapToLand;   // FIX: keep air-crew spawn off the sea
                                 _position set [2,1000];
 
                                 if(count _heliClasses > 0) then {
@@ -7432,9 +7811,11 @@ switch(_operation) do {
                             // clean.
                             if (!_alreadyDelivered) then {
                                 // [ML-DIAG-DupSpawn] capture caller context for the unload trigger
+                                if (_debug) then {
                                 ["[ML-DIAG-DupSpawn] heliTransport(transportProfiles) calling unloadTransportHelicopter for %1 alreadyDelivered=%2 slingReady=%3 iter=%4 heliObjNull=%5",
                                     _x, _alreadyDelivered, _slingReady, _waitIterations,
                                     isNull (_profile select 2 select 10)] call ALiVE_fnc_dump;
+                                };
                                 [_logic,"unloadTransportHelicopter",[_event,_profile]] call MAINCLASS;
                             };
                         } else {
@@ -7551,9 +7932,11 @@ switch(_operation) do {
                             // successful delivery. Same rationale as _transportProfiles.
                             if (!_alreadyDelivered) then {
                                 // [ML-DIAG-DupSpawn] capture caller context for the unload trigger
+                                if (_debug) then {
                                 ["[ML-DIAG-DupSpawn] heliTransport(heliProfiles) calling unloadTransportHelicopter for %1 alreadyDelivered=%2 slingReadyH=%3 iter=%4 heliObjNull=%5",
                                     _x, _alreadyDelivered, _slingReadyH, _waitIterations,
                                     isNull (_profile select 2 select 10)] call ALiVE_fnc_dump;
+                                };
                                 [_logic,"unloadTransportHelicopter",[_event,_profile]] call MAINCLASS;
                             };
                         } else {
@@ -7634,7 +8017,12 @@ switch(_operation) do {
                     // egress in opposite direction of ingress to avoid AI fun time
 
                     private _eventDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
-                    private _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
+                    // Airfield-launched helis RTB to the departure recorded on the
+                    // event; events without the key keep the original derivation.
+                    private _reinforcementPosition = [_event, "departurePosition", []] call ALIVE_fnc_hashGet;
+                    if (count _reinforcementPosition < 2) then {
+                        _reinforcementPosition = [_reinforcementPrimaryObjective,"center"] call ALIVE_fnc_hashGet;
+                    };
                     // Guard against empty finalDestination
                     private _returnDest = if (count _eventDestination > 1) then {
                         // Bearing FROM destination TOWARD reinforcement position = egress direction
@@ -7963,7 +8351,7 @@ switch(_operation) do {
                                         private _cmdProf = [ALIVE_profileHandler, "getProfile", _inCommand select 0] call ALIVE_fnc_profileHandler;
                                         if (!isNil "_cmdProf") then { [_cmdProf, "destroy"] call ALIVE_fnc_profileEntity; };
                                     };
-                                    [_tProfile, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_profileVehicle;
+                                    [_tProfile, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
                                     [_tProfile, "destroy"] call ALIVE_fnc_profileVehicle;
                                 };
                                 _anyActive = _anyActive + 1;
@@ -7973,7 +8361,7 @@ switch(_operation) do {
                                     private _cmdProf = [ALIVE_profileHandler, "getProfile", _inCommand select 0] call ALIVE_fnc_profileHandler;
                                     if (!isNil "_cmdProf") then { [_cmdProf, "destroy"] call ALIVE_fnc_profileEntity; };
                                 };
-                                [_tProfile, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_profileVehicle;
+                                [_tProfile, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
                                 [_tProfile, "destroy"] call ALIVE_fnc_profileVehicle;
                             };
                         };
@@ -7988,7 +8376,12 @@ switch(_operation) do {
 
                         // Send REQUEST_DELIVERED to the requesting player
                         if (_playerRequested) then {
-                            private _logEvent2 = ['LOGCOM_RESPONSE', [_requestID,_playerID],"Logistics","REQUEST_DELIVERED"] call ALIVE_fnc_event;
+                            // Match the HELI_INSERT / STANDARD payload shape: the player tablet's
+                            // REQUEST_DELIVERED handler reads index 2 (destination) and 3 (isWaiting).
+                            // Sending only [requestID, playerID] left those nil -> "Zero divisor" and
+                            // no completion radio / destination marker / tablet reset for airdrops. (#944)
+                            private _finalDestination = [_event, "finalDestination", []] call ALIVE_fnc_hashGet;
+                            private _logEvent2 = ['LOGCOM_RESPONSE', [_requestID,_playerID,_finalDestination,true],"Logistics","REQUEST_DELIVERED"] call ALIVE_fnc_event;
                             [ALIVE_eventLog, "addEvent", _logEvent2] call ALIVE_fnc_eventLog;
                             if (_debug) then {
                                 ["ML - airdropReturnWait: REQUEST_DELIVERED sent to player %1 for request %2",
@@ -9438,6 +9831,21 @@ switch(_operation) do {
                                     _tProfile select 2 select 2
                                 };
                                 _farEnough = _checkPos distance2D _finalDest > 1500;
+                                // Never land-and-remove a carrier players can see: an active
+                                // (= observed) heli stopping mid-air, or hovering over water
+                                // where isTouchingGround never fires, then detonating looks
+                                // broken. Defer and let it keep flying its RTB waypoints --
+                                // the _waitTotalIterations timeout below still bounds its
+                                // lifetime regardless. Gate on the live heli spawn radius so
+                                // missions with a raised spawn envelope are covered too.
+                                private _dzGuardRadius = (missionNamespace getVariable ["ALIVE_spawnRadiusHeli", 1500]) max 1500;
+                                if (_farEnough && {([_checkPos, _dzGuardRadius] call ALiVE_fnc_anyPlayersInRange) > 0}) then {
+                                    _farEnough = false;
+                                    if (_debug) then {
+                                        ["ML - heliParadropReturnWait: carrier %1 far enough for removal but players within %2m -- deferring land-and-remove. Event: %3",
+                                            _x, _dzGuardRadius, _eventID] call ALiVE_fnc_dump;
+                                    };
+                                };
                             };
 
                             if (_waitIterations > _waitTotalIterations || _farEnough) then {
@@ -9466,7 +9874,7 @@ switch(_operation) do {
                                     };
                                     // Clear vehicleAssignments before destroy to prevent
                                     // fnc_removeProfileVehicleAssignment _indexes error in ALiVE core.
-                                    [_tProfile, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_profileVehicle;
+                                    [_tProfile, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
                                     [_tProfile, "destroy"] call ALIVE_fnc_profileVehicle;
                                 };
                                 _anyActive = _anyActive + 1;
@@ -9477,7 +9885,7 @@ switch(_operation) do {
                                     if (!isNil "_cmdProf") then { [_cmdProf, "destroy"] call ALIVE_fnc_profileEntity; };
                                 };
                                 // Clear vehicleAssignments before destroy to prevent ALiVE core _indexes error.
-                                [_tProfile, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_profileVehicle;
+                                [_tProfile, "vehicleAssignments", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashSet;
                                 [_tProfile, "destroy"] call ALIVE_fnc_profileVehicle;
                             };
                         };
@@ -9645,6 +10053,16 @@ switch(_operation) do {
                             _paraDrop = true;
                             // remote position should probably be spawn range - risk of heli getting shot down though too...
                             _remotePosition = [_reinforcementPosition, 1600] call ALIVE_fnc_getPositionDistancePlayers;
+                            // getPositionDistancePlayers can return [] (no player-free sector) or a
+                            // water sector centre -- retry land-only, then fall back to the base
+                            // (same guard as the reinforcement path) so the remote ground spawns
+                            // below always have a usable anchor.
+                            if (count _remotePosition < 2 || {surfaceIsWater _remotePosition}) then {
+                                _remotePosition = [_reinforcementPosition, 1600, 1, true] call ALIVE_fnc_getPositionDistancePlayers;
+                            };
+                            if (count _remotePosition < 2) then {
+                                _remotePosition = _reinforcementPosition;
+                            };
                         }else{
                             _remotePosition = _reinforcementPosition;
                         };
@@ -9689,13 +10107,31 @@ switch(_operation) do {
 
                                 switch(_itemCategory) do {
                                     case "Car":{
+                                        // Ground delivery with players near the departure: spawn the
+                                        // ordered vehicle out of sight instead of chuting it at the
+                                        // base -- via the clear-spot finder (the surfaceIsWater gate
+                                        // above ran on the pre-reassignment base scatter, so a coastal
+                                        // remote anchor needs the finder's own water/clearance checks).
+                                        // Heli-insert keeps the boost (sling pickup runs later).
                                         if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
+                                            if (_eventType == "PR_STANDARD") then {
+                                                _position = [_logic, "prepareHelicopterLZ", [
+                                                    _remotePosition getPos [random(150), random(360)], 80
+                                                ]] call MAINCLASS;
+                                            } else {
+                                                _position set [2,PARADROP_HEIGHT];
+                                            };
                                         };
                                     };
                                     case "Armored":{
                                         if(_paraDrop) then {
-                                            _position set [2,PARADROP_HEIGHT];
+                                            if (_eventType == "PR_STANDARD") then {
+                                                _position = [_logic, "prepareHelicopterLZ", [
+                                                    _remotePosition getPos [random(150), random(360)], 80
+                                                ]] call MAINCLASS;
+                                            } else {
+                                                _position set [2,PARADROP_HEIGHT];
+                                            };
                                         };
                                     };
                                     case "Ship":{
@@ -9766,7 +10202,11 @@ switch(_operation) do {
 
                         } forEach _emptyVehicles;
 
-                        // set up slingload for empty vehicles
+                        // Sling the ordered empty vehicles (e.g. a car) in alongside the inserted
+                        // individuals. Player heli orders keep _eventType == "PR_HELI_INSERT"
+                        // through the whole playerRequested path (only the OPCOM path remaps to
+                        // "HELI_INSERT"), so this gate must test the PR_ value - testing
+                        // "HELI_INSERT" here left ordered vehicles undelivered (#909).
                         if(_eventType == "PR_HELI_INSERT" && {_x select 1 select 1 != "Air"} count _emptyVehicles > 0) then {
 
                             // create heli transport vehicles for the empty vehicles
@@ -9775,8 +10215,19 @@ switch(_operation) do {
                             _transportProfiles = [];
                             _transportVehicleProfiles = [];
 
-                            if(count _transportGroups == 0) then {
+                            // #947: only fall back to side-default aircraft when transports are
+                            // not faction-limited; the no-heli else below already teleports
+                            // the ordered vehicles to the destination when the pool stays empty
+                            if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
+                            };
+
+                            // #909: skip heli classes that failed sling-validation this session
+                            // (mirrors the motorised/mechanised slingload pre-filters) so the empty-
+                            // vehicle order picks a working alternative; if all are blacklisted the
+                            // no-heli fallback below repositions the package at the destination.
+                            if (!isNil "ALIVE_ML_slingFailedClasses" && {count ALIVE_ML_slingFailedClasses > 0}) then {
+                                _transportGroups = _transportGroups select { !(_x in ALIVE_ML_slingFailedClasses) };
                             };
 
                             if(count _transportGroups > 0) then {
@@ -9870,6 +10321,24 @@ switch(_operation) do {
                                         _profile = _profiles select 0;
                                         [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
+                                        // #909 Part B: this branch was missing the slingload profile
+                                        // management the motorised branch sets (~:6175-6204). Without
+                                        // preventDespawn the profile system garbage-collects the heli +
+                                        // slung car mid-flight; the pilot/truck backref + dropPos let
+                                        // heliDeliveryWatchdog drop the car at the destination if the heli
+                                        // can't actually sling it.
+                                        private _heliEntityProf  = _profiles select 0;
+                                        private _heliVehicleProf = _profiles select 1;
+                                        [_heliEntityProf,  "spawnType", ["preventDespawn"]] call ALIVE_fnc_hashSet;
+                                        [_heliVehicleProf, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                                        [_slingloadProfile, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                                        [_heliVehicleProf, "alive_ml_pilot_entity_id", _heliEntityProf select 2 select 4] call ALIVE_fnc_hashSet;
+                                        // #909: spawn-proof heli->cargo link (replaces the per-profile
+                                        // backref, which doesn't survive the spawn rebuild). Keyed by heli
+                                        // vehicle profile id, read by heliDeliveryWatchdog.
+                                        if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
+                                        ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), _eventPosition]];
+
                                         if (_debug) then {
                                             ["ML - PR_HELI_INSERT [%1] dest waypoint: %2", _forEachIndex + 1, _prDestPos] call ALiVE_fnc_dump;
                                         };
@@ -9887,7 +10356,21 @@ switch(_operation) do {
                                 } foreach _emptyVehicleProfiles;
 
                             } else {
-                                ["WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
+                                // #909: no sling-capable heli available (none configured for the
+                                // faction, or all blacklisted for failed sling-validation this
+                                // session). Don't abandon the cargo - drop each empty vehicle at
+                                // the destination (the same Option-A teleport the per-vehicle
+                                // no-lift fallback uses) so the player still gets their vehicle.
+                                ["ML - PR_HELI_INSERT: no sling-capable heli for %1 (none/all blacklisted) - teleporting %2 empty vehicle(s) to destination %3.",
+                                    _eventFaction, count _emptyVehicleProfiles, _eventPosition] call ALIVE_fnc_dump;
+                                {
+                                    private _evID = _x select 0;
+                                    private _evProfile = [ALiVE_ProfileHandler, "getProfile", _evID] call ALIVE_fnc_profileHandler;
+                                    if (!isNil "_evProfile") then {
+                                        [_evProfile, "position", _eventPosition] call ALIVE_fnc_profileVehicle;
+                                        _payloadGroupProfiles pushback [_evID];
+                                    };
+                                } forEach _emptyVehicleProfiles;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
@@ -9912,7 +10395,17 @@ switch(_operation) do {
                                 if(_eventType == "PR_HELI_INSERT") then {
                                     _position = _remotePosition;
                                 }else{
-                                    _position set [2,PARADROP_HEIGHT];
+                                    if (_eventType == "PR_STANDARD") then {
+                                        // Ground delivery with players near the departure: ground-spawn
+                                        // out of sight at the remote anchor via the clear-spot finder --
+                                        // no chute drop at the watched base. Airdrop keeps the boost
+                                        // (those units are repositioned to their carrier later).
+                                        _position = [_logic, "prepareHelicopterLZ", [
+                                            _remotePosition getPos [random(150), random(360)], 80
+                                        ]] call MAINCLASS;
+                                    } else {
+                                        _position set [2,PARADROP_HEIGHT];
+                                    };
                                 };
                             };
 
@@ -9947,7 +10440,17 @@ switch(_operation) do {
                                 if(_eventType == "PR_HELI_INSERT") then {
                                     _position = _remotePosition;
                                 }else{
-                                    _position set [2,PARADROP_HEIGHT];
+                                    if (_eventType == "PR_STANDARD") then {
+                                        // Ground delivery with players near the departure: ground-spawn
+                                        // out of sight at the remote anchor via the clear-spot finder --
+                                        // no chute drop at the watched base. Airdrop keeps the boost
+                                        // (those units are repositioned to their carrier later).
+                                        _position = [_logic, "prepareHelicopterLZ", [
+                                            _remotePosition getPos [random(150), random(360)], 80
+                                        ]] call MAINCLASS;
+                                    } else {
+                                        _position set [2,PARADROP_HEIGHT];
+                                    };
                                 };
                             };
 
@@ -9981,7 +10484,17 @@ switch(_operation) do {
                                 if(_eventType == "PR_HELI_INSERT") then {
                                     _position = _remotePosition;
                                 }else{
-                                    _position set [2,PARADROP_HEIGHT];
+                                    if (_eventType == "PR_STANDARD") then {
+                                        // Ground delivery with players near the departure: ground-spawn
+                                        // out of sight at the remote anchor via the clear-spot finder --
+                                        // no chute drop at the watched base. Airdrop keeps the boost
+                                        // (those units are repositioned to their carrier later).
+                                        _position = [_logic, "prepareHelicopterLZ", [
+                                            _remotePosition getPos [random(150), random(360)], 80
+                                        ]] call MAINCLASS;
+                                    } else {
+                                        _position set [2,PARADROP_HEIGHT];
+                                    };
                                 };
                             };
 
@@ -10089,7 +10602,7 @@ switch(_operation) do {
                                             };
                                         };
                                         case "Air": {
-                                            _position = _remotePosition getPos [random(200), random(360)];
+                                            _position = [_remotePosition getPos [random(200), random(360)]] call _fnc_snapToLand;   // FIX: keep air-crew spawn off the sea
                                             _position set [2,1000];
                                         };
                                         default {
@@ -10188,10 +10701,15 @@ switch(_operation) do {
                             if(count _transportGroups > 0) then {
                                 for "_i" from 0 to (count _infantryProfiles) -1 do {
 
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
+                                    // Players near the departure: spawn the transport out of sight at
+                                    // the same remote anchor as its passengers (boarding is physical
+                                    // when spawned) -- no truck chuting at the watched base.
+                                    if (_paraDrop) then {
+                                        _position = [_logic, "prepareHelicopterLZ", [
+                                            _remotePosition getPos [random(150), random(360)], 80
+                                        ]] call MAINCLASS;
+                                    } else {
+                                        _position = _reinforcementPosition getPos [random(200), random(360)];
                                     };
 
                                     if(count _transportGroups > 0) then {
@@ -10223,7 +10741,9 @@ switch(_operation) do {
                             _transportProfiles = [];
                             _transportVehicleProfiles = [];
 
-                            if(count _transportGroups == 0) then {
+                            // #947: only fall back to side-default aircraft when transports are
+                            // not faction-limited (same rule as the analysis path)
+                            if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
                             };
 
@@ -10281,7 +10801,39 @@ switch(_operation) do {
                                 };
 
                             } else {
-                                ["ML - WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
+                                // #947: no faction transport heli (Faction Only or none configured).
+                                // Deliver the infantry carrierless instead of stranding them at the
+                                // departure: chute-height reposition when players can see the DZ,
+                                // silent ground teleport otherwise (same fallback as PR_AIRDROP).
+                                private _playersNearDZ = ([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0;
+                                ["ML - PR_HELI_INSERT: No %1 transport heli (limitToFaction=%2). Carrierless %3 at destination %4.",
+                                    _eventFaction, _limitTransportToFaction,
+                                    ["ground delivery","paradrop"] select _playersNearDZ, _eventPosition] call ALiVE_fnc_dump;
+                                {
+                                    private _dropPos = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
+                                    if (surfaceIsWater _dropPos) then { _dropPos = +_eventPosition; };
+                                    if (_playersNearDZ) then { _dropPos set [2, PARADROP_HEIGHT]; };
+                                    {
+                                        private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                        if (!isNil "_p") then {
+                                            if ([_x,"vehicle"] call CBA_fnc_find != -1) then {
+                                                [_p, "position", _dropPos] call ALIVE_fnc_profileVehicle;
+                                                [_p, "despawnPosition", _dropPos] call ALIVE_fnc_profileVehicle;
+                                            } else {
+                                                [_p, "position", _dropPos] call ALIVE_fnc_profileEntity;
+                                                [_p, "mergePositions"] call ALIVE_fnc_profileEntity;
+                                                // move order only on the ground branch -- a chuted profile must
+                                                // keep an empty waypoint list or the virtual mover flattens the
+                                                // drop height before the spawner hands out parachutes
+                                                if (!_playersNearDZ) then {
+                                                    private _wpDZ = [_eventPosition, 100, "MOVE", "NORMAL", 60, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                                                    [_p, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                                                    [_p, "addWaypoint", _wpDZ] call ALIVE_fnc_profileEntity;
+                                                };
+                                            };
+                                        };
+                                    } forEach _x;
+                                } forEach _infantryProfiles;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
@@ -10302,7 +10854,9 @@ switch(_operation) do {
                             _transportProfiles = [];
                             _transportVehicleProfiles = [];
 
-                            if(count _transportGroups == 0) then {
+                            // #947: only fall back to side-default aircraft when transports are
+                            // not faction-limited (same rule as the analysis path)
+                            if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                 _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
                             };
 
@@ -10368,9 +10922,26 @@ switch(_operation) do {
                                             // Create slingloading heli (slingloading another profile!)
                                             _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true,[], [[_x], []]] call ALIVE_fnc_createProfilesCrewedVehicle;
 
-                                            ["HELI PROFILE FOR SLINGLOADING: %1",_profiles select 1 select 2 select 4] call ALiVE_fnc_dump;
                                             // Set slingloaded profile
                                             [_slingloadProfile,"slung",[[_profiles select 1 select 2 select 4]]] call ALIVE_fnc_profileVehicle;
+
+                                            // #909: this grouped-vehicle sling (the branch the PR car
+                                            // actually uses) was missing the slingload profile management
+                                            // the watchdog needs: preventDespawn so it isn't GC'd in flight,
+                                            // and the pilot/truck backref + dropPos so the watchdog can
+                                            // recover the cargo to the destination if the heli can't sling.
+                                            // cargo id via _slingloadProfile (the nested forEach below
+                                            // reassigns _x, so _x select 0 would be garbage here).
+                                            private _heliEntityProf  = _profiles select 0;
+                                            private _heliVehicleProf = _profiles select 1;
+                                            [_heliEntityProf,  "spawnType", ["preventDespawn"]] call ALIVE_fnc_hashSet;
+                                            [_heliVehicleProf, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                                            [_slingloadProfile, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
+                                            [_heliVehicleProf, "alive_ml_pilot_entity_id", _heliEntityProf select 2 select 4] call ALIVE_fnc_hashSet;
+                                            // #909: spawn-proof heli->cargo link (replaces the per-profile
+                                            // backref + dropPos, which don't survive the spawn rebuild).
+                                            if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
+                                            ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingloadProfile select 2 select 4), _eventPosition]];
 
                                             _transportProfiles pushback (_profiles select 0 select 2 select 4);
                                             _transportVehicleProfiles pushback (_profiles select 1 select 2 select 4);
@@ -10396,7 +10967,28 @@ switch(_operation) do {
                                 } foreach _groupProfiles;
 
                             } else {
-                                ["WARNING: No %1 transport vehicles found for Heli Insert.",_eventFaction] call ALIVE_fnc_dump;
+                                // #947: no faction sling heli (Faction Only or none configured) --
+                                // deliver the groups with the same ground teleport the too-heavy
+                                // fallback above uses so they are not stranded at the departure.
+                                // Ground, not chute: a slung vehicle and the crew that must mount
+                                // it are safer delivered together at ground level.
+                                ["ML - PR_HELI_INSERT: no sling heli for faction=%1 (limitToFaction=%2). Teleporting group profiles to destination %3.",
+                                    _eventFaction, _limitTransportToFaction, _eventPosition] call ALiVE_fnc_dump;
+                                {
+                                    {
+                                        private _gp = [ALiVE_ProfileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                        if (!isNil "_gp") then {
+                                            if ([_x,"vehicle"] call CBA_fnc_find != -1) then {
+                                                [_gp, "position", _eventPosition] call ALIVE_fnc_profileVehicle;
+                                                [_gp, "despawnPosition", _eventPosition] call ALIVE_fnc_profileVehicle;
+                                                _payloadGroupProfiles pushback [_x];
+                                            } else {
+                                                [_gp, "position", _eventPosition] call ALIVE_fnc_profileEntity;
+                                                [_gp, "mergePositions"] call ALIVE_fnc_profileEntity;
+                                            };
+                                        };
+                                    } forEach _x;
+                                } forEach _groupProfiles;
                             };
 
                             _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
@@ -10445,10 +11037,14 @@ switch(_operation) do {
 
                                 if(count _transportGroups > 0) then {
 
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
-
-                                    if(_paraDrop) then {
-                                        _position set [2,PARADROP_HEIGHT];
+                                    // Players near the departure: spawn the payload transport out of
+                                    // sight at the remote anchor -- no truck chuting at the watched base.
+                                    if (_paraDrop) then {
+                                        _position = [_logic, "prepareHelicopterLZ", [
+                                            _remotePosition getPos [random(150), random(360)], 80
+                                        ]] call MAINCLASS;
+                                    } else {
+                                        _position = _reinforcementPosition getPos [random(200), random(360)];
                                     };
 
                                     _vehicleClass = selectRandom _transportGroups;
@@ -10485,7 +11081,10 @@ switch(_operation) do {
                                 _transportProfiles = [];
                                 _transportVehicleProfiles = [];
 
-                                if(count _transportGroups == 0) then {
+                                // #947: only fall back to side-default aircraft when transports are
+                                // not faction-limited; with the pool left empty the payload falls
+                                // through to the carrierless container drop below
+                                if(count _transportGroups == 0 && !_limitTransportToFaction) then {
                                     _transportGroups = [ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet;
                                 };
 
@@ -10597,9 +11196,11 @@ switch(_operation) do {
                                     _profile = _profiles select 0;
                                     [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
 
-                                };
+                                    // #947: book the delivery only when a transport heli was actually
+                                    // created -- the carrierless container fallback books its own
+                                    _totalCount = _totalCount + 1;
 
-                                _totalCount = _totalCount + 1;
+                                };
 
                                 _eventTransportProfiles = _eventTransportProfiles + _transportProfiles;
                                 _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _transportVehicleProfiles;
@@ -10608,7 +11209,10 @@ switch(_operation) do {
 
                             private ["_containers","_vehicle","_parachute","_soundFlyover"];
 
-                            if(_eventType == "PR_AIRDROP") then {
+                            // #947: a PR_HELI_INSERT payload with no available transport heli
+                            // (Faction Only + heli-less faction) falls through to the same
+                            // carrierless container drop PR_AIRDROP uses.
+                            if(_eventType == "PR_AIRDROP" || {_eventType == "PR_HELI_INSERT" && {count _transportGroups == 0}}) then {
 
                                 _containers = [ALIVE_factionDefaultContainers,_eventFaction,[]] call ALIVE_fnc_hashGet;
 
@@ -10618,7 +11222,13 @@ switch(_operation) do {
 
                                 if(count _containers > 0) then {
 
-                                    _position = _reinforcementPosition getPos [random(200), random(360)];
+                                    // #947: anchor the container to the requested drop position, not the
+                                    // supply-node departure, and chute it when players can see the DZ.
+                                    // _paraDrop watched the departure area; nothing reads it after this
+                                    // block so it is safe to rebase it on the destination here.
+                                    _paraDrop = ([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0;
+                                    _position = _eventPosition getPos [random(200), random(360)];
+                                    if (surfaceIsWater _position) then { _position = +_eventPosition; };
 
                                     if(_paraDrop) then {
                                         _position set [2,PARADROP_HEIGHT];
@@ -10750,7 +11360,17 @@ switch(_operation) do {
 
                                     // update the state of the event
                                     // next state is transport load
-                                    [_event, "state", "heliTransportStart"] call ALIVE_fnc_hashSet;
+                                    // #947: carrierless delivery (Faction Only + heli-less faction)
+                                    // created no transports -- the cargo is already placed at the
+                                    // destination, so skip the flight states. heliTransport would
+                                    // read zero transport waypoints as "destroyed enroute" and send
+                                    // a false loss report; eventComplete sends the single correct
+                                    // delivered notification instead.
+                                    if (count _eventTransportProfiles == 0) then {
+                                        [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                                    } else {
+                                        [_event, "state", "heliTransportStart"] call ALIVE_fnc_hashSet;
+                                    };
 
                                     // dispatch event
                                     _logEvent = ['LOGISTICS_INSERTION', [_reinforcementPosition,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
@@ -10780,8 +11400,18 @@ switch(_operation) do {
                                     private _airdropInfTransportProfID = "";
 
                                     private _airdropTransportGroups = [ALIVE_factionDefaultAirTransport,_eventFaction,[]] call ALIVE_fnc_hashGet;
-                                    if (count _airdropTransportGroups == 0 || !_limitTransportToFaction) then {
+                                    // #947: append side defaults ONLY when transports are not faction-limited.
+                                    // The old `count == 0 ||` also refilled an EMPTY faction pool from the side
+                                    // registry, so Faction Only + a heli-less faction (WW2 mods) still spawned
+                                    // a vanilla side aircraft. A faction-limited heli-less pool must stay empty
+                                    // so the carrierless fallback below delivers the drop instead.
+                                    if (!_limitTransportToFaction) then {
                                         _airdropTransportGroups append ([ALIVE_sideDefaultAirTransport,_side] call ALIVE_fnc_hashGet);
+                                    };
+
+                                    if (_debug) then {
+                                        ["ML - PR_AIRDROP transport pool: faction=%1 limitToFaction=%2 pool=%3",
+                                            _eventFaction, _limitTransportToFaction, _airdropTransportGroups] call ALiVE_fnc_dump;
                                     };
 
                                     // Filter out classes that have failed sling-validation in
@@ -10863,9 +11493,10 @@ switch(_operation) do {
                                                             [_slingLoadProfile, "spawnType", ["preventDespawn"]] call ALIVE_fnc_profileVehicle;
                                                             [_heliVehicleProf, "alive_ml_pilot_entity_id",
                                                                 _heliEntityProf select 2 select 4] call ALIVE_fnc_hashSet;
-                                                            // Backref to slung truck profile for sling-validation FAIL cleanup
-                                                            // (mirrors the motorised + mechanised slingload sites).
-                                                            [_heliVehicleProf, "alive_ml_sling_truck_profile_id", _x] call ALIVE_fnc_hashSet;
+                                                            // #909: spawn-proof heli->cargo link (replaces the per-profile
+                                                            // backref, which doesn't survive the spawn rebuild).
+                                                            if (isNil "ALIVE_ML_slingCargo") then { ALIVE_ML_slingCargo = createHashMap; };
+                                                            ALIVE_ML_slingCargo set [(_heliVehicleProf select 2 select 4), [(_slingLoadProfile select 2 select 4), _eventPosition]];
 
                                                             if (_debug) then {
                                                                 ["ML - PR_AIRDROP slingload: preventDespawn set on pilot %1 heli %2 truck %3",
@@ -10948,14 +11579,50 @@ switch(_operation) do {
                                         _eventTransportVehiclesProfiles = _eventTransportVehiclesProfiles + _airdropTransportVehicleProfiles;
 
                                     } else {
-                                        ["ML - PR_AIRDROP: No air transport assets found for faction=%1 side=%2. Falling back to teleport -- profiles placed at destination.",
-                                            _eventFaction, _side] call ALiVE_fnc_dump;
-                                        // Fallback: teleport all cargo profiles to destination
+                                        // #947: carrierless delivery. With Faction Only air transport and a
+                                        // heli-less faction the pool is legitimately empty -- spawn NO aircraft.
+                                        // If players can see the DZ, park the payload profiles above the drop
+                                        // position at PARADROP_HEIGHT: the profile system's native parachute
+                                        // spawn (entities z>300 -> Steerable_Parachute_F, ground vehicles
+                                        // z>300 -> B_Parachute_02_F) floats them down onto the destination.
+                                        // With nobody near the DZ keep the silent ground teleport.
+                                        private _playersNearDZ = ([_eventPosition, 1500] call ALiVE_fnc_anyPlayersInRange) > 0;
+                                        ["ML - PR_AIRDROP: No air transport assets found for faction=%1 side=%2 (limitToFaction=%3). Carrierless %4 at destination %5.",
+                                            _eventFaction, _side, _limitTransportToFaction,
+                                            ["ground delivery","paradrop"] select _playersNearDZ, _eventPosition] call ALiVE_fnc_dump;
                                         {
+                                            private _dropPos = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
+                                            if (surfaceIsWater _dropPos) then { _dropPos = +_eventPosition; };
+                                            if (_playersNearDZ) then { _dropPos set [2, PARADROP_HEIGHT]; };
                                             {
                                                 private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
                                                 if (!isNil "_p") then {
-                                                    [_p, "position", _eventPosition] call ALIVE_fnc_profileEntity;
+                                                    if ([_x,"vehicle"] call CBA_fnc_find != -1) then {
+                                                        // vehicle profile: despawnPosition must move too or the
+                                                        // spawner snaps the vehicle back to its stored ground pos
+                                                        [_p, "position", _dropPos] call ALIVE_fnc_profileVehicle;
+                                                        [_p, "despawnPosition", _dropPos] call ALIVE_fnc_profileVehicle;
+                                                    } else {
+                                                        [_p, "position", _dropPos] call ALIVE_fnc_profileEntity;
+                                                        // per-unit positions still hold the departure coords and
+                                                        // the spawner prefers them over the profile position
+                                                        [_p, "mergePositions"] call ALIVE_fnc_profileEntity;
+                                                        // Move order ONLY on the ground branch: a chuted profile
+                                                        // must keep an EMPTY waypoint list -- the virtual mover
+                                                        // repositions any waypointed profile at ground level and
+                                                        // would flatten the drop height before the spawner hands
+                                                        // out parachutes. Chuted units land within
+                                                        // DESTINATION_VARIANCE and the delivery completion joins/
+                                                        // garrisons them at the drop position anyway.
+                                                        if (!_playersNearDZ) then {
+                                                            private _wpDZ = [_eventPosition, 100, "MOVE", "NORMAL", 60, [], "LINE"] call ALIVE_fnc_createProfileWaypoint;
+                                                            [_p, "clearWaypoints"] call ALIVE_fnc_profileEntity;
+                                                            [_p, "addWaypoint", _wpDZ] call ALIVE_fnc_profileEntity;
+                                                        };
+                                                    };
+                                                    if (_debug) then {
+                                                        ["ML - PR_AIRDROP carrierless: profile %1 repositioned to %2", _x, _dropPos] call ALiVE_fnc_dump;
+                                                    };
                                                 };
                                             } forEach _x;
                                         } forEach (_infantryProfiles + _motorisedProfiles + _mechanisedProfiles);
@@ -11899,21 +12566,24 @@ switch(_operation) do {
 
                         // Pass _logic into spawn so findHelicopterLandingPos can be called
                         // for drop position retries (_logic is out of scope inside spawn blocks)
-                        [_vehicle, _slingloading, _position, _eventPosition, _logic] spawn {
+                        [_vehicle, _slingloading, _position, _eventPosition, _logic, _debug] spawn {
 
                             private _vehicle      = _this select 0;
                             private _slingloading = _this select 1;
                             private _position     = _this select 2;
                             private _eventPosition = _this select 3;
                             private _logic        = _this select 4;
+                            private _dbg          = _this select 5;
 
                             // [ML-DIAG-Stall] entry: capture spawn time + slingload flag + initial unitReady
                             private _diagT0 = diag_tickTime;
+                            if (_dbg) then {
                             ["[ML-DIAG-Stall] spawn-entry %1 sling=%2 unitReady=%3 slungAttached=%4 AGL=%5m spd=%6km/h pos=%7",
                                 _vehicle, _slingloading, unitReady _vehicle,
                                 !isNull (getSlingLoad _vehicle),
                                 round ((getPosATL _vehicle) select 2),
                                 round (speed _vehicle), getPosATL _vehicle] call ALiVE_fnc_dump;
+                            };
 
                             // [ML-DIAG-DupSpawn] flag duplicate unload spawns for the same vehicle.
                             // Increments a per-vehicle counter; logs DUPLICATE on count > 1
@@ -11922,7 +12592,7 @@ switch(_operation) do {
                             _vehicle setVariable ["alive_ml_diag_unload_spawncount", _spawnCount];
                             private _prevSpawnT = _vehicle getVariable ["alive_ml_diag_unload_spawnT", -1];
                             _vehicle setVariable ["alive_ml_diag_unload_spawnT", _diagT0];
-                            if (_spawnCount > 1) then {
+                            if (_dbg && {_spawnCount > 1}) then {
                                 ["[ML-DIAG-DupSpawn] %1 spawnCount=%2 elapsedSincePrev=%3s sling=%4 slungAttached=%5 profileID=%6 unloadActive=%7 slingReleased=%8",
                                     _vehicle, _spawnCount,
                                     (if (_prevSpawnT > 0) then { round (_diagT0 - _prevSpawnT) } else { -1 }),
@@ -11939,7 +12609,7 @@ switch(_operation) do {
                             private _readyTimer = 0;
                             while { alive _vehicle && !(unitReady _vehicle) && _readyTimer < 60 } do {
                                 // [ML-DIAG-Stall] every 10s: log unitReady + AI state during the wait
-                                if (_readyTimer mod 10 == 0) then {
+                                if (_dbg && {_readyTimer mod 10 == 0}) then {
                                     ["[ML-DIAG-Stall] waiting %1 t=%2s unitReady=%3 behaviour=%4 currentCommand=%5 slungAttached=%6 AGL=%7m spd=%8km/h",
                                         _vehicle, _readyTimer, unitReady _vehicle,
                                         behaviour (driver _vehicle),
@@ -11954,11 +12624,13 @@ switch(_operation) do {
                             // [ML-DIAG-Stall] wait-exit: capture exit reason + total time
                             private _diagExitReason = if (!alive _vehicle) then { "heli-dead" }
                                 else { if (_readyTimer >= 60) then { "timeout" } else { "unitReady-true" } };
+                            if (_dbg) then {
                             ["[ML-DIAG-Stall] wait-exit %1 reason=%2 readyTimer=%3s elapsed=%4s slungAttached=%5 AGL=%6m",
                                 _vehicle, _diagExitReason, _readyTimer,
                                 round (diag_tickTime - _diagT0),
                                 !isNull (getSlingLoad _vehicle),
                                 round ((getPosATL _vehicle) select 2)] call ALiVE_fnc_dump;
+                            };
 
                             if (alive _vehicle) then {
                                 if (_slingLoading) then {

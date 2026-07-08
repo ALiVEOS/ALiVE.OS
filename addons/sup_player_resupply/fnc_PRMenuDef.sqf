@@ -84,7 +84,7 @@ _menus =
                 "",
                 -1,
                 (MOD(Require) getVariable [format["ALIVE_MIL_LOG_AVAIL_%1", (side group player)], false]),
-                !([QMOD(mil_C2ISTAR)] call ALiVE_fnc_isModuleAvailable) && {_result}
+                !([QMOD(mil_c2istar)] call ALiVE_fnc_isModuleAvailable) && {_result}
             ]
         ]
     ]

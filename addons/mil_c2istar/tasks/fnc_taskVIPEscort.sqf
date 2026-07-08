@@ -1,4 +1,4 @@
-#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\x\alive\addons\mil_c2istar\script_component.hpp"
 SCRIPT(taskVIPEscort);
 
 /* ----------------------------------------------------------------------------
@@ -425,9 +425,9 @@ switch (_taskState) do {
         private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
         private _vip = _targets param [0, objNull, [objNull]];
 
-        if (_lastState != "Pickup") then {
+        if !([_params, "chatStartDone_Pickup", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Pickup"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Pickup", true] call ALIVE_fnc_hashSet;
         };
 
         if (isNull _vip || {!alive _vip}) then {
@@ -484,9 +484,9 @@ switch (_taskState) do {
         private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
         private _vip = _targets param [0, objNull, [objNull]];
 
-        if (_lastState != "Escort") then {
+        if !([_params, "chatStartDone_Escort", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Escort"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Escort", true] call ALIVE_fnc_hashSet;
         };
 
         if (isNull _vip || {!alive _vip}) then {
@@ -550,9 +550,9 @@ switch (_taskState) do {
         private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
         private _vip = _targets param [0, objNull, [objNull]];
 
-        if (_lastState != "Return") then {
+        if !([_params, "chatStartDone_Return", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Return"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Return", true] call ALIVE_fnc_hashSet;
         };
 
         if (isNull _vip || {!alive _vip}) then {

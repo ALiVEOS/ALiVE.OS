@@ -84,13 +84,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_AMOUNT">
-    <English>Group Size:</English>
-    <Chinese>小組人數：</Chinese>
-    <Chinesesimp>小组人数：</Chinesesimp>
-    <Spanish>Tamaño del grupo:</Spanish>
-    <French>Taille du groupe:</French>
-    <Portuguese>Tamanho do grupo:</Portuguese>
-    <Russian>Размер группы:</Russian>
+    <English>Group Size Ceiling:</English>
+    <Chinesesimp>小组人数上限：</Chinesesimp>
+    <Chinese>小組人數上限：</Chinese>
+    <Spanish>Tamaño máximo del grupo:</Spanish>
+    <French>Taille maximale du groupe:</French>
+    <Portuguese>Tamanho máximo do grupo:</Portuguese>
+    <Russian>Максимальный размер группы:</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_AMOUNT_COMMENT">
@@ -190,14 +190,15 @@
     <Russian>Вероятность:</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_SPAWN_COMMENT">
-    <English>Probability in % that a house will be occupied</English>
-    <Chinesesimp>房屋被占用的概率(%)</Chinesesimp>
-    <Chinese>建築被佔用的機率（%）</Chinese>
-    <Spanish>Probabilidad en % de que una casa esté ocupada</Spanish>
-    <French>Probabilité en % qu'une maison soit occupée</French>
-    <Portuguese>Probabilidade em % de que uma casa esteja ocupada</Portuguese>
-    <Russian>Вероятность в %, что дом будет занят</Russian>
+    <English>Chance that a house near an existing garrison is also occupied. With Density set to None (the default), this chance applies to every house in the area instead.</English>
+    <Chinesesimp>已有驻军附近的房屋同样被占用的概率。密度设为"无"（默认）时，该概率适用于区域内的每栋房屋。</Chinesesimp>
+    <Chinese>已有駐軍附近的建築同樣被佔用的機率。密度設為「無」（預設）時，該機率適用於區域內的每棟建築。</Chinese>
+    <Spanish>Probabilidad de que una casa cercana a una guarnición existente también esté ocupada. Con la Densidad en Ninguna (predeterminado), esta probabilidad se aplica a todas las casas de la zona.</Spanish>
+    <French>Probabilité qu'une maison proche d'une garnison existante soit également occupée. Avec la Densité sur Aucune (par défaut), cette probabilité s'applique à toutes les maisons de la zone.</French>
+    <Portuguese>Probabilidade de uma casa próxima de uma guarnição existente também estar ocupada. Com a Densidade em Nenhuma (padrão), esta probabilidade aplica-se a todas as casas da área.</Portuguese>
+    <Russian>Вероятность того, что дом рядом с существующим гарнизоном также будет занят. Если Плотность установлена на «Нет» (по умолчанию), эта вероятность применяется ко всем домам в области.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DISABLE">
@@ -330,14 +331,15 @@
     <Russian>Плотность:</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_DENSITY_COMMENT">
-    <English>Density of additional CQB placement. Adds more house locations with a minimum distance of x metres to each other, resulting in a tight grid of CQB positions.</English>
-    <Chinesesimp>额外CQB放置密度</Chinesesimp>
-    <Chinese>額外 CQB 放置的密度。新增更多建築位置,彼此間距至少 x 公尺,形成緊密的 CQB 位置網格。</Chinese>
-    <Spanish>Densidad de colocación adicional de CQB. Añade más ubicaciones de casas con una distancia mínima de x metros entre sí, resultando en una rejilla densa de posiciones CQB.</Spanish>
-    <French>Densité de placement CQB supplémentaire. Ajoute plus d'emplacements de maisons avec une distance minimale de x mètres entre eux, résultant en une grille serrée de positions CQB.</French>
-    <Portuguese>Densidade de posicionamento CQB adicional. Adiciona mais locais de casas com uma distância mínima de x metros entre si, resultando numa grelha densa de posições CQB.</Portuguese>
-    <Russian>Плотность дополнительного размещения CQB. Добавляет больше домов с минимальным расстоянием x метров друг от друга, создавая плотную сетку позиций CQB.</Russian>
+    <English>Guarantees an occupied house at least every N metres: any house further than N from all existing garrisons is always occupied, while houses closer than N are decided by the Probability chance. None (default): no guaranteed spacing - every house is decided by Probability alone.</English>
+    <Chinesesimp>保证至少每 N 米有一栋被占用的房屋：距离所有已有驻军超过 N 米的房屋必定被占用，而更近的房屋则由概率决定。无（默认）：不保证间距——每栋房屋仅由概率决定。</Chinesesimp>
+    <Chinese>保證至少每 N 公尺有一棟被佔用的建築：距離所有已有駐軍超過 N 公尺的建築必定被佔用，而更近的建築則由機率決定。無（預設）：不保證間距——每棟建築僅由機率決定。</Chinese>
+    <Spanish>Garantiza una casa ocupada al menos cada N metros: toda casa a más de N de todas las guarniciones existentes se ocupa siempre, mientras que las casas a menos de N se deciden por la Probabilidad. Ninguna (predeterminado): sin espaciado garantizado; cada casa se decide solo por la Probabilidad.</Spanish>
+    <French>Garantit une maison occupée au moins tous les N mètres : toute maison à plus de N de toutes les garnisons existantes est toujours occupée, tandis que les maisons à moins de N sont décidées par la Probabilité. Aucune (par défaut) : pas d'espacement garanti - chaque maison est décidée par la seule Probabilité.</French>
+    <Portuguese>Garante uma casa ocupada pelo menos a cada N metros: qualquer casa a mais de N de todas as guarnições existentes é sempre ocupada, enquanto as casas a menos de N são decididas pela Probabilidade. Nenhuma (padrão): sem espaçamento garantido - cada casa é decidida apenas pela Probabilidade.</Portuguese>
+    <Russian>Гарантирует занятый дом как минимум каждые N метров: любой дом дальше N от всех существующих гарнизонов занимается всегда, а дома ближе N определяются Вероятностью. «Нет» (по умолчанию): без гарантированного интервала — каждый дом определяется только Вероятностью.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_PATROLCHANCE">

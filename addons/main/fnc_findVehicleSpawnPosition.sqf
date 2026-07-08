@@ -189,6 +189,15 @@ private _fnc_footprintClear = {
     };
     if (_terrainHit >= 0) exitWith { _lastRejectReason = "terrain-blocker"; false };
 
+    // Rock terrain objects: the terrain-blocker check above is road-scoped
+    // (mustBeOnRoad) and its type list excludes rocks, so off-road A3 rock
+    // clusters slip through and vehicles spawn inside them (#913 / sys_profile
+    // Item 1). Query rocks directly, off-road, across the footprint samples.
+    private _rockHit = _samples findIf {
+        !((nearestTerrainObjects [_x, ["ROCK", "ROCKS"], _sampleRadius + _gap, false]) isEqualTo [])
+    };
+    if (_rockHit >= 0) exitWith { _lastRejectReason = "rock"; false };
+
     private _classHit = _samples findIf {
         !((nearestObjects [_x, _classObstacles, _sampleRadius + _gap]) isEqualTo [])
     };

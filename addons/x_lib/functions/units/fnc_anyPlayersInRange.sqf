@@ -22,6 +22,7 @@ Examples:
 
 Author:
 Wolffy.au
+Jman
  
 Peer reviewed:
 nil
@@ -32,4 +33,5 @@ PARAMS_1(_pos);
 DEFAULT_PARAM(1,_dist,2500);
 
 // That code that checks if any players are in range
-({_pos distance _x < _dist} count allPlayers);
+// #918: drop headless clients (they sit in allPlayers) so an HC doesn't trigger spawning
+({_pos distance _x < _dist} count (allPlayers - entities "HeadlessClient_F"));

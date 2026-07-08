@@ -621,31 +621,21 @@ switch(_operation) do {
             _deliveryListOptions = [];
             _deliveryListValues = [];
 
-            // PR_AIRDROP delivery option hidden from the player UI 
-            //
-            // Rationale: the current PR_AIRDROP FSM draws transports from the same
-            // ALIVE_factionDefaultAirTransport / ALIVE_sideDefaultAirTransport pool as
-            // PR_HELI_INSERT, so in practice both spawn rotary-wing transports. The only
-            // behavioural difference is that AIRDROP paradrops infantry mid-air whereas
-            // HELI_INSERT lands and dismounts -- not enough of a distinction to justify
-            // presenting the player with what looks like two near-identical choices.
-            //
-            // The FSM itself (airdropStart / Fly / Return / ReturnWait in fnc_ML.sqf) is
-            // kept intact so AI-internal AIRDROP usage continues to work, and so Option 1
-            // (introduce a dedicated fixed-wing ALIVE_factionDefaultParaTransport hash and
-            // re-expose AIRDROP as a genuinely distinct C-130-style drop) can be picked
-            // up later without re-implementing the pipeline.
-            //
-            // To re-enable the option, uncomment the block below.
-            /*
+            // PR_AIRDROP is a genuinely distinct delivery: the transport paradrops
+            // infantry mid-air and parachutes cargo, reaching destinations with no safe
+            // landing zone, whereas PR_HELI_INSERT lands to unload. Both currently draw
+            // from the same rotary-wing transport pool (ALIVE_factionDefaultAirTransport /
+            // ALIVE_sideDefaultAirTransport), so they share an aircraft; a dedicated
+            // fixed-wing C-130-style para-transport is a separate piece of work. The
+            // delivery FSM (airdropStart / Fly / Return / ReturnWait in fnc_ML.sqf) is
+            // reached only via this player option. (#944)
             if(_restrictionTypeAirDrop) then {
-                _deliveryListOptions pushback ("Airdrop  -  Assets parachuted from transport aircraft");
+                _deliveryListOptions pushback ("Airdrop  -  Parachuted in; no landing zone needed");
                 _deliveryListValues pushback "PR_AIRDROP";
             };
-            */
 
             if(_restrictionTypeHeliInsert) then {
-                _deliveryListOptions pushback ("Helicopter  -  Assets delivered by rotary wing or VTOL");
+                _deliveryListOptions pushback ("Helicopter  -  Lands to unload (rotary wing or VTOL)");
                 _deliveryListValues pushback "PR_HELI_INSERT";
             };
 
@@ -961,6 +951,30 @@ switch(_operation) do {
             // start listening for logcom events
             [_logic,"listen"] call MAINCLASS;
 
+            // Player resupply delivers via LOGCOM (the Military Logistics module)
+            // and has no delivery pipeline of its own: a request raised with no
+            // mil_logistics module placed is never answered and silently hangs.
+            // Warn the mission maker. ALIVE_MLGlobalRegistry is created by
+            // mil_logistics init, so poll for it (module load order isn't
+            // guaranteed) and only warn once it's clear none will register -
+            // otherwise this would false-alarm when PR happens to start first.
+            [] spawn {
+                private _tries = 0;
+                private _haveLogcom = false;
+                waitUntil {
+                    uiSleep 5;
+                    _tries = _tries + 1;
+                    if (!isNil "ALIVE_MLGlobalRegistry") then {
+                        private _mods = [ALIVE_MLGlobalRegistry, "getModules"] call ALIVE_fnc_MLGlobalRegistry;
+                        _haveLogcom = !isNil "_mods" && {count (_mods select 1) > 0};
+                    };
+                    _haveLogcom || (_tries >= 24)  // ~120s grace for module registration
+                };
+                if (!_haveLogcom) then {
+                    ["ALiVE Player Combat Logistics: no Military Logistics (LOGCOM) module found - player resupply requests cannot be fulfilled. Place a Military Logistics module for the players' side and faction."] call ALIVE_fnc_dumpR;
+                };
+            };
+
         };
 
     };
@@ -1138,8 +1152,10 @@ switch(_operation) do {
 
                     private ["_position","_isWaiting","_marker","_markers","_markerLabel"];
 
-                    _position = _eventData select 2;
-                    _isWaiting = _eventData select 3;
+                    // param (not select) so a short payload can't throw -- airdrop deliveries
+                    // historically sent a 2-element payload and crashed this handler. (#944)
+                    _position = _eventData param [2, []];
+                    _isWaiting = _eventData param [3, false];
                     _markerLabel = "";
 
                     if (_audio) then {

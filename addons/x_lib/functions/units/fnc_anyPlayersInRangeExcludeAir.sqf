@@ -23,6 +23,7 @@ Examples:
 
 Author:
 ARJay
+Jman
 
 Peer Reviewed:
 Wolffy 20131117
@@ -33,7 +34,8 @@ PARAMS_1(_pos);
 DEFAULT_PARAM(1,_dist,2500);
 DEFAULT_PARAM(2,_includeHelicopters,false);
 
-_players = allPlayers;
+// #918: drop headless clients (they sit in allPlayers) so an HC doesn't trigger spawning
+_players = allPlayers - entities "HeadlessClient_F";
 if (!isnil "ALIVE_profileSystem" && { [ALIVE_profileSystem,"zeusSpawn"] call ALiVE_fnc_hashGet }) then {
     _players append allCurators;
 };

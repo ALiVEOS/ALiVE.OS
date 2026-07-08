@@ -16,14 +16,19 @@ private _fnc_checkCoastTravelForWater = {
     private _dist = _sectorAPos distance _sectorBPos;
     private _inc = ceil(_dist / 15);
     private _waterDistance = 0;
+    private _seaLevel = missionNamespace getVariable ["ALiVE_pathfinding_seaLevel", 0];
     _a = ((_sectorBPos select 0) - (_sectorAPos select 0))/_inc;
     _b = ((_sectorBPos select 1) - (_sectorAPos select 1))/_inc;
 
     for "_i" from 0 to _inc do {
-        _heightASL = getTerrainHeightASL [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)];
-        if (_heightASL < -0.3) then {
+        if (getTerrainHeightASL [(_sectorAPos select 0) + (_a*_i),(_sectorAPos select 1) + (_b*_i)] < _seaLevel) then {
             _waterTravel = true;
-            _waterDistance = _waterDistance + _inc;
+            // Accumulate the WATER SPAN in metres - each underwater sample covers
+            // one step of ~_dist/_inc m (~15 m). (Was "+ _inc", the step COUNT not
+            // a length, which made _waterDistance far too small at subsector scale
+            // and defeated the "_waterDistance < 100" ford limit - letting land
+            // units cross wide open water.)
+            _waterDistance = _waterDistance + (_dist / _inc);
         };
 
         // // _debugMarkers = [_logic , "pathDebugMarkers"] call Alive_fnc_hashGet;
@@ -53,14 +58,369 @@ private _fnc_getDistanceFromLayer = {
 
     _distance;
 };
+
+// CANDIDATE A (#pathfinding-opt): the A* inner loop hits these ops ~40-50x per
+// node expansion. As op-string cases, each call paid a MAINCLASS re-entry +
+// params parse + switch walk. Hoisted here as file-scope CODE so the L1/L2 loops
+// (and setNodeToFrontier) call them directly; the matching op-string cases now
+// just delegate here, leaving external callers unchanged. Pure dispatch removal -
+// behaviour is identical, so the perf-log nodes/expL*/frontierL* must match the
+// pre-A run exactly. (Pass 1: priorityPull / getMovementCost / priorityAdd /
+// setNode. heuristic + canTraverseSector follow in pass 2.)
+private _fnc_getMovementCost = {
+    private _args = _this;
+    private "_result";
+    _args params ["_currentSector","_goalSector","_size"];
+    if (
+        ((_currentSector select 0) select 0) != ((_goalSector select 0) select 0) &&
+        { ((_currentSector select 0) select 1) != ((_goalSector select 0) select 1) }
+    ) then {
+        _result = 1.414 * _size;
+    } else {
+        _result = 1.0 * _size;
+    };
+    _result
+};
+
+private _fnc_priorityAdd = {
+    // CANDIDATE B: binary min-heap insert (sift-up), O(log n) - replaces the old
+    // linear scan + array insert (O(n)). The frontier is now heap-ordered (root = min),
+    // not fully sorted; priorityPull still returns the minimum. Push the new node at the
+    // tail, then walk it up while it outranks its parent (smaller priority = higher).
+    private _args = _this;
+    _args params ["_queue","_priority","_item"];
+    private _node = [_priority, _item];
+    _queue pushBack _node;
+    private _i = (count _queue) - 1;
+    while {_i > 0} do {
+        private _parent = floor ((_i - 1) / 2);
+        if (((_queue select _parent) select 0) <= _priority) exitWith {};
+        _queue set [_i, _queue select _parent];   // pull the parent down into the hole
+        _i = _parent;
+    };
+    _queue set [_i, _node];                        // drop the new node in its slot
+};
+
+private _fnc_priorityPull = {
+    // CANDIDATE B: binary min-heap extract-min (sift-down), O(log n) - replaces the old
+    // deleteAt 0 (O(n) shift of the whole queue). Return the root's item, move the tail
+    // into the root hole, then walk it down past the smaller of its two children until
+    // the heap order is restored.
+    private _queue = _this;
+    private "_result";
+    private _n = count _queue;
+    if (_n > 0) then {
+        _result = (_queue select 0) select 1;        // the minimum's item
+        private _last = _queue deleteAt (_n - 1);     // pop the tail
+        private _m = _n - 1;                           // heap size after the pop
+        if (_m > 0) then {
+            private _i = 0;
+            private _pri = _last select 0;
+            while {true} do {
+                private _l = 2*_i + 1;
+                private _r = 2*_i + 2;
+                private _smallest = _i;
+                private _smPri = _pri;
+                if (_l < _m && {((_queue select _l) select 0) < _smPri}) then { _smallest = _l; _smPri = ((_queue select _l) select 0); };
+                if (_r < _m && {((_queue select _r) select 0) < _smPri}) then { _smallest = _r; };
+                if (_smallest == _i) exitWith {};
+                _queue set [_i, _queue select _smallest];   // pull the smaller child up
+                _i = _smallest;
+            };
+            _queue set [_i, _last];                  // drop the tail in its slot
+        };
+    };
+    _result
+};
+
+private _fnc_setNode = {
+    private _args = _this;
+    _args params ["_cameFromMap", "_costSoFarMap", "_frontier", "_sector", "_cameFromSector", "_distanceToGoal", "_heuristicParams"];
+
+    private _size = _heuristicParams select 4;
+    private _moveCost = ([_cameFromSector,_sector,_size] call _fnc_getMovementCost);
+    private _priority = (_heuristicParams call _fnc_heuristic);
+    private _newCostSoFar = _moveCost + (_costSoFarMap get (_cameFromSector select 0));
+    private _sectorCostSoFar = _costSoFarMap get (_sector select 0);
+
+    if (isnil "_sectorCostSoFar" || { _newCostSoFar < _sectorCostSoFar }) then {
+        _costSoFarMap set [_sector select 0, _newCostSoFar];
+        [_frontier, _distanceToGoal + _priority + _moveCost, _sector] call _fnc_priorityAdd;
+        _cameFromMap set [_sector select 0, _cameFromSector];
+    };
+};
+
+// CANDIDATE A pass 2: the two big per-node ops, same hoist as pass 1 - the L1/L2
+// loops + setNode call these directly instead of via call MAINCLASS. canTraverse
+// reuses the sibling _fnc_checkCoastTravelForWater. NOTE: the op-string heuristic /
+// canTraverseSector cases below still carry the original bodies for external +
+// layer1SeaTravelCheck callers - flagged to collapse to delegates before commit so
+// the logic (incl. the water guard) has a single home.
+private _fnc_heuristic = {
+    private _args = _this;
+    private "_result";
+    _args params ["_currentSector","_fromSector","_procedure","_basePriority","_sectorDistance",["_isWaterTravel",false]];
+
+    _currentSector params ["_indx", "_pos", "_centerPos", "_type", "_modifiers"];
+    _procedure params ["_name","_capabilities","_limits","_weights"];
+    _capabilities params ["_canTraverseLand", "_canTraverseTrails", "_canTraverseRoads", "_canTraverseWater", "_canTraverseAir"];
+    _limits params ["_maxSlope", "_maxDensity"];
+    _weights params ["_roadWeight", "_waterWeight", "_heightWeight", "_densityWeight"];
+
+    if (_canTraverseAir && (_weights isEqualTo [0,0,0,0]) ) exitwith {
+        _result = _basePriority;
+    };
+
+    private _modpriority = _basePriority;
+
+    private _road = _modifiers select 0;
+    _road params  ["_hasRoads","_hasTrails","_hasBridge","_roadModifier"];
+    private _water = _modifiers select 1;
+    _water params ["_hasWater","_waterModifier"];
+    private _height = _modifiers select 2;
+    private _densityModifier = _modifiers select 3;
+
+    private _prevHeight = (_fromSector select 4) select 2;
+
+    switch (_type) do {
+        case "WATER": {
+            _modPriority = _modPriority + (_modPriority * _waterModifier * _waterWeight);
+            if (_heightWeight != 0) then {
+                _modPriority = _modPriority + (_modPriority * ((_height - _prevHeight)/_sectorDistance) * _heightWeight );
+            };
+        };
+
+        case "BRIDGE": {
+            if (_isWaterTravel) exitwith {_modPriority = _modPriority + (_modPriority * _waterModifier * _waterWeight);};
+            if (_canTraverseRoads) then {
+                if (_roadWeight != 0) then {
+                    _modPriority = _modPriority + (_modPriority * _roadModifier * _roadWeight);
+                };
+            } else {
+                if (_heightWeight != 0) then {
+                    _modPriority = _modPriority + (_modPriority * ((_height - _prevHeight)/_sectorDistance) * _heightWeight );
+                };
+                if (_densityWeight != 0 && _maxDensity !=0) then {
+                    _modPriority = _modPriority + (_modPriority * (_densityModifier/_maxDensity) * _densityWeight);
+                };
+            };
+        };
+
+        case "COAST": {
+            if (_isWaterTravel) exitwith {_modPriority = _modPriority + (_modPriority * _waterModifier * _waterWeight);};
+            if ((_canTraverseRoads && _hasRoads) || (_canTraverseTrails && _hasTrails)) then {
+                if (_roadWeight != 0) then {
+                    _modPriority = _modPriority + (_modPriority * _roadModifier * _roadWeight);
+                };
+            } else {
+                if (_heightWeight != 0) then {
+                    _modPriority = _modPriority + (_modPriority * ((_height - _prevHeight)/_sectorDistance) * _heightWeight );
+                };
+                if (_densityWeight != 0 && _maxDensity !=0) then {
+                    _modPriority = _modPriority + (_modPriority * (_densityModifier/_maxDensity) * _densityWeight);
+                };
+            };
+        };
+
+        case "LAND": {
+            if ((_canTraverseRoads && _hasRoads) || (_canTraverseTrails && _hasTrails)) then {
+                if (_roadWeight != 0) then {
+                    _modPriority = _modPriority + (_modPriority * _roadModifier * _roadWeight);
+                };
+            } else {
+                if (_heightWeight != 0) then {
+                    _modPriority = _modPriority + (_modPriority * ((_height - _prevHeight)/_sectorDistance) * _heightWeight );
+                };
+                if (_densityWeight != 0 && _maxDensity !=0) then {
+                    _modPriority = _modPriority + (_modPriority * (_densityModifier/_maxDensity) * _densityWeight);
+                };
+            };
+        };
+    };
+    _result = _modPriority;
+    _result
+};
+
+private _fnc_canTraverse = {
+    private _args = _this;
+    private "_result";
+    _args params ["_procedure", "_sectorTo", "_sectorFrom", "_size"];
+
+    _procedure params ["_name","_capabilities","_limits","_weights"];
+    _capabilities params ["_canTraverseLand", "_canTraverseTrails", "_canTraverseRoads", "_canTraverseWater", "_canTraverseAir"];
+    _limits params ["_maxSlope", "_maxDensity"];
+    _weights params ["_roadWeight", "_waterWeight", "_heightWeight", "_densityWeight"];
+
+    _sectorTo params ["_indxTo", "_posTo", "_centerPosTo", "_typeTo", "_modifiersTo"];
+    _sectorFrom params ["_indxFrom", "_posFrom", "_centerPosFrom", "_typeFrom", "_modifiersFrom"];
+    _modifiersTo params ["_road","_water","_height","_density"];
+    _road params ["_hasRoads","_hasTrails","_hasBridge","_roadModifier"];
+    _water params ["_hasWater","_waterModifier","_centreHeightTo"];   // CANDIDATE C2: precomputed TO-cell centre height (was a runtime getTerrainHeightASL in the guard below)
+    _modifiersFrom params ["_prevRoad", "_prevWater", "_prevHeight", "_prevDensity"];
+    _prevWater params ["_prevHasWater","_prevWaterModifier"];
+
+    private _canTraverse = false;
+
+    if !(_canTraverseAir) then {
+
+        // First check if Land Unit is attempting to cross a Water Body or Naval unit on water
+        private _isWaterCrossing = false;
+        private _waterDistance = 0;
+        private _isCoastTravel = (_typeTo == "COAST" || _typeFrom == "COAST");
+        private _isMovingToFromBridge = (_typeTo == "BRIDGE" || _typeFrom == "BRIDGE") && (_roadWeight < 0);
+        private _hasDeepWater = (_waterModifier > 0.4) || (_prevWaterModifier > 0.4);
+        // Land Unit Check. The endpoint gate (_isCoastTravel + _hasDeepWater) only
+        // fires when a FROM/TO cell is itself coast/water - it misses a dry-land ->
+        // dry-land segment that crosses water BETWEEN the cells (a narrow bay/inlet
+        // spanned in one step). The lazy midpoint probe catches that: if the segment
+        // midpoint is over deep water, run the span check so the <100m ford limit can
+        // block it. Short-circuited by the cheap endpoint gate. (#pathfinding-water)
+        if (!(_isMovingToFromBridge) && _canTraverseLand && (
+                (_isCoastTravel && _hasDeepWater)
+                || {(getTerrainHeightASL [((_centerPosFrom select 0)+(_centerPosTo select 0))/2, ((_centerPosFrom select 1)+(_centerPosTo select 1))/2]) < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)}
+            )) then {
+            private _waterData = [_centerPosFrom,_centerPosTo] call _fnc_checkCoastTravelForWater;
+            _isWaterCrossing = _waterData select 0;
+            _waterDistance = _waterData select 1;
+        };
+        // Naval Unit check
+        if (_canTraverseWater && !_canTraverseLand && _typeTo != "LAND") then {
+            _isWaterCrossing = true;
+        };
+
+        if (!_isWaterCrossing) then {
+            switch (_typeTo) do {
+                case "LAND": {
+                    if (_canTraverseRoads && _hasRoads) then {_canTraverse = true;};
+                    if (_canTraverseTrails && _hasTrails) then {_canTraverse = true;};
+                    if (_canTraverseLand && _maxDensity !=0 && (_density < _maxDensity) && ((abs(_height - _prevHeight)/_size) < _maxSlope)) then {
+                        _canTraverse = true;
+                    };
+                };
+                case "WATER": {
+                    _canTraverse = _canTraverseWater && !(_canTraverseLand);
+                };
+                case "BRIDGE": {_canTraverse = true;};
+                case "COAST": {
+                    // A coast sector mixes land + water. Pure-water units (Naval,
+                    // !land) cross it on water-capability; LAND units (incl. the
+                    // water-capable "Man") must have a road/trail OR be mostly land
+                    // (_waterModifier < 0.4). Without the water gate a flat, empty,
+                    // mostly-water coast sector wrongly passes the density/slope land
+                    // check and infantry walk onto open water.
+                    _canTraverse = _canTraverseWater && !(_canTraverseLand);
+                    if (_canTraverseRoads && _hasRoads) then {_canTraverse = true;};
+                    if (_canTraverseTrails && _hasTrails) then {_canTraverse = true;};
+                    if (_canTraverseLand && _waterModifier < 0.4 && _maxDensity !=0 && (_density < _maxDensity) && ((abs(_height - _prevHeight)/_size) < _maxSlope)) then {
+                        _canTraverse = true;
+                    };
+                };
+            };
+        } else {
+            if (_canTraverseLand) then {
+                _canTraverse = [(_canTraverseWater && (_waterDistance < 100)),_isWaterCrossing];
+            } else {
+                _canTraverse = [_canTraverseWater,_isWaterCrossing];
+            };
+        };
+    } else {
+        _canTraverse = true;
+    };
+
+    // Hard guard (#pathfinding-water): a land unit may never END a step in a cell whose
+    // CENTRE is genuinely deep water. This overrides the WATER/COAST switch AND the
+    // <100m ford branch above - the loophole that let infantry wade across a bay one
+    // sub-100m step at a time. Air is excluded; pure-naval (!_canTraverseLand) still
+    // crosses water freely.
+    if (!_canTraverseAir && _canTraverseLand && {_centreHeightTo < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)}) then {
+        if (_canTraverse isEqualType []) then { _canTraverse set [0, false]; } else { _canTraverse = false; };
+    };
+
+    _result = _canTraverse;
+    _result
+};
 ////////////////////////////////
 
 switch (_operation) do {
 
     case "create": {
-        PRIVATE _pathfindingSize = [ALIVE_profileSystem,"pathfindingSize"] call ALIVE_fnc_profileSystem;
+        private _pathfindingSizeRaw = [ALIVE_profileSystem,"pathfindingSize"] call ALIVE_fnc_profileSystem;
+
+        // Resolve the configured grid size to a [sectorSize, subSectorSize] pair.
+        //
+        //   ARRAY            -> a literal [sector, sub] pair. Used as-is (a direct
+        //                       init.sqf override).
+        //   STRING "[x,y]"    -> a stringified pair from the Eden "Manual:" combo
+        //                       entries (Eden saves the combo value as a STRING).
+        //                       Parsed back to a pair and used as-is. Covers legacy
+        //                       missions that picked a fixed km tier.
+        //   STRING token      -> an auto-size token: "auto" / "high" / "med" /
+        //                       "low". The grid is sized from the map's own
+        //                       worldSize instead of the mission-maker matching a
+        //                       km tier by hand. The map is rounded UP to the
+        //                       nearest existing tier (10/20/30/40 km) so coverage
+        //                       is always guaranteed, and the exact hand-tuned
+        //                       sector sizes for that tier are reused - so auto
+        //                       reproduces the old manual tiers precisely, with no
+        //                       pathing change and no preprocessing regression.
+        //                       "auto" == "med" (balanced).
+        //
+        // Tier table rows are [maxWorldSize, [highPair, medPair, lowPair]] using
+        // the same numbers as the sys_profile pathfindingSize Eden combo.
+        private _resolvePathfindingSize = {
+            params ["_raw"];
+            // A valid explicit pair = a 2-element array of positive numbers
+            // (init.sqf override). An EMPTY or malformed array (e.g. the hashGet
+            // miss default []) must NOT be used literally - it produced a [] grid
+            // and cascaded "Undefined _sectorSize" errors through the A* search.
+            // Fall through to auto in that case.
+            private _validPair = {
+                params ["_p"];
+                (_p isEqualType []) && {count _p == 2}
+                    && {(_p select 0) isEqualType 0} && {(_p select 0) > 0}
+                    && {(_p select 1) isEqualType 0} && {(_p select 1) > 0}
+            };
+            if ([_raw] call _validPair) exitWith { _raw };        // explicit pair
+            if (_raw isEqualType "" && {_raw != ""} && {(_raw select [0,1]) == "["}) exitWith {
+                private _parsed = parseSimpleArray _raw;          // stringified manual pair "[x,y]"
+                if ([_parsed] call _validPair) exitWith { _parsed };
+                [250,50]                                          // malformed -> safe 10km-Med
+            };
+            private _q = if (_raw isEqualType "") then { toLower _raw } else { "auto" };
+            private _qIdx = switch (_q) do {
+                case "high": { 0 };
+                case "low":  { 2 };
+                default      { 1 };                               // "auto" / "med" / unknown -> balanced
+            };
+            private _tiers = [
+                [10000, [[200,40],[250,50],[300,60]]],
+                [20000, [[400,50],[480,60],[600,75]]],
+                [30000, [[640,80],[720,90],[800,100]]],
+                [40000, [[800,100],[1000,125],[1200,150]]]
+            ];
+            // First tier whose extent covers worldSize (round UP). findIf returns
+            // -1 when the map is bigger than every tier (>40km) - fall back to the
+            // LARGEST tier (last row), never the smallest.
+            private _tierIdx = _tiers findIf { worldSize <= (_x select 0) };
+            if (_tierIdx < 0) then { _tierIdx = (count _tiers) - 1; };
+            ((_tiers select _tierIdx) select 1) select _qIdx
+        };
+        private _pathfindingSize = [_pathfindingSizeRaw] call _resolvePathfindingSize;
+
         private _sectorSize = _pathfindingSize select 0;
         private _subSectorSize = _pathfindingSize select 1;
+        ["Pathfinding: grid size resolved to %1 (configured: %2, worldSize %3)", _pathfindingSize, _pathfindingSizeRaw, worldSize] call Alive_fnc_Dump;
+        // Cache the map's sea level once (getTerrainInfo select 4) for the water
+        // tests in grid classification + the A* coast checks. Heightmap-based water
+        // detection is reliable at grid-create time; surfaceIsWater only sees inland
+        // pond OBJECTS once they're loaded within view distance, so it silently
+        // misses distant ponds during the one-time grid classification.
+        ALiVE_pathfinding_seaLevel = (getTerrainInfo select 4);
+        // Deep-water margin (metres below sea level) past which terrain counts as real
+        // sea for the goal-snap + the A* deep-water traverse checks - anything shallower is walkable
+        // beach/surf and must NOT be treated as water. isNil-guarded so a console
+        // override (e.g. ALiVE_pathfinding_waterMargin = 0.5) survives a mission restart.
+        if (isNil "ALiVE_pathfinding_waterMargin") then { ALiVE_pathfinding_waterMargin = 1.0 };
         private _terrainGrid = [nil,"create", _pathfindingSize] call ALiVE_fnc_pathfindingGrid;
 
         _logic = [[
@@ -68,7 +428,8 @@ switch (_operation) do {
             ["pathfindingProcedures", [] call ALiVE_fnc_hashCreate],
             ["currentJobData", []],
             ["pathJobs", []],
-            ["pathDebugMarkers", []]
+            ["pathDebugMarkers", []],
+            ["pathDrawMarkers", []]
         ]] call ALiVE_fnc_hashCreate;
 
         [_logic,"addPathfindingProcedure", ["default",["Man", [true, true, true, true, false], [0.7, 30], [-0.1, 0.6, -0.1, -0.1]]]] call MAINCLASS;
@@ -84,6 +445,34 @@ switch (_operation) do {
 
         _result = _logic;
 
+    };
+
+    ////////// DEBUG-DRAW CONTROL //////////
+    // Toggle the terrain-grid sector overlay on/off. Sets the global the Eden
+    // param / admin menu read, and drives the grid's own enableDebugMarkers op
+    // (which builds the coloured sector rectangles, or tears them down).
+    // (#pathfinding-draw 2026-06-01)
+    case "setDrawGrid": {
+        private _enable = if (_args isEqualType true) then { _args } else { false };
+        missionNamespace setVariable ["ALiVE_pathfinding_drawGrid", _enable];
+        private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
+        if (!isNil "_terrainGrid") then {
+            [_terrainGrid, "enableDebugMarkers", [_enable]] call ALiVE_fnc_pathfindingGrid;
+        };
+        _result = _enable;
+    };
+
+    // Toggle the computed-path overlay on/off. Off also clears any path markers
+    // already drawn so the map doesn't keep stale routes.
+    case "setDrawPaths": {
+        private _enable = if (_args isEqualType true) then { _args } else { false };
+        missionNamespace setVariable ["ALiVE_pathfinding_drawPaths", _enable];
+        if (!_enable) then {
+            private _pathMarkers = [_logic, "pathDrawMarkers", []] call ALiVE_fnc_hashGet;
+            { deleteMarker _x } forEach _pathMarkers;
+            [_logic, "pathDrawMarkers", []] call ALiVE_fnc_hashSet;
+        };
+        _result = _enable;
     };
 
     ////////// PROCEDURE FUNCTIONS //////////
@@ -124,176 +513,17 @@ switch (_operation) do {
     };
 
     ////////// SECTOR ANALYSIS //////////
-    case "heuristic": {
-        _args params ["_currentSector","_fromSector","_procedure","_basePriority","_sectorDistance",["_isWaterTravel",false]];
+    // CANDIDATE A: body hoisted to file-scope _fnc_heuristic (called directly by setNode).
+    // This op-string case now just delegates so external callers stay correct, with the
+    // priority-weighting logic living in one place.
+    case "heuristic": { _result = _args call _fnc_heuristic; };
 
-        _currentSector params ["_indx", "_pos", "_centerPos", "_type", "_modifiers"];
-        _procedure params ["_name","_capabilities","_limits","_weights"];
-        _capabilities params ["_canTraverseLand", "_canTraverseTrails", "_canTraverseRoads", "_canTraverseWater", "_canTraverseAir"];
-        _limits params ["_maxSlope", "_maxDensity"];
-        _weights params ["_roadWeight", "_waterWeight", "_heightWeight", "_densityWeight"];
+    // CANDIDATE A: body hoisted to file-scope _fnc_canTraverse (called directly by the
+    // L1/L2 loops). This op-string case now just delegates so external + layer1SeaTravelCheck
+    // callers stay correct, with the water-guard logic living in one place.
+    case "canTraverseSector": { _result = _args call _fnc_canTraverse; };
 
-        if (_canTraverseAir && (_weights isEqualTo [0,0,0,0]) ) exitwith {
-            _result = _basePriority;
-        }; 
-
-        private _modpriority = _basePriority;
-
-        private _road = _modifiers select 0;
-        _road params  ["_hasRoads","_hasTrails","_hasBridge","_roadModifier"];
-        private _water = _modifiers select 1;
-        _water params ["_hasWater","_waterModifier"];
-        private _height = _modifiers select 2;        
-        private _densityModifier = _modifiers select 3;
-
-        private _prevHeight = (_fromSector select 4) select 2;
-
-        switch (_type) do {
-            case "WATER": {
-                _modPriority = _modPriority + (_modPriority * _waterModifier * _waterWeight);
-                if (_heightWeight != 0) then {
-                    _modPriority = _modPriority + (_modPriority * ((_height - _prevHeight)/_sectorDistance) * _heightWeight );
-                };
-            };
-
-            case "BRIDGE": {
-                if (_isWaterTravel) exitwith {_modPriority = _modPriority + (_modPriority * _waterModifier * _waterWeight);};
-                if (_canTraverseRoads) then { 
-                    if (_roadWeight != 0) then {
-                        _modPriority = _modPriority + (_modPriority * _roadModifier * _roadWeight);
-                    };
-                } else {  
-                    if (_heightWeight != 0) then {
-                        _modPriority = _modPriority + (_modPriority * ((_height - _prevHeight)/_sectorDistance) * _heightWeight );
-                    };
-                    if (_densityWeight != 0 && _maxDensity !=0) then {
-                        _modPriority = _modPriority + (_modPriority * (_densityModifier/_maxDensity) * _densityWeight);
-                    };
-                };
-            };
-
-            case "COAST": {
-                if (_isWaterTravel) exitwith {_modPriority = _modPriority + (_modPriority * _waterModifier * _waterWeight);};
-                if ((_canTraverseRoads && _hasRoads) || (_canTraverseTrails && _hasTrails)) then { 
-                    if (_roadWeight != 0) then {
-                            _modPriority = _modPriority + (_modPriority * _roadModifier * _roadWeight);
-                    };
-                } else { 
-                    if (_heightWeight != 0) then {
-                        _modPriority = _modPriority + (_modPriority * ((_height - _prevHeight)/_sectorDistance) * _heightWeight );
-                    };
-                    if (_densityWeight != 0 && _maxDensity !=0) then {
-                        _modPriority = _modPriority + (_modPriority * (_densityModifier/_maxDensity) * _densityWeight);
-                    };
-                }; 
-            };
-
-            case "LAND": {
-                if ((_canTraverseRoads && _hasRoads) || (_canTraverseTrails && _hasTrails)) then { 
-                    if (_roadWeight != 0) then {
-                            _modPriority = _modPriority + (_modPriority * _roadModifier * _roadWeight);
-                    };
-                } else { 
-                    if (_heightWeight != 0) then {
-                        _modPriority = _modPriority + (_modPriority * ((_height - _prevHeight)/_sectorDistance) * _heightWeight );
-                    };
-                    if (_densityWeight != 0 && _maxDensity !=0) then {
-                        _modPriority = _modPriority + (_modPriority * (_densityModifier/_maxDensity) * _densityWeight);
-                    };
-                };
-            };
-        };
-        _result = _modPriority;
-        // Threat / Danger weight
-        // ?? future ??
-    };
-
-    case "canTraverseSector": {
-        _args params ["_procedure", "_sectorTo", "_sectorFrom", "_size"];
-
-        _procedure params ["_name","_capabilities","_limits","_weights"];
-        _capabilities params ["_canTraverseLand", "_canTraverseTrails", "_canTraverseRoads", "_canTraverseWater", "_canTraverseAir"];
-        _limits params ["_maxSlope", "_maxDensity"];
-        _weights params ["_roadWeight", "_waterWeight", "_heightWeight", "_densityWeight"];
-
-        _sectorTo params ["_indxTo", "_posTo", "_centerPosTo", "_typeTo", "_modifiersTo"];
-        _sectorFrom params ["_indxFrom", "_posFrom", "_centerPosFrom", "_typeFrom", "_modifiersFrom"];
-        _modifiersTo params ["_road","_water","_height","_density"];
-        _road params ["_hasRoads","_hasTrails","_hasBridge","_roadModifier"];
-        _water params ["_hasWater","_waterModifier"];
-        _modifiersFrom params ["_prevRoad", "_prevWater", "_prevHeight", "_prevDensity"];
-        _prevWater params ["_prevHasWater","_prevWaterModifier"];
-
-        private _canTraverse = false;
-
-        if !(_canTraverseAir) then {
-
-            // First check if Land Unit is attempting to cross a Water Body or Naval unit on water
-            private _isWaterCrossing = false;
-            private _waterDistance = 0;
-            private _isCoastTravel = (_typeTo == "COAST" || _typeFrom == "COAST");
-            private _isMovingToFromBridge = (_typeTo == "BRIDGE" || _typeFrom == "BRIDGE") && (_roadWeight < 0);
-            private _hasDeepWater = (_waterModifier > 0.4) || (_prevWaterModifier > 0.4);
-            // Land Unit Check
-            if (_isCoastTravel && !(_isMovingToFromBridge) && _canTraverseLand && _hasDeepWater) then {
-                private _waterData = [_centerPosFrom,_centerPosTo] call _fnc_checkCoastTravelForWater;
-                _isWaterCrossing = _waterData select 0;
-                _waterDistance = _waterData select 1;
-            };
-            // Naval Unit check
-            if (_canTraverseWater && !_canTraverseLand && _typeTo != "LAND") then {
-                _isWaterCrossing = true;
-            };
-
-            if (!_isWaterCrossing) then {
-                switch (_typeTo) do {
-                    case "LAND": {
-                        if (_canTraverseRoads && _hasRoads) then {_canTraverse = true;};
-                        if (_canTraverseTrails && _hasTrails) then {_canTraverse = true;};
-                        if (_canTraverseLand && _maxDensity !=0 && (_density < _maxDensity) && ((abs(_height - _prevHeight)/_size) < _maxSlope)) then {
-                            _canTraverse = true;
-                        };
-                    };
-                    case "WATER": {
-                        _canTraverse = _canTraverseWater && !(_canTraverseLand);
-                    };
-                    case "BRIDGE": {_canTraverse = true;};
-                    case "COAST": {
-                        _canTraverse = _canTraverseWater;
-                        if (_canTraverseRoads && _hasRoads) then {_canTraverse = true;};
-                        if (_canTraverseTrails && _hasTrails) then {_canTraverse = true;};
-                        if (_canTraverseLand && _maxDensity !=0 && (_density < _maxDensity) && ((abs(_height - _prevHeight)/_size) < _maxSlope)) then {
-                            _canTraverse = true;
-                        };
-                    };
-                };
-            } else {
-                if (_canTraverseLand) then {
-                    _canTraverse = [(_canTraverseWater && (_waterDistance < 100)),_isWaterCrossing];
-                } else {
-                    _canTraverse = [_canTraverseWater,_isWaterCrossing];
-                };
-            };
-        } else {
-            _canTraverse = true;
-        };
-
-        _result = _canTraverse;
-    };
-
-    case "getMovementCost": {
-        _args params ["_currentSector","_goalSector","_size"];
-
-        if (
-            ((_currentSector select 0) select 0) != ((_goalSector select 0) select 0) &&
-            { ((_currentSector select 0) select 1) != ((_goalSector select 0) select 1) }
-        ) then {
-            _result = 1.414 * _size;
-            //_result = 1.3;
-        } else {
-            _result = 1.0 * _size;
-        };
-    };
+    case "getMovementCost": { _result = _args call _fnc_getMovementCost; };
 
     case "layer1SeaTravelCheck": {
         _args params [
@@ -310,11 +540,22 @@ switch (_operation) do {
         private _startSector = [_terrainGrid,"positionToSector", _startPos] call ALiVE_fnc_pathfindingGrid;
         private _goalSector = [_terrainGrid,"positionToSector", _endPos] call ALiVE_fnc_pathfindingGrid;
 
-        private _cameFromMapLayer1 = call CBA_fnc_createNamespace;
-        private _costSoFarMapLayer1 = call CBA_fnc_createNamespace;
-        _costSoFarMapLayer1 setvariable [str(_startSector select 0),0];
+        // Cost / came-from maps use native HashMaps keyed by the sector index
+        // array [x,y] directly (Array is a supported HashMap key type, deep-
+        // copied on insertion). Replaces the previous CBA namespaces keyed by
+        // str(index) - removes the per-node stringify + CBA call overhead in the
+        // hot A* loop. (#pathfinding-opt 2026-06-01)
+        private _cameFromMapLayer1 = createHashMap;
+        private _costSoFarMapLayer1 = createHashMap;
+        _costSoFarMapLayer1 set [_startSector select 0, 0];
         private _frontierLayer1 = [[0,_startSector]];
         private _layer1Complete = false;
+        // Distinguish a genuine land-block (frontier exhausted, or the goal sector
+        // itself untraversable -> really needs sea travel) from simply running out of
+        // the iteration budget on a far but land-reachable goal. Only the former is
+        // sea travel; budget exhaustion is inconclusive and must not drop the group
+        // from OPCOM sections (#936 -- far land commanders were wrongly excluded).
+        private _genuinelyBlocked = false;
         private _sectorIterations = 0;
 
         scopeName "Main";
@@ -345,18 +586,22 @@ switch (_operation) do {
                         [nil,"setNodeToFrontier",[_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams]] call MAINCLASS;
                     } else {
                         if (_neighSector isEqualTo _goalSector) exitwith {
-                            // Unable to complete path to goal
+                            // Goal sector itself is untraversable by land -> genuine sea travel
+                            _genuinelyBlocked = true;
                             breakTo "Main"
                         };
                     };
                 } foreach ([_terrainGrid, "getNeighborSectors", _indxCS] call Alive_fnc_pathfindingGrid);
 
-                if (count _frontierLayer1 == 0) exitwith {breakTo "Main";};
+                if (count _frontierLayer1 == 0) exitwith {_genuinelyBlocked = true; breakTo "Main";};
             };
         };
 
         // ["layer1SeaCheck: results c:%1 , SI:%2 , FL:%3",_layer1Complete,_sectorIterations, count _frontierLayer1] call Alive_fnc_Dump;
-        _result = !_layer1Complete;
+        // Sea travel only when genuinely land-blocked. An iteration-budget timeout
+        // (goal not reached but the frontier still had nodes) is inconclusive and
+        // returns false, so a far but land-reachable group is not wrongly excluded (#936).
+        _result = _genuinelyBlocked;
     };
 
     ////////// PATHING FUNCTIONS //////////
@@ -385,9 +630,35 @@ switch (_operation) do {
         } foreach [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
 
         if (_canTraverseWater && !(_canTraverseLand) && (_type != "LAND")) then { 
-            {
-                if ((getTerrainHeightASL _x) < (getTerrainheightASL _result)) then {_result = _x;};
-            } foreach _subPositions;
+            // Boats: pick the probe that keeps the route straightest (min
+            // prev->node->next detour) while staying in water, so adjacent naval
+            // waypoints track a centreline instead of each lurching to the deepest
+            // nearby pocket. Depth only breaks near-straight ties. (#943)
+            if !((isNil "_prevPos") || (isNil "_nextPos")) then {
+                private _seaLvl = missionNamespace getVariable ["ALiVE_pathfinding_seaLevel", 0];
+                private _bestDetour = (_nextPos distance _result) + (_prevPos distance _result);
+                private _bestDepth = getTerrainHeightASL _result;
+                {
+                    private _detour = (_nextPos distance _x) + (_prevPos distance _x);
+                    private _depth = getTerrainHeightASL _x;
+                    if ((_depth < _seaLvl) && {(_detour < _bestDetour) || ((_detour < _bestDetour + 30) && (_depth < _bestDepth))}) then {
+                        _result = _x;
+                        _bestDetour = _detour;
+                        _bestDepth = _depth;
+                    };
+                } foreach _subPositions;
+                // Never leave a naval waypoint on dry land: if nothing straighter and
+                // wet was found, fall back to the deepest-water probe (original snap).
+                if ((getTerrainHeightASL _result) >= _seaLvl) then {
+                    {
+                        if ((getTerrainHeightASL _x) < (getTerrainheightASL _result)) then {_result = _x;};
+                    } foreach _subPositions;
+                };
+            } else {
+                {
+                    if ((getTerrainHeightASL _x) < (getTerrainheightASL _result)) then {_result = _x;};
+                } foreach _subPositions;
+            };
         };
         if (_canTraverseLand) then {
             if !((isNil "_prevPos") || (isNil "_nextPos")) then {
@@ -396,7 +667,7 @@ switch (_operation) do {
                     private _distR2 = _prevPos distance _result;
                     private _distS1 = _nextPos distance _x;
                     private _distS2 = _prevPos distance _x;
-                    if (((_distS1+_distS2) < (_distR1+_distR2)) && (getTerrainHeightASL _x > -0.3)) then {_result = _x;};
+                    if (((_distS1+_distS2) < (_distR1+_distR2)) && (getTerrainHeightASL _x >= (missionNamespace getVariable ["ALiVE_pathfinding_seaLevel", 0]))) then {_result = _x;};
                 } foreach _subPositions;
             };
             private _useRoads = (_roadWeight < 0);
@@ -424,9 +695,9 @@ switch (_operation) do {
         while { !((_currentSector select 0) isequalto _end) } do {            
             if (isNil "_procedure" || {count _pathLayer < 1}) then {
                 _pathLayer pushback (_currentSector select 2);
-                _currentSector = _cameFromMap getVariable str(_currentSector select 0);
+                _currentSector = _cameFromMap get (_currentSector select 0);
             } else {
-                private _nextSector = _cameFromMap getvariable str(_currentSector select 0);
+                private _nextSector = _cameFromMap get (_currentSector select 0);
                 private _nextPos = _nextSector select 2;
                 private _prevPos = _pathLayer select ((count _pathLayer)-1); 
                 _pathLayer pushback ([nil, "findOptimalPos", [_currentSector, _sectorSize, _procedure, _nextPos, _prevPos]] call MAINCLASS);
@@ -476,42 +747,11 @@ switch (_operation) do {
         };
     };
 
-    case "priorityAdd": {
-        _args params ["_queue","_priority","_item"];
+    case "priorityAdd": { _args call _fnc_priorityAdd; };
 
-        private _queueSize = count _queue;
-        private _i = 0;
-        while {_i <= _queueSize - 1 && { _priority > ((_queue select _i) select 0) }} do {
-            _i = _i + 1;
-        };
+    case "priorityPullLowest": { _result = _args call _fnc_priorityPull; };
 
-        _queue insert [_i, [[_priority, _item]] ];
-    };
-
-    case "priorityPullLowest": {  // Renamed for better description
-        private _queue = _args;
-
-        if (count _queue > 0) then {
-            _result = (_queue deleteat 0) select 1;
-        };
-    };
-
-    case "setNodeToFrontier": {
-        _args params ["_cameFromMap", "_costSoFarMap", "_frontier", "_sector", "_cameFromSector", "_distanceToGoal", "_heuristicParams"];
-    
-        private _size = _heuristicParams select 4;
-        private _moveCost = ([nil,"getMovementCost", [_cameFromSector,_sector,_size]] call MAINCLASS); 
-        private _priority = ([nil,"heuristic", _heuristicParams] call MAINCLASS);
-        private _newCostSoFar = _moveCost + (_costSoFarMap getvariable str(_cameFromSector select 0));
-        private _sectorCostSoFar = _costSoFarMap getvariable str(_sector select 0);
-
-        if (isnil "_sectorCostSoFar" || { _newCostSoFar < _sectorCostSoFar }) then {
-            _costSoFarMap setvariable [str (_sector select 0), _newCostSoFar]; 
-            [nil,"priorityAdd", [_frontier, _distanceToGoal + _priority + _moveCost/*_newCostSoFar*/, _sector]] call MAINCLASS;
-            //["[d:%1] [p:%2] [nc:%3] -- total[%4] ",_distanceToGoal , _priority , _newCostSoFar,_distanceToGoal + _priority + _newCostSoFar] call Alive_fnc_Dump;
-            _cameFromMap setVariable [str(_sector select 0),_cameFromSector];            
-        };       
-    };
+    case "setNodeToFrontier": { _args call _fnc_setNode; };
 
     ////////// JOB FUNCTIONS //////////
     case "findPath": {
@@ -548,29 +788,75 @@ switch (_operation) do {
             
             private _terrainGrid = [_logic,"terrainGrid"] call ALiVE_fnc_hashGet;
 
+            // Goal-snap (#pathfinding-water): a land-capable group must never be routed
+            // into open sea. When the goal resolves over water - an objective/waypoint
+            // placed offshore (see the route WATER diag) - retarget to the nearest land
+            // so the route ends at the shore, not in the sea. Fires only for land
+            // procedures with a water goal; a land goal is untouched, and a goal on an
+            // island stays as-is (the A* still returns the closest reachable node).
+            // getTerrainHeightASL < seaLevel matches the grid's own water classification
+            // and is reliable at any range (unlike surfaceIsWater). Ring-search outward
+            // in subsector steps for the nearest land point.
+            private _canLand = (_procedure select 1) select 0;   // capabilities select 0 = canTraverseLand
+            if (_canLand && {(getTerrainHeightASL [_endPos select 0, _endPos select 1]) < (ALiVE_pathfinding_seaLevel - ALiVE_pathfinding_waterMargin)}) then {
+                private _step = ([_terrainGrid,"subSectorSize"] call ALiVE_fnc_hashGet) max 25;
+                private _origEnd = _endPos;
+                private _found = false;
+                for "_ring" from 1 to 30 do {
+                    if (!_found) then {
+                        private _r = _ring * _step;
+                        {
+                            private _p = [(_origEnd select 0) + _r * cos _x, (_origEnd select 1) + _r * sin _x];
+                            if (!_found && {(getTerrainHeightASL _p) >= ALiVE_pathfinding_seaLevel}) then {
+                                _endPos = [_p select 0, _p select 1, 0];
+                                _found = true;
+                            };
+                        } forEach [0,45,90,135,180,225,270,315];
+                    };
+                };
+            };
+
             private _startSector = [_terrainGrid,"positionToSector", _startPos] call ALiVE_fnc_pathfindingGrid;
             private _goalSector = [_terrainGrid,"positionToSector", _endPos] call ALiVE_fnc_pathfindingGrid;
             private _startSubSector = [_terrainGrid,"positionToSubSector", _startPos] call ALiVE_fnc_pathfindingGrid;
             private _goalSubSector = [_terrainGrid,"positionToSubSector", _endPos] call ALiVE_fnc_pathfindingGrid;
 
-            // Setup Layer 1
-            private _cameFromMapLayer1 = call CBA_fnc_createNamespace;
-            private _costSoFarMapLayer1 = call CBA_fnc_createNamespace;
+            // Single-subsector early-out (#pathfinding-opt, candidate E): when start
+            // and goal land in the same subsector, the A* only ever yields a 1-node
+            // no-op path - the same check onFrame's init already makes (~line 745).
+            // Doing it HERE, before the A* setup, skips 4 createHashMaps + the
+            // frontier / currentJobData allocation AND a whole onFrame round-trip,
+            // for ~59% of requests (measured 257/433). Mirror onFrame's completion:
+            // fire the callback with the goal subsector centre, drop the job, load
+            // the next (recurses through any further leading no-ops - queue depth is
+            // small). Checked here, not in findPath, so the previousWaypoint position
+            // re-read above is final - no false early-out from a stale queued start.
+            // (Leaves onFrame's line-745 check as a now-redundant safety net.)
+            if (_startSubSector isEqualTo _goalSubSector) exitWith {
+                [_callbackArgs, [_goalSubSector select 2]] spawn _callback;
+                _pathJobs deleteAt 0;
+                [_logic,"loadCurrentJobData"] call MAINCLASS;
+            };
+
+            // Setup Layer 1 — native HashMaps keyed by index array (see
+            // setNodeToFrontier / layer1SeaTravelCheck note). (#pathfinding-opt)
+            private _cameFromMapLayer1 = createHashMap;
+            private _costSoFarMapLayer1 = createHashMap;
             private _frontierLayer1 = [[0,_startSector]];
             private _pathLayer1 = [];
             private _closestSector = [(_startSector select 2) distance (_goalSector select 2),_startSector];
 
             // Setup Layer 2
-            private _cameFromMapLayer2 = call CBA_fnc_createNamespace;
-            private _costSoFarMapLayer2 = call CBA_fnc_createNamespace;
+            private _cameFromMapLayer2 = createHashMap;
+            private _costSoFarMapLayer2 = createHashMap;
             private _frontierLayer2 = [[0,_startSubSector]];
             private _pathLayer2 = [];
             private _closestSubSector = [(_startSubSector select 2) distance (_goalSubSector select 2),_startSubSector];
             private _itersSinceClosest = 0;
 
             // Init Layers
-            _costSoFarMapLayer1 setvariable [str(_startSector select 0),0];
-            _costSoFarMapLayer2 setvariable [str(_startSubSector select 0),0];
+            _costSoFarMapLayer1 set [_startSector select 0, 0];
+            _costSoFarMapLayer2 set [_startSubSector select 0, 0];
 
             private _layer1Data = [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _pathLayer1, _closestSector];
             private _layer2Data = [_cameFromMapLayer2, _costSoFarMapLayer2, _frontierLayer2, _pathLayer2, _closestSubSector, _itersSinceClosest];
@@ -659,7 +945,7 @@ switch (_operation) do {
                 _sectorIterations = _sectorIterations + 1;
                 _layer1 params ["_cameFromMapLayer1", "_costSoFarMapLayer1", "_frontierLayer1", "_pathLayer1", "_closestSector"];
 
-                private _currentSector = [nil,"priorityPullLowest", _frontierLayer1] call MAINCLASS;
+                private _currentSector = _frontierLayer1 call _fnc_priorityPull;
                 _currentSector params ["_indxCS", "_posCS", "_centerPosCS", "_typeCS", "_modifiersCS"];
 
                 // ////////////////////////////////////////////////////
@@ -689,12 +975,12 @@ switch (_operation) do {
                     _neighSector params ["_indx", "_pos", "_centerPos", "_type", "_modifiers"];
                     private _prevHeight = _modifiersCS select 2;
                     private _isWaterTravel = false;
-                    private _canTraverse = [_logic, "canTraverseSector", [_procedure, _neighSector, _currentSector, _sectorSize]] call MAINCLASS;
+                    private _canTraverse = [_procedure, _neighSector, _currentSector, _sectorSize] call _fnc_canTraverse;
                     if (typeName _canTraverse == "ARRAY") then {_isWaterTravel = _canTraverse select 1; _canTraverse = _canTraverse select 0;};
                     if (_canTraverse) then {
                         private _distanceToGoal = _centerPos distance (_goalSector select 2);
                         private _heuristicParams = [_neighSector,_currentSector,_procedure, _distanceToGoal,_sectorSize,_isWaterTravel];
-                        [_logic,"setNodeToFrontier",[_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams]] call MAINCLASS;
+                        [_cameFromMapLayer1, _costSoFarMapLayer1, _frontierLayer1, _neighSector, _currentSector, _distanceToGoal, _heuristicParams] call _fnc_setNode;
                         if (_distanceToGoal > (_closestSector select 0)*5) exitwith {
                             // Unable to complete path to goal
                             _layer1Complete = [_logic,"getLayerPath", [_procedure, _startSector, (_closestSector select 1),_cameFromMapLayer1, _pathLayer1, _sectorSize ]] call MAINCLASS;
@@ -724,7 +1010,7 @@ switch (_operation) do {
                 _layer2 params ["_cameFromMapLayer2", "_costSoFarMapLayer2", "_frontierLayer2", "_pathLayer2", "_closestSubSector", "_itersSinceClosest"];
                 _layer2 set [5, _itersSinceClosest + 1];
                 private _pathLayer1 = _layer1 select 3;
-                private _currentSubSector = [nil,"priorityPullLowest", _frontierLayer2] call MAINCLASS;
+                private _currentSubSector = _frontierLayer2 call _fnc_priorityPull;
                 _currentSubSector params ["_indxCS", "_posCS", "_centerPosCS", "_typeCS", "_modifiersCS"];
 
                 ////////////////////////////////////////////////////
@@ -762,13 +1048,13 @@ switch (_operation) do {
                     private _prevHeight = _modifiersCS select 2;
                     private _distanceToGoal = _centerPos distance (_goalSubSector select 2);
                     private _isWaterTravel = false;
-                    private _canTraverse = [_logic, "canTraverseSector", [_procedure, _neighSubSector, _currentSubSector, _subSectorSize]] call MAINCLASS;
+                    private _canTraverse = [_procedure, _neighSubSector, _currentSubSector, _subSectorSize] call _fnc_canTraverse;
                     if (typeName _canTraverse == "ARRAY") then {_isWaterTravel = _canTraverse select 1; _canTraverse = _canTraverse select 0;};
 
                     if (_canTraverse) then { 
                         if (count _pathLayer1 > 0) then {_distanceToGoal = [_pathLayer1,_centerPos] call _fnc_getDistanceFromLayer;};
                         private _heuristicParams = [_neighSubSector,_currentSubSector,_procedure,_distanceToGoal,_subSectorSize,_isWaterTravel];
-                        [nil,"setNodeToFrontier",[_cameFromMapLayer2, _costSoFarMapLayer2, _frontierLayer2, _neighSubSector, _currentSubSector, _distanceToGoal, _heuristicParams]] call MAINCLASS;
+                        [_cameFromMapLayer2, _costSoFarMapLayer2, _frontierLayer2, _neighSubSector, _currentSubSector, _distanceToGoal, _heuristicParams] call _fnc_setNode;
                         if (/*(_distanceToGoal > (_closestSubSector select 0)*4) ||*/ (_itersSinceClosest > 500)) exitwith {
                             // Unable to complete path to goal - spent too much time looking
                             [_logic,"getLayerPath", [_procedure, _startSubSector, (_closestSubSector select 1),_cameFromMapLayer2, _pathLayer2, _subSectorSize ]] call MAINCLASS;
@@ -811,14 +1097,65 @@ switch (_operation) do {
         if (_jobComplete) then {
             if (isNil {_result select 0;}) then {["Error - Undefined value in path: %1 \n%2", _layer2, _result] call Alive_fnc_Dump;};
 
+            // Optional debug draw of the final computed route (gated by the
+            // "Draw Paths" toggle - Eden param ALiVE_sys_profile_pathfindingDrawPaths
+            // or the live admin-menu toggle, both set the global below). Off by
+            // default = zero cost (the flag short-circuits before any marker is
+            // made). Each path's markers are tagged with a per-call id so the next
+            // draw doesn't collide. (#pathfinding-draw 2026-06-01)
+            // Only draw/log actual routes (>= 2 nodes). A 1-node "path" means start
+            // and goal share a subsector (len 0) - drawing it leaves an orphaned dot
+            // with no line, and it's the bulk of completed paths (log noise too).
+            if (missionNamespace getVariable ["ALiVE_pathfinding_drawPaths", false] && {_result isEqualType []} && {count _result > 1}) then {
+                private _pathMarkers = [_logic, "pathDrawMarkers", []] call ALiVE_fnc_hashGet;
+                // Colour the route by the requesting profile's side (threaded as
+                // the 3rd callbackArgs element from fnc_profileEntity's findPath
+                // call). Standard A3 side marker colours; unknown -> ColorUNKNOWN.
+                private _drawColor = switch (toUpper (_callbackArgs param [2, "UNKNOWN"])) do {
+                    case "WEST": { "ColorWEST" };   // BLUFOR
+                    case "EAST": { "ColorEAST" };   // OPFOR
+                    case "GUER": { "ColorGUER" };   // Independent
+                    case "CIV":  { "ColorCIV"  };   // Civilian
+                    default      { "ColorUNKNOWN" };
+                };
+                private _tag = format ["ALiVE_pf_path_%1_%2", diag_frameNo, count _pathMarkers];
+                // Drop a dot at each node and collect a flat [x1,y1,x2,y2,...]
+                // coordinate list for the connecting polyline.
+                private _line = [];
+                {
+                    private _mName = format ["%1_%2", _tag, _forEachIndex];
+                    private _m = createMarker [_mName, _x];
+                    _m setMarkerShape "ICON";
+                    _m setMarkerType "hd_dot";
+                    _m setMarkerSize [0.5, 0.5];
+                    _m setMarkerColor _drawColor;
+                    _m setMarkerAlpha 0.7;
+                    _pathMarkers pushBack _mName;
+                    _line pushBack (_x select 0);
+                    _line pushBack (_x select 1);
+                } forEach _result;
+                // Link the nodes with a single polyline marker so the route reads
+                // as a line rather than a scatter of dots. setMarkerPolyline needs
+                // a flat, even-length array of >= 2 points (>= 4 numbers).
+                if (count _line >= 4) then {
+                    private _plName = format ["%1_line", _tag];
+                    createMarker [_plName, _result select 0];
+                    _plName setMarkerShape "POLYLINE";
+                    _plName setMarkerPolyline _line;
+                    _plName setMarkerColor _drawColor;
+                    _plName setMarkerAlpha 0.8;
+                    _pathMarkers pushBack _plName;
+                };
+                [_logic, "pathDrawMarkers", _pathMarkers] call ALiVE_fnc_hashSet;
+            };
+
             [_callbackArgs,_result] spawn _callback;
 
-            // remove job from queue and clean up the mess we made
+            // remove job from queue and clean up the mess we made. The cost /
+            // came-from HashMaps are released by garbage collection once the job
+            // data holding them is cleared below - no explicit delete needed
+            // (unlike the CBA namespaces these replaced). (#pathfinding-opt)
             _pathJobs deleteat 0;
-            _cameFromMapLayer1 call CBA_fnc_deleteNamespace;
-            _costSoFarMapLayer1 call CBA_fnc_deleteNamespace;
-            _cameFromMapLayer2 call CBA_fnc_deleteNamespace;
-            _costSoFarMapLayer2 call CBA_fnc_deleteNamespace;
             _currentJobData resize 0;
             _currentJob resize 0;
             // {deleteMarker _x} foreach _debugMarkers;

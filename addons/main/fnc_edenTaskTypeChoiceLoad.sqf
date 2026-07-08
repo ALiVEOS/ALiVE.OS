@@ -203,11 +203,11 @@ private _selectedLogics = get3DENSelected "logic";
 if (count _selectedLogics > 0) then {
     private _logicObj = _selectedLogics select 0;
     if (!isNull _logicObj) then {
-        // Eden stores Combo values as strings via the attribute
-        // expression - coerce defensively. Default false matches the
-        // CfgVehicles default; first-time configuration sees a
-        // legacy-6-only listbox.
-        private _val = _logicObj getVariable ["civicStateEnabled", false];
+        // civicStateEnabled isn't a logic var at 3DEN edit time (its
+        // expression runs at mission start), so read the attribute directly.
+        // The Combo stores "true"/"false" strings; coerce defensively below.
+        private _valArr = _logicObj get3DENAttribute "ALiVE_MIL_C2ISTAR_civicStateEnabled";
+        private _val = if (_valArr isEqualType [] && {count _valArr > 0}) then { _valArr select 0 } else { "false" };
         _civicStateEnabled = switch (typeName _val) do {
             case "BOOL":   { _val };
             case "STRING": { (toLower _val) == "true" };
@@ -237,8 +237,11 @@ private _hasAsymmetricOpcom = false;
 {
     {
         if (_x isEqualType objNull && {!isNull _x} && {(typeOf _x) == "ALiVE_mil_OPCOM"}) then {
-            private _ct = _x getVariable ["controltype", ""];
-            if (typeName _ct == "STRING" && {(toLower _ct) == "asymmetric"}) exitWith {
+            // controltype isn't a logic var at 3DEN edit time (its expression
+            // runs at mission start), so read the attribute directly.
+            private _ctArr = _x get3DENAttribute "ALiVE_mil_opcom_controltype";
+            private _ct = if (_ctArr isEqualType [] && {count _ctArr > 0}) then { _ctArr select 0 } else { "" };
+            if (_ct isEqualType "" && {(toLower _ct) == "asymmetric"}) exitWith {
                 _hasAsymmetricOpcom = true;
             };
         };

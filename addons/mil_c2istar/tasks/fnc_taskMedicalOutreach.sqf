@@ -1,4 +1,4 @@
-#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\x\alive\addons\mil_c2istar\script_component.hpp"
 SCRIPT(taskMedicalOutreach);
 
 /* ----------------------------------------------------------------------------
@@ -223,9 +223,9 @@ switch (_taskState) do {
         private _taskDialog = [_params, "dialog"] call ALIVE_fnc_hashGet;
         private _currentTaskDialog = [_taskDialog, "Travel"] call ALIVE_fnc_hashGet;
 
-        if (_lastState != "Travel") then {
+        if !([_params, "chatStartDone_Travel", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Travel"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Travel", true] call ALIVE_fnc_hashSet;
         };
 
         [_taskPosition, _taskSide, _taskPlayers, _taskID, "building", "medical outreach site"] call ALIVE_fnc_taskCreateMarkersForPlayers;
@@ -260,9 +260,9 @@ switch (_taskState) do {
         private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
         private _target = _targets param [0, objNull, [objNull]];
 
-        if (_lastState != "Deliver") then {
+        if !([_params, "chatStartDone_Deliver", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Deliver"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Deliver", true] call ALIVE_fnc_hashSet;
         };
 
         if (isNull _target || {!alive _target}) then {

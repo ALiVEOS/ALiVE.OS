@@ -31,6 +31,7 @@ Authors:
 Naught
 Highhead
 Wolffy.au
+Jman
 ---------------------------------------------------------------------------- */
 private ["_spawnhouses","_BuildingTypeStrategic","_density","_CQB_spawn","_blackzone","_whitezone","_nonstrathouses","_strathouses"];
 
@@ -50,10 +51,27 @@ _nonstrathouses = [];
 { // forEach
     private ["_obj", "_isStrategic", "_houses"];
     _obj = _x;
+
+    // CBA AI Building Position helper objects are kindOf Building, so the enterable-houses
+    // sweep hands them to this sorter as standalone one-slot houses. If the helper sits
+    // inside a nearby enterable building, that building's own garrison already mans the
+    // spot at spawn time (CBA_fnc_buildingPositions merge in spawnGroup) - drop the helper
+    // here so it cannot raise a second group on the same spot. Free-standing helpers and
+    // helpers inside buildings without engine positions are kept as houses, so areas that
+    // only have CBA positions keep their CQB presence.
+    private _absorbedCBApos = (_obj isKindOf "CBA_buildingPos") && {
+        private _cbaPos = _obj buildingPos 0;
+        ((nearestObjects [_obj, ["House","Building"], 50]) findIf {
+            private _building = _x;
+            !(_building isKindOf "CBA_buildingPos")
+            && {[_building] call ALiVE_fnc_isHouseEnterable}
+            && {(([_building] call CBA_fnc_buildingPositions) findIf {_x isEqualTo _cbaPos}) != -1}
+        }) != -1
+    };
     _isStrategic = (typeOf _obj) in _BuildingTypeStrategic;
     _houses = if (_isStrategic) then {_strathouses} else {_nonstrathouses};
 
-    if (!(([_obj] call ALiVE_fnc_getBuildingPositions) isEqualTo []) && {!(_obj in _houses)}) then {
+    if (!_absorbedCBApos && {!(([_obj] call ALiVE_fnc_getBuildingPositions) isEqualTo [])} && {!(_obj in _houses)}) then {
         private ["_pos", "_collect"];
 
         _pos = getPosATL _obj;

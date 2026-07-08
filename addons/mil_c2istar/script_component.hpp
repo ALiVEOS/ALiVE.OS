@@ -1,4 +1,4 @@
-#define COMPONENT MIL_C2ISTAR
+#define COMPONENT mil_c2istar
 #include "\x\alive\addons\main\script_mod.hpp"
 
 #ifdef DEBUG_ENABLED_MIL_C2ISTAR

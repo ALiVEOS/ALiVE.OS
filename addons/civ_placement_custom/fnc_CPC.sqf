@@ -78,7 +78,7 @@ switch (_operation) do {
         _result = _args;
     };
     case "state": {
-        private _simpleOperations = ["targets", "objectiveSize", "size", "type", "faction", "priority", "asymmetricInstallationCountOverrides"];
+        private _simpleOperations = ["targets", "objectiveSize", "size", "type", "faction", "factions", "priority", "asymmetricInstallationCountOverrides"];
 
         if (typeName _args != "ARRAY") then {
             private _state = [] call CBA_fnc_hashCreate;
@@ -149,6 +149,9 @@ switch (_operation) do {
     case "asymmetricInstallationCountOverrides": {
         _result = [_logic, _operation, _args, DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "factions": {
+        _result = [_logic, _operation, _args, "[]"] call ALIVE_fnc_OOsimpleOperation;
+    };
     // #875 - objective scenery objects: AA-style triplet.
     case "objectiveObjects": {
         _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
@@ -167,7 +170,7 @@ switch (_operation) do {
     };
 
     case "faction": {
-        _result = [_logic, _operation, _args, DEFAULT_FACTION, [] call ALiVE_fnc_configGetFactions] call ALIVE_fnc_OOsimpleOperation;
+        _result = [_logic, _operation, _args, DEFAULT_FACTION, [""] + ([] call ALiVE_fnc_configGetFactions)] call ALIVE_fnc_OOsimpleOperation;
 
         if !(_args isEqualType "") then {
             private _compiledFaction = [_logic] call ALiVE_fnc_factionCompilerResolveForModule;
@@ -327,7 +330,8 @@ switch (_operation) do {
                 if !(ALIVE_loadProfilesPersistent) then {
                     [_logic, "placement"] call MAINCLASS;
                 } else {
-                    if (_roadBlocks > 0) then {
+                    if (_roadBlocks > 0 && isNil QMOD(COMPOSITIONS_LOADED)) then {
+                        // #922: when COMPOSITIONS_LOADED is set, sys_data has already restored these roadblocks this load - re-seeding here would duplicate them. (The queue inited above stays [], so the spawn loop is still safe.)
                         private _restoredRoadblocks = 0;
                         private _savedRoadblockLocations = if (isNil "ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS") then {[]} else {+ALIVE_CIV_PLACEMENT_ROADBLOCK_LOCATIONS};
 
@@ -461,8 +465,83 @@ switch (_operation) do {
             private _customSpecOpsCount = [_logic, "customSpecOpsCount"] call MAINCLASS;
             if (_customSpecOpsCount == "") then {_customSpecOpsCount = 666} else {_customSpecOpsCount = parseNumber _customSpecOpsCount;};
 
+            private _fnc_parseFactions = {
+                params ["_value"];
+                private _parsed = [];
+                if (_value isEqualType []) then {
+                    {
+                        if (_x isEqualType "" && {_x != ""} && {_x != "NONE"} && {!(_x in _parsed)}) then {
+                            _parsed pushBack _x;
+                        };
+                    } forEach _value;
+                    _parsed
+                } else {
+                    if !(_value isEqualType "") exitWith { [] };
+                    if (_value == "") exitWith { [] };
+                    private _s = _value;
+                    _s = [_s, " ", ""] call CBA_fnc_replace;
+                    _s = [_s, "[", ""] call CBA_fnc_replace;
+                    _s = [_s, "]", ""] call CBA_fnc_replace;
+                    _s = [_s, """", ""] call CBA_fnc_replace;
+                    {
+                        if (_x != "" && {_x != "NONE"} && {!(_x in _parsed)}) then {
+                            _parsed pushBack _x;
+                        };
+                    } forEach ([_s, ","] call CBA_fnc_split);
+                    _parsed
+                };
+            };
+
+            private _fnc_getOpcomFactions = {
+                params ["_opcom"];
+                private _opcomFactions = [_opcom getVariable ["factions", ""]] call _fnc_parseFactions;
+                {
+                    if !(_x in _opcomFactions) then { _opcomFactions pushBack _x };
+                } forEach ([_opcom getVariable ["factionsManual", ""]] call _fnc_parseFactions);
+
+                if (count _opcomFactions == 0) then {
+                    {
+                        private _legacyFaction = _opcom getVariable [_x, ""];
+                        if (_legacyFaction != "" && {_legacyFaction != "NONE"} && {!(_legacyFaction in _opcomFactions)}) then {
+                            _opcomFactions pushBack _legacyFaction;
+                        };
+                    } forEach ["faction1", "faction2", "faction3", "faction4"];
+                };
+                if (count _opcomFactions == 0) then { _opcomFactions pushBack DEFAULT_FACTION };
+
+                _opcomFactions
+            };
+
             private _type = [_logic, "type"] call MAINCLASS;
-            private _faction = [_logic, "faction"] call MAINCLASS;
+            private _factions = [_logic getVariable ["factions", ""]] call _fnc_parseFactions;
+            // Read the raw hidden legacy value so only a non-default legacy
+            // faction blocks OPCOM inheritance.
+            private _legacyFactions = [_logic getVariable ["faction", ""]] call _fnc_parseFactions;
+            // Old SQMs often carry the former BLU_F default in the now-hidden
+            // field; don't let that stale default block commander inheritance.
+            private _legacyIsDefault = (count _legacyFactions == 1) && {(_legacyFactions select 0) == DEFAULT_FACTION};
+
+            if ((count _factions == 0) && {count _legacyFactions > 0} && {!_legacyIsDefault}) then {
+                _factions = +_legacyFactions;
+            };
+
+            if (count _factions == 0) then {
+                {
+                    if ((typeOf _x) isEqualTo "ALiVE_mil_OPCOM") then {
+                        {
+                            if !(_x in _factions) then { _factions pushBack _x };
+                        } forEach ([_x] call _fnc_getOpcomFactions);
+                    };
+                } forEach (synchronizedObjects _logic);
+            };
+
+            if ((count _factions == 0) && {count _legacyFactions > 0}) then {
+                _factions = +_legacyFactions;
+            };
+
+            if (count _factions == 0) then { _factions = [DEFAULT_FACTION] };
+
+            private _faction = _factions select 0;
             private _size = parseNumber ([_logic, "size"] call MAINCLASS);
             private _roadBlocks = parseNumber ([_logic, "roadBlocks"] call MAINCLASS);
 
@@ -472,7 +551,7 @@ switch (_operation) do {
             private _countProfiles = 0;
 
             if (_debug) then {
-                ["CPC [%1] - Force Size: %2 Type: %3 SideNum: %4 Side: %5 Faction: %6", _faction, _size, _type, _factionSideNumber, _side, _faction] call ALiVE_fnc_dump;
+                ["CPC [%1] - Force Size: %2 Type: %3 SideNum: %4 Side: %5 Factions: %6", _faction, _size, _type, _factionSideNumber, _side, _factions] call ALiVE_fnc_dump;
             };
 
             call ALiVE_fnc_staticDataHandler;
@@ -557,27 +636,40 @@ switch (_operation) do {
                 ["Count Spec Ops: %1", _countSpecOps] call ALIVE_fnc_dump;
             };
 
+            private _fnc_pickGroupForCategory = {
+                params ["_category", "_slotIndex"];
+                private _entry = ["FALSE", ""];
+                private _factionCount = count _factions;
+                if (_factionCount == 0) exitWith { _entry };
+                private _start = _slotIndex mod _factionCount;
+                for "_attempt" from 0 to (_factionCount - 1) do {
+                    private _candidateFaction = _factions select ((_start + _attempt) mod _factionCount);
+                    private _candidateGroup = [_category, _candidateFaction] call ALIVE_fnc_configGetRandomGroup;
+                    if !(_candidateGroup == "FALSE") exitWith {
+                        _entry = [_candidateGroup, _candidateFaction];
+                    };
+                };
+                _entry
+            };
+
             private _groups = [];
             for "_i" from 0 to _countArmored - 1 do {
-                private _group = ["Armored", _faction] call ALIVE_fnc_configGetRandomGroup;
-                if !(_group == "FALSE") then {_groups pushBack _group;};
+                private _entry = ["Armored", _i] call _fnc_pickGroupForCategory;
+                if !((_entry select 0) == "FALSE") then {_groups pushBack _entry;};
             };
             for "_i" from 0 to _countMechanized - 1 do {
-                private _group = ["Mechanized", _faction] call ALIVE_fnc_configGetRandomGroup;
-                if !(_group == "FALSE") then {_groups pushBack _group;};
+                private _entry = ["Mechanized", _i] call _fnc_pickGroupForCategory;
+                if !((_entry select 0) == "FALSE") then {_groups pushBack _entry;};
             };
 
             if (_countMotorized > 0) then {
                 private _motorizedGroups = [];
                 for "_i" from 0 to _countMotorized - 1 do {
-                    private _group = ["Motorized", _faction] call ALIVE_fnc_configGetRandomGroup;
-                    if !(_group == "FALSE") then {_motorizedGroups pushBack _group;};
-                };
-                if (count _motorizedGroups == 0) then {
-                    for "_i" from 0 to _countMotorized - 1 do {
-                        private _group = ["Motorized_MTP", _faction] call ALIVE_fnc_configGetRandomGroup;
-                        if !(_group == "FALSE") then {_motorizedGroups pushBack _group;};
+                    private _entry = ["Motorized", _i] call _fnc_pickGroupForCategory;
+                    if ((_entry select 0) == "FALSE") then {
+                        _entry = ["Motorized_MTP", _i] call _fnc_pickGroupForCategory;
                     };
+                    if !((_entry select 0) == "FALSE") then {_motorizedGroups pushBack _entry;};
                 };
                 _groups append _motorizedGroups;
             };
@@ -587,23 +679,23 @@ switch (_operation) do {
 
             private _infantryGroups = [];
             for "_i" from 0 to _countInfantry - 1 do {
-                private _group = ["Infantry", _faction] call ALIVE_fnc_configGetRandomGroup;
-                if !(_group == "FALSE") then {_infantryGroups pushBack _group;};
+                private _entry = ["Infantry", _i] call _fnc_pickGroupForCategory;
+                if !((_entry select 0) == "FALSE") then {_infantryGroups pushBack _entry;};
             };
             _groups append _infantryGroups;
             private _infantryGroupEnd = count _groups;
 
             for "_i" from 0 to _countAir - 1 do {
-                private _group = ["Air", _faction] call ALIVE_fnc_configGetRandomGroup;
-                if !(_group == "FALSE") then {_groups pushBack _group;};
+                private _entry = ["Air", _i] call _fnc_pickGroupForCategory;
+                if !((_entry select 0) == "FALSE") then {_groups pushBack _entry;};
             };
             for "_i" from 0 to _countSpecOps - 1 do {
-                private _group = ["SpecOps", _faction] call ALIVE_fnc_configGetRandomGroup;
-                if !(_group == "FALSE") then {_groups pushBack _group;};
+                private _entry = ["SpecOps", _i] call _fnc_pickGroupForCategory;
+                if !((_entry select 0) == "FALSE") then {_groups pushBack _entry;};
             };
 
-            _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;
-            _infantryGroups = _infantryGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
+            _groups = _groups select {!((_x select 0) in ALiVE_PLACEMENT_GROUPBLACKLIST)};
+            _infantryGroups = _infantryGroups select {!((_x select 0) in ALiVE_PLACEMENT_GROUPBLACKLIST)};
             // Recompute boundary post-blacklist.
             if (count _infantryGroups > 0) then {
                 _infantryGroupStart = _groups find (_infantryGroups select 0);
@@ -676,10 +768,6 @@ switch (_operation) do {
                 [_clusterCenter getPos [50, random 360], _seedDir]
             };
 
-            private _factionConfigCPC = _faction call ALiVE_fnc_configGetFactionClass;
-            private _factionSideNumberCPC = getNumber(_factionConfigCPC >> "side");
-            private _sideCPC = _factionSideNumberCPC call ALIVE_fnc_sideNumberToText;
-
             if (isNil QGVAR(ROADBLOCK_LOCATIONS)) then {
                 GVAR(ROADBLOCK_LOCATIONS) = [];
             };
@@ -689,13 +777,14 @@ switch (_operation) do {
             if (_placeSeaPatrols > 0) then {
                 private _marineClusters = [_logic, "objectivesMarine"] call MAINCLASS;
                 {
-                    private _seaPatrolGroup = ["Naval", _faction] call ALIVE_fnc_configGetRandomGroup;
+                    private _seaEntry = ["Naval", _forEachIndex] call _fnc_pickGroupForCategory;
+                    _seaEntry params ["_seaPatrolGroup", "_seaPatrolFaction"];
                     if !(_seaPatrolGroup == "FALSE") then {
                         private _center = [_x, "center"] call ALIVE_fnc_hashGet;
                         private _pos = [_center, true] call ALiVE_fnc_getClosestSea;
                         if (surfaceIsWater _pos) then {
                             if ((random 1) < _placeSeaPatrols) then {
-                                private _seaPatrol = [_seaPatrolGroup, _pos, random 360, true, _faction, true, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                                private _seaPatrol = [_seaPatrolGroup, _pos, random 360, true, _seaPatrolFaction, true, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
                                 {
                                     if (([_x, "type"] call ALiVE_fnc_HashGet) == "entity") then {
                                         [_x, "setActiveCommand", ["ALIVE_fnc_SeaPatrol", "spawn", [1000, "AWARE", _center]]] call ALIVE_fnc_profileEntity;
@@ -708,7 +797,7 @@ switch (_operation) do {
                 } forEach _marineClusters;
 
                 if (_debug) then {
-                    ["CPC [%1] - Created %2 Sea Patrols", _faction, _countSeaPatrols] call ALiVE_fnc_dump;
+                    ["CPC [%1] - Created %2 Sea Patrols", _factions, _countSeaPatrols] call ALiVE_fnc_dump;
                 };
             };
 
@@ -732,7 +821,8 @@ switch (_operation) do {
 
                 if (count _infantryGroups > 0 && {_guardProbabilityCount > 0}) then {
                     for "_i" from 0 to _guardProbabilityCount - 1 do {
-                        private _guardGroup = selectRandom _infantryGroups;
+                        private _guardEntry = selectRandom _infantryGroups;
+                        _guardEntry params ["_guardGroup", "_guardFaction"];
                         // Water-aware random pick - up to 10 retries before
                         // falling back to _center.
                         private _guardPos = _center;
@@ -740,7 +830,7 @@ switch (_operation) do {
                             private _candidate = [_center, _guardDistance] call CBA_fnc_RandPos;
                             if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
                         };
-                        private _guards = [_guardGroup, _guardPos, random 360, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                        private _guards = [_guardGroup, _guardPos, random 360, true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
                         {
                             if (([_x, "type"] call ALiVE_fnc_HashGet) == "entity") then {
                                 [_x, "setActiveCommand", ["ALIVE_fnc_garrison", "spawn", [_guardRadius, "true", [0,0,0], "", _guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
@@ -751,7 +841,8 @@ switch (_operation) do {
                 };
 
                 private _fnc_placeGroupCPC = {
-                    params ["_group", "_isVehicle", "_isInfantry"];
+                    params ["_groupEntry", "_isVehicle", "_isInfantry"];
+                    _groupEntry params ["_group", "_groupFaction"];
                     private _command = "";
                     private _radius = [];
                     private _position = [];
@@ -759,7 +850,7 @@ switch (_operation) do {
 
                     private _vehicleReserveClass = "";
                     if (_isVehicle && {_vehicleActivePlacedCount >= _vehicleActiveCount}) then {
-                        _vehicleReserveClass = [_group, _faction] call _fnc_getGroupVehicleClass;
+                        _vehicleReserveClass = [_group, _groupFaction] call _fnc_getGroupVehicleClass;
                     };
                     private _isVehicleReserve = _vehicleReserveClass != "";
                     private _isInfantryReserve = _isInfantry && {_infantryActivePlacedCount >= _infantryActiveCount};
@@ -777,10 +868,13 @@ switch (_operation) do {
                             };
                             if ((!isNil "ALiVE_civ_placement_custom_debug" && {ALiVE_civ_placement_custom_debug})
                                 && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
-                                ["[ALiVE Reserve DEBUG] CPC-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
+                                ["[ALiVE Reserve DEBUG] CPC-VEHICLE-RESERVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _groupFaction, _totalCount, _group, _vehicleReserveClass, _vehiclePos, round ((diag_tickTime - _t0) * 1000)] call ALiVE_fnc_dump;
                             };
 
-                            private _emptyProfiles = [_vehicleReserveClass, _sideCPC, _faction, _vehiclePos, _vehicleDir, false, _faction] call ALIVE_fnc_createProfilesUnCrewedVehicle;
+                            private _groupFactionConfig = _groupFaction call ALiVE_fnc_configGetFactionClass;
+                            private _groupFactionSideNumber = getNumber(_groupFactionConfig >> "side");
+                            private _groupSide = _groupFactionSideNumber call ALIVE_fnc_sideNumberToText;
+                            private _emptyProfiles = [_vehicleReserveClass, _groupSide, _groupFaction, _vehiclePos, _vehicleDir, false, _groupFaction] call ALIVE_fnc_createProfilesUnCrewedVehicle;
                             private _profileEntity = _emptyProfiles select 0;
                             private _profileVehicle = _emptyProfiles select 1;
                             [_profileEntity, "objectType", _group] call ALIVE_fnc_profileEntity;
@@ -793,10 +887,10 @@ switch (_operation) do {
                             [_profileVehicle, "ALiVE_reserveLocked", _vehicleEmptyLocked] call ALiVE_fnc_HashSet;
                             private _vehicleProfileID = [_profileVehicle, "profileID"] call ALiVE_fnc_hashGet;
                             private _entityProfileID = [_profileEntity, "profileID"] call ALiVE_fnc_hashGet;
-                            _reservePool pushBack ["VEHICLE", _group, _vehicleProfileID, _entityProfileID, _faction, _onEachSpawn, _onEachSpawnOnce];
+                            _reservePool pushBack ["VEHICLE", _group, _vehicleProfileID, _entityProfileID, _groupFaction, _onEachSpawn, _onEachSpawnOnce];
                             _countProfiles = _countProfiles + 2;
                         } else {
-                            _reservePool pushBack ["INFANTRY", _group, _faction, _onEachSpawn, _onEachSpawnOnce];
+                            _reservePool pushBack ["INFANTRY", _group, _groupFaction, _onEachSpawn, _onEachSpawnOnce];
                         };
                         [_cluster, "reservePool", _reservePool] call ALiVE_fnc_hashSet;
                         _totalCount = _totalCount + 1;
@@ -807,7 +901,7 @@ switch (_operation) do {
                         if (_isVehicle) then {
                             _command = "ALIVE_fnc_ambientMovement";
                             _radius = [_guardRadius, "SAFE", [0,0,0]];
-                            _activeVehClass = [_group, _faction] call _fnc_getGroupVehicleClass;
+                            _activeVehClass = [_group, _groupFaction] call _fnc_getGroupVehicleClass;
                             if (_activeVehClass != "") then {
                                 private _parking = [_activeVehClass, _center, _clusterSize] call _fnc_findVehicleParkingPos;
                                 _position = _parking select 0;
@@ -833,12 +927,12 @@ switch (_operation) do {
                         };
 
                         if !(surfaceIsWater _position) then {
-                            private _profiles = [_group, _position, _activeDir, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                            private _profiles = [_group, _position, _activeDir, true, _groupFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
                             if (_isVehicle
                                 && {!isNil "ALiVE_civ_placement_custom_debug" && {ALiVE_civ_placement_custom_debug}}
                                 && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
-                                ["[ALiVE Reserve DEBUG] CPC-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _faction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)] call ALiVE_fnc_dump;
+                                ["[ALiVE Reserve DEBUG] CPC-VEHICLE-ACTIVE faction=%1 totalCount=%2 group=%3 class=%4 pos=%5 elapsed=%6ms", _groupFaction, _totalCount, _group, _activeVehClass, _position, round ((diag_tickTime - _activeT0) * 1000)] call ALiVE_fnc_dump;
                             };
 
                             {
@@ -883,7 +977,7 @@ switch (_operation) do {
                     };
                 };
 
-                if (!isNil "ALIVE_fnc_createRoadblock" && isNil QGVAR(COMPOSITIONS_LOADED) && {random 100 < _roadBlocks}) then {
+                if (!isNil "ALIVE_fnc_createRoadblock" && {random 100 < _roadBlocks}) then {
                     private _roadblockLocation = [_center, _clusterSize];
                     GVAR(ROADBLOCK_LOCATIONS) pushBack _roadblockLocation;
 
@@ -925,7 +1019,7 @@ switch (_operation) do {
             };
 
             if (_debug) then {
-                ["CPC %2 - Total profiles created: %1", _countProfiles, _faction] call ALiVE_fnc_dump;
+                ["CPC %2 - Total profiles created: %1", _countProfiles, _factions] call ALiVE_fnc_dump;
                 ["CPC - Placement completed"] call ALiVE_fnc_dump;
                 [] call ALIVE_fnc_timer;
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;

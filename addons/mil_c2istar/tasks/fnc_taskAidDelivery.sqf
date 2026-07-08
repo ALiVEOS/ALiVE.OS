@@ -1,4 +1,4 @@
-#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\x\alive\addons\mil_c2istar\script_component.hpp"
 SCRIPT(taskAidDelivery);
 
 /* ----------------------------------------------------------------------------
@@ -148,8 +148,18 @@ switch (_taskState) do {
         };
         _aidVehiclePosition set [2, 0];
 
+        // #925: place the rally NPC a footprint-clear distance from the van. Both
+        // were anchored to _sourceContactPosition (the van is searched within 80 m
+        // of it), so they routinely spawned on the exact same spot and the NPC was
+        // run over the instant the player drove the van off at the Rally step.
+        private _sourceContactSpawnPos = [_aidVehiclePosition, 6, 12, 1, 0, 0.3, 0] call BIS_fnc_findSafePos;
+        if (_sourceContactSpawnPos isEqualTo []) then {
+            _sourceContactSpawnPos = [_aidVehiclePosition, 8, _aidVehicleDir + 90] call BIS_fnc_relPos;
+        };
+        _sourceContactSpawnPos set [2, 0];
+
         private _sourceContactGroup = createGroup [civilian, true];
-        private _sourceContact = _sourceContactGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _sourceContactPosition, [], 0, "NONE"];
+        private _sourceContact = _sourceContactGroup createUnit [selectRandom ([] call ALiVE_fnc_taskGetCivilianClasses), _sourceContactSpawnPos, [], 0, "NONE"];
         removeAllWeapons _sourceContact;
         _sourceContact disableAI "AUTOTARGET";
         _sourceContact disableAI "TARGET";
@@ -355,9 +365,9 @@ switch (_taskState) do {
         private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
         private _aidVehicle = _targets param [0, objNull, [objNull]];
 
-        if (_lastState != "Rally") then {
+        if !([_params, "chatStartDone_Rally", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Rally"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Rally", true] call ALIVE_fnc_hashSet;
         };
 
         if (isNull _aidVehicle || {!alive _aidVehicle}) then {
@@ -412,9 +422,9 @@ switch (_taskState) do {
         private _targets = [_params, "targets"] call ALIVE_fnc_hashGet;
         private _aidVehicle = _targets param [0, objNull, [objNull]];
 
-        if (_lastState != "Move") then {
+        if !([_params, "chatStartDone_Move", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Move"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Move", true] call ALIVE_fnc_hashSet;
         };
 
         if (isNull _aidVehicle || {!alive _aidVehicle}) then {
@@ -474,9 +484,9 @@ switch (_taskState) do {
         private _aidVehicle = _targets param [0, objNull, [objNull]];
         private _completionVar = [_params, "completionVar", ""] call ALIVE_fnc_hashGet;
 
-        if (_lastState != "Deliver") then {
+        if !([_params, "chatStartDone_Deliver", false] call ALIVE_fnc_hashGet) then {
             ["chat_start", _currentTaskDialog, _taskSide, _taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
-            [_params, "lastState", "Deliver"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Deliver", true] call ALIVE_fnc_hashSet;
         };
 
         if (isNull _aidVehicle || {!alive _aidVehicle}) then {

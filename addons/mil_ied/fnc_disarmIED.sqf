@@ -167,9 +167,10 @@ if (_IED getVariable ["ALiVE_IED_Disarmed", false]) exitWith {
         if (_success) then {
             [_IED, _caller, _id, _IEDCharge, "You guessed correct! IED disarmed."] call _fnDisarmSuccess;
         } else {
-            // Wrong wire - detonate.
-            // M_Mo_120mm_AT removed 2026-05-27 -- unspawnable, weight shifted onto LG (see fnc_armIED.sqf:48).
-            private _shell = [["M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[12,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
+            // Wrong wire - detonate. Use an ammo class that explodes at rest
+            // (#890): the M_Mo_*_AT* mortar rounds spawn non-null but inert.
+            // Confirmed-detonating classes per the 2026-05-30 in-game test.
+            private _shell = [["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted;
             _shell createVehicle getposATL _IED;
 
             private _trgr = (position _IED) nearObjects ["EmptyDetector", 3];

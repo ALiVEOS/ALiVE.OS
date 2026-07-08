@@ -20,7 +20,7 @@
 | Component |
 #===========#
 
-ALiVE_mil_C2ISTAR
+ALiVE_mil_c2istar
 
 #================#
 | Main author(s) |

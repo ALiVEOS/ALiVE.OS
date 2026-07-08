@@ -46,7 +46,8 @@ DEFAULT_PARAM(2,_jetSpawnDistance,0);
 DEFAULT_PARAM(3,_helicopterSpawnDistance,1500);
 DEFAULT_PARAM(4,_uavSpawnDistance,0);
 
-_players = allPlayers;
+// #918: drop headless clients (they sit in allPlayers) so an HC doesn't trigger spawning
+_players = allPlayers - entities "HeadlessClient_F";
 if (!isnil "ALIVE_profileSystem" && { [ALIVE_profileSystem,"zeusSpawn"] call ALiVE_fnc_hashGet }) then {
     _players append allCurators;
 };

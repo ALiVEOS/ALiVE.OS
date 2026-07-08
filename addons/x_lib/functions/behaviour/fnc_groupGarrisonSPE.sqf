@@ -20,7 +20,7 @@ Author:
 Jman
 ---------------------------------------------------------------------------- */
 
-params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false]];
+params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_cbaSearchRadius", 300]];
 
 private _units = units _group;
 _radius = 50;
@@ -70,3 +70,9 @@ if (count _staticWeapons > 0) then
 };
 
 if (count _units == 0) exitwith {};
+
+// Garrison any remaining units onto CBA AI Building Positions (CBA_buildingPos objects) when
+// the mission-maker has placed them, so a Garrison Objective mans custom positions such as
+// trench slots. Sweep the whole objective (radius = the objective's Size, passed in), not just
+// the 50 m static-weapon search above -- a trench / defensive line can span well beyond it. (#945)
+[_units, _position, _cbaSearchRadius, _moveInstantly] call ALIVE_fnc_garrisonUnitsOnCBAPositions;

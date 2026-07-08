@@ -81,6 +81,16 @@ _menus =
 ];
 
 if (_menuName == "profile") then {
+    // Live pathfinding debug-draw toggles are offered to a logged-in admin /
+    // listen-host / assigned-Zeus (the same three-gate test the virtualised
+    // profile debug uses). Gating on this - NOT on the server-only
+    // "alive_pathfinder" global, which is nil on every remote client - keeps the
+    // entries present for the admins meant to use them, independent of whether
+    // pathfinding draw is currently on or even whether pathfinding is enabled.
+    private _pfAdmin   = (isServer && hasInterface) || (serverCommandAvailable "#kick") || !isNull (getAssignedCuratorLogic player);
+    private _pfGridOn  = missionNamespace getVariable ["ALiVE_pathfinding_drawGrid",  false];
+    private _pfPathsOn = missionNamespace getVariable ["ALiVE_pathfinding_drawPaths", false];
+
     _menus set [count _menus,
         [
             ["profile", localize "STR_ALIVE_PROFILE_SYSTEM", "popup"],
@@ -102,6 +112,46 @@ if (_menuName == "profile") then {
                     -1,
                     [QUOTE(ADDON)] call ALiVE_fnc_isModuleAvailable,
                     !isnil QUOTE(ADDON) && {((ADDON getVariable ["debug","false"]) == "true")}
+                ],
+                // --- Pathfinding debug-draw toggles (live, admin only) ---
+                // Offered to any admin/host/Zeus (_pfAdmin); each activate/
+                // deactivate pair shows depending on the current draw flag. The
+                // action no-ops safely if no pathfinder exists on this machine.
+                [localize "STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_ENABLE",
+                    {if (!isNil "alive_pathfinder") then {[alive_pathfinder,"setDrawGrid",true] call ALiVE_fnc_pathfinder;};},
+                    "",
+                    localize "STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_COMMENT",
+                    "",
+                    -1,
+                    _pfAdmin,
+                    _pfAdmin && {!_pfGridOn}
+                ],
+                [localize "STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_DISABLE",
+                    {if (!isNil "alive_pathfinder") then {[alive_pathfinder,"setDrawGrid",false] call ALiVE_fnc_pathfinder;};},
+                    "",
+                    localize "STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_COMMENT",
+                    "",
+                    -1,
+                    _pfAdmin,
+                    _pfAdmin && {_pfGridOn}
+                ],
+                [localize "STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_ENABLE",
+                    {if (!isNil "alive_pathfinder") then {[alive_pathfinder,"setDrawPaths",true] call ALiVE_fnc_pathfinder;};},
+                    "",
+                    localize "STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_COMMENT",
+                    "",
+                    -1,
+                    _pfAdmin,
+                    _pfAdmin && {!_pfPathsOn}
+                ],
+                [localize "STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_DISABLE",
+                    {if (!isNil "alive_pathfinder") then {[alive_pathfinder,"setDrawPaths",false] call ALiVE_fnc_pathfinder;};},
+                    "",
+                    localize "STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_COMMENT",
+                    "",
+                    -1,
+                    _pfAdmin,
+                    _pfAdmin && {_pfPathsOn}
                 ]
             ]
         ]

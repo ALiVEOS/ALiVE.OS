@@ -321,6 +321,20 @@ if (ADDON getVariable ["debug", false]) then {
             };
         } forEach _goodspots;
     };
+
+    // Check 6: Not near a roadblock. mil_ied shouldn't drop IEDs on or beside a
+    // friendly checkpoint composition. civ_placement records each spawned roadblock
+    // centre in its ROADBLOCKS global (cross-component EGVAR reference; reads as an
+    // empty list if civ_placement isn't loaded or no roadblocks have spawned yet).
+    if (_isValid) then {
+        private _roadblocks = missionNamespace getVariable [QEGVAR(civ_placement,ROADBLOCKS), []];
+        if ({_pos distance2D _x < 100} count _roadblocks > 0) then {
+            _isValid = false;
+            if (ADDON getVariable ["debug", false]) then {
+                ["ALIVE-IED: Position rejected (within 100m of a roadblock) at %1", _pos] call ALiVE_fnc_dump;
+            };
+        };
+    };
     
     // If position passed all checks, add to good spots
     if (_isValid) then {

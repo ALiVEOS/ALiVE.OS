@@ -310,7 +310,10 @@ for "_j" from 1 to _numIEDs do {
                 };
                 [position _IED, [str(side (group _killer))], +10] call ALiVE_fnc_updateSectorHostility;
                 _pos set [2,0];
-                "M_Mo_120mm_AT_LG" createVehicle _pos;
+                // Detonate with an ammo class that explodes at rest (#890) --
+                // the old M_Mo_120mm_AT_LG spawns inert. Confirmed-detonating
+                // classes per the 2026-05-30 in-game test.
+                ([["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted) createVehicle _pos;
             };
 
             [ADDON, "removeIED", _IED] call ALiVE_fnc_IED;
@@ -352,7 +355,10 @@ for "_j" from 1 to _numIEDs do {
                 };
                 [position _ied, [str(side (group _killer))], +10] call ALiVE_fnc_updateSectorHostility;
                 _pos set [2,0];
-                "M_Mo_120mm_AT_LG" createVehicle _pos;
+                // Detonate with an ammo class that explodes at rest (#890) --
+                // the old M_Mo_120mm_AT_LG spawns inert. Confirmed-detonating
+                // classes per the 2026-05-30 in-game test.
+                ([["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted) createVehicle _pos;
             };
 
             [ADDON, "removeIED", _ied] call ALiVE_fnc_IED;

@@ -107,10 +107,13 @@ _ehID = _IED addeventhandler ["HandleDamage",{
         [(_this select 0) getvariable "Marker"] call cba_fnc_deleteEntity;
     };
 
-    // M_Mo_120mm_AT replaced with LG variant 2026-05-27 -- the no-_LG
-    // class silently returns objNull from createVehicle, leaving the
-    // VBIED inert. Caught via Ares #890 retest DIAG-STRIP log.
-    "M_Mo_120mm_AT_LG" createVehicle [(getpos (_this select 0)) select 0, (getpos (_this select 0)) select 1,0];
+    // Spawn an ammo class that detonates at rest (#890). The M_Mo_*_AT_LG
+    // round used before spawns non-null but inert (guided ammo, no velocity)
+    // -> the VBIED did no damage. A car bomb is a big blast, so weight toward
+    // the larger bombs; R_60mm_HE kept as the lighter option. Confirmed
+    // detonating classes per the in-game test 2026-05-30.
+    private _vbShell = [["Bomb_04_F","Bomb_03_F","R_60mm_HE"],[3,3,1]] call BIS_fnc_selectRandomWeighted;
+    _vbShell createVehicle [(getpos (_this select 0)) select 0, (getpos (_this select 0)) select 1,0];
 
     _trgr = (position (_this select 0)) nearObjects ["EmptyDetector", 3];
     {

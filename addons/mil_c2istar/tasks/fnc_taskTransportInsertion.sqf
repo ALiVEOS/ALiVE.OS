@@ -1,4 +1,4 @@
-#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\x\alive\addons\mil_c2istar\script_component.hpp"
 SCRIPT(taskTransportInsertion);
 
 /* ----------------------------------------------------------------------------
@@ -317,11 +317,11 @@ switch (_taskState) do {
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
 
         // first run of this task
-        if(_lastState != "Pickup") then {
+        if !([_params, "chatStartDone_Pickup", false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","Pickup"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Pickup", true] call ALIVE_fnc_hashSet;
         };
 
         // the players have not yet reached the
@@ -510,11 +510,11 @@ switch (_taskState) do {
         _currentTaskDialog = [_taskDialog,_taskState] call ALIVE_fnc_hashGet;
 
         // first run of this task
-        if(_lastState != "Insertion") then {
+        if !([_params, "chatStartDone_Insertion", false] call ALIVE_fnc_hashGet) then {
 
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
 
-            [_params,"lastState","Insertion"] call ALIVE_fnc_hashSet;
+            [_params, "chatStartDone_Insertion", true] call ALIVE_fnc_hashSet;
         };
 
         // the players have not yet reached the

@@ -212,7 +212,12 @@ switch(_operation) do {
             _logic setVariable ["CQB_amount", _amount];
 
             private _staticWeaponsIntensity = _logic getvariable ["CQB_staticWeapons","0"];
-            if (_staticWeaponsIntensity isequaltype "") then {_staticWeaponsIntensity = call compile _staticWeaponsIntensity};
+            // Guard the empty string: missions saved with the old empty attribute
+            // default store "" and `call compile ""` yields nil, erroring both
+            // setVariable copies below on every init
+            if (_staticWeaponsIntensity isequaltype "") then {
+                _staticWeaponsIntensity = if (_staticWeaponsIntensity == "") then {0} else {call compile _staticWeaponsIntensity};
+            };
             _logic setVariable ["CQB_staticWeapons", _staticWeaponsIntensity];
 
             private _staticWeaponsClassnames = _logic getvariable ["CQB_staticWeaponsClassnames","B_HMG_01_high_F,O_Mortar_01_F,O_HMG_01_high_F"];
@@ -1242,6 +1247,13 @@ switch(_operation) do {
 
             [_logic,"groups",[_grp],true,true] call BIS_fnc_variableSpaceRemove;
 
+            // Clear pending waypoints BEFORE deleting units - CBA patrol/search
+            // follow-up waypoint statements otherwise fire against a half-deleted
+            // group and spam undefined-variable errors from CBA's internals
+            for "_i" from (count waypoints _grp) - 1 to 0 step -1 do {
+                deleteWaypoint [_grp, _i];
+            };
+
             {deleteVehicle _x} forEach units _grp;
 
             // FIX YOUR FUCKING CODES BIS. FINALLY. AFTER 239475987 gazillion years
@@ -1322,8 +1334,35 @@ switch(_operation) do {
                 [_logic, "delGroup", _grp] call ALiVE_fnc_CQB;
             };
 
-            // position AI
-            _positions = [[_house] call ALiVE_fnc_getBuildingPositions, true] call CBA_fnc_shuffle;
+            // position AI - engine building positions, plus CBA AI Building Positions when the mission has any
+            if (isNil QGVAR(HASCBAPOSITIONS)) then {
+                GVAR(HASCBAPOSITIONS) = !((allMissionObjects "CBA_buildingPos") isEqualTo []);
+            };
+
+            private _housePositions = [_house] call ALiVE_fnc_getBuildingPositions;
+
+            if (GVAR(HASCBAPOSITIONS) && {!(_house isKindOf "CBA_buildingPos")}) then {
+                // CBA_fnc_buildingPositions returns engine buildingPos plus any CBA position
+                // helper objects inside this building's bounding box, in the same world
+                // position space. Additive-only merge: seed with the engine list and add only
+                // genuinely new spots, so an engine position can never be dropped and a helper
+                // placed on top of an engine slot cannot double-book it. Recomputed per spawn
+                // (like the engine list) so a destroyed building never serves stale positions.
+                private _cbaAdded = 0;
+                {
+                    private _candidate = _x;
+                    if ((_housePositions findIf {_x distance _candidate < 0.5}) == -1) then {
+                        _housePositions pushBack _candidate;
+                        _cbaAdded = _cbaAdded + 1;
+                    };
+                } forEach ([_house] call CBA_fnc_buildingPositions);
+
+                if (_cbaAdded > 0 && {_debug}) then {
+                    ["CQB Population: House %1 building positions: %2 engine + %3 CBA AI Building Positions", typeof _house, (count _housePositions) - _cbaAdded, _cbaAdded] call ALiVE_fnc_Dump;
+                };
+            };
+
+            _positions = [_housePositions, true] call CBA_fnc_shuffle;
 
             if (count _positions == 0) exitwith {_args = _grp};
 
@@ -1346,21 +1385,20 @@ switch(_operation) do {
                 } forEach (units _grp);
             };
 
-            {
-                private _unit = _x;
-
+            // Each unit takes its own position from the shuffled list (wrapping when
+            // the group outnumbers the positions). The old loop walked every unit
+            // through ALL positions, stacking the whole group on the last one.
+            private _usablePositions = _positions;
+            if (_strategicPlatforms find (typeof _house) != -1) then {
+                // strategic platforms: only elevated positions qualify
+                _usablePositions = _positions select {(_x select 2) > 1};
+            };
+            if (count _usablePositions > 0) then {
                 {
-                    private _pos = _x;
-                    if (_strategicPlatforms find (typeof _house) != -1) then {  
-                      if (_pos select 2 > 1) then {
-                       _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
-                      }
-                    } else {
-                      _unit setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
-                    };    
-                } foreach _positions;
-
-            } forEach (units _grp);
+                    private _pos = _usablePositions select (_forEachIndex % (count _usablePositions));
+                    _x setPosATL [_pos select 0, _pos select 1, (_pos select 2 + 0.4)];
+                } forEach (units _grp);
+            };
 
 
             // TODO Notify controller to start directing
@@ -1388,7 +1426,7 @@ switch(_operation) do {
                 if (random 1 <= _CQB_patrolSearchChance) then {
                     private _group = group this;
                     if (!isNull this && {alive this} && {_group != grpNull} && {count (units _group) > 0}) then {
-                        [this] call CBA_fnc_searchNearby;
+                        [_group] call CBA_fnc_searchNearby;
                     };
                 };
                 "
@@ -1547,6 +1585,12 @@ switch(_operation) do {
                                 _nearplayers = [getposATL _house,_spawn + _staticRange,_spawnJet,_spawnHeli] call ALiVE_fnc_PlayersInRangeIncludeAir;
                                 if ((isNil {_house getVariable "group"}) && {count _nearplayers > 0}) then {
 
+                                        // Zeus curator counted as a spawn source - gated on the Profile System
+                                        // "Zeus Spawn Virtual Groups" option inside ALiVE_fnc_PlayersInRangeIncludeAir
+                                        if (_debug && {_nearplayers findIf {_x in allCurators} != -1}) then {
+                                            ["CQB Population: Zeus curator in range of house at %1 - counted as spawn source",getposATL _house] call ALiVE_fnc_Dump;
+                                        };
+
                                         switch (_locality) do {
                                             default {
                                                 _hosts = [false];
@@ -1557,19 +1601,49 @@ switch(_operation) do {
                                             _host = (selectRandom _hosts);
 
                                             if !(isnil "_host") then {
-                                                _house setvariable ["group","preinit",true];
-
                                                 if (_useDominantFaction) then {
-                                                    _faction = [getposATL _house, 250,true] call ALiVE_fnc_getDominantFaction;
+                                                    // Retry cooldown: after a failed wide scan, skip re-scanning this
+                                                    // house for a short while - full-profile scans every pass add up
+                                                    // near ungarrisoned towns (local variable, no network broadcast)
+                                                    if (time < (_house getVariable ["ALIVE_CQB_nextDetect", 0])) then {
+                                                        _faction = nil;
+                                                    } else {
+                                                        _faction = [getposATL _house, 250,true] call ALiVE_fnc_getDominantFaction;
 
-                                                    if (isnil "_faction") then {_faction = (selectRandom (_logic getvariable ["factions",DEFAULT_FACTIONS]))};
+                                                        // Close scan found nothing - houses activate at spawnDistance,
+                                                        // so retry at the house's activation radius before giving up
+                                                        if (isnil "_faction") then {
+                                                            private _wideScan = 250 max (_spawn + _staticRange);
+                                                            _faction = [getposATL _house, _wideScan,true] call ALiVE_fnc_getDominantFaction;
+
+                                                            // Still no non-civilian profile or group in range - spawn
+                                                            // NOTHING instead of defaulting to the module factions list
+                                                            // (empty Eden fields substitute ["OPF_F"] - vanilla CSAT on
+                                                            // modded/era missions, #946). The house stays unmarked so a
+                                                            // later pass retries once profiles arrive (placement still
+                                                            // initialising, garrison returning, etc.)
+                                                            if (isnil "_faction") then {
+                                                                _house setVariable ["ALIVE_CQB_nextDetect", time + 30];
+
+                                                                if (_debug) then {
+                                                                    ["CQB Population: No dominant faction within %1m of house at %2 - nothing spawned, house will retry...",_wideScan,getposATL _house] call ALiVE_fnc_Dump;
+                                                                };
+                                                            };
+                                                        };
+                                                    };
                                                 } else {
                                                     _faction = (selectRandom (_logic getvariable ["factions",DEFAULT_FACTIONS]));
                                                 };
 
+                                                if !(isnil "_faction") then {
+                                                    // Mark the house only once a faction is confirmed - marking before
+                                                    // detection meant a failed detection needed a second broadcast to
+                                                    // release the house again
+                                                    _house setvariable ["group","preinit",true];
 
-                                                /////////////////////////////////////////////////////////////
-                                                _spawnPool pushback [_house,_faction,_host];
+                                                    /////////////////////////////////////////////////////////////
+                                                    _spawnPool pushback [_house,_faction,_host];
+                                                };
 
                                                 //["CQB Population: Group creation triggered on client %1 for house %2 and dominantfaction %3...",_host,_house,_faction] call ALiVE_fnc_Dump;
                                                 //sleep 0.2;

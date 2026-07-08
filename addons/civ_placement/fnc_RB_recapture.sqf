@@ -110,7 +110,7 @@ if (_debug) then {
         isNull _a ||
         {(_a getVariable ["ALiVE_RB_currentFaction", ""]) != _f} ||
         {diag_tickTime > _safetyTimeout} ||
-        {({(_x distance2D _p) < 300} count allPlayers) == 0}
+        {({(_x distance2D _p) < 300} count (allPlayers - entities "HeadlessClient_F")) == 0}
     };
 
     if (isNull _a) exitWith {
@@ -133,6 +133,14 @@ if (_debug) then {
                         ["ALIVE_fnc_garrison", "spawn", [30, "false", [0,0,0], "", 1, 1]]
                     ] call ALIVE_fnc_profileEntity;
                     [_x, "busy", true] call ALIVE_fnc_hashSet;
+                    // Hold the captured block: register the guard "stationary" so
+                    // OPCOM/TACOM never drains it (busy alone doesn't cover the QRF path).
+                    // Runtime-only marker (as with static AA) -- not rehydrated on persistent reload.
+                    private _pid = [_x, "profileID", ""] call ALiVE_fnc_HashGet;
+                    if (_pid != "") then {
+                        if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
+                        [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+                    };
                 };
             } forEach _guards;
             if (_d) then {

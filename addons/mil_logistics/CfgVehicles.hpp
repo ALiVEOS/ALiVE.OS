@@ -197,6 +197,18 @@ class CfgVehicles
                                     class Yes { name = "Faction Only"; value = true; };
                                 };
                         };
+                        class heliDepartFromAirfield : Combo
+                        {
+                                property = "ALiVE_mil_logistics_heliDepartFromAirfield";
+                                displayName = "$STR_ALIVE_ML_HELI_DEPART_AIRFIELD";
+                                tooltip = "$STR_ALIVE_ML_HELI_DEPART_AIRFIELD_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                    class Yes { name = "Yes"; value = true; };
+                                    class No { name = "No"; value = false; default = 1; };
+                                };
+                        };
                         // ---- Custom Static Data ---------------------------------------------
                         class HDR_CUSTOM : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_CUSTOM"; displayName = "CUSTOM TRANSPORT CLASSES"; };
                         class customStaticDataMode : Combo

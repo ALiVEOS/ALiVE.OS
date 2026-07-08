@@ -433,6 +433,14 @@ class Cfg3DEN
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 
+        // Shared by custom military/civilian objective modules. Empty
+        // selection is meaningful: the module inherits factions from synced
+        // OPCOMs at runtime.
+        class ALiVE_FactionChoiceMulti_Military_CustomObjectives: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, [0,1,2], 'factions', [], _value, 'Force Factions:', 'Optional. Pick one or more factions for this custom objective to spawn. Leave empty to inherit factions from a synced AI Commander. If no Commander factions are available, the legacy Force Faction fallback is used.'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
+        };
+
         // Per-consumer variant for sup_player_resupply's faction
         // whitelist picker. Title text + tooltip pulled from the
         // sup_player_resupply stringtable.

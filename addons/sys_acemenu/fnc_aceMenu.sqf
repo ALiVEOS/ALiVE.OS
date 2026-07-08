@@ -52,7 +52,7 @@ GVAR(MenuRoot) = ["ACE_SelfActions", "ALiVE_Menu"];
 
 
 // C2ISTAR //
-if ([QMOD(mil_C2ISTAR)] call ALiVE_fnc_isModuleAvailable) then {
+if ([QMOD(mil_c2istar)] call ALiVE_fnc_isModuleAvailable) then {
     [] spawn FUNCMAIN(aceMenuC2);
 };
 

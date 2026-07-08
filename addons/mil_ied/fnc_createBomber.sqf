@@ -16,11 +16,15 @@ if (typeName (_this select 0) == "ARRAY") then {
     _bomber = _this select 0;
 };
 
-// Pick the first valid target from the trigger's thisList, excluding
-// any player who currently holds a Zeus curator. Without this filter a
-// Zeus host near the area gets chosen and the bomber chases the curator
-// camera (erratic, elevated positions) instead of a real target.
-// Jman 2026-05-28 Zeus-host test.
+// Pick the first valid target from the trigger's thisList, excluding any
+// player who has a Zeus curator assigned. This is the real fix for the
+// bomber chasing the Zeus camera: victim SELECTION is where it matters, so
+// even if a curator armed the trigger the bomber can't lock onto the camera.
+// Deliberately kept here (not on the trigger-arming condition in fnc_IED):
+// the engine offers no reliable server-side "in Zeus camera vs on the
+// ground" test, and applying this same filter to trigger arming suppressed
+// IED spawning for every GM-hosted mission. Skipping a Zeus-assigned GM as a
+// bomber victim is an acceptable trade. Jman 2026-05-28 / refined 2026-05-30.
 _victim = ((_this select 1) select {
     private _person = if (vehicle _x != _x) then { driver (vehicle _x) } else { _x };
     !isNull _person && {isNull (getAssignedCuratorLogic _person)}
@@ -200,8 +204,11 @@ if (_debug) then {
         // Detonate regardless - the vest has already been stripped so
         // there is nothing to confiscate. The 10% dud chance is removed:
         // a bomber who reached the target and armed should always detonate.
-        // M_Mo_120mm_AT removed 2026-05-27 -- unspawnable, weight shifted onto LG (see fnc_armIED.sqf:48).
-        _shell = [["M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[12,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
+        // Only ammo classes that actually detonate when spawned static at rest
+        // (#890 fix, see fnc_armIED.sqf). The M_Mo_*_AT* mortar rounds spawn
+        // inert -- confirmed in-game 2026-05-30 that only R_60mm_HE / Bomb_03_F
+        // / Bomb_04_F explode on createVehicle.
+        _shell = [["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted;
         _shell createVehicle [(getpos _bomber) select 0, (getpos _bomber) select 1, 0];
         ["ALIVE-%1 Suicide Bomber: DETONATED at %2", time, getpos _bomber] call ALiVE_fnc_dump;
         sleep 0.3;
@@ -220,8 +227,11 @@ if (_debug) then {
         };
         if ((random 100) > 50) then {
             // Dead man switch - bomber timed out or victim died, detonate anyway
-            // M_Mo_120mm_AT removed 2026-05-27 -- unspawnable, weight shifted onto LG (see fnc_armIED.sqf:48).
-        _shell = [["M_Mo_120mm_AT_LG","M_Mo_82mm_AT_LG","R_60mm_HE","Bomb_04_F","Bomb_03_F"],[12,2,1,1,1]] call BIS_fnc_selectRandomWeighted;
+            // Only ammo classes that actually detonate when spawned static at rest
+        // (#890 fix, see fnc_armIED.sqf). The M_Mo_*_AT* mortar rounds spawn
+        // inert -- confirmed in-game 2026-05-30 that only R_60mm_HE / Bomb_03_F
+        // / Bomb_04_F explode on createVehicle.
+        _shell = [["R_60mm_HE","Bomb_03_F","Bomb_04_F"],[8,1,1]] call BIS_fnc_selectRandomWeighted;
             _shell createVehicle [(getpos _bomber) select 0, (getpos _bomber) select 1,0];
             ["ALIVE-%1 Suicide Bomber: dead man switch DETONATED at %2", time, getpos _bomber] call ALiVE_fnc_dump;
             sleep 0.3;

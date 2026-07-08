@@ -25,8 +25,8 @@ class CfgVehicles {
                 author = MODULE_AUTHOR;
                 functionPriority = 150;
                 isGlobal = 1;
-                icon = "x\alive\addons\mil_C2ISTAR\icon_mil_C2.paa";
-                picture = "x\alive\addons\mil_C2ISTAR\icon_mil_C2.paa";
+                icon = "x\alive\addons\mil_c2istar\icon_mil_C2.paa";
+                picture = "x\alive\addons\mil_c2istar\icon_mil_C2.paa";
                 class Attributes : AttributesBase
                 {
                     // ---- Module parameters ----------------------------------------------
@@ -1196,7 +1196,7 @@ class CfgVehicles {
                             "$STR_ALIVE_C2ISTAR_USAGE_MARKERS"
                     };
                     // OPCOM is read by this module's OPCOM-side code path (fnc_OPCOM.sqf ~328-341
-                    // iterates synchronizedObjects looking for ALiVE_mil_C2ISTAR to set up the
+                    // iterates synchronizedObjects looking for ALiVE_mil_c2istar to set up the
                     // G2 intel pipeline per-OPCOM). Declare the peer here so Eden's module-info
                     // panel lists it and downstream sync validation treats the edge as legitimate.
                     sync[] = {"ALiVE_mil_OPCOM"};

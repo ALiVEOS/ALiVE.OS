@@ -19,9 +19,25 @@ Peer Reviewed:
 
 params ["_unit"];
 
-// Only proceed if the global interaction handler has been initialised and
-// the unit is actually a civilian
-if (!isNil "ALiVE_civInteractHandler" && {side _unit == CIVILIAN} && {!(_unit getVariable ["ALiVE_advciv_blacklist", false])}) then {
+// Cheap synchronous rejects first -- no point spawning for a non-civ or blacklisted unit.
+if (side _unit != CIVILIAN) exitWith {};
+if (_unit getVariable ["ALiVE_advciv_blacklist", false]) exitWith {};
+
+// The interaction handler (ALiVE_civInteractHandler) is built per-machine and only after
+// the server's `waterItems` broadcast arrives (fnc_civInteract case "init"); it is never
+// publicVariable'd. On a non-host / JIP client a civilian's one-shot clientInit can fire
+// BEFORE the handler exists, so the old plain isNil gate silently dropped the addAction and
+// non-host players got no interaction option (#937). Wait for the handler in a spawn (so the
+// clientInit EH returns immediately), then attach the action -- mirrors the ACE branch.
+[_unit] spawn {
+    params ["_unit"];
+
+    private _waitStart = diag_tickTime;
+    waitUntil {
+        sleep 0.5;
+        (!isNil "ALiVE_civInteractHandler") || {diag_tickTime - _waitStart > 120} || {isNull _unit} || {!alive _unit}
+    };
+    if (isNil "ALiVE_civInteractHandler" || {isNull _unit} || {!alive _unit}) exitWith {};
     private _uiMode = missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"];
     private _hasAdvCiv = _unit getVariable ["ALiVE_advciv_active", false];
 

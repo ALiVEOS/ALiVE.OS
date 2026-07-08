@@ -320,6 +320,26 @@
     <Russian>Какие авиатранспортные средства может вызывать командир. Сторона и фракция (по умолчанию) — любой вертолёт или транспортный самолёт той же стороны, независимо от фракции. Только фракция — ограничивает пул техникой именно той же фракции, что и у командира.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_HELI_DEPART_AIRFIELD">
+    <English>Helicopters Depart From Airfields:</English>
+    <Chinese>直升機從機場出發：</Chinese>
+    <Chinesesimp>直升机从机场出发：</Chinesesimp>
+    <Spanish>Helicópteros despegan desde aeródromos:</Spanish>
+    <French>Hélicoptères au départ des aérodromes:</French>
+    <Portuguese>Helicópteros partem de aeródromos:</Portuguese>
+    <Russian>Вертолёты вылетают с аэродромов:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_HELI_DEPART_AIRFIELD_COMMENT">
+    <English>No (default): transport helicopters launch from the supply network's held objective nearest the force HQ, as before. Yes: helicopter insertions launch from — and return to — the nearest friendly airfield instead (a held objective within 1000m of a runway), when one exists; if none qualifies the default departure is used. Combat paradrops always use the default departure.</English>
+    <Chinese>否（預設）：運輸直升機一如既往從補給網路中最靠近部隊指揮部的據守目標出發。是：直升機運送改為從最近的友方機場出發並返回該處（跑道 1000 公尺範圍內的據守目標），若存在的話；若無符合條件者則使用預設出發點。戰鬥傘降一律使用預設出發點。</Chinese>
+    <Chinesesimp>否（默认）：运输直升机一如既往从补给网络中最靠近部队指挥部的据守目标出发。是：直升机运送改为从最近的友方机场出发并返回该处（跑道 1000 米范围内的据守目标），若存在的话；若无符合条件者则使用默认出发点。战斗伞降一律使用默认出发点。</Chinesesimp>
+    <Spanish>No (predeterminado): los helicópteros de transporte despegan del objetivo controlado de la red de suministro más cercano al cuartel general, como hasta ahora. Sí: las inserciones en helicóptero despegan desde — y regresan a — el aeródromo amigo más cercano (un objetivo controlado a menos de 1000 m de una pista), cuando existe; si ninguno cumple los requisitos se usa la salida predeterminada. Los lanzamientos paracaidistas de combate siempre usan la salida predeterminada.</Spanish>
+    <French>Non (par défaut) : les hélicoptères de transport décollent de l'objectif tenu du réseau de ravitaillement le plus proche du QG, comme auparavant. Oui : les insertions héliportées décollent depuis — et retournent vers — l'aérodrome ami le plus proche (un objectif tenu à moins de 1000 m d'une piste), s'il en existe un ; si aucun ne convient, le départ par défaut est utilisé. Les parachutages de combat utilisent toujours le départ par défaut.</French>
+    <Portuguese>Não (padrão): os helicópteros de transporte partem do objetivo controlado da rede de suprimentos mais próximo do QG, como antes. Sim: as inserções de helicóptero partem de — e retornam a — o aeródromo aliado mais próximo (um objetivo controlado a menos de 1000 m de uma pista), quando existir; se nenhum se qualificar, a partida padrão é usada. Os lançamentos de paraquedistas em combate sempre usam a partida padrão.</Portuguese>
+    <Russian>Нет (по умолчанию): транспортные вертолёты вылетают с удерживаемой цели сети снабжения, ближайшей к штабу, как и раньше. Да: вертолётные высадки вылетают с ближайшего дружественного аэродрома и возвращаются на него (удерживаемая цель в пределах 1000 м от взлётной полосы), если такой существует; если ни один не подходит, используется вылет по умолчанию. Боевые парашютные выброски всегда используют вылет по умолчанию.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_CUSTOM_MODE">
     <English>Custom Class Mode:</English>
     <Chinese>自訂類別模式：</Chinese>

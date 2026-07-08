@@ -85,18 +85,26 @@ private _fnc_getHeightWaterModifier = {
     //Check for Water in multiple positions from center
     private _sOffset = _radius * 0.7;
     private _sPositions = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+    private _seaLevel = missionNamespace getVariable ["ALiVE_pathfinding_seaLevel", 0];
     {
         private _testPos = [
             (_sPos select 0) + ((_x select 0 ) * _sOffset),
             (_sPos select 1) + ((_x select 1 ) * _sOffset)
             ];
-        if (getTerrainHeightASL _testPos < -0.3) then {_subHasWater = true;_subWaterModifier = _subWaterModifier + 1;} else {_subIsEntirelyWater = false;};
+        // Water = terrain below the map's sea level (getTerrainInfo[4], cached at
+        // pathfinder create). Heightmap-based, so reliable during this one-time
+        // grid classification - unlike surfaceIsWater, which only sees inland pond
+        // OBJECTS once loaded in view distance and so missed distant ponds at create.
+        // Threshold at sea level (was -0.3m) catches the shore shallows that routed
+        // infantry into the water edge, while keeping flats at/above sea level walkable.
+        if (getTerrainHeightASL _testPos < _seaLevel) then {_subHasWater = true;_subWaterModifier = _subWaterModifier + 1;} else {_subIsEntirelyWater = false;};
 
     } foreach _sPositions;
     
     _subWaterModifier = _subWaterModifier / 8;
     _subWater pushback _subHasWater;
     _subWater pushback _subWaterModifier;
+    _subWater pushback _subHeightASL;   // CANDIDATE C2: centre height, so the water guard reads it instead of a per-step terrain lookup
     (_subSector select 4) pushback _subWater;
     (_subSector select 4) pushback _subHeightASL;
     private _hasBridge = (((_subSector select 4) select 0) select 2);
@@ -213,7 +221,7 @@ switch (_operation) do {
         private _isEntirelyWater = true;
 
         //// WATER - Grid Compression - use single array ref for 'Water' sectors to compress memory
-        _waterSectorArray = [[-1,-1], [-1,-1], [-1,-1], "WATER",[[false,false,false,0],[true,1],-99,0]];
+        _waterSectorArray = [[-1,-1], [-1,-1], [-1,-1], "WATER",[[false,false,false,0],[true,1,-99],-99,0]];   // water sub 3rd = centre height (CANDIDATE C2): -99 = always deep
         ////
 
         {
@@ -238,7 +246,7 @@ switch (_operation) do {
         // for compression
         if (_isEntirelyWater) exitwith { _sector = [_index,_waterSectorArray]; _result = [_sector, _subSectors]; };
  
-        private _waterModData = [_hasWater, _sumWaterModifier/_numWaterAreas];
+        private _waterModData = [_hasWater, _sumWaterModifier/_numWaterAreas, getTerrainHeightASL _posCenter];   // 3rd = sector centre height (CANDIDATE C2: water guard)
         _modifiers pushback _waterModData;
         _modifiers pushback (_sumHeightASL/(count _subsectors)); //Height Data
 

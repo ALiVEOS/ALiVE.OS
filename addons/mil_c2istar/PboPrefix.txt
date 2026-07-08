@@ -1,6 +1,6 @@
-x\alive\addons\mil_C2ISTAR
+x\alive\addons\mil_c2istar
 =======HEADER=======
-prefix=x\alive\addons\mil_C2ISTAR
+prefix=x\alive\addons\mil_c2istar
 Mikero=DePbo.dll
 product=Arma 3
 version=1

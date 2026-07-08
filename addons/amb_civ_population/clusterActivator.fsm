@@ -797,8 +797,8 @@ class FSM
        "        _unit = _agent select 2 select 5;" \n
        "        _position = getposATL _unit;" \n
        "" \n
-       "        if !([_position, (_spawnDistance), _spawnTypeJetRadius, _spawnTypeHeliRadius, _spawnRadiusUAV] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
-       "            if ([_position, _spawnDistance] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
+       "        if !([_position, (_spawnDistance * 1.25), _spawnTypeJetRadius, _spawnTypeHeliRadius, _spawnRadiusUAV] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {" \n
+       "            if ([_position, (_spawnDistance * 1.25)] call ALiVE_fnc_anyAutonomousInRange == 0) then {" \n
        "                       _toDespawn set [count _toDespawn, _agent];" \n
        "            };" \n
        "        };" \n

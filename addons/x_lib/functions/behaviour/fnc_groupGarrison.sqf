@@ -89,6 +89,14 @@ if (count _staticWeapons > 0) then
 
 if (count _units == 0) exitwith {};
 
+// Man CBA AI Building Positions first when present (mission-maker-placed custom positions,
+// e.g. trench slots) -- the vanilla buildingPos below does not return them, so prefer these
+// explicitly-placed positions over the auto-picked building slots. Consumes only the units it
+// fills (mutates _units), so a mission with no CBA positions is unaffected. (#945)
+[_units, _position, _radius, _moveInstantly] call ALIVE_fnc_garrisonUnitsOnCBAPositions;
+
+if (count _units == 0) exitwith {};
+
 private _buildings = nearestObjects [_position,ALIVE_garrisonPositions select 1,_radius];
 if (count _buildings == 0 || _profileCount > 3) then {
 	 // DEBUG -------------------------------------------------------------------------------------

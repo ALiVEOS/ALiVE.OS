@@ -1,4 +1,4 @@
-#include "\x\alive\addons\mil_C2ISTAR\script_component.hpp"
+#include "\x\alive\addons\mil_c2istar\script_component.hpp"
 #include "\a3\editor_f\Data\Scripts\dikCodes.h"
 
 SCRIPT(C2MenuDef);
@@ -275,7 +275,7 @@ if (_menuName == "C2ISTAR") then {
                      "",
                      -1,
                      true,
-                     [QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable && {_csResult}
+                     [QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable && {_csResult} && {call ALIVE_fnc_combatSupportIsOperator}
                 ],
                 ["Send SITREP",
                     {

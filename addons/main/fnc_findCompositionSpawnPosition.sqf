@@ -327,14 +327,25 @@ private _candidateClear = {
     //    and check it at function-top-level so the exitWith-at-true-scope
     //    actually returns false from _candidateClear.
     private _buildingIntruders = [];
-    if (_excludeBuildings) then {
+    // Roadblock mode normally skips this check (urban tolerance - see the
+    // _excludeBuildings note above), but a road point sitting under a building
+    // footprint spawns the checkpoint inside the building. So roadblock runs a
+    // narrowed version: only actual buildings (House class), and only when their
+    // footprint covers the composition core (a tight radius), so flanking
+    // buildings lining the street are still tolerated.
+    private _isRoadblock = (_mode == "roadblock");
+    if (_excludeBuildings || _isRoadblock) then {
         // Same envelope-vs-envHalf rationale as the runway / helipad
         // exclusions above: composition objects extend to FULL envelope
         // from the anchor, so any building whose bbox sits within `_env`
         // of `_p` could be clipped by an outer composition object. The
         // +15 padding on the search radius is to catch building CENTRES
         // outside the envelope but with bboxes that extend inside.
-        private _buildingCheckRadius = (_env + 15) max 25;
+        // Roadblock narrows the intrusion radius to the composition core but
+        // searches a fixed 35m so large buildings whose footprint reaches the
+        // road point are still caught.
+        private _intrudeRadius       = if (_isRoadblock) then { 6 } else { _env };
+        private _buildingCheckRadius = if (_isRoadblock) then { 35 } else { (_env + 15) max 25 };
         private _allHits = nearestObjects [_p, [], _buildingCheckRadius];
 
         _buildingIntruders = _allHits select {
@@ -348,13 +359,17 @@ private _candidateClear = {
                 private _w = (_bMax select 0) - (_bMin select 0);
                 private _l = (_bMax select 1) - (_bMin select 1);
                 private _h = (_bMax select 2) - (_bMin select 2);
-                (_w * _l * _h > 30) && {
+                // Non-roadblock: any solid object over 30 m3. Roadblock: only
+                // actual buildings (House), so street walls / fences / clutter
+                // don't reject an otherwise-good urban checkpoint.
+                private _qualifies = if (_isRoadblock) then { _x isKindOf "House" } else { (_w * _l * _h) > 30 };
+                _qualifies && {
                     private _pLocal = _x worldToModel _p;
                     private _cx = ((_pLocal select 0) max (_bMin select 0)) min (_bMax select 0);
                     private _cy = ((_pLocal select 1) max (_bMin select 1)) min (_bMax select 1);
                     private _dx = (_pLocal select 0) - _cx;
                     private _dy = (_pLocal select 1) - _cy;
-                    sqrt ((_dx * _dx) + (_dy * _dy)) < _env
+                    sqrt ((_dx * _dx) + (_dy * _dy)) < _intrudeRadius
                 }
             }
         };
@@ -405,7 +420,7 @@ private _candidateClear = {
         case "field":     {[0.07, 0.970]};   // ~4.0 deg delta + ~14 deg normal-Z
         case "military":  {[0.10, 0.950]};   // ~5.7 deg delta + ~18 deg
         case "civilian":  {[0.12, 0.930]};   // ~6.8 deg delta + ~22 deg
-        case "roadblock": {[0.12, 0.930]};   // road heading dominates anyway
+        case "roadblock": {[0.10, 0.950]};   // tightened from [0.12, 0.930]: a tilted checkpoint reads as broken even on a graded road
         default           {[0.10, 0.950]};
     };
     _slopeRules params ["_deltaRatio", "_normalZMin"];
@@ -469,6 +484,31 @@ private _candidateClear = {
         false
     };
 
+    // 8. Rock terrain objects intruding the footprint. The solid-obstacle check
+    //    (4) misses rocks (terrain objects, small bbox to its volume filter) and a
+    //    rock on flat ground doesn't trip the slope check (6) either - so AI
+    //    compositions sat in the rocks (#913). The first fix here used a flat
+    //    _envHalf proximity radius, but a large boulder whose ORIGIN sits just
+    //    outside _envHalf still reaches its body into the footprint and clips the
+    //    composition. Test each nearby rock's real footprint (boundingBoxReal
+    //    half-extent + 1.5m margin) against the composition envelope - the same
+    //    technique already proven for infantry anchor placement in
+    //    sys_profile/fnc_profileGetGoodSpawnPosition.sqf. Search radius is
+    //    deliberately _envHalf+25 (tighter than that sibling's fixed 80m) to bound
+    //    cost while still reaching any rock whose body can intrude the footprint.
+    private _nearRocks = nearestTerrainObjects [_p, ["ROCK", "ROCKS"], _envHalf + 25, false];
+    private _rockBlocked = _nearRocks findIf {
+        private _bb = boundingBoxReal _x;
+        private _p0 = _bb select 0;
+        private _p1 = _bb select 1;
+        private _reach = (((abs (_p0 select 0)) max (abs (_p1 select 0))) max ((abs (_p0 select 1)) max (abs (_p1 select 1)))) + 1.5;
+        (_p distance2D _x) < (_reach + _envHalf)
+    };
+    if (_rockBlocked >= 0) exitWith {
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: rock footprint intrudes (rock %2)", _p, typeOf (_nearRocks select _rockBlocked)] call ALiVE_fnc_dump };
+        false
+    };
+
     if (_debug) then { ["[ALiVE CompSpawn]   accept %1", _p] call ALiVE_fnc_dump };
     true
 };
@@ -484,21 +524,24 @@ private _candidateClear = {
 // connected neighbour, which `roadsConnectedTo` exposes. Falls back to
 // `direction` only when the road is a true dead-end with no neighbours.
 // ------------------------------------------------------------------------
-private _findRoadCandidate = {
+private _findRoadCandidates = {
     params ["_p", "_searchRadius"];
     private _nearby = _p nearRoads _searchRadius;
     if (count _nearby == 0) exitWith { [] };
     // Sort by distance to centre - closest first
     _nearby = [_nearby, [], { _x distance _p }, "ASCEND"] call BIS_fnc_sortBy;
-    private _picked = _nearby select 0;
-    private _roadConnectedTo = roadsConnectedTo _picked;
-    private _roadDir = if (count _roadConnectedTo > 0) then {
-        _picked getDir (_roadConnectedTo select 0)
-    } else {
-        direction _picked
-    };
-    private _roadPos = getPosATL _picked;
-    [_roadPos, _roadDir]
+    // Return the nearest few pieces, each as [centreline pos, road tangent].
+    // The anchor search walks them in order so a bad nearest piece (rock /
+    // slope) falls through to the next instead of abandoning the road point.
+    (_nearby select [0, 3]) apply {
+        private _roadConnectedTo = roadsConnectedTo _x;
+        private _roadDir = if (count _roadConnectedTo > 0) then {
+            _x getDir (_roadConnectedTo select 0)
+        } else {
+            direction _x
+        };
+        [getPosATL _x, _roadDir]
+    }
 };
 
 // ------------------------------------------------------------------------
@@ -512,55 +555,79 @@ if (_mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear}) exit
 
 // Roadblock mode: handle separately (always road-snap).
 if (_mode == "roadblock") exitWith {
-    private _result = [_centerPos, _radius] call _findRoadCandidate;
-    if (count _result == 0) exitWith {
+    private _candidates = [_centerPos, _radius] call _findRoadCandidates;
+    if (count _candidates == 0) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: no road in radius (roadblock mode)"] call ALiVE_fnc_dump };
         []
     };
-    _result params ["_rPos", "_rDir"];
-    if !([_rPos, _envelope] call _candidateClear) exitWith {
-        if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: road candidate %1 fails clearance", _rPos] call ALiVE_fnc_dump };
-        []
-    };
-    // Extra perpendicular-to-road slope check. Roads themselves are
-    // graded flat along their direction even on hillsides; the issue
-    // is the verge that drops away on either side. Compositions that
-    // span the road width (gates / wings / hesco walls / outposts)
-    // put their OUTERMOST objects out at full envelope radius, and a
-    // 1m+ vertical drop there breaks layout cohesion (objects float /
-    // clip / tilt visibly).
-    //
-    // The general 8-compass slope check averages this away because
-    // most of the eight axes lie along/near the road. Sampling
-    // ONLY at the two road-perpendicular axes catches the verge
-    // profile directly. Sampling extends to the FULL envelope radius
-    // (not half) - the outpost wings of a 35m-envelope composition
-    // reach 35m out, so a check that stops at 26m misses the slope
-    // the outermost wing actually sits on.
-    private _perpAngles = [_rDir + 90, _rDir - 90];
-    private _perpDistances = [_envelope * 0.33, _envelope * 0.67, _envelope];
-    private _baseZ = _rPos select 2;
-    private _perpDeltas = [];
-    {
-        private _ang = _x;
+
+    // Per-position validator: footprint clearance + slope. Slope is read off the
+    // underlying terrain heightmap (getTerrainHeightASL ignores the graded road
+    // mesh and bridge decks, so elevated/bridge segments are correctly rejected)
+    // along road-relative axes out to the composition's footprint radius (env/2 --
+    // env is a diameter). Verge axes -- both perpendiculars plus the two diagonals,
+    // which catch a switchback fall-line oblique to the road -- use a 12%-grade
+    // budget; the along-road axes 14%. These are generous on purpose: the heightmap
+    // reads the true hill (steeper than the graded road the checkpoint sits on), so
+    // tight budgets starved roadblocks on hilly maps. The general _candidateClear
+    // slope check still binds normal roads; this only backstops egregiously steep
+    // spots.
+    private _validateRoadPos = {
+        params ["_rPos", "_rDir"];
+        if !([_rPos, _envelope] call _candidateClear) exitWith { false };
+        private _half = _envelope / 2;
+        private _dists = [_half * 0.33, _half * 0.67, _half];
+        private _baseZ = getTerrainHeightASL [_rPos select 0, _rPos select 1];
+        private _vergeDeltas = [];
         {
-            private _sp = _rPos getPos [_x, _ang];
-            _perpDeltas pushBack (abs ((_sp select 2) - _baseZ));
-        } forEach _perpDistances;
-    } forEach _perpAngles;
-    private _maxPerpDelta = selectMax _perpDeltas;
-    // Budget: 8% slope max measured to envelope radius. Tighter than
-    // the general envelope slope check because verge-edge objects
-    // tilt visibly on slopes the road centreline itself handles
-    // cleanly. For env=35m this allows 2.8m drop at 35m perp - any
-    // steeper and the outermost wing tilts off the verge.
-    private _perpBudget = _envelope * 0.08;
-    if (_maxPerpDelta > _perpBudget) exitWith {
-        if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: road candidate %1 perpendicular slope-delta %2m > %3m budget (roadDir %4, envelope %5)", _rPos, _maxPerpDelta, _perpBudget, _rDir, _envelope] call ALiVE_fnc_dump };
+            private _ang = _x;
+            { private _sp = _rPos getPos [_x, _ang]; _vergeDeltas pushBack (abs ((getTerrainHeightASL [_sp select 0, _sp select 1]) - _baseZ)); } forEach _dists;
+        } forEach [_rDir + 90, _rDir - 90, _rDir + 45, _rDir - 45, _rDir + 135, _rDir - 135];
+        if ((selectMax _vergeDeltas) > (_half * 0.12)) exitWith { false };
+        private _longDeltas = [];
+        {
+            private _ang = _x;
+            { private _sp = _rPos getPos [_x, _ang]; _longDeltas pushBack (abs ((getTerrainHeightASL [_sp select 0, _sp select 1]) - _baseZ)); } forEach _dists;
+        } forEach [_rDir, _rDir + 180];
+        if ((selectMax _longDeltas) > (_half * 0.14)) exitWith { false };
+        true
+    };
+
+    // Anchor search. Instead of abandoning the road point when the nearest
+    // road-piece centreline fails (a boulder, a sloped cut), slide the anchor:
+    //   Pass 1 - the nearest road-piece centreline that validates (keeps the
+    //            checkpoint centred on the carriageway).
+    //   Pass 2 - if none, nudge each piece a few metres laterally / along the
+    //            road, staying within 8m of a road, onto nearby clear ground.
+    private _accepted = [];
+    private _idx = _candidates findIf { [_x select 0, _x select 1] call _validateRoadPos };
+    if (_idx >= 0) then { _accepted = _candidates select _idx; };
+
+    if (count _accepted == 0) then {
+        // [distance, angle relative to the road tangent]: lateral shoulder steps
+        // + short longitudinal steps. The +-8m laterals were dropped -- they
+        // usually land off the carriageway and get rejected by the nearRoads guard.
+        private _offsets = [[4, 90], [4, -90], [6, 0], [6, 180]];
+        private _nudges = [];
+        {
+            private _pPos = _x select 0;
+            private _pDir = _x select 1;
+            { _nudges pushBack [_pPos getPos [(_x select 0), _pDir + (_x select 1)], _pDir]; } forEach _offsets;
+        } forEach _candidates;
+        private _nidx = _nudges findIf {
+            private _cand = _x select 0;
+            (count (_cand nearRoads 8) > 0) && {[_cand, _x select 1] call _validateRoadPos}
+        };
+        if (_nidx >= 0) then { _accepted = _nudges select _nidx; };
+    };
+
+    if (count _accepted == 0) exitWith {
+        if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: no clear roadblock anchor across %1 road pieces (slope / clearance)", count _candidates] call ALiVE_fnc_dump };
         []
     };
-    if (_debug) then { ["[ALiVE CompSpawn] EXIT roadblock pos=%1 dir=%2 perpDelta=%3m budget=%4m", _rPos, _rDir, _maxPerpDelta, _perpBudget] call ALiVE_fnc_dump };
-    [_rPos, _rDir]
+    _accepted params ["_fPos", "_fDir"];
+    if (_debug) then { ["[ALiVE CompSpawn] EXIT roadblock pos=%1 dir=%2 (anchor search)", _fPos, _fDir] call ALiVE_fnc_dump };
+    [_fPos, _fDir]
 };
 
 // ------------------------------------------------------------------------

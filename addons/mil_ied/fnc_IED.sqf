@@ -698,12 +698,18 @@ switch(_operation) do {
                     // disappear when I get in and out of a vehicle". RPT
                     // confirmed the 11s gap between vehicle entry and the
                     // trigger's removeIED dispatch.
-                    // Curator-controlled players (Zeus hosts) are excluded:
-                    // BIS_fnc_listPlayers includes a player who's in Zeus, so
-                    // without this filter the bomber / IED trigger arms on a
-                    // hovering curator and the bomber chases the Zeus camera.
-                    // Jman 2026-05-28 Zeus-host test.
-                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count (([] call BIS_fnc_listPlayers) select {isNull (getAssignedCuratorLogic _x)}) > 0)"
+                    // NOTE: no curator/Zeus filter here. There is no reliable
+                    // server-side way to tell a Game Master flying the Zeus
+                    // camera apart from one playing on the ground -
+                    // getAssignedCuratorLogic is non-null for ANY Zeus-assigned
+                    // player (body or camera), and curatorCamera is client-local
+                    // so it reads null on the server. Filtering on it here
+                    // suppressed IED spawning for every GM-hosted mission
+                    // (Jman 2026-05-30). The bomber-chases-the-camera fix lives
+                    // where it belongs - the victim selection in fnc_createBomber
+                    // - so a curator hovering over an area can at worst arm a
+                    // trigger with no real target nearby, which is harmless.
+                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)"
                 };
 
 
@@ -1360,12 +1366,13 @@ switch(_operation) do {
                     // Accept person OR vehicle in thisList - see the
                     // matching comment in case "start" (search for
                     // HepatitisC.TnB) for the vehicle-board issue.
-                    // Curator-controlled players (Zeus hosts) are excluded:
-                    // BIS_fnc_listPlayers includes a player who's in Zeus, so
-                    // without this filter the bomber / IED trigger arms on a
-                    // hovering curator and the bomber chases the Zeus camera.
-                    // Jman 2026-05-28 Zeus-host test.
-                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count (([] call BIS_fnc_listPlayers) select {isNull (getAssignedCuratorLogic _x)}) > 0)"
+                    // No curator/Zeus filter here - see the matching note in
+                    // case "start": there's no reliable server-side test for
+                    // "in the Zeus camera vs on the ground", so filtering it
+                    // suppressed IED spawning for GM-hosted missions. The
+                    // bomber-chase fix is in fnc_createBomber victim selection
+                    // (Jman 2026-05-30).
+                    "({((_x in thisList) || ((vehicle _x) in thisList)) && ((getposATL (vehicle _x)) select 2 < 25)} count ([] call BIS_fnc_listPlayers) > 0)"
                 };
 
                 if (_num > 0) then {

@@ -356,7 +356,7 @@ switch (_operation) do {
             };
         };
 
-        if (["ALiVE_mil_C2ISTAR"] call ALIVE_fnc_isModuleAvailable) then {
+        if (["ALiVE_mil_c2istar"] call ALIVE_fnc_isModuleAvailable) then {
             // G2 intel pipeline setup for each synced C2ISTAR.
             // Wrapped in a spawn because the waituntil on the
             // C2ISTAR's startupComplete flag otherwise blocks
@@ -377,7 +377,7 @@ switch (_operation) do {
             [_logic, _handler, _side] spawn {
                 params ["_logic", "_handler", "_side"];
                 {
-                    if (typeof _x == "ALiVE_mil_C2ISTAR") then {
+                    if (typeof _x == "ALiVE_mil_c2istar") then {
                         waituntil {_x getVariable ["startupComplete",false]};
                         
                         // Read opcomIntelSides from the SPECIFIC C2ISTAR
@@ -805,7 +805,7 @@ switch (_operation) do {
                         [ALIVE_aaProfileBehaviour, _profileID] call ALIVE_fnc_hashGet
                     } else { nil };
                     private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
-                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {_commander && {!(call _isSeaTravel)}}} && {!_isStaticAA};
+                    private _valid = !_busy && {_profileID in _troops} && {!_commander || {if (_profileID in ([_logic,"sea",[]] call ALiVE_fnc_HashGet)) then {call _isSeaTravel} else {!(call _isSeaTravel)}}} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})};
 
                     if (_valid) then {_troopsUnsorted pushBack _profile};
                 };
@@ -1028,7 +1028,7 @@ switch (_operation) do {
                         } else { nil };
                         private _isStaticAA = !isNil "_aaBehVal" && {typeName _aaBehVal == "STRING"} && {_aaBehVal == "static"};
 
-                        if (!(isnil "_profile") && {_pos distance _posAttacker < _dist} && {!(_profileID in _reserved)} && {!_isStaticAA}) then {
+                        if (!(isnil "_profile") && {_pos distance _posAttacker < _dist} && {!(_profileID in _reserved)} && {!_isStaticAA} && {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _profileID, false] call ALIVE_fnc_hashGet})}) then {
 
                             _waypoints = [_profile,"waypoints"] call ALIVE_fnc_hashGet;
 
@@ -3242,7 +3242,8 @@ switch (_operation) do {
                         if (
                             count _assignments == 0 && // entity is not assigned to a vehicle
                             {!([_profile,"isPlayer",false] call ALIVE_fnc_hashGet)} && // not a player
-                            {{[toLower _x, "pilot"] call CBA_fnc_find != -1} count _unitClasses == 0} // no pilots in entity
+                            {{[toLower _x, "pilot"] call CBA_fnc_find != -1} count _unitClasses == 0} && // no pilots in entity
+                            {!(!isNil "ALIVE_profileStationary" && {[ALIVE_profileStationary, _x, false] call ALIVE_fnc_hashGet})} // not a held roadblock / stationary garrison
                             ) then {
                             _inf pushback _x;
                         };
@@ -3644,22 +3645,67 @@ switch (_operation) do {
         //but the synced Mil Placement was left on its OPF_F
         //default, so there are zero profiles for X and OPCOM
         //silently refuses to run.
+        private _parsePlacementFactions = {
+            params ["_value"];
+            private _parsed = [];
+            if (_value isEqualType []) exitWith {
+                {
+                    if (_x isEqualType "" && {_x != ""} && {_x != "NONE"} && {!(_x in _parsed)}) then {
+                        _parsed pushBack _x;
+                    };
+                } forEach _value;
+                _parsed
+            };
+            if !(_value isEqualType "") exitWith { [] };
+            if (_value == "") exitWith { [] };
+            private _s = _value;
+            _s = [_s, " ", ""] call CBA_fnc_replace;
+            _s = [_s, "[", ""] call CBA_fnc_replace;
+            _s = [_s, "]", ""] call CBA_fnc_replace;
+            _s = [_s, """", ""] call CBA_fnc_replace;
+            {
+                if (_x != "" && {_x != "NONE"} && {!(_x in _parsed)}) then {
+                    _parsed pushBack _x;
+                };
+            } forEach ([_s, ","] call CBA_fnc_split);
+            _parsed
+        };
+
         private _availableFactions = [];
+        private _customPlacementClasses = ["ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"];
         {
             // mil_placement_spe omitted - see rationale at the placement-class
             // iteration above.
-            if ((typeOf _x) in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
-                private _fac = _x getVariable ["faction", ""];
-                if (_fac != "" && {!(_fac in _availableFactions)}) then {
-                    _availableFactions pushBack _fac;
+            private _placementType = typeOf _x;
+            if (_placementType in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom","ALiVE_mil_placement_custom"]) then {
+                private _placementFactions = [_x getVariable ["factions", ""]] call _parsePlacementFactions;
+                private _legacyPlacementFactions = [];
+                if (count _placementFactions == 0) then {
+                    _legacyPlacementFactions = [_x getVariable ["faction", ""]] call _parsePlacementFactions;
+                    private _legacyIsDefault = (count _legacyPlacementFactions == 1) && {(_legacyPlacementFactions select 0) == "BLU_F"};
+                    private _legacyBlocksInheritance = (_placementType in _customPlacementClasses) && {_legacyIsDefault};
+                    if (!_legacyBlocksInheritance) then {
+                        _placementFactions = +_legacyPlacementFactions;
+                    };
                 };
+                if ((count _placementFactions == 0) && {_placementType in _customPlacementClasses}) then {
+                    _placementFactions = +_factions;
+                };
+                if ((count _placementFactions == 0) && {count _legacyPlacementFactions > 0}) then {
+                    _placementFactions = +_legacyPlacementFactions;
+                };
+                {
+                    if (!(_x in _availableFactions)) then {
+                        _availableFactions pushBack _x;
+                    };
+                } forEach _placementFactions;
             };
         } forEach (synchronizedObjects _opcomModule);
 
         private _unmatchedFactions = _factions select {!(_x in _availableFactions)};
         if (count _unmatchedFactions > 0) then {
             [
-                "ALiVE OPCOM init MISMATCH: AI Commander '%1' has Factions [%2] but synced placement modules only provide factions [%3]. Unmatched: [%4]. Fix: either change the OPCOM Factions multi-select to match a placement module's faction, or add / sync a Mil Placement (or Mil Placement (Civ Obj)) module with the missing faction to this OPCOM.",
+                "ALiVE OPCOM init MISMATCH: AI Commander '%1' has Factions [%2] but synced placement modules only provide factions [%3]. Unmatched: [%4]. Fix: change the OPCOM Factions multi-select to match a placement module, sync a placement with the missing faction, or leave a custom objective's Force Factions empty so it inherits this Commander.",
                 _customName,
                 _factions joinString ", ",
                 _availableFactions joinString ", ",
