@@ -438,6 +438,13 @@ switch(_operation) do {
 
         ALIVE_SUP_PLAYER_RESUPPLY = _logic;
 
+        // Enable Debug attribute drives the module-wide diagnostic gate. Coerce like pr_audio
+        // below (bool when binarised, STRING "0"/"1" on -packonly builds).
+        private _prDebug = _logic getVariable ["pr_debug", false];
+        if !(_prDebug isEqualType true) then { _prDebug = parseNumber format ["%1", _prDebug] > 0; };
+        ALiVE_sup_player_resupply_debug = _prDebug;
+        publicVariable "ALiVE_sup_player_resupply_debug";
+
         // pr_audio arrives as STRING "0"/"1" on builds packed without binarisation; the getter's
         // BOOL default would silently overwrite a "0" back to true, making audio impossible to
         // disable. Normalise once before any getter call (same guard Combat Support uses).

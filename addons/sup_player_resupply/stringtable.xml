@@ -23,6 +23,12 @@
     <Russian>Пополняет припасы игроков через логистические запросы</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_DEBUG">
+    <English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_PR_DEBUG_COMMENT">
+    <English>Writes Player Combat Logistics diagnostic logging to the RPT (resupply requests, deliveries and catalog resolution).</English>
+</Key>
 <Key ID="STR_ALIVE_PR_ALLOW">
     <English>Trigger Item Categories:</English>
 </Key>

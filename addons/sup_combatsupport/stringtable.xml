@@ -35,6 +35,12 @@
 <Key ID="STR_ALIVE_ARTY_LIMIT_COMMENT">
     <English>Total number of times destroyed artillery batteries can be replaced, shared across all artillery assets. 0 disables replacement.</English>
 </Key>
+<Key ID="STR_ALIVE_CS_DEBUG">
+    <English>Enable Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_CS_DEBUG_COMMENT">
+    <English>Writes Combat Support diagnostic logging to the RPT (CAS engagements, guided delivery, RTB and the rearm-by-landing cycle).</English>
+</Key>
 <Key ID="STR_ALIVE_CS_AUDIO">
     <English>Radio Messages (Audio):</English>
     <Chinesesimp>无线电信息（音频）</Chinesesimp>

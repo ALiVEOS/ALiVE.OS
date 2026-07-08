@@ -11,8 +11,7 @@
     <Chinesesimp>用于ALiVE战斗支援的运输模块</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_USAGE">
-    <English>Place Module and set the settings accordingly! Sync to a Combat Support Module!</English>
-    <Chinesesimp>放置模块并相应地设置设置!同步到战斗支援模块!</Chinesesimp>
+    <English>Place the module and sync it to a Player Combat Support module.</English>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_CALLSIGN">
     <English>Callsign</English>
@@ -27,40 +26,33 @@
     <Chinesesimp>运输车辆类型</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_TYPE_DESC">
-    <English>Type of Transport i.e B_Heli_Transport_01_camo_F</English>
-    <Chinesesimp>传输类型,即B_Heli_Transport_01_camo_</Chinesesimp>
+    <English>Pick the vehicle from the list of suitable classes across all loaded factions (use the Side button to narrow the list). Type a classname into the Override field for vehicles the list doesn't show.</English>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_HEIGHT">
-    <English>Spawn Height</English>
-    <Chinesesimp>产生高</Chinesesimp>
+    <English>Spawn Height (m ASL)</English>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_HEIGHT_DESC">
-    <English>Sets Assets Spawn Height ASL, for use with Nimitz Addon</English>
-    <Chinesesimp>设置资产刷出高度ASL,用于尼米兹插件</Chinesesimp>
+    <English>Spawn height above sea level, for carrier decks (e.g. the Nimitz addon). Values of 0 or below spawn the asset on the ground.</English>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_CODE">
     <English>Code</English>
     <Chinesesimp>代码</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_CODE_DESC">
-    <English>Code that will be ran on this unit</English>
-    <Chinesesimp>将在此单元上运行的代码</Chinesesimp>
+    <English>Code run on the spawned vehicle; use "this" to reference it. Statements separated by ; run independently.</English>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_SLINGLOADING">
     <English>Slingloading</English>
     <Chinesesimp>绳索吊装</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_SLINGLOADING_DESC">
-    <English>If selected enables slingloading of vehicles and containers, containers are spawned near transport chopper.</English>
-    <Chinesesimp>如果选择启用吊运车辆和集装箱,集装箱将在运输直升机附近产生。</Chinesesimp>
+    <English>Enables the Slingload and Unhook tasks. Automatically disabled if the vehicle cannot slingload. Containers are controlled by Number of Containers below.</English>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_CONTAINERS">
-    <English>No. of Containers</English>
-    <Chinesesimp>集装箱的编号</Chinesesimp>
+    <English>Number of Containers</English>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_CONTAINERS_DESC">
-    <English>Number of containers to be spawned for slingloading purposes</English>
-    <Chinesesimp>生成的用于吊运的集装箱数量</Chinesesimp>
+    <English>Number of slingloadable containers spawned near the helicopter (spawns regardless of the Slingloading setting).</English>
 </Key>
 <Key ID="STR_ALIVE_TRANSPORT_LOGISTICS">
     <English>Use Military Logistics Simulation</English>

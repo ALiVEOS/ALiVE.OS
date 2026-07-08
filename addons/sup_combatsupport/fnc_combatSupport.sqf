@@ -91,6 +91,14 @@ switch(_operation) do {
                         _ARTY_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_artyrespawnlimit","3"];
                         ARTY_RESPAWN_LIMIT = parsenumber(_ARTY_SET_RESPAWN_LIMIT);
 
+                        // Enable Debug attribute drives the module-wide diagnostic gate read by the
+                        // CAS engagement/rearm scripts and the resupply watchdog. Bool when binarised,
+                        // STRING "0"/"1" on -packonly builds - coerce like the audio attribute below.
+                        private _csDebug = NEO_radioLogic getVariable ["combatsupport_debug", false];
+                        if !(_csDebug isEqualType true) then { _csDebug = parseNumber format ["%1", _csDebug] > 0; };
+                        ALiVE_sup_combatsupport_debug = _csDebug;
+                        publicVariable "ALiVE_sup_combatsupport_debug";
+
                         _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
                         // Defensive coercion: combatsupport_audio is a Combo and Eden returns it as BOOL
                         // when the PBO is binarised (normal production builds) but as STRING "0"/"1" when
@@ -261,7 +269,7 @@ switch(_operation) do {
                                         _guided = ["SADARM",parsenumber(_entry getvariable ["CS_artillery_guided","30"])];
                                         _cluster = ["CLUSTER",parsenumber(_entry getvariable ["CS_artillery_cluster","30"])];
                                         _lg = ["LASER",parsenumber(_entry getvariable ["CS_artillery_lg","30"])];
-                                        _mine = ["MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
+                                        _mine = ["MINE",parsenumber(_entry getvariable ["CS_artillery_mine","30"])];
                                         _atmine = ["AT MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
                                         _rockets = ["ROCKETS",parsenumber(_entry getvariable ["CS_artillery_rockets","16"])];
 
@@ -304,7 +312,7 @@ switch(_operation) do {
                                     private ["_position","_callsign","_type","_slingloading","_containers","_tasks"];
 
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
-                                    _callsign = ((synchronizedObjects _logic) select _i) getvariable ["transport_callsign","FRIZ ONE"];
+                                    _callsign = ((synchronizedObjects _logic) select _i) getvariable ["transport_callsign","RODEO TWO"];
                                     _type = ((synchronizedObjects _logic) select _i) getvariable ["transport_type","B_Heli_Transport_01_camo_F"];
                                     _heightset = ((synchronizedObjects _logic) select _i) getvariable ["transport_height","0"];
                                     _height = parsenumber(_heightset);
@@ -354,12 +362,12 @@ switch(_operation) do {
                                     private ["_position","_callsign","_type"];
 
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
-                                    _callsign = ((synchronizedObjects _logic) select _i) getvariable ["artillery_callsign","FOX ONE"];
+                                    _callsign = ((synchronizedObjects _logic) select _i) getvariable ["artillery_callsign","FOX SEVEN"];
                                     _class = ((synchronizedObjects _logic) select _i) getvariable ["artillery_type","B_Mortar_01_F"];
                                     _setherounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_he","30"];
                                     _setillumrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_illum","30"];
                                     _setsmokerounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_smoke","30"];
-                                    _setwprounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_wp","30"];
+                                    _setwprounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_wp","0"];
                                     _setguidedrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_guided","30"];
                                     _setclusterrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_cluster","30"];
                                     _setlgrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_lg","30"];

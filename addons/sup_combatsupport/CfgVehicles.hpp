@@ -21,7 +21,22 @@ class CfgVehicles {
                 picture = "x\alive\addons\sup_combatsupport\icon_sup_combatsupport.paa";
                 class Attributes : AttributesBase
                 {
-                        // ---- Access (who can call in support) ----
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_combatsupport_HDR_GENERAL"; displayName = "GENERAL"; };
+                        class combatsupport_debug : Combo
+                        {
+                                property = "ALiVE_sup_combatsupport_combatsupport_debug";
+                                displayName = "$STR_ALIVE_CS_DEBUG";
+                                tooltip = "$STR_ALIVE_CS_DEBUG_COMMENT";
+                                expression = "_this setVariable ['combatsupport_debug', _value];";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class off { name="No"; value = 0; default = 1; };
+                                    class on { name="Yes"; value = 1; };
+                                };
+                        };
+
+                        class HDR_ACCESS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_combatsupport_HDR_ACCESS"; displayName = "ACCESS"; };
                         class combatsupport_item
                         {
                                 property     = "ALiVE_sup_combatsupport_combatsupport_item";
@@ -54,7 +69,7 @@ class CfgVehicles {
                                 };
                         };
 
-                        // ---- Asset replacement ----
+                        class HDR_RESPAWN : ALiVE_ModuleSubTitle { property = "ALiVE_sup_combatsupport_HDR_RESPAWN"; displayName = "ASSET REPLACEMENT"; };
                         class combatsupport_respawn : Combo
                         {
                                 property = "ALiVE_sup_combatsupport_combatsupport_respawn";
@@ -73,7 +88,7 @@ class CfgVehicles {
                         class combatsupport_transportrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_transportrespawnlimit"; displayName = "$STR_ALIVE_TRANS_LIMIT"; tooltip = "$STR_ALIVE_TRANS_LIMIT_COMMENT"; defaultValue = """3"""; };
                         class combatsupport_artyrespawnlimit : Edit { property = "ALiVE_sup_combatsupport_combatsupport_artyrespawnlimit"; displayName = "$STR_ALIVE_ARTY_LIMIT"; tooltip = "$STR_ALIVE_ARTY_LIMIT_COMMENT"; defaultValue = """3"""; };
 
-                        // ---- Misc ----
+                        class HDR_MISC : ALiVE_ModuleSubTitle { property = "ALiVE_sup_combatsupport_HDR_MISC"; displayName = "MISC"; };
                         class combatsupport_audio : Combo
                         {
                                 property = "ALiVE_sup_combatsupport_combatsupport_audio";

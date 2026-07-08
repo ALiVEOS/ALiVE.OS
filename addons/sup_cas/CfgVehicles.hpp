@@ -21,10 +21,21 @@ class CfgVehicles {
                 picture = "x\alive\addons\sup_cas\icon_sup_cas.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_cas_HDR_GENERAL"; displayName = "GENERAL"; };
                         class cas_callsign : Edit { property = "ALiVE_sup_cas_cas_callsign"; displayName = "$STR_ALIVE_CAS_CALLSIGN"; tooltip = "$STR_ALIVE_CAS_CALLSIGN_DESC"; defaultValue = """EAGLE ONE"""; };
-                        class cas_type : Edit { property = "ALiVE_sup_cas_cas_type"; displayName = "$STR_ALIVE_CAS_TYPE"; tooltip = "$STR_ALIVE_CAS_TYPE_DESC"; defaultValue = """B_Heli_Attack_01_F"""; };
+                        class cas_type
+                        {
+                                property     = "ALiVE_sup_cas_cas_type";
+                                displayName  = "$STR_ALIVE_CAS_TYPE";
+                                tooltip      = "$STR_ALIVE_CAS_TYPE_DESC";
+                                control      = "ALiVE_VehicleCombo_CAS";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['cas_type', _value];";
+                                defaultValue = """B_Heli_Attack_01_F""";
+                        };
                         class cas_height : Edit { property = "ALiVE_sup_cas_cas_height"; displayName = "$STR_ALIVE_CAS_HEIGHT"; tooltip = "$STR_ALIVE_CAS_HEIGHT_DESC"; defaultValue = """0"""; };
                         class cas_code : Edit { property = "ALiVE_sup_cas_cas_code"; displayName = "$STR_ALIVE_CAS_CODE"; tooltip = "$STR_ALIVE_CAS_CODE_DESC"; defaultValue = """"""; };
+                        class HDR_LOGISTICS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_cas_HDR_LOGISTICS"; displayName = "LOGISTICS"; };
                         class cas_logistics : Combo
                         {
                                 property = "ALiVE_sup_cas_cas_logistics";

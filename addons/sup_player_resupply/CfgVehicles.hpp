@@ -23,6 +23,19 @@ class CfgVehicles {
                 {
                     // ── GENERAL ──────────────────────────────────────────────
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_player_resupply_HDR_GENERAL"; displayName = "GENERAL"; };
+                    class pr_debug : Combo
+                    {
+                            property = "ALiVE_sup_player_resupply_pr_debug";
+                            displayName = "$STR_ALIVE_PR_DEBUG";
+                            tooltip = "$STR_ALIVE_PR_DEBUG_COMMENT";
+                            expression = "_this setVariable ['pr_debug', _value];";
+                            defaultValue = """0""";
+                            class Values
+                            {
+                                class off { name="No"; value = 0; default = 1; };
+                                class on { name="Yes"; value = 1; };
+                            };
+                    };
                     class pr_item
                     {
                             property     = "ALiVE_sup_player_resupply_pr_item";

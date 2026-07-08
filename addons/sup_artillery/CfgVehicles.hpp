@@ -21,8 +21,19 @@ class CfgVehicles {
                 picture = "x\alive\addons\sup_cas\icon_sup_cas.paa";
                 class Attributes : AttributesBase
                 {
+                        class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_artillery_HDR_GENERAL"; displayName = "GENERAL"; };
                         class artillery_callsign : Edit { property = "ALiVE_sup_artillery_artillery_callsign"; displayName = "$STR_ALIVE_ARTILLERY_CALLSIGN"; tooltip = "$STR_ALIVE_ARTILLERY_CALLSIGN_DESC"; defaultValue = """FOX SEVEN"""; };
-                        class artillery_type : Edit { property = "ALiVE_sup_artillery_artillery_type"; displayName = "$STR_ALIVE_ARTILLERY_TYPE"; tooltip = "$STR_ALIVE_ARTILLERY_TYPE_DESC"; defaultValue = """B_MBT_01_arty_F"""; };
+                        class artillery_type
+                        {
+                                property     = "ALiVE_sup_artillery_artillery_type";
+                                displayName  = "$STR_ALIVE_ARTILLERY_TYPE";
+                                tooltip      = "$STR_ALIVE_ARTILLERY_TYPE_DESC";
+                                control      = "ALiVE_VehicleCombo_Artillery";
+                                typeName     = "STRING";
+                                expression   = "_this setVariable ['artillery_type', _value];";
+                                defaultValue = """B_MBT_01_arty_F""";
+                        };
+                        class HDR_ROUNDS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_artillery_HDR_ROUNDS"; displayName = "ROUNDS"; };
                         class artillery_he : Edit { property = "ALiVE_sup_artillery_artillery_he"; displayName = "$STR_ALIVE_ARTILLERY_HE"; tooltip = "$STR_ALIVE_ARTILLERY_HE_DESC"; defaultValue = """30"""; };
                         class artillery_illum : Edit { property = "ALiVE_sup_artillery_artillery_illum"; displayName = "$STR_ALIVE_ARTILLERY_ILLUM"; tooltip = "$STR_ALIVE_ARTILLERY_ILLUM_DESC"; defaultValue = """30"""; };
                         class artillery_smoke : Edit { property = "ALiVE_sup_artillery_artillery_smoke"; displayName = "$STR_ALIVE_ARTILLERY_SMOKE"; tooltip = "$STR_ALIVE_ARTILLERY_SMOKE_DESC"; defaultValue = """30"""; };
@@ -34,6 +45,7 @@ class CfgVehicles {
                         class artillery_atmine : Edit { property = "ALiVE_sup_artillery_artillery_atmine"; displayName = "$STR_ALIVE_ARTILLERY_ATMINE"; tooltip = "$STR_ALIVE_ARTILLERY_ATMINE_DESC"; defaultValue = """30"""; };
                         class artillery_rockets : Edit { property = "ALiVE_sup_artillery_artillery_rockets"; displayName = "$STR_ALIVE_ARTILLERY_ROCKETS"; tooltip = "$STR_ALIVE_ARTILLERY_ROCKETS_DESC"; defaultValue = """16"""; };
                         class artillery_code : Edit { property = "ALiVE_sup_artillery_artillery_code"; displayName = "$STR_ALIVE_ARTILLERY_CODE"; tooltip = "$STR_ALIVE_ARTILLERY_CODE_DESC"; defaultValue = """"""; };
+                        class HDR_LOGISTICS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_artillery_HDR_LOGISTICS"; displayName = "LOGISTICS"; };
                         class artillery_logistics : Combo
                         {
                                 property = "ALiVE_sup_artillery_artillery_logistics";
