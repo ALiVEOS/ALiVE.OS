@@ -136,13 +136,13 @@ class Cfg3DEN
         // surfaces as a selected "(unrecognised)" row so open+OK never
         // rewrites the mission. Same pattern as ALiVE_FactionChoice.
         class ALiVE_VehicleCombo_CAS: Combo {
-            attributeLoad = "[_this, 'cas_type', 'cas', 'B_Heli_Attack_01_F'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
+            attributeLoad = "[_this, 'cas_type', 'cas'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
         };
         class ALiVE_VehicleCombo_Artillery: Combo {
-            attributeLoad = "[_this, 'artillery_type', 'arty', 'B_MBT_01_arty_F'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
+            attributeLoad = "[_this, 'artillery_type', 'arty'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
         };
         class ALiVE_VehicleCombo_Transport: Combo {
-            attributeLoad = "[_this, 'transport_type', 'transport', 'B_Heli_Transport_01_camo_F'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
+            attributeLoad = "[_this, 'transport_type', 'transport'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
         };
 
         // Variant control classes for civilian-side single-select

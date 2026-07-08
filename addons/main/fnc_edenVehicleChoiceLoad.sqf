@@ -22,7 +22,7 @@ Description:
     round-trip never rewrites the mission.
 
 Parameters:
-    [_display, _varName, _role, _defaultClass]
+    [_display, _varName, _role]
 
 Author:
     Jman
@@ -31,13 +31,11 @@ Author:
 private _display = controlNull;
 private _varName = "cas_type";
 private _role = "cas";
-private _defaultClass = "B_Heli_Attack_01_F";
 
 if (typeName _this == "ARRAY") then {
     if (count _this > 0) then { _display = _this select 0; };
     if (count _this > 1 && {typeName (_this select 1) == "STRING"}) then { _varName = _this select 1; };
     if (count _this > 2 && {typeName (_this select 2) == "STRING"}) then { _role = _this select 2; };
-    if (count _this > 3 && {typeName (_this select 3) == "STRING"}) then { _defaultClass = _this select 3; };
 } else {
     _display = _this;
 };
@@ -46,7 +44,10 @@ if (isNull _display) exitWith {
     ["ALIVE VehicleChoice LOAD: null display"] call ALiVE_fnc_dump;
 };
 
-// Resolve the stored value (priority: logic variable > Eden value slot > role default)
+// Resolve the stored value (priority: logic variable > Eden value slot; a fresh
+// module arrives with the ATTRIBUTE defaultValue in the Eden value slot, so no
+// classname fallback is needed here - if everything is empty, the first
+// enumerated vehicle is selected below)
 private _selected = get3DENSelected "logic";
 private _storedFromLogic = if (count _selected > 0) then {
     (_selected select 0) getVariable [_varName, nil]
@@ -55,7 +56,7 @@ private _storedFromLogic = if (count _selected > 0) then {
 };
 private _edenValue = _display getVariable "value";
 
-private _value = _defaultClass;
+private _value = "";
 if (!isNil "_edenValue" && {typeName _edenValue == "STRING"} && {_edenValue != ""}) then { _value = _edenValue };
 if (!isNil "_storedFromLogic" && {typeName _storedFromLogic == "STRING"} && {_storedFromLogic != ""}) then { _value = _storedFromLogic };
 
