@@ -159,6 +159,7 @@ class FSM
                          "//Vehicle Status" \n
                          "_veh setVariable [""NEO_radioCasUnitStatus"", ""NONE"", true];" \n
                          "_veh setVariable [""ALIVE_CombatSupport_Base"", _base, true];" \n
+                         "_veh setVariable [""ALIVE_CombatSupport_Airport"", _airport, true];" \n
                          "" \n
                          "//for attack run short circuiting" \n
                          "_restoreAmmo = false;" \n
@@ -245,7 +246,8 @@ class FSM
                         name = "_";
                         itemno = 4;
                         init = /*%FSM<STATEINIT""">*/"if !(isnil ""_parking"") then {_veh setFuel 1; _parking = nil};" \n
-                         "if (!isnil ""_h"") then {deleteVehicle _h};"/*%FSM</STATEINIT""">*/;
+                         "if (!isnil ""_h"") then {deleteVehicle _h};" \n
+                         "_veh setVariable [""ALIVE_cas_parked"", false];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -516,7 +518,8 @@ class FSM
                 {
                         name = "__2";
                         itemno = 12;
-                        init = /*%FSM<STATEINIT""">*/"[_veh,_callsign, _audio, _player] spawn {" \n
+                        init = /*%FSM<STATEINIT""">*/"_rearmHandle = [_veh, _grp, _callsign, _airport, _base, _audio] spawn NEO_fnc_casRearmService;" \n
+                         "[_veh,_callsign, _audio, _player] spawn {" \n
                          "	params [""_veh"",""_callsign"",""_audio"",""_player""];" \n
                          "" \n
                          "	sleep 5;" \n
@@ -635,9 +638,6 @@ class FSM
                          "_veh setVariable [""NEO_radioCasUnitStatus"", ""NONE"", true];" \n
                          "_veh setVariable [""NEO_radioCurrentTask"", nil, true];" \n
                          "" \n
-                         "_veh setDamage 0;" \n
-                         "_veh setVehicleAmmo 1;" \n
-                         "_veh setFuel 0;" \n
                          "_veh engineOn false;" \n
                          "" \n
                          "_parking = true;" \n
@@ -1340,7 +1340,7 @@ class FSM
                                         to="__3";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"// Landed and waiting at starting position" \n
-                                         "((getposATL _veh) select 2) < 1 && {_veh distance _base < 20};"/*%FSM</CONDITION""">*/;
+                                         "(((getposATL _veh) select 2) < 1 && {_veh distance _base < 20}) || {_veh getVariable [""ALIVE_cas_parked"", false]};"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -1352,10 +1352,7 @@ class FSM
                 {
                         name = "__11";
                         itemno = 36;
-                        init = /*%FSM<STATEINIT""">*/"_veh setFuel 1;" \n
-                         "_veh setVehicleAmmo 1;" \n
-                         "_veh setDamage 0;" \n
-                         "_veh engineOn false;"/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"_veh engineOn false;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {

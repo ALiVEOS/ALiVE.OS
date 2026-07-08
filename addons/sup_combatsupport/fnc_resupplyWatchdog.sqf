@@ -176,6 +176,13 @@ while {true} do {
         private _needsFuel = fuel _primaryVeh < FUEL_THRESHOLD;
         private _needsRepair = damage _primaryVeh > DAMAGE_THRESHOLD && {damage _primaryVeh < 1};
 
+        // RTB hand-off flag from the CAS attack loop: the aircraft flew home specifically to be
+        // serviced, so treat it as a dispatch trigger even when no numeric threshold is tripped
+        // (the RTB fuel trigger fires at <0.2 while the fuel threshold here is <0.15).
+        if (!_needsAmmo && {!_needsFuel} && {!_needsRepair} && {_primaryVeh getVariable ["ALIVE_resupply_needsService", false]}) then {
+            _needsAmmo = true;
+        };
+
         // No thresholds hit — skip.
         if (!_needsAmmo && {!_needsFuel} && {!_needsRepair}) then { continue };
 
