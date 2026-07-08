@@ -102,9 +102,25 @@ if (_parked && {alive _veh}) then {
 // ---- Phase 2: hold for the resupply truck ---------------------------------
 if (_parked && _needsService && {alive _veh} && {!(call _fnc_retasked)}) then {
     // the resupply watchdog reads ALIVE_resupply_needsService and dispatches a
-    // truck once the aircraft is parked; service restores ammo 1 / fuel 0.5 / damage 0
+    // truck once the aircraft is parked; service restores ammo 1 / fuel 0.5 / damage 0.
+    // "Serviced" means the SERVICE COMPLETED (lastDispatch is stamped at completion,
+    // incl. the max-retries force-service), or every resource genuinely reads healthy -
+    // fuel and damage alone are NOT enough: a winchester RTB parks with plenty of fuel
+    // and no damage but empty pylons, and must keep waiting for the truck.
     private _t1 = time;
-    private _fnc_serviced = { (fuel _veh >= 0.45) && {damage _veh <= 0.1} };
+    private _svcStart = serverTime;
+    private _fnc_serviced = {
+        if ((_veh getVariable ["ALIVE_resupply_lastDispatch", 0]) > _svcStart) exitWith { true };
+        if (fuel _veh < 0.45 || {damage _veh > 0.1}) exitWith { false };
+        // no ordnance type below 25% of capacity (mirrors the resupply watchdog's check)
+        private _low = false;
+        {
+            private _current = _x select 1;
+            private _max = _x select 2;
+            if (_max > 0 && {(_current / _max) < 0.25}) exitWith { _low = true };
+        } forEach (_veh call ALiVE_fnc_vehicleGetAmmo);
+        !_low
+    };
     while {alive _veh && {!(call _fnc_serviced)} && {!(call _fnc_retasked)} && {time - _t1 < 900}} do {
         sleep 10;
     };
