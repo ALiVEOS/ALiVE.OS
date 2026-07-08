@@ -523,6 +523,22 @@ class Cfg3DEN
             attributeSave = "[_this, 'c2_item'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsSave.sqf'";
         };
 
+        // Combat Support / Player Combat Logistics variants of the access-items
+        // multi-select. Same shared registry (CfgALiVEC2ISTARAccessItems), same
+        // Load/Save handlers, same geometry - only the stored variable name and
+        // title differ. Cloned control classes are required because the Load/Save
+        // handler strings must live on the CONTROL class: attributeLoad overrides
+        // on the consuming attribute class do not propagate for controlsGroup
+        // based controls.
+        class ALiVE_CSAccessItemsChoice: ALiVE_C2ISTARAccessItemsChoice {
+            attributeLoad = "[_this, 'combatsupport_item', '$STR_ALIVE_CS_ALLOW', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsLoad.sqf'";
+            attributeSave = "[_this, 'combatsupport_item'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsSave.sqf'";
+        };
+        class ALiVE_PRAccessItemsChoice: ALiVE_C2ISTARAccessItemsChoice {
+            attributeLoad = "[_this, 'pr_item', '$STR_ALIVE_PR_ALLOW', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsLoad.sqf'";
+            attributeSave = "[_this, 'pr_item'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsSave.sqf'";
+        };
+
         class ALiVE_SideChoiceMulti: ALiVE_FactionChoiceMulti_Base {
             // Compact 4-row listbox sitting in the normal right column
             // (x=48..130) so the Title sub-control has the left column

@@ -26,6 +26,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_isModuleAvailable.sqf";
                 RECOMPILE;
             };
+            class playerHasAccessItems {
+                description = "Shared access-item gate for the player tablet/menu modules";
+                file = "\x\alive\addons\main\fnc_playerHasAccessItems.sqf";
+                RECOMPILE;
+            };
             class versioning {
                 description = "Warns or kicks players on version mismatch";
                 file = "\x\alive\addons\main\fnc_versioning.sqf";
