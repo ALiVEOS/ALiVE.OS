@@ -35,7 +35,8 @@ Peer Reviewed:
 #define SUPERCLASS ALIVE_fnc_baseClass
 #define MAINCLASS ALIVE_fnc_PR
 #define MTEMPLATE "ALiVE_PR_%1"
-#define DEFAULT_PR_ITEM "LaserDesignator"
+#define DEFAULT_PR_ITEM "LaserDesignators"
+#define DEFAULT_PR_ITEM_CUSTOM ""
 #define DEFAULT_RESTRICTION_TYPE "SIDE"
 #define DEFAULT_RESTRICTION_BLACKLIST []
 #define DEFAULT_RESTRICTION_WHITELIST []
@@ -121,6 +122,9 @@ switch(_operation) do {
 
     case "pr_item": {
         _result = [_logic,_operation,_args,DEFAULT_PR_ITEM] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "pr_item_custom": {
+        _result = [_logic,_operation,_args,DEFAULT_PR_ITEM_CUSTOM] call ALIVE_fnc_OOsimpleOperation;
     };
     case "pr_restrictionType": {
         _result = [_logic,_operation,_args,DEFAULT_RESTRICTION_TYPE] call ALIVE_fnc_OOsimpleOperation;
@@ -433,6 +437,15 @@ switch(_operation) do {
         _logic setVariable ["startupComplete", false];
 
         ALIVE_SUP_PLAYER_RESUPPLY = _logic;
+
+        // pr_audio arrives as STRING "0"/"1" on builds packed without binarisation; the getter's
+        // BOOL default would silently overwrite a "0" back to true, making audio impossible to
+        // disable. Normalise once before any getter call (same guard Combat Support uses).
+        private _prAudio = _logic getVariable ["pr_audio", true];
+        if !(_prAudio isEqualType true) then {
+            _prAudio = parseNumber format ["%1", _prAudio] > 0;
+            _logic setVariable ["pr_audio", _prAudio];
+        };
 
         // load static data
         call ALiVE_fnc_staticDataHandler;

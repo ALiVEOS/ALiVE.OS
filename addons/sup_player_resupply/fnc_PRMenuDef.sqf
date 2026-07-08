@@ -37,18 +37,21 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_menuDef","_target","_params","_menuName","_menuRsc","_menus","_backpacks","_userItems","_items","_result"];
+private ["_menuDef","_target","_params","_menuName","_menuRsc","_menus","_result"];
 // _this==[_target, _menuNameOrParams]
 
 PARAMS_2(_target,_params);
 
 _menuName = "";
 _menuRsc = "popup";
-_items = assignedItems player + items player;
-_backpacks = Backpack player;
-_userItems = [[MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR,"ALIVE_Tablet"];
-//Finds selected userItem-string(s) in assignedItems
-_result = (({([toLower(str(_items + [_backpacks])), toLower(_x)] call CBA_fnc_find) > -1} count _userItems) > 0);
+// shared access-item gate: expands Trigger Item Categories + Custom Trigger Items
+// and matches against one player pool, so this menu, the C2ISTAR tablet and the
+// ACE self-interaction all agree on who can open the resupply tablet
+_result = [
+    [MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR,
+    [MOD(SUP_PLAYER_RESUPPLY),"pr_item_custom"] call ALIVE_fnc_PR,
+    ["ALIVE_Tablet"]
+] call ALIVE_fnc_playerHasAccessItems;
 
 if (typeName _params == typeName []) then {
     if (count _params < 1) exitWith {["Error: Invalid params: %1, %2", _this, __FILE__] call ALiVE_fnc_dump;};
