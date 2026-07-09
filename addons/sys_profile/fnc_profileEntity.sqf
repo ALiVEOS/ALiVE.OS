@@ -630,6 +630,22 @@ switch(_operation) do {
     case "advancePendingWaypoints": {
         private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
 
+        // #943 - boat profiles need their terminal order waypoint kept on water (below).
+        // Commanding-a-ship entities and ship vehicle profiles qualify; groups riding a
+        // boat as cargo keep land destinations (they disembark and walk).
+        private _isShipProfile = false;
+        if ((_logic select 2 select 5) == "entity") then {
+            private _vehiclesInCommandOf = _logic select 2 select 8;
+            if (count _vehiclesInCommandOf > 0) then {
+                private _vehicleProfile = [ALiVE_profileHandler,"getProfile", _vehiclesInCommandOf select 0] call ALiVE_fnc_profileHandler;
+                if (!isnil "_vehicleProfile") then {
+                    _isShipProfile = (tolower (_vehicleProfile select 2 select 6)) == "ship";
+                };
+            };
+        } else {
+            _isShipProfile = (tolower (_logic select 2 select 6)) == "ship";
+        };
+
         // Drain READY entries from the front in order (the loop below stops at the first
         // not-ready one). This was gated on the LAST entry being ready, but an
         // insertWaypoint reorder parks a permanently-not-ready rebuilt addWaypoint job at
@@ -659,6 +675,21 @@ switch(_operation) do {
                         [_tempWP,"position", _x] call ALiVE_fnc_hashSet;
 
                         _tempWP
+                    };
+                    // #943 - naval routes end at the closest reachable water point, but
+                    // OPCOM order waypoints sit at objective centres, which are on land.
+                    // The virtual mover completes them by plain distance; a spawned boat's
+                    // engine AI cannot, so it noses the shoreline forever. Keep the order
+                    // waypoint (its completion statements must still fire) but move it
+                    // onto the route's final water node.
+                    if (_isShipProfile) then {
+                        private _orderPosition = [_waypoint,"position"] call ALiVE_fnc_hashGet;
+                        if !(surfaceIsWater _orderPosition) then {
+                            private _lastNodePosition = [_path select (count _path - 1),"position"] call ALiVE_fnc_hashGet;
+                            if (surfaceIsWater _lastNodePosition) then {
+                                [_waypoint,"position",_lastNodePosition] call ALiVE_fnc_hashSet;
+                            };
+                        };
                     };
                     _path set [count _path - 1, _waypoint];
                 } else {

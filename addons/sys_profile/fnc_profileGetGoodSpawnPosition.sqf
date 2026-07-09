@@ -132,7 +132,12 @@ switch(_type) do {
 
                         //["GGSP [%1] - ship - the position is land",_profileID] call ALIVE_fnc_dump;
                         //_spawnPosition = [_position] call ALIVE_fnc_getClosestSea;
-                        _spawnPosition = [_position,0,100,1,1,0.5,0,[],[_position]] call BIS_fnc_findSafePos;
+                        // #943 - waterMode 1 made water OPTIONAL, so a dry-land crew
+                        // position could stay on land and beach the boat at spawn.
+                        // Require water (mode 2), and supply both default slots - the
+                        // malformed one-element default fell through to the map centre
+                        // on a failed search.
+                        _spawnPosition = [_position,0,100,1,2,0.5,0,[],[_position,_position]] call BIS_fnc_findSafePos;
 
                         //[_spawnPosition,"SEA",_profileID] call _createMarker;
                     };

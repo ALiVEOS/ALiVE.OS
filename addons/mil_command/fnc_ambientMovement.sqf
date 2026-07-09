@@ -22,6 +22,7 @@ See Also:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_profile","_params"];
@@ -97,6 +98,9 @@ if (count _vehiclesInCommandOf > 0) then {
                         _radius = 2000;
                     };
                 };
+                case ("Ship") : {
+                    _radius = 800;
+                };
             };
         };
     } forEach _vehiclesInCommandOf;
@@ -142,8 +146,18 @@ if (count _waypoints == 0 && {!_parkedAir}) then {
             //to be done: min distance to avoid waypoints too close together
             _pos = [_startPos,_radius] call CBA_fnc_RandPos;
 
-            if (surfaceIsWater _pos) then {
-                _pos = [_pos] call ALiVE_fnc_getClosestLand;
+            if (_vehicleObjectType == "Ship") then {
+                // #943 - boats keep their ambient waypoints ON water. The land
+                // relocation below hands a spawned boat shoreline waypoints its
+                // engine AI can never reach, halting it against the beach.
+                if !(surfaceIsWater _pos) then {
+                    _pos = [_pos] call ALiVE_fnc_getClosestSea;
+                };
+                if !(surfaceIsWater _pos) then { _pos = _startPos; };
+            } else {
+                if (surfaceIsWater _pos) then {
+                    _pos = [_pos] call ALiVE_fnc_getClosestLand;
+                };
             };
 
             if (_debug) then {
