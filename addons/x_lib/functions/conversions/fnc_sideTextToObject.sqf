@@ -23,11 +23,17 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_side", "_result"];
 
 _side = _this select 0;
+
+// #897 - callers sometimes pass an already-converted side object; the string
+// switch below would silently fall through to the civilian default for it,
+// misreporting the side (which neutered enemy checks downstream)
+if (_side isEqualType east) exitWith {_side};
 
 switch(_side) do {
     case "WEST": {

@@ -3036,17 +3036,35 @@ switch(_operation) do {
                 private _baseCaptured = false;
                 private _HQIsALive = true;
 
-                private _dominantFaction = [[_baseCluster,"center"] call ALiVE_fnc_hashGet] call ALiVE_fnc_getDominantFaction;
+                // #897 - the HQ property defaults to objNull, so a never-assigned HQ
+                // (faction without HQ compositions, or no clear spot to place one)
+                // read as a dead building and latched the compromised broadcast
+                // forever. Only a building that existed and died counts as HQ down.
+                private _HQ = [_logic,"HQBuilding",nil] call MAINCLASS;
+                if (!isNil "_HQ" && {!isNull _HQ}) then {
+                    _HQIsALive = alive _HQ;
+                };
+
+                // #897 - probe where the base actually lives (the HQ) rather than the
+                // baked cluster centre, which sits mid-runway on large airfields and
+                // reaches ~500m past the field edge. Civilians no longer count and
+                // votes are weighted by unit count, so a couple of passing enemy
+                // scout profiles can't outvote the garrison.
+                private _probePos = [_baseCluster,"center"] call ALiVE_fnc_hashGet;
+                if (!isNil "_HQ" && {!isNull _HQ}) then { _probePos = getPosATL _HQ; };
+
+                private _dominantFaction = [_probePos, 500, true, true] call ALiVE_fnc_getDominantFaction;
 
                 if (isNil "_dominantFaction") then {_dominantFaction = _eventFaction;};
 
-                if !([(_dominantFaction call ALiVE_fnc_factionSide), [_eventSide] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsFriendly) then {
-                    _baseCaptured = true;
-                };
+                // #897 - a faction with no resolvable CfgFactionClasses side maps to
+                // EAST by default, which read friendly custom/ORBAT factions (possibly
+                // this module's own) as an enemy takeover. Unresolvable factions never
+                // flip the base.
+                private _dominantSideKnown = isNumber ((_dominantFaction call ALiVE_fnc_configGetFactionClass) >> "side");
 
-                private _HQ = [_logic,"HQBuilding",nil] call MAINCLASS;
-                if (!isNil "_HQ") then {
-                    _HQIsALive = alive _HQ;
+                if (_dominantSideKnown && {!([(_dominantFaction call ALiVE_fnc_factionSide), [_eventSide] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsFriendly)}) then {
+                    _baseCaptured = true;
                 };
 
                 if (_debug || !(_HQIsAlive) || _baseCaptured ) then {
@@ -3184,7 +3202,12 @@ switch(_operation) do {
                     // DEBUG -------------------------------------------------------------------------------------
 
                     //Radio Broadcast
-                    if (_broadcastOnRadio) then {
+                    // #897 - every ATO request replayed this broadcast (OPCOM raises
+                    // one on each enemy contact anywhere on the map), spamming players
+                    // with "compromised" radio that tracked unrelated fighting. One
+                    // message per 10 minutes carries the same information.
+                    if (_broadcastOnRadio && {time - (_logic getVariable ["ATO_lastOverrunBroadcast", -3600]) > 600}) then {
+                        _logic setVariable ["ATO_lastOverrunBroadcast", time];
                         private _message = format[localize "STR_ALIVE_ATO_OVERRUN", _HQID, _factionName, mapGridPosition _HQ];
                         // send a message to all side players from HQ
                         private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
@@ -3218,11 +3241,25 @@ switch(_operation) do {
                 private _side = [_logic, "side"] call MAINCLASS;
                 private _faction = [_logic, "faction"] call MAINCLASS;
 
-                private _dominantFaction = [[_baseCluster,"center"] call ALiVE_fnc_hashGet] call ALiVE_fnc_getDominantFaction;
+                // #897 - same hardening as the request handler: a never-assigned HQ is
+                // not a dead HQ, probe at the HQ rather than the runway midpoint,
+                // ignore civilians, weight votes by unit count, and never let an
+                // unresolvable faction read as an enemy takeover.
+                private _HQ = [_logic,"HQBuilding",nil] call MAINCLASS;
+                if (!isNil "_HQ" && {!isNull _HQ}) then {
+                    _HQIsALive = alive _HQ;
+                };
+
+                private _probePos = [_baseCluster,"center"] call ALiVE_fnc_hashGet;
+                if (!isNil "_HQ" && {!isNull _HQ}) then { _probePos = getPosATL _HQ; };
+
+                private _dominantFaction = [_probePos, 500, true, true] call ALiVE_fnc_getDominantFaction;
 
                 if (isNil "_dominantFaction") then {_dominantFaction = _faction;};
 
-                if !([(_dominantFaction call ALiVE_fnc_factionSide), [_side] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsFriendly) then {
+                private _dominantSideKnown = isNumber ((_dominantFaction call ALiVE_fnc_configGetFactionClass) >> "side");
+
+                if (_dominantSideKnown && {!([(_dominantFaction call ALiVE_fnc_factionSide), [_side] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsFriendly)}) then {
                     _baseCaptured = true;
                 };
 
@@ -3421,7 +3458,10 @@ switch(_operation) do {
                         ["ATO %2 - Air assets still available: %1",_available, _logic] call ALiVE_fnc_dump;
                     };
                     // DEBUG -------------------------------------------------------------------------------------
-                } then {
+                // #897 - was "} then {": a second then after the if-block is a runtime
+                // type error, logged on every on-demand analysis pass, and made this
+                // branch unreachable
+                } else {
 
                     // Need to relocate base
 
