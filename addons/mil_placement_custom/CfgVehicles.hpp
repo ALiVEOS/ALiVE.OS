@@ -106,6 +106,7 @@ class CfgVehicles {
                         class customMotorisedCount : Edit { property = "ALiVE_mil_placement_custom_customMotorisedCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customMechanisedCount : Edit { property = "ALiVE_mil_placement_custom_customMechanisedCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customArmourCount : Edit { property = "ALiVE_mil_placement_custom_customArmourCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT_COMMENT"; defaultValue = """0"""; };
+                        class customArtilleryCount : Edit { property = "ALiVE_mil_placement_custom_customArtilleryCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customSpecOpsCount : Edit { property = "ALiVE_mil_placement_custom_customSpecOpsCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT_COMMENT"; defaultValue = """0"""; };
 
                         // ---- Anti-Air -------------------------------------------------------

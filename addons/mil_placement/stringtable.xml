@@ -822,6 +822,12 @@
     <Portuguese>Gera helicópteros e aeronaves de asa fixa em heliportos e hangares dentro dos objetivos militares. Requer infraestrutura de pouso adequada nos objetivos.</Portuguese>
     <Russian>Создаёт вертолёты и самолёты на вертолётных площадках и в ангарах в пределах военных объектов. Требует наличия подходящей посадочной инфраструктуры на объектах.</Russian>
 </Key>
+<Key ID="STR_ALIVE_MP_PLACE_ARTILLERY">
+    <English>Place artillery units:</English>
+</Key>
+<Key ID="STR_ALIVE_MP_PLACE_ARTILLERY_COMMENT">
+    <English>Places self-propelled artillery sections alongside the placed forces, drawn from the faction's artillery groups. The AI commander treats them like any other force for now - they move with the force and hold at objectives. Factions without artillery groups place none and log a note.</English>
+</Key>
 <Key ID="STR_ALIVE_MP_PLACE_SUPPLIES">
     <English>Place supplies:</English>
     <Chinese>放置物資：</Chinese>

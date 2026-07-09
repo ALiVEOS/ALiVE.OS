@@ -23,8 +23,9 @@ ALIVE_getEmptyVehiclePositions
 
 Author:
 HighHead
+Jman
 ---------------------------------------------------------------------------- */
-private ["_class","_hasArtyScanner","_maxElev"];
+private ["_class","_hasArtyScanner"];
 
 _class = _this select 0;
 
@@ -33,6 +34,14 @@ switch (typeName _class) do {
     case ("STRING") : {_class = _class};
 };
 
-_maxElev = getNumber(configfile >> "CfgVehicles" >> _class >> "Turrets" >> "MainTurret" >> "maxElev");
 _hasArtyScanner = getnumber(configfile >> "CfgVehicles" >> _class >> "artilleryScanner");
-_class iskindOf "LandVehicle" && {_maxElev > 65} && {_hasArtyScanner > 0};
+
+if !(_class iskindOf "LandVehicle" && {_hasArtyScanner > 0}) exitWith { false };
+
+// any turret elevating past 65 degrees counts (walk all turrets, not just
+// MainTurret - mod artillery often mounts the gun on a different turret)
+private _high = false;
+{
+    if (getNumber (_x >> "maxElev") > 65) exitWith { _high = true };
+} forEach ("isClass _x" configClasses (configfile >> "CfgVehicles" >> _class >> "Turrets"));
+_high

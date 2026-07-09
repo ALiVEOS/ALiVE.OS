@@ -145,6 +145,9 @@ switch(_operation) do {
     case "customArmourCount": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "customArtilleryCount": {
+        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+    };
 
     case "customSpecOpsCount": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
@@ -475,6 +478,9 @@ switch(_operation) do {
 
             private _countArmored = [_logic, "customArmourCount"] call MAINCLASS;
             _countArmored = parseNumber _countArmored;
+
+            private _countArtillery = [_logic, "customArtilleryCount"] call MAINCLASS;
+            _countArtillery = parseNumber _countArtillery;
 
             private _countSpecOps = [_logic, "customSpecOpsCount"] call MAINCLASS;
             _countSpecOps = parseNumber _countSpecOps;
@@ -849,6 +855,7 @@ switch(_operation) do {
             if(_debug) then {
                 ["CMP [%1] - Force creation ",_factions] call ALiVE_fnc_dump;
                 ["CMP Count Armor: %1",_countArmored] call ALiVE_fnc_dump;
+                ["CMP Count Artillery: %1",_countArtillery] call ALiVE_fnc_dump;
                 ["CMP Count Mech: %1",_countMechanized] call ALiVE_fnc_dump;
                 ["CMP Count Motor: %1",_countMotorized] call ALiVE_fnc_dump;
                 ["CMP Count Infantry: %1",_countInfantry] call ALiVE_fnc_dump;
@@ -918,6 +925,23 @@ switch(_operation) do {
                 private _entry = ["Armored",_i] call _fnc_pickGroupForCategory;
                 if!((_entry select 0) == "FALSE") then {
                     _groups pushback _entry;
+                };
+            };
+
+            // #887 groundwork - artillery sections ride the normal group pipeline;
+            // OPCOM buckets them as an artillery force class
+            private _artilleryWarned = false;
+            private _artilleryGroupNames = [];
+            for "_i" from 0 to _countArtillery -1 do {
+                private _entry = ["Artillery",_i] call _fnc_pickGroupForCategory;
+                if!((_entry select 0) == "FALSE") then {
+                    _groups pushback _entry;
+                    _artilleryGroupNames pushback (_entry select 0);
+                } else {
+                    if (!_artilleryWarned) then {
+                        _artilleryWarned = true;
+                        ["CMP [%1] - Artillery Count is set but no faction has Artillery groups (CfgGroups or custom mappings) - no artillery placed",_factions] call ALiVE_fnc_dump;
+                    };
                 };
             };
 
@@ -1156,6 +1180,10 @@ switch(_operation) do {
 
                         if !(surfaceIsWater _position) then {
                             private _profiles = [_group, _position, _activeDir, false, _groupFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+
+                            if (_debug && {_group in _artilleryGroupNames}) then {
+                                ["CMP - Artillery section %1 placed at grid %2 %3", _group, mapGridPosition _position, _position] call ALiVE_fnc_dump;
+                            };
 
                             if (_isVehicle
                                 && {!isNil "ALiVE_mil_placement_custom_debug" && {ALiVE_mil_placement_custom_debug}}

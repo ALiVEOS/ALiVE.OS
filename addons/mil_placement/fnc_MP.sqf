@@ -248,6 +248,20 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "placeArtillery": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["placeArtillery", _args];
+        } else {
+            _args = _logic getVariable ["placeArtillery", false];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["placeArtillery", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
     case "placeSupplies": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeSupplies", _args];
@@ -755,7 +769,7 @@ switch(_operation) do {
 
             private ["_debug","_clusters","_cluster","_HQClusters","_airClusters","_heliClusters","_vehicleClusters",
             "_countHQClusters","_countAirClusters","_countHeliClusters","_size","_type","_faction","_ambientVehicleAmount",
-            "_placeHelis","_placeSupplies","_factionConfig","_factionSideNumber","_side","_countProfiles","_vehicleClass",
+            "_placeHelis","_placeArtillery","_placeSupplies","_factionConfig","_factionSideNumber","_side","_countProfiles","_vehicleClass",
             "_position","_direction","_unitBlackist","_vehicleBlacklist","_groupBlacklist","_heliClasses","_nodes",
             "_airClasses","_node","_buildings","_customInfantryCount","_customMotorisedCount","_customMechanisedCount",
             "_customArmourCount","_customSpecOpsCount","_countVehicleClusters","_createHQ","_createFieldHQ","_file",
@@ -852,6 +866,7 @@ switch(_operation) do {
             _createFieldHQ = [_logic, "createFieldHQ"] call MAINCLASS;
 
             _placeHelis = [_logic, "placeHelis"] call MAINCLASS;
+            _placeArtillery = [_logic, "placeArtillery"] call MAINCLASS;
             _placeSupplies = [_logic, "placeSupplies"] call MAINCLASS;
 
             _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
@@ -2033,6 +2048,13 @@ switch(_operation) do {
                 _countSpecOps = _customSpecOpsCount;
             };
 
+            // #887 groundwork - opt-in artillery sections ride the normal group
+            // pipeline; OPCOM already buckets them as an artillery force class
+            private _countArtillery = 0;
+            if (_placeArtillery) then {
+                _countArtillery = (floor (_size / 100)) max 1;
+            };
+
 
 
           
@@ -2051,6 +2073,7 @@ switch(_operation) do {
             if(_debug) then {
                 ["MP [%1] - Main force creation ",_faction] call ALiVE_fnc_dump;
                 ["Count Armor: %1",_countArmored] call ALIVE_fnc_dump;
+                ["Count Artillery: %1",_countArtillery] call ALIVE_fnc_dump;
                 ["Count Mech: %1",_countMechanized] call ALIVE_fnc_dump;
                 ["Count Motor: %1",_countMotorized] call ALIVE_fnc_dump;
                 ["Count Air: %1",_countAir] call ALIVE_fnc_dump;
@@ -2076,6 +2099,21 @@ switch(_operation) do {
                 if!(_group == "FALSE") then {
                     _groups pushback _group;
                 }
+            };
+
+            private _artilleryWarned = false;
+            private _artilleryGroupNames = [];
+            for "_i" from 0 to _countArtillery -1 do {
+                _group = ["Artillery",_faction] call ALIVE_fnc_configGetRandomGroup;
+                if!(_group == "FALSE") then {
+                    _groups pushback _group;
+                    _artilleryGroupNames pushback _group;
+                } else {
+                    if (!_artilleryWarned) then {
+                        _artilleryWarned = true;
+                        ["MP [%1] - Place Artillery is enabled but the faction has no Artillery groups (CfgGroups or custom mappings) - no artillery placed",_faction] call ALiVE_fnc_dump;
+                    };
+                };
             };
 
             if(_countMotorized > 0) then {
@@ -2574,6 +2612,10 @@ switch(_operation) do {
                                     if!(surfaceIsWater _position) then {
                                         _profiles = [_group, _position, _activeDir, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
 
+                                        if (_debug && {_group in _artilleryGroupNames}) then {
+                                            ["MP [%1] - Artillery section %2 placed at grid %3 %4", _faction, _group, mapGridPosition _position, _position] call ALiVE_fnc_dump;
+                                        };
+
                                         if (_isVehicle
                                             && {!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}}
                                             && {!isNil "ALiVE_vehicleSpawn_debug" && {ALiVE_vehicleSpawn_debug}}) then {
@@ -2721,6 +2763,10 @@ switch(_operation) do {
 
                                 if!(surfaceIsWater _position) then {
                                     _profiles = [_group, _position, _activeDir, true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+
+                                    if (_debug && {_group in _artilleryGroupNames}) then {
+                                        ["MP [%1] - Artillery section %2 placed at grid %3 %4", _faction, _group, mapGridPosition _position, _position] call ALiVE_fnc_dump;
+                                    };
 
                                     if (_isVehicle
                                         && {!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}}

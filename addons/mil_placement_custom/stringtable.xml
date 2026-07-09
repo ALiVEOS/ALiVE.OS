@@ -80,6 +80,12 @@
     <English>Set count of Armour groups to be spawned, set to 0 for none</English>
     <Chinesesimp>设置要生成的装甲小组计数,如果没有则设置为0</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT">
+    <English>Artillery Count:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT_COMMENT">
+    <English>Set count of self-propelled artillery sections to be spawned, set to 0 for none. Drawn from the faction's artillery groups; factions without artillery groups place none and log a note.</English>
+</Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT">
     <English>SpecOps Count:</English>
     <Chinesesimp>特战小组计数</Chinesesimp>
