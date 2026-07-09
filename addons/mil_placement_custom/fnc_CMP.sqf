@@ -343,6 +343,15 @@ switch(_operation) do {
         if (typeName _args != "STRING") then { _args = "0"; };
         _result = _args;
     };
+    case "objectiveObjectsChance": {
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["objectiveObjectsChance", _args];
+        } else {
+            _args = _logic getVariable ["objectiveObjectsChance", "100"];
+        };
+        if (typeName _args != "STRING") then { _args = "100"; };
+        _result = _args;
+    };
     case "objectiveObjectsBehaviour": {
         if (typeName _args == "STRING") then {
             _logic setVariable ["objectiveObjectsBehaviour", _args];
@@ -1476,7 +1485,9 @@ switch(_operation) do {
             private _objCountStr = [_logic, "objectiveObjectsCount"] call MAINCLASS;
             private _objCount = if (typeName _objCountStr == "STRING" && {_objCountStr != ""}) then { parseNumber _objCountStr } else { 0 };
             private _objBehaviour = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
-            private _countObjectiveObjects = [_logic, _position, _objSizeRadius, _objCount, _objBehaviour, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            private _objChanceStr = [_logic, "objectiveObjectsChance"] call MAINCLASS;
+            private _objChance = if (typeName _objChanceStr == "STRING" && {_objChanceStr != ""}) then { (parseNumber _objChanceStr) max 0 min 100 } else { 100 };
+            private _countObjectiveObjects = [_logic, _position, _objSizeRadius, _objCount, _objBehaviour, _debug, _objChance] call ALiVE_fnc_spawnObjectiveObjects;
             if (_debug) then {
                 ["CMP [%1] - Objective objects placed: %2 of %3 (radius=%4 behaviour=%5)",
                     _faction, _countObjectiveObjects, _objCount, _objSizeRadius, _objBehaviour] call ALiVE_fnc_dump;

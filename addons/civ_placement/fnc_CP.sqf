@@ -276,6 +276,9 @@ switch(_operation) do {
     case "objectiveObjectsCount": {
         _result = [_logic, _operation, _args, "0"] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "objectiveObjectsChance": {
+        _result = [_logic, _operation, _args, "100"] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "objectiveObjectsBehaviour": {
         _result = [_logic, _operation, _args, "dispersed"] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -1489,7 +1492,9 @@ switch(_operation) do {
             private _objCountStr_CP = [_logic, "objectiveObjectsCount"] call MAINCLASS;
             private _objCount_CP = if (typeName _objCountStr_CP == "STRING" && {_objCountStr_CP != ""}) then { parseNumber _objCountStr_CP } else { 0 };
             private _objBehaviour_CP = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
-            private _countObjectiveObjects_CP = [_logic, position _logic, 250, _objCount_CP, _objBehaviour_CP, _debugCP] call ALiVE_fnc_spawnObjectiveObjects;
+            private _objChanceStr_CP = [_logic, "objectiveObjectsChance"] call MAINCLASS;
+            private _objChance_CP = if (typeName _objChanceStr_CP == "STRING" && {_objChanceStr_CP != ""}) then { (parseNumber _objChanceStr_CP) max 0 min 100 } else { 100 };
+            private _countObjectiveObjects_CP = [_logic, position _logic, 250, _objCount_CP, _objBehaviour_CP, _debugCP, _objChance_CP] call ALiVE_fnc_spawnObjectiveObjects;
             if (_debugCP) then {
                 ["CP - Objective objects placed: %1 of %2 (behaviour=%3)",
                     _countObjectiveObjects_CP, _objCount_CP, _objBehaviour_CP] call ALiVE_fnc_dump;

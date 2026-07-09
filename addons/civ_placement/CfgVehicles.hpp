@@ -293,6 +293,13 @@ class CfgVehicles {
                                 tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT";
                                 defaultValue = """0""";
                         };
+                        class objectiveObjectsChance : Edit
+                        {
+                                property     = "ALiVE_civ_placement_objectiveObjectsChance";
+                                displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE";
+                                tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE_COMMENT";
+                                defaultValue = """100""";
+                        };
                         class objectiveObjectsBehaviour : Combo
                         {
                                 property     = "ALiVE_civ_placement_objectiveObjectsBehaviour";

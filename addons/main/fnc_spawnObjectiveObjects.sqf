@@ -54,6 +54,10 @@ Parameters:
     _behaviour   : STRING - "clustered" / "dispersed" / "perimeter".
                             Empty / unrecognised falls back to "dispersed".
     _debug       : BOOL   - whether to log spawn results via ALiVE_fnc_dump
+    _chance      : SCALAR - optional, 0-100 (default 100). Percentage chance
+                            that this objective spawns its objects at all.
+                            ONE roll per objective: pass spawns the full
+                            configured count, fail spawns nothing (#914).
 
 Returns:
     NUMBER - count of objects successfully spawned
@@ -68,11 +72,21 @@ params [
     ["_baseRadius", 150, [0]],
     ["_count", 0, [0]],
     ["_behaviour", "dispersed", [""]],
-    ["_debug", false, [false]]
+    ["_debug", false, [false]],
+    ["_chance", 100, [0]]
 ];
 
 if (isNull _logic) exitWith { 0 };
 if (_count <= 0) exitWith { 0 };
+
+// #914 - one roll per objective gates the whole set: an objective either gets
+// its full configured object count or nothing at all
+if (_chance < 100 && {(random 100) >= (_chance max 0)}) exitWith {
+    if (_debug) then {
+        ["ALiVE_fnc_spawnObjectiveObjects: %1 chance roll failed (%2%3) - no objects at this objective", _logic, _chance, "%"] call ALiVE_fnc_dump;
+    };
+    0
+};
 
 private _raw = _logic getVariable ["objectiveObjects", ""];
 if (typeName _raw != "STRING" || {_raw == ""}) exitWith { 0 };

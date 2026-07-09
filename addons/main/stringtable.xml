@@ -152,6 +152,12 @@
     <Russian>Создать единицы цели</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE">
+    <English>Objective Objects Chance (%):</English>
+</Key>
+<Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE_COMMENT">
+    <English>Percentage chance that this objective spawns its scenery objects at all. One roll per objective: pass spawns the full configured count, fail spawns none. 100 (default) = always. Use low values so only a fraction of objectives carry special objects like jammers or SAM props.</English>
+</Key>
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT">
     <English>How many scenery objects to spawn at the objective, drawn at random from the Objective Objects picker pool. Default 0 (disabled - no scenery spawned). Selection is with replacement, so a small pool plus a high count means duplicates appear.</English>
     <Chinese>在目標位置生成多少場景物件，從目標物件選擇器池中隨機抽取。預設為0（停用 - 不生成場景物件）。選擇允許重複，因此小型池加上高計數意味著會出現重複物件。</Chinese>
