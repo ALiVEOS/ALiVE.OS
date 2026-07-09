@@ -437,6 +437,31 @@ switch(_operation) do {
                         _c = [];
                         _a = [];
 
+                        // #887 - a synced editor asset can already be profiled (the
+                        // editor-unit sweep runs before this module inits). A profiled
+                        // support asset belongs to the AI commander and drives off on
+                        // its orders while also serving player calls. Forget any such
+                        // profiles, and mark the asset so no later profile sweep
+                        // captures it and other modules recognise the ownership.
+                        private _fnc_shieldFromProfiler = {
+                            params ["_veh", "_grp"];
+                            if (!isNil "ALIVE_profileHandler") then {
+                                {
+                                    private _profileID = _x getVariable ["profileID", ""];
+                                    if (_profileID != "") then {
+                                        private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+                                        if (!isNil "_profile") then {
+                                            [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
+                                        };
+                                        _x setVariable ["profileID", nil];
+                                    };
+                                } forEach ([_veh] + (crew _veh));
+                            };
+                            _veh setVariable ["ALIVE_CombatSupport", true];
+                            _veh setVariable ["ALIVE_profileIgnore", true];
+                            if (!isNull _grp) then { _grp setVariable ["ALIVE_profileIgnore", true]; };
+                        };
+
 
                         // Transport
 
@@ -488,6 +513,8 @@ switch(_operation) do {
                             // Exclude CS from VCOM
                             // CS only runs serverside so no PV is needed
                             (driver _veh) setvariable ["VCOM_NOAI", true];
+
+                            [_veh, _grp] call _fnc_shieldFromProfiler;
 
                             _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                             _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
@@ -636,6 +663,8 @@ switch(_operation) do {
                             // CS only runs serverside so no PV is needed
                             (driver _veh) setvariable ["VCOM_NOAI", true];
 
+                            [_veh, _grp] call _fnc_shieldFromProfiler;
+
                                 _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                                 _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                                 _ffvTurrets = _ffvTurrets - _gunnerTurrets;
@@ -756,6 +785,10 @@ switch(_operation) do {
                              };
                              
 
+                            if (!isNil "_veh") then {
+                                [_veh, _grp] call _fnc_shieldFromProfiler;
+                            };
+
                             if (isnil "_veh") then {
                                 private ["_vehPos","_i"];
                                 for "_i" from 1 to _unitCount do
@@ -841,6 +874,8 @@ switch(_operation) do {
                                     // Exclude CS from VCOM
                                     // CS only runs serverside so no PV is needed
                                     (driver _veh) setvariable ["VCOM_NOAI", true];
+
+                                    [_veh, _grp] call _fnc_shieldFromProfiler;
 
                                     if (_i == 1) then {leader _grp setRank "CAPTAIN"};
 
