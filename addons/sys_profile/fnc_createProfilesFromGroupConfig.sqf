@@ -275,6 +275,15 @@ if(count _config > 0) then {
             _countCrewPositions = _countCrewPositions + (_vehiclePositions select _i);
         };
 
+        // #887 - self-propelled artillery reports only its hull driver here: the
+        // gun sits in an inherited MainTurret that the crew-position count skips
+        // (it mimics BIS_fnc_crewCount), so the gun would spawn without a gunner
+        // and read as uncrewed. Floor artillery at driver + gunner so the piece
+        // is always manned. Never lowers a count, so non-artillery is untouched.
+        if (_countCrewPositions < 2 && {[_vehicleClass] call ALIVE_fnc_isArtillery}) then {
+            _countCrewPositions = 2;
+        };
+
         // for all crew positions add units to the entity group
         for "_i" from 0 to _countCrewPositions -1 do {
             [_profileEntity, "addUnit", [_crew,_position,0,_vehicleRank]] call ALIVE_fnc_profileEntity;
