@@ -44,6 +44,8 @@ if (is3DEN) then {
     // still registered for completeness / runtime callers.
     ALiVE_edenFactionValidator = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenValidateOpcomFactions.sqf";
     ALiVE_edenValidateFactionCompilerSync = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenValidateFactionCompilerSync.sqf";
+    // leaf function (config reads + get3DENAttribute only, no ALiVE deps)
+    ALIVE_fnc_edenArtilleryDependencyCheck = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenArtilleryDependencyCheck.sqf";
 
     // Viability Eden chain. Inline-compile the helper functions
     // the assessor reaches transitively, plus the assessor itself,
@@ -272,6 +274,7 @@ if (is3DEN) then {
     add3DENEventHandler ["OnMissionPreview", {
         ["preview", []] call ALiVE_edenFactionValidator;
         ["preview", []] call ALiVE_edenValidateFactionCompilerSync;
+        [] call ALIVE_fnc_edenArtilleryDependencyCheck;
     }];
 
     // Index viability check uses a spawn-and-poll rather than a

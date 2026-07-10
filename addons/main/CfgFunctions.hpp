@@ -108,6 +108,12 @@ class cfgFunctions {
                 preInit = 1;
                 RECOMPILE;
             };
+            class edenArtilleryDependencyCheck {
+                description = "3DEN editor-time advisory: warns when Military AI Commander Artillery is placed with no source of artillery batteries";
+                file = "\x\alive\addons\main\fnc_edenArtilleryDependencyCheck.sqf";
+                preInit = 1;
+                RECOMPILE;
+            };
             class getVehicleBoundingBox {
                 description = "Returns cached [length, width, height] bbox dimensions for a vehicle classname";
                 file = "\x\alive\addons\main\fnc_getVehicleBoundingBox.sqf";

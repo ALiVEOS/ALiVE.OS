@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project name="ALiVE">
+<Package name="mil_artillery">
+<Container ID="mil_artillery">
+<Key ID="STR_ALIVE_MIL_ARTILLERY">
+    <English>Military AI Commander Artillery</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_DESCRIPTION">
+    <English>Lets AI commanders run artillery fire missions. This module controls how artillery behaves, but does not place any guns itself - just like the Military Air Component Commander does not place aircraft. It needs artillery batteries to exist in the world: enable "Place artillery units" on a Military Placement module (or "Artillery Count" on a Custom Objective), or place and profile artillery in the editor. Fire missions are throttled by battery cooldowns, limited ammunition, extra dispersion and targeting rules. Place one module per mission; it serves every AI commander.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_DEBUG">
+    <English>Debug:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_DEBUG_COMMENT">
+    <English>Log battery registry, fire mission decisions and results to the RPT.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY">
+    <English>Fire mission intensity:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_COMMENT">
+    <English>One setting that scales everything: how often each battery may fire, shell spread, rounds per mission, how many enemy contacts are needed before a strike is called, and battery ammunition stocks. Low keeps artillery an occasional threat; High makes it a constant presence.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW">
+    <English>Low</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM">
+    <English>Medium</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH">
+    <English>High</English>
+</Key>
+</Container>
+</Package>
+</Project>

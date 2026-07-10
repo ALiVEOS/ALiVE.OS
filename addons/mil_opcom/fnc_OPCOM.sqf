@@ -1048,7 +1048,7 @@ switch(_operation) do {
         case "attackentity": {
             ASSERT_TRUE(typeName _args == "ARRAY",str _args);
 
-            private ["_target","_reserved","_sides","_size","_type","_proIDs","_knownE","_attackedE","_pos","_profiles","_profileIDs","_profile","_section","_profileID","_i","_waypoints","_posAttacker","_dist","_rtb","_vehicleProfile","_vehicleType","_ATOtype"];
+            private ["_target","_reserved","_sides","_size","_type","_proIDs","_knownE","_attackedE","_pos","_profiles","_profileIDs","_profile","_section","_profileID","_i","_waypoints","_posAttacker","_dist","_rtb","_fireSupport","_vehicleProfile","_vehicleType","_ATOtype"];
 
             _target = _args select 0;
             _size = _args select 1;
@@ -1127,6 +1127,7 @@ switch(_operation) do {
                     case ("artillery") : {
                         _profiles = _artillery;
                         _dist = 5000;
+                        _fireSupport = true;
                     };
                     case ("AAA") : {
                         _profiles = _AAA;
@@ -1161,6 +1162,38 @@ switch(_operation) do {
 					];
 					_event = ['ATO_REQUEST', [_ATOtype, [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, _pos, _args],"OPCOM"] call ALIVE_fnc_event;
 					_eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+
+                    _attackedE pushback [_target,_pos,_section,time];
+                    [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;
+                };
+
+                // #887 - with the AI artillery module present, artillery sections
+                // hold position and answer with fire missions instead of driving
+                // at the enemy like a line unit
+                if (!isnil "_fireSupport" && {["ALiVE_mil_artillery"] call ALiVE_fnc_IsModuleAvailable}) exitwith {
+
+                    private _targetProfile = [ALiVE_ProfileHandler,"getProfile",_target] call ALiVE_fnc_ProfileHandler;
+                    if (isnil "_targetProfile") exitwith {};
+                    private _targetPos = [_targetProfile,"position"] call ALiVE_fnc_HashGet;
+
+                    // contact weight: known enemies near the target - the artillery
+                    // module applies its minimum-contact rule to this count
+                    private _contacts = 0;
+                    {
+                        if (!isnil "_x" && {_x isEqualType []} && {count _x > 0}) then {
+                            private _kProfile = [ALiVE_ProfileHandler,"getProfile",_x select 0] call ALiVE_fnc_ProfileHandler;
+                            if (!isnil "_kProfile") then {
+                                if (([_kProfile,"position"] call ALiVE_fnc_HashGet) distance2D _targetPos < 200) then {
+                                    _contacts = _contacts + 1;
+                                };
+                            };
+                        };
+                    } foreach _knownE;
+
+                    private _asym = ([_logic,"controltype",""] call ALiVE_fnc_HashGet) == "asymmetric";
+
+                    private _aEvent = ['ARTY_REQUEST', [_target, _targetPos, _contacts, [_side] call ALiVE_fnc_sideTextToObject, _factions select 0, _asym],"OPCOM"] call ALIVE_fnc_event;
+                    [ALIVE_eventLog, "addEvent",_aEvent] call ALIVE_fnc_eventLog;
 
                     _attackedE pushback [_target,_pos,_section,time];
                     [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;
