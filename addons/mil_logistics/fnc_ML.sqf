@@ -3183,7 +3183,7 @@ switch(_operation) do {
     case "listen": {
         private["_listenerID"];
 
-        _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["LOGCOM_REQUEST","LOGCOM_RESUPPLY","LOGCOM_STATUS_REQUEST","LOGCOM_CANCEL_REQUEST","OPCOM_CAPTURE"]]] call ALIVE_fnc_eventLog;
+        _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["LOGCOM_REQUEST","LOGCOM_RESUPPLY","ARTY_RESUPPLY_REQUEST","LOGCOM_STATUS_REQUEST","LOGCOM_CANCEL_REQUEST","OPCOM_CAPTURE"]]] call ALIVE_fnc_eventLog;
         _logic setVariable ["listenerID", _listenerID];
     };
 
@@ -3302,6 +3302,160 @@ switch(_operation) do {
     #define RESUPPLY_RTB_ARRIVE_RADIUS 75
     #define RESUPPLY_RTB_SPEED_KPH 45
     #define RESUPPLY_RTB_TIMEOUT_MULTIPLIER 2
+
+    // =========================================================================
+    // ARTY_RESUPPLY_REQUEST - resupply a (virtual) AI artillery battery.
+    // Position-keyed sibling of LOGCOM_RESUPPLY: the battery is a sys_profile
+    // entity, usually not spawned, so there is no asset object to service. On
+    // truck arrival we raise ARTY_RESUPPLY_ARRIVED back to mil_artillery, which
+    // owns the ledger refill. mil_artillery also runs a fallback timer, so this
+    // convoy is immersion only - if the pool is exhausted or water blocks the
+    // route we simply send nothing and the battery refills on its own.
+    // =========================================================================
+    case "ARTY_RESUPPLY_REQUEST": {
+
+        if (typeName _args == "ARRAY") then {
+
+            private _event = _args;
+            private _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
+            _eventData params ["_targetPos","_eventSide","_assetType","_callsign","_entityID"];
+
+            // side-route: only the matching-side ML module handles it
+            if (([_logic, "side"] call MAINCLASS) != _eventSide) exitWith {};
+
+            // source position: nearest friendly defend/reserve objective, else
+            // the LOGCOM base (reuses the LOGCOM_RESUPPLY Dynamic logic)
+            private _sourcePos = getPos _logic;
+            private _candidates = [];
+            {
+                // OPCOM_instances holds the handler hashes directly
+                private _handler = _x;
+                if (_handler isEqualType [] && {([_handler, "side", ""] call ALiVE_fnc_HashGet) == _eventSide}) then {
+                    {
+                        if (([_x, "opcom_state", "none"] call ALiVE_fnc_HashGet) in ["defend","reserve"]) then {
+                            private _objPos = [_x, "center"] call ALiVE_fnc_HashGet;
+                            _candidates pushBack [_objPos distance2D _targetPos, _objPos];
+                        };
+                    } forEach ([_handler, "objectives", []] call ALiVE_fnc_HashGet);
+                };
+            } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+            if (count _candidates > 0) then {
+                _candidates sort true;
+                private _setSize = (2 + floor random 2) min (count _candidates);
+                _sourcePos = (selectRandom (_candidates select [0, _setSize])) select 1;
+            };
+
+            // force-pool deduct (same pattern as LOGCOM_RESUPPLY). On exhaustion
+            // just bail - the mil_artillery fallback timer still refills.
+            private _factions = [_logic, "factions"] call MAINCLASS;
+            private _eventFaction = "";
+            { if ((_x select 0) == _eventSide) exitWith { _eventFaction = (_x select 1) select 0; }; } forEach _factions;
+            if (_eventFaction == "" && {count _factions > 0}) then { _eventFaction = (_factions select 0 select 1) select 0; };
+            private _registryID = [_logic, "registryID"] call MAINCLASS;
+            private _forcePool = [ALIVE_globalForcePool, _eventFaction] call ALIVE_fnc_hashGet;
+            if (typeName _forcePool == "STRING") then { _forcePool = parseNumber _forcePool; };
+            if (typeName _forcePool != "SCALAR") then { _forcePool = 0; };
+            private _resupplyCost = 1 max (10 min (floor (_forcePool * 0.02)));
+            if (_forcePool < _resupplyCost) exitWith {
+                ["ARTY_RESUPPLY: force pool exhausted for %1 (faction=%2 pool=%3), no convoy - battery refills on its own timer", _callsign, _eventFaction, _forcePool] call ALiVE_fnc_dump;
+            };
+            _forcePool = _forcePool - _resupplyCost;
+            [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [_registryID, _forcePool]] call ALIVE_fnc_MLGlobalRegistry;
+
+            // water on the route -> no ground convoy (heli path is out of scope
+            // for arty resupply); the fallback timer covers it
+            private _distance = _sourcePos distance2D _targetPos;
+            // generous window: this path has no retries (the battery's own timer
+            // is the backstop), and AI trucks rarely hold 45km/h cross-country -
+            // a tight window deleted the truck mid-drive
+            private _timeout = ((_distance / (45/3.6)) * 3) max 300;
+            private _waterBlocked = false;
+            private _routeDir = _sourcePos getDir _targetPos;
+            private _checkPos = +_sourcePos;
+            for "_step" from 0 to _distance step 50 do {
+                _checkPos = _checkPos getPos [50, _routeDir];
+                if (surfaceIsWater _checkPos) exitWith { _waterBlocked = true };
+            };
+            if (_waterBlocked) exitWith {
+                ["ARTY_RESUPPLY: water on the route to %1, no ground convoy - battery refills on its own timer", _callsign] call ALiVE_fnc_dump;
+            };
+
+            // truck dispatch (mirrors LOGCOM_RESUPPLY's truck path)
+            private _truckClass = switch (_eventSide) do {
+                case "EAST": { "O_Truck_03_ammo_F" };
+                case "WEST": { "B_Truck_01_ammo_F" };
+                case "GUER": { "I_Truck_02_ammo_F" };
+                default { "B_Truck_01_ammo_F" };
+            };
+            private _truckSpawnPos = _sourcePos;
+            private _spawnResult = [_truckClass, _sourcePos, 50, "auto"] call ALiVE_fnc_findVehicleSpawnPosition;
+            if (count _spawnResult >= 2) then { _truckSpawnPos = _spawnResult select 0; };
+            private _truck = createVehicle [_truckClass, _truckSpawnPos, [], 10, "NONE"];
+            _truck setDir (_truckSpawnPos getDir _targetPos);
+            createVehicleCrew _truck;
+            _truck allowDamage false;
+            [{_this allowDamage true;}, _truck, 15] call CBA_fnc_waitAndExecute;
+            private _truckGrp = group (driver _truck);
+            private _wp = _truckGrp addWaypoint [_targetPos, 50];
+            _wp setWaypointType "MOVE"; _wp setWaypointSpeed "FULL"; _wp setWaypointBehaviour "SAFE";
+
+            if (!isNil "ALiVE_Pathfinder") then {
+                private _proc = [ALiVE_Pathfinder, "getPathfindingProcedure", ["LandRoad", "default"]] call ALiVE_fnc_pathfinder;
+                if (!isNil "_proc") then {
+                    private _wpHash = [] call ALiVE_fnc_hashCreate;
+                    [_wpHash, "position", _targetPos] call ALiVE_fnc_hashSet;
+                    [ALiVE_Pathfinder, "findPath", [getPosATL _truck, _proc, _wpHash, nil, [_truckGrp], {
+                        params ["_cbArgs", "_path"];
+                        _cbArgs params ["_grp"];
+                        if (!isNull _grp && {count _path > 1}) then {
+                            while {count (waypoints _grp) > 1} do { deleteWaypoint ((waypoints _grp) select 1); };
+                            {
+                                private _pw = _grp addWaypoint [_x, 10];
+                                _pw setWaypointType "MOVE"; _pw setWaypointSpeed "FULL"; _pw setWaypointBehaviour "SAFE";
+                            } forEach _path;
+                        };
+                    }]] call ALiVE_fnc_pathfinder;
+                };
+            };
+
+            ["ARTY_RESUPPLY: truck dispatched to %1 (%2m), ETA %3s", _callsign, round _distance, round _timeout] call ALiVE_fnc_dump;
+
+            // delivery monitor: on arrival (position) tell mil_artillery, then RTB
+            [_truck, _targetPos, _callsign, _entityID, _timeout, _sourcePos] spawn {
+                params ["_truck","_targetPos","_callsign","_entityID","_timeout","_sourcePos"];
+                private _startTime = serverTime;
+                while {true} do {
+                    if (isNull _truck || {!alive _truck}) exitWith {
+                        ["ARTY_RESUPPLY: truck lost en route to %1 - battery refills on its own timer", _callsign] call ALiVE_fnc_dump;
+                    };
+                    if (serverTime - _startTime > _timeout) exitWith {
+                        ["ARTY_RESUPPLY: truck timed out for %1 - battery refills on its own timer", _callsign] call ALiVE_fnc_dump;
+                        { deleteVehicle _x } forEach (crew _truck); deleteVehicle _truck;
+                    };
+                    if (_truck distance2D _targetPos < 100) exitWith {
+                        ["ARTY_RESUPPLY: truck arrived at %1, resupplying battery", _callsign] call ALiVE_fnc_dump;
+                        sleep RESUPPLY_SERVICE_DELAY;
+                        private _ev = ['ARTY_RESUPPLY_ARRIVED', [_entityID], "MilArtillery"] call ALIVE_fnc_event;
+                        [ALIVE_eventLog, "addEvent", _ev] call ALIVE_fnc_eventLog;
+
+                        private _grp = group (driver _truck);
+                        while {count waypoints _grp > 0} do { deleteWaypoint [_grp, 0] };
+                        private _rtbWp = _grp addWaypoint [_sourcePos, 50];
+                        _rtbWp setWaypointType "MOVE"; _rtbWp setWaypointSpeed "FULL"; _rtbWp setWaypointBehaviour "SAFE";
+                        [_truck, _sourcePos] spawn {
+                            params ["_truck","_sourcePos"];
+                            private _t0 = serverTime;
+                            private _rtbTimeout = (((_truck distance _sourcePos) / (RESUPPLY_RTB_SPEED_KPH / 3.6)) * RESUPPLY_RTB_TIMEOUT_MULTIPLIER) max 60;
+                            while { !isNull _truck && {alive _truck} && {_truck distance _sourcePos > RESUPPLY_RTB_ARRIVE_RADIUS} && {serverTime - _t0 < _rtbTimeout} } do { sleep 5; };
+                            if (!isNull _truck) then { { deleteVehicle _x } forEach (crew _truck); deleteVehicle _truck; };
+                        };
+                    };
+                    sleep 10;
+                };
+            };
+        };
+    };
+
     case "LOGCOM_RESUPPLY": {
 
         if (typeName _args == "ARRAY") then {
@@ -3355,9 +3509,12 @@ switch(_operation) do {
                 // always the single nearest stash.
                 private _candidates = [];  // [[dist, pos], ...]
                 {
-                    private _handler = _x getVariable ["handler", objNull];
-                    if (!isNull _handler) then {
-                        private _opcomSide = [_handler, "side"] call ALiVE_fnc_HashGet;
+                    // OPCOM_instances holds the handler hashes directly - reading
+                    // them with getVariable threw a type error every dispatch and
+                    // silently defaulted the source to the LOGCOM base
+                    private _handler = _x;
+                    if (_handler isEqualType []) then {
+                        private _opcomSide = [_handler, "side", ""] call ALiVE_fnc_HashGet;
                         if (_opcomSide == _eventSide) then {
                             private _objectives = [_handler, "objectives", []] call ALiVE_fnc_HashGet;
                             {
