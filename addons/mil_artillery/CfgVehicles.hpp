@@ -59,6 +59,92 @@ class CfgVehicles
                             class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
                         };
                 };
+                class generateTasks : Combo
+                {
+                        property = "ALiVE_mil_artillery_generateTasks";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_TASKS";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_TASKS_COMMENT";
+                        defaultValue = """true""";
+                        class Values
+                        {
+                            class Yes { name = "Yes"; value = true; default = 1; };
+                            class No { name = "No"; value = false; };
+                        };
+                };
+                // ---- Fine Tuning ----------------------------------------------------
+                // per-parameter overrides; "Use intensity preset" leaves the master
+                // dial in charge of that parameter
+                class HDR_TUNING : ALiVE_ModuleSubTitle { property = "ALiVE_mil_artillery_HDR_TUNING"; displayName = "FINE TUNING"; };
+                class cadenceLevel : Combo
+                {
+                        property = "ALiVE_mil_artillery_cadenceLevel";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_CADENCE";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_CADENCE_COMMENT";
+                        defaultValue = """PRESET""";
+                        class Values
+                        {
+                            class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
+                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
+                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; };
+                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                        };
+                };
+                class spreadLevel : Combo
+                {
+                        property = "ALiVE_mil_artillery_spreadLevel";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_SPREAD";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_SPREAD_COMMENT";
+                        defaultValue = """PRESET""";
+                        class Values
+                        {
+                            class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
+                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
+                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; };
+                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                        };
+                };
+                class roundsLevel : Combo
+                {
+                        property = "ALiVE_mil_artillery_roundsLevel";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_ROUNDS";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_ROUNDS_COMMENT";
+                        defaultValue = """PRESET""";
+                        class Values
+                        {
+                            class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
+                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
+                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; };
+                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                        };
+                };
+                class ammoLevel : Combo
+                {
+                        property = "ALiVE_mil_artillery_ammoLevel";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_AMMO";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_AMMO_COMMENT";
+                        defaultValue = """PRESET""";
+                        class Values
+                        {
+                            class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
+                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
+                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; };
+                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                        };
+                };
+                class selectivityLevel : Combo
+                {
+                        property = "ALiVE_mil_artillery_selectivityLevel";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_SELECTIVITY";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_SELECTIVITY_COMMENT";
+                        defaultValue = """PRESET""";
+                        class Values
+                        {
+                            class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
+                            class LOOSE { name = "$STR_ALIVE_MIL_ARTILLERY_SEL_LOOSE"; value = "LOOSE"; };
+                            class STANDARD { name = "$STR_ALIVE_MIL_ARTILLERY_SEL_STANDARD"; value = "STANDARD"; };
+                            class STRICT { name = "$STR_ALIVE_MIL_ARTILLERY_SEL_STRICT"; value = "STRICT"; };
+                        };
+                };
                 class ModuleDescription : ModuleDescription {};
         };
         class ModuleDescription

@@ -33,6 +33,9 @@ Jman
 #define DEFAULT_RANGE_MORTAR 4000
 #define DEFAULT_RANGE_GUN 12000
 #define DEFAULT_RANGE_ROCKET 15000
+#define DEFAULT_MINRANGE_MORTAR 100
+#define DEFAULT_MINRANGE_GUN 500
+#define DEFAULT_MINRANGE_ROCKET 6000
 
 private ["_logic","_operation","_args","_result"];
 
@@ -49,11 +52,13 @@ switch(_operation) do {
 
         if (isServer) then {
 
-            // module is a server-side singleton
-            if (!isNil "ALIVE_MilArtillery") exitWith {
-                ["ALiVE MIL_ARTILLERY - duplicate module ignored, one module serves every AI commander"] call ALiVE_fnc_dump;
-            };
-            ALIVE_MilArtillery = _logic;
+            // one module per AI commander (sync it to the OPCOM), or a single
+            // unsynced module to serve every commander. First module also goes
+            // into ALIVE_MilArtillery for console convenience.
+            private _instances = missionNamespace getVariable ["ALIVE_MilArtilleryInstances", []];
+            _instances pushBack _logic;
+            missionNamespace setVariable ["ALIVE_MilArtilleryInstances", _instances];
+            if (isNil "ALIVE_MilArtillery") then { ALIVE_MilArtillery = _logic; };
 
             // event log dispatch resolves the handler through these
             _logic setVariable ["super", QUOTE(SUPERCLASS)];
@@ -69,15 +74,37 @@ switch(_operation) do {
                 case "HIGH": { [300, 120, 50, 8, 2, 2, 120] };
                 default      { [420, 120, 75, 6, 3, 1, 90] };
             };
+
+            // per-parameter fine tuning: each override replaces just its slice
+            // of the preset when set to something other than "Use preset"
+            private _cadence = [_logic, "cadenceLevel"] call MAINCLASS;
+            if (_cadence != "PRESET") then {
+                _profile set [0, switch (_cadence) do { case "LOW": {600}; case "HIGH": {300}; default {420} }];
+            };
+            private _spread = [_logic, "spreadLevel"] call MAINCLASS;
+            if (_spread != "PRESET") then {
+                _profile set [2, switch (_spread) do { case "LOW": {100}; case "HIGH": {50}; default {75} }];
+            };
+            private _rounds = [_logic, "roundsLevel"] call MAINCLASS;
+            if (_rounds != "PRESET") then {
+                _profile set [3, switch (_rounds) do { case "LOW": {4}; case "HIGH": {8}; default {6} }];
+            };
+            private _ammo = [_logic, "ammoLevel"] call MAINCLASS;
+            if (_ammo != "PRESET") then {
+                _profile set [6, switch (_ammo) do { case "LOW": {60}; case "HIGH": {120}; default {90} }];
+            };
+            private _selectivity = [_logic, "selectivityLevel"] call MAINCLASS;
+            if (_selectivity != "PRESET") then {
+                _profile set [4, switch (_selectivity) do { case "LOOSE": {1}; case "STRICT": {3}; default {2} }];
+            };
+
             _logic setVariable ["intensityProfile", _profile];
             _logic setVariable ["batteryRegistry", []];
             _logic setVariable ["requestQueue", []];
             _logic setVariable ["activeMissions", 0];
 
-            if (_debug) then {
-                ["ALiVE MIL_ARTILLERY - init, intensity %1 -> cooldown %2+%3s dispersion %4m rounds %5 minContacts %6 concurrent %7 ledger %8",
-                    _intensity, _profile select 0, _profile select 1, _profile select 2, _profile select 3, _profile select 4, _profile select 5, _profile select 6] call ALiVE_fnc_dump;
-            };
+            // settings are logged from the monitor once sides are resolved, so
+            // the line can say WHICH commander this module serves
 
             [_logic,"listen"] call MAINCLASS;
             [_logic,"monitor"] call MAINCLASS;
@@ -115,6 +142,92 @@ switch(_operation) do {
         _args = toUpper _args;
         _logic setVariable ["intensity", _args];
         _result = _args;
+    };
+
+    case "generateTasks": {
+        if (_args isEqualType true) then {
+            _logic setVariable ["generateTasks", _args];
+        } else {
+            _args = _logic getVariable ["generateTasks", _logic getVariable ["ALiVE_mil_artillery_generateTasks", true]];
+        };
+        if (_args isEqualType "") then {
+            _args = (toLower _args) == "true";
+        };
+        if !(_args isEqualType true) then { _args = true; };
+        _logic setVariable ["generateTasks", _args];
+        _result = _args;
+    };
+
+    // fine-tuning overrides - "PRESET" defers to the intensity dial
+    case "cadenceLevel";
+    case "spreadLevel";
+    case "roundsLevel";
+    case "selectivityLevel";
+    case "ammoLevel": {
+        private _attr = _operation;
+        if (_args isEqualType "" && {_args != ""}) then {
+            _args = toUpper _args;
+        } else {
+            _args = _logic getVariable [_attr, _logic getVariable [format ["ALiVE_mil_artillery_%1", _attr], "PRESET"]];
+        };
+        if !(_args isEqualType "") then { _args = "PRESET"; };
+        _args = toUpper _args;
+        _logic setVariable [_attr, _args];
+        _result = _args;
+    };
+
+    // side ownership -------------------------------------------------------------
+
+    // Derive which sides this module serves from the OPCOM modules synced to it.
+    // A module with nothing synced serves every side not claimed by a synced one.
+    // First module to claim a side wins; a competing claim is logged once.
+    case "resolveSides": {
+
+        private _handled = [];
+        {
+            if ((typeOf _x) == "ALiVE_mil_OPCOM") then {
+                private _handler = _x getVariable "handler";
+                if (!isNil "_handler" && {_handler isEqualType []}) then {
+                    private _oSide = toUpper ([_handler,"side",""] call ALiVE_fnc_hashGet);
+                    if (_oSide != "") then { _handled pushBackUnique _oSide; };
+                };
+            };
+        } forEach (synchronizedObjects _logic);
+
+        private _claims = missionNamespace getVariable ["ALIVE_MilArtillerySideClaims", []];
+        private _final = [];
+        {
+            private _side = _x;
+            private _idx = _claims findIf { (_x select 0) == _side };
+            if (_idx == -1) then {
+                _claims pushBack [_side, _logic];
+                _final pushBack _side;
+            } else {
+                if (((_claims select _idx) select 1) isEqualTo _logic) then {
+                    _final pushBack _side;
+                } else {
+                    private _warned = _logic getVariable ["sideClaimWarned", []];
+                    if !(_side in _warned) then {
+                        _warned pushBack _side;
+                        _logic setVariable ["sideClaimWarned", _warned];
+                        ["ALiVE MIL_ARTILLERY - side %1 is already served by another Military AI Commander Artillery module; this module ignores it", _side] call ALiVE_fnc_dump;
+                    };
+                };
+            };
+        } forEach _handled;
+        missionNamespace setVariable ["ALIVE_MilArtillerySideClaims", _claims];
+
+        _logic setVariable ["handledSides", _final];
+        _result = _final;
+    };
+
+    case "sideInScope": {
+        private _sideText = toUpper _args;
+        private _handled = _logic getVariable ["handledSides", []];
+        if (count _handled > 0) exitWith { _result = _sideText in _handled; };
+        // unsynced module: cover any side no synced module has claimed
+        private _claims = missionNamespace getVariable ["ALIVE_MilArtillerySideClaims", []];
+        _result = (_claims findIf { (_x select 0) == _sideText && {!((_x select 1) isEqualTo _logic)} }) == -1;
     };
 
     // battery registry ---------------------------------------------------------
@@ -156,6 +269,16 @@ switch(_operation) do {
                 if (_class != "" && {[_class] call ALIVE_fnc_isArtillery}) then {
                     private _entities = [_profile,"entitiesInCommandOf",[]] call ALiVE_fnc_hashGet;
 
+                    // static weapons (towed guns, mortars) have no driver seat,
+                    // so their crew never counts as "commanding" - derive the
+                    // crew entity from the vehicle's assignment keys instead
+                    if (count _entities == 0) then {
+                        private _assignments = [_profile,"vehicleAssignments",[[],[],[]]] call ALiVE_fnc_hashGet;
+                        if (_assignments isEqualType [] && {count _assignments > 1} && {count (_assignments select 1) > 0}) then {
+                            _entities = +(_assignments select 1);
+                        };
+                    };
+
                     if (count _entities > 0) then {
                         private _entityID = _entities select 0;
 
@@ -163,7 +286,19 @@ switch(_operation) do {
                             // new battery - collect every artillery vehicle this crew commands
                             private _entityProfile = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
 
-                            if (!isNil "_entityProfile") then {
+                            // only batteries of the sides this module serves
+                            if (!isNil "_entityProfile" && {
+                                [_logic,"sideInScope", [_entityProfile,"side",""] call ALiVE_fnc_hashGet] call MAINCLASS
+                            }) then {
+                                // same static-weapon caveat as above: fall back
+                                // to the entity's assignment keys (vehicle IDs)
+                                private _candidateVehicles = [_entityProfile,"vehiclesInCommandOf",[]] call ALiVE_fnc_hashGet;
+                                if (count _candidateVehicles == 0) then {
+                                    private _eAssignments = [_entityProfile,"vehicleAssignments",[[],[],[]]] call ALiVE_fnc_hashGet;
+                                    if (_eAssignments isEqualType [] && {count _eAssignments > 1}) then {
+                                        _candidateVehicles = +(_eAssignments select 1);
+                                    };
+                                };
                                 private _vehicleIDs = [];
                                 {
                                     private _vp = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
@@ -173,19 +308,22 @@ switch(_operation) do {
                                             _vehicleIDs pushBack _x;
                                         };
                                     };
-                                } forEach ([_entityProfile,"vehiclesInCommandOf",[]] call ALiVE_fnc_hashGet);
+                                } forEach _candidateVehicles;
 
                                 if (count _vehicleIDs > 0) then {
                                     private _kind = "gun";
                                     private _range = DEFAULT_RANGE_GUN;
+                                    private _minRange = DEFAULT_MINRANGE_GUN;
                                     if (_class isKindOf "StaticMortar") then {
                                         _kind = "mortar";
                                         _range = DEFAULT_RANGE_MORTAR;
+                                        _minRange = DEFAULT_MINRANGE_MORTAR;
                                     } else {
                                         private _ordnance = _class call ALiVE_fnc_GetArtyRounds;
                                         if ("ROCKETS" in _ordnance && {!("HE" in _ordnance)}) then {
                                             _kind = "rocket";
                                             _range = DEFAULT_RANGE_ROCKET;
+                                            _minRange = DEFAULT_MINRANGE_ROCKET;
                                         };
                                     };
 
@@ -196,6 +334,7 @@ switch(_operation) do {
                                     [_record,"faction",[_entityProfile,"faction",""] call ALiVE_fnc_hashGet] call ALiVE_fnc_hashSet;
                                     [_record,"kind",_kind] call ALiVE_fnc_hashSet;
                                     [_record,"maxRange",_range] call ALiVE_fnc_hashSet;
+                                    [_record,"minRange",_minRange] call ALiVE_fnc_hashSet;
                                     [_record,"rounds",_ledgerSize] call ALiVE_fnc_hashSet;
                                     [_record,"cooldownUntil",0] call ALiVE_fnc_hashSet;
                                     [_record,"state","IDLE"] call ALiVE_fnc_hashSet;
@@ -234,10 +373,12 @@ switch(_operation) do {
         private _count = count _registry;
         if (_count != (_logic getVariable ["lastRegistryCount", -1])) then {
             _logic setVariable ["lastRegistryCount", _count];
+            private _handled = _logic getVariable ["handledSides", []];
+            private _scopeText = if (count _handled > 0) then { str _handled } else { "every unclaimed side (nothing synced)" };
             if (_count == 0) then {
-                ["ALiVE MIL_ARTILLERY - no artillery batteries found. Enable 'Place artillery units' on a placement module (or place profiled artillery in the editor) and give the faction artillery groups. Still watching for late placements."] call ALiVE_fnc_dump;
+                ["ALiVE MIL_ARTILLERY - no artillery batteries found for %1. Enable 'Place artillery units' on a placement module (or place profiled artillery in the editor) and give the faction artillery groups. Still watching for late placements.", _scopeText] call ALiVE_fnc_dump;
             } else {
-                ["ALiVE MIL_ARTILLERY - %1 artillery batteries available:", _count] call ALiVE_fnc_dump;
+                ["ALiVE MIL_ARTILLERY - %1 artillery batteries available (serving %2):", _count, _scopeText] call ALiVE_fnc_dump;
                 {
                     private _ep = [ALIVE_profileHandler, "getProfile", [_x,"entityID"] call ALiVE_fnc_hashGet] call ALIVE_fnc_profileHandler;
                     private _bpos = if (!isNil "_ep") then { [_ep,"position"] call ALiVE_fnc_hashGet } else { [0,0,0] };
@@ -270,11 +411,15 @@ switch(_operation) do {
             switch (_type) do {
                 case "ARTY_REQUEST": {
                     // the event log only holds a handful of events - copy the
-                    // request into the module's own queue immediately
-                    private _queue = _logic getVariable ["requestQueue", []];
-                    if (count _queue < 12) then {
-                        _queue pushBack ([_event, "data"] call ALIVE_fnc_hashGet);
-                        _logic setVariable ["requestQueue", _queue];
+                    // request into the module's own queue immediately, but only
+                    // when the requesting side is one this module serves
+                    private _data = [_event, "data"] call ALIVE_fnc_hashGet;
+                    if ([_logic,"sideInScope", str (_data select 3)] call MAINCLASS) then {
+                        private _queue = _logic getVariable ["requestQueue", []];
+                        if (count _queue < 12) then {
+                            _queue pushBack _data;
+                            _logic setVariable ["requestQueue", _queue];
+                        };
                     };
                 };
                 // a LOGCOM convoy reached a dry battery - refill it
@@ -310,9 +455,22 @@ switch(_operation) do {
                 private _tick = 0;
                 while {!isNull _logic} do {
                     // rebuild on the first pass and periodically after, so late
-                    // placements and editor batteries are picked up
+                    // placements and editor batteries are picked up. Sides are
+                    // re-resolved first so late-inited or re-synced commanders
+                    // are honoured.
                     if (_tick mod 8 == 0) then {
+                        [_logic,"resolveSides"] call ALIVE_fnc_MilArtillery;
                         [_logic,"buildRegistry"] call ALIVE_fnc_MilArtillery;
+                    };
+
+                    // one settings line per module, once the served sides are known
+                    if (_tick == 0 && {[_logic, "debug"] call ALIVE_fnc_MilArtillery}) then {
+                        private _handled = _logic getVariable ["handledSides", []];
+                        private _scopeText = if (count _handled > 0) then { str _handled } else { "every unclaimed side (nothing synced)" };
+                        private _p = _logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]];
+                        ["ALiVE MIL_ARTILLERY - module serving %1: intensity %2 -> cooldown %3+%4s dispersion %5m rounds %6 minContacts %7 concurrent %8 ledger %9",
+                            _scopeText, [_logic,"intensity"] call ALIVE_fnc_MilArtillery,
+                            _p select 0, _p select 1, _p select 2, _p select 3, _p select 4, _p select 5, _p select 6] call ALiVE_fnc_dump;
                     };
 
                     private _queue = _logic getVariable ["requestQueue", []];
@@ -408,25 +566,35 @@ switch(_operation) do {
     // Debug/test: force an idle battery dry so the resupply path fires without
     // shooting it empty. Console: [ALIVE_MilArtillery,"debugDry"] call ALIVE_fnc_MilArtillery;
     case "debugDry": {
-        private _registry = _logic getVariable ["batteryRegistry", []];
-        private _idx = _registry findIf { ([_x,"state"] call ALiVE_fnc_hashGet) == "IDLE" };
-        if (_idx < 0) exitWith {
+        private _record = [];
+        {
+            private _registry = _x getVariable ["batteryRegistry", []];
+            private _idx = _registry findIf { ([_x,"state"] call ALiVE_fnc_hashGet) == "IDLE" };
+            if (_idx >= 0) exitWith { _record = _registry select _idx; };
+        } forEach (missionNamespace getVariable ["ALIVE_MilArtilleryInstances", [_logic]]);
+        if (_record isEqualTo []) exitWith {
             ["ALiVE MIL_ARTILLERY - debugDry: no idle battery to dry out"] call ALiVE_fnc_dump;
         };
-        private _record = _registry select _idx;
         [_record,"rounds",0] call ALiVE_fnc_hashSet;
         [_record,"state","DRY"] call ALiVE_fnc_hashSet;
         ["ALiVE MIL_ARTILLERY - debugDry: battery %1 forced dry - resupply dispatches on the next monitor tick", [_record,"entityID"] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump;
     };
 
-    // Debug / test: force the nearest ammo'd battery to fire at a position,
-    // skipping the cooldown + minimum-contact gates but keeping range and the
-    // friendly-fire abort so the strike still behaves realistically. Console:
+    // Debug / test: force the nearest ammo'd battery to fire at a position.
+    // Console:
     //   [ALIVE_MilArtillery, "debugStrike", screenToWorld [0.5,0.5]] call ALIVE_fnc_MilArtillery;
-    //   [ALIVE_MilArtillery, "debugStrike", getMarkerPos "strike"]   call ALIVE_fnc_MilArtillery;
+    //   [ALIVE_MilArtillery, "debugStrike", "strike"] call ALIVE_fnc_MilArtillery;          (marker name or label)
+    //   [ALIVE_MilArtillery, "debugStrike", ["strike", east]] call ALIVE_fnc_MilArtillery;  (restrict to a side's batteries)
     case "debugStrike": {
 
         private _pos = _args;
+        private _sideFilter = "";
+
+        // optional [target, side] form - restrict the battery pick to one side
+        if (_pos isEqualType [] && {count _pos == 2} && {(_pos select 1) isEqualType west}) then {
+            _sideFilter = str (_pos select 1);
+            _pos = _pos select 0;
+        };
 
         // accept a marker string: resolve by marker variable-name first, then
         // fall back to matching the marker's text / description field (Eden
@@ -454,30 +622,43 @@ switch(_operation) do {
         // nearest battery with rounds that isn't already mid-mission, in range
         private _best = [];
         private _bestDist = 1e9;
+        // search every module instance so the console command works no matter
+        // which module owns the side; the mission runs under the owning module
+        private _bestLogic = _logic;
+        private _searched = 0;
         {
-            private _rec = _x;
-            if ((([_rec,"state"] call ALiVE_fnc_hashGet) in ["IDLE","DRY"])
-                && {([_rec,"rounds"] call ALiVE_fnc_hashGet) > 0}) then {
-                private _ep = [ALIVE_profileHandler, "getProfile", [_rec,"entityID"] call ALiVE_fnc_hashGet] call ALIVE_fnc_profileHandler;
-                if (!isNil "_ep") then {
-                    private _d = ([_ep,"position"] call ALiVE_fnc_hashGet) distance2D _pos;
-                    if (_d < (([_rec,"maxRange"] call ALiVE_fnc_hashGet) * 0.95) && {_d < _bestDist}) then {
-                        _best = _rec; _bestDist = _d;
+            private _instLogic = _x;
+            {
+                private _rec = _x;
+                _searched = _searched + 1;
+                private _recSide = [_rec,"side",""] call ALiVE_fnc_hashGet;
+                private _recSideText = if (_recSide isEqualType west) then { str _recSide } else { toUpper _recSide };
+                if ((([_rec,"state"] call ALiVE_fnc_hashGet) in ["IDLE","DRY"])
+                    && {([_rec,"rounds"] call ALiVE_fnc_hashGet) > 0}
+                    && {_sideFilter == "" || {_recSideText == _sideFilter}}) then {
+                    private _ep = [ALIVE_profileHandler, "getProfile", [_rec,"entityID"] call ALiVE_fnc_hashGet] call ALIVE_fnc_profileHandler;
+                    if (!isNil "_ep") then {
+                        private _d = ([_ep,"position"] call ALiVE_fnc_hashGet) distance2D _pos;
+                        if (_d < (([_rec,"maxRange"] call ALiVE_fnc_hashGet) * 0.95)
+                            && {_d > ([_rec,"minRange",300] call ALiVE_fnc_hashGet)}
+                            && {_d < _bestDist}) then {
+                            _best = _rec; _bestDist = _d; _bestLogic = _instLogic;
+                        };
                     };
                 };
-            };
-        } forEach (_logic getVariable ["batteryRegistry", []]);
+            } forEach (_instLogic getVariable ["batteryRegistry", []]);
+        } forEach (missionNamespace getVariable ["ALIVE_MilArtilleryInstances", [_logic]]);
 
         if (_best isEqualTo []) exitWith {
-            ["ALiVE MIL_ARTILLERY - debugStrike: no battery with ammo in range of %1 (registry has %2)", _pos, count (_logic getVariable ["batteryRegistry", []])] call ALiVE_fnc_dump;
+            ["ALiVE MIL_ARTILLERY - debugStrike: no battery with ammo in range of %1 (side filter '%3', %2 batteries searched)", _pos, _searched, _sideFilter] call ALiVE_fnc_dump;
         };
 
         ["ALiVE MIL_ARTILLERY - debugStrike: forcing battery %1 to fire at %2 (%3m)",
             [_best,"entityID"] call ALiVE_fnc_hashGet, _pos, round _bestDist] call ALiVE_fnc_dump;
 
         [_best,"state","FIRING"] call ALiVE_fnc_hashSet;
-        _logic setVariable ["activeMissions", (_logic getVariable ["activeMissions", 0]) + 1];
-        [_logic, _best, "", _pos, true] spawn ALIVE_fnc_MilArtilleryFireMission;
+        _bestLogic setVariable ["activeMissions", (_bestLogic getVariable ["activeMissions", 0]) + 1];
+        [_bestLogic, _best, "", _pos, true] spawn ALIVE_fnc_MilArtilleryFireMission;
     };
 
     case "processRequest": {
@@ -530,7 +711,9 @@ switch(_operation) do {
                 if (!isNil "_entityProfile") then {
                     private _batteryPos = [_entityProfile,"position"] call ALiVE_fnc_hashGet;
                     private _dist = _batteryPos distance2D _targetPos;
-                    if (_dist < (([_record,"maxRange"] call ALiVE_fnc_hashGet) * 0.95) && {_dist > 300} && {_dist < _bestDist}) then {
+                    if (_dist < (([_record,"maxRange"] call ALiVE_fnc_hashGet) * 0.95)
+                        && {_dist > (([_record,"minRange",300] call ALiVE_fnc_hashGet) max 300)}
+                        && {_dist < _bestDist}) then {
                         _best = _record;
                         _bestDist = _dist;
                     };

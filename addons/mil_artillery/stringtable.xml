@@ -6,7 +6,7 @@
     <English>Military AI Commander Artillery</English>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_DESCRIPTION">
-    <English>Lets AI commanders run artillery fire missions. This module controls how artillery behaves, but does not place any guns itself - just like the Military Air Component Commander does not place aircraft. It needs artillery batteries to exist in the world: enable "Place artillery units" on a Military Placement module (or "Artillery Count" on a Custom Objective), or place and profile artillery in the editor. Fire missions are throttled by battery cooldowns, limited ammunition, extra dispersion and targeting rules. Place one module per mission; it serves every AI commander.</English>
+    <English>Lets AI commanders run artillery fire missions. Sync the module to an AI Commander (OPCOM) to serve that commander's side with these settings - place one per commander for per-side tuning. Left unsynced, a single module serves every commander. The module controls behaviour but places no guns itself: enable "Place artillery units" on a Military Placement module (or "Artillery Count" on a Custom Objective), or place and profile artillery in the editor. Fire missions are throttled by battery cooldowns, limited ammunition, extra dispersion and targeting rules.</English>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_DEBUG">
     <English>Debug:</English>
@@ -28,6 +28,60 @@
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH">
     <English>High</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_PRESET">
+    <English>Use intensity preset</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CADENCE">
+    <English>Fire mission cadence:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CADENCE_COMMENT">
+    <English>How often each battery may fire. Low is roughly one mission per ten minutes per battery, High one per five. Overrides the intensity preset for this parameter only.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_SPREAD">
+    <English>Shell spread:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_SPREAD_COMMENT">
+    <English>How widely the shells scatter around the aim point. Low is a wide 100m scatter, High a tight 50m. Overrides the intensity preset for this parameter only.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_ROUNDS">
+    <English>Rounds per fire mission:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_ROUNDS_COMMENT">
+    <English>How many shells a battery fires per mission (split across its guns). Low 4, Medium 6, High 8. Overrides the intensity preset for this parameter only.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO">
+    <English>Battery ammunition stock:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_COMMENT">
+    <English>Each battery's ammunition ledger. Low 60, Medium 90, High 120 rounds; a dry battery falls silent until resupplied. Overrides the intensity preset for this parameter only.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_SELECTIVITY">
+    <English>Target selectivity:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_SELECTIVITY_COMMENT">
+    <English>How many known enemy groups or vehicles must be clustered within 200m of a target before a fire mission is spent on it. Loose 1 (even lone targets are shelled), Standard 2, Strict 3. Counted from the AI commander's own intel, not ground truth. Overrides the intensity preset for this parameter only.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_SEL_LOOSE">
+    <English>Loose (1 contact)</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_SEL_STANDARD">
+    <English>Standard (2 contacts)</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_SEL_STRICT">
+    <English>Strict (3 contacts)</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_TASKS">
+    <English>Generate destroy-artillery tasks:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_TASKS_COMMENT">
+    <English>When players are shelled by AI artillery, give their side a task to destroy the firing battery (requires the C2ISTAR module). One task per battery. The incoming-fire radio warning is unaffected by this setting.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_INCOMING">
+    <English>%1: All callsigns be advised, incoming artillery fire in the vicinity of grid %2. Take cover. Out.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_FIRE_SUPPORT">
+    <English>%1: All callsigns, fire mission in progress. Friendly artillery engaging grid %2. Keep clear of the target area. Out.</English>
 </Key>
 </Container>
 </Package>

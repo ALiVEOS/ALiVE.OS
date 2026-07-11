@@ -161,9 +161,59 @@ if (_mag == "") then {
         _mag = [_gunLead, _types select 0] call ALIVE_fnc_getArtyMagazineType;
     };
 };
+if (_mag == "") then {
+    // ask the LIVE gun's artillery computer: some mods (e.g. RHS rocket
+    // artillery) add their weapon by script at spawn, invisible to any config
+    // walk. Prefer an HE-classified magazine, else take the first offered.
+    private _liveMags = getArtilleryAmmo [_gunLead];
+    if (count _liveMags > 0) then {
+        private _idx = _liveMags findIf { ["HE", _x] call ALIVE_fnc_isMagazineOfOrdnanceType };
+        _mag = _liveMags select (_idx max 0);
+        if (_debug) then {
+            ["ALiVE MIL_ARTILLERY - ordnance resolved from the live gun for %1: %2", typeOf _gunLead, _mag] call ALiVE_fnc_dump;
+        };
+    };
+};
+if (_mag == "") then {
+    // last resort: an artillery piece only carries artillery magazines - take
+    // whatever the config lists rather than standing down
+    private _cfgMags = (typeOf _gunLead) call ALIVE_fnc_getArtyMagazines;
+    if (count _cfgMags > 0) then {
+        _mag = _cfgMags select 0;
+        if (_debug) then {
+            ["ALiVE MIL_ARTILLERY - ordnance unclassifiable for %1, falling back to its first magazine %2", typeOf _gunLead, _mag] call ALiVE_fnc_dump;
+        };
+    };
+};
 if (_mag == "") exitWith {
     ["ALiVE MIL_ARTILLERY - fire mission aborted: no usable ordnance found for %1 - battery stood down", typeOf _gunLead] call ALiVE_fnc_dump;
     [1] call _fnc_release;
+};
+
+// first-activation capability probe: measure the gun's real engagement
+// envelope (script-added ordnance and rocket artillery defeat every config
+// heuristic - the RHS Grad turned out to be an 8-20km system). Cached on the
+// record so battery picks stop offering it unreachable targets.
+if !([_record,"probed",false] call ALiVE_fnc_hashGet) then {
+    [_record,"probed",true] call ALiVE_fnc_hashSet;
+    private _probeMag = (getArtilleryAmmo [_gunLead]) param [0, _mag];
+    if (_probeMag != "") then {
+        private _minR = -1;
+        private _maxR = -1;
+        {
+            if ((_gunLead getPos [_x, 0]) inRangeOfArtillery [[_gunLead], _probeMag]) then {
+                if (_minR < 0) then { _minR = _x; };
+                _maxR = _x;
+            };
+        } forEach [500, 1000, 2000, 4000, 6000, 8000, 12000, 16000, 20000, 24000];
+        if (_minR > 0) then {
+            [_record,"minRange", _minR * 0.75] call ALiVE_fnc_hashSet;
+            [_record,"maxRange", _maxR] call ALiVE_fnc_hashSet;
+            if (_debug) then {
+                ["ALiVE MIL_ARTILLERY - battery %1 envelope probed: %2m to %3m (%4)", _entityID, round (_minR * 0.75), _maxR, _probeMag] call ALiVE_fnc_dump;
+            };
+        };
+    };
 };
 
 private _aimBase = [_targetPos select 0, _targetPos select 1, 0];
@@ -173,11 +223,15 @@ private _aimBase = [_targetPos select 0, _targetPos select 1, 0];
 if !(_aimBase inRangeOfArtillery [_guns, _mag]) exitWith {
     private _dist = _gunLead distance2D _aimBase;
     private _maxRange = [_record,"maxRange"] call ALiVE_fnc_hashGet;
-    if (_dist > _maxRange * 0.5) then {
+    // only revise unprobed defaults - a measured envelope is authoritative
+    if (!([_record,"probed",false] call ALiVE_fnc_hashGet) && {_dist > _maxRange * 0.5}) then {
         [_record,"maxRange", ((_dist * 0.9) max 1500)] call ALiVE_fnc_hashSet;
     };
     if (_debug) then {
-        ["ALiVE MIL_ARTILLERY - fire mission aborted: target out of range for %1 at %2m (range default revised)", typeOf _gunLead, round _dist] call ALiVE_fnc_dump;
+        ["ALiVE MIL_ARTILLERY - fire mission aborted: target at %1m is outside %2's engagement envelope (%3m to %4m)",
+            round _dist, typeOf _gunLead,
+            round ([_record,"minRange",300] call ALiVE_fnc_hashGet),
+            [_record,"maxRange"] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump;
     };
     [0.5] call _fnc_release;
 };
@@ -213,6 +267,77 @@ if (_ffBlocked) exitWith {
         ["ALiVE MIL_ARTILLERY - fire mission aborted: friendlies inside the impact area at %1", _aimBase] call ALiVE_fnc_dump;
     };
     [0.5] call _fnc_release;
+};
+
+// players about to be shelled get a radio warning from their HQ, and being
+// shelled reveals the battery: a destroy-artillery task is raised for the
+// victim side (approximate position - counter-battery intel, not psychic)
+private _victimPlayers = (allPlayers - entities "HeadlessClient_F") select {
+    (_x distance2D _aimBase < 600) && {!([side group _x, _sideObject] call BIS_fnc_sideIsFriendly)}
+};
+if (count _victimPlayers > 0) then {
+    private _victimSides = [];
+    { _victimSides pushBackUnique (side group _x) } forEach _victimPlayers;
+
+    {
+        private _vSide = _x;
+        private _vSideText = str _vSide;
+
+        // one warning per side per 10 minutes
+        private _lastVar = format ["artyWarnLast_%1", _vSideText];
+        if (time - (_logic getVariable [_lastVar, -3600]) > 600) then {
+            _logic setVariable [_lastVar, time];
+            private _hqClass = switch (_vSide) do { case west: {"BLU"}; case east: {"OPF"}; case resistance: {"IND"}; default {"HQ"} };
+            private _hqid = getText (configFile >> "CfgHQIdentities" >> _hqClass >> "name");
+            private _message = format [localize "STR_ALIVE_MIL_ARTILLERY_INCOMING", _hqid, mapGridPosition _aimBase];
+            private _radioBroadcast = [objNull, _message, "side", _vSide, false, false, false, true, _hqClass];
+            [_vSideText, _radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+        };
+
+        // destroy-artillery task, once per battery per side, via the task system
+        if (([_logic,"generateTasks"] call ALIVE_fnc_MilArtillery)
+            && {["ALiVE_mil_c2istar"] call ALiVE_fnc_IsModuleAvailable}) then {
+            private _taskedVar = format ["artyTasked_%1", _vSideText];
+            private _tasked = _logic getVariable [_taskedVar, []];
+            if !(_entityID in _tasked) then {
+                _tasked pushBack _entityID;
+                _logic setVariable [_taskedVar, _tasked];
+
+                private _sidePlayers = [_vSideText] call ALiVE_fnc_getPlayersDataSource;
+                _sidePlayers = [_sidePlayers select 1, _sidePlayers select 0];
+                private _vFaction = faction (_victimPlayers select 0);
+                private _batFaction = [_record,"faction",""] call ALiVE_fnc_hashGet;
+                private _revealPos = ([_entityProfile,"position"] call ALiVE_fnc_hashGet) getPos [50 + random 150, random 360];
+                private _requestID = format ["ARTY_%1_%2", _entityID, floor time];
+                private _taskData = [_requestID, "ARTY", _vSideText, _vFaction, "DestroyVehicles", "NULL", _revealPos, _sidePlayers, _batFaction, "Y", "Side", +_vehicleIDs];
+                private _tEvent = ["TASK_GENERATE", _taskData, "MilArtillery"] call ALIVE_fnc_event;
+                [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
+
+                if (_debug) then {
+                    ["ALiVE MIL_ARTILLERY - destroy-artillery task raised for %1 against battery %2", _vSideText, _entityID] call ALiVE_fnc_dump;
+                };
+            };
+        };
+    } forEach _victimSides;
+};
+
+// the battery's own side hears the fire-support call too - players allied
+// with the guns get the HQ announcement wherever they are on the map
+private _friendlyPlayers = (allPlayers - entities "HeadlessClient_F") select {
+    [side group _x, _sideObject] call BIS_fnc_sideIsFriendly
+};
+if (count _friendlyPlayers > 0) then {
+    private _friendlySides = [];
+    { _friendlySides pushBackUnique (side group _x) } forEach _friendlyPlayers;
+    {
+        private _fSide = _x;
+        private _fSideText = str _fSide;
+        private _hqClass = switch (_fSide) do { case west: {"BLU"}; case east: {"OPF"}; case resistance: {"IND"}; default {"HQ"} };
+        private _hqid = getText (configFile >> "CfgHQIdentities" >> _hqClass >> "name");
+        private _message = format [localize "STR_ALIVE_MIL_ARTILLERY_FIRE_SUPPORT", _hqid, mapGridPosition _aimBase];
+        private _radioBroadcast = [objNull, _message, "side", _fSide, false, false, false, true, _hqClass];
+        [_fSideText, _radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
+    } forEach _friendlySides;
 };
 
 // fired watchdog counters - no fire event within the window means a broken
