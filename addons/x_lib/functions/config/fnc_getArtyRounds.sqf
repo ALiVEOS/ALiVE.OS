@@ -6,16 +6,9 @@ if(_class isEqualTo "BUS_MotInf_MortTeam") then {
 _class    = "B_MBT_01_arty_F"
 };
 
-// #887 - collect magazines from EVERY turret (mod artillery often mounts the
-// gun outside MainTurret), with a vehicle-level fallback for statics
-_mags = [];
-{
-    _mags append (getArray (_x >> "magazines"));
-} forEach ("isClass _x" configClasses (configfile >> "CfgVehicles" >> _class >> "Turrets"));
-
-if (_mags isEqualTo []) then {
-    _mags = getArray (configfile >> "CfgVehicles" >> _class >> "magazines");
-};
+// #887 - recursive turret walk + magazineWell resolution: mod artillery
+// mounts guns on nested turrets and lists ordnance through wells
+_mags = _class call ALIVE_fnc_getArtyMagazines;
 
 private _allTypes = ["HE","SMOKE","WP","SADARM","CLUSTER","LASER","MINE","AT MINE","ROCKETS","ILLUM"];
 private _roundsAvail = [];

@@ -136,12 +136,16 @@ switch (_ordnanceType) do {
         }
     };
     case "ROCKETS": {
-        _ammo isKindOf ["RocketBase", _cfgAmmoRoot]
+        // parentage first, then simulation type - mod rocket ammo (e.g. RHS
+        // Grad) often has its own class tree but always simulates as a rocket
+        (_ammo isKindOf ["RocketBase", _cfgAmmoRoot])
+            || {(toLower getText (_ammoCfg >> "simulation")) in ["shotrocket","shotmissile"]}
     };
     case "HE": {
         // plain shell only - anything smoke / flare / guided / dispenser /
-        // rocket parented belongs to its own type
-        (_ammo isKindOf ["ShellBase", _cfgAmmoRoot])
+        // rocket parented belongs to its own type. Shell simulation is the
+        // mod-proof fallback when the ammo has its own class tree.
+        ((_ammo isKindOf ["ShellBase", _cfgAmmoRoot]) || {(toLower getText (_ammoCfg >> "simulation")) == "shotshell"})
             && {!(_ammo isKindOf ["SmokeShell", _cfgAmmoRoot])}
             && {!(_ammo isKindOf ["FlareCore", _cfgAmmoRoot])}
             && {getNumber (_ammoCfg >> "laserLock") == 0}

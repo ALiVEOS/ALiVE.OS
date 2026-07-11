@@ -55,11 +55,12 @@ private _fnc_isArmedAir = {
 private _fnc_isArtillery = {
     params ["_cfg", "_class"];
     if (getNumber (_cfg >> "artilleryScanner") <= 0) exitWith { false };
-    // any turret elevating past 65 degrees counts (walk all turrets, not
-    // just MainTurret - mod artillery often mounts the gun elsewhere)
+    // any turret elevating past 45 degrees counts (walk all turrets, not
+    // just MainTurret - mod artillery often mounts the gun elsewhere).
+    // 45 rather than 65 so rocket artillery's ~55-degree tubes qualify
     private _high = false;
     {
-        if (getNumber (_x >> "maxElev") > 65) exitWith { _high = true };
+        if (getNumber (_x >> "maxElev") > 45) exitWith { _high = true };
     } forEach ("isClass _x" configClasses (_cfg >> "Turrets"));
     _high
 };

@@ -37,17 +37,10 @@ _type = _this select 1;
 
 private _weaponType = if (_class isEqualType objNull) then { typeof (vehicle _class) } else { _class };
 
-// #887 - walk EVERY turret (mod artillery often mounts the gun outside
-// MainTurret), with a vehicle-level fallback for statics. The ordnance
-// matcher handles mod magazine names via config ancestry.
-_mags = [];
-{
-    _mags append (getArray (_x >> "magazines"));
-} forEach ("isClass _x" configClasses (configfile >> "CfgVehicles" >> _weaponType >> "Turrets"));
-
-if (_mags isEqualTo []) then {
-    _mags = getArray (configfile >> "CfgVehicles" >> _weaponType >> "magazines");
-};
+// #887 - recursive turret walk + magazineWell resolution: mod artillery
+// mounts guns on nested turrets and lists ordnance through wells. The
+// ordnance matcher handles mod magazine names via config ancestry.
+_mags = _weaponType call ALIVE_fnc_getArtyMagazines;
 
 private _ord = "";
 
