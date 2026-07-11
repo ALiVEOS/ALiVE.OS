@@ -262,6 +262,9 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "artilleryFaction": {
+        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "placeSupplies": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeSupplies", _args];
@@ -873,6 +876,24 @@ switch(_operation) do {
             _factionSideNumber = getNumber(_factionConfig >> "side");
             _side = _factionSideNumber call ALIVE_fnc_sideNumberToText;
             _countProfiles = 0;
+
+            // #887 - optional donor faction for artillery: models batteries
+            // attached from a sister branch (e.g. RHS Tank Troops guns
+            // supporting Motor Rifles, whose own faction fields no
+            // self-propelled artillery). The donor must fight for the same side
+            private _artilleryFaction = trim ([_logic, "artilleryFaction"] call MAINCLASS);
+            if (_artilleryFaction != "") then {
+                private _donorConfig = _artilleryFaction call ALiVE_fnc_configGetFactionClass;
+                if (!isClass _donorConfig) then {
+                    ["MP [%1] - Artillery faction %2 not found in CfgFactionClasses - artillery reverts to the force faction",_faction,_artilleryFaction] call ALiVE_fnc_dump;
+                    _artilleryFaction = "";
+                } else {
+                    if (getNumber (_donorConfig >> "side") != _factionSideNumber) then {
+                        ["MP [%1] - Artillery faction %2 does not fight for side %3 - artillery reverts to the force faction",_faction,_artilleryFaction,_side] call ALiVE_fnc_dump;
+                        _artilleryFaction = "";
+                    };
+                };
+            };
 
 
             // DEBUG -------------------------------------------------------------------------------------
@@ -1790,6 +1811,78 @@ switch(_operation) do {
                 };
             };
 
+            // (fallback artillery block moved below the force-assembly loop -
+            // it consumes the shortfall counted there)
+            private _fnc_placeFallbackArtillery = {
+            if (_artilleryFallback > 0 && {!isNil "_clusters"} && {count _clusters > 0}) then {
+                private _artySourceFaction = if (_artilleryFaction != "") then {_artilleryFaction} else {_faction};
+                private _artyClasses = _artySourceFaction call ALIVE_fnc_configGetFactionArtilleryVehicles;
+                // prefer gun artillery (howitzers) on small terrains; keep rockets only
+                // when the faction owns nothing else
+                if (_smallMapForRockets) then {
+                    private _guns = _artyClasses select { !([_x] call ALIVE_fnc_isRocketArtillery) };
+                    if (count _guns > 0) then { _artyClasses = _guns; };
+                };
+                // prefer self-propelled guns over towed/static pieces - they can
+                // relocate and the AI commander can maneuver them
+                private _selfPropelled = _artyClasses select { !(_x isKindOf "StaticWeapon") };
+                if (count _selfPropelled > 0) then { _artyClasses = _selfPropelled; };
+                if (count _artyClasses == 0) then {
+                    ["MP [%1] - Place Artillery: %2 has no artillery groups AND no artillery vehicles - nothing to place",_faction,_artySourceFaction] call ALiVE_fnc_dump;
+                } else {
+                    private _usedArtyPositions = [];
+                    for "_b" from 1 to _artilleryFallback do {
+                        private _artyClass = selectRandom _artyClasses;
+                        private _cluster = _clusters select ((_b - 1) mod (count _clusters));
+                        private _cPos = [_cluster, "center"] call ALIVE_fnc_hashGet;
+                        if (isNil "_cPos" || {typeName _cPos != "ARRAY"}) then { _cPos = [0,0,0] };
+
+                        private _gunsPlaced = 0;
+                        for "_g" from 1 to 2 do {
+                            private _safePos = [];
+                            private _safeDir = 0;
+                            {
+                                if (count _safePos > 0) exitWith {};
+                                private _radius = _x;
+                                // 6 bearings per ring (60-degree sectors with
+                                // jitter) - one random bearing per ring was
+                                // striking out entirely in broken terrain
+                                for "_a" from 0 to 5 do {
+                                    private _cand = _cPos getPos [_radius, (_a * 60) + random 60];
+                                    private _res = [_cand, 25, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
+                                    if (count _res >= 2) then {
+                                        private _testPos = _res select 0;
+                                        private _clash = false;
+                                        { if (_testPos distance2D _x < 25) exitWith { _clash = true } } forEach _usedArtyPositions;
+                                        if (!_clash) then {
+                                            _safePos = _testPos;
+                                            _safeDir = _res select 1;
+                                        };
+                                    };
+                                    if (count _safePos > 0) exitWith {};
+                                };
+                            } forEach [50, 80, 110, 140, 170, 200];
+
+                            if (count _safePos > 0) then {
+                                _usedArtyPositions pushBack _safePos;
+                                [_artyClass, _side, _artySourceFaction, "PRIVATE", _safePos, _safeDir, false, _artySourceFaction] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                _countProfiles = _countProfiles + 2;
+                                _gunsPlaced = _gunsPlaced + 1;
+                            };
+                        };
+
+                        if (_gunsPlaced > 0) then {
+                            ["MP [%1] - Artillery battery composed from vehicles: %2 x %3 at grid %4", _faction, _gunsPlaced, _artyClass, mapGridPosition _cPos] call ALiVE_fnc_dump;
+                        } else {
+                            if (_debug) then {
+                                ["MP [%1] - Artillery battery %2: no clear position near grid %3, skipped", _faction, _b, mapGridPosition _cPos] call ALiVE_fnc_dump;
+                            };
+                        };
+                    };
+                };
+            };
+            };
+
 
             // Spawn ambient vehicles
 
@@ -2103,18 +2196,50 @@ switch(_operation) do {
 
             private _artilleryWarned = false;
             private _artilleryGroupNames = [];
+            private _artilleryFallback = 0;
+            // rocket artillery (4-5km minimum range) has nothing to shoot at
+            // on small terrains - defer rocket groups there and compose howitzer
+            // batteries from the faction's vehicles instead
+            private _smallMapForRockets = worldSize < 10240;
+            if (_artilleryFaction != "") then {
+                // attached batteries come from the donor faction - the group
+                // pipeline is single-faction, so every battery is composed
+                // directly from the donor's artillery vehicles below
+                _artilleryFallback = _countArtillery;
+                if (_countArtillery > 0) then {
+                    ["MP [%1] - Place Artillery: composing %2 batteries from donor faction %3",_faction,_countArtillery,_artilleryFaction] call ALiVE_fnc_dump;
+                };
+            } else {
             for "_i" from 0 to _countArtillery -1 do {
                 _group = ["Artillery",_faction] call ALIVE_fnc_configGetRandomGroup;
                 if!(_group == "FALSE") then {
-                    _groups pushback _group;
-                    _artilleryGroupNames pushback _group;
+                    if (_smallMapForRockets && {[_faction, _group] call ALIVE_fnc_groupIsRocketArtillery}) then {
+                        _artilleryFallback = _artilleryFallback + 1;
+                        if (!_artilleryWarned) then {
+                            _artilleryWarned = true;
+                            ["MP [%1] - Place Artillery: %2 is rocket artillery, out-ranged by this terrain (worldSize %3) - composing a howitzer battery instead",_faction,_group,worldSize] call ALiVE_fnc_dump;
+                        };
+                    } else {
+                        _groups pushback _group;
+                        _artilleryGroupNames pushback _group;
+                    };
                 } else {
+                    // no artillery group - compose this battery directly from
+                    // the faction's artillery vehicles later in init (some
+                    // factions have the vehicles but define no groups)
+                    _artilleryFallback = _artilleryFallback + 1;
                     if (!_artilleryWarned) then {
                         _artilleryWarned = true;
-                        ["MP [%1] - Place Artillery is enabled but the faction has no Artillery groups (CfgGroups or custom mappings) - no artillery placed",_faction] call ALiVE_fnc_dump;
+                        ["MP [%1] - Place Artillery: the faction has no Artillery groups - composing batteries from its artillery vehicles instead",_faction] call ALiVE_fnc_dump;
                     };
                 };
             };
+            };
+
+            // place any batteries the group pull could not provide (block is
+            // defined earlier in init where the AA machinery lives; calling it
+            // here means the shortfall above is populated)
+            call _fnc_placeFallbackArtillery;
 
             if(_countMotorized > 0) then {
 

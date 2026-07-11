@@ -86,6 +86,12 @@
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT_COMMENT">
     <English>Set count of self-propelled artillery sections to be spawned, set to 0 for none. Drawn from the faction's artillery groups; factions without artillery groups place none and log a note.</English>
 </Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION">
+    <English>Artillery Faction:</English>
+</Key>
+<Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION_COMMENT">
+    <English>Optional. Draw the placed artillery from this donor faction instead of the composition factions - models batteries attached from a sister branch, for example RHS Tank Troops guns supporting Motor Rifles. Only factions that field artillery are listed; the donor must fight for the same side. Uses the donor's artillery groups when it defines them, otherwise composes batteries from its artillery vehicles. Select (none) to use the composition factions.</English>
+</Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT">
     <English>SpecOps Count:</English>
     <Chinesesimp>特战小组计数</Chinesesimp>

@@ -42,10 +42,14 @@ Jman
 // majority of single-select faction attributes).
 private _display = controlNull;
 private _varName = "faction";
+private _allowNone = false;
 if (typeName _this == "ARRAY") then {
     _display = _this select 0;
     if (count _this > 1 && {typeName (_this select 1) == "STRING"} && {(_this select 1) != ""}) then {
         _varName = _this select 1;
+    };
+    if (count _this > 2 && {typeName (_this select 2) == "BOOL"}) then {
+        _allowNone = _this select 2;
     };
 } else {
     _display = _this;
@@ -54,13 +58,18 @@ if (typeName _this == "ARRAY") then {
 private _ctrl = (_display controlsGroupCtrl 100);
 private _sel = lbCurSel _ctrl;
 private _result = if (_sel < 0) then {
-    "OPF_F"
+    if (_allowNone) then { "" } else { "OPF_F" }
 } else {
     _ctrl lbData _sel
 };
 
-// Defensive: if lbData was somehow empty, don't silently write "" to the logic
-if (typeName _result != "STRING" || {_result == ""}) then {
+// Defensive: if lbData was somehow empty, don't silently write "" to the
+// logic - UNLESS this is an optional attribute, where "" is the legitimate
+// "(none)" selection
+if (typeName _result != "STRING") then {
+    _result = if (_allowNone) then { "" } else { "OPF_F" };
+};
+if (_result == "" && {!_allowNone}) then {
     _result = "OPF_F";
 };
 

@@ -169,6 +169,22 @@ class Cfg3DEN
             attributeSave = "[_this, 'ambientCrowdFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceSave.sqf'";
         };
 
+        // Optional artillery-donor variants (#887): same Military dropdown
+        // but with a "(none)" row at the top (the attribute is optional -
+        // empty means "use the force's own factions") and an artillery-
+        // capability filter so only factions that actually field guns are
+        // offered. Flags ride the 4th load / 3rd save argument. One variant
+        // per consumer so the stored logic-variable name matches the
+        // module's expression / case-accessor.
+        class ALiVE_FactionChoice_Military_ArtilleryFaction: ALiVE_FactionChoice_Military {
+            attributeLoad = "[_this, [0,1,2], 'artilleryFaction', ['allowNone','artilleryOnly']] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceLoad.sqf'";
+            attributeSave = "[_this, 'artilleryFaction', true] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceSave.sqf'";
+        };
+        class ALiVE_FactionChoice_Military_CustomArtilleryFaction: ALiVE_FactionChoice_Military {
+            attributeLoad = "[_this, [0,1,2], 'customArtilleryFaction', ['allowNone','artilleryOnly']] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceLoad.sqf'";
+            attributeSave = "[_this, 'customArtilleryFaction', true] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceSave.sqf'";
+        };
+
         // ALiVE_FactionChoiceMulti family:
         //   Multi-select counterpart to ALiVE_FactionChoice. Same dynamic
         //   population (CfgFactionClasses + missionConfig, side filtered,

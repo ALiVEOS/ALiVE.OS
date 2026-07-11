@@ -828,6 +828,12 @@
 <Key ID="STR_ALIVE_MP_PLACE_ARTILLERY_COMMENT">
     <English>Places self-propelled artillery sections alongside the placed forces, drawn from the faction's artillery groups. The AI commander treats them like any other force for now - they move with the force and hold at objectives. Factions without artillery groups place none and log a note.</English>
 </Key>
+<Key ID="STR_ALIVE_MP_ARTILLERY_FACTION">
+    <English>Artillery faction (attached):</English>
+</Key>
+<Key ID="STR_ALIVE_MP_ARTILLERY_FACTION_COMMENT">
+    <English>Optional. Draw the placed artillery from this donor faction instead of the force faction - models batteries attached from a sister branch, for example RHS Tank Troops guns supporting Motor Rifles, whose own faction fields no self-propelled artillery. Only factions that field artillery are listed; the donor must fight for the same side as the force. Batteries are composed from the donor's artillery vehicles with donor crews. Select (none) to use the force faction.</English>
+</Key>
 <Key ID="STR_ALIVE_MP_PLACE_SUPPLIES">
     <English>Place supplies:</English>
     <Chinese>放置物資：</Chinese>

@@ -106,8 +106,23 @@ class CfgVehicles {
                         class customMotorisedCount : Edit { property = "ALiVE_mil_placement_custom_customMotorisedCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_MOTORISED_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customMechanisedCount : Edit { property = "ALiVE_mil_placement_custom_customMechanisedCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_MECHANISED_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customArmourCount : Edit { property = "ALiVE_mil_placement_custom_customArmourCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT_COMMENT"; defaultValue = """0"""; };
-                        class customArtilleryCount : Edit { property = "ALiVE_mil_placement_custom_customArtilleryCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customSpecOpsCount : Edit { property = "ALiVE_mil_placement_custom_customSpecOpsCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT_COMMENT"; defaultValue = """0"""; };
+
+                        // ---- AI Artillery (#887) --------------------------------------------
+                        class HDR_ARTILLERY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ARTILLERY"; displayName = "AI ARTILLERY"; };
+                        class customArtilleryCount : Edit { property = "ALiVE_mil_placement_custom_customArtilleryCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT_COMMENT"; defaultValue = """0"""; };
+                        // Optional donor-faction dropdown - shared ALiVE_FactionChoice
+                        // substrate, artillery-capable factions only, "(none)" = use
+                        // the composition factions. See addons/main/CfgVehicles.hpp.
+                        class customArtilleryFaction {
+                            property     = "ALiVE_mil_placement_custom_customArtilleryFaction";
+                            displayName  = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION";
+                            tooltip      = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION_COMMENT";
+                            control      = "ALiVE_FactionChoice_Military_CustomArtilleryFaction";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['customArtilleryFaction', _value];";
+                            defaultValue = """""";
+                        };
 
                         // ---- Anti-Air -------------------------------------------------------
                         class HDR_ANTIAIR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ANTIAIR"; displayName = "$STR_ALIVE_CMP_HDR_ANTIAIR"; };

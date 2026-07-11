@@ -198,8 +198,22 @@ class CfgVehicles {
                         class createHQ : Combo { property = "ALiVE_mil_placement_createHQ"; displayName = "$STR_ALIVE_MP_CREATE_HQ"; tooltip = "$STR_ALIVE_MP_CREATE_HQ_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class createFieldHQ : Combo { property = "ALiVE_mil_placement_createFieldHQ"; displayName = "$STR_ALIVE_MP_CREATE_FIELDHQ"; tooltip = "$STR_ALIVE_MP_CREATE_FIELDHQ_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
                         class placeHelis : Combo { property = "ALiVE_mil_placement_placeHelis"; displayName = "$STR_ALIVE_MP_PLACE_HELI"; tooltip = "$STR_ALIVE_MP_PLACE_HELI_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
-                        class placeArtillery : Combo { property = "ALiVE_mil_placement_placeArtillery"; displayName = "$STR_ALIVE_MP_PLACE_ARTILLERY"; tooltip = "$STR_ALIVE_MP_PLACE_ARTILLERY_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
                         class placeSupplies : Combo { property = "ALiVE_mil_placement_placeSupplies"; displayName = "$STR_ALIVE_MP_PLACE_SUPPLIES"; tooltip = "$STR_ALIVE_MP_PLACE_SUPPLIES_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
+                        // ---- AI Artillery (#887) --------------------------------------------
+                        class HDR_ARTILLERY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_ARTILLERY"; displayName = "AI ARTILLERY"; };
+                        class placeArtillery : Combo { property = "ALiVE_mil_placement_placeArtillery"; displayName = "$STR_ALIVE_MP_PLACE_ARTILLERY"; tooltip = "$STR_ALIVE_MP_PLACE_ARTILLERY_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
+                        // Optional donor-faction dropdown - shared ALiVE_FactionChoice
+                        // substrate, artillery-capable factions only, "(none)" = use
+                        // the force faction. See addons/main/CfgVehicles.hpp.
+                        class artilleryFaction {
+                            property     = "ALiVE_mil_placement_artilleryFaction";
+                            displayName  = "$STR_ALIVE_MP_ARTILLERY_FACTION";
+                            tooltip      = "$STR_ALIVE_MP_ARTILLERY_FACTION_COMMENT";
+                            control      = "ALiVE_FactionChoice_Military_ArtilleryFaction";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['artilleryFaction', _value];";
+                            defaultValue = """""";
+                        };
                         // ---- Objective Objects (#875) ---------------------------------------
                         class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
                         // AA-style triplet: count Edit + behaviour Combo + picker.

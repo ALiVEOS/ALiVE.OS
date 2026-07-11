@@ -65,6 +65,18 @@ if (is3DEN) then {
     ALIVE_fnc_dump                    = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\logging\fnc_dump.sqf";
     ALIVE_fnc_assessIndexViability    = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_assessIndexViability.sqf";
     ALIVE_fnc_indexViabilityEdenCheck = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_indexViabilityEdenCheck.sqf";
+
+    // #887 artillery-donor dropdown (FactionChoice "artilleryOnly" flag):
+    // the Eden load handler runs the isArtillery chain to keep only
+    // gun-owning factions in the list. Same pure-Eden gap as above, so
+    // inline-compile the chain. getArtyRounds reaches getArtyMagazines +
+    // isMagazineOfOrdnanceType; isArtillery additionally needs the hash
+    // trio compiled above for its per-class result cache. No other ALiVE
+    // deps (verified by grepping the sources).
+    ALIVE_fnc_isArtillery              = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\vehicles\fnc_isArtillery.sqf";
+    ALIVE_fnc_getArtyRounds            = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\config\fnc_getArtyRounds.sqf";
+    ALIVE_fnc_getArtyMagazines         = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\config\fnc_getArtyMagazines.sqf";
+    ALIVE_fnc_isMagazineOfOrdnanceType = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\config\fnc_isMagazineOfOrdnanceType.sqf";
     ["ALiVE 3DEN: inline-compiled validators; OPCOM=%1, compilerSync=%2, hashCreate=%3, hashSet=%4, hashGet=%5, dump=%6, assessor=%7, edenViability=%8",
         typeName ALiVE_edenFactionValidator,
         typeName ALiVE_edenValidateFactionCompilerSync,
