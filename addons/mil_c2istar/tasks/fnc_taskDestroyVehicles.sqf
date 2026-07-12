@@ -107,7 +107,14 @@ switch (_taskState) do {
             if (typeName _targetVehicle != "OBJECT") then {
                 _vehicleProfile = [ALIVE_profileHandler, "getProfile", _targetVehicle] call ALIVE_fnc_profileHandler;
                 // _vehicleProfile call ALIVE_fnc_inspectHash;
-                _vehiclePosition = _vehicleProfile select 2 select 2;
+                // artillery destroy tasks pass their targets at index 11 and
+                // a deliberately fuzzed location (counter-battery intel, not
+                // psychic) - keep it. The auto/player-anchored path computes
+                // its target HERE and must snap the marker to the vehicle's
+                // true profile position, not the requesting player's location
+                if (count _task <= 11) then {
+                    _vehiclePosition = _vehicleProfile select 2 select 2;
+                };
                 _vehicleType = _vehicleProfile select 2 select 11;
             } else {
                 _vehiclePosition = position _targetVehicle;
