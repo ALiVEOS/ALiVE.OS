@@ -971,27 +971,41 @@ switch(_operation) do {
             // start listening for logcom events
             [_logic,"listen"] call MAINCLASS;
 
-            // Player resupply delivers via LOGCOM (the Military Logistics module)
-            // and has no delivery pipeline of its own: a request raised with no
-            // mil_logistics module placed is never answered and silently hangs.
-            // Warn the mission maker. ALIVE_MLGlobalRegistry is created by
-            // mil_logistics init, so poll for it (module load order isn't
-            // guaranteed) and only warn once it's clear none will register -
-            // otherwise this would false-alarm when PR happens to start first.
+            // Player resupply delivers via LOGCOM (the Military Logistics
+            // module) and has no delivery pipeline of its own: a request raised
+            // with no mil_logistics module placed is never answered. Warn the
+            // mission maker - but ONLY when no LOGCOM is actually placed. A
+            // module that IS placed registers during its own startup, which is
+            // blocking and can take minutes on heavy missions (it waits on its
+            // synced commander's objective analysis before registering); a fixed
+            // timeout used to fire this warning before that finished, a false
+            // alarm. Discriminate on the count of PLACED modules, not a timer.
             [] spawn {
-                private _tries = 0;
-                private _haveLogcom = false;
-                waitUntil {
-                    uiSleep 5;
-                    _tries = _tries + 1;
-                    if (!isNil "ALIVE_MLGlobalRegistry") then {
-                        private _mods = [ALIVE_MLGlobalRegistry, "getModules"] call ALIVE_fnc_MLGlobalRegistry;
-                        _haveLogcom = !isNil "_mods" && {count (_mods select 1) > 0};
+                private _placedLogcom = count (allMissionObjects "ALiVE_mil_logistics");
+
+                if (_placedLogcom == 0) then {
+                    // none placed - genuine misconfiguration, no race possible
+                    ["ALiVE Player Combat Logistics: no Military Logistics (LOGCOM) module placed - player resupply requests cannot be fulfilled. Place a Military Logistics module synced to an AI Commander for the players' side."] call ALIVE_fnc_dumpR;
+                } else {
+                    // module(s) placed - wait for them to register through their
+                    // (sometimes slow) startup. Stay silent while waiting; only
+                    // a genuine hang (nothing registered after a generous cap)
+                    // warrants a diagnostic, and it points at startup, not a
+                    // missing module
+                    private _registered = false;
+                    private _tries = 0;
+                    waitUntil {
+                        uiSleep 5;
+                        _tries = _tries + 1;
+                        if (!isNil "ALIVE_MLGlobalRegistry") then {
+                            private _mods = [ALIVE_MLGlobalRegistry, "getModules"] call ALIVE_fnc_MLGlobalRegistry;
+                            _registered = !isNil "_mods" && {count (_mods select 1) > 0};
+                        };
+                        _registered || (_tries >= 120)  // 10 min safety cap
                     };
-                    _haveLogcom || (_tries >= 24)  // ~120s grace for module registration
-                };
-                if (!_haveLogcom) then {
-                    ["ALiVE Player Combat Logistics: no Military Logistics (LOGCOM) module found - player resupply requests cannot be fulfilled. Place a Military Logistics module for the players' side and faction."] call ALIVE_fnc_dumpR;
+                    if (!_registered) then {
+                        ["ALiVE Player Combat Logistics: %1 Military Logistics module(s) placed but none registered after several minutes - a module may be stuck in startup (check that each is synced to an AI Commander).", _placedLogcom] call ALIVE_fnc_dumpR;
+                    };
                 };
             };
 
