@@ -197,6 +197,9 @@ switch(_operation) do {
     case "garrisonPatrolSpeed": {
         _result = [_logic,_operation,_args,"LIMITED"] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "garrisonCompositions": {
+        _result = [_logic,_operation,_args,"true"] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "onEachSpawn": {
         _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -871,6 +874,7 @@ switch(_operation) do {
             _placeHelis = [_logic, "placeHelis"] call MAINCLASS;
             _placeArtillery = [_logic, "placeArtillery"] call MAINCLASS;
             _placeSupplies = [_logic, "placeSupplies"] call MAINCLASS;
+            private _garrisonCompositions = ([_logic, "garrisonCompositions"] call MAINCLASS) in [true, "true"];
 
             _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             _factionSideNumber = getNumber(_factionConfig >> "side");
@@ -1055,6 +1059,15 @@ switch(_operation) do {
                             {
                                 if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
                                     [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[30,"false",[0,0,0],"",1, 1]]] call ALIVE_fnc_profileEntity;
+                                    if (_garrisonCompositions) then {
+                                        // Field HQ garrison holds its post like
+                                        // other composition garrisons
+                                        private _pid = [_x,"profileID",""] call ALiVE_fnc_HashGet;
+                                        if (_pid != "") then {
+                                            if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
+                                            [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+                                        };
+                                    };
                                 };
                             } foreach _profiles;
                         };
@@ -1144,6 +1157,35 @@ switch(_operation) do {
                                 _compResult params ["_safePos", "_safeDir"];
                                 [_composition, _safePos, _safeDir, _faction] call ALIVE_fnc_spawnComposition;
                                 _campIndex = _campIndex + 1;
+
+                                // stash the camp position and a garrison-seat
+                                // estimate on the cluster so the guard pass can
+                                // divert groups INTO the camp instead of
+                                // scattering them around the cluster centre.
+                                // Ring geometry mirrors x_lib fnc_groupGarrison -
+                                // keep the two in sync
+                                private _campCluster = _x;
+                                private _campEnvelope = _envelope max 30;
+                                private _campSeats = 0;
+                                {
+                                    private _bp = count (_x buildingPos -1);
+                                    if (_bp > 0) then {
+                                        _campSeats = _campSeats + _bp;
+                                    } else {
+                                        (boundingBoxReal _x) params ["_bMin","_bMax"];
+                                        private _ringRadius = 0.5 * (((_bMax select 0) - (_bMin select 0)) max ((_bMax select 1) - (_bMin select 1))) + 1;
+                                        _campSeats = _campSeats + (2 max (floor ((2 * pi * _ringRadius) / 4)) min 6);
+                                    };
+                                } forEach (nearestObjects [_safePos, ALIVE_garrisonPositions select 1, _campEnvelope]);
+                                {
+                                    _campSeats = _campSeats + ([_x] call ALIVE_fnc_vehicleCountEmptyPositions);
+                                } forEach (nearestObjects [_safePos, ["StaticWeapon"], _campEnvelope]);
+                                [_campCluster, "campSafePos", _safePos] call ALiVE_fnc_hashSet;
+                                [_campCluster, "campEnvelope", _campEnvelope] call ALiVE_fnc_hashSet;
+                                [_campCluster, "campSeats", _campSeats] call ALiVE_fnc_hashSet;
+                                if (_debug) then {
+                                    ["MP [%1] - Random Camp #%2 garrison anchor %3 (envelope %4m, est. seats %5)", _faction, _campIndex, mapGridPosition _safePos, _campEnvelope, _campSeats] call ALiVE_fnc_dump;
+                                };
 
                                 // DEBUG -----------------------------------------------------------
                                 if (_debug) then {
@@ -2566,33 +2608,75 @@ switch(_operation) do {
                     private _garrisonPatrolBehaviour = toUpper ([_logic, "garrisonPatrolBehaviour"] call MAINCLASS);
                     private _garrisonPatrolSpeed = toUpper ([_logic, "garrisonPatrolSpeed"] call MAINCLASS);
                 		private _guardDistance = _size;
-                        
+
+                    // divert a share of the guard groups INTO the camp
+                    // composition when this cluster spawned one - camps
+                    // otherwise stand empty while their guards scatter
+                    // around the cluster centre
+                    private _campPos = [_cluster, "campSafePos", []] call ALiVE_fnc_hashGet;
+                    private _campEnvelope = [_cluster, "campEnvelope", 50] call ALiVE_fnc_hashGet;
+                    private _campSeats = [_cluster, "campSeats", 0] call ALiVE_fnc_hashGet;
+                    private _compGuardCount = 0;
+                    if (_garrisonCompositions && {_campPos isEqualType []} && {count _campPos > 0} && {_guardProbabilityCount > 0}) then {
+                        // cap at guardCount - 1 so at least one garrison group
+                        // always holds the objective itself - never send the
+                        // whole guard force to a satellite camp. A lone single
+                        // guard stays put and the camp goes unmanned
+                        _compGuardCount = ((1 max (ceil (_campSeats / 8))) min (_guardProbabilityCount - 1)) max 0;
+                        if (_debug) then {
+                            ["MP [%1] - Diverting %2 of %3 guard groups to camp at %4", _faction, _compGuardCount, _guardProbabilityCount, mapGridPosition _campPos] call ALiVE_fnc_dump;
+                        };
+                    };
+
                     if(count _infantryGroups > 0 && _guardProbabilityCount > 0) then {
                      for "_i" from 0 to _guardProbabilityCount -1 do {
-                     	
+
                         _guardGroup = (selectRandom _infantryGroups);
-                        // Water-aware random pick around cluster center.
+                        // camp-diverted iterations anchor at the composition
+                        // with a tight jitter and command radius; the rest
+                        // keep today's cluster-centre behaviour
+                        private _guardAnchor = _center;
+                        private _guardJitter = _guardDistance;
+                        private _thisRadius = _guardRadius;
+                        private _pinStationary = false;
+                        if (_i < _compGuardCount) then {
+                            _guardAnchor = _campPos;
+                            _guardJitter = _campEnvelope * 0.5;
+                            _thisRadius = _campEnvelope max 50;
+                            _pinStationary = true;
+                        };
+                        // Water-aware random pick around the anchor.
                         // CBA_fnc_RandPos doesn't check surface, so coastal
                         // clusters drop infantry profiles in water - they
                         // become ghosts (player never close enough to spawn).
-                        // Up to 10 retries; fall back to _center.
-                        private _guardPos = _center;
+                        // Up to 10 retries; fall back to the anchor.
+                        private _guardPos = _guardAnchor;
                         for "_try" from 1 to 10 do {
-                            private _candidate = [_center, _guardDistance] call CBA_fnc_RandPos;
+                            private _candidate = [_guardAnchor, _guardJitter] call CBA_fnc_RandPos;
                             if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
                         };
                         _guards = [_guardGroup, _guardPos, random(360), true, _faction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
-                        
+
                         // DEBUG -------------------------------------------------------------------------------------
                         if(_debug) then {
                           ["MP [%1] - Placing Garrison Guards - %2", _faction, _guardGroup] call ALiVE_fnc_dump;
                         };
                         // DEBUG -------------------------------------------------------------------------------------
-                    
+
                         // Garrison & Patrols instead of the static garrison.
                         {
                             if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
+                              [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
+                              if (_pinStationary) then {
+                                  // composition garrisons hold their posts - the
+                                  // same pin roadblock guards use, honoured at
+                                  // OPCOM's three re-task gates
+                                  private _pid = [_x,"profileID",""] call ALiVE_fnc_HashGet;
+                                  if (_pid != "") then {
+                                      if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
+                                      [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+                                  };
+                              };
                             };
                         } forEach _guards;
                         _countProfiles = _countProfiles + count _guards;

@@ -82,3 +82,28 @@ ALIVE_garrisonPositions = [] call ALIVE_fnc_hashCreate;
 [ALIVE_garrisonPositions,"Land_SPE_Abbaye_R_Tower_Corner", [0,1,2,3,4,5,6,7]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_SPE_Abbaye_R_Tower_End", [0,1,2,3,4,5,6,7]] call ALIVE_fnc_hashSet;
 [ALIVE_garrisonPositions,"Land_SPE_Church_Evroult_TallTower", [0,1,2,3,4,5]] call ALIVE_fnc_hashSet;
+
+// Composition props used by the stock camp / outpost / Field HQ layouts
+// (#887 follow-up: spawned compositions stand empty). Empty index list =
+// no authored seats; the garrison logic uses engine buildingPos when the
+// prop has them, else synthesises a ring of standing positions around it.
+// Deliberately NOT listed: bag fences, H-barriers, razorwire, furniture -
+// they would flood the sweep and seat AI on tables.
+[ALIVE_garrisonPositions,"Land_TentDome_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_TentA_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"CamoNet_BLUFOR_open_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"CamoNet_OPFOR_open_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"CamoNet_INDP_open_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"CamoNet_BLUFOR_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"CamoNet_OPFOR_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"CamoNet_INDP_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"CamoNet_BLUFOR_big_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"CamoNet_OPFOR_big_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"CamoNet_INDP_big_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_BagBunker_Large_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_BagBunker_Tower_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_Cargo_House_V1_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_Cargo_House_V2_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_Cargo_House_V3_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_HBarrierTower_F", []] call ALIVE_fnc_hashSet;
+[ALIVE_garrisonPositions,"Land_CncShelter_F", []] call ALIVE_fnc_hashSet;
