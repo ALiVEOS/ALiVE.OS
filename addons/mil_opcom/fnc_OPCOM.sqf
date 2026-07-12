@@ -1182,9 +1182,11 @@ switch(_operation) do {
                     if (!isnil "_targetProfile") then {
                         private _targetPos = [_targetProfile,"position"] call ALiVE_fnc_HashGet;
 
-                        // contact weight: known enemies near the target - the artillery
-                        // module applies its minimum-contact rule to this count
-                        private _contacts = 0;
+                        // contact weight: the target itself counts (it was pruned
+                        // from the known-entities list above, so start at 1) plus
+                        // known enemies near it - the artillery module applies
+                        // its minimum-contact rule to this count
+                        private _contacts = 1;
                         {
                             if (!isnil "_x" && {_x isEqualType []} && {count _x > 0}) then {
                                 private _kProfile = [ALiVE_ProfileHandler,"getProfile",_x select 0] call ALiVE_fnc_ProfileHandler;
@@ -3438,17 +3440,20 @@ switch(_operation) do {
                                 // Dont collect vehicles with player profiles assigned
                                 if ({(_x getvariable ["profileID",""]) in _assignments} count allPlayers > 0) exitwith {};
 
+                                // artillery and AA hold and fire regardless of
+                                // chassis - wheeled launchers and SPGs (BM-21,
+                                // DANA, CAESAR) carry objectType car/truck and
+                                // must not be waypointed at the enemy as QRF
+                                if ([_vehicleClass] call ALiVE_fnc_isArtillery || {[_vehicleClass] call ALiVE_fnc_isAA}) exitwith {
+                                    if ([_vehicleClass] call ALiVE_fnc_isArtillery) then {{if !(_x in _arty) then {_arty pushback _x}} foreach _assignments};
+                                    if ([_vehicleClass] call ALiVE_fnc_isAA) then {{if !(_x in _AAA) then {_AAA pushback _x}} foreach _assignments};
+                                };
                                 switch (tolower _objectType) do {
                                     case "car": {
                                             {if !(_x in _mot) then {_mot pushback _x}} foreach _assignments;
                                     };
                                     case "tank": {
-                                            if ([_vehicleClass] call ALiVE_fnc_isAA || {[_vehicleClass] call ALiVE_fnc_isArtillery}) then {
-                                                if ([_vehicleClass] call ALiVE_fnc_isArtillery) then {{if !(_x in _arty) then {_arty pushback _x}} foreach _assignments};
-                                                if ([_vehicleClass] call ALiVE_fnc_isAA) then {{if !(_x in _AAA) then {_AAA pushback _x}} foreach _assignments};
-                                            } else {
-                                                {if !(_x in _arm) then {_arm pushback _x}} foreach _assignments;
-                                            };
+                                            {if !(_x in _arm) then {_arm pushback _x}} foreach _assignments;
                                     };
                                     case "armored": {
                                             {if !(_x in _mech) then {_mech pushback _x}} foreach _assignments;
