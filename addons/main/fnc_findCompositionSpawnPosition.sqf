@@ -554,7 +554,7 @@ private _findRoadCandidates = {
 // ------------------------------------------------------------------------
 if (_mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear}) exitWith {
     private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
-    ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _centerPos] call ALiVE_fnc_dump;
+    if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _centerPos] call ALiVE_fnc_dump };
     [_centerPos, _dir]
 };
 
@@ -631,7 +631,7 @@ if (_mode == "roadblock") exitWith {
         []
     };
     _accepted params ["_fPos", "_fDir"];
-    ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _fPos] call ALiVE_fnc_dump;
+    if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _fPos] call ALiVE_fnc_dump };
     [_fPos, _fDir]
 };
 
@@ -654,7 +654,7 @@ for "_i" from 1 to _maxAttempts do {
     if ([_candidate, _envelope] call _candidateClear) exitWith {
         private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
         _result = [_candidate, _dir];
-        ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _candidate] call ALiVE_fnc_dump;
+        if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _candidate] call ALiVE_fnc_dump };
     };
 };
 

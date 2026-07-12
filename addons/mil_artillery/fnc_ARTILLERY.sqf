@@ -432,19 +432,23 @@ switch(_operation) do {
             if (_count == 0) then {
                 ["ALiVE MIL_ARTILLERY - no artillery batteries found for %1. Enable 'Place artillery units' on a placement module (or place profiled artillery in the editor) and give the faction artillery groups. Still watching for late placements.", _scopeText] call ALiVE_fnc_dump;
             } else {
-                ["ALiVE MIL_ARTILLERY - %1 artillery batteries available (serving %2):", _count, _scopeText] call ALiVE_fnc_dump;
-                {
-                    private _ep = [ALIVE_profileHandler, "getProfile", [_x,"entityID"] call ALiVE_fnc_hashGet] call ALIVE_fnc_profileHandler;
-                    private _bpos = if (!isNil "_ep") then { [_ep,"position"] call ALiVE_fnc_hashGet } else { [0,0,0] };
-                    ["  - battery %1: side %2 faction %3 kind %4 guns %5 crew %6 grid %7",
-                        [_x,"entityID"] call ALiVE_fnc_hashGet,
-                        [_x,"side"] call ALiVE_fnc_hashGet,
-                        [_x,"faction"] call ALiVE_fnc_hashGet,
-                        [_x,"kind"] call ALiVE_fnc_hashGet,
-                        count ([_x,"vehicleIDs"] call ALiVE_fnc_hashGet),
-                        [_x,"crewCount",0] call ALiVE_fnc_hashGet,
-                        mapGridPosition _bpos] call ALiVE_fnc_dump;
-                } forEach _registry;
+                ["ALiVE MIL_ARTILLERY - %1 artillery batteries available (serving %2)", _count, _scopeText] call ALiVE_fnc_dump;
+                // per-battery detail is debug-only; the count line above is the
+                // always-on (change-only) mission feedback
+                if (_debug) then {
+                    {
+                        private _ep = [ALIVE_profileHandler, "getProfile", [_x,"entityID"] call ALiVE_fnc_hashGet] call ALIVE_fnc_profileHandler;
+                        private _bpos = if (!isNil "_ep") then { [_ep,"position"] call ALiVE_fnc_hashGet } else { [0,0,0] };
+                        ["  - battery %1: side %2 faction %3 kind %4 guns %5 crew %6 grid %7",
+                            [_x,"entityID"] call ALiVE_fnc_hashGet,
+                            [_x,"side"] call ALiVE_fnc_hashGet,
+                            [_x,"faction"] call ALiVE_fnc_hashGet,
+                            [_x,"kind"] call ALiVE_fnc_hashGet,
+                            count ([_x,"vehicleIDs"] call ALiVE_fnc_hashGet),
+                            [_x,"crewCount",0] call ALiVE_fnc_hashGet,
+                            mapGridPosition _bpos] call ALiVE_fnc_dump;
+                    } forEach _registry;
+                };
             };
         };
 
@@ -489,13 +493,18 @@ switch(_operation) do {
 
     case "monitor": {
 
-        ["ALiVE MIL_ARTILLERY - monitor case reached (isServer %1)", isServer] call ALiVE_fnc_dump;
+        if ([_logic,"debug"] call MAINCLASS) then {
+            ["ALiVE MIL_ARTILLERY - monitor case reached (isServer %1)", isServer] call ALiVE_fnc_dump;
+        };
 
         if (isServer) then {
             [_logic] spawn {
                 params ["_logic"];
 
-                ["ALiVE MIL_ARTILLERY - monitor thread live, waiting for the profile system"] call ALiVE_fnc_dump;
+                private _monDebug = [_logic,"debug"] call ALIVE_fnc_MilArtillery;
+                if (_monDebug) then {
+                    ["ALiVE MIL_ARTILLERY - monitor thread live, waiting for the profile system"] call ALiVE_fnc_dump;
+                };
 
                 // wait for the profile system, then let placement finish so the
                 // first registry scan sees the guns the placement modules spawn.
@@ -561,10 +570,14 @@ switch(_operation) do {
                         };
                         while {count _events > 30} do { _events deleteAt 0; };
                     }];
-                    ["ALiVE MIL_ARTILLERY - counter-battery watch installed (ArtilleryShellFired handle %1)", _handle] call ALiVE_fnc_dump;
+                    if (_monDebug) then {
+                        ["ALiVE MIL_ARTILLERY - counter-battery watch installed (ArtilleryShellFired handle %1)", _handle] call ALiVE_fnc_dump;
+                    };
                 };
 
-                ["ALiVE MIL_ARTILLERY - monitor started, scanning for artillery batteries"] call ALiVE_fnc_dump;
+                if (_monDebug) then {
+                    ["ALiVE MIL_ARTILLERY - monitor started, scanning for artillery batteries"] call ALiVE_fnc_dump;
+                };
 
                 private _tick = 0;
                 while {!isNull _logic} do {

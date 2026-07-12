@@ -1872,7 +1872,9 @@ switch(_operation) do {
                         };
 
                         if (_gunsPlaced > 0) then {
-                            ["MP [%1] - Artillery battery composed from vehicles: %2 x %3 at grid %4", _faction, _gunsPlaced, _artyClass, mapGridPosition _cPos] call ALiVE_fnc_dump;
+                            if (_debug) then {
+                                ["MP [%1] - Artillery battery composed from vehicles: %2 x %3 at grid %4", _faction, _gunsPlaced, _artyClass, mapGridPosition _cPos] call ALiVE_fnc_dump;
+                            };
                         } else {
                             if (_debug) then {
                                 ["MP [%1] - Artillery battery %2: no clear position near grid %3, skipped", _faction, _b, mapGridPosition _cPos] call ALiVE_fnc_dump;
@@ -2206,7 +2208,7 @@ switch(_operation) do {
                 // pipeline is single-faction, so every battery is composed
                 // directly from the donor's artillery vehicles below
                 _artilleryFallback = _countArtillery;
-                if (_countArtillery > 0) then {
+                if (_countArtillery > 0 && _debug) then {
                     ["MP [%1] - Place Artillery: composing %2 batteries from donor faction %3",_faction,_countArtillery,_artilleryFaction] call ALiVE_fnc_dump;
                 };
             } else {

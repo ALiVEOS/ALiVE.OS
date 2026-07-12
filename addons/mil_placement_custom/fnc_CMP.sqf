@@ -1061,7 +1061,9 @@ switch(_operation) do {
                         };
 
                         if (_gunsPlaced > 0) then {
-                            ["CMP - Artillery battery composed from vehicles: %1 x %2 at grid %3", _gunsPlaced, _artyClass, mapGridPosition _position] call ALiVE_fnc_dump;
+                            if (_debug) then {
+                                ["CMP - Artillery battery composed from vehicles: %1 x %2 at grid %3", _gunsPlaced, _artyClass, mapGridPosition _position] call ALiVE_fnc_dump;
+                            };
                         };
                     };
                 };
