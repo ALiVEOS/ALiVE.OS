@@ -2,95 +2,276 @@
 <Project name="ALiVE">
 <Package name="mil_artillery">
 <Container ID="mil_artillery">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MIL_ARTILLERY">
     <English>Military AI Commander Artillery</English>
+    <Chinese>軍事AI指揮官砲兵</Chinese>
+    <Chinesesimp>AI指挥官炮兵</Chinesesimp>
+    <Spanish>Comandante de IA militar de artillería</Spanish>
+    <French>Commandant IA militaire - Artillerie</French>
+    <Portuguese>Comandante de IA Militar - Artilharia</Portuguese>
+    <Russian>Модуль ИИ-командующего: Артиллерия</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_DESCRIPTION">
     <English>Lets AI commanders run artillery fire missions. Sync the module to an AI Commander (OPCOM) to serve that commander's side with these settings - place one per commander for per-side tuning. Left unsynced, a single module serves every commander. The module controls behaviour but places no guns itself: enable "Place artillery units" on a Military Placement module (or "Artillery Count" on a Custom Objective), or place and profile artillery in the editor. Fire missions are throttled by battery cooldowns, limited ammunition, extra dispersion and targeting rules.</English>
+    <Chinese>讓AI指揮官執行砲兵射擊任務。將此模組同步至一名AI指揮官(OPCOM)，即可用這些設定為該指揮官所屬陣營提供服務——每位指揮官可放置一個模組以進行陣營別調校。若未同步，單一模組將服務所有指揮官。本模組僅控制行為，不會自行放置火砲：請在軍事部署模組上啟用「放置砲兵單位」(或在自訂目標上設定「砲兵數量」)，或於編輯器中放置並設定砲兵。射擊任務會受到砲兵連冷卻時間、有限彈藥、額外散佈及瞄準規則的限制。</Chinese>
+    <Chinesesimp>使AI指挥官能够执行炮兵火力任务。将本模块与一名AI指挥官(OPCOM)同步,即可用这些设置为该指挥官所属阵营服务——如需按阵营分别调校,请每名指挥官放置一个模块。若不同步,则单个模块将服务于所有指挥官。本模块只负责控制炮兵行为,不会自行部署火炮:请在军事部署模块上启用“部署炮兵单位”(或在自定义目标上设置“炮兵数量”),或在编辑器中手动放置并配置炮兵。火力任务受炮兵连冷却时间、弹药限量、额外散布及瞄准规则的限制。</Chinesesimp>
+    <Spanish>Permite a los comandantes de IA ejecutar misiones de fuego de artillería. Sincronice el módulo con un Comandante de IA (OPCOM) para que estos ajustes sirvan al bando de ese comandante; coloque uno por comandante para un ajuste por bando. Sin sincronizar, un único módulo sirve a todos los comandantes. El módulo controla el comportamiento pero no coloca piezas por sí mismo: active "Colocar unidades de artillería" en un módulo de Colocación Militar (o "Número de piezas de artillería" en un Objetivo Personalizado), o coloque y configure la artillería en el editor. Las misiones de fuego están limitadas por los tiempos de reutilización de las baterías, la munición limitada, la dispersión adicional y las reglas de designación de blancos.</Spanish>
+    <French>Permet aux commandants IA de mener des missions de tir d'artillerie. Synchronisez le module à un commandant IA (OPCOM) pour appliquer ces réglages à ce commandant - placez-en un par commandant pour un réglage propre à chaque camp. Non synchronisé, un seul module dessert tous les commandants. Le module contrôle le comportement mais ne place aucune pièce lui-même : activez « Placer des unités d'artillerie » dans un module de déploiement militaire (ou « Nombre de pièces d'artillerie » dans un objectif personnalisé), ou placez et profilez l'artillerie dans l'éditeur. Les missions de tir sont limitées par les délais de récupération des batteries, les munitions limitées, une dispersion accrue et les règles de ciblage.</French>
+    <Portuguese>Permite que comandantes de IA conduzam missões de tiro de artilharia. Sincronize o módulo a um Comandante de IA (OPCOM) para aplicar estas configurações ao lado desse comandante - coloque um módulo por comandante para ajuste individual por lado. Se deixado sem sincronizar, um único módulo atende a todos os comandantes. O módulo controla o comportamento, mas não posiciona canhões por conta própria: ative "Posicionar unidades de artilharia" em um módulo de Posicionamento Militar (ou "Contagem de Artilharia" em um Objetivo Personalizado), ou posicione e configure a artilharia no editor. As missões de tiro são limitadas por tempo de recarga das baterias, munição limitada, dispersão extra e regras de seleção de alvo.</Portuguese>
+    <Russian>Позволяет ИИ-командующим проводить артиллерийские огневые задачи. Синхронизируйте модуль с ИИ-командующим (OPCOM), чтобы применить эти настройки к его стороне - размещайте по одному модулю на командующего для индивидуальной настройки каждой стороны. Без синхронизации один модуль обслуживает всех командующих. Модуль управляет поведением, но сам орудия не размещает: включите "Разместить артиллерийские подразделения" в модуле военного развёртывания (или "Количество артиллерии" в пользовательской задаче), либо разместите и настройте артиллерию вручную в редакторе. Огневые задачи ограничиваются временем перезарядки батарей, запасом боеприпасов, дополнительным рассеиванием и правилами выбора целей.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_DEBUG">
     <English>Debug:</English>
+    <Chinese>除錯:</Chinese>
+    <Chinesesimp>调试:</Chinesesimp>
+    <Spanish>Depuración:</Spanish>
+    <French>Débogage :</French>
+    <Portuguese>Depuração:</Portuguese>
+    <Russian>Отладка:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_DEBUG_COMMENT">
     <English>Log battery registry, fire mission decisions and results to the RPT.</English>
+    <Chinese>將砲兵連登記、射擊任務決策與結果記錄至RPT日誌。</Chinese>
+    <Chinesesimp>将炮兵连注册表、火力任务决策及结果记录到RPT日志中。</Chinesesimp>
+    <Spanish>Registra en el RPT el listado de baterías, las decisiones de misiones de fuego y sus resultados.</Spanish>
+    <French>Journalise le registre des batteries, les décisions de mission de tir et leurs résultats dans le RPT.</French>
+    <Portuguese>Registra no RPT o cadastro de baterias, as decisões de missão de tiro e os resultados.</Portuguese>
+    <Russian>Записывать в RPT реестр батарей, решения по огневым задачам и их результаты.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY">
     <English>Fire mission intensity:</English>
+    <Chinese>射擊任務強度:</Chinese>
+    <Chinesesimp>火力任务强度:</Chinesesimp>
+    <Spanish>Intensidad de las misiones de fuego:</Spanish>
+    <French>Intensité des missions de tir :</French>
+    <Portuguese>Intensidade da missão de tiro:</Portuguese>
+    <Russian>Интенсивность огневых задач:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_COMMENT">
     <English>One setting that scales everything: how often each battery may fire, shell spread, rounds per mission, how many enemy contacts are needed before a strike is called, and battery ammunition stocks. Low keeps artillery an occasional threat; High makes it a constant presence.</English>
+    <Chinese>一個可調整所有參數的設定：每個砲兵連可開火的頻率、彈著散佈範圍、每次任務發射的砲彈數量、下令攻擊前所需的敵軍接觸數量，以及砲兵連的彈藥存量。低會讓砲兵成為偶發威脅；高則讓砲兵持續構成威脅。</Chinese>
+    <Chinesesimp>一个统一调节所有参数的设置:每个炮兵连的开火频率、炮弹散布范围、每次任务发射的弹数、发起打击所需的敌方接触目标数量,以及炮兵连的弹药储量。低强度使炮兵仅偶尔构成威胁;高强度则使其持续存在。</Chinesesimp>
+    <Spanish>Un único ajuste que escala todo lo demás: la frecuencia con la que puede disparar cada batería, la dispersión de los proyectiles, el número de disparos por misión, cuántos contactos enemigos se necesitan antes de ordenar un ataque, y las reservas de munición de las baterías. Baja mantiene la artillería como una amenaza ocasional; Alta la convierte en una presencia constante.</Spanish>
+    <French>Un seul réglage qui module tout : la fréquence de tir autorisée par batterie, la dispersion des obus, le nombre de coups par mission, le nombre de contacts ennemis requis avant qu'une frappe soit déclenchée, et les stocks de munitions des batteries. Faible maintient l'artillerie comme une menace occasionnelle ; Élevée en fait une présence constante.</French>
+    <Portuguese>Uma única configuração que ajusta tudo: com que frequência cada bateria pode atirar, a dispersão dos projéteis, o número de disparos por missão, quantos contatos inimigos são necessários para acionar um ataque e o estoque de munição das baterias. Baixa mantém a artilharia como uma ameaça ocasional; Alta a torna uma presença constante.</Portuguese>
+    <Russian>Единая настройка, масштабирующая всё сразу: частоту огня каждой батареи, рассеивание снарядов, количество выстрелов на задачу, необходимое число обнаруженных целей для вызова удара и запасы боеприпасов батарей. Низкая делает артиллерию эпизодической угрозой; Высокая - постоянным фактором боя.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW">
     <English>Low</English>
+    <Chinese>低</Chinese>
+    <Chinesesimp>低</Chinesesimp>
+    <Spanish>Baja</Spanish>
+    <French>Faible</French>
+    <Portuguese>Baixa</Portuguese>
+    <Russian>Низкая</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM">
     <English>Medium</English>
+    <Chinese>中</Chinese>
+    <Chinesesimp>中</Chinesesimp>
+    <Spanish>Media</Spanish>
+    <French>Moyenne</French>
+    <Portuguese>Média</Portuguese>
+    <Russian>Средняя</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH">
     <English>High</English>
+    <Chinese>高</Chinese>
+    <Chinesesimp>高</Chinesesimp>
+    <Spanish>Alta</Spanish>
+    <French>Élevée</French>
+    <Portuguese>Alta</Portuguese>
+    <Russian>Высокая</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_PRESET">
     <English>Use intensity preset</English>
+    <Chinese>使用強度預設值</Chinese>
+    <Chinesesimp>使用强度预设</Chinesesimp>
+    <Spanish>Usar preajuste de intensidad</Spanish>
+    <French>Utiliser un préréglage d'intensité</French>
+    <Portuguese>Usar predefinição de intensidade</Portuguese>
+    <Russian>Использовать пресет интенсивности</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_CADENCE">
     <English>Fire mission cadence:</English>
+    <Chinese>射擊任務頻率:</Chinese>
+    <Chinesesimp>火力任务频率:</Chinesesimp>
+    <Spanish>Cadencia de misiones de fuego:</Spanish>
+    <French>Cadence des missions de tir :</French>
+    <Portuguese>Cadência de missão de tiro:</Portuguese>
+    <Russian>Периодичность огневых задач:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_CADENCE_COMMENT">
     <English>How often each battery may fire. Low is roughly one mission per ten minutes per battery, High one per five. Overrides the intensity preset for this parameter only.</English>
+    <Chinese>每個砲兵連可開火的頻率。低約為每個砲兵連每十分鐘一次任務，高則為每五分鐘一次。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
+    <Chinesesimp>每个炮兵连的开火频率。低约为每个炮兵连每十分钟一次任务,高则为每五分钟一次。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
+    <Spanish>Frecuencia con la que puede disparar cada batería. Baja equivale aproximadamente a una misión cada diez minutos por batería, Alta a una cada cinco. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
+    <French>Fréquence à laquelle chaque batterie peut ouvrir le feu. Faible correspond à environ une mission toutes les dix minutes par batterie, Élevée une toutes les cinq. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
+    <Portuguese>Com que frequência cada bateria pode atirar. Baixa equivale a aproximadamente uma missão a cada dez minutos por bateria, Alta a uma a cada cinco. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
+    <Russian>Как часто каждая батарея может открывать огонь. При настройке Низкая - примерно одна огневая задача на десять минут на батарею, при Высокая - одна на пять минут. Переопределяет только этот параметр пресета интенсивности.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SPREAD">
     <English>Shell spread:</English>
+    <Chinese>彈著散佈:</Chinese>
+    <Chinesesimp>炮弹散布:</Chinesesimp>
+    <Spanish>Dispersión de los proyectiles:</Spanish>
+    <French>Dispersion des obus :</French>
+    <Portuguese>Dispersão dos projéteis:</Portuguese>
+    <Russian>Рассеивание снарядов:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SPREAD_COMMENT">
     <English>How widely the shells scatter around the aim point. Low is a wide 100m scatter, High a tight 50m. Overrides the intensity preset for this parameter only.</English>
+    <Chinese>砲彈於瞄準點周圍散佈的範圍大小。低為寬達100公尺的散佈範圍，高則為緊密的50公尺。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
+    <Chinesesimp>炮弹在瞄准点周围的散布范围。低为100米的宽范围散布,高为50米的密集散布。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
+    <Spanish>Grado de dispersión de los proyectiles alrededor del punto de impacto. Baja produce una dispersión amplia de 100 m, Alta una dispersión ajustada de 50 m. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
+    <French>Étendue de la dispersion des obus autour du point visé. Faible donne une dispersion large de 100 m, Élevée une dispersion resserrée de 50 m. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
+    <Portuguese>Quão dispersos os projéteis caem em torno do ponto de mira. Baixa é uma dispersão ampla de 100m, Alta é uma dispersão fechada de 50m. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
+    <Russian>Насколько широко снаряды рассеиваются вокруг точки прицеливания. Низкая даёт широкое рассеивание 100 м, Высокая - плотное 50 м. Переопределяет только этот параметр пресета интенсивности.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_ROUNDS">
     <English>Rounds per fire mission:</English>
+    <Chinese>每次射擊任務發射數:</Chinese>
+    <Chinesesimp>每次任务发射弹数:</Chinesesimp>
+    <Spanish>Disparos por misión de fuego:</Spanish>
+    <French>Coups par mission de tir :</French>
+    <Portuguese>Disparos por missão de tiro:</Portuguese>
+    <Russian>Выстрелов на огневую задачу:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_ROUNDS_COMMENT">
     <English>How many shells a battery fires per mission (split across its guns). Low 4, Medium 6, High 8. Overrides the intensity preset for this parameter only.</English>
+    <Chinese>每次任務中砲兵連發射的砲彈數量(分配至各火砲)。低4發、中6發、高8發。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
+    <Chinesesimp>每次火力任务中一个炮兵连发射的炮弹数量(由连内各火炮分摊)。低为4发,中为6发,高为8发。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
+    <Spanish>Número de proyectiles que dispara una batería por misión (repartidos entre sus piezas). Baja 4, Media 6, Alta 8. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
+    <French>Nombre d'obus tirés par une batterie par mission (répartis entre ses pièces). Faible 4, Moyenne 6, Élevée 8. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
+    <Portuguese>Quantos projéteis uma bateria dispara por missão (divididos entre seus canhões). Baixa 4, Média 6, Alta 8. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
+    <Russian>Сколько снарядов батарея выпускает за одну задачу (распределяется между её орудиями). Низкая - 4, Средняя - 6, Высокая - 8. Переопределяет только этот параметр пресета интенсивности.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO">
     <English>Battery ammunition stock:</English>
+    <Chinese>砲兵連彈藥存量:</Chinese>
+    <Chinesesimp>炮兵连弹药储量:</Chinesesimp>
+    <Spanish>Reserva de munición de la batería:</Spanish>
+    <French>Stock de munitions de la batterie :</French>
+    <Portuguese>Estoque de munição da bateria:</Portuguese>
+    <Russian>Запас боеприпасов батареи:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_COMMENT">
     <English>Each battery's ammunition ledger. Low 60, Medium 90, High 120 rounds; a dry battery falls silent until resupplied. Overrides the intensity preset for this parameter only.</English>
+    <Chinese>各砲兵連的彈藥帳目。低60發、中90發、高120發；彈藥耗盡的砲兵連將停止射擊，直到獲得補給為止。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
+    <Chinesesimp>每个炮兵连的弹药账目。低为60发,中为90发,高为120发;弹药耗尽的炮兵连将停止开火,直至获得补给。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
+    <Spanish>El registro de munición de cada batería. Baja 60, Media 90, Alta 120 proyectiles; una batería sin munición queda en silencio hasta ser reabastecida. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
+    <French>Le registre de munitions de chaque batterie. Faible 60, Moyenne 90, Élevée 120 coups ; une batterie à sec cesse le feu jusqu'à son ravitaillement. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
+    <Portuguese>O registro de munição de cada bateria. Baixa 60, Média 90, Alta 120 disparos; uma bateria sem munição fica em silêncio até ser reabastecida. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
+    <Russian>Ведомость боеприпасов каждой батареи. Низкая - 60, Средняя - 90, Высокая - 120 снарядов; батарея, израсходовавшая боезапас, замолкает до пополнения. Переопределяет только этот параметр пресета интенсивности.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SELECTIVITY">
     <English>Target selectivity:</English>
+    <Chinese>目標篩選標準:</Chinese>
+    <Chinesesimp>目标选择标准:</Chinesesimp>
+    <Spanish>Selectividad de blancos:</Spanish>
+    <French>Sélectivité des cibles :</French>
+    <Portuguese>Seletividade de alvo:</Portuguese>
+    <Russian>Избирательность целей:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SELECTIVITY_COMMENT">
     <English>How many known enemy groups or vehicles must be clustered within 200m of a target before a fire mission is spent on it. Loose 1 (even lone targets are shelled), Standard 2, Strict 3. Counted from the AI commander's own intel, not ground truth. Overrides the intensity preset for this parameter only.</English>
+    <Chinese>在對目標發動射擊任務前，需要在該目標200公尺範圍內集結多少已知敵軍小隊或載具。寬鬆1(即使單一目標也會遭到砲擊)、標準2、嚴格3。此數量依AI指揮官自身的情報計算，而非依實際戰場真相。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
+    <Chinesesimp>在对目标发起火力任务前,需要在其200米范围内聚集多少已知敌方小队或车辆。宽松为1(即使单个孤立目标也会遭到炮击),标准为2,严格为3。该数量依据AI指挥官自身掌握的情报计算,而非战场真实情况。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
+    <Spanish>Número de grupos o vehículos enemigos conocidos que deben estar agrupados en un radio de 200 m de un blanco antes de emplear en él una misión de fuego. Laxa 1 (incluso blancos aislados son bombardeados), Estándar 2, Estricta 3. Se cuenta a partir de la inteligencia propia del comandante de IA, no de la información real sobre el terreno. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
+    <French>Nombre de groupes ou véhicules ennemis connus devant être regroupés dans un rayon de 200 m d'une cible avant qu'une mission de tir ne lui soit consacrée. Souple 1 (même un contact isolé est pilonné), Standard 2, Stricte 3. Décompté à partir du renseignement propre au commandant IA, pas de la vérité terrain. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
+    <Portuguese>Quantos grupos ou veículos inimigos conhecidos devem estar agrupados dentro de 200m de um alvo antes que uma missão de tiro seja empregada contra ele. Flexível 1 (até alvos isolados são bombardeados), Padrão 2, Rigorosa 3. Contado a partir da inteligência do próprio comandante de IA, não da verdade absoluta do terreno. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
+    <Russian>Сколько известных вражеских групп или машин должно быть сосредоточено в радиусе 200 м от цели, прежде чем на неё будет израсходована огневая задача. Свободная - 1 (обстреливаются даже одиночные цели), Стандартная - 2, Строгая - 3. Подсчёт ведётся по данным разведки самого ИИ-командующего, а не по фактическому положению дел. Переопределяет только этот параметр пресета интенсивности.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SEL_LOOSE">
     <English>Loose (1 contact)</English>
+    <Chinese>寬鬆(1個接觸目標)</Chinese>
+    <Chinesesimp>宽松(1个接触目标)</Chinesesimp>
+    <Spanish>Laxa (1 contacto)</Spanish>
+    <French>Souple (1 contact)</French>
+    <Portuguese>Flexível (1 contato)</Portuguese>
+    <Russian>Свободная (1 цель)</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SEL_STANDARD">
     <English>Standard (2 contacts)</English>
+    <Chinese>標準(2個接觸目標)</Chinese>
+    <Chinesesimp>标准(2个接触目标)</Chinesesimp>
+    <Spanish>Estándar (2 contactos)</Spanish>
+    <French>Standard (2 contacts)</French>
+    <Portuguese>Padrão (2 contatos)</Portuguese>
+    <Russian>Стандартная (2 цели)</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SEL_STRICT">
     <English>Strict (3 contacts)</English>
+    <Chinese>嚴格(3個接觸目標)</Chinese>
+    <Chinesesimp>严格(3个接触目标)</Chinesesimp>
+    <Spanish>Estricta (3 contactos)</Spanish>
+    <French>Stricte (3 contacts)</French>
+    <Portuguese>Rigorosa (3 contatos)</Portuguese>
+    <Russian>Строгая (3 цели)</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_CB">
     <English>Counter-battery fire:</English>
+    <Chinese>反砲兵射擊:</Chinese>
+    <Chinesesimp>反炮兵火力:</Chinesesimp>
+    <Spanish>Fuego de contrabatería:</Spanish>
+    <French>Tir de contre-batterie :</French>
+    <Portuguese>Fogo de contrabateria:</Portuguese>
+    <Russian>Контрбатарейная стрельба:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_CB_COMMENT">
     <English>How readily each AI commander locates an enemy battery from its firing and answers with a fire mission of its own. The chance is rolled per enemy volley and scales with the number of shells fired; a located battery is engaged through the normal fire-mission rules (cooldowns, range, ammunition, concurrency). Low 5%, Medium 10%, High 18% per shell. Off disables counter-battery fire. Overrides the intensity preset for this parameter only.</English>
+    <Chinese>各AI指揮官依敵方開火情況鎖定敵軍砲兵連，並以自身的射擊任務予以還擊的機率。此機率會針對敵方每輪齊射進行判定，並隨發射砲彈數量而提升；一旦鎖定敵軍砲兵連，將依一般射擊任務規則(冷卻時間、射程、彈藥、同時任務數)進行交戰。低每發5%、中10%、高18%。關閉將停用反砲兵射擊功能。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
+    <Chinesesimp>每名AI指挥官根据敌方炮击定位其炮兵连并以己方火力还击的概率。该概率在敌方每轮齐射时判定一次,并随发射炮弹数量而提高;被定位的炮兵连将按常规火力任务规则(冷却时间、射程、弹药、并发限制)遭到打击。低为每发5%,中为10%,高为18%。关闭则禁用反炮兵火力。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
+    <Spanish>Con qué facilidad cada comandante de IA localiza una batería enemiga a partir de sus disparos y responde con una misión de fuego propia. La probabilidad se calcula por cada salva enemiga y aumenta con el número de proyectiles disparados; una batería localizada es atacada siguiendo las reglas normales de misión de fuego (tiempos de reutilización, alcance, munición, concurrencia). Baja 5 %, Media 10 %, Alta 18 % por proyectil. Desactivado deshabilita el fuego de contrabatería. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
+    <French>Probabilité que chaque commandant IA localise une batterie ennemie d'après ses tirs et riposte par une mission de tir. La chance est tirée au sort à chaque salve ennemie et augmente avec le nombre d'obus tirés ; une batterie localisée est engagée selon les règles normales de mission de tir (délais de récupération, portée, munitions, tirs simultanés). Faible 5 %, Moyenne 10 %, Élevée 18 % par obus. Désactivé supprime le tir de contre-batterie. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
+    <Portuguese>Com que facilidade cada comandante de IA localiza uma bateria inimiga a partir de seus disparos e responde com uma missão de tiro própria. A chance é sorteada por salva inimiga e aumenta com o número de projéteis disparados; uma bateria localizada é engajada seguindo as regras normais de missão de tiro (tempo de recarga, alcance, munição, concorrência). Baixa 5%, Média 10%, Alta 18% por disparo. Desligado desativa o fogo de contrabateria. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
+    <Russian>Насколько охотно каждый ИИ-командующий обнаруживает вражескую батарею по её стрельбе и отвечает собственной огневой задачей. Вероятность рассчитывается на каждый вражеский залп и растёт с числом выпущенных снарядов; обнаруженная батарея поражается по обычным правилам огневых задач (время перезарядки, дальность, боеприпасы, одновременность). Низкая - 5%, Средняя - 10%, Высокая - 18% на снаряд. Выключено отключает контрбатарейную стрельбу. Переопределяет только этот параметр пресета интенсивности.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_CB_OFF">
     <English>Off</English>
+    <Chinese>關閉</Chinese>
+    <Chinesesimp>关闭</Chinesesimp>
+    <Spanish>Desactivado</Spanish>
+    <French>Désactivé</French>
+    <Portuguese>Desligado</Portuguese>
+    <Russian>Выключено</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_TASKS">
     <English>Generate destroy-artillery tasks:</English>
+    <Chinese>產生摧毀砲兵任務:</Chinese>
+    <Chinesesimp>生成摧毁炮兵任务:</Chinesesimp>
+    <Spanish>Generar tareas de destrucción de artillería:</Spanish>
+    <French>Générer des tâches de destruction d'artillerie :</French>
+    <Portuguese>Gerar tarefas de destruir artilharia:</Portuguese>
+    <Russian>Создавать задачи на уничтожение артиллерии:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_TASKS_COMMENT">
     <English>When players are shelled by AI artillery, give their side a task to destroy the firing battery (requires the C2ISTAR module). One task per battery. The incoming-fire radio warning is unaffected by this setting.</English>
+    <Chinese>當玩家遭受AI砲兵轟擊時，為其陣營指派摧毀開火砲兵連的任務(需搭配C2ISTAR模組)。每個砲兵連對應一項任務。此設定不影響遭砲擊時的無線電警告。</Chinese>
+    <Chinesesimp>当玩家遭到AI炮兵炮击时,为其阵营生成一个摧毁开火炮兵连的任务(需要C2ISTAR模块)。每个炮兵连对应一个任务。此设置不影响遇袭预警的无线电通报。</Chinesesimp>
+    <Spanish>Cuando los jugadores son bombardeados por la artillería de la IA, asigna a su bando una tarea para destruir la batería que dispara (requiere el módulo C2ISTAR). Una tarea por batería. El aviso radiofónico de fuego entrante no se ve afectado por este ajuste.</Spanish>
+    <French>Lorsque les joueurs sont pris sous le feu de l'artillerie IA, attribue à leur camp une tâche de destruction de la batterie tireuse (nécessite le module C2ISTAR). Une tâche par batterie. L'avertissement radio de tir entrant n'est pas affecté par ce réglage.</French>
+    <Portuguese>Quando os jogadores são bombardeados pela artilharia da IA, atribui ao seu lado uma tarefa de destruir a bateria responsável pelo disparo (requer o módulo C2ISTAR). Uma tarefa por bateria. O aviso de rádio de fogo entrante não é afetado por esta configuração.</Portuguese>
+    <Russian>Когда игроков обстреливает вражеская артиллерия, их стороне выдаётся задача уничтожить стреляющую батарею (требуется модуль C2ISTAR). Одна задача на батарею. На радиопредупреждение о входящем огне эта настройка не влияет.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_INCOMING">
     <English>%1: All callsigns be advised, incoming artillery fire in the vicinity of grid %2. Take cover. Out.</English>
+    <Chinese>%1: 各呼號注意，座標%2附近有敵方砲兵來襲，立即尋找掩護。通話完畢。</Chinese>
+    <Chinesesimp>%1:所有呼号注意,%2 网格附近有炮弹来袭。立即隐蔽。完毕。</Chinesesimp>
+    <Spanish>%1: Atención todos los indicativos, fuego de artillería entrante en las proximidades de la cuadrícula %2. Busquen cobertura. Corto.</Spanish>
+    <French>%1 : à tous les indicatifs, tir d'artillerie entrant à proximité du carroyage %2. Mettez-vous à couvert. Terminé.</French>
+    <Portuguese>%1: Atenção a todos os indicativos, fogo de artilharia entrante nas proximidades da grade %2. Buscar cobertura. Câmbio, desligo.</Portuguese>
+    <Russian>%1: Внимание всем позывным, в районе квадрата %2 - входящий артиллерийский огонь. Занять укрытия. Приём окончен.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_FIRE_SUPPORT">
     <English>%1: All callsigns, fire mission in progress. Friendly artillery engaging grid %2. Keep clear of the target area. Out.</English>
+    <Chinese>%1: 各呼號注意，射擊任務執行中。友軍砲兵正在打擊座標%2，請遠離目標區域。通話完畢。</Chinese>
+    <Chinesesimp>%1:所有呼号注意,火力任务正在进行。友军炮兵正打击 %2 网格。请远离目标区域。完毕。</Chinesesimp>
+    <Spanish>%1: Atención todos los indicativos, misión de fuego en curso. Artillería amiga batiendo la cuadrícula %2. Manténganse alejados de la zona de impacto. Corto.</Spanish>
+    <French>%1 : à tous les indicatifs, mission de tir en cours. Notre artillerie engage le carroyage %2. Restez à l'écart de la zone cible. Terminé.</French>
+    <Portuguese>%1: Atenção a todos os indicativos, missão de tiro em andamento. Artilharia amiga engajando a grade %2. Manter distância da área alvo. Câmbio, desligo.</Portuguese>
+    <Russian>%1: Внимание всем позывным, выполняется огневая задача. Своя артиллерия ведёт огонь по квадрату %2. Держаться в стороне от района цели. Приём окончен.</Russian>
 </Key>
 </Container>
 </Package>

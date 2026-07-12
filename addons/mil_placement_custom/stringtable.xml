@@ -80,17 +80,45 @@
     <English>Set count of Armour groups to be spawned, set to 0 for none</English>
     <Chinesesimp>设置要生成的装甲小组计数,如果没有则设置为0</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT">
     <English>Artillery Count:</English>
+    <Chinese>砲兵數量:</Chinese>
+    <Chinesesimp>炮兵数量:</Chinesesimp>
+    <Spanish>Número de piezas de artillería:</Spanish>
+    <French>Nombre de pièces d'artillerie :</French>
+    <Portuguese>Contagem de Artilharia:</Portuguese>
+    <Russian>Количество артиллерии:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT_COMMENT">
     <English>Set count of artillery sections to be spawned, set to 0 for none. Drawn from the faction's artillery groups; factions without artillery groups get batteries composed directly from their artillery vehicles instead (self-propelled guns preferred).</English>
+    <Chinese>設定要生成的砲兵分隊數量，設為0則不生成。取自該派系的砲兵小隊；若派系沒有砲兵小隊，則改由該派系的砲兵載具直接編成砲兵連(優先採用自走砲)。</Chinese>
+    <Chinesesimp>设置生成的炮兵分队数量,设为0则不生成。取自该阵营编制内的炮兵小队;若阵营没有炮兵小队,则改由其炮兵车辆直接组成炮兵连(优先选用自行火炮)。</Chinesesimp>
+    <Spanish>Establece el número de secciones de artillería que se generarán; establezca 0 para ninguna. Se toman de los grupos de artillería de la facción; las facciones sin grupos de artillería reciben en su lugar baterías compuestas directamente a partir de sus vehículos de artillería (se prefieren las piezas autopropulsadas).</Spanish>
+    <French>Définit le nombre de sections d'artillerie à faire apparaître, mettre à 0 pour aucune. Tirées des groupes d'artillerie de la faction ; les factions dépourvues de groupes d'artillerie reçoivent à la place des batteries composées directement à partir de leurs véhicules d'artillerie (canons automoteurs privilégiés).</French>
+    <Portuguese>Define a quantidade de seções de artilharia a serem geradas; defina 0 para nenhuma. Extraídas dos grupos de artilharia da facção; facções sem grupos de artilharia recebem baterias compostas diretamente a partir de seus veículos de artilharia (canhões autopropulsados preferidos).</Portuguese>
+    <Russian>Задайте количество создаваемых артиллерийских подразделений, 0 - без артиллерии. Выбираются из артиллерийских групп фракции; для фракций без артиллерийских групп батареи формируются непосредственно из их артиллерийских машин (предпочтение отдаётся самоходным орудиям).</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION">
     <English>Artillery Faction:</English>
+    <Chinese>砲兵派系:</Chinese>
+    <Chinesesimp>炮兵阵营:</Chinesesimp>
+    <Spanish>Facción de artillería:</Spanish>
+    <French>Faction d'artillerie :</French>
+    <Portuguese>Facção de Artilharia:</Portuguese>
+    <Russian>Фракция артиллерии:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION_COMMENT">
     <English>Optional. Draw the placed artillery from this donor faction instead of the composition factions - models batteries attached from a sister branch, for example RHS Tank Troops guns supporting Motor Rifles. Only factions that field artillery are listed; the donor must fight for the same side. Uses the donor's artillery groups when it defines them, otherwise composes batteries from its artillery vehicles. Select (none) to use the composition factions.</English>
+    <Chinese>可選。改由此支援派系提供放置的砲兵，而非編組派系——模擬由友軍分支支援的砲兵連，例如以RHS戰車部隊的火砲支援機械化步兵。僅列出擁有砲兵的派系，且支援派系須與同一陣營作戰。若支援派系有定義砲兵小隊則優先採用，否則改由其砲兵載具編成砲兵連。選擇「(無)」則使用編組派系。</Chinese>
+    <Chinesesimp>可选。改从此供体阵营抽取部署的炮兵,而非使用编组阵营——用于模拟由友邻兵种附属支援的炮兵连,例如RHS坦克部队的火炮支援摩托化步兵。仅列出拥有炮兵编制的阵营,且供体阵营须与本方同一阵营作战。若供体阵营定义了炮兵小队则优先使用,否则由其炮兵车辆组成炮兵连。选择“(无)”则使用编组阵营。</Chinesesimp>
+    <Spanish>Opcional. Obtiene la artillería colocada de esta facción donante en lugar de las facciones de la composición; representa baterías adscritas de una rama hermana, por ejemplo piezas de los Cuerpos de Tanques RHS apoyando a Infantería Motorizada. Solo se listan las facciones que disponen de artillería; la donante debe combatir por el mismo bando. Usa los grupos de artillería de la donante cuando los define, o en su defecto compone baterías a partir de sus vehículos de artillería. Seleccione (ninguna) para usar las facciones de la composición.</Spanish>
+    <French>Facultatif. Tire l'artillerie déployée de cette faction donneuse plutôt que des factions de la composition - modélise des batteries rattachées d'une branche sœur, par exemple des pièces des troupes blindées RHS appuyant l'infanterie motorisée. Seules les factions disposant d'artillerie sont listées ; la faction donneuse doit combattre dans le même camp. Utilise les groupes d'artillerie de la faction donneuse lorsqu'elle en définit, sinon compose les batteries à partir de ses véhicules d'artillerie. Sélectionnez (aucune) pour utiliser les factions de la composition.</French>
+    <Portuguese>Opcional. Extrai a artilharia posicionada desta facção doadora em vez das facções da composição - representa baterias vinculadas de um ramo irmão, por exemplo canhões das Tropas de Tanques da RHS apoiando os Fuzileiros Motorizados. Somente facções que possuem artilharia são listadas; a doadora deve lutar pelo mesmo lado. Usa os grupos de artilharia da doadora quando definidos, ou compõe baterias a partir de seus veículos de artilharia. Selecione (nenhuma) para usar as facções da composição.</Portuguese>
+    <Russian>Необязательно. Формировать размещаемую артиллерию из этой фракции-донора вместо фракций состава - моделирует батареи, приданные из смежного рода войск, например орудия RHS танковых войск, поддерживающие мотострелков. Перечислены только фракции, располагающие артиллерией; донор должен воевать на той же стороне. Использует артиллерийские группы донора, если они определены, иначе формирует батареи из его артиллерийских машин. Выберите (нет), чтобы использовать фракции состава.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT">
     <English>SpecOps Count:</English>
