@@ -71,6 +71,15 @@
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SEL_STRICT">
     <English>Strict (3 contacts)</English>
 </Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CB">
+    <English>Counter-battery fire:</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CB_COMMENT">
+    <English>How readily each AI commander locates an enemy battery from its firing and answers with a fire mission of its own. The chance is rolled per enemy volley and scales with the number of shells fired; a located battery is engaged through the normal fire-mission rules (cooldowns, range, ammunition, concurrency). Low 5%, Medium 10%, High 18% per shell. Off disables counter-battery fire. Overrides the intensity preset for this parameter only.</English>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CB_OFF">
+    <English>Off</English>
+</Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_TASKS">
     <English>Generate destroy-artillery tasks:</English>
 </Key>

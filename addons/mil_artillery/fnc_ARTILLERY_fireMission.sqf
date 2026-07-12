@@ -47,6 +47,9 @@ private _fnc_hold = {
     params ["_p","_pid","_pkind"];
     private _prior = [_p,"spawnType",[]] call ALiVE_fnc_hashGet;
     _priorHolds pushBack [_pid, _pkind, +_prior];
+    // marker survives a war-state save so the module init sweep can heal
+    // holds this thread never got to release
+    [_p,"ALiVE_artyHold",true] call ALiVE_fnc_hashSet;
     if (_pkind == "vehicle") then {
         [_p,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileVehicle;
     } else {
@@ -64,6 +67,7 @@ private _fnc_release = {
         _x params ["_pid","_pkind","_prior"];
         private _p = [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler;
         if (!isNil "_p") then {
+            [_p,"ALiVE_artyHold",false] call ALiVE_fnc_hashSet;
             if (_pkind == "vehicle") then {
                 [_p,"spawnType",_prior] call ALiVE_fnc_profileVehicle;
             } else {
@@ -195,7 +199,6 @@ if (_mag == "") exitWith {
 // heuristic - the RHS Grad turned out to be an 8-20km system). Cached on the
 // record so battery picks stop offering it unreachable targets.
 if !([_record,"probed",false] call ALiVE_fnc_hashGet) then {
-    [_record,"probed",true] call ALiVE_fnc_hashSet;
     private _probeMag = (getArtilleryAmmo [_gunLead]) param [0, _mag];
     if (_probeMag != "") then {
         private _minR = -1;
@@ -207,6 +210,10 @@ if !([_record,"probed",false] call ALiVE_fnc_hashGet) then {
             };
         } forEach [500, 1000, 2000, 4000, 6000, 8000, 12000, 16000, 20000, 24000];
         if (_minR > 0) then {
+            // only a SUCCESSFUL sweep pins the flag - a blank sweep (bad
+            // probe magazine, terrain blanking the samples) must retry on
+            // the next mission or the coarse defaults are frozen forever
+            [_record,"probed",true] call ALiVE_fnc_hashSet;
             [_record,"minRange", _minR * 0.75] call ALiVE_fnc_hashSet;
             [_record,"maxRange", _maxR] call ALiVE_fnc_hashSet;
             if (_debug) then {
@@ -305,7 +312,10 @@ if (count _victimPlayers > 0) then {
 
                 private _sidePlayers = [_vSideText] call ALiVE_fnc_getPlayersDataSource;
                 _sidePlayers = [_sidePlayers select 1, _sidePlayers select 0];
-                private _vFaction = faction (_victimPlayers select 0);
+                // attribute the task to a victim of THIS side - with two
+                // hostile sides in the impact area the first victim overall
+                // may belong to the other one
+                private _vFaction = faction (_victimPlayers select ((_victimPlayers findIf { side group _x == _vSide }) max 0));
                 private _batFaction = [_record,"faction",""] call ALiVE_fnc_hashGet;
                 private _revealPos = ([_entityProfile,"position"] call ALiVE_fnc_hashGet) getPos [50 + random 150, random 360];
                 private _requestID = format ["ARTY_%1_%2", _entityID, floor time];
@@ -347,9 +357,19 @@ if (count _friendlyPlayers > 0) then {
 {
     _x setVariable ["ALiVE_artyMissionFired", 0, true];
     [_x, {
+        // count only artillery ordnance - a battery defending itself with its
+        // machine gun must not satisfy the volley watchdog (or feed the enemy
+        // counter-battery watch a volley that never flew). Classify by the
+        // fired AMMO's simulation family: shells/rockets/missiles count,
+        // bullets and countermeasure smoke do not. Ammo-based so script-added
+        // launcher weapons (config-invisible magazines) still count
         private _eh = _this addEventHandler ["Fired", {
-            params ["_unit"];
-            _unit setVariable ["ALiVE_artyMissionFired", (_unit getVariable ["ALiVE_artyMissionFired", 0]) + 1, true];
+            params ["_unit","","","","_ammo"];
+            if (_ammo isKindOf ["ShellBase", configFile >> "CfgAmmo"]
+                || {_ammo isKindOf ["RocketBase", configFile >> "CfgAmmo"]}
+                || {_ammo isKindOf ["MissileBase", configFile >> "CfgAmmo"]}) then {
+                _unit setVariable ["ALiVE_artyMissionFired", (_unit getVariable ["ALiVE_artyMissionFired", 0]) + 1, true];
+            };
         }];
         _this setVariable ["ALiVE_artyMissionFiredEH", _eh];
     }] remoteExec ["call", _x];
@@ -362,6 +382,7 @@ private _fnc_firedCount = {
 };
 
 // ranging round first - it doubles as the audible warning at the target end
+private _volleyStart = time;
 private _rangingAim = _aimBase getPos [random _dispersion, random 360];
 [_gunLead, [_rangingAim, _mag, 1]] remoteExec ["doArtilleryFire", _gunLead];
 
@@ -389,6 +410,22 @@ waitUntil {
 };
 
 private _fired = call _fnc_firedCount;
+
+// counter-battery self-verification: if the shell watch missed THIS volley
+// (wrong event name or params, per-client locality, guns local to a headless
+// client), record the volley ourselves so AI-vs-AI detection never depends on
+// the engine event. Weight is the volley size - the watch counts per shell
+if (_fired > 0 && {!isNil "ALIVE_artyShellEvents"}) then {
+    private _events = ALIVE_artyShellEvents;
+    if ((_events findIf { (_x select 0) in _vehicleIDs && {(_x select 3) > _volleyStart} }) == -1) then {
+        // IN-PLACE mutation only - see the watch installer in the monitor
+        _events pushBack [_vehicleIDs param [0, ""], getPosATL _gunLead, toUpper str _sideObject, time, _roundsPerMission + 1, time];
+        while {count _events > 30} do { _events deleteAt 0; };
+        if (_debug) then {
+            ["ALiVE MIL_ARTILLERY - counter-battery: fallback fire event recorded for battery %1 (%2 shell(s))", _entityID, _roundsPerMission + 1] call ALiVE_fnc_dump;
+        };
+    };
+};
 
 if (_fired == 0) then {
     ["ALiVE MIL_ARTILLERY - battery %1 (%2) took a fire order but never fired - stood down for a full cooldown", _entityID, typeOf _gunLead] call ALiVE_fnc_dump;

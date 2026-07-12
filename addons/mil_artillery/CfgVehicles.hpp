@@ -145,6 +145,21 @@ class CfgVehicles
                             class STRICT { name = "$STR_ALIVE_MIL_ARTILLERY_SEL_STRICT"; value = "STRICT"; };
                         };
                 };
+                class counterBatteryLevel : Combo
+                {
+                        property = "ALiVE_mil_artillery_counterBatteryLevel";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_CB";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_CB_COMMENT";
+                        defaultValue = """PRESET""";
+                        class Values
+                        {
+                            class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
+                            class OFF { name = "$STR_ALIVE_MIL_ARTILLERY_CB_OFF"; value = "OFF"; };
+                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
+                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; };
+                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                        };
+                };
                 class ModuleDescription : ModuleDescription {};
         };
         class ModuleDescription
