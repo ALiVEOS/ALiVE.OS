@@ -960,26 +960,48 @@ if (!_simAttacks) then {
             // remove crew from commanding entity
 
             private _vehAssignments = _commandingEntity select 2 select 7;
+            private _crewIdx = [];
 
             if (count (_vehAssignments select 1) > 0) then {
                 private _vehicleID = _subordinateVehicle select 2 select 4;
 
                 private _vehAssignment = [_vehAssignments,_vehicleID] call ALiVE_fnc_hashGet;
-                private _unitAssignments = +(_vehAssignment param [2, [], [[]]]);
 
-                reverse _unitAssignments; // must remove in reverse order
+                // flatten the position groups and remove in DESCENDING unit
+                // index order. The groups hold ascending indexes, so reversing
+                // only the group list still removed multi-man groups bottom-up
+                // - each deleteAt shifted the arrays and later removals hit
+                // the wrong unit (or none)
+                { _crewIdx append _x } forEach (_vehAssignment param [2, [], [[]]]);
+                _crewIdx sort false;
 
                 {
-                    {
-                        [_commandingEntity,"removeUnit", _x] call ALiVE_fnc_profileEntity
-                    } foreach _x;
-                } foreach _unitAssignments;
+                    [_commandingEntity,"removeUnit", _x] call ALiVE_fnc_profileEntity
+                } foreach _crewIdx;
             } else {
                 ["FIXME: _vehAssignments is empty while we expect it not to be?!"] call ALiVE_fnc_dump;
             };
 
             // unassign vehicle from entity
             _x call ALiVE_fnc_removeProfileVehicleAssignment;
+
+            // re-base the entity's remaining vehicle assignments - the crew
+            // removal shifted the unit arrays down, so surviving vehicles'
+            // stored indexes would point at the wrong soldiers
+            if (count _crewIdx > 0) then {
+                {
+                    private _otherAssign = [_vehAssignments, _x] call ALiVE_fnc_hashGet;
+                    if (!isNil "_otherAssign") then {
+                        {
+                            private _group = _x;
+                            {
+                                private _old = _x;
+                                _group set [_forEachIndex, _old - ({ _x < _old } count _crewIdx)];
+                            } forEach _group;
+                        } forEach (_otherAssign param [2, [], [[]]]);
+                    };
+                } forEach +(_vehAssignments select 1);
+            };
         } foreach _toBeUnassigned;
 
         {
