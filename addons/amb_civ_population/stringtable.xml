@@ -122,11 +122,25 @@
     <Chinese>玩家搭乘直升機時生成平民的半徑。設為 0 則在直升機中停用生成</Chinese>
     <Chinesesimp>玩家在直升机周围生成平民的半径。设置为0将禁用在直升机中生成</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS">
     <English>Spawn UAV Radius (m):</English>
+    <Chinese>UAV 生成半徑 (公尺):</Chinese>
+    <Chinesesimp>无人机生成半径 (米):</Chinesesimp>
+    <Spanish>Radio de aparición para UAV (m):</Spanish>
+    <French>Rayon d'apparition autour d'un drone (m):</French>
+    <Portuguese>Raio de Surgimento por UAV (m):</Portuguese>
+    <Russian>Радиус появления при БПЛА (м):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_SPAWN_UAV_RADIUS_COMMENT">
     <English>The radius around a player-controlled UAV at which civilians spawn. Set to 0 to disable civilian spawning while controlling a UAV. Set to -1 to default to (foot/ground) Spawn Radius + 800.</English>
+    <Chinese>玩家操控 UAV 周圍會生成平民的半徑。設為 0 可在操控 UAV 時停用平民生成。設為 -1 則預設為（步行/地面）生成半徑 + 800。</Chinese>
+    <Chinesesimp>玩家操控的无人机周围生成平民的半径。设为 0 可在操控无人机时禁止平民生成。设为 -1 则默认为(步行/地面)生成半径 + 800。</Chinesesimp>
+    <Spanish>El radio alrededor de un UAV controlado por un jugador dentro del cual aparecen civiles. Establecer en 0 para desactivar la aparición de civiles mientras se controla un UAV. Establecer en -1 para usar por defecto el Radio de Aparición (a pie/terrestre) + 800.</Spanish>
+    <French>Rayon autour d'un drone (UAV) contrôlé par un joueur dans lequel les civils apparaissent. Régler sur 0 pour désactiver l'apparition de civils pendant le contrôle d'un drone. Régler sur -1 pour utiliser par défaut le Rayon d'apparition (à pied/au sol) + 800.</French>
+    <Portuguese>O raio ao redor de um UAV controlado por jogador dentro do qual civis surgem. Defina como 0 para desativar o surgimento de civis enquanto controla um UAV. Defina como -1 para usar por padrão o Raio de Surgimento (a pé/terrestre) + 800.</Portuguese>
+    <Russian>Радиус вокруг БПЛА под управлением игрока, в пределах которого появляются гражданские. Установите 0, чтобы отключить появление гражданских при управлении БПЛА. Установите -1, чтобы использовать (пеший/наземный) радиус появления + 800.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST">
@@ -5105,11 +5119,25 @@
     <Chinese>恐慌中的平民嘗試以車輛逃離(而非徒步)的機率。預設值:0.3。</Chinese>
     <Chinesesimp>恐慌中的平民尝试乘载具逃跑而非徒步逃跑的机率。默认:0.3。</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE">
     <English>Ambient Vehicle Civ Driver Chance (0-1):</English>
+    <Chinese>環境載具平民駕駛機率 (0-1):</Chinese>
+    <Chinesesimp>环境车辆平民驾驶员几率 (0-1):</Chinesesimp>
+    <Spanish>Probabilidad de conductor civil en vehículo ambiental (0-1):</Spanish>
+    <French>Chance de conducteur civil pour véhicule ambiant (0-1):</French>
+    <Portuguese>Chance de Motorista Civil em Veículo Ambiente (0-1):</Portuguese>
+    <Russian>Шанс гражданского водителя в фоновой технике (0-1):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE_COMMENT">
     <English>Probability that an "ambient" parked civilian vehicle borrows a nearby civilian as a static driver when it spawns. 0 = always empty (true ambient parked cars). 0.15 (default) = roughly 1 in 7 spawns get a sitting driver, giving towns some life without filling every car. 1 = every spawn with a nearby civ gets a driver. The driver does not drive — they sit in the seat with the engine off.</English>
+    <Chinese>「環境」停放平民載具生成時，向附近平民借用一名靜態駕駛的機率。0 = 永遠空車（真正的環境停放車輛）。0.15（預設值）= 大約每 7 次生成有 1 次會有坐著的駕駛，讓城鎮有點生氣但不會每輛車都塞人。1 = 只要附近有平民，每次生成都會配駕駛。該駕駛不會開車 -- 他們只是坐在座位上，引擎關閉。</Chinese>
+    <Chinesesimp>"环境"停放平民车辆生成时,借用附近平民作为静止驾驶员的概率。0 = 始终为空(真正的环境停放车辆)。0.15(默认)= 大约每 7 次生成中有 1 次会有坐着的驾驶员,让城镇有些生气,但不会让每辆车都坐满人。1 = 每次生成、只要附近有平民就会安排驾驶员。该驾驶员不会驾驶——只是坐在座位上,发动机熄火。</Chinesesimp>
+    <Spanish>Probabilidad de que un vehículo civil aparcado "ambiental" tome prestado a un civil cercano como conductor estático al aparecer. 0 = siempre vacío (coches aparcados verdaderamente ambientales). 0.15 (por defecto) = aproximadamente 1 de cada 7 apariciones obtiene un conductor sentado, dando vida a los pueblos sin llenar cada coche. 1 = toda aparición con un civil cercano obtiene un conductor. El conductor no conduce: se sienta en el asiento con el motor apagado.</Spanish>
+    <French>Probabilité qu'un véhicule civil « ambiant » garé emprunte un civil proche comme conducteur statique lors de son apparition. 0 = toujours vide (véhicules garés purement ambiants). 0,15 (par défaut) = environ 1 apparition sur 7 avec un conducteur assis, donnant un peu de vie aux villes sans remplir chaque véhicule. 1 = chaque apparition avec un civil à proximité obtient un conducteur. Le conducteur ne conduit pas - il reste assis, moteur coupé.</French>
+    <Portuguese>Probabilidade de um veículo civil estacionado "ambiente" receber um civil próximo como motorista estático ao surgir. 0 = sempre vazio (carros estacionados totalmente ambientes). 0,15 (padrão) = aproximadamente 1 em cada 7 surgimentos recebe um motorista sentado, dando vida às cidades sem lotar todos os carros. 1 = todo surgimento com um civil próximo recebe um motorista. O motorista não dirige - ele fica sentado no banco com o motor desligado.</Portuguese>
+    <Russian>Вероятность того, что "фоновый" припаркованный гражданский автомобиль при появлении получит ближайшего гражданского в качестве неподвижного водителя. 0 = всегда пусто (полностью фоновые припаркованные машины). 0.15 (по умолчанию) = примерно 1 из 7 появлений получает сидящего водителя, что придаёт городам немного жизни, но не заполняет каждую машину. 1 = каждое появление с ближайшим гражданским получает водителя. Водитель не управляет машиной — он сидит на месте с выключенным двигателем.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ADVCIV_NO_STEAL_MILITARY">

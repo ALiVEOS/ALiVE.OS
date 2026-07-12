@@ -253,11 +253,25 @@
     <Russian>Только объекты высокого приоритета</Russian>
 </Key>
 <!-- English-only; translations welcome -->
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_INCLUDE_CUSTOM_OBJECTIVES">
     <English>Include Custom Civ Objectives:</English>
+    <Chinese>包含自訂平民目標:</Chinese>
+    <Chinesesimp>包含自定义平民目标:</Chinesesimp>
+    <Spanish>Incluir objetivos civiles personalizados:</Spanish>
+    <French>Inclure les objectifs civils personnalisés:</French>
+    <Portuguese>Incluir Objetivos Civis Personalizados:</Portuguese>
+    <Russian>Включить пользовательские гражданские объекты:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_INCLUDE_CUSTOM_OBJECTIVES_COMMENT">
     <English>Add Custom Civ Objective modules to the civilian population placement pool. Civilians spawn only when valid civilian buildings are found inside the custom objective radius. Custom objectives use priority, TAOR and blacklist filters, but not the indexed-settlement size filter.</English>
+    <Chinese>將自訂平民目標模組加入平民配置池。僅當自訂目標半徑內找到有效的平民建築物時，平民才會生成。自訂目標會套用優先度、TAOR 及黑名單篩選條件，但不套用已索引聚落規模篩選條件。</Chinese>
+    <Chinesesimp>将自定义平民目标模块加入平民人口生成池。仅当自定义目标半径内存在有效的平民建筑时,平民才会生成。自定义目标使用优先级、TAOR 和黑名单过滤器,但不使用已索引聚居地规模过滤器。</Chinesesimp>
+    <Spanish>Añade módulos de Objetivo Civil Personalizado al conjunto de colocación de población civil. Los civiles solo aparecen cuando se encuentran edificios civiles válidos dentro del radio del objetivo personalizado. Los objetivos personalizados usan los filtros de prioridad, TAOR y lista negra, pero no el filtro de tamaño de asentamiento indexado.</Spanish>
+    <French>Ajoute les modules Objectif civil personnalisé au pool de placement de population civile. Les civils n'apparaissent que si des bâtiments civils valides se trouvent dans le rayon de l'objectif personnalisé. Les objectifs personnalisés utilisent les filtres de priorité, de TAOR et de liste noire, mais pas le filtre de taille des agglomérations indexées.</French>
+    <Portuguese>Adiciona módulos de Objetivo Civil Personalizado ao conjunto de posicionamento da população civil. Os civis só aparecem quando são encontradas edificações civis válidas dentro do raio do objetivo personalizado. Objetivos personalizados usam os filtros de prioridade, TAOR e lista negra, mas não o filtro de tamanho de assentamento indexado.</Portuguese>
+    <Russian>Добавляет модули пользовательских гражданских объектов в пул размещения гражданского населения. Гражданские появляются только там, где внутри радиуса пользовательского объекта найдены подходящие гражданские здания. Пользовательские объекты используют фильтры приоритета, TAOR и чёрного списка, но не фильтр размера по индексированным населённым пунктам.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AMBCP_FACTION">

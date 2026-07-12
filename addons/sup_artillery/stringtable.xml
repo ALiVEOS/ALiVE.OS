@@ -10,8 +10,15 @@
     <English>Artillery Module for ALiVE Combat Support</English>
     <Chinesesimp>用于ALiVE作战支持的火炮模块</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_USAGE">
     <English>Place the module and sync it to a Player Combat Support module.</English>
+    <Chinese>放置此模組並將其同步至玩家戰鬥支援模組。</Chinese>
+    <Chinesesimp>放置该模块并将其同步至玩家战斗支援模块。</Chinesesimp>
+    <Spanish>Coloque el módulo y sincronícelo con un módulo de Apoyo de Combate para Jugadores.</Spanish>
+    <French>Placez le module et synchronisez-le avec un module Soutien au combat joueur.</French>
+    <Portuguese>Posicione o módulo e sincronize-o a um módulo de Suporte de Combate do Jogador.</Portuguese>
+    <Russian>Разместите модуль и синхронизируйте его с модулем поддержки игрока в бою.</Russian>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CALLSIGN">
     <English>Callsign</English>
@@ -21,17 +28,45 @@
     <English>Enter the Callsign, ensure that it is unique</English>
     <Chinesesimp>输入呼号，确保它是唯一的</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_TYPE">
     <English>Artillery/Mortar Type</English>
+    <Chinese>火砲/迫砲類型</Chinese>
+    <Chinesesimp>火炮/迫击炮类型</Chinesesimp>
+    <Spanish>Tipo de artillería/mortero</Spanish>
+    <French>Type d'artillerie/mortier</French>
+    <Portuguese>Tipo de Artilharia/Morteiro</Portuguese>
+    <Russian>Тип артиллерии/миномёта</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_TYPE_DESC">
     <English>Pick the vehicle from the list of suitable classes across all loaded factions (use the Side button to narrow the list). Type a classname into the Override field for vehicles the list doesn't show.</English>
+    <Chinese>從所有已載入陣營的適用類別清單中選取載具（使用「陣營」按鈕縮小清單範圍）。若清單未列出所需載具，可在覆寫欄位中輸入類別名稱。</Chinese>
+    <Chinesesimp>从所有已加载阵营的适用类别列表中选择载具(使用阵营按钮缩小列表范围)。若列表中未显示所需载具,可在覆盖字段中输入其类名。</Chinesesimp>
+    <Spanish>Elija el vehículo de la lista de clases adecuadas de todas las facciones cargadas (use el botón de Bando para acotar la lista). Escriba un nombre de clase en el campo de Anulación para vehículos que la lista no muestre.</Spanish>
+    <French>Choisissez le véhicule dans la liste des classes adaptées, toutes factions chargées confondues (utilisez le bouton Camp pour restreindre la liste). Saisissez un nom de classe dans le champ de remplacement pour les véhicules absents de la liste.</French>
+    <Portuguese>Escolha o veículo na lista de classes adequadas entre todas as facções carregadas (use o botão Lado para restringir a lista). Digite um nome de classe no campo Substituir para veículos que não aparecem na lista.</Portuguese>
+    <Russian>Выберите технику из списка подходящих классов по всем загруженным фракциям (используйте кнопку "Сторона", чтобы сузить список). Введите класснейм в поле переопределения для техники, отсутствующей в списке.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_TYPE_CUSTOM">
     <English>Custom Vehicle Classname:</English>
+    <Chinese>自訂載具類別名稱:</Chinese>
+    <Chinesesimp>自定义载具类名:</Chinesesimp>
+    <Spanish>Nombre de clase de vehículo personalizado:</Spanish>
+    <French>Nom de classe de véhicule personnalisé:</French>
+    <Portuguese>Nome de Classe do Veículo Personalizado:</Portuguese>
+    <Russian>Пользовательский класснейм техники:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_TYPE_CUSTOM_DESC">
     <English>Optional override. Type any vehicle classname to use instead of the selection above - when filled it always wins. Use this for vehicles the list doesn't show. Leave empty to use the selection.</English>
+    <Chinese>選擇性覆寫項目。輸入任何載具類別名稱以取代上方選項 -- 填入後永遠優先生效。適用於清單未列出的載具。留空則使用上方選項。</Chinese>
+    <Chinesesimp>可选覆盖项。输入任意载具类名以代替上方所选载具——填写后始终优先生效。用于列表中未显示的载具。留空则使用上方所选载具。</Chinesesimp>
+    <Spanish>Anulación opcional. Escriba cualquier nombre de clase de vehículo para usarlo en lugar de la selección anterior; cuando se rellena, siempre prevalece. Úselo para vehículos que la lista no muestre. Déjelo vacío para usar la selección.</Spanish>
+    <French>Remplacement facultatif. Saisissez un nom de classe de véhicule à utiliser à la place de la sélection ci-dessus - s'il est renseigné, il a toujours priorité. À utiliser pour les véhicules absents de la liste. Laisser vide pour utiliser la sélection.</French>
+    <Portuguese>Substituição opcional. Digite qualquer nome de classe de veículo para usar em vez da seleção acima - quando preenchido, sempre prevalece. Use isto para veículos que a lista não mostra. Deixe vazio para usar a seleção.</Portuguese>
+    <Russian>Необязательное переопределение. Введите любой класснейм техники для использования вместо выбора выше — если поле заполнено, оно всегда имеет приоритет. Используйте для техники, отсутствующей в списке. Оставьте пустым, чтобы использовать выбор.</Russian>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_HE">
     <English>Number of HE Rounds</English>
@@ -61,15 +96,29 @@
     <English>Number of WP Rounds</English>
     <Chinesesimp>白磷弹数量</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_WP_DESC">
     <English>Set the number of White Phosphorus rounds available for the asset. Defaults to 0 - WP rounds only exist in some mods.</English>
+    <Chinese>設定該資產可用的白磷彈數量。預設為 0 -- 白磷彈僅存在於部分模組中。</Chinese>
+    <Chinesesimp>设置该单位可用的白磷弹数量。默认为 0——白磷弹仅在部分模组中存在。</Chinesesimp>
+    <Spanish>Establece el número de proyectiles de fósforo blanco disponibles para el activo. Por defecto 0; los proyectiles de fósforo blanco solo existen en algunos mods.</Spanish>
+    <French>Définit le nombre d'obus au phosphore blanc disponibles pour l'unité. Par défaut 0 - les obus au phosphore blanc n'existent que dans certains mods.</French>
+    <Portuguese>Define o número de projéteis de Fósforo Branco disponíveis para o ativo. O padrão é 0 - projéteis de FB só existem em alguns mods.</Portuguese>
+    <Russian>Задайте количество доступных снарядов с белым фосфором для этого средства. По умолчанию 0 — снаряды WP есть только в некоторых модах.</Russian>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_GUIDED">
     <English>Number of GUIDED Rounds</English>
     <Chinesesimp>制导导弹数量</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_GUIDED_DESC">
     <English>Set the number of GUIDED (SADARM) rounds available for the asset - Only used by MBT</English>
+    <Chinese>設定該資產可用的導引（SADARM）彈藥數量 -- 僅供 MBT 使用。</Chinese>
+    <Chinesesimp>设置该单位可用的制导(SADARM)弹药数量——仅主战坦克使用。</Chinesesimp>
+    <Spanish>Establece el número de proyectiles GUIADOS (SADARM) disponibles para el activo. Solo lo usan los MBT.</Spanish>
+    <French>Définit le nombre d'obus GUIDÉS (SADARM) disponibles pour l'unité - utilisé uniquement par les MBT</French>
+    <Portuguese>Define o número de projéteis GUIADOS (SADARM) disponíveis para o ativo - Usado apenas por MBT</Portuguese>
+    <Russian>Задайте количество доступных УПРАВЛЯЕМЫХ (SADARM) снарядов для этого средства — используется только у ОБТ</Russian>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CLUSTER">
     <English>Number of CLUSTER Rounds</English>
@@ -115,19 +164,54 @@
     <English>Code</English>
     <Chinesesimp>代码</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_CODE_DESC">
     <English>Code run on each artillery piece; use "this" to reference it.</English>
+    <Chinese>在每門火砲上執行的程式碼；使用 "this" 來參照該單位。</Chinese>
+    <Chinesesimp>在每门火炮上运行的代码;使用 "this" 来引用该单位。</Chinesesimp>
+    <Spanish>Código ejecutado en cada pieza de artillería; use "this" para referenciarla.</Spanish>
+    <French>Code exécuté sur chaque pièce d'artillerie; utilisez « this » pour la référencer.</French>
+    <Portuguese>Código executado em cada peça de artilharia; use "this" para referenciá-la.</Portuguese>
+    <Russian>Код, выполняемый на каждом артиллерийском орудии; используйте "this" для ссылки на него.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_LOGISTICS">
     <English>Use Military Logistics Simulation</English>
+    <Chinese>使用軍事後勤模擬</Chinese>
+    <Chinesesimp>使用军事后勤仿真</Chinesesimp>
+    <Spanish>Usar simulación de logística militar</Spanish>
+    <French>Utiliser la simulation de logistique militaire</French>
+    <Portuguese>Usar Simulação de Logística Militar</Portuguese>
+    <Russian>Использовать военную логистическую симуляцию</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_LOGISTICS_DESC">
     <English>When enabled, this asset will request resupply from LOGCOM when ammo, fuel, or damage thresholds are reached. Each resupply draws from the Military Logistics force pool - the same pool used for OPCOM reinforcements. Requires a Military Logistics module.</English>
+    <Chinese>啟用後，當彈藥、油料或損傷達到門檻時，此資產會向 LOGCOM 請求補給。每次補給都會從軍事後勤兵力池扣抵 -- 與 OPCOM 增援共用同一兵力池。需要一個軍事後勤模組。</Chinese>
+    <Chinesesimp>启用后,当弹药、燃料或损伤达到阈值时,该单位将向 LOGCOM 请求补给。每次补给都从军事后勤力量池中抽取——与 OPCOM 增援使用的是同一力量池。需要一个军事后勤模块。</Chinesesimp>
+    <Spanish>Cuando está activado, este activo solicitará reabastecimiento a LOGCOM al alcanzar los umbrales de munición, combustible o daño. Cada reabastecimiento se extrae del fondo de fuerzas de la Logística Militar, el mismo fondo usado para los refuerzos de OPCOM. Requiere un módulo de Logística Militar.</Spanish>
+    <French>Une fois activé, cet élément demandera un ravitaillement au LOGCOM lorsque les seuils de munitions, de carburant ou de dommages sont atteints. Chaque ravitaillement puise dans le pool de forces de la Logistique militaire - le même pool que celui utilisé pour les renforts OPCOM. Nécessite un module Logistique militaire.</French>
+    <Portuguese>Quando ativado, este ativo solicitará ressuprimento ao LOGCOM quando os limiares de munição, combustível ou dano forem atingidos. Cada ressuprimento é retirado do conjunto de forças da Logística Militar - o mesmo conjunto usado para reforços do OPCOM. Requer um módulo de Logística Militar.</Portuguese>
+    <Russian>При включении это средство будет запрашивать снабжение у LOGCOM при достижении пороговых значений боезапаса, топлива или повреждений. Каждая поставка снабжения расходует пул сил военной логистики — тот же пул, что используется для подкреплений OPCOM. Требуется модуль военной логистики.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_LOGISTICSSOURCE">
     <English>Logistics Source</English>
+    <Chinese>後勤來源</Chinese>
+    <Chinesesimp>后勤来源</Chinesesimp>
+    <Spanish>Fuente de logística</Spanish>
+    <French>Source logistique</French>
+    <Portuguese>Fonte de Logística</Portuguese>
+    <Russian>Источник снабжения</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_LOGISTICSSOURCE_DESC">
     <English>Static: resupply dispatched from LOGCOM base position. Dynamic: dispatched from nearest friendly-held objective.</English>
+    <Chinese>靜態:補給自 LOGCOM 基地位置派出。動態:自最近的友軍佔領目標派出。</Chinese>
+    <Chinesesimp>静态:补给从 LOGCOM 基地位置派出。动态:从最近的友军控制目标派出。</Chinesesimp>
+    <Spanish>Estático: el reabastecimiento se despacha desde la posición base de LOGCOM. Dinámico: se despacha desde el objetivo amigo más cercano en poder propio.</Spanish>
+    <French>Statique: ravitaillement envoyé depuis la position de base du LOGCOM. Dynamique: envoyé depuis l'objectif ami tenu le plus proche.</French>
+    <Portuguese>Estático: ressuprimento despachado a partir da posição da base do LOGCOM. Dinâmico: despachado a partir do objetivo amigo mais próximo em posse aliada.</Portuguese>
+    <Russian>Статический: снабжение отправляется с базовой позиции LOGCOM. Динамический: отправляется с ближайшей дружественной удерживаемой задачи.</Russian>
 </Key>
 </Container></Package></Project>

@@ -128,32 +128,95 @@
     <Portuguese>Infinito</Portuguese>
     <Russian>Бесконечный</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_FORCE_POOL_20000">
     <English>20000</English>
+    <Chinese>20000</Chinese>
+    <Chinesesimp>20000</Chinesesimp>
+    <Spanish>20000</Spanish>
+    <French>20000</French>
+    <Portuguese>20000</Portuguese>
+    <Russian>20000</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_FORCE_POOL_10000">
     <English>10000</English>
+    <Chinese>10000</Chinese>
+    <Chinesesimp>10000</Chinesesimp>
+    <Spanish>10000</Spanish>
+    <French>10000</French>
+    <Portuguese>10000</Portuguese>
+    <Russian>10000</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_FORCE_POOL_5000">
     <English>5000</English>
+    <Chinese>5000</Chinese>
+    <Chinesesimp>5000</Chinesesimp>
+    <Spanish>5000</Spanish>
+    <French>5000</French>
+    <Portuguese>5000</Portuguese>
+    <Russian>5000</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_FORCE_POOL_2500">
     <English>2500</English>
+    <Chinese>2500</Chinese>
+    <Chinesesimp>2500</Chinesesimp>
+    <Spanish>2500</Spanish>
+    <French>2500</French>
+    <Portuguese>2500</Portuguese>
+    <Russian>2500</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_FORCE_POOL_1000">
     <English>1000</English>
+    <Chinese>1000</Chinese>
+    <Chinesesimp>1000</Chinesesimp>
+    <Spanish>1000</Spanish>
+    <French>1000</French>
+    <Portuguese>1000</Portuguese>
+    <Russian>1000</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_FORCE_POOL_500">
     <English>500</English>
+    <Chinese>500</Chinese>
+    <Chinesesimp>500</Chinesesimp>
+    <Spanish>500</Spanish>
+    <French>500</French>
+    <Portuguese>500</Portuguese>
+    <Russian>500</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_FORCE_POOL_200">
     <English>200</English>
+    <Chinese>200</Chinese>
+    <Chinesesimp>200</Chinesesimp>
+    <Spanish>200</Spanish>
+    <French>200</French>
+    <Portuguese>200</Portuguese>
+    <Russian>200</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_FORCE_POOL_100">
     <English>100</English>
+    <Chinese>100</Chinese>
+    <Chinesesimp>100</Chinesesimp>
+    <Spanish>100</Spanish>
+    <French>100</French>
+    <Portuguese>100</Portuguese>
+    <Russian>100</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_FORCE_POOL_50">
     <English>50</English>
+    <Chinese>50</Chinese>
+    <Chinesesimp>50</Chinesesimp>
+    <Spanish>50</Spanish>
+    <French>50</French>
+    <Portuguese>50</Portuguese>
+    <Russian>50</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_INF">
     <English>Allow Infantry:</English>
@@ -335,7 +398,7 @@
     <Chinese>否（預設）：運輸直升機一如既往從補給網路中最靠近部隊指揮部的據守目標出發。是：直升機運送改為從最近的友方機場出發並返回該處（跑道 1000 公尺範圍內的據守目標），若存在的話；若無符合條件者則使用預設出發點。戰鬥傘降一律使用預設出發點。</Chinese>
     <Chinesesimp>否（默认）：运输直升机一如既往从补给网络中最靠近部队指挥部的据守目标出发。是：直升机运送改为从最近的友方机场出发并返回该处（跑道 1000 米范围内的据守目标），若存在的话；若无符合条件者则使用默认出发点。战斗伞降一律使用默认出发点。</Chinesesimp>
     <Spanish>No (predeterminado): los helicópteros de transporte despegan del objetivo controlado de la red de suministro más cercano al cuartel general, como hasta ahora. Sí: las inserciones en helicóptero despegan desde — y regresan a — el aeródromo amigo más cercano (un objetivo controlado a menos de 1000 m de una pista), cuando existe; si ninguno cumple los requisitos se usa la salida predeterminada. Los lanzamientos paracaidistas de combate siempre usan la salida predeterminada.</Spanish>
-    <French>Non (par défaut) : les hélicoptères de transport décollent de l'objectif tenu du réseau de ravitaillement le plus proche du QG, comme auparavant. Oui : les insertions héliportées décollent depuis — et retournent vers — l'aérodrome ami le plus proche (un objectif tenu à moins de 1000 m d'une piste), s'il en existe un ; si aucun ne convient, le départ par défaut est utilisé. Les parachutages de combat utilisent toujours le départ par défaut.</French>
+    <French>Non (par défaut): les hélicoptères de transport décollent de l'objectif tenu du réseau de ravitaillement le plus proche du QG, comme auparavant. Oui: les insertions héliportées décollent depuis — et retournent vers — l'aérodrome ami le plus proche (un objectif tenu à moins de 1000 m d'une piste), s'il en existe un; si aucun ne convient, le départ par défaut est utilisé. Les parachutages de combat utilisent toujours le départ par défaut.</French>
     <Portuguese>Não (padrão): os helicópteros de transporte partem do objetivo controlado da rede de suprimentos mais próximo do QG, como antes. Sim: as inserções de helicóptero partem de — e retornam a — o aeródromo aliado mais próximo (um objetivo controlado a menos de 1000 m de uma pista), quando existir; se nenhum se qualificar, a partida padrão é usada. Os lançamentos de paraquedistas em combate sempre usam a partida padrão.</Portuguese>
     <Russian>Нет (по умолчанию): транспортные вертолёты вылетают с удерживаемой цели сети снабжения, ближайшей к штабу, как и раньше. Да: вертолётные высадки вылетают с ближайшего дружественного аэродрома и возвращаются на него (удерживаемая цель в пределах 1000 м от взлётной полосы), если такой существует; если ни один не подходит, используется вылет по умолчанию. Боевые парашютные выброски всегда используют вылет по умолчанию.</Russian>
 </Key>
@@ -375,7 +438,7 @@
     <Chinese>對車隊地面運輸池（ALIVE_factionDefaultTransport）進行各派系覆寫。在列表框中勾選要保留的類別；在列表框下方的覆寫欄位使用 FACTION=class1,class2;FACTION2=class3 語法輸入額外的模組類別。取代模式會以您的選擇清除該派系的原始清單；附加模式則在原始項目之上加入您的選擇。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>对车队地面运输池（ALIVE_factionDefaultTransport）进行各派系覆写。在列表框中勾选要保留的类别；在列表框下方的覆写字段使用 FACTION=class1,class2;FACTION2=class3 语法输入额外的模组类别。取代模式会以您的选择清除该派系的原始清单；附加模式则在原始项目之上加入您的选择。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Reemplazos por facción del pool de transporte terrestre de convoyes (ALIVE_factionDefaultTransport). Marca clases en el listbox para conservarlas; introduce clases de mods adicionales en el campo override bajo el listbox con la sintaxis FACTION=class1,class2;FACTION2=class3. El modo Replace borra la lista estándar de la facción con tu selección; el modo Append añade tu selección encima de las entradas estándar. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
-    <French>Surcharges par faction du vivier de transport terrestre des convois (ALIVE_factionDefaultTransport). Cochez des classes dans la liste pour les conserver; saisissez des classes de mods supplémentaires dans le champ override sous la liste avec la syntaxe FACTION=class1,class2;FACTION2=class3. Le mode Replace efface la liste d'origine de la faction et la remplace par votre sélection; le mode Append ajoute votre sélection par-dessus les entrées d'origine. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <French>Surcharges par faction du vivier de transport terrestre des convois (ALIVE_factionDefaultTransport). Cochez des classes dans la liste pour les conserver; saisissez des classes de mods supplémentaires dans le champ override sous la liste avec la syntaxe FACTION=class1,class2;FACTION2=class3. Le mode Replace efface la liste d'origine de la faction et la remplace par votre sélection; le mode Append ajoute votre sélection par-dessus les entrées d'origine. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
     <Portuguese>Substituições por facção do pool de transporte terrestre de comboios (ALIVE_factionDefaultTransport). Marque classes no listbox para mantê-las; insira classes de mods adicionais no campo override abaixo do listbox com a sintaxe FACTION=class1,class2;FACTION2=class3. O modo Replace apaga a lista padrão da facção com a sua seleção; o modo Append adiciona a sua seleção sobre as entradas padrão. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
     <Russian>Переопределения по фракциям для пула наземного транспорта конвоев (ALIVE_factionDefaultTransport). Отмечайте классы в списке, чтобы их сохранить; вводите дополнительные модовые классы в поле override под списком, используя синтаксис FACTION=class1,class2;FACTION2=class3. Режим Replace стирает стоковый список фракции и заменяет его вашим выбором; режим Append добавляет ваш выбор поверх стоковых записей. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
@@ -395,7 +458,7 @@
     <Chinese>對 HELI_INSERT、HELI_PARADROP 與吊掛投送所使用的直升機 / VTOL 池（ALIVE_factionDefaultAirTransport）進行各派系覆寫。與上方陸運覆寫相同的列表框 + 覆寫欄位流程。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>对 HELI_INSERT、HELI_PARADROP 与吊挂投送所使用的直升机 / VTOL 池（ALIVE_factionDefaultAirTransport）进行各派系覆写。与上方陆运覆写相同的列表框 + 覆写字段流程。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Reemplazos por facción del pool de helicópteros / VTOL usados por HELI_INSERT, HELI_PARADROP y entregas con eslinga (ALIVE_factionDefaultAirTransport). Mismo flujo de listbox + campo override que el atributo de transporte terrestre de arriba. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
-    <French>Surcharges par faction du vivier d'hélicoptères / VTOL utilisés par HELI_INSERT, HELI_PARADROP et les livraisons en élingue (ALIVE_factionDefaultAirTransport). Même flux liste + champ override que l'attribut de transport terrestre ci-dessus. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <French>Surcharges par faction du vivier d'hélicoptères / VTOL utilisés par HELI_INSERT, HELI_PARADROP et les livraisons en élingue (ALIVE_factionDefaultAirTransport). Même flux liste + champ override que l'attribut de transport terrestre ci-dessus. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
     <Portuguese>Substituições por facção do pool de helicópteros / VTOL usado por HELI_INSERT, HELI_PARADROP e entregas em estropo (ALIVE_factionDefaultAirTransport). Mesmo fluxo de listbox + campo override que o atributo de transporte terrestre acima. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
     <Russian>Переопределения по фракциям для пула вертолётов / VTOL, используемых HELI_INSERT, HELI_PARADROP и доставкой на тросе (ALIVE_factionDefaultAirTransport). Такой же процесс списка + поля override, что и у атрибута наземного транспорта выше. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
@@ -415,7 +478,7 @@
     <Chinese>對空投 / 吊掛容器池（ALIVE_factionDefaultContainers）進行各派系覆寫。列表框會顯示宣告屬於各派系的 ReammoBox 衍生類別、貨網與吊掛底座；列表框未顯示的容器類別可使用覆寫欄位。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>对空投 / 吊挂容器池（ALIVE_factionDefaultContainers）进行各派系覆写。列表框会显示声明属于各派系的 ReammoBox 衍生类别、货网与吊挂底座；列表框未显示的容器类别可使用覆写字段。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Reemplazos por facción del pool de contenedores aerolanzados / con eslinga (ALIVE_factionDefaultContainers). El listbox muestra clases derivadas de ReammoBox, redes de carga y bases de eslinga declaradas como pertenecientes a cada facción; usa el campo override para cualquier clase de contenedor que el listbox no muestre. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
-    <French>Surcharges par faction du vivier de conteneurs largués / en élingue (ALIVE_factionDefaultContainers). La liste affiche les classes dérivées de ReammoBox, les filets de cargaison et les bases d'élingue déclarés comme appartenant à chaque faction; utilisez le champ override pour les classes de conteneurs que la liste ne présente pas. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <French>Surcharges par faction du vivier de conteneurs largués / en élingue (ALIVE_factionDefaultContainers). La liste affiche les classes dérivées de ReammoBox, les filets de cargaison et les bases d'élingue déclarés comme appartenant à chaque faction; utilisez le champ override pour les classes de conteneurs que la liste ne présente pas. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
     <Portuguese>Substituições por facção do pool de contêineres lançados / em estropo (ALIVE_factionDefaultContainers). O listbox mostra classes derivadas de ReammoBox, redes de carga e bases de estropo declaradas como pertencentes a cada facção; use o campo override para qualquer classe de contêiner que o listbox não exiba. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
     <Russian>Переопределения по фракциям для пула десантных / тросовых контейнеров (ALIVE_factionDefaultContainers). В списке отображаются ReammoBox-производные классы, грузовые сети и тросовые базы, объявленные принадлежащими каждой фракции; используйте поле override для классов контейнеров, которые список не показывает. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>

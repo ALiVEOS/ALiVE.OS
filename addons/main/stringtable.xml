@@ -98,8 +98,15 @@
     <English>Simply place ALiVE (Required) in the editor and choose the settings as desired. Do not sync it to anything.</English>
     <Chinesesimp>只需在编辑器中放置ALiVE (必需)并根据需要选择设置。不要将它同步到任何东西。</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MOD_LAUNCHER_ACTION">
     <English>ALiVE Mod Website</English>
+    <Chinese>ALiVE 模組網站</Chinese>
+    <Chinesesimp>ALiVE 模组网站</Chinesesimp>
+    <Spanish>Sitio web del mod ALiVE</Spanish>
+    <French>Site Web du mod ALiVE</French>
+    <Portuguese>Site do Mod ALiVE</Portuguese>
+    <Russian>Сайт мода ALiVE</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS">
@@ -154,9 +161,22 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE">
     <English>Objective Objects Chance (%):</English>
+    <Chinese>目標物件生成機率 (%):</Chinese>
+    <Chinesesimp>目标物体几率 (%):</Chinesesimp>
+    <Spanish>Probabilidad de objetos de objetivo (%):</Spanish>
+    <French>Chance d'objets d'objectif (%):</French>
+    <Portuguese>Chance de Objetos do Objetivo (%):</Portuguese>
+    <Russian>Шанс появления объектов задачи (%):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE_COMMENT">
     <English>Percentage chance that this objective spawns its scenery objects at all. One roll per objective: pass spawns the full configured count, fail spawns none. 100 (default) = always. Use low values so only a fraction of objectives carry special objects like jammers or SAM props.</English>
+    <Chinese>此目標是否生成場景物件的機率。每個目標只擲一次骰:成功則生成完整設定數量，失敗則完全不生成。100（預設值）= 永遠生成。使用低數值可讓只有一小部分目標帶有干擾器或防空飛彈道具等特殊物件。</Chinese>
+    <Chinesesimp>该目标是否会生成其场景物体的百分比几率。每个目标只判定一次:成功则生成全部已配置数量,失败则一个都不生成。100(默认)= 总是生成。使用较低数值可让只有一部分目标携带干扰器或防空导弹道具等特殊物体。</Chinesesimp>
+    <Spanish>Probabilidad, en porcentaje, de que este objetivo genere sus objetos de escenario. Una tirada por objetivo: el éxito genera el número configurado completo, el fallo no genera ninguno. 100 (por defecto) = siempre. Usar valores bajos para que solo una fracción de los objetivos lleve objetos especiales como inhibidores o accesorios de SAM.</Spanish>
+    <French>Pourcentage de chance que cet objectif fasse apparaître ses objets de décor. Un seul tirage par objectif: succès fait apparaître le nombre configuré au complet, échec n'en fait apparaître aucun. 100 (par défaut) = toujours. Utiliser des valeurs basses pour que seule une fraction des objectifs porte des objets spéciaux comme des brouilleurs ou des accessoires SAM.</French>
+    <Portuguese>Chance percentual de este objetivo gerar seus objetos de cenário. Um sorteio por objetivo: sucesso gera a quantidade total configurada, falha não gera nenhum. 100 (padrão) = sempre. Use valores baixos para que apenas uma fração dos objetivos tenha objetos especiais, como bloqueadores de sinal ou suportes de SAM.</Portuguese>
+    <Russian>Процентная вероятность того, что данная задача вообще создаст свои декоративные объекты. Один бросок на задачу: успех — появляется полный заданный набор, неудача — не появляется ничего. 100 (по умолчанию) = всегда. Используйте низкие значения, чтобы особые объекты (глушилки, макеты ЗРК) встречались лишь у части задач.</Russian>
 </Key>
 <Key ID="STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT">
     <English>How many scenery objects to spawn at the objective, drawn at random from the Objective Objects picker pool. Default 0 (disabled - no scenery spawned). Selection is with replacement, so a small pool plus a high count means duplicates appear.</English>

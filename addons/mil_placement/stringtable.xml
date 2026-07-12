@@ -828,7 +828,7 @@
     <Chinese>放置砲兵單位:</Chinese>
     <Chinesesimp>部署炮兵单位:</Chinesesimp>
     <Spanish>Colocar unidades de artillería:</Spanish>
-    <French>Placer des unités d'artillerie :</French>
+    <French>Placer des unités d'artillerie:</French>
     <Portuguese>Posicionar unidades de artilharia:</Portuguese>
     <Russian>Разместить артиллерийские подразделения:</Russian>
 </Key>
@@ -848,7 +848,7 @@
     <Chinese>砲兵派系(附屬):</Chinese>
     <Chinesesimp>炮兵阵营(附属):</Chinesesimp>
     <Spanish>Facción de artillería (adscrita):</Spanish>
-    <French>Faction d'artillerie (rattachée) :</French>
+    <French>Faction d'artillerie (rattachée):</French>
     <Portuguese>Facção de artilharia (vinculada):</Portuguese>
     <Russian>Фракция-донор артиллерии (приданная):</Russian>
 </Key>
@@ -858,7 +858,7 @@
     <Chinese>可選。改由此支援派系提供放置的砲兵，而非部隊本身的派系——模擬由友軍分支支援的砲兵連，例如以RHS戰車部隊的火砲支援機械化步兵，因該部隊自身派系並未編制自走砲。僅列出擁有砲兵的派系，且支援派系須與部隊同陣營。砲兵連將以支援派系的砲兵載具及其乘員編成。選擇「(無)」則使用部隊本身的派系。</Chinese>
     <Chinesesimp>可选。改从此供体阵营抽取部署的炮兵,而非使用本部队阵营——用于模拟由友邻兵种附属支援的炮兵连,例如RHS坦克部队的火炮支援摩托化步兵,而其自身阵营并无自行火炮编制。仅列出拥有炮兵编制的阵营,且供体阵营须与本部队同一阵营作战。炮兵连将由供体阵营的炮兵车辆及其乘员组成。选择“(无)”则使用本部队阵营。</Chinesesimp>
     <Spanish>Opcional. Obtiene la artillería colocada de esta facción donante en lugar de la facción de la fuerza; representa baterías adscritas de una rama hermana, por ejemplo piezas de los Cuerpos de Tanques RHS apoyando a Infantería Motorizada cuya propia facción no dispone de artillería autopropulsada. Solo se listan las facciones que disponen de artillería; la donante debe combatir por el mismo bando que la fuerza. Las baterías se componen a partir de los vehículos de artillería de la donante, con sus propias tripulaciones. Seleccione (ninguna) para usar la facción de la fuerza.</Spanish>
-    <French>Facultatif. Tire l'artillerie déployée de cette faction donneuse plutôt que de la faction de la force - modélise des batteries rattachées d'une branche sœur, par exemple des pièces des troupes blindées RHS appuyant l'infanterie motorisée, dont la propre faction n'aligne aucune artillerie automotrice. Seules les factions disposant d'artillerie sont listées ; la faction donneuse doit combattre dans le même camp. Les batteries sont composées à partir des véhicules d'artillerie de la faction donneuse, avec leurs propres équipages. Sélectionnez (aucune) pour utiliser la faction de la force.</French>
+    <French>Facultatif. Tire l'artillerie déployée de cette faction donneuse plutôt que de la faction de la force - modélise des batteries rattachées d'une branche sœur, par exemple des pièces des troupes blindées RHS appuyant l'infanterie motorisée, dont la propre faction n'aligne aucune artillerie automotrice. Seules les factions disposant d'artillerie sont listées; la faction donneuse doit combattre dans le même camp. Les batteries sont composées à partir des véhicules d'artillerie de la faction donneuse, avec leurs propres équipages. Sélectionnez (aucune) pour utiliser la faction de la force.</French>
     <Portuguese>Opcional. Extrai a artilharia posicionada desta facção doadora em vez da facção da força - representa baterias vinculadas de um ramo irmão, por exemplo canhões das Tropas de Tanques da RHS apoiando os Fuzileiros Motorizados, cuja própria facção não possui artilharia autopropulsada. Somente facções que possuem artilharia são listadas; a doadora deve lutar pelo mesmo lado da força. As baterias são compostas a partir dos veículos de artilharia da doadora, com tripulações da doadora. Selecione (nenhuma) para usar a facção da força.</Portuguese>
     <Russian>Необязательно. Формировать размещаемую артиллерию из этой фракции-донора вместо фракции основных сил - моделирует батареи, приданные из смежного рода войск, например орудия RHS танковых войск, поддерживающие мотострелков, чья собственная фракция не располагает самоходной артиллерией. Перечислены только фракции, располагающие артиллерией; донор должен воевать на той же стороне, что и основные силы. Батареи формируются из артиллерийских машин донора с его экипажами. Выберите (нет), чтобы использовать фракцию основных сил.</Russian>
 </Key>
@@ -1029,7 +1029,7 @@
     <Chinesesimp>驻防巡逻行为：</Chinesesimp>
     <Chinese>駐防巡邏行為：</Chinese>
     <Spanish>Comportamiento de patrulla de guarnición:</Spanish>
-    <French>Comportement de patrouille de garnison :</French>
+    <French>Comportement de patrouille de garnison:</French>
     <Portuguese>Comportamento de patrulha de guarnição:</Portuguese>
     <Russian>Поведение гарнизонного патруля:</Russian>
 </Key>
@@ -1039,7 +1039,7 @@
     <Chinesesimp>驻防小组在未发现敌人时于建筑物之间巡逻的战斗行为。默认为安全（步行）。发现敌人时小组仍会自动反应。</Chinesesimp>
     <Chinese>駐防小組在未發現敵人時於建築物之間巡邏的戰鬥行為。預設為安全（步行）。發現敵人時小組仍會自動反應。</Chinese>
     <Spanish>Comportamiento de combate de los grupos de guarnición que patrullan entre edificios cuando no hay enemigos a la vista. Por defecto es Seguro (caminando). Los grupos siguen reaccionando automáticamente al detectar a un enemigo.</Spanish>
-    <French>Comportement de combat des groupes de garnison patrouillant entre les bâtiments lorsqu'aucun ennemi n'est en vue. Par défaut : Tranquille (marche). Les groupes réagissent toujours automatiquement lorsqu'ils repèrent un ennemi.</French>
+    <French>Comportement de combat des groupes de garnison patrouillant entre les bâtiments lorsqu'aucun ennemi n'est en vue. Par défaut: Tranquille (marche). Les groupes réagissent toujours automatiquement lorsqu'ils repèrent un ennemi.</French>
     <Portuguese>Comportamento de combate dos grupos de guarnição que patrulham entre edifícios quando não há inimigos à vista. Predefinição: Seguro (a andar). Os grupos continuam a reagir automaticamente ao avistar um inimigo.</Portuguese>
     <Russian>Боевое поведение гарнизонных групп, патрулирующих между зданиями, когда враг не виден. По умолчанию — «Безопасно» (шагом). Группы всё равно реагируют автоматически, заметив противника.</Russian>
 </Key>
@@ -1048,7 +1048,7 @@
     <Chinesesimp>驻防巡逻速度：</Chinesesimp>
     <Chinese>駐防巡邏速度：</Chinese>
     <Spanish>Velocidad de patrulla de guarnición:</Spanish>
-    <French>Vitesse de patrouille de garnison :</French>
+    <French>Vitesse de patrouille de garnison:</French>
     <Portuguese>Velocidade de patrulha de guarnição:</Portuguese>
     <Russian>Скорость гарнизонного патруля:</Russian>
 </Key>
@@ -1058,7 +1058,7 @@
     <Chinesesimp>驻防小组在未发现敌人时于建筑物之间巡逻的移动速度。默认为受限（步行）。</Chinesesimp>
     <Chinese>駐防小組在未發現敵人時於建築物之間巡邏的移動速度。預設為受限（步行）。</Chinese>
     <Spanish>Velocidad de movimiento de los grupos de guarnición que patrullan entre edificios cuando no hay enemigos a la vista. Por defecto es Limitada (caminando).</Spanish>
-    <French>Vitesse de déplacement des groupes de garnison patrouillant entre les bâtiments lorsqu'aucun ennemi n'est en vue. Par défaut : Limitée (marche).</French>
+    <French>Vitesse de déplacement des groupes de garnison patrouillant entre les bâtiments lorsqu'aucun ennemi n'est en vue. Par défaut: Limitée (marche).</French>
     <Portuguese>Velocidade de movimento dos grupos de guarnição que patrulham entre edifícios quando não há inimigos à vista. Predefinição: Limitada (a andar).</Portuguese>
     <Russian>Скорость передвижения гарнизонных групп, патрулирующих между зданиями, когда враг не виден. По умолчанию — «Ограниченная» (шагом).</Russian>
 </Key>
@@ -1071,17 +1071,45 @@
     <Portuguese>Nenhum</Portuguese>
     <Russian>Нет</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_LOW">
     <English>25%</English>
+    <Chinese>25%</Chinese>
+    <Chinesesimp>25%</Chinesesimp>
+    <Spanish>25%</Spanish>
+    <French>25 %</French>
+    <Portuguese>25%</Portuguese>
+    <Russian>25%</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_MEDIUM">
     <English>50%</English>
+    <Chinese>50%</Chinese>
+    <Chinesesimp>50%</Chinesesimp>
+    <Spanish>50%</Spanish>
+    <French>50 %</French>
+    <Portuguese>50%</Portuguese>
+    <Russian>50%</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_HIGH">
     <English>75%</English>
+    <Chinese>75%</Chinese>
+    <Chinesesimp>75%</Chinesesimp>
+    <Spanish>75%</Spanish>
+    <French>75 %</French>
+    <Portuguese>75%</Portuguese>
+    <Russian>75%</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_AMBIENT_PATROL_PERCENT_ALL">
     <English>100%</English>
+    <Chinese>100%</Chinese>
+    <Chinesesimp>100%</Chinesesimp>
+    <Spanish>100%</Spanish>
+    <French>100 %</French>
+    <Portuguese>100%</Portuguese>
+    <Russian>100%</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_CUSTOM_MODE">

@@ -10,8 +10,15 @@
     <English>CAS Module for ALiVE Combat Support</English>
     <Chinesesimp>CAS模块用于实时战斗支援</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_USAGE">
     <English>Place the module and sync it to a Player Combat Support module.</English>
+    <Chinese>放置此模組並將其同步至玩家戰鬥支援模組。</Chinese>
+    <Chinesesimp>放置该模块并将其同步至玩家战斗支援模块。</Chinesesimp>
+    <Spanish>Coloque el módulo y sincronícelo con un módulo de Apoyo de Combate para Jugadores.</Spanish>
+    <French>Placez le module et synchronisez-le avec un module Soutien au combat joueur.</French>
+    <Portuguese>Posicione o módulo e sincronize-o a um módulo de Suporte de Combate do Jogador.</Portuguese>
+    <Russian>Разместите модуль и синхронизируйте его с модулем поддержки игрока в бою.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CAS_CALLSIGN">
     <English>Callsign</English>
@@ -25,39 +32,109 @@
     <English>CAS Vehicle Type</English>
     <Chinesesimp>CAS 载具类型</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_TYPE_DESC">
     <English>Pick the vehicle from the list of suitable classes across all loaded factions (use the Side button to narrow the list). Type a classname into the Override field for vehicles the list doesn't show.</English>
+    <Chinese>從所有已載入陣營的適用類別清單中選取載具（使用「陣營」按鈕縮小清單範圍）。若清單未列出所需載具，可在覆寫欄位中輸入類別名稱。</Chinese>
+    <Chinesesimp>从所有已加载阵营的适用类别列表中选择载具(使用阵营按钮缩小列表范围)。若列表中未显示所需载具,可在覆盖字段中输入其类名。</Chinesesimp>
+    <Spanish>Elija el vehículo de la lista de clases adecuadas de todas las facciones cargadas (use el botón de Bando para acotar la lista). Escriba un nombre de clase en el campo de Anulación para vehículos que la lista no muestre.</Spanish>
+    <French>Choisissez le véhicule dans la liste des classes adaptées, toutes factions chargées confondues (utilisez le bouton Camp pour restreindre la liste). Saisissez un nom de classe dans le champ de remplacement pour les véhicules absents de la liste.</French>
+    <Portuguese>Escolha o veículo na lista de classes adequadas entre todas as facções carregadas (use o botão Lado para restringir a lista). Digite um nome de classe no campo Substituir para veículos que não aparecem na lista.</Portuguese>
+    <Russian>Выберите технику из списка подходящих классов по всем загруженным фракциям (используйте кнопку "Сторона", чтобы сузить список). Введите класснейм в поле переопределения для техники, отсутствующей в списке.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_TYPE_CUSTOM">
     <English>Custom Vehicle Classname:</English>
+    <Chinese>自訂載具類別名稱:</Chinese>
+    <Chinesesimp>自定义载具类名:</Chinesesimp>
+    <Spanish>Nombre de clase de vehículo personalizado:</Spanish>
+    <French>Nom de classe de véhicule personnalisé:</French>
+    <Portuguese>Nome de Classe do Veículo Personalizado:</Portuguese>
+    <Russian>Пользовательский класснейм техники:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_TYPE_CUSTOM_DESC">
     <English>Optional override. Type any vehicle classname to use instead of the selection above - when filled it always wins. Use this for vehicles the list doesn't show. Leave empty to use the selection.</English>
+    <Chinese>選擇性覆寫項目。輸入任何載具類別名稱以取代上方選項 -- 填入後永遠優先生效。適用於清單未列出的載具。留空則使用上方選項。</Chinese>
+    <Chinesesimp>可选覆盖项。输入任意载具类名以代替上方所选载具——填写后始终优先生效。用于列表中未显示的载具。留空则使用上方所选载具。</Chinesesimp>
+    <Spanish>Anulación opcional. Escriba cualquier nombre de clase de vehículo para usarlo en lugar de la selección anterior; cuando se rellena, siempre prevalece. Úselo para vehículos que la lista no muestre. Déjelo vacío para usar la selección.</Spanish>
+    <French>Remplacement facultatif. Saisissez un nom de classe de véhicule à utiliser à la place de la sélection ci-dessus - s'il est renseigné, il a toujours priorité. À utiliser pour les véhicules absents de la liste. Laisser vide pour utiliser la sélection.</French>
+    <Portuguese>Substituição opcional. Digite qualquer nome de classe de veículo para usar em vez da seleção acima - quando preenchido, sempre prevalece. Use isto para veículos que a lista não mostra. Deixe vazio para usar a seleção.</Portuguese>
+    <Russian>Необязательное переопределение. Введите любой класснейм техники для использования вместо выбора выше — если поле заполнено, оно всегда имеет приоритет. Используйте для техники, отсутствующей в списке. Оставьте пустым, чтобы использовать выбор.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_HEIGHT">
     <English>Spawn Height (m ASL)</English>
+    <Chinese>生成高度 (公尺，海拔)</Chinese>
+    <Chinesesimp>生成高度 (米,海拔)</Chinesesimp>
+    <Spanish>Altura de aparición (m ASL)</Spanish>
+    <French>Hauteur d'apparition (m ASL)</French>
+    <Portuguese>Altura de Surgimento (m ASL)</Portuguese>
+    <Russian>Высота появления (м над уровнем моря)</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_HEIGHT_DESC">
     <English>Spawn height above sea level, for carrier decks (e.g. the Nimitz addon). Values of 0 or below spawn the asset on the ground.</English>
+    <Chinese>生成時的海拔高度，供航空母艦甲板使用（例如 Nimitz 模組）。數值為 0 或以下時，資產會生成在地面上。</Chinese>
+    <Chinesesimp>海拔生成高度,用于航母甲板(例如 Nimitz 模组)。数值为 0 或以下时,单位将在地面生成。</Chinesesimp>
+    <Spanish>Altura de aparición sobre el nivel del mar, para cubiertas de portaaviones (p. ej. el addon Nimitz). Valores de 0 o inferiores hacen que el activo aparezca en el suelo.</Spanish>
+    <French>Hauteur d'apparition au-dessus du niveau de la mer, pour les ponts de porte-avions (ex. l'add-on Nimitz). Les valeurs de 0 ou inférieures font apparaître l'unité au sol.</French>
+    <Portuguese>Altura de surgimento acima do nível do mar, para conveses de porta-aviões (ex.: o addon Nimitz). Valores de 0 ou menores fazem o ativo surgir no solo.</Portuguese>
+    <Russian>Высота появления над уровнем моря, для палуб авианосцев (например, аддон Nimitz). Значения 0 или ниже создают средство на земле.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CAS_CODE">
     <English>Code</English>
     <Chinesesimp>代码</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_CODE_DESC">
     <English>Code run on the spawned vehicle; use "this" to reference it. Statements separated by ; run independently.</English>
+    <Chinese>在生成的載具上執行的程式碼；使用 "this" 來參照該載具。以 ; 分隔的敘述會各自獨立執行。</Chinese>
+    <Chinesesimp>在生成的载具上运行的代码;使用 "this" 来引用该载具。以 ; 分隔的语句将独立运行。</Chinesesimp>
+    <Spanish>Código ejecutado en el vehículo generado; use "this" para referenciarlo. Las sentencias separadas por ; se ejecutan de forma independiente.</Spanish>
+    <French>Code exécuté sur le véhicule apparu; utilisez « this » pour le référencer. Les instructions séparées par; s'exécutent indépendamment.</French>
+    <Portuguese>Código executado no veículo gerado; use "this" para referenciá-lo. Comandos separados por ; são executados de forma independente.</Portuguese>
+    <Russian>Код, выполняемый на появившейся технике; используйте "this" для ссылки на неё. Операторы, разделённые ";", выполняются независимо друг от друга.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_LOGISTICS">
     <English>Use Military Logistics Simulation</English>
+    <Chinese>使用軍事後勤模擬</Chinese>
+    <Chinesesimp>使用军事后勤仿真</Chinesesimp>
+    <Spanish>Usar simulación de logística militar</Spanish>
+    <French>Utiliser la simulation de logistique militaire</French>
+    <Portuguese>Usar Simulação de Logística Militar</Portuguese>
+    <Russian>Использовать военную логистическую симуляцию</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_LOGISTICS_DESC">
     <English>When enabled, this asset will request resupply from LOGCOM when ammo, fuel, or damage thresholds are reached. Each resupply draws from the Military Logistics force pool - the same pool used for OPCOM reinforcements. Requires a Military Logistics module.</English>
+    <Chinese>啟用後，當彈藥、油料或損傷達到門檻時，此資產會向 LOGCOM 請求補給。每次補給都會從軍事後勤兵力池扣抵 -- 與 OPCOM 增援共用同一兵力池。需要一個軍事後勤模組。</Chinese>
+    <Chinesesimp>启用后,当弹药、燃料或损伤达到阈值时,该单位将向 LOGCOM 请求补给。每次补给都从军事后勤力量池中抽取——与 OPCOM 增援使用的是同一力量池。需要一个军事后勤模块。</Chinesesimp>
+    <Spanish>Cuando está activado, este activo solicitará reabastecimiento a LOGCOM al alcanzar los umbrales de munición, combustible o daño. Cada reabastecimiento se extrae del fondo de fuerzas de la Logística Militar, el mismo fondo usado para los refuerzos de OPCOM. Requiere un módulo de Logística Militar.</Spanish>
+    <French>Une fois activé, cet élément demandera un ravitaillement au LOGCOM lorsque les seuils de munitions, de carburant ou de dommages sont atteints. Chaque ravitaillement puise dans le pool de forces de la Logistique militaire - le même pool que celui utilisé pour les renforts OPCOM. Nécessite un module Logistique militaire.</French>
+    <Portuguese>Quando ativado, este ativo solicitará ressuprimento ao LOGCOM quando os limiares de munição, combustível ou dano forem atingidos. Cada ressuprimento é retirado do conjunto de forças da Logística Militar - o mesmo conjunto usado para reforços do OPCOM. Requer um módulo de Logística Militar.</Portuguese>
+    <Russian>При включении это средство будет запрашивать снабжение у LOGCOM при достижении пороговых значений боезапаса, топлива или повреждений. Каждая поставка снабжения расходует пул сил военной логистики — тот же пул, что используется для подкреплений OPCOM. Требуется модуль военной логистики.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_LOGISTICSSOURCE">
     <English>Logistics Source</English>
+    <Chinese>後勤來源</Chinese>
+    <Chinesesimp>后勤来源</Chinesesimp>
+    <Spanish>Fuente de logística</Spanish>
+    <French>Source logistique</French>
+    <Portuguese>Fonte de Logística</Portuguese>
+    <Russian>Источник снабжения</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_LOGISTICSSOURCE_DESC">
     <English>Static: resupply dispatched from LOGCOM base position. Dynamic: dispatched from nearest friendly-held objective.</English>
+    <Chinese>靜態:補給自 LOGCOM 基地位置派出。動態:自最近的友軍佔領目標派出。</Chinese>
+    <Chinesesimp>静态:补给从 LOGCOM 基地位置派出。动态:从最近的友军控制目标派出。</Chinesesimp>
+    <Spanish>Estático: el reabastecimiento se despacha desde la posición base de LOGCOM. Dinámico: se despacha desde el objetivo amigo más cercano en poder propio.</Spanish>
+    <French>Statique: ravitaillement envoyé depuis la position de base du LOGCOM. Dynamique: envoyé depuis l'objectif ami tenu le plus proche.</French>
+    <Portuguese>Estático: ressuprimento despachado a partir da posição da base do LOGCOM. Dinâmico: despachado a partir do objetivo amigo mais próximo em posse aliada.</Portuguese>
+    <Russian>Статический: снабжение отправляется с базовой позиции LOGCOM. Динамический: отправляется с ближайшей дружественной удерживаемой задачи.</Russian>
 </Key>
 
 </Container></Package></Project>

@@ -86,7 +86,7 @@
     <Chinese>砲兵數量:</Chinese>
     <Chinesesimp>炮兵数量:</Chinesesimp>
     <Spanish>Número de piezas de artillería:</Spanish>
-    <French>Nombre de pièces d'artillerie :</French>
+    <French>Nombre de pièces d'artillerie:</French>
     <Portuguese>Contagem de Artilharia:</Portuguese>
     <Russian>Количество артиллерии:</Russian>
 </Key>
@@ -96,7 +96,7 @@
     <Chinese>設定要生成的砲兵分隊數量，設為0則不生成。取自該派系的砲兵小隊；若派系沒有砲兵小隊，則改由該派系的砲兵載具直接編成砲兵連(優先採用自走砲)。</Chinese>
     <Chinesesimp>设置生成的炮兵分队数量,设为0则不生成。取自该阵营编制内的炮兵小队;若阵营没有炮兵小队,则改由其炮兵车辆直接组成炮兵连(优先选用自行火炮)。</Chinesesimp>
     <Spanish>Establece el número de secciones de artillería que se generarán; establezca 0 para ninguna. Se toman de los grupos de artillería de la facción; las facciones sin grupos de artillería reciben en su lugar baterías compuestas directamente a partir de sus vehículos de artillería (se prefieren las piezas autopropulsadas).</Spanish>
-    <French>Définit le nombre de sections d'artillerie à faire apparaître, mettre à 0 pour aucune. Tirées des groupes d'artillerie de la faction ; les factions dépourvues de groupes d'artillerie reçoivent à la place des batteries composées directement à partir de leurs véhicules d'artillerie (canons automoteurs privilégiés).</French>
+    <French>Définit le nombre de sections d'artillerie à faire apparaître, mettre à 0 pour aucune. Tirées des groupes d'artillerie de la faction; les factions dépourvues de groupes d'artillerie reçoivent à la place des batteries composées directement à partir de leurs véhicules d'artillerie (canons automoteurs privilégiés).</French>
     <Portuguese>Define a quantidade de seções de artilharia a serem geradas; defina 0 para nenhuma. Extraídas dos grupos de artilharia da facção; facções sem grupos de artilharia recebem baterias compostas diretamente a partir de seus veículos de artilharia (canhões autopropulsados preferidos).</Portuguese>
     <Russian>Задайте количество создаваемых артиллерийских подразделений, 0 - без артиллерии. Выбираются из артиллерийских групп фракции; для фракций без артиллерийских групп батареи формируются непосредственно из их артиллерийских машин (предпочтение отдаётся самоходным орудиям).</Russian>
 </Key>
@@ -106,7 +106,7 @@
     <Chinese>砲兵派系:</Chinese>
     <Chinesesimp>炮兵阵营:</Chinesesimp>
     <Spanish>Facción de artillería:</Spanish>
-    <French>Faction d'artillerie :</French>
+    <French>Faction d'artillerie:</French>
     <Portuguese>Facção de Artilharia:</Portuguese>
     <Russian>Фракция артиллерии:</Russian>
 </Key>
@@ -116,7 +116,7 @@
     <Chinese>可選。改由此支援派系提供放置的砲兵，而非編組派系——模擬由友軍分支支援的砲兵連，例如以RHS戰車部隊的火砲支援機械化步兵。僅列出擁有砲兵的派系，且支援派系須與同一陣營作戰。若支援派系有定義砲兵小隊則優先採用，否則改由其砲兵載具編成砲兵連。選擇「(無)」則使用編組派系。</Chinese>
     <Chinesesimp>可选。改从此供体阵营抽取部署的炮兵,而非使用编组阵营——用于模拟由友邻兵种附属支援的炮兵连,例如RHS坦克部队的火炮支援摩托化步兵。仅列出拥有炮兵编制的阵营,且供体阵营须与本方同一阵营作战。若供体阵营定义了炮兵小队则优先使用,否则由其炮兵车辆组成炮兵连。选择“(无)”则使用编组阵营。</Chinesesimp>
     <Spanish>Opcional. Obtiene la artillería colocada de esta facción donante en lugar de las facciones de la composición; representa baterías adscritas de una rama hermana, por ejemplo piezas de los Cuerpos de Tanques RHS apoyando a Infantería Motorizada. Solo se listan las facciones que disponen de artillería; la donante debe combatir por el mismo bando. Usa los grupos de artillería de la donante cuando los define, o en su defecto compone baterías a partir de sus vehículos de artillería. Seleccione (ninguna) para usar las facciones de la composición.</Spanish>
-    <French>Facultatif. Tire l'artillerie déployée de cette faction donneuse plutôt que des factions de la composition - modélise des batteries rattachées d'une branche sœur, par exemple des pièces des troupes blindées RHS appuyant l'infanterie motorisée. Seules les factions disposant d'artillerie sont listées ; la faction donneuse doit combattre dans le même camp. Utilise les groupes d'artillerie de la faction donneuse lorsqu'elle en définit, sinon compose les batteries à partir de ses véhicules d'artillerie. Sélectionnez (aucune) pour utiliser les factions de la composition.</French>
+    <French>Facultatif. Tire l'artillerie déployée de cette faction donneuse plutôt que des factions de la composition - modélise des batteries rattachées d'une branche sœur, par exemple des pièces des troupes blindées RHS appuyant l'infanterie motorisée. Seules les factions disposant d'artillerie sont listées; la faction donneuse doit combattre dans le même camp. Utilise les groupes d'artillerie de la faction donneuse lorsqu'elle en définit, sinon compose les batteries à partir de ses véhicules d'artillerie. Sélectionnez (aucune) pour utiliser les factions de la composition.</French>
     <Portuguese>Opcional. Extrai a artilharia posicionada desta facção doadora em vez das facções da composição - representa baterias vinculadas de um ramo irmão, por exemplo canhões das Tropas de Tanques da RHS apoiando os Fuzileiros Motorizados. Somente facções que possuem artilharia são listadas; a doadora deve lutar pelo mesmo lado. Usa os grupos de artilharia da doadora quando definidos, ou compõe baterias a partir de seus veículos de artilharia. Selecione (nenhuma) para usar as facções da composição.</Portuguese>
     <Russian>Необязательно. Формировать размещаемую артиллерию из этой фракции-донора вместо фракций состава - моделирует батареи, приданные из смежного рода войск, например орудия RHS танковых войск, поддерживающие мотострелков. Перечислены только фракции, располагающие артиллерией; донор должен воевать на той же стороне. Использует артиллерийские группы донора, если они определены, иначе формирует батареи из его артиллерийских машин. Выберите (нет), чтобы использовать фракции состава.</Russian>
 </Key>
@@ -258,11 +258,25 @@
     <English>Selects HQ objective close to the module or if unavailable spawns an HQ composition at the module position</English>
     <Chinesesimp>选择模块附近的总部目标,或者如果不可用,则在模块位置生成总部合成</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_CREATE_FIELD_HQ">
     <English>Auto Field HQ if empty:</English>
+    <Chinese>若為空則自動生成野戰指揮部:</Chinese>
+    <Chinesesimp>为空时自动生成野战指挥部:</Chinesesimp>
+    <Spanish>Auto Puesto de Mando de Campaña si está vacío:</Spanish>
+    <French>PC de campagne auto si vide:</French>
+    <Portuguese>Auto QG de Campanha se vazio:</Portuguese>
+    <Russian>Авто-полевой ШТАБ, если пусто:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_CREATE_FIELD_HQ_COMMENT">
     <English>Auto-fill fallback for the Spawn Composition picker. When the picker is empty and this is set to Yes, a random FieldHQ-class composition spawns near the module (validator-checked, 3-tier 50m / 200m / 500m search). When the picker has any tick or override class, this toggle is ignored and the picked composition takes precedence. Use when the spot needs an HQ but the specific composition doesn't matter.</English>
+    <Chinese>生成組合選取器為空時的自動填入備援。當選取器為空且此項設為「是」時，會在模組附近生成隨機的 FieldHQ 類編組（經驗證器檢查，採 3 層 50 公尺 / 200 公尺 / 500 公尺搜尋）。若選取器中有任何勾選項目或覆寫類別，此開關會被忽略，改以所選編組優先。適用於該地點需要指揮部但具體編組不重要的情況。</Chinese>
+    <Chinesesimp>生成组合选择器为空时的自动填充后备方案。当选择器为空且此项设为“是”时,会在模块附近生成一个随机的野战指挥部(FieldHQ)类组合(经过验证器检查,采用 50 米 / 200 米 / 500 米三级搜索)。当选择器中有任意勾选项或覆盖类别时,此开关将被忽略,已选组合优先生效。适用于需要指挥部但具体组合不重要的场合。</Chinesesimp>
+    <Spanish>Relleno automático de reserva para el selector de Composición de Aparición. Cuando el selector está vacío y esto está en Sí, aparece una composición aleatoria de clase FieldHQ cerca del módulo (validada, búsqueda de 3 niveles 50m / 200m / 500m). Cuando el selector tiene alguna marca o clase de anulación, este ajuste se ignora y la composición elegida tiene prioridad. Usar cuando el lugar necesita un puesto de mando pero la composición específica no importa.</Spanish>
+    <French>Solution de repli automatique pour le sélecteur de composition à faire apparaître. Quand le sélecteur est vide et que ce réglage est sur Oui, une composition aléatoire de classe PC de campagne apparaît près du module (validée, recherche en 3 paliers 50 m / 200 m / 500 m). Quand le sélecteur contient une coche ou une classe de remplacement, ce réglage est ignoré et la composition choisie a priorité. À utiliser quand l'emplacement nécessite un PC mais que la composition précise importe peu.</French>
+    <Portuguese>Preenchimento automático de contingência para o seletor de Composição de Surgimento. Quando o seletor está vazio e esta opção está definida como Sim, uma composição aleatória da classe FieldHQ surge perto do módulo (verificado por validador, busca em 3 níveis de 50m / 200m / 500m). Quando o seletor tem qualquer marcação ou classe substituta, esta opção é ignorada e a composição escolhida tem prioridade. Use quando o local precisa de um QG, mas a composição específica não importa.</Portuguese>
+    <Russian>Резервное автозаполнение для выбора состава размещения. Если выбор пуст и этот параметр установлен в "Да", рядом с модулем создаётся случайный состав класса FieldHQ (проверяется валидатором, трёхуровневый поиск 50 м / 200 м / 500 м). Если в выборе есть отметка или переопределение класса, этот переключатель игнорируется, и выбранный состав имеет приоритет. Используйте, когда точке нужен штаб, но конкретный состав не важен.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CMP_USAGE">
     <English>Place the Custom Military Objective module in the editor, select the desired Size, Priority and force composition. Custom factions can be entered in the text box (separated by a comma).</English>

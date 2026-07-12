@@ -10,36 +10,99 @@
     <English>ALiVE Combat Support System (CAS/Artillery/Transport)</English>
     <Chinesesimp>现役作战支持系统（空对地/火炮/运输）</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_ALLOW">
     <English>Access Item Categories:</English>
+    <Chinese>可用物品類別:</Chinese>
+    <Chinesesimp>可用物资类别:</Chinesesimp>
+    <Spanish>Categorías de artículos de acceso:</Spanish>
+    <French>Catégories d'objets d'accès:</French>
+    <Portuguese>Categorias de Itens de Acesso:</Portuguese>
+    <Russian>Категории предметов доступа:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_CUSTOM_ITEMS">
     <English>Custom Access Items (classnames):</English>
+    <Chinese>自訂可用物品（類別名稱）:</Chinese>
+    <Chinesesimp>自定义可用物资 (类名):</Chinesesimp>
+    <Spanish>Artículos de acceso personalizados (nombres de clase):</Spanish>
+    <French>Objets d'accès personnalisés (noms de classe):</French>
+    <Portuguese>Itens de Acesso Personalizados (nomes de classe):</Portuguese>
+    <Russian>Пользовательские предметы доступа (класснеймы):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_CUSTOM_ITEMS_COMMENT">
     <English>Comma-separated list of additional item classnames that should grant Combat Support access on top of the Access Item Categories above. Use this for mod-supplied items that don't fit a registered category (e.g. a custom faction's command tablet, a campaign-specific radio). Classnames are matched literally and case-insensitively against the player's assigned items / uniform / vest / backpack. Example: "MyMod_CommandTablet, AnotherMod_FieldRadio". Leave empty for none.</English>
+    <Chinese>以逗號分隔的額外物品類別名稱清單，這些物品會在上方「可用物品類別」之外額外授予戰鬥支援存取權。適用於不屬於已註冊類別的模組供應物品（例如自訂陣營的指揮平板、戰役專屬的無線電）。類別名稱會以逐字、不分大小寫的方式比對玩家所配戴的物品／制服／背心／背包。範例:"MyMod_CommandTablet, AnotherMod_FieldRadio"。留空表示無。</Chinese>
+    <Chinesesimp>以逗号分隔的附加物品类名列表,除上方可用物资类别外,持有这些物品也可获得战斗支援权限。适用于不属于已注册类别的模组自带物品(例如自定义阵营的指挥平板、战役专属电台)。类名匹配为逐字且不区分大小写,针对玩家已分配的物品/军服/背心/背包进行匹配。示例:"MyMod_CommandTablet, AnotherMod_FieldRadio"。留空表示无。</Chinesesimp>
+    <Spanish>Lista separada por comas de nombres de clase de artículos adicionales que deben conceder acceso al Apoyo de Combate, además de las Categorías de Artículos de Acceso anteriores. Úsela para artículos suministrados por mods que no encajan en una categoría registrada (p. ej. la tableta de mando de una facción personalizada, una radio específica de campaña). Los nombres de clase se comparan literalmente y sin distinguir mayúsculas frente a los artículos asignados, el uniforme, el chaleco o la mochila del jugador. Ejemplo: "MyMod_CommandTablet, AnotherMod_FieldRadio". Déjelo vacío para ninguno.</Spanish>
+    <French>Liste, séparée par des virgules, de noms de classe d'objets supplémentaires accordant l'accès au Soutien au combat en plus des Catégories d'objets d'accès ci-dessus. À utiliser pour des objets fournis par un mod qui ne correspondent à aucune catégorie enregistrée (ex. la tablette de commandement d'une faction personnalisée, une radio spécifique à une campagne). Les noms de classe sont comparés littéralement et sans distinction de casse aux objets/uniforme/gilet/sac à dos assignés au joueur. Exemple: « MyMod_CommandTablet, AnotherMod_FieldRadio ». Laisser vide pour aucun.</French>
+    <Portuguese>Lista separada por vírgulas de nomes de classe de itens adicionais que devem conceder acesso ao Suporte de Combate, além das Categorias de Itens de Acesso acima. Use isto para itens fornecidos por mods que não se encaixam em uma categoria registrada (ex.: um tablet de comando de uma facção personalizada, um rádio específico de campanha). Os nomes de classe são comparados literalmente e sem diferenciar maiúsculas/minúsculas com os itens atribuídos, uniforme, colete ou mochila do jogador. Exemplo: "MyMod_CommandTablet, AnotherMod_FieldRadio". Deixe vazio para nenhum.</Portuguese>
+    <Russian>Список класснеймов дополнительных предметов через запятую, которые должны предоставлять доступ к боевой поддержке в дополнение к категориям предметов доступа выше. Используйте для предметов из модов, не подходящих ни под одну зарегистрированную категорию (например, командный планшет пользовательской фракции, радиостанция кампании). Класснеймы сопоставляются буквально и без учёта регистра с назначенными игроку предметами / формой / жилетом / рюкзаком. Пример: "MyMod_CommandTablet, AnotherMod_FieldRadio". Оставьте пустым, если не требуется.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CAS_LIMIT_COMMENT">
     <English>Total number of times destroyed CAS aircraft can be replaced, shared across all CAS assets. 0 disables replacement.</English>
+    <Chinese>被摧毀的 CAS 飛機可重新替補的總次數，由所有 CAS 資產共用。0 表示停用替補。</Chinese>
+    <Chinesesimp>被摧毁的近距空中支援飞机可被替补的总次数,由所有近距空中支援单位共享。0 表示禁止替补。</Chinesesimp>
+    <Spanish>Número total de veces que las aeronaves de CAS destruidas pueden reemplazarse, compartido entre todos los activos de CAS. 0 desactiva el reemplazo.</Spanish>
+    <French>Nombre total de fois où les aéronefs CAS détruits peuvent être remplacés, partagé entre toutes les unités CAS. 0 désactive le remplacement.</French>
+    <Portuguese>Número total de vezes que aeronaves CAS destruídas podem ser substituídas, compartilhado entre todos os ativos CAS. 0 desativa a substituição.</Portuguese>
+    <Russian>Общее число раз, которое уничтоженные самолёты CAS могут быть заменены, общее для всех средств CAS. 0 отключает замену.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CAS_LIMIT">
     <English>CAS Respawn Limit:</English>
     <Chinesesimp>空中支援限额</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_TRANS_LIMIT_COMMENT">
     <English>Total number of times destroyed transport aircraft can be replaced, shared across all transport assets. 0 disables replacement.</English>
+    <Chinese>被摧毀的運輸機可重新替補的總次數，由所有運輸資產共用。0 表示停用替補。</Chinese>
+    <Chinesesimp>被摧毁的运输机可被替补的总次数,由所有运输单位共享。0 表示禁止替补。</Chinesesimp>
+    <Spanish>Número total de veces que las aeronaves de transporte destruidas pueden reemplazarse, compartido entre todos los activos de transporte. 0 desactiva el reemplazo.</Spanish>
+    <French>Nombre total de fois où les aéronefs de transport détruits peuvent être remplacés, partagé entre toutes les unités de transport. 0 désactive le remplacement.</French>
+    <Portuguese>Número total de vezes que aeronaves de transporte destruídas podem ser substituídas, compartilhado entre todos os ativos de transporte. 0 desativa a substituição.</Portuguese>
+    <Russian>Общее число раз, которое уничтоженные транспортные самолёты могут быть заменены, общее для всех транспортных средств. 0 отключает замену.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTY_LIMIT">
     <English>Artillery Respawn Limit:</English>
+    <Chinese>火砲重生上限:</Chinese>
+    <Chinesesimp>火炮重生上限:</Chinesesimp>
+    <Spanish>Límite de reaparición de artillería:</Spanish>
+    <French>Limite de réapparition de l'artillerie:</French>
+    <Portuguese>Limite de Reposição de Artilharia:</Portuguese>
+    <Russian>Лимит возрождения артиллерии:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTY_LIMIT_COMMENT">
     <English>Total number of times destroyed artillery batteries can be replaced, shared across all artillery assets. 0 disables replacement.</English>
+    <Chinese>被摧毀的火砲連可重新替補的總次數，由所有火砲資產共用。0 表示停用替補。</Chinese>
+    <Chinesesimp>被摧毁的炮兵单位可被替补的总次数,由所有火炮单位共享。0 表示禁止替补。</Chinesesimp>
+    <Spanish>Número total de veces que las baterías de artillería destruidas pueden reemplazarse, compartido entre todos los activos de artillería. 0 desactiva el reemplazo.</Spanish>
+    <French>Nombre total de fois où les batteries d'artillerie détruites peuvent être remplacées, partagé entre toutes les unités d'artillerie. 0 désactive le remplacement.</French>
+    <Portuguese>Número total de vezes que baterias de artilharia destruídas podem ser substituídas, compartilhado entre todos os ativos de artilharia. 0 desativa a substituição.</Portuguese>
+    <Russian>Общее число раз, которое уничтоженные артиллерийские батареи могут быть заменены, общее для всех артиллерийских средств. 0 отключает замену.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_DEBUG">
     <English>Enable Debug:</English>
+    <Chinese>啟用除錯:</Chinese>
+    <Chinesesimp>启用调试:</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
+    <French>Activer le débogage:</French>
+    <Portuguese>Ativar Depuração:</Portuguese>
+    <Russian>Включить отладку:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_DEBUG_COMMENT">
     <English>Writes Combat Support diagnostic logging to the RPT (CAS engagements, guided delivery, RTB and the rearm-by-landing cycle).</English>
+    <Chinese>將戰鬥支援除錯記錄寫入 RPT（CAS 交戰、導引投射、返航及降落補給循環）。</Chinese>
+    <Chinesesimp>将战斗支援诊断日志写入 RPT(近距空中支援交战、制导投放、返航及着陆再武装循环)。</Chinesesimp>
+    <Spanish>Escribe el registro de diagnóstico del Apoyo de Combate en el RPT (enganches de CAS, entrega guiada, RTB y el ciclo de rearme por aterrizaje).</Spanish>
+    <French>Écrit dans le RPT les journaux de diagnostic du Soutien au combat (engagements CAS, largage guidé, RTB et cycle de réarmement à l'atterrissage).</French>
+    <Portuguese>Grava no RPT os registros de diagnóstico do Suporte de Combate (engajamentos de CAS, entrega guiada, RTB e o ciclo de rearmamento por pouso).</Portuguese>
+    <Russian>Записывает диагностические логи боевой поддержки в RPT (атаки CAS, наведение управляемых боеприпасов, возврат на базу и цикл дозаправки посадкой).</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_AUDIO">
     <English>Radio Messages (Audio):</English>
@@ -53,30 +116,72 @@
     <English>Transport Respawn Limit:</English>
     <Chinesesimp>运输支援限额</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_RESPAWN_COMMENT">
     <English>Time before a destroyed CAS, Transport or Artillery asset is replaced.</English>
+    <Chinese>被摧毀的 CAS、運輸或火砲資產被替補前的等待時間。</Chinese>
+    <Chinesesimp>被摧毁的近距空中支援、运输或火炮单位被替补前所需的时间。</Chinesesimp>
+    <Spanish>Tiempo antes de que un activo destruido de CAS, Transporte o Artillería sea reemplazado.</Spanish>
+    <French>Délai avant qu'une unité CAS, Transport ou Artillerie détruite ne soit remplacée.</French>
+    <Portuguese>Tempo até que um ativo de CAS, Transporte ou Artilharia destruído seja substituído.</Portuguese>
+    <Russian>Время до замены уничтоженного средства CAS, транспорта или артиллерии.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_RESPAWN">
     <English>Respawn Time:</English>
     <Chinesesimp>支援间隔时间</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_ALLOW_COMMENT">
     <English>Pick one or more equipment categories. The player can call in Combat Support if they carry any item from any ticked category (e.g. Laser Designators covers vanilla and mod-supplied designator classes). Categories from unloaded mods drop off the list automatically. Defaults to Laser Designators. For mod-supplied items that don't belong to a registered category, use the Custom Access Items (classnames) field below to add their classnames directly.</English>
+    <Chinese>選取一個或多個裝備類別。玩家只要攜帶任一勾選類別中的物品，即可呼叫戰鬥支援（例如「雷射標定器」涵蓋原版及模組供應的標定器類別）。未載入模組的類別會自動從清單中移除。預設為雷射標定器。若模組供應的物品不屬於任何已註冊類別，請使用下方的「自訂可用物品（類別名稱）」欄位直接加入其類別名稱。</Chinese>
+    <Chinesesimp>选择一个或多个装备类别。玩家只要携带任一已勾选类别中的物品(例如激光指示器涵盖原版及模组自带的指示器类别),即可呼叫战斗支援。未加载模组的类别会自动从列表中移除。默认使用激光指示器。若模组自带物品不属于已注册类别,请使用下方的“自定义可用物资 (类名)”字段直接添加其类名。</Chinesesimp>
+    <Spanish>Elija una o más categorías de equipo. El jugador puede solicitar Apoyo de Combate si lleva cualquier artículo de cualquier categoría marcada (p. ej. Designadores Láser cubre las clases de designadores tanto estándar como suministradas por mods). Las categorías de mods no cargados se eliminan automáticamente de la lista. Por defecto, Designadores Láser. Para artículos suministrados por mods que no pertenecen a una categoría registrada, use el campo Artículos de Acceso Personalizados (nombres de clase) más abajo para añadir sus nombres de clase directamente.</Spanish>
+    <French>Choisissez une ou plusieurs catégories d'équipement. Le joueur peut appeler le Soutien au combat s'il porte un objet de n'importe quelle catégorie cochée (ex. Désignateurs laser couvre les classes de désignateurs vanilla et fournies par des mods). Les catégories des mods non chargés disparaissent automatiquement de la liste. Par défaut Désignateurs laser. Pour les objets fournis par un mod qui n'appartiennent à aucune catégorie enregistrée, utilisez le champ Objets d'accès personnalisés (noms de classe) ci-dessous pour ajouter directement leurs noms de classe.</French>
+    <Portuguese>Escolha uma ou mais categorias de equipamento. O jogador pode acionar o Suporte de Combate se estiver portando qualquer item de qualquer categoria marcada (ex.: Designadores a Laser cobre classes de designadores vanilla e fornecidas por mods). Categorias de mods não carregados são removidas automaticamente da lista. Padrão: Designadores a Laser. Para itens fornecidos por mods que não pertencem a uma categoria registrada, use o campo Itens de Acesso Personalizados (nomes de classe) abaixo para adicioná-los diretamente.</Portuguese>
+    <Russian>Выберите одну или несколько категорий снаряжения. Игрок может вызвать боевую поддержку, если несёт при себе любой предмет из любой отмеченной категории (например, "Лазерные целеуказатели" охватывает как штатные, так и модовые классы целеуказателей). Категории из незагруженных модов автоматически исчезают из списка. По умолчанию — лазерные целеуказатели. Для предметов из модов, не подходящих ни под одну зарегистрированную категорию, используйте поле "Пользовательские предметы доступа (класснеймы)" ниже, чтобы добавить их класснеймы напрямую.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CS_ERROR1">
     <English>Only one Combat Support module can be used</English>
     <Chinesesimp>只能使用一个作战支持模块</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_USAGE">
     <English>Place the module and sync it to SUP CAS, SUP Transport and/or SUP Artillery modules.</English>
+    <Chinese>放置此模組並將其同步至 SUP CAS、SUP 運輸及／或 SUP 火砲模組。</Chinese>
+    <Chinesesimp>放置该模块并将其同步至近距空中支援、运输及/或火炮支援模块。</Chinesesimp>
+    <Spanish>Coloque el módulo y sincronícelo con los módulos SUP CAS, SUP Transporte y/o SUP Artillería.</Spanish>
+    <French>Placez le module et synchronisez-le avec des modules SUP CAS, SUP Transport et/ou SUP Artillerie.</French>
+    <Portuguese>Posicione o módulo e sincronize-o aos módulos SUP CAS, SUP Transporte e/ou SUP Artilharia.</Portuguese>
+    <Russian>Разместите модуль и синхронизируйте его с модулями SUP CAS, SUP Transport и/или SUP Artillery.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_SINGLEOP">
     <English>Support Access:</English>
+    <Chinese>支援存取權:</Chinese>
+    <Chinesesimp>支援权限:</Chinesesimp>
+    <Spanish>Acceso al apoyo:</Spanish>
+    <French>Accès au soutien:</French>
+    <Portuguese>Acesso ao Suporte:</Portuguese>
+    <Russian>Доступ к поддержке:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_SINGLEOP_COMMENT">
     <English>Who may call combat support from the tablet. 'First player only' (default) restricts it to a single operator per side; if that player leaves the game, the slot passes to another player automatically. 'All players' gives every player the support tablet.</English>
+    <Chinese>誰可以從平板呼叫戰鬥支援。「僅限第一位玩家」（預設）限制每個陣營僅一名操作員；若該玩家離開遊戲，該職位會自動轉移給其他玩家。「所有玩家」則讓每位玩家都擁有支援平板。</Chinese>
+    <Chinesesimp>谁可以通过平板呼叫战斗支援。“仅限首名玩家”(默认)将其限制为每个阵营一名操作员;若该玩家离开游戏,该席位会自动转交给另一名玩家。“所有玩家”则让每名玩家都拥有支援平板。</Chinesesimp>
+    <Spanish>Quién puede solicitar apoyo de combate desde la tableta. 'Solo el primer jugador' (por defecto) lo restringe a un único operador por bando; si ese jugador abandona la partida, el puesto pasa automáticamente a otro jugador. 'Todos los jugadores' otorga la tableta de apoyo a todos los jugadores.</Spanish>
+    <French>Qui peut appeler le Soutien au combat depuis la tablette. « Premier joueur uniquement » (par défaut) restreint l'accès à un seul opérateur par camp; si ce joueur quitte la partie, le créneau passe automatiquement à un autre joueur. « Tous les joueurs » donne la tablette de soutien à chaque joueur.</French>
+    <Portuguese>Quem pode acionar o suporte de combate pelo tablet. 'Somente o primeiro jogador' (padrão) restringe a um único operador por lado; se esse jogador sair do jogo, a vaga passa automaticamente para outro jogador. 'Todos os jogadores' dá o tablet de suporte a todos os jogadores.</Portuguese>
+    <Russian>Кто может вызывать боевую поддержку с планшета. "Только первый игрок" (по умолчанию) ограничивает вызов одним оператором на сторону; если этот игрок покидает игру, слот автоматически переходит другому игроку. "Все игроки" даёт планшет поддержки каждому игроку.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_NOTOPERATOR">
     <English>You are not the assigned Combat Support operator.</English>
+    <Chinese>您不是指定的戰鬥支援操作員。</Chinese>
+    <Chinesesimp>你不是指定的战斗支援操作员。</Chinesesimp>
+    <Spanish>No es el operador de Apoyo de Combate asignado.</Spanish>
+    <French>Vous n'êtes pas l'opérateur assigné du Soutien au combat.</French>
+    <Portuguese>Você não é o operador de Suporte de Combate designado.</Portuguese>
+    <Russian>Вы не являетесь назначенным оператором боевой поддержки.</Russian>
 </Key>
 </Container></Package></Project>
