@@ -84,7 +84,7 @@
     <English>Artillery Count:</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT_COMMENT">
-    <English>Set count of self-propelled artillery sections to be spawned, set to 0 for none. Drawn from the faction's artillery groups; factions without artillery groups place none and log a note.</English>
+    <English>Set count of artillery sections to be spawned, set to 0 for none. Drawn from the faction's artillery groups; factions without artillery groups get batteries composed directly from their artillery vehicles instead (self-propelled guns preferred).</English>
 </Key>
 <Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION">
     <English>Artillery Faction:</English>
