@@ -563,4 +563,24 @@
     <Portuguese>Fator pelo qual startForceStrength reduz na perda de um objetivo. Só reduz quando o valor for &gt; 0</Portuguese>
     <Russian>Коэффициент уменьшения startForceStrength при потере объекта. Действует только при значении &gt; 0</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_CONVOY_TASKS">
+    <English>Convoy Escort/Ambush Tasks:</English>
+    <Chinese>車隊護送/伏擊任務：</Chinese>
+    <Chinesesimp>车队护送/伏击任务：</Chinesesimp>
+    <Spanish>Tareas de escolta/emboscada de convoy:</Spanish>
+    <French>Tâches d'escorte/embuscade de convoi:</French>
+    <Portuguese>Tarefas de escolta/emboscada de comboio:</Portuguese>
+    <Russian>Задачи сопровождения/засады на конвой:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ML_CONVOY_TASKS_COMMENT">
+    <English>Generate C2ISTAR tasks that ride real resupply convoys: the delivering side is asked to protect the truck, hostile sides to ambush it. Only convoy legs over 1 km produce a task. Requires a C2ISTAR module.</English>
+    <Chinese>產生搭乘實際補給車隊的 C2ISTAR 任務：運送方需護送卡車，敵對方則進行伏擊。僅超過 1 公里的車隊路段會產生任務。需要 C2ISTAR 模組。</Chinese>
+    <Chinesesimp>生成搭乘实际补给车队的 C2ISTAR 任务：运送方需护送卡车，敌对方则进行伏击。仅超过 1 公里的车队路段会产生任务。需要 C2ISTAR 模块。</Chinesesimp>
+    <Spanish>Genera tareas de C2ISTAR sobre convoyes de reabastecimiento reales: se pide al bando que entrega que proteja el camión y a los bandos hostiles que lo embosquen. Solo los trayectos de más de 1 km generan una tarea. Requiere un módulo C2ISTAR.</Spanish>
+    <French>Génère des tâches C2ISTAR sur de vrais convois de ravitaillement: le camp livreur doit protéger le camion, les camps hostiles doivent l'embusquer. Seuls les trajets de plus de 1 km produisent une tâche. Nécessite un module C2ISTAR.</French>
+    <Portuguese>Gera tarefas C2ISTAR sobre comboios de reabastecimento reais: pede-se ao lado que entrega para proteger o caminhão e aos lados hostis para emboscá-lo. Apenas trechos de comboio acima de 1 km geram uma tarefa. Requer um módulo C2ISTAR.</Portuguese>
+    <Russian>Создаёт задачи C2ISTAR на реальных конвоях снабжения: доставляющей стороне поручается защитить грузовик, враждебным сторонам — устроить засаду. Задача создаётся только для участков длиннее 1 км. Требуется модуль C2ISTAR.</Russian>
+</Key>
 </Container></Package></Project>

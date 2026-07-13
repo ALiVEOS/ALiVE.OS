@@ -420,12 +420,37 @@
 	[_taskData,"description","We have reliable intelligence of a %1 vehicle operating in the area near %2.  Find, fix and destroy the vehicles before they leave the area."] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_start",[["HQ","We have reliable intelligence of a %1 vehicle operating in the area near %2.  Find, fix and destroy the vehicles before they leave the area, Over!"],["PLAYERS","Roger, moving to location now, Out"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"chat_success",[["PLAYERS","Enemy vehicles confirmed neutralised, Over"],["HQ","Roger, well done.  Standby for further taskings, Out!"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["PLAYERS","The enemy vehicles slipped the net, Over"],["HQ","Understood.  Stand down, we'll re-task, Out!"]]] call ALIVE_fnc_hashSet;
 	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
 	[_tasksData,"Destroy",_taskData] call ALIVE_fnc_hashSet;
 
 	_options set [count _options,_tasksData];
 
 	[ALIVE_generatedTasks, "DestroyVehicles", ["Destroy the Vehicles",_options]] call ALIVE_fnc_hashSet;
+
+// Protect Convoy Task
+
+	_options = [];
+
+	_tasksData = [] call ALIVE_fnc_hashCreate;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Protect Resupply Convoy"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","A friendly resupply convoy is en route to %1."] call ALIVE_fnc_hashSet;
+	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Escort the resupply convoy"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","A friendly resupply truck is running supplies forward to %1.  Screen its route and keep it alive until the supplies are delivered."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","A friendly resupply truck is inbound to %1.  Screen its route and keep it alive until the supplies are delivered, Over!"],["PLAYERS","Roger, moving to cover the convoy, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","Convoy delivered its supplies, Over"],["HQ","Good work.  Standby for further taskings, Out!"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["PLAYERS","We lost the convoy, Over"],["HQ","Understood.  Stand down, Out!"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Escort",_taskData] call ALIVE_fnc_hashSet;
+
+	_options set [count _options,_tasksData];
+
+	[ALIVE_generatedTasks, "ProtectConvoy", ["Protect the Convoy",_options]] call ALIVE_fnc_hashSet;
 
 // SEAD Task
 

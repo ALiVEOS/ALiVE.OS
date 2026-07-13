@@ -89,6 +89,19 @@ class CfgVehicles
                                     class FP50 { name = "$STR_ALIVE_ML_FORCE_POOL_50"; value = "50"; };
                                 };
                         };
+                        // #263 - generate C2ISTAR protect/ambush tasks that ride real resupply convoys
+                        class generateConvoyTasks : Combo
+                        {
+                                property = "ALiVE_mil_logistics_generateConvoyTasks";
+                                displayName = "$STR_ALIVE_ML_CONVOY_TASKS";
+                                tooltip = "$STR_ALIVE_ML_CONVOY_TASKS_COMMENT";
+                                defaultValue = """true""";
+                                class Values
+                                {
+                                    class Yes { name = "Yes"; value = "true"; default = 1; };
+                                    class No { name = "No"; value = "false"; };
+                                };
+                        };
                         // ---- Reinforcement Types --------------------------------------------
                         class HDR_REINF : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_REINF"; displayName = "REINFORCEMENT TYPES"; };
                         class allowInfantryReinforcement : Combo

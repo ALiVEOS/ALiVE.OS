@@ -141,6 +141,20 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "generateConvoyTasks": {
+        // #263 - raise C2ISTAR protect/ambush tasks for real resupply convoys.
+        // Read the short name first, then the 3DEN property name (which the
+        // editor writes directly), so it works with or without a framework copy
+        if (_args isEqualType true) then {
+            _logic setVariable ["generateConvoyTasks", _args];
+        } else {
+            _args = _logic getVariable ["generateConvoyTasks", _logic getVariable ["ALiVE_mil_logistics_generateConvoyTasks", true]];
+        };
+        if (_args isEqualType "") then { _args = (toLower _args) == "true"; };
+        if !(_args isEqualType true) then { _args = true; };
+        _logic setVariable ["generateConvoyTasks", _args];
+        _result = _args;
+    };
     case "persistent": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["persistent", _args];
@@ -3673,9 +3687,126 @@ switch(_operation) do {
                 ["LOGCOM_RESUPPLY: Truck %1 dispatched from %2 to %3 (%4), ETA %5s",
                     _truckClass, _sourcePos, _callsign, _assetType, round _timeout] call ALiVE_fnc_dump;
 
+                // #263 - protect/ambush tasks ride this real truck. No per-asset
+                // cooldown: the watchdog's inProgress flag + 600s cooldown already
+                // cap dispatches, so this fires once per truck spawn; a retry truck
+                // gets fresh tasks (the previous set is terminal via the latch,
+                // written before the old truck deletes). Only legs over 1km - the
+                // dynamic source picks the closest objective, and a short leg would
+                // auto-succeed on the monitor's first <100m poll with no play.
+                private _convoyID = "";
+                if (([_logic,"generateConvoyTasks"] call MAINCLASS)
+                    && {["ALiVE_mil_c2istar"] call ALiVE_fnc_IsModuleAvailable}
+                    && {_distance > 1000}) then {
+
+                    if (isNil "ALIVE_MLConvoyTaskStates") then { ALIVE_MLConvoyTaskStates = [] call ALIVE_fnc_hashCreate; };
+                    // prune: drop terminal entries older than 2h; flip a stale
+                    // "enroute" to "aborted" rather than removing it (a removed
+                    // key would make a still-live task's hashGet default read
+                    // "enroute" forever)
+                    {
+                        private _entry = [ALIVE_MLConvoyTaskStates, _x, ["", 0]] call ALIVE_fnc_hashGet;
+                        if (serverTime - (_entry select 1) > 7200) then {
+                            if ((_entry select 0) == "enroute") then {
+                                [ALIVE_MLConvoyTaskStates, _x, ["aborted", serverTime]] call ALIVE_fnc_hashSet;
+                            } else {
+                                [ALIVE_MLConvoyTaskStates, _x] call ALIVE_fnc_hashRem;
+                            };
+                        };
+                    } forEach +(ALIVE_MLConvoyTaskStates select 1);
+
+                    private _cvyN = (missionNamespace getVariable ["ALIVE_MLConvoyCounter", 0]) + 1;
+                    missionNamespace setVariable ["ALIVE_MLConvoyCounter", _cvyN];
+                    _convoyID = format ["MLCVY_%1", _cvyN];   // no '-' so task-source parsing round-trips
+                    [ALIVE_MLConvoyTaskStates, _convoyID, ["enroute", serverTime]] call ALIVE_fnc_hashSet;
+
+                    private _ownSideObj = [_eventSide] call ALiVE_fnc_sideTextToObject;
+                    private _raised = 0;
+                    private _popEffectFree = true;
+
+                    // lead faction of a hostile OPCOM - the Protect task's enemy
+                    // faction, and the Destroy-side fallback when a player's own
+                    // object isn't resolvable yet (JIP)
+                    private _hostileOpcomFaction = "";
+                    {
+                        if (_x isEqualType [] && {_hostileOpcomFaction == ""}) then {
+                            private _oSide = [_x, "side", ""] call ALiVE_fnc_HashGet;
+                            if (_oSide in ["EAST","WEST","GUER"] && {!([[_oSide] call ALiVE_fnc_sideTextToObject, _ownSideObj] call BIS_fnc_sideIsFriendly)}) then {
+                                _hostileOpcomFaction = ([_x, "factions", []] call ALiVE_fnc_HashGet) param [0, ""];
+                            };
+                        };
+                    } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+
+                    // Protect task - to the convoy's own side
+                    private _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                    if (count (_ownPlayers select 1) > 0) then {
+                        private _enemyFaction = _hostileOpcomFaction;
+                        if (_enemyFaction == "") then {
+                            // no hostile OPCOM (player-only enemy) - use a hostile player's faction
+                            {
+                                if (_enemyFaction == "" && {!([[_x] call ALiVE_fnc_sideTextToObject, _ownSideObj] call BIS_fnc_sideIsFriendly)}) then {
+                                    private _hp = [_x] call ALiVE_fnc_getPlayersDataSource;
+                                    if (count (_hp select 1) > 0) then {
+                                        private _pObj = [(_hp select 1) select 0] call ALIVE_fnc_getPlayerByUID;
+                                        if (!isNull _pObj) then { _enemyFaction = faction _pObj; };
+                                    };
+                                };
+                            } forEach (["WEST","EAST","GUER"] - [_eventSide]);
+                        };
+                        if (_enemyFaction != "") then {
+                            private _taskData = [format ["%1_P", _convoyID], "LOGCOM", _eventSide, _eventFaction,
+                                "ProtectConvoy", "NULL", +_targetPos, [_ownPlayers select 1, _ownPlayers select 0],
+                                _enemyFaction, "Y", "Side", [_truck], [_convoyID, +_targetPos, true]];
+                            private _tEvent = ["TASK_GENERATE", _taskData, "MilLogistics"] call ALIVE_fnc_event;
+                            [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
+                            _raised = _raised + 1; _popEffectFree = false;
+                        };
+                    };
+
+                    // Destroy/ambush task - to each hostile side that has players
+                    {
+                        private _hSideText = _x;
+                        if (!([[_hSideText] call ALiVE_fnc_sideTextToObject, _ownSideObj] call BIS_fnc_sideIsFriendly)) then {
+                            private _hPlayers = [_hSideText] call ALiVE_fnc_getPlayersDataSource;
+                            if (count (_hPlayers select 1) > 0) then {
+                                private _hFaction = "";
+                                private _pObj = [(_hPlayers select 1) select 0] call ALIVE_fnc_getPlayerByUID;
+                                if (!isNull _pObj) then { _hFaction = faction _pObj; };
+                                if (_hFaction == "") then { _hFaction = _hostileOpcomFaction; };
+                                if (_hFaction != "") then {
+                                    private _revealPos = _truckSpawnPos getPos [100 + random 200, random 360];
+                                    private _taskData = [format ["%1_D_%2", _convoyID, _hSideText], "LOGCOM", _hSideText, _hFaction,
+                                        "DestroyVehicles", "NULL", _revealPos, [_hPlayers select 1, _hPlayers select 0],
+                                        _eventFaction, "Y", "Side", [_truck], [_convoyID, +_targetPos, _popEffectFree]];
+                                    private _tEvent = ["TASK_GENERATE", _taskData, "MilLogistics"] call ALIVE_fnc_event;
+                                    [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
+                                    _raised = _raised + 1; _popEffectFree = false;
+                                };
+                            };
+                        };
+                    } forEach (["WEST","EAST","GUER"] - [_eventSide]);
+
+                    if (_raised > 0) then {
+                        ["LOGCOM_RESUPPLY: Raised %1 convoy task(s) for %2 (convoyID %3)", _raised, _callsign, _convoyID] call ALiVE_fnc_dump;
+                    } else {
+                        [ALIVE_MLConvoyTaskStates, _convoyID] call ALIVE_fnc_hashRem;
+                        _convoyID = "";
+                    };
+                };
+
                 // Spawn delivery monitor. Pass sourcePos so the truck can RTB after servicing.
-                [_truck, _targetVeh, _timeout, _callsign, _sourcePos] spawn {
-                    params ["_truck", "_targetVeh", "_timeout", "_callsign", "_sourcePos"];
+                [_truck, _targetVeh, _timeout, _callsign, _sourcePos, _convoyID] spawn {
+                    params ["_truck", "_targetVeh", "_timeout", "_callsign", "_sourcePos", "_convoyID"];
+
+                    // #263 - latch the convoy's terminal outcome into the shared
+                    // state hash BEFORE the truck is deleted, so the protect/ambush
+                    // tasks read the real result (destroyed vs arrived vs aborted)
+                    // after the object is gone
+                    private _fnc_latchConvoy = {
+                        if (_convoyID != "" && {!isNil "ALIVE_MLConvoyTaskStates"}) then {
+                            [ALIVE_MLConvoyTaskStates, _convoyID, [_this, serverTime]] call ALIVE_fnc_hashSet;
+                        };
+                    };
 
                     private _startTime = serverTime;
 
@@ -3683,6 +3814,7 @@ switch(_operation) do {
                         // Protection: truck destroyed.
                         if (!alive _truck) exitWith {
                             ["LOGCOM_RESUPPLY: Truck destroyed en route to %1", _callsign] call ALiVE_fnc_dump;
+                            "destroyed" call _fnc_latchConvoy;
                             _targetVeh setVariable ["ALIVE_resupply_state", "failed", true];
                             _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
                             _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
@@ -3695,6 +3827,7 @@ switch(_operation) do {
                         // Protection: target asset destroyed.
                         if (isNull _targetVeh || {!alive _targetVeh}) exitWith {
                             ["LOGCOM_RESUPPLY: Target %1 destroyed, aborting truck", _callsign] call ALiVE_fnc_dump;
+                            "aborted" call _fnc_latchConvoy;
                             {deleteVehicle _x} forEach (crew _truck);
                             deleteVehicle _truck;
                             private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
@@ -3706,6 +3839,7 @@ switch(_operation) do {
                         // after it down the runway (re-triggers via the watchdog once it's parked).
                         if (_targetVeh isKindOf "Air" && {((getPosATL _targetVeh) select 2 > 5) || {abs (speed _targetVeh) > 15}}) exitWith {
                             ["LOGCOM_RESUPPLY: %1 airborne/moving, cancelling truck chase", _callsign] call ALiVE_fnc_dump;
+                            "aborted" call _fnc_latchConvoy;
                             {deleteVehicle _x} forEach (crew _truck);
                             deleteVehicle _truck;
                             _targetVeh setVariable ["ALIVE_resupply_state", "cancelled", true];
@@ -3717,6 +3851,10 @@ switch(_operation) do {
 
                         // Protection: timeout expired.
                         if (serverTime - _startTime > _timeout) exitWith {
+                            // both the retry and the force-service branches end
+                            // this convoy - the tasks cancel, players shouldn't
+                            // win or lose off AI pathing/timeout
+                            "aborted" call _fnc_latchConvoy;
                             private _retries = _targetVeh getVariable ["ALIVE_resupply_retries", 0];
                             if (_retries < RESUPPLY_MAX_RETRIES) then {
                                 ["LOGCOM_RESUPPLY: Truck timed out for %1 (attempt %2/%3), retrying",
@@ -3745,6 +3883,7 @@ switch(_operation) do {
                         // Success: truck within 100m of target.
                         if (_truck distance _targetVeh < 100) exitWith {
                             ["LOGCOM_RESUPPLY: Truck arrived at %1, servicing...", _callsign] call ALiVE_fnc_dump;
+                            "arrived" call _fnc_latchConvoy;
                             _targetVeh setVariable ["ALIVE_resupply_state", "servicing", true];
 
                             // Simulate service time.

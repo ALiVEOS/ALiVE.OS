@@ -117,7 +117,13 @@ switch (_taskState) do {
                 };
                 _vehicleType = _vehicleProfile select 2 select 11;
             } else {
-                _vehiclePosition = position _targetVehicle;
+                // convoy/counter-battery callers pass objects at index 11 with a
+                // deliberately fuzzed reveal location (index 6) - keep it, don't
+                // leak the object's true spawn position. Only the auto path (no
+                // index 11) snaps the marker to the object itself.
+                if (count _task <= 11) then {
+                    _vehiclePosition = position _targetVehicle;
+                };
                 _vehicleType = typeof _targetVehicle;
             };
 
@@ -214,7 +220,23 @@ switch (_taskState) do {
             // sets busy on each — OPCOM gates troop selection on the
             // entity's busy flag, not the vehicle's. Released centrally
             // on Succeeded / Failed / Canceled via the taskHandler hook.
-            [_newTaskID, _targetVehicles] call ALIVE_fnc_taskLockProfiles;
+            // Only profile-ID (string) targets expand into crew entities;
+            // raw objects (convoy trucks) have none and taskLockProfiles
+            // expects ID strings, so it is skipped for object targets.
+            if (_targetVehicles isEqualTypeAll "") then {
+                [_newTaskID, _targetVehicles] call ALIVE_fnc_taskLockProfiles;
+            };
+
+            // #263: convoy ambush metadata (index 12) - lets the Destroy stage
+            // read the mil_logistics latch instead of bare `alive`, which can't
+            // tell "deleted after delivery" from "destroyed".
+            if (count _task > 12) then {
+                private _convoyPayload = _task select 12;
+                [_taskParams,"convoyID",_convoyPayload select 0] call ALIVE_fnc_hashSet;
+                [_taskParams,"destPos",_convoyPayload select 1] call ALIVE_fnc_hashSet;
+                [_taskParams,"popEffect",_convoyPayload select 2] call ALIVE_fnc_hashSet;
+                [_taskParams,"nullTicks",0] call ALIVE_fnc_hashSet;
+            };
 
             // return the created tasks and params
 
@@ -253,6 +275,95 @@ switch (_taskState) do {
 
             [_params,"lastState","Destroy"] call ALIVE_fnc_hashSet;
         };
+
+        // #263: convoy ambush - the target is a real truck object, so its
+        // outcome is read from the mil_logistics latch. Bare `alive` cannot
+        // tell "deleted after delivery" (ambush failed) from "destroyed"
+        // (ambush succeeded), because `alive objNull` is false either way.
+        private _convoyID = [_params,"convoyID",""] call ALIVE_fnc_hashGet;
+
+        if (_convoyID != "") then {
+
+            private _popEffect = [_params,"popEffect",false] call ALIVE_fnc_hashGet;
+            private _destPos = [_params,"destPos",_taskPosition] call ALIVE_fnc_hashGet;
+            private _cvyEnemyFaction = [_params,"enemyFaction"] call ALIVE_fnc_hashGet;
+            private _cvyEnemySide = _cvyEnemyFaction call ALiVE_fnc_factionSide;
+            private _convoyState = ([ALIVE_MLConvoyTaskStates, _convoyID, ["enroute",0]] call ALIVE_fnc_hashGet) select 0;
+
+            private _anyAlive = false;
+            private _anyNonNull = false;
+            {
+                if (!isNull _x) then {
+                    _anyNonNull = true;
+                    if (alive _x) then { _anyAlive = true; };
+                };
+            } forEach _vehicleProfiles;
+            // truck died before the ML monitor latched "destroyed"
+            if (_convoyState == "enroute" && _anyNonNull && {!_anyAlive}) then { _convoyState = "destroyed"; };
+
+            switch (_convoyState) do {
+                case "destroyed":{
+                    // ambush succeeded
+                    [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+                    _task set [8,"Succeeded"];
+                    _task set [10,"N"];
+                    _result = _task;
+                    [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                    [_taskID] call ALIVE_fnc_taskReleaseTaskLocks;
+                    ["chat_success",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                    [_currentTaskDialog,_taskSide,_taskFaction] call ALIVE_fnc_taskCreateReward;
+                    if (_popEffect isEqualTo true) then {
+                        [_destPos,_taskSide,10,["","DestroyVehicles",3000,"success"]] call ALIVE_fnc_taskApplyPopulationEffect;
+                    };
+                };
+                case "arrived":{
+                    // convoy got through - ambush failed
+                    [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+                    _task set [8,"Failed"];
+                    _task set [10,"N"];
+                    _result = _task;
+                    [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                    [_taskID] call ALIVE_fnc_taskReleaseTaskLocks;
+                    ["chat_failed",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
+                    if (_popEffect isEqualTo true) then {
+                        [_destPos,_taskSide,10,["","DestroyVehicles",3000,"failure"]] call ALIVE_fnc_taskApplyPopulationEffect;
+                    };
+                };
+                case "aborted":{
+                    [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+                    _task set [8,"Canceled"];
+                    _task set [10,"N"];
+                    _result = _task;
+                    [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                    [_taskID] call ALIVE_fnc_taskReleaseTaskLocks;
+                };
+                default {
+                    // still enroute
+                    if (!_anyNonNull) then {
+                        // convoy objects gone but no terminal latch - the ML
+                        // monitor likely died; cancel after 3 idle ticks
+                        private _nullTicks = ([_params,"nullTicks",0] call ALIVE_fnc_hashGet) + 1;
+                        [_params,"nullTicks",_nullTicks] call ALIVE_fnc_hashSet;
+                        if (_nullTicks >= 3) then {
+                            [_params,"nextTask",""] call ALIVE_fnc_hashSet;
+                            _task set [8,"Canceled"];
+                            _task set [10,"N"];
+                            _result = _task;
+                            [_taskPlayers,_taskID] call ALIVE_fnc_taskDeleteMarkersForPlayers;
+                            [_taskID] call ALIVE_fnc_taskReleaseTaskLocks;
+                        };
+                    } else {
+                        [_params,"nullTicks",0] call ALIVE_fnc_hashSet;
+                        {
+                            if (alive _x) then {
+                                [getPos _x,_cvyEnemySide,_taskPlayers,_taskID,"vehicle",typeOf _x,_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                            };
+                        } forEach _vehicleProfiles;
+                    };
+                };
+            };
+
+        } else {
 
         if (typename (_vehicleProfiles select 0) == "STRING") then {
             _vehiclesState = [_vehicleProfiles] call ALIVE_fnc_taskGetStateOfVehicleProfiles;
@@ -301,6 +412,8 @@ switch (_taskState) do {
                 [_position,_taskEnemySide,_taskPlayers,_taskID,"vehicle",_objectType,_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
 
             } forEach _profiles;
+
+        };
 
         };
 
