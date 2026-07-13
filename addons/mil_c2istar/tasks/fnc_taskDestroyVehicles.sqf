@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskState","_taskID","_task","_params","_debug","_result","_nextState"];
@@ -56,6 +57,16 @@ switch (_taskState) do {
         if (_taskEnemyFaction == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskEnemyFaction!"] call ALiVE_fnc_Dump};
         if (_taskApplyType == "") exitwith {["C2ISTAR - Task DestroyVehicles - Wrong input for _taskApplyType!"] call ALiVE_fnc_Dump};
 
+        // #426 - heli shoot-down variant: payload (index 12) element 3 flags it,
+        // element 4 carries the heli's vehicle profile ID. Existing callers pass
+        // a 3-element (convoy) or no index-12 payload, so _isHeli stays false.
+        private _isHeli = false;
+        private _heliProfileID = "";
+        if (count _task > 12) then {
+            private _p = _task select 12;
+            _isHeli = (_p param [3, ""]) == "HELI";
+            _heliProfileID = _p param [4, ""];
+        };
 
         _taskEnemySide = _taskEnemyFaction call ALiVE_fnc_factionSide;
         _taskEnemySide = [_taskEnemySide] call ALIVE_fnc_sideObjectToNumber;
@@ -112,10 +123,15 @@ switch (_taskState) do {
                 // psychic) - keep it. The auto/player-anchored path computes
                 // its target HERE and must snap the marker to the vehicle's
                 // true profile position, not the requesting player's location
-                if (count _task <= 11) then {
-                    _vehiclePosition = _vehicleProfile select 2 select 2;
+                // #426 - a heli target is a profile-ID string that could be
+                // reaped between raise and init; getProfile then returns nil.
+                // Guard the dereferences (position stays _taskLocation, type "").
+                if (!isNil "_vehicleProfile") then {
+                    if (count _task <= 11) then {
+                        _vehiclePosition = _vehicleProfile select 2 select 2;
+                    };
+                    _vehicleType = _vehicleProfile select 2 select 11;
                 };
-                _vehicleType = _vehicleProfile select 2 select 11;
             } else {
                 // convoy/counter-battery callers pass objects at index 11 with a
                 // deliberately fuzzed reveal location (index 6) - keep it, don't
@@ -133,7 +149,7 @@ switch (_taskState) do {
 
             // select the random text
 
-            _dialogOptions = [ALIVE_generatedTasks,"DestroyVehicles"] call ALIVE_fnc_hashGet;
+            _dialogOptions = [ALIVE_generatedTasks, if (_isHeli) then {"DestroyHeli"} else {"DestroyVehicles"}] call ALIVE_fnc_hashGet;
             _dialogOptions = _dialogOptions select 1;
             _dialogOption = +(selectRandom _dialogOptions);
 
@@ -223,7 +239,10 @@ switch (_taskState) do {
             // Only profile-ID (string) targets expand into crew entities;
             // raw objects (convoy trucks) have none and taskLockProfiles
             // expects ID strings, so it is skipped for object targets.
-            if (_targetVehicles isEqualTypeAll "") then {
+            // #426: a heli target IS a profile-ID string but must NOT lock -
+            // taskLockProfiles clearWaypoints's the pilot entity, stripping the
+            // delivery waypoint and wrecking the flight the task rides.
+            if (_targetVehicles isEqualTypeAll "" && {!_isHeli}) then {
                 [_newTaskID, _targetVehicles] call ALIVE_fnc_taskLockProfiles;
             };
 
@@ -236,6 +255,9 @@ switch (_taskState) do {
                 [_taskParams,"destPos",_convoyPayload select 1] call ALIVE_fnc_hashSet;
                 [_taskParams,"popEffect",_convoyPayload select 2] call ALIVE_fnc_hashSet;
                 [_taskParams,"nullTicks",0] call ALIVE_fnc_hashSet;
+                // #426 - heli variant: which latch the Destroy stage reads + the tracked profile
+                [_taskParams,"latchVar", if (_isHeli) then {"ALIVE_MLHeliTaskStates"} else {"ALIVE_MLConvoyTaskStates"}] call ALIVE_fnc_hashSet;
+                [_taskParams,"heliProfileID",_heliProfileID] call ALIVE_fnc_hashSet;
             };
 
             // return the created tasks and params
@@ -288,17 +310,35 @@ switch (_taskState) do {
             private _destPos = [_params,"destPos",_taskPosition] call ALIVE_fnc_hashGet;
             private _cvyEnemyFaction = [_params,"enemyFaction"] call ALIVE_fnc_hashGet;
             private _cvyEnemySide = _cvyEnemyFaction call ALiVE_fnc_factionSide;
-            private _convoyState = ([ALIVE_MLConvoyTaskStates, _convoyID, ["enroute",0]] call ALIVE_fnc_hashGet) select 0;
+            // #426 - heli variant reads a different latch and tracks a profile
+            private _latchVar = [_params,"latchVar","ALIVE_MLConvoyTaskStates"] call ALIVE_fnc_hashGet;
+            private _heliProfileID = [_params,"heliProfileID",""] call ALIVE_fnc_hashGet;
+            private _latchHash = missionNamespace getVariable _latchVar;
+            private _convoyState = if (isNil "_latchHash") then {"enroute"} else {
+                ([_latchHash, _convoyID, ["enroute",0]] call ALIVE_fnc_hashGet) select 0
+            };
 
             private _anyAlive = false;
             private _anyNonNull = false;
-            {
-                if (!isNull _x) then {
+            if (_heliProfileID != "") then {
+                // #426 - the heli virtualises mid-flight; liveness comes from the
+                // profile (_vehicleProfiles holds a profile-ID STRING here, on which
+                // isNull/alive would be a type error), not from a live object
+                private _vProf = [ALIVE_profileHandler, "getProfile", _heliProfileID] call ALIVE_fnc_profileHandler;
+                if (!isNil "_vProf") then {
                     _anyNonNull = true;
-                    if (alive _x) then { _anyAlive = true; };
+                    private _hObj = _vProf select 2 select 10;
+                    _anyAlive = isNull _hObj || {alive _hObj};
                 };
-            } forEach _vehicleProfiles;
-            // truck died before the ML monitor latched "destroyed"
+            } else {
+                {
+                    if (!isNull _x) then {
+                        _anyNonNull = true;
+                        if (alive _x) then { _anyAlive = true; };
+                    };
+                } forEach _vehicleProfiles;
+            };
+            // target died before the ML monitor latched "destroyed"
             if (_convoyState == "enroute" && _anyNonNull && {!_anyAlive}) then { _convoyState = "destroyed"; };
 
             switch (_convoyState) do {
@@ -354,11 +394,21 @@ switch (_taskState) do {
                         };
                     } else {
                         [_params,"nullTicks",0] call ALIVE_fnc_hashSet;
-                        {
-                            if (alive _x) then {
-                                [getPos _x,_cvyEnemySide,_taskPlayers,_taskID,"vehicle",typeOf _x,_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                        if (_heliProfileID != "") then {
+                            // #426 - mark the heli (air icon) at its live or virtual position
+                            private _vProf = [ALIVE_profileHandler, "getProfile", _heliProfileID] call ALIVE_fnc_profileHandler;
+                            if (!isNil "_vProf") then {
+                                private _hObj = _vProf select 2 select 10;
+                                private _mPos = if (!isNull _hObj) then { getPos _hObj } else { +(_vProf select 2 select 2) };
+                                [_mPos,_cvyEnemySide,_taskPlayers,_taskID,"vehicle","Helicopter",_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
                             };
-                        } forEach _vehicleProfiles;
+                        } else {
+                            {
+                                if (alive _x) then {
+                                    [getPos _x,_cvyEnemySide,_taskPlayers,_taskID,"vehicle",typeOf _x,_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                                };
+                            } forEach _vehicleProfiles;
+                        };
                     };
                 };
             };

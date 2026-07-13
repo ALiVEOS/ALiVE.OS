@@ -5,15 +5,21 @@ SCRIPT(taskProtectConvoy);
 Function: ALIVE_fnc_taskProtectConvoy
 
 Description:
-Escort task riding a real LOGCOM resupply truck. The convoy's own side is asked
-to screen the truck's route and keep it alive until it reaches the asset it is
-resupplying. Outcome is read from the mil_logistics convoy-state latch
-(ALIVE_MLConvoyTaskStates), keyed by a unique convoyID:
-    "arrived"   -> Succeeded  (supplies delivered)
-    "destroyed" -> Failed     (truck killed en route)
+Escort task riding a real LOGCOM delivery. The delivering side is asked to keep
+the vehicle alive until it reaches its destination. Outcome is read from a
+mil_logistics state latch, keyed by a unique ID:
+    "arrived"   -> Succeeded  (delivered)
+    "destroyed" -> Failed     (killed en route)
     "aborted"   -> Canceled   (AI pathing / timeout / target lost)
 
-The mirror-image DestroyVehicles task rides the same truck for a hostile side.
+Two variants, selected by payload element 3 ("HELI") at init:
+  - ground convoy: tracks the raw truck object, reads ALIVE_MLConvoyTaskStates,
+    ground marker icon (#263).
+  - heli delivery (#426): tracks the transport heli by vehicle profile ID
+    (it virtualises mid-flight), reads ALIVE_MLHeliTaskStates, air marker icon.
+The params "latchVar" / "heliProfileID" carry the variant into the Escort stage.
+
+The mirror-image DestroyVehicles task rides the same vehicle for a hostile side.
 
 Author:
 Jman
@@ -64,11 +70,17 @@ switch (_taskState) do {
         _destPos = _payload select 1;
         _popEffect = _payload select 2;
 
+        // #426 - heli deliveries ride this same template: payload element 3
+        // flags the variant, element 4 carries the heli's vehicle profile ID
+        // so the stage code can track it through virtualisation
+        private _isHeli = (_payload param [3, ""]) == "HELI";
+        private _heliProfileID = _payload param [4, ""];
+
         // pick a dialog variant
 
         private["_dialogOptions","_dialogOption","_nearestTown","_dialog","_formatDescription","_formatChat","_formatMessage","_formatMessageText"];
 
-        _dialogOptions = [ALIVE_generatedTasks,"ProtectConvoy"] call ALIVE_fnc_hashGet;
+        _dialogOptions = [ALIVE_generatedTasks, if (_isHeli) then {"ProtectHeli"} else {"ProtectConvoy"}] call ALIVE_fnc_hashGet;
         _dialogOptions = _dialogOptions select 1;
         _dialogOption = +(selectRandom _dialogOptions);
 
@@ -141,6 +153,10 @@ switch (_taskState) do {
         [_taskParams,"convoyID",_convoyID] call ALIVE_fnc_hashSet;
         [_taskParams,"destPos",_destPos] call ALIVE_fnc_hashSet;
         [_taskParams,"popEffect",_popEffect] call ALIVE_fnc_hashSet;
+        // #426 - which mission-namespace latch the Escort stage reads, and the
+        // heli's vehicle profile ID ("" for a ground convoy)
+        [_taskParams,"latchVar", if (_isHeli) then {"ALIVE_MLHeliTaskStates"} else {"ALIVE_MLConvoyTaskStates"}] call ALIVE_fnc_hashSet;
+        [_taskParams,"heliProfileID",_heliProfileID] call ALIVE_fnc_hashSet;
         [_taskParams,"supportEffectPosition",_destPos] call ALIVE_fnc_hashSet;
         [_taskParams,"supportValue",10] call ALIVE_fnc_hashSet;
         [_taskParams,"cooldownDuration",3000] call ALIVE_fnc_hashSet;
@@ -161,7 +177,8 @@ switch (_taskState) do {
     case "Escort":{
 
         private["_taskSide","_taskPosition","_taskFaction","_taskTitle","_lastState","_taskDialog","_currentTaskDialog",
-        "_convoyObjects","_convoyID","_destPos","_popEffect","_convoyState","_anyAlive","_anyNonNull","_fnc_terminate","_nullTicks"];
+        "_convoyObjects","_convoyID","_destPos","_popEffect","_convoyState","_anyAlive","_anyNonNull","_fnc_terminate","_nullTicks",
+        "_latchVar","_heliProfileID","_latchHash"];
 
         _taskID = _task select 0;
         _taskSide = _task select 2;
@@ -177,6 +194,9 @@ switch (_taskState) do {
         _convoyID = [_params,"convoyID"] call ALIVE_fnc_hashGet;
         _destPos = [_params,"destPos"] call ALIVE_fnc_hashGet;
         _popEffect = [_params,"popEffect"] call ALIVE_fnc_hashGet;
+        // #426 - heli variant reads a different latch and tracks a profile, not an object
+        _latchVar = [_params,"latchVar","ALIVE_MLConvoyTaskStates"] call ALIVE_fnc_hashGet;
+        _heliProfileID = [_params,"heliProfileID",""] call ALIVE_fnc_hashGet;
 
         if(_lastState != "Escort") then {
             ["chat_start",_currentTaskDialog,_taskSide,_taskPlayers] call ALIVE_fnc_taskCreateRadioBroadcastForPlayers;
@@ -184,18 +204,42 @@ switch (_taskState) do {
         };
 
         // read the mil_logistics latch (default "enroute" until the monitor writes)
-        _convoyState = ([ALIVE_MLConvoyTaskStates, _convoyID, ["enroute",0]] call ALIVE_fnc_hashGet) select 0;
+        _latchHash = missionNamespace getVariable _latchVar;
+        _convoyState = if (isNil "_latchHash") then {"enroute"} else {
+            ([_latchHash, _convoyID, ["enroute",0]] call ALIVE_fnc_hashGet) select 0
+        };
 
         _anyAlive = false;
         _anyNonNull = false;
-        {
-            if (!isNull _x) then {
+        if (_heliProfileID != "") then {
+            // #426 - the heli virtualises mid-flight (object flips objNull while
+            // still on mission), so liveness comes from the profile: profile
+            // present + virtual = alive; profile present + spawned-dead = the
+            // destroyed fast-path below; profile gone = latch/nullTicks decide
+            private _vProf = [ALIVE_profileHandler, "getProfile", _heliProfileID] call ALIVE_fnc_profileHandler;
+            if (!isNil "_vProf") then {
                 _anyNonNull = true;
-                if (alive _x) then { _anyAlive = true; };
+                private _hObj = _vProf select 2 select 10;
+                _anyAlive = isNull _hObj || {alive _hObj};
             };
-        } forEach _convoyObjects;
+        } else {
+            {
+                if (!isNull _x) then {
+                    _anyNonNull = true;
+                    if (alive _x) then { _anyAlive = true; };
+                };
+            } forEach _convoyObjects;
+        };
 
-        // fast-path: truck died before the ML monitor could latch "destroyed"
+        if (_debug && {_heliProfileID != ""}) then {
+            private _vP = [ALIVE_profileHandler, "getProfile", _heliProfileID] call ALIVE_fnc_profileHandler;
+            private _hO = if (isNil "_vP") then {objNull} else {_vP select 2 select 10};
+            ["C2ISTAR heli task [DIAG-STRIP-426]: %1 (id %2 latch %3) state=%4 anyAlive=%5 anyNonNull=%6 profNil=%7 heliNull=%8 heliPos=%9",
+                _taskID, _convoyID, _latchVar, _convoyState, _anyAlive, _anyNonNull, isNil "_vP", isNull _hO,
+                (if (isNull _hO) then {[0,0,0]} else {getPos _hO})] call ALiVE_fnc_dump;
+        };
+
+        // fast-path: target died before the ML monitor could latch "destroyed"
         if (_convoyState == "enroute" && _anyNonNull && {!_anyAlive}) then { _convoyState = "destroyed"; };
 
         // clears nextTask so taskHandler tears the finished task down instead of
@@ -203,6 +247,7 @@ switch (_taskState) do {
         // this task owns the population effect
         _fnc_terminate = {
             params ["_stateOut","_broadcast","_outcome"];
+            if (_debug) then { ["C2ISTAR heli/convoy task [DIAG-STRIP-426]: %1 (id %2) latch state '%3' -> %4 (outcome %5)", _taskID, _convoyID, _convoyState, _stateOut, _outcome] call ALiVE_fnc_dump; };
             [_params,"nextTask",""] call ALIVE_fnc_hashSet;
             _task set [8,_stateOut];
             _task set [10,"N"];
@@ -244,11 +289,23 @@ switch (_taskState) do {
                     };
                 } else {
                     [_params,"nullTicks",0] call ALIVE_fnc_hashSet;
-                    {
-                        if (alive _x) then {
-                            [getPos _x,_taskSide,_taskPlayers,_taskID,"vehicle",typeOf _x,_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                    if (_heliProfileID != "") then {
+                        // #426 - mark the heli at its live position, or its virtual
+                        // profile position when despawned. "Helicopter" (not typeOf)
+                        // so the marker switch picks the air icon.
+                        private _vProf = [ALIVE_profileHandler, "getProfile", _heliProfileID] call ALIVE_fnc_profileHandler;
+                        if (!isNil "_vProf") then {
+                            private _hObj = _vProf select 2 select 10;
+                            private _mPos = if (!isNull _hObj) then { getPos _hObj } else { +(_vProf select 2 select 2) };
+                            [_mPos,_taskSide,_taskPlayers,_taskID,"vehicle","Helicopter",_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
                         };
-                    } forEach _convoyObjects;
+                    } else {
+                        {
+                            if (alive _x) then {
+                                [getPos _x,_taskSide,_taskPlayers,_taskID,"vehicle",typeOf _x,_taskTitle] call ALIVE_fnc_taskCreateMarkersForPlayers;
+                            };
+                        } forEach _convoyObjects;
+                    };
                 };
             };
         };

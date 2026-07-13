@@ -428,6 +428,30 @@
 
 	[ALIVE_generatedTasks, "DestroyVehicles", ["Destroy the Vehicles",_options]] call ALIVE_fnc_hashSet;
 
+// Shoot Down Heli Task (#426 - rides real LOGCOM heli deliveries; direct channel only, never auto-generated)
+
+	_options = [];
+
+	_tasksData = [] call ALIVE_fnc_hashCreate;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Shoot Down Transport Helicopter"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Int indicates an enemy %1 running an air resupply toward %2."] call ALIVE_fnc_hashSet;
+	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Shoot down the helicopter"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","An enemy %1 is flying reinforcements toward %2.  Intercept and shoot it down before the delivery is made."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","An enemy %1 is inbound to %2 with reinforcements.  Intercept and shoot it down before the delivery is made, Over!"],["PLAYERS","Roger, engaging, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","Enemy helicopter is down, Over"],["HQ","Roger, well done.  Standby for further taskings, Out!"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["PLAYERS","The helicopter got through, Over"],["HQ","Understood.  Stand down, we'll re-task, Out!"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Destroy",_taskData] call ALIVE_fnc_hashSet;
+
+	_options set [count _options,_tasksData];
+
+	[ALIVE_generatedTasks, "DestroyHeli", ["Shoot Down the Helicopter",_options]] call ALIVE_fnc_hashSet;
+
 // Protect Convoy Task
 
 	_options = [];
@@ -451,6 +475,30 @@
 	_options set [count _options,_tasksData];
 
 	[ALIVE_generatedTasks, "ProtectConvoy", ["Protect the Convoy",_options]] call ALIVE_fnc_hashSet;
+
+// Protect Heli Task (#426 - rides real LOGCOM heli deliveries; direct channel only, never auto-generated)
+
+	_options = [];
+
+	_tasksData = [] call ALIVE_fnc_hashCreate;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Protect Transport Helicopter"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","A friendly transport helicopter is inbound to %1."] call ALIVE_fnc_hashSet;
+	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Escort the transport helicopter"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","A friendly helicopter is flying reinforcements forward to %1.  Cover its approach and keep it flying until the delivery is complete."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","A friendly transport helicopter is inbound to %1.  Cover its approach and keep it flying until the delivery is complete, Over!"],["PLAYERS","Roger, moving to cover the helicopter, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","The helicopter has made its delivery, Over"],["HQ","Good work.  Standby for further taskings, Out!"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["PLAYERS","We lost the helicopter, Over"],["HQ","Understood.  Stand down, Out!"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",10]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Escort",_taskData] call ALIVE_fnc_hashSet;
+
+	_options set [count _options,_tasksData];
+
+	[ALIVE_generatedTasks, "ProtectHeli", ["Protect the Helicopter",_options]] call ALIVE_fnc_hashSet;
 
 // SEAD Task
 
