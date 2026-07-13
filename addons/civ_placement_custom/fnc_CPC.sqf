@@ -568,52 +568,52 @@ switch (_operation) do {
 
             switch (_type) do {
                 case "Armored": {
-                    _countArmored = floor((_size / 20) * 0.5);
+                    _countArmored = round((_size / 20) * 0.5);
                     _countMechanized = floor((_size / 12) * random 0.2);
                     _countMotorized = floor((_size / 12) * random 0.2);
-                    _countInfantry = floor((_size / 10) * 0.5);
+                    _countInfantry = round((_size / 10) * 0.5);
                     _countAir = floor((_size / 30) * random 0.1);
-                    _countSpecOps = floor((_size / 25) * 0.5);
+                    _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Mechanized": {
-                    _countMechanized = floor((_size / 12) * 0.5);
+                    _countMechanized = round((_size / 12) * 0.5);
                     _countArmored = floor((_size / 20) * random 0.2);
                     _countMotorized = floor((_size / 12) * random 0.2);
-                    _countInfantry = floor((_size / 10) * 0.5);
+                    _countInfantry = round((_size / 10) * 0.5);
                     _countAir = floor((_size / 30) * random 0.1);
-                    _countSpecOps = floor((_size / 25) * 0.5);
+                    _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Motorized": {
-                    _countMotorized = floor((_size / 12) * 0.5);
+                    _countMotorized = round((_size / 12) * 0.5);
                     _countMechanized = floor((_size / 12) * random 0.2);
                     _countArmored = floor((_size / 20) * random 0.2);
-                    _countInfantry = floor((_size / 10) * 0.5);
+                    _countInfantry = round((_size / 10) * 0.5);
                     _countAir = floor((_size / 30) * random 0.1);
-                    _countSpecOps = floor((_size / 25) * 0.5);
+                    _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Infantry": {
-                    _countInfantry = floor((_size / 10) * 0.8);
+                    _countInfantry = round((_size / 10) * 0.8);
                     _countMotorized = floor((_size / 12) * random 0.2);
                     _countMechanized = floor((_size / 12) * random 0.2);
                     _countArmored = floor((_size / 20) * random 0.2);
                     _countAir = floor((_size / 30) * random 0.1);
-                    _countSpecOps = floor((_size / 25) * 0.5);
+                    _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Air": {
-                    _countAir = floor((_size / 30) * 0.5);
-                    _countInfantry = floor((_size / 10) * 0.5);
+                    _countAir = round((_size / 30) * 0.5);
+                    _countInfantry = round((_size / 10) * 0.5);
                     _countMotorized = floor((_size / 12) * random 0.2);
                     _countMechanized = floor((_size / 12) * random 0.2);
                     _countArmored = floor((_size / 20) * random 0.2);
-                    _countSpecOps = floor((_size / 25) * 0.5);
+                    _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Specops": {
-                    _countAir = floor((_size / 30) * 0.5);
-                    _countInfantry = floor((_size / 10) * 0.5);
+                    _countAir = round((_size / 30) * 0.5);
+                    _countInfantry = round((_size / 10) * 0.5);
                     _countMotorized = floor((_size / 12) * random 0.2);
                     _countMechanized = floor((_size / 12) * random 0.2);
                     _countArmored = floor((_size / 20) * random 0.2);
-                    _countSpecOps = floor((_size / 10) * 0.5);
+                    _countSpecOps = round((_size / 10) * 0.5);
                 };
             };
 
