@@ -3535,6 +3535,7 @@ switch (_operation) do {
         if (_newControlType in _conventionalTypes) then {
             if (_existingControlType in _conventionalTypes) then {
                 // conventional to conventional
+                // NEEDS TESTED
 
                 // terminate fsms
                 _opcomFSM setFSMvariable ["_exitFSM", true];
@@ -3562,12 +3563,49 @@ switch (_operation) do {
                 [_logic,"pendingorders", []] call ALiVE_fnc_hashSet;
             } else {
                 // asymm to conventional
+                // NEEDS REVIEWED
+
+                _opcomFSM setFSMvariable ["_exitFSM", true];
+                _tacomFSM setFSMvariable ["_exitFSM", true];
+
+                private _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
+                {
+                    [_logic,"resetObjective", [_x,"objectiveID"] call ALiVE_fnc_hashGet] call MAINCLASS;
+                } foreach _objectives;
+
+                switch (_newControlType) do {
+                    case ("occupation") : {
+                        _objectives = [_logic,"objectives",
+                            [_logic,"createObjectives", [_objectives,"strategic"]] call MAINCLASS
+                        ] call MAINCLASS;
+                    };
+                    case ("invasion") : {
+                        _objectives = [_logic,"objectives", [_logic,"createObjectives", [_objectives,"distance"]] call MAINCLASS] call MAINCLASS;
+                    };
+                };
+
+                [_logic,"pendingorders", []] call ALiVE_fnc_hashSet;
             };
         } else {
             if (_existingControlType in _conventionalTypes) then {
                 // conventional to asymm
+                // NEEDS REVIEWED
+
+                _opcomFSM setFSMvariable ["_exitFSM", true];
+                _tacomFSM setFSMvariable ["_exitFSM", true];
+
+                private _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
+                {
+                    [_logic,"resetObjective", [_x,"objectiveID"] call ALiVE_fnc_hashGet] call MAINCLASS;
+                } foreach _objectives;
+
+                _objectives = [_logic,"objectives", [_logic,"createObjectives", [_objectives,"asymmetric"]] call MAINCLASS] call MAINCLASS;
+
+                [_logic,"pendingorders", []] call ALiVE_fnc_hashSet;
             }
         };
+
+        [_logic,"controltype", _newControlType] call ALiVE_fnc_hashSet;
 
         _result = true;
     };
