@@ -1267,11 +1267,11 @@ switch (_operation) do {
         private _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
         {
             private _section = [_x,"section", []] call ALiVE_fnc_HashGet;
-            [_x,"sectionAssist", []] call ALiVE_fnc_HashSet; //TODO: seems wrong to have this here
 
             private _sectionProfileIndex = _section find _profileID;
             if (_sectionProfileIndex != -1) exitwith {
                 _section deleteat _sectionProfileIndex;
+                [_x,"sectionAssist", []] call ALiVE_fnc_HashSet;
 
                 if (_section isequalto []) then {
                     [_logic,"resetObjective", ([_x,"objectiveID"] call ALiVE_fnc_HashGet)] call MAINCLASS;
