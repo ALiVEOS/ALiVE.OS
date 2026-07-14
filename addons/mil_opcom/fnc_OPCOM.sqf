@@ -3164,7 +3164,7 @@ switch (_operation) do {
 
         private _sidesEnemy = [_logic,"sidesenemy", ["EAST"]] call ALiVE_fnc_HashGet;
 
-        _result = [_logic,"findProfilesNearPosition", [_pos,_sidesEnemy,_requireVisibility]] call MAINCLASS;
+        _result = [_logic,"findProfilesNearPosition", [_position,_sidesEnemy,_requireVisibility]] call MAINCLASS;
     };
 
     ///////////////////////////////////////////////////
