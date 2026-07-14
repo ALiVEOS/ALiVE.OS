@@ -126,6 +126,25 @@ class Cfg3DEN
             attributeSave = "_this call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceSave.sqf'";
         };
 
+        // Single-select vehicle dropdowns for the Combat Support sub-modules
+        // (SUP CAS / Artillery / Transport). Dynamically filled from
+        // fnc_listFactionRoleVehicles (role-suitable vehicles across all
+        // loaded factions, rows "[side] class | Name [Faction] Mod");
+        // stores ONE bare classname STRING via BI's default Combo save -
+        // the same wire format as the free-text Edit these replace. A
+        // stored classname the enumeration doesn't know (unloaded mod)
+        // surfaces as a selected "(unrecognised)" row so open+OK never
+        // rewrites the mission. Same pattern as ALiVE_FactionChoice.
+        class ALiVE_VehicleCombo_CAS: Combo {
+            attributeLoad = "[_this, 'cas_type', 'cas'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
+        };
+        class ALiVE_VehicleCombo_Artillery: Combo {
+            attributeLoad = "[_this, 'artillery_type', 'arty'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
+        };
+        class ALiVE_VehicleCombo_Transport: Combo {
+            attributeLoad = "[_this, 'transport_type', 'transport'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenVehicleChoiceLoad.sqf'";
+        };
+
         // Variant control classes for civilian-side single-select
         // faction attributes that store the selection under a non-
         // default setVariable key (i.e. NOT "faction"). The variant
@@ -148,6 +167,22 @@ class Cfg3DEN
         class ALiVE_FactionChoice_Civilian_AmbientCrowdFaction: ALiVE_FactionChoice_Civilian {
             attributeLoad = "[_this, [3], 'ambientCrowdFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceLoad.sqf'";
             attributeSave = "[_this, 'ambientCrowdFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceSave.sqf'";
+        };
+
+        // Optional artillery-donor variants (#887): same Military dropdown
+        // but with a "(none)" row at the top (the attribute is optional -
+        // empty means "use the force's own factions") and an artillery-
+        // capability filter so only factions that actually field guns are
+        // offered. Flags ride the 4th load / 3rd save argument. One variant
+        // per consumer so the stored logic-variable name matches the
+        // module's expression / case-accessor.
+        class ALiVE_FactionChoice_Military_ArtilleryFaction: ALiVE_FactionChoice_Military {
+            attributeLoad = "[_this, [0,1,2], 'artilleryFaction', ['allowNone','artilleryOnly']] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceLoad.sqf'";
+            attributeSave = "[_this, 'artilleryFaction', true] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceSave.sqf'";
+        };
+        class ALiVE_FactionChoice_Military_CustomArtilleryFaction: ALiVE_FactionChoice_Military {
+            attributeLoad = "[_this, [0,1,2], 'customArtilleryFaction', ['allowNone','artilleryOnly']] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceLoad.sqf'";
+            attributeSave = "[_this, 'customArtilleryFaction', true] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceSave.sqf'";
         };
 
         // ALiVE_FactionChoiceMulti family:
@@ -522,6 +557,23 @@ class Cfg3DEN
             attributeLoad = "[_this, 'c2_item', '$STR_ALIVE_C2ISTAR_ALLOW', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsLoad.sqf'";
             attributeSave = "[_this, 'c2_item'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsSave.sqf'";
         };
+
+        // Combat Support / Player Combat Logistics variants of the access-items
+        // multi-select. Same shared registry (CfgALiVEC2ISTARAccessItems), same
+        // Load/Save handlers, same geometry - only the stored variable name and
+        // title differ. Cloned control classes are required because the Load/Save
+        // handler strings must live on the CONTROL class: attributeLoad overrides
+        // on the consuming attribute class do not propagate for controlsGroup
+        // based controls.
+        class ALiVE_CSAccessItemsChoice: ALiVE_C2ISTARAccessItemsChoice {
+            attributeLoad = "[_this, 'combatsupport_item', '$STR_ALIVE_CS_ALLOW', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsLoad.sqf'";
+            attributeSave = "[_this, 'combatsupport_item'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsSave.sqf'";
+        };
+        class ALiVE_PRAccessItemsChoice: ALiVE_C2ISTARAccessItemsChoice {
+            attributeLoad = "[_this, 'pr_item', '$STR_ALIVE_PR_ALLOW', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsLoad.sqf'";
+            attributeSave = "[_this, 'pr_item'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenC2ISTARAccessItemsSave.sqf'";
+        };
+
 
         class ALiVE_SideChoiceMulti: ALiVE_FactionChoiceMulti_Base {
             // Compact 4-row listbox sitting in the normal right column
@@ -1026,6 +1078,7 @@ class Cfg3DEN
             attributeLoad = "[_this, 'autoGenerateFactions', 'autoGenerateBluforFaction,autoGenerateBluforEnemyFaction,autoGenerateOpforFaction,autoGenerateOpforEnemyFaction,autoGenerateIndforFaction,autoGenerateIndforEnemyFaction', 'BLU Friendly,BLU Enemy,OPF Friendly,OPF Enemy,IND Friendly,IND Enemy', '1|0,2|0|1,2|2|0,1', 'BLU_F,OPF_F,OPF_F,BLU_F,IND_F,OPF_F', _value, 'Auto Task Factions:'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionSlotChoiceLoad.sqf'";
             attributeSave = "[_this, 'autoGenerateFactions', 'autoGenerateBluforFaction,autoGenerateBluforEnemyFaction,autoGenerateOpforFaction,autoGenerateOpforEnemyFaction,autoGenerateIndforFaction,autoGenerateIndforEnemyFaction'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionSlotChoiceSave.sqf'";
         };
+
 
         // ALiVE_FactionStaticDataChoice family:
         //   Lets a mission-maker override the per-faction static-data

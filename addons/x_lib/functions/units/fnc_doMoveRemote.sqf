@@ -30,7 +30,12 @@ params [
     ["_pos", [], [[]]]
 ];
 
-if (!(alive _unit) || {count _pos < 2}) exitwith {["domoveRemote failed - dead/empty unit"] call ALiVE_fnc_dump};
+// a dead unit or an invalid position is a routine outcome (a queued move
+// firing on a unit combat killed in the meantime) - gate the trace behind the
+// profile-system debug switch so it stops spamming the RPT. Code path unchanged
+if (!(alive _unit) || {count _pos < 2}) exitwith {
+    if (ALiVE_SYS_PROFILE_DEBUG_ON) then { ["domoveRemote failed - dead/empty unit"] call ALiVE_fnc_dump };
+};
 
 //Flag for usage with ALiVE_fnc_unitReadyRemote
 _unit setvariable [QGVAR(MOVEDESTINATION),_pos];

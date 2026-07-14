@@ -536,7 +536,35 @@ switch (_operation) do {
                 }else{
 
                     if (tolower _vehicleType == "ship") then {
-                        _position = [_position, 0, 50, 10, 2, 5 , 0, [], [_position]] call BIS_fnc_findSafePos;
+                        // #943 - boats need NAVIGABLE water, not just a wet surface.
+                        // The old blind findSafePos re-roll accepted ankle-deep surf
+                        // (waterMode 2 has no depth requirement - the keel grounds
+                        // and the hull never moves again) and its malformed
+                        // one-element default parameter teleported the boat to the
+                        // map centre when the search failed. Keep the profile
+                        // position when it is already deep enough; otherwise search
+                        // outward for water with ~2 m of depth and, failing that,
+                        // keep the unmoved profile position.
+                        private _fnc_isNavigable = {
+                            params ["_p"];
+                            (surfaceIsWater _p) && {(getTerrainHeightASL _p) < -2}
+                        };
+                        if !([_position] call _fnc_isNavigable) then {
+                            private _candidate = [_position, 0, 50, 10, 2, 5, 0, [], [_position,_position]] call BIS_fnc_findSafePos;
+                            if ([_candidate] call _fnc_isNavigable) then {
+                                _position = _candidate;
+                            } else {
+                                private _deepWater = [];
+                                for "_r" from 50 to 300 step 50 do {
+                                    for "_a" from 0 to 330 step 30 do {
+                                        private _sample = _position getPos [_r, _a];
+                                        if ([_sample] call _fnc_isNavigable) exitWith { _deepWater = _sample; };
+                                    };
+                                    if (count _deepWater > 0) exitWith {};
+                                };
+                                if (count _deepWater > 0) then { _position = _deepWater; };
+                            };
+                        };
                     } else {
                         // Switch to the unified spawn-position validator
                         // (#850 fix). Returns [_pos, _dir] with side-of-road

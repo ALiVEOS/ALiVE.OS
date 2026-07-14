@@ -21,19 +21,26 @@ See Also:
 
 Author:
 Whigital
+Jman
 
 Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-// Define a global var with PR items once instead of calling the function each time the menu condition is evaluated //
-MOD(SUP_PR_Items) = [([MOD(SUP_PLAYER_RESUPPLY), "pr_item"] call ALIVE_fnc_PR), "ALIVE_Tablet"];
-
 // Define local menu vars //
 private _menu = "ALiVE_PR";
 
-// Condition code for PR menu items //
-private _prCond = {(({([(toLower(str((assignedItems player) + (uniformItems player) + (backpackItems player) + (vestItems player)))), toLower(_x)] call CBA_fnc_find) > -1} count MOD(SUP_PR_Items)) > 0) && {(MOD(Require) getVariable [(format ["ALIVE_MIL_LOG_AVAIL_%1", (side group player)]), false])}};
+// Condition code for PR menu items - shared access-item gate (categories + custom
+// classnames, same pool and matcher as the flexiMenu and C2ISTAR tablet entries;
+// evaluated per menu-open so attribute and inventory changes apply live) //
+private _prCond = {
+    ([
+        [MOD(SUP_PLAYER_RESUPPLY), "pr_item"] call ALIVE_fnc_PR,
+        [MOD(SUP_PLAYER_RESUPPLY), "pr_item_custom"] call ALIVE_fnc_PR,
+        ["ALIVE_Tablet"]
+    ] call ALIVE_fnc_playerHasAccessItems)
+    && {(MOD(Require) getVariable [(format ["ALIVE_MIL_LOG_AVAIL_%1", (side group player)]), false])}
+};
 
 private _action = [
     _menu,

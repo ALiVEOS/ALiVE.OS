@@ -1408,6 +1408,13 @@ switch(_operation) do {
                         [_profileEntity, "boat", [_profile,"boat"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                     };
 
+                    // artillery despawn-hold marker - restored so the AI
+                    // artillery module can heal holds frozen by a save made
+                    // while a fire mission was in flight
+                    if("ALiVE_artyHold" in (_profile select 1)) then {
+                        [_profileEntity, "ALiVE_artyHold", [_profile,"ALiVE_artyHold"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                    };
+
                     if(ALiVE_SYS_DATA_DEBUG_ON) then {
                         ["SYS PROFILE - RECREATED PROFILE ENTITY:"] call ALiVE_fnc_dump;
                         _profileEntity call ALIVE_fnc_inspectHash;
@@ -1463,6 +1470,11 @@ switch(_operation) do {
 
                     if("spawnType" in (_profile select 1)) then {
                         [_profileVehicle, "spawnType", [_profile,"spawnType"] call ALIVE_fnc_hashGet] call ALIVE_fnc_profileVehicle;
+                    };
+
+                    // artillery despawn-hold marker (see the entity branch)
+                    if("ALiVE_artyHold" in (_profile select 1)) then {
+                        [_profileVehicle, "ALiVE_artyHold", [_profile,"ALiVE_artyHold"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                     };
 
                     _side = [_profile,"side"] call ALIVE_fnc_hashGet;

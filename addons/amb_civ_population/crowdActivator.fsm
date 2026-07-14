@@ -185,9 +185,9 @@ class FSM
                          "					[_agent, """"] call ALIVE_fnc_switchMove;" \n
                          "					 private _target = [position _agent, _spawnDistance * 2] call ALIVE_fnc_getRandomPlayerNear;  " \n
                          "					_agent setDir (_agent getDir (_target select 0));" \n
-                         "					_agent addWeapon ""Throw"";" \n
+                         "					_agent addWeapon ""ALiVE_Throw"";" \n
                          "					_agent addMagazine [(_weapon select 0),1];" \n
-                         "					_agent selectWeapon ""Throw"";" \n
+                         "					_agent selectWeapon ""ALiVE_Throw"";" \n
                          "					_agent forceWeaponFire [(_weapon select 1),(_weapon select 1)];" \n
                          "				};" \n
                          "                 } else {" \n
@@ -211,9 +211,9 @@ class FSM
                          "					[_agent, """"] call ALIVE_fnc_switchMove;" \n
                          "					 private _target = [position _agent, _spawnDistance * 2] call ALIVE_fnc_getRandomPlayerNear;  " \n
                          "					_agent setDir (_agent getDir  (_target select 0));" \n
-                         "					_agent addWeapon ""Throw"";" \n
+                         "					_agent addWeapon ""ALiVE_Throw"";" \n
                          "					_agent addMagazine [(_weapon select 0),1];" \n
-                         "					_agent selectWeapon ""Throw"";" \n
+                         "					_agent selectWeapon ""ALiVE_Throw"";" \n
                          "					_agent forceWeaponFire [(_weapon select 1),(_weapon select 1)];" \n
                          "                 } else {" \n
                          "                      // Play angry anim" \n
@@ -1229,7 +1229,7 @@ class FSM
                          "		// Issue #8: only arm with Throw when global hostility is at protest tier" \n
                          "		private _maxHostility = 0;" \n
                          "		{_maxHostility = _maxHostility max ([ALIVE_civilianHostility, str _x, 0] call ALIVE_fnc_hashGet)} forEach [west, east, independent];" \n
-                         "		if (_maxHostility >= 70) then {_m addWeapon ""Throw"";};" \n
+                         "		if (_maxHostility >= 70) then {_m addWeapon ""ALiVE_Throw"";};" \n
                          "" \n
                          "      	if(_debug) then {" \n
                          "              private _d = createMarker [format[""%1_debug"",(time + random 10000)], position _m];" \n

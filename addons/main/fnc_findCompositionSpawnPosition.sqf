@@ -127,7 +127,12 @@ if !(_mode in ["field", "military", "civilian", "roadblock", "ato"]) then {
     _mode = "military";
 };
 
-private _debug = _callerDebug || (!isNil "ALiVE_compSpawn_debug" && {ALiVE_compSpawn_debug});
+// Verbose per-candidate trace is gated on the dedicated ALiVE_compSpawn_debug
+// flag ONLY, not on the calling module's debug - a module with debug on was
+// flooding the log with every rejected sample. Set ALiVE_compSpawn_debug at
+// the console for the deep trace. The one-line placement result below prints
+// regardless so successful placements are always visible.
+private _debug = (!isNil "ALiVE_compSpawn_debug" && {ALiVE_compSpawn_debug});
 
 if (_debug) then {
     ["[ALiVE CompSpawn] ENTER pos=%1 radius=%2 envelope=%3 mode=%4", _centerPos, _radius, _envelope, _mode] call ALiVE_fnc_dump;
@@ -549,7 +554,7 @@ private _findRoadCandidates = {
 // ------------------------------------------------------------------------
 if (_mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear}) exitWith {
     private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
-    if (_debug) then { ["[ALiVE CompSpawn] EXIT centre dir=%1", _dir] call ALiVE_fnc_dump };
+    if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _centerPos] call ALiVE_fnc_dump };
     [_centerPos, _dir]
 };
 
@@ -626,7 +631,7 @@ if (_mode == "roadblock") exitWith {
         []
     };
     _accepted params ["_fPos", "_fDir"];
-    if (_debug) then { ["[ALiVE CompSpawn] EXIT roadblock pos=%1 dir=%2 (anchor search)", _fPos, _fDir] call ALiVE_fnc_dump };
+    if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _fPos] call ALiVE_fnc_dump };
     [_fPos, _fDir]
 };
 
@@ -649,7 +654,7 @@ for "_i" from 1 to _maxAttempts do {
     if ([_candidate, _envelope] call _candidateClear) exitWith {
         private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
         _result = [_candidate, _dir];
-        if (_debug) then { ["[ALiVE CompSpawn] EXIT sample[%1] pos=%2 dir=%3", _i, _candidate, _dir] call ALiVE_fnc_dump };
+        if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _candidate] call ALiVE_fnc_dump };
     };
 };
 

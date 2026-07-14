@@ -2,10 +2,17 @@ class CfgWeapons
 {
 	class CBA_MiscItem;
 	class CBA_MiscItem_ItemInfo;
-	class GrenadeLauncher;
-	class Throw: GrenadeLauncher
+	class Throw;
+	// Standalone thrower for civilian crowds (stones/cans/bottles). Deliberately NOT an
+	// override of the base Throw weapon: appending muzzles to Throw changes the muzzle
+	// table of a weapon EVERY unit carries, and when only some machines in an MP session
+	// load ALiVE that mismatch silences remote players' weapon sounds and firing
+	// animations across the modset boundary (engine behaviour, BI feedback T81181).
+	// Crowd agents are given this weapon by crowdActivator.fsm instead.
+	class ALiVE_Throw: Throw
 	{
-		muzzles[] += {"ALiVE_Handgrenade_stoneMuzzle","ALiVE_Handgrenade_canMuzzle","ALiVE_Handgrenade_bottleMuzzle"};
+		scope = 1;
+		muzzles[] = {"ALiVE_Handgrenade_stoneMuzzle","ALiVE_Handgrenade_canMuzzle","ALiVE_Handgrenade_bottleMuzzle"};
 		class ThrowMuzzle;
 		class ALiVE_Handgrenade_stoneMuzzle: ThrowMuzzle
 		{

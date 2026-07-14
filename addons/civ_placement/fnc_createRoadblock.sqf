@@ -148,7 +148,7 @@ for "_j" from 1 to (count _roadpoints) do {
     _roadpos = _roadpoints select (_j - 1);
     _vehicle = objNull;
 
-    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {["Roadblock %1 too close to another! Not created...",_roadpos] call ALiVE_fnc_dump};
+    if ({_roadpos distance _x < 100} count GVAR(ROADBLOCKS) > 0) exitWith {/* ["Roadblock %1 too close to another! Not created...",_roadpos] call ALiVE_fnc_dump */};
 
     _roadConnectedTo = roadsConnectedTo _roadpos;
 
@@ -256,7 +256,7 @@ for "_j" from 1 to (count _roadpoints) do {
     };
 
     if (isNull _spawnedComp) exitWith {
-        ["CMP createRoadblock [%1] - no candidate fit at roadpoint %2 (%3 candidates tried, validator rejected all - slope / clearance / building footprint)", _fac, _roadpos, count _candidates] call ALiVE_fnc_dump;
+        // ["CMP createRoadblock [%1] - no candidate fit at roadpoint %2 (%3 candidates tried, validator rejected all - slope / clearance / building footprint)", _fac, _roadpos, count _candidates] call ALiVE_fnc_dump;
     };
 
     GVAR(ROADBLOCKS) pushBack _spawnedSafePos;

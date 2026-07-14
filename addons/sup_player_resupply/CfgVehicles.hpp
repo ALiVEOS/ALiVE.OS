@@ -23,12 +23,43 @@ class CfgVehicles {
                 {
                     // ── GENERAL ──────────────────────────────────────────────
                     class HDR_GENERAL : ALiVE_ModuleSubTitle { property = "ALiVE_sup_player_resupply_HDR_GENERAL"; displayName = "GENERAL"; };
-                    class pr_item : Edit { property = "ALiVE_sup_player_resupply_pr_item"; displayName = "$STR_ALIVE_PR_ALLOW"; tooltip = "$STR_ALIVE_PR_ALLOW_COMMENT"; defaultValue = """LaserDesignator"""; typeName = "STRING"; };
+                    class pr_debug : Combo
+                    {
+                            property = "ALiVE_sup_player_resupply_pr_debug";
+                            displayName = "$STR_ALIVE_PR_DEBUG";
+                            tooltip = "$STR_ALIVE_PR_DEBUG_COMMENT";
+                            expression = "_this setVariable ['pr_debug', _value];";
+                            defaultValue = """0""";
+                            class Values
+                            {
+                                class off { name="No"; value = 0; default = 1; };
+                                class on { name="Yes"; value = 1; };
+                            };
+                    };
+                    class pr_item
+                    {
+                            property     = "ALiVE_sup_player_resupply_pr_item";
+                            displayName  = "$STR_ALIVE_PR_ALLOW";
+                            tooltip      = "$STR_ALIVE_PR_ALLOW_COMMENT";
+                            control      = "ALiVE_PRAccessItemsChoice";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['pr_item', _value];";
+                            defaultValue = """LaserDesignators""";
+                    };
+                    class pr_item_custom : Edit
+                    {
+                            property     = "ALiVE_sup_player_resupply_pr_item_custom";
+                            displayName  = "$STR_ALIVE_PR_CUSTOM_ITEMS";
+                            tooltip      = "$STR_ALIVE_PR_CUSTOM_ITEMS_COMMENT";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['pr_item_custom', _value];";
+                            defaultValue = """""";
+                    };
                     class pr_audio : Combo
                     {
                             property = "ALiVE_sup_player_resupply_pr_audio";
-                            displayName = "$STR_ALIVE_CS_AUDIO";
-                            tooltip = "$STR_ALIVE_CS_AUDIO_COMMENT";
+                            displayName = "$STR_ALIVE_PR_AUDIO";
+                            tooltip = "$STR_ALIVE_PR_AUDIO_COMMENT";
                             defaultValue = """1""";
                             class Values
                             {

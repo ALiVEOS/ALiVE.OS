@@ -155,7 +155,7 @@
     <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
     <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
     <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
-    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format : noms séparés par des virgules, sans espaces ni guillemets.</French>
+    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format: noms séparés par des virgules, sans espaces ni guillemets.</French>
     <Portuguese>Opcional. Digite classnames de facções adicionais para mods não carregados atualmente. Formato: nomes separados por vírgulas, sem espaços ou aspas.</Portuguese>
     <Russian>Необязательно. Введите classnames дополнительных фракций для незагруженных модов. Формат: имена через запятую, без пробелов и кавычек.</Russian>
 </Key>
@@ -337,7 +337,7 @@
     <Chinesesimp>保证至少每 N 米有一栋被占用的房屋：距离所有已有驻军超过 N 米的房屋必定被占用，而更近的房屋则由概率决定。无（默认）：不保证间距——每栋房屋仅由概率决定。</Chinesesimp>
     <Chinese>保證至少每 N 公尺有一棟被佔用的建築：距離所有已有駐軍超過 N 公尺的建築必定被佔用，而更近的建築則由機率決定。無（預設）：不保證間距——每棟建築僅由機率決定。</Chinese>
     <Spanish>Garantiza una casa ocupada al menos cada N metros: toda casa a más de N de todas las guarniciones existentes se ocupa siempre, mientras que las casas a menos de N se deciden por la Probabilidad. Ninguna (predeterminado): sin espaciado garantizado; cada casa se decide solo por la Probabilidad.</Spanish>
-    <French>Garantit une maison occupée au moins tous les N mètres : toute maison à plus de N de toutes les garnisons existantes est toujours occupée, tandis que les maisons à moins de N sont décidées par la Probabilité. Aucune (par défaut) : pas d'espacement garanti - chaque maison est décidée par la seule Probabilité.</French>
+    <French>Garantit une maison occupée au moins tous les N mètres: toute maison à plus de N de toutes les garnisons existantes est toujours occupée, tandis que les maisons à moins de N sont décidées par la Probabilité. Aucune (par défaut): pas d'espacement garanti - chaque maison est décidée par la seule Probabilité.</French>
     <Portuguese>Garante uma casa ocupada pelo menos a cada N metros: qualquer casa a mais de N de todas as guarnições existentes é sempre ocupada, enquanto as casas a menos de N são decididas pela Probabilidade. Nenhuma (padrão): sem espaçamento garantido - cada casa é decidida apenas pela Probabilidade.</Portuguese>
     <Russian>Гарантирует занятый дом как минимум каждые N метров: любой дом дальше N от всех существующих гарнизонов занимается всегда, а дома ближе N определяются Вероятностью. «Нет» (по умолчанию): без гарантированного интервала — каждый дом определяется только Вероятностью.</Russian>
 </Key>
@@ -367,7 +367,7 @@
     <Chinesesimp>巡逻行为：</Chinesesimp>
     <Chinese>巡邏行為：</Chinese>
     <Spanish>Comportamiento de patrulla:</Spanish>
-    <French>Comportement de patrouille :</French>
+    <French>Comportement de patrouille:</French>
     <Portuguese>Comportamento de patrulha:</Portuguese>
     <Russian>Поведение патруля:</Russian>
 </Key>
@@ -377,7 +377,7 @@
     <Chinesesimp>驻军巡逻在未发现敌人时的战斗行为。默认为安全（步行）。发现敌人时小组仍会自动转为警戒。</Chinesesimp>
     <Chinese>駐軍巡邏在未發現敵人時的戰鬥行為。預設為安全（步行）。發現敵人時小組仍會自動轉為警戒。</Chinese>
     <Spanish>Comportamiento de combate de las patrullas de guarnición cuando no hay enemigos a la vista. Por defecto es Seguro (caminando). Los grupos siguen pasando a alerta automáticamente al detectar a un enemigo.</Spanish>
-    <French>Comportement de combat des patrouilles de garnison lorsqu'aucun ennemi n'est en vue. Par défaut : Tranquille (marche). Les groupes passent toujours automatiquement en alerte lorsqu'ils repèrent un ennemi.</French>
+    <French>Comportement de combat des patrouilles de garnison lorsqu'aucun ennemi n'est en vue. Par défaut: Tranquille (marche). Les groupes passent toujours automatiquement en alerte lorsqu'ils repèrent un ennemi.</French>
     <Portuguese>Comportamento de combate das patrulhas de guarnição quando não há inimigos à vista. Predefinição: Seguro (a andar). Os grupos continuam a mudar automaticamente para alerta ao avistar um inimigo.</Portuguese>
     <Russian>Боевое поведение гарнизонных патрулей, когда враг не виден. По умолчанию — «Безопасно» (шагом). Группы всё равно автоматически переходят в боевую готовность, заметив противника.</Russian>
 </Key>
@@ -387,7 +387,7 @@
     <Chinesesimp>巡逻速度：</Chinesesimp>
     <Chinese>巡邏速度：</Chinese>
     <Spanish>Velocidad de patrulla:</Spanish>
-    <French>Vitesse de patrouille :</French>
+    <French>Vitesse de patrouille:</French>
     <Portuguese>Velocidade de patrulha:</Portuguese>
     <Russian>Скорость патруля:</Russian>
 </Key>
@@ -397,7 +397,7 @@
     <Chinesesimp>驻军巡逻在未发现敌人时的移动速度。默认为受限（步行）。</Chinesesimp>
     <Chinese>駐軍巡邏在未發現敵人時的移動速度。預設為受限（步行）。</Chinese>
     <Spanish>Velocidad de movimiento de las patrullas de guarnición cuando no hay enemigos a la vista. Por defecto es Limitada (caminando).</Spanish>
-    <French>Vitesse de déplacement des patrouilles de garnison lorsqu'aucun ennemi n'est en vue. Par défaut : Limitée (marche).</French>
+    <French>Vitesse de déplacement des patrouilles de garnison lorsqu'aucun ennemi n'est en vue. Par défaut: Limitée (marche).</French>
     <Portuguese>Velocidade de movimento das patrulhas de guarnição quando não há inimigos à vista. Predefinição: Limitada (a andar).</Portuguese>
     <Russian>Скорость передвижения гарнизонных патрулей, когда враг не виден. По умолчанию — «Ограниченная» (шагом).</Russian>
 </Key>
@@ -537,7 +537,7 @@
     <Chinese>玩家周圍地面單位生成/解除生成的距離（公尺）。注意：戰略放置使用此值的 1.4 倍。</Chinese>
     <Chinesesimp>玩家周围地面单位生成/解除生成的距离（米）。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
     <Spanish>Distancia en metros a la que las unidades terrestres se generan/desaparecen alrededor del jugador. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
-    <French>Distance en mètres à laquelle les unités au sol apparaissent/disparaissent autour du joueur. Note : les placements stratégiques utilisent 1,4× cette valeur.</French>
+    <French>Distance en mètres à laquelle les unités au sol apparaissent/disparaissent autour du joueur. Note: les placements stratégiques utilisent 1,4× cette valeur.</French>
     <Portuguese>Distância em metros à qual as unidades terrestres aparecem/desaparecem em torno do jogador. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
     <Russian>Расстояние в метрах, на котором наземные юниты появляются/исчезают вокруг игрока. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
 </Key>
@@ -557,7 +557,7 @@
     <Chinese>玩家周圍靜態武器生成/解除生成的距離（公尺）。注意：戰略放置使用此值的 1.4 倍。</Chinese>
     <Chinesesimp>玩家周围静态武器生成/解除生成的距离（米）。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
     <Spanish>Distancia en metros a la que las armas estáticas se generan/desaparecen alrededor del jugador. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
-    <French>Distance en mètres à laquelle les armes statiques apparaissent/disparaissent autour du joueur. Note : les placements stratégiques utilisent 1,4× cette valeur.</French>
+    <French>Distance en mètres à laquelle les armes statiques apparaissent/disparaissent autour du joueur. Note: les placements stratégiques utilisent 1,4× cette valeur.</French>
     <Portuguese>Distância em metros à qual as armas estáticas aparecem/desaparecem em torno do jogador. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
     <Russian>Расстояние в метрах, на котором стационарное оружие появляется/исчезает вокруг игрока. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
 </Key>
@@ -577,7 +577,7 @@
     <Chinese>玩家周圍直升機生成/解除生成的距離（公尺）。設為 0 以停用直升機生成。注意：戰略放置使用此值的 1.4 倍。</Chinese>
     <Chinesesimp>玩家周围直升机生成/解除生成的距离（米）。设为 0 以停用直升机生成。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
     <Spanish>Distancia en metros a la que los helicópteros se generan/desaparecen alrededor del jugador. Establece en 0 para desactivar la generación de helicópteros. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
-    <French>Distance en mètres à laquelle les hélicoptères apparaissent/disparaissent autour du joueur. Réglez sur 0 pour désactiver l'apparition d'hélicoptères. Note : les placements stratégiques utilisent 1,4× cette valeur.</French>
+    <French>Distance en mètres à laquelle les hélicoptères apparaissent/disparaissent autour du joueur. Réglez sur 0 pour désactiver l'apparition d'hélicoptères. Note: les placements stratégiques utilisent 1,4× cette valeur.</French>
     <Portuguese>Distância em metros à qual os helicópteros aparecem/desaparecem em torno do jogador. Defina como 0 para desativar a geração de helicópteros. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
     <Russian>Расстояние в метрах, на котором вертолёты появляются/исчезают вокруг игрока. Установите 0, чтобы отключить появление вертолётов. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
 </Key>
@@ -597,7 +597,7 @@
     <Chinese>玩家周圍固定翼飛機生成/解除生成的距離（公尺）。設為 0 以停用戰機生成。注意：戰略放置使用此值的 1.4 倍。</Chinese>
     <Chinesesimp>玩家周围固定翼飞机生成/解除生成的距离（米）。设为 0 以停用战机生成。注意：战略放置使用此值的 1.4 倍。</Chinesesimp>
     <Spanish>Distancia en metros a la que los aviones de ala fija se generan/desaparecen alrededor del jugador. Establece en 0 para desactivar la generación de jets. Nota: las colocaciones estratégicas usan 1,4 veces este valor.</Spanish>
-    <French>Distance en mètres à laquelle les avions à voilure fixe apparaissent/disparaissent autour du joueur. Réglez sur 0 pour désactiver l'apparition de jets. Note : les placements stratégiques utilisent 1,4× cette valeur.</French>
+    <French>Distance en mètres à laquelle les avions à voilure fixe apparaissent/disparaissent autour du joueur. Réglez sur 0 pour désactiver l'apparition de jets. Note: les placements stratégiques utilisent 1,4× cette valeur.</French>
     <Portuguese>Distância em metros à qual as aeronaves de asa fixa aparecem/desaparecem em torno do jogador. Defina como 0 para desativar a geração de jatos. Nota: posicionamentos estratégicos usam 1,4× este valor.</Portuguese>
     <Russian>Расстояние в метрах, на котором самолёты с неподвижным крылом появляются/исчезают вокруг игрока. Установите 0, чтобы отключить появление самолётов. Примечание: стратегические размещения используют 1,4× это значение.</Russian>
 </Key>
@@ -677,7 +677,7 @@
     <Chinesesimp>可以生成的静态武器</Chinesesimp>
     <Chinese>可生成於 CQB 區域的靜態武器類別名稱。多個類別名稱以逗號分隔,無空格、無引號 — 例如 B_HMG_01_high_F,O_Mortar_01_F。預設為 HMG 與迫擊砲類別的混合。</Chinese>
     <Spanish>Nombres de clase de armas estáticas elegibles para aparecer en áreas CQB. Separa varios nombres de clase con comas, sin espacios, sin comillas — p. ej. B_HMG_01_high_F,O_Mortar_01_F. Predeterminado: una mezcla de nombres de clase de HMG y mortero.</Spanish>
-    <French>Noms de classes d'armes statiques pouvant apparaître dans les zones CQB. Séparez plusieurs noms de classes par des virgules, sans espaces, sans guillemets — ex. B_HMG_01_high_F,O_Mortar_01_F. Par défaut : un mélange de classes HMG et mortier.</French>
+    <French>Noms de classes d'armes statiques pouvant apparaître dans les zones CQB. Séparez plusieurs noms de classes par des virgules, sans espaces, sans guillemets — ex. B_HMG_01_high_F,O_Mortar_01_F. Par défaut: un mélange de classes HMG et mortier.</French>
     <Portuguese>Nomes de classes de armas estáticas elegíveis para aparecer em áreas CQB. Separe vários nomes de classes por vírgulas, sem espaços, sem aspas — ex. B_HMG_01_high_F,O_Mortar_01_F. Padrão: uma mistura de classes de HMG e morteiro.</Portuguese>
     <Russian>Имена классов стационарного оружия, которое может появиться в зонах CQB. Разделяйте несколько имён классов запятыми, без пробелов, без кавычек — например, B_HMG_01_high_F,O_Mortar_01_F. По умолчанию: смесь классов HMG и миномётов.</Russian>
 </Key>
@@ -718,7 +718,7 @@
     <Chinese>每次 CQB 單位生成時執行的 SQF 程式碼。_this = [unit, profileID, side, faction]。在伺服器端排程執行緒中執行。若要影響所有客戶端,請使用 remoteExec 或 publicVariable。hint 與 player 命令無效。範例:_this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Chinese>
     <Chinesesimp>每次 CQB 单位生成时执行的 SQF 代码。_this = [unit, profileID, side, faction]。在服务器端调度线程中执行。若要影响所有客户端,请使用 remoteExec 或 publicVariable。hint 与 player 命令无效。示例:_this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Chinesesimp>
     <Spanish>Código SQF ejecutado cada vez que aparece una unidad CQB. _this = [unit, profileID, side, faction]. Se ejecuta en el lado del servidor en un hilo programado. Para afectar a todos los clientes usa remoteExec o publicVariable. Los comandos hint y player no tendrán efecto. Ejemplo: _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Spanish>
-    <French>Code SQF exécuté à chaque apparition d'une unité CQB. _this = [unit, profileID, side, faction]. S'exécute côté serveur dans un thread planifié. Pour affecter tous les clients, utilisez remoteExec ou publicVariable. Les commandes hint et player n'auront aucun effet. Exemple : _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</French>
+    <French>Code SQF exécuté à chaque apparition d'une unité CQB. _this = [unit, profileID, side, faction]. S'exécute côté serveur dans un thread planifié. Pour affecter tous les clients, utilisez remoteExec ou publicVariable. Les commandes hint et player n'auront aucun effet. Exemple: _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</French>
     <Portuguese>Código SQF executado sempre que uma unidade CQB aparece. _this = [unit, profileID, side, faction]. Executa no lado do servidor numa thread agendada. Para afetar todos os clientes, use remoteExec ou publicVariable. Os comandos hint e player não terão efeito. Exemplo: _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Portuguese>
     <Russian>Код SQF, выполняемый каждый раз при появлении юнита CQB. _this = [unit, profileID, side, faction]. Выполняется на стороне сервера в запланированном потоке. Чтобы повлиять на всех клиентов, используйте remoteExec или publicVariable. Команды hint и player не будут иметь эффекта. Пример: _this params ["_unit"]; ["fnc_mySetup", _unit] remoteExec ["BIS_fnc_call"];</Russian>
 </Key>
@@ -738,7 +738,7 @@
     <Chinese>是：SQF 鉤子僅在每個單位首次生成時執行 — 適用於一次性設定,例如新增事件處理器。否：每次單位重新生成時都執行。</Chinese>
     <Chinesesimp>是：SQF 钩子仅在每个单位首次生成时执行 — 适用于一次性设定,例如新增事件处理器。否：每次单位重新生成时都执行。</Chinesesimp>
     <Spanish>Sí: el hook SQF se ejecuta solo en la primera aparición de cada unidad — útil para configuraciones únicas como agregar manejadores de eventos. No: se ejecuta cada vez que la unidad reaparece.</Spanish>
-    <French>Oui : le hook SQF ne s'exécute qu'à la première apparition de chaque unité — utile pour la configuration ponctuelle comme l'ajout de gestionnaires d'événements. Non : s'exécute à chaque réapparition de l'unité.</French>
+    <French>Oui: le hook SQF ne s'exécute qu'à la première apparition de chaque unité — utile pour la configuration ponctuelle comme l'ajout de gestionnaires d'événements. Non: s'exécute à chaque réapparition de l'unité.</French>
     <Portuguese>Sim: o hook SQF é executado apenas no primeiro aparecimento de cada unidade — útil para configuração pontual como adicionar manipuladores de eventos. Não: executa cada vez que a unidade reaparece.</Portuguese>
     <Russian>Да: SQF-обработчик выполняется только при первом появлении каждого юнита — полезно для одноразовой настройки, например добавления обработчиков событий. Нет: выполняется каждый раз при повторном появлении юнита.</Russian>
 </Key>

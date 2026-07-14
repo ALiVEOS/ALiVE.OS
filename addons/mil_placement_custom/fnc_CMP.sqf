@@ -145,6 +145,12 @@ switch(_operation) do {
     case "customArmourCount": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "customArtilleryCount": {
+        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "customArtilleryFaction": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
 
     case "customSpecOpsCount": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
@@ -199,6 +205,9 @@ switch(_operation) do {
     };
     case "garrisonPatrolSpeed": {
         _result = [_logic,_operation,_args,"LIMITED"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "garrisonCompositions": {
+        _result = [_logic,_operation,_args,"true"] call ALIVE_fnc_OOsimpleOperation;
     };
 
     case "size": {
@@ -343,6 +352,15 @@ switch(_operation) do {
         if (typeName _args != "STRING") then { _args = "0"; };
         _result = _args;
     };
+    case "objectiveObjectsChance": {
+        if (typeName _args == "STRING") then {
+            _logic setVariable ["objectiveObjectsChance", _args];
+        } else {
+            _args = _logic getVariable ["objectiveObjectsChance", "100"];
+        };
+        if (typeName _args != "STRING") then { _args = "100"; };
+        _result = _args;
+    };
     case "objectiveObjectsBehaviour": {
         if (typeName _args == "STRING") then {
             _logic setVariable ["objectiveObjectsBehaviour", _args];
@@ -467,6 +485,9 @@ switch(_operation) do {
             private _countArmored = [_logic, "customArmourCount"] call MAINCLASS;
             _countArmored = parseNumber _countArmored;
 
+            private _countArtillery = [_logic, "customArtilleryCount"] call MAINCLASS;
+            _countArtillery = parseNumber _countArtillery;
+
             private _countSpecOps = [_logic, "customSpecOpsCount"] call MAINCLASS;
             _countSpecOps = parseNumber _countSpecOps;
 
@@ -586,6 +607,7 @@ switch(_operation) do {
             private _createFieldHQ = [_logic, "createFieldHQ"] call MAINCLASS;
             private _placeHelis = [_logic, "placeHelis"] call MAINCLASS;
             private _placeSupplies = [_logic, "placeSupplies"] call MAINCLASS;
+            private _garrisonCompositions = ([_logic, "garrisonCompositions"] call MAINCLASS) in [true, "true"];
             private _objectiveObjectsRaw = [_logic, "objectiveObjects"] call MAINCLASS;
             private _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
             private _factionSideNumber = getNumber(_factionConfig >> "side");
@@ -624,6 +646,7 @@ switch(_operation) do {
             private _compositionMarkerName = "";
             private _compositionSpawnedClass = "";
             private _compositionEnvelope = 30;
+            private _compositionSeats = 0;
 
             if (typeName _composition == "STRING" && _composition != "" && _composition != "false") then {
                 if (isNil QMOD(COMPOSITIONS_LOADED)) then {
@@ -768,6 +791,22 @@ switch(_operation) do {
                         // actual layout (small radio kit vs. a sprawling
                         // BIS Camp Bravery have very different reaches).
                         _compositionEnvelope = ([_spawnedComp] call ALiVE_fnc_getCompositionRadius) max 30;
+                        // estimate garrison seats so the guard pass knows how
+                        // many groups to divert into the composition. Ring
+                        // geometry mirrors x_lib fnc_groupGarrison - keep in sync
+                        {
+                            private _bp = count (_x buildingPos -1);
+                            if (_bp > 0) then {
+                                _compositionSeats = _compositionSeats + _bp;
+                            } else {
+                                (boundingBoxReal _x) params ["_bMin","_bMax"];
+                                private _ringRadius = 0.5 * (((_bMax select 0) - (_bMin select 0)) max ((_bMax select 1) - (_bMin select 1))) + 1;
+                                _compositionSeats = _compositionSeats + (2 max (floor ((2 * pi * _ringRadius) / 4)) min 6);
+                            };
+                        } forEach (nearestObjects [_spawnedSafePos, ALIVE_garrisonPositions select 1, _compositionEnvelope]);
+                        {
+                            _compositionSeats = _compositionSeats + ([_x] call ALIVE_fnc_vehicleCountEmptyPositions);
+                        } forEach (nearestObjects [_spawnedSafePos, ["StaticWeapon"], _compositionEnvelope]);
                         if (_debug) then {
                             _compositionMarkerName = [_spawnedSafePos, 4, format ["%1 - Custom Comp (%2)", _side, _compositionSpawnedClass], "ColorOrange", "placement.cmp.comp"] call ALIVE_fnc_placeDebugMarker;
                             ["CMP [%1] - Custom composition %2 spawned at %3 (module pos was %4, %5m offset, search tier %6m, picked from %7 selections)",
@@ -840,6 +879,7 @@ switch(_operation) do {
             if(_debug) then {
                 ["CMP [%1] - Force creation ",_factions] call ALiVE_fnc_dump;
                 ["CMP Count Armor: %1",_countArmored] call ALiVE_fnc_dump;
+                ["CMP Count Artillery: %1",_countArtillery] call ALiVE_fnc_dump;
                 ["CMP Count Mech: %1",_countMechanized] call ALiVE_fnc_dump;
                 ["CMP Count Motor: %1",_countMotorized] call ALiVE_fnc_dump;
                 ["CMP Count Infantry: %1",_countInfantry] call ALiVE_fnc_dump;
@@ -912,6 +952,144 @@ switch(_operation) do {
                 };
             };
 
+            // #887 groundwork - artillery sections ride the normal group pipeline;
+            // OPCOM buckets them as an artillery force class
+            private _artilleryWarned = false;
+            private _artilleryGroupNames = [];
+            private _artilleryFallback = 0;
+            // #887 - optional donor faction for artillery: models batteries
+            // attached from a sister branch (e.g. RHS Tank Troops guns
+            // supporting Motor Rifles). The donor must fight for the same side
+            private _artilleryDonor = trim ([_logic, "customArtilleryFaction"] call MAINCLASS);
+            if (_artilleryDonor != "") then {
+                private _donorConfig = _artilleryDonor call ALiVE_fnc_configGetFactionClass;
+                if (!isClass _donorConfig) then {
+                    ["CMP - Artillery faction %1 not found in CfgFactionClasses - artillery reverts to the composition factions",_artilleryDonor] call ALiVE_fnc_dump;
+                    _artilleryDonor = "";
+                } else {
+                    if (getNumber (_donorConfig >> "side") != _factionSideNumber) then {
+                        ["CMP - Artillery faction %1 does not fight for side %2 - artillery reverts to the composition factions",_artilleryDonor,_side] call ALiVE_fnc_dump;
+                        _artilleryDonor = "";
+                    };
+                };
+            };
+            private _artyPullFactions = if (_artilleryDonor != "") then {[_artilleryDonor]} else {_factions};
+
+            // rocket artillery is out-ranged by small terrains (4-5km minimum
+            // range) - defer rocket groups there, howitzer batteries come from the
+            // vehicle fallback below
+            private _smallMapForRockets = worldSize < 10240;
+            for "_i" from 0 to _countArtillery -1 do {
+                private _entry = ["FALSE",""];
+                if (_artilleryDonor != "") then {
+                    // donor groups can ride the pipeline - CMP spawns each
+                    // group with its own faction
+                    private _donorGroup = ["Artillery",_artilleryDonor] call ALIVE_fnc_configGetRandomGroup;
+                    if (_donorGroup != "FALSE") then { _entry = [_donorGroup,_artilleryDonor] };
+                } else {
+                    _entry = ["Artillery",_i] call _fnc_pickGroupForCategory;
+                };
+                if!((_entry select 0) == "FALSE") then {
+                    if (_smallMapForRockets && {[_entry select 1, _entry select 0] call ALIVE_fnc_groupIsRocketArtillery}) then {
+                        _artilleryFallback = _artilleryFallback + 1;
+                        if (!_artilleryWarned) then {
+                            _artilleryWarned = true;
+                            ["CMP - %1 is rocket artillery, out-ranged by this terrain (worldSize %2) - composing a howitzer battery instead",_entry select 0,worldSize] call ALiVE_fnc_dump;
+                        };
+                    } else {
+                        _groups pushback _entry;
+                        _artilleryGroupNames pushback (_entry select 0);
+                    };
+                } else {
+                    _artilleryFallback = _artilleryFallback + 1;
+                    if (!_artilleryWarned) then {
+                        _artilleryWarned = true;
+                        ["CMP [%1] - no faction has Artillery groups - composing batteries from their artillery vehicles instead",_artyPullFactions] call ALiVE_fnc_dump;
+                    };
+                };
+            };
+
+            // Fallback artillery batteries - a faction has artillery VEHICLES but
+            // no artillery GROUPS: compose each battery directly (one class, two
+            // crewed guns) around the objective. Self-propelled guns take
+            // priority: the first faction fielding them wins; towed/static
+            // pieces are used only when no faction owns anything better
+            if (_artilleryFallback > 0) then {
+                private _fnc_factionGuns = {
+                    private _c = _this call ALIVE_fnc_configGetFactionArtilleryVehicles;
+                    // prefer gun artillery (howitzers) on small terrains; keep rockets
+                    // only when the faction owns nothing else
+                    if (_smallMapForRockets) then {
+                        private _guns = _c select { !([_x] call ALIVE_fnc_isRocketArtillery) };
+                        if (count _guns > 0) then { _c = _guns; };
+                    };
+                    _c
+                };
+
+                private _artyClasses = [];
+                private _artyFaction = "";
+                {
+                    private _sp = (_x call _fnc_factionGuns) select { !(_x isKindOf "StaticWeapon") };
+                    if (count _sp > 0) exitWith { _artyClasses = _sp; _artyFaction = _x; };
+                } forEach _artyPullFactions;
+                if (count _artyClasses == 0) then {
+                    {
+                        private _c = _x call _fnc_factionGuns;
+                        if (count _c > 0) exitWith { _artyClasses = _c; _artyFaction = _x; };
+                    } forEach _artyPullFactions;
+                };
+
+                if (count _artyClasses == 0) then {
+                    ["CMP [%1] - no faction has artillery groups OR artillery vehicles - nothing to place",_artyPullFactions] call ALiVE_fnc_dump;
+                } else {
+                    private _artySideNum = getNumber ((_artyFaction call ALiVE_fnc_configGetFactionClass) >> "side");
+                    private _artySide = _artySideNum call ALIVE_fnc_sideNumberToText;
+                    private _usedArtyPositions = [];
+
+                    for "_b" from 1 to _artilleryFallback do {
+                        private _artyClass = selectRandom _artyClasses;
+                        private _gunsPlaced = 0;
+                        for "_g" from 1 to 2 do {
+                            private _safePos = [];
+                            private _safeDir = 0;
+                            {
+                                if (count _safePos > 0) exitWith {};
+                                private _radius = _x;
+                                // 6 bearings per ring (60-degree sectors with
+                                // jitter) - one random bearing per ring was
+                                // striking out entirely in broken terrain
+                                for "_a" from 0 to 5 do {
+                                    private _cand = _position getPos [_radius, (_a * 60) + random 60];
+                                    private _res = [_cand, 25, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
+                                    if (count _res >= 2) then {
+                                        private _testPos = _res select 0;
+                                        private _clash = false;
+                                        { if (_testPos distance2D _x < 25) exitWith { _clash = true } } forEach _usedArtyPositions;
+                                        if (!_clash) then {
+                                            _safePos = _testPos;
+                                            _safeDir = _res select 1;
+                                        };
+                                    };
+                                    if (count _safePos > 0) exitWith {};
+                                };
+                            } forEach [50, 80, 110, 140, 170, 200];
+
+                            if (count _safePos > 0) then {
+                                _usedArtyPositions pushBack _safePos;
+                                [_artyClass, _artySide, _artyFaction, "PRIVATE", _safePos, _safeDir, false, _artyFaction] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                _gunsPlaced = _gunsPlaced + 1;
+                            };
+                        };
+
+                        if (_gunsPlaced > 0) then {
+                            if (_debug) then {
+                                ["CMP - Artillery battery composed from vehicles: %1 x %2 at grid %3", _gunsPlaced, _artyClass, mapGridPosition _position] call ALiVE_fnc_dump;
+                            };
+                        };
+                    };
+                };
+            };
+
             _infantryGroups = _infantryGroups select {!((_x select 0) in ALiVE_PLACEMENT_GROUPBLACKLIST)};
             _motorizedGroups = _motorizedGroups select {!((_x select 0) in ALiVE_PLACEMENT_GROUPBLACKLIST)};
             _groups = _groups select {!((_x select 0) in ALiVE_PLACEMENT_GROUPBLACKLIST)};
@@ -939,35 +1117,93 @@ switch(_operation) do {
             private _groupCount = count _groups;
             private _totalCount = 0;
 
+            // hoisted from the Field HQ block below: the guard pass needs to
+            // know whether an auto Field HQ is still coming so it can defer
+            // its groups until that composition exists to anchor them.
+            // Strip the picker's [F:...] prefix before checking emptiness so
+            // a saved-but-empty picker (just "[F:0,0,0,0]" with no classes)
+            // correctly evaluates as empty.
+            private _pickerCheck = _composition;
+            if (typeName _pickerCheck == "STRING" && {count _pickerCheck > 3} && {(_pickerCheck select [0, 3]) == "[F:"}) then {
+                private _closeIdx = _pickerCheck find "]";
+                if (_closeIdx > 3) then { _pickerCheck = _pickerCheck select [_closeIdx + 1] };
+            };
+            private _pickerEmpty = (typeName _pickerCheck != "STRING") || {_pickerCheck == ""} || {_pickerCheck == "false"};
+
+            // guard diversion into spawned compositions - camps otherwise
+            // stand empty while their guards scatter around the module
+            private _deferFieldHQGuards = _garrisonCompositions && _pickerEmpty && _createFieldHQ;
+            private _deferredCompGuards = [];
+            private _compGuardCount = 0;
+            if (_garrisonCompositions && {_compositionSpawned} && {_guardProbabilityCount > 0}) then {
+                // cap at guardCount - 1 so at least one garrison group always
+                // holds the objective anchor - never send the whole guard
+                // force to the composition. A lone single guard stays put
+                _compGuardCount = ((1 max (ceil (_compositionSeats / 8))) min (_guardProbabilityCount - 1)) max 0;
+                if (_debug) then {
+                    ["CMP [%1] - Diverting %2 of %3 guard groups to composition %4 at %5 (est. seats %6)", _faction, _compGuardCount, _guardProbabilityCount, _compositionSpawnedClass, mapGridPosition _compositionSafePos, _compositionSeats] call ALiVE_fnc_dump;
+                };
+            };
+
             if(_groupCount > 0) then {
                 // Guards
                 if (count _infantryGroups > 0 && _guardProbabilityCount > 0) then {
+                    if (_deferFieldHQGuards && _debug) then {
+                        ["CMP [%1] - %2 guard groups deferred pending Field HQ placement", _faction, _guardProbabilityCount] call ALiVE_fnc_dump;
+                    };
                     for "_i" from 0 to _guardProbabilityCount -1 do {
                         private _guardEntry = selectRandom _infantryGroups;
-                        _guardEntry params ["_guardGroup", "_guardFaction"];
-                        // Water-aware random pick - up to 10 retries to
-                        // avoid dropping infantry in water when the module
-                        // anchor is coastal. Fallback to _position.
-                        private _guardPos = _position;
-                        for "_try" from 1 to 10 do {
-                            private _candidate = [_position, _guardDistance] call CBA_fnc_RandPos;
-                            if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
-                        };
-                        _guards = [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
-
-                        // DEBUG -------------------------------------------------------------------------------------
-                        if(_debug) then {
-                            ["CMP [%1] - Placing Garrison Guards - %2", _guardFaction, _guardGroup] call ALiVE_fnc_dump;
-                        };
-                        // DEBUG -------------------------------------------------------------------------------------
-
-                        // Garrison & Patrols instead of the static garrison.
-                        {
-                            if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
-                                [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
+                        if (_deferFieldHQGuards) then {
+                            // spawn after the Field HQ block - see the
+                            // deferred-guard drain below it
+                            _deferredCompGuards pushBack _guardEntry;
+                        } else {
+                            _guardEntry params ["_guardGroup", "_guardFaction"];
+                            // composition-diverted iterations anchor at the
+                            // composition with tight jitter and command radius
+                            private _guardAnchor = _position;
+                            private _guardJitter = _guardDistance;
+                            private _thisRadius = _guardRadius;
+                            private _pinStationary = false;
+                            if (_i < _compGuardCount) then {
+                                _guardAnchor = _compositionSafePos;
+                                _guardJitter = _compositionEnvelope * 0.5;
+                                _thisRadius = _compositionEnvelope max 50;
+                                _pinStationary = true;
                             };
-                        } forEach _guards;
-                        _countProfiles = _countProfiles + count _guards;
+                            // Water-aware random pick - up to 10 retries to
+                            // avoid dropping infantry in water when the module
+                            // anchor is coastal. Fallback to the anchor.
+                            private _guardPos = _guardAnchor;
+                            for "_try" from 1 to 10 do {
+                                private _candidate = [_guardAnchor, _guardJitter] call CBA_fnc_RandPos;
+                                if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
+                            };
+                            _guards = [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+
+                            // DEBUG -------------------------------------------------------------------------------------
+                            if(_debug) then {
+                                ["CMP [%1] - Placing Garrison Guards - %2", _guardFaction, _guardGroup] call ALiVE_fnc_dump;
+                            };
+                            // DEBUG -------------------------------------------------------------------------------------
+
+                            // Garrison & Patrols instead of the static garrison.
+                            {
+                                if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                                    [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
+                                    if (_pinStationary) then {
+                                        // composition garrisons hold their posts -
+                                        // the same pin roadblock guards use
+                                        private _pid = [_x,"profileID",""] call ALiVE_fnc_HashGet;
+                                        if (_pid != "") then {
+                                            if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
+                                            [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+                                        };
+                                    };
+                                };
+                            } forEach _guards;
+                            _countProfiles = _countProfiles + count _guards;
+                        };
                     };
                 };
 
@@ -1137,7 +1373,11 @@ switch(_operation) do {
                             if (_infantryActivePlacedCount < _garrisonCount) then {
                                 _command = "ALIVE_fnc_garrison";
                                 _radius = [_guardRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed];
-                                _position = [position _logic, 30] call CBA_fnc_RandPos;
+                                // garrison legs anchor at the spawned composition
+                                // when there is one - its structures are the
+                                // defensible positions this leg is meant to man
+                                private _garrisonAnchor = if (_garrisonCompositions && {_compositionSpawned}) then { _compositionSafePos } else { position _logic };
+                                _position = [_garrisonAnchor, 30] call CBA_fnc_RandPos;
                             } else {
                                 _command = "ALIVE_fnc_ambientMovement";
                                 _radius = [_guardRadius,"SAFE",[0,0,0]];
@@ -1147,6 +1387,10 @@ switch(_operation) do {
 
                         if !(surfaceIsWater _position) then {
                             private _profiles = [_group, _position, _activeDir, false, _groupFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+
+                            if (_debug && {_group in _artilleryGroupNames}) then {
+                                ["CMP - Artillery section %1 placed at grid %2 %3", _group, mapGridPosition _position, _position] call ALiVE_fnc_dump;
+                            };
 
                             if (_isVehicle
                                 && {!isNil "ALiVE_mil_placement_custom_debug" && {ALiVE_mil_placement_custom_debug}}
@@ -1226,15 +1470,8 @@ switch(_operation) do {
             private _fieldHQMarkerName = "";
             private _fieldHQSpawnedClass = "";
             private _fieldHQEnvelope = 30;
-            // Strip the picker's [F:...] prefix before checking emptiness so
-            // a saved-but-empty picker (just "[F:0,0,0,0]" with no classes)
-            // correctly evaluates as empty.
-            private _pickerCheck = _composition;
-            if (typeName _pickerCheck == "STRING" && {count _pickerCheck > 3} && {(_pickerCheck select [0, 3]) == "[F:"}) then {
-                private _closeIdx = _pickerCheck find "]";
-                if (_closeIdx > 3) then { _pickerCheck = _pickerCheck select [_closeIdx + 1] };
-            };
-            private _pickerEmpty = (typeName _pickerCheck != "STRING") || {_pickerCheck == ""} || {_pickerCheck == "false"};
+            // (_pickerEmpty is computed above the guard block - the guard
+            // deferral needs it before this block runs)
 
             if (_createFieldHQ && _pickerEmpty) then {
                 if (isNil QMOD(COMPOSITIONS_LOADED)) then {
@@ -1279,6 +1516,80 @@ switch(_operation) do {
                                 _faction, selectMax _radii, count _radii, configName _HQ] call ALiVE_fnc_dump;
                         };
                     };
+                };
+            };
+
+            // deferred guard spawn: the auto Field HQ (if any) now exists, so
+            // the diverted share anchors at it and the remainder uses the
+            // module anchor - total spawned always equals the configured
+            // guard count on every branch. Spawn recipe kept in sync with
+            // the guard loop above
+            if (count _deferredCompGuards > 0) then {
+                private _fieldHQSeats = 0;
+                private _hqGuardCount = 0;
+                if (_fieldHQSpawned) then {
+                    // seat estimate - ring geometry mirrors x_lib
+                    // fnc_groupGarrison, keep in sync
+                    {
+                        private _bp = count (_x buildingPos -1);
+                        if (_bp > 0) then {
+                            _fieldHQSeats = _fieldHQSeats + _bp;
+                        } else {
+                            (boundingBoxReal _x) params ["_bMin","_bMax"];
+                            private _ringRadius = 0.5 * (((_bMax select 0) - (_bMin select 0)) max ((_bMax select 1) - (_bMin select 1))) + 1;
+                            _fieldHQSeats = _fieldHQSeats + (2 max (floor ((2 * pi * _ringRadius) / 4)) min 6);
+                        };
+                    } forEach (nearestObjects [_fieldHQSafePos, ALIVE_garrisonPositions select 1, _fieldHQEnvelope]);
+                    {
+                        _fieldHQSeats = _fieldHQSeats + ([_x] call ALIVE_fnc_vehicleCountEmptyPositions);
+                    } forEach (nearestObjects [_fieldHQSafePos, ["StaticWeapon"], _fieldHQEnvelope]);
+                    // same reservation: at least one deferred group holds the
+                    // objective anchor rather than the Field HQ
+                    _hqGuardCount = ((1 max (ceil (_fieldHQSeats / 8))) min ((count _deferredCompGuards) - 1)) max 0;
+                };
+                if (_debug) then {
+                    ["CMP [%1] - Deferred guards: %2 to Field HQ at %3, %4 at module anchor", _faction, _hqGuardCount, mapGridPosition _fieldHQSafePos, (count _deferredCompGuards) - _hqGuardCount] call ALiVE_fnc_dump;
+                };
+                {
+                    _x params ["_guardGroup", "_guardFaction"];
+                    private _guardAnchor = _position;
+                    private _guardJitter = _guardDistance;
+                    private _thisRadius = _guardRadius;
+                    private _pinStationary = false;
+                    if (_forEachIndex < _hqGuardCount) then {
+                        _guardAnchor = _fieldHQSafePos;
+                        _guardJitter = _fieldHQEnvelope * 0.5;
+                        _thisRadius = _fieldHQEnvelope max 50;
+                        _pinStationary = true;
+                    };
+                    private _guardPos = _guardAnchor;
+                    for "_try" from 1 to 10 do {
+                        private _candidate = [_guardAnchor, _guardJitter] call CBA_fnc_RandPos;
+                        if (!surfaceIsWater _candidate) exitWith { _guardPos = _candidate };
+                    };
+                    private _dGuards = [_guardGroup, _guardPos, random(360), true, _guardFaction, false, false, "STEALTH", _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_createProfilesFromGroupConfig;
+                    {
+                        if (([_x,"type"] call ALiVE_fnc_HashGet) == "entity") then {
+                            [_x, "setActiveCommand", ["ALIVE_fnc_garrison","spawn",[_thisRadius,"true",[0,0,0],"",_guardProbabilityCount, _guardPatrolPercentage, _garrisonPatrolBehaviour, _garrisonPatrolSpeed]]] call ALIVE_fnc_profileEntity;
+                            if (_pinStationary) then {
+                                // composition garrisons hold their posts - the
+                                // same pin roadblock guards use
+                                private _pid = [_x,"profileID",""] call ALiVE_fnc_HashGet;
+                                if (_pid != "") then {
+                                    if (isNil "ALIVE_profileStationary") then { ALIVE_profileStationary = [] call ALIVE_fnc_hashCreate; };
+                                    [ALIVE_profileStationary, _pid, true] call ALIVE_fnc_hashSet;
+                                };
+                            };
+                        };
+                    } forEach _dGuards;
+                    _countProfiles = _countProfiles + count _dGuards;
+                } forEach _deferredCompGuards;
+
+                // the "Total profiles created" summary above printed before
+                // this drain ran - re-state the true total so profile-count
+                // comparisons against the RPT stay honest
+                if (_debug) then {
+                    ["CMP [%1] - Total profiles created (incl. deferred guards): %2", _faction, _countProfiles] call ALiVE_fnc_dump;
                 };
             };
 
@@ -1476,7 +1787,9 @@ switch(_operation) do {
             private _objCountStr = [_logic, "objectiveObjectsCount"] call MAINCLASS;
             private _objCount = if (typeName _objCountStr == "STRING" && {_objCountStr != ""}) then { parseNumber _objCountStr } else { 0 };
             private _objBehaviour = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
-            private _countObjectiveObjects = [_logic, _position, _objSizeRadius, _objCount, _objBehaviour, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            private _objChanceStr = [_logic, "objectiveObjectsChance"] call MAINCLASS;
+            private _objChance = if (typeName _objChanceStr == "STRING" && {_objChanceStr != ""}) then { (parseNumber _objChanceStr) max 0 min 100 } else { 100 };
+            private _countObjectiveObjects = [_logic, _position, _objSizeRadius, _objCount, _objBehaviour, _debug, _objChance] call ALiVE_fnc_spawnObjectiveObjects;
             if (_debug) then {
                 ["CMP [%1] - Objective objects placed: %2 of %3 (radius=%4 behaviour=%5)",
                     _faction, _countObjectiveObjects, _objCount, _objSizeRadius, _objBehaviour] call ALiVE_fnc_dump;

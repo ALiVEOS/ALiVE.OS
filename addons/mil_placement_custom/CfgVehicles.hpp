@@ -108,6 +108,22 @@ class CfgVehicles {
                         class customArmourCount : Edit { property = "ALiVE_mil_placement_custom_customArmourCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARMOUR_COUNT_COMMENT"; defaultValue = """0"""; };
                         class customSpecOpsCount : Edit { property = "ALiVE_mil_placement_custom_customSpecOpsCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_SPECOPS_COUNT_COMMENT"; defaultValue = """0"""; };
 
+                        // ---- AI Artillery (#887) --------------------------------------------
+                        class HDR_ARTILLERY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ARTILLERY"; displayName = "AI ARTILLERY"; };
+                        class customArtilleryCount : Edit { property = "ALiVE_mil_placement_custom_customArtilleryCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT_COMMENT"; defaultValue = """0"""; };
+                        // Optional donor-faction dropdown - shared ALiVE_FactionChoice
+                        // substrate, artillery-capable factions only, "(none)" = use
+                        // the composition factions. See addons/main/CfgVehicles.hpp.
+                        class customArtilleryFaction {
+                            property     = "ALiVE_mil_placement_custom_customArtilleryFaction";
+                            displayName  = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION";
+                            tooltip      = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION_COMMENT";
+                            control      = "ALiVE_FactionChoice_Military_CustomArtilleryFaction";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['customArtilleryFaction', _value];";
+                            defaultValue = """""";
+                        };
+
                         // ---- Anti-Air -------------------------------------------------------
                         class HDR_ANTIAIR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ANTIAIR"; displayName = "$STR_ALIVE_CMP_HDR_ANTIAIR"; };
                         class aaCount : Edit { property = "ALiVE_mil_placement_custom_aaCount"; displayName = "$STR_ALIVE_CMP_AA_COUNT"; tooltip = "$STR_ALIVE_CMP_AA_COUNT_COMMENT"; defaultValue = """0"""; };
@@ -174,6 +190,7 @@ class CfgVehicles {
                                     class Full { name = "Full (run)"; value = "FULL"; };
                                 };
                         };
+                        class garrisonCompositions : Combo { property = "ALiVE_mil_placement_custom_garrisonCompositions"; displayName = "$STR_ALIVE_CMP_GARRISON_COMPOSITIONS"; tooltip = "$STR_ALIVE_CMP_GARRISON_COMPOSITIONS_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value="true";default=1;}; class No{name="No";value="false";}; }; };
                         class composition
                         {
                                 property     = "ALiVE_mil_placement_custom_composition";
@@ -197,6 +214,13 @@ class CfgVehicles {
                                 displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT";
                                 tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_COUNT_COMMENT";
                                 defaultValue = """0""";
+                        };
+                        class objectiveObjectsChance : Edit
+                        {
+                                property     = "ALiVE_mil_placement_custom_objectiveObjectsChance";
+                                displayName  = "$STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE";
+                                tooltip      = "$STR_ALIVE_OBJECTIVE_OBJECTS_CHANCE_COMMENT";
+                                defaultValue = """100""";
                         };
                         class objectiveObjectsBehaviour : Combo
                         {

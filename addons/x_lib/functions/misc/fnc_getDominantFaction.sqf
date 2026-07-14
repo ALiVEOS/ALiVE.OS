@@ -21,12 +21,17 @@ Examples:
 
 Author:
 Highhead
+Jman
 ---------------------------------------------------------------------------- */
-private ["_pos","_radius","_fac","_facs","_profiles","_result","_noCiv"];
+private ["_pos","_radius","_fac","_facs","_profiles","_result","_noCiv","_weighted"];
 
 PARAMS_1(_pos);
 DEFAULT_PARAM(1,_radius,500);
 DEFAULT_PARAM(2,_noCiv,false);
+// #897 - optional: weight votes by unit count instead of one vote per
+// profile/group, so a couple of two-man scout profiles can't outvote a
+// full garrison. Default off preserves every existing caller.
+DEFAULT_PARAM(3,_weighted,false);
 
 //Virtual Profiles activated?
 if !(isnil "ALIVE_profileHandler") then {
@@ -38,13 +43,21 @@ if !(isnil "ALIVE_profileHandler") then {
 _facs = [];
 {
     if (((_x select 2 select 5) == "entity") && {!(_x select 2 select 1)} && {!(_x select 2 select 30)} && {(_x select 2 select 2) distance _pos < _radius}) then {
-        _facs pushback (_x select 2 select 29);
+        private _votes = 1;
+        if (_weighted) then { _votes = (_x select 2 select 12) max 1; }; // unitCount
+        for "_i" from 1 to _votes do {
+            _facs pushback (_x select 2 select 29);
+        };
     };
 } foreach (_profiles select 2);
 
 {
     if ((_pos distance (getposATL (leader _x)) < _radius) && {{isPlayer _x} count (units _x) < 1}) then {
-        _facs pushback (faction(leader _x));
+        private _votes = 1;
+        if (_weighted) then { _votes = ({alive _x} count (units _x)) max 1; };
+        for "_i" from 1 to _votes do {
+            _facs pushback (faction(leader _x));
+        };
     };
 } foreach allgroups;
 

@@ -26,6 +26,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_isModuleAvailable.sqf";
                 RECOMPILE;
             };
+            class playerHasAccessItems {
+                description = "Shared access-item gate for the player tablet/menu modules";
+                file = "\x\alive\addons\main\fnc_playerHasAccessItems.sqf";
+                RECOMPILE;
+            };
             class versioning {
                 description = "Warns or kicks players on version mismatch";
                 file = "\x\alive\addons\main\fnc_versioning.sqf";
@@ -100,6 +105,12 @@ class cfgFunctions {
             class edenValidateFactionCompilerSync {
                 description = "3DEN editor-time validator: warns when sys_factioncompiler categories have vehicles synced directly instead of crew";
                 file = "\x\alive\addons\main\fnc_edenValidateFactionCompilerSync.sqf";
+                preInit = 1;
+                RECOMPILE;
+            };
+            class edenArtilleryDependencyCheck {
+                description = "3DEN editor-time advisory: warns when Military AI Commander Artillery is placed with no source of artillery batteries";
+                file = "\x\alive\addons\main\fnc_edenArtilleryDependencyCheck.sqf";
                 preInit = 1;
                 RECOMPILE;
             };

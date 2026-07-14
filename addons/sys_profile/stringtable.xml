@@ -158,43 +158,113 @@
     <English>Profiles use intelligent pathing to reach their destinations, routing around terrain, water and dense areas instead of travelling in straight lines.\nEnabled by default. Set to No to fall back to straight-line movement if you prefer, or if you encounter an issue.</English>
     <Chinesesimp>实验的!\n这项功能是高度实验性的,可能会破坏任务.\n如果发现任何问题,请禁用.\n配置文件将使用智能路径到达目的地.</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID">
     <English>Pathfinding Grid Size/Resolution:</English>
+    <Chinese>路徑搜尋網格大小／解析度:</Chinese>
+    <Chinesesimp>寻路网格大小/分辨率:</Chinesesimp>
+    <Spanish>Tamaño/resolución de la cuadrícula de búsqueda de rutas:</Spanish>
+    <French>Taille/résolution de la grille de recherche de chemin:</French>
+    <Portuguese>Tamanho/Resolução da Malha de Navegação:</Portuguese>
+    <Russian>Размер/разрешение сетки поиска пути:</Russian>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_GRID_COMMENT">
     <English>Controls the resolution of the pathfinding grid.\n\nAuto (recommended) sizes the grid to this map automatically - no need to match a map size by hand. High detail / Balanced / Performance trade path accuracy against server load. (An exact grid size can still be forced from init.sqf if ever needed.)</English>
     <Chinesesimp>实验的!\n这项功能是高度实验性的,可能会破坏任务.\n如果发现任何问题,请禁用.\n配置文件将使用智能路径到达目的地.</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID">
     <English>Draw Pathfinding Grid:</English>
+    <Chinese>繪製路徑搜尋網格:</Chinese>
+    <Chinesesimp>绘制寻路网格:</Chinesesimp>
+    <Spanish>Dibujar cuadrícula de búsqueda de rutas:</Spanish>
+    <French>Dessiner la grille de recherche de chemin:</French>
+    <Portuguese>Desenhar Malha de Navegação:</Portuguese>
+    <Russian>Отображать сетку поиска пути:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_COMMENT">
     <English>Debug: draw the pathfinding terrain grid on the map - coloured sectors showing how the map is classified (land / water / coast / bridge). Independent of the module Debug setting. A logged-in admin can also toggle this live from the ALiVE menu (Admin Options - Profile System). Default No.</English>
+    <Chinese>除錯:在地圖上繪製路徑搜尋地形網格 -- 以彩色區塊顯示地圖如何被分類（陸地／水域／海岸／橋樑）。與模組的除錯設定無關。已登入的管理員也可從 ALiVE 選單即時切換此功能（管理選項 -- 檔案系統）。預設為否。</Chinese>
+    <Chinesesimp>调试:在地图上绘制寻路地形网格——以彩色区块显示地图的分类方式(陆地/水域/海岸/桥梁)。与模块的调试设置相互独立。已登录的管理员也可从 ALiVE 菜单(管理选项 - 档案系统)中实时切换此项。默认关闭。</Chinesesimp>
+    <Spanish>Depuración: dibuja en el mapa la cuadrícula del terreno para la búsqueda de rutas; sectores coloreados que muestran cómo está clasificado el mapa (tierra / agua / costa / puente). Independiente del ajuste de Depuración del módulo. Un administrador conectado también puede activarlo en vivo desde el menú de ALiVE (Opciones de Administrador - Sistema de Perfiles). Por defecto No.</Spanish>
+    <French>Débogage: dessine sur la carte la grille terrain de recherche de chemin - secteurs colorés montrant comment la carte est classée (terre / eau / côte / pont). Indépendant du réglage Débogage du module. Un administrateur connecté peut aussi l'activer en direct depuis le menu ALiVE (Options admin - Système de profils). Par défaut Non.</French>
+    <Portuguese>Depuração: desenha a malha de navegação do terreno no mapa - setores coloridos mostrando como o mapa é classificado (terra / água / costa / ponte). Independente da configuração de Depuração do módulo. Um administrador conectado também pode ativar isto ao vivo pelo menu ALiVE (Opções de Administrador - Sistema de Perfis). Padrão Não.</Portuguese>
+    <Russian>Отладка: отображает сетку местности для поиска пути на карте — цветные сектора, показывающие, как классифицирована карта (суша / вода / берег / мост). Не зависит от настройки отладки модуля. Вошедший в систему администратор также может переключать это в реальном времени из меню ALiVE (Параметры администратора - Система профилей). По умолчанию Нет.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS">
     <English>Draw Pathfinding Routes:</English>
+    <Chinese>繪製路徑搜尋路線:</Chinese>
+    <Chinesesimp>绘制寻路路线:</Chinesesimp>
+    <Spanish>Dibujar rutas de búsqueda de rutas:</Spanish>
+    <French>Dessiner les itinéraires de recherche de chemin:</French>
+    <Portuguese>Desenhar Rotas de Navegação:</Portuguese>
+    <Russian>Отображать маршруты поиска пути:</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_COMMENT">
     <English>Debug: draw each computed route on the map as a connected line through its nodes, as profiles request paths. Lines are coloured by the requesting side (BLUFOR blue, OPFOR red, Independent green, Civilian purple). Independent of the module Debug setting. A logged-in admin can also toggle this live from the ALiVE menu (Admin Options - Profile System). Default No.</English>
+    <Chinese>除錯:當檔案請求路徑時，在地圖上以連接各節點的線條繪製每條計算出的路線。線條依請求方陣營著色（藍軍為藍色、紅軍為紅色、獨立軍為綠色、平民為紫色）。與模組的除錯設定無關。已登入的管理員也可從 ALiVE 選單即時切換此功能（管理選項 -- 檔案系統）。預設為否。</Chinese>
+    <Chinesesimp>调试:在档案请求路径时,在地图上以经过各节点的连线绘制每条已计算路线。线条颜色按请求方阵营区分(BLUFOR 蓝色、OPFOR 红色、独立方绿色、平民紫色)。与模块的调试设置相互独立。已登录的管理员也可从 ALiVE 菜单(管理选项 - 档案系统)中实时切换此项。默认关闭。</Chinesesimp>
+    <Spanish>Depuración: dibuja en el mapa cada ruta calculada como una línea conectada a través de sus nodos, a medida que los perfiles solicitan rutas. Las líneas se colorean según el bando solicitante (BLUFOR azul, OPFOR rojo, Independiente verde, Civil morado). Independiente del ajuste de Depuración del módulo. Un administrador conectado también puede activarlo en vivo desde el menú de ALiVE (Opciones de Administrador - Sistema de Perfiles). Por defecto No.</Spanish>
+    <French>Débogage: dessine sur la carte chaque itinéraire calculé sous forme de ligne reliant ses nœuds, au fur et à mesure que les profils demandent des itinéraires. Les lignes sont colorées selon le camp demandeur (BLUFOR bleu, OPFOR rouge, Indépendant vert, Civil violet). Indépendant du réglage Débogage du module. Un administrateur connecté peut aussi l'activer en direct depuis le menu ALiVE (Options admin - Système de profils). Par défaut Non.</French>
+    <Portuguese>Depuração: desenha cada rota calculada no mapa como uma linha conectada através de seus nós, conforme os perfis solicitam caminhos. As linhas são coloridas pelo lado solicitante (BLUFOR azul, OPFOR vermelho, Independente verde, Civil roxo). Independente da configuração de Depuração do módulo. Um administrador conectado também pode ativar isto ao vivo pelo menu ALiVE (Opções de Administrador - Sistema de Perfis). Padrão Não.</Portuguese>
+    <Russian>Отладка: отображает каждый рассчитанный маршрут на карте в виде соединённой линии через его узлы, по мере того как профили запрашивают пути. Линии окрашены по запрашивающей стороне (BLUFOR — синий, OPFOR — красный, независимые — зелёный, гражданские — фиолетовый). Не зависит от настройки отладки модуля. Вошедший в систему администратор также может переключать это в реальном времени из меню ALiVE (Параметры администратора - Система профилей). По умолчанию Нет.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_ENABLE">
     <English>Activate Pathfinding Grid Drawing</English>
+    <Chinese>啟動路徑搜尋網格繪製</Chinese>
+    <Chinesesimp>启用寻路网格绘制</Chinesesimp>
+    <Spanish>Activar dibujo de la cuadrícula de búsqueda de rutas</Spanish>
+    <French>Activer l'affichage de la grille de recherche de chemin</French>
+    <Portuguese>Ativar Desenho da Malha de Navegação</Portuguese>
+    <Russian>Активировать отображение сетки поиска пути</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWGRID_DISABLE">
     <English>Deactivate Pathfinding Grid Drawing</English>
+    <Chinese>關閉路徑搜尋網格繪製</Chinese>
+    <Chinesesimp>关闭寻路网格绘制</Chinesesimp>
+    <Spanish>Desactivar dibujo de la cuadrícula de búsqueda de rutas</Spanish>
+    <French>Désactiver l'affichage de la grille de recherche de chemin</French>
+    <Portuguese>Desativar Desenho da Malha de Navegação</Portuguese>
+    <Russian>Деактивировать отображение сетки поиска пути</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_ENABLE">
     <English>Activate Pathfinding Routes Drawing</English>
+    <Chinese>啟動路徑搜尋路線繪製</Chinese>
+    <Chinesesimp>启用寻路路线绘制</Chinesesimp>
+    <Spanish>Activar dibujo de rutas de búsqueda de rutas</Spanish>
+    <French>Activer l'affichage des itinéraires de recherche de chemin</French>
+    <Portuguese>Ativar Desenho das Rotas de Navegação</Portuguese>
+    <Russian>Активировать отображение маршрутов поиска пути</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PATHFINDING_DRAWPATHS_DISABLE">
     <English>Deactivate Pathfinding Routes Drawing</English>
+    <Chinese>關閉路徑搜尋路線繪製</Chinese>
+    <Chinesesimp>关闭寻路路线绘制</Chinesesimp>
+    <Spanish>Desactivar dibujo de rutas de búsqueda de rutas</Spanish>
+    <French>Désactiver l'affichage des itinéraires de recherche de chemin</French>
+    <Portuguese>Desativar Desenho das Rotas de Navegação</Portuguese>
+    <Russian>Деактивировать отображение маршрутов поиска пути</Russian>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT">
     <English>Infantry Sea Transport:</English>
     <Chinesesimp>步兵海上运输：</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SEATRANSPORT_COMMENT">
     <English>Lets virtualised infantry cross open water by boat when there is no land route to their objective. Auto: use a boat only if the group's faction fields one. Always: otherwise fall back to a generic boat. Never: keep infantry on land and route around water. Default Auto.</English>
+    <Chinese>讓虛擬化步兵在沒有陸路可通往目標時，能以船隻橫渡開闊水域。自動:僅在該編組所屬派系有配置船隻時才使用。永遠:否則改用通用船隻。永不:讓步兵維持陸路並繞過水域。預設為自動。</Chinese>
+    <Chinesesimp>让虚拟化步兵在没有陆路可通往目标时乘船渡过开阔水域。自动:仅当该派系拥有船只时才使用。始终:否则改用通用船只。从不:让步兵留在陆地上绕过水域。默认自动。</Chinesesimp>
+    <Spanish>Permite que la infantería virtualizada cruce aguas abiertas en barco cuando no hay ruta terrestre hacia su objetivo. Automático: usa un barco solo si la facción del grupo dispone de uno. Siempre: en caso contrario recurre a un barco genérico. Nunca: mantiene a la infantería en tierra y la desvía rodeando el agua. Por defecto Automático.</Spanish>
+    <French>Permet à l'infanterie virtualisée de traverser des étendues d'eau en bateau lorsqu'il n'existe aucun itinéraire terrestre vers leur objectif. Auto: utilise un bateau uniquement si la faction du groupe en possède un. Toujours: sinon se rabat sur un bateau générique. Jamais: maintient l'infanterie sur terre et contourne l'eau. Par défaut Auto.</French>
+    <Portuguese>Permite que infantaria virtualizada atravesse águas abertas de barco quando não há rota terrestre até o objetivo. Automático: usa um barco apenas se a facção do grupo possuir um. Sempre: caso contrário, recorre a um barco genérico. Nunca: mantém a infantaria em terra e contorna a água. Padrão Automático.</Portuguese>
+    <Russian>Позволяет виртуализированной пехоте пересекать открытую воду на лодке, если к их задаче нет сухопутного маршрута. Авто: использовать лодку, только если у фракции группы она есть. Всегда: иначе использовать обычную лодку. Никогда: держать пехоту на суше и прокладывать маршрут в обход воды. По умолчанию Авто.</Russian>
 </Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN">
     <English>Smooth Spawn:</English>
@@ -217,7 +287,7 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_VEH_SETTLE_COMMENT">
     <English>Seconds of damage immunity granted to a profile-spawned vehicle after creation. The engine needs a brief window to resolve collisions and settle the vehicle's pose before damage takes effect; without it, vehicles spawning near terrain features sometimes explode immediately. The unified spawn-position validator covers the common cases by finding clear spots beforehand; this window catches residual edge cases where no clear spot was available and the vehicle landed on its original profile position. Higher values are safer but mean newly-spawned enemy vehicles are briefly invulnerable. Default 15 s.</English>
-    <French>Nombre de secondes d'immunite aux degats accordees a un vehicule issu d'un profil apres sa creation. Le moteur a besoin d'une breve fenetre pour resoudre les collisions et stabiliser la pose du vehicule avant que les degats prennent effet ; sans cela, les vehicules apparaissant pres d'elements de terrain explosent parfois immediatement. Le validateur unifie de position de spawn couvre les cas courants en trouvant des emplacements degages au prealable ; cette fenetre rattrape les cas residuels ou aucun emplacement n'a ete trouve et le vehicule a atterri sur sa position de profil initiale. Des valeurs plus elevees sont plus surs mais signifient que les vehicules ennemis fraichement apparus sont brievement invulnerables. Par defaut : 15 s.</French>
+    <French>Nombre de secondes d'immunite aux degats accordees a un vehicule issu d'un profil apres sa creation. Le moteur a besoin d'une breve fenetre pour resoudre les collisions et stabiliser la pose du vehicule avant que les degats prennent effet; sans cela, les vehicules apparaissant pres d'elements de terrain explosent parfois immediatement. Le validateur unifie de position de spawn couvre les cas courants en trouvant des emplacements degages au prealable; cette fenetre rattrape les cas residuels ou aucun emplacement n'a ete trouve et le vehicule a atterri sur sa position de profil initiale. Des valeurs plus elevees sont plus surs mais signifient que les vehicules ennemis fraichement apparus sont brievement invulnerables. Par defaut: 15 s.</French>
     <Portuguese>Segundos de imunidade a danos concedidos a um veiculo gerado a partir de um perfil apos a sua criacao. O motor precisa de uma breve janela para resolver colisoes e estabilizar a pose do veiculo antes de o dano produzir efeito ; sem ela, veiculos que surgem proximos de elementos do terreno por vezes explodem imediatamente. O validador unificado de posicao de spawn cobre os casos comuns ao encontrar pontos livres com antecedencia ; esta janela apanha os casos residuais em que nao havia ponto livre e o veiculo aterrou na sua posicao original de perfil. Valores mais altos sao mais seguros mas significam que os veiculos inimigos recem-criados ficam brevemente invulneraveis. Padrao: 15 s.</Portuguese>
     <Russian>Сколько секунд защиты от урона получает транспорт, появившийся из профиля, сразу после создания. Движку нужно небольшое окно, чтобы разрешить коллизии и стабилизировать позу транспорта до того, как урон начнёт действовать ; без этого транспорт, появляющийся рядом с элементами местности, иногда взрывается сразу. Единый валидатор позиции спавна покрывает обычные случаи, заранее находя свободные точки ; это окно ловит остаточные случаи, когда свободной точки не нашлось, и транспорт оказался на своей исходной позиции профиля. Большие значения безопаснее, но означают, что только что появившийся вражеский транспорт ненадолго неуязвим. По умолчанию 15 с.</Russian>
     <Spanish>Segundos de inmunidad al dano concedidos a un vehiculo generado desde un perfil tras su creacion. El motor necesita una breve ventana para resolver colisiones y estabilizar la pose del vehiculo antes de que el dano surta efecto ; sin ella, los vehiculos que aparecen cerca de elementos del terreno a veces explotan de inmediato. El validador unificado de posicion de spawn cubre los casos comunes al encontrar puntos despejados con antelacion ; esta ventana captura los casos residuales en los que no habia punto despejado y el vehiculo aterrizo en su posicion original de perfil. Valores mas altos son mas seguros, pero significa que los vehiculos enemigos recien aparecidos son brevemente invulnerables. Predeterminado: 15 s.</Spanish>
@@ -264,29 +334,85 @@
     <Chinese>30 秒</Chinese>
     <Chinesesimp>30 秒</Chinesesimp>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLAYER_OCCUPANT_GRACE">
     <English>Player Occupant Grace (s):</English>
+    <Chinese>玩家佔用寬限時間 (秒):</Chinese>
+    <Chinesesimp>玩家乘员宽限时间 (秒):</Chinesesimp>
+    <Spanish>Periodo de gracia de ocupante jugador (s):</Spanish>
+    <French>Délai de grâce occupant joueur (s):</French>
+    <Portuguese>Tolerância de Ocupante Jogador (s):</Portuguese>
+    <Russian>Отсрочка для занятого игроком средства (с):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_PLAYER_OCCUPANT_GRACE_COMMENT">
     <English>Seconds to keep an AI-owned profiled vehicle spawned after the last player leaves it. Prevents vehicles vanishing under players who were riding in or commandeering AI assets. Default 300 (5 min).</English>
+    <Chinese>最後一名玩家離開後，AI 擁有的已檔案化載具仍保持生成的秒數。可避免搭乘或劫持 AI 資產的玩家腳下車輛突然消失。預設為 300（5 分鐘）。</Chinese>
+    <Chinesesimp>最后一名玩家离开一辆 AI 拥有的已档案化载具后,继续保持其生成状态的秒数。防止正在搭乘或强占 AI 单位的玩家所在的载具凭空消失。默认 300(5 分钟)。</Chinesesimp>
+    <Spanish>Segundos que se mantiene generado un vehículo perfilado propiedad de la IA tras salir de él el último jugador. Evita que los vehículos desaparezcan bajo jugadores que iban montados en activos de la IA o los habían tomado. Por defecto 300 (5 min).</Spanish>
+    <French>Secondes pendant lesquelles un véhicule profilé appartenant à l'IA reste actif après que le dernier joueur l'a quitté. Empêche les véhicules de disparaître sous des joueurs qui les conduisaient ou les avaient réquisitionnés. Par défaut 300 (5 min).</French>
+    <Portuguese>Segundos para manter um veículo perfilado de propriedade da IA gerado após o último jogador sair dele. Evita que veículos desapareçam sob jogadores que estavam carona ou assumindo o comando de ativos de IA. Padrão 300 (5 min).</Portuguese>
+    <Russian>Число секунд, в течение которых профилированное средство, принадлежащее ИИ, остаётся созданным после того, как последний игрок покинул его. Предотвращает исчезновение техники под игроками, находившимися в средствах ИИ или управлявшими ими. По умолчанию 300 (5 мин).</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_POST_DEATH_GRACE">
     <English>Post-Death Grace (s):</English>
+    <Chinese>死亡後寬限時間 (秒):</Chinese>
+    <Chinesesimp>死亡后宽限时间 (秒):</Chinesesimp>
+    <Spanish>Periodo de gracia tras la muerte (s):</Spanish>
+    <French>Délai de grâce post-mortem (s):</French>
+    <Portuguese>Tolerância Pós-Morte (s):</Portuguese>
+    <Russian>Отсрочка после гибели (с):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_POST_DEATH_GRACE_COMMENT">
     <English>Seconds to keep AI profiles near a player-death location spawned after the player dies, even if the player respawns outside normal spawn radius. Lets the remaining firefight play out naturally. Default 120.</English>
+    <Chinese>玩家死亡後，位置附近的 AI 檔案仍保持生成的秒數，即使玩家在正常生成半徑外重生也一樣。可讓剩餘的交火自然進行下去。預設為 120。</Chinese>
+    <Chinesesimp>玩家死亡后,即使玩家在正常生成半径之外重生,仍将玩家死亡地点附近的 AI 档案保持生成状态的秒数。让残余的交火自然收尾。默认 120。</Chinesesimp>
+    <Spanish>Segundos que se mantienen generados los perfiles de IA cerca del lugar de muerte de un jugador tras su fallecimiento, incluso si el jugador reaparece fuera del radio normal de aparición. Permite que el combate restante se desarrolle con naturalidad. Por defecto 120.</Spanish>
+    <French>Secondes pendant lesquelles les profils IA proches d'un lieu de mort de joueur restent actifs après la mort du joueur, même s'il réapparaît hors du rayon d'apparition normal. Permet à l'échange de tirs restant de se dérouler naturellement. Par défaut 120.</French>
+    <Portuguese>Segundos para manter perfis de IA perto de um local de morte de jogador gerados após a morte do jogador, mesmo que o jogador reapareça fora do raio normal de surgimento. Permite que o restante do combate se desenrole naturalmente. Padrão 120.</Portuguese>
+    <Russian>Число секунд, в течение которых профили ИИ рядом с местом гибели игрока остаются созданными после смерти игрока, даже если игрок возрождается за пределами обычного радиуса появления. Позволяет оставшемуся бою естественным образом развиваться. По умолчанию 120.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_POST_DEATH_RADIUS">
     <English>Post-Death Radius (m):</English>
+    <Chinese>死亡後半徑 (公尺):</Chinese>
+    <Chinesesimp>死亡后半径 (米):</Chinesesimp>
+    <Spanish>Radio tras la muerte (m):</Spanish>
+    <French>Rayon post-mortem (m):</French>
+    <Portuguese>Raio Pós-Morte (m):</Portuguese>
+    <Russian>Радиус после гибели (м):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_POST_DEATH_RADIUS_COMMENT">
     <English>Radius around a player-death position within which nearby AI profiles receive the Post-Death Grace linger. Default 500.</English>
+    <Chinese>以玩家死亡位置為中心的半徑，範圍內的附近 AI 檔案會獲得「死亡後寬限時間」的延遲消失效果。預設為 500。</Chinese>
+    <Chinesesimp>以玩家死亡位置为中心的半径,范围内的 AI 档案将获得死亡后宽限时间的延续效果。默认 500。</Chinesesimp>
+    <Spanish>Radio alrededor de la posición de muerte de un jugador dentro del cual los perfiles de IA cercanos reciben el periodo de gracia tras la muerte. Por defecto 500.</Spanish>
+    <French>Rayon autour d'une position de mort de joueur dans lequel les profils IA proches bénéficient du délai de grâce post-mortem. Par défaut 500.</French>
+    <Portuguese>Raio ao redor de uma posição de morte de jogador dentro do qual perfis de IA próximos recebem a tolerância de Pós-Morte. Padrão 500.</Portuguese>
+    <Russian>Радиус вокруг места гибели игрока, в пределах которого ближайшие профили ИИ получают отсрочку после гибели. По умолчанию 500.</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_MID_COMBAT_EXTENSION">
     <English>Mid-Combat Extension (s):</English>
+    <Chinese>戰鬥中延長時間 (秒):</Chinese>
+    <Chinesesimp>战斗中延长时间 (秒):</Chinesesimp>
+    <Spanish>Extensión en pleno combate (s):</Spanish>
+    <French>Prolongation en cours de combat (s):</French>
+    <Portuguese>Extensão em Meio ao Combate (s):</Portuguese>
+    <Russian>Продление в разгар боя (с):</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_MID_COMBAT_EXTENSION_COMMENT">
     <English>If a profile within its Post-Death linger window is still in combat when the grace would expire, extend the linger by this many seconds. Repeats while combat continues. Default 60.</English>
+    <Chinese>若某檔案在其「死亡後」延遲視窗內、寬限即將到期時仍處於戰鬥中，則將延遲時間延長此秒數。只要戰鬥持續即會重複延長。預設為 60。</Chinese>
+    <Chinesesimp>若某档案在其死亡后宽限窗口内、宽限即将到期时仍处于交战状态,则按此秒数延长宽限时间。只要战斗持续即会重复延长。默认 60。</Chinesesimp>
+    <Spanish>Si un perfil dentro de su ventana de gracia tras la muerte sigue en combate cuando el periodo de gracia estaría por expirar, extiende el periodo de gracia en este número de segundos. Se repite mientras continúe el combate. Por defecto 60.</Spanish>
+    <French>Si un profil dans sa fenêtre de délai post-mortem est toujours en combat au moment où le délai de grâce expirerait, prolonge le délai de ce nombre de secondes. Se répète tant que le combat continue. Par défaut 60.</French>
+    <Portuguese>Se um perfil dentro de sua janela de tolerância Pós-Morte ainda estiver em combate quando a tolerância for expirar, estende a permanência por este número de segundos. Repete-se enquanto o combate continuar. Padrão 60.</Portuguese>
+    <Russian>Если профиль в пределах окна отсрочки после гибели всё ещё находится в бою на момент истечения отсрочки, продлевает отсрочку на это число секунд. Повторяется, пока продолжается бой. По умолчанию 60.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_DEBUG_VIRT">

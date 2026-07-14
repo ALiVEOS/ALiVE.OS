@@ -21,6 +21,7 @@ See Also:
 
 Author:
 Whigital
+Jman
 
 Peer reviewed:
 nil
@@ -30,14 +31,20 @@ nil
 waitUntil {!isNil "NEO_radioLogic"};
 waitUntil {NEO_radioLogic getVariable ["init", false]};
 
-// Define a global var with c2 items once instead of calling the function each time the menu condition is evaluated //
-MOD(MIL_CS_Items) = [NEO_radioLogic getVariable ["combatsupport_item", "LaserDesignator"]];
-
 // Define local menu vars //
 private _menu = "ALiVE_CS";
 
-// Condition code for CS menu items //
-private _csCond = {(({([(toLower(str((assignedItems player) + (uniformItems player) + (backpackItems player) + (vestItems player)))), toLower(_x)] call CBA_fnc_find) > -1} count MOD(MIL_CS_Items)) > 0) && {call ALIVE_fnc_combatSupportIsOperator}};
+// Condition code for CS menu items - shared access-item gate (categories + custom
+// classnames, same pool and matcher as the flexiMenu and C2ISTAR tablet entries;
+// evaluated per menu-open so attribute and inventory changes apply live) //
+private _csCond = {
+    ([
+        NEO_radioLogic getVariable ["combatsupport_item", "LaserDesignators"],
+        NEO_radioLogic getVariable ["combatsupport_item_custom", ""],
+        []
+    ] call ALIVE_fnc_playerHasAccessItems)
+    && {call ALIVE_fnc_combatSupportIsOperator}
+};
 
 private _action = [
     _menu,

@@ -592,6 +592,34 @@ class getArtyRounds
 	RECOMPILE;
 };
 
+class getArtyMagazines
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_getArtyMagazines.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class configGetFactionArtilleryVehicles
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_configGetFactionArtilleryVehicles.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class isRocketArtillery
+{
+	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_isRocketArtillery.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class groupIsRocketArtillery
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_groupIsRocketArtillery.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class isMagazineOfOrdnanceType
 {
 	file = "\x\alive\addons\x_lib\functions\config\fnc_isMagazineOfOrdnanceType.sqf";

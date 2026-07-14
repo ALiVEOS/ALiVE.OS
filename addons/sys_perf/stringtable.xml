@@ -2,23 +2,65 @@
 <Project name="Arma3">
 <Package name="ALiVE">
 <Container name="STR_DN">
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PERF">
     <English>Perf</English>
+    <Chinese>效能</Chinese>
+    <Chinesesimp>性能</Chinesesimp>
+    <Spanish>Rendimiento</Spanish>
+    <French>Perf</French>
+    <Portuguese>Desempenho</Portuguese>
+    <Russian>Производительность</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_DISABLE_PERF">
     <English>Disable Perf</English>
+    <Chinese>停用效能記錄</Chinese>
+    <Chinesesimp>禁用性能记录</Chinesesimp>
+    <Spanish>Desactivar rendimiento</Spanish>
+    <French>Désactiver Perf</French>
+    <Portuguese>Desativar Desempenho</Portuguese>
+    <Russian>Отключить учёт производительности</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PERF_COMMENT">
     <English>Disable MP Perf recorded to ALiVE web service</English>
+    <Chinese>停用回報至 ALiVE 網路服務的多人效能記錄</Chinese>
+    <Chinesesimp>禁止将多人性能数据记录至 ALiVE 网络服务</Chinesesimp>
+    <Spanish>Desactivar el registro de rendimiento multijugador en el servicio web de ALiVE</Spanish>
+    <French>Désactive l'enregistrement Perf MP vers le service web ALiVE</French>
+    <Portuguese>Desativa o registro de Desempenho MP no serviço web do ALiVE</Portuguese>
+    <Russian>Отключает отправку данных MP-производительности в веб-сервис ALiVE</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PERF_ENABLE">
     <English>Enable Perf</English>
+    <Chinese>啟用效能記錄</Chinese>
+    <Chinesesimp>启用性能记录</Chinesesimp>
+    <Spanish>Activar rendimiento</Spanish>
+    <French>Activer Perf</French>
+    <Portuguese>Ativar Desempenho</Portuguese>
+    <Russian>Включить учёт производительности</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PERF_ENABLE_COMMENT">
     <English>Enable/Disable perf recording to the ALiVE web service</English>
+    <Chinese>啟用／停用回報至 ALiVE 網路服務的效能記錄</Chinese>
+    <Chinesesimp>启用/禁用向 ALiVE 网络服务记录性能数据</Chinesesimp>
+    <Spanish>Activar/desactivar el registro de rendimiento en el servicio web de ALiVE</Spanish>
+    <French>Active/désactive l'enregistrement des performances vers le service web ALiVE</French>
+    <Portuguese>Ativa/Desativa o registro de desempenho no serviço web do ALiVE</Portuguese>
+    <Russian>Включает/отключает запись данных производительности в веб-сервис ALiVE</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PERF_ERROR1">
     <English>Only one perf module can be used</English>
+    <Chinese>只能使用一個效能模組</Chinese>
+    <Chinesesimp>只能使用一个性能模块</Chinesesimp>
+    <Spanish>Solo se puede usar un módulo de rendimiento</Spanish>
+    <French>Un seul module de performances peut être utilisé</French>
+    <Portuguese>Apenas um módulo de desempenho pode ser usado</Portuguese>
+    <Russian>Можно использовать только один модуль учёта производительности</Russian>
 </Key>
 
 </Container></Package></Project>

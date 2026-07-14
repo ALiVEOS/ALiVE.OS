@@ -242,7 +242,7 @@ if (isNil "ALIVE_COP_LAST_HASH_ASYM") then {
         // Cycle 1 cold-start exemption (same rationale as Loop A).
         private _warnThreshold = if (_cycleCount == 1) then { ALIVE_COP_DEBUG_PERF_WARN_CYCLE1_MS } else { ALIVE_COP_DEBUG_PERF_WARN_MS };
         if (_cycleMs > _warnThreshold) then {
-            ["warn", "perf", "Asym cycle %1 took %2ms (threshold: %3ms)", [_cycleCount, _cycleMs, _warnThreshold]] call ALIVE_fnc_COPLog;
+            // ["warn", "perf", "Asym cycle %1 took %2ms (threshold: %3ms)", [_cycleCount, _cycleMs, _warnThreshold]] call ALIVE_fnc_COPLog;
         };
 
         sleep ALIVE_COP_INTERVAL_SLOW;

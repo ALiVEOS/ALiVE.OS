@@ -104,7 +104,33 @@ if (count _buildings == 0 || _profileCount > 3) then {
 	  ["ALIVE_fnc_groupGarrison - _profileCount: %1, Getting ALIVE_fnc_getEnterableHouses()", _profileCount] call ALiVE_fnc_dump;
 	 };
 	 // DEBUG -------------------------------------------------------------------------------------
-    _buildings = [_position, floor(_radius/2)] call ALIVE_fnc_getEnterableHouses;
+    // append rather than replace: discarding the curated garrison props here
+    // left camp and composition structures unmanned whenever the guard count
+    // exceeded 3 - the load-spreading intent only needs MORE seats, not fewer
+    private _houses = [_position, floor(_radius/2)] call ALIVE_fnc_getEnterableHouses;
+    _buildings = _buildings + (_houses - _buildings);
+};
+
+// seat nearest structures first - without this the whitelist sweep (full
+// radius) always outranks enterable houses (half radius) and a prop-rich
+// objective empties its houses into the props
+_buildings = [_buildings, [], { _x distance2D _position }, "ASCEND"] call BIS_fnc_sortBy;
+
+// shared ring geometry for props without engine positions - keep in sync
+// with the seat estimators in mil_placement / mil_placement_custom
+private _fnc_ringParams = {
+    params ["_obj"];
+    (boundingBoxReal _obj) params ["_bMin","_bMax"];
+    private _bRadius = 0.5 * (((_bMax select 0) - (_bMin select 0)) max ((_bMax select 1) - (_bMin select 1)));
+    private _ringRadius = _bRadius + 1;
+    [_ringRadius, 2 max (floor ((2 * pi * _ringRadius) / 4)) min 6]
+};
+
+// props without engine positions cannot host buildingPatrol.fsm circuits
+// (the FSM selectRandoms buildingPos) - patrol only position-bearing props
+private _patrolBuildings = _buildings select { !((_x buildingPos -1) isEqualTo []) };
+if (_patrolBuildings isEqualTo [] && {count _buildings > 0} && {ALiVE_SYS_PROFILE_DEBUG_ON}) then {
+    ["ALIVE_fnc_groupGarrison - no patrol-capable props, garrison fully static"] call ALiVE_fnc_dump;
 };
 
 
@@ -146,6 +172,20 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
 
         private _buildingPositions = [];
 		    _buildingPositions append (_building buildingPos -1);
+        // composition props (tents, camo nets, shelters) carry no engine
+        // buildingPos data - synthesise standing positions on a ring just
+        // outside the prop's bounding box so the whitelist can seat units.
+        // Engine-positioned buildings never reach this branch
+        if (_buildingPositions isEqualTo []) then {
+            ([_building] call _fnc_ringParams) params ["_ringRadius","_ringCount"];
+            for "_i" from 0 to (_ringCount - 1) do {
+                private _rp = _building getPos [_ringRadius, _i * (360 / _ringCount)];
+                _buildingPositions pushBack [_rp select 0, _rp select 1, 0];
+            };
+            if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+                ["ALIVE_fnc_groupGarrison - ring-scatter %1 positions around %2 (no buildingPos)", _ringCount, typeOf _building] call ALiVE_fnc_dump;
+            };
+        };
         [_buildingPositions, true] call CBA_fnc_Shuffle;
             
         // sort based on height
@@ -182,13 +222,14 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
             };
             
             if (_guardPatrolPercentage > 0) then {
-            	 if (_unitPercentCount > 0 ) then {
-                 // Patrol the buildings
+            	 if (_unitPercentCount > 0 && {count _patrolBuildings > 0}) then {
+                 // Patrol the position-bearing buildings only - ring-scatter
+                 // props would feed the FSM empty position lists
                  [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
-                 [_group, _unit, _buildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
+                 [_group, _unit, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
                  _unitPercentCount = _unitPercentCount -1;
                };
-            }; 
+            };
             
             
             _units deleteAt 0;

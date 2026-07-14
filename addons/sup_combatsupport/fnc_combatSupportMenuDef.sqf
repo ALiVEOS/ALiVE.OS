@@ -37,30 +37,21 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_menuDef", "_target", "_params", "_menuName", "_menuRsc", "_menus","_userItems","_items","_result"];
+private ["_menuDef", "_target", "_params", "_menuName", "_menuRsc", "_menus","_result"];
 // _this==[_target, _menuNameOrParams]
 
 PARAMS_2(_target,_params);
 
 _menuName = "";
 _menuRsc = "popup";
-_userItems = NEO_radioLogic getVariable ["combatsupport_item","LaserDesignator"];
-_userItems = _userItems call ALiVE_fnc_stringListToArray;
-_userItems = _userItems apply {tolower _x};
-//Finds selected userItem-string(s) in assignedItems
-_items = (assignedItems player) + (items player) + ([backpack player]);
-_items = _items apply {tolower _x};
-
-//_result = count (_items arrayIntersect _userItems) > 0;
-// for backwards compat use 'find' to support partial matches
-private _itemsString = _items joinstring ",";
-_result = false;
-{
-	private _requiredItem = _x;
-	if (_itemsString find _requiredItem != -1) exitwith {
-		_result = true;
-	};
-} foreach _userItems;
+// shared access-item gate: expands Access Item Categories + Custom Access Items
+// and matches against one player pool, so this menu, the C2ISTAR tablet and the
+// ACE self-interaction all agree on who can call support
+_result = [
+    NEO_radioLogic getVariable ["combatsupport_item","LaserDesignators"],
+    NEO_radioLogic getVariable ["combatsupport_item_custom",""],
+    []
+] call ALIVE_fnc_playerHasAccessItems;
 
 // #940 follow-up: in "first player only" mode, only the current per-side operator
 // sees the Combat Support entry enabled (evaluated per-open, so it follows hand-offs).

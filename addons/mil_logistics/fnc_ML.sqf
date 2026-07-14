@@ -141,6 +141,33 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "generateConvoyTasks": {
+        // #263 - raise C2ISTAR protect/ambush tasks for real resupply convoys.
+        // Read the short name first, then the 3DEN property name (which the
+        // editor writes directly), so it works with or without a framework copy
+        if (_args isEqualType true) then {
+            _logic setVariable ["generateConvoyTasks", _args];
+        } else {
+            _args = _logic getVariable ["generateConvoyTasks", _logic getVariable ["ALiVE_mil_logistics_generateConvoyTasks", false]];
+        };
+        if (_args isEqualType "") then { _args = (toLower _args) == "true"; };
+        if !(_args isEqualType true) then { _args = false; };
+        _logic setVariable ["generateConvoyTasks", _args];
+        _result = _args;
+    };
+    case "generateHeliTasks": {
+        // #426 - raise C2ISTAR protect/shoot-down tasks for real heli deliveries.
+        // Short name first, then the 3DEN property name, same as generateConvoyTasks
+        if (_args isEqualType true) then {
+            _logic setVariable ["generateHeliTasks", _args];
+        } else {
+            _args = _logic getVariable ["generateHeliTasks", _logic getVariable ["ALiVE_mil_logistics_generateHeliTasks", false]];
+        };
+        if (_args isEqualType "") then { _args = (toLower _args) == "true"; };
+        if !(_args isEqualType true) then { _args = false; };
+        _logic setVariable ["generateHeliTasks", _args];
+        _result = _args;
+    };
     case "persistent": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["persistent", _args];
@@ -1369,7 +1396,7 @@ switch(_operation) do {
     // Only acts when the heli is ACTIVE (spawned near players).
     // Never fights ALiVE's virtualisation system.
     // Phases: TRANSIT(0) -> LANDING(1) -> UNLOAD(2) -> RTB(3)
-    // Args: [_transportProfileID, _vehicleProfileID, _eventPosition, _returnPosition, _debug]
+    // Args: [_transportProfileID, _vehicleProfileID, _eventPosition, _returnPosition, _debug, _heliTaskKey]
     // ============================================================
     case "spawnHeliDeliveryWatchdog": {
 
@@ -1378,19 +1405,40 @@ switch(_operation) do {
         private _eventPosition      = _args select 2;
         private _returnPosition     = _args select 3;
         private _debug              = _args select 4;
+        private _heliTaskKey        = _args param [5, ""];   // #426 - convoy-task latch key ("" = untasked)
 
-        [_transportProfileID, _vehicleProfileID, _eventPosition, _returnPosition, _debug] spawn {
+        [_transportProfileID, _vehicleProfileID, _eventPosition, _returnPosition, _debug, _heliTaskKey] spawn {
 
             private _tProfID   = _this select 0;
             private _vProfID   = _this select 1;
             private _destPos   = _this select 2;
             private _returnPos = _this select 3;
             private _dbg       = _this select 4;
+            private _heliKey   = _this param [5, ""];
+
+            // #426 - first-write-wins terminal latch for the heli protect/shoot-down
+            // tasks. "arrived" is written authoritatively by the ML event state machine
+            // at the unload-complete transition (it is the only writer that sees VIRTUAL
+            // deliveries), and mirrored at this watchdog's phase-3 transitions. This
+            // thread keeps running through RTB, so later exits (RTB kill, timeout,
+            // profile reap) must NOT overwrite a terminal state: only an "enroute" entry
+            // may be advanced. This is the one deliberate difference from the convoy
+            // latch, which writes exactly once at monitor exit.
+            private _fnc_latchHeli = {
+                if (_heliKey != "" && {!isNil "ALIVE_MLHeliTaskStates"}) then {
+                    private _cur = ([ALIVE_MLHeliTaskStates, _heliKey, ["enroute", 0]] call ALIVE_fnc_hashGet) select 0;
+                    if (_cur == "enroute") then {
+                        [ALIVE_MLHeliTaskStates, _heliKey, [_this, serverTime]] call ALIVE_fnc_hashSet;
+                        if (_dbg) then { ["LOGCOM heli tasks [DIAG-STRIP-426]: watchdog latched %1 -> %2 (tProf %3, phase %4)", _heliKey, _this, _tProfID, _phase] call ALiVE_fnc_dump; };
+                    };
+                };
+            };
 
             private _phase        = 0; // 0=transit 1=landing 2=unload 3=rtb
             private _phaseTimer   = 0;
             private _running      = true;
             private _landAtIssued = false;
+            private _wdLifetime   = 0;  // #426 - total loop time for the tasked backstop
 
             // Hit event handler: when the heli takes fire the Arma AI immediately
             // overrides landAt with evasive behaviour -- banking away, climbing,
@@ -1402,15 +1450,40 @@ switch(_operation) do {
             private _hitEH = -1;
             private _hitEHAdded = false;
 
-            // Wait until the heli is active (spawned) before attaching the EH
+            // Wait until the heli is active (spawned) before attaching the EH.
+            // #426 - bounded: also exit if the profile is reaped (killed while
+            // virtual), if the task latch already went terminal (the event state
+            // machine resolved the delivery/loss), or after a backstop above
+            // heliTransport's own ~33min ceiling. Every early exit routes through
+            // the first-write-wins latch, so a clean VIRTUAL delivery (already
+            // latched "arrived" by the event machine) is never mis-scored here.
             private _heliForEH = objNull;
+            private _wdWait = 0;
+            private _profGone = false;
+            private _latchTerminal = false;
             waitUntil {
                 sleep 2;
+                _wdWait = _wdWait + 2;
                 private _vp = [ALIVE_profileHandler, "getProfile", _vProfID] call ALIVE_fnc_profileHandler;
-                if (!isNil "_vp" && { _vp select 2 select 1 } && { !isNull (_vp select 2 select 10) }) then {
-                    _heliForEH = _vp select 2 select 10;
+                if (isNil "_vp") then {
+                    _profGone = true;
+                } else {
+                    if ((_vp select 2 select 1) && { !isNull (_vp select 2 select 10) }) then {
+                        _heliForEH = _vp select 2 select 10;
+                    };
                 };
-                (!isNull _heliForEH || !_running)
+                if (_heliKey != "" && {!isNil "ALIVE_MLHeliTaskStates"}) then {
+                    _latchTerminal = (([ALIVE_MLHeliTaskStates, _heliKey, ["enroute", 0]] call ALIVE_fnc_hashGet) select 0) != "enroute";
+                };
+                (!isNull _heliForEH || !_running || _profGone || _latchTerminal || (_heliKey != "" && _wdWait > 3600))
+            };
+            if (isNull _heliForEH && (_profGone || _latchTerminal || (_heliKey != "" && _wdWait > 3600))) exitWith {
+                // profile gone pre-spawn = killed/reaped while virtual -> "destroyed";
+                // backstop timeout -> "aborted". Both no-op if the event machine already
+                // latched "arrived" (virtual delivery). Untasked helis (_heliKey "")
+                // only reach here via _profGone, and the latch call is a no-op for them.
+                if (_profGone) then { "destroyed" call _fnc_latchHeli; } else { "aborted" call _fnc_latchHeli; };
+                if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 exit before spawn (profileGone=%2 latchTerminal=%3 t=%4s).", _tProfID, _profGone, _latchTerminal, _wdWait] call ALiVE_fnc_dump; };
             };
 
             if (!isNull _heliForEH && alive _heliForEH && !_hitEHAdded) then {
@@ -1475,12 +1548,44 @@ switch(_operation) do {
 
                 // Profile gone - heli destroyed or cleaned up
                 if (isNil "_tProf" || isNil "_vProf") exitWith {
+                    // #426 - profile reaped with the latch still "enroute" = lost
+                    // pre-delivery (killed between polls, virtual attrition, or
+                    // external cleanup). A delivered run is already latched "arrived"
+                    // by the event machine (which fires strictly before the transport
+                    // profile is destroyed), so this write is a no-op for it.
+                    "destroyed" call _fnc_latchHeli;
                     if (_dbg) then { ["ML - heliDeliveryWatchdog: Profile gone (%1), exiting.", _tProfID] call ALiVE_fnc_dump; };
                     _running = false;
                 };
 
                 private _isActive = _vProf select 2 select 1;
                 private _heli     = _vProf select 2 select 10;
+
+                // #426 - shot down while spawned. Latch before any cleanup;
+                // first-write-wins keeps an RTB kill from flipping a delivered
+                // run (already "arrived") to "destroyed".
+                if (!isNull _heli && {!alive _heli}) exitWith {
+                    "destroyed" call _fnc_latchHeli;
+                    if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 destroyed (phase %2), exiting.", _tProfID, _phase] call ALiVE_fnc_dump; };
+                    _running = false;
+                };
+
+                // #426 - for a TASKED heli, stop monitoring the moment the task latch
+                // resolves (notably the event machine's "arrived" for a fully-virtual
+                // delivery), and enforce a single lifetime backstop ABOVE heliTransport's
+                // own ~33min ceiling. The in-loop TRANSIT (900s) and virtual (1200s)
+                // timeouts below fire ONLY for untasked helis so they can never pre-empt
+                // the authoritative "arrived" or orphan the tasks unlatched.
+                if (_heliKey != "") then { _wdLifetime = _wdLifetime + 5; };
+                if (_heliKey != "" && {(([ALIVE_MLHeliTaskStates, _heliKey, ["enroute", 0]] call ALIVE_fnc_hashGet) select 0) != "enroute"}) exitWith {
+                    if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 task latch resolved, watchdog exiting.", _tProfID] call ALiVE_fnc_dump; };
+                    _running = false;
+                };
+                if (_heliKey != "" && {_wdLifetime > 3600}) exitWith {
+                    "aborted" call _fnc_latchHeli;
+                    if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 task backstop (%2s), latching aborted.", _tProfID, _wdLifetime] call ALiVE_fnc_dump; };
+                    _running = false;
+                };
 
                 // Only act when physically spawned - never force virtualisation state
                 if (_isActive && !isNull _heli && alive _heli) then {
@@ -1574,6 +1679,11 @@ switch(_operation) do {
                                     if (_phaseTimer > 30) then {
                                         ["ML - heliDeliveryWatchdog: %1 SLING-VALIDATION FAILED at t=%2s. Class=%3 setSlingLoad never attached cargo (likely missing slingLoadCargoMemoryPoint config or other engine restriction). Despawning empty heli; trashing failed cargo (truck object + profile).",
                                             _tProfID, _phaseTimer, typeOf _heli] call ALiVE_fnc_dump;
+
+                                        // #426 - heli + crew deleted, cargo undelivered = nobody
+                                        // wins. Latch before the deleteVehicle calls below,
+                                        // keeping the #263 latch-before-delete discipline.
+                                        "aborted" call _fnc_latchHeli;
 
                                         // Add this class to the session-scoped slingload
                                         // blacklist so future HELI_INSERT slingload pick
@@ -1720,6 +1830,7 @@ switch(_operation) do {
                                 };
 
                                 _phase = 3; _phaseTimer = 0;
+                                "arrived" call _fnc_latchHeli;   // #426 - slingload released mid-TRANSIT = delivered
                                 _heli setVariable ["alive_ml_watchdog_phase", _phase];
                             };
 
@@ -1821,8 +1932,11 @@ switch(_operation) do {
                                     ([getPos _heli] call ALIVE_fnc_taskGetNearestLocationName),
                                     round _heliAGLt, _heliSpdT, !isNull (getSlingLoad _heli)] call ALiVE_fnc_dump;
                             };
-                            // Hard timeout - something went wrong in transit
-                            if (_phaseTimer > 900) then {
+                            // Hard timeout - something went wrong in transit.
+                            // #426 - untasked only; a tasked heli keeps monitoring
+                            // (so its destroyed/arrived/profile-gone latches stay
+                            // reachable) up to the lifetime backstop above.
+                            if (_phaseTimer > 900 && _heliKey == "") then {
                                 ["ML - heliDeliveryWatchdog: %1 TRANSIT timeout at AGL=%2m spd=%3km/h dist=%4m, watchdog exiting.",
                                     _tProfID, round _heliAGLt, _heliSpdT, round _distToDest] call ALiVE_fnc_dump;
                                 _running = false;
@@ -1954,6 +2068,7 @@ switch(_operation) do {
                                 };
 
                                 _phase = 3; _phaseTimer = 0;
+                                "arrived" call _fnc_latchHeli;   // #426 - slingload early-release in UNLOAD = delivered
                                 _heli setVariable ["alive_ml_watchdog_phase", _phase];
                                 _earlyReleased = true;
                             };
@@ -1986,6 +2101,7 @@ switch(_operation) do {
                                 };
 
                                 _phase = 3; _phaseTimer = 0;
+                                "arrived" call _fnc_latchHeli;   // #426 - slingload released (unload thread) = delivered
                                 _heli setVariable ["alive_ml_watchdog_phase", _phase];
                                 // Hit EH stays attached through RTB - the EH body now handles
                                 // phase 3 by reissuing _heli move _returnPos instead of landAt,
@@ -2087,6 +2203,11 @@ switch(_operation) do {
                                     };
 
                                     _phase = 3; _phaseTimer = 0;
+                                    // #426 - a troop heli that timed out with troops still
+                                    // aboard RTBs undelivered (nobody wins). Troops physically
+                                    // clear, or a sling heli (load force-released just above),
+                                    // is a real delivery.
+                                    if (_troopsClear || _isSlingHeli) then { "arrived" call _fnc_latchHeli; } else { "aborted" call _fnc_latchHeli; };
                                     _heli setVariable ["alive_ml_watchdog_phase", _phase];
                                 } else {
                                     if (_dbg) then {
@@ -2249,7 +2370,11 @@ switch(_operation) do {
                         _running = false;
                         if (_dbg) then { ["ML - heliDeliveryWatchdog: %1 virtualised in RTB, done.", _tProfID] call ALiVE_fnc_dump; };
                     };
-                    if (_phaseTimer > 1200) then {
+                    // #426 - untasked only. A tasked heli is bounded by the lifetime
+                    // backstop above, which sits above heliTransport's ~33min delivery
+                    // ceiling, so this 1200s exit can never pre-empt a slow virtual
+                    // delivery's authoritative "arrived".
+                    if (_phaseTimer > 1200 && _heliKey == "") then {
                         // Something went wrong - exit to avoid zombie watchdog
                         _running = false;
                         ["ML - heliDeliveryWatchdog: %1 global timeout, exiting.", _tProfID] call ALiVE_fnc_dump;
@@ -3183,7 +3308,7 @@ switch(_operation) do {
     case "listen": {
         private["_listenerID"];
 
-        _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["LOGCOM_REQUEST","LOGCOM_RESUPPLY","LOGCOM_STATUS_REQUEST","LOGCOM_CANCEL_REQUEST","OPCOM_CAPTURE"]]] call ALIVE_fnc_eventLog;
+        _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["LOGCOM_REQUEST","LOGCOM_RESUPPLY","ARTY_RESUPPLY_REQUEST","LOGCOM_STATUS_REQUEST","LOGCOM_CANCEL_REQUEST","OPCOM_CAPTURE"]]] call ALIVE_fnc_eventLog;
         _logic setVariable ["listenerID", _listenerID];
     };
 
@@ -3302,6 +3427,160 @@ switch(_operation) do {
     #define RESUPPLY_RTB_ARRIVE_RADIUS 75
     #define RESUPPLY_RTB_SPEED_KPH 45
     #define RESUPPLY_RTB_TIMEOUT_MULTIPLIER 2
+
+    // =========================================================================
+    // ARTY_RESUPPLY_REQUEST - resupply a (virtual) AI artillery battery.
+    // Position-keyed sibling of LOGCOM_RESUPPLY: the battery is a sys_profile
+    // entity, usually not spawned, so there is no asset object to service. On
+    // truck arrival we raise ARTY_RESUPPLY_ARRIVED back to mil_artillery, which
+    // owns the ledger refill. mil_artillery also runs a fallback timer, so this
+    // convoy is immersion only - if the pool is exhausted or water blocks the
+    // route we simply send nothing and the battery refills on its own.
+    // =========================================================================
+    case "ARTY_RESUPPLY_REQUEST": {
+
+        if (typeName _args == "ARRAY") then {
+
+            private _event = _args;
+            private _eventData = [_event, "data"] call ALIVE_fnc_hashGet;
+            _eventData params ["_targetPos","_eventSide","_assetType","_callsign","_entityID"];
+
+            // side-route: only the matching-side ML module handles it
+            if (([_logic, "side"] call MAINCLASS) != _eventSide) exitWith {};
+
+            // source position: nearest friendly defend/reserve objective, else
+            // the LOGCOM base (reuses the LOGCOM_RESUPPLY Dynamic logic)
+            private _sourcePos = getPos _logic;
+            private _candidates = [];
+            {
+                // OPCOM_instances holds the handler hashes directly
+                private _handler = _x;
+                if (_handler isEqualType [] && {([_handler, "side", ""] call ALiVE_fnc_HashGet) == _eventSide}) then {
+                    {
+                        if (([_x, "opcom_state", "none"] call ALiVE_fnc_HashGet) in ["defend","reserve"]) then {
+                            private _objPos = [_x, "center"] call ALiVE_fnc_HashGet;
+                            _candidates pushBack [_objPos distance2D _targetPos, _objPos];
+                        };
+                    } forEach ([_handler, "objectives", []] call ALiVE_fnc_HashGet);
+                };
+            } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+            if (count _candidates > 0) then {
+                _candidates sort true;
+                private _setSize = (2 + floor random 2) min (count _candidates);
+                _sourcePos = (selectRandom (_candidates select [0, _setSize])) select 1;
+            };
+
+            // force-pool deduct (same pattern as LOGCOM_RESUPPLY). On exhaustion
+            // just bail - the mil_artillery fallback timer still refills.
+            private _factions = [_logic, "factions"] call MAINCLASS;
+            private _eventFaction = "";
+            { if ((_x select 0) == _eventSide) exitWith { _eventFaction = (_x select 1) select 0; }; } forEach _factions;
+            if (_eventFaction == "" && {count _factions > 0}) then { _eventFaction = (_factions select 0 select 1) select 0; };
+            private _registryID = [_logic, "registryID"] call MAINCLASS;
+            private _forcePool = [ALIVE_globalForcePool, _eventFaction] call ALIVE_fnc_hashGet;
+            if (typeName _forcePool == "STRING") then { _forcePool = parseNumber _forcePool; };
+            if (typeName _forcePool != "SCALAR") then { _forcePool = 0; };
+            private _resupplyCost = 1 max (10 min (floor (_forcePool * 0.02)));
+            if (_forcePool < _resupplyCost) exitWith {
+                ["ARTY_RESUPPLY: force pool exhausted for %1 (faction=%2 pool=%3), no convoy - battery refills on its own timer", _callsign, _eventFaction, _forcePool] call ALiVE_fnc_dump;
+            };
+            _forcePool = _forcePool - _resupplyCost;
+            [ALIVE_MLGlobalRegistry, "updateGlobalForcePool", [_registryID, _forcePool]] call ALIVE_fnc_MLGlobalRegistry;
+
+            // water on the route -> no ground convoy (heli path is out of scope
+            // for arty resupply); the fallback timer covers it
+            private _distance = _sourcePos distance2D _targetPos;
+            // generous window: this path has no retries (the battery's own timer
+            // is the backstop), and AI trucks rarely hold 45km/h cross-country -
+            // a tight window deleted the truck mid-drive
+            private _timeout = ((_distance / (45/3.6)) * 3) max 300;
+            private _waterBlocked = false;
+            private _routeDir = _sourcePos getDir _targetPos;
+            private _checkPos = +_sourcePos;
+            for "_step" from 0 to _distance step 50 do {
+                _checkPos = _checkPos getPos [50, _routeDir];
+                if (surfaceIsWater _checkPos) exitWith { _waterBlocked = true };
+            };
+            if (_waterBlocked) exitWith {
+                ["ARTY_RESUPPLY: water on the route to %1, no ground convoy - battery refills on its own timer", _callsign] call ALiVE_fnc_dump;
+            };
+
+            // truck dispatch (mirrors LOGCOM_RESUPPLY's truck path)
+            private _truckClass = switch (_eventSide) do {
+                case "EAST": { "O_Truck_03_ammo_F" };
+                case "WEST": { "B_Truck_01_ammo_F" };
+                case "GUER": { "I_Truck_02_ammo_F" };
+                default { "B_Truck_01_ammo_F" };
+            };
+            private _truckSpawnPos = _sourcePos;
+            private _spawnResult = [_truckClass, _sourcePos, 50, "auto"] call ALiVE_fnc_findVehicleSpawnPosition;
+            if (count _spawnResult >= 2) then { _truckSpawnPos = _spawnResult select 0; };
+            private _truck = createVehicle [_truckClass, _truckSpawnPos, [], 10, "NONE"];
+            _truck setDir (_truckSpawnPos getDir _targetPos);
+            createVehicleCrew _truck;
+            _truck allowDamage false;
+            [{_this allowDamage true;}, _truck, 15] call CBA_fnc_waitAndExecute;
+            private _truckGrp = group (driver _truck);
+            private _wp = _truckGrp addWaypoint [_targetPos, 50];
+            _wp setWaypointType "MOVE"; _wp setWaypointSpeed "FULL"; _wp setWaypointBehaviour "SAFE";
+
+            if (!isNil "ALiVE_Pathfinder") then {
+                private _proc = [ALiVE_Pathfinder, "getPathfindingProcedure", ["LandRoad", "default"]] call ALiVE_fnc_pathfinder;
+                if (!isNil "_proc") then {
+                    private _wpHash = [] call ALiVE_fnc_hashCreate;
+                    [_wpHash, "position", _targetPos] call ALiVE_fnc_hashSet;
+                    [ALiVE_Pathfinder, "findPath", [getPosATL _truck, _proc, _wpHash, nil, [_truckGrp], {
+                        params ["_cbArgs", "_path"];
+                        _cbArgs params ["_grp"];
+                        if (!isNull _grp && {count _path > 1}) then {
+                            while {count (waypoints _grp) > 1} do { deleteWaypoint ((waypoints _grp) select 1); };
+                            {
+                                private _pw = _grp addWaypoint [_x, 10];
+                                _pw setWaypointType "MOVE"; _pw setWaypointSpeed "FULL"; _pw setWaypointBehaviour "SAFE";
+                            } forEach _path;
+                        };
+                    }]] call ALiVE_fnc_pathfinder;
+                };
+            };
+
+            ["ARTY_RESUPPLY: truck dispatched to %1 (%2m), ETA %3s", _callsign, round _distance, round _timeout] call ALiVE_fnc_dump;
+
+            // delivery monitor: on arrival (position) tell mil_artillery, then RTB
+            [_truck, _targetPos, _callsign, _entityID, _timeout, _sourcePos] spawn {
+                params ["_truck","_targetPos","_callsign","_entityID","_timeout","_sourcePos"];
+                private _startTime = serverTime;
+                while {true} do {
+                    if (isNull _truck || {!alive _truck}) exitWith {
+                        ["ARTY_RESUPPLY: truck lost en route to %1 - battery refills on its own timer", _callsign] call ALiVE_fnc_dump;
+                    };
+                    if (serverTime - _startTime > _timeout) exitWith {
+                        ["ARTY_RESUPPLY: truck timed out for %1 - battery refills on its own timer", _callsign] call ALiVE_fnc_dump;
+                        { deleteVehicle _x } forEach (crew _truck); deleteVehicle _truck;
+                    };
+                    if (_truck distance2D _targetPos < 100) exitWith {
+                        ["ARTY_RESUPPLY: truck arrived at %1, resupplying battery", _callsign] call ALiVE_fnc_dump;
+                        sleep RESUPPLY_SERVICE_DELAY;
+                        private _ev = ['ARTY_RESUPPLY_ARRIVED', [_entityID], "MilArtillery"] call ALIVE_fnc_event;
+                        [ALIVE_eventLog, "addEvent", _ev] call ALIVE_fnc_eventLog;
+
+                        private _grp = group (driver _truck);
+                        while {count waypoints _grp > 0} do { deleteWaypoint [_grp, 0] };
+                        private _rtbWp = _grp addWaypoint [_sourcePos, 50];
+                        _rtbWp setWaypointType "MOVE"; _rtbWp setWaypointSpeed "FULL"; _rtbWp setWaypointBehaviour "SAFE";
+                        [_truck, _sourcePos] spawn {
+                            params ["_truck","_sourcePos"];
+                            private _t0 = serverTime;
+                            private _rtbTimeout = (((_truck distance _sourcePos) / (RESUPPLY_RTB_SPEED_KPH / 3.6)) * RESUPPLY_RTB_TIMEOUT_MULTIPLIER) max 60;
+                            while { !isNull _truck && {alive _truck} && {_truck distance _sourcePos > RESUPPLY_RTB_ARRIVE_RADIUS} && {serverTime - _t0 < _rtbTimeout} } do { sleep 5; };
+                            if (!isNull _truck) then { { deleteVehicle _x } forEach (crew _truck); deleteVehicle _truck; };
+                        };
+                    };
+                    sleep 10;
+                };
+            };
+        };
+    };
+
     case "LOGCOM_RESUPPLY": {
 
         if (typeName _args == "ARRAY") then {
@@ -3325,6 +3604,18 @@ switch(_operation) do {
                 missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
             };
 
+            // A ground resupply truck can only service a PARKED aircraft. If the asset is an
+            // aircraft that is airborne or taxiing/moving, don't send a truck to chase it -
+            // defer; the resupply watchdog re-triggers once it is back on the ground and still.
+            if (_targetVeh isKindOf "Air" && {((getPosATL _targetVeh) select 2 > 5) || {abs (speed _targetVeh) > 15}}) exitWith {
+                ["LOGCOM_RESUPPLY: %1 is airborne/moving, deferring ground resupply until parked", _callsign] call ALiVE_fnc_dump;
+                _targetVeh setVariable ["ALIVE_resupply_state", "deferred", true];
+                _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
+                _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
+                private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+            };
+
             // Multi-ML routing: every ML module receives every LOGCOM_RESUPPLY event.
             // Only the module matching this event's side should handle it. Silent exit for others
             // (matches upstream LOGCOM_REQUEST routing; no activeCount touch - the owning module
@@ -3343,9 +3634,12 @@ switch(_operation) do {
                 // always the single nearest stash.
                 private _candidates = [];  // [[dist, pos], ...]
                 {
-                    private _handler = _x getVariable ["handler", objNull];
-                    if (!isNull _handler) then {
-                        private _opcomSide = [_handler, "side"] call ALiVE_fnc_HashGet;
+                    // OPCOM_instances holds the handler hashes directly - reading
+                    // them with getVariable threw a type error every dispatch and
+                    // silently defaulted the source to the LOGCOM base
+                    private _handler = _x;
+                    if (_handler isEqualType []) then {
+                        private _opcomSide = [_handler, "side", ""] call ALiVE_fnc_HashGet;
                         if (_opcomSide == _eventSide) then {
                             private _objectives = [_handler, "objectives", []] call ALiVE_fnc_HashGet;
                             {
@@ -3478,8 +3772,11 @@ switch(_operation) do {
                     if (!isNil "_proc") then {
                         private _wpHash = [] call ALiVE_fnc_hashCreate;
                         [_wpHash, "position", _targetPos] call ALiVE_fnc_hashSet;
-                        private "_prevWp";   // nil: no previous pathfinding waypoint
-                        [ALiVE_Pathfinder, "findPath", [getPosATL _truck, _proc, _wpHash, _prevWp, [_truckGrp], {
+                        // no previous waypoint on this fresh resupply leg. Pass the nil KEYWORD
+                        // directly for the _previousWaypoint slot: a nil-valued variable reference
+                        // there logs a harmless but noisy "Undefined variable _prevWp" every dispatch
+                        // (the pathfinder checks isNil on the slot, so the route is correct either way).
+                        [ALiVE_Pathfinder, "findPath", [getPosATL _truck, _proc, _wpHash, nil, [_truckGrp], {
                             params ["_cbArgs", "_path"];
                             _cbArgs params ["_grp"];
                             if (!isNull _grp && {count _path > 1}) then {
@@ -3501,9 +3798,126 @@ switch(_operation) do {
                 ["LOGCOM_RESUPPLY: Truck %1 dispatched from %2 to %3 (%4), ETA %5s",
                     _truckClass, _sourcePos, _callsign, _assetType, round _timeout] call ALiVE_fnc_dump;
 
+                // #263 - protect/ambush tasks ride this real truck. No per-asset
+                // cooldown: the watchdog's inProgress flag + 600s cooldown already
+                // cap dispatches, so this fires once per truck spawn; a retry truck
+                // gets fresh tasks (the previous set is terminal via the latch,
+                // written before the old truck deletes). Only legs over 1km - the
+                // dynamic source picks the closest objective, and a short leg would
+                // auto-succeed on the monitor's first <100m poll with no play.
+                private _convoyID = "";
+                if (([_logic,"generateConvoyTasks"] call MAINCLASS)
+                    && {["ALiVE_mil_c2istar"] call ALiVE_fnc_IsModuleAvailable}
+                    && {_distance > 1000}) then {
+
+                    if (isNil "ALIVE_MLConvoyTaskStates") then { ALIVE_MLConvoyTaskStates = [] call ALIVE_fnc_hashCreate; };
+                    // prune: drop terminal entries older than 2h; flip a stale
+                    // "enroute" to "aborted" rather than removing it (a removed
+                    // key would make a still-live task's hashGet default read
+                    // "enroute" forever)
+                    {
+                        private _entry = [ALIVE_MLConvoyTaskStates, _x, ["", 0]] call ALIVE_fnc_hashGet;
+                        if (serverTime - (_entry select 1) > 7200) then {
+                            if ((_entry select 0) == "enroute") then {
+                                [ALIVE_MLConvoyTaskStates, _x, ["aborted", serverTime]] call ALIVE_fnc_hashSet;
+                            } else {
+                                [ALIVE_MLConvoyTaskStates, _x] call ALIVE_fnc_hashRem;
+                            };
+                        };
+                    } forEach +(ALIVE_MLConvoyTaskStates select 1);
+
+                    private _cvyN = (missionNamespace getVariable ["ALIVE_MLConvoyCounter", 0]) + 1;
+                    missionNamespace setVariable ["ALIVE_MLConvoyCounter", _cvyN];
+                    _convoyID = format ["MLCVY_%1", _cvyN];   // no '-' so task-source parsing round-trips
+                    [ALIVE_MLConvoyTaskStates, _convoyID, ["enroute", serverTime]] call ALIVE_fnc_hashSet;
+
+                    private _ownSideObj = [_eventSide] call ALiVE_fnc_sideTextToObject;
+                    private _raised = 0;
+                    private _popEffectFree = true;
+
+                    // lead faction of a hostile OPCOM - the Protect task's enemy
+                    // faction, and the Destroy-side fallback when a player's own
+                    // object isn't resolvable yet (JIP)
+                    private _hostileOpcomFaction = "";
+                    {
+                        if (_x isEqualType [] && {_hostileOpcomFaction == ""}) then {
+                            private _oSide = [_x, "side", ""] call ALiVE_fnc_HashGet;
+                            if (_oSide in ["EAST","WEST","GUER"] && {!([[_oSide] call ALiVE_fnc_sideTextToObject, _ownSideObj] call BIS_fnc_sideIsFriendly)}) then {
+                                _hostileOpcomFaction = ([_x, "factions", []] call ALiVE_fnc_HashGet) param [0, ""];
+                            };
+                        };
+                    } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+
+                    // Protect task - to the convoy's own side
+                    private _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                    if (count (_ownPlayers select 1) > 0) then {
+                        private _enemyFaction = _hostileOpcomFaction;
+                        if (_enemyFaction == "") then {
+                            // no hostile OPCOM (player-only enemy) - use a hostile player's faction
+                            {
+                                if (_enemyFaction == "" && {!([[_x] call ALiVE_fnc_sideTextToObject, _ownSideObj] call BIS_fnc_sideIsFriendly)}) then {
+                                    private _hp = [_x] call ALiVE_fnc_getPlayersDataSource;
+                                    if (count (_hp select 1) > 0) then {
+                                        private _pObj = [(_hp select 1) select 0] call ALIVE_fnc_getPlayerByUID;
+                                        if (!isNull _pObj) then { _enemyFaction = faction _pObj; };
+                                    };
+                                };
+                            } forEach (["WEST","EAST","GUER"] - [_eventSide]);
+                        };
+                        if (_enemyFaction != "") then {
+                            private _taskData = [format ["%1_P", _convoyID], "LOGCOM", _eventSide, _eventFaction,
+                                "ProtectConvoy", "NULL", +_targetPos, [_ownPlayers select 1, _ownPlayers select 0],
+                                _enemyFaction, "Y", "Side", [_truck], [_convoyID, +_targetPos, true]];
+                            private _tEvent = ["TASK_GENERATE", _taskData, "MilLogistics"] call ALIVE_fnc_event;
+                            [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
+                            _raised = _raised + 1; _popEffectFree = false;
+                        };
+                    };
+
+                    // Destroy/ambush task - to each hostile side that has players
+                    {
+                        private _hSideText = _x;
+                        if (!([[_hSideText] call ALiVE_fnc_sideTextToObject, _ownSideObj] call BIS_fnc_sideIsFriendly)) then {
+                            private _hPlayers = [_hSideText] call ALiVE_fnc_getPlayersDataSource;
+                            if (count (_hPlayers select 1) > 0) then {
+                                private _hFaction = "";
+                                private _pObj = [(_hPlayers select 1) select 0] call ALIVE_fnc_getPlayerByUID;
+                                if (!isNull _pObj) then { _hFaction = faction _pObj; };
+                                if (_hFaction == "") then { _hFaction = _hostileOpcomFaction; };
+                                if (_hFaction != "") then {
+                                    private _revealPos = _truckSpawnPos getPos [100 + random 200, random 360];
+                                    private _taskData = [format ["%1_D_%2", _convoyID, _hSideText], "LOGCOM", _hSideText, _hFaction,
+                                        "DestroyVehicles", "NULL", _revealPos, [_hPlayers select 1, _hPlayers select 0],
+                                        _eventFaction, "Y", "Side", [_truck], [_convoyID, +_targetPos, _popEffectFree]];
+                                    private _tEvent = ["TASK_GENERATE", _taskData, "MilLogistics"] call ALIVE_fnc_event;
+                                    [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
+                                    _raised = _raised + 1; _popEffectFree = false;
+                                };
+                            };
+                        };
+                    } forEach (["WEST","EAST","GUER"] - [_eventSide]);
+
+                    if (_raised > 0) then {
+                        ["LOGCOM_RESUPPLY: Raised %1 convoy task(s) for %2 (convoyID %3)", _raised, _callsign, _convoyID] call ALiVE_fnc_dump;
+                    } else {
+                        [ALIVE_MLConvoyTaskStates, _convoyID] call ALIVE_fnc_hashRem;
+                        _convoyID = "";
+                    };
+                };
+
                 // Spawn delivery monitor. Pass sourcePos so the truck can RTB after servicing.
-                [_truck, _targetVeh, _timeout, _callsign, _sourcePos] spawn {
-                    params ["_truck", "_targetVeh", "_timeout", "_callsign", "_sourcePos"];
+                [_truck, _targetVeh, _timeout, _callsign, _sourcePos, _convoyID] spawn {
+                    params ["_truck", "_targetVeh", "_timeout", "_callsign", "_sourcePos", "_convoyID"];
+
+                    // #263 - latch the convoy's terminal outcome into the shared
+                    // state hash BEFORE the truck is deleted, so the protect/ambush
+                    // tasks read the real result (destroyed vs arrived vs aborted)
+                    // after the object is gone
+                    private _fnc_latchConvoy = {
+                        if (_convoyID != "" && {!isNil "ALIVE_MLConvoyTaskStates"}) then {
+                            [ALIVE_MLConvoyTaskStates, _convoyID, [_this, serverTime]] call ALIVE_fnc_hashSet;
+                        };
+                    };
 
                     private _startTime = serverTime;
 
@@ -3511,6 +3925,7 @@ switch(_operation) do {
                         // Protection: truck destroyed.
                         if (!alive _truck) exitWith {
                             ["LOGCOM_RESUPPLY: Truck destroyed en route to %1", _callsign] call ALiVE_fnc_dump;
+                            "destroyed" call _fnc_latchConvoy;
                             _targetVeh setVariable ["ALIVE_resupply_state", "failed", true];
                             _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
                             _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
@@ -3523,14 +3938,34 @@ switch(_operation) do {
                         // Protection: target asset destroyed.
                         if (isNull _targetVeh || {!alive _targetVeh}) exitWith {
                             ["LOGCOM_RESUPPLY: Target %1 destroyed, aborting truck", _callsign] call ALiVE_fnc_dump;
+                            "aborted" call _fnc_latchConvoy;
                             {deleteVehicle _x} forEach (crew _truck);
                             deleteVehicle _truck;
                             private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
                             missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
                         };
 
+                        // Protection: aircraft taxiing / took off en route. A ground truck cannot
+                        // rearm a moving or airborne plane, so abort the chase rather than grind
+                        // after it down the runway (re-triggers via the watchdog once it's parked).
+                        if (_targetVeh isKindOf "Air" && {((getPosATL _targetVeh) select 2 > 5) || {abs (speed _targetVeh) > 15}}) exitWith {
+                            ["LOGCOM_RESUPPLY: %1 airborne/moving, cancelling truck chase", _callsign] call ALiVE_fnc_dump;
+                            "aborted" call _fnc_latchConvoy;
+                            {deleteVehicle _x} forEach (crew _truck);
+                            deleteVehicle _truck;
+                            _targetVeh setVariable ["ALIVE_resupply_state", "cancelled", true];
+                            _targetVeh setVariable ["ALIVE_resupply_inProgress", false, true];
+                            _targetVeh setVariable ["ALIVE_resupply_vehicle", objNull, true];
+                            private _count = missionNamespace getVariable ["ALIVE_resupply_activeCount", 1];
+                            missionNamespace setVariable ["ALIVE_resupply_activeCount", (_count - 1) max 0, true];
+                        };
+
                         // Protection: timeout expired.
                         if (serverTime - _startTime > _timeout) exitWith {
+                            // both the retry and the force-service branches end
+                            // this convoy - the tasks cancel, players shouldn't
+                            // win or lose off AI pathing/timeout
+                            "aborted" call _fnc_latchConvoy;
                             private _retries = _targetVeh getVariable ["ALIVE_resupply_retries", 0];
                             if (_retries < RESUPPLY_MAX_RETRIES) then {
                                 ["LOGCOM_RESUPPLY: Truck timed out for %1 (attempt %2/%3), retrying",
@@ -3559,6 +3994,7 @@ switch(_operation) do {
                         // Success: truck within 100m of target.
                         if (_truck distance _targetVeh < 100) exitWith {
                             ["LOGCOM_RESUPPLY: Truck arrived at %1, servicing...", _callsign] call ALiVE_fnc_dump;
+                            "arrived" call _fnc_latchConvoy;
                             _targetVeh setVariable ["ALIVE_resupply_state", "servicing", true];
 
                             // Simulate service time.
@@ -7537,6 +7973,11 @@ switch(_operation) do {
                 // Track assigned landing positions to prevent helis landing on top of each other
                 private _usedLandingPositions = [];
 
+                // #426 - one protect/shoot-down task set per event: the first
+                // transport with a resolvable vehicle profile carries the tasks,
+                // wingmen fly untasked (keeps exactly one popEffect owner)
+                private _heliTaskID = "";
+
                 {
                     private _destPos = [_logic, "findHelicopterLandingPos", [
                         _eventPosition, 200, 600, _usedLandingPositions
@@ -7567,8 +8008,130 @@ switch(_operation) do {
                         };
                         if (_vProfID != "") then {
                             private _returnPos = [_reinforcementPrimaryObjective, "center"] call ALIVE_fnc_hashGet;
+
+                            // #426 - protect/shoot-down tasks ride this transport heli.
+                            // Same side/faction resolution as the convoy raise, with the
+                            // heli vehicle profile ID as the tracked target. Only the
+                            // first transport of the event (leg over 1km) carries tasks.
+                            private _wdKey = "";
+                            if (_heliTaskID == ""
+                                && {[_logic,"generateHeliTasks"] call MAINCLASS}
+                                && {["ALiVE_mil_c2istar"] call ALiVE_fnc_IsModuleAvailable}
+                                && {(([_profile,"position"] call ALiVE_fnc_HashGet) distance2D _destPos) > 1000}) then {
+
+                                if (isNil "ALIVE_MLHeliTaskStates") then { ALIVE_MLHeliTaskStates = [] call ALIVE_fnc_hashCreate; };
+                                if (isNil "ALIVE_MLHeliTaskEventMap") then { ALIVE_MLHeliTaskEventMap = [] call ALIVE_fnc_hashCreate; };
+                                // prune: drop terminal entries older than 2h; flip a stale
+                                // "enroute" to "aborted" rather than removing it (a removed
+                                // key would read "enroute" forever from the task default)
+                                {
+                                    private _entry = [ALIVE_MLHeliTaskStates, _x, ["", 0]] call ALIVE_fnc_hashGet;
+                                    if (serverTime - (_entry select 1) > 7200) then {
+                                        if ((_entry select 0) == "enroute") then {
+                                            [ALIVE_MLHeliTaskStates, _x, ["aborted", serverTime]] call ALIVE_fnc_hashSet;
+                                        } else {
+                                            [ALIVE_MLHeliTaskStates, _x] call ALIVE_fnc_hashRem;
+                                        };
+                                    };
+                                } forEach +(ALIVE_MLHeliTaskStates select 1);
+                                // event-map hygiene: drop entries whose latch is no longer
+                                // "enroute" (delivered/destroyed/pruned) - the map only
+                                // matters until the delivery-complete latch fires
+                                {
+                                    private _mk = [ALIVE_MLHeliTaskEventMap, _x, ""] call ALIVE_fnc_hashGet;
+                                    private _st = ([ALIVE_MLHeliTaskStates, _mk, ["", 0]] call ALIVE_fnc_hashGet) select 0;
+                                    if (_st != "enroute") then { [ALIVE_MLHeliTaskEventMap, _x] call ALIVE_fnc_hashRem; };
+                                } forEach +(ALIVE_MLHeliTaskEventMap select 1);
+
+                                private _hlN = (missionNamespace getVariable ["ALIVE_MLHeliCounter", 0]) + 1;
+                                missionNamespace setVariable ["ALIVE_MLHeliCounter", _hlN];
+                                private _hKey = format ["MLHELI_%1", _hlN];   // no '-' so task-source parsing round-trips
+                                [ALIVE_MLHeliTaskStates, _hKey, ["enroute", serverTime]] call ALIVE_fnc_hashSet;
+
+                                private _ownSideObj = [_eventSide] call ALiVE_fnc_sideTextToObject;
+                                private _raised = 0;
+                                private _popEffectFree = true;
+
+                                // lead faction of a hostile OPCOM - the Protect task's enemy
+                                // faction and the shoot-down-side fallback when a player's own
+                                // object isn't resolvable yet (JIP)
+                                private _hostileOpcomFaction = "";
+                                {
+                                    if (_x isEqualType [] && {_hostileOpcomFaction == ""}) then {
+                                        private _oSide = [_x, "side", ""] call ALiVE_fnc_HashGet;
+                                        if (_oSide in ["EAST","WEST","GUER"] && {!([[_oSide] call ALiVE_fnc_sideTextToObject, _ownSideObj] call BIS_fnc_sideIsFriendly)}) then {
+                                            _hostileOpcomFaction = ([_x, "factions", []] call ALiVE_fnc_HashGet) param [0, ""];
+                                        };
+                                    };
+                                } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
+
+                                // Protect task - to the delivering heli's own side
+                                private _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                                if (count (_ownPlayers select 1) > 0) then {
+                                    private _enemyFaction = _hostileOpcomFaction;
+                                    if (_enemyFaction == "") then {
+                                        {
+                                            if (_enemyFaction == "" && {!([[_x] call ALiVE_fnc_sideTextToObject, _ownSideObj] call BIS_fnc_sideIsFriendly)}) then {
+                                                private _hp = [_x] call ALiVE_fnc_getPlayersDataSource;
+                                                if (count (_hp select 1) > 0) then {
+                                                    private _pObj = [(_hp select 1) select 0] call ALIVE_fnc_getPlayerByUID;
+                                                    if (!isNull _pObj) then { _enemyFaction = faction _pObj; };
+                                                };
+                                            };
+                                        } forEach (["WEST","EAST","GUER"] - [_eventSide]);
+                                    };
+                                    if (_enemyFaction != "") then {
+                                        private _taskData = [format ["%1_P", _hKey], "LOGCOM", _eventSide, _eventFaction,
+                                            "ProtectConvoy", "NULL", +_destPos, [_ownPlayers select 1, _ownPlayers select 0],
+                                            _enemyFaction, "Y", "Side", [_vProfID], [_hKey, +_destPos, true, "HELI", _vProfID]];
+                                        private _tEvent = ["TASK_GENERATE", _taskData, "MilLogistics"] call ALIVE_fnc_event;
+                                        [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
+                                        _raised = _raised + 1; _popEffectFree = false;
+                                    };
+                                };
+
+                                // Shoot-down task - to each hostile side that has players
+                                {
+                                    private _hSideText = _x;
+                                    if (!([[_hSideText] call ALiVE_fnc_sideTextToObject, _ownSideObj] call BIS_fnc_sideIsFriendly)) then {
+                                        private _hPlayers = [_hSideText] call ALiVE_fnc_getPlayersDataSource;
+                                        if (count (_hPlayers select 1) > 0) then {
+                                            private _hFaction = "";
+                                            private _pObj = [(_hPlayers select 1) select 0] call ALIVE_fnc_getPlayerByUID;
+                                            if (!isNull _pObj) then { _hFaction = faction _pObj; };
+                                            if (_hFaction == "") then { _hFaction = _hostileOpcomFaction; };
+                                            if (_hFaction != "") then {
+                                                // fuzz the reveal off the DELIVERY point (the leg's far
+                                                // end is the actionable intercept intel), not the base
+                                                private _revealPos = _destPos getPos [100 + random 200, random 360];
+                                                private _taskData = [format ["%1_D_%2", _hKey, _hSideText], "LOGCOM", _hSideText, _hFaction,
+                                                    "DestroyVehicles", "NULL", _revealPos, [_hPlayers select 1, _hPlayers select 0],
+                                                    _eventFaction, "Y", "Side", [_vProfID], [_hKey, +_destPos, _popEffectFree, "HELI", _vProfID]];
+                                                private _tEvent = ["TASK_GENERATE", _taskData, "MilLogistics"] call ALIVE_fnc_event;
+                                                [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
+                                                _raised = _raised + 1; _popEffectFree = false;
+                                            };
+                                        };
+                                    };
+                                } forEach (["WEST","EAST","GUER"] - [_eventSide]);
+
+                                if (_raised > 0) then {
+                                    _heliTaskID = _hKey;
+                                    _wdKey = _hKey;
+                                    // the event state machine latches "arrived" at the
+                                    // heliTransportUnloadWait -> heliTransportComplete
+                                    // transition via this map: it is the only writer that
+                                    // sees VIRTUAL deliveries complete (the watchdog's
+                                    // phases only advance while the heli is spawned)
+                                    [ALIVE_MLHeliTaskEventMap, _eventID, _hKey] call ALIVE_fnc_hashSet;
+                                    ["LOGCOM heli tasks: Raised %1 task(s) for event %2 (heliID %3, vProf %4)", _raised, _eventID, _hKey, _vProfID] call ALiVE_fnc_dump;
+                                } else {
+                                    [ALIVE_MLHeliTaskStates, _hKey] call ALIVE_fnc_hashRem;
+                                };
+                            };
+
                             [_logic, "spawnHeliDeliveryWatchdog", [
-                                _x, _vProfID, _destPos, _returnPos, _debug
+                                _x, _vProfID, _destPos, _returnPos, _debug, _wdKey
                             ]] call MAINCLASS;
                             if (_debug) then {
                                 ["ML - heliTransportStart: Delivery watchdog started for transport %1 vehicle %2", _x, _vProfID] call ALiVE_fnc_dump;
@@ -9239,6 +9802,27 @@ switch(_operation) do {
 
                     if (_eventState == "heliTransportUnloadWait") then {
                         [_event, "state", "heliTransportComplete"] call ALIVE_fnc_hashSet;
+                        // #426 - authoritative "delivered" signal for the heli tasks. This
+                        // is the ONLY writer that sees VIRTUAL deliveries complete (the
+                        // delivery watchdog's phases only advance while the heli is spawned),
+                        // and it fires strictly before heliTransportComplete destroys the
+                        // virtual transport profile - so the watchdog's later profile-gone
+                        // "destroyed" write is a no-op for a clean delivery. First-write-wins,
+                        // inline (the watchdog's latch helper is local to its own thread).
+                        // Also fires on the forced unload timeout, which force-dumps the cargo.
+                        if (!isNil "ALIVE_MLHeliTaskEventMap") then {
+                            private _hK = [ALIVE_MLHeliTaskEventMap, _eventID, ""] call ALIVE_fnc_hashGet;
+                            if (_hK != "") then {
+                                if (!isNil "ALIVE_MLHeliTaskStates") then {
+                                    private _cur = ([ALIVE_MLHeliTaskStates, _hK, ["enroute", 0]] call ALIVE_fnc_hashGet) select 0;
+                                    if (_cur == "enroute") then {
+                                        [ALIVE_MLHeliTaskStates, _hK, ["arrived", serverTime]] call ALIVE_fnc_hashSet;
+                                    };
+                                    if (_debug) then { ["LOGCOM heli tasks [DIAG-STRIP-426]: event %1 unload-complete -> %2 arrived (prev state %3)", _eventID, _hK, _cur] call ALiVE_fnc_dump; };
+                                };
+                                [ALIVE_MLHeliTaskEventMap, _eventID] call ALIVE_fnc_hashRem;
+                            };
+                        };
                     } else {
                         [_event, "state", "transportComplete"] call ALIVE_fnc_hashSet;
                     };

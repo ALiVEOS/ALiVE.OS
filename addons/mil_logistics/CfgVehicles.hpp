@@ -89,6 +89,32 @@ class CfgVehicles
                                     class FP50 { name = "$STR_ALIVE_ML_FORCE_POOL_50"; value = "50"; };
                                 };
                         };
+                        // #263 - generate C2ISTAR protect/ambush tasks that ride real resupply convoys (opt-in)
+                        class generateConvoyTasks : Combo
+                        {
+                                property = "ALiVE_mil_logistics_generateConvoyTasks";
+                                displayName = "$STR_ALIVE_ML_CONVOY_TASKS";
+                                tooltip = "$STR_ALIVE_ML_CONVOY_TASKS_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No { name = "No"; value = "false"; default = 1; };
+                                };
+                        };
+                        // #426 - generate C2ISTAR protect/shoot-down tasks that ride real heli deliveries (opt-in)
+                        class generateHeliTasks : Combo
+                        {
+                                property = "ALiVE_mil_logistics_generateHeliTasks";
+                                displayName = "$STR_ALIVE_ML_HELI_TASKS";
+                                tooltip = "$STR_ALIVE_ML_HELI_TASKS_COMMENT";
+                                defaultValue = """false""";
+                                class Values
+                                {
+                                    class Yes { name = "Yes"; value = "true"; };
+                                    class No { name = "No"; value = "false"; default = 1; };
+                                };
+                        };
                         // ---- Reinforcement Types --------------------------------------------
                         class HDR_REINF : ALiVE_ModuleSubTitle { property = "ALiVE_mil_logistics_HDR_REINF"; displayName = "REINFORCEMENT TYPES"; };
                         class allowInfantryReinforcement : Combo

@@ -27,7 +27,7 @@ _show = switch (toUpper (_lb lbText _index)) do
 {
     case "SAD" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location, provide Close Air Support and engage all painted targets</t>" };
     case "LOITER" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location and loiter without engaging any targets</t>" };
-    case "ATTACK RUN" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location and engage any known targets with the specified weapon</t>" };
+    case "ATTACK" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit engages all hostiles in the target area, including unmanned vehicles. Lase a target to designate it manually - the pilot will prioritise your laser. Gun runs saturate the area if no contacts are found</t>" };
 };
 _veh = _casArray select (lbCurSel _casUnitLb) select 0;
 _casRadiusSlider = _display displayCtrl 655592;
@@ -36,7 +36,7 @@ _casAttackRunText ctrlSetText "";
 _casAttackRunLB ctrlEnable false;
 
 //Radius Slider
-if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOITER" || toUpper (_lb lbText _index) == "ATTACK RUN") then
+if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOITER" || toUpper (_lb lbText _index) == "ATTACK") then
 {
 
     _casRadiusSliderText ctrlSetText "CAS Radius: 500m";
@@ -74,7 +74,33 @@ if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOIT
     _casROELb lbSetCurSel 4;
 
 
-    if (toUpper (_lb lbText _index) == "ATTACK RUN") then {
+    // #735 follow-up: only offer weapons the pilot can actually deliver against a ground/laser point.
+    // Keep guns + unguided/guided rockets + bombs + laser/IR AGMs; drop air-to-air-only missiles,
+    // countermeasures/illum/smoke, and pseudo/utility weapons with no magazine (master-arm-safe, dummy).
+    private _usableWeapons = (weapons _veh) select {
+        private _w = _x;
+        private _keep = false;
+        // gun/cannon: always usable (may declare magazines per-muzzle)
+        if (_w isKindOf ["CannonCore", configFile >> "CfgWeapons"]) then {
+            _keep = true;
+        } else {
+            private _mags = getArray (configFile >> "CfgWeapons" >> _w >> "magazines");
+            // no magazine = pseudo/utility weapon (master-arm-safe, dummy launcher) -> drop
+            if !(_mags isEqualTo []) then {
+                private _ammoCfg = configFile >> "CfgAmmo" >> getText (configFile >> "CfgMagazines" >> (_mags select 0) >> "ammo");
+                private _sim = toLower getText (_ammoCfg >> "simulation");
+                private _isCountermeasure = (_sim find "shotcm") == 0 || {_sim in ["shotilluminating", "shotsmoke"]};
+                // air-to-air ONLY missile (airLock 2 locks air, cannot designate ground); ground AGMs are airLock 0/1
+                private _isAirToAir = getNumber (_ammoCfg >> "airLock") >= 2;
+                // placeholder/pylon-management launchers (e.g. RHS DummyLauncher) carry real-looking
+                // magazines but their ammo does no damage - drop anything that can't actually hurt the ground
+                private _doesNoDamage = (getNumber (_ammoCfg >> "hit") <= 0) && {(getNumber (_ammoCfg >> "indirectHit") <= 0)};
+                _keep = !_isCountermeasure && !_isAirToAir && !_doesNoDamage;
+            };
+        };
+        _keep
+    };
+    if (toUpper (_lb lbText _index) == "ATTACK") then {
         _casAttackRunText ctrlSetText "Choose Weapon";
         _casAttackRunText ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
         _casAttackRunText ctrlCommit 0;
@@ -82,19 +108,20 @@ if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOIT
         _casAttackRunLB ctrlEnable true;
         lbClear _casAttackRunLB;
         {
-            private "_weapon";
-            _weapon = [(configFile>>"CfgWeapons">>_x)] call bis_fnc_displayName;
-            _casAttackRunLB lbAdd _weapon;
-        } forEach weapons _veh;
+            private "_row";
+            _row = _casAttackRunLB lbAdd ([(configFile >> "CfgWeapons" >> _x)] call bis_fnc_displayName);
+            _casAttackRunLB lbSetData [_row, _x];
+        } forEach _usableWeapons;
+        if (lbSize _casAttackRunLB > 0) then { _casAttackRunLB lbSetCurSel 0; };
 
     } else {
         lbClear _casAttackRunLB;
         {
-            private "_weapon";
-            _weapon = [(configFile>>"CfgWeapons">>_x)] call bis_fnc_displayName;
-            _casAttackRunLB lbAdd _weapon;
-        } forEach weapons _veh;
-        _casAttackRunLB lbSetCurSel 0;
+            private "_row";
+            _row = _casAttackRunLB lbAdd ([(configFile >> "CfgWeapons" >> _x)] call bis_fnc_displayName);
+            _casAttackRunLB lbSetData [_row, _x];
+        } forEach _usableWeapons;
+        if (lbSize _casAttackRunLB > 0) then { _casAttackRunLB lbSetCurSel 0; };
     };
 }
 else

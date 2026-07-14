@@ -80,7 +80,9 @@ switch(_operation) do {
                         //not publicVariable to clients yet to let it init before
                         NEO_radioLogic = _logic;
 
-                        _CS_Set_Respawn = NEO_radioLogic getvariable ["combatsupport_respawn","3"];
+                        // fallback matches the Eden default (600s = 10 mins) - the old "3" fallback made
+                        // script-created modules respawn destroyed assets after 3 SECONDS
+                        _CS_Set_Respawn = NEO_radioLogic getvariable ["combatsupport_respawn","600"];
                         CS_RESPAWN = parsenumber(_CS_Set_Respawn);
                         _CAS_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_casrespawnlimit","3"];
                         CAS_RESPAWN_LIMIT = parsenumber(_CAS_SET_RESPAWN_LIMIT);
@@ -88,6 +90,14 @@ switch(_operation) do {
                         TRANS_RESPAWN_LIMIT = parsenumber(_TRANS_SET_RESPAWN_LIMIT);
                         _ARTY_SET_RESPAWN_LIMIT = NEO_radioLogic getvariable ["combatsupport_artyrespawnlimit","3"];
                         ARTY_RESPAWN_LIMIT = parsenumber(_ARTY_SET_RESPAWN_LIMIT);
+
+                        // Enable Debug attribute drives the module-wide diagnostic gate read by the
+                        // CAS engagement/rearm scripts and the resupply watchdog. Bool when binarised,
+                        // STRING "0"/"1" on -packonly builds - coerce like the audio attribute below.
+                        private _csDebug = NEO_radioLogic getVariable ["combatsupport_debug", false];
+                        if !(_csDebug isEqualType true) then { _csDebug = parseNumber format ["%1", _csDebug] > 0; };
+                        ALiVE_sup_combatsupport_debug = _csDebug;
+                        publicVariable "ALiVE_sup_combatsupport_debug";
 
                         _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
                         // Defensive coercion: combatsupport_audio is a Combo and Eden returns it as BOOL
@@ -259,7 +269,7 @@ switch(_operation) do {
                                         _guided = ["SADARM",parsenumber(_entry getvariable ["CS_artillery_guided","30"])];
                                         _cluster = ["CLUSTER",parsenumber(_entry getvariable ["CS_artillery_cluster","30"])];
                                         _lg = ["LASER",parsenumber(_entry getvariable ["CS_artillery_lg","30"])];
-                                        _mine = ["MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
+                                        _mine = ["MINE",parsenumber(_entry getvariable ["CS_artillery_mine","30"])];
                                         _atmine = ["AT MINE",parsenumber(_entry getvariable ["CS_artillery_atmine","30"])];
                                         _rockets = ["ROCKETS",parsenumber(_entry getvariable ["CS_artillery_rockets","16"])];
 
@@ -279,6 +289,9 @@ switch(_operation) do {
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
                                     _callsign = ((synchronizedObjects _logic) select _i) getvariable ["cas_callsign","EAGLE ONE"];
                                     _type = ((synchronizedObjects _logic) select _i) getvariable ["cas_type","B_Heli_Attack_01_F"];
+                                    // custom classname override always wins when filled
+                                    private _typeCustom = [((synchronizedObjects _logic) select _i) getvariable ["cas_type_custom",""], " ", ""] call CBA_fnc_replace;
+                                    if (_typeCustom != "") then { _type = _typeCustom };
                                     _heightset = ((synchronizedObjects _logic) select _i) getvariable ["cas_height","0"];
                                     _direction =  getDir ((synchronizedObjects _logic) select _i);
                                     _id = [_position] call ALiVE_fnc_getNearestAirportID;
@@ -302,8 +315,11 @@ switch(_operation) do {
                                     private ["_position","_callsign","_type","_slingloading","_containers","_tasks"];
 
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
-                                    _callsign = ((synchronizedObjects _logic) select _i) getvariable ["transport_callsign","FRIZ ONE"];
+                                    _callsign = ((synchronizedObjects _logic) select _i) getvariable ["transport_callsign","RODEO TWO"];
                                     _type = ((synchronizedObjects _logic) select _i) getvariable ["transport_type","B_Heli_Transport_01_camo_F"];
+                                    // custom classname override always wins when filled
+                                    private _typeCustom = [((synchronizedObjects _logic) select _i) getvariable ["transport_type_custom",""], " ", ""] call CBA_fnc_replace;
+                                    if (_typeCustom != "") then { _type = _typeCustom };
                                     _heightset = ((synchronizedObjects _logic) select _i) getvariable ["transport_height","0"];
                                     _height = parsenumber(_heightset);
                                     _direction =  getDir ((synchronizedObjects _logic) select _i);
@@ -352,12 +368,15 @@ switch(_operation) do {
                                     private ["_position","_callsign","_type"];
 
                                     _position = getposATL ((synchronizedObjects _logic) select _i);
-                                    _callsign = ((synchronizedObjects _logic) select _i) getvariable ["artillery_callsign","FOX ONE"];
+                                    _callsign = ((synchronizedObjects _logic) select _i) getvariable ["artillery_callsign","FOX SEVEN"];
                                     _class = ((synchronizedObjects _logic) select _i) getvariable ["artillery_type","B_Mortar_01_F"];
+                                    // custom classname override always wins when filled
+                                    private _classCustom = [((synchronizedObjects _logic) select _i) getvariable ["artillery_type_custom",""], " ", ""] call CBA_fnc_replace;
+                                    if (_classCustom != "") then { _class = _classCustom };
                                     _setherounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_he","30"];
                                     _setillumrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_illum","30"];
                                     _setsmokerounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_smoke","30"];
-                                    _setwprounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_wp","30"];
+                                    _setwprounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_wp","0"];
                                     _setguidedrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_guided","30"];
                                     _setclusterrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_cluster","30"];
                                     _setlgrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_lg","30"];
@@ -418,6 +437,31 @@ switch(_operation) do {
                         _c = [];
                         _a = [];
 
+                        // #887 - a synced editor asset can already be profiled (the
+                        // editor-unit sweep runs before this module inits). A profiled
+                        // support asset belongs to the AI commander and drives off on
+                        // its orders while also serving player calls. Forget any such
+                        // profiles, and mark the asset so no later profile sweep
+                        // captures it and other modules recognise the ownership.
+                        private _fnc_shieldFromProfiler = {
+                            params ["_veh", "_grp"];
+                            if (!isNil "ALIVE_profileHandler") then {
+                                {
+                                    private _profileID = _x getVariable ["profileID", ""];
+                                    if (_profileID != "") then {
+                                        private _profile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+                                        if (!isNil "_profile") then {
+                                            [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
+                                        };
+                                        _x setVariable ["profileID", nil];
+                                    };
+                                } forEach ([_veh] + (crew _veh));
+                            };
+                            _veh setVariable ["ALIVE_CombatSupport", true];
+                            _veh setVariable ["ALIVE_profileIgnore", true];
+                            if (!isNull _grp) then { _grp setVariable ["ALIVE_profileIgnore", true]; };
+                        };
+
 
                         // Transport
 
@@ -469,6 +513,8 @@ switch(_operation) do {
                             // Exclude CS from VCOM
                             // CS only runs serverside so no PV is needed
                             (driver _veh) setvariable ["VCOM_NOAI", true];
+
+                            [_veh, _grp] call _fnc_shieldFromProfiler;
 
                             _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                             _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
@@ -617,6 +663,8 @@ switch(_operation) do {
                             // CS only runs serverside so no PV is needed
                             (driver _veh) setvariable ["VCOM_NOAI", true];
 
+                            [_veh, _grp] call _fnc_shieldFromProfiler;
+
                                 _ffvTurrets = [_type,true,true,false,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                                 _gunnerTurrets = [_type,false,true,true,true] call ALIVE_fnc_configGetVehicleTurretPositions;
                                 _ffvTurrets = _ffvTurrets - _gunnerTurrets;
@@ -737,6 +785,10 @@ switch(_operation) do {
                              };
                              
 
+                            if (!isNil "_veh") then {
+                                [_veh, _grp] call _fnc_shieldFromProfiler;
+                            };
+
                             if (isnil "_veh") then {
                                 private ["_vehPos","_i"];
                                 for "_i" from 1 to _unitCount do
@@ -822,6 +874,8 @@ switch(_operation) do {
                                     // Exclude CS from VCOM
                                     // CS only runs serverside so no PV is needed
                                     (driver _veh) setvariable ["VCOM_NOAI", true];
+
+                                    [_veh, _grp] call _fnc_shieldFromProfiler;
 
                                     if (_i == 1) then {leader _grp setRank "CAPTAIN"};
 

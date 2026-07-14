@@ -55,12 +55,17 @@ on the `class X { control = "Y"; }` shape are silently ignored by
 Eden, so the variant control class is the only honoured hook.
 
 Parameters:
-    [_display, _allowedSides, _varName]
+    [_display, _allowedSides, _varName, _flags]
     _display      : DISPLAY - Eden attribute display. Combo control IDC 100.
     _allowedSides : ARRAY of NUMBERs - sides to include in the dropdown.
                     Defaults to [0,1,2,3] (all) if missing/invalid.
     _varName      : STRING - name of the logic variable storing the value.
                     Defaults to "faction".
+    _flags        : ARRAY of STRINGs - optional behaviour switches:
+                    "allowNone"     - prepend a "(none)" row storing "" and
+                                      default to it (optional attributes)
+                    "artilleryOnly" - only list factions that field at least
+                                      one artillery vehicle (donor pickers)
 
 Author:
 Jman
@@ -74,6 +79,7 @@ Jman
 private _display = controlNull;
 private _allowedSides = [0,1,2,3];
 private _varName = "faction";
+private _flags = [];
 if (typeName _this == "ARRAY") then {
     _display = _this select 0;
     if (count _this > 1 && {typeName (_this select 1) == "ARRAY"}) then {
@@ -82,9 +88,14 @@ if (typeName _this == "ARRAY") then {
     if (count _this > 2 && {typeName (_this select 2) == "STRING"} && {(_this select 2) != ""}) then {
         _varName = _this select 2;
     };
+    if (count _this > 3 && {typeName (_this select 3) == "ARRAY"}) then {
+        _flags = _this select 3;
+    };
 } else {
     _display = _this;
 };
+private _allowNone = "allowNone" in _flags;
+private _artilleryOnly = "artilleryOnly" in _flags;
 
 // ------------------------------------------------------------------------
 // 1. Resolve the currently-stored faction string.
@@ -105,7 +116,9 @@ private _storedFromLogic = if (count _selected > 0) then {
 };
 private _edenValue = _display getVariable "value";
 
-private _value = if (_allowedSides isEqualTo [3]) then { "CIV_F" } else { "OPF_F" };
+private _value = if (_allowNone) then { "" } else {
+    if (_allowedSides isEqualTo [3]) then { "CIV_F" } else { "OPF_F" }
+};
 if (!isNil "_edenValue" && {typeName _edenValue == "STRING"} && {_edenValue != ""}) then {
     _value = _edenValue;
 };
@@ -218,6 +231,24 @@ if (isClass _registry) then {
     };
 };
 
+// ------------------------------------------------------------------------
+// Optional artillery-donor filter ("artilleryOnly" flag): only list
+// factions that actually field artillery vehicles. One engine-filtered
+// CfgVehicles pass (scope 2 + artilleryScanner) with the full
+// ALiVE_fnc_isArtillery verdict on the survivors - the spotter guard in
+// there keeps observation vehicles from qualifying a faction.
+// ------------------------------------------------------------------------
+private _artilleryFactions = createHashMap;
+if (_artilleryOnly) then {
+    private _candidates = "getNumber (_x >> 'scope') == 2 && getNumber (_x >> 'artilleryScanner') > 0" configClasses (configFile >> "CfgVehicles");
+    {
+        private _fac = toLower getText (_x >> "faction");
+        if (_fac != "" && {!(_fac in _artilleryFactions)} && {[configName _x] call ALIVE_fnc_isArtillery}) then {
+            _artilleryFactions set [_fac, true];
+        };
+    } forEach _candidates;
+};
+
 private _seen = createHashMap; // lowercase classname -> true, for dedup
 private _entries = [];
 private _totalScanned = 0;
@@ -269,7 +300,14 @@ private _configPaths = [
                     //   squads), but CIV_F is the primary faction for every
                     //   civilian placement mission. Exempt civilians from
                     //   the CfgGroups check.
-                    private _usable = if (_side == 3) then {
+                    private _usable = if (_artilleryOnly) then {
+                        // artillery-donor mode: usable = fields at least one
+                        // artillery vehicle. CfgGroups coverage is NOT
+                        // required - batteries can be composed directly from
+                        // the donor's vehicles
+                        _cnLower in _artilleryFactions
+                    } else {
+                    if (_side == 3) then {
                         // Civilian: always include UNLESS blacklisted as a
                         // known internal / non-real civilian-side faction
                         // (see _civilianBlacklist above).
@@ -301,6 +339,7 @@ private _configPaths = [
                                 {(configName _x) isKindOf "Man"}
                             }) >= 0
                         };
+                    };
                     };
                     if (_usable) then {
                         // Consult Cfg3rdPartyFactions registry for per-
@@ -344,6 +383,14 @@ private _hasMatch = (_entries findIf {
 }) >= 0;
 
 private _foundIdx = -1;
+
+// "(none)" row for optional attributes - stores "" and sits above
+// everything, selected whenever no faction is stored
+if (_allowNone) then {
+    private _idx = _ctrl lbAdd "(none)";
+    _ctrl lbSetData [_idx, ""];
+    if (_value == "") then { _foundIdx = _idx };
+};
 
 if (!_hasMatch && _value != "") then {
     private _idx = _ctrl lbAdd format ["(unrecognised) %1", _value];
@@ -412,7 +459,7 @@ _ctrl lbSetCurSel _foundIdx;
 //  - match outcome (index + resolved lbData, or "(added as unrecognised)")
 // ------------------------------------------------------------------------
 [
-    "ALIVE FactionChoice LOAD: allowedSides=%1 scanned=%2 dropped(bad side)=%3 dropped(side filter)=%4 dropped(no CfgGroups)=%5 dropped(registry excluded)=%6 populated=%7 stored='%8' selected=%9 (lbData='%10')",
+    "ALIVE FactionChoice LOAD: allowedSides=%1 scanned=%2 dropped(bad side)=%3 dropped(side filter)=%4 dropped(no CfgGroups)=%5 dropped(registry excluded)=%6 populated=%7 stored='%8' selected=%9 (lbData='%10') flags=%11",
     _allowedSides,
     _totalScanned,
     _droppedBadSide,
@@ -422,5 +469,6 @@ _ctrl lbSetCurSel _foundIdx;
     count _entries,
     _value,
     _foundIdx,
-    if (_foundIdx >= 0 && _foundIdx < lbSize _ctrl) then { _ctrl lbData _foundIdx } else { "(none)" }
+    if (_foundIdx >= 0 && _foundIdx < lbSize _ctrl) then { _ctrl lbData _foundIdx } else { "(none)" },
+    _flags
 ] call ALiVE_fnc_dump;

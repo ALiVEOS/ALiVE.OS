@@ -4,6 +4,33 @@ class CfgGroups
     {
         class OPF_F
         {
+            // Self-propelled artillery sections so factions have an Artillery
+            // group category for force placement (vanilla defines none)
+            class Artillery
+            {
+                name = "Artillery";
+                class ALiVE_OIA_ArtySection
+                {
+                    name = "Artillery Section";
+                    side = 0;
+                    faction = "OPF_F";
+                    rarityGroup = 0.5;
+                    class Unit0
+                    {
+                        side = 0;
+                        vehicle = "O_MBT_02_arty_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 0;
+                        vehicle = "O_MBT_02_arty_F";
+                        rank = "CORPORAL";
+                        position[] = {15,-15,0};
+                    };
+                };
+            };
             class Infantry
             {
                 class OIA_InfSquad
@@ -2508,6 +2535,33 @@ class CfgGroups
     {
         class BLU_F
         {
+            // Self-propelled artillery sections so factions have an Artillery
+            // group category for force placement (vanilla defines none)
+            class Artillery
+            {
+                name = "Artillery";
+                class ALiVE_BUS_ArtySection
+                {
+                    name = "Artillery Section";
+                    side = 1;
+                    faction = "BLU_F";
+                    rarityGroup = 0.5;
+                    class Unit0
+                    {
+                        side = 1;
+                        vehicle = "B_MBT_01_arty_F";
+                        rank = "SERGEANT";
+                        position[] = {0,0,0};
+                    };
+                    class Unit1
+                    {
+                        side = 1;
+                        vehicle = "B_MBT_01_arty_F";
+                        rank = "CORPORAL";
+                        position[] = {15,-15,0};
+                    };
+                };
+            };
             class Naval
             {
                 name = "$STR_A3_CfgGroups_West_BLU_F_Naval";

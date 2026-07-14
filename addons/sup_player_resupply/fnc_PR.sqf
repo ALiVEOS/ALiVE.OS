@@ -35,7 +35,8 @@ Peer Reviewed:
 #define SUPERCLASS ALIVE_fnc_baseClass
 #define MAINCLASS ALIVE_fnc_PR
 #define MTEMPLATE "ALiVE_PR_%1"
-#define DEFAULT_PR_ITEM "LaserDesignator"
+#define DEFAULT_PR_ITEM "LaserDesignators"
+#define DEFAULT_PR_ITEM_CUSTOM ""
 #define DEFAULT_RESTRICTION_TYPE "SIDE"
 #define DEFAULT_RESTRICTION_BLACKLIST []
 #define DEFAULT_RESTRICTION_WHITELIST []
@@ -121,6 +122,9 @@ switch(_operation) do {
 
     case "pr_item": {
         _result = [_logic,_operation,_args,DEFAULT_PR_ITEM] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "pr_item_custom": {
+        _result = [_logic,_operation,_args,DEFAULT_PR_ITEM_CUSTOM] call ALIVE_fnc_OOsimpleOperation;
     };
     case "pr_restrictionType": {
         _result = [_logic,_operation,_args,DEFAULT_RESTRICTION_TYPE] call ALIVE_fnc_OOsimpleOperation;
@@ -433,6 +437,22 @@ switch(_operation) do {
         _logic setVariable ["startupComplete", false];
 
         ALIVE_SUP_PLAYER_RESUPPLY = _logic;
+
+        // Enable Debug attribute drives the module-wide diagnostic gate. Coerce like pr_audio
+        // below (bool when binarised, STRING "0"/"1" on -packonly builds).
+        private _prDebug = _logic getVariable ["pr_debug", false];
+        if !(_prDebug isEqualType true) then { _prDebug = parseNumber format ["%1", _prDebug] > 0; };
+        ALiVE_sup_player_resupply_debug = _prDebug;
+        publicVariable "ALiVE_sup_player_resupply_debug";
+
+        // pr_audio arrives as STRING "0"/"1" on builds packed without binarisation; the getter's
+        // BOOL default would silently overwrite a "0" back to true, making audio impossible to
+        // disable. Normalise once before any getter call (same guard Combat Support uses).
+        private _prAudio = _logic getVariable ["pr_audio", true];
+        if !(_prAudio isEqualType true) then {
+            _prAudio = parseNumber format ["%1", _prAudio] > 0;
+            _logic setVariable ["pr_audio", _prAudio];
+        };
 
         // load static data
         call ALiVE_fnc_staticDataHandler;
@@ -951,27 +971,41 @@ switch(_operation) do {
             // start listening for logcom events
             [_logic,"listen"] call MAINCLASS;
 
-            // Player resupply delivers via LOGCOM (the Military Logistics module)
-            // and has no delivery pipeline of its own: a request raised with no
-            // mil_logistics module placed is never answered and silently hangs.
-            // Warn the mission maker. ALIVE_MLGlobalRegistry is created by
-            // mil_logistics init, so poll for it (module load order isn't
-            // guaranteed) and only warn once it's clear none will register -
-            // otherwise this would false-alarm when PR happens to start first.
+            // Player resupply delivers via LOGCOM (the Military Logistics
+            // module) and has no delivery pipeline of its own: a request raised
+            // with no mil_logistics module placed is never answered. Warn the
+            // mission maker - but ONLY when no LOGCOM is actually placed. A
+            // module that IS placed registers during its own startup, which is
+            // blocking and can take minutes on heavy missions (it waits on its
+            // synced commander's objective analysis before registering); a fixed
+            // timeout used to fire this warning before that finished, a false
+            // alarm. Discriminate on the count of PLACED modules, not a timer.
             [] spawn {
-                private _tries = 0;
-                private _haveLogcom = false;
-                waitUntil {
-                    uiSleep 5;
-                    _tries = _tries + 1;
-                    if (!isNil "ALIVE_MLGlobalRegistry") then {
-                        private _mods = [ALIVE_MLGlobalRegistry, "getModules"] call ALIVE_fnc_MLGlobalRegistry;
-                        _haveLogcom = !isNil "_mods" && {count (_mods select 1) > 0};
+                private _placedLogcom = count (allMissionObjects "ALiVE_mil_logistics");
+
+                if (_placedLogcom == 0) then {
+                    // none placed - genuine misconfiguration, no race possible
+                    ["ALiVE Player Combat Logistics: no Military Logistics (LOGCOM) module placed - player resupply requests cannot be fulfilled. Place a Military Logistics module synced to an AI Commander for the players' side."] call ALIVE_fnc_dumpR;
+                } else {
+                    // module(s) placed - wait for them to register through their
+                    // (sometimes slow) startup. Stay silent while waiting; only
+                    // a genuine hang (nothing registered after a generous cap)
+                    // warrants a diagnostic, and it points at startup, not a
+                    // missing module
+                    private _registered = false;
+                    private _tries = 0;
+                    waitUntil {
+                        uiSleep 5;
+                        _tries = _tries + 1;
+                        if (!isNil "ALIVE_MLGlobalRegistry") then {
+                            private _mods = [ALIVE_MLGlobalRegistry, "getModules"] call ALIVE_fnc_MLGlobalRegistry;
+                            _registered = !isNil "_mods" && {count (_mods select 1) > 0};
+                        };
+                        _registered || (_tries >= 120)  // 10 min safety cap
                     };
-                    _haveLogcom || (_tries >= 24)  // ~120s grace for module registration
-                };
-                if (!_haveLogcom) then {
-                    ["ALiVE Player Combat Logistics: no Military Logistics (LOGCOM) module found - player resupply requests cannot be fulfilled. Place a Military Logistics module for the players' side and faction."] call ALIVE_fnc_dumpR;
+                    if (!_registered) then {
+                        ["ALiVE Player Combat Logistics: %1 Military Logistics module(s) placed but none registered after several minutes - a module may be stuck in startup (check that each is synced to an AI Commander).", _placedLogcom] call ALIVE_fnc_dumpR;
+                    };
                 };
             };
 

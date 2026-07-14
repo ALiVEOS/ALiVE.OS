@@ -20,6 +20,9 @@ _grp = _casArray select (lbCurSel _casUnitLb) select 1;
 _callsign = _casArray select (lbCurSel _casUnitLb) select 2;
 _callSignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
 _task = _casTaskLb lbText (lbCurSel _casTaskLb);
+// the single ATTACK task (merged ATTACK RUN + ATTACK GROUND) dispatches as "ATTACK GROUND" - the
+// area-attack path handles auto-detection, empty vehicles AND a player's manual laser designation
+if (_task == "ATTACK") then { _task = "ATTACK GROUND"; };
 _marker = NEO_radioLogic getVariable "NEO_supportMarker";
 _isPlane = !(_veh isKindOf "Helicopter");
 _pos = getMarkerPos _marker;
@@ -32,7 +35,9 @@ _flyInHeight = switch (sliderPosition _casFlyHeightSlider) do
     case 3 : { if (_isPlane) then { 500 } else { 150 } };
 };
 _coord = _pos call BIS_fnc_posToGrid;
-_weapon = (weapons _veh) select (lbCurSel _casAttackRunLB);
+// #735 follow-up: resolve chosen weapon by its row DATA (classname), not by re-indexing the
+// now-filtered weapons list (row index no longer maps to weapons _veh).
+_weapon = _casAttackRunLB lbData (lbCurSel _casAttackRunLB);
 _ROE = _casROELb lbData (lbCurSel _casROELb);
 
 //New Task
@@ -43,7 +48,7 @@ if (_audio) then {
     player kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
     leader _grp kbAddtopic["ALIVE_SUPP_protocol", "a3\modules_f\supports\kb\protocol.bikb"];
 
-    if (_isPlane && (_task == "SAD" || _task == "ATTACK RUN")) then {
+    if (_isPlane && (_task == "SAD" || _task == "ATTACK RUN" || _task == "ATTACK GROUND")) then {
         player kbTell [leader _grp, "ALIVE_SUPP_protocol", "CAS_Bombing_Request", "GROUP"];
     } else {
         player kbTell [leader _grp, "ALIVE_SUPP_protocol", "CAS_Heli_Request", "GROUP"];

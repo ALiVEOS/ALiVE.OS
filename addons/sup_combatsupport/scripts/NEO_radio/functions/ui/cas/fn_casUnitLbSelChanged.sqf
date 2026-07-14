@@ -70,7 +70,9 @@ if (_status != "KILLED") then
     lbClear _casTaskLb;
     {
         _casTaskLb lbAdd _x;
-    } forEach ["SAD","LOITER","ATTACK RUN"];
+    // ATTACK merges the old ATTACK RUN + ATTACK GROUND: auto-engages everything in the area (incl. empty
+    // vehicles) and honours a player's manual laser designation. Internally still runs as "ATTACK GROUND".
+    } forEach ["SAD","LOITER","ATTACK"];
 
     //GPS
     uinamespace setVariable ["NEO_casMarkerCreated", nil];

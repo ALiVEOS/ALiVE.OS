@@ -69,5 +69,6 @@ if (_isArty) then {
     _veh setVehicleAmmo 1;
     _veh setFuel 0.5;
     _veh setDamage 0;
+    _veh setVariable ["ALIVE_resupply_needsService", false, true];
     ["ALIVE Resupply Service: Vehicle %1 serviced (ammo, fuel 0.5, damage 0)", _veh] call ALiVE_fnc_dump;
 };

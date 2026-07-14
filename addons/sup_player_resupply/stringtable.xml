@@ -23,24 +23,84 @@
     <Russian>Пополняет припасы игроков через логистические запросы</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_DEBUG">
+    <English>Enable Debug:</English>
+    <Chinese>啟用除錯:</Chinese>
+    <Chinesesimp>启用调试:</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
+    <French>Activer le débogage:</French>
+    <Portuguese>Ativar Depuração:</Portuguese>
+    <Russian>Включить отладку:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_DEBUG_COMMENT">
+    <English>Writes Player Combat Logistics diagnostic logging to the RPT (resupply requests, deliveries and catalog resolution).</English>
+    <Chinese>將玩家戰鬥後勤除錯記錄寫入 RPT（補給請求、運送及目錄解析）。</Chinese>
+    <Chinesesimp>将玩家战斗后勤诊断日志写入 RPT(补给请求、投送及目录解析)。</Chinesesimp>
+    <Spanish>Escribe el registro de diagnóstico de la Logística de Combate para Jugadores en el RPT (solicitudes de reabastecimiento, entregas y resolución de catálogo).</Spanish>
+    <French>Écrit dans le RPT les journaux de diagnostic de la Logistique de combat joueur (demandes de ravitaillement, livraisons et résolution du catalogue).</French>
+    <Portuguese>Grava no RPT os registros de diagnóstico da Logística de Combate do Jogador (solicitações de ressuprimento, entregas e resolução de catálogo).</Portuguese>
+    <Russian>Записывает диагностические логи игрового логистического снабжения в RPT (запросы снабжения, поставки и разрешение каталога).</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_ALLOW">
-    <English>Trigger Item:</English>
-    <Chinese>觸發物品：</Chinese>
-    <Chinesesimp>触发物品：</Chinesesimp>
-    <Spanish>Objeto desencadenante:</Spanish>
-    <French>Objet déclencheur:</French>
-    <Portuguese>Item gatilho:</Portuguese>
-    <Russian>Предмет-триггер:</Russian>
+    <English>Trigger Item Categories:</English>
+    <Chinese>觸發物品類別:</Chinese>
+    <Chinesesimp>触发物资类别:</Chinesesimp>
+    <Spanish>Categorías de artículos activadores:</Spanish>
+    <French>Catégories d'objets déclencheurs:</French>
+    <Portuguese>Categorias de Itens de Ativação:</Portuguese>
+    <Russian>Категории предметов-триггеров:</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_ALLOW_COMMENT">
-    <English>Class name of the item a player must carry to access the resupply tablet (e.g. LaserDesignator). Class names are case-sensitive.</English>
-    <Chinese>玩家必須攜帶以存取補給平板的物品類別名稱（例如 LaserDesignator）。類別名稱區分大小寫。</Chinese>
-    <Chinesesimp>玩家必须携带以访问补给平板的物品类别名称（例如 LaserDesignator）。类别名称区分大小写。</Chinesesimp>
-    <Spanish>Nombre de clase del objeto que el jugador debe portar para acceder a la tableta de reabastecimiento (p. ej. LaserDesignator). Los nombres de clase distinguen mayúsculas y minúsculas.</Spanish>
-    <French>Nom de classe de l'objet que le joueur doit porter pour accéder à la tablette de réapprovisionnement (ex. LaserDesignator). Les noms de classe sont sensibles à la casse.</French>
-    <Portuguese>Nome da classe do item que o jogador deve carregar para acessar o tablet de reabastecimento (ex. LaserDesignator). Os nomes de classe são sensíveis a maiúsculas/minúsculas.</Portuguese>
-    <Russian>Имя класса предмета, который должен быть у игрока для доступа к планшету снабжения (например, LaserDesignator). Имена классов чувствительны к регистру.</Russian>
+    <English>Pick one or more equipment categories. The player can access the resupply tablet if they carry any item from any ticked category (e.g. Laser Designators covers vanilla and mod-supplied designator classes). Categories from unloaded mods drop off the list automatically. Defaults to Laser Designators. For mod-supplied items that don't belong to a registered category, use the Custom Trigger Items (classnames) field below to add their classnames directly.</English>
+    <Chinese>選取一個或多個裝備類別。玩家只要攜帶任一勾選類別中的物品，即可使用補給平板（例如「雷射標定器」涵蓋原版及模組供應的標定器類別）。未載入模組的類別會自動從清單中移除。預設為雷射標定器。若模組供應的物品不屬於任何已註冊類別，請使用下方的「自訂觸發物品（類別名稱）」欄位直接加入其類別名稱。</Chinese>
+    <Chinesesimp>选择一个或多个装备类别。玩家只要携带任一已勾选类别中的物品(例如激光指示器涵盖原版及模组自带的指示器类别),即可使用补给平板。未加载模组的类别会自动从列表中移除。默认使用激光指示器。若模组自带物品不属于已注册类别,请使用下方的“自定义触发物资 (类名)”字段直接添加其类名。</Chinesesimp>
+    <Spanish>Elija una o más categorías de equipo. El jugador puede acceder a la tableta de reabastecimiento si lleva cualquier artículo de cualquier categoría marcada (p. ej. Designadores Láser cubre las clases de designadores tanto estándar como suministradas por mods). Las categorías de mods no cargados se eliminan automáticamente de la lista. Por defecto, Designadores Láser. Para artículos suministrados por mods que no pertenecen a una categoría registrada, use el campo Artículos Activadores Personalizados (nombres de clase) más abajo para añadir sus nombres de clase directamente.</Spanish>
+    <French>Choisissez une ou plusieurs catégories d'équipement. Le joueur peut accéder à la tablette de ravitaillement s'il porte un objet de n'importe quelle catégorie cochée (ex. Désignateurs laser couvre les classes de désignateurs vanilla et fournies par des mods). Les catégories des mods non chargés disparaissent automatiquement de la liste. Par défaut Désignateurs laser. Pour les objets fournis par un mod qui n'appartiennent à aucune catégorie enregistrée, utilisez le champ Objets déclencheurs personnalisés (noms de classe) ci-dessous pour ajouter directement leurs noms de classe.</French>
+    <Portuguese>Escolha uma ou mais categorias de equipamento. O jogador pode acessar o tablet de ressuprimento se estiver portando qualquer item de qualquer categoria marcada (ex.: Designadores a Laser cobre classes de designadores vanilla e fornecidas por mods). Categorias de mods não carregados são removidas automaticamente da lista. Padrão: Designadores a Laser. Para itens fornecidos por mods que não pertencem a uma categoria registrada, use o campo Itens de Ativação Personalizados (nomes de classe) abaixo para adicioná-los diretamente.</Portuguese>
+    <Russian>Выберите одну или несколько категорий снаряжения. Игрок получает доступ к планшету снабжения, если несёт при себе любой предмет из любой отмеченной категории (например, "Лазерные целеуказатели" охватывает как штатные, так и модовые классы целеуказателей). Категории из незагруженных модов автоматически исчезают из списка. По умолчанию — лазерные целеуказатели. Для предметов из модов, не подходящих ни под одну зарегистрированную категорию, используйте поле "Пользовательские предметы-триггеры (класснеймы)" ниже, чтобы добавить их класснеймы напрямую.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_CUSTOM_ITEMS">
+    <English>Custom Trigger Items (classnames):</English>
+    <Chinese>自訂觸發物品（類別名稱）:</Chinese>
+    <Chinesesimp>自定义触发物资 (类名):</Chinesesimp>
+    <Spanish>Artículos activadores personalizados (nombres de clase):</Spanish>
+    <French>Objets déclencheurs personnalisés (noms de classe):</French>
+    <Portuguese>Itens de Ativação Personalizados (nomes de classe):</Portuguese>
+    <Russian>Пользовательские предметы-триггеры (класснеймы):</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_CUSTOM_ITEMS_COMMENT">
+    <English>Comma-separated list of additional item classnames that should grant resupply tablet access on top of the Trigger Item Categories above. Use this for mod-supplied items that don't fit a registered category (e.g. a custom faction's command tablet, a campaign-specific radio). Classnames are matched literally and case-insensitively against the player's assigned items / uniform / vest / backpack. Example: "MyMod_CommandTablet, AnotherMod_FieldRadio". Leave empty for none.</English>
+    <Chinese>以逗號分隔的額外物品類別名稱清單，這些物品會在上方「觸發物品類別」之外額外授予補給平板存取權。適用於不屬於已註冊類別的模組供應物品（例如自訂陣營的指揮平板、戰役專屬的無線電）。類別名稱會以逐字、不分大小寫的方式比對玩家所配戴的物品／制服／背心／背包。範例:"MyMod_CommandTablet, AnotherMod_FieldRadio"。留空表示無。</Chinese>
+    <Chinesesimp>以逗号分隔的附加物品类名列表,除上方触发物资类别外,持有这些物品也可获得补给平板权限。适用于不属于已注册类别的模组自带物品(例如自定义阵营的指挥平板、战役专属电台)。类名匹配为逐字且不区分大小写,针对玩家已分配的物品/军服/背心/背包进行匹配。示例:"MyMod_CommandTablet, AnotherMod_FieldRadio"。留空表示无。</Chinesesimp>
+    <Spanish>Lista separada por comas de nombres de clase de artículos adicionales que deben conceder acceso a la tableta de reabastecimiento, además de las Categorías de Artículos Activadores anteriores. Úsela para artículos suministrados por mods que no encajan en una categoría registrada (p. ej. la tableta de mando de una facción personalizada, una radio específica de campaña). Los nombres de clase se comparan literalmente y sin distinguir mayúsculas frente a los artículos asignados, el uniforme, el chaleco o la mochila del jugador. Ejemplo: "MyMod_CommandTablet, AnotherMod_FieldRadio". Déjelo vacío para ninguno.</Spanish>
+    <French>Liste, séparée par des virgules, de noms de classe d'objets supplémentaires accordant l'accès à la tablette de ravitaillement en plus des Catégories d'objets déclencheurs ci-dessus. À utiliser pour des objets fournis par un mod qui ne correspondent à aucune catégorie enregistrée (ex. la tablette de commandement d'une faction personnalisée, une radio spécifique à une campagne). Les noms de classe sont comparés littéralement et sans distinction de casse aux objets/uniforme/gilet/sac à dos assignés au joueur. Exemple: « MyMod_CommandTablet, AnotherMod_FieldRadio ». Laisser vide pour aucun.</French>
+    <Portuguese>Lista separada por vírgulas de nomes de classe de itens adicionais que devem conceder acesso ao tablet de ressuprimento, além das Categorias de Itens de Ativação acima. Use isto para itens fornecidos por mods que não se encaixam em uma categoria registrada (ex.: um tablet de comando de uma facção personalizada, um rádio específico de campanha). Os nomes de classe são comparados literalmente e sem diferenciar maiúsculas/minúsculas com os itens atribuídos, uniforme, colete ou mochila do jogador. Exemplo: "MyMod_CommandTablet, AnotherMod_FieldRadio". Deixe vazio para nenhum.</Portuguese>
+    <Russian>Список класснеймов дополнительных предметов через запятую, которые должны предоставлять доступ к планшету снабжения в дополнение к категориям предметов-триггеров выше. Используйте для предметов из модов, не подходящих ни под одну зарегистрированную категорию (например, командный планшет пользовательской фракции, радиостанция кампании). Класснеймы сопоставляются буквально и без учёта регистра с назначенными игроку предметами / формой / жилетом / рюкзаком. Пример: "MyMod_CommandTablet, AnotherMod_FieldRadio". Оставьте пустым, если не требуется.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_AUDIO">
+    <English>Radio Messages (Audio):</English>
+    <Chinese>無線電訊息（語音）:</Chinese>
+    <Chinesesimp>无线电消息 (语音):</Chinesesimp>
+    <Spanish>Mensajes de radio (audio):</Spanish>
+    <French>Messages radio (audio):</French>
+    <Portuguese>Mensagens de Rádio (Áudio):</Portuguese>
+    <Russian>Радиосообщения (аудио):</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_PR_AUDIO_COMMENT">
+    <English>Uses audible radio messages for resupply requests and deliveries.</English>
+    <Chinese>在補給請求與運送時使用可聽見的無線電語音訊息。</Chinese>
+    <Chinesesimp>为补给请求与投送使用可听的无线电语音消息。</Chinesesimp>
+    <Spanish>Usa mensajes de radio audibles para las solicitudes y entregas de reabastecimiento.</Spanish>
+    <French>Utilise des messages radio audibles pour les demandes de ravitaillement et les livraisons.</French>
+    <Portuguese>Usa mensagens de rádio audíveis para solicitações e entregas de ressuprimento.</Portuguese>
+    <Russian>Использует звуковые радиосообщения для запросов снабжения и поставок.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE">
@@ -54,31 +114,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_COMMENT">
-    <English>Controls which vehicles and groups are available to the player.\n\n• Side — shows all assets belonging to the player's side.\n• Faction — shows only assets from the player's own faction, or from the factions listed in Faction Whitelist below.</English>
-    <Chinese>控制玩家可使用哪些載具與小組。
-
-• 陣營 — 顯示玩家所屬陣營的所有資源。
-• 派系 — 僅顯示玩家自身派系的資源,或下方派系白名單中列出的派系資源。</Chinese>
-    <Chinesesimp>控制玩家可使用哪些载具与小组。
-
-• 阵营 — 显示玩家所属阵营的所有资源。
-• 派系 — 仅显示玩家自身派系的资源,或下方派系白名单中列出的派系资源。</Chinesesimp>
-    <Spanish>Controla qué vehículos y grupos están disponibles para el jugador.
-
-• Bando — muestra todos los activos del bando del jugador.
-• Facción — solo muestra activos de la facción del jugador o de las listadas en la lista blanca de facciones de abajo.</Spanish>
-    <French>Contrôle quels véhicules et groupes sont disponibles pour le joueur.
-
-• Camp — affiche tous les actifs appartenant au camp du joueur.
-• Faction — n'affiche que les actifs de la faction du joueur, ou des factions listées dans la liste blanche de factions ci-dessous.</French>
-    <Portuguese>Controla quais veículos e grupos estão disponíveis para o jogador.
-
-• Lado — mostra todos os ativos do lado do jogador.
-• Facção — mostra apenas ativos da própria facção do jogador ou das facções listadas na lista de permissões de facções abaixo.</Portuguese>
-    <Russian>Управляет тем, какая техника и группы доступны игроку.
-
-• Сторона — показывает все активы стороны игрока.
-• Фракция — показывает только активы собственной фракции игрока или фракций из белого списка ниже.</Russian>
+    <English>Controls which vehicles and groups are available to the player.\n\n• Side — shows the player's side-wide assets, narrowed to the active friendly factions (see Filter Friendly Factions below).\n• Faction — shows only assets from the player's own faction, or from the factions ticked in the Factions list below.</English>
+    <Chinese>控制玩家可使用哪些載具與編組。\n\n• 陣營 -- 顯示玩家所屬陣營全體的資產，並縮限至現役友軍派系（見下方「篩選友軍派系」）。\n• 派系 -- 僅顯示玩家所屬派系的資產，或下方「派系」清單中勾選的派系資產。</Chinese>
+    <Chinesesimp>控制玩家可用的载具与队伍。\n\n• 阵营 — 显示玩家整个阵营的资产,并缩小至当前活跃的友方派系(参见下方的“过滤友方派系”)。\n• 派系 — 仅显示玩家自身派系的资产,或下方派系列表中勾选的派系。</Chinesesimp>
+    <Spanish>Controla qué vehículos y grupos están disponibles para el jugador.\n\n• Bando — muestra los activos de todo el bando del jugador, acotados a las facciones amigas activas (ver Filtrar Facciones Amigas más abajo).\n• Facción — muestra solo los activos de la facción propia del jugador, o de las facciones marcadas en la lista de Facciones más abajo.</Spanish>
+    <French>Contrôle les véhicules et groupes disponibles pour le joueur.\n\n• Camp - affiche les unités du camp entier du joueur, restreintes aux factions amies actives (voir Filtrer les factions amies ci-dessous).\n• Faction - affiche uniquement les unités de la propre faction du joueur, ou des factions cochées dans la liste Factions ci-dessous.</French>
+    <Portuguese>Controla quais veículos e grupos ficam disponíveis para o jogador.\n\n• Lado — mostra os ativos gerais do lado do jogador, restringidos às facções amigas ativas (ver Filtrar Facções Amigas abaixo).\n• Facção — mostra apenas ativos da própria facção do jogador, ou das facções marcadas na lista de Facções abaixo.</Portuguese>
+    <Russian>Определяет, какая техника и группы доступны игроку.\n\n• Сторона — показывает средства всей стороны игрока, ограниченные активными дружественными фракциями (см. "Фильтр дружественных фракций" ниже).\n• Фракция — показывает только средства собственной фракции игрока или фракций, отмеченных в списке фракций ниже.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_SIDE">
@@ -93,7 +135,7 @@
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_FACTION">
     <English>Faction</English>
-    <Chinesesimp>阵营</Chinesesimp>
+    <Chinesesimp>派系</Chinesesimp>
     <Chinese>派系</Chinese>
     <Spanish>Facción</Spanish>
     <French>Faction</French>
@@ -116,14 +158,14 @@
     <Chinese>選取載具與小組可用於補給的派系。若留空,執行時預設為玩家所屬派系。下方手動欄位可用於清單未顯示的派系。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>选取载具与小组可用于补给的派系。若留空,执行时默认为玩家所属派系。下方手动字段可用于清单未显示的派系。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Selecciona las facciones cuyos vehículos y grupos están disponibles para el reabastecimiento. Si se deja vacío, recurre a la facción del jugador en tiempo de ejecución. Usa el campo manual de abajo para facciones que no aparezcan en la lista. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
-    <French>Sélectionnez les factions dont les véhicules et les groupes sont disponibles pour le réapprovisionnement. Si laissé vide, utilise la faction du joueur à l'exécution. Utilisez le champ manuel ci-dessous pour les factions qui n'apparaissent pas dans la liste. Sélection multiple : clic gauche sélectionne une ligne ; Ctrl+clic gauche active/désactive des lignes individuelles ; Shift+clic gauche sélectionne une plage.</French>
+    <French>Sélectionnez les factions dont les véhicules et les groupes sont disponibles pour le réapprovisionnement. Si laissé vide, utilise la faction du joueur à l'exécution. Utilisez le champ manuel ci-dessous pour les factions qui n'apparaissent pas dans la liste. Sélection multiple: clic gauche sélectionne une ligne; Ctrl+clic gauche active/désactive des lignes individuelles; Shift+clic gauche sélectionne une plage.</French>
     <Portuguese>Selecione as facções cujos veículos e grupos estão disponíveis para reabastecimento. Se deixado vazio, recorre à facção do jogador em tempo de execução. Use o campo manual abaixo para facções não exibidas na lista. Seleção múltipla: clique esquerdo seleciona uma linha; Ctrl+clique esquerdo alterna linhas individuais; Shift+clique esquerdo seleciona um intervalo.</Portuguese>
     <Russian>Выберите фракции, чьи техника и группы доступны для пополнения. Если оставить пустым, по умолчанию используется фракция игрока в рантайме. Используйте поле ручного ввода ниже для фракций, не показанных в списке. Множественный выбор: левый клик выбирает одну строку; Ctrl+левый клик переключает отдельные строки; Shift+левый клик выбирает диапазон.</Russian>
 </Key>
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST_MANUAL">
     <English>Factions (manual override):</English>
-    <Chinese>派系（手動覆蓋）:</Chinese>
-    <Chinesesimp>派系（手动覆盖）:</Chinesesimp>
+    <Chinese>派系（手動覆蓋）：</Chinese>
+    <Chinesesimp>派系（手动覆盖）：</Chinesesimp>
     <Spanish>Facciones (anulación manual):</Spanish>
     <French>Factions (remplacement manuel)&#xa0;:</French>
     <Portuguese>Facções (substituição manual):</Portuguese>
@@ -134,7 +176,7 @@
     <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
     <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
     <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
-    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format : noms séparés par des virgules, sans espaces ni guillemets.</French>
+    <French>Facultatif. Saisissez les classnames de factions supplémentaires pour les mods non chargés actuellement. Format: noms séparés par des virgules, sans espaces ni guillemets.</French>
     <Portuguese>Opcional. Digite classnames de facções adicionais para mods não carregados atualmente. Formato: nomes separados por vírgulas, sem espaços ou aspas.</Portuguese>
     <Russian>Необязательно. Введите classnames дополнительных фракций для незагруженных модов. Формат: имена через запятую, без пробелов и кавычек.</Russian>
 </Key>
@@ -150,13 +192,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_FILTER_FRIENDLY_FACTIONS_COMMENT">
-    <English>When enabled, the Reinforce List (Groups) only shows factions actively commanded by OPCOM modules friendly to the player's side. Disable to show all config factions. Has no effect if Faction Whitelist is set.</English>
-    <Chinese>啟用時,「增援清單（小組）」僅顯示由對玩家陣營友善的 OPCOM 模組所實際指揮的派系。停用以顯示所有設定派系。若已設定派系白名單則無作用。</Chinese>
-    <Chinesesimp>启用时,「增援清单（小组）」仅显示由对玩家阵营友善的 OPCOM 模块所实际指挥的派系。停用以显示所有配置派系。若已设定派系白名单则无作用。</Chinesesimp>
-    <Spanish>Cuando está activado, la Lista de refuerzo (Grupos) solo muestra facciones comandadas activamente por módulos OPCOM amistosos al bando del jugador. Desactiva para mostrar todas las facciones del config. No tiene efecto si la lista blanca de facciones está establecida.</Spanish>
-    <French>Lorsqu'activé, la liste de renforts (Groupes) n'affiche que les factions activement commandées par des modules OPCOM alliés au camp du joueur. Désactivez pour afficher toutes les factions du config. N'a aucun effet si la liste blanche de factions est définie.</French>
-    <Portuguese>Quando ativado, a Lista de Reforços (Grupos) mostra apenas facções comandadas ativamente por módulos OPCOM aliados ao lado do jogador. Desative para mostrar todas as facções do config. Não tem efeito se a lista de permissões de facções estiver definida.</Portuguese>
-    <Russian>Когда включено, список подкреплений (группы) показывает только фракции, активно управляемые модулями OPCOM, дружественными стороне игрока. Отключите, чтобы показывать все фракции из конфига. Не имеет эффекта, если задан белый список фракций.</Russian>
+    <English>When enabled, both the Supply List (vehicles) and the Reinforce List (groups) only show factions actively commanded by OPCOM modules friendly to the player's side. Disable to show all config factions. Has no effect if the Factions list above is set.</English>
+    <Chinese>啟用後，補給清單（載具）與增援清單（編組）都只會顯示由對玩家陣營友善的 OPCOM 模組實際指揮的派系。停用則顯示所有設定檔中的派系。若上方已設定「派系」清單，則此設定無效。</Chinese>
+    <Chinesesimp>启用后,补给列表(载具)与增援列表(队伍)都只显示由友方 OPCOM 模块实际指挥、且与玩家阵营友好的派系。禁用则显示所有已配置派系。若上方已设置派系列表,此项将不起作用。</Chinesesimp>
+    <Spanish>Cuando está activado, tanto la Lista de Suministro (vehículos) como la Lista de Refuerzo (grupos) solo muestran facciones comandadas activamente por módulos OPCOM amigos del bando del jugador. Desactive para mostrar todas las facciones de la configuración. No tiene efecto si la lista de Facciones anterior está definida.</Spanish>
+    <French>Une fois activé, la Liste d'approvisionnement (véhicules) et la Liste de renfort (groupes) n'affichent que les factions activement commandées par des modules OPCOM amis du camp du joueur. Désactiver pour afficher toutes les factions configurées. Sans effet si la liste Factions ci-dessus est définie.</French>
+    <Portuguese>Quando ativado, tanto a Lista de Suprimentos (veículos) quanto a Lista de Reforços (grupos) só mostram facções ativamente comandadas por módulos OPCOM aliados ao lado do jogador. Desative para mostrar todas as facções configuradas. Não tem efeito se a lista de Facções acima estiver definida.</Portuguese>
+    <Russian>При включении список поставок (техника) и список подкреплений (группы) показывают только фракции, реально управляемые модулями OPCOM, дружественными стороне игрока. Отключите, чтобы показать все фракции из конфига. Не действует, если выше задан список фракций.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_DELIVERY_AIRDROP">

@@ -371,6 +371,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyVehicles.sqf";
                 RECOMPILE;
             };
+            class taskProtectConvoy {
+                description = "Task Protect Convoy";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskProtectConvoy.sqf";
+                RECOMPILE;
+            };
             class taskDestroyBuilding {
                 description = "Task Destroy Building";
                 file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyBuilding.sqf";

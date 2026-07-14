@@ -830,7 +830,7 @@
     <Chinesesimp>驻防巡逻行为：</Chinesesimp>
     <Chinese>駐防巡邏行為：</Chinese>
     <Spanish>Comportamiento de patrulla de guarnición:</Spanish>
-    <French>Comportement de patrouille de garnison :</French>
+    <French>Comportement de patrouille de garnison:</French>
     <Portuguese>Comportamento de patrulha de guarnição:</Portuguese>
     <Russian>Поведение гарнизонного патруля:</Russian>
 </Key>
@@ -840,7 +840,7 @@
     <Chinesesimp>驻防小组在未发现敌人时于建筑物之间巡逻的战斗行为。默认为安全（步行）。发现敌人时小组仍会自动反应。</Chinesesimp>
     <Chinese>駐防小組在未發現敵人時於建築物之間巡邏的戰鬥行為。預設為安全（步行）。發現敵人時小組仍會自動反應。</Chinese>
     <Spanish>Comportamiento de combate de los grupos de guarnición que patrullan entre edificios cuando no hay enemigos a la vista. Por defecto es Seguro (caminando). Los grupos siguen reaccionando automáticamente al detectar a un enemigo.</Spanish>
-    <French>Comportement de combat des groupes de garnison patrouillant entre les bâtiments lorsqu'aucun ennemi n'est en vue. Par défaut : Tranquille (marche). Les groupes réagissent toujours automatiquement lorsqu'ils repèrent un ennemi.</French>
+    <French>Comportement de combat des groupes de garnison patrouillant entre les bâtiments lorsqu'aucun ennemi n'est en vue. Par défaut: Tranquille (marche). Les groupes réagissent toujours automatiquement lorsqu'ils repèrent un ennemi.</French>
     <Portuguese>Comportamento de combate dos grupos de guarnição que patrulham entre edifícios quando não há inimigos à vista. Predefinição: Seguro (a andar). Os grupos continuam a reagir automaticamente ao avistar um inimigo.</Portuguese>
     <Russian>Боевое поведение гарнизонных групп, патрулирующих между зданиями, когда враг не виден. По умолчанию — «Безопасно» (шагом). Группы всё равно реагируют автоматически, заметив противника.</Russian>
 </Key>
@@ -849,7 +849,7 @@
     <Chinesesimp>驻防巡逻速度：</Chinesesimp>
     <Chinese>駐防巡邏速度：</Chinese>
     <Spanish>Velocidad de patrulla de guarnición:</Spanish>
-    <French>Vitesse de patrouille de garnison :</French>
+    <French>Vitesse de patrouille de garnison:</French>
     <Portuguese>Velocidade de patrulha de guarnição:</Portuguese>
     <Russian>Скорость гарнизонного патруля:</Russian>
 </Key>
@@ -859,7 +859,7 @@
     <Chinesesimp>驻防小组在未发现敌人时于建筑物之间巡逻的移动速度。默认为受限（步行）。</Chinesesimp>
     <Chinese>駐防小組在未發現敵人時於建築物之間巡邏的移動速度。預設為受限（步行）。</Chinese>
     <Spanish>Velocidad de movimiento de los grupos de guarnición que patrullan entre edificios cuando no hay enemigos a la vista. Por defecto es Limitada (caminando).</Spanish>
-    <French>Vitesse de déplacement des groupes de garnison patrouillant entre les bâtiments lorsqu'aucun ennemi n'est en vue. Par défaut : Limitée (marche).</French>
+    <French>Vitesse de déplacement des groupes de garnison patrouillant entre les bâtiments lorsqu'aucun ennemi n'est en vue. Par défaut: Limitée (marche).</French>
     <Portuguese>Velocidade de movimento dos grupos de guarnição que patrulham entre edifícios quando não há inimigos à vista. Predefinição: Limitada (a andar).</Portuguese>
     <Russian>Скорость передвижения гарнизонных групп, патрулирующих между зданиями, когда враг не виден. По умолчанию — «Ограниченная» (шагом).</Russian>
 </Key>
@@ -872,17 +872,45 @@
     <Portuguese>Nenhum</Portuguese>
     <Russian>Нет</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_LOW">
     <English>25%</English>
+    <Chinese>25%</Chinese>
+    <Chinesesimp>25%</Chinesesimp>
+    <Spanish>25%</Spanish>
+    <French>25 %</French>
+    <Portuguese>25%</Portuguese>
+    <Russian>25%</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_MEDIUM">
     <English>50%</English>
+    <Chinese>50%</Chinese>
+    <Chinesesimp>50%</Chinesesimp>
+    <Spanish>50%</Spanish>
+    <French>50 %</French>
+    <Portuguese>50%</Portuguese>
+    <Russian>50%</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_HIGH">
     <English>75%</English>
+    <Chinese>75%</Chinese>
+    <Chinesesimp>75%</Chinesesimp>
+    <Spanish>75%</Spanish>
+    <French>75 %</French>
+    <Portuguese>75%</Portuguese>
+    <Russian>75%</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CP_CUSTOM_PATROL_PERCENT_ALL">
     <English>100%</English>
+    <Chinese>100%</Chinese>
+    <Chinesesimp>100%</Chinesesimp>
+    <Spanish>100%</Spanish>
+    <French>100 %</French>
+    <Portuguese>100%</Portuguese>
+    <Russian>100%</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_ON_EACH_SPAWN">
     <English>On unit spawn (SQF):</English>

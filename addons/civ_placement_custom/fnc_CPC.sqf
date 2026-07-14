@@ -159,6 +159,9 @@ switch (_operation) do {
     case "objectiveObjectsCount": {
         _result = [_logic, _operation, _args, "0"] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "objectiveObjectsChance": {
+        _result = [_logic, _operation, _args, "100"] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "objectiveObjectsBehaviour": {
         _result = [_logic, _operation, _args, "dispersed"] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -565,52 +568,52 @@ switch (_operation) do {
 
             switch (_type) do {
                 case "Armored": {
-                    _countArmored = floor((_size / 20) * 0.5);
+                    _countArmored = round((_size / 20) * 0.5);
                     _countMechanized = floor((_size / 12) * random 0.2);
                     _countMotorized = floor((_size / 12) * random 0.2);
-                    _countInfantry = floor((_size / 10) * 0.5);
+                    _countInfantry = round((_size / 10) * 0.5);
                     _countAir = floor((_size / 30) * random 0.1);
-                    _countSpecOps = floor((_size / 25) * 0.5);
+                    _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Mechanized": {
-                    _countMechanized = floor((_size / 12) * 0.5);
+                    _countMechanized = round((_size / 12) * 0.5);
                     _countArmored = floor((_size / 20) * random 0.2);
                     _countMotorized = floor((_size / 12) * random 0.2);
-                    _countInfantry = floor((_size / 10) * 0.5);
+                    _countInfantry = round((_size / 10) * 0.5);
                     _countAir = floor((_size / 30) * random 0.1);
-                    _countSpecOps = floor((_size / 25) * 0.5);
+                    _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Motorized": {
-                    _countMotorized = floor((_size / 12) * 0.5);
+                    _countMotorized = round((_size / 12) * 0.5);
                     _countMechanized = floor((_size / 12) * random 0.2);
                     _countArmored = floor((_size / 20) * random 0.2);
-                    _countInfantry = floor((_size / 10) * 0.5);
+                    _countInfantry = round((_size / 10) * 0.5);
                     _countAir = floor((_size / 30) * random 0.1);
-                    _countSpecOps = floor((_size / 25) * 0.5);
+                    _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Infantry": {
-                    _countInfantry = floor((_size / 10) * 0.8);
+                    _countInfantry = round((_size / 10) * 0.8);
                     _countMotorized = floor((_size / 12) * random 0.2);
                     _countMechanized = floor((_size / 12) * random 0.2);
                     _countArmored = floor((_size / 20) * random 0.2);
                     _countAir = floor((_size / 30) * random 0.1);
-                    _countSpecOps = floor((_size / 25) * 0.5);
+                    _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Air": {
-                    _countAir = floor((_size / 30) * 0.5);
-                    _countInfantry = floor((_size / 10) * 0.5);
+                    _countAir = round((_size / 30) * 0.5);
+                    _countInfantry = round((_size / 10) * 0.5);
                     _countMotorized = floor((_size / 12) * random 0.2);
                     _countMechanized = floor((_size / 12) * random 0.2);
                     _countArmored = floor((_size / 20) * random 0.2);
-                    _countSpecOps = floor((_size / 25) * 0.5);
+                    _countSpecOps = round((_size / 25) * 0.5);
                 };
                 case "Specops": {
-                    _countAir = floor((_size / 30) * 0.5);
-                    _countInfantry = floor((_size / 10) * 0.5);
+                    _countAir = round((_size / 30) * 0.5);
+                    _countInfantry = round((_size / 10) * 0.5);
                     _countMotorized = floor((_size / 12) * random 0.2);
                     _countMechanized = floor((_size / 12) * random 0.2);
                     _countArmored = floor((_size / 20) * random 0.2);
-                    _countSpecOps = floor((_size / 10) * 0.5);
+                    _countSpecOps = round((_size / 10) * 0.5);
                 };
             };
 
@@ -1030,7 +1033,9 @@ switch (_operation) do {
             private _objCountStr_CPC = [_logic, "objectiveObjectsCount"] call MAINCLASS;
             private _objCount_CPC = if (typeName _objCountStr_CPC == "STRING" && {_objCountStr_CPC != ""}) then { parseNumber _objCountStr_CPC } else { 0 };
             private _objBehaviour_CPC = [_logic, "objectiveObjectsBehaviour"] call MAINCLASS;
-            private _countObjectiveObjects_CPC = [_logic, _position, _objSizeRadius_CPC, _objCount_CPC, _objBehaviour_CPC, _debug] call ALiVE_fnc_spawnObjectiveObjects;
+            private _objChanceStr_CPC = [_logic, "objectiveObjectsChance"] call MAINCLASS;
+            private _objChance_CPC = if (typeName _objChanceStr_CPC == "STRING" && {_objChanceStr_CPC != ""}) then { (parseNumber _objChanceStr_CPC) max 0 min 100 } else { 100 };
+            private _countObjectiveObjects_CPC = [_logic, _position, _objSizeRadius_CPC, _objCount_CPC, _objBehaviour_CPC, _debug, _objChance_CPC] call ALiVE_fnc_spawnObjectiveObjects;
             if (_debug) then {
                 ["CPC - Objective objects placed: %1 of %2 (radius=%3 behaviour=%4)",
                     _countObjectiveObjects_CPC, _objCount_CPC, _objSizeRadius_CPC, _objBehaviour_CPC] call ALiVE_fnc_dump;
