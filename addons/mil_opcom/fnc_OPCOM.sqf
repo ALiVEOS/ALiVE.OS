@@ -1332,12 +1332,14 @@ switch (_operation) do {
         if(isnil "_args") then {
             _args = [_logic,"objectives"] call ALIVE_fnc_hashGet;
         } else {
-            private ["_objectives","_type","_asym_occupation","_side","_color"];
+            private ["_side","_color"];
 
-            _type = _args;
-            _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
-            _asym_occupation = [_logic,"asym_occupation",-1] call ALiVE_fnc_HashGet;
-            _roadblocks = [_logic,"roadblocks",true] call ALiVE_fnc_HashGet;
+            private _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
+
+            private _type = _args;
+            private _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
+            private _asym_occupation = [_logic,"asym_occupation",-1] call ALiVE_fnc_HashGet;
+            private _roadblocks = [_logic,"roadblocks",true] call ALiVE_fnc_HashGet;
 
             switch (_type) do {
                 //by distance
@@ -1391,7 +1393,6 @@ switch (_operation) do {
                     _sidesEnemy = [_logic,"sidesenemy",["WEST"]] call ALiVE_fnc_HashGet;
                     _sidesFriendly = [_logic,"sidesfriendly",["EAST"]] call ALiVE_fnc_HashGet;
                     _CQB = [_logic,"CQB",[]] call ALiVE_fnc_HashGet;
-                    _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
 
                     //Convert CQB modules
                     _CQB = +_CQB; {_CQB set [_foreachIndex,[[],"convertObject",_x] call ALiVE_fnc_OPCOM]} foreach _CQB;
@@ -1660,7 +1661,7 @@ switch (_operation) do {
 
             // clean up markers
 
-            deleteMarker _objectiveID;
+            deleteMarker GET_OBJECTIVE_DEBUG_MARKER(_objectiveID);
 
             private _controlType = ([_logic, "controltype", ""] call ALiVE_fnc_HashGet); 
             if (_controlType == "asymmetric") then {
@@ -3567,7 +3568,7 @@ switch (_operation) do {
     };
 
     case "changeControlType": {
-        _args params ["_newControlType","_timeToChange"];
+        _args params ["_newControlType"];
 
         _result = false;
 
