@@ -34,12 +34,14 @@ SpyderBlack723
 
 params ["_hash","_pairs"];
 
-_hash params ["_keys","_values","_defaultValue"];
+_hash params ["_hashType","_keys","_values","_defaultValue"];
+
+private _hasDefault = !isnil "_defaultValue";
 
 {
     _x params ["_key","_value"];
 
-    private _isDefault = _value isequalto _defaultValue;
+    private _isDefault = _hasDefault && { _value isequalto _defaultValue };
 
     private _keyIndex = _keys find _key;
     if (_keyIndex != -1) then {
