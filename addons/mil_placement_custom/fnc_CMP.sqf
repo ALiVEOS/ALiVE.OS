@@ -151,6 +151,9 @@ switch(_operation) do {
     case "customArtilleryFaction": {
         _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "customArtillerySectionSize": {
+        _result = [_logic,_operation,_args,"4"] call ALIVE_fnc_OOsimpleOperation;
+    };
 
     case "customSpecOpsCount": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
@@ -1045,11 +1048,15 @@ switch(_operation) do {
                     private _artySideNum = getNumber ((_artyFaction call ALiVE_fnc_configGetFactionClass) >> "side");
                     private _artySide = _artySideNum call ALIVE_fnc_sideNumberToText;
                     private _usedArtyPositions = [];
+                    // #876 - guns per vehicle-composed battery (Eden attribute, default 4).
+                    // A larger section simply places proportionally more guns and crews.
+                    private _sectionSize = parseNumber ([_logic,"customArtillerySectionSize"] call MAINCLASS);
+                    if (_sectionSize < 1) then { _sectionSize = 4; };
 
                     for "_b" from 1 to _artilleryFallback do {
                         private _artyClass = selectRandom _artyClasses;
                         private _gunsPlaced = 0;
-                        for "_g" from 1 to 2 do {
+                        for "_g" from 1 to _sectionSize do {
                             private _safePos = [];
                             private _safeDir = 0;
                             {

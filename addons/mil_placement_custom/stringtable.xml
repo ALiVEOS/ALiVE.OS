@@ -121,6 +121,26 @@
     <Russian>Необязательно. Формировать размещаемую артиллерию из этой фракции-донора вместо фракций состава - моделирует батареи, приданные из смежного рода войск, например орудия RHS танковых войск, поддерживающие мотострелков. Перечислены только фракции, располагающие артиллерией; донор должен воевать на той же стороне. Использует артиллерийские группы донора, если они определены, иначе формирует батареи из его артиллерийских машин. Выберите (нет), чтобы использовать фракции состава.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_SECTION_SIZE">
+    <English>Artillery Section Size (guns):</English>
+    <Chinese>砲兵編組規模（火砲數）:</Chinese>
+    <Chinesesimp>炮兵编组规模（火炮数）:</Chinesesimp>
+    <Spanish>Tamaño de la sección de artillería (piezas):</Spanish>
+    <French>Taille de la section d'artillerie (pièces):</French>
+    <Portuguese>Tamanho da seção de artilharia (peças):</Portuguese>
+    <Russian>Размер артиллерийской секции (орудий):</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CMP_CUSTOM_ARTILLERY_SECTION_SIZE_COMMENT">
+    <English>Number of guns per battery when artillery is composed from vehicles (factions whose guns have no dedicated artillery group, for example RHS M252/M119). A realistic mortar section or howitzer battery is 4 guns. Larger sections place more guns and crews. Factions that field their own artillery groups keep the group's own size.</English>
+    <Chinese>當砲兵以載具編成時（其火砲未定義專屬砲兵小隊的派系，例如RHS的M252/M119），每個砲兵連的火砲數量。真實的迫擊砲排或榴彈砲連為4門。編組越大，放置的火砲與乘員也越多。擁有自身砲兵小隊的派系仍沿用該小隊的既有規模。</Chinese>
+    <Chinesesimp>当炮兵由车辆组成时（其火炮未定义专属炮兵小队的阵营，例如RHS的M252/M119），每个炮兵连的火炮数量。真实的迫击炮排或榴弹炮连为4门。编组越大，放置的火炮与乘员也越多。拥有自身炮兵小队的阵营仍沿用该小队的既有规模。</Chinesesimp>
+    <Spanish>Número de piezas por batería cuando la artillería se compone a partir de vehículos (facciones cuyas piezas no tienen un grupo de artillería propio, por ejemplo el M252/M119 de RHS). Una sección de morteros o batería de obuses realista tiene 4 piezas. Las secciones más grandes colocan más piezas y dotaciones. Las facciones que disponen de sus propios grupos de artillería conservan el tamaño del grupo.</Spanish>
+    <French>Nombre de pièces par batterie lorsque l'artillerie est composée à partir de véhicules (factions dont les pièces n'ont pas de groupe d'artillerie dédié, par exemple les M252/M119 de RHS). Une section de mortiers ou une batterie d'obusiers réaliste compte 4 pièces. Les sections plus grandes déploient plus de pièces et leurs équipages. Les factions disposant de leurs propres groupes d'artillerie conservent la taille du groupe.</French>
+    <Portuguese>Número de peças por bateria quando a artilharia é composta a partir de veículos (facções cujas peças não têm um grupo de artilharia próprio, por exemplo o M252/M119 da RHS). Uma seção de morteiros ou bateria de obuses realista tem 4 peças. Seções maiores posicionam mais peças e guarnições. Facções que possuem seus próprios grupos de artilharia mantêm o tamanho do grupo.</Portuguese>
+    <Russian>Количество орудий в батарее, когда артиллерия формируется из машин (фракции, чьи орудия не имеют выделенной артиллерийской группы, например M252/M119 из RHS). Реалистичный миномётный взвод или гаубичная батарея — 4 орудия. Более крупные секции размещают больше орудий и расчётов. Фракции с собственными артиллерийскими группами сохраняют размер группы.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CMP_GARRISON_COMPOSITIONS">
     <English>Garrison compositions:</English>
     <Chinese>駐守組合設施:</Chinese>

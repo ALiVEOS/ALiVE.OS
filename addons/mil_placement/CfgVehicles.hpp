@@ -215,6 +215,24 @@ class CfgVehicles {
                             expression   = "_this setVariable ['artilleryFaction', _value];";
                             defaultValue = """""";
                         };
+                        // #876 - guns per battery when composing artillery from vehicles
+                        // (e.g. RHS M252/M119, which ship no CfgGroups Artillery group)
+                        class artillerySectionSize : Combo
+                        {
+                                property     = "ALiVE_mil_placement_artillerySectionSize";
+                                displayName  = "$STR_ALIVE_MP_ARTILLERY_SECTION_SIZE";
+                                tooltip      = "$STR_ALIVE_MP_ARTILLERY_SECTION_SIZE_COMMENT";
+                                defaultValue = """4""";
+                                class Values
+                                {
+                                    class Sz1 { name = "1"; value = "1"; };
+                                    class Sz2 { name = "2"; value = "2"; };
+                                    class Sz3 { name = "3"; value = "3"; };
+                                    class Sz4 { name = "4"; value = "4"; default = 1; };
+                                    class Sz6 { name = "6"; value = "6"; };
+                                    class Sz8 { name = "8"; value = "8"; };
+                                };
+                        };
                         // ---- Objective Objects (#875) ---------------------------------------
                         class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
                         // AA-style triplet: count Edit + behaviour Combo + picker.

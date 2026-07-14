@@ -123,6 +123,24 @@ class CfgVehicles {
                             expression   = "_this setVariable ['customArtilleryFaction', _value];";
                             defaultValue = """""";
                         };
+                        // #876 - guns per battery when composing artillery from vehicles
+                        // (e.g. RHS M252/M119, which ship no CfgGroups Artillery group)
+                        class customArtillerySectionSize : Combo
+                        {
+                                property     = "ALiVE_mil_placement_custom_customArtillerySectionSize";
+                                displayName  = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_SECTION_SIZE";
+                                tooltip      = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_SECTION_SIZE_COMMENT";
+                                defaultValue = """4""";
+                                class Values
+                                {
+                                    class Sz1 { name = "1"; value = "1"; };
+                                    class Sz2 { name = "2"; value = "2"; };
+                                    class Sz3 { name = "3"; value = "3"; };
+                                    class Sz4 { name = "4"; value = "4"; default = 1; };
+                                    class Sz6 { name = "6"; value = "6"; };
+                                    class Sz8 { name = "8"; value = "8"; };
+                                };
+                        };
 
                         // ---- Anti-Air -------------------------------------------------------
                         class HDR_ANTIAIR : ALiVE_ModuleSubTitle { property = "ALiVE_mil_placement_custom_HDR_ANTIAIR"; displayName = "$STR_ALIVE_CMP_HDR_ANTIAIR"; };

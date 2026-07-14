@@ -268,6 +268,9 @@ switch(_operation) do {
     case "artilleryFaction": {
         _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
+    case "artillerySectionSize": {
+        _result = [_logic,_operation,_args,"4"] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "placeSupplies": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeSupplies", _args];
@@ -1873,6 +1876,10 @@ switch(_operation) do {
                     ["MP [%1] - Place Artillery: %2 has no artillery groups AND no artillery vehicles - nothing to place",_faction,_artySourceFaction] call ALiVE_fnc_dump;
                 } else {
                     private _usedArtyPositions = [];
+                    // #876 - guns per vehicle-composed battery (Eden attribute, default 4).
+                    // A larger section simply places proportionally more guns and crews.
+                    private _sectionSize = parseNumber ([_logic,"artillerySectionSize"] call MAINCLASS);
+                    if (_sectionSize < 1) then { _sectionSize = 4; };
                     for "_b" from 1 to _artilleryFallback do {
                         private _artyClass = selectRandom _artyClasses;
                         private _cluster = _clusters select ((_b - 1) mod (count _clusters));
@@ -1880,7 +1887,7 @@ switch(_operation) do {
                         if (isNil "_cPos" || {typeName _cPos != "ARRAY"}) then { _cPos = [0,0,0] };
 
                         private _gunsPlaced = 0;
-                        for "_g" from 1 to 2 do {
+                        for "_g" from 1 to _sectionSize do {
                             private _safePos = [];
                             private _safeDir = 0;
                             {
