@@ -365,9 +365,14 @@ if (count _friendlyPlayers > 0) then {
         // launcher weapons (config-invisible magazines) still count
         private _eh = _this addEventHandler ["Fired", {
             params ["_unit","","","","_ammo"];
-            if (_ammo isKindOf ["ShellBase", configFile >> "CfgAmmo"]
+            // #876 - flares excluded: the night illumination pre-shot must not
+            // satisfy the volley watchdog - only lethal ordnance proves the
+            // volley flew. Vanilla flares usually fail the tests below anyway;
+            // this guards mod illum ammo parented under its HE shell tree.
+            if ((_ammo isKindOf ["ShellBase", configFile >> "CfgAmmo"]
                 || {_ammo isKindOf ["RocketBase", configFile >> "CfgAmmo"]}
-                || {_ammo isKindOf ["MissileBase", configFile >> "CfgAmmo"]}) then {
+                || {_ammo isKindOf ["MissileBase", configFile >> "CfgAmmo"]})
+                && {!(_ammo isKindOf ["FlareCore", configFile >> "CfgAmmo"])}) then {
                 _unit setVariable ["ALiVE_artyMissionFired", (_unit getVariable ["ALiVE_artyMissionFired", 0]) + 1, true];
             };
         }];
@@ -381,8 +386,39 @@ private _fnc_firedCount = {
     _n
 };
 
-// ranging round first - it doubles as the audible warning at the target end
 private _volleyStart = time;
+
+// #876 - when it's properly dark, put one illumination round dead-centre on the
+// target ahead of everything else, so the ranging round and HE volley that
+// follow land under the flare. sunOrMoon < 0.3 = genuinely dark (skips dusk/dawn
+// twilight, where a flare adds little). Fire and forget: a gun with no illum
+// magazine, or one out of flare range, just proceeds exactly as in daylight.
+// This runs only on the real-fire path (a player is near), so a flare is always
+// seen; virtual missions never reach this file.
+private _sunOrMoon = sunOrMoon;
+private _illumMag = if (_sunOrMoon < 0.3) then {
+    [_gunLead, "ILLUM"] call ALIVE_fnc_getArtyMagazineType
+} else { "" };
+// illum magazines have their own (usually shorter) firing solution - if the
+// flare cannot reach the target the engine silently refuses the order, so skip
+// the shot and its delay rather than pay 20s for nothing
+if (_illumMag != "" && {!(_aimBase inRangeOfArtillery [[_gunLead], _illumMag])}) then {
+    if (_debug) then {
+        ["ALiVE MIL_ARTILLERY - illumination skipped: target outside %1's envelope for %2", typeOf _gunLead, _illumMag] call ALiVE_fnc_dump;
+    };
+    _illumMag = "";
+};
+if (_illumMag != "") then {
+    [_gunLead, [_aimBase, _illumMag, 1]] remoteExec ["doArtilleryFire", _gunLead];
+    if (_debug) then {
+        ["ALiVE MIL_ARTILLERY - illumination round ordered: %1 firing %2 at %3 (sunOrMoon %4)", typeOf _gunLead, _illumMag, _aimBase, _sunOrMoon] call ALiVE_fnc_dump;
+    };
+    // let the flare leave the tube before the same gun takes its next order -
+    // a fresh doArtilleryFire overrides one still being laid
+    sleep 20;
+};
+
+// ranging round next - it doubles as the audible warning at the target end
 private _rangingAim = _aimBase getPos [random _dispersion, random 360];
 [_gunLead, [_rangingAim, _mag, 1]] remoteExec ["doArtilleryFire", _gunLead];
 
