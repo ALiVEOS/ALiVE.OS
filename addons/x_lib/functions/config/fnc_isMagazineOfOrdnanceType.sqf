@@ -37,7 +37,7 @@ Jman
 #define MINE_SUBSTRINGS    ["Mo_Mine"];
 #define AT_MINE_SUBSTRINGS ["Mo_AT_mine"];
 #define ROCKET_SUBSTRINGS  ["rockets"];
-#define ILLUM_SUBSTRINGS   ["illum", "flare", "lume"];
+#define ILLUM_SUBSTRINGS   ["illum", "ilum", "flare", "lume"];
 /*
 unknown substrings for VN:
 - ab    (air burst)
