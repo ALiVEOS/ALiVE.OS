@@ -1638,44 +1638,50 @@ switch (_operation) do {
     };
 
     case "removeObjective": {
-        if(isnil "_args") then {
-                _args = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
+        if (isnil "_args") then {
+            _result = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
         } else {
-            ASSERT_TRUE(typeName _args == "STRING",str _args);
-            private ["_objective","_section","_debug","_objectiveID","_index"];
+            ASSERT_TRUE(_args isequaltype "", str _args);
 
-            _objectiveID = _args;
+            private _objectiveID = _args;
 
-            _objectives = [_logic,"objectives",[]] call ALiVE_fnc_HashGet;
-            _debug = [_logic,"debug",false] call ALiVE_fnc_HashGet;
+            private _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
+            private _objectiveIndex = _objectives findIf { ([_x,"objectiveID",""] call ALiVE_fnc_HashGet) == _objectiveID };
 
-            {
-                _oID = [_x,"objectiveID",""] call ALiVE_fnc_HashGet;
+            if (_objectiveIndex != -1) then {
+                private _objective = _objectives select _objectiveIndex;
+                private _section = [_objective,"section",[]] call ALiVE_fnc_HashGet;
 
-                if (_oID == _objectiveID) exitwith {
-                    _section = [_x,"section",[]] call ALiVE_fnc_HashGet;
+                { [_logic,"resetProfileOrders", _x] call ALiVE_fnc_OPCOM } foreach _section;
+                [_logic,"resetObjective", _objectiveID] call ALiVE_fnc_OPCOM;
 
-                    {[_logic,"resetProfileOrders",_x] call ALiVE_fnc_OPCOM} foreach _section;
-                    [_logic,"resetObjective",_objectiveID] call ALiVE_fnc_OPCOM;
-
-                    _index = _foreachIndex;
-                };
-            } foreach _objectives;
-
-            if !(isnil "_index") then {
-                _objectives set [_index,objNull];
-                _objectives = _objectives - [objNull];
-
-                [_logic,"objectives", _objectives] call ALiVE_fnc_HashSet;
+                _objectives deleteAt _objectiveIndex;
             };
 
-            _args = _objectives;
+            // clean up markers
 
-            // debug ---------------------------------------
-            if (_debug) then {deletemarkerLocal _objectiveID};
-            // debug ---------------------------------------
+            deleteMarker _objectiveID;
+
+            private _controlType = ([_logic, "controltype", ""] call ALiVE_fnc_HashGet); 
+            if (_controlType == "asymmetric") then {
+                {
+                    deleteMarker _x;
+                } forEach [
+                    format ["%1_Hostility", _objectiveID],
+                    format ["%1_actions", _objectiveID],
+                    format ["hq_%1", _objectiveID],
+                    format ["depot_%1", _objectiveID],
+                    format ["factory_%1", _objectiveID],
+                    format ["ambush_%1", _objectiveID],
+                    format ["sabotage_%1", _objectiveID],
+                    format ["ied_%1", _objectiveID],
+                    format ["suicide_%1", _objectiveID],
+                    format ["roadblocks_%1", _objectiveID]
+                ];
+            };
+
+            _result = _objectives;
         };
-        _result = _args;
     };
 
     case "findReinforcementBase": {
@@ -2719,7 +2725,7 @@ switch (_operation) do {
 
             private _opcomIndex = OPCOM_instances findif {
                 private _factions = ([_x,"factions", []] call ALiVE_fnc_HashGet) apply { tolower _x };
-                private _side = tolower ([[_x,"side", ""] call ALiVE_fnc_HashGet]);
+                private _side = tolower ([_x,"side", ""] call ALiVE_fnc_HashGet);
 
                 (_identifier == _side) || { _identifier in _factions }
             };
@@ -2807,7 +2813,7 @@ switch (_operation) do {
         private _unsortedObjectives = _objectives apply {
             private _target = _x;
 
-            ([_target, ["center","size","type","priority","clusterID","asymmetricInstallationCountOverrides","asymmetricInstallationOverrideSource"]] call ALiVE_fnc_hashGetMany) params [
+            ([_target, ["center","size","objectiveType","priority","clusterID","asymmetricInstallationCountOverrides","asymmetricInstallationOverrideSource"]] call ALiVE_fnc_hashGetMany) params [
                 "_pos",
                 "_size",
                 "_type",
@@ -3577,91 +3583,71 @@ switch (_operation) do {
         if (_newControlType == _existingControlType) exitwith {};
 
         private _conventionalTypes = ["invasion","occupation"];
-        private _asymmTypes = ["asymmetric"];
 
-        private _opcomFSM = [_logic,"OPCOM_FSM"] call ALiVE_fnc_HashGet;
-        private _tacomFSM = [_logic,"TACOM_FSM"] call ALiVE_fnc_HashGet;
+        private _opcomFSM = [_logic,"OPCOM_FSM",-1] call ALiVE_fnc_HashGet;
+        private _tacomFSM = [_logic,"TACOM_FSM",-1] call ALiVE_fnc_HashGet;
 
-        if (_newControlType in _conventionalTypes) then {
-            if (_existingControlType in _conventionalTypes) then {
-                // conventional to conventional
-                // NEEDS TESTED
-
-                // terminate fsms
-                _opcomFSM setFSMvariable ["_exitFSM", true];
-                _tacomFSM setFSMvariable ["_exitFSM", true];
-                
-                // reset objectives
-                private _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
-                {
-                    [_logic,"resetObjective", [_x,"objectiveID"] call ALiVE_fnc_hashGet] call MAINCLASS;
-                } foreach _objectives;
-
-                // re-sort objectives
-                switch (_newControlType) do {
-                    case ("occupation") : {
-                        _objectives = [_logic,"objectives",
-                            [_logic,"createObjectives", [_objectives,"strategic"]] call MAINCLASS
-                        ] call MAINCLASS;
-                    };
-                    case ("invasion") : {
-                        _objectives = [_logic,"objectives", [_logic,"createObjectives", [_objectives,"distance"]] call MAINCLASS] call MAINCLASS;
-                    };
-                };
-
-                // reset orders
-                [_logic,"pendingorders", []] call ALiVE_fnc_hashSet;
-            } else {
-                // asymm to conventional
-                // NEEDS REVIEWED
-
-                _opcomFSM setFSMvariable ["_exitFSM", true];
-                _tacomFSM setFSMvariable ["_exitFSM", true];
-
-                private _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
-                {
-                    [_logic,"resetObjective", [_x,"objectiveID"] call ALiVE_fnc_hashGet] call MAINCLASS;
-                } foreach _objectives;
-
-                switch (_newControlType) do {
-                    case ("occupation") : {
-                        _objectives = [_logic,"objectives",
-                            [_logic,"createObjectives", [_objectives,"strategic"]] call MAINCLASS
-                        ] call MAINCLASS;
-                    };
-                    case ("invasion") : {
-                        _objectives = [_logic,"objectives", [_logic,"createObjectives", [_objectives,"distance"]] call MAINCLASS] call MAINCLASS;
-                    };
-                };
-
-                [_logic,"pendingorders", []] call ALiVE_fnc_hashSet;
+        // Terminate active controllers before replacing their objective set.
+        // Asymmetric OPCOMs do not have a TACOM FSM, hence the -1 sentinel.
+        if (_tacomFSM != -1) then {
+            _tacomFSM setFSMvariable ["_exitFSM", true];
+            _tacomFSM setFSMvariable ["_busy", false];
+            waitUntil {
+                sleep 1;
+                isNil {[_logic, "TACOM_FSM"] call ALiVE_fnc_HashGet}
             };
-        } else {
-            if (_existingControlType in _conventionalTypes) then {
-                // conventional to asymm
-                // NEEDS REVIEWED
-
-                _opcomFSM setFSMvariable ["_exitFSM", true];
-                _tacomFSM setFSMvariable ["_exitFSM", true];
-
-                private _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
-                {
-                    [_logic,"resetObjective", [_x,"objectiveID"] call ALiVE_fnc_hashGet] call MAINCLASS;
-                } foreach _objectives;
-
-                _objectives = [_logic,"objectives", [_logic,"createObjectives", [_objectives,"asymmetric"]] call MAINCLASS] call MAINCLASS;
-
-                [_logic,"pendingorders", []] call ALiVE_fnc_hashSet;
-            }
+        };
+        if (_opcomFSM != -1) then {
+            _opcomFSM setFSMvariable ["_exitFSM", true];
+            _opcomFSM setFSMvariable ["_busy", false];
+            waitUntil {
+                sleep 1;
+                isNil {[_logic, "OPCOM_FSM"] call ALiVE_fnc_HashGet}
+            };
         };
 
+        // remove objectives
+
+        private _objectives = +([_logic,"objectives"] call ALiVE_fnc_HashGet);
+        {
+            [_logic,"removeObjective", [_x,"objectiveID"] call ALiVE_fnc_hashGet] call MAINCLASS;
+        } foreach _objectives;
+
+        private _sortType = switch (_newControlType) do {
+            case "occupation": {"strategic"};
+            case "invasion": {"distance"};
+            default {"asymmetric"};
+        };
+        _objectives = [_logic,"objectives",
+            [_logic,"createObjectives", [_objectives,_sortType]] call MAINCLASS
+        ] call MAINCLASS;
+        [_logic,"pendingorders", []] call ALiVE_fnc_hashSet;
+
         [_logic,"controltype", _newControlType] call ALiVE_fnc_hashSet;
+
+        // reboot FSMs
+
+        if (_newControlType in _conventionalTypes) then {
+            private _newOPCOMFSM = [_logic] execFSM "\x\alive\addons\mil_opcom\opcom.fsm";
+            private _newTACOMFSM = [_logic] execFSM "\x\alive\addons\mil_opcom\tacom.fsm";
+            [_logic,"OPCOM_FSM", _newOPCOMFSM] call ALiVE_fnc_HashSet;
+            [_logic,"TACOM_FSM", _newTACOMFSM] call ALiVE_fnc_HashSet;
+        } else {
+            // load ins helpers if not already loaded
+            if (isnil "ALiVE_fnc_INS_getOpcomByObjective") then {
+                call ALiVE_fnc_INS_helpers;
+            };
+
+            private _newOPCOMFSM = [_logic] execFSM "\x\alive\addons\mil_opcom\insurgency.fsm";
+            [_logic,"OPCOM_FSM", _newOPCOMFSM] call ALiVE_fnc_HashSet;
+            [_logic,"TACOM_FSM", -1] call ALiVE_fnc_HashSet;
+        };
 
         _result = true;
     };
 
     case "state": {
-        if (_args iequaltype []) then {
+        if (_args isequaltype []) then {
             // Restore state
 
             private _newState = _args;
