@@ -28,7 +28,10 @@ marceldev89
 Jman
 ---------------------------------------------------------------------------- */
 
-#define HE_SUBSTRINGS      ["Mo_shells", "he", "HE"];
+// bare "he"/"HE" matched any classname containing that letter pair (chem,
+// shells, launcher...) - underscore-boundary tokens only. Real HE shells the
+// tokens miss are still caught by the CfgAmmo ancestry fallback below.
+#define HE_SUBSTRINGS      ["Mo_shells", "_he", "he_", "_HE", "HE_"];
 #define SMOKE_SUBSTRINGS   ["Mo_smoke", "smoke", "Smoke","smokeshell","SmokeShell","NB","nb"];
 #define PHOS_SUBSTRINGS    ["wp", "WP"];
 #define GUIDED_SUBSTRINGS  ["Mo_guided"];
@@ -38,13 +41,9 @@ Jman
 #define AT_MINE_SUBSTRINGS ["Mo_AT_mine"];
 #define ROCKET_SUBSTRINGS  ["rockets"];
 #define ILLUM_SUBSTRINGS   ["illum", "ilum", "flare", "lume"];
-/*
-unknown substrings for VN:
-- ab    (air burst)
-- frag  (frag)
-- wp    (white phospherous)
-- chem  (mustard gas)
-*/
+// VN 105mm naming: wp classifies by the "wp" pattern above; ab / frag / chem
+// carry no pattern and classify by the CfgAmmo fallback (ab -> CLUSTER + HE,
+// frag -> HE, chem -> intentionally nothing - it is a gas round).
 
 private _ordnanceType      = param [0];
 private _magazineClassName = param [1];
@@ -101,6 +100,12 @@ private _fnc_nameMatchesAny = {
     (_this findIf { _x in _magazineClassName }) > -1
 };
 
+// plain-shell test shared by HE and the CLUSTER carrier arm - shell
+// simulation is the mod-proof fallback when the ammo has its own class tree
+private _fnc_isShell = {
+    (_ammo isKindOf ["ShellBase", _cfgAmmoRoot]) || {(toLower getText (_ammoCfg >> "simulation")) == "shotshell"}
+};
+
 switch (_ordnanceType) do {
     case "ILLUM": {
         _ammo isKindOf ["FlareCore", _cfgAmmoRoot]
@@ -128,11 +133,28 @@ switch (_ordnanceType) do {
         }
     };
     case "CLUSTER": {
-        (call _fnc_isDispenser) && {
+        // a dispenser round, or a real shell that deploys submunitions on the
+        // way down (SOG 105mm airburst simulates as shotShell). Array-form
+        // submunitionAmmo is the discriminator on the shell arm: bare-string
+        // form is a single follow-through penetrator (tandem HEAT), never a
+        // cluster - the isArray gate is what rejects those and is NOT
+        // redundant with the count check below (which rejects empty arrays,
+        // e.g. the SOG frag round). Smoke / flare / laser carriers mirror the
+        // HE guards; smoke or flare submunitions and WP-named rounds are held
+        // out so picking CLUSTER can never fire smoke or WP.
+        ((call _fnc_isDispenser) || {
+            (call _fnc_isShell)
+                && {!(_ammo isKindOf ["SmokeShell", _cfgAmmoRoot])}
+                && {!(_ammo isKindOf ["FlareCore", _cfgAmmoRoot])}
+                && {getNumber (_ammoCfg >> "laserLock") == 0}
+                && {isArray (_ammoCfg >> "submunitionAmmo")}
+        }) && {
             private _subs = call _fnc_submunitions;
             private _isMine = (_subs findIf { _x isKindOf ["MineBase", _cfgAmmoRoot] || {_x isKindOf ["TimeBombCore", _cfgAmmoRoot]} }) > -1;
             private _isGuided = (_subs findIf { getNumber (_cfgAmmoRoot >> _x >> "laserLock") > 0 || {getNumber (_cfgAmmoRoot >> _x >> "irLock") > 0} }) > -1;
-            !_isMine && {!_isGuided}
+            private _isSmokeOrFlare = (_subs findIf { _x isKindOf ["SmokeShell", _cfgAmmoRoot] || {_x isKindOf ["FlareCore", _cfgAmmoRoot]} }) > -1;
+            (count _subs > 0) && {!_isMine} && {!_isGuided} && {!_isSmokeOrFlare}
+                && {!((call { PHOS_SUBSTRINGS }) call _fnc_nameMatchesAny)}
         }
     };
     case "ROCKETS": {
@@ -145,7 +167,7 @@ switch (_ordnanceType) do {
         // plain shell only - anything smoke / flare / guided / dispenser /
         // rocket parented belongs to its own type. Shell simulation is the
         // mod-proof fallback when the ammo has its own class tree.
-        ((_ammo isKindOf ["ShellBase", _cfgAmmoRoot]) || {(toLower getText (_ammoCfg >> "simulation")) == "shotshell"})
+        (call _fnc_isShell)
             && {!(_ammo isKindOf ["SmokeShell", _cfgAmmoRoot])}
             && {!(_ammo isKindOf ["FlareCore", _cfgAmmoRoot])}
             && {getNumber (_ammoCfg >> "laserLock") == 0}
