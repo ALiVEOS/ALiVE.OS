@@ -98,6 +98,7 @@ config
 conversions
 
 	ALiVE_fnc_dirToText
+	ALiVE_fnc_parseArrayFromString
 	ALiVE_fnc_sideNumberToText
 	ALiVE_fnc_sideObjectToNumber
 	ALiVE_fnc_sideTextToLong
@@ -120,8 +121,10 @@ data
 	ALiVE_fnc_hashCopy
 	ALiVE_fnc_hashCreate
 	ALiVE_fnc_hashGet
+	ALiVE_fnc_hashGetMany
 	ALiVE_fnc_hashRem
 	ALiVE_fnc_hashSet
+	ALiVE_fnc_hashSetMany
 	ALiVE_fnc_isHash
 	ALiVE_fnc_JSON
 	ALiVE_fnc_parseJSON
@@ -259,6 +262,7 @@ misc
 	ALiVE_fnc_getDominantFaction
 	ALiVE_fnc_getEnvironment
 	ALiVE_fnc_getPos
+	ALiVE_fnc_getSideAllegiances
 	ALiVE_fnc_getSideFactions
 	ALiVE_fnc_isAbleToHost
 	ALiVE_fnc_isHC

@@ -683,6 +683,13 @@ class dirToText
 	RECOMPILE;
 };
 
+class parseArrayFromString
+{
+	file = "\x\alive\addons\x_lib\functions\conversions\fnc_parseArrayFromString.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class sideNumberToText
 {
 	file = "\x\alive\addons\x_lib\functions\conversions\fnc_sideNumberToText.sqf";
@@ -809,6 +816,13 @@ class hashGet
 	RECOMPILE;
 };
 
+class hashGetMany
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_hashGetMany.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class hashRem
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_hashRem.sqf";
@@ -819,6 +833,13 @@ class hashRem
 class hashSet
 {
 	file = "\x\alive\addons\x_lib\functions\data\fnc_hashSet.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class hashSetMany
+{
+	file = "\x\alive\addons\x_lib\functions\data\fnc_hashSetMany.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };
@@ -1611,6 +1632,13 @@ class getEnvironment
 class getPos
 {
 	file = "\x\alive\addons\x_lib\functions\misc\fnc_getPos.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class getSideAllegiances
+{
+	file = "\x\alive\addons\x_lib\functions\misc\fnc_getSideAllegiances.sqf";
 	ext = ".sqf";
 	RECOMPILE;
 };

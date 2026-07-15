@@ -356,7 +356,7 @@ switch(_operation) do {
                             _faction2 = _mod getvariable ["faction2","NONE"];
                             _faction3 = _mod getvariable ["faction3","NONE"];
                             _faction4 = _mod getvariable ["faction4","NONE"];
-                            _factions = [_mod, "convert", _mod getvariable ["factions",[]]] call ALiVE_fnc_OPCOM;
+                            _factions = [_mod getvariable ["factions",[]]] call ALiVE_fnc_parseArrayFromString;
 
                             if ((count _factions) == 0) then {{if (!(_x == "NONE") && {!(_x in _factions)}) then {_factions pushBack _x}} foreach [_faction1,_faction2,_faction3,_faction4]};
 
