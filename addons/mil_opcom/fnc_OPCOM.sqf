@@ -3574,6 +3574,11 @@ switch (_operation) do {
     };
 
     case "changeControlType": {
+        // Execute on Server only — OPCOM state (FSM handles, objectives,
+        // controltype) lives in a server-local hash, so a client-side call
+        // would tear down nothing and misreport "startup not complete".
+        if !(isServer) exitwith {[_logic,_operation,_args] remoteExec ["ALiVE_fnc_OPCOM",2]};
+
         _args params ["_newControlType"];
 
         _result = false;
