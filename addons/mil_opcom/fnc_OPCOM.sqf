@@ -2863,10 +2863,10 @@ switch (_operation) do {
         private _objectives = if (_args isequaltype []) then { _args } else { [_logic,"objectives"] call ALiVE_fnc_HashGet };
         private _fullObjectiveIDList = ([_logic,"objectives"] call ALiVE_fnc_HashGet) apply { [_x,"objectiveID"] call ALiVE_fnc_HashGet };
 
-        private _colorMapping = createHashMapFromArray [
-            ["EAST", "COLORRED"],
-            ["WEST", "COLORBLUE"],
-            ["GUER", "COLORGREEN"]
+        private _sideSettings = createHashMapFromArray [
+            ["EAST", ["COLORRED", 0]],
+            ["WEST", ["COLORBLUE", 1]],
+            ["GUER", ["COLORGREEN", 2]]
         ];
 
         {
@@ -2875,7 +2875,13 @@ switch (_operation) do {
             private _type = [_x,"objectiveType",""] call ALiVE_fnc_HashGet;
             private _side = [_logic,"side","EAST"] call ALiVE_fnc_HashGet;
 
-            private _color = _colorMapping getordefault [_side, "COLORYELLOW"];
+            (_sideSettings getordefault [_side, ["COLORWHITE", 3]]) params [
+                "_color",
+                "_yOffsetMultipler"
+            ];
+            
+            _pos set [1, (_pos select 1) + (3 * _yOffsetMultipler)];
+            
             private _priorityIndex = _fullObjectiveIDList find _id;
 
             private _debugMarkerID = GET_OBJECTIVE_DEBUG_MARKER(_id);
