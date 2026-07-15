@@ -1341,6 +1341,26 @@ switch (_operation) do {
             private _asym_occupation = [_logic,"asym_occupation",-1] call ALiVE_fnc_HashGet;
             private _roadblocks = [_logic,"roadblocks",true] call ALiVE_fnc_HashGet;
 
+            // A single objective with a missing or malformed center position throws a
+            // Generic error inside the sort callbacks below (they read the raw hash
+            // values array: _x select 2 select 1), which aborts OPCOM init entirely and
+            // hangs the mission on the loading screen. An objective with no position
+            // cannot be sorted or tasked, so drop it here and name it in the RPT.
+            _objectives = _objectives select {
+                private _center = if (_x isEqualType [] && {count _x > 2 && {(_x select 2) isEqualType [] && {count (_x select 2) > 1}}}) then {(_x select 2) select 1};
+                private _valid = !isNil "_center" && {_center isEqualType [] && {count _center >= 2 && {(_center select 0) isEqualType 0 && {(_center select 1) isEqualType 0}}}};
+
+                if (!_valid) then {
+                    ["OPCOM dropped objective with invalid center position! objectiveID: %1, objectiveType: %2, center: %3",
+                        [_x,"objectiveID","unknown"] call ALiVE_fnc_HashGet,
+                        [_x,"objectiveType","unknown"] call ALiVE_fnc_HashGet,
+                        if (isNil "_center") then {"nil"} else {str _center}
+                    ] call ALiVE_fnc_dump;
+                };
+
+                _valid
+            };
+
             switch (_type) do {
                 //by distance
                 case ("distance") : {
