@@ -571,6 +571,23 @@ switch(_operation) do {
         if (typeName _args != "BOOL") then { _args = false };
         _result = _args;
     };
+    case "opcomStanceControlEnabled": {
+        // Mission-maker opt-in BOOL: when true, the c2istar tablet menu
+        // surfaces an "OPCOM Stance" submenu letting a player holding a
+        // c2_item switch their side's OPCOM between invasion / occupation /
+        // asymmetric at runtime. Default false - the submenu is hidden.
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["opcomStanceControlEnabled", _args];
+        } else {
+            _args = _logic getVariable ["opcomStanceControlEnabled", false];
+        };
+        if (typeName _args == "STRING") then {
+            _args = (_args == "true");
+            _logic setVariable ["opcomStanceControlEnabled", _args];
+        };
+        if (typeName _args != "BOOL") then { _args = false };
+        _result = _args;
+    };
     case "copShowBft": {
         // Direct BOOL toggle for the friendly BFT layer in COP. Overrides
         // the Commander Intel Mode tier's BFT default — mission-maker can
@@ -1315,6 +1332,13 @@ switch(_operation) do {
             // server-set + JIP-broadcast as above; fnc_G2.sqf reads this flag.
             private _showBlockingLines = [_logic, "copShowBlockingLines"] call MAINCLASS;
             missionNamespace setVariable ["ALIVE_COP_SHOW_BLOCKING_LINES", (_showBlockingLines == "true"), true];
+
+            // OPCOM stance mission-maker gate - read by the c2istar tablet
+            // menu to show/hide the "OPCOM Stance" submenu. Set regardless
+            // of COP mode (the feature is unrelated to COP) and broadcast
+            // JIP-persistent so late joiners see the gate immediately.
+            private _stanceEnabled = [_logic, "opcomStanceControlEnabled"] call MAINCLASS;
+            missionNamespace setVariable ["ALIVE_OPCOM_StanceControlEnabled", _stanceEnabled, true];
 
             if (_mode != "Off") then {
                 // Apply the configurable Loop A interval BEFORE COPInit

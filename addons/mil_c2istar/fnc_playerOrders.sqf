@@ -650,6 +650,87 @@ switch (_operation) do {
             };
         };
     };
+    case "changeStance": {
+        if !(isServer) exitWith {
+            [_operation, _args] remoteExec ["ALiVE_fnc_playerOrders", 2];
+        };
+
+        _args params [
+            ["_player", objNull, [objNull]],
+            ["_newControlType", "", [""]]
+        ];
+
+        if (isNull _player) exitWith {};
+
+        if !(_newControlType in ["invasion","occupation","asymmetric"]) exitWith {
+            ["notify", [_player, "Invalid OPCOM stance."]] call MAINCLASS;
+        };
+
+        private _groupData = ["getGroupData", [_player]] call MAINCLASS;
+        if (_groupData isEqualTo []) exitWith {
+            ["notify", [_player, "OPCOM cannot identify your player group."]] call MAINCLASS;
+        };
+
+        _groupData params [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "_side"
+        ];
+
+        if (isNil "OPCOM_instances") exitWith {
+            ["notify", [_player, "No OPCOM is active in this mission."]] call MAINCLASS;
+        };
+
+        private _opcom = [nil, "findOPCOMByAllegiance", _side] call ALiVE_fnc_OPCOM;
+        if (isNil "_opcom") exitWith {
+            ["notify", [_player, "No OPCOM found for your side."]] call MAINCLASS;
+        };
+
+        private _currentStance = [_opcom, "controltype", ""] call ALiVE_fnc_hashGet;
+        if (_newControlType == _currentStance) exitWith {
+            ["notify", [_player, format ["OPCOM is already in %1 stance.", _newControlType]]] call MAINCLASS;
+        };
+
+        if !([_opcom, "startupComplete", false] call ALiVE_fnc_hashGet) exitWith {
+            ["notify", [_player, "OPCOM is still starting up - try again shortly."]] call MAINCLASS;
+        };
+
+        // Latch against overlapping swaps: during the FSM teardown
+        // startupComplete stays true and controltype stays old, so a second
+        // request would pass every check above and interleave a second
+        // teardown/rebuild against dying FSM handles.
+        if ([_opcom, "stanceChangeInProgress", false] call ALiVE_fnc_hashGet) exitWith {
+            ["notify", [_player, "OPCOM is already changing stance - please wait."]] call MAINCLASS;
+        };
+        [_opcom, "stanceChangeInProgress", true] call ALiVE_fnc_hashSet;
+
+        ["notify", [_player, format ["OPCOM is changing stance to %1 - this may take a minute.", _newControlType]]] call MAINCLASS;
+
+        // changeControlType suspends (waitUntil + sleep during FSM teardown),
+        // so it must run scheduled - both the remoteExec arrival path and the
+        // hosted-server menu path (buttonSetAction UI context) are unscheduled.
+        [_opcom, _newControlType, _player] spawn {
+            params ["_opcom", "_newControlType", "_player"];
+
+            [_opcom, "changeControlType", [_newControlType]] call ALiVE_fnc_OPCOM;
+
+            [_opcom, "stanceChangeInProgress", false] call ALiVE_fnc_hashSet;
+
+            private _stance = [_opcom, "controltype", ""] call ALiVE_fnc_hashGet;
+            private _message = if (_stance == _newControlType) then {
+                format ["OPCOM stance is now %1.", _newControlType]
+            } else {
+                "OPCOM could not change stance - see the server log."
+            };
+            ["notify", [_player, _message]] call MAINCLASS;
+        };
+    };
 };
 
 _result

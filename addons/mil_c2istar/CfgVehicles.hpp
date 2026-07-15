@@ -382,6 +382,19 @@ class CfgVehicles {
                             };
                     };
 
+                    class opcomStanceControlEnabled : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_opcomStanceControlEnabled";
+                            displayName = "$STR_ALIVE_C2ISTAR_OPCOM_STANCE_ENABLED";
+                            tooltip = "$STR_ALIVE_C2ISTAR_OPCOM_STANCE_ENABLED_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "$STR_ALIVE_C2ISTAR_OPCOM_STANCE_ENABLED_NO";  value = "false"; default = 1; };
+                                    class Yes { name = "$STR_ALIVE_C2ISTAR_OPCOM_STANCE_ENABLED_YES"; value = "true"; };
+                            };
+                    };
+
                     class SPACER_ROLE_OPS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_OPS"; displayName = " "; };
                     class scomOpsLimit : Combo
                     {

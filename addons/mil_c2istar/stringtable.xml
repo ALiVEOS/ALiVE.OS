@@ -2082,4 +2082,44 @@
     <Portuguese>Escolhe uma facção por slot para as seis faixas de tarefas automáticas por lado (BLU Amiga / BLU Inimiga / OPF Amiga / OPF Inimiga / IND Amiga / IND Inimiga). Clique em Próximo &gt; na linha de filtro superior para percorrer os slots; a lista mostra a facção atualmente atribuída a esse slot. A linha de filtro inferior alterna entre Automático (restringe a lista ao lado natural do slot) e Todas (todas as facções militares visíveis).</Portuguese>
     <Russian>Выбирает одну фракцию для каждого слота из шести пострановых линий автозадач (BLU дружественная / BLU вражеская / OPF дружественная / OPF вражеская / IND дружественная / IND вражеская). Нажмите «Далее &gt;» в верхней строке фильтра, чтобы переключаться между слотами; список показывает фракцию, назначенную текущему слоту. Нижняя строка фильтра переключается между Авто (сужает список до естественной стороны слота) и Все (все видимые военные фракции).</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_C2ISTAR_OPCOM_STANCE_ENABLED">
+    <English>Player OPCOM Stance Control:</English>
+    <Chinese>玩家OPCOM態勢控制:</Chinese>
+    <Chinesesimp>玩家OPCOM态势控制:</Chinesesimp>
+    <Spanish>Control de postura del OPCOM por el jugador:</Spanish>
+    <French>Contrôle de la posture de l'OPCOM par le joueur:</French>
+    <Portuguese>Controle de postura do OPCOM pelo jogador:</Portuguese>
+    <Russian>Управление стратегией OPCOM игроком:</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_C2ISTAR_OPCOM_STANCE_ENABLED_COMMENT">
+    <English>Adds an OPCOM Stance submenu to the c2istar tablet menu, letting a player holding a c2_item switch their side's OPCOM between Invasion, Occupation and Asymmetric at runtime. The switch rebuilds the OPCOM's objectives and takes a short while to complete. Default No (the submenu is hidden). Players still need to carry a valid c2_item to access it.</English>
+    <Chinese>在c2istar平板選單中加入「OPCOM態勢」子選單,讓持有c2_item的玩家在遊戲中將其陣營的OPCOM在「入侵」、「佔領」與「非對稱」之間切換。切換會重建OPCOM的目標,需要一小段時間完成。預設為「否」(子選單隱藏)。玩家仍須攜帶有效的c2_item才能使用。</Chinese>
+    <Chinesesimp>在c2istar平板菜单中加入“OPCOM态势”子菜单,让持有c2_item的玩家在游戏中将其阵营的OPCOM在“入侵”、“占领”与“非对称”之间切换。切换会重建OPCOM的目标,需要一小段时间完成。默认为“否”(子菜单隐藏)。玩家仍需携带有效的c2_item才能使用。</Chinesesimp>
+    <Spanish>Añade un submenú de Postura de OPCOM al menú de la tableta c2istar, permitiendo a un jugador que porte un c2_item cambiar el OPCOM de su bando entre Invasión, Ocupación y Asimétrica durante la partida. El cambio reconstruye los objetivos del OPCOM y tarda un poco en completarse. Por defecto No (el submenú queda oculto). Los jugadores siguen necesitando portar un c2_item válido para acceder.</Spanish>
+    <French>Ajoute un sous-menu Posture OPCOM au menu de la tablette c2istar, permettant à un joueur porteur d'un c2_item de basculer l'OPCOM de son camp entre Invasion, Occupation et Asymétrique en cours de partie. Le basculement reconstruit les objectifs de l'OPCOM et prend un court moment. Par défaut Non (le sous-menu est masqué). Les joueurs doivent toujours porter un c2_item valide pour y accéder.</French>
+    <Portuguese>Adiciona um submenu de Postura do OPCOM ao menu do tablet c2istar, permitindo que um jogador portando um c2_item alterne o OPCOM do seu lado entre Invasão, Ocupação e Assimétrica durante a partida. A troca reconstrói os objetivos do OPCOM e leva um curto período para concluir. Padrão Não (o submenu fica oculto). Os jogadores ainda precisam portar um c2_item válido para acessá-lo.</Portuguese>
+    <Russian>Добавляет подменю «Стратегия OPCOM» в меню планшета c2istar, позволяя игроку с c2_item переключать OPCOM своей стороны между режимами «Вторжение», «Оккупация» и «Асимметричный» во время игры. Переключение перестраивает цели OPCOM и занимает некоторое время. По умолчанию «Нет» (подменю скрыто). Для доступа игроку по-прежнему нужен действительный c2_item.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_C2ISTAR_OPCOM_STANCE_ENABLED_YES">
+    <English>Yes</English>
+    <Chinese>是</Chinese>
+    <Chinesesimp>是</Chinesesimp>
+    <Spanish>Sí</Spanish>
+    <French>Oui</French>
+    <Portuguese>Sim</Portuguese>
+    <Russian>Да</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_C2ISTAR_OPCOM_STANCE_ENABLED_NO">
+    <English>No</English>
+    <Chinese>否</Chinese>
+    <Chinesesimp>否</Chinesesimp>
+    <Spanish>No</Spanish>
+    <French>Non</French>
+    <Portuguese>Não</Portuguese>
+    <Russian>Нет</Russian>
+</Key>
 </Container></Package></Project>

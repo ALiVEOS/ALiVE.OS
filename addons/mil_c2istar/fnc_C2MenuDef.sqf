@@ -185,6 +185,18 @@ if (_menuName == "C2ISTAR") then {
                      true,
                      _result
                 ],
+                ["OPCOM Stance >",
+                    "",
+                    "",
+                    "Change your side's OPCOM stance at runtime.",
+                    ["call ALiVE_fnc_C2MenuDef", "C2_OPCOM_STANCE", 1],
+                     -1,
+                     true,
+                     // Visible only when an OPCOM module exists, the
+                     // mission-maker opted in via the Eden attribute AND the
+                     // player carries a c2_item.
+                     ([QMOD(MIL_OPCOM)] call ALiVE_fnc_isModuleAvailable) && {missionNamespace getVariable ["ALIVE_OPCOM_StanceControlEnabled", false]} && {_result}
+                ],
                 ["Operations",
                     {["OPEN_OPS",[]] call ALIVE_fnc_SCOMTabletOnAction},
                     "",
@@ -304,6 +316,43 @@ if (_menuName == "C2_PLAYER_ORDERS") then {
                     {["toggleOptOut", [player]] call ALiVE_fnc_playerOrders},
                     "",
                     "Toggle whether your group receives automatic OPCOM orders.",
+                    "",
+                    -1,
+                    true,
+                    _result
+                ]
+            ]
+        ]
+    ];
+};
+
+if (_menuName == "C2_OPCOM_STANCE") then {
+        _menus set [count _menus,
+        [
+            ["C2_OPCOM_STANCE", "OPCOM Stance", "popup"],
+            [
+                ["Invasion",
+                    {["changeStance", [player, "invasion"]] call ALiVE_fnc_playerOrders},
+                    "",
+                    "OPCOM advances objective by objective from its start point, massing forces forward.",
+                    "",
+                    -1,
+                    true,
+                    _result
+                ],
+                ["Occupation",
+                    {["changeStance", [player, "occupation"]] call ALiVE_fnc_playerOrders},
+                    "",
+                    "OPCOM spreads out to hold and defend its objectives rather than push forward.",
+                    "",
+                    -1,
+                    true,
+                    _result
+                ],
+                ["Asymmetric",
+                    {["changeStance", [player, "asymmetric"]] call ALiVE_fnc_playerOrders},
+                    "",
+                    "OPCOM fights as an insurgency - recruitment, ambushes, IEDs and hidden installations.",
                     "",
                     -1,
                     true,
