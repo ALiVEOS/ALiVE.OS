@@ -146,6 +146,41 @@ class CfgVehicles {
                                     class LOW { name = "25%"; value = "0.25"; };
                                 };
                         };
+                        // ---- AI Artillery (#949, ported from mil_placement #887) ------------
+                        // Opt-in artillery batteries at CIVILIAN objectives. Same toggle +
+                        // donor-faction + section-size triplet as mil_placement. Stringtable
+                        // keys are canonical in mil_placement (STR_ALIVE_MP_*) and reused here.
+                        class HDR_ARTILLERY : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_HDR_ARTILLERY"; displayName = "AI ARTILLERY"; };
+                        class placeArtillery : Combo { property = "ALiVE_civ_placement_placeArtillery"; displayName = "$STR_ALIVE_MP_PLACE_ARTILLERY"; tooltip = "$STR_ALIVE_MP_PLACE_ARTILLERY_COMMENT"; defaultValue = """false"""; class Values { class Yes{name="Yes";value=true;}; class No{name="No";value=false;default=1;}; }; };
+                        // Optional donor-faction dropdown - shared ALiVE_FactionChoice
+                        // substrate, artillery-capable factions only, "(none)" = use
+                        // the force faction. See addons/main/CfgVehicles.hpp.
+                        class artilleryFaction {
+                            property     = "ALiVE_civ_placement_artilleryFaction";
+                            displayName  = "$STR_ALIVE_MP_ARTILLERY_FACTION";
+                            tooltip      = "$STR_ALIVE_MP_ARTILLERY_FACTION_COMMENT";
+                            control      = "ALiVE_FactionChoice_Military_ArtilleryFaction";
+                            typeName     = "STRING";
+                            expression   = "_this setVariable ['artilleryFaction', _value];";
+                            defaultValue = """""";
+                        };
+                        // #876 - guns per battery when composing artillery from vehicles
+                        class artillerySectionSize : Combo
+                        {
+                                property     = "ALiVE_civ_placement_artillerySectionSize";
+                                displayName  = "$STR_ALIVE_MP_ARTILLERY_SECTION_SIZE";
+                                tooltip      = "$STR_ALIVE_MP_ARTILLERY_SECTION_SIZE_COMMENT";
+                                defaultValue = """4""";
+                                class Values
+                                {
+                                    class Sz1 { name = "1"; value = "1"; };
+                                    class Sz2 { name = "2"; value = "2"; };
+                                    class Sz3 { name = "3"; value = "3"; };
+                                    class Sz4 { name = "4"; value = "4"; default = 1; };
+                                    class Sz6 { name = "6"; value = "6"; };
+                                    class Sz8 { name = "8"; value = "8"; };
+                                };
+                        };
                         // Reserve-pool attributes - shared semantics with mil_placement.
                         // Stringtable keys are canonical in mil_placement (STR_ALIVE_MP_*)
                         // and cross-referenced here.
