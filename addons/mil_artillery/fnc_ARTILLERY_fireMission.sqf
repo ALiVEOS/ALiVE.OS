@@ -32,6 +32,9 @@ params ["_logic","_record","_targetID","_targetPos",["_force", false, [false]]];
 private _debug = [_logic, "debug"] call ALIVE_fnc_MilArtillery;
 private _settings = _logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]];
 _settings params ["_cooldownBase","_cooldownJitter","_dispersion","_roundsPerMission","_minContacts","_maxConcurrent","_ledgerSize"];
+// danger-close: when on, batteries fire even with friendlies in the impact
+// area (the module's ignore-nearby-friendlies toggle - use with caution)
+private _dangerClose = [_logic, "dangerClose"] call ALIVE_fnc_MilArtillery;
 
 private _entityID = [_record,"entityID"] call ALiVE_fnc_hashGet;
 private _vehicleIDs = [_record,"vehicleIDs"] call ALiVE_fnc_hashGet;
@@ -243,12 +246,13 @@ if !(_aimBase inRangeOfArtillery [_guns, _mag]) exitWith {
     [0.5] call _fnc_release;
 };
 
-// friendly-fire check on the impact area (skipped on a forced debug strike)
+// friendly-fire check on the impact area (skipped on a forced debug strike,
+// or when the module's danger-close / ignore-friendlies toggle is on)
 private _sideObject = [_sideText] call ALIVE_fnc_sideTextToObject;
 private _ffRadius = _dispersion + 150;
 private _ffBlocked = false;
 
-if (!_force) then {
+if (!_force && !_dangerClose) then {
 {
     if (!_ffBlocked && {([_x,"type",""] call ALiVE_fnc_hashGet) in ["entity","vehicle"]}) then {
         private _pSide = [_x,"side",""] call ALiVE_fnc_hashGet;

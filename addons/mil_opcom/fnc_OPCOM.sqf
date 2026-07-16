@@ -926,6 +926,57 @@ switch (_operation) do {
         _attackedE = _attackedE - ["x"];
         [_logic,"attackedentities",_attackedE] call ALiVE_fnc_HashSet;
 
+        // request-rate lever: when the mil_artillery "Call-for-fire rate" setting
+        // is above Normal it broadcasts [contactsPerScan, cooldownSeconds]. Here
+        // we fan a fresh ARTY_REQUEST across several known enemy contacts per scan
+        // (not just the lead target below), each on its own short artillery
+        // cooldown, independent of the 90s maneuver cooldown above. [0,0] (Normal,
+        // or no artillery module) skips this block entirely - maneuver behaviour
+        // is unchanged, so this is additive and default-off.
+        private _artyRate = missionNamespace getVariable [format ["ALIVE_MilArtillery_requestRate_%1", toUpper str _side], [0,0]];
+        if ((_artyRate select 0) > 0 && {["ALiVE_mil_artillery"] call ALiVE_fnc_IsModuleAvailable}) then {
+            private _artyMax = _artyRate select 0;
+            private _artyCd = _artyRate select 1;
+            private _artyReq = [_logic,"artyRequestedEntities",[]] call ALiVE_fnc_HashGet;
+            {
+                if ((isnil "_x") || {time - (_x select 1) > _artyCd} || {!((_x select 0) in _profileIDs)}) then {
+                    _artyReq set [_foreachIndex,"x"];
+                };
+            } forEach _artyReq;
+            _artyReq = _artyReq - ["x"];
+            private _artyAsym = ([_logic,"controltype",""] call ALiVE_fnc_HashGet) == "asymmetric";
+            private _artySideObj = [_side] call ALiVE_fnc_sideTextToObject;
+            private _artyFaction = _factions select 0;
+            private _artyFired = 0;
+            {
+                if (_artyFired >= _artyMax) exitWith {};
+                if (!isnil "_x" && {_x isEqualType []} && {count _x > 0}) then {
+                    private _cID = _x select 0;
+                    if (({!(isnil "_x") && {_x isEqualType []} && {(_x select 0) == _cID}} count _artyReq) < 1) then {
+                        private _cProfile = [ALiVE_ProfileHandler,"getProfile",_cID] call ALiVE_fnc_ProfileHandler;
+                        if (!isnil "_cProfile") then {
+                            private _cPos = [_cProfile,"position"] call ALiVE_fnc_HashGet;
+                            // _cID is still a member of _knownE (unlike the #887
+                            // block, where _target was pruned at the top), so its
+                            // own entry supplies the "self" count - no 1+ seed, or
+                            // the weight would run one high and relax selectivity.
+                            private _cContacts = ({
+                                !isnil "_x" && {_x isEqualType []} && {count _x > 0} && {
+                                    private _kP = [ALiVE_ProfileHandler,"getProfile",_x select 0] call ALiVE_fnc_ProfileHandler;
+                                    !isnil "_kP" && {([_kP,"position"] call ALiVE_fnc_HashGet) distance2D _cPos < 200}
+                                }
+                            } count _knownE);
+                            private _aE = ['ARTY_REQUEST', [_cID, _cPos, _cContacts, _artySideObj, _artyFaction, _artyAsym],"OPCOM"] call ALIVE_fnc_event;
+                            [ALIVE_eventLog, "addEvent",_aE] call ALIVE_fnc_eventLog;
+                            _artyReq pushBack [_cID, time];
+                            _artyFired = _artyFired + 1;
+                        };
+                    };
+                };
+            } forEach _knownE;
+            [_logic,"artyRequestedEntities",_artyReq] call ALiVE_fnc_HashSet;
+        };
+
         if ({!(isnil "_x") && {_x select 0 == _target}} count _attackedE < 1) then {
 
             private _infantry = [_logic,"infantry",[]] call ALiVE_fnc_HashGet;

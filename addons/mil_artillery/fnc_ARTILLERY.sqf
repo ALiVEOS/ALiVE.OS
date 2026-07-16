@@ -72,6 +72,11 @@ switch(_operation) do {
             private _profile = switch (_intensity) do {
                 case "LOW":  { [600, 120, 100, 4, 4, 1, 60, 0.05] };
                 case "HIGH": { [300, 120, 50, 8, 2, 2, 120, 0.18] };
+                // EXTREME - saturation mode. Short cooldown, fires on a single
+                // contact, more rounds and ammunition. Its concurrency (index 5)
+                // defaults to the "Scale with guns" mode (see the concurrency dial
+                // + buildRegistry), so more guns mean more simultaneous fire.
+                case "EXTREME": { [180, 60, 40, 10, 1, 2, 160, 0.25] };
                 default      { [420, 120, 75, 6, 3, 1, 90, 0.10] };
             };
 
@@ -91,7 +96,7 @@ switch(_operation) do {
             };
             private _ammo = [_logic, "ammoLevel"] call MAINCLASS;
             if (_ammo != "PRESET") then {
-                _profile set [6, switch (_ammo) do { case "LOW": {60}; case "HIGH": {120}; default {90} }];
+                _profile set [6, switch (_ammo) do { case "LOW": {60}; case "HIGH": {120}; case "VERYHIGH": {240}; case "EXTREME": {500}; case "INFINITE": {1e7}; default {90} }];
             };
             private _selectivity = [_logic, "selectivityLevel"] call MAINCLASS;
             if (_selectivity != "PRESET") then {
@@ -102,6 +107,24 @@ switch(_operation) do {
                 _profile set [7, switch (_cb) do { case "OFF": {0}; case "LOW": {0.05}; case "HIGH": {0.18}; default {0.10} }];
             };
 
+            // concurrency dial (index 5) - the one throttle with no preset
+            // dimension of its own. PRESET follows intensity (EXTREME defaults to
+            // scaling with guns); an explicit 1-4 sets a fixed cap; SCALE scales
+            // with battery count. The scaling itself happens in buildRegistry,
+            // which knows the live battery count; here we only flag the mode and
+            // apply any fixed cap.
+            private _concurrency = [_logic, "concurrencyLevel"] call MAINCLASS;
+            private _concurrencyAuto = false;
+            switch (_concurrency) do {
+                case "PRESET": { if (_intensity == "EXTREME") then { _concurrencyAuto = true; }; };
+                case "SCALE":  { _concurrencyAuto = true; };
+                default {
+                    private _n = parseNumber _concurrency;
+                    if (_n >= 1) then { _profile set [5, _n]; };
+                };
+            };
+            _logic setVariable ["concurrencyAuto", _concurrencyAuto];
+
             _logic setVariable ["intensityProfile", _profile];
             _logic setVariable ["batteryRegistry", []];
             _logic setVariable ["requestQueue", []];
@@ -109,6 +132,17 @@ switch(_operation) do {
             _logic setVariable ["cbContacts", []];
             _logic setVariable ["cbLastScan", 0];
             _logic setVariable ["cbRolled", []];
+
+            // request-rate lever: resolve this module's [contactsPerScan, cooldown]
+            // and stash it on the logic. resolveSides then publishes it per served
+            // side (ALIVE_MilArtillery_requestRate_<SIDE>) so OPCOM reads a per-side
+            // rate and two modules on different sides can run different rates.
+            // Normal -> [0,0] (OPCOM's re-request stanza does nothing).
+            _logic setVariable ["requestRateCfg", switch ([_logic, "requestRateLevel"] call MAINCLASS) do {
+                case "HIGH": { [3, 45] };
+                case "SURGE": { [6, 20] };
+                default { [0, 0] };
+            }];
 
             // settings are logged from the monitor once sides are resolved, so
             // the line can say WHICH commander this module serves
@@ -165,8 +199,45 @@ switch(_operation) do {
         _result = _args;
     };
 
+    // danger-close: ignore the friendly-fire abort so batteries shell targets
+    // even with friendly units in the impact area (default off - use with care)
+    case "dangerClose": {
+        if (_args isEqualType true) then {
+            _logic setVariable ["dangerClose", _args];
+        } else {
+            _args = _logic getVariable ["dangerClose", _logic getVariable ["ALiVE_mil_artillery_dangerClose", false]];
+        };
+        if (_args isEqualType "") then {
+            _args = (toLower _args) == "true";
+        };
+        if !(_args isEqualType true) then { _args = false; };
+        _logic setVariable ["dangerClose", _args];
+        _result = _args;
+    };
+
+    // real-fire radius (metres): a mission spawns visible guns and shells only
+    // if a player is within this range of the target or the battery; beyond it
+    // the mission resolves virtually on the ledger. Default 3000.
+    case "visualRange": {
+        _args = _logic getVariable ["visualRange", _logic getVariable ["ALiVE_mil_artillery_visualRange", "3000"]];
+        if !(_args isEqualType "") then { _args = "3000"; };
+        _logic setVariable ["visualRange", _args];
+        _result = _args;
+    };
+
+    // call-for-fire rate: Normal / High / Surge. Broadcast to OPCOM at init so
+    // its contact response fans more fire missions across known enemy contacts.
+    case "requestRateLevel": {
+        _args = _logic getVariable ["requestRateLevel", _logic getVariable ["ALiVE_mil_artillery_requestRateLevel", "NORMAL"]];
+        if !(_args isEqualType "") then { _args = "NORMAL"; };
+        _args = toUpper _args;
+        _logic setVariable ["requestRateLevel", _args];
+        _result = _args;
+    };
+
     // fine-tuning overrides - "PRESET" defers to the intensity dial
     case "cadenceLevel";
+    case "concurrencyLevel";
     case "spreadLevel";
     case "roundsLevel";
     case "selectivityLevel";
@@ -238,6 +309,13 @@ switch(_operation) do {
         missionNamespace setVariable ["ALIVE_MilArtillerySideClaims", _claims];
 
         _logic setVariable ["handledSides", _final];
+        // publish this module's request rate per served side so OPCOM reads the
+        // right rate for its commander's side (sides are arbitrated to one module
+        // each, so no cross-module clobber; two modules on different sides can run
+        // different Call-for-fire rates)
+        {
+            missionNamespace setVariable [format ["ALIVE_MilArtillery_requestRate_%1", _x], _logic getVariable ["requestRateCfg", [0,0]]];
+        } forEach _final;
         // counter-battery requests inherit the commander's control type -
         // asymmetric commanders answer with mortars only (processRequest gate).
         // Built from the arbitrated set so a lost side can't linger here
@@ -427,6 +505,18 @@ switch(_operation) do {
         private _count = count _registry;
         if (_count != (_logic getVariable ["lastRegistryCount", -1])) then {
             _logic setVariable ["lastRegistryCount", _count];
+            // concurrency "Scale with guns" mode (the dial's SCALE value, and
+            // EXTREME's default): scale the concurrency cap (intensityProfile
+            // index 5) with the number of batteries available, capped at 4.
+            // Recomputed on every count change - covers late placements and
+            // post-load rebuilds. Fixed 1-4 caps are set at init and skip this.
+            if (_logic getVariable ["concurrencyAuto", false]) then {
+                private _prof = _logic getVariable ["intensityProfile", []];
+                if (count _prof > 5) then {
+                    _prof set [5, (_count min 4) max 1];
+                    _logic setVariable ["intensityProfile", _prof];
+                };
+            };
             private _handled = _logic getVariable ["handledSides", []];
             private _scopeText = if (count _handled > 0) then { str _handled } else { "every unclaimed side (nothing synced)" };
             if (_count == 0) then {
@@ -601,10 +691,27 @@ switch(_operation) do {
                     };
 
                     private _queue = _logic getVariable ["requestQueue", []];
-                    if (count _queue > 0) then {
-                        private _request = _queue deleteAt 0;
-                        _logic setVariable ["requestQueue", _queue];
-                        [_logic,"processRequest",_request] call ALIVE_fnc_MilArtillery;
+                    private _rr = _logic getVariable ["requestRateCfg", [0,0]];
+                    if ((_rr select 0) > 0) then {
+                        // request-rate lever raised: drain up to the free
+                        // concurrency slots per tick so the extra requests reach
+                        // the guns instead of trickling one per ~20s
+                        private _maxCon = (_logic getVariable ["intensityProfile", [420,120,75,6,3,1,90]]) select 5;
+                        private _drained = 0;
+                        while { count _queue > 0 && {_drained < _maxCon} && {(_logic getVariable ["activeMissions", 0]) < _maxCon} } do {
+                            private _request = _queue deleteAt 0;
+                            _logic setVariable ["requestQueue", _queue];
+                            [_logic,"processRequest",_request] call ALIVE_fnc_MilArtillery;
+                            _drained = _drained + 1;
+                            _queue = _logic getVariable ["requestQueue", []];
+                        };
+                    } else {
+                        // default: one request per tick (unchanged)
+                        if (count _queue > 0) then {
+                            private _request = _queue deleteAt 0;
+                            _logic setVariable ["requestQueue", _queue];
+                            [_logic,"processRequest",_request] call ALIVE_fnc_MilArtillery;
+                        };
                     };
 
                     // counter-battery: age tracks and roll acquisition against
@@ -879,8 +986,10 @@ switch(_operation) do {
         };
         private _batteryPos = [_entityProfile,"position"] call ALiVE_fnc_hashGet;
         private _humanPlayers = allPlayers - entities "HeadlessClient_F";
-        if (((_humanPlayers findIf { _x distance2D _targetPos < 3000 }) == -1)
-            && {(_humanPlayers findIf { _x distance2D _batteryPos < 3000 }) == -1}) exitWith {
+        private _visualRange = parseNumber ([_logic,"visualRange"] call MAINCLASS);
+        if (_visualRange <= 0) then { _visualRange = 3000; };
+        if (((_humanPlayers findIf { _x distance2D _targetPos < _visualRange }) == -1)
+            && {(_humanPlayers findIf { _x distance2D _batteryPos < _visualRange }) == -1}) exitWith {
             [_logic,"virtualFireMission",[_best, _targetID, _targetProfile, _targetPos, _batteryPos, _profileSettings, _entityProfile, _cbRequest]] call MAINCLASS;
         };
 

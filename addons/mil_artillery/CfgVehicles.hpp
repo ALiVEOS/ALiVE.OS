@@ -57,6 +57,7 @@ class CfgVehicles
                             class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
                             class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; default = 1; };
                             class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                            class EXTREME { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_EXTREME"; value = "EXTREME"; };
                         };
                 };
                 class generateTasks : Combo
@@ -75,6 +76,25 @@ class CfgVehicles
                 // per-parameter overrides; "Use intensity preset" leaves the master
                 // dial in charge of that parameter
                 class HDR_TUNING : ALiVE_ModuleSubTitle { property = "ALiVE_mil_artillery_HDR_TUNING"; displayName = "FINE TUNING"; };
+                // How many fire missions the whole side may run at once - the real
+                // limit on how often shells land. Own dial because it has no
+                // intensity-preset dimension. SCALE ties it to the battery count.
+                class concurrencyLevel : Combo
+                {
+                        property = "ALiVE_mil_artillery_concurrencyLevel";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_CONCURRENCY";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_CONCURRENCY_COMMENT";
+                        defaultValue = """PRESET""";
+                        class Values
+                        {
+                            class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
+                            class C1 { name = "1"; value = "1"; };
+                            class C2 { name = "2"; value = "2"; };
+                            class C3 { name = "3"; value = "3"; };
+                            class C4 { name = "4"; value = "4"; };
+                            class SCALE { name = "$STR_ALIVE_MIL_ARTILLERY_CONCURRENCY_SCALE"; value = "SCALE"; };
+                        };
+                };
                 class cadenceLevel : Combo
                 {
                         property = "ALiVE_mil_artillery_cadenceLevel";
@@ -84,9 +104,9 @@ class CfgVehicles
                         class Values
                         {
                             class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
-                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
-                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; };
-                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_CADENCE_LOW"; value = "LOW"; };
+                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_CADENCE_MED"; value = "MEDIUM"; };
+                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_CADENCE_HIGH"; value = "HIGH"; };
                         };
                 };
                 class spreadLevel : Combo
@@ -98,9 +118,9 @@ class CfgVehicles
                         class Values
                         {
                             class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
-                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
-                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; };
-                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_SPREAD_LOW"; value = "LOW"; };
+                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_SPREAD_MED"; value = "MEDIUM"; };
+                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_SPREAD_HIGH"; value = "HIGH"; };
                         };
                 };
                 class roundsLevel : Combo
@@ -112,9 +132,9 @@ class CfgVehicles
                         class Values
                         {
                             class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
-                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
-                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; };
-                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_ROUNDS_LOW"; value = "LOW"; };
+                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_ROUNDS_MED"; value = "MEDIUM"; };
+                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_ROUNDS_HIGH"; value = "HIGH"; };
                         };
                 };
                 class ammoLevel : Combo
@@ -126,9 +146,12 @@ class CfgVehicles
                         class Values
                         {
                             class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
-                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
-                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; };
-                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_AMMO_LOW"; value = "LOW"; };
+                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_AMMO_MED"; value = "MEDIUM"; };
+                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_AMMO_HIGH"; value = "HIGH"; };
+                            class VERYHIGH { name = "$STR_ALIVE_MIL_ARTILLERY_AMMO_VERYHIGH"; value = "VERYHIGH"; };
+                            class EXTREME { name = "$STR_ALIVE_MIL_ARTILLERY_AMMO_EXTREME"; value = "EXTREME"; };
+                            class INFINITE { name = "$STR_ALIVE_MIL_ARTILLERY_AMMO_INFINITE"; value = "INFINITE"; };
                         };
                 };
                 class selectivityLevel : Combo
@@ -155,9 +178,57 @@ class CfgVehicles
                         {
                             class PRESET { name = "$STR_ALIVE_MIL_ARTILLERY_PRESET"; value = "PRESET"; default = 1; };
                             class OFF { name = "$STR_ALIVE_MIL_ARTILLERY_CB_OFF"; value = "OFF"; };
-                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_LOW"; value = "LOW"; };
-                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_MEDIUM"; value = "MEDIUM"; };
-                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_INTENSITY_HIGH"; value = "HIGH"; };
+                            class LOW { name = "$STR_ALIVE_MIL_ARTILLERY_CB_LOW"; value = "LOW"; };
+                            class MEDIUM { name = "$STR_ALIVE_MIL_ARTILLERY_CB_MED"; value = "MEDIUM"; };
+                            class HIGH { name = "$STR_ALIVE_MIL_ARTILLERY_CB_HIGH"; value = "HIGH"; };
+                        };
+                };
+                // Safety override: fire even with friendlies in the impact area.
+                // Default off; the tooltip flags the friendly-fire risk.
+                class dangerClose : Combo
+                {
+                        property = "ALiVE_mil_artillery_dangerClose";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_DANGERCLOSE";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_DANGERCLOSE_COMMENT";
+                        defaultValue = """false""";
+                        class Values
+                        {
+                            class No { name = "No"; value = false; default = 1; };
+                            class Yes { name = "Yes"; value = true; };
+                        };
+                };
+                // real-fire radius: how close a player must be (to target or
+                // battery) for shells to actually spawn and be visible. Beyond
+                // it the mission resolves on the ledger. Default 3 km.
+                class visualRange : Combo
+                {
+                        property = "ALiVE_mil_artillery_visualRange";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_VISUALRANGE";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_VISUALRANGE_COMMENT";
+                        defaultValue = """3000""";
+                        class Values
+                        {
+                            class R1500 { name = "1.5 km"; value = "1500"; };
+                            class R3000 { name = "3 km"; value = "3000"; default = 1; };
+                            class R5000 { name = "5 km"; value = "5000"; };
+                            class R8000 { name = "8 km"; value = "8000"; };
+                            class R12000 { name = "12 km"; value = "12000"; };
+                        };
+                };
+                // call-for-fire rate: above Normal, commanders fan fire missions
+                // across several known contacts per scan (needs OPCOM + batteries).
+                // Default Normal = today's request cadence, unchanged.
+                class requestRateLevel : Combo
+                {
+                        property = "ALiVE_mil_artillery_requestRateLevel";
+                        displayName = "$STR_ALIVE_MIL_ARTILLERY_REQUESTRATE";
+                        tooltip = "$STR_ALIVE_MIL_ARTILLERY_REQUESTRATE_COMMENT";
+                        defaultValue = """NORMAL""";
+                        class Values
+                        {
+                            class Normal { name = "Normal (1 target)"; value = "NORMAL"; default = 1; };
+                            class High { name = "High (3 targets)"; value = "HIGH"; };
+                            class Surge { name = "Surge (6 targets)"; value = "SURGE"; };
                         };
                 };
                 class ModuleDescription : ModuleDescription {};

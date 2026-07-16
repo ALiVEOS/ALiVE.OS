@@ -49,7 +49,7 @@
     <Russian>Интенсивность огневых задач:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_COMMENT">
-    <English>One setting that scales everything: how often each battery may fire, shell spread, rounds per mission, how many enemy contacts are needed before a strike is called, and battery ammunition stocks. Low keeps artillery an occasional threat; High makes it a constant presence.</English>
+    <English>One setting that scales everything: how often each battery may fire, shell spread, rounds per mission, how many enemy contacts are needed before a strike is called, and battery ammunition stocks. Low keeps artillery an occasional threat; High makes it a constant presence; Extreme saturates the battlefield and lets more guns fire at once (it fires on a single spotted contact and scales with how many batteries are in play).</English>
     <Chinese>一個可調整所有參數的設定：每個砲兵連可開火的頻率、彈著散佈範圍、每次任務發射的砲彈數量、下令攻擊前所需的敵軍接觸數量，以及砲兵連的彈藥存量。低會讓砲兵成為偶發威脅；高則讓砲兵持續構成威脅。</Chinese>
     <Chinesesimp>一个统一调节所有参数的设置:每个炮兵连的开火频率、炮弹散布范围、每次任务发射的弹数、发起打击所需的敌方接触目标数量,以及炮兵连的弹药储量。低强度使炮兵仅偶尔构成威胁;高强度则使其持续存在。</Chinesesimp>
     <Spanish>Un único ajuste que escala todo lo demás: la frecuencia con la que puede disparar cada batería, la dispersión de los proyectiles, el número de disparos por misión, cuántos contactos enemigos se necesitan antes de ordenar un ataque, y las reservas de munición de las baterías. Baja mantiene la artillería como una amenaza ocasional; Alta la convierte en una presencia constante.</Spanish>
@@ -84,6 +84,15 @@
     <Portuguese>Alta</Portuguese>
     <Russian>Высокая</Russian>
 </Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_INTENSITY_EXTREME">
+    <English>Extreme</English>
+    <Chinese>極高</Chinese>
+    <Chinesesimp>极高</Chinesesimp>
+    <Spanish>Extrema</Spanish>
+    <French>Extrême</French>
+    <Portuguese>Extrema</Portuguese>
+    <Russian>Экстремальная</Russian>
+</Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_PRESET">
     <English>Use intensity preset</English>
     <Chinese>使用強度預設值</Chinese>
@@ -92,6 +101,33 @@
     <French>Utiliser un préréglage d'intensité</French>
     <Portuguese>Usar predefinição de intensidade</Portuguese>
     <Russian>Использовать пресет интенсивности</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CONCURRENCY">
+    <English>Simultaneous fire missions:</English>
+    <Chinese>同時射擊任務數:</Chinese>
+    <Chinesesimp>同时射击任务数:</Chinesesimp>
+    <Spanish>Misiones de fuego simultáneas:</Spanish>
+    <French>Missions de tir simultanées:</French>
+    <Portuguese>Missões de fogo simultâneas:</Portuguese>
+    <Russian>Одновременные огневые задачи:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CONCURRENCY_COMMENT">
+    <English>How many fire missions the whole side may run at the same time - the real limit on how often shells land. Use intensity preset follows the intensity setting; a fixed number caps it directly; Scale with battery count raises the cap as more guns become available (up to four).</English>
+    <Chinese>整個陣營可同時執行的射擊任務數量——這才是砲彈落地頻率的真正上限。使用強度預設會依強度設定調整；固定數字直接設定上限；隨砲兵連數量調整會隨可用火砲增加而提高上限（最多四個）。</Chinese>
+    <Chinesesimp>整个阵营可同时执行的火力任务数量——这才是炮弹落地频率的真正上限。使用强度预设会依强度设置调整；固定数字直接设定上限；随炮兵连数量调整会随可用火炮增加而提高上限（最多四个）。</Chinesesimp>
+    <Spanish>Cuántas misiones de fuego puede ejecutar todo el bando al mismo tiempo: el límite real de la frecuencia con que caen los proyectiles. Usar preajuste de intensidad sigue el ajuste de intensidad; un número fijo lo limita directamente; Escalar con el número de baterías eleva el límite a medida que hay más cañones disponibles (hasta cuatro).</Spanish>
+    <French>Combien de missions de tir tout le camp peut mener en même temps - la vraie limite de la fréquence des impacts. Utiliser un préréglage d'intensité suit le réglage d'intensité; un nombre fixe le plafonne directement; Adapter au nombre de batteries relève le plafond à mesure que davantage de canons sont disponibles (jusqu'à quatre).</French>
+    <Portuguese>Quantas missões de fogo todo o lado pode executar ao mesmo tempo - o limite real da frequência com que os projéteis caem. Usar predefinição de intensidade segue a configuração de intensidade; um número fixo limita diretamente; Escalar com o número de baterias eleva o limite conforme mais canhões ficam disponíveis (até quatro).</Portuguese>
+    <Russian>Сколько огневых задач вся сторона может выполнять одновременно — реальный предел того, как часто ложатся снаряды. «Использовать пресет интенсивности» следует настройке интенсивности; фиксированное число задаёт предел напрямую; «По числу батарей» поднимает предел по мере доступности орудий (до четырёх).</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CONCURRENCY_SCALE">
+    <English>Scale with battery count</English>
+    <Chinese>隨砲兵連數量調整</Chinese>
+    <Chinesesimp>随炮兵连数量调整</Chinesesimp>
+    <Spanish>Escalar con el número de baterías</Spanish>
+    <French>Adapter au nombre de batteries</French>
+    <Portuguese>Escalar com o número de baterias</Portuguese>
+    <Russian>По числу батарей</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_CADENCE">
     <English>Fire mission cadence:</English>
@@ -157,13 +193,229 @@
     <Russian>Запас боеприпасов батареи:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_COMMENT">
-    <English>Each battery's ammunition ledger. Low 60, Medium 90, High 120 rounds; a dry battery falls silent until resupplied. Overrides the intensity preset for this parameter only.</English>
+    <English>Each battery's ammunition ledger. Low 60, Medium 90, High 120, Very High 240, Extreme 500 rounds, or Infinite for a battery that never runs dry; a dry battery falls silent until resupplied. Overrides the intensity preset for this parameter only.</English>
     <Chinese>各砲兵連的彈藥帳目。低60發、中90發、高120發；彈藥耗盡的砲兵連將停止射擊，直到獲得補給為止。此設定僅覆蓋強度預設值中的此項參數。</Chinese>
     <Chinesesimp>每个炮兵连的弹药账目。低为60发,中为90发,高为120发;弹药耗尽的炮兵连将停止开火,直至获得补给。此设置仅覆盖强度预设中的该项参数。</Chinesesimp>
     <Spanish>El registro de munición de cada batería. Baja 60, Media 90, Alta 120 proyectiles; una batería sin munición queda en silencio hasta ser reabastecida. Sobrescribe el preajuste de intensidad solo para este parámetro.</Spanish>
     <French>Le registre de munitions de chaque batterie. Faible 60, Moyenne 90, Élevée 120 coups; une batterie à sec cesse le feu jusqu'à son ravitaillement. Remplace le préréglage d'intensité pour ce seul paramètre.</French>
     <Portuguese>O registro de munição de cada bateria. Baixa 60, Média 90, Alta 120 disparos; uma bateria sem munição fica em silêncio até ser reabastecida. Substitui a predefinição de intensidade apenas para este parâmetro.</Portuguese>
     <Russian>Ведомость боеприпасов каждой батареи. Низкая - 60, Средняя - 90, Высокая - 120 снарядов; батарея, израсходовавшая боезапас, замолкает до пополнения. Переопределяет только этот параметр пресета интенсивности.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_INFINITE">
+    <English>Infinite</English>
+    <Chinese>無限</Chinese>
+    <Chinesesimp>无限</Chinesesimp>
+    <Spanish>Infinita</Spanish>
+    <French>Illimité</French>
+    <Portuguese>Infinita</Portuguese>
+    <Russian>Бесконечный</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CADENCE_LOW">
+    <English>Low (600 s)</English>
+    <Chinese>低 (600 s)</Chinese>
+    <Chinesesimp>低 (600 s)</Chinesesimp>
+    <Spanish>Baja (600 s)</Spanish>
+    <French>Faible (600 s)</French>
+    <Portuguese>Baixa (600 s)</Portuguese>
+    <Russian>Низкая (600 s)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CADENCE_MED">
+    <English>Medium (420 s)</English>
+    <Chinese>中 (420 s)</Chinese>
+    <Chinesesimp>中 (420 s)</Chinesesimp>
+    <Spanish>Media (420 s)</Spanish>
+    <French>Moyenne (420 s)</French>
+    <Portuguese>Média (420 s)</Portuguese>
+    <Russian>Средняя (420 s)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CADENCE_HIGH">
+    <English>High (300 s)</English>
+    <Chinese>高 (300 s)</Chinese>
+    <Chinesesimp>高 (300 s)</Chinesesimp>
+    <Spanish>Alta (300 s)</Spanish>
+    <French>Élevée (300 s)</French>
+    <Portuguese>Alta (300 s)</Portuguese>
+    <Russian>Высокая (300 s)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_SPREAD_LOW">
+    <English>Low (100 m)</English>
+    <Chinese>低 (100 m)</Chinese>
+    <Chinesesimp>低 (100 m)</Chinesesimp>
+    <Spanish>Baja (100 m)</Spanish>
+    <French>Faible (100 m)</French>
+    <Portuguese>Baixa (100 m)</Portuguese>
+    <Russian>Низкая (100 m)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_SPREAD_MED">
+    <English>Medium (75 m)</English>
+    <Chinese>中 (75 m)</Chinese>
+    <Chinesesimp>中 (75 m)</Chinesesimp>
+    <Spanish>Media (75 m)</Spanish>
+    <French>Moyenne (75 m)</French>
+    <Portuguese>Média (75 m)</Portuguese>
+    <Russian>Средняя (75 m)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_SPREAD_HIGH">
+    <English>High (50 m)</English>
+    <Chinese>高 (50 m)</Chinese>
+    <Chinesesimp>高 (50 m)</Chinesesimp>
+    <Spanish>Alta (50 m)</Spanish>
+    <French>Élevée (50 m)</French>
+    <Portuguese>Alta (50 m)</Portuguese>
+    <Russian>Высокая (50 m)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_ROUNDS_LOW">
+    <English>Low (4)</English>
+    <Chinese>低 (4)</Chinese>
+    <Chinesesimp>低 (4)</Chinesesimp>
+    <Spanish>Baja (4)</Spanish>
+    <French>Faible (4)</French>
+    <Portuguese>Baixa (4)</Portuguese>
+    <Russian>Низкая (4)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_ROUNDS_MED">
+    <English>Medium (6)</English>
+    <Chinese>中 (6)</Chinese>
+    <Chinesesimp>中 (6)</Chinesesimp>
+    <Spanish>Media (6)</Spanish>
+    <French>Moyenne (6)</French>
+    <Portuguese>Média (6)</Portuguese>
+    <Russian>Средняя (6)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_ROUNDS_HIGH">
+    <English>High (8)</English>
+    <Chinese>高 (8)</Chinese>
+    <Chinesesimp>高 (8)</Chinesesimp>
+    <Spanish>Alta (8)</Spanish>
+    <French>Élevée (8)</French>
+    <Portuguese>Alta (8)</Portuguese>
+    <Russian>Высокая (8)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_LOW">
+    <English>Low (60)</English>
+    <Chinese>低 (60)</Chinese>
+    <Chinesesimp>低 (60)</Chinesesimp>
+    <Spanish>Baja (60)</Spanish>
+    <French>Faible (60)</French>
+    <Portuguese>Baixa (60)</Portuguese>
+    <Russian>Низкая (60)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_MED">
+    <English>Medium (90)</English>
+    <Chinese>中 (90)</Chinese>
+    <Chinesesimp>中 (90)</Chinesesimp>
+    <Spanish>Media (90)</Spanish>
+    <French>Moyenne (90)</French>
+    <Portuguese>Média (90)</Portuguese>
+    <Russian>Средняя (90)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_HIGH">
+    <English>High (120)</English>
+    <Chinese>高 (120)</Chinese>
+    <Chinesesimp>高 (120)</Chinesesimp>
+    <Spanish>Alta (120)</Spanish>
+    <French>Élevée (120)</French>
+    <Portuguese>Alta (120)</Portuguese>
+    <Russian>Высокая (120)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_VERYHIGH">
+    <English>Very High (240)</English>
+    <Chinese>很高 (240)</Chinese>
+    <Chinesesimp>很高 (240)</Chinesesimp>
+    <Spanish>Muy alta (240)</Spanish>
+    <French>Très élevée (240)</French>
+    <Portuguese>Muito alta (240)</Portuguese>
+    <Russian>Очень высокая (240)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_AMMO_EXTREME">
+    <English>Extreme (500)</English>
+    <Chinese>極高 (500)</Chinese>
+    <Chinesesimp>极高 (500)</Chinesesimp>
+    <Spanish>Extrema (500)</Spanish>
+    <French>Extrême (500)</French>
+    <Portuguese>Extrema (500)</Portuguese>
+    <Russian>Экстремальная (500)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CB_LOW">
+    <English>Low (5%)</English>
+    <Chinese>低 (5%)</Chinese>
+    <Chinesesimp>低 (5%)</Chinesesimp>
+    <Spanish>Baja (5%)</Spanish>
+    <French>Faible (5%)</French>
+    <Portuguese>Baixa (5%)</Portuguese>
+    <Russian>Низкая (5%)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CB_MED">
+    <English>Medium (10%)</English>
+    <Chinese>中 (10%)</Chinese>
+    <Chinesesimp>中 (10%)</Chinesesimp>
+    <Spanish>Media (10%)</Spanish>
+    <French>Moyenne (10%)</French>
+    <Portuguese>Média (10%)</Portuguese>
+    <Russian>Средняя (10%)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_CB_HIGH">
+    <English>High (18%)</English>
+    <Chinese>高 (18%)</Chinese>
+    <Chinesesimp>高 (18%)</Chinesesimp>
+    <Spanish>Alta (18%)</Spanish>
+    <French>Élevée (18%)</French>
+    <Portuguese>Alta (18%)</Portuguese>
+    <Russian>Высокая (18%)</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_DANGERCLOSE">
+    <English>Ignore nearby friendlies:</English>
+    <Chinese>無視附近友軍:</Chinese>
+    <Chinesesimp>无视附近友军:</Chinesesimp>
+    <Spanish>Ignorar aliados cercanos:</Spanish>
+    <French>Ignorer les alliés proches:</French>
+    <Portuguese>Ignorar aliados próximos:</Portuguese>
+    <Russian>Игнорировать своих поблизости:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_REQUESTRATE">
+    <English>Call-for-fire rate:</English>
+    <Chinese>呼叫火力頻率:</Chinese>
+    <Chinesesimp>呼叫火力频率:</Chinesesimp>
+    <Spanish>Frecuencia de petición de fuego:</Spanish>
+    <French>Fréquence des demandes de tir:</French>
+    <Portuguese>Frequência de pedido de fogo:</Portuguese>
+    <Russian>Частота вызова огня:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_REQUESTRATE_COMMENT">
+    <English>How many enemy contacts commanders call fire on per scan. Normal keeps today's behaviour - the lead contact only, roughly one request every 90 s. High fans fire across up to 3 known contacts per scan on a 45 s cooldown; Surge up to 6 contacts on a 20 s cooldown - denser, simultaneous barrages. Needs AI artillery batteries and an OPCOM.</English>
+    <Chinese>指揮官每次掃描呼叫火力的敵方接觸目標數量。Normal 維持現有行為——僅主要接觸目標，約每 90 秒一次請求。High 每次掃描將火力分散至最多 3 個已知接觸目標，冷卻 45 秒；Surge 最多 6 個目標，冷卻 20 秒——更密集的同時彈幕。需要 AI 砲兵連與 OPCOM。</Chinese>
+    <Chinesesimp>指挥官每次扫描呼叫火力的敌方接触目标数量。Normal 维持现有行为——仅主要接触目标,约每 90 秒一次请求。High 每次扫描将火力分散至最多 3 个已知接触目标,冷却 45 秒;Surge 最多 6 个目标,冷却 20 秒——更密集的同时弹幕。需要 AI 炮兵连与 OPCOM。</Chinesesimp>
+    <Spanish>Cuántos contactos enemigos ordenan fuego los comandantes por exploración. Normal mantiene el comportamiento actual: solo el contacto principal, alrededor de una petición cada 90 s. High reparte fuego entre hasta 3 contactos conocidos por exploración con 45 s de reutilización; Surge hasta 6 contactos con 20 s: descargas simultáneas más densas. Requiere baterías de artillería IA y un OPCOM.</Spanish>
+    <French>Combien de contacts ennemis les commandants prennent sous le feu par balayage. Normal conserve le comportement actuel : le contact principal uniquement, environ une demande toutes les 90 s. High répartit le tir sur jusqu'à 3 contacts connus par balayage avec un délai de 45 s ; Surge jusqu'à 6 contacts avec 20 s - des barrages simultanés plus denses. Nécessite des batteries d'artillerie IA et un OPCOM.</French>
+    <Portuguese>Quantos contatos inimigos os comandantes atacam por varredura. Normal mantém o comportamento atual: apenas o contato principal, cerca de um pedido a cada 90 s. High distribui fogo por até 3 contatos conhecidos por varredura com 45 s de recarga; Surge até 6 contatos com 20 s - barragens simultâneas mais densas. Requer baterias de artilharia de IA e um OPCOM.</Portuguese>
+    <Russian>Сколько целей противника командиры берут под огонь за одно сканирование. Normal сохраняет текущее поведение - только ведущая цель, примерно один запрос каждые 90 с. High распределяет огонь по 3 известным целям за сканирование с откатом 45 с; Surge до 6 целей с откатом 20 с - более плотные одновременные заградительные огни. Требуются ИИ-батареи и OPCOM.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_VISUALRANGE">
+    <English>Visible-fire range:</English>
+    <Chinese>可見射擊範圍:</Chinese>
+    <Chinesesimp>可见射击范围:</Chinesesimp>
+    <Spanish>Alcance de fuego visible:</Spanish>
+    <French>Portée de tir visible:</French>
+    <Portuguese>Alcance de fogo visível:</Portuguese>
+    <Russian>Дальность видимого огня:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_VISUALRANGE_COMMENT">
+    <English>How close a player must be to the target or the firing battery for real shells to spawn and be seen. Beyond this range a mission resolves on the ledger with no visible shells, to save performance. Raise it for large maps or Zeus/spectator observation. Default 3 km.</English>
+    <Chinese>玩家需距離目標或開火砲兵連多近，實體砲彈才會生成並可見。超出此範圍，射擊任務將僅在帳目上結算、不產生可見砲彈，以節省效能。大型地圖或Zeus／觀戰觀察時可調高。預設3公里。</Chinese>
+    <Chinesesimp>玩家需距离目标或开火炮兵连多近,实体炮弹才会生成并可见。超出此范围,射击任务将仅在账目上结算、不产生可见炮弹,以节省性能。大型地图或Zeus／观战观察时可调高。默认3公里。</Chinesesimp>
+    <Spanish>Lo cerca que debe estar un jugador del objetivo o de la batería que dispara para que se generen proyectiles reales y visibles. Más allá de este alcance, la misión se resuelve en el registro sin proyectiles visibles, para ahorrar rendimiento. Auméntelo para mapas grandes u observación con Zeus/espectador. 3 km por defecto.</Spanish>
+    <French>À quelle distance un joueur doit se trouver de la cible ou de la batterie qui tire pour que de vrais obus apparaissent et soient visibles. Au-delà de cette portée, la mission se résout sur le registre sans obus visibles, pour préserver les performances. Augmentez-la pour les grandes cartes ou l'observation Zeus/spectateur. 3 km par défaut.</French>
+    <Portuguese>Quão perto um jogador deve estar do alvo ou da bateria que dispara para que projéteis reais surjam e sejam vistos. Além deste alcance, a missão é resolvida no registro sem projéteis visíveis, para poupar desempenho. Aumente-o para mapas grandes ou observação com Zeus/espectador. 3 km por padrão.</Portuguese>
+    <Russian>Насколько близко игрок должен находиться к цели или стреляющей батарее, чтобы появились реальные видимые снаряды. За пределами этой дальности задача выполняется по ведомости без видимых снарядов — для экономии производительности. Увеличьте для больших карт или наблюдения через Zeus/спектатора. По умолчанию 3 км.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MIL_ARTILLERY_DANGERCLOSE_COMMENT">
+    <English>USE WITH CAUTION. Normally a fire mission aborts when friendly units are inside the impact area. Turn this on and batteries fire anyway, shelling targets even with friendlies (including players) close by - expect friendly casualties. Default off.</English>
+    <Chinese>謹慎使用。通常當友軍位於彈著區內時，射擊任務會中止。開啟此選項後，砲兵連仍會照常開火——即使附近有友軍（包括玩家）也一樣，請預期會出現友軍傷亡。預設關閉。</Chinese>
+    <Chinesesimp>谨慎使用。通常当友军位于弹着区内时,射击任务会中止。开启此选项后,炮兵连仍会照常开火——即使附近有友军(包括玩家)也一样,请预期会出现友军伤亡。默认关闭。</Chinesesimp>
+    <Spanish>ÚSESE CON PRECAUCIÓN. Normalmente una misión de fuego se cancela cuando hay unidades aliadas dentro de la zona de impacto. Actívelo y las baterías dispararán igualmente, bombardeando objetivos aunque haya aliados (incluidos jugadores) cerca; espere bajas propias. Desactivado por defecto.</Spanish>
+    <French>À UTILISER AVEC PRUDENCE. Normalement une mission de tir est annulée lorsque des unités alliées se trouvent dans la zone d'impact. Activez ceci et les batteries tirent quand même, pilonnant les cibles même avec des alliés (joueurs compris) à proximité - attendez-vous à des pertes amies. Désactivé par défaut.</French>
+    <Portuguese>USE COM CAUTELA. Normalmente uma missão de fogo é cancelada quando há unidades aliadas dentro da área de impacto. Ative isto e as baterias disparam mesmo assim, bombardeando alvos mesmo com aliados (incluindo jogadores) por perto - espere baixas amigas. Desativado por padrão.</Portuguese>
+    <Russian>ИСПОЛЬЗУЙТЕ С ОСТОРОЖНОСТЬЮ. Обычно огневая задача отменяется, когда в зоне поражения находятся союзные подразделения. Включите это - и батареи всё равно откроют огонь, обстреливая цели даже при близких союзниках (включая игроков); ждите потерь среди своих. По умолчанию выключено.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MIL_ARTILLERY_SELECTIVITY">
     <English>Target selectivity:</English>
