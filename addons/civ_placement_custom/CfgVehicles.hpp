@@ -106,6 +106,36 @@ class CfgVehicles {
             class customArmourCount : Edit { property = "ALiVE_civ_placement_custom_customArmourCount"; displayName = "$STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_ARMOUR_COUNT_COMMENT"; defaultValue = """"""; };
             class customSpecOpsCount : Edit { property = "ALiVE_civ_placement_custom_customSpecOpsCount"; displayName = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT"; tooltip = "$STR_ALIVE_CP_CUSTOM_SPECOPS_COUNT_COMMENT"; defaultValue = """"""; };
             class asymmetricInstallationCountOverrides : Edit { property = "ALiVE_civ_placement_custom_asymmetricInstallationCountOverrides"; displayName = "$STR_ALIVE_CP_ASYM_INSTALLATION_COUNT_OVERRIDES"; tooltip = "$STR_ALIVE_CP_ASYM_INSTALLATION_COUNT_OVERRIDES_COMMENT"; defaultValue = """"""; };
+            // ---- AI Artillery (#949, ported from mil_placement_custom #887) ------
+            // Count-based artillery at CIVILIAN objectives. Keys are canonical in
+            // mil_placement_custom (STR_ALIVE_CMP_CUSTOM_ARTILLERY_*) and reused here.
+            class HDR_ARTILLERY : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_ARTILLERY"; displayName = "AI ARTILLERY"; };
+            class customArtilleryCount : Edit { property = "ALiVE_civ_placement_custom_customArtilleryCount"; displayName = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT"; tooltip = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_COUNT_COMMENT"; defaultValue = """"""; };
+            class customArtilleryFaction {
+                property     = "ALiVE_civ_placement_custom_customArtilleryFaction";
+                displayName  = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION";
+                tooltip      = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_FACTION_COMMENT";
+                control      = "ALiVE_FactionChoice_Military_CustomArtilleryFaction";
+                typeName     = "STRING";
+                expression   = "_this setVariable ['customArtilleryFaction', _value];";
+                defaultValue = """""";
+            };
+            class customArtillerySectionSize : Combo
+            {
+                    property     = "ALiVE_civ_placement_custom_customArtillerySectionSize";
+                    displayName  = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_SECTION_SIZE";
+                    tooltip      = "$STR_ALIVE_CMP_CUSTOM_ARTILLERY_SECTION_SIZE_COMMENT";
+                    defaultValue = """4""";
+                    class Values
+                    {
+                        class Sz1 { name = "1"; value = "1"; };
+                        class Sz2 { name = "2"; value = "2"; };
+                        class Sz3 { name = "3"; value = "3"; };
+                        class Sz4 { name = "4"; value = "4"; default = 1; };
+                        class Sz6 { name = "6"; value = "6"; };
+                        class Sz8 { name = "8"; value = "8"; };
+                    };
+            };
             // ---- Objective Objects (#875) ---------------------------------------
             class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_civ_placement_custom_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
             // AA-style triplet: count Edit + behaviour Combo + picker.

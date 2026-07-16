@@ -143,6 +143,16 @@ switch (_operation) do {
     case "customArmourCount": {
         _result = [_logic, _operation, _args, DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
+    // #949 - count-based AI artillery at civilian objectives (ported from mil_placement_custom #887)
+    case "customArtilleryCount": {
+        _result = [_logic,_operation,_args,DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "customArtilleryFaction": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "customArtillerySectionSize": {
+        _result = [_logic,_operation,_args,"4"] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "customSpecOpsCount": {
         _result = [_logic, _operation, _args, DEFAULT_NO_TEXT] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -468,6 +478,10 @@ switch (_operation) do {
             private _customSpecOpsCount = [_logic, "customSpecOpsCount"] call MAINCLASS;
             if (_customSpecOpsCount == "") then {_customSpecOpsCount = 666} else {_customSpecOpsCount = parseNumber _customSpecOpsCount;};
 
+            // #949 - count-based artillery at civilian objectives (ported from mil_placement_custom #887)
+            private _countArtillery = [_logic, "customArtilleryCount"] call MAINCLASS;
+            _countArtillery = parseNumber _countArtillery;
+
             private _fnc_parseFactions = {
                 params ["_value"];
                 private _parsed = [];
@@ -675,6 +689,135 @@ switch (_operation) do {
                     if !((_entry select 0) == "FALSE") then {_motorizedGroups pushBack _entry;};
                 };
                 _groups append _motorizedGroups;
+            };
+
+            // ---- AI Artillery (#949, ported from mil_placement_custom #887) ------
+            // Multi-faction, count-based batteries. Group-pull entries [group,
+            // faction] are pushed into _groups BEFORE the _infantryGroupStart
+            // snapshot below so SP-gun LandVehicle classes classify as vehicles
+            // (CPC uses index-based classification like CP, NOT CMP's per-array
+            // model). Vehicle-composed fallback batteries anchor on cluster
+            // centres (CPC is cluster-based, unlike CMP's single module position).
+            private _artilleryWarned = false;
+            private _artilleryFallback = 0;
+            private _artilleryDonor = trim ([_logic, "customArtilleryFaction"] call MAINCLASS);
+            if (_artilleryDonor != "") then {
+                private _donorConfig = _artilleryDonor call ALiVE_fnc_configGetFactionClass;
+                if (!isClass _donorConfig) then {
+                    ["CPC - Artillery faction %1 not found in CfgFactionClasses - artillery reverts to the composition factions",_artilleryDonor] call ALiVE_fnc_dump;
+                    _artilleryDonor = "";
+                } else {
+                    if (getNumber (_donorConfig >> "side") != _factionSideNumber) then {
+                        ["CPC - Artillery faction %1 does not fight for side %2 - artillery reverts to the composition factions",_artilleryDonor,_side] call ALiVE_fnc_dump;
+                        _artilleryDonor = "";
+                    };
+                };
+            };
+            private _artyPullFactions = if (_artilleryDonor != "") then {[_artilleryDonor]} else {_factions};
+            private _smallMapForRockets = worldSize < 10240;
+            // #949 - observable count for the self-test
+            if (_countArtillery > 0 && _debug) then {
+                ["CPC [%1] - Count Artillery: %2",_artyPullFactions,_countArtillery] call ALiVE_fnc_dump;
+            };
+
+            for "_i" from 0 to _countArtillery -1 do {
+                private _entry = ["FALSE",""];
+                if (_artilleryDonor != "") then {
+                    private _donorGroup = ["Artillery",_artilleryDonor] call ALIVE_fnc_configGetRandomGroup;
+                    if (_donorGroup != "FALSE") then { _entry = [_donorGroup,_artilleryDonor] };
+                } else {
+                    _entry = ["Artillery",_i] call _fnc_pickGroupForCategory;
+                };
+                if!((_entry select 0) == "FALSE") then {
+                    if (_smallMapForRockets && {[_entry select 1, _entry select 0] call ALIVE_fnc_groupIsRocketArtillery}) then {
+                        _artilleryFallback = _artilleryFallback + 1;
+                        if (!_artilleryWarned) then {
+                            _artilleryWarned = true;
+                            ["CPC - %1 is rocket artillery, out-ranged by this terrain (worldSize %2) - composing a howitzer battery instead",_entry select 0,worldSize] call ALiVE_fnc_dump;
+                        };
+                    } else {
+                        _groups pushback _entry;
+                    };
+                } else {
+                    _artilleryFallback = _artilleryFallback + 1;
+                    if (!_artilleryWarned) then {
+                        _artilleryWarned = true;
+                        ["CPC [%1] - no faction has Artillery groups - composing batteries from their artillery vehicles instead",_artyPullFactions] call ALiVE_fnc_dump;
+                    };
+                };
+            };
+
+            // Fallback: a faction has artillery VEHICLES but no artillery GROUPS.
+            // Compose each battery gun-by-gun. Self-propelled guns take priority;
+            // the first faction fielding them wins. Anchored on cluster centres.
+            if (_artilleryFallback > 0 && {!isNil "_clusters"} && {count _clusters > 0}) then {
+                private _fnc_factionGuns = {
+                    private _c = _this call ALIVE_fnc_configGetFactionArtilleryVehicles;
+                    if (_smallMapForRockets) then {
+                        private _guns = _c select { !([_x] call ALIVE_fnc_isRocketArtillery) };
+                        if (count _guns > 0) then { _c = _guns; };
+                    };
+                    _c
+                };
+                private _artyClasses = [];
+                private _artyFaction = "";
+                {
+                    private _sp = (_x call _fnc_factionGuns) select { !(_x isKindOf "StaticWeapon") };
+                    if (count _sp > 0) exitWith { _artyClasses = _sp; _artyFaction = _x; };
+                } forEach _artyPullFactions;
+                if (count _artyClasses == 0) then {
+                    {
+                        private _c = _x call _fnc_factionGuns;
+                        if (count _c > 0) exitWith { _artyClasses = _c; _artyFaction = _x; };
+                    } forEach _artyPullFactions;
+                };
+                if (count _artyClasses == 0) then {
+                    ["CPC [%1] - no faction has artillery groups OR artillery vehicles - nothing to place",_artyPullFactions] call ALiVE_fnc_dump;
+                } else {
+                    private _artySideNum = getNumber ((_artyFaction call ALiVE_fnc_configGetFactionClass) >> "side");
+                    private _artySide = _artySideNum call ALIVE_fnc_sideNumberToText;
+                    private _usedArtyPositions = [];
+                    private _sectionSize = parseNumber ([_logic,"customArtillerySectionSize"] call MAINCLASS);
+                    if (_sectionSize < 1) then { _sectionSize = 4; };
+                    for "_b" from 1 to _artilleryFallback do {
+                        private _artyClass = selectRandom _artyClasses;
+                        private _cluster = _clusters select ((_b - 1) mod (count _clusters));
+                        private _cPos = [_cluster, "center"] call ALIVE_fnc_hashGet;
+                        if (isNil "_cPos" || {typeName _cPos != "ARRAY"}) then { _cPos = [0,0,0] };
+                        private _gunsPlaced = 0;
+                        for "_g" from 1 to _sectionSize do {
+                            private _safePos = [];
+                            private _safeDir = 0;
+                            {
+                                if (count _safePos > 0) exitWith {};
+                                private _radius = _x;
+                                for "_a" from 0 to 5 do {
+                                    private _cand = _cPos getPos [_radius, (_a * 60) + random 60];
+                                    private _res = [_cand, 25, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
+                                    if (count _res >= 2) then {
+                                        private _testPos = _res select 0;
+                                        private _clash = false;
+                                        { if (_testPos distance2D _x < 25) exitWith { _clash = true } } forEach _usedArtyPositions;
+                                        if (!_clash) then {
+                                            _safePos = _testPos;
+                                            _safeDir = _res select 1;
+                                        };
+                                    };
+                                    if (count _safePos > 0) exitWith {};
+                                };
+                            } forEach [50, 80, 110, 140, 170, 200];
+                            if (count _safePos > 0) then {
+                                _usedArtyPositions pushBack _safePos;
+                                [_artyClass, _artySide, _artyFaction, "PRIVATE", _safePos, _safeDir, false, _artyFaction] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                _countProfiles = _countProfiles + 2;
+                                _gunsPlaced = _gunsPlaced + 1;
+                            };
+                        };
+                        if (_gunsPlaced > 0 && _debug) then {
+                            ["CPC - Artillery battery composed from vehicles: %1 x %2 at grid %3", _gunsPlaced, _artyClass, mapGridPosition _cPos] call ALiVE_fnc_dump;
+                        };
+                    };
+                };
             };
 
             // Track infantry boundary for the reserve-pool dispatcher.
