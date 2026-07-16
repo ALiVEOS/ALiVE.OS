@@ -1497,7 +1497,7 @@ switch (_operation) do {
             private _objectiveID = _args;
 
             private _objective = [_logic,"getObjectiveByID", _objectiveID] call MAINCLASS;
-            if isnil "_objective" exitwith {
+            if (isnil "_objective") exitwith {
                 _result = [_logic,"objectives", []] call ALIVE_fnc_hashGet;
             };
 
