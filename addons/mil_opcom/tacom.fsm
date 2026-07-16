@@ -6,12 +6,12 @@ item1[] = {"INIT_COMPLETE",4,218,-194.557098,-181.067123,-104.557114,-131.067123
 item2[] = {"ANALYZE",2,250,-398.915314,190.635864,98.822098,238.500443,0.000000,"ANALYZE"};
 item3[] = {"RECEIVE",4,218,-194.508545,-19.777693,-104.508537,30.222303,0.000000,"RECEIVE"};
 item4[] = {"CAPTURE_Conditio",4,218,-296.383759,269.200836,-206.383591,319.200775,3.000000,"CAPTURE" \n "Conditions"};
-item5[] = {"",7,210,176.004105,761.434937,184.004105,769.434814,0.000000,""};
-item6[] = {"",7,210,174.604492,1.165148,182.604553,9.165155,0.000000,""};
+item5[] = {"",7,210,258.500000,758.500061,266.499969,766.499939,0.000000,""};
+item6[] = {"",7,210,258.499969,-4.000004,266.500031,4.000004,0.000000,""};
 item7[] = {"DEFEND_condition",4,218,-197.909698,270.277069,-107.909790,320.277069,2.000000,"DEFEND" \n "conditions"};
 item8[] = {"RESERVE_conditio",4,218,-98.860970,268.983917,-8.860947,318.983917,1.000000,"RESERVE" \n "conditions"};
 item9[] = {"CUSTOM_condition",4,218,5.405207,267.636688,95.405060,317.636871,0.000000,"CUSTOM" \n "conditions"};
-item10[] = {"ISSUE_ORDERS",2,4346,-405.948853,673.407532,93.318497,717.610718,0.000000,"ISSUE ORDERS"};
+item10[] = {"ISSUE_ORDERS",2,250,-405.948853,673.407532,93.318497,717.610718,0.000000,"ISSUE ORDERS"};
 item11[] = {"GROUP_NOT_CONFIR",4,218,-146.461060,733.516846,-56.461060,783.517090,0.000000,"GROUP" \n "NOT" \n "CONFIRM"};
 item12[] = {"GROUP_CONFIRM",4,218,-250.579010,734.345947,-160.579208,784.346069,0.000000,"GROUP" \n "CONFIRM"};
 item13[] = {"",7,210,-509.836731,753.771851,-501.836670,761.771851,0.000000,""};
@@ -30,6 +30,7 @@ item25[] = {"PREPARE_ORDERS",2,250,-198.326187,497.752075,-108.326187,547.752319
 item26[] = {"PREPARED",4,218,-199.323730,579.343994,-109.323708,629.343994,0.000000,"PREPARED"};
 item27[] = {"EXIT",4,218,-205.862900,897.221252,-115.862823,947.221252,99.000000,"EXIT"};
 item28[] = {"END",1,250,-205.443878,1033.162964,-115.443787,1083.162964,0.000000,"END"};
+item29[] = {"OBJECTIVE_DELETE",4,218,125.000000,275.000000,225.000000,325.000000,4.000000,"OBJECTIVE" \n "DELETED"};
 version=1;
 class LayoutItems
 {
@@ -53,38 +54,40 @@ link6[] = {2,9};
 link7[] = {2,19};
 link8[] = {2,22};
 link9[] = {2,27};
-link10[] = {3,20};
-link11[] = {4,23};
-link12[] = {5,6};
-link13[] = {5,27};
-link14[] = {6,3};
-link15[] = {7,23};
-link16[] = {8,23};
-link17[] = {9,23};
-link18[] = {10,11};
-link19[] = {10,12};
-link20[] = {10,27};
-link21[] = {11,18};
-link22[] = {12,17};
-link23[] = {13,14};
-link24[] = {13,27};
-link25[] = {14,3};
-link26[] = {15,3};
-link27[] = {17,13};
-link28[] = {18,5};
-link29[] = {19,23};
-link30[] = {20,21};
-link31[] = {20,27};
-link32[] = {21,2};
-link33[] = {22,2};
-link34[] = {23,24};
-link35[] = {23,27};
-link36[] = {24,25};
-link37[] = {25,26};
-link38[] = {26,10};
-link39[] = {27,28};
-globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-596.514893,199.497864,915.546021,-56.482750,606,740,1};
-window[] = {0,-1,-1,-1,-1,986,144,1865,74,1,624};
+link10[] = {2,29};
+link11[] = {3,20};
+link12[] = {4,23};
+link13[] = {5,6};
+link14[] = {5,27};
+link15[] = {6,3};
+link16[] = {7,23};
+link17[] = {8,23};
+link18[] = {9,23};
+link19[] = {10,11};
+link20[] = {10,12};
+link21[] = {10,27};
+link22[] = {11,18};
+link23[] = {12,17};
+link24[] = {13,14};
+link25[] = {13,27};
+link26[] = {14,3};
+link27[] = {15,3};
+link28[] = {17,13};
+link29[] = {18,5};
+link30[] = {19,23};
+link31[] = {20,21};
+link32[] = {20,27};
+link33[] = {21,2};
+link34[] = {22,2};
+link35[] = {23,24};
+link36[] = {23,27};
+link37[] = {24,25};
+link38[] = {25,26};
+link39[] = {26,10};
+link40[] = {27,28};
+link41[] = {29,10};
+globals[] = {0.000000,0,0,0,0,640,480,1,81,6316128,1,-456.032654,235.499298,856.921509,12.476685,606,740,1};
+window[] = {0,-1,-1,-1,-1,1132,96,1817,220,1,624};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -99,6 +102,7 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"_busy = false;" \n
                          "_exitFSM = false;" \n
                          "_TAC_confirmed = false;" \n
+                         "_objectiveDeleted = false;" \n
                          "" \n
                          "_TACOM_status = ""PreInit"";" \n
                          "_timestamp = time;" \n
@@ -204,6 +208,7 @@ class FSM
                          "_defend = nil;" \n
                          "_reserve = nil;" \n
                          "_custom = nil;" \n
+                         "_objectiveDeleted = false;" \n
                          "" \n
                          "_section = [];" \n
                          "_sections = [];" \n
@@ -277,6 +282,10 @@ class FSM
                          "            private [""_targets"",""_targetID"",""_target"",""_vehicle""];" \n
                          "    " \n
                          "            _objective = _DATA_VALUE;" \n
+                         "            if (isnil ""_objective"") exitwith {};" \n
+                         "            _objectiveDeleted = [_objective,""deleted"",false] call ALiVE_fnc_HashGet;" \n
+                         "            if (_objectiveDeleted) exitwith {};" \n
+                         "" \n
                          "            _pos = [_objective,""center""] call AliVE_fnc_HashGet;" \n
                          "            _opcom_orders = [_objective,""opcom_orders""] call AliVE_fnc_HashGet;" \n
                          "            _state = [_objective,""opcom_state""] call AliVE_fnc_HashGet;" \n
@@ -348,6 +357,15 @@ class FSM
                          "            _orders = _DATA_VALUE select 2;" \n
                          "" \n
                          "            _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_objectiveID] call ALiVE_fnc_OPCOM;" \n
+                         "            if (" \n
+                         "                isnil ""_objective""" \n
+                         "                || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}" \n
+                         "            ) exitwith {" \n
+                         "                [_OPCOM_HANDLER,""resetProfileOrders"",_ProfileID] call ALiVE_fnc_OPCOM;" \n
+                         "                _TACOM_DATA = nil;" \n
+                         "                _busy = false;" \n
+                         "            };" \n
+                         "" \n
                          "            _profile = [ALiVE_ProfileHandler,""getProfile"",_profileID] call ALiVE_fnc_ProfileHandler;" \n
                          "" \n
                          "            if (isnil ""_profile"") exitwith {_TACOM_DATA = [""analyze"",_objective]; _busy = false};" \n
@@ -483,6 +501,17 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                                /*%FSM<LINK "OBJECTIVE_DELETE">*/
+                                class OBJECTIVE_DELETE
+                                {
+                                        itemno = 29;
+                                        priority = 4.000000;
+                                        to="ISSUE_ORDERS";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_objectiveDeleted;"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "CAPTURE_Conditio">*/
                                 class CAPTURE_Conditio
                                 {
@@ -516,17 +545,6 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
-                                /*%FSM<LINK "RECON_Conditions">*/
-                                class RECON_Conditions
-                                {
-                                        itemno = 19;
-                                        priority = 0.000000;
-                                        to="SELECT_SECTION";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_recon"");"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "Feeder">*/
                                 class Feeder
                                 {
@@ -538,14 +556,14 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
-                                /*%FSM<LINK "CUSTOM_condition">*/
-                                class CUSTOM_condition
+                                /*%FSM<LINK "RECON_Conditions">*/
+                                class RECON_Conditions
                                 {
-                                        itemno = 9;
+                                        itemno = 19;
                                         priority = 0.000000;
                                         to="SELECT_SECTION";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_custom"");"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_recon"");"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -561,6 +579,17 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                                /*%FSM<LINK "CUSTOM_condition">*/
+                                class CUSTOM_condition
+                                {
+                                        itemno = 9;
+                                        priority = 0.000000;
+                                        to="SELECT_SECTION";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(isnil ""_custom"");"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                         };
                 };
                 /*%FSM</STATE>*/
@@ -573,6 +602,13 @@ class FSM
                          "" \n
                          "_TACOM_status = ""Order"";" \n
                          "_timestamp = time;" \n
+                         "_objectiveDeleted = [_objective,""deleted"",false] call ALiVE_fnc_HashGet;" \n
+                         "if (_objectiveDeleted) exitwith {" \n
+                         "    _TAC_confirmed = false;" \n
+                         "    _data = [_objective, [""objective deleted""]];" \n
+                         "    " \n
+                         "    _busy = false;" \n
+                         "};" \n
                          "" \n
                          "//Get all profileIDs and objectives" \n
                          "_profiles = ([ALIVE_profileHandler, ""getProfiles"", ""entity""] call ALIVE_fnc_profileHandler) select 1;" \n
@@ -984,12 +1020,16 @@ class FSM
                          "        private [""_objective"",""_pos"",""_taskTypes""];" \n
                          "" \n
                          "        _objective = _this select 1 select 0;" \n
+                         "        if ([_objective,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {};" \n
+                         "" \n
                          "        _size = _this select 1 select 1;" \n
                          "        _taskTypes = _this select 1 select 2;" \n
                          "        _pos = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
                          "" \n
                          "        _sectionAssist = [_this select 0,""NearestAvailableSection"",[_pos,_size,_taskTypes]] call ALiVE_fnc_OPCOM;" \n
-                         "        [_objective, ""sectionAssist"",_sectionAssist] call ALiVE_fnc_HashSet;" \n
+                         "        if !([_objective,""deleted"",false] call ALiVE_fnc_HashGet) then {" \n
+                         "            [_objective, ""sectionAssist"",_sectionAssist] call ALiVE_fnc_HashSet;" \n
+                         "        };" \n
                          "    };" \n
                          "} else {" \n
                          "    _hdl = [] spawn {true};" \n
@@ -1028,6 +1068,8 @@ class FSM
                         name = "PREPARE_ORDERS";
                         itemno = 25;
                         init = /*%FSM<STATEINIT""">*/"terminate _hdl;" \n
+                         "" \n
+                         "if ([_objective,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {};" \n
                          "" \n
                          "private [""_sectionAssist""];" \n
                          "_sectionAssist = [_objective,""sectionAssist"",[]] call AliVE_fnc_HashGet;" \n

@@ -417,6 +417,11 @@ class FSM
                          "            _target = _information select 0;" \n
                          "            _return = _information select 1;" \n
                          "" \n
+                         "            if ([_target,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {" \n
+                         "                _OPCOM_DATA = [""analyze"",nil];" \n
+                         "                _busy = false;" \n
+                         "            };" \n
+                         "" \n
                          "            _faction = selectRandom _factions;" \n
                          "            _enemySide = selectRandom _sidesEnemy;" \n
                          "" \n
@@ -1303,6 +1308,8 @@ class FSM
                          "if ({_target == (_x select 2 select 0)} count _objectives > 0) then {" \n
                          "" \n
                          "	private _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_target] call ALiVE_fnc_OPCOM;" \n
+                         "	if (isnil ""_objective"" || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}) exitWith {};" \n
+                         "" \n
                          "	private _center = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
                          "	private _size = [_objective,""size"",100] call ALiVE_fnc_HashGet;" \n
                          "" \n
@@ -1421,6 +1428,8 @@ class FSM
                          "if ({_target == (_x select 2 select 0)} count _objectives > 0) then {" \n
                          "" \n
                          "	private _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_target] call ALiVE_fnc_OPCOM;" \n
+                         "	if (isnil ""_objective"" || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}) exitWith {};" \n
+                         "" \n
                          "	private _center = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
                          "	private _size = [_objective,""size"",100] call ALiVE_fnc_HashGet;" \n
                          "" \n
@@ -1516,6 +1525,8 @@ class FSM
                          "if ({_target == (_x select 2 select 0)} count _objectives > 0) then {" \n
                          "" \n
                          "	private _objective = [_OPCOM_HANDLER,""getobjectivebyid"",_target] call ALiVE_fnc_OPCOM;" \n
+                         "	if (isnil ""_objective"" || {[_objective,""deleted"",false] call ALiVE_fnc_HashGet}) exitWith {};" \n
+                         "" \n
                          "	private _center = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
                          "	private _size = [_objective,""size"",100] call ALiVE_fnc_HashGet; " \n
                          "" \n

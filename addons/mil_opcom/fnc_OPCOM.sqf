@@ -1477,6 +1477,9 @@ switch (_operation) do {
 
                 default {};
             };
+            _objectives = _objectives select {
+                !([_x,"deleted",false] call ALiVE_fnc_HashGet)
+            };
             [_logic,"objectives",_objectives] call ALiVE_fnc_HashSet;
 
             if (_debug) then {
@@ -1494,6 +1497,10 @@ switch (_operation) do {
             private _objectiveID = _args;
 
             private _objective = [_logic,"getObjectiveByID", _objectiveID] call MAINCLASS;
+            if isnil "_objective" exitwith {
+                _result = [_logic,"objectives", []] call ALIVE_fnc_hashGet;
+            };
+
             private _previousTacomState = [_objective,"tacom_state", "none"] call ALiVE_fnc_hashGet;
             private _objectiveType = [_objective,"objectiveType", "MIL"] call ALiVE_fnc_hashGet;
 
@@ -1659,6 +1666,8 @@ switch (_operation) do {
     };
 
     case "removeObjective": {
+        if !(isServer) exitwith {[_logic,_operation,_args] remoteExec ["ALiVE_fnc_OPCOM",2]};
+
         if (isnil "_args") then {
             _result = [_logic,"objectives",[]] call ALIVE_fnc_hashGet;
         } else {
@@ -1672,6 +1681,8 @@ switch (_operation) do {
             if (_objectiveIndex != -1) then {
                 private _objective = _objectives select _objectiveIndex;
                 private _section = [_objective,"section",[]] call ALiVE_fnc_HashGet;
+
+                [_objective,"deleted", true] call ALiVE_fnc_hashSet;
 
                 { [_logic,"resetProfileOrders", _x] call ALiVE_fnc_OPCOM } foreach _section;
                 [_logic,"resetObjective", _objectiveID] call ALiVE_fnc_OPCOM;
@@ -2798,6 +2809,7 @@ switch (_operation) do {
             ["opcom_state", _opcomState],
             ["clusterID", _clusterID],
             ["opcomID", _opcomID],
+            ["deleted", false],
             ["_rev", ""]
         ]] call ALIVE_fnc_hashCreate;
 
@@ -3385,9 +3397,11 @@ switch (_operation) do {
             private _objectiveID = _x select 0;
 
             private _target = [_logic,"getObjectiveByID", _objectiveID] call ALiVE_fnc_OPCOM;
-            private _opcomState = [_target,"opcom_state"] call AliVE_fnc_HashGet;
-            if !(_opcomState in _idleStates) then {
-                [_target,"opcom_state", _operation] call AliVE_fnc_HashSet;
+            if (!isnil "_target" && {!([_target,"deleted", false] call ALiVE_fnc_hashGet)}) then {
+                private _opcomState = [_target,"opcom_state"] call ALiVE_fnc_HashGet;
+                if !(_opcomState in _idleStates) then {
+                    [_target,"opcom_state", _operation] call ALiVE_fnc_HashSet;
+                };
             };
         } foreach _objectives;
     };
