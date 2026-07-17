@@ -493,6 +493,23 @@ switch(_operation) do {
                                             [_record,"side"] call ALiVE_fnc_hashGet,
                                             [_record,"faction"] call ALiVE_fnc_hashGet,
                                             _kind, count _vehicleIDs, _crewCount, _class] call ALiVE_fnc_dump;
+
+                                        // everything the ordnance lookup could see for this gun, so a
+                                        // battery that later refuses to fire can be read out of one log
+                                        // rather than reproduced. The abort names the round it tried to
+                                        // load; this names what it had to choose from. If those do not
+                                        // meet, the lookup is the fault and this line says how - nothing
+                                        // found at all means it is declared somewhere unread, while a
+                                        // list of hull machine guns means it was read and misjudged.
+                                        // Distinct names, not a count: a Calliope reporting eleven
+                                        // magazines looks healthy until you see they are all the coax.
+                                        private _cfgMags = _class call ALiVE_fnc_getArtyMagazines;
+                                        private _distinct = _cfgMags arrayIntersect _cfgMags;
+                                        ["ALiVE MIL_ARTILLERY - battery %1 ordnance: %2 magazine(s), %3 distinct %4, classified as %5, engaging %6m to %7m",
+                                            _entityID, count _cfgMags, count _distinct,
+                                            if (count _distinct > 10) then { (_distinct select [0,10]) + ["(more)"] } else { _distinct },
+                                            _class call ALiVE_fnc_GetArtyRounds,
+                                            _minRange, _range] call ALiVE_fnc_dump;
                                     };
                                 };
                             };
