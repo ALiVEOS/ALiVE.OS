@@ -198,6 +198,21 @@ if (_mag == "") exitWith {
     [1] call _fnc_release;
 };
 
+// a gun can only fire a magazine it is actually holding. Some mods advertise
+// compatible magazines a piece never loads - IFA3's BM-13 lists a BM-21 grad
+// round in config yet spawns carrying LIB_16Rnd_BM13 - and inRangeOfArtillery
+// refuses an unloaded magazine at EVERY range, reading exactly like an
+// out-of-range abort. If the config pick is not among the live loadout, swap to
+// a carried magazine (preferring HE) so the range check and the shot agree.
+private _liveMags = getArtilleryAmmo [_gunLead];
+if (count _liveMags > 0 && {!(_mag in _liveMags)}) then {
+    private _idx = _liveMags findIf { ["HE", _x] call ALIVE_fnc_isMagazineOfOrdnanceType };
+    if (_debug) then {
+        ["ALiVE MIL_ARTILLERY - %1: config named %2 but the gun carries %3 - firing a carried round instead", typeOf _gunLead, _mag, _liveMags] call ALiVE_fnc_dump;
+    };
+    _mag = _liveMags select (_idx max 0);
+};
+
 // first-activation capability probe: measure the gun's real engagement
 // envelope, because no config heuristic predicts it - the RHS Grad turned out
 // to be an 8-20km system, nothing like the howitzer defaults. Cached on the
