@@ -1472,14 +1472,26 @@ ALiVE_fnc_INS_registerInstallationOnBuilding = {
     // the area at registration time. Idempotent (skips already-
     // flagged civs); multi-installation buildings re-trigger the
     // sweep but the flag-check short-circuits.
+    private _civFlagged = 0;
+    private _nearMen = _building nearObjects ["CAManBase", 50];
     {
         if (
             side _x == civilian
             && {!(_x getVariable ["ALiVE_CivPop_InsurgentContact", false])}
         ) then {
             _x setVariable ["ALiVE_CivPop_InsurgentContact", true, true];
+            _civFlagged = _civFlagged + 1;
         };
-    } forEach (_building nearObjects ["CAManBase", 50]);
+    } forEach _nearMen;
+
+    // DIAG-STRIP - does this sweep ever reach a soul? nearObjects only returns
+    // SPAWNED units, and an installation registers long after its objective
+    // spawns, with no player about to have spawned anyone - so the civilians
+    // nearby may all still be virtual and invisible to it. A run that only ever
+    // reports zero means the flag has no source, and the civilian question that
+    // reads it can never answer anything but "no, no one".
+    diag_log format ["[ALiVE DIAG-STRIP INS-CONTACT] %1 spawned man/men within 50m of %2, %3 civilian(s) flagged",
+        count _nearMen, typeOf _building, _civFlagged];
 };
 
 ALiVE_fnc_INS_getBuildingInstallations = {
