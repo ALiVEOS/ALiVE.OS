@@ -261,6 +261,12 @@ switch (_operation) do {
         };
 
         ([_side] call ALiVE_fnc_getSideAllegiances) params ["_sidesEnemy","_sidesFriendly"];
+        // the helper only reports how the OTHER sides align, so our own side is
+        // absent from both lists. The occupation analysis bins nearby profiles by
+        // side membership, so ours has to be listed friendly - without it an
+        // objective our own troops hold matches neither list, reads as unheld and
+        // gets ordered attacked.
+        _sidesFriendly pushBackUnique _side;
 
         // set custom name
 

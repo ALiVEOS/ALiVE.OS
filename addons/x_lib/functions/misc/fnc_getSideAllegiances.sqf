@@ -5,15 +5,17 @@ SCRIPT(getSideAllegiances);
 Function: ALiVE_fnc_getSideAllegiances
 
 Description:
-Calculates enemy and friendly sides for a given side
+Calculates which of the OTHER sides are enemy and which are friendly to a given
+side. The queried side is never listed in either result - a caller that needs its
+own side counted among the friendlies has to add it back itself.
 
 Parameters:
 text - side to get allegiances of
 
 Returns:
 array
-    0: array of enemy sides 
-    1: array of friendly sides
+    0: array of enemy sides (never includes the queried side)
+    1: array of friendly sides (never includes the queried side)
 
 Examples:
 (begin example)
@@ -25,6 +27,7 @@ See Also:
 
 Author:
 SpyderBlack723
+Jman
 ---------------------------------------------------------------------------- */
 
 private _sideText = toupper (_this select 0);
