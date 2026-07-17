@@ -238,8 +238,17 @@ if !(_aimBase inRangeOfArtillery [_guns, _mag]) exitWith {
         [_record,"maxRange", ((_dist * 0.9) max 1500)] call ALiVE_fnc_hashSet;
     };
     if (_debug) then {
-        ["ALiVE MIL_ARTILLERY - fire mission aborted: target at %1m is outside %2's engagement envelope (%3m to %4m)",
-            round _dist, typeOf _gunLead,
+        // name the round, and say what the gun is actually carrying. What refused
+        // the shot is the engine being asked whether THIS gun can put THIS
+        // magazine there - the envelope below is only a record of an earlier
+        // measurement, taken with whatever the gun reported carrying, and it
+        // takes no part in the decision. A magazine the gun cannot fire is
+        // refused at every range, and reads exactly like a range problem unless
+        // the round is named: if the round below is not among what it carries,
+        // the range is a red herring and the ordnance lookup is the fault.
+        ["ALiVE MIL_ARTILLERY - fire mission aborted: %1 will not put %2 on a target %3m away. It is carrying %4. Envelope last measured %5m to %6m",
+            typeOf _gunLead, _mag, round _dist,
+            getArtilleryAmmo [_gunLead],
             round ([_record,"minRange",300] call ALiVE_fnc_hashGet),
             [_record,"maxRange"] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump;
     };
