@@ -592,6 +592,13 @@ class getArtyRounds
 	RECOMPILE;
 };
 
+class auditArtyOrdnance
+{
+	file = "\x\alive\addons\x_lib\functions\config\fnc_auditArtyOrdnance.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class getArtyMagazines
 {
 	file = "\x\alive\addons\x_lib\functions\config\fnc_getArtyMagazines.sqf";
