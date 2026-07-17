@@ -451,8 +451,13 @@ switch(_operation) do {
                                         _range = DEFAULT_RANGE_MORTAR;
                                         _minRange = DEFAULT_MINRANGE_MORTAR;
                                     } else {
-                                        private _ordnance = _class call ALiVE_fnc_GetArtyRounds;
-                                        if ("ROCKETS" in _ordnance && {!("HE" in _ordnance)}) then {
+                                        // ask the shared test rather than reading the ordnance here.
+                                        // Rocket artillery rarely answers to ROCKETS: a salvo modelled
+                                        // as one submunition shot reads CLUSTER (the M270, the BM-21,
+                                        // the Calliope), and the Grad lists HE alongside it, so reading
+                                        // ordnance alone books all three in as howitzers - short of the
+                                        // 6 km a rocket needs and blind to the 3 km beyond a gun's reach
+                                        if ([_class] call ALiVE_fnc_isRocketArtillery) then {
                                             _kind = "rocket";
                                             _range = DEFAULT_RANGE_ROCKET;
                                             _minRange = DEFAULT_MINRANGE_ROCKET;
