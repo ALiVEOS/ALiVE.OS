@@ -19,10 +19,10 @@ There are two ways to read a gun, and they do not always agree:
     config    - CAPABILITY: everything the gun can ever load. Free, works on a
                 classname, and is what a module knows before anything spawns. It
                 is the right answer for a round list, because the module stocks
-                the battery. It can still be wrong: it misses a launcher mounted
-                at spawn (the Spearhead Calliope reports eleven hull machine guns
-                and not one rocket), and it can list magazines the gun never fires
-                as artillery (the RHS HIMARS reports its fuel tanks).
+                the battery. It is only ever as good as where ALIVE_fnc_getArtyMagazines
+                looks: rocket artillery hangs its launcher off a pylon rather than
+                a turret, and until that was read the Calliope reported eleven hull
+                machine guns and the BM-21 reported nothing at all.
     the gun   - INVENTORY: what the spawned vehicle is loaded with right now, via
                 getArtilleryAmmo. Needs a live vehicle. It is NOT a better config -
                 it is a different question, and usually a narrower answer. A
@@ -50,7 +50,8 @@ Parameters:
 Returns:
 Array of [classname, magazineCount, roundTypes, isRocketArtillery, readFromLiveGun],
 and logs the same to the RPT prefixed [ALiVE ARTY AUDIT]. The live sweep returns
-[classname, configRounds, gunRounds, differ] and logs [ALiVE ARTY AUDIT LIVE].
+[classname, configRounds, gunRounds, differ, isRocketArtillery] and logs
+[ALiVE ARTY AUDIT LIVE].
 
 Examples:
 (begin example)
@@ -136,11 +137,17 @@ if (_spawnLive) exitWith {
             private _cfgRounds = (_class call ALIVE_fnc_getArtyMagazines) call _fnc_classify;
             private _gunRounds = (getArtilleryAmmo [_veh]) call _fnc_classify;
             private _differ = !(_cfgRounds isEqualTo _gunRounds);
+            // carry the rocket verdict too. It is derived from the ordnance, so a
+            // change to what the ordnance read returns can silently flip it - the
+            // RHS HIMARS was only ever answering "rocket" off a misread fuel tank,
+            // and correcting that read turned it into a howitzer with a howitzer's
+            // ranges. A sweep with no column for it could not see that happen.
+            private _rocket = [_class] call ALIVE_fnc_isRocketArtillery;
 
-            _rows pushBack [_class, _cfgRounds, _gunRounds, _differ];
+            _rows pushBack [_class, _cfgRounds, _gunRounds, _differ, _rocket];
 
-            ["ALiVE ARTY AUDIT LIVE - %1 | config %2 | the gun %3 | %4",
-                _class, _cfgRounds, _gunRounds, if (_differ) then {"DIFFER"} else {"same"}] call ALiVE_fnc_dump;
+            ["ALiVE ARTY AUDIT LIVE - %1 | config %2 | the gun %3 | %4 | rocket artillery %5",
+                _class, _cfgRounds, _gunRounds, if (_differ) then {"DIFFER"} else {"same"}, _rocket] call ALiVE_fnc_dump;
 
             deleteVehicle _veh;
         };
@@ -148,8 +155,10 @@ if (_spawnLive) exitWith {
 
     private _differing = _rows select { _x select 3 };
 
-    // config blind - the gun offers ordnance config cannot see at all. A launcher
-    // mounted at spawn does this, and it is the fault behind an empty tablet
+    // config blind - the gun offers ordnance the config read cannot see. This is
+    // a gap in getArtyMagazines, not a fact about the vehicle: rocket artillery
+    // hangs its launcher off a pylon, and the Calliope and BM-21 sat here until
+    // the walk learned to read them. Go and find where the config declares it
     private _cfgBlind = (_differing select { (_x select 1) isEqualTo [] && {!((_x select 2) isEqualTo [])} }) apply { _x select 0 };
 
     // config lists MORE than the gun carries. Expected and harmless: getArtilleryAmmo
@@ -168,7 +177,7 @@ if (_spawnLive) exitWith {
 
     ["ALiVE ARTY AUDIT LIVE - %1 gun(s) swept, %2 where config and the gun disagree", count _rows, count _differing] call ALiVE_fnc_dump;
     if !(_cfgBlind isEqualTo []) then {
-        ["ALiVE ARTY AUDIT LIVE - config sees no ordnance, the gun does (launcher mounted at spawn): %1", _cfgBlind] call ALiVE_fnc_dump;
+        ["ALiVE ARTY AUDIT LIVE - config sees no ordnance, the gun does. The config read is not looking where these keep it - find that place, do not assume it cannot be read: %1", _cfgBlind] call ALiVE_fnc_dump;
     };
     if !(_cfgWider isEqualTo []) then {
         ["ALiVE ARTY AUDIT LIVE - config lists more than the gun is loaded with, which is expected - config is capability, the gun is inventory: %1", _cfgWider] call ALiVE_fnc_dump;
@@ -211,13 +220,13 @@ private _empty = _rows select { (_x select 2) isEqualTo [] };
 ["ALiVE ARTY AUDIT - %1 gun(s) audited, %2 with no rounds to offer", count _rows, count _empty] call ALiVE_fnc_dump;
 
 // split on what was actually read, not on the magazine count. A count is not
-// evidence: a gun whose launcher is mounted at spawn still reports whatever its
-// config lists, and that can be hull machine guns and no ordnance whatever.
+// evidence: a gun whose ordnance the walk cannot find still reports whatever its
+// config does list, and that can be hull machine guns and nothing that fires.
 private _byName = (_empty select { !(_x select 4) }) apply { _x select 0 };
 private _byLive = (_empty select { _x select 4 }) apply { _x select 0 };
 
 if !(_byName isEqualTo []) then {
-    ["ALiVE ARTY AUDIT - no rounds from config. Audit a live one to learn why: rounds there means the launcher is mounted at spawn, nothing there means the classifier missed the magazines: %1", _byName] call ALiVE_fnc_dump;
+    ["ALiVE ARTY AUDIT - no rounds from config. Audit a live one to learn why: rounds there means the config read is missing where this gun keeps its ordnance, nothing there means the classifier missed the magazines: %1", _byName] call ALiVE_fnc_dump;
 };
 if !(_byLive isEqualTo []) then {
     ["ALiVE ARTY AUDIT - no rounds from the live gun either - the magazines are there and no ordnance type matched them (ALIVE_fnc_isMagazineOfOrdnanceType): %1", _byLive] call ALiVE_fnc_dump;

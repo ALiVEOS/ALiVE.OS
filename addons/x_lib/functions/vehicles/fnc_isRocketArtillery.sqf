@@ -45,4 +45,7 @@ if ("ROCKETS" in _ordnance && {!("HE" in _ordnance)}) exitWith { true };
 // script-added ordnance is invisible to config - recognise the common
 // launcher families by classname / model path
 private _sig = toLower format ["%1 %2", _class, getText (configFile >> "CfgVehicles" >> _class >> "model")];
-(["bm21", "bm-21", "grad", "mlrs", "m270", "himars", "smerch", "uragan", "rm70", "rm-70", "katyusha"] findIf { _x in _sig }) > -1
+// "m142" as well as "himars" - RHS names the launcher rhsusf_M142_*, which
+// carries neither the word himars nor, now its pylon pod is read correctly,
+// a ROCKETS answer to vote with above
+(["bm21", "bm-21", "grad", "mlrs", "m270", "himars", "m142", "smerch", "uragan", "rm70", "rm-70", "katyusha"] findIf { _x in _sig }) > -1

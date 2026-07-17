@@ -70,7 +70,7 @@ if (_class iskindOf "LandVehicle" && {_hasArtyScanner > 0}) then {
 
         if (!_result) then {
             private _sig = toLower format ["%1 %2", _class, getText (configfile >> "CfgVehicles" >> _class >> "model")];
-            _result = (["bm21", "bm-21", "grad", "mlrs", "m270", "himars", "smerch", "uragan", "rm70", "rm-70", "katyusha"] findIf { _x in _sig }) > -1;
+            _result = (["bm21", "bm-21", "grad", "mlrs", "m270", "himars", "m142", "smerch", "uragan", "rm70", "rm-70", "katyusha"] findIf { _x in _sig }) > -1;
         };
     };
 };

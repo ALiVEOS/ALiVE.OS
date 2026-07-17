@@ -67,12 +67,31 @@ private _fnc_collect = {
     } forEach (getArray (_cfg >> "weapons"));
 };
 
+// pylon stores are named on the pylon, not in the turret tree. Take the
+// attachment - what is actually fitted - and never hardpoints[], which lists
+// everything that COULD fit and would drag in every compatible store
+private _fnc_pylons = {
+    params ["_cfg"];
+    private _pylons = _cfg >> "Components" >> "TransportPylonsComponent" >> "pylons";
+    if (!isClass _pylons) exitWith {};
+    {
+        private _fitted = getText (_x >> "attachment");
+        if (_fitted != "") then { _mags pushBack _fitted };
+    } forEach ("isClass _x" configClasses _pylons);
+};
+
 private _fnc_walkTurrets = {
     params ["_cfg"];
     {
-        [_x] call _fnc_collect;
-        if (isClass (_x >> "Turrets")) then {
-            [_x >> "Turrets"] call _fnc_walkTurrets;
+        // a hatch or cargo seat is never the gun. The RHS HIMARS hangs its pylon
+        // compatibility list off a passenger turret's dummy launcher, so walking
+        // one collects two fuel tanks and an ECM pod as if they were ordnance -
+        // and the fuel tank is missile-simulated, so it answers to ROCKETS
+        if (getNumber (_x >> "isPersonTurret") != 1) then {
+            [_x] call _fnc_collect;
+            if (isClass (_x >> "Turrets")) then {
+                [_x >> "Turrets"] call _fnc_walkTurrets;
+            };
         };
     } forEach ("isClass _x" configClasses _cfg);
 };
@@ -80,6 +99,7 @@ private _fnc_walkTurrets = {
 private _vehCfg = configFile >> "CfgVehicles" >> _class;
 
 [_vehCfg] call _fnc_collect;
+[_vehCfg] call _fnc_pylons;
 if (isClass (_vehCfg >> "Turrets")) then {
     [_vehCfg >> "Turrets"] call _fnc_walkTurrets;
 };
