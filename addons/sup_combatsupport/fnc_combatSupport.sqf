@@ -376,7 +376,7 @@ switch(_operation) do {
                                     _setherounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_he","30"];
                                     _setillumrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_illum","30"];
                                     _setsmokerounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_smoke","30"];
-                                    _setwprounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_wp","0"];
+                                    _setwprounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_wp","30"];
                                     _setguidedrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_guided","30"];
                                     _setclusterrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_cluster","30"];
                                     _setlgrounds = ((synchronizedObjects _logic) select _i) getvariable ["artillery_lg","30"];

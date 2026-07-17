@@ -98,13 +98,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_WP_DESC">
-    <English>Set the number of White Phosphorus rounds available for the asset. Defaults to 0 - WP rounds only exist in some mods.</English>
-    <Chinese>設定該資產可用的白磷彈數量。預設為 0 -- 白磷彈僅存在於部分模組中。</Chinese>
-    <Chinesesimp>设置该单位可用的白磷弹数量。默认为 0——白磷弹仅在部分模组中存在。</Chinesesimp>
-    <Spanish>Establece el número de proyectiles de fósforo blanco disponibles para el activo. Por defecto 0; los proyectiles de fósforo blanco solo existen en algunos mods.</Spanish>
-    <French>Définit le nombre d'obus au phosphore blanc disponibles pour l'unité. Par défaut 0 - les obus au phosphore blanc n'existent que dans certains mods.</French>
-    <Portuguese>Define o número de projéteis de Fósforo Branco disponíveis para o ativo. O padrão é 0 - projéteis de FB só existem em alguns mods.</Portuguese>
-    <Russian>Задайте количество доступных снарядов с белым фосфором для этого средства. По умолчанию 0 — снаряды WP есть только в некоторых модах.</Russian>
+    <English>Set the number of White Phosphorus rounds available for the asset. Only a gun that carries WP will offer it - most artillery has none, and vanilla artillery has none at all.</English>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_GUIDED">
     <English>Number of GUIDED Rounds</English>

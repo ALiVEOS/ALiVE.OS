@@ -46,7 +46,7 @@ class CfgVehicles {
                         class artillery_he : Edit { property = "ALiVE_sup_artillery_artillery_he"; displayName = "$STR_ALIVE_ARTILLERY_HE"; tooltip = "$STR_ALIVE_ARTILLERY_HE_DESC"; defaultValue = """30"""; };
                         class artillery_illum : Edit { property = "ALiVE_sup_artillery_artillery_illum"; displayName = "$STR_ALIVE_ARTILLERY_ILLUM"; tooltip = "$STR_ALIVE_ARTILLERY_ILLUM_DESC"; defaultValue = """30"""; };
                         class artillery_smoke : Edit { property = "ALiVE_sup_artillery_artillery_smoke"; displayName = "$STR_ALIVE_ARTILLERY_SMOKE"; tooltip = "$STR_ALIVE_ARTILLERY_SMOKE_DESC"; defaultValue = """30"""; };
-                        class artillery_wp : Edit { property = "ALiVE_sup_artillery_artillery_wp"; displayName = "$STR_ALIVE_ARTILLERY_WP"; tooltip = "$STR_ALIVE_ARTILLERY_WP_DESC"; defaultValue = """0"""; };
+                        class artillery_wp : Edit { property = "ALiVE_sup_artillery_artillery_wp"; displayName = "$STR_ALIVE_ARTILLERY_WP"; tooltip = "$STR_ALIVE_ARTILLERY_WP_DESC"; defaultValue = """30"""; };
                         class artillery_guided : Edit { property = "ALiVE_sup_artillery_artillery_guided"; displayName = "$STR_ALIVE_ARTILLERY_GUIDED"; tooltip = "$STR_ALIVE_ARTILLERY_GUIDED_DESC"; defaultValue = """30"""; };
                         class artillery_cluster : Edit { property = "ALiVE_sup_artillery_artillery_cluster"; displayName = "$STR_ALIVE_ARTILLERY_CLUSTER"; tooltip = "$STR_ALIVE_ARTILLERY_CLUSTER_DESC"; defaultValue = """30"""; };
                         class artillery_lg : Edit { property = "ALiVE_sup_artillery_artillery_lg"; displayName = "$STR_ALIVE_ARTILLERY_LG"; tooltip = "$STR_ALIVE_ARTILLERY_LG_DESC"; defaultValue = """30"""; };
