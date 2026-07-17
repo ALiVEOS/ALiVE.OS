@@ -946,6 +946,27 @@ switch(_operation) do {
                                 } forEach _codeArray;
                             } forEach _artyBatteries;
 
+                            // #950 - the guns exist by now, so re-ask with a live one.
+                            // The classname scan further up runs before they spawn, and
+                            // rocket artillery mounts its launcher at spawn - so that
+                            // scan resolves no ordnance and the tablet comes up empty.
+                            // An Eden-placed gun adopted through the nearestObjects
+                            // branch never reaches _artyBatteries, so fall back to _veh.
+                            // Only overwrite on a real answer: never let a gun the
+                            // classname scan already resolved lose its rounds here.
+                            private _probeGun = if (count _artyBatteries > 0) then {
+                                _artyBatteries select 0
+                            } else {
+                                if (isNil "_veh") then { objNull } else { _veh }
+                            };
+                            if (!isNull _probeGun) then {
+                                private _liveRounds = _probeGun call ALiVE_fnc_GetArtyRounds;
+                                if !(_liveRounds isEqualTo []) then {
+                                    _roundsUnit = _liveRounds;
+                                    ["CS - _roundsUnit (live gun): %1",_roundsUnit] call ALiVE_fnc_dump;
+                                };
+                            };
+
                             //Validate rounds
                             {
                                 if ((_x select 0) in _roundsUnit) then

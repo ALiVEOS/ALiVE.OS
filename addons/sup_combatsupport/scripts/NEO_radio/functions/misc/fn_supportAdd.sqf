@@ -317,7 +317,15 @@ switch (_support) do
         } forEach _artyBatteries;
 
         //Validate rounds
-        private _roundsUnit = if (!isNil "_tempclass") then { _tempclass call ALiVE_fnc_GetArtyRounds } else { _class call ALiVE_fnc_GetArtyRounds };
+        // #950 - hand over a live gun when we have one. Rocket artillery mounts
+        // its launcher at spawn, so a classname on its own resolves no ordnance
+        // and the tablet offers nothing to fire.
+        private _roundsProbe = if (count _artyBatteries > 0) then {
+            _artyBatteries select 0
+        } else {
+            if (!isNil "_tempclass") then { _tempclass } else { _class }
+        };
+        private _roundsUnit = _roundsProbe call ALiVE_fnc_GetArtyRounds;
         private _roundsAvailable = _rounds select { (_x select 0) in _roundsUnit };
 
         leader _grp setVariable ["NEO_radioArtyBatteryRounds", _roundsAvailable, true];

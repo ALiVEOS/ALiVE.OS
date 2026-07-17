@@ -50,6 +50,18 @@ private _ord = "";
     };
 } forEach _mags;
 
+// #950 - the launcher may be script-added at spawn and invisible to the config
+// walk above (Spearhead Calliope, RHS BM-21). Ask the live gun's artillery
+// computer before reporting nothing - otherwise the round is offered in the
+// tablet and then resolves to "" when the fire mission tries to load it.
+if (_ord == "" && {_class isEqualType objNull}) then {
+    {
+        if ([_type, _x] call ALIVE_fnc_isMagazineOfOrdnanceType) exitWith {
+            _ord = _x;
+        };
+    } forEach (getArtilleryAmmo [vehicle _class]);
+};
+
 // "" (not nil) when the gun has nothing of this type - callers pass the
 // result into the fire-mission task array and the range checks
 _ord;
