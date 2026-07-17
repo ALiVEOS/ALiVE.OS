@@ -172,6 +172,15 @@ switch (_ordnanceType) do {
             && {!(_ammo isKindOf ["FlareCore", _cfgAmmoRoot])}
             && {getNumber (_ammoCfg >> "laserLock") == 0}
             && {!(call _fnc_isDispenser)}
+            // an HE round explodes. Spearhead parents its smoke shell on
+            // ShellBase and gives it no splash at all, so parentage alone reads
+            // it as HE and an HE fire mission puts smoke on the target. Every
+            // real HE shell carries indirect damage - vanilla's 155 has 125,
+            // Spearhead's own HE has 250, its smoke has none - so ask whether
+            // the thing actually goes off rather than what it inherits from.
+            // Vanilla never reaches here: its names match at the pattern test
+            // above and exit before any of this runs.
+            && {getNumber (_ammoCfg >> "indirectHit") > 0}
     };
     default { false };
 };
