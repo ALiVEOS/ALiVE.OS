@@ -36,6 +36,10 @@ item31[] = {"ACTIONS_EXECUTIN",4,218,-969.264343,432.824890,-879.264343,482.8248
 item32[] = {"IDLE",4,218,-922.595764,-362.032440,-832.595764,-312.032410,20.000000,"IDLE"};
 item33[] = {"EXIT",4,218,-708.160400,-1273.398193,-618.160278,-1223.398193,99.000000,"EXIT"};
 item34[] = {"END",1,4346,-709.962219,-1383.000854,-619.962036,-1333.000610,0.000000,"END"};
+item35[] = {"OBJECTIVE_DELETE",4,218,-500.000000,-549.000000,-410.000000,-499.000000,4.000000,"OBJECTIVE" \n "DELETED"};
+item36[] = {"OBJECTIVE_DELETE",4,218,-500.000000,-400.000000,-410.000000,-350.000000,4.000000,"OBJ DELETED"};
+item37[] = {"OBJECTIVE_DELETE",4,218,-500.000000,-250.000000,-410.000000,-200.000000,4.000000,"OBJ DELETED"};
+item38[] = {"OBJECTIVE_DELETE",4,218,-500.000000,-100.000000,-410.000000,-50.000000,4.000000,"OBJ DELETED"};
 link0[] = {0,1};
 link1[] = {1,2};
 link2[] = {2,29};
@@ -80,6 +84,14 @@ link40[] = {30,33};
 link41[] = {31,26};
 link42[] = {32,26};
 link43[] = {33,34};
+link44[] = {4,35};
+link45[] = {35,28};
+link46[] = {17,36};
+link47[] = {36,28};
+link48[] = {19,37};
+link49[] = {37,28};
+link50[] = {21,38};
+link51[] = {38,28};
 globals[] = {0.000000,0,0,0,0,640,480,1,137,6316128,1,-1476.037354,32.889648,135.714111,-1442.855591,845,884,1};
 window[] = {2,-1,-1,-1,-1,986,1998,3550,78,3,863};
 *//*%FSM</HEAD>*/
@@ -124,6 +136,7 @@ class FSM
                          "_busy = false;" \n
                          "_pause = false;" \n
                          "_exitFSM = false;" \n
+                         "_objectiveDeleted = false;" \n
                          "_time = 0;" \n
                          "_troopsBusy = [];" \n
                          "_simultan = [];" \n
@@ -262,6 +275,9 @@ class FSM
                          "];" \n
                          "" \n
                          "_objective = _objectives select _iteration;" \n
+                         "if (isnil ""_objective"") exitwith {_objectiveDeleted = true};" \n
+                         "_objectiveDeleted = [_objective,""deleted"",false] call ALiVE_fnc_HashGet;" \n
+                         "if (_objectiveDeleted) exitwith {};" \n
                          "" \n
                          "_center = [_objective,""center""] call ALiVE_fnc_HashGet;" \n
                          "_id = [_objective,""objectiveID""] call ALiVE_fnc_HashGet;" \n
@@ -380,6 +396,17 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "OBJECTIVE_DELETE">*/
+                                class OBJECTIVE_DELETE
+                                {
+                                        itemno = 35;
+                                        priority = 4.000000;
+                                        to="RESET";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_objectiveDeleted"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_iteration = _iteration + 1;"/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "_">*/
                                 class _
                                 {
@@ -1188,6 +1215,7 @@ class FSM
                         name = "SELECT_SECTION";
                         itemno = 17;
                         init = /*%FSM<STATEINIT""">*/"private [""_section"",""_dead"",""_types"",""_agents""];" \n
+                         "if ([_objective,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {_objectiveDeleted = true};" \n
                          "" \n
                          "_section = [_objective,""section"",[]] call ALiVE_fnc_HashGet;" \n
                          "_actions = [_objective,""actions""] call ALiVE_fnc_HashGet;" \n
@@ -1246,6 +1274,17 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "OBJECTIVE_DELETE">*/
+                                class OBJECTIVE_DELETE
+                                {
+                                        itemno = 36;
+                                        priority = 4.000000;
+                                        to="RESET";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_objectiveDeleted"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "SECTION_SELECTED">*/
                                 class SECTION_SELECTED
                                 {
@@ -1283,6 +1322,7 @@ class FSM
                         name = "MOVE_SECTION";
                         itemno = 19;
                         init = /*%FSM<STATEINIT""">*/"private [""_pos"",""_actions"",""_switch"",""_behaviour"",""_speed"",""_command"",""_commandParams"",""_pending"",""_count""];" \n
+                         "if ([_objective,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {_objectiveDeleted = true};" \n
                          "" \n
                          "_actions = [_objective,""actions""] call ALiVE_fnc_HashGet;" \n
                          "_pos = _actions select 1;" \n
@@ -1386,6 +1426,17 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "OBJECTIVE_DELETE">*/
+                                class OBJECTIVE_DELETE
+                                {
+                                        itemno = 37;
+                                        priority = 4.000000;
+                                        to="RESET";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_objectiveDeleted"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "SECTION_READY">*/
                                 class SECTION_READY
                                 {
@@ -1438,6 +1489,7 @@ class FSM
                         name = "EXECUTE_ACTIONS";
                         itemno = 21;
                         init = /*%FSM<STATEINIT""">*/"private [""_type"",""_pos"",""_switch"",""_actions"",""_code""];" \n
+                         "if ([_objective,""deleted"",false] call ALiVE_fnc_HashGet) exitwith {_objectiveDeleted = true};" \n
                          "" \n
                          "_actions = [_objective,""actions""] call ALiVE_fnc_HashGet;" \n
                          "_code = [_objective,""code""] call ALiVE_fnc_HashGet;" \n
@@ -1460,6 +1512,17 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "OBJECTIVE_DELETE">*/
+                                class OBJECTIVE_DELETE
+                                {
+                                        itemno = 38;
+                                        priority = 4.000000;
+                                        to="RESET";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_objectiveDeleted"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "ACTIONS_FULFILLE">*/
                                 class ACTIONS_FULFILLE
                                 {

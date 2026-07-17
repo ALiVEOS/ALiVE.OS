@@ -202,7 +202,12 @@ _baseInstallations = [
 // Count active insurgency installations from the objective hashes owned by each matched asymmetric OPCOM.
 {
     private _handler = _x;
-    private _objectives = [_handler,"objectives",[]] call ALIVE_fnc_hashGet;
+    // #727 - a removed objective keeps its still-alive installation objects, so
+    // filter deleted objectives out or the counts stay inflated (mirrors the
+    // OPCOM/TACOM removed-objective guards on the non-asymmetric paths).
+    private _objectives = ([_handler,"objectives",[]] call ALIVE_fnc_hashGet) select {
+        !([_x,"deleted",false] call ALiVE_fnc_HashGet)
+    };
 
     {
         private _objective = _x;

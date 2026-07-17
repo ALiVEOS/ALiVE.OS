@@ -567,6 +567,7 @@ ALiVE_fnc_INS_assault = {
 
                 // Timeout
                 waituntil {time - _timeTaken > 120};
+                if (isNil "_objective" || {[_objective,"deleted",false] call ALiVE_fnc_HashGet}) exitWith {};
 
                 // Add TACOM suicide command on one ambient civilian agents
                 {
@@ -712,6 +713,7 @@ ALiVE_fnc_INS_factory = {
 
                 // Timeout
                 waituntil {time - _timeTaken > 120};
+                if (isNil "_objective" || {[_objective,"deleted",false] call ALiVE_fnc_HashGet}) exitWith {};
 
                 // Store center position
                 _center = _pos;
@@ -772,6 +774,7 @@ ALiVE_fnc_INS_ied = {
 
                 // Timeout
                 waituntil {time - _timeTaken > 120};
+                if (isNil "_objective" || {[_objective,"deleted",false] call ALiVE_fnc_HashGet}) exitWith {};
 
                 // If IED module is used add IEDs and VBIEDs according to IED module settings
                 if (!isnil "ALiVE_MIL_IED") then {
@@ -832,6 +835,7 @@ ALiVE_fnc_INS_suicide = {
 
                 // Timeout
                 waituntil {time - _timeTaken > 120};
+                if (isNil "_objective" || {[_objective,"deleted",false] call ALiVE_fnc_HashGet}) exitWith {};
 
                 // Place ambient suiciders trigger
                 if (!isnil "ALiVE_mil_IED") then {
@@ -888,6 +892,7 @@ ALiVE_fnc_INS_sabotage = {
 
                 // Timeout
                 waituntil {time - _timeTaken > 120};
+                if (isNil "_objective" || {[_objective,"deleted",false] call ALiVE_fnc_HashGet}) exitWith {};
 
                 // Assign sabotage target
                 if (alive _target) then {[_objective,"sabotage",[[],"convertObject",_target] call ALiVE_fnc_OPCOM] call ALiVE_fnc_HashSet};
@@ -1086,6 +1091,7 @@ ALiVE_fnc_INS_roadblocks = {
 
                 // Timeout
                 waituntil {time - _timeTaken > 120};
+                if (isNil "_objective" || {[_objective,"deleted",false] call ALiVE_fnc_HashGet}) exitWith {};
 
                 // Add TACOM IED command on all selected agents
                 {
@@ -1151,6 +1157,7 @@ ALiVE_fnc_INS_depot = {
 
                 // Timeout
                 waituntil {time - _timeTaken > 120};
+                if (isNil "_objective" || {[_objective,"deleted",false] call ALiVE_fnc_HashGet}) exitWith {};
 
                 // Establish Depot
                 if (alive _depot) then {
@@ -1288,7 +1295,7 @@ ALiVE_fnc_INS_recruit = {
 
                     _attemptsRemaining = if (_recruitAttemptLimit == 0) then {count _agents} else {_recruitAttemptLimit};
 
-                    while {alive _HQ && {_attemptsRemaining != 0}} do {
+                    while {alive _HQ && {_attemptsRemaining != 0} && {!isNil "_objective"} && {!([_objective,"deleted",false] call ALiVE_fnc_HashGet)}} do {
 
                         private _hmPressureData = [_pos,_side,(_size + 600) max 900] call ALiVE_fnc_INS_getHeartsAndMindsPressure;
                         _hmPressureData params [["_hmPressure",0],["_hmPhase","Stabilize"]];
