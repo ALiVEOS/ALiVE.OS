@@ -62,9 +62,9 @@ if (_class iskindOf "LandVehicle" && {_hasArtyScanner > 0}) then {
     if (_high) then {
         // spotter guard: observation vehicles pass both checks above (scanner
         // flag + high-elevation optics/MG turret) without owning a gun, so
-        // demand lethal ordnance in config. Launchers whose weapon is added
-        // by script (BM-21 family) show an empty config loadout - recognise
-        // those by the same name signature isRocketArtillery uses
+        // demand lethal ordnance in config. A launcher can still read empty
+        // if its rounds sit somewhere the walk does not look - recognise those
+        // by the same name signature isRocketArtillery uses
         private _rounds = _class call ALIVE_fnc_getArtyRounds;
         _result = count (_rounds - ["SMOKE","ILLUM"]) > 0;
 

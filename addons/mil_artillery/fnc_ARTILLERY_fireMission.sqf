@@ -169,9 +169,10 @@ if (_mag == "") then {
     };
 };
 if (_mag == "") then {
-    // ask the LIVE gun's artillery computer: some mods (e.g. RHS rocket
-    // artillery) add their weapon by script at spawn, invisible to any config
-    // walk. Prefer an HE-classified magazine, else take the first offered.
+    // ask the live gun what it is holding. The config read is only ever as good
+    // as where it looks - every rocket launcher hid from it until it learned to
+    // read pylons - and there may be somewhere else it still does not look.
+    // Prefer an HE-classified magazine, else take the first offered.
     private _liveMags = getArtilleryAmmo [_gunLead];
     if (count _liveMags > 0) then {
         private _idx = _liveMags findIf { ["HE", _x] call ALIVE_fnc_isMagazineOfOrdnanceType };
@@ -198,8 +199,8 @@ if (_mag == "") exitWith {
 };
 
 // first-activation capability probe: measure the gun's real engagement
-// envelope (script-added ordnance and rocket artillery defeat every config
-// heuristic - the RHS Grad turned out to be an 8-20km system). Cached on the
+// envelope, because no config heuristic predicts it - the RHS Grad turned out
+// to be an 8-20km system, nothing like the howitzer defaults. Cached on the
 // record so battery picks stop offering it unreachable targets.
 if !([_record,"probed",false] call ALiVE_fnc_hashGet) then {
     private _probeMag = (getArtilleryAmmo [_gunLead]) param [0, _mag];
@@ -374,8 +375,8 @@ if (count _friendlyPlayers > 0) then {
         // machine gun must not satisfy the volley watchdog (or feed the enemy
         // counter-battery watch a volley that never flew). Classify by the
         // fired AMMO's simulation family: shells/rockets/missiles count,
-        // bullets and countermeasure smoke do not. Ammo-based so script-added
-        // launcher weapons (config-invisible magazines) still count
+        // bullets and countermeasure smoke do not. Judging the round that
+        // actually flew needs no config read at all, so nothing can hide
         private _eh = _this addEventHandler ["Fired", {
             params ["_unit","","","","_ammo"];
             // #876 - flares excluded: the night illumination pre-shot must not

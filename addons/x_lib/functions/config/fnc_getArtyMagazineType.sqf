@@ -50,10 +50,11 @@ private _ord = "";
     };
 } forEach _mags;
 
-// #950 - the launcher may be script-added at spawn and invisible to the config
-// walk above (Spearhead Calliope, RHS BM-21). Ask the live gun's artillery
-// computer before reporting nothing - otherwise the round is offered in the
-// tablet and then resolves to "" when the fire mission tries to load it.
+// #950 - the walk above can come back empty even when the gun is loaded: it
+// missed every pylon-mounted launcher (Spearhead Calliope, RHS BM-21) until it
+// learned to read them, and other blind spots may remain. Ask the live gun's
+// artillery computer before reporting nothing - otherwise the round is offered
+// in the tablet and then resolves to "" when the fire mission tries to load it.
 if (_ord == "" && {_class isEqualType objNull}) then {
     {
         if ([_type, _x] call ALIVE_fnc_isMagazineOfOrdnanceType) exitWith {

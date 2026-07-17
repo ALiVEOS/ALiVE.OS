@@ -8,9 +8,9 @@ Description:
 Checks if a vehicle is ROCKET artillery (MLRS-class), as opposed to gun
 artillery. Rocket systems have large minimum ranges (4-5km) that make them
 useless on small terrains, so placement can defer them. Classified by
-ordnance where the config shows it; some mods add the launcher's weapon by
-script (config-invisible), so a name signature over classname + model path
-is the fallback.
+ordnance where that is decisive; many launchers carry rounds that do not
+classify as ROCKETS, so a name signature over classname + model path is the
+fallback.
 
 Parameters:
 Object or String - vehicle (or classname)
@@ -42,8 +42,9 @@ if !([_class] call ALIVE_fnc_isArtillery) exitWith { false };
 private _ordnance = _class call ALiVE_fnc_GetArtyRounds;
 if ("ROCKETS" in _ordnance && {!("HE" in _ordnance)}) exitWith { true };
 
-// script-added ordnance is invisible to config - recognise the common
-// launcher families by classname / model path
+// the ordnance vote above only catches launchers whose rounds classify as
+// ROCKETS with no HE among them; plenty do not. Recognise those by the common
+// launcher families in the classname / model path
 private _sig = toLower format ["%1 %2", _class, getText (configFile >> "CfgVehicles" >> _class >> "model")];
 // "m142" as well as "himars" - RHS names the launcher rhsusf_M142_*, which
 // carries neither the word himars nor, now its pylon pod is read correctly,
