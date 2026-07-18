@@ -325,8 +325,9 @@ class NEO_RscMap
     sizeExLevel = 0.025; //sizeExLevel = 0.02;
   sizeExNames = "(      (     (     ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8) * 2";
   sizeExUnits = "(      (     (     ((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8)";
-  stickX[] = {0.2,["Gamma",1,1.5]};
-  stickY[] = {0.2,["Gamma",1,1.5]};
+  // stickX/stickY removed - they snap the map back to a centre point when the
+  // player releases a pan, so the player's pan/zoom never held. The c2istar
+  // tablet map (C2Tablet_RscMap) omits them and holds position correctly.
   style = 48;
   text = "#(argb,8,8,3)color(1,1,1,1)";
   type = 101;

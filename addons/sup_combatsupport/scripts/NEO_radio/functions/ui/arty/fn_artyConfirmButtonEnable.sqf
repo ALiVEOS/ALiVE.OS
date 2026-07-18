@@ -31,7 +31,14 @@ _status = _battery getVariable "NEO_radioArtyUnitStatus";
 
 if
 (
-    !isNil { uinamespace getVariable "NEO_artyMarkerCreated" }
+    (
+        !isNil { uinamespace getVariable "NEO_artyMarkerCreated" }
+        ||
+        {
+            private _ls = NEO_radioLogic getVariable ["NEO_supportMarkerArtyLastShot", ""];
+            _ls != "" && {markerAlpha _ls > 0}
+        }
+    )
     &&
     _status != "KILLED"
     &&

@@ -31,6 +31,26 @@ _unit = player;
 // building the menu below. Default to the general menu when nothing set it.
 _action = uinamespace getVariable ["NEO_radioCurrentAction", "radio"];
 
+// restore the player's last map pan + zoom (saved on close in fn_radioOnUnload)
+// so re-opening the tablet returns to the same view, not the default centre.
+// Do it on the map's first Draw (unscheduled, lands within a frame) instead of a
+// timed spawn that visibly panned across about a second later.
+if ((uinamespace getVariable ["NEO_radioMapScale", 0]) > 0) then {
+    private _rMap = (findDisplay 655555) displayCtrl 655560;
+    if (!isNull _rMap) then {
+        _rMap setVariable ["NEO_mapRestored", false];
+        _rMap ctrlAddEventHandler ["Draw", {
+            params ["_ctrl"];
+            if !(_ctrl getVariable ["NEO_mapRestored", false]) then {
+                _ctrl setVariable ["NEO_mapRestored", true];
+                ctrlMapAnimClear _ctrl;
+                _ctrl ctrlMapAnimAdd [0, uinamespace getVariable ["NEO_radioMapScale", 0.16], uinamespace getVariable ["NEO_radioMapCenter", [0,0,0]]];
+                ctrlMapAnimCommit _ctrl;
+            };
+        }];
+    };
+};
+
 private ["_available", "_transportArray", "_casArray", "_artyArray","_side"];
 
 /*
@@ -183,3 +203,51 @@ if (vehicle _unit == _unit && _action == "radio") then
 
 //Hide GPS
 showGPS false;
+
+// keep the panel in step with each asset's status. The support FSMs flip it
+// asynchronously (on mission, RTB, smoke requested, complete) and nothing
+// refreshed the UI, so Confirm stayed active after firing and the transport
+// smoke prompt never appeared. Refresh only when the SELECTED asset's status
+// actually changes (not when the player switches assets, which already
+// refreshes), so in-progress input is left alone.
+[] spawn {
+    private _lastUnit = objNull;
+    private _lastStatus = "";
+    while { !isNull (findDisplay 655555) } do {
+        uiSleep 1;
+        private _disp = findDisplay 655555;
+        if (!isNull _disp) then {
+            private _supLb = _disp displayCtrl 655565;
+            private _cfg = switch (toUpper (_supLb lbText (lbCurSel _supLb))) do {
+                case "ARTY":      { [655594, "NEO_radioArtyArray", "NEO_radioArtyUnitStatus"] };
+                case "CAS":       { [655582, "NEO_radioCasArray", "NEO_radioCasUnitStatus"] };
+                case "TRANSPORT": { [655568, "NEO_radioTrasportArray", "NEO_radioTrasportUnitStatus"] };
+                default           { [] };
+            };
+            private _curUnit = objNull;
+            private _curStatus = "";
+            if !(_cfg isEqualTo []) then {
+                _cfg params ["_ulbIdc", "_arrPrefix", "_statVar"];
+                private _sel = lbCurSel (_disp displayCtrl _ulbIdc);
+                if (_sel >= 0) then {
+                    private _arr = NEO_radioLogic getVariable [format ["%1_%2", _arrPrefix, playerSide], []];
+                    if (_sel < count _arr) then {
+                        _curUnit = _arr select _sel select 0;
+                        _curStatus = _curUnit getVariable [_statVar, ""];
+                    };
+                };
+            };
+            if (!isNull _curUnit) then {
+                if (_curUnit isEqualTo _lastUnit) then {
+                    if (_curStatus != _lastStatus) then {
+                        _lastStatus = _curStatus;
+                        [lbCurSel _supLb] call NEO_fnc_radioRefreshUi;
+                    };
+                } else {
+                    _lastUnit = _curUnit;
+                    _lastStatus = _curStatus;
+                };
+            };
+        };
+    };
+};

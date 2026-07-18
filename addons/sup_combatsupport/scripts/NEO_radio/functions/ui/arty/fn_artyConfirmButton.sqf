@@ -37,7 +37,14 @@ _unit = _artyArray select (lbCurSel _artyUnitLb) select 1;
 
 _status = _battery getVariable "NEO_radioArtyUnitStatus";
 _supportMarker = NEO_radioLogic getVariable "NEO_supportMarker";
-_pos = getMarkerPos _supportMarker; _pos set [2, 0];
+// a fresh map click takes precedence; otherwise fall back to the last-shot
+// marker so a fire mission can be repeated on the same grid without re-clicking
+_pos = if (!isNil { uinamespace getVariable "NEO_artyMarkerCreated" }) then {
+    getMarkerPos _supportMarker
+} else {
+    getMarkerPos (NEO_radioLogic getVariable ["NEO_supportMarkerArtyLastShot", _supportMarker])
+};
+_pos set [2, 0];
 _type = "IMMEDIATE";
 _ordnanceType = _artyOrdnanceTypeLb lbText (lbCurSel _artyOrdnanceTypeLb);
 
@@ -78,6 +85,13 @@ if (_audio) then {
 
 //NEW TASK
 _battery setVariable ["NEO_radioArtyNewTask", [_type, _ordnanceType, _rate, _count, _dispersion, _pos, _unit, _ord, _callsignPlayer, player], true];
+
+// show the panel the battery is engaged the moment the mission is called - the
+// FSM only flips the status to MISSION once it actually fires (after crew-up and
+// the ranging round), which left Confirm active and the status reading
+// "available" until then. The FSM re-affirms MISSION when it fires, or corrects
+// to RESPONSE a moment later if the target is out of range.
+_battery setVariable ["NEO_radioArtyUnitStatus", "MISSION", true];
 
 // remember where this fire mission was called. A marker at the target grid that
 // stays on the map after the tablet closes, so a ranging round can be followed

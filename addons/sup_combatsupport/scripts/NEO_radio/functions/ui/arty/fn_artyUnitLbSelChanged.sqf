@@ -53,20 +53,21 @@ _ord = _battery getVariable "NEO_radioArtyBatteryRounds";
 //Help Text
 _artyHelpUnitText ctrlSetStructuredText parseText (switch (toUpper _status) do
 {
-    case "NONE" : { "<t color='#627057' size='0.7' font='PuristaMedium'>Unit is available and waiting for fire mission</t>" };
-    case "KILLED" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Unit is combat ineffective</t>" };
-    case "MISSION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is on a fire mission</t>" };
-    case "MOVE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is on the move to get in range of target</t>" };
-    case "RTB" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit is RTB</t>" };
-    case "RESPONSE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit waiting for response</t>" };
-    case "NOAMMO" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Unit is out of ammunition</t>" };
+    case "NONE" : { "<t color='#627057' size='0.7' font='PuristaMedium'>Battery is available and waiting for a fire mission</t>" };
+    case "KILLED" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Battery is combat ineffective</t>" };
+    case "MISSION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Battery is on a fire mission</t>" };
+    case "MOVE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Battery is moving to bring the target into range</t>" };
+    case "RTB" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Battery is returning to base</t>" };
+    case "RESPONSE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Battery is out of range - order it to reposition below</t>" };
+    case "NOAMMO" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Battery is out of ammunition</t>" };
 });
 
 if (_status == "RESPONSE") then
 {
-    _artyMoveButton ctrlEnable true; _artyMoveButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6176 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyMoveButton ctrlCommit 0;
+    // Get in Range on top, Don't Move below (positive option first)
+    _artyMoveButton ctrlEnable true; _artyMoveButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.584 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyMoveButton ctrlCommit 0;
     _artyMoveButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_artyMoveButtons"];
-    _artyDontMoveButton ctrlEnable true; _artyDontMoveButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.584 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyDontMoveButton ctrlCommit 0;
+    _artyDontMoveButton ctrlEnable true; _artyDontMoveButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6176 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyDontMoveButton ctrlCommit 0;
     _artyDontMoveButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_artyMoveButtons"];
 }
 else
@@ -121,14 +122,17 @@ if (!(_status in ["KILLED", "MISSION", "RTB", "MOVE", "RESPONSE", "NOAMMO"]) && 
         };
     } forEach _artyMarkers;
 
-    //Map Anim
-    ctrlMapAnimClear _map;
-    _map ctrlMapAnimAdd [0.5, 1, position _battery];
-    ctrlMapAnimCommit _map;
+    // the map is left entirely to the player - no auto-centre or zoom, so the
+    // pan and zoom they set is never overridden by a refresh. The red/green range
+    // rings placed above still mark the battery so it can be found on the map.
 
     //EventHandlers
     _artyOrdnanceTypeLb ctrlSetEventHandler ["LBSelChanged", "_this call NEO_fnc_artyConfirmButtonEnable; _this call NEO_fnc_artyOrdLbSelChanged"];
     _map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
+
+    // default to the first ordnance so the panel opens ready; the LBSelChanged
+    // above cascades into artyOrdLbSelChanged which defaults rate + round count
+    if (lbSize _artyOrdnanceTypeLb > 0) then { _artyOrdnanceTypeLb lbSetCurSel 0; };
 };
 
 //Buttons

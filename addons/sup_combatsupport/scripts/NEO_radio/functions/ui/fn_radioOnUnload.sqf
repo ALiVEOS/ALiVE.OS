@@ -1,3 +1,11 @@
+// remember the player's map pan + zoom so re-opening the tablet returns to it
+private _saveMap = (findDisplay 655555) displayCtrl 655560;
+if (!isNull _saveMap) then {
+    private _cp = ctrlPosition _saveMap;
+    uinamespace setVariable ["NEO_radioMapScale", ctrlMapScale _saveMap];
+    uinamespace setVariable ["NEO_radioMapCenter", _saveMap ctrlMapScreenToWorld [(_cp select 0) + (_cp select 2) / 2, (_cp select 1) + (_cp select 3) / 2]];
+};
+
 if (!isNil { NEO_radioLogic getVariable "NEO_radioSatalliteObject" }) then
 {
     private ["_obj"];

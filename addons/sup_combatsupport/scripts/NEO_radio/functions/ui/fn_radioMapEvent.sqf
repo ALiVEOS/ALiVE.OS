@@ -7,10 +7,7 @@ _button = _this select 1; if (_button == 1) exitWith {};
 _pos = _map ctrlMapScreenToWorld [_this select 2, _this select 3];
 _marker = NEO_radioLogic getVariable "NEO_supportMarker";
 
-ctrlMapAnimClear _map;
-_map ctrlMapAnimAdd [0.5, ctrlMapScale _map, _pos];
-ctrlMapAnimCommit _map;
-
+// place the marker at the click without recentring the map - keep the player's pan/zoom
 _marker setMarkerPosLocal _pos;
 _marker setMarkerAlphaLocal 1;
 
