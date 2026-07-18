@@ -240,7 +240,7 @@ class NEO_resourceRadio
                         colorText[] = {0.384,0.439,0.341,1};
                         colorActive[] = {0.384,0.439,0.341,1};
                         color[] = {0.384,0.439,0.341,1};
-                        colorDisabled[] = {10.384,0.439,0.341,1};
+                        colorDisabled[] = {0.384,0.439,0.341,1};
                         sizeEx = 0.8 * GUI_GRID_H;
                 };
 
@@ -475,7 +475,7 @@ class NEO_resourceRadio
                         h = safeZoneH / 1000;
             colorActive[] = {0.384,0.439,0.341,1};
                         color[] = {0.384,0.439,0.341,1};
-                        colorDisabled[] = {10.384,0.439,0.341,1};
+                        colorDisabled[] = {0.384,0.439,0.341,1};
                 };
 
                 //Cas FlyInHeight Slider Text
@@ -503,7 +503,7 @@ class NEO_resourceRadio
                         colorText[] = {0.384,0.439,0.341,1};
                         colorActive[] = {0.384,0.439,0.341,1};
                         color[] = {0.384,0.439,0.341,1};
-                        colorDisabled[] = {10.384,0.439,0.341,1};
+                        colorDisabled[] = {0.384,0.439,0.341,1};
                         sizeEx = 0.8 * GUI_GRID_H;
                 };
 
@@ -702,8 +702,9 @@ class NEO_resourceRadio
                 {
                         idc = 655606;
                         text = "Get in Range";
-                        colorBackgroundFocused[] = {0,0,0,0};
-                        colorFocused[] = {0,0,0,0};
+                        // inherit the parent's visible focused colours - the {0,0,0,0}
+                        // overrides blanked the label and fill the moment the cursor
+                        // reached the button
                 };
 
                 //Arty Dont Move
@@ -711,8 +712,7 @@ class NEO_resourceRadio
                 {
                         idc = 655607;
                         text = "Don't Move";
-                        colorBackgroundFocused[] = {0,0,0,0};
-                        colorFocused[] = {0,0,0,0};
+                        // inherit the parent's visible focused colours (see the move button)
                 };
                 class NEO_radioArtyDispersionText : NEO_radioCasUnitText
                 {
@@ -735,7 +735,7 @@ class NEO_resourceRadio
                         colorText[] = {0.384,0.439,0.341,1};
                         colorActive[] = {0.384,0.439,0.341,1};
                         color[] = {0.384,0.439,0.341,1};
-                        colorDisabled[] = {10.384,0.439,0.341,1};
+                        colorDisabled[] = {0.384,0.439,0.341,1};
                         sizeEx = 0.8 * GUI_GRID_H;
                 };
                 class NEO_radioArtyRateDelayText : NEO_radioCasUnitText
@@ -759,7 +759,7 @@ class NEO_resourceRadio
                         colorText[] = {0.384,0.439,0.341,1};
                         colorActive[] = {0.384,0.439,0.341,1};
                         color[] = {0.384,0.439,0.341,1};
-                        colorDisabled[] = {10.384,0.439,0.341,1};
+                        colorDisabled[] = {0.384,0.439,0.341,1};
                         sizeEx = 0.8 * GUI_GRID_H;
                 };
 
