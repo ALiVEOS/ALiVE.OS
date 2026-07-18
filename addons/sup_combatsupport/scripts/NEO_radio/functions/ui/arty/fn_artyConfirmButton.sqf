@@ -79,5 +79,22 @@ if (_audio) then {
 //NEW TASK
 _battery setVariable ["NEO_radioArtyNewTask", [_type, _ordnanceType, _rate, _count, _dispersion, _pos, _unit, _ord, _callsignPlayer, player], true];
 
+// remember where this fire mission was called. A marker at the target grid that
+// stays on the map after the tablet closes, so a ranging round can be followed
+// by a fire-for-effect on the same spot without hunting the map for it again
+// (danger close, or expert mode with no unit icons). Local like every marker
+// here, overwritten each mission, and deliberately left out of the tablet's
+// marker-hide on close and on unit re-select so it persists.
+private _lastShotMarker = NEO_radioLogic getVariable ["NEO_supportMarkerArtyLastShot", ""];
+if (_lastShotMarker == "") then {
+    _lastShotMarker = createMarkerLocal ["NEO_supportMarkerArtyLastShot", _pos];
+    _lastShotMarker setMarkerTypeLocal "hd_Destroy";
+    _lastShotMarker setMarkerColorLocal "ColorOrange";
+    NEO_radioLogic setVariable ["NEO_supportMarkerArtyLastShot", _lastShotMarker];
+};
+_lastShotMarker setMarkerPosLocal _pos;
+_lastShotMarker setMarkerTextLocal format ["Last fire: %1", mapGridPosition _pos];
+_lastShotMarker setMarkerAlphaLocal 1;
+
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;
