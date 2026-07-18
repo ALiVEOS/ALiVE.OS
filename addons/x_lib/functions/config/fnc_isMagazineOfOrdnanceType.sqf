@@ -112,7 +112,29 @@ switch (_ordnanceType) do {
     };
     case "SMOKE": {
         // WP rounds are smoke-parented in config - keep them out of SMOKE
-        (_ammo isKindOf ["SmokeShell", _cfgAmmoRoot]) && {!((call { PHOS_SUBSTRINGS }) call _fnc_nameMatchesAny)}
+        (
+            (_ammo isKindOf ["SmokeShell", _cfgAmmoRoot])
+            // a shell that deploys HARMLESS smoke submunitions is a smoke round.
+            // Spearhead's M84 smoke shell is ShellBase-parented with no splash,
+            // so parentage alone misses it - its submunition is SmokeShell-
+            // parented. Two guards keep everything else out. The carrier must do
+            // no damage: a shell that explodes is HE, whose branch owns
+            // indirectHit>0, so requiring ==0 here keeps the two disjoint. And
+            // the smoke submunition itself must be harmless: a gas/chem cloud or
+            // a WP wedge is SmokeShell-derived too, but it poisons or burns, so
+            // a submunition that deals damage is not plain concealment smoke.
+            || {
+                ((call _fnc_isDispenser) || {call _fnc_isShell})
+                    && {getNumber (_ammoCfg >> "indirectHit") == 0}
+                    && {
+                        (call _fnc_submunitions) findIf {
+                            (_x isKindOf ["SmokeShell", _cfgAmmoRoot])
+                                && {getNumber (_cfgAmmoRoot >> _x >> "indirectHit") == 0}
+                                && {getNumber (_cfgAmmoRoot >> _x >> "hit") == 0}
+                        } > -1
+                    }
+            }
+        ) && {!((call { PHOS_SUBSTRINGS }) call _fnc_nameMatchesAny)}
     };
     case "LASER": {
         getNumber (_ammoCfg >> "laserLock") > 0
