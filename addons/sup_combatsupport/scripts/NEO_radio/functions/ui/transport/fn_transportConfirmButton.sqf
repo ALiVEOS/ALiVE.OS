@@ -50,7 +50,7 @@ private ["_posTask", "_text"];
 _posTask = _pos call BIS_fnc_posToGrid;
 _text = switch (toUpper _task) do
 {
-    case "PICKUP" : { format ["%1, %2 requesting pickup at %3 %4 . Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
+    case "PICKUP" : { format ["%1, %2 requesting pickup at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
     case "LAND" : { format ["%1, land at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
     case "LAND (ENG OFF)" : { format ["%1, land at %3 %4. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };
     case "MOVE" : { format ["%1, move to %3 %4 and wait for orders. Over.", _callsign, _callSignPlayer, _posTask select 0, _posTask select 1] };

@@ -61,7 +61,7 @@ if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOIT
         _casRadiusSliderText ctrlSetText _text;
     "];
 
-    _casROEText ctrlSetText "Rules of Engagment";
+    _casROEText ctrlSetText "Rules of Engagement";
     _casROEText ctrlSetPosition [0.402708 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
     _casROEText ctrlCommit 0;
 

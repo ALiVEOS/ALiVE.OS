@@ -79,7 +79,7 @@ if (_status != "KILLED") then
     _supportMarker setMarkerAlphaLocal 0;
 
     //Sliders
-    _casFlyHeighSliderText ctrlSetText "Altitude: Med";
+    _casFlyHeighSliderText ctrlSetText "Altitude: Medium";
     _casFlyHeighSliderText ctrlSetPosition [0.397304 * safezoneW + safezoneX, 0.514 * safezoneH + safezoneY, (0.105169 * safezoneW), (0.028 * safezoneH)];
     _casFlyHeighSliderText ctrlCommit 0;
     _casFlyHeightSlider ctrlSetPosition [0.402708 * safezoneW + safezoneX, 0.5508 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
@@ -97,7 +97,7 @@ if (_status != "KILLED") then
         _text = switch (_pos) do
         {
             case 1 : { ""Altitude: Low"" };
-            case 2 : { ""Altitude: Med"" };
+            case 2 : { ""Altitude: Medium"" };
             case 3 : { ""Altitude: High"" };
         };
 

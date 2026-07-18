@@ -20,8 +20,8 @@ else {
 _show = switch (toUpper (_lb lbText _index)) do
 {
     case "PICKUP" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location and wait for a smoke visual and confirmation (EVAC)</t>" };
-    case "LAND" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to coordinates and land the chopper at his discression (DROP)</t>" };
-    case "LAND (ENG OFF)" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to coordinates and land the chopper at his discression and will shutdown engine (DROP)</t>" };
+    case "LAND" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to coordinates and land the helicopter at the pilot's discretion (DROP)</t>" };
+    case "LAND (ENG OFF)" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to coordinates, land the helicopter at the pilot's discretion and shut down its engine (DROP)</t>" };
     case "MOVE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated position and wait for further orders</t>" };
     case "CIRCLE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and circle the area clockwise till further notice</t>" };
     case "INSERTION" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to designated coordinates and will hover for rope insertion</t>" };
