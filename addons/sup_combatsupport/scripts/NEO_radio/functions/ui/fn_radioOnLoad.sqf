@@ -26,7 +26,10 @@ _artylist = SR_getControl(SR_Main_Display,SR_Arty_List);
 _map = SR_getControl(SR_Main_Display,SR_Map);
 _abort = SR_getControl(SR_Main_Display,SR_ABORT_BTN);
 _unit = player;
-_action = uinamespace getVariable "NEO_radioCurrentAction";
+// the ACE interaction entry opens the dialog without setting the action first
+// (only the tablet's own actions do), which left _action undefined and threw
+// building the menu below. Default to the general menu when nothing set it.
+_action = uinamespace getVariable ["NEO_radioCurrentAction", "radio"];
 
 private ["_available", "_transportArray", "_casArray", "_artyArray","_side"];
 
