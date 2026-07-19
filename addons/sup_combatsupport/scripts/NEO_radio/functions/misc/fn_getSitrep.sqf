@@ -87,35 +87,55 @@ _fuel = fuel _asset;
 _ammoArray = _asset call ALiVE_fnc_vehicleGetAmmo;
 _distance = _destination distance _pos;
 
-// Calculate % of ammo
+// Ammo: mean fill across the asset's magazines. Guard the empty case - unarmed
+// transports have no ammo array, which previously divided by zero and poisoned Condition
+_ammo = -1;
 _avail = 0;
 {
-    _avail = _avail + ((_x select 1)/(_x select 2));
-} foreach _ammoArray;
-_ammo = _avail / count _ammoArray;
-
-// Calculate amcas as a combo of ammo and damage state
-_damage = ((1 - _ammo) + _damage) / 2;
+    if ((_x select 2) > 0) then { _avail = _avail + ((_x select 1) / (_x select 2)); };
+} forEach _ammoArray;
+if (count _ammoArray > 0) then { _ammo = _avail / (count _ammoArray) };
 
 _text = format ["%1 this is %2, send SITREP. Over.",_callsign, _callSignPlayer];
 
 [[player, _text, "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
 
-private ["_damageamcas","_fuelamcas","_amcas","_approxTime"];
+private ["_damageamcas","_fuelamcas","_amcas","_approxTime","_ammoStr","_statusLabel","_statusValue"];
 
-_damageamcas = "";
-    if (_damage <= 0.3) then {_damageamcas = "Green"};
-    if (_damage > 0.3 &&  _damage < 0.6) then {_damageamcas = "Amber"};
+// Condition = actual battle damage only (previously blended with ammo, so a healthy
+// battery low on shells wrongly read as damaged)
+_damageamcas = "Green";
+    if (_damage > 0.3) then {_damageamcas = "Amber"};
     if (_damage >= 0.6) then {_damageamcas = "Red"};
 
-_fuelamcas = "";
-    if (_fuel <= 0.3) then {_fuelamcas = "Red"};
-    if (_fuel > 0.3 &&  _damage < 0.6) then {_fuelamcas = "Amber"};
+// Fuel: the mid-band previously tested _damage by mistake, which could blank the field
+_fuelamcas = "Red";
+    if (_fuel > 0.3) then {_fuelamcas = "Amber"};
     if (_fuel >= 0.6) then {_fuelamcas = "Green"};
 
+// Ammo as an explicit percentage of the asset's magazines; "n/a" for an unarmed asset
+_ammoStr = if (_ammo < 0) then {"n/a"} else {format ["%1%2", round (_ammo * 100), "%"]};
+
+// Movement / status field: aircraft report an ETA to their tasking; a ground battery
+// does not fly, so it reports its tasking status instead ("taking off"/ETA were nonsense)
 _approxTime = "unknown";
-    if (_speed > 0 && {(_pos select 2) > 5}) then {_approxTime = round((_distance/((_speed)/3.6))/60)};
+    if (_speed > 0 && {(_pos select 2) > 5}) then {_approxTime = format ["%1 min", round((_distance/((_speed)/3.6))/60)]};
     if (_speed > 0 && {(_pos select 2) < 5}) then {_approxTime = "taking off"};
+_statusLabel = "ETA";
+_statusValue = _approxTime;
+if (toUpper _task == "ARTY") then {
+    _statusLabel = "Status";
+    _statusValue = switch (_asset getVariable ["NEO_radioArtyUnitStatus", ""]) do {
+        case "NONE": {"ready to fire"};
+        case "MISSION": {"on a fire mission"};
+        case "MOVE": {"repositioning into range"};
+        case "RTB": {"returning to base"};
+        case "RESPONSE": {"out of range"};
+        case "NOAMMO": {"out of ammunition"};
+        case "KILLED": {"combat ineffective"};
+        default {"standing by"};
+    };
+};
 
 // Military Logistics Simulation status.
 // Resupply state lives on the primary vehicle (single source of truth), not the leader / NEO asset,
@@ -152,7 +172,7 @@ if (_asset getVariable ["ALIVE_logistics_enabled", false]) then {
 };
 
 private _logSuffix = if (_logisticsStatus != "") then {format [", %1", _logisticsStatus]} else {""};
-_amcas = format ["%1 this is %2! Current location: %3, ETA: %4, Condition: %5, Fuel: %6%7",_callSignPlayer,_callsign,_assetpos,_approxTime,_damageamcas,_fuelamcas,_logSuffix];
+_amcas = format ["%1 this is %2! Location: %3, %4: %5, Ammo: %6, Condition: %7, Fuel: %8%9",_callSignPlayer,_callsign,_assetpos,_statusLabel,_statusValue,_ammoStr,_damageamcas,_fuelamcas,_logSuffix];
 
 // Show resupply vehicle marker for currently selected asset.
 private _resupplyVeh = _stateHolder getVariable ["ALIVE_resupply_vehicle", objNull];

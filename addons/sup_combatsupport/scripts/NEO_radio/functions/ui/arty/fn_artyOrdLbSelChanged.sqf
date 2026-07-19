@@ -33,7 +33,7 @@ _artyUnitLb = _display displayCtrl 655594;
 _artyRateDelayText = _display displayCtrl 655611;
 _artyRateDelaySlider = _display displayCtrl 655612;
 _battery = _artyArray select (lbCurSel _artyUnitLb) select 0;
-_ord = _artyOrdnanceTypeLb lbText (lbCurSel _artyOrdnanceTypeLb);
+_ord = _artyOrdnanceTypeLb lbData (lbCurSel _artyOrdnanceTypeLb);
 _count = 0;
 _countArray = [];
 

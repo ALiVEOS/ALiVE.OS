@@ -1,10 +1,11 @@
-private ["_display", "_map", "_lb", "_index", "_supportMarker", "_artyMarkers"];
+private ["_display", "_map", "_lb", "_index", "_supportMarker", "_artyMarkers", "_sitRepButton"];
 _display = findDisplay 655555;
 _map = _display displayCtrl 655560;
 _lb = _this select 0;
 _index = _this select 1;
 _supportMarker = NEO_radioLogic getVariable "NEO_supportMarker";
 _artyMarkers = NEO_radioLogic getVariable "NEO_supportArtyMarkers";
+_sitRepButton = _display displayCtrl 655625;
 
 //Transport Controls
 private
@@ -84,6 +85,7 @@ _artyRateDelaySlider = _display displayCtrl 655612;
 { _x ctrlSetPosition [1, 1, (safeZoneW / 1000), (safeZoneH / 1000)]; _x ctrlCommit 0; } forEach [_transportConfirmButton, _transportBaseButton, _transportSmokeFoundButton, _transportSmokeNotFoundButton, _transportSlider, _transportSliderText, _casConfirmButton, _casBaseButton, _casFlyHeightSlider, _casRadiusSlider, _artyConfirmButton, _artyMoveButton, _artyDontMoveButton, _artyDispersionSlider, _artyBaseButton, _artyRateDelaySlider, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
 { _x ctrlSetText "" } forEach [_transportUnitText, _transportTaskText, _transportHelpUnitText, _transportHelpTaskText, _transportSliderText, _casUnitText, _casHelpUnitText, _casTaskText, _casROEText,_casTaskHelpText, _casFlyHeighSliderText, _casRadiusSliderText, _casAttackRunText, _artyUnitText, _artyHelpUnitText, _artyOrdnanceTypeText, _artyRateOfFireText, _artyRoundCountText, _artyDispersionText, _artyRateDelayText, _transportComboText];
 { _x ctrlEnable false; } forEach [_transportUnitLb, _transportTaskLb, _casUnitLb, _casTaskLb, _casROELb, _casAttackRunLB, _artyUnitLb, _artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
+_sitRepButton ctrlEnable false; // no unit selected yet - each unit handler re-enables it
 { lbClear _x } forEach [_transportUnitLb, _transportTaskLb, _casUnitLb, _casTaskLb, _casROELb, _casAttackRunLB, _artyUnitLb, _artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
 
 //Markers

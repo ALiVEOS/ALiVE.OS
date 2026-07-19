@@ -116,6 +116,9 @@ _task = switch (_lb lbText _index) do
             };
         } forEach _nearestObjects;
 
+        // no liftable cargo nearby - tell the player rather than leave a blank list + silent confirm
+        if (lbSize _objectLb == 0) then { _sliderText ctrlSetText "No liftable cargo within 100m"; };
+
         _objectLb lbSetCurSel 0;
 
         _objectLb ctrlSetEventHandler ["LBSelChanged",

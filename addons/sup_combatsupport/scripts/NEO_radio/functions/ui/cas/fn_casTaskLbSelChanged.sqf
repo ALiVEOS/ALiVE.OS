@@ -39,7 +39,7 @@ _casAttackRunLB ctrlEnable false;
 if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOITER" || toUpper (_lb lbData _index) == "ATTACK") then
 {
 
-    _casRadiusSliderText ctrlSetText "CAS Radius: 500m";
+    _casRadiusSliderText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>CAS Radius: 500m</t>";
     _casRadiusSliderText ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.514 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
     _casRadiusSliderText ctrlCommit 0;
     _casRadiusSlider ctrlSetPosition [0.281002 * safezoneW + safezoneX, 0.5504 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
@@ -63,24 +63,33 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
         _text = format [""CAS Radius: %1m"", _pos];
 
         _slider sliderSetPosition _pos;
-        _casRadiusSliderText ctrlSetText _text;
+        _casRadiusSliderText ctrlSetStructuredText parseText format [""<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>"", _text];
 
         if (!isNil { uinamespace getVariable ""NEO_casMarkerCreated"" }) then {
             [getMarkerPos (NEO_radioLogic getVariable ""NEO_supportMarker""), _pos, ""ColorBlue""] call NEO_fnc_supportDrawRing;
         };
     "];
 
-    _casROEText ctrlSetText "RULES OF ENGAGEMENT";
-    _casROEText ctrlSetPosition [0.402708 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
-    _casROEText ctrlCommit 0;
+    // ROE only matters for tasks that actually engage - LOITER never fires, so hide it
+    if (toUpper (_lb lbData _index) == "LOITER") then {
+        _casROEText ctrlSetText "";
+        _casROELb ctrlEnable false;
+        lbClear _casROELb;
+    } else {
+        _casROEText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>RULES OF ENGAGEMENT</t>";
+        // sits just left of the ROE list so "RULES OF ENGAGEMENT" reads flush with it;
+        // wide (transparent bg, so the extra width is invisible) to stay on one line
+        _casROEText ctrlSetPosition [0.38 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.16 * safezoneW), (0.028 * safezoneH)];
+        _casROEText ctrlCommit 0;
 
-    _casROELb ctrlEnable true;
-    lbClear _casROELb;
-    {
-        _casROELb lbAdd (_x select 0);
-        _casROELb lbSetData [_foreachIndex, (_x select 1)];
-    } forEach [["Hold Fire","BLUE"], ["Hold Fire - Defend","GREEN"], ["Hold Fire - Return Fire","WHITE"],["Fire At Will","YELLOW"],["Fire At Will - Engage At Will","RED"]];
-    _casROELb lbSetCurSel 4;
+        _casROELb ctrlEnable true;
+        lbClear _casROELb;
+        {
+            _casROELb lbAdd (_x select 0);
+            _casROELb lbSetData [_foreachIndex, (_x select 1)];
+        } forEach [["Hold Fire","BLUE"], ["Hold Fire - Defend","GREEN"], ["Hold Fire - Return Fire","WHITE"],["Fire At Will","YELLOW"],["Fire At Will - Engage At Will","RED"]];
+        _casROELb lbSetCurSel 4;
+    };
 
 
     // one shared filter with the runtime weapon logic - see NEO_fnc_casUsableWeapons
@@ -88,7 +97,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
     // designator, countermeasures, air-to-air-only missiles and no-damage dummies)
     private _usableWeapons = [_veh] call NEO_fnc_casUsableWeapons;
     if (toUpper (_lb lbData _index) == "ATTACK") then {
-        _casAttackRunText ctrlSetText "CHOOSE WEAPON";
+        _casAttackRunText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>CHOOSE WEAPON</t>";
         _casAttackRunText ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
         _casAttackRunText ctrlCommit 0;
 
@@ -106,20 +115,28 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
             if (_fam != "OTHER") then { _name = format ["[%1] %2", _fam, _name]; };
             _row = _casAttackRunLB lbAdd _name;
             _casAttackRunLB lbSetData [_row, _x];
+            _casAttackRunLB lbSetTooltip [_row, _name]; // full label on hover - the narrow row can clip long modded names
         } forEach _usableWeapons;
         if (lbSize _casAttackRunLB > 0) then { _casAttackRunLB lbSetCurSel 0; };
 
     } else {
-        lbClear _casAttackRunLB;
-        {
-            private ["_row", "_fam", "_name"];
-            _fam = [_x] call NEO_fnc_casWeaponFamily;
-            _name = [(configFile >> "CfgWeapons" >> _x)] call bis_fnc_displayName;
-            if (_fam != "OTHER") then { _name = format ["[%1] %2", _fam, _name]; };
-            _row = _casAttackRunLB lbAdd _name;
-            _casAttackRunLB lbSetData [_row, _x];
-        } forEach _usableWeapons;
-        if (lbSize _casAttackRunLB > 0) then { _casAttackRunLB lbSetCurSel 0; };
+        if (toUpper (_lb lbData _index) == "LOITER") then {
+            // loiter never delivers ordnance - no weapon picker, no greyed clutter
+            lbClear _casAttackRunLB;
+            _casAttackRunLB ctrlEnable false;
+        } else {
+            lbClear _casAttackRunLB;
+            {
+                private ["_row", "_fam", "_name"];
+                _fam = [_x] call NEO_fnc_casWeaponFamily;
+                _name = [(configFile >> "CfgWeapons" >> _x)] call bis_fnc_displayName;
+                if (_fam != "OTHER") then { _name = format ["[%1] %2", _fam, _name]; };
+                _row = _casAttackRunLB lbAdd _name;
+                _casAttackRunLB lbSetData [_row, _x];
+                _casAttackRunLB lbSetTooltip [_row, _name];
+            } forEach _usableWeapons;
+            if (lbSize _casAttackRunLB > 0) then { _casAttackRunLB lbSetCurSel 0; };
+        };
     };
 }
 else

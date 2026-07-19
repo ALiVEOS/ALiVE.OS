@@ -46,7 +46,7 @@ _pos = if (!isNil { uinamespace getVariable "NEO_artyMarkerCreated" }) then {
 };
 _pos set [2, 0];
 _type = "IMMEDIATE";
-_ordnanceType = _artyOrdnanceTypeLb lbText (lbCurSel _artyOrdnanceTypeLb);
+_ordnanceType = _artyOrdnanceTypeLb lbData (lbCurSel _artyOrdnanceTypeLb);
 
 //_ord = [_battery, _ordnanceType] CALL ALIVE_fnc_GetMagazineType;
 _ord = [_battery, _ordnanceType] CALL ALIVE_fnc_getArtyMagazineType;

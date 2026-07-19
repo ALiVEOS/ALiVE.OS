@@ -253,7 +253,7 @@ class NEO_resourceRadio
                         y = 0.514 * safezoneH + safezoneY;
                         w = safeZoneW / 1000;
                         h = safeZoneH / 1000;
-                        text = "Radius: 100/300";
+                        text = "";
                         colorText[] = {0.706,0.706,0.706,1};
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_BTN_SIZE;
@@ -412,6 +412,7 @@ class NEO_resourceRadio
                 class NEO_radioSitRepButton : NEO_radioCasConfirmButton
                 {
                         idc = 655625;
+                        enable = 0; // starts disabled - SITREP no-ops until a unit is selected (enabled in the unit handlers)
                         x = 0.445231 * safezoneW + safezoneX;
                         y = 0.150015 * safezoneH + safezoneY;
                         w = 0.0597643 * safezoneW;
@@ -527,7 +528,7 @@ class NEO_resourceRadio
                         x = 0.269865 * safezoneW + safezoneX;
                         y = 0.615 * safezoneH + safezoneY;
                         w = 0.125 * safezoneW;
-                        h = 0.084 * safezoneH;
+                        h = 0.12 * safezoneH;
                         colorBackground[] = {0,0,0,0};
                         colorActive[] = {0.384,0.439,0.341,1};
                 sizeEx = CS_LIST_SIZE;
@@ -554,7 +555,7 @@ class NEO_resourceRadio
                         x = 0.392 * safezoneW + safezoneX;
                         y = 0.615 * safezoneH + safezoneY;
                         w = 0.125 * safezoneW;
-                        h = 0.084 * safezoneH;
+                        h = 0.12 * safezoneH;
                         colorBackground[] = {0,0,0,0};
                         colorActive[] = {0.384,0.439,0.341,1};
                 sizeEx = CS_LIST_SIZE;

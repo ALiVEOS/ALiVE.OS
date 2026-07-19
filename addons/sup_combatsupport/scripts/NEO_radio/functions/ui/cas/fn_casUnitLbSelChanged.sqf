@@ -84,7 +84,7 @@ if (_status != "KILLED") then
     _supportMarker setMarkerAlphaLocal 0;
 
     //Sliders
-    _casFlyHeighSliderText ctrlSetText "Altitude: Medium";
+    _casFlyHeighSliderText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>Altitude: Medium</t>";
     _casFlyHeighSliderText ctrlSetPosition [0.397304 * safezoneW + safezoneX, 0.514 * safezoneH + safezoneY, (0.105169 * safezoneW), (0.028 * safezoneH)];
     _casFlyHeighSliderText ctrlCommit 0;
     _casFlyHeightSlider ctrlSetPosition [0.402708 * safezoneW + safezoneX, 0.5508 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
@@ -107,7 +107,7 @@ if (_status != "KILLED") then
         };
 
         _slider sliderSetPosition _pos;
-        _casFlyHeightSliderText ctrlSetText _text;
+        _casFlyHeightSliderText ctrlSetStructuredText parseText format [""<t color='#B4B4B4' size='0.8' font='PuristaMedium'>%1</t>"", _text];
     "];
 
     //GPS

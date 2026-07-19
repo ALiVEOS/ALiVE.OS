@@ -7,7 +7,7 @@ private
     "_artyArray", "_artyUnitLb", "_artyUnitText", "_artyHelpUnitText", "_artyConfirmButton", "_artyBaseButton", "_artyOrdnanceTypeText",
     "_artyOrdnanceTypeLb", "_artyRateOfFireText", "_artyRateOfFireLb", "_artyRoundCountText", "_artyRoundCountLb", "_artyMoveButton",
     "_artyDontMoveButton", "_artyDispersionText", "_artyDispersionSlider", "_artyRateDelayText", "_artyRateDelaySlider",
-    "_supportMarker", "_artyMarkers", "_battery", "_status", "_class", "_ord"
+    "_supportMarker", "_artyMarkers", "_battery", "_status", "_class", "_ord", "_sitRepButton"
 ];
 
   	    _has_SPE_leFH18 = false;
@@ -43,6 +43,7 @@ _artyDispersionText = _display displayCtrl 655608;
 _artyDispersionSlider = _display displayCtrl 655609;
 _artyRateDelayText = _display displayCtrl 655611;
 _artyRateDelaySlider = _display displayCtrl 655612;
+_sitRepButton = _display displayCtrl 655625;
 _supportMarker = NEO_radioLogic getVariable "NEO_supportMarker";
 _artyMarkers = NEO_radioLogic getVariable "NEO_supportArtyMarkers";
 _battery = _artyArray select (lbCurSel _artyUnitLb) select 0; if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then { _battery = ((NEO_radioLogic getVariable "NEO_radioTalkWithArty") getVariable "NEO_radioArtyModule") select 0 };
@@ -61,6 +62,10 @@ _artyHelpUnitText ctrlSetStructuredText parseText (switch (toUpper _status) do
     case "RESPONSE" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Battery is out of range - order it to reposition below</t>" };
     case "NOAMMO" : { "<t color='#603234' size='0.7' font='PuristaMedium'>Battery is out of ammunition</t>" };
 });
+
+// SITREP reports on the selected battery - CAS/transport enable it in their unit
+// handlers too; disabled only for a combat-ineffective battery
+_sitRepButton ctrlEnable (_status != "KILLED");
 
 if (_status == "RESPONSE") then
 {
@@ -95,8 +100,9 @@ if (!(_status in ["KILLED", "MISSION", "RTB", "MOVE", "RESPONSE", "NOAMMO"]) && 
     {
         if ((_x select 1) >= 1) then
         {
-            _artyOrdnanceTypeLb lbAdd (_x select 0);
-
+            // show the rounds remaining per type; keep the raw type in lbData for the consumers
+            private _oRow = _artyOrdnanceTypeLb lbAdd (format ["%1 - %2 rd%3", _x select 0, _x select 1, ["s",""] select ((_x select 1) == 1)]);
+            _artyOrdnanceTypeLb lbSetData [_oRow, _x select 0];
         };
     } forEach _ord;
 
