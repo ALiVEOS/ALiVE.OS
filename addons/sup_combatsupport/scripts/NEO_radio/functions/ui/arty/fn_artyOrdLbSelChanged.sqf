@@ -54,14 +54,14 @@ if (count _countArray > 0) then
     //Texts
     _artyRateOfFireText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>RATE OF FIRE</t>";
     _artyRoundCountText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>ROUND COUNT</t>";
-    _artyDispersionText ctrlSetStructuredText parseText "<t color='#627057' size='0.8' font='PuristaMedium'>DISPERSION - 0/500m</t>";
+    _artyDispersionText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>DISPERSION - 0/500m</t>";
 
     //Rate Of Fire Type LB
     _artyRateOfFireLb ctrlEnable true;
     lbClear _artyRateOfFireLb;
     {
         _artyRateOfFireLb lbAdd _x;
-    } forEach ["FULL", "SEMI-FULL"];
+    } forEach ["RAPID", "STAGGERED"];
 
     //Rate Of Fire Type LB
     _artyRoundCountLb ctrlEnable true;
@@ -83,7 +83,7 @@ if (count _countArray > 0) then
     _artyDispersionSlider ctrlSetEventHandler ["SliderPosChanged", "_this call NEO_fnc_artyDispersionOnSliderPosChanged"];
     _artyRateDelaySlider ctrlSetEventHandler ["SliderPosChanged", "_this call NEO_fnc_artyRateDelayOnSliderPosChanged"];
 
-    // default RATE OF FIRE = FULL and ROUND COUNT = 1 ROUND so the panel is
+    // default RATE OF FIRE = RAPID and ROUND COUNT = 1 ROUND so the panel is
     // ready to fire once a battery and target are picked
     _artyRateOfFireLb lbSetCurSel 0;
     if (lbSize _artyRoundCountLb > 0) then { _artyRoundCountLb lbSetCurSel 0; };

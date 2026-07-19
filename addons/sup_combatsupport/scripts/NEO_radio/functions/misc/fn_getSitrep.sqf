@@ -4,7 +4,7 @@ disableSerialization;
 _display = findDisplay 655555;
 _tasklb = _display displayctrl 655565;
 _task = _tasklb lbText (lbCurSel _tasklb);
-["_task: %1", _task] call ALiVE_fnc_dump;
+if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["_task: %1", _task] call ALiVE_fnc_dump; };
 
 
 switch (toUpper _task) do
@@ -152,7 +152,7 @@ if (_asset getVariable ["ALIVE_logistics_enabled", false]) then {
 };
 
 private _logSuffix = if (_logisticsStatus != "") then {format [", %1", _logisticsStatus]} else {""};
-_amcas = format ["%1 this is %2! Current location: %3, ETA: %4, AMCAS: %5, Fuel: %6%7",_callSignPlayer,_callsign,_assetpos,_approxTime,_damageamcas,_fuelamcas,_logSuffix];
+_amcas = format ["%1 this is %2! Current location: %3, ETA: %4, Condition: %5, Fuel: %6%7",_callSignPlayer,_callsign,_assetpos,_approxTime,_damageamcas,_fuelamcas,_logSuffix];
 
 // Show resupply vehicle marker for currently selected asset.
 private _resupplyVeh = _stateHolder getVariable ["ALIVE_resupply_vehicle", objNull];

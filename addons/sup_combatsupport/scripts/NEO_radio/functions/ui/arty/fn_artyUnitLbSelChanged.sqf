@@ -79,6 +79,7 @@ else
 //Markers
 uinamespace setVariable ["NEO_artyMarkerCreated", nil];
 { _x setMarkerAlphaLocal 0 } forEach _artyMarkers + [_supportMarker];
+[[], 0] call NEO_fnc_supportDrawRing; // clear any dispersion ring from the previous target
 
 //Re-initialize Controls
 { _x ctrlSetPosition [1, 1, (safeZoneW / 1000), (safeZoneH / 1000)]; _x ctrlCommit 0; } forEach [_artyDispersionSlider, _artyRateDelaySlider];

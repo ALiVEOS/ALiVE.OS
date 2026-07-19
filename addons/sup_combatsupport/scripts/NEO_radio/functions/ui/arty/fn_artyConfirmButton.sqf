@@ -53,8 +53,8 @@ _ord = [_battery, _ordnanceType] CALL ALIVE_fnc_getArtyMagazineType;
 
 _rate = switch (_artyRateOfFireLb lbText (lbCurSel _artyRateOfFireLb)) do
 {
-    case "FULL" : { 0 };
-    case "SEMI-FULL" : { round (sliderPosition _artyRateDelaySlider) };
+    case "RAPID" : { 0 };
+    case "STAGGERED" : { round (sliderPosition _artyRateDelaySlider) };
     case DEFAULT { 0 };
 };
 _count = switch (_artyRoundCountLb lbText (lbCurSel _artyRoundCountLb)) do

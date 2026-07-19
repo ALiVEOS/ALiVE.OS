@@ -19,7 +19,9 @@ _veh = _casArray select (lbCurSel _casUnitLb) select 0;
 _grp = _casArray select (lbCurSel _casUnitLb) select 1;
 _callsign = _casArray select (lbCurSel _casUnitLb) select 2;
 _callSignPlayer = (format ["%1", group player]) call NEO_fnc_callsignFix;
-_task = _casTaskLb lbText (lbCurSel _casTaskLb);
+// read the internal task token via lbData, not lbText - the CAS task list can show a friendlier
+// label (e.g. "SEARCH AND DESTROY") while the token that flows to cas.fsm's _task compares stays "SAD"
+_task = _casTaskLb lbData (lbCurSel _casTaskLb);
 // the single ATTACK task (merged ATTACK RUN + ATTACK GROUND) dispatches as "ATTACK GROUND" - the
 // area-attack path handles auto-detection, empty vehicles AND a player's manual laser designation
 if (_task == "ATTACK") then { _task = "ATTACK GROUND"; };
@@ -39,6 +41,9 @@ _coord = _pos call BIS_fnc_posToGrid;
 // now-filtered weapons list (row index no longer maps to weapons _veh).
 _weapon = _casAttackRunLB lbData (lbCurSel _casAttackRunLB);
 _ROE = _casROELb lbData (lbCurSel _casROELb);
+// guard: never hand setCombatMode an empty enum (cas.fsm does "_grp setCombatMode _ROE").
+// lbData is "" when the list has no selection - default to the list's own default (RED).
+if (_ROE == "") then { _ROE = "RED"; };
 
 //New Task
 _veh setVariable ["NEO_radioCasNewTask", [_task, _pos, _radius, _flyInHeight, _weapon, _ROE, player], true];

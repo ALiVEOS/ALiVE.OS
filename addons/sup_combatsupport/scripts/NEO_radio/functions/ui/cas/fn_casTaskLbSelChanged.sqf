@@ -23,7 +23,7 @@ _casAttackRunLB = _display displayCtrl 655613;
 _casROELb = _display displayCtrl 655615;
 _casROEText = _display displayCtrl 655616;
 
-_show = switch (toUpper (_lb lbText _index)) do
+_show = switch (toUpper (_lb lbData _index)) do
 {
     case "SAD" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location, provide Close Air Support and engage all painted targets</t>" };
     case "LOITER" : { "<t color='#FFFF73' size='0.7' font='PuristaMedium'>Unit will move to location and loiter without engaging any targets</t>" };
@@ -36,7 +36,7 @@ _casAttackRunText ctrlSetText "";
 _casAttackRunLB ctrlEnable false;
 
 //Radius Slider
-if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOITER" || toUpper (_lb lbText _index) == "ATTACK") then
+if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOITER" || toUpper (_lb lbData _index) == "ATTACK") then
 {
 
     _casRadiusSliderText ctrlSetText "CAS Radius: 500m";
@@ -49,6 +49,11 @@ if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOIT
     _casRadiusSlider sliderSetRange [250, 1000];
     _casRadiusSlider sliderSetspeed [50, 100];
     _casRadiusSlider sliderSetPosition 500;
+    // keep the engagement ring in step when the radius resets on a task switch -
+    // sliderSetPosition does not fire SliderPosChanged, so redraw the ring explicitly
+    if (!isNil { uinamespace getVariable "NEO_casMarkerCreated" }) then {
+        [getMarkerPos (NEO_radioLogic getVariable "NEO_supportMarker"), 500, "ColorBlue"] call NEO_fnc_supportDrawRing;
+    };
     _casRadiusSlider ctrlSetEventHandler ["SliderPosChanged",
     "
         private [""_slider"", ""_pos"", ""_casRadiusSliderText"", ""_text""];
@@ -59,9 +64,13 @@ if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOIT
 
         _slider sliderSetPosition _pos;
         _casRadiusSliderText ctrlSetText _text;
+
+        if (!isNil { uinamespace getVariable ""NEO_casMarkerCreated"" }) then {
+            [getMarkerPos (NEO_radioLogic getVariable ""NEO_supportMarker""), _pos, ""ColorBlue""] call NEO_fnc_supportDrawRing;
+        };
     "];
 
-    _casROEText ctrlSetText "Rules of Engagement";
+    _casROEText ctrlSetText "RULES OF ENGAGEMENT";
     _casROEText ctrlSetPosition [0.402708 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
     _casROEText ctrlCommit 0;
 
@@ -70,7 +79,7 @@ if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOIT
     {
         _casROELb lbAdd (_x select 0);
         _casROELb lbSetData [_foreachIndex, (_x select 1)];
-    } forEach [["Hold Fire","BLUE"], ["Hold Fire - Defend","GREEN"], ["Hold fire, engage at will","WHITE"],["Fire at will","YELLOW"],["Fire at will, engage at will","RED"]];
+    } forEach [["Hold Fire","BLUE"], ["Hold Fire - Defend","GREEN"], ["Hold Fire - Return Fire","WHITE"],["Fire At Will","YELLOW"],["Fire At Will - Engage At Will","RED"]];
     _casROELb lbSetCurSel 4;
 
 
@@ -78,8 +87,8 @@ if (toUpper (_lb lbText _index) == "SAD" || toUpper (_lb lbText _index) == "LOIT
     // (keeps deliverable guns/rockets/bombs/ground missiles; drops the laser
     // designator, countermeasures, air-to-air-only missiles and no-damage dummies)
     private _usableWeapons = [_veh] call NEO_fnc_casUsableWeapons;
-    if (toUpper (_lb lbText _index) == "ATTACK") then {
-        _casAttackRunText ctrlSetText "Choose Weapon";
+    if (toUpper (_lb lbData _index) == "ATTACK") then {
+        _casAttackRunText ctrlSetText "CHOOSE WEAPON";
         _casAttackRunText ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
         _casAttackRunText ctrlCommit 0;
 

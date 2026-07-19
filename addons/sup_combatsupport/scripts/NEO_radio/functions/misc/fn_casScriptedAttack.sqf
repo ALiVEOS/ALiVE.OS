@@ -234,14 +234,14 @@ if (_groundAttack) then {
     _lasedObj = objNull;
     _target = if (_guided) then { _laze } else { objNull };
     if (_guided) then {
-        ["Telling %1 (%2) to designate and strike area at %3 (radius %4) with %5",_veh,_callsign,_posCas,_radiusCas,_weapon] call ALiVE_fnc_dump;
+        if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["Telling %1 (%2) to designate and strike area at %3 (radius %4) with %5",_veh,_callsign,_posCas,_radiusCas,_weapon] call ALiVE_fnc_dump; };
     } else {
-        ["Telling %1 (%2) to saturate area at %3 (radius %4) with %5 (scripted gun run)",_veh,_callsign,_posCas,_radiusCas,_weapon] call ALiVE_fnc_dump;
+        if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["Telling %1 (%2) to saturate area at %3 (radius %4) with %5 (scripted gun run)",_veh,_callsign,_posCas,_radiusCas,_weapon] call ALiVE_fnc_dump; };
     };
 } else {
     _target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;
 
-    ["Telling %1 to target %2 (%3 %4)",_veh,_target, _posCas,_radiusCas] call ALiVE_fnc_dump;
+    if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["Telling %1 to target %2 (%3 %4)",_veh,_target, _posCas,_radiusCas] call ALiVE_fnc_dump; };
 };
 
 _isPlane  = _veh isKindOf "Plane";
@@ -607,7 +607,7 @@ while {
             _radiusCas = 2 * _radiusCas;
             _target = [_veh, _posCas, _radiusCas,_weapon] call NEO_fnc_pickCasTarget;
         };
-        if (!isNull _target) then { ["Telling %1 to target %2 (%3 %4)",_veh,_target, _posCas,_radiusCas] call ALiVE_fnc_dump; };
+        if (!isNull _target && {!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}}) then { ["Telling %1 to target %2 (%3 %4)",_veh,_target, _posCas,_radiusCas] call ALiVE_fnc_dump; };
     };
 };
 

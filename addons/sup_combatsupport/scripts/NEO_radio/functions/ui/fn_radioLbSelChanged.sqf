@@ -89,6 +89,7 @@ _artyRateDelaySlider = _display displayCtrl 655612;
 //Markers
 { uinamespace setVariable [_x, nil] } forEach ["NEO_transportMarkerCreated", "NEO_casMarkerCreated", "NEO_artyMarkerCreated"];
 { _x setMarkerAlphaLocal 0 } forEach (_artyMarkers + [_supportMarker]);
+[[], 0] call NEO_fnc_supportDrawRing; // clear the area-of-influence ring when switching support type
 
 switch (toUpper (_lb lbText _index)) do
 {

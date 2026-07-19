@@ -9,7 +9,7 @@ _pos = _veh getVariable ["ALIVE_CombatSupport_Base", []];
 
 //Task
 _veh setVariable ["NEO_radioCasNewTask", ["RTB", _pos, 0, 0, "", "", player], true];
-[player, format ["%1. Return to base. Over.", _callsign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
+[player, format ["%1, this is %2, return to base. Over.", _callsign, _callSignPlayer], "side"] call NEO_fnc_messageBroadcast;
 
 //Interface
 [lbCurSel 655565] call NEO_fnc_radioRefreshUi;

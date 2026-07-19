@@ -1,4 +1,4 @@
-private ["_display", "_map", "_transportUnitLb", "_transportTaskLb", "_transportConfirmButton", "_slider", "_transportFlyHeightSlider"];
+private ["_display", "_map", "_transportUnitLb", "_transportTaskLb", "_transportConfirmButton", "_slider"];
 // #940 follow-up: in "first player only" mode, only the current operator may dispatch.
 if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { hint localize "STR_ALIVE_CS_NOTOPERATOR"; };
 _display = findDisplay 655555;
@@ -7,7 +7,6 @@ _transportUnitLb = _display displayCtrl 655568;
 _transportTaskLb = _display displayCtrl 655569;
 _transportConfirmButton = _display displayCtrl 655574;
 _slider = _display displayCtrl 655578;
-_transportFlyHeightSlider = _display displayCtrl 655580;
 _audio = NEO_radioLogic getVariable format ["combatsupport_audio", true];
 
 private ["_transportArray", "_chopper", "_grp", "_callsign", "_callSignPlayer", "_task", "_marker", "_pos","_amnt"];

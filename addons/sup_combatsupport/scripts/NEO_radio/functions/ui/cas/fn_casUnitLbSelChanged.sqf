@@ -42,6 +42,7 @@ _casHelpUnitText ctrlSetStructuredText parseText (switch (_status) do
 //Marker
 uinamespace setVariable ["NEO_casMarkerCreated", nil];
 _supportMarker setMarkerAlphaLocal 0;
+[[], 0] call NEO_fnc_supportDrawRing; // clear any ring from the previous asset/target
 
 //Base Button
 if (_status == "RTB" || _status == "NONE" || _status == "KILLED" || getPosATL _veh select 2 < 10) then
@@ -69,10 +70,14 @@ if (_status != "KILLED") then
     _sitRepButton ctrlEnable true;
     lbClear _casTaskLb;
     {
-        _casTaskLb lbAdd _x;
-    // ATTACK merges the old ATTACK RUN + ATTACK GROUND: auto-engages everything in the area (incl. empty
-    // vehicles) and honours a player's manual laser designation. Internally still runs as "ATTACK GROUND".
-    } forEach ["SAD","LOITER","ATTACK"];
+        _casTaskLb lbAdd (_x select 0);
+        _casTaskLb lbSetData [_foreachIndex, (_x select 1)];
+    // Display labels are cosmetic; the token in lbData is what fn_casTaskLbSelChanged,
+    // fn_casConfirmButton and cas.fsm compare against. ATTACK dispatches as "ATTACK GROUND"
+    // (auto-engages everything in the area incl. empty vehicles, honouring a manual laser
+    // designation); SEARCH AND DESTROY dispatches as "SAD". ATTACK leads so the default
+    // selection (below) arms the weapon + ROE lists straight away.
+    } forEach [["ATTACK","ATTACK"], ["SEARCH AND DESTROY","SAD"], ["LOITER","LOITER"]];
 
     //GPS
     uinamespace setVariable ["NEO_casMarkerCreated", nil];
@@ -107,6 +112,12 @@ if (_status != "KILLED") then
 
     //GPS
     _map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
+
+    // default-select the first task (ATTACK) so its weapon + ROE sub-lists populate
+    // immediately - the task lb's LBSelChanged (wired in fn_radioLbSelChanged) fires
+    // fn_casTaskLbSelChanged. Without this the panel showed a highlighted-but-inert
+    // first task with blank sub-lists until the player clicked a row.
+    _casTaskLb lbSetCurSel 0;
 };
 
 //Confirm Button

@@ -1,7 +1,6 @@
-private ["_display", "_transportUnitLb", "_transportFlyHeightSlider"];
+private ["_display", "_transportUnitLb"];
 _display = findDisplay 655555;
 _transportUnitLb = _display displayCtrl 655568;
-_transportFlyHeightSlider = _display displayCtrl 655580;
 
 private ["_transportArray", "_chopper", "_grp", "_callsign", "_callSignPlayer", "_pos"];
 _transportArray = NEO_radioLogic getVariable [format ["NEO_radioTrasportArray_%1", playerSide], []];

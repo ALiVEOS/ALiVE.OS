@@ -15,6 +15,17 @@ if (isNil { NEO_radioLogic getVariable "NEO_supportMarker" }) then
     NEO_radioLogic setVariable ["NEO_supportArtyMarkers", [_markerArtyMin, _markerArtyMax]];
 };
 
+// target-centred area-of-influence ring (CAS radius / arty dispersion). Separate guard
+// so it is created even in a session where the support marker already existed.
+if (isNil { NEO_radioLogic getVariable "NEO_supportMarkerRing" }) then
+{
+    private _markerRing = createMarkerLocal ["NEO_supportMarkerRing", [100, 1000, 0]];
+    _markerRing setMarkerShapeLocal "ELLIPSE";
+    _markerRing setMarkerBrushLocal "Border";
+    _markerRing setMarkerAlphaLocal 0;
+    NEO_radioLogic setVariable ["NEO_supportMarkerRing", _markerRing];
+};
+
 //Display
 private ["_display", "_map", "_abort", "_suppListBox", "_unit", "_action","_available", "_transportArray", "_casArray", "_artyArray"];
 
@@ -51,20 +62,8 @@ if ((uinamespace getVariable ["NEO_radioMapScale", 0]) > 0) then {
     };
 };
 
-private ["_available", "_transportArray", "_casArray", "_artyArray","_side"];
+private ["_available", "_transportArray", "_casArray", "_artyArray"];
 
-/*
-if (isnil "playerSide") then {
-    switch (getNumber(configFile >> "Cfgvehicles" >> (typeof _unit) >> "side")) do {
-        case 0 : {_side = EAST};
-        case 1 : {_side = WEST};
-        case 2 : {_side = RESISTANCE};
-        case 3 : {_side = CIVILIAN};
-        default {_side = EAST};
-    };
-    playerSide = _side;
-};
-*/
 _available = [];
 _transportArray = NEO_radioLogic getVariable [format ["NEO_radioTrasportArray_%1", playerSide], []];
 _casArray = NEO_radioLogic getVariable [format ["NEO_radioCasArray_%1", playerSide], []];
@@ -190,16 +189,6 @@ switch (_action) do
         };
     };
 };
-
-/*//Satellite
-if (vehicle _unit == _unit && _action == "radio") then
-{
-    private ["_sat"];
-    _sat = createVehicle ["SatPhone", getPosATL _unit, [], 0, "CAN_COLLIDE"];
-    NEO_radioLogic setVariable ["NEO_radioSatalliteObject", _sat];
-    _sat attachTo [_unit, [-0.15,0.3,-0.3], "neck"];
-    _unit playMove "amovpknlmstpsraswrfldnon_gear";
-};*/
 
 //Hide GPS
 showGPS false;

@@ -6,6 +6,7 @@ NEO_fnc_messageBroadcast = compile preprocessFileLineNumbers "x\alive\addons\sup
 NEO_fnc_callsignFix = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_callsignFix.sqf";
 NEO_fnc_artyUnitAvailableRounds = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_artyUnitAvailableRounds.sqf";
 NEO_fnc_artyUnitFiringDistance = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_artyUnitFiringDistance.sqf";
+NEO_fnc_supportDrawRing = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportDrawRing.sqf";
 NEO_fnc_radioCreateMarker = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_createMarker.sqf";
 NEO_fnc_radioHint = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_radioHint.sqf";
 NEO_fnc_radioSupportAdd = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportAdd.sqf";

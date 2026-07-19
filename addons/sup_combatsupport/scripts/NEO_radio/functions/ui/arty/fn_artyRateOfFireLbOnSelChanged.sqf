@@ -9,9 +9,9 @@ _artyRoundCountLb = _display displayCtrl 655605;
 _artyRateDelayText = _display displayCtrl 655611;
 _artyRateDelaySlider = _display displayCtrl 655612;
 
-if (_rate == "SEMI-FULL") then
+if (_rate == "STAGGERED") then
 {
-    _artyRateDelayText ctrlSetStructuredText parseText "<t color='#627057' size='0.8' font='PuristaMedium'>DELAY - 5/30s</t>";
+    _artyRateDelayText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>DELAY - 5/30s</t>";
 
     _artyRateDelaySlider ctrlSetPosition [0.404129 * safezoneW + safezoneX, 0.710018 * safezoneH + safezoneY, (0.105833 * safezoneW), (0.0280024 * safezoneH)];
     _artyRateDelaySlider sliderSetRange [5, 30];

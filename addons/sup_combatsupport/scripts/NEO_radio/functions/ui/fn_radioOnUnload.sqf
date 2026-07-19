@@ -6,16 +6,6 @@ if (!isNull _saveMap) then {
     uinamespace setVariable ["NEO_radioMapCenter", _saveMap ctrlMapScreenToWorld [(_cp select 0) + (_cp select 2) / 2, (_cp select 1) + (_cp select 3) / 2]];
 };
 
-if (!isNil { NEO_radioLogic getVariable "NEO_radioSatalliteObject" }) then
-{
-    private ["_obj"];
-    _obj = NEO_radioLogic getVariable "NEO_radioSatalliteObject";
-
-    detach _obj;
-    deleteVehicle _obj;
-    NEO_radioLogic setVariable ["NEO_radioSatalliteObject", nil];
-};
-
 if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then
 {
     NEO_radioLogic setVariable ["NEO_radioTalkWithPilot", nil];
@@ -41,5 +31,6 @@ if (!isNil { uinamespace getVariable "NEO_radioCbVehicle" }) then
 } forEach (NEO_radioLogic getVariable "NEO_supportArtyMarkers");
 
 (NEO_radioLogic getVariable "NEO_supportMarker") setMarkerAlphaLocal 0;
+[[], 0] call NEO_fnc_supportDrawRing; // hide the area-of-influence ring
 
 showGPS true;

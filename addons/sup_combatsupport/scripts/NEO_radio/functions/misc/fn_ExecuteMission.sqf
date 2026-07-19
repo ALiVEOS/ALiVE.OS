@@ -15,7 +15,7 @@ _dispersion = _this select 8;
 _units = _this select 9;
 
 
-["MISSION: %1", _this] call ALiVE_fnc_dump;
+if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["MISSION: %1", _this] call ALiVE_fnc_dump; };
 
 // Arty is on mission
 _battery setVariable ["ARTY_SHOTCALLED", false, true];

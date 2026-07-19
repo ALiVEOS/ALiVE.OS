@@ -111,6 +111,7 @@ if (_status != "KILLED") then
     //GPS
     uinamespace setVariable ["NEO_transportMarkerCreated", nil];
     _supportMarker setMarkerAlphaLocal 0;
+    [[], 0] call NEO_fnc_supportDrawRing; // transport has no area of influence - clear any ring
 
     //GPS
     _map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
@@ -124,7 +125,7 @@ if (_status != "KILLED") then
     lbClear _transportHeightCombo;
     {
         _transportHeightCombo lbAdd _x;
-    } forEach ["Height - Low", "Height - Medium", "Height - High"];
+    } forEach ["Altitude: Low", "Altitude: Medium", "Altitude: High"];
     _transportHeightCombo lbSetCurSel _height;
 
     lbClear _transportSpeedCombo;
@@ -136,7 +137,7 @@ if (_status != "KILLED") then
     lbClear _transportRoeCombo;
     {
         _transportRoeCombo lbAdd _x;
-    } forEach ["Roe - Hold Fire", "Roe - Fire"];
+    } forEach ["ROE: Hold Fire", "ROE: Fire At Will"];
     _transportRoeCombo lbSetCurSel _roe;
 
     //ComboBoxes EventHandlers
