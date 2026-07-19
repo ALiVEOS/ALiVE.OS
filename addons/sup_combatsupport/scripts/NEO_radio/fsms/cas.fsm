@@ -887,7 +887,10 @@ class FSM
                 {
                         name = "__7";
                         itemno = 25;
-                        init = /*%FSM<STATEINIT""">*/"[_veh,_callsign,_posCas, _audio, _player] spawn" \n
+                        init = /*%FSM<STATEINIT""">*/"private _loiterDuration = _taskArray param [7, -1];" \n
+                         "if (_loiterDuration > 0) then { _loiterEnd = time + _loiterDuration; } else { _loiterEnd = -1; };" \n
+                         "" \n
+                         "[_veh,_callsign,_posCas, _audio, _player] spawn" \n
                          "{        " \n
                          "private [""_veh"", ""_callsign"",""_posCas""];" \n
                          "        _veh = _this select 0;" \n
@@ -1042,6 +1045,17 @@ class FSM
                                          "_veh setVariable [""NEO_radioCasNewTask"", nil, true];" \n
                                          "" \n
                                          ""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "loiter_timeout">*/
+                                class loiter_timeout
+                                {
+                                        itemno = 41;
+                                        priority = 1.000000;
+                                        to="_";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!isNil ""_loiterEnd"" && {_loiterEnd > 0 && {time > _loiterEnd}}"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/"_task = ""RTB"";"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                                 /*%FSM<LINK "_">*/

@@ -121,9 +121,20 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
 
     } else {
         if (toUpper (_lb lbData _index) == "LOITER") then {
-            // loiter never delivers ordnance - no weapon picker, no greyed clutter
+            // loiter never delivers ordnance - reuse the freed weapon list as a
+            // loiter-duration picker (lbData carries seconds; Indefinite = -1)
+            _casAttackRunText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>LOITER DURATION</t>";
+            _casAttackRunText ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
+            _casAttackRunText ctrlCommit 0;
+
+            _casAttackRunLB ctrlEnable true;
             lbClear _casAttackRunLB;
-            _casAttackRunLB ctrlEnable false;
+            {
+                private _row = _casAttackRunLB lbAdd (_x select 0);
+                _casAttackRunLB lbSetData [_row, (_x select 1)];
+            } forEach [["10 min", "600"], ["20 min", "1200"], ["30 min", "1800"], ["Indefinite", "-1"]];
+            // default to 20 min - a sensible on-station window rather than tying the asset up forever
+            _casAttackRunLB lbSetCurSel 1;
         } else {
             lbClear _casAttackRunLB;
             {

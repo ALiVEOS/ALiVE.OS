@@ -2,7 +2,7 @@ private
 [
     "_display", "_casUnitLb", "_casTaskLb", "_casFlyHeightSlider", "_casRadiusSlider", "_casArray", "_veh",
     "_grp", "_callsign", "_callSignPlayer", "_task", "_marker", "_isPlane", "_pos", "_radius", "_flyInHeight",
-    "_Coord","_weapon"
+    "_Coord","_weapon","_loiterDuration"
 ];
 // #940 follow-up: in "first player only" mode, only the current operator may dispatch.
 if !(call ALIVE_fnc_combatSupportIsOperator) exitWith { hint localize "STR_ALIVE_CS_NOTOPERATOR"; };
@@ -44,9 +44,17 @@ _ROE = _casROELb lbData (lbCurSel _casROELb);
 // guard: never hand setCombatMode an empty enum (cas.fsm does "_grp setCombatMode _ROE").
 // lbData is "" when the list has no selection - default to the list's own default (RED).
 if (_ROE == "") then { _ROE = "RED"; };
+// #323: for LOITER the weapon list is reused as a duration picker - its lbData is seconds
+// (Indefinite = -1), not a weapon classname. Move it to the duration slot and blank the
+// weapon field. Every other task keeps -1 so the array shape (index 7) stays uniform.
+_loiterDuration = -1;
+if (_task == "LOITER") then {
+    if (_weapon != "") then { _loiterDuration = parseNumber _weapon; };
+    _weapon = "";
+};
 
 //New Task
-_veh setVariable ["NEO_radioCasNewTask", [_task, _pos, _radius, _flyInHeight, _weapon, _ROE, player], true];
+_veh setVariable ["NEO_radioCasNewTask", [_task, _pos, _radius, _flyInHeight, _weapon, _ROE, player, _loiterDuration], true];
 
 
 if (_audio) then {
