@@ -226,6 +226,9 @@ class FSM
                          "    _x setSkill 1;" \n
                          "} forEach units _grp;" \n
                          "" \n
+                         "//#530: turret door gunners defend the aircraft (own AWARE group + scripted fire) while the pilot stays CARELESS and flies" \n
+                         "[_chopper] spawn NEO_fnc_transportGunnerDefend;" \n
+                         "" \n
                          "//Vehicle Status" \n
                          "_chopper setVariable [""NEO_radioTrasportUnitStatus"", ""NONE"", true];" \n
                          "_chopper setVariable [""NEO_radioTrasportUnitFlyingProperties"", [1, 1, 0], true];" \n

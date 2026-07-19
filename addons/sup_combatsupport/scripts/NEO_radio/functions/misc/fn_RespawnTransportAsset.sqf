@@ -68,6 +68,10 @@ private _keepAsset = (!isNull _veh) && {
     || ({ isPlayer _x && { alive _x } && { _x distance _veh < 120 } } count allPlayers > 0)
 };
 
+// #530: the door gunners live in their own group (NEO_radioGunnerGroup), so they are NOT in
+// units _grp - grab it while _veh still exists so we can recycle them alongside the rest
+private _gunGrp = if (!isNull _veh) then { _veh getVariable ["NEO_radioGunnerGroup", grpNull] } else { grpNull };
+
 //Delete objects and groups
 if (!isNull _veh && {!_keepAsset}) then {
     deletevehicle _veh;
@@ -76,6 +80,11 @@ if (!isNull _veh && {!_keepAsset}) then {
 if (!isNull _grp && {!_keepAsset}) then {
     {deletevehicle _x} foreach units _grp;
     _grp call ALiVE_fnc_DeleteGroupRemote;
+};
+
+if (!isNull _gunGrp && {!_keepAsset}) then {
+    {deletevehicle _x} foreach units _gunGrp;
+    deleteGroup _gunGrp;
 };
 
 if (!_keepAsset) then { waitUntil {isNull _veh} };
