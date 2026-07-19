@@ -58,17 +58,27 @@ TRANS_RESPAWN_LIMIT = TRANS_RESPAWN_LIMIT - 1;
 
 sleep (floor (random [3,6,9]));
 
+// Don't yank a disabled transport out from under the player who called it. If a player is
+// aboard or standing next to the downed asset (e.g. it hard-landed at their position and cut
+// its engine), leave the airframe + crew where they are - it's already de-listed above, so it's
+// no longer a callable asset, and garbage collection cleans it up later. The replacement still
+// comes in from base. Anything downed away from players is recycled immediately as before.
+private _keepAsset = (!isNull _veh) && {
+    ({ isPlayer _x } count crew _veh > 0)
+    || ({ isPlayer _x && { alive _x } && { _x distance _veh < 120 } } count allPlayers > 0)
+};
+
 //Delete objects and groups
-if (!isNull _veh) then {
+if (!isNull _veh && {!_keepAsset}) then {
     deletevehicle _veh;
 };
 
-if (!isNull _grp) then {
+if (!isNull _grp && {!_keepAsset}) then {
     {deletevehicle _x} foreach units _grp;
     _grp call ALiVE_fnc_DeleteGroupRemote;
 };
 
-waitUntil {isNull _veh};
+if (!_keepAsset) then { waitUntil {isNull _veh} };
 
 private ["_veh","_grp"];
 
