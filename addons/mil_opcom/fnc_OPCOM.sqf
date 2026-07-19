@@ -1756,6 +1756,7 @@ switch (_operation) do {
                 {
                     deleteMarker _x;
                 } forEach [
+                    _objectiveID,
                     format ["%1_Hostility", _objectiveID],
                     format ["%1_actions", _objectiveID],
                     format ["hq_%1", _objectiveID],
