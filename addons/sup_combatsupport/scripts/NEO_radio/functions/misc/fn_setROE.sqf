@@ -1,24 +1,20 @@
-private ["_chopper", "_engage", "_crew"];
-                _chopper = _this select 0;
-                _engage = _this select 1;
-                _crew = crew _chopper;
+// #530: the transport ROE combo is the master on/off for the scripted door-gunner defence
+// (NEO_fnc_transportGunnerDefend). Engage -> gunners defend (their own group goes AWARE + fires
+// and the defend loop is armed); Hold -> gunners stand down (BLUE + the loop skips firing). It
+// only ever touches the gunners' own group, never the pilot, so the aircraft keeps flying either
+// way. Runs server-side (dispatched via BIS_fnc_MP with target false).
+// Author: Jman
+params ["_chopper", "_engage"];
+if (isNull _chopper) exitWith {};
 
-                {
-                    if (!isPlayer _x && !(_x in assignedCargo _chopper)) then
-                    {
-                        if (_engage) then
-                        {
-                            _x enableAi "TARGET";
-                            _x enableAi "AUTOTARGET";
-                            _x setCombatMode "YELLOW";
-                            group _x enableAttack true;
-                        }
-                        else
-                        {
-                            _x disableAi "TARGET";
-                            _x disableAi "AUTOTARGET";
-                            _x setCombatMode "BLUE";
-                            group _x enableAttack false;
-                        };
-                    };
-                } forEach _crew;
+_chopper setVariable ["NEO_radioGunnerDefendOn", _engage, true];
+
+private _gunGrp = _chopper getVariable ["NEO_radioGunnerGroup", grpNull];
+if (!isNull _gunGrp) then {
+    if (_engage) then {
+        _gunGrp setBehaviour "AWARE";
+        _gunGrp setCombatMode "YELLOW";
+    } else {
+        _gunGrp setCombatMode "BLUE";
+    };
+};

@@ -45,6 +45,8 @@ if (_gunners isEqualTo []) exitWith {
 
 _gunGrp setBehaviour "AWARE";
 _gunGrp setCombatMode "YELLOW";
+// default the master switch on; the tablet ROE combo (fn_setROE) flips it to hold
+_chopper setVariable ["NEO_radioGunnerDefendOn", true, true];
 // keep the pilot from auto-escalating to COMBAT behaviour (that switch is what makes an AI heli
 // hover / break off); per-unit, does not touch the gunners
 { _x disableAi "AUTOCOMBAT" } forEach (crew _chopper select {!(_x in _gunners)});
@@ -65,7 +67,7 @@ _gunGrp setCombatMode "YELLOW";
             };
         } forEach (_chopper nearEntities [["Man","Car","Tank","Air","Ship"], 800]);
 
-        if (!isNull _t) then {
+        if (!isNull _t && {_chopper getVariable ["NEO_radioGunnerDefendOn", true]}) then {
             // reveal to the GUNNER group (not the vehicle/pilot group) - doFire is dropped unless
             // the firing unit's own group knows the target
             _gunGrp reveal [_t, 4];
