@@ -20,7 +20,7 @@
 // Author: Neo, Tupolov, Jman
 // ------------------------------------------------------------------
 
-private ["_veh","_callsign","_ammoCount","_grp","_ROE","_oldPos","_restoreAmmo","_weapon","_posCas","_radiusCas","_task","_groundAttack","_dummy","_laze","_lazeGrp","_lasedObj","_playerLaze","_casGuideEH","_guideMethod","_aceLaserUuid","_parents","_isBomb","_canLock","_guided","_bareGroundGun","_sleep","_turret","_unit","_muzzle","_firemode","_target","_isPlane","_casStart","_nextMove","_aimPos","_aimASL","_movePos","_dir","_toTgt","_noseOn","_ammoClass","_struckThisLeg","_runBearing","_legToFar","_legStart","_sideCas","_sideTxt","_enemySides","_friendlySides","_enemiesNear","_rtbNeeded","_rtbReason","_passCount","_killableNear"];
+private ["_veh","_callsign","_ammoCount","_grp","_ROE","_oldPos","_restoreAmmo","_weapon","_posCas","_radiusCas","_task","_groundAttack","_dummy","_laze","_lazeGrp","_lasedObj","_playerLaze","_casGuideEH","_guideMethod","_aceLaserUuid","_parents","_isBomb","_canLock","_guided","_bareGroundGun","_sleep","_turret","_unit","_muzzle","_firemode","_target","_isPlane","_casStart","_nextMove","_aimPos","_aimASL","_movePos","_dir","_toTgt","_noseOn","_ammoClass","_struckThisLeg","_runBearing","_legToFar","_legStart","_sideCas","_sideTxt","_enemySides","_friendlySides","_enemiesNear","_rtbNeeded","_rtbReason","_passCount","_killableNear","_usableWeapons","_setupWeapon","_retargetForWeapon","_mySortie","_myTask"];
 
 _veh         = _this select 0;
 _callsign    = _this select 1;
@@ -45,121 +45,197 @@ _casGuideEH = -1;   // Fired EH id for scripted projectile guidance; the guided 
 _guideMethod  = "VANILLA";   // tiered guided delivery: ACE | VANILLA (real laser) -> scripted watchdog fallback
 _aceLaserUuid = "";          // handle from ace_laser_fnc_laserOn, for laserOff in cleanup ("" = none)
 
-// weapon classification - guided munitions need a laser/IR designation,
-// guns & unguided fire scripted down the run
-_parents = [ (configFile >> "CfgWeapons" >> _weapon),true] call BIS_fnc_returnParents;
-_isBomb  = getText (configFile >> "CfgWeapons" >> _weapon >> "cursorAim") == "bomb";
-_canLock = getNumber (configFile >> "CfgWeapons" >> _weapon >> "canLock");
-// Guided = launches lockable/steered ordnance that wants a laser/IR designation, so it takes the
-// lase-and-fire path instead of the scripted gun run. Detection is by launcher-base NAME because mods
-// don't share a clean class tree: RHS's rhs_weap_gbu12 has NO MissileLauncher/BombLauncher parent,
-// isBomb=false and canLock=0 - its real base is "weapon_LGBLauncherBase" (+ a "Bomb_04..." parent). So
-// we match the BOMB / LGB / MISSILE token anywhere in the (upper-cased) parent chain. Guns and genuinely
-// unguided rocket pods carry none of those tokens, so they still gun-run.
-private _pu = _parents apply { toUpper _x };
-_guided = (_pu findIf { ((_x find "MISSILE") >= 0) || {(_x find "BOMB") >= 0} || {(_x find "LGB") >= 0} } > -1)
-          || {_isBomb} || {_canLock > 1};
-_bareGroundGun = _groundAttack && !_guided;
+// ---- sortie token: the FSM Attack link bumps NEO_casSortieId once per sortie.
+// If it changes under us, a newer scripted attack now owns this aircraft and we
+// retire on the next loop pass (see the while gate + the stale-aware cleanup). ----
+_mySortie = _veh getVariable ["NEO_casSortieId", 0];
+// the task this delivery was spawned for. The FSM writes NEO_radioCurrentTask on EVERY
+// task consumption (every New_Task link, not just ATTACK), so if it changes under us the
+// player has re-tasked this aircraft - RTB / SAD / LOITER / a fresh attack - and we retire
+// quietly on the next pass instead of fighting the new order. The sortie token still covers
+// an identical attack-to-attack re-task (same task array) that this compare would miss.
+_myTask = _veh getVariable ["NEO_radioCurrentTask", []];
 
-// fire cadence per weapon family (governs the guided + heli branches;
-// the plane gun puppet uses its own small frame step)
-if ("RocketPods" in _parents) then {
-    _sleep = 3;
-} else {
-    if ("MissileLauncher" in _parents) then {
-        _sleep = 12;
+// the weapons the pilot may fire this sortie - the SAME shared filter the picker
+// used, so a switch can never land on a weapon the list hid.
+_usableWeapons = [_veh] call NEO_fnc_casUsableWeapons;
+
+// ---- per-weapon setup: run once at the start and re-run on every mid-attack
+// weapon switch, so the tuned per-family delivery (guided tiering, cadence,
+// turret/muzzle, simulated on-target ordnance) always matches the weapon that is
+// actually firing. SCOPE RULE: anything the delivery loop reads back MUST be set
+// here by BARE assignment - a params/private inside this call-block would declare
+// block-locals that shadow the outer vars and the loop would fire an empty muzzle. ----
+_setupWeapon = {
+    // guided munitions need a laser/IR designation, guns and unguided fire down the
+    // run. Detection is by launcher-base NAME token because mods do not share a clean
+    // class tree (RHS rhs_weap_gbu12 has no BombLauncher parent, isBomb=false,
+    // canLock=0 - its base is "weapon_LGBLauncherBase" + a "Bomb_04.." parent).
+    _parents = [ (configFile >> "CfgWeapons" >> _weapon),true] call BIS_fnc_returnParents;
+    _isBomb  = getText (configFile >> "CfgWeapons" >> _weapon >> "cursorAim") == "bomb";
+    _canLock = getNumber (configFile >> "CfgWeapons" >> _weapon >> "canLock");
+    private _pu = _parents apply { toUpper _x };
+    _guided = (_pu findIf { ((_x find "MISSILE") >= 0) || {(_x find "BOMB") >= 0} || {(_x find "LGB") >= 0} } > -1)
+              || {_isBomb} || {_canLock > 1};
+    _bareGroundGun = _groundAttack && !_guided;
+
+    // fire cadence per weapon family (governs the guided + heli branches; the plane
+    // gun uses its own small frame step)
+    if ("RocketPods" in _parents) then {
+        _sleep = 3;
     } else {
-        if ("MGunCore" in _parents) then {
-            _sleep = 0.3;
+        if ("MissileLauncher" in _parents) then {
+            _sleep = 12;
         } else {
-            _sleep = 0.5;
+            if ("MGunCore" in _parents) then {
+                _sleep = 0.3;
+            } else {
+                _sleep = 0.5;
+            };
+        };
+    };
+
+    // resolve the turret holding the chosen weapon and the unit that pulls its
+    // trigger (single-seat CAS plane: the pilot/driver)
+    _turret = [];
+    {
+        if (_weapon in (_veh weaponsTurret _x)) exitWith { _turret = _x; };
+    } forEach ([[]] + allTurrets [_veh, true]);
+    _unit = _veh turretUnit _turret;
+    if (isNull _unit) then { _unit = driver _veh; };
+    // BARE assignment (NOT params, which would privatise _muzzle/_firemode to this
+    // block and leave the outer ones empty - every gun/heli forceWeaponFire would miss)
+    private _ws = weaponState [_veh, _turret, _weapon];
+    _muzzle   = _ws param [1, ""];
+    _firemode = _ws param [2, ""];
+    if (_muzzle isEqualTo "") then { _muzzle = _weapon; };
+    if (_firemode isEqualTo "") then {
+        private _modes = getArray (configFile >> "CfgWeapons" >> _weapon >> _muzzle >> "modes");
+        if (_modes isEqualTo []) then { _modes = getArray (configFile >> "CfgWeapons" >> _weapon >> "modes"); };
+        _firemode = _modes param [0, "this"];
+        if (_firemode isEqualTo "this") then { _firemode = _muzzle; };
+    };
+
+    // resolve the chosen weapon own shell/rocket ammo for the simulated on-target
+    // ordnance (plane gun pass). Guns often declare magazines per-muzzle, so fall back
+    // to the muzzle when the weapon root has none. A kinetic-only shell (indirectHit 0)
+    // is swapped for a known HE cannon shell so the simulated impact always craters.
+    _ammoClass = "";
+    private _cvMags = getArray (configFile >> "CfgWeapons" >> _weapon >> "magazines");
+    if (_cvMags isEqualTo []) then { _cvMags = getArray (configFile >> "CfgWeapons" >> _weapon >> _muzzle >> "magazines"); };
+    _ammoClass = getText (configFile >> "CfgMagazines" >> (_cvMags param [0, ""]) >> "ammo");
+    if (_ammoClass isEqualTo "" || {getNumber (configFile >> "CfgAmmo" >> _ammoClass >> "indirectHit") <= 0}) then {
+        _ammoClass = "G_20mm_HE";
+    };
+
+    // tiered guided delivery: ACE (SALH seeker) / SELF (lockable IR) / STEER (ACE, no
+    // seeker) / VANILLA (engine laser). Only meaningful for a guided weapon.
+    if (_guided) then {
+        if (_canLock > 0) then {
+            _guideMethod = "SELF";
+        } else {
+            private _aceLoaded = isClass (configFile >> "CfgPatches" >> "ace_laser");
+            private _aceSeeker = "SALH" in (getArray (configFile >> "CfgAmmo" >> _ammoClass >> "ace_missileguidance" >> "seekerTypes"));
+            _guideMethod = "VANILLA";
+            if (_aceLoaded) then { _guideMethod = if (_aceSeeker) then {"ACE"} else {"STEER"}; };
+        };
+        _veh setVariable ["NEO_casGuideMethod", _guideMethod];
+        if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-GUIDE: weapon=%1 ammo=%2 canLock=%3 method=%4", _weapon, _ammoClass, _canLock, _guideMethod] call ALiVE_fnc_dump; };
+    };
+
+    _veh selectWeapon _weapon;
+};
+
+// ---- re-aim after a weapon switch: the valid target set, the auto-lase hand-off
+// and any live designation all depend on the weapon family. ----
+_retargetForWeapon = {
+    // the shared steer target belongs to the OLD weapon guidance - a stale value here
+    // would let the Fired EH hijack the new weapon unguided rounds onto the last lased
+    // target. The guided per-pass branch re-arms it; the EH is inert on objNull.
+    _veh setVariable ["NEO_casGuideTgt", objNull];
+    // an ACE designation lit for the previous bomb must not keep burning on a target
+    // we no longer service (other friendly SALH ordnance would home on it).
+    if (_aceLaserUuid != "" && {!isNil "ace_laser_fnc_laserOff"}) then {
+        [_aceLaserUuid] call ace_laser_fnc_laserOff;
+        _aceLaserUuid = "";
+    };
+    if (_groundAttack) then {
+        // hand the standing laser to a guided weapon, or aim the gun at the bare point;
+        // reset the once-per-vehicle throttle so the new weapon re-engages
+        _lasedObj = objNull;
+        _veh setVariable ["NEO_casLastFired", objNull];
+        _target = if (_guided) then { _laze } else { objNull };
+    } else {
+        // attack run: target class list + auto-lase are weapon-driven - re-pick with the
+        // same widen-once fallback the death-of-target re-pick uses
+        if (!isNull _target && {_target getVariable ["NEO_radioAutoLase", false]}) then { deleteVehicle _target; };
+        _target = [_veh, _posCas, _radiusCas, _weapon] call NEO_fnc_pickCasTarget;
+        if (isNull _target) then {
+            // widen once for THIS pick only - do not compound _radiusCas across switches
+            _target = [_veh, _posCas, _radiusCas * 2, _weapon] call NEO_fnc_pickCasTarget;
         };
     };
 };
 
-// resolve the turret holding the chosen weapon and the unit that pulls its
-// trigger (single-seat CAS plane: the pilot/driver)
-_turret = [];
-{
-    if (_weapon in (_veh weaponsTurret _x)) exitWith { _turret = _x; };
-} forEach ([[]] + allTurrets [_veh, true]);
-_unit = _veh turretUnit _turret;
-if (isNull _unit) then { _unit = driver _veh; };
-(weaponState [_veh, _turret, _weapon]) params ["", ["_muzzle", ""], ["_firemode", ""]];
-if (_muzzle isEqualTo "") then { _muzzle = _weapon; };
-if (_firemode isEqualTo "") then {
-    private _modes = getArray (configFile >> "CfgWeapons" >> _weapon >> _muzzle >> "modes");
-    if (_modes isEqualTo []) then { _modes = getArray (configFile >> "CfgWeapons" >> _weapon >> "modes"); };
-    _firemode = _modes param [0, "this"];
-    if (_firemode isEqualTo "this") then { _firemode = _muzzle; };
-};
+call _setupWeapon;
 
 // target setup
 if (_groundAttack) then {
-    if (_guided) then {
-        // ATTACK GROUND (guided) - create the laser designation; the loop re-attaches it directly onto the
-        // nearest enemy vehicle each pass (see the guided branch). _dummy is only the marker-centre fallback
-        // holder for when no vehicle is present. NOTE: the old code attached the laser with a random +/-15m
-        // offset (a hangover from designating a whole AREA) - that threw the bomb ~15m off ("landed long"),
-        // so it's [0,0,1] with no jitter now.
-        _lazeGrp = createGroup SideLogic;
-        _dummy = _lazeGrp createUnit ["Logic", _posCas, [], 0, "NONE"];
+    // Create the laser designation for EVERY ground attack (not just a guided first
+    // pick), so a gun-first sortie that later switches to a bomb already has a live
+    // designator. The Fired EH steers a released bomb/missile onto NEO_casGuideTgt and
+    // is INERT while that is objNull (only the guided per-pass branch arms it). The old
+    // random +/-15m attach offset made bombs land long, so it is [0,0,1] with no jitter.
+    _lazeGrp = createGroup SideLogic;
+    _dummy = _lazeGrp createUnit ["Logic", _posCas, [], 0, "NONE"];
 
-        private _lazor = "LaserTargetE";
-        if (side _grp getFriend WEST > 0.6) then {_lazor = "LaserTargetW"};
+    private _lazor = "LaserTargetE";
+    if (side _grp getFriend WEST > 0.6) then {_lazor = "LaserTargetW"};
 
-        _laze = _lazor createVehicle _posCas;
-        _laze attachTo [_dummy,[0, 0, 1]];
-        _dummy setPos _posCas;
+    _laze = _lazor createVehicle _posCas;
+    _laze attachTo [_dummy,[0, 0, 1]];
+    _dummy setPos _posCas;
 
-        _grp reveal _laze;
-        _target = _laze;
-        _lasedObj = objNull;
+    _grp reveal _laze;
 
-        // Scripted projectile guidance. ACE replaces vanilla laser tracking (its designations need an owner +
-        // code via ace_laser_fnc_laserOn), so our scripted LaserTarget is ignored and a real LGB just drops
-        // ballistic and lands long (the observed ~10m-long misses). Instead, catch the RELEASED bomb/missile
-        // and steer it onto the lased vehicle ourselves - reliable regardless of ACE / mod / release geometry.
-        // The round is a real armed projectile so it detonates on contact. EH is removed in cleanup.
-        _veh setVariable ["NEO_casGuideTgt", objNull];
-        _veh setVariable ["NEO_casLastFired", objNull];
-        _casGuideEH = _veh addEventHandler ["Fired", {
-            params ["_shooter", "", "", "", "", "", "_proj"];
-            private _t = _shooter getVariable ["NEO_casGuideTgt", objNull];
-            // Catch the released round by ORDNANCE TYPE (the Fired EH reports a pylon/muzzle weapon name for
-            // aircraft bombs, so a name match was unreliable). SubmunitionBase covers cluster/DAGR-style rounds.
-            private _isOrd = !isNull _proj && {(_proj isKindOf "BombCore") || {_proj isKindOf "MissileBase"} || {_proj isKindOf "RocketBase"} || {_proj isKindOf "SubmunitionBase"}};
-            if (!_isOrd || {isNull _t}) exitWith {};
-            // STEER the REAL round onto the target: it visibly flies from the jet, decelerating on final
-            // approach so it converges in ~2s (not a spiral) and ORIENTED along its flight path so it does NOT
-            // tumble. The velocity override stops it self-detonating, so on arrival (<12m) bin it + set off a
-            // real bomb ON the target + a sure kill. Real self-guidance (IR Maverick) and laser both proved
-            // unreliable in testing, so steering is the universal delivery; the loop watchdog is the backstop.
-            [_proj, _t] spawn {
-                params ["_p", "_t"];
-                while { !isNull _p && {alive _p} && {!isNull _t} && {alive _t} } do {
-                    private _to = ((getPosASL _t) vectorAdd [0, 0, 0.5]) vectorDiff (getPosASL _p);
-                    private _dist = vectorMagnitude _to;
-                    if (_dist < 12) exitWith {
-                        deleteVehicle _p;
-                        "Bomb_04_F" createVehicle (getPosATL _t);
-                        _t setDamage 1;
-                        if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-GUIDE: STEER hit on %1", _t] call ALiVE_fnc_dump; };
-                    };
-                    private _dir = vectorNormalized _to;
-                    private _spd = ((_dist * 1.5) min 180) max 45;
-                    _p setVelocity (_dir vectorMultiply _spd);
-                    _p setVectorDirAndUp [_dir, [0, 0, 1]];
-                    sleep 0.02;
+    _veh setVariable ["NEO_casGuideTgt", objNull];
+    _veh setVariable ["NEO_casLastFired", objNull];
+    _casGuideEH = _veh addEventHandler ["Fired", {
+        params ["_shooter", "", "", "", "", "", "_proj"];
+        private _t = _shooter getVariable ["NEO_casGuideTgt", objNull];
+        // Catch the released round by ORDNANCE TYPE (the Fired EH reports a pylon/muzzle
+        // weapon name for aircraft bombs, so a name match was unreliable). SubmunitionBase
+        // covers cluster/DAGR-style rounds.
+        private _isOrd = !isNull _proj && {(_proj isKindOf "BombCore") || {_proj isKindOf "MissileBase"} || {_proj isKindOf "RocketBase"} || {_proj isKindOf "SubmunitionBase"}};
+        if (!_isOrd || {isNull _t}) exitWith {};
+        // STEER the REAL round onto the target: it flies from the jet, decelerating on
+        // final approach so it converges in ~2s, oriented along its path so it does not
+        // tumble. On arrival (<12m) bin it + set off a real bomb ON the target + a sure kill.
+        [_proj, _t] spawn {
+            params ["_p", "_t"];
+            while { !isNull _p && {alive _p} && {!isNull _t} && {alive _t} } do {
+                private _to = ((getPosASL _t) vectorAdd [0, 0, 0.5]) vectorDiff (getPosASL _p);
+                private _dist = vectorMagnitude _to;
+                if (_dist < 12) exitWith {
+                    deleteVehicle _p;
+                    "Bomb_04_F" createVehicle (getPosATL _t);
+                    _t setDamage 1;
+                    if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-GUIDE: STEER hit on %1", _t] call ALiVE_fnc_dump; };
                 };
+                private _dir = vectorNormalized _to;
+                private _spd = ((_dist * 1.5) min 180) max 45;
+                _p setVelocity (_dir vectorMultiply _spd);
+                _p setVectorDirAndUp [_dir, [0, 0, 1]];
+                sleep 0.02;
             };
-        }];
+        };
+    }];
 
+    _lasedObj = objNull;
+    _target = if (_guided) then { _laze } else { objNull };
+    if (_guided) then {
         ["Telling %1 (%2) to designate and strike area at %3 (radius %4) with %5",_veh,_callsign,_posCas,_radiusCas,_weapon] call ALiVE_fnc_dump;
     } else {
-        // ATTACK GROUND (gun/unguided) - no laser, scripted fire is aimed at the bare ground point
-        _target = objNull;
-
         ["Telling %1 (%2) to saturate area at %3 (radius %4) with %5 (scripted gun run)",_veh,_callsign,_posCas,_radiusCas,_weapon] call ALiVE_fnc_dump;
     };
 } else {
@@ -171,45 +247,6 @@ if (_groundAttack) then {
 _isPlane  = _veh isKindOf "Plane";
 _casStart = time;
 _nextMove = 0;
-
-// resolve the chosen weapon's own shell/rocket ammo for the simulated on-target
-// ordnance (plane gun pass, Path B). Guns often declare magazines per-muzzle, so
-// fall back to the muzzle when the weapon root has none. A kinetic-only shell
-// (indirectHit 0) is swapped for a known HE cannon shell so the simulated impact
-// always craters + area-damages the target regardless of the real round's ballistics.
-_ammoClass = "";
-private _cvMags = getArray (configFile >> "CfgWeapons" >> _weapon >> "magazines");
-if (_cvMags isEqualTo []) then { _cvMags = getArray (configFile >> "CfgWeapons" >> _weapon >> _muzzle >> "magazines"); };
-_ammoClass = getText (configFile >> "CfgMagazines" >> (_cvMags param [0, ""]) >> "ammo");
-if (_ammoClass isEqualTo "" || {getNumber (configFile >> "CfgAmmo" >> _ammoClass >> "indirectHit") <= 0}) then {
-    _ammoClass = "G_20mm_HE";
-};
-
-// ---- Tiered guided delivery (option B) - pick the best REAL delivery the munition + environment support:
-//   ACE     = ACE loaded AND the munition has an ACE SALH seeker -> ace_laser designation, real bomb guides.
-//   STEER   = ACE loaded BUT no ACE seeker -> NEITHER laser works (proven: no ACE seeker to home, AND ACE
-//             intercepts the vanilla LaserTarget - "doesn't have owner"), so self-steer the REAL bomb onto
-//             the target for a connected visual + guaranteed kill. This is the RHS GBU + ACE case.
-//   VANILLA = ACE not loaded -> engine LaserTarget, real bomb guides itself.
-// A scripted Bomb_04_F on target is the ultimate watchdog if a real-laser bomb (ACE/VANILLA) still misses. ----
-if (_guided) then {
-    if (_canLock > 0) then {
-        // lockable missile (IR/radar, e.g. AGM-65 Maverick) - it locks the vehicle and guides ITSELF. No
-        // laser, no steering: steering fought its own seeker and detonated a bomb warhead, which read as a
-        // scripted hit. Just fire at the vehicle and let the real missile fly; watchdog covers a miss.
-        _guideMethod = "SELF";
-    } else {
-        // laser bomb (canLock 0, e.g. GBU) - needs a designation: ACE laser if it has an ACE SALH seeker;
-        // else self-steer (ACE loaded, no seeker - ACE leaves it to vanilla but AI can't acquire canLock 0);
-        // else the vanilla engine LaserTarget (no ACE).
-        private _aceLoaded = isClass (configFile >> "CfgPatches" >> "ace_laser");
-        private _aceSeeker = "SALH" in (getArray (configFile >> "CfgAmmo" >> _ammoClass >> "ace_missileguidance" >> "seekerTypes"));
-        _guideMethod = "VANILLA";
-        if (_aceLoaded) then { _guideMethod = if (_aceSeeker) then {"ACE"} else {"STEER"}; };
-    };
-    _veh setVariable ["NEO_casGuideMethod", _guideMethod];
-    if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-GUIDE: weapon=%1 ammo=%2 canLock=%3 method=%4", _weapon, _ammoClass, _canLock, _guideMethod] call ALiVE_fnc_dump; };
-};
 _struckThisLeg = false;   // guaranteed strike fires once per inbound racetrack leg; re-armed on each leg flip
 _runBearing    = -1;      // fixed attack axis (compass bearing plane->target), set on the first plane pass
 _legToFar      = true;    // which racetrack end the jet is currently running toward
@@ -232,15 +269,41 @@ _passCount   = 0;
 // Keep attack-running the marked area while LIVE enemies remain within 150m (crewed units/vehicles,
 // virtualised enemy profiles, and empty hostile/civilian vehicles), breaking off to RTB on low fuel,
 // damage, or winchester. Hard time + pass backstops guarantee the loop can never run away.
+// Hold the group at BLUE for the whole scripted delivery: fireAtTarget / forceWeaponFire
+// bypass ROE so the scripted shots still fire, but the now fully-loaded rack cannot be
+// rippled autonomously at the lased target (belt-and-braces with the FSM disableAi leash).
+_grp setCombatMode "BLUE";
+
+// alive _veh leads (lazy braces on the rest) so a wreck GC'd mid-sleep never runs a
+// getVariable/ammo on objNull. The sortie token AND the current-task latch both retire a
+// superseded delivery; the loop also switches through the whole usable set before winchester.
 while {
-    (_veh ammo _weapon) > 0
-    && !(_veh getVariable ["NEO_radioCasUnitBreakOff", false])
-    && (if (_groundAttack) then {_killableNear > 0 || {!isNull _playerLaze}} else {alive _target})
-    && !_rtbNeeded
-    && _passCount < 1000
-    && (time - _casStart) < 300
+    alive _veh
+    && {(_usableWeapons findIf { (_veh ammo _x) > 0 }) > -1}
+    && {(_veh getVariable ["NEO_casSortieId", 0]) == _mySortie}
+    && {(_veh getVariable ["NEO_radioCurrentTask", []]) isEqualTo _myTask}
+    && {!(_veh getVariable ["NEO_radioCasUnitBreakOff", false])}
+    && {if (_groundAttack) then {_killableNear > 0 || {!isNull _playerLaze}} else {alive _target}}
+    && {!_rtbNeeded}
+    && {_passCount < 1000}
+    && {(time - _casStart) < 300}
 } do {
     _passCount = _passCount + 1;
+
+    // current weapon empty but the jet is not dry: switch to the next usable loaded
+    // weapon (same priority as AUTO), re-run the per-family setup + re-aim, and keep
+    // attacking. A specific pick no longer forces an early winchester. The while gate
+    // only let this pass run because something is still loaded, so a pick always lands.
+    if ((_veh ammo _weapon) <= 0) then {
+        private _next = [_veh, _usableWeapons] call NEO_fnc_casNextWeapon;
+        if (_next != "" && {_next != _weapon}) then {
+            [[_veh, format ["%1 is out of %2, switching to %3. Out.", _callsign, [configFile >> "CfgWeapons" >> _weapon] call bis_fnc_displayName, [configFile >> "CfgWeapons" >> _next] call bis_fnc_displayName], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+            _weapon = _next;
+            call _setupWeapon;
+            call _retargetForWeapon;
+            if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-SWITCH: %1 now on %2 (guided %3 method %4)", _callsign, _weapon, _guided, _guideMethod] call ALiVE_fnc_dump; };
+        };
+    };
 
     // ---- per-pass enemy scan (once per pass): crewed enemies + virtualised enemy profiles +
     //      empty hostile vehicles within 150m of the marker. Drives persist-until-clear + strike aim. ----
@@ -549,67 +612,83 @@ while {
 };
 
 // ---- cleanup (always runs on any loop exit) ----
-// ATTACK GROUND laser and its dummy must never outlive this script
+// a newer sortie may have superseded us (the FSM Attack link bumped the token and
+// spawned a fresh delivery on this same aircraft). If so, retire QUIETLY: tear down
+// only OUR own listeners/objects and touch nothing shared - no ammo restore, no
+// movement, no message, no RTB - so we cannot clobber the sortie now in control.
+// null vehicle (shot down + wreck GC'd mid-sleep) counts as superseded/dry, so the shared
+// teardown is skipped and no getVariable/ammo runs on objNull. Also stale if the sortie
+// token OR the current task changed under us (any re-task).
+private _stale = isNull _veh
+    || {(_veh getVariable ["NEO_casSortieId", 0]) != _mySortie}
+    || {!((_veh getVariable ["NEO_radioCurrentTask", []]) isEqualTo _myTask)};
+// genuinely dry = every USABLE weapon is empty (a specific pick running out is a switch)
+private _winchester = isNull _veh || {(_usableWeapons findIf { (_veh ammo _x) > 0 }) == -1};
+
+// per-instance teardown (our own laser/dummy/EH/ACE handle - safe even when stale; a
+// superseding sortie created its OWN objects and holds a different Fired EH id)
 if (!isNull _laze)  then {deleteVehicle _laze};
 if (!isNull _dummy) then {deleteVehicle _dummy};
 if (!isNull _lazeGrp) then {deleteGroup _lazeGrp};
-if (_casGuideEH >= 0 && {!isNull _veh}) then { _veh removeEventHandler ["Fired", _casGuideEH]; _veh setVariable ["NEO_casGuideTgt", objNull]; _veh setVariable ["NEO_casLastFired", objNull]; };
+if (_casGuideEH >= 0 && {!isNull _veh}) then { _veh removeEventHandler ["Fired", _casGuideEH]; };
 if (_aceLaserUuid != "" && {!isNil "ace_laser_fnc_laserOff"}) then { [_aceLaserUuid] call ace_laser_fnc_laserOff; };
-// run-mode auto-lased bomb target (fn_pickCasTarget) is tagged - clear it too
-if (!isNull _target && {_target getVariable ["NEO_radioAutoLase", false]}) then {deleteVehicle _target};
+// run-mode auto-lased bomb target (fn_pickCasTarget) is tagged - clear it, but ONLY while we
+// still own the sortie: a superseded pickCasTarget can have returned the NEW sortie's laser.
+if (!_stale && {!isNull _target} && {_target getVariable ["NEO_radioAutoLase", false]}) then {deleteVehicle _target};
 
-[_veh,_oldPos] call ALiVE_fnc_doMoveRemote;
-// move the loiter point to here
-[_grp,0] setWaypointPosition [_oldPos,0];
+if (!_stale) then {
+    // shared guidance state is ours to clear only while we still own the aircraft
+    if (!isNull _veh) then { _veh setVariable ["NEO_casGuideTgt", objNull]; _veh setVariable ["NEO_casLastFired", objNull]; };
 
-if (alive _veh) then {
-    if (_groundAttack) then {
-        if( (_veh ammo _weapon) == 0) then {
-            [[_veh,format["%1 is Winchester for %2. Returning to loiter position. Out.",_callsign,[configFile >> "CfgWeapons" >> _weapon] call bis_fnc_displayName],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+    [_veh,_oldPos] call ALiVE_fnc_doMoveRemote;
+    // move the loiter point to here
+    [_grp,0] setWaypointPosition [_oldPos,0];
+
+    if (alive _veh) then {
+        if (_winchester) then {
+            [[_veh,format["%1 is Winchester, all weapons expended. Returning to base. Out.",_callsign],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
         } else {
-            [[_veh, format["%1 has finished engaging the target area, will loiter until further orders. Out.",_callsign], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
-        };
-    } else {
-        if( isNull _target) then {
-            sleep 8;
-            [[_veh,format["%1 cannot engage any targets in the AO. Out.",_callsign],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
-        } else {
-            if( (_veh ammo _weapon) == 0) then {
-                [[_veh,format["%1 is Winchester for %2. Returning to loiter position. Out.",_callsign,[configFile >> "CfgWeapons" >> _weapon] call bis_fnc_displayName],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+            if (_groundAttack) then {
+                [[_veh, format["%1 has finished engaging the target area, will loiter until further orders. Out.",_callsign], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
             } else {
-                [[_veh, format["%1 has completed attack run, will loiter until further orders. Out.",_callsign], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+                if( isNull _target) then {
+                    sleep 8;
+                    [[_veh,format["%1 cannot engage any targets in the AO. Out.",_callsign],"side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+                } else {
+                    [[_veh, format["%1 has completed attack run, will loiter until further orders. Out.",_callsign], "side"],"NEO_fnc_messageBroadcast",true,false] spawn BIS_fnc_MP;
+                };
             };
         };
+
+        // restore weapons: prepare only zeroed the never-usable stores, so this gives
+        // back countermeasures/etc - spent usable ammo correctly stays spent for the
+        // resupply watchdog.
+        if(_restoreAmmo) then {
+            _restoreAmmo = false;
+            [_veh,_ammoCount] call NEO_fnc_reenableWeapons;
+        };
+
+        _veh doWatch objNull;
+        _veh forceSpeed -1;
+        _grp setCombatMode "BLUE";
+        _grp setBehaviour "CARELESS";
+        _grp setSpeedMode "FULL";
+        _grp enableAttack false;
     };
 
-    // restore weapons
-    if(_restoreAmmo) then {
-        _restoreAmmo = false;
-        [_veh,_ammoCount] call NEO_fnc_reenableWeapons;
+    // ---- RTB hand-off (winchester / low fuel / damage): overrides the loiter hand-off above ----
+    // a dry usable set breaks the loop via its own gate without a reason set - attribute it here.
+    if ((_rtbReason isEqualTo "") && {alive _veh} && {_winchester}) then { _rtbReason = "AMMO"; };
+    if (!(_rtbReason isEqualTo "") && {alive _veh}) then {
+        // breadcrumb for the resupply watchdog (it self-scans fuel/damage/ammo each cycle
+        // and services this asset once it is parked, per the queued rearm-land cycle).
+        _veh setVariable ["ALIVE_resupply_needsService", true, true];
+
+        // route the airframe home: the FSM New_Task link (attack-run state, priority over
+        // the loiter hand-off) reads NEO_radioCasNewTask and flies the jet back to base.
+        private _basePos = _veh getVariable ["ALIVE_CombatSupport_Base", _oldPos];
+        _veh setVariable ["NEO_radioCasNewTask", ["RTB", _basePos, 0, 0, "", "", objNull], true];
+
+        if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-RTB: %1 reason=%2 fuel=%3 damage=%4 usableAmmo=%5", _callsign, _rtbReason, fuel _veh, damage _veh, _usableWeapons apply { [_x, _veh ammo _x] }] call ALiVE_fnc_dump; };
     };
-
-    _veh doWatch objNull;
-    _veh forceSpeed -1;
-    _grp setCombatMode "BLUE";
-    _grp setBehaviour "CARELESS";
-    _grp setSpeedMode "FULL";
-    _grp enableAttack false;
-};
-
-
-// ---- RTB hand-off (winchester / low fuel / damage): overrides the loiter hand-off above ----
-// ammo==0 breaks the loop via its own gate without a reason set - attribute it here.
-if ((_rtbReason isEqualTo "") && {alive _veh} && {(_veh ammo _weapon) == 0}) then { _rtbReason = "AMMO"; };
-if (!(_rtbReason isEqualTo "") && {alive _veh}) then {
-    // breadcrumb for the resupply watchdog (it self-scans fuel/damage/ammo each cycle and services this
-    // asset once it is parked, per the queued rearm-land cycle).
-    _veh setVariable ["ALIVE_resupply_needsService", true, true];
-
-    // route the airframe home: the FSM New_Task link (attack-run state, priority over the loiter hand-off)
-    // reads NEO_radioCasNewTask and flies the jet back to base to be serviced. objNull caller is safe
-    // server-side (the RTB link only reads the caller for player messaging).
-    private _basePos = _veh getVariable ["ALIVE_CombatSupport_Base", _oldPos];
-    _veh setVariable ["NEO_radioCasNewTask", ["RTB", _basePos, 0, 0, "", "", objNull], true];
-
-    if (!isNil "ALiVE_sup_combatsupport_debug" && {ALiVE_sup_combatsupport_debug}) then { ["CAS-RTB: %1 reason=%2 fuel=%3 damage=%4 ammo=%5", _callsign, _rtbReason, fuel _veh, damage _veh, _veh ammo _weapon] call ALiVE_fnc_dump; };
 };

@@ -51,6 +51,10 @@ NEO_fnc_casScriptedAttack = compile preprocessFileLineNumbers "x\alive\addons\su
 NEO_fnc_casRearmService = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_casRearmService.sqf";
 NEO_fnc_disableOtherWeapons = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_disableOtherWeapons.sqf";
 NEO_fnc_reenableWeapons = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_reenableWeapons.sqf";
+NEO_fnc_casWeaponFamily = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_casWeaponFamily.sqf";
+NEO_fnc_casUsableWeapons = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_casUsableWeapons.sqf";
+NEO_fnc_casNextWeapon = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_casNextWeapon.sqf";
+NEO_fnc_casPrepareWeapons = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_casPrepareWeapons.sqf";
 
 //ARTY
 NEO_fnc_artyUnitLbSelChanged = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\arty\fn_artyUnitLbSelChanged.sqf";

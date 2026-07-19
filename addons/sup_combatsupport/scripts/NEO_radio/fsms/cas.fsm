@@ -360,14 +360,19 @@ class FSM
                                          "_oldpos = getpos _veh;" \n
                                          "[_veh, _posCas] call ALiVE_fnc_doMoveRemote;" \n
                                          "" \n
-                                         "// Remove all weapons bar the one chosen" \n
-                                         "_ammoCount = [];" \n
+                                         "// Prepare the loadout: keep every usable ground-attack weapon live, zero" \n
+                                         "// the rest, resolve AUTO / a bad pick to a real weapon -> [weapon, ammoCount]" \n
+                                         "_ammoCount = [_veh,_weapon] call NEO_fnc_casPrepareWeapons;" \n
+                                         "_weapon = _ammoCount select 0;" \n
+                                         "_ammoCount = _ammoCount select 1;" \n
                                          "_restoreAmmo = true;" \n
-                                         "_ammoCount = [_veh,_weapon] call NEO_fnc_disableOtherWeapons;" \n
-                                         "_veh selectWeapon _weapon;" \n
-                                         "" \n
-                                         "" \n
-                                         "" \n
+                                         "if (_weapon != """") then { _veh selectWeapon _weapon; };" \n
+                                         "// loadout stays live only with targeting AI off: nr_position forces" \n
+                                         "// YELLOW/AWARE/enableAttack true and SAD re-enables targeting, so re-assert" \n
+                                         "// the leash here - every shot stays scripted on a named weapon" \n
+                                         "{ _x disableAi ""TARGET""; _x disableAi ""AUTOTARGET""; } forEach units _grp;" \n
+                                         "// bump the sortie token so any superseded scripted attack retires itself" \n
+                                         "_veh setVariable [""NEO_casSortieId"", (_veh getVariable [""NEO_casSortieId"", 0]) + 1];" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
