@@ -5,6 +5,17 @@
 #define GUI_GRID_WAbs (1)
 #define GUI_GRID_HAbs (1)
 
+// Combat Support tablet font sizing (referenced by the list/button controls in main.hpp).
+// Lists previously drew the glyph at the full row height, so the text looked oversized
+// next to the fixed-size buttons. CS_LIST_ROW stays proportional to the safezone-scaled
+// list heights (so the visible row count never drifts by monitor), while CS_LIST_SIZE
+// shrinks just the glyph within the row. CS_BTN_SIZE is the fixed button/caption size.
+// Tune the leading multipliers, then rebuild sup_combatsupport.
+#define CS_LIST_FORMULA ((safeZoneW / 75) + (safeZoneH / 275))
+#define CS_LIST_SIZE (0.85 * CS_LIST_FORMULA)   // list / combo glyph height (was 1.0 * formula)
+#define CS_LIST_ROW  (1.0 * CS_LIST_FORMULA)    // list row height (lower for tighter rows)
+#define CS_BTN_SIZE  (0.9 * GUI_GRID_H)         // button / caption glyph (was 0.8)
+
 class RscPicture;
 
 /***************************
