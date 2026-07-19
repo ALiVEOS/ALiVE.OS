@@ -132,7 +132,7 @@ switch(_operation) do {
                 - frequent check to modify menu and display status (ALIVE_fnc_logisticsmenuDef)
                 */
 
-                TRACE_2("Adding menu",hasInterface);
+                TRACE_1("Adding menu",hasInterface);
 
                 if(hasInterface) then {
                         // Initialise interaction key if undefined

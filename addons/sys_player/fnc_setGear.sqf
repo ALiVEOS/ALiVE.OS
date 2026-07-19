@@ -43,7 +43,7 @@ _gearHash = [] call CBA_fnc_hashCreate;
 // Create Data Command Array
 _data = GVAR(LOADOUT_DATA);
 
-TRACE_5("SYS_PLAYER GEAR SET", count _data);
+TRACE_1("SYS_PLAYER GEAR SET", count _data);
 
 // Run data collection commands
 {

@@ -36,7 +36,7 @@ _missionKey  = _args select 3;
 
 _data = +_data;
 
-TRACE_3("Saving data", _logic, _args);
+TRACE_2("Saving data", _logic, _args);
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     ["SYS_DATA_PNS - BULK SAVE"] call ALiVE_fnc_dump;
@@ -51,7 +51,7 @@ MOD(PNS_STORE) = +(profileNamespace getVariable [_missionKey, [] call ALiVE_fnc_
 profileNamespace setVariable [_missionKey, MOD(PNS_STORE)];
 
 // Save Docs
-TRACE_3("Saving Data", _data);
+TRACE_1("Saving Data", _data);
 saveProfileNamespace;
 
 _result;

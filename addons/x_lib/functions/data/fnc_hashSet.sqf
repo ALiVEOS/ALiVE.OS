@@ -36,7 +36,7 @@ _value = _this select 2;
 
 private ["_index", "_isDefault"];
 
-if (isNil "BIS_fnc_areEqual") then { LOG( "WARNING: BIS_fnc_areEqual is Nil") };
+if (isNil "BIS_fnc_areEqual") then { LOG_WARNING(QUOTE(COMPONENT), "BIS_fnc_areEqual is Nil") };
 
 // DIAG-STRIP : Phase 6 hashSet "Zero divisor" trace logger. Gated OFF
 // by default - hashSet is hot enough that an unconditional dump

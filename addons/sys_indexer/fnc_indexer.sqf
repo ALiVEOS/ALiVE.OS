@@ -116,7 +116,7 @@ switch(_operation) do {
 
             TRACE_1("Spawning clientside processes",hasInterface);
 
-            TRACE_2("Adding menu",hasInterface);
+            TRACE_1("Adding menu",hasInterface);
 
             if(hasInterface) then {
                     // Initialise interaction key if undefined

@@ -548,7 +548,7 @@ switch(_operation) do {
 
                     _result = true;
             } else {
-                TRACE_3("SYS_PLAYER PLAYER DATA DOES NOT EXIST",_unit);
+                TRACE_1("SYS_PLAYER PLAYER DATA DOES NOT EXIST",_unit);
                 _result = false;
             };
 

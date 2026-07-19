@@ -34,7 +34,7 @@ _data = _args select 1;
 _missionKey  = _args select 2;
 _async = _args select 3;
 
-TRACE_3("Saving data", _logic, _args);
+TRACE_2("Saving data", _logic, _args);
 
 if(ALiVE_SYS_DATA_DEBUG_ON) then {
     ["SYS_DATA_COUCHDB - BULK SAVE"] call ALiVE_fnc_dump;
@@ -43,7 +43,7 @@ if(ALiVE_SYS_DATA_DEBUG_ON) then {
 _result = "";
 
 // Save Docs
-TRACE_3("Saving Data", _data);
+TRACE_1("Saving Data", _data);
 _response = [_logic, "bulkWrite", [_module, _data, _async, _missionKey] ] call ALIVE_fnc_Data;
 
 TRACE_1("", _response);

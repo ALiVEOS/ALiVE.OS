@@ -50,7 +50,7 @@ if (local _player) then {
     // Create Data Command Array
     _data = GVAR(LOADOUT_DATA);
 
-    TRACE_5("SYS_PLAYER GET GEAR", count _data);
+    TRACE_1("SYS_PLAYER GET GEAR", count _data);
 
     // Run data commands
     {

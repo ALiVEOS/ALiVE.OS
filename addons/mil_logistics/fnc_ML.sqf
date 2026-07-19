@@ -9763,7 +9763,7 @@ switch(_operation) do {
                                 };
 
                                 // If payload vehicle is not slingloading and its cargo is empty - its done.
-                                TRACE_1("PR UNLOADED", !_slingLoading, _noCargo);
+                                TRACE_2("PR UNLOADED", !_slingLoading, _noCargo);
 
                                 if (_active && _noCargo && !_slingLoading) then {
                                     _payloadUnloaded = true;

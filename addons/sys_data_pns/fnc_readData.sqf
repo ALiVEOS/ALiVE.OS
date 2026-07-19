@@ -35,7 +35,7 @@ _module = _args select 0;
 _keys = _args select 1;
 _uid = _args select 2;
 
-TRACE_3("PNS readData", _logic, _args);
+TRACE_2("PNS readData", _logic, _args);
 
 _data = +(profileNamespace getvariable _uid);
 

@@ -34,7 +34,7 @@ _data = _args select 1;
 _missionKey  = _args select 2;
 _async = _args select 3;
 
-TRACE_3("Saving data", _logic, _args);
+TRACE_2("Saving data", _logic, _args);
 
 _result = "";
 

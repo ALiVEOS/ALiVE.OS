@@ -76,7 +76,7 @@ _response = [_logic, "read", ["sys_data", [], "dictionary"]] call ALIVE_fnc_Data
 if ( typeName _response != "STRING") then {
     ALIVE_DataDictionary = _response;
 } else {
-    TRACE_1("NO DICTIONARY AVAILABLE" _response);
+    TRACE_1("NO DICTIONARY AVAILABLE", _response);
 };
 TIMEREND
 ASSERT_DEFINED("ALIVE_DataDictionary",ALIVE_DataDictionary);
