@@ -80,6 +80,25 @@ class SCOMTablet
             action = "closeDialog 0";
         };
 
+        // #698 Terrain toggle - top-right of the header bezel (same toughbook as the other tablets),
+        // toggles the main map (12022) between the textured satellite view and the plain schematic.
+        class SCOMTablet_TerrainButton : SCOMTablet_RscRealButton
+        {
+            idc = 12050;
+            x = 0.686 * safezoneW + safezoneX;
+            y = 0.098 * safezoneH + safezoneY;
+            w = 0.0597643 * safezoneW;
+            h = 0.028 * safezoneH;
+            text = "Terrain";
+            periodFocus = 1e10;
+            periodOver = 1e10;
+            action = "[!(uinamespace getVariable ['SCOMTerrainMode', true])] call ALIVE_fnc_SCOMSetTerrainMode";
+            colorBackground[] = {0.384,0.439,0.341,1};
+            colorBackgroundFocused[] = {0.384,0.439,0.341,1};
+            colorFocused[] = {0.706,0.706,0.706,1};
+            sizeEx = 0.9 * GUI_GRID_H;
+        };
+
         class SCOMTablet_1ButtonL : SCOMTablet_RscButton
         {
             idc = 12014;

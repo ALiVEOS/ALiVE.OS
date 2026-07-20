@@ -41,6 +41,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_command\fnc_SCOMTabletEventToServer.sqf";
                 RECOMPILE;
             };
+            class SCOMSetTerrainMode {
+                description = "SCOM tablet terrain-mode toggle (#698)";
+                file = "\x\alive\addons\sup_command\fnc_SCOMSetTerrainMode.sqf";
+                RECOMPILE;
+            };
         };
     };
 };

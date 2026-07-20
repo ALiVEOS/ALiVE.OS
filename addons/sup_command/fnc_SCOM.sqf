@@ -770,6 +770,7 @@ switch (_operation) do {
                         ctrlMapAnimCommit _map;
 
                         _map ctrlSetEventHandler ["MouseButtonDown", "['INTEL_IMINT_FOCUS_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                        uinamespace setVariable ["SCOMMainMapClick", "['INTEL_IMINT_FOCUS_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"]; // #698 remember the main-map click so the terrain toggle restores it after the swap
 
                         _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
                         _back ctrlShow true;
@@ -799,6 +800,7 @@ switch (_operation) do {
                     private _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_MainMap);
                     _map ctrlShow true;
                     _map ctrlSetEventHandler ["MouseButtonDown", ""];
+                    uinamespace setVariable ["SCOMMainMapClick", ""]; // #698 remember the disabled main-map click so the terrain toggle keeps it after the swap
 
                     private _renderTarget = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_IntelRenderTarget);
                     _renderTarget ctrlShow false;
