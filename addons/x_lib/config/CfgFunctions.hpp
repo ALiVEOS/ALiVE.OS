@@ -1348,6 +1348,27 @@ class getMapInfo
 	RECOMPILE;
 };
 
+class mapControlSwap
+{
+	file = "\x\alive\addons\x_lib\functions\map\fnc_mapControlSwap.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class mapRestoreView
+{
+	file = "\x\alive\addons\x_lib\functions\map\fnc_mapRestoreView.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class tabletSetTerrainMode
+{
+	file = "\x\alive\addons\x_lib\functions\map\fnc_tabletSetTerrainMode.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class getMaxBuildingPositions
 {
 	file = "\x\alive\addons\x_lib\functions\map\fnc_getMaxBuildingPositions.sqf";
