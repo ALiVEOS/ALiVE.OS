@@ -241,6 +241,64 @@ class patrolrep_RscComboBox
     sizeEx = "(safeZoneH / 100) + (safeZoneH / 100)";
 };
 
+// #698 real CT_BUTTON (type 1) base for the Terrain toggle. The report form's other buttons are
+// CT_SHORTCUTBUTTON (type 16): those left-align the label (via the TextPos class, not style) and fall
+// back to the white base colour when focused after a click. A plain button centres its label and holds
+// its background colour, so the Terrain toggle uses this base. Mirrors the Combat Support tablet's
+// NEO_RscButton, which drives the working CS Terrain button.
+class patrolrep_RscRealButton
+{
+    idc = -1;
+    type = 1;
+    style = 0x00;
+    default = 0;
+    shadow = 2;
+    x = "safeZoneX + (safeZoneW / 5)";
+    y = "safeZoneY + (safeZoneH / 1.525)";
+    w = "(safeZoneW / 12.5)";
+    h = "(safeZoneH / 20)";
+    colorBackgroundActive[] = {1, 1, 1, 0.4};
+    colorBackgroundDisabled[] = {0, 0, 0, 0.5};
+    color[] = {0.8784, 0.8471, 0.651, 1.0};
+    color2[] = {0.95, 0.95, 0.95, 1};
+    colorBackground[] = {1, 1, 1, 1};
+    colorbackground2[] = {1, 1, 1, 0.4};
+    colorText[] = {1, 1, 1, 1};
+    colorDisabled[] = {1, 1, 1, 0.25};
+    colorShadow[] = {0, 0, 0, 1};
+    colorBorder[] = {0, 0, 0, 1};
+    borderSize = 0;
+    periodFocus = 1.2;
+    periodOver = 0.8;
+    offsetX = 0;
+    offsetY = 0;
+    offsetPressedX = 0;
+    offsetPressedY = 0;
+    animTextureDefault = "#(argb,8,8,3)color(1,1,1,1)";
+    animTextureDisabled = "#(argb,8,8,3)color(1,1,1,1)";
+    animTextureFocused = "#(argb,8,8,3)color(1,1,1,1)";
+    animTextureNormal = "#(argb,8,8,3)color(1,1,1,1)";
+    animTextureOver = "#(argb,8,8,3)color(1,1,1,0.5)";
+    animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
+    period = 0.4;
+    font = "PuristaMedium";
+    size = "(safeZoneW / 125) + (safeZoneH / 125)";
+    text = "";
+    soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
+    soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
+    soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1};
+    soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1};
+    textureNoShortcut = "";
+    action = "";
+    class Attributes
+    {
+        font = "PuristaMedium";
+        color = "#E5E5E5";
+        align = "left";
+        shadow = "true";
+    };
+};
+
 class patrolrep_RscButton
 {
     idc = -1;

@@ -73,7 +73,7 @@ class RscDisplayALiVEPATROLREP
         };
         // #698 Terrain toggle - top-right of the header bezel (identical toughbook to the CS tablet,
         // so the same slot), clear of the map. Swaps the map between satellite and schematic.
-        class patrolrep_TerrainButton: patrolrep_RscButton
+        class patrolrep_TerrainButton: patrolrep_RscRealButton
         {
             idc = 90004;
             x = 0.686 * safezoneW + safezoneX;
@@ -85,9 +85,9 @@ class RscDisplayALiVEPATROLREP
             periodOver = 1e10;
             action = "[!(uinamespace getVariable ['patrolrepTerrainMode', true])] call ALiVE_fnc_patrolrepSetTerrainMode";
             colorBackground[] = {0.384,0.439,0.341,1};
-            colorBackgroundFocused[] = {0.706,0.706,0.706,1};
+            colorBackgroundFocused[] = {0.384,0.439,0.341,1}; // stay green on focus (matches the CS Terrain button)
             colorFocused[] = {0.706,0.706,0.706,1};
-            sizeEx = 0.8 * GUI_GRID_H * GUI_GRID_H * GUI_GRID_H;
+            sizeEx = 0.9 * GUI_GRID_H; // 0.036 - readable label; the earlier cubed value (~0.00005) was invisible on a CT_BUTTON
         };
         class patrolrep_DTGTEXT: patrolrep_RscText_Right
         {
