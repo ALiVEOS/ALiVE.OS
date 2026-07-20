@@ -82,6 +82,7 @@ _artyRateDelaySlider = _display displayCtrl 655612;
 
 //Re-initialize Controls
 { (_x select 0) ctrlSetEventHandler [(_x select 1), ""] } forEach [[_map, "MouseButtonDown"]];
+uinamespace setVariable ["NEO_radioMapClickArmed", false]; // #698 map-click handler just cleared - mirror for the terrain toggle
 { _x ctrlSetPosition [1, 1, (safeZoneW / 1000), (safeZoneH / 1000)]; _x ctrlCommit 0; } forEach [_transportConfirmButton, _transportBaseButton, _transportSmokeFoundButton, _transportSmokeNotFoundButton, _transportSlider, _transportSliderText, _casConfirmButton, _casBaseButton, _casFlyHeightSlider, _casRadiusSlider, _artyConfirmButton, _artyMoveButton, _artyDontMoveButton, _artyDispersionSlider, _artyBaseButton, _artyRateDelaySlider, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
 { _x ctrlSetText "" } forEach [_transportUnitText, _transportTaskText, _transportHelpUnitText, _transportHelpTaskText, _transportSliderText, _casUnitText, _casHelpUnitText, _casTaskText, _casROEText,_casTaskHelpText, _casFlyHeighSliderText, _casRadiusSliderText, _casAttackRunText, _artyUnitText, _artyHelpUnitText, _artyOrdnanceTypeText, _artyRateOfFireText, _artyRoundCountText, _artyDispersionText, _artyRateDelayText, _transportComboText];
 { _x ctrlEnable false; } forEach [_transportUnitLb, _transportTaskLb, _casUnitLb, _casTaskLb, _casROELb, _casAttackRunLB, _artyUnitLb, _artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];

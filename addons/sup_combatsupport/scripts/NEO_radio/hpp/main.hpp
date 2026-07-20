@@ -424,6 +424,26 @@ class NEO_resourceRadio
                         colorFocused[] = {0.706,0.706,0.706,1};
                         sizeEx = CS_BTN_SIZE;
                 };
+                // Terrain toggle - swaps the map between satellite and schematic (see NEO_fnc_radioSetTerrainMode).
+                // Sits in the top-right of the tablet frame header (mirroring the ALiVE logo top-left), well
+                // clear of the map and every dynamic button, so the map's draw layer never covers it and this
+                // same header slot should carry over to the other tablet layouts.
+                class NEO_radioTerrainButton : NEO_radioCasConfirmButton
+                {
+                        idc = 655634;
+                        x = 0.686 * safezoneW + safezoneX;   // top-right of the header bezel (mirrors the logo), above the map
+                        y = 0.098 * safezoneH + safezoneY;   // on the light-grey header band, level with the ALiVE logo
+                        w = 0.0597643 * safezoneW;
+                        h = 0.028 * safezoneH;
+                        text = "Terrain";
+                        periodFocus = 1e10; // never blink (periodFocus = 0 can fall back to the default focus-pulse)
+                        periodOver = 1e10;
+                        action = "[!(uinamespace getVariable ['NEO_radioTerrainMode', true])] call NEO_fnc_radioSetTerrainMode";
+                        colorBackground[] = {0.384,0.439,0.341,1};
+                        colorBackgroundFocused[] = {0.384,0.439,0.341,1};
+                        colorFocused[] = {0.706,0.706,0.706,1};
+                        sizeEx = CS_BTN_SIZE;
+                };
 
                 //CAS Task LB
                 class NEO_radioCasTaskList : NEO_radioCasUnitList

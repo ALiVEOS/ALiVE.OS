@@ -115,6 +115,7 @@ if (_status != "KILLED") then
 
     //GPS
     _map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
+    uinamespace setVariable ["NEO_radioMapClickArmed", true]; // #698 mirror the map-click handler state for the terrain toggle
 
     //ComboBoxes
     _transportHeightCombo ctrlEnable true; _transportHeightCombo ctrlSetPosition [0.278525 * safezoneW + safezoneX, 0.64 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)]; _transportHeightCombo ctrlCommit 0;

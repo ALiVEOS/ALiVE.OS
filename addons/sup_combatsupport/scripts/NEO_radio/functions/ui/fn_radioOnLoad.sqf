@@ -42,23 +42,22 @@ _unit = player;
 // building the menu below. Default to the general menu when nothing set it.
 _action = uinamespace getVariable ["NEO_radioCurrentAction", "radio"];
 
-// restore the player's last map pan + zoom (saved on close in fn_radioOnUnload)
-// so re-opening the tablet returns to the same view, not the default centre.
-// Do it on the map's first Draw (unscheduled, lands within a frame) instead of a
-// timed spawn that visibly panned across about a second later.
+// #698 fresh dialog: no unit is selected yet, so map-click target placement is unarmed.
+uinamespace setVariable ["NEO_radioMapClickArmed", false];
+
+// #698 terrain mode: the config map is the satellite variant, so only schematic mode needs a swap
+// on open. Restore the saved pan/zoom either way. (The terrain button sits clear of the map, so it
+// does not depend on the map being recreated.)
+private _savedView = [];
 if ((uinamespace getVariable ["NEO_radioMapScale", 0]) > 0) then {
-    private _rMap = (findDisplay 655555) displayCtrl 655560;
-    if (!isNull _rMap) then {
-        _rMap setVariable ["NEO_mapRestored", false];
-        _rMap ctrlAddEventHandler ["Draw", {
-            params ["_ctrl"];
-            if !(_ctrl getVariable ["NEO_mapRestored", false]) then {
-                _ctrl setVariable ["NEO_mapRestored", true];
-                ctrlMapAnimClear _ctrl;
-                _ctrl ctrlMapAnimAdd [0, uinamespace getVariable ["NEO_radioMapScale", 0.16], uinamespace getVariable ["NEO_radioMapCenter", [0,0,0]]];
-                ctrlMapAnimCommit _ctrl;
-            };
-        }];
+    _savedView = [uinamespace getVariable ["NEO_radioMapScale", 0.16], uinamespace getVariable ["NEO_radioMapCenter", [0,0,0]]];
+};
+if !(uinamespace getVariable ["NEO_radioTerrainMode", true]) then {
+    [false, _savedView] call NEO_fnc_radioSetTerrainMode;
+} else {
+    if !(_savedView isEqualTo []) then {
+        (_savedView) params ["_vs", "_vc"];
+        [(findDisplay 655555) displayCtrl 655560, _vs, _vc] call NEO_fnc_mapRestoreView;
     };
 };
 

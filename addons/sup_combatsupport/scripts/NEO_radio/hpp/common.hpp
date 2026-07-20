@@ -314,6 +314,7 @@ class NEO_RscMap
     fontNames = "PuristaMedium";
     fontUnits = "TahomaB";
     maxSatelliteAlpha = 0.85; // #698 restore satellite terrain layer (renders when zoomed in; was 0)
+    deletable = 1; // #698 lets NEO_fnc_mapControlSwap ctrlDelete this map for the terrain-mode toggle
     moveOnEdges = 1;
     ptsPerSquareSea = 8;
     ptsPerSquareTxt = 10;
@@ -658,4 +659,13 @@ class NEO_RscMap
     importance = 1;
     size = 24;
     };
+};
+
+// #698 schematic (drawn-map) variant for the terrain-mode toggle - identical to
+// NEO_RscMap but with the satellite layer off. maxSatelliteAlpha is creation-time
+// only, so NEO_fnc_mapControlSwap toggles terrain by swapping the map control
+// between these two classes.
+class NEO_RscMapSchematic : NEO_RscMap
+{
+    maxSatelliteAlpha = 0;
 };

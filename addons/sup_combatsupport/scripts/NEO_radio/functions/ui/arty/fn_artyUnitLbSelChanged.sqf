@@ -136,6 +136,7 @@ if (!(_status in ["KILLED", "MISSION", "RTB", "MOVE", "RESPONSE", "NOAMMO"]) && 
     //EventHandlers
     _artyOrdnanceTypeLb ctrlSetEventHandler ["LBSelChanged", "_this call NEO_fnc_artyConfirmButtonEnable; _this call NEO_fnc_artyOrdLbSelChanged"];
     _map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
+    uinamespace setVariable ["NEO_radioMapClickArmed", true]; // #698 mirror the map-click handler state for the terrain toggle
 
     // default to the first ordnance so the panel opens ready; the LBSelChanged
     // above cascades into artyOrdLbSelChanged which defaults rate + round count

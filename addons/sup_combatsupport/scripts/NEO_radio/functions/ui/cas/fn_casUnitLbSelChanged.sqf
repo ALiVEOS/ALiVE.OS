@@ -112,6 +112,7 @@ if (_status != "KILLED") then
 
     //GPS
     _map ctrlSetEventHandler ["MouseButtonDown", "_this call NEO_fnc_radioMapEvent"];
+    uinamespace setVariable ["NEO_radioMapClickArmed", true]; // #698 mirror the map-click handler state for the terrain toggle
 
     // default-select the first task (ATTACK) so its weapon + ROE sub-lists populate
     // immediately - the task lb's LBSelChanged (wired in fn_radioLbSelChanged) fires

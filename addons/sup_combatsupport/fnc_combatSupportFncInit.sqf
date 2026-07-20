@@ -31,6 +31,9 @@ NEO_fnc_radioOnUnload = compile preprocessFileLineNumbers "x\alive\addons\sup_co
 NEO_fnc_radioLbSelChanged = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\fn_radioLbSelChanged.sqf";
 NEO_fnc_radioMapEvent = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\fn_radioMapEvent.sqf";
 NEO_fnc_radioRefreshUi = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\fn_radioRefreshUi.sqf";
+NEO_fnc_mapRestoreView = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\fn_mapRestoreView.sqf";
+NEO_fnc_mapControlSwap = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\fn_mapControlSwap.sqf";
+NEO_fnc_radioSetTerrainMode = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\fn_radioSetTerrainMode.sqf";
 
 //Transport
 NEO_fnc_transportUnitLbSelChanged = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\ui\transport\fn_transportUnitLbSelChanged.sqf";
