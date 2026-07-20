@@ -81,6 +81,7 @@ class RscDisplayALiVESITREP
             text = "Terrain";
             periodFocus = 1e10; // never blink (0 can fall back to the default focus-pulse)
             periodOver = 1e10;
+            period = 1e10; // #698 freeze the focus blink too (period drives the pulse while focused; periodFocus/Over alone left it flashing until focus moved away)
             action = "[!(uinamespace getVariable ['SITREP_TerrainMode', true])] call ALiVE_fnc_sitrepSetTerrainMode";
             colorBackground[] = {0.384,0.439,0.341,1};
             colorBackgroundFocused[] = {0.384,0.439,0.341,1}; // stay green on focus (matches the CS Terrain button)

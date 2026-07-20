@@ -94,6 +94,7 @@ class PRTablet
             text = "Terrain";
             periodFocus = 1e10; // never blink
             periodOver = 1e10;
+            period = 1e10; // #698 freeze the focus blink too (period drives the pulse while focused; periodFocus/Over alone left it flashing until focus moved away)
             action = "[!(uinamespace getVariable ['PRTerrainMode', true])] call ALIVE_fnc_PRSetTerrainMode";
             colorBackground[] = {0.384,0.439,0.341,1};
             colorBackgroundFocused[] = {0.384,0.439,0.341,1};
