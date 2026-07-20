@@ -3587,6 +3587,7 @@ switch(_operation) do {
         _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
         _map ctrlShow true;
         _map ctrlSetEventHandler ["MouseButtonDown", "['TASK_GENERATE_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+        uinamespace setVariable ["C2Tablet_taskingMapClickHandler", "['TASK_GENERATE_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"]; // #698 remember the live click handler so the terrain toggle restores it after the swap
 
         private ["_createButton"];
 
@@ -3911,6 +3912,7 @@ switch(_operation) do {
         _map = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddMap);
         _map ctrlShow true;
         _map ctrlSetEventHandler ["MouseButtonDown", "['TASK_ADD_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+        uinamespace setVariable ["C2Tablet_taskingMapClickHandler", "['TASK_ADD_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"]; // #698 remember the live click handler so the terrain toggle restores it after the swap
 
         _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);
         _statusText ctrlShow true;
@@ -4275,8 +4277,10 @@ switch(_operation) do {
 
         if!(_taskEditingDisabled) then {
             _map ctrlSetEventHandler ["MouseButtonDown", "['TASK_ADD_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+            uinamespace setVariable ["C2Tablet_taskingMapClickHandler", "['TASK_ADD_MAP_CLICK',[_this]] call ALIVE_fnc_C2TabletOnAction"]; // #698 remember the live click handler so the terrain toggle restores it after the swap
         }else{
             _map ctrlSetEventHandler ["MouseButtonDown", "['TASK_ADD_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_C2TabletOnAction"];
+            uinamespace setVariable ["C2Tablet_taskingMapClickHandler", "['TASK_ADD_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_C2TabletOnAction"]; // #698 remember the disabled click handler so the terrain toggle keeps it after the swap
         };
 
         _statusText = C2_getControl(C2Tablet_CTRL_MainDisplay,C2Tablet_CTRL_TaskAddStatusText);

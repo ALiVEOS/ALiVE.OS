@@ -535,6 +535,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\cop\fnc_COPInit.sqf";
                 RECOMPILE;
             };
+            class C2TabletSetTerrainMode {
+                description = "C2ISTAR tablet terrain-mode toggle (#698)";
+                file = "\x\alive\addons\mil_c2istar\fnc_C2TabletSetTerrainMode.sqf";
+                RECOMPILE;
+            };
         };
     };
 };

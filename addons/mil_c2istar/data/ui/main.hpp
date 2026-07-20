@@ -80,6 +80,26 @@ class C2Tablet
             action = "closeDialog 0";
         };
 
+        // #698 Terrain toggle - top-right of the header bezel (same toughbook as the other tablets),
+        // toggles the tasking map (70022) between the textured satellite view and the plain schematic.
+        class C2Tablet_TerrainButton : C2Tablet_RscRealButton
+        {
+            idc = 70003;
+            x = 0.686 * safezoneW + safezoneX;
+            y = 0.098 * safezoneH + safezoneY;
+            w = 0.0597643 * safezoneW;
+            h = 0.028 * safezoneH;
+            text = "Terrain";
+            periodFocus = 1e10;
+            periodOver = 1e10;
+            period = 1e10; // #698 freeze the focus blink too (period drives the pulse while focused; periodFocus/Over alone left it flashing until focus moved away)
+            action = "[!(uinamespace getVariable ['C2TerrainMode', true])] call ALIVE_fnc_C2TabletSetTerrainMode";
+            colorBackground[] = {0.384,0.439,0.341,1};
+            colorBackgroundFocused[] = {0.384,0.439,0.341,1};
+            colorFocused[] = {0.706,0.706,0.706,1};
+            sizeEx = 0.9 * GUI_GRID_H;
+        };
+
         class C2Tablet_currentTaskList : C2Tablet_RscGUIListBox
         {
             idc = 70025;
