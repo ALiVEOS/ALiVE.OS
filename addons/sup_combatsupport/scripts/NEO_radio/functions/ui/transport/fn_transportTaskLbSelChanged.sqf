@@ -95,7 +95,7 @@ _task = switch (_lb lbText _index) do
         _objectLb ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.5504 * safezoneH + safezoneY, (0.22 * safezoneW), (0.028 * safezoneH)];
         _objectLb ctrlCommit 0;
         _sliderText ctrlSetText "Select cargo to lift:";
-        _sliderText ctrlSetPosition [0.225 * safezoneW + safezoneX, 0.52 * safezoneH + safezoneY, (0.19 * safezoneW), (0.028 * safezoneH)];
+        _sliderText ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.52 * safezoneH + safezoneY, (0.19 * safezoneW), (0.028 * safezoneH)]; // indent to line up with the cargo box below (was 0.225, flush with the section labels)
         _sliderText ctrlCommit 0;
 
         _pos = getMarkerPos (uinamespace getVariable ["NEO_transportMarkerCreated","unknown"]);
@@ -117,9 +117,13 @@ _task = switch (_lb lbText _index) do
         } forEach _nearestObjects;
 
         // no liftable cargo nearby - tell the player rather than leave a blank list + silent confirm
-        if (lbSize _objectLb == 0) then { _sliderText ctrlSetText "No liftable cargo within 100m"; };
-
-        _objectLb lbSetCurSel 0;
+        if (lbSize _objectLb == 0) then {
+            _sliderText ctrlSetText "No liftable cargo within 100m";
+        } else {
+            // only auto-select when there IS cargo; lbSetCurSel 0 on an empty list fires LBSelChanged
+            // with empty lbData, and parseSimpleArray "" throws a format error
+            _objectLb lbSetCurSel 0;
+        };
 
         _objectLb ctrlSetEventHandler ["LBSelChanged",
         "

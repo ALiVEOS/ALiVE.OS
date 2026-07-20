@@ -111,7 +111,7 @@ class NEO_resourceRadio
                         x = 0.269865 * safezoneW + safezoneX;
                         y = 0.4272 * safezoneH + safezoneY;
                         w = 0.242507 * safezoneW;
-                        h = 0.15 * safezoneH; // taller so all transport tasks show by default (clear gap down to Behaviour at 0.598)
+                        h = 0.09 * safezoneH; // ends ~0.517, clearing the sling-load message/cargo row at y=0.52 (0.15 overlapped it); boxed above by the TASK header ending ~0.4244
                         colorBackground[] = {0,0,0,0}; // transparent - this list shares the y-slot with the CAS/ARTY controls (disabled+empty when they're active), so the extra height must never draw over them
                         colorActive[] = {0.384,0.439,0.341,1};
                 };
