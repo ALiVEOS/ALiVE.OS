@@ -74,5 +74,9 @@ if (ctrlEnabled _objectLb) then {
         };
     } forEach _nearestObjects;
 
-    _objectLb lbSetCurSel 0;
+    // only auto-select when there IS cargo; lbSetCurSel 0 on an empty list fires LBSelChanged
+    // with empty lbData, and parseSimpleArray "" throws a format error
+    if (lbSize _objectLb > 0) then {
+        _objectLb lbSetCurSel 0;
+    };
 };
