@@ -21,3 +21,6 @@ nil
 ---------------------------------------------------------------------------- */
 
 [MOD(SUP_PLAYER_RESUPPLY),"tabletOnLoad"] call ALIVE_fnc_PR;
+
+// #698 the tablet opens satellite (config default); reset the terrain-mode flag so the Terrain button starts in step.
+uinamespace setVariable ["PRTerrainMode", true];

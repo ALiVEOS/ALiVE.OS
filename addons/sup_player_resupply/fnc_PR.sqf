@@ -1886,6 +1886,7 @@ switch(_operation) do {
                     _map = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_Map);
 
                     _map ctrlSetEventHandler ["MouseButtonDown", "['MAP_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
+                    uinamespace setVariable ["PRMapClickMode", "MAP_CLICK"]; // #698 remember the live click mode so the terrain toggle restores it after the map swap
 
                     _markers = [_logic,"marker"] call MAINCLASS;
 
@@ -3559,6 +3560,7 @@ switch(_operation) do {
         _map = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_Map);
 
         _map ctrlSetEventHandler ["MouseButtonDown", "['MAP_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
+        uinamespace setVariable ["PRMapClickMode", "MAP_CLICK"]; // #698 remember the live click mode so the terrain toggle restores it after the map swap
 
         _map ctrlShow true;
 
@@ -3983,6 +3985,7 @@ switch(_operation) do {
 
             _map = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_Map);
             _map ctrlSetEventHandler ["MouseButtonDown", "['MAP_CLICK_NULL',[_this]] call ALIVE_fnc_PRTabletOnAction"];
+            uinamespace setVariable ["PRMapClickMode", "MAP_CLICK_NULL"]; // #698 remember the disabled click mode so the terrain toggle keeps it after the map swap
 
             _deliveryTitle = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_DeliveryTypeTitle);
             _deliveryTitle ctrlShow false;

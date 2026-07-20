@@ -36,6 +36,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_player_resupply\fnc_PRTabletEventToClient.sqf";
                 RECOMPILE;
             };
+            class PRSetTerrainMode {
+                description = "Player Resupply terrain-mode toggle (#698)";
+                file = "\x\alive\addons\sup_player_resupply\fnc_PRSetTerrainMode.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
