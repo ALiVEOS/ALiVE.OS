@@ -69,6 +69,24 @@ class RscDisplayALiVESITREP
             sizeEx = 0.8 * GUI_GRID_H * GUI_GRID_H * GUI_GRID_H;
             action = "call ALiVE_fnc_sitrepButtonAction";
         };
+        // #698 Terrain toggle - top-right of the header bezel (identical toughbook to the CS tablet,
+        // so the same slot), clear of the map. Swaps the map between satellite and schematic.
+        class SITREP_TerrainButton: SITREP_RscRealButton
+        {
+            idc = 40;
+            x = 0.686 * safezoneW + safezoneX;
+            y = 0.098 * safezoneH + safezoneY;
+            w = 0.0597643 * safezoneW;
+            h = 0.028 * safezoneH;
+            text = "Terrain";
+            periodFocus = 1e10; // never blink (0 can fall back to the default focus-pulse)
+            periodOver = 1e10;
+            action = "[!(uinamespace getVariable ['SITREP_TerrainMode', true])] call ALiVE_fnc_sitrepSetTerrainMode";
+            colorBackground[] = {0.384,0.439,0.341,1};
+            colorBackgroundFocused[] = {0.384,0.439,0.341,1}; // stay green on focus (matches the CS Terrain button)
+            colorFocused[] = {0.706,0.706,0.706,1};
+            sizeEx = 0.9 * GUI_GRID_H; // 0.036 - readable label; the earlier cubed value (~0.00005) was invisible on a CT_BUTTON
+        };
         class SITREP_DTGTEXT: SITREP_RscText_Right
         {
             style = 1;

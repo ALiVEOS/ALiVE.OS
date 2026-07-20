@@ -56,6 +56,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sys_sitrep\fnc_sitrepOnMapEvent.sqf";
                                                                 RECOMPILE;
                         };
+                        class sitrepSetTerrainMode {
+                                description = "sitrep terrain-mode toggle (#698)";
+                                file = "\x\alive\addons\sys_sitrep\fnc_sitrepSetTerrainMode.sqf";
+                                                                RECOMPILE;
+                        };
                 };
         };
 };
