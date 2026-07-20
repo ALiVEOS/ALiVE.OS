@@ -111,7 +111,8 @@ class NEO_resourceRadio
                         x = 0.269865 * safezoneW + safezoneX;
                         y = 0.4272 * safezoneH + safezoneY;
                         w = 0.242507 * safezoneW;
-                        h = 0.084 * safezoneH;
+                        h = 0.15 * safezoneH; // taller so all transport tasks show by default (clear gap down to Behaviour at 0.598)
+                        colorBackground[] = {0,0,0,0}; // transparent - this list shares the y-slot with the CAS/ARTY controls (disabled+empty when they're active), so the extra height must never draw over them
                         colorActive[] = {0.384,0.439,0.341,1};
                 };
 
