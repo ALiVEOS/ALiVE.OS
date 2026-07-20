@@ -241,11 +241,8 @@ switch (_operation) do {
         //doesn't crash on the _factions select 0 below - just
         //logs a warning so the mission-maker can see they need
         //to populate Factions.
-        if (_factions isequalto []) then {
-            [
-                "ALiVE OPCOM init WARNING: AI Commander '%1' has no factions configured (Factions multi-select empty AND Factions manual override empty). Defaulting to ['BLU_F']. Pick at least one faction in the Factions multi-select to silence this.",
-                _customName
-            ] call ALiVE_fnc_Dump;
+        private _usedDefaultFaction = _factions isEqualTo [];
+        if (_usedDefaultFaction) then {
             _factions pushBack "BLU_F";
         };
 
@@ -275,6 +272,13 @@ switch (_operation) do {
             format ["%1 Commander", [_side] call Alive_fnc_sideTextToLong]
         } else {
             _customNameParam
+        };
+
+        if (_usedDefaultFaction) then {
+            [
+                "ALiVE OPCOM init WARNING: AI Commander '%1' has no factions configured (Factions multi-select empty AND Factions manual override empty). Defaulting to ['BLU_F']. Pick at least one faction in the Factions multi-select to silence this.",
+                _customName
+            ] call ALiVE_fnc_Dump;
         };
 
         //Finally set common data
