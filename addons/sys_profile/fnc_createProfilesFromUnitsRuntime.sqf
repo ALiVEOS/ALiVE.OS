@@ -10,6 +10,10 @@ Create profiles for all units on the map that don't have profiles
 Parameters:
 
 Returns:
+Array - [
+    ARRAY of created group profiles,
+    ARRAY of created vehicle profiles
+]
 
 Examples:
 (begin example)
@@ -28,7 +32,8 @@ private ["_entityCount","_vehicleCount",
 "_group","_leader","_units","_ignore","_inVehicle","_unitClasses","_positions","_ranks","_damages",
 "_vehicle","_entityID","_profileEntity","_profileWaypoint","_vehicleID","_profileVehicle","_profileVehicleAssignments",
 "_assignments","_vehicleAssignments","_vehicleClass","_vehicleKind","_position","_waypoints","_playerVehicle","_unitBlackist",
-"_vehicleBlacklist","_unitBlacklisted","_initCommand","_deleteEntityCount","_deleteVehicleCount"];
+"_vehicleBlacklist","_unitBlacklisted","_initCommand","_deleteEntityCount","_deleteVehicleCount",
+"_createdGroupProfiles","_createdVehicleProfiles"];
 
 if (isnil "_this") then {_this = []};
 
@@ -40,6 +45,8 @@ params [
 
 _entityCount = 0;
 _vehicleCount = 0;
+_createdGroupProfiles = [];
+_createdVehicleProfiles = [];
 
 _unitBlackist = ["O_UAV_AI","B_UAV_AI"];
 _vehicleBlacklist = ["O_UAV_02_F","O_UAV_02_CAS_F","O_UAV_01_F","O_UGV_01_F","O_UGV_01_rcws_F","B_UAV_01_F","B_UAV_02_F","B_UAV_02_CAS_F","B_UGV_01_F","B_UGV_01_rcws_F"];
@@ -124,6 +131,7 @@ if(_debug) then {
             //_profileEntity call ALIVE_fnc_inspectHash;
 
             [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
+            _createdGroupProfiles pushBack _profileEntity;
 
             {
                 if (!(vehicle _x == _x)) then {
@@ -168,6 +176,7 @@ if(_debug) then {
                         //_profileVehicle call ALIVE_fnc_inspectHash;
 
                         [ALIVE_profileHandler, "registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;
+                        _createdVehicleProfiles pushBack _profileVehicle;
 
                         _vehicleCount = _vehicleCount + 1;
                     }else{
@@ -360,6 +369,7 @@ _vehicleCount = 0;
             //_profileVehicle call ALIVE_fnc_inspectHash;
 
             [ALIVE_profileHandler, "registerProfile", _profileVehicle] call ALIVE_fnc_profileHandler;
+            _createdVehicleProfiles pushBack _profileVehicle;
 
             _vehicleCount = _vehicleCount + 1;
         } else {
@@ -378,10 +388,7 @@ if(_debug) then {
 // DEBUG -------------------------------------------------------------------------------------
 
 
-if !(isnil "_profileEntity") then {
-    _profileEntity;
-} else {
-    if !(isnil "_profileVehicle") then {
-        _profileVehicle;
-    };
-};
+[
+    _createdGroupProfiles,
+    _createdVehicleProfiles
+]

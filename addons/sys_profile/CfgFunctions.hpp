@@ -71,6 +71,26 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_createProfilesFromUnitsRuntime.sqf";
                 RECOMPILE;
             };
+            class zeusVirtualiseInRadius {
+                description = "Handles placement of the Virtualise Groups In Radius Zeus module";
+                file = "\x\alive\addons\sys_profile\fnc_zeusVirtualiseInRadius.sqf";
+                RECOMPILE;
+            };
+            class virtualiseInRadiusResult {
+                description = "Displays the result of a Virtualise Groups In Radius request";
+                file = "\x\alive\addons\sys_profile\fnc_virtualiseInRadiusResult.sqf";
+                RECOMPILE;
+            };
+            class showVirtualiseUnavailable {
+                description = "Shows the profile-system guard over the active Zeus display";
+                file = "\x\alive\addons\sys_profile\fnc_showVirtualiseUnavailable.sqf";
+                RECOMPILE;
+            };
+            class virtualiseInRadius {
+                description = "Virtualises unprofiled AI groups and empty vehicles in a radius";
+                file = "\x\alive\addons\sys_profile\fnc_virtualiseInRadius.sqf";
+                RECOMPILE;
+            };
             class createProfilesFromPlayers {
                 description = "createProfilesFromPlayers";
                 file = "\x\alive\addons\sys_profile\fnc_createProfilesFromPlayers.sqf";

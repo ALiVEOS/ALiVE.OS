@@ -3,3 +3,4 @@
 #include "CfgPatches.hpp"
 #include "CfgVehicles.hpp"
 #include "CfgFunctions.hpp"
+#include "RscVirtualiseRadius.hpp"

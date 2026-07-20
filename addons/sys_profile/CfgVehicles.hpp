@@ -175,4 +175,19 @@ class CfgVehicles {
                     class ModuleDescription : ModuleDescription {};
                 };
         };
+
+        class ALiVE_ModuleVirtualise : ModuleAliveBase
+        {
+                scope = 1;
+                scopeCurator = 2;
+                displayName = "$STR_ALIVE_PROFILE_VIRTUALISE";
+                function = "ALIVE_fnc_zeusVirtualiseInRadius";
+                functionPriority = 1;
+                isGlobal = 0;
+                isDisposable = 1;
+                curatorCanAttach = 0;
+                author = MODULE_AUTHOR;
+                icon = "x\alive\addons\sys_profile\icon_sys_profile.paa";
+                picture = "x\alive\addons\sys_profile\icon_sys_profile.paa";
+        };
 };
