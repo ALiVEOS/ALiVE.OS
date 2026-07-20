@@ -38,6 +38,11 @@ _map ctrlMapAnimAdd [0.5, 1, position player];
 ctrlMapAnimCommit _map;
 _map ctrlSetEventHandler ["MouseButtonDown", "_this call ALiVE_fnc_patrolrepOnMapEvent"];
 
+// #698 the map always opens satellite (config default; PATROLREP re-centres on the player each open
+// rather than restoring a saved view), so reset the terrain-mode flag to keep the Terrain button in
+// step. The toggle is a within-session control here.
+uinamespace setVariable ["patrolrepTerrainMode", true];
+
 GVAR(epos) = position player;
 GVAR(mapState) = "START";
 

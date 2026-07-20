@@ -349,6 +349,7 @@ class patrolrep_RscMap
     fontNames = "PuristaMedium";
     fontUnits = "TahomaB";
     maxSatelliteAlpha = 0.85; // #698 restore satellite terrain layer (renders when zoomed in; was 0)
+    deletable = 1; // #698 lets ALIVE_fnc_mapControlSwap ctrlDelete this map for the terrain toggle
     moveOnEdges = 1;
     ptsPerSquareSea = 8;
     ptsPerSquareTxt = 10;
@@ -692,5 +693,12 @@ class patrolrep_RscMap
         importance = 1;
         size = 24;
     };
+};
+
+// #698 schematic (drawn-map) variant for the terrain-mode toggle - identical to patrolrep_RscMap
+// but with the satellite layer off. ALIVE_fnc_mapControlSwap swaps the map between these two.
+class patrolrep_RscMapSchematic : patrolrep_RscMap
+{
+    maxSatelliteAlpha = 0;
 };
 

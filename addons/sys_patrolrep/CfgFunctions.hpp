@@ -56,6 +56,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepOnMapEvent.sqf";
                                                                 RECOMPILE;
                         };
+                        class patrolrepSetTerrainMode {
+                                description = "patrolrep terrain-mode toggle (#698)";
+                                file = "\x\alive\addons\sys_patrolrep\fnc_patrolrepSetTerrainMode.sqf";
+                                                                RECOMPILE;
+                        };
                 };
         };
 };
