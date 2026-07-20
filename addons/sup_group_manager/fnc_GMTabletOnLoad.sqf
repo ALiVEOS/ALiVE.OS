@@ -21,3 +21,6 @@ nil
 ---------------------------------------------------------------------------- */
 
 [MOD(SUP_GROUP_MANAGER),"tabletOnLoad"] call ALIVE_fnc_GM;
+
+// #698 the group-view maps open satellite (config default); reset the terrain-mode flag so the Terrain button starts in step.
+uinamespace setVariable ["GMTerrainMode", true];

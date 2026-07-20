@@ -36,6 +36,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\sup_group_manager\fnc_groupHandler.sqf";
                 RECOMPILE;
             };
+            class GMSetTerrainMode {
+                description = "Group Manager tablet terrain-mode toggle (#698)";
+                file = "\x\alive\addons\sup_group_manager\fnc_GMSetTerrainMode.sqf";
+                RECOMPILE;
+            };
         };
     };
 };
