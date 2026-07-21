@@ -161,6 +161,19 @@ if(_debug) then {
                         [_profileVehicle, "damage", _vehicle call ALIVE_fnc_vehicleGetDamage] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "fuel", fuel _vehicle] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "ammo", _vehicle call ALIVE_fnc_vehicleGetAmmo] call ALIVE_fnc_profileVehicle;
+                        // #460 / #441 - snapshot the pylon loadout while the airframe is
+                        // still live, so a custom Arsenal loadout survives virtualisation
+                        // (sys_profile reapplies it on each spawn). Air only; the store is
+                        // skipped for airframes with no pylons (empty getPylonMagazines).
+                        if (_vehicle isKindOf "Air") then {
+                            private _pylonMagazines = getPylonMagazines _vehicle;
+                            if (!isNil "ALiVE_sys_profile_debug" && {ALiVE_sys_profile_debug}) then {
+                                ["ALiVE sys_profile - pylon snapshot for %1: %2", _vehicleClass, _pylonMagazines] call ALIVE_fnc_dump;
+                            };
+                            if (count _pylonMagazines > 0) then {
+                                [_profileVehicle, "pylonLoadout", _pylonMagazines] call ALIVE_fnc_hashSet;
+                            };
+                        };
                         [_profileVehicle, "engineOn", isEngineOn _vehicle] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "canFire", canFire _vehicle] call ALIVE_fnc_profileVehicle;
                         [_profileVehicle, "canMove", canMove _vehicle] call ALIVE_fnc_profileVehicle;
@@ -348,6 +361,18 @@ _vehicleCount = 0;
             [_profileVehicle, "damage", _vehicle call ALIVE_fnc_vehicleGetDamage] call ALIVE_fnc_profileVehicle;
             [_profileVehicle, "fuel", fuel _vehicle] call ALIVE_fnc_profileVehicle;
             [_profileVehicle, "ammo", _vehicle call ALIVE_fnc_vehicleGetAmmo] call ALIVE_fnc_profileVehicle;
+            // #460 / #441 - snapshot the pylon loadout while the airframe is still
+            // live, so a custom Arsenal loadout survives virtualisation (sys_profile
+            // reapplies it on each spawn). Air only; skipped when there are no pylons.
+            if (_vehicle isKindOf "Air") then {
+                private _pylonMagazines = getPylonMagazines _vehicle;
+                if (!isNil "ALiVE_sys_profile_debug" && {ALiVE_sys_profile_debug}) then {
+                    ["ALiVE sys_profile - pylon snapshot for %1: %2", _vehicleClass, _pylonMagazines] call ALIVE_fnc_dump;
+                };
+                if (count _pylonMagazines > 0) then {
+                    [_profileVehicle, "pylonLoadout", _pylonMagazines] call ALIVE_fnc_hashSet;
+                };
+            };
             [_profileVehicle, "engineOn", isEngineOn _vehicle] call ALIVE_fnc_profileVehicle;
             [_profileVehicle, "canFire", canFire _vehicle] call ALIVE_fnc_profileVehicle;
             [_profileVehicle, "canMove", canMove _vehicle] call ALIVE_fnc_profileVehicle;

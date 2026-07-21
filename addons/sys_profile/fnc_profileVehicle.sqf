@@ -623,6 +623,19 @@ switch (_operation) do {
             _vehicle setFuel _fuel;
             _vehicle engineOn _engineOn;
 
+            // #460 / #441 - restore a pylon loadout a module captured before
+            // virtualisation (e.g. ATO adopting an editor-placed aircraft).
+            // createVehicle only ever gives the config default, so reapply the
+            // stored magazines to keep a custom Arsenal loadout across the
+            // despawn / spawn cycle. A no-op for profiles that never stored one.
+            private _pylonLoadout = [_logic, "pylonLoadout", []] call ALIVE_fnc_HashGet;
+            if (count _pylonLoadout > 0) then {
+                { _vehicle setPylonLoadOut [_forEachIndex + 1, _x] } forEach _pylonLoadout;
+                if (_debug) then {
+                    ["Profile [%1] restored pylon loadout: %2", _profileID, _pylonLoadout] call ALIVE_fnc_dump;
+                };
+            };
+
             // mil_placement vehicles (active + reserve) are tagged with
             // `ALiVE_reserveLocked` at placement when the cluster's
             // `reserveEmptyVehicleLocked` attribute is on. Honour the
