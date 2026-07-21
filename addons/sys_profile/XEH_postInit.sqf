@@ -29,16 +29,24 @@ if (!isServer) exitWith {};
 addMissionEventHandler ["Map", {
     params ["_mapIsOpened"];
     if (!_mapIsOpened) exitWith {};
-    if (isNil "ALIVE_profileHandler") exitWith {};
 
-    // Only bother if debug is actually on — nothing to refresh otherwise.
-    private _debugOn = [ALIVE_profileHandler, "debug"] call ALIVE_fnc_profileHandler;
-    if (!_debugOn) exitWith {};
+    // The Map EH can fire before visibleMap becomes true. Wait for the
+    // engine's map state before rebuilding visibleMap-gated markers.
+    [
+        { visibleMap },
+        {
+            if (isNil "ALIVE_profileHandler") exitWith {};
+            
+            // Only bother if debug is actually on — nothing to refresh otherwise.
+            private _debugOn = [ALIVE_profileHandler,"debug"] call ALiVE_fnc_profileHandler;
+            if (!_debugOn) exitWith {};
 
-    // Re-toggle debug: the existing case "debug" path in fnc_profileHandler
-    // enumerates every registered profile, deletes its markers, then (because
-    // we pass true) recreates them. This is the map-open full-refresh sweep.
-    [ALIVE_profileHandler, "debug", true] call ALIVE_fnc_profileHandler;
+            // Re-toggle debug: the existing case "debug" path in fnc_profileHandler
+            // enumerates every registered profile, deletes its markers, then (because
+            // we pass true) recreates them. This is the map-open full-refresh sweep.
+            [ALIVE_profileHandler, "debug", true] call ALIVE_fnc_profileHandler;
+        }
+    ] call CBA_fnc_waitUntilAndExecute;
 }];
 
 // Post-death AI linger: when a player dies in an actively spawned area and
