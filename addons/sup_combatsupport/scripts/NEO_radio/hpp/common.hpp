@@ -58,6 +58,11 @@ class NEO_RscEdit
     colorText[] = {1,1,1,1};
     autocomplete = 0;
     colorSelection[] = {0,0,0,1};
+    colorDisabled[] = {}; // required for a CT_EDIT to instantiate (this base was previously never used)
+    class Attributes
+    {
+        valign = "top";
+    };
 };
 
 /***************************

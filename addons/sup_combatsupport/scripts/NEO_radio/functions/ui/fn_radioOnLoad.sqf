@@ -102,6 +102,9 @@ lbClear _suppListBox;
 _suppListBox ctrlSetEventHandler ["LBSelChanged", "_this call NEO_fnc_radioLbSelChanged"];
 _abort ctrlSetEventHandler ["ButtonClick", "closeDialog 0;"];
 
+// #630 pressing Enter in the grid field submits it, same as clicking Set (28 = Return, 156 = numpad Enter)
+((findDisplay 655555) displayCtrl 655636) ctrlAddEventHandler ["KeyDown", "if ((_this select 1) in [28, 156]) exitWith { [] call NEO_fnc_radioGridSetButton; true }; false"];
+
 switch (_action) do
 {
     case "talk" :

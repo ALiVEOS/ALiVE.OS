@@ -433,17 +433,62 @@ class NEO_resourceRadio
                 {
                         idc = 655634;
                         x = 0.686 * safezoneW + safezoneX;   // top-right of the header bezel (mirrors the logo), above the map
-                        y = 0.098 * safezoneH + safezoneY;   // on the light-grey header band, level with the ALiVE logo
+                        y = 0.108 * safezoneH + safezoneY;   // on the light-grey header band (nudged down with the grid row)
                         w = 0.0597643 * safezoneW;
                         h = 0.028 * safezoneH;
                         text = "Terrain";
                         periodFocus = 1e10; // never blink (periodFocus = 0 can fall back to the default focus-pulse)
                         periodOver = 1e10;
+                        period = 1e10; // freeze the base blink too (period 0.4 pulses while the button holds focus)
                         action = "[!(uinamespace getVariable ['NEO_radioTerrainMode', true])] call NEO_fnc_radioSetTerrainMode";
                         colorBackground[] = {0.384,0.439,0.341,1};
                         colorBackgroundFocused[] = {0.384,0.439,0.341,1};
                         colorFocused[] = {0.706,0.706,0.706,1};
                         sizeEx = CS_BTN_SIZE;
+                };
+
+                // #630 additive grid-entry - type an 8-digit grid + Set as an alternative to clicking
+                // the map. On the header band, left of the Terrain button, clear of the map redraw layer.
+                class NEO_radioGridLabel : NEO_RscText
+                {
+                        idc = 655635;
+                        x = 0.5198 * safezoneW + safezoneX;
+                        y = 0.108 * safezoneH + safezoneY;
+                        w = 0.032 * safezoneW;
+                        h = 0.028 * safezoneH;
+                        text = "GRID";
+                        sizeEx = CS_BTN_SIZE;
+                        colorText[] = {0.25,0.25,0.25,1}; // darker grey - more visible on the light header band
+                        class Attributes
+                        {
+                                color = "#404040";
+                        };
+                };
+                class NEO_radioGridEdit : NEO_RscEdit
+                {
+                        idc = 655636;
+                        x = 0.5518 * safezoneW + safezoneX;
+                        y = 0.10 * safezoneH + safezoneY; // extend up from the button row (bottom stays aligned at 0.136) for a taller, readable box
+                        w = 0.086 * safezoneW;
+                        h = 0.036 * safezoneH;
+                        text = "";
+                        sizeEx = 0.034; // larger, comfortably readable
+                        colorText[] = {0.1,0.1,0.1,1}; // dark - readable on the light input box
+                        class Attributes
+                        {
+                                valign = "middle";
+                        };
+                };
+                class NEO_radioGridButton : NEO_radioTerrainButton
+                {
+                        idc = 655637;
+                        x = 0.640 * safezoneW + safezoneX;
+                        y = 0.108 * safezoneH + safezoneY;
+                        w = 0.043 * safezoneW;
+                        h = 0.028 * safezoneH;
+                        text = "Set";
+                        period = 1e10; // freeze the focus blink (the inherited period 0.4 pulses while the button holds focus)
+                        action = "[] call NEO_fnc_radioGridSetButton";
                 };
 
                 //CAS Task LB
