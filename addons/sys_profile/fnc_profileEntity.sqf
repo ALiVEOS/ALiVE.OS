@@ -1555,82 +1555,83 @@ switch(_operation) do {
                 default        { false };
             };
         };
+        
         _result = [];
         if (visibleMap || _forceRender) then {
 
-        private _markers = [];
+            private _markers = [];
 
-        private _position = [_logic,"position"] call ALIVE_fnc_hashGet;
-        private _profileID = [_logic,"profileID"] call ALIVE_fnc_hashGet;
-        private _profileSide = [_logic,"side"] call ALIVE_fnc_hashGet;
-        private _profileType = [_logic,"objectType"] call ALIVE_fnc_hashGet;
-        private _profileActive = [_logic,"active"] call ALIVE_fnc_hashGet;
-        private _profileWaypoints = [_logic,"waypoints"] call ALIVE_fnc_hashGet;
+            private _position = [_logic,"position"] call ALIVE_fnc_hashGet;
+            private _profileID = [_logic,"profileID"] call ALIVE_fnc_hashGet;
+            private _profileSide = [_logic,"side"] call ALIVE_fnc_hashGet;
+            private _profileType = [_logic,"objectType"] call ALIVE_fnc_hashGet;
+            private _profileActive = [_logic,"active"] call ALIVE_fnc_hashGet;
+            private _profileWaypoints = [_logic,"waypoints"] call ALIVE_fnc_hashGet;
 
-        private _debugColor = [_logic,"debugColor","ColorGreen"] call ALIVE_fnc_hashGet;
-        private _typePrefix = "n";
-        switch(_profileSide) do {
-            case "EAST":{
-                _debugColor = "ColorRed";
-                _typePrefix = "o";
+            private _debugColor = [_logic,"debugColor","ColorGreen"] call ALIVE_fnc_hashGet;
+            private _typePrefix = "n";
+            switch(_profileSide) do {
+                case "EAST":{
+                    _debugColor = "ColorRed";
+                    _typePrefix = "o";
+                };
+                case "WEST":{
+                    _debugColor = "ColorBlue";
+                    _typePrefix = "b";
+                };
+                case "CIV":{
+                    _debugColor = "ColorYellow";
+                    _typePrefix = "n";
+                };
+                case "GUER":{
+                    _debugColor = "ColorGreen";
+                    _typePrefix = "n";
+                };
             };
-            case "WEST":{
-                _debugColor = "ColorBlue";
-                _typePrefix = "b";
+
+            private _debugIcon = format["%1_inf",_typePrefix];
+
+            private _label = [_profileID, "_"] call CBA_fnc_split;
+            private _debugAlpha = if (_profileActive) then { 1 } else { 0.3 };
+
+            private _waypointCount = 0;
+            {
+                private _waypointPosition = [_x,"position"] call ALIVE_fnc_hashGet;
+
+                private _m = createMarker [format["SIM_MARKER_%1_%2",_profileID,_waypointCount], _waypointPosition];
+                _m setMarkerShape "ICON";
+                _m setMarkerSize [.6, .6];
+                _m setMarkerType "waypoint";
+                _m setMarkerColor _debugColor;
+                _m setMarkerAlpha 0.6;
+
+                _m setMarkerText format["%1", _label select ((count _label) - 1), _waypointCount];
+
+                _markers pushback _m;
+
+                [_logic,"debugMarkers", _markers] call ALIVE_fnc_hashSet;
+
+                _waypointCount = _waypointCount + 1;
+            } forEach _profileWaypoints;
+
+            if (count _position > 0) then {
+                private _m = createMarker [format[MTEMPLATE, format["%1_debug",_profileID]], _position];
+                _m setMarkerShape "ICON";
+                _m setMarkerSize [.4, .4];
+                _m setMarkerType _debugIcon;
+                _m setMarkerColor _debugColor;
+                _m setMarkerAlpha _debugAlpha;
+
+                _m setMarkerText format["e%1",_label select ((count _label) - 1)];
+
+                _markers pushback _m;
+
+                [_logic,"debugMarkers", _markers] call ALIVE_fnc_hashSet;
             };
-            case "CIV":{
-                _debugColor = "ColorYellow";
-                _typePrefix = "n";
-            };
-            case "GUER":{
-                _debugColor = "ColorGreen";
-                _typePrefix = "n";
-            };
+
+            _result = _markers;
+
         };
-
-        private _debugIcon = format["%1_inf",_typePrefix];
-
-        private _label = [_profileID, "_"] call CBA_fnc_split;
-        private _debugAlpha = if (_profileActive) then { 1 } else { 0.3 };
-
-        private _waypointCount = 0;
-        {
-            private _waypointPosition = [_x,"position"] call ALIVE_fnc_hashGet;
-
-            private _m = createMarker [format["SIM_MARKER_%1_%2",_profileID,_waypointCount], _waypointPosition];
-            _m setMarkerShape "ICON";
-            _m setMarkerSize [.6, .6];
-            _m setMarkerType "waypoint";
-            _m setMarkerColor _debugColor;
-            _m setMarkerAlpha 0.6;
-
-            _m setMarkerText format["%1", _label select ((count _label) - 1), _waypointCount];
-
-            _markers pushback _m;
-
-            [_logic,"debugMarkers", _markers] call ALIVE_fnc_hashSet;
-
-            _waypointCount = _waypointCount + 1;
-        } forEach _profileWaypoints;
-
-        if (count _position > 0) then {
-            private _m = createMarker [format[MTEMPLATE, format["%1_debug",_profileID]], _position];
-            _m setMarkerShape "ICON";
-            _m setMarkerSize [.4, .4];
-            _m setMarkerType _debugIcon;
-            _m setMarkerColor _debugColor;
-            _m setMarkerAlpha _debugAlpha;
-
-            _m setMarkerText format["e%1",_label select ((count _label) - 1)];
-
-            _markers pushback _m;
-
-            [_logic,"debugMarkers", _markers] call ALIVE_fnc_hashSet;
-        };
-
-        _result = _markers;
-
-        }; // end if (visibleMap)
     };
 
     case "deleteDebugMarkers": {

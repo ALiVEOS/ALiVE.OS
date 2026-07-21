@@ -247,14 +247,12 @@ switch(_operation) do {
 
     case "debug": {
         if !(_args isEqualType true) then {
-            _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
+            _result = [_logic,"debug"] call ALIVE_fnc_hashGet;
         } else {
             [_logic,"debug", _args] call ALIVE_fnc_hashSet;
-        };
 
-        private _profiles = [_logic,"profiles"] call ALIVE_fnc_hashGet;
+            private _profiles = [_logic,"profiles"] call ALIVE_fnc_hashGet;
 
-        if !(_profiles isEqualTo []) then {
             {
                 switch([_x,"type"] call ALIVE_fnc_hashGet) do {
                     case "entity": {
@@ -277,17 +275,10 @@ switch(_operation) do {
                         };
                     };
                 } forEach (_profiles select 2);
-
-                // DEBUG -------------------------------------------------------------------------------------
-                //["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
-                //["Profile Handler State"] call ALiVE_fnc_dump;
-                //_state = [_logic, "state"] call MAINCLASS;
-                //_state call ALIVE_fnc_inspectHash;
-                // DEBUG -------------------------------------------------------------------------------------
             };
-        };
 
-        _result = _args;
+            _result = _args;
+        };
     };
 
     case "state": {
