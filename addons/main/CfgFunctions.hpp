@@ -144,6 +144,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_getAirfieldGeometry.sqf";
                 RECOMPILE;
             };
+            class getRunwayCentreline {
+                description = "Derives a usable runway centreline near a position for terrains with no ILS config data";
+                file = "\x\alive\addons\main\fnc_getRunwayCentreline.sqf";
+                RECOMPILE;
+            };
             class findRunwayClear {
                 description = "Returns input position unchanged when clear of runway/taxiway segments by `_clearance`m beyond halfWidth, or a perpendicular-nudged position otherwise. One-shot waypoint / unit-sweep helper";
                 file = "\x\alive\addons\main\fnc_findRunwayClear.sqf";

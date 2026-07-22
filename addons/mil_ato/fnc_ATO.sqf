@@ -157,7 +157,10 @@ ALiVE_fnc_getAirportTaxiPos = {
     params [
         ["_airportID", 0, [0]],
         ["_taxiPos", "ilsTaxiIn", [""]], // ilsTaxiIn  ilsTaxisOff  ilsPosition
-        ["_scope", 0, [0]]
+        ["_scope", 0, [0]],
+        // Optional. Where to look for a runway on the ground when the terrain
+        // config has no ILS data. Omit it and behaviour is exactly as before.
+        ["_nearPos", [], [[]]]
     ];
 
     private _result = [];
@@ -179,6 +182,32 @@ ALiVE_fnc_getAirportTaxiPos = {
             private _pos = _runway modelToWorld [(_result select _i), (_result select _i+1), 0];
             _result set [_i, _pos select 0];
             _result set [_i+1, _pos select 1];
+        };
+    };
+
+    // The terrain config had nothing for this airport. Rather than give up, use
+    // the runway ALiVE can actually see on the ground - the same geometry that
+    // already keeps compositions and parked aircraft off it. The two ends of the
+    // centreline fit the shape callers expect: first coordinate pair is a
+    // position, second pair gives them a heading down the strip.
+    //
+    // This is what makes a terrain with no airport in its config usable for
+    // takeoff at all, instead of throwing on an empty array.
+    if (count _result == 0 && {count _nearPos > 1}) then {
+        private _centreline = [_nearPos, 1500] call ALiVE_fnc_getRunwayCentreline;
+        if (count _centreline > 1) then {
+            private _clA = _centreline select 0;
+            private _clB = _centreline select 1;
+
+            // Work from whichever end is closer, so an aircraft does not start
+            // by crossing the whole airfield.
+            if (_clB distance2D _nearPos < _clA distance2D _nearPos) then {
+                private _swap = _clA;
+                _clA = _clB;
+                _clB = _swap;
+            };
+
+            _result = [_clA select 0, _clA select 1, _clB select 0, _clB select 1];
         };
     };
 
@@ -4718,7 +4747,7 @@ switch(_operation) do {
                                     [_logic,"runways",_airports] call MAINCLASS;
 
                                     // Get Taxi position
-                                    private _taxiPositions = [_airportID, "ilsTaxiIn",4] call ALiVE_fnc_getAirportTaxiPos;
+                                    private _taxiPositions = [_airportID, "ilsTaxiIn",4,_startPosition] call ALiVE_fnc_getAirportTaxiPos;
 
                                     // A terrain with no ILS data for this airport returns nothing.
                                     // Keep the parked position set above rather than indexing into
@@ -5173,7 +5202,7 @@ switch(_operation) do {
                                 if (_isPlane) then {
                                     // Set position relative to TaxiOff (but 300m up)
                                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
-                                    private _taxiPositions = [_airportID, "ilsTaxiOff",4] call ALiVE_fnc_getAirportTaxiPos;
+                                    private _taxiPositions = [_airportID, "ilsTaxiOff",4,_startPosition] call ALiVE_fnc_getAirportTaxiPos;
 
                                     if (!isnil {_taxiPositions select 0}) then {
 
@@ -6090,7 +6119,7 @@ switch(_operation) do {
                     // Set position if plane to taxi position
                     if (_vehicle iskindOf "Plane") then {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
-                        private _taxiPositions = [_airportID, "ilsTaxiIn"] call ALiVE_fnc_getAirportTaxiPos;
+                        private _taxiPositions = [_airportID, "ilsTaxiIn",0,_startPosition] call ALiVE_fnc_getAirportTaxiPos;
 
                         // With no ILS data for this airport the list comes back empty and the
                         // count-2 / count-1 indices below go negative, throwing on arrival.
