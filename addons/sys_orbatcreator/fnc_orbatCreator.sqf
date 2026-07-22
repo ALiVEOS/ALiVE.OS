@@ -2239,6 +2239,19 @@ switch(_operation) do {
 
     };
 
+    case "stripOCImportSuffix": {
+
+        private _classname = _args;
+        private _markerIndex = _classname find "_OCimport_";
+
+        _result = if (_markerIndex == -1) then {
+            _classname
+        } else {
+            [_classname, 0, _markerIndex] call CBA_fnc_substr
+        };
+
+    };
+
     case "getRealUnitClass": {
 
         private ["_unitParentEntry"];
@@ -2268,8 +2281,7 @@ switch(_operation) do {
             _unitParentConfigPath = _cfgVehicles >> _unitParent;
         };
 
-        _unitParent = [_unitParent,"_OCimport_01",""] call CBA_fnc_replace;
-        _unitParent = [_unitParent,"_OCimport_02",""] call CBA_fnc_replace;
+        _unitParent = [_logic,"stripOCImportSuffix", _unitParent] call MAINCLASS;
 
         _result = _unitParent;
 
@@ -2476,8 +2488,7 @@ switch(_operation) do {
 
             // hide importer classes from user
 
-            _unitParent = [_unitParent,"_OCimport_01",""] call CBA_fnc_replace;
-            _unitParent = [_unitParent,"_OCimport_02",""] call CBA_fnc_replace;
+            _unitParent = [_logic,"stripOCImportSuffix", _unitParent] call MAINCLASS;
 
             private _newUnit = [nil,"create"] call ALiVE_fnc_orbatCreatorUnit;
             [_newUnit,"init"] call ALiVE_fnc_orbatCreatorUnit;
@@ -6375,11 +6386,13 @@ switch(_operation) do {
 
     case "exportCustomUnits": {
 
-        private _unitclasses = _args;
+        private _unitClasses = _args;
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _customUnits = [_state,"customUnits"] call ALiVE_fnc_hashGet;
         private _forwardDeclared = [];
+        private _exportFaction = [_state,"selectedFaction"] call ALiVE_fnc_hashGet;
+        private _importSuffix = "_OCimport_" + _exportFaction;
 
         _result = "";
         private _indent = "    ";
@@ -6430,8 +6443,8 @@ switch(_operation) do {
                 // parent is in config and isn't imported
                 // we need to forward declare it with imports
 
-                private _importClass1 = _unitConfigName + "_OCimport_01";
-                private _importClass2 = _unitConfigName + "_OCimport_02";
+                private _importClass1 = _unitConfigName + _importSuffix + "_01";
+                private _importClass2 = _unitConfigName + _importSuffix + "_02";
 
                 private _realUnitClass = [_logic,"getRealUnitClass", _unitConfigName] call MAINCLASS;
 
@@ -6483,7 +6496,7 @@ switch(_operation) do {
         // export units
 
         {
-            private _unitExportString = [_logic,"exportCustomUnit", _x] call MAINCLASS;
+            private _unitExportString = [_logic,"exportCustomUnit", [_x,_importSuffix]] call MAINCLASS;
             _result = _result + _unitExportString + _newLine;
         } foreach _unitsToExport;
 
@@ -6493,7 +6506,7 @@ switch(_operation) do {
 
     case "exportCustomUnit": {
 
-        private _unit = _args;
+        _args params ["_unit","_importSuffix"];
         private _prefix = [_logic,"prefix"] call MAINCLASS;
         private _state = [_logic,"state"] call MAINCLASS;
         private _factions = [_state,"factions"] call ALiVE_fnc_hashGet;
@@ -6539,7 +6552,7 @@ switch(_operation) do {
         /*
         if (_unitParent != "") then {
             if (isClass (_cfgVehicles >> _unitParent)) then {
-                _result = _result + " : " + _unitParent + "_OCimport_02";
+                _result = _result + " : " + _unitParent + _importSuffix + "_02";
             } else {
                 _result = _result + " : " + _unitParent;
             };
@@ -6547,7 +6560,7 @@ switch(_operation) do {
         */
         private _unitParentCustomUnit = [_customUnits,_unitParent] call ALiVE_fnc_hashGet;
         if (isnil "_unitParentCustomUnit") then {
-            _result = _result + " : " + _unitParent + "_OCimport_02";
+            _result = _result + " : " + _unitParent + _importSuffix + "_02";
         } else {
             _result = _result + " : " + _unitParent;
         };
