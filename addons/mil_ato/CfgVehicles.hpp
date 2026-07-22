@@ -84,7 +84,12 @@ class CfgVehicles
                         property = "ALiVE_mil_ato_types";
                         displayName = "$STR_ALIVE_ATO_TYPES";
                         tooltip = "$STR_ALIVE_ATO_TYPES_COMMENT";
-                        defaultValue = """['CAP','DCA','SEAD','CAS','Strike','Recce']""";
+                        // OCA is fully implemented and the AI commander raises it against
+                        // enemy airfields, but it was missing here while the code-side
+                        // default included it - so every Editor-placed module silently
+                        // dropped those requests. AS is deliberately NOT listed: it has no
+                        // implementation and nothing raises it.
+                        defaultValue = """['CAP','DCA','SEAD','CAS','Strike','Recce','OCA']""";
                 };
                 class airspace : Edit
                 {

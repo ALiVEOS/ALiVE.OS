@@ -106,6 +106,14 @@ switch (_support) do
 
         // set ownership flag for other modules
         _veh setVariable ["ALIVE_CombatSupport", true];
+
+        // Shield from the profiler as well - the ownership flag alone does not stop
+        // sys_profile capturing this asset on its next runtime sweep, after which the
+        // AI commander (or mil_ato, which adopts armed air profiles by faction and
+        // airspace) can task a support asset the player is relying on.
+        _veh setVariable ["ALIVE_profileIgnore", true];
+        if (!isNull _grp) then { _grp setVariable ["ALIVE_profileIgnore", true]; };
+
         _veh setVariable ["NEO_transportAvailableTasks", _tasks, true];
 
         private _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
@@ -187,6 +195,13 @@ switch (_support) do
         // set ownership flag for other modules
         _veh setVariable ["ALIVE_CombatSupport", true];
 
+        // Shield from the profiler as well - the ownership flag alone does not stop
+        // sys_profile capturing this asset on its next runtime sweep, after which the
+        // AI commander (or mil_ato, which adopts armed air profiles by faction and
+        // airspace) can task a support asset the player is relying on.
+        _veh setVariable ["ALIVE_profileIgnore", true];
+        if (!isNull _grp) then { _grp setVariable ["ALIVE_profileIgnore", true]; };
+
         private _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 
         //FSM
@@ -261,6 +276,13 @@ switch (_support) do
 
             // set ownership flag for other modules
             _veh setVariable ["ALIVE_CombatSupport", true];
+
+            // Shield from the profiler as well - the ownership flag alone does not stop
+            // sys_profile capturing this asset on its next runtime sweep, after which the
+            // AI commander (or mil_ato, which adopts armed air profiles by faction and
+            // airspace) can task a support asset the player is relying on.
+            _veh setVariable ["ALIVE_profileIgnore", true];
+            if (!isNull _grp) then { _grp setVariable ["ALIVE_profileIgnore", true]; };
 
             // Exclude CS from VCOM
             // CS only runs serverside so no PV is needed

@@ -180,7 +180,15 @@ ALiVE_fnc_getAirportTaxiPos = {
     };
 
     if (_scope != 0) then {
-        _result resize _scope;
+        // Resizing UP pads the array with nil, and every caller selects straight
+        // into the result - so an airport with no ILS data in its config handed
+        // back [nil,nil,nil,nil] and surfaced as script errors downstream rather
+        // than a clean "no taxi position available". Return nothing instead.
+        if (count _result >= _scope) then {
+            _result resize _scope;
+        } else {
+            _result = [];
+        };
     };
 
     _result
@@ -1035,7 +1043,16 @@ switch(_operation) do {
             if ([_vehicleProfile,"active",false] call ALiVE_fnc_hashGet) then {
 
                 private _vehicle = [_vehicleProfile,"vehicle"] call ALiVE_fnc_hashGet;
-                private _isCombatSupport = _vehicle getVariable ["ALIVE_CombatSupport", false];
+
+                // Assign, do not redeclare. The second "private" here created a new
+                // variable scoped to this block, so the outer one stayed false and the
+                // guard below never fired - the Combat Support check has been dead since
+                // it was written. sup_combatsupport shields its assets from the profiler
+                // at source, so this is a backstop rather than the primary defence; it can
+                // only see assets that are currently spawned.
+                if (!isNil "_vehicle" && {!isNull _vehicle}) then {
+                    _isCombatSupport = _vehicle getVariable ["ALIVE_CombatSupport", false];
+                };
             };
             if (_isCombatSupport) exitWith {
 
@@ -1915,7 +1932,10 @@ switch(_operation) do {
                 // If OPCOM isn't friendly don't add them
                 if !([[_moduleSide] call ALIVE_fnc_sideTextToObject,[[_logic, "side"] call MAINCLASS] call ALIVE_fnc_sideTextToObject] call BIS_fnc_sideIsFriendly) exitWith {
                     ["ATO %1 - Warning, AI Commander is synced to an Air Component Commander that is not side friendly.", _logic] call ALiVE_fnc_dumpR;
-                    _modules deleteAt _forEachIndex;
+                    // No deleteAt here - exitWith already skips this module, and removing
+                    // an element from the array being walked shifted everything down by
+                    // one, so the NEXT synced commander was silently skipped too and its
+                    // factions never merged. _modules is not read after this loop.
                 };
 
                 // Register side with clients
@@ -3422,31 +3442,53 @@ switch(_operation) do {
                     // Check to see the current state of air assets, if less than 2 restrict ATOs
                     if ((_loaded && count (_assets select 1) <= 4) || (!_loaded && count (_assets select 1) <= 2) ) then {
                         private _types = [_logic, "types"] call MAINCLASS;
-                        private _orig = [_logic,"origTypes"] call MAINCLASS;
-                        if (count _orig == 0) then {
-                           [_logic,"origTypes",+_types] call MAINCLASS;
+
+                        // Remember the unrestricted list the first time we restrict so it can
+                        // be put back later. A dedicated flag is needed because the origTypes
+                        // accessor falls back to the full default type list when unset, so
+                        // "count _orig == 0" could never answer "have we saved yet" and the
+                        // original list was never actually stored.
+                        if !(_logic getVariable ["origTypesSaved", false]) then {
+                            [_logic,"origTypes",+_types] call MAINCLASS;
+                            _logic setVariable ["origTypesSaved", true];
                         };
+
+                        // Defensive tasking only while airframes are scarce. Note "CAP" and not
+                        // ["CAP"] - the list holds strings, so the array form never matched and
+                        // this emptied the type list instead of narrowing it, silently stopping
+                        // ALL air tasking. The restore branch below could not undo it either, so
+                        // one dip in aircraft numbers grounded the MACC for the rest of the mission.
                         private _tmpTypes = [];
-                        if (["CAP"] in _types) then {
-                            _tmpTypes pushback ["CAP"];
+                        if ("CAP" in _types) then {
+                            _tmpTypes pushback "CAP";
                         };
-                        if (["DCA"] in _types) then {
-                            _tmpTypes pushback ["DCA"];
+                        if ("DCA" in _types) then {
+                            _tmpTypes pushback "DCA";
                         };
-                        _types = _tmpTypes;
-                        [_logic,"types",_types] call MAINCLASS;
+
+                        // Only narrow if something survives - a mission running neither CAP nor
+                        // DCA should keep flying what it has rather than go silent.
+                        if (count _tmpTypes > 0) then {
+                            [_logic,"types",_tmpTypes] call MAINCLASS;
+                        };
 
                     };
 
                     if ( (!_loaded && count (_assets select 1) > 2) || (_loaded && count (_assets select 1) > 4) ) then {
-                        private _types = [_logic, "types"] call MAINCLASS;
-                        private _orig = [_logic, "origTypes",[]] call MAINCLASS;
-                        if (count _orig == 0) then {
-                           [_logic,"origTypes",+_types] call MAINCLASS;
-                        };
-                        // Reset ATOs
-                        if (count _types < count _orig) then {
-                            [_logic,"types",+_orig] call MAINCLASS;
+
+                        // Only restore if we actually saved something. Passing [] to the accessor
+                        // here used to SET origTypes to an empty list and then reseed it from the
+                        // already-narrowed types, destroying the original list both ways round.
+                        if (_logic getVariable ["origTypesSaved", false]) then {
+                            private _types = [_logic, "types"] call MAINCLASS;
+                            private _orig = [_logic, "origTypes"] call MAINCLASS;
+
+                            // Reset ATOs
+                            if (count _types < count _orig) then {
+                                [_logic,"types",+_orig] call MAINCLASS;
+                            };
+
+                            _logic setVariable ["origTypesSaved", false];
                         };
                     };
 
@@ -4579,8 +4621,15 @@ switch(_operation) do {
 
                                     // Get Taxi position
                                     private _taxiPositions = [_airportID, "ilsTaxiIn",4] call ALiVE_fnc_getAirportTaxiPos;
-                                    _taxiPosition = [_taxiPositions select 0, _taxiPositions select 1];
-                                    _taxiDir = _taxiPosition getDir [_taxiPositions select 2, _taxiPositions select 3];
+
+                                    // A terrain with no ILS data for this airport returns nothing.
+                                    // Keep the parked position set above rather than indexing into
+                                    // an empty list, which handed nil coordinates to the launch and
+                                    // surfaced as script errors instead of a graceful fallback.
+                                    if (count _taxiPositions >= 4) then {
+                                        _taxiPosition = [_taxiPositions select 0, _taxiPositions select 1];
+                                        _taxiDir = _taxiPosition getDir [_taxiPositions select 2, _taxiPositions select 3];
+                                    };
 
                                     // Check to see if we are over water, assume aircraft carrier, check for catapult
                                     if (surfaceIsWater _taxiPosition && _isOnCarrier) then {
@@ -4790,7 +4839,24 @@ switch(_operation) do {
                                 private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
                                 private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
 
-                                if (isNil "_crewProfile" && !(_vehicleClass isKindOf "UAV")) exitWith {
+                                // When the aircraft profile is already active its crew must be live
+                                // too, so an invalid group handle there means the crew profile is
+                                // corrupt rather than merely unspawned. A crew profile that has been
+                                // through an entity despawn could carry an Object in its "group" slot
+                                // instead of a Group, and hashGet does no type checking, so it reached
+                                // "_group addVehicle" below and threw "Type Object, expected Group",
+                                // killing the activation. Treat it as crew-unavailable and take the
+                                // abort path already used for a missing crew profile.
+                                private _crewGroupBad = false;
+                                if (!isNil "_crewProfile" && {[_profile,"active",false] call ALiVE_fnc_hashGet}) then {
+                                    private _crewGroup = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
+                                    if (isNil "_crewGroup" || {!(_crewGroup isEqualType grpNull)} || {isNull _crewGroup}) then {
+                                        _crewGroupBad = true;
+                                        ["ATO %1 - crew profile %2 for aircraft %3 has an invalid group handle, aborting activation", _logic, _crewID, _profileID] call ALiVE_fnc_dumpR;
+                                    };
+                                };
+
+                                if ((isNil "_crewProfile" || _crewGroupBad) && !(_vehicleClass isKindOf "UAV")) exitWith {
                                     // abort mission
                                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -5927,7 +5993,14 @@ switch(_operation) do {
                     if (_vehicle iskindOf "Plane") then {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                         private _taxiPositions = [_airportID, "ilsTaxiIn"] call ALiVE_fnc_getAirportTaxiPos;
-                        private _taxiPosition = [_taxiPositions select (count _taxiPositions -2), _taxiPositions select (count _taxiPositions -1), 0];
+
+                        // With no ILS data for this airport the list comes back empty and the
+                        // count-2 / count-1 indices below go negative, throwing on arrival.
+                        // Fall back to the aircraft's own parking spot.
+                        private _taxiPosition = +_startPosition;
+                        if (count _taxiPositions >= 2) then {
+                            _taxiPosition = [_taxiPositions select (count _taxiPositions -2), _taxiPositions select (count _taxiPositions -1), 0];
+                        };
                         if (_isOnCarrier) then {
                             _vehicle setposATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
                         } else {

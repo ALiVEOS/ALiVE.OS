@@ -95,6 +95,14 @@ if (count _veh == 0) then {
 
     _veh lockDriver true;
     _veh setVariable ["ALIVE_CombatSupport", true];
+
+    // A respawned support asset needs the same profiler shield the module-init
+    // path applies, otherwise sys_profile captures it on its next runtime sweep
+    // and the AI commander - or mil_ato, which adopts any armed air profile of a
+    // matching faction standing in its airspace - can claim the player's asset.
+    _veh setVariable ["ALIVE_profileIgnore", true];
+    if (!isNull _grp) then { _grp setVariable ["ALIVE_profileIgnore", true]; };
+
     (driver _veh) setvariable ["VCOM_NOAI", true];
 } else {
     _veh = _veh select 0;

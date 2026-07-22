@@ -79,8 +79,7 @@
     <Chinesesimp>可用的ATO</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_TYPES_COMMENT">
-    <English>SQF array of air tasking order types, in priority order. Valid values: CAP, DCA, SEAD, CAS, Strike, Recce. Example: ['CAP','DCA','SEAD','CAS','Strike','Recce']. Remove types to disable them. Order determines priority when multiple tasks are available.</English>
-    <Chinesesimp>按优先级顺序选择空中任务指令的类型。选择有SEAD、DCA、CAP、CAS、Strike、Recce</Chinesesimp>
+    <English>Types of air mission this commander will fly. Valid values: CAP, DCA, SEAD, CAS, Strike, Recce, OCA. Example: ['CAP','DCA','SEAD','CAS','Strike','Recce','OCA']. Remove a type to stop it being flown.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE">
     <English>Airspace Markers:</English>

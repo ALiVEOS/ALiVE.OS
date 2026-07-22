@@ -1444,7 +1444,12 @@ switch(_operation) do {
                 [_logic,"leader", objNull] call ALIVE_fnc_hashSet;
                 [_logic,"positions", _positions] call ALIVE_fnc_hashSet;
                 [_logic,"damages", _damages] call ALIVE_fnc_hashSet;
-                [_logic,"group", objNull] call ALIVE_fnc_hashSet;
+                // The "group" slot holds a Group, not an Object - the init reset
+                // above uses grpNull. Writing objNull here handed consumers an
+                // Object; hashGet does no type checking, so it survived all the
+                // way to "_group addVehicle" in mil_ato and threw "Type Object,
+                // expected Group" when a despawned crew profile was reused.
+                [_logic,"group", grpNull] call ALIVE_fnc_hashSet;
                 [_logic,"units", []] call ALIVE_fnc_hashSet;
 
                 // process commands
