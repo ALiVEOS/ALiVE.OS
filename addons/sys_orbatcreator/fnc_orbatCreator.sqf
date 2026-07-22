@@ -4194,8 +4194,6 @@ switch(_operation) do {
                 private _ctrlListVoices = _displayArsenal displayCtrl (16 + _iconList);
                 private _ctrlListInsignia = _displayArsenal displayCtrl (17 + _iconList);
 
-                private _selVoiceIdentityType = [_logic,"getVoiceIdentityType", _selVoice select 0] call MAINCLASS;
-
                 private _identityTypes = [_selectedUnitData,"identityTypes"] call ALiVE_fnc_hashGet;
 
                 if (lbCurSel _ctrlListFaces > -1) then {
@@ -4203,7 +4201,7 @@ switch(_operation) do {
                     [_identityTypes,"face", _selFaceData select 0] call ALiVE_fnc_hashSet;
                 };
 
-                if (lbCurSel _selVoice > -1) then {
+                if (lbCurSel _ctrlListVoices > -1) then {
                     private _selVoice = call compile (OC_ctrlGetSelData( _ctrlListVoices ));
                     [_identityTypes,"voice", _selVoice select 0] call ALiVE_fnc_hashSet;
                 };
