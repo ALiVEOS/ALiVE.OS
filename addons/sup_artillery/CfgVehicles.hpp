@@ -32,7 +32,7 @@ class CfgVehicles {
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['artillery_type', _value];";
                                 defaultValue = """B_MBT_01_arty_F""";
-                        };
+                        };
                         class artillery_type_custom : Edit
                         {
                                 property     = "ALiVE_sup_artillery_artillery_type_custom";
@@ -41,6 +41,18 @@ class CfgVehicles {
                                 typeName     = "STRING";
                                 expression   = "_this setVariable ['artillery_type_custom', _value];";
                                 defaultValue = """""";
+                        };
+                        class artillery_relocate : Combo
+                        {
+                                property = "ALiVE_sup_artillery_artillery_relocate";
+                                displayName = "$STR_ALIVE_ARTILLERY_RELOCATE";
+                                tooltip = "$STR_ALIVE_ARTILLERY_RELOCATE_DESC";
+                                defaultValue = """0""";
+                                class Values
+                                {
+                                    class No { name = "No"; value = 0; default = 1; };
+                                    class Yes { name = "Yes"; value = 1; };
+                                };
                         };
                         class HDR_ROUNDS : ALiVE_ModuleSubTitle { property = "ALiVE_sup_artillery_HDR_ROUNDS"; displayName = "ROUNDS"; };
                         class artillery_he : Edit { property = "ALiVE_sup_artillery_artillery_he"; displayName = "$STR_ALIVE_ARTILLERY_HE"; tooltip = "$STR_ALIVE_ARTILLERY_HE_DESC"; defaultValue = """30"""; };

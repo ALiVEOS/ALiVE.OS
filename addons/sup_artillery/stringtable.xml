@@ -169,6 +169,26 @@
     <Russian>Код, выполняемый на каждом артиллерийском орудии; используйте "this" для ссылки на него.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ARTILLERY_RELOCATE">
+    <English>Allow Repositioning</English>
+    <Chinese>允許重新部署</Chinese>
+    <Chinesesimp>允许重新部署</Chinesesimp>
+    <Spanish>Permitir reposicionamiento</Spanish>
+    <French>Autoriser le repositionnement</French>
+    <Portuguese>Permitir reposicionamento</Portuguese>
+    <Russian>Разрешить смену позиции</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_ARTILLERY_RELOCATE_DESC">
+    <English>Whether this battery may move to a new firing position when a target is out of range. It never moves on its own: it asks over the radio and keeps asking until you answer, and moves only if you press Move on the Combat Support tablet - Don't Move refuses. Only offered for batteries that can physically move; a towed or emplaced gun stays put regardless.</English>
+    <Chinese>當目標超出射程時，此砲兵單位是否可以移動到新的射擊位置。它絕不會自行移動：它會透過無線電請求並持續詢問直到您回覆，只有在您於戰鬥支援平板上按下移動後才會移動，按下不要移動則拒絕。僅適用於能夠實際移動的砲兵；牽引式或固定式火砲不會移動。</Chinese>
+    <Chinesesimp>当目标超出射程时，此炮兵单位是否可以移动到新的射击位置。它绝不会自行移动：它会通过无线电请求并持续询问直到您回复，只有在您于战斗支援平板上按下移动后才会移动，按下不要移动则拒绝。仅适用于能够实际移动的炮兵；牵引式或固定式火炮不会移动。</Chinesesimp>
+    <Spanish>Si esta batería puede desplazarse a una nueva posición de tiro cuando un objetivo está fuera de alcance. Nunca se mueve por su cuenta: lo pide por radio y sigue preguntando hasta que responda, y solo se desplaza si pulsa Mover en la tablet de Apoyo de Combate; No mover lo rechaza. Solo se ofrece a baterías que puedan moverse físicamente; un cañón remolcado o emplazado no se moverá.</Spanish>
+    <French>Si cette batterie peut se déplacer vers un nouveau site de tir lorsqu'une cible est hors de portée. Elle ne se déplace jamais d'elle-même : elle en fait la demande par radio et répète jusqu'à votre réponse, et ne se déplace que si vous appuyez sur Déplacer sur la tablette d'appui au combat ; Ne pas déplacer refuse. Proposé uniquement aux batteries capables de se déplacer ; un canon tracté ou en position fixe ne bougera pas.</French>
+    <Portuguese>Se esta bateria pode deslocar-se para uma nova posição de tiro quando um alvo está fora de alcance. Nunca se desloca sozinha: pede por rádio e continua a perguntar até responder, e só se desloca se premir Mover no tablet de Apoio de Combate; Não mover recusa. Apenas disponível para baterias que se possam deslocar; uma peça rebocada ou fixa não sai do lugar.</Portuguese>
+    <Russian>Может ли эта батарея сменить огневую позицию, если цель вне досягаемости. Она никогда не перемещается сама: она запрашивает разрешение по радио и повторяет запрос, пока вы не ответите, и перемещается только если вы нажмёте Переместить на планшете боевой поддержки; Не перемещать - отказ. Доступно только для батарей, способных передвигаться; буксируемое или стационарное орудие останется на месте.</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_LOGISTICS">
     <English>Use Military Logistics Simulation</English>
     <Chinese>使用軍事後勤模擬</Chinese>

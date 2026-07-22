@@ -416,7 +416,14 @@ switch(_operation) do {
                                     _artyLogistics = parseNumber (((synchronizedObjects _logic) select _i) getvariable ["artillery_logistics","0"]);
                                     _artyLogisticsSource = parseNumber (((synchronizedObjects _logic) select _i) getvariable ["artillery_logisticssource","0"]);
 
-                                    _artyArray = [_position,_class, _callsign,3,_ordnance,_code,_artyLogistics,_artyLogisticsSource];
+                                    // Whether this battery may relocate to a new firing position when a
+                                    // target is out of range. Combined at use-time with a config check -
+                                    // an emplaced gun stays put no matter what this says.
+                                    // Defaults to 0 (off), matching the module default, so a mission
+                                    // saved before this setting existed keeps its old behaviour.
+                                    _artyRelocate = parseNumber (((synchronizedObjects _logic) select _i) getvariable ["artillery_relocate","0"]);
+
+                                    _artyArray = [_position,_class, _callsign,3,_ordnance,_code,_artyLogistics,_artyLogisticsSource,_artyRelocate];
                                     _artyArrays pushback _artyArray;
                                 };
                             };
@@ -768,7 +775,23 @@ switch(_operation) do {
 
 
                             _roundsAvailable = [];
-                            _canMove = if (_class in ["B_MBT_01_arty_F", "O_MBT_02_arty_F", "B_MBT_01_mlrs_F","O_Mortar_01_F", "B_Mortar_01_F","I_Mortar_01_F","BUS_Support_Mort","BUS_MotInf_MortTeam","OIA_MotInf_MortTeam","OI_support_Mort","HAF_MotInf_MortTeam","HAF_Support_Mort"]) then { true } else { false };
+                            // Can this battery physically reposition? Derived from config, not from a
+                            // hardcoded class list. The old list named only vanilla + SPE classes, so
+                            // EVERY modded piece (RHS, CUP, 3CB) was treated as immobile - including
+                            // self-propelled guns like the M109, which obviously can drive.
+                            private _fnc_canRelocate = {
+                                params ["_c"];
+                                // Not a CfgVehicles class -> a group entry (infantry mortar team); they walk.
+                                if (isNull (configFile >> "CfgVehicles" >> _c)) exitWith { true };
+                                // Anything with a road speed drives itself.
+                                if ((getNumber (configFile >> "CfgVehicles" >> _c >> "maxSpeed")) > 0) exitWith { true };
+                                // Static mortars are man-portable; other emplaced guns are not.
+                                (_c isKindOf "StaticMortar")
+                            };
+                            // Mission-maker switch (Allow Repositioning) AND physical capability.
+                            // Opt-in: the array default matches the module default of off, so an
+                            // array built before this field existed leaves the battery as it was.
+                            _canMove = ([_class] call _fnc_canRelocate) && {(_x param [8,0]) > 0};
                             _units = [];
                             _artyBatteries = [];
                             _vehDir = 0;
@@ -1009,6 +1032,33 @@ switch(_operation) do {
                             _a pushback ([leader _grp, _grp, _callsign, _units, _roundsAvailable, _fsmHandle]);
 
                             NEO_radioLogic setVariable [format ["NEO_radioArtyArray_%1", _side], _a, true];
+
+                            // A player's battery is expected to hold its emplacement. It has been seen
+                            // hundreds of metres from where it was placed with no known cause - the
+                            // battery's own scatter is only 20-50m and the relocate branch is gated, so
+                            // neither accounts for it. Report a drift once per excursion with enough
+                            // state (waypoint, behaviour, combat mode) to identify what moved it, rather
+                            // than discovering it after the fact with the evidence gone.
+                            [_grp, _callsign, +_pos, _class] spawn {
+                                params ["_grp","_callsign","_origin","_class"];
+                                private _reported = false;
+                                while {!isNull _grp && {count (units _grp) > 0}} do {
+                                    sleep 30;
+                                    private _ldr = leader _grp;
+                                    if (!isNull _ldr && {alive _ldr}) then {
+                                        private _drift = (getPosATL _ldr) distance2D _origin;
+                                        if (_drift > 100 && {!_reported}) then {
+                                            _reported = true;
+                                            ["CS ARTY DRIFT - battery %1 (%2) is %3m from its emplacement. origin=%4 now=%5 waypoint=%6/%7 behaviour=%8 combatMode=%9 canFire=%10",
+                                                _callsign, _class, round _drift, _origin, getPosATL _ldr,
+                                                currentWaypoint _grp, count (waypoints _grp),
+                                                behaviour _ldr, combatMode _grp, canFire (vehicle _ldr)] call ALiVE_fnc_dumpR;
+                                        };
+                                        // Re-arm once it settles back, so a repeat excursion is reported too.
+                                        if (_drift <= 100) then { _reported = false; };
+                                    };
+                                };
+                            };
 
                         } forEach SUP_ARTYARRAYS;
 
