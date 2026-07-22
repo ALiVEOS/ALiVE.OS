@@ -45,6 +45,11 @@ Tupolov & Jman
 #define DEFAULT_EVENT_QUEUE []
 #define DEFAULT_ANALYSIS []
 #define DEFAULT_SIDE "EAST"
+// #460 Phase B - how long to wait for a LOGCOM replacement before giving up on it.
+// LOGCOM has no failure callback for an AI requester (all its response messages are
+// gated on _playerRequested), so a request that dies quietly - force pool exhausted,
+// no valid class for the faction, event cancelled - can only be detected by timeout.
+#define ATO_RESUPPLY_TIMEOUT 1800
 #define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","Strike","Recce","AS","OCA"]
 #define DEFAULT_REGISTRY_ID ""
 #define DEFAULT_OP_HEIGHT 750
@@ -874,6 +879,17 @@ switch(_operation) do {
         };
         _result;
     };
+    case "resupplyPending": {
+        // #460 Phase B - in-flight LOGCOM replacement requests, keyed
+        // eventID(string) -> [assetHash, requestTime, retryCount]. Lazily created
+        // and returned by reference so callers hashSet/hashGet on it directly.
+        _result = _logic getVariable ["resupplyPending", nil];
+        if (isNil "_result") then {
+            _result = [] call ALIVE_fnc_hashCreate;
+            _logic setVariable ["resupplyPending", _result];
+        };
+        _result;
+    };
 
     // Methods
     case "registerThreat": {
@@ -1513,6 +1529,7 @@ switch(_operation) do {
                 ["ATO - Persistent: %1",[_logic, "persistent"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Create HQ: %1",[_logic, "createHQ"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Place Air Assets: %1",[_logic, "placeAir"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ATO - Resupply: %1",[_logic, "resupply"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Generate Tasks: %1",[_logic, "generateTasks"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Generate SEAD Tasks: %1",[_logic, "generateSEADTasks"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Runway Start Position: %1",[_logic, "runwaystartpos"] call MAINCLASS] call ALiVE_fnc_dump;
@@ -2471,7 +2488,10 @@ switch(_operation) do {
     case "listen": {
         private["_listenerID"];
 
-        _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["ATO_REQUEST","ATO_STATUS_REQUEST","ATO_CANCEL_REQUEST"]]] call ALIVE_fnc_eventLog;
+        // #460 Phase B - LOGISTICS_COMPLETE lets us adopt an airframe LOGCOM delivered
+        // against one of our resupply requests. Every module hears every completion, so
+        // the handler filters by the eventID we stashed in resupplyPending.
+        _listenerID = [ALIVE_eventLog, "addListener",[_logic, ["ATO_REQUEST","ATO_STATUS_REQUEST","ATO_CANCEL_REQUEST","LOGISTICS_COMPLETE"]]] call ALIVE_fnc_eventLog;
         _logic setVariable ["listenerID", _listenerID];
     };
 
@@ -2487,6 +2507,111 @@ switch(_operation) do {
 
             [_logic, _type, _event] call MAINCLASS;
 
+        };
+    };
+
+    // #460 Phase B - adopt an airframe LOGCOM delivered against one of our requests.
+    // NOTE: the case name MUST be the raw event type - handleEvent dispatches
+    // [_logic, _type, _event] straight into this switch.
+    case "LOGISTICS_COMPLETE": {
+
+        private _debug = [_logic, "debug"] call MAINCLASS;
+        private _eventData = [_args, "data"] call ALIVE_fnc_hashGet;
+        if !(_eventData isEqualType []) exitWith {};
+
+        private _eventID = _eventData param [3, ""];
+        private _pending = [_logic, "resupplyPending"] call MAINCLASS;
+        private _entry   = [_pending, str _eventID, []] call ALiVE_fnc_hashGet;
+
+        // Every module hears every completion - anything not ours exits quietly.
+        if !(_entry isEqualType []) exitWith {};
+        if (count _entry == 0) exitWith {};
+
+        // Consume the pending entry now: this completion is ours whether or not the
+        // adoption below succeeds, and a duplicate completion (some transport paths
+        // fire it twice) must not re-run it.
+        private _abandoned = if (count _entry > 3) then {_entry select 3} else {false};
+        [_pending, str _eventID] call ALiVE_fnc_hashRem;
+
+        private _asset     = _entry select 0;
+        private _delivered = _eventData param [5, []];
+
+        // The sweep already gave up on this one and queued a replacement by another route,
+        // so adopting now would leave us a duplicate airframe. ML held these busy for us,
+        // so hand them to OPCOM rather than stranding an aircraft nobody commands.
+        if (_abandoned) exitWith {
+            ["ATO - LOGCOM delivery for event %1 arrived after we gave up on it; releasing rather than orphaning.", _eventID] call ALiVE_fnc_dumpR;
+            {
+                {
+                    private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                    if !(isNil "_p") then { [_p, "busy", false] call ALiVE_fnc_hashSet; };
+                } forEach _x;
+            } forEach _delivered;
+        };
+
+        // Resolve the delivered pair by PROFILE TYPE, not by position - the export is a
+        // nested [entityID, vehicleID] pair and relying on ordering is fragile.
+        private _entityID  = "";
+        private _vehicleID = "";
+        {
+            {
+                private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                if !(isNil "_p") then {
+                    if (([_p, "type"] call ALIVE_fnc_hashGet) == "entity") then {
+                        _entityID = _x;
+                    } else {
+                        _vehicleID = _x;
+                    };
+                };
+            } forEach _x;
+        } forEach _delivered;
+
+        if (_entityID == "") exitWith {
+            ["ATO - LOGCOM delivery for event %1 carried no adoptable crewed airframe; releasing it.", _eventID] call ALiVE_fnc_dumpR;
+            // Don't strand it. ML held these busy for us, so hand back what did arrive
+            // rather than leave an airframe nobody can command.
+            {
+                {
+                    private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                    if !(isNil "_p") then { [_p, "busy", false] call ALiVE_fnc_hashSet; };
+                } forEach _x;
+            } forEach _delivered;
+        };
+
+        // Adopt via the ENTITY profile. registerProfile only stamps crewID (and busies the
+        // crew) on the entity path; adopting the vehicle profile of an already-crewed
+        // airframe leaves crewID unset and the tasking loop rejects it as crew-unavailable.
+        private _baseAirspace = [_asset, "airspace"] call ALiVE_fnc_hashGet;
+        [_logic, "registerProfile", [_entityID, _baseAirspace]] call MAINCLASS;
+
+        // Stand the ML fuel watchdog down - we command this airframe now, and it would
+        // otherwise keep forcing RTB/landing at an ML position and fight our tasking.
+        private _entProfile = [ALIVE_profileHandler, "getProfile", _entityID] call ALIVE_fnc_profileHandler;
+        if !(isNil "_entProfile") then {
+            [_entProfile, "alive_ml_releaseWatchdog", true] call ALiVE_fnc_hashSet;
+        };
+
+        // registerProfile derives startPos/startDir/airportID (and can create a helipad)
+        // from where the airframe currently IS - wherever LOGCOM flew it, not our parking
+        // spot. Restore the lost aircraft's geometry from the stashed asset.
+        private _assets   = [_logic, "assets"] call MAINCLASS;
+        private _aircraft = [_assets, _vehicleID, ""] call ALiVE_fnc_hashGet;
+
+        if (_aircraft isEqualType "") exitWith {
+            ["ATO - adopted %1 for event %2 but no asset was registered against %3.", _entityID, _eventID, _vehicleID] call ALiVE_fnc_dumpR;
+        };
+
+        {
+            private _v = [_asset, _x, "__unset__"] call ALiVE_fnc_hashGet;
+            if !(_v isEqualTo "__unset__") then { [_aircraft, _x, _v] call ALiVE_fnc_hashSet; };
+        } forEach ["startPos","startDir","airportID","helipad","isOnCarrier"];
+
+        // Mirror the self-create tail so the maintenance cycle sees identical state.
+        [_aircraft, "maintenance", time] call ALiVE_fnc_hashSet;
+
+        if (_debug) then {
+            ["ATO - adopted LOGCOM-delivered %1 (entity %2, vehicle %3) for event %4.",
+                [_asset,"vehicleClass"] call ALiVE_fnc_hashGet, _entityID, _vehicleID, _eventID] call ALiVE_fnc_dumpR;
         };
     };
 
@@ -3133,8 +3258,8 @@ switch(_operation) do {
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
                                 ["ATO %1 - ATO request event received", _logic] call ALiVE_fnc_dump;
-                                private _cunt = if (_loaded) then {count (_assets select 1) - 2} else {count (_assets select 1)};
-                                ["ATO - %2 available assets for %1", _side, _cunt] call ALiVE_fnc_dump;
+                                private _assetCount = if (_loaded) then {count (_assets select 1) - 2} else {count (_assets select 1)};
+                                ["ATO - %2 available assets for %1", _side, _assetCount] call ALiVE_fnc_dump;
                                 _event call ALIVE_fnc_inspectHash;
                             };
                             // DEBUG -------------------------------------------------------------------------------------
@@ -3326,56 +3451,117 @@ switch(_operation) do {
                     };
 
                     // if not order new assets from LOGCOM
+                    // #460 Phase B - sweep in-flight LOGCOM replacement requests. Runs before
+                    // the gate below so anything it re-queues is picked up on this same pass.
+                    if ([_logic,"resupply"] call MAINCLASS) then {
+                        private _pendingSweep = [_logic,"resupplyPending"] call MAINCLASS;
+                        // Copy the keys: the loop mutates the hash as it goes.
+                        private _pendingKeys = +(_pendingSweep select 1);
+                        {
+                            private _pkey   = _x;
+                            private _pentry = [_pendingSweep, _pkey, []] call ALiVE_fnc_hashGet;
+
+                            if (_pentry isEqualType [] && {count _pentry >= 3}) then {
+                                private _pAsset     = _pentry select 0;
+                                private _pTime      = _pentry select 1;
+                                private _pRetries   = _pentry select 2;
+                                private _pAbandoned = if (count _pentry > 3) then {_pentry select 3} else {false};
+                                private _age        = time - _pTime;
+
+                                if (_pAbandoned) then {
+
+                                    // Already given up on. Keep the entry a while longer so a late
+                                    // delivery can still be reconciled (released rather than left
+                                    // holding busy forever), then purge it.
+                                    if (_age > (ATO_RESUPPLY_TIMEOUT * 2)) then {
+                                        [_pendingSweep, _pkey] call ALiVE_fnc_hashRem;
+                                    };
+
+                                } else {
+
+                                    if (_age > ATO_RESUPPLY_TIMEOUT) then {
+
+                                        // Flag rather than delete, so a late arrival is still recognised.
+                                        [_pendingSweep, _pkey, [_pAsset, _pTime, _pRetries + 1, true]] call ALiVE_fnc_hashSet;
+
+                                        if (_pRetries < 1) then {
+                                            // One more attempt through LOGCOM - a transient blockage
+                                            // (pool briefly empty, no route) usually clears.
+                                            [_logic,"resupplyList",_pAsset] call MAINCLASS;
+                                            ["ATO - LOGCOM replacement for %1 timed out (event %2); retrying once.",
+                                                [_pAsset,"vehicleClass"] call ALiVE_fnc_hashGet, _pkey] call ALiVE_fnc_dumpR;
+                                        } else {
+                                            // Second failure: fall back to the proven self-create path
+                                            // so the air campaign never silently grinds down.
+                                            [_pAsset,"forceSelfCreate",true] call ALiVE_fnc_hashSet;
+                                            [_logic,"resupplyList",_pAsset] call MAINCLASS;
+                                            ["ATO - LOGCOM replacement for %1 timed out twice (event %2); self-creating instead.",
+                                                [_pAsset,"vehicleClass"] call ALiVE_fnc_hashGet, _pkey] call ALiVE_fnc_dumpR;
+                                        };
+                                    };
+                                };
+                            };
+                        } forEach _pendingKeys;
+                    };
+
                     if ([_logic,"resupply"] call MAINCLASS && {count ([_logic,"resupplyList"] call MAINCLASS) > 0}) then {
 
                         // Order 1 asset each go around, first in first out!
                         private _resupplyList = [_logic,"resupplyList"] call MAINCLASS;
                         private _asset = _resupplyList deleteAt 0;
 
-                        private _implemented = false; // remove once LOGCOM integration done
+                        private _side = [_logic,"side"] call MAINCLASS;
+                        private _debug = [_logic,"debug"] call MAINCLASS;
 
-                        if (["ALiVE_MIL_LOGISTICS"] call ALiVE_fnc_isModuleAvailable && _implemented) then {
+                        // #460 Phase B - route replacement airframes through LOGCOM when a
+                        // mil_logistics module is present (and the asset isn't carrier-based,
+                        // which LOGCOM's ground/air delivery can't service). Otherwise fall
+                        // through to the proven self-create path in the else below.
+                        private _useLogcom = (["ALiVE_MIL_LOGISTICS"] call ALiVE_fnc_isModuleAvailable)
+                            && {!([_asset,"isOnCarrier",false] call ALiVE_fnc_hashGet)}
+                            // Set by the sweep after LOGCOM failed us twice - take the proven path.
+                            && {!([_asset,"forceSelfCreate",false] call ALiVE_fnc_hashGet)};
+
+                        if (_useLogcom) then {
 
                             private _base = [_logic,"HQBuilding",nil] call MAINCLASS;
 
-                            if (isnil "_base") exitwith {
-                                if (_debug) then {["ATO - Requesting reinforcments for side %1 not possible! No position secured!",_side] call ALiVE_fnc_dumpR};
+                            if (isNil "_base") exitWith {
+                                if (_debug) then {["ATO - LOGCOM resupply for side %1 held: no secured HQ position yet.",_side] call ALiVE_fnc_dumpR};
+                                // Re-queue the asset so the replacement isn't lost while the HQ is unsecured.
+                                [_logic,"resupplyList",_asset] call MAINCLASS;
                             };
 
-                            [_base,_resupplyAsset] spawn {
+                            private _vehicleClass = [_asset,"vehicleClass"] call ALiVE_fnc_hashGet;
+                            private _position = position _base;
 
-                                private _base = _this select 0;
-                                private _asset = _this select 1;
-                                private _side = [_logic,"side"] call MAINCLASS;
-                                private _factions = [_logic,"factions"] call MAINCLASS;
-                                private _debug = [_logic,"debug"] call MAINCLASS;
-
-                                private _position = position _base;
-                                private _vehicleClass = [_asset,"vehicleClass"] call ALiVE_fnc_hashGet;
-                                private _faction = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "faction");
-
-                                private _plane = if (_vehicleClass isKindOf "Plane") then {1} else {0};
-                                private _heli = if (_vehicleClass isKindOf "Helicopter") then {1} else {0};
-
-                                private _forceMakeup = [
-                                    0,              //infantry
-                                    0,              //motorized
-                                    0,              //mechanized
-                                    0,              //armoured
-                                    _plane,         //planes
-                                    _heli           //helicopters
-                                ];
-
-                                _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,"STANDARD"],"ATO"] call ALIVE_fnc_event;
-                                _eventID = [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
-
-                                // Store the eventID so we can react once the airframe is delivered.
-                                [_asset, "eventID", _eventID] call ALiVE_fnc_hashSet;
-
-                                if (_debug) then {
-                                    ["ATO - FORCEMAKEUP DATA %1 ", _forceMakeup] call ALiVE_fnc_dumpR;
-                                };
+                            // Request from the ATO's own faction - a third-party config faction
+                            // (e.g. BLU_F on an RHS OPCOM) would be dropped by LOGCOM's routing.
+                            private _factions = [_logic,"factions"] call MAINCLASS;
+                            private _faction = getText(configFile >> "CfgVehicles" >> _vehicleClass >> "faction");
+                            if (count _factions > 0) then {
+                                private _f0 = _factions select 0;
+                                _faction = if (_f0 isEqualType "") then {_f0} else {(_f0 select 1) select 0};
                             };
+
+                            private _plane = if (_vehicleClass isKindOf "Plane") then {1} else {0};
+                            private _heli  = if (_vehicleClass isKindOf "Helicopter") then {1} else {0};
+                            private _forceMakeup = [0,0,0,0,_plane,_heli];
+
+                            private _event = ['LOGCOM_REQUEST', [_position,_faction,_side,_forceMakeup,"STANDARD"], "ATO"] call ALIVE_fnc_event;
+                            // Carry the exact lost class so LOGCOM builds that airframe, not a random one.
+                            [_event, "requestVehicleClass", _vehicleClass] call ALiVE_fnc_hashSet;
+                            private _eventID = [ALIVE_eventLog, "addEvent", _event] call ALIVE_fnc_eventLog;
+
+                            // Track the pending request; the completion handler + timeout sweep
+                            // (later increments) correlate the delivery back to this asset by eventID.
+                            private _pending = [_logic,"resupplyPending"] call MAINCLASS;
+                            [_pending, str _eventID, [_asset, time, 0, false]] call ALiVE_fnc_hashSet;
+
+                            if (_debug) then {
+                                ["ATO - LOGCOM resupply requested: class %1, faction %2, eventID %3", _vehicleClass, _faction, _eventID] call ALiVE_fnc_dumpR;
+                            };
+
                         } else {
 
                             // If not LOGCOM, create asset and add a maintenance time

@@ -1091,6 +1091,16 @@ switch(_operation) do {
                     _active = false;
                 };
 
+                // #460 - once another module (e.g. ATO) adopts this airframe it becomes the
+                // sole commander; this watchdog would otherwise keep forcing RTB/landing at
+                // an ML position and fight the new owner's tasking. The adopting module sets
+                // this flag on the profile and we stand down on the next tick.
+                if ([_profile, "alive_ml_releaseWatchdog", false] call ALIVE_fnc_hashGet) exitWith {
+                    ["ML - spawnHelicopterFuelWatchdog: Profile %1 adopted by another module, standing down",
+                        _profileID] call ALiVE_fnc_dump;
+                    _active = false;
+                };
+
                 private _isActive = _profile select 2 select 1;
 
                 if (_isActive) then {
@@ -5007,6 +5017,12 @@ switch(_operation) do {
                         //Restricted to opcom calls as the player logistic requests are made different
                         _eventForceMakeup = (_eventData select 3) apply { _x max 0 };
 
+                        // #460 - a MACC/ATO replacement is a specific 1-for-1 airframe swap,
+                        // distinct from OPCOM air reinforcement, so the module's
+                        // allowPlane/allowHeliReinforcement toggles (aimed at OPCOM) must not
+                        // zero it. Identified by the request's 'from' tag.
+                        private _atoRequest = (([_event, "from", ""] call ALIVE_fnc_hashGet) == "ATO");
+
                         _allowInfantry = [_logic, "allowInfantryReinforcement"] call MAINCLASS;
                         _allowMechanised = [_logic, "allowMechanisedReinforcement"] call MAINCLASS;
                         _allowMotorised = [_logic, "allowMotorisedReinforcement"] call MAINCLASS;
@@ -5046,12 +5062,12 @@ switch(_operation) do {
                             _eventForceMakeup set [3,0];
                         };
 
-                        if!(_allowPlane) then {
+                        if (!_allowPlane && !_atoRequest) then {
                             _forceMakeupTotal = _forceMakeupTotal - _eventForcePlane;
                             _eventForceMakeup set [4,0];
                         };
 
-                        if!(_allowHeli) then {
+                        if (!_allowHeli && !_atoRequest) then {
                             _forceMakeupTotal = _forceMakeupTotal - _eventForceHeli;
                             _eventForceMakeup set [5,0];
                         };
@@ -5904,8 +5920,17 @@ switch(_operation) do {
                         // 8. Distance >= 1500m                     -> HELI_INSERT
                         // ---------------------------------------------------------------
 
-                        if (!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) then {
-                            ["ML - TEST BYPASS: Preserving requested eventType=%1, skipping delivery type decision.", _eventType] call ALiVE_fnc_dump;
+                        // #460 - an ATO airframe replacement carries no troops to insert, so the
+                        // delivery-type decision below (which routes INFANTRY via HELI_INSERT /
+                        // HELI_PARADROP) must not re-type it. Re-typing to HELI_PARADROP silently
+                        // skips BOTH dedicated aircraft-creation blocks (each gated on
+                        // STANDARD/HELI_INSERT), so the event builds nothing and dies with
+                        // "No reinforcements have been created!".
+                        private _atoRequest = (([_event, "from", ""] call ALIVE_fnc_hashGet) == "ATO");
+
+                        if ((!isNil "ALIVE_ML_TEST_REQUEST" && { ALIVE_ML_TEST_REQUEST == _eventID }) || _atoRequest) then {
+                            ["ML - Preserving requested eventType=%1 (%2), skipping delivery type decision.",
+                                _eventType, if (_atoRequest) then {"ATO airframe replacement"} else {"TEST BYPASS"}] call ALiVE_fnc_dump;
                         } else {
                         private _reserveCount = [_reinforcementAnalysis, "reserveCount", 99] call ALIVE_fnc_hashGet;
                         private _hasVehicles  = (_eventForceMechanised > 0 || _eventForceMotorised > 0);
@@ -7615,6 +7640,15 @@ switch(_operation) do {
                             _planeClasses = _planeClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
                             _planeClasses = [_planeClasses, "", ([_logic, "excludeKinds"] call MAINCLASS), "vehicles"] call ALIVE_fnc_MLExcludeKindsFilter;
 
+                            // #460 - honour a caller-specified airframe (an ATO replacement asking
+                            // for the exact aircraft that was lost). Overrides the random pick and
+                            // bypasses the empty-list gate when findVehicleType has nothing for the
+                            // faction. Set as a by-name key on the request event by the caller.
+                            private _requestedClass = [_event, "requestVehicleClass", ""] call ALIVE_fnc_hashGet;
+                            if (_requestedClass != "" && {_requestedClass isKindOf "Plane"}) then {
+                                _planeClasses = [_requestedClass];
+                            };
+
                             for "_i" from 0 to _eventForcePlane -1 do {
 
                                 _position = [_logic, "findHelicopterLandingPos", [
@@ -7677,6 +7711,12 @@ switch(_operation) do {
                             _heliClasses = [0,_eventFaction,"Helicopter"] call ALiVE_fnc_findVehicleType;
                             _heliClasses = _heliClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
                             _heliClasses = [_heliClasses, "", ([_logic, "excludeKinds"] call MAINCLASS), "vehicles"] call ALIVE_fnc_MLExcludeKindsFilter;
+
+                            // #460 - honour a caller-specified airframe (ATO replacement); see the plane block above.
+                            private _requestedClass = [_event, "requestVehicleClass", ""] call ALIVE_fnc_hashGet;
+                            if (_requestedClass != "" && {_requestedClass isKindOf "Helicopter"}) then {
+                                _heliClasses = [_requestedClass];
+                            };
 
                             for "_i" from 0 to _eventForceHeli -1 do {
 
@@ -9179,18 +9219,31 @@ switch(_operation) do {
 
                 _position = [_eventPosition] call ALIVE_fnc_getClosestRoad;
 
-                _positionSeries = [_position,300,_countProfiles,false] call ALIVE_fnc_getSeriesRoadPositions;
+                // #460 - an air-only request (e.g. an ATO replacement airframe) carries
+                // zero ground cargo, so there is no road series to build; calling
+                // getSeriesRoadPositions with count 0 does no useful work and would leave
+                // finalDestination nil (which then breaks setEventProfilesAvailable). Guard
+                // it and point the destination at the requested position - the air profiles
+                // fly themselves in via their own creation-time waypoints.
+                _positionSeries = [];
+                if (_countProfiles > 0) then {
+                    _positionSeries = [_position,300,_countProfiles,false] call ALIVE_fnc_getSeriesRoadPositions;
 
-                if((count _positionSeries) < _countProfiles) then {
-                    for "_i" from 0 to _countProfiles -1 do {
-                        _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
-                        _positionSeries set [_i, _position];
+                    if((count _positionSeries) < _countProfiles) then {
+                        for "_i" from 0 to _countProfiles -1 do {
+                            _position = _eventPosition getPos [random(DESTINATION_VARIANCE), random(360)];
+                            _positionSeries set [_i, _position];
+                        };
                     };
                 };
 
                 _seriesIndex = 0;
 
-                [_event, "finalDestination", _positionSeries select 0] call ALIVE_fnc_hashSet;
+                if (count _positionSeries > 0) then {
+                    [_event, "finalDestination", _positionSeries select 0] call ALIVE_fnc_hashSet;
+                } else {
+                    [_event, "finalDestination", _eventPosition] call ALIVE_fnc_hashSet;
+                };
 
                 {
 
@@ -13680,7 +13733,7 @@ switch(_operation) do {
             // All infantry (heli-inserted and paradropped) garrison at their drop-off point
             // so they hold the area rather than standing idle waiting for OPCOM orders.
             private _garrisonPos = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
-            if (isNil "_garrisonPos" || count _garrisonPos == 0) then {
+            if (isNil "_garrisonPos" || {count _garrisonPos == 0}) then {
                 _garrisonPos = _eventPosition;
             };
 
@@ -13748,25 +13801,39 @@ switch(_operation) do {
 
             } forEach _motorisedProfiles;
 
-            {
+            // #460 - an ATO airframe replacement must NOT be released to OPCOM; ATO adopts
+            // it through its own LOGISTICS_COMPLETE handler. ML already creates these
+            // profiles busy=true, so SKIPPING the release simply preserves that and closes
+            // the ownership race outright - there is no flip and therefore no window for
+            // OPCOM (a poll consumer of the busy flag) to claim the airframe first.
+            private _atoRequest = (([_event, "from", ""] call ALIVE_fnc_hashGet) == "ATO");
+
+            if (!_atoRequest) then {
                 {
-                    _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                    if!(isNil "_profile") then {
-                        [_profile,"busy",false] call ALIVE_fnc_hashSet;
-                    };
-                } forEach _x;
+                    {
+                        _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                        if!(isNil "_profile") then {
+                            [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                        };
+                    } forEach _x;
 
-            } forEach _planeProfiles;
+                } forEach _planeProfiles;
 
-            {
                 {
-                    _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
-                    if!(isNil "_profile") then {
-                        [_profile,"busy",false] call ALIVE_fnc_hashSet;
-                    };
-                } forEach _x;
+                    {
+                        _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                        if!(isNil "_profile") then {
+                            [_profile,"busy",false] call ALIVE_fnc_hashSet;
+                        };
+                    } forEach _x;
 
-            } forEach _heliProfiles;
+                } forEach _heliProfiles;
+            } else {
+                if (_debug) then {
+                    ["ML - setEventProfilesAvailable: holding %1 air profile group(s) busy for ATO adoption (event %2)",
+                        (count _planeProfiles) + (count _heliProfiles), _eventID] call ALiVE_fnc_dump;
+                };
+            };
 
 
             // -----------------------------------------------------------------
@@ -13812,7 +13879,14 @@ switch(_operation) do {
 
             // dispatch event
             _finalDestination = [_event, "finalDestination"] call ALIVE_fnc_hashGet;
-            _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID,_eventType],"Logistics"] call ALIVE_fnc_event;
+            // #460 - carry the delivered air profiles so a requester (ATO) can adopt the
+            // airframe. Each entry is a nested [entityID, vehicleID] pair as built by the
+            // dedicated plane/heli blocks. Appended as index 5: every existing consumer
+            // reads select 0..4 only, so they are unaffected. The other LOGISTICS_COMPLETE
+            // emit sites are player/payload paths ATO never reaches; a reader there simply
+            // gets no index 5 and should default it.
+            private _deliveredAir = _planeProfiles + _heliProfiles;
+            _logEvent = ['LOGISTICS_COMPLETE', [_finalDestination,_eventFaction,_side,_eventID,_eventType,_deliveredAir],"Logistics"] call ALIVE_fnc_event;
             [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
 
             // Arrival summary -- always logged

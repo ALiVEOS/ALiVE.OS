@@ -300,7 +300,7 @@
     <Russian>Разрешить вертолёты:</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_HELI_COMMENT">
-    <English>Allow helicopters reinforcements</English>
+    <English>Allow helicopter reinforcements. MACC (Air Tasking Orders) aircraft replacements are delivered regardless of this setting.</English>
     <Chinese>允許直升機增援</Chinese>
     <Chinesesimp>允许直升机增援</Chinesesimp>
     <Spanish>Permite refuerzos en helicóptero</Spanish>
@@ -318,7 +318,7 @@
     <Russian>Разрешить самолёты:</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_ALLOW_PLANE_COMMENT">
-    <English>Allow planes reinforcements</English>
+    <English>Allow plane reinforcements. MACC (Air Tasking Orders) aircraft replacements are delivered regardless of this setting.</English>
     <Chinese>允許飛機增援</Chinese>
     <Chinesesimp>允许飞机增援</Chinesesimp>
     <Spanish>Permite refuerzos en avión</Spanish>
