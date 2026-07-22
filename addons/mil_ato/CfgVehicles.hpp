@@ -79,17 +79,24 @@ class CfgVehicles
                 };
                 // ---- Air Operations ------------------------------------------------
                 class HDR_OPS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_OPS"; displayName = "AIR OPERATIONS"; };
-                class types : Edit
+                // Multi-select picker rather than a free-text array. The old Edit
+                // asked the mission maker to hand-type ['CAP','DCA',...]; a typo
+                // silently disabled a mission type with no feedback, and the bare
+                // acronyms explained nothing. Stored as CSV of the same tokens.
+                //
+                // OCA is included: it is fully implemented and the AI commander
+                // raises it against enemy airfields, but it was missing from the
+                // old default, so Editor-placed modules dropped those requests
+                // without a word. AS is absent - it has no implementation at all.
+                class types
                 {
-                        property = "ALiVE_mil_ato_types";
-                        displayName = "$STR_ALIVE_ATO_TYPES";
-                        tooltip = "$STR_ALIVE_ATO_TYPES_COMMENT";
-                        // OCA is fully implemented and the AI commander raises it against
-                        // enemy airfields, but it was missing here while the code-side
-                        // default included it - so every Editor-placed module silently
-                        // dropped those requests. AS is deliberately NOT listed: it has no
-                        // implementation and nothing raises it.
-                        defaultValue = """['CAP','DCA','SEAD','CAS','Strike','Recce','OCA']""";
+                        property     = "ALiVE_mil_ato_types";
+                        displayName  = "$STR_ALIVE_ATO_TYPES";
+                        tooltip      = "$STR_ALIVE_ATO_TYPES_COMMENT";
+                        control      = "ALiVE_ATOTypeChoiceMulti";
+                        typeName     = "STRING";
+                        expression   = "_this setVariable ['types', _value];";
+                        defaultValue = """CAP,DCA,SEAD,CAS,Strike,Recce,OCA""";
                 };
                 class airspace : Edit
                 {
@@ -146,16 +153,21 @@ class CfgVehicles
                             class Yes { name = "Yes"; value = true; };
                         };
                 };
+                // Defaults to Yes. Ground forces are reinforced through the Logistics
+                // Commander as a matter of course, so air was the only arm that could
+                // only ever shrink - every loss permanent, and a commander with nothing
+                // left refuses every request for the rest of the mission. A default that
+                // steers long campaigns toward that dead end is the wrong one.
                 class Resupply : Combo
                 {
                         property = "ALiVE_mil_ato_Resupply";
                         displayName = "$STR_ALIVE_ATO_RESUPPLY";
                         tooltip = "$STR_ALIVE_ATO_RESUPPLY_COMMENT";
-                        defaultValue = """false""";
+                        defaultValue = """true""";
                         class Values
                         {
-                            class Yes { name = "Yes"; value = true; };
-                            class No { name = "No"; value = false; default = 1; };
+                            class Yes { name = "Yes"; value = true; default = 1; };
+                            class No { name = "No"; value = false; };
                         };
                 };
                 class broadcastOnRadio : Combo
@@ -169,6 +181,32 @@ class CfgVehicles
                             class Yes { name = "Yes"; value = true; default = 1; };
                             class No { name = "No"; value = false; };
                         };
+                };
+                // Tempo controls. Both blank by default and blank means "as before",
+                // so an untouched mission is byte-identical in behaviour.
+                class sortieDuration : Edit
+                {
+                        property = "ALiVE_mil_ato_sortieDuration";
+                        displayName = "$STR_ALIVE_ATO_SORTIE_DURATION";
+                        tooltip = "$STR_ALIVE_ATO_SORTIE_DURATION_COMMENT";
+                        defaultValue = """""";
+                };
+                class minAssetsForOffensive : Edit
+                {
+                        property = "ALiVE_mil_ato_minAssetsForOffensive";
+                        displayName = "$STR_ALIVE_ATO_MIN_ASSETS";
+                        tooltip = "$STR_ALIVE_ATO_MIN_ASSETS_COMMENT";
+                        defaultValue = """""";
+                };
+                // Aircrew, not runway geometry - this was previously filed under the
+                // runway section, where nobody would think to look for it.
+                class pilotbuilding : Edit
+                {
+                        property = "ALiVE_mil_ato_pilotbuilding";
+                        displayName = "$STR_ALIVE_ATO_PILOTBUILDING";
+                        tooltip = "$STR_ALIVE_ATO_PILOTBUILDING_COMMENT";
+                        defaultValue = """""";
+                        typeName = "STRING";
                 };
                 // ---- Objective Objects (#875) ---------------------------------------
                 class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
@@ -211,16 +249,12 @@ class CfgVehicles
                         expression   = "_this setVariable ['objectiveObjects', _value];";
                         defaultValue = """""";
                 };
-                // ---- Runway Configuration ------------------------------------------
-                class HDR_RUNWAY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_RUNWAY"; displayName = "RUNWAY CONFIGURATION"; };
-                class pilotbuilding : Edit
-                {
-                        property = "ALiVE_mil_ato_pilotbuilding";
-                        displayName = "$STR_ALIVE_ATO_PILOTBUILDING";
-                        tooltip = "$STR_ALIVE_ATO_PILOTBUILDING_COMMENT";
-                        defaultValue = """""";
-                        typeName = "STRING";
-                };
+                // ---- Advanced airfield overrides -----------------------------------
+                // Rarely needed. ALiVE already detects real runways and taxiways by itself
+                // (see ALiVE_fnc_getAirfieldGeometry); these exist only for terrains where
+                // that detection falls short. They feed composition and parking exclusion -
+                // they do NOT decide where aircraft take off and land.
+                class HDR_RUNWAY : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_RUNWAY"; displayName = "ADVANCED - AIRFIELD OVERRIDES"; };
                 class runwaystartpos : Edit
                 {
                         property = "ALiVE_mil_ato_runwaystartpos";

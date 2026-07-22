@@ -50,7 +50,10 @@ Tupolov & Jman
 // gated on _playerRequested), so a request that dies quietly - force pool exhausted,
 // no valid class for the faction, event cancelled - can only be detected by timeout.
 #define ATO_RESUPPLY_TIMEOUT 1800
-#define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","Strike","Recce","AS","OCA"]
+// "AS" was listed here for years but has no implementation anywhere - no branch
+// in any switch, and nothing raises it - so it fell through to a plain loiter.
+// Removed so this agrees with the Eden picker, which only offers types that exist.
+#define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","Strike","Recce","OCA"]
 #define DEFAULT_REGISTRY_ID ""
 #define DEFAULT_OP_HEIGHT 750
 #define DEFAULT_OP_DURATION 25
@@ -617,7 +620,9 @@ switch(_operation) do {
         if (_args isEqualType true) then {
             _logic setVariable ["broadcastOnRadio", _args];
         } else {
-            _args = _logic getVariable ["broadcastOnRadio", false];
+            // Default true to match the Eden default - a scripted module used to get
+            // the opposite behaviour to an Editor-placed one with nothing reporting it.
+            _args = _logic getVariable ["broadcastOnRadio", true];
         };
         if (_args isEqualType "") then {
                 if(_args == "true") then {_args = true;} else {_args = false;};
@@ -631,7 +636,9 @@ switch(_operation) do {
         if (_args isEqualType true) then {
             _logic setVariable ["createHQ", _args];
         } else {
-            _args = _logic getVariable ["createHQ", false];
+            // Default true to match the Eden default - a scripted module used to get
+            // the opposite behaviour to an Editor-placed one with nothing reporting it.
+            _args = _logic getVariable ["createHQ", true];
         };
         if (_args isEqualType "") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
@@ -695,7 +702,11 @@ switch(_operation) do {
         if (_args isEqualType true) then {
             _logic setVariable [_operation, _args];
         } else {
-            _args = _logic getVariable [_operation, false];
+            // Default true, matching the Eden default. Keeping these two apart is
+            // exactly what made offensive counter-air unreachable for years: an
+            // Editor-placed module took one default and a scripted one took the
+            // other, and nothing reported the difference.
+            _args = _logic getVariable [_operation, true];
         };
         if (_args isEqualType "") then {
             if (_args == "true") then {
@@ -756,7 +767,39 @@ switch(_operation) do {
     };
     case "types": {
         if(_args isEqualType "") then {
-            _logic setVariable [_operation, call compile _args];
+            // Accepts the Eden picker's CSV ("CAP,DCA,Strike") and the legacy
+            // hand-typed array literal ("['CAP','DCA']") alike. Parsed rather
+            // than compiled: this text comes straight from a mission file, and
+            // one stray character used to take the module out with a compile
+            // error instead of simply being ignored.
+            //
+            // Tokens are matched case-insensitively but stored in canonical
+            // case, because the request gate is an exact `_eventType in _types`
+            // match and "Strike"/"Recce" are title case. Anything not a known
+            // type is dropped rather than poisoning the list.
+            private _parsed = [];
+            {
+                private _token = toLower _x;
+                if (_token != "") then {
+                    {
+                        if (toLower _x == _token && {!(_x in _parsed)}) then {
+                            _parsed pushBack _x;
+                        };
+                    } forEach DEFAULT_ATO_TYPES;
+                };
+            } forEach (_args splitString "[]""', ");
+
+            // An empty result means one of two very different things. Nothing
+            // selected in the picker is a deliberate "fly nothing" and is
+            // honoured. Text that produced no recognisable type is a mistake -
+            // fall back to the full set and say so, rather than silently
+            // grounding the commander for the whole mission.
+            if (count _parsed == 0 && {_args != ""}) then {
+                ["ATO %1 - Warning, no recognisable mission types in %2. Using the full set instead.", _logic, str _args] call ALiVE_fnc_dumpR;
+                _parsed = DEFAULT_ATO_TYPES;
+            };
+
+            _logic setVariable [_operation, _parsed];
         };
         if(_args isEqualType []) then {
             _logic setVariable [_operation, _args];
@@ -783,6 +826,18 @@ switch(_operation) do {
     };
     case "objectiveObjectsCount": {
         _result = [_logic, _operation, _args, "0"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // Minutes allowed for a sortie. Blank or 0 keeps whatever the requesting
+    // commander asked for. This single number drives the wait-for-pilot abort,
+    // the target waypoint timeout, the force-launch nudge and the return-to-base
+    // deadline, so it is the module's main tempo control.
+    case "sortieDuration": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // Airframes remaining at or below which offensive tasking is suspended in
+    // favour of defensive patrols. Blank or 0 keeps the built-in behaviour.
+    case "minAssetsForOffensive": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
     case "objectiveObjectsChance": {
         _result = [_logic, _operation, _args, "100"] call ALIVE_fnc_OOsimpleOperation;
@@ -1524,6 +1579,21 @@ switch(_operation) do {
 
             [_logic,"enemyFactions",_enemyFactions] call MAINCLASS;
             [_logic,"enemySides",_sidesEnemy] call MAINCLASS;
+
+            // Drop airspace markers that do not exist. A misspelled name used to survive
+            // all the way to the cluster lookups, which then found nothing and aborted
+            // startup with only a log line - so the commander simply never ran, with no
+            // HQ, no aircraft and no tasking. Filtering here lets the whole-map fallback
+            // below take over, so a typo costs the intended boundary rather than the
+            // entire module.
+            if (count _airspace > 0) then {
+                private _validAirspace = _airspace select {markerShape _x != ""};
+                if (count _validAirspace < count _airspace) then {
+                    ["ATO %1 - Warning, airspace marker(s) %2 do not exist and have been ignored. Check the spelling in this module's Airspace Markers setting.", _logic, str (_airspace - _validAirspace)] call ALiVE_fnc_dumpR;
+                    _airspace = _validAirspace;
+                    [_logic, "airspace", _airspace] call MAINCLASS;
+                };
+            };
 
             // If no airspace marker, then use the whole map
             if (count _airspace == 0) then {
@@ -2483,19 +2553,22 @@ switch(_operation) do {
 
             private _message = format[localize "STR_ALIVE_ATO_ESTABLISHED", _HQ, _factionName, _location];
 
-            // If no air assets, exit
-            if (count (([_logic, "assets"] call MAINCLASS) select 1) == 0) exitWith {
-                ["ATO %1 - Warning, air operations are being suspended as there are no available air assets within the airspace.", _logic] call ALiVE_fnc_dump;
+            // If no air assets, say so - but do NOT stop here
+            if (count (([_logic, "assets"] call MAINCLASS) select 1) == 0) then {
+                ["ATO %1 - Warning, no air assets found within the airspace. Requests will be refused until aircraft are available. Check this module's faction, its airspace markers, and that armed aircraft of that faction start inside them.", _logic] call ALiVE_fnc_dumpR;
                 _message = format[localize "STR_ALIVE_ATO_NOT_ESTABLISHED", _HQ, _factionName];
-                private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
-                [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
             };
 
             // send a message to all side players from HQ
             private _radioBroadcast = [objNull,_message,"side",_sideObject,false,false,false,true,_hqClass];
             [_side,_radioBroadcast] call ALIVE_fnc_radioBroadcastToSide;
 
-            // Start main processes
+            // Start main processes even when the roster came up empty. This used to exit
+            // early, which left the commander deaf for the rest of the mission: it never
+            // subscribed to the event bus at all, so requests went unanswered rather than
+            // refused, and nothing delivered later could ever be taken on. Starting the
+            // listener regardless costs nothing - with no aircraft the request gate simply
+            // declines every request, which is the behaviour a mission maker expects.
             // start listening for ATO events
             [_logic,"listen"] call MAINCLASS;
 
@@ -3243,6 +3316,21 @@ switch(_operation) do {
 
                             _available = true;
 
+                            // Apply this module's sortie duration override, if it has one.
+                            // The requesting commander proposes a duration (index 6 of the
+                            // ATO argument array) and every sortie timer is derived from it,
+                            // so overriding here sets the tempo for the whole module in one
+                            // place. Blank or zero leaves the requester's value untouched.
+                            private _sortieDuration = parseNumber ([_logic,"sortieDuration"] call MAINCLASS);
+                            if (_sortieDuration > 0) then {
+                                private _atoArgs = _eventData select 4;
+                                if (!isNil "_atoArgs" && {_atoArgs isEqualType []} && {count _atoArgs > 6}) then {
+                                    _atoArgs set [6, _sortieDuration];
+                                    _eventData set [4, _atoArgs];
+                                    [_event, "data", _eventData] call ALIVE_fnc_hashSet;
+                                };
+                            };
+
                             // set the state of the event
                             [_event, "state", "requested"] call ALIVE_fnc_hashSet;
 
@@ -3439,8 +3527,18 @@ switch(_operation) do {
                         _available = false;
                     };
 
-                    // Check to see the current state of air assets, if less than 2 restrict ATOs
-                    if ((_loaded && count (_assets select 1) <= 4) || (!_loaded && count (_assets select 1) <= 2) ) then {
+                    // Airframe count at or below which offensive tasking is suspended in
+                    // favour of defensive patrols. Blank keeps the original behaviour -
+                    // 4 when the roster came back from persistence, 2 otherwise - so an
+                    // untouched mission behaves exactly as before.
+                    private _minAssets = parseNumber ([_logic,"minAssetsForOffensive"] call MAINCLASS);
+                    if (_minAssets <= 0) then {
+                        _minAssets = if (_loaded) then {4} else {2};
+                    };
+                    private _assetsRemaining = count (_assets select 1);
+
+                    // Check to see the current state of air assets, if scarce restrict ATOs
+                    if (_assetsRemaining <= _minAssets) then {
                         private _types = [_logic, "types"] call MAINCLASS;
 
                         // Remember the unrestricted list the first time we restrict so it can
@@ -3474,7 +3572,7 @@ switch(_operation) do {
 
                     };
 
-                    if ( (!_loaded && count (_assets select 1) > 2) || (_loaded && count (_assets select 1) > 4) ) then {
+                    if (_assetsRemaining > _minAssets) then {
 
                         // Only restore if we actually saved something. Passing [] to the accessor
                         // here used to SET origTypes to an empty list and then reseed it from the

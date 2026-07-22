@@ -15,123 +15,118 @@
     <Chinesesimp>启用调试</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_DEBUG_COMMENT">
-    <English>Enables Module Debug</English>
-    <Chinesesimp>启用模块调试</Chinesesimp>
+    <English>Verbose logging to the RPT file, plus map markers at the HQ, field HQ and hangar positions this module picks. Those markers are global - every player sees them, not just admins - and are never removed, so leave this off for live missions.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_PERSISTENT">
     <English>Persistent:</English>
     <Chinesesimp>持久的</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PERSISTENT_COMMENT">
-    <English>Enables external Database persistence</English>
-    <Chinesesimp>启用外部数据库持久性</Chinesesimp>
+    <English>Saves this module's aircraft roster - which aircraft exist and which airspace each belongs to - to the ALiVE database between sessions. Turning it on for any one MACC saves the roster for all of them. The HQ, runway overrides and any tasking in progress are never saved and are worked out fresh on every load.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO">
     <English>Radio Messages:</English>
     <Chinesesimp>无线电信息</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO_COMMENT">
-    <English>Broadcast radio messages on ATO activity</English>
-    <Chinesesimp>广播ATO活动的无线电信息</Chinesesimp>
+    <English>HQ radio traffic, heard only by players on this module's own side: mission acknowledged or denied, aircraft lost, and base compromised. No silences all of it except the one-off 'forward airbase established' call at mission start, which always plays.</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_SORTIE_DURATION">
+    <English>Sortie Duration:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_SORTIE_DURATION_COMMENT">
+    <English>Minutes a sortie is allowed to run before the aircraft is recalled, in whole minutes. This also sets how long an aircraft waits for its pilot and how long it loiters on task. Leave blank to use whatever the requesting commander asks for, which is usually 10.</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_MIN_ASSETS">
+    <English>Minimum Aircraft For Offensive Missions:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_MIN_ASSETS_COMMENT">
+    <English>Once this many aircraft or fewer remain, the commander stops flying offensive missions and keeps only Combat Air Patrol and Defensive Counter-Air until numbers recover. Leave blank for the default, which is 4 aircraft when the roster was restored from a save and 2 otherwise.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_PILOTBUILDING">
     <English>Pilot Ready Room:</English>
     <Chinesesimp>飞行员准备室</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PILOTBUILDING_COMMENT">
-    <English>Pilots will spawn in this building classname. Place building on map.</English>
-    <Chinesesimp>飞行员将在此建筑类名中生成</Chinesesimp>
+    <English>Classname of a building within 50 m of this module where replacement aircrew appear, for example Land_Cargo_House_V3_F. Leave blank to pick a nearby building automatically. A classname that matches nothing within 50 m puts the crew out in the open at the module's own position, which is worse than leaving it blank.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS">
     <English>Runway start position:</English>
     <Chinesesimp>跑道起始位置:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS_COMMENT">
-    <English>Defines blacklist marker start position coords for runway. Format: [x,y,z]</English>
-    <Chinesesimp>定义跑道的黑名单标记起始位置线,格式:[x, y, z]</Chinesesimp>
+    <English>Advanced override. One end of the runway centreline, format [x,y,z]. Stops other ALiVE systems placing compositions on the runway - it does not affect where aircraft take off or land. Leave blank: ALiVE detects real runways and taxiways on its own.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYENDPOS">
     <English>Runway end position:</English>
     <Chinesesimp>跑道终点位置:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYENDPOS_COMMENT">
-    <English>Defines blacklist marker end position coords for runway. Format: [x,y,z]</English>
-    <Chinesesimp>定义跑道的黑名单标记终点位置线,格式:[x, y, z]</Chinesesimp>
+    <English>Advanced override. The other end of the runway centreline, format [x,y,z]. Pairs with Runway start position - see that tooltip. Only drawn on the map when Debug is on.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYWIDTH">
     <English>Runway width:</English>
     <Chinesesimp>跑道宽度:</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYWIDTH_COMMENT">
-    <English>Number in metres</English>
-    <Chinesesimp>米数</Chinesesimp>
+    <English>Advanced override. Width in metres of the no-placement zone around the centreline above. Leave blank if start and end position are blank. If those are set and this is not, a 24 m zone is used - the same as a vanilla runway.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION">
     <English>Faction:</English>
     <Chinesesimp>阵营</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION_COMMENT">
-    <English>The faction whose air assets this module will command. Enter a single faction classname — e.g. OPF_F. Must match the faction used on the synced AI Commander.</English>
-    <Chinesesimp>选择空中任务的势力</Chinesesimp>
+    <English>Seeds this module's aircraft list and permanently fixes its side — e.g. OPF_F. Factions from synced AI Commanders are added automatically, but only from Commanders whose side is friendly to this one; the rest are dropped without warning. An unrecognised classname does not error, it falls back to EAST. A synced Faction Compiler overrides this.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_TYPES">
     <English>Available ATOs:</English>
     <Chinesesimp>可用的ATO</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_TYPES_COMMENT">
-    <English>Types of air mission this commander will fly. Valid values: CAP, DCA, SEAD, CAS, Strike, Recce, OCA. Example: ['CAP','DCA','SEAD','CAS','Strike','Recce','OCA']. Remove a type to stop it being flown.</English>
+    <English>Tick the air missions this commander may fly. Ctrl-click to select more than one. Suppression of Enemy Air Defences only detects anti-air sites - turn on Generate SEAD Tasks to have anything done about them. When few aircraft remain, the list is narrowed to Combat Air Patrol and Defensive Counter-Air on its own until numbers recover.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE">
     <English>Airspace Markers:</English>
     <Chinesesimp>空域标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE_COMMENT">
-    <English>Markers defining the airspace managed by this module. Enter marker names separated by commas, no spaces, no quotes — e.g. marker1,marker2. Aircraft will conduct CAP and DCA within these boundaries. Leave blank to use the full map.</English>
-    <Chinesesimp>输入表示此模块管理的空域的标记名称</Chinesesimp>
+    <English>Marker names bounding this module's airspace, comma-separated, no spaces or quotes — e.g. marker1,marker2. Aircraft are never synced to this module: any armed aircraft of a managed faction already sitting inside one of these markers is adopted. Leave blank for the whole map. If none of the names match a real marker the module silently fails to start, so check the spelling.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_USAGE">
-    <English>Place a MACC module to provide Combat Air Patrol and Suppresion of Enemy Air Defenses over your airspace. Sync to an AI Commander module to enable Recce, Strike or Close Air Support requests</English>
-    <Chinesesimp>放置一个MACC模块,在你的领空上空提供战斗空中巡逻和压制敌人防空。与AI指挥官模块同步,以启用侦察、打击或近距离空中支援请求</Chinesesimp>
+    <English>Place a MACC module to provide Combat Air Patrol and Defensive Counter-Air over your airspace. Sync it to an AI Commander module to enable Recce, Strike, Close Air Support and OCA requests. A Military AI Commander module must be present somewhere in the mission or MACC will not start.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_CREATE_HQ">
-    <English>Create HQ:</English>
-    <Chinesesimp>创建总部</Chinesesimp>
+    <English>Build HQ If Needed:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_CREATE_HQ_COMMENT">
-    <English>Selects HQ objective close to the module or spawns an appropriate composition</English>
-    <Chinesesimp>选择模块附近的总部目标或生成适当的组成</Chinesesimp>
+    <English>MACC always takes a military or headquarters building within 750 m of the module as its command post. This only decides what happens when there is none: Yes spawns a garrisoned field HQ composition, No falls back to a building at the nearest airbase with no garrison. A carrier-based MACC always uses the fallback. Either way air tasking stops while the enemy holds the ground around the HQ, and stops for good if it is destroyed.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AIR">
     <English>Place Air Assets:</English>
     <Chinesesimp>放置飞行载具</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_PLACE_AIR_COMMENT">
-    <English>If there are no available air assets, then place additional assets at the nearest airbase or helipad</English>
-    <Chinesesimp>如果没有可用的飞行载具,则将额外载具放置在最近的空军基地或直升机停机坪</Chinesesimp>
+    <English>If fewer than two armed aircraft start inside this module's airspace, extra ones are placed at the nearest airbase or helipad. Startup only - replacing later losses is what Resupply does. Has no effect on a carrier. Beware: with this off and no armed aircraft at all in the airspace, MACC never starts and nothing is tasked for the whole mission.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_TASKS">
     <English>Generate Player Tasks:</English>
     <Chinesesimp>生成玩家任务</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_TASKS_COMMENT">
-    <English>Automatically generate player Air Tasking Orders (CSAR, CAS, Strike)</English>
-    <Chinesesimp>自动生成玩家空中任务指令(CSAR、CAS、Strike)</Chinesesimp>
+    <English>Hands air missions to players as tasks, using the C2ISTAR module: search and rescue for downed aircrew, a backup interception call when several hostiles appear, and any mission with no free AI aircraft - that last only when a player is already flying the right type. AI tasking is unaffected either way; with No these are simply dropped, not held for later.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_SEADTASKS">
     <English>Generate SEAD Tasks:</English>
-    <Chinesesimp>生成玩家任务</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_GENERATE_SEADTASKS_COMMENT">
-    <English>Automatically generate player tasks for ground/air attacks on anti-air systems. This option is useful if you want player infantry units tasked with taking out anti-air on behalf of MACC. </English>
-    <Chinesesimp>自动生成玩家空中任务指令(CSAR、CAS、Strike)</Chinesesimp>
+    <English>MACC does not send AI aircraft against detected anti-air sites. This only creates a player Air Tasking Order for them, and needs the C2ISTAR module. Leave this off and detected anti-air is recorded but never engaged.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_RESUPPLY">
     <English>Resupply:</English>
     <Chinesesimp>重新补给</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_RESUPPLY_COMMENT">
-    <English>Enables resupply of air assets. If LOGCOM is available to AI OPCOM then air assets will be ordered from LOGCOM.</English>
-    <Chinesesimp>实现飞行载具的再补给。如果AI OPCOM可以使用后勤司令部,则将从后勤司令部订购航空资产</Chinesesimp>
+    <English>Replaces lost aircraft. If a Logistics Commander for the same faction is anywhere in the mission it flies the replacement in; otherwise MACC creates one itself at the original parking spot. Either way the new aircraft sits out a few minutes of maintenance before it can be tasked. With No, losses are permanent and the roster only ever shrinks.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_NOT_ESTABLISHED">
     <English>All callsigns, this is %1, %2 forward airbase has not been established. No air assets available for tasking. Out.</English>

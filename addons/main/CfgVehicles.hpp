@@ -615,6 +615,36 @@ class Cfg3DEN
             attributeSave = "[_this, 'opcomIntelSides'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";
         };
 
+        // ALiVE_ATOTypeChoiceMulti:
+        //   Multi-select listbox of the air mission types mil_ato can fly,
+        //   spelled out in full instead of as bare acronyms. Replaces a
+        //   free-text Edit in which the mission maker hand-typed an SQF
+        //   array literal - a typo there silently disabled a mission type
+        //   with no feedback at all, and "SEAD" told a newcomer nothing.
+        //
+        //   Storage shape: CSV of canonical tokens, e.g. "CAP,DCA,Strike".
+        //   mil_ato's case "types" parses CSV and the legacy array-literal
+        //   form alike, so missions saved before the picker load cleanly.
+        //
+        //   CASE MATTERS. The runtime gate is an exact, case-sensitive
+        //   `_eventType in _types` match, and "Strike"/"Recce" are title
+        //   case while the other five are upper. The dedicated LOAD handler
+        //   normalises to canonical case - do NOT point this at
+        //   fnc_edenSideChoiceMultiLoad, which uppercases everything and
+        //   would silently kill those two types.
+        //
+        //   attributeSave IS shared with SideChoiceMulti: that handler is
+        //   token-agnostic (reads lbData off selected rows, joins with
+        //   commas) with nothing side-specific in it.
+        //
+        //   Geometry inherited unchanged from the Base - seven long labels
+        //   want the full-width listbox, not SideChoiceMulti's compact
+        //   side-by-side variant.
+        class ALiVE_ATOTypeChoiceMulti: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, 'types', '$STR_ALIVE_ATO_TYPES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenATOTypeChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'types'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";
+        };
+
         // ALiVE_ItemChoiceMulti family:
         //   Multi-select listbox of humanitarian items (water or ration)
         //   populated from the CfgALiVEHumanitarianItems registry. Each
