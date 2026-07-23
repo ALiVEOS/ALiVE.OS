@@ -182,6 +182,34 @@ class CfgVehicles
                             class No { name = "No"; value = false; };
                         };
                 };
+                // Override for factions that catalogue no drones of their own, which is
+                // common regardless of what the mod itself ships. Same shape as the
+                // artillery module's custom type field.
+                class droneTypes
+                {
+                        property     = "ALiVE_mil_ato_droneTypes";
+                        displayName  = "$STR_ALIVE_ATO_DRONE_TYPES";
+                        tooltip      = "$STR_ALIVE_ATO_DRONE_TYPES_COMMENT";
+                        control      = "ALiVE_DroneChoiceMulti";
+                        typeName     = "STRING";
+                        expression   = "_this setVariable ['droneTypes', _value];";
+                        defaultValue = """""";
+                };
+                // Separate from Place Air Assets on purpose: a drone needs no aircrew,
+                // so an air component can consist of drones alone, and that should not
+                // depend on whether crewed aircraft were wanted too.
+                class placeDrones : Combo
+                {
+                        property = "ALiVE_mil_ato_placeDrones";
+                        displayName = "$STR_ALIVE_ATO_PLACE_DRONES";
+                        tooltip = "$STR_ALIVE_ATO_PLACE_DRONES_COMMENT";
+                        defaultValue = """false""";
+                        class Values
+                        {
+                            class Yes { name = "Yes"; value = true; };
+                            class No { name = "No"; value = false; default = 1; };
+                        };
+                };
                 // Defaults to Yes - the module has flown drones for years and carries
                 // dedicated handling for their lack of a crew. The setting exists so a
                 // mission maker can say no, which was not previously possible.

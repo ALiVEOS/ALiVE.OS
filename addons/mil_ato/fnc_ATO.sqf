@@ -859,6 +859,30 @@ switch(_operation) do {
     case "objectiveObjectsCount": {
         _result = [_logic, _operation, _args, "0"] call ALIVE_fnc_OOsimpleOperation;
     };
+    // Drone classes to place, overriding the faction's own list. Blank uses the
+    // faction, which is right when it has drones catalogued and useless when it
+    // does not - and plenty do not, however many the mod itself ships.
+    case "droneTypes": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // Whether to place a drone at the base at mission start. Default false, in
+    // line with placing crewed aircraft - putting things on the map is opt-in.
+    // Independent of that setting because a drone needs no aircrew, so an air
+    // component can consist of drones alone.
+    case "placeDrones": {
+        if (_args isEqualType true) then {
+            _logic setVariable [_operation, _args];
+        } else {
+            _args = _logic getVariable [_operation, false];
+        };
+        if (_args isEqualType "") then {
+            if (_args == "true") then { _args = true; } else { _args = false; };
+            _logic setVariable [_operation, _args];
+        };
+        ASSERT_TRUE(_args isEqualType true,str _args);
+
+        _result = _args;
+    };
     // Whether this commander may use drones at all. Default true, matching the
     // behaviour before the setting existed - the module has flown drones for
     // years, with dedicated handling throughout for their lack of a crew.
@@ -1149,23 +1173,27 @@ switch(_operation) do {
             private _vehicleClass = [_vehicleProfile,"vehicleClass",""] call ALIVE_fnc_HashGet;
             private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
 
+            // isKindOf "UAV" alone is not enough: the Darter's base inherits from
+            // Helicopter_Base_F rather than UAV, so the small reconnaissance drones
+            // slip past it. The isUav config property resolves through inheritance
+            // and catches them.
+            // Flyable drones only. isUav is not an air property - the ground rover
+            // base descends from Car_F and carries it too - and this admits an
+            // aircraft past the armament check below, so without the Air test a
+            // rover parked in the airspace could be taken on by the air commander
+            // and tasked with a sortie.
+            private _isDroneAsset = _vehicleClass isKindOf "Air"
+                                 && {_vehicleClass isKindOf "UAV"
+                                     || {getNumber (configFile >> "CfgVehicles" >> _vehicleClass >> "isUav") == 1}};
+
             // Skip drones when the mission maker has turned them off. Checked here
             // rather than at selection so an excluded drone never joins the pool at
             // all - otherwise it counts towards the airframe totals that decide
             // whether the commander has enough aircraft to keep flying offensive
             // missions.
-            //
-            // isKindOf "UAV" alone is not enough: the Darter's base inherits from
-            // Helicopter_Base_F rather than UAV, so the small reconnaissance drones
-            // slip past it. The isUav config property resolves through inheritance
-            // and catches them.
-            if !([_logic,"useUAVs"] call MAINCLASS) then {
-                private _isDroneAsset = _vehicleClass isKindOf "UAV"
-                                     || {getNumber (configFile >> "CfgVehicles" >> _vehicleClass >> "isUav") == 1};
-                if (_isDroneAsset) exitWith {
-                    if (_debug) then {
-                        ["ATO %1 ignoring %2 - drones are turned off for this commander", _logic, _vehicleClass] call ALiVE_fnc_dump;
-                    };
+            if (_isDroneAsset && {!([_logic,"useUAVs"] call MAINCLASS)}) exitWith {
+                if (_debug) then {
+                    ["ATO %1 ignoring %2 - drones are turned off for this commander", _logic, _vehicleClass] call ALiVE_fnc_dump;
                 };
             };
 
@@ -1194,7 +1222,19 @@ switch(_operation) do {
 
             };
 
-            if ([_vehicleClass] call ALiVE_fnc_isArmed) then {
+            // Everything below is the adoption itself, so an aircraft that fails this
+            // is never taken on at all.
+            //
+            // Drones are admitted whether or not they carry weapons. A reconnaissance
+            // drone's only "weapon" is a camera, and the armament test deliberately
+            // discounts pilot cameras and laser designators - so the aircraft most
+            // worth having for reconnaissance was the one aircraft that could never be
+            // adopted. Place a Darter at an airfield and the commander simply ignored
+            // it, despite carrying handling throughout for aircraft that have no crew.
+            //
+            // A drone reaching this point has already passed the Use Drones check
+            // above, so no second test is needed here.
+            if (([_vehicleClass] call ALiVE_fnc_isArmed) || _isDroneAsset) then {
 
                 // make sure vehicle is set to side of logic
                 [_vehicleProfile, "side", [_logic,"side"] call MAINCLASS] call ALiVE_fnc_profileVehicle;
@@ -2204,6 +2244,13 @@ switch(_operation) do {
                 private _placeAir = [_logic, "placeAir"] call MAINCLASS;
                 private _airCount = [_logic, "assets"] call MAINCLASS;
 
+                // ATO_PLACE_DBG (DIAG-STRIP): the plane placement block below only runs when the
+                // commander has fewer than two air assets, and the whole surrounding case is
+                // skipped once persistence has loaded. A class missing from the airfield is
+                // therefore ambiguous between "filtered out" and "the block never ran", and
+                // these two lines are the only way to tell those apart.
+                diag_log format ["ATO_PLACE_DBG gate placeAir=%1 airCount=%2 isCarrier=%3", _placeAir, count (_airCount select 1), _isCarrier];
+
                 if (_debug) then {
                     ["ATO %1 AIR ASSETS: %2",_logic, _airCount] call ALiVE_fnc_dump;
                 };
@@ -2384,6 +2431,11 @@ switch(_operation) do {
                     // Place planes
                     private _airClasses = [0,_faction,"Plane"] call ALiVE_fnc_findVehicleType;
 
+                    // ATO_PLACE_DBG (DIAG-STRIP): the pool BEFORE the unarmed strip. A class
+                    // absent here never came back from findVehicleType at all, which is a
+                    // faction question and nothing to do with the filter below.
+                    diag_log format ["ATO_PLACE_DBG pool faction=%1 preFilter=%2", _faction, _airClasses];
+
                     // Remove unarmed classes
                     {
                         if !([_x] call ALiVE_fnc_isArmed) then {
@@ -2545,6 +2597,114 @@ switch(_operation) do {
                             [_logic,"registerProfile",[_profileID,_baseAirspace]] call MAINCLASS;
                         };
                     } forEach _aprofiles;
+                };
+
+                // Place drones. Separate from placing crewed aircraft on purpose:
+                // a drone needs no aircrew, so an air component can consist of
+                // nothing but drones, and that should not depend on whether crewed
+                // aircraft were wanted as well.
+                if (([_logic,"placeDrones"] call MAINCLASS) && {!_isCarrier}) then {
+
+                    // No point placing what the commander has been told to ignore.
+                    if !([_logic,"useUAVs"] call MAINCLASS) then {
+                        if (_debug) then {
+                            ["ATO %1 - not placing drones, they are turned off for this commander", _logic] call ALiVE_fnc_dump;
+                        };
+                    } else {
+
+                        private _droneBase = [_logic, "currentBase"] call MAINCLASS;
+                        private _droneCentre = [_droneBase,"center"] call ALiVE_fnc_hashGet;
+
+                        private _droneAirspace = _airspace select 0;
+                        {
+                            if (_droneCentre inArea _x) exitWith { _droneAirspace = _x; };
+                        } forEach _airspace;
+
+                        private _droneSide = [_logic, "side"] call MAINCLASS;
+                        private _droneFaction = [_logic, "faction"] call MAINCLASS;
+
+                        private _droneClasses = [];
+
+                        // A named list wins over the faction's own. Plenty of factions
+                        // catalogue no drones at all - RHS US Army is one - so without
+                        // this the setting simply cannot work for them, however many
+                        // drones the mod itself ships.
+                        private _customDrones = [_logic,"droneTypes"] call MAINCLASS;
+
+                        if (_customDrones != "") then {
+                            {
+                                private _cls = _x;
+                                if (_cls != "") then {
+                                    if !(isClass (configFile >> "CfgVehicles" >> _cls)) then {
+                                        ["ATO %1 - Warning, drone type %2 does not exist and was ignored. Check the spelling in this module's Drone Types setting.", _logic, _cls] call ALiVE_fnc_dumpR;
+                                    } else {
+                                        // Named classes are checked for being flyable as well
+                                        // as existing. The picker only offers aircraft, but a
+                                        // value typed by hand, or carried over from a mission
+                                        // saved before the picker existed, is not constrained
+                                        // by it - and a ground rover would be placed at the
+                                        // airfield and then tasked with a sortie.
+                                        if (_cls isKindOf "Air") then {
+                                            _droneClasses pushBackUnique _cls;
+                                        } else {
+                                            ["ATO %1 - Warning, drone type %2 is not an aircraft and was ignored.", _logic, _cls] call ALiVE_fnc_dumpR;
+                                        };
+                                    };
+                                };
+                            } forEach (_customDrones splitString "[]""', ");
+                        } else {
+
+                            // Ask for both families and keep only the drones. Asking for
+                            // the "UAV" class directly would miss the small rotary
+                            // reconnaissance drones, whose base inherits from the
+                            // helicopter chain rather than from UAV, and those are the
+                            // ones most worth having.
+                            _droneClasses = (([0,_droneFaction,"Helicopter"] call ALiVE_fnc_findVehicleType)
+                                          + ([0,_droneFaction,"Plane"] call ALiVE_fnc_findVehicleType))
+                                          - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+
+                            _droneClasses = _droneClasses select {
+                                _x isKindOf "UAV" || {getNumber (configFile >> "CfgVehicles" >> _x >> "isUav") == 1}
+                            };
+                        };
+
+                        // Deliberately NOT filtered for armament, unlike the crewed
+                        // aircraft above. A reconnaissance drone carries nothing, so
+                        // that filter would throw away exactly what was asked for -
+                        // which is why drones were never placed even when a faction
+                        // had them.
+
+                        if (count _droneClasses == 0) then {
+                            ["ATO %1 - Warning, drone placement is on but faction %2 has no drones to place.", _logic, _droneFaction] call ALiVE_fnc_dumpR;
+                        } else {
+
+                            private _droneClass = selectRandom _droneClasses;
+                            private _dronePos = +_droneCentre;
+                            private _droneDir = random 360;
+
+                            // Prefer a helipad if the base has one - it keeps the drone
+                            // clear of the runway and looks deliberate rather than
+                            // dropped in the middle of the field.
+                            {
+                                if (_x isKindOf "HeliH") exitWith {
+                                    _dronePos = position _x;
+                                    _droneDir = direction _x;
+                                };
+                            } forEach ([_droneBase, "nodes"] call ALIVE_fnc_hashGet);
+
+                            private _droneProfile = [_droneClass,_droneSide,_droneFaction,_dronePos,_droneDir,false,_droneFaction] call ALIVE_fnc_createProfileVehicle;
+
+                            if !(isNil "_droneProfile") then {
+                                private _droneID = [_droneProfile, "profileID"] call ALIVE_fnc_hashGet;
+                                if (!isNil "_droneID" && {_droneID != ""}) then {
+                                    [_logic,"registerProfile",[_droneID,_droneAirspace]] call MAINCLASS;
+                                    if (_debug) then {
+                                        ["ATO %1 - placed drone %2 at %3", _logic, _droneClass, _dronePos] call ALiVE_fnc_dump;
+                                    };
+                                };
+                            };
+                        };
+                    };
                 };
 
                 // Register new assets

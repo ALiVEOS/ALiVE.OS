@@ -640,6 +640,30 @@ class Cfg3DEN
         //   Geometry inherited unchanged from the Base - seven long labels
         //   want the full-width listbox, not SideChoiceMulti's compact
         //   side-by-side variant.
+        // ALiVE_DroneChoiceMulti:
+        //   Multi-select listbox of every drone the loaded content provides,
+        //   used by mil_ato's Drone Types setting to override the faction's
+        //   own list - which is often empty even when the mod ships drones.
+        //
+        //   Rows come from a config scan rather than a curated registry, unlike
+        //   the objective-object and animal pickers. Drones can be identified
+        //   outright: the isUav property resolves through inheritance, so one
+        //   pass finds them all and any mod is covered with nothing to maintain.
+        //   isKindOf "UAV" is NOT sufficient - the small rotary reconnaissance
+        //   drones inherit from the helicopter chain and would be missed.
+        //
+        //   An empty selection is meaningful here and is left alone: blank means
+        //   "use the faction's own drones". That is the opposite of the mission
+        //   types picker, which fills itself when empty because an empty mission
+        //   list left a commander flying nothing.
+        //
+        //   Geometry inherited from the Base - the list can be long with a large
+        //   modset, so it wants the full-width listbox.
+        class ALiVE_DroneChoiceMulti: ALiVE_FactionChoiceMulti_Base {
+            attributeLoad = "[_this, 'droneTypes', '$STR_ALIVE_ATO_DRONE_TYPES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenDroneChoiceMultiLoad.sqf'";
+            attributeSave = "[_this, 'droneTypes'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";
+        };
+
         class ALiVE_ATOTypeChoiceMulti: ALiVE_FactionChoiceMulti_Base {
             attributeLoad = "[_this, 'types', '$STR_ALIVE_ATO_TYPES', _value] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenATOTypeChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'types'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenSideChoiceMultiSave.sqf'";

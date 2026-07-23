@@ -31,6 +31,18 @@
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO_COMMENT">
     <English>HQ radio traffic, heard only by players on this module's own side: mission acknowledged or denied, aircraft lost, and base compromised. No silences all of it except the one-off 'forward airbase established' call at mission start, which always plays.</English>
 </Key>
+<Key ID="STR_ALIVE_ATO_DRONE_TYPES">
+    <English>Drone Types:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_DRONE_TYPES_COMMENT">
+    <English>Tick the drones this commander may place. Ctrl-click to select more than one. Leave everything unticked to use whatever drones the faction itself lists, which is the usual choice. Worth setting when a faction has none of its own, which is common even where the mod provides them. The list covers every drone the loaded content offers.</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_PLACE_DRONES">
+    <English>Place Drones:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_PLACE_DRONES_COMMENT">
+    <English>Places one of the faction's drones at the base at mission start, on a helipad if there is one. Separate from Place Air Assets, so an air component can consist of drones alone. Unarmed reconnaissance drones count - they are the ones most worth having. Does nothing if Use Drones is set to No.</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_USE_UAVS">
     <English>Use Drones:</English>
 </Key>
