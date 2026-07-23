@@ -34,10 +34,10 @@ params [
 ];
 
 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
-private _near = ([_spacialGrid,"findInRange", [_position,_radius,_filter2D]] call ALiVE_fnc_spacialGrid) apply {_x select 1};
+private _near = [_spacialGrid,"findInRange", [_position,_radius,_filter2D,true]] call ALiVE_fnc_spacialGrid;
 
 if (_categorySelector isEqualTo []) then {
-   _near select {(_x select 2 select 5) == "entity"};
+    _near select {(_x select 2 select 5) == "entity"};
 } else {
     _categorySelector params [
         ["_categorySide", "all"],
@@ -46,31 +46,53 @@ if (_categorySelector isEqualTo []) then {
         ["_customFilter", {}]
     ];
 
-    private _query = "true";
+    private _hasSideFilter = !(_categorySide isEqualTo "all");
+    private _hasTypeFilter = _categoryType != "all";
+    private _hasObjectTypeFilter = !(_categoryObjectType isEqualTo "none");
+    private _hasCustomFilter = !(_customFilter isEqualTo {});
 
-    if !(_categorySide isEqualTo "all") then {
-        if (_categorySide isEqualType []) then {
-            _query = _query + " && ((_x select 2 select 3) in _categorySide)";
-        } else {
-            _query = _query + " && ((_x select 2 select 3) == _categorySide)";
+    if (
+        !_hasSideFilter
+        && {!_hasTypeFilter}
+        && {!_hasObjectTypeFilter}
+        && {!_hasCustomFilter}
+    ) exitWith {
+        _near
+    };
+
+    private _filtered = _near;
+
+    if (_hasSideFilter || {_hasTypeFilter} || {_hasObjectTypeFilter}) then {
+        _filtered = _near select {
+            private _sideMatches = if (!_hasSideFilter) then {
+                true
+            } else {
+                if (_categorySide isEqualType []) then {
+                    (_x select 2 select 3) in _categorySide
+                } else {
+                    (_x select 2 select 3) == _categorySide
+                }
+            };
+
+            private _typeMatches = !_hasTypeFilter || {(_x select 2 select 5) == _categoryType};
+
+            private _objectTypeMatches = if (!_hasObjectTypeFilter) then {
+                true
+            } else {
+                if (_categoryObjectType isEqualType []) then {
+                    (_x select 2 select 6) in _categoryObjectType
+                } else {
+                    (_x select 2 select 6) == _categoryObjectType
+                }
+            };
+
+            _sideMatches && {_typeMatches} && {_objectTypeMatches}
         };
     };
 
-    if (_categoryType != "all") then {
-        _query = _query + " && {(_x select 2 select 5) == _categoryType}";
+    if (_hasCustomFilter) then {
+        _filtered select _customFilter
+    } else {
+        _filtered
     };
-
-    if !(_categoryObjectType isEqualTo "none") then {
-        if (_categoryObjectType isEqualType "") then {
-            _query = _query + " && {(_x select 2 select 6) == _categoryObjectType}";
-        } else {
-            _query = _query + " && {(_x select 2 select 6) in _categoryObjectType}";
-        };
-    };
-
-    if !(_customFilter isEqualTo {}) then {
-        _query = _query + (format [" && %1", _customFilter]);
-    };
-
-    _near select (compile _query);
 };
