@@ -4759,9 +4759,25 @@ switch(_operation) do {
                                         && {!_liveObjMissing}
                                         && {_currentOp == ""}
                                         && {!_playerOccupied}
-                                        && {_position distance _currentPosition > 100}) then {
+                                        && {_position distance _currentPosition > 250}) then {
 
+                                        // Before trusting a negative answer, check the test can
+                                        // answer at all here. If the aircraft's OWN parking slot
+                                        // does not read as an airfield, this terrain has no
+                                        // runway data the test can see, and a "not an airfield"
+                                        // verdict anywhere else means nothing. Acting on it would
+                                        // strand aircraft sitting on their own apron.
+                                        //
+                                        // Only the negative needs this guard. A positive answer
+                                        // is evidence in its own right whatever the home reads as.
                                         private _atAirfield = [_currentPosition, _assetClass] call ALiVE_fnc_isAirfieldPosition;
+                                        private _homeIsAirfield = _atAirfield || {[_position, _assetClass] call ALiVE_fnc_isAirfieldPosition};
+
+                                        if (!_homeIsAirfield) then {
+                                            if (_debug) then {
+                                                ["ATO %1 %2 home reconciliation skipped: no runway data near %3", _logic, _assetClass, _position] call ALiVE_fnc_dump;
+                                            };
+                                        } else {
 
                                         if (_atAirfield) then {
                                             [_aircraft,"strandedAt",[]] call ALiVE_fnc_hashSet;
@@ -4812,6 +4828,8 @@ switch(_operation) do {
                                             if (_debug) then {
                                                 ["ATO %1 %2 stranded off-airfield at %3, returning to %4 (spawned=%5)", _logic, _assetClass, _currentPosition, _position, _active] call ALiVE_fnc_dump;
                                             };
+                                        };
+
                                         };
                                     };
 
