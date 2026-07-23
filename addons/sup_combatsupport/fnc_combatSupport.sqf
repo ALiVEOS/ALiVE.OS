@@ -1025,6 +1025,25 @@ switch(_operation) do {
                                 _leader setVariable ["ALIVE_resupply_primaryVehicle", _units select 0, true];
                             };
 
+                            // Keep the battery on its emplacement unless repositioning was
+                            // allowed. The battery FSM sets COMBAT / RED so the guns engage
+                            // freely, and Arma reads COMBAT as licence to manoeuvre - so a
+                            // self-propelled piece drives off looking for a better spot. It
+                            // was measured 167m from its emplacement with waypoint 1/1 still
+                            // current, so nothing had re-tasked it; the crew simply drove.
+                            // Towed and static pieces never showed this because they cannot
+                            // move at all.
+                            //
+                            // Disabling PATH stops the driver plotting anywhere while leaving
+                            // the turret, tracking and firing untouched. Same idea as the
+                            // mortar teams, which disable movement on the gunner and
+                            // assistant when a tube is set up.
+                            if (!_canMove) then {
+                                {
+                                    _x disableAI "PATH";
+                                } forEach (units _grp);
+                            };
+
                             //FSM
                             private _fsmHandle = [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _class, leader _grp, _code, _audio, _side] execFSM "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
 

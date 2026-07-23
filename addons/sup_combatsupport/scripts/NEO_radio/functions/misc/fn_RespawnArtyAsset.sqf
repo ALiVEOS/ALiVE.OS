@@ -147,6 +147,17 @@ _codeArray = [_code, ";"] Call CBA_fnc_split;
 
 private _audio = NEO_radioLogic getvariable ["combatsupport_audio",true];
 
+// Keep the battery on its emplacement unless repositioning was allowed - see the
+// matching note at the initial-creation site in fnc_combatSupport.sqf. The FSM
+// puts the guns into COMBAT so they engage freely, and Arma treats COMBAT as
+// licence to manoeuvre, which drives a self-propelled piece off its position.
+// A respawned battery needs the same treatment as the original.
+if (!_canMove) then {
+    {
+        _x disableAI "PATH";
+    } forEach (units _grp);
+};
+
 //FSM
 private _artyfsm = "\x\alive\addons\sup_combatSupport\scripts\NEO_radio\fsms\alivearty.fsm";
 private _fsmHandle = [_units, _grp, _callsign, _pos, _roundsAvailable, _canMove, _type, leader _grp, _code, _audio, _side] execFSM _artyfsm;
