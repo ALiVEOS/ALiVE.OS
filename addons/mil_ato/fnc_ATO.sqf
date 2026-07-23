@@ -483,6 +483,28 @@ ALiVE_fnc_CheckSpawnInMarkerArea = {
 
 private _result = true;
 
+// Is this a drone? Accepts a class name or a live vehicle.
+//
+// Testing isKindOf "UAV" on its own is not enough and getting this wrong is
+// expensive. Only the Greyhawk, the UAV_04 and the Sentinel families actually
+// descend from the "UAV" base class. Nineteen other stock drones do not,
+// including the AR-2 Darter, the Falcon and the whole UAV_06 family, so a
+// narrow test sees them as ordinary aircraft.
+//
+// That mattered because the commander adopted them with the broad test and then
+// crewed them with the narrow one, so those drones were tasked and spawned but
+// never given an operator. They sat inert on the taxiway holding their slot, and
+// every aircraft tasked behind them queued up and never launched.
+//
+// Every drone test in this file goes through here so the two halves cannot drift
+// apart again.
+private _fnc_isDroneClass = {
+    params [["_v", "", ["", objNull]]];
+    if (_v isEqualType objNull) then { _v = typeOf _v };
+    if (_v == "") exitWith { false };
+    (_v isKindOf "UAV") || {getNumber (configFile >> "CfgVehicles" >> _v >> "isUav") == 1}
+};
+
 // Safe reposition for recycled / aborted aircraft: stops the airframe detonating
 // when it is teleported back into its hangar slot (the spawn position sits inside
 // the hangar shell). If a sibling already occupies the slot, drop into a clear
@@ -1335,7 +1357,7 @@ switch(_operation) do {
                     if !(ALIVE_loadProfilesPersistent && {[ALIVE_ATOGlobalRegistry,"persistenceLoaded", false] call ALIVE_fnc_hashGet}) then {
                         // Register a crew
                         // Check to see if this is just a vehicle (likely a plane), if so create the crew in a nearby building
-                        if ([_profile,"type"] call ALiVE_fnc_hashGet == "vehicle" && !(_vehicleClass iskindof "UAV")) then {
+                        if ([_profile,"type"] call ALiVE_fnc_hashGet == "vehicle" && !([_vehicleClass] call _fnc_isDroneClass)) then {
 
                             // Check to see if the vehicle has a crew, if not create
                             if (count ([_profile,"entitiesInCommandOf"] call ALiVE_fnc_hashGet) == 0) then {
@@ -4749,7 +4771,7 @@ switch(_operation) do {
 
                                     // Check crew are alive if not UAV
 
-                                    if !(([_profile,"vehicleClass",""] call ALiVE_fnc_hashGet) isKindOf "UAV") then {
+                                    if !([[_profile,"vehicleClass",""] call ALiVE_fnc_hashGet] call _fnc_isDroneClass) then {
                                         private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
                                         private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
                                         if (isNil "_crewProfile") then {
@@ -5458,7 +5480,7 @@ switch(_operation) do {
                                     };
                                 };
 
-                                if ((isNil "_crewProfile" || _crewGroupBad) && !(_vehicleClass isKindOf "UAV")) exitWith {
+                                if ((isNil "_crewProfile" || _crewGroupBad) && !([_vehicleClass] call _fnc_isDroneClass)) exitWith {
                                     // abort mission
                                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -5506,7 +5528,7 @@ switch(_operation) do {
                                 } else {
 
                                     // Make sure crew are active
-                                    if (!(_vehicleClass isKindOf "UAV") && {!([_crewProfile,"active"] call ALiVE_fnc_hashGet)} ) then {
+                                    if (!([_vehicleClass] call _fnc_isDroneClass) && {!([_crewProfile,"active"] call ALiVE_fnc_hashGet)} ) then {
 
                                         [_crewProfile,"spawn"] call ALiVE_fnc_profileEntity;
                                         if (_debug) then {
@@ -5518,7 +5540,7 @@ switch(_operation) do {
                                     // Get vehicle
                                     private _vehicleObj = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
 
-                                    if !(_vehicleClass isKindOf "UAV") then {
+                                    if !([_vehicleClass] call _fnc_isDroneClass) then {
                                         // Move crew into aircraft
                                         private _group = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
 
@@ -5617,10 +5639,15 @@ switch(_operation) do {
                                     };
                                 };
 
-                                if (_vehicleClass isKindOf "UAV") then {
+                                if ([_vehicleClass] call _fnc_isDroneClass) then {
                                     private _vehicleObj = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
                                     // Add crew
+                                    // DIAG-STRIP: which crewing site fired for this drone, and whether it took.
+                                    private _cbefore = count (crew _vehicleObj);
                                     createVehicleCrew _vehicleObj;
+                                    if (_debug) then {
+                                        ["ATO %1 DIAG-STRIP drone crewed at site 1: class=%2 crew %3 -> %4 driver=%5", _logic, typeOf _vehicleObj, _cbefore, count (crew _vehicleObj), (if (isNull (driver _vehicleObj)) then {"NONE"} else {typeOf (driver _vehicleObj)})] call ALiVE_fnc_dump;
+                                    };
                                 };
 
                                 // Mark aircraft as ready
@@ -5647,7 +5674,7 @@ switch(_operation) do {
                                 private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
                                 private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
 
-                                if (isNil "_crewProfile" && !(_vehicleClass isKindOf "UAV")) exitWith {
+                                if (isNil "_crewProfile" && !([_vehicleClass] call _fnc_isDroneClass)) exitWith {
                                     // abort mission
                                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
@@ -5665,7 +5692,7 @@ switch(_operation) do {
                                 };
 
                                 // Assign crew to aircraft
-                                if !(_vehicleClass isKindOf "UAV") then {
+                                if !([_vehicleClass] call _fnc_isDroneClass) then {
                                     // Assign crew
                                     [_crewProfile,_profile] call ALIVE_fnc_createProfileVehicleAssignment;
                                 };
@@ -5720,10 +5747,15 @@ switch(_operation) do {
                                     _profile call ALIVE_fnc_inspectHash;
                                 };
 
-                                if (_vehicleClass isKindOf "UAV") then {
+                                if ([_vehicleClass] call _fnc_isDroneClass) then {
                                     private _vehicleObj = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
                                     // Add crew
+                                    // DIAG-STRIP: which crewing site fired for this drone, and whether it took.
+                                    private _cbefore = count (crew _vehicleObj);
                                     createVehicleCrew _vehicleObj;
+                                    if (_debug) then {
+                                        ["ATO %1 DIAG-STRIP drone crewed at site 2: class=%2 crew %3 -> %4 driver=%5", _logic, typeOf _vehicleObj, _cbefore, count (crew _vehicleObj), (if (isNull (driver _vehicleObj)) then {"NONE"} else {typeOf (driver _vehicleObj)})] call ALiVE_fnc_dump;
+                                    };
                                 };
 
                                 // Set Aircraft as ready for mission
@@ -5779,8 +5811,13 @@ switch(_operation) do {
                             {
                                 _x moveInAny _vehicle;
                             } forEach (units _grp);
-                            if (_vehicle isKindOf "UAV") then {
+                            if ([_vehicle] call _fnc_isDroneClass) then {
+                                // DIAG-STRIP: which crewing site fired for this drone, and whether it took.
+                                private _cbefore = count (crew _vehicle);
                                 createVehicleCrew _vehicle;
+                                if (_debug) then {
+                                    ["ATO %1 DIAG-STRIP drone crewed at site 3: class=%2 crew %3 -> %4 driver=%5", _logic, typeOf _vehicle, _cbefore, count (crew _vehicle), (if (isNull (driver _vehicle)) then {"NONE"} else {typeOf (driver _vehicle)})] call ALiVE_fnc_dump;
+                                };
                             };
                         };
 
@@ -6619,7 +6656,7 @@ switch(_operation) do {
                         deleteWaypoint ((waypoints _grp) select 0);
                      };
 
-                    if !(_vehicle isKindOf "UAV") then {
+                    if !([_vehicle] call _fnc_isDroneClass) then {
                         private _leader = leader _grp;
 
                         // Crew should be unassigned from aircraft
