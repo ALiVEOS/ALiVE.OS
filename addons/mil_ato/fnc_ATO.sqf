@@ -1252,6 +1252,16 @@ switch(_operation) do {
                 private _roles = [_vehicleClass, _fittedLoadout] call ALiVE_fnc_getAircraftRoles;
                 [_asset,"roles",_roles] call ALiVE_fnc_hashSet;
 
+                // Keep the capability list too, not just the roles derived from it.
+                // Roles are deliberately broad so that nothing gets excluded, which
+                // means they cannot tell an air-superiority jet from a ground-attack
+                // aircraft: both carry a cannon, so both come out as Attack and CAS.
+                // Choosing between two aircraft that qualify for the same job needs
+                // the finer detail, and working it out once here is far cheaper than
+                // re-reading config every time a mission is requested.
+                private _caps = [_vehicleClass, _fittedLoadout] call ALiVE_fnc_getAircraftCapabilities;
+                [_asset,"capabilities",_caps] call ALiVE_fnc_hashSet;
+
                 // Report what each airframe was credited with and why. Capability is
                 // read from config, and third-party aircraft vary in how completely
                 // they declare sensors and ordnance - so rather than assert this
@@ -1263,7 +1273,6 @@ switch(_operation) do {
                 // which predate or ignore the sensor overhaul working as they do
                 // today rather than quietly dropping out of the roster.
                 if (_debug) then {
-                    private _caps = [_vehicleClass, _fittedLoadout] call ALiVE_fnc_getAircraftCapabilities;
                     ["ATO %1 - %2 capabilities %3 -> roles %4 (fitted loadout: %5)", _logic, _vehicleClass, _caps, _roles, count _fittedLoadout] call ALiVE_fnc_dump;
                 };
 
@@ -4521,12 +4530,98 @@ switch(_operation) do {
                                 };
                             };
 
-                            // Sort by distance
-                            _selectedAsset = ([_selectedAsset,[],{_eventPosition distance ([_x,"currentPos"] call ALiVE_fnc_hashGet)},"ASCEND"] call ALiVE_fnc_SortBy) select 0;
+                            // Sort by how well suited the aircraft is, then by distance.
+                            //
+                            // Distance alone meant every qualifying aircraft was equal, so
+                            // whatever sat closest won. A ground-attack aircraft carrying
+                            // self-defence missiles counts as a fighter, so an A-10 parked
+                            // near the runway was being sent on combat air patrol ahead of
+                            // an actual fighter parked further away - and then loitering
+                            // over defended ground until it was shot down.
+                            //
+                            // The preference only reorders, it never excludes: if the
+                            // ill-suited aircraft is all there is, it still flies. That
+                            // matters more than picking well, because an empty result means
+                            // no air support at all.
+
+                            // Each branch works out its own penalty and hands it back
+                            // rather than adding to a running total, because the case
+                            // blocks run as their own scopes and writing to a variable
+                            // declared outside them is the sort of thing that works right
+                            // up until someone moves the code.
+                            private _fnc_suitability = {
+                                params ["_asset", "_wantRole"];
+
+                                // An asset whose capabilities never resolved must not sink
+                                // the whole sort. Nothing known means no penalty, so it
+                                // ranks on distance alone, exactly as it did before.
+                                private _rawCaps = [_asset,"capabilities",[]] call ALiVE_fnc_hashGet;
+                                private _caps = if (!isNil "_rawCaps" && {_rawCaps isEqualType []}) then {_rawCaps} else {[]};
+
+                                // The cannon is deliberately ignored on both counts below.
+                                // Nearly every combat aircraft carries one, so it says
+                                // nothing about what the airframe is for. What separates
+                                // them is the air-to-ground ordnance hanging off the wings.
+                                private _agGuided   = "agGuided"   in _caps;
+                                private _agUnguided = "agUnguided" in _caps;
+
+                                switch (_wantRole) do {
+                                    // Patrolling for aircraft: bombs and ground missiles
+                                    // are dead weight up there, and an aircraft built to
+                                    // carry them is slower and less survivable than one
+                                    // built to fight. Each kind carried pushes it down.
+                                    case "Fighter": {
+                                        {_x} count [_agGuided, _agUnguided]
+                                    };
+                                    // Going after something on the ground: precision
+                                    // ordnance first, then unguided, and an aircraft with
+                                    // only a cannon last. It can still be sent, but it is
+                                    // the weakest answer to the request.
+                                    case "Attack": {
+                                        if (_agGuided) then {0} else {if (_agUnguided) then {1} else {2}}
+                                    };
+                                    // Looking rather than shooting: send the drone where
+                                    // there is one, and keep aircrew out of it.
+                                    case "Recon": {
+                                        private _cls = [_asset,"vehicleClass",""] call ALiVE_fnc_hashGet;
+                                        private _isDrone = _cls isKindOf "Air"
+                                                        && {_cls isKindOf "UAV"
+                                                            || {getNumber (configFile >> "CfgVehicles" >> _cls >> "isUav") == 1}};
+                                        if (_isDrone) then {0} else {1}
+                                    };
+                                    default {0};
+                                }
+                            };
+
+                            // Suitability dominates, distance breaks ties inside a band.
+                            // The multiplier only has to exceed any real distance on any
+                            // map, and the largest terrains are a few tens of kilometres.
+                            private _ranked = [_selectedAsset,[],{
+                                (([_x, _aircraftRole] call _fnc_suitability) * 1000000)
+                                + (_eventPosition distance ([_x,"currentPos"] call ALiVE_fnc_hashGet))
+                            },"ASCEND"] call ALiVE_fnc_SortBy;
+
+                            _selectedAsset = _ranked select 0;
                             _assetAvailable = true;
 
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
+                                // The whole ranking, in order, with what each aircraft was
+                                // marked down for. Without this a bad choice looks the same
+                                // as no choice at all, which is what made the wrong aircraft
+                                // being sent on patrol so hard to spot in the first place.
+                                {
+                                    ["ATO %1 rank %2 for %3: %4 penalty=%5 dist=%6 caps=%7",
+                                        _logic,
+                                        _forEachIndex,
+                                        _aircraftRole,
+                                        [_x,"vehicleClass",""] call ALiVE_fnc_hashGet,
+                                        [_x, _aircraftRole] call _fnc_suitability,
+                                        round (_eventPosition distance ([_x,"currentPos"] call ALiVE_fnc_hashGet)),
+                                        [_x,"capabilities",[]] call ALiVE_fnc_hashGet
+                                    ] call ALiVE_fnc_dump;
+                                } forEach _ranked;
+
                                 _selectedAsset call ALIVE_fnc_inspectHash;
                             };
 
