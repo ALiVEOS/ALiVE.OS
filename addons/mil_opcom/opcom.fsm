@@ -433,6 +433,7 @@ class FSM
                          "                switch (_operation) do {" \n
                          "                    case (""attack"") : {" \n
                          "                        [_target,""opcom_state"",""attacking""] call AliVE_fnc_HashSet;" \n
+                         "                        if (_debug) then {format [""ALiVE_OPCOM_%1"",[_target,""objectiveID""] call ALiVE_fnc_HashGet] setMarkerColor ""ColorRed""};" \n
                          "" \n
                          "                        if ([_side,[""attacking""]] call ALIVE_fnc_OPCOMgetHighestPrioObjective == _targetId) then {" \n
                          "                            _targets = [_pos, 300, [_enemySide,""entity""],true] call ALIVE_fnc_getNearProfiles;" \n
@@ -444,12 +445,14 @@ class FSM
                          "                    };" \n
                          "                    case (""defend"") : {" \n
                          "                        [_target,""opcom_state"",""defending""] call AliVE_fnc_HashSet;" \n
+                         "                        if (_debug) then {format [""ALiVE_OPCOM_%1"",[_target,""objectiveID""] call ALiVE_fnc_HashGet] setMarkerColor ""ColorBlue""};" \n
                          "" \n
                          "                        //Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
                          "                        _OPCOM_DATA = [""analyze"",nil];" \n
                          "                    };" \n
                          "                    case (""reserve"") : {" \n
                          "                        [_target,""opcom_state"",""reserving""] call AliVE_fnc_HashSet;" \n
+                         "                        if (_debug) then {format [""ALiVE_OPCOM_%1"",[_target,""objectiveID""] call ALiVE_fnc_HashGet] setMarkerColor ""ColorGreen""};" \n
                          "" \n
                          "                        //Trigger new OPCOM analysis after TACOM confirmation including TACOMs answer" \n
                          "                        _OPCOM_DATA = [""analyze"",nil];" \n

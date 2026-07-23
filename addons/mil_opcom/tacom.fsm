@@ -462,7 +462,7 @@ class FSM
                          "                    //transmit to OPCOM as objective was completed" \n
                          "                    [_objective,""opcom_state"",""idle""] call AliVE_fnc_HashSet;" \n
                          "                    [_objective,""opcom_orders"",""none""] call AliVE_fnc_HashSet;" \n
-                         "                    if (_debug) then {([_objective,""objectiveID""] call AliVE_fnc_HashGet) setMarkerColorLocal _colorside};" \n
+                         "                    if (_debug) then {format [""ALiVE_OPCOM_%1"",[_objective,""objectiveID""] call AliVE_fnc_HashGet] setMarkerColor _colorside};" \n
                          "" \n
                          "                    _event = ['OPCOM_RESERVE', [_side,_objective],""OPCOM""] call ALIVE_fnc_event;" \n
                          "                    _eventID = [ALIVE_eventLog, ""addEvent"",_event] call ALIVE_fnc_eventLog;" \n

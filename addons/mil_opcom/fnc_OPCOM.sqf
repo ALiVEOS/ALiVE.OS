@@ -1583,7 +1583,7 @@ switch (_operation) do {
             private _debug = [_logic,"debug", false] call ALiVE_fnc_HashGet;
             if (_debug) then {
                 private _marker = GET_OBJECTIVE_DEBUG_MARKER(_objectiveID);
-                _marker setMarkerColorLocal "ColorWhite";
+                _marker setMarkerColor "ColorWhite";
             };
         };
 
@@ -1716,7 +1716,9 @@ switch (_operation) do {
                 [_objective,"objectiveType",[_objective,"objectiveType","MIL"] call AliVE_fnc_HashGet] call AliVE_fnc_HashSet;
 
                 // debug ---------------------------------------
-                if (_debug) then {_args setMarkerColorLocal "ColorWhite"};
+                if (_debug) then {
+                    GET_OBJECTIVE_DEBUG_MARKER(_args) setMarkerColor "ColorWhite";
+                };
                 // debug ---------------------------------------
 
             //} call CBA_fnc_DirectCall;
