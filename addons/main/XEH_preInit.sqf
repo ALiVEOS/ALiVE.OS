@@ -2,6 +2,16 @@
 
 LOG(MSG_INIT);
 
+// Airside exclusion cache. Declared at the earliest hook on every machine so
+// the hot path can read plain globals rather than fall back to a getVariable,
+// and so anything reaching the test before the server has finished building
+// reads empty instead of erroring on an undefined variable.
+//
+// Empty means no airfield, and every consumer short-circuits on that one
+// comparison. See ALiVE_fnc_buildAirsideCache for the shapes.
+ALiVE_airsideBounds   = [];
+ALiVE_airsideCapsules = [];
+
 //Set ALiVE Interaction menu on custom userkey 20 and if none is defined fallback to 221 App key
 if ((count ActionKeys "User20") > 0) then {
     SELF_INTERACTION_KEY = [(ActionKeys "User20" select 0),[false,false,false]];

@@ -149,6 +149,26 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_getRunwayCentreline.sqf";
                 RECOMPILE;
             };
+            class buildAirsideCache {
+                description = "Reduces every airfield on the terrain to cached bounding circles and capsules once at mission start, so airside tests later cost no engine query";
+                file = "\x\alive\addons\main\fnc_buildAirsideCache.sqf";
+                RECOMPILE;
+            };
+            class isAirside {
+                description = "True when a position is on airfield surface ground movement should keep off: runway, approach strips, taxiway or parking. Hot path, cached arithmetic only";
+                file = "\x\alive\addons\main\fnc_isAirside.sqf";
+                RECOMPILE;
+            };
+            class airsideClear {
+                description = "Moves a position off airfield surface by the shortest push that clears it, or returns it unchanged when it cannot";
+                file = "\x\alive\addons\main\fnc_airsideClear.sqf";
+                RECOMPILE;
+            };
+            class airsideLegBypass {
+                description = "Returns intermediate positions routing a straight leg around airfield surface, or empty when the leg is already clear";
+                file = "\x\alive\addons\main\fnc_airsideLegBypass.sqf";
+                RECOMPILE;
+            };
             class isAirfieldPosition {
                 description = "True when a position is a recognised airfield for a given airframe: on or beside a runway, or on a helipad for rotary and VTOL";
                 file = "\x\alive\addons\main\fnc_isAirfieldPosition.sqf";

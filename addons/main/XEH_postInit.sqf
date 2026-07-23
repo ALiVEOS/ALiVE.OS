@@ -25,6 +25,29 @@ PREPMAIN(ZEUSinit);
     };
 }, true] call CBA_fnc_addClassEventHandler;
 
+// Work out where every airfield's runways, taxiways and parking are, once, on
+// the server, and broadcast the result. Nothing consumes it yet, so this adds
+// no behaviour: what it does add is a line in the log per airfield saying what
+// was actually found, which is the only way the terrain-dependent gaps become
+// visible. Parking in particular is inferred rather than declared by the game,
+// and on some terrains it will resolve to nothing.
+//
+// Waits for the mission to start so terrain objects and any mission-authored
+// runway tags exist to be found.
+// The isNil guard matters here: this file is picked up live under file
+// patching, but the function it calls only exists once the config carrying its
+// CfgFunctions entry has been rebuilt. Without the guard, every mission started
+// between the source edit and the rebuild throws an undefined variable error.
+if (isServer) then {
+    [] spawn {
+        waitUntil {time > 0};
+        if (isNil "ALiVE_fnc_buildAirsideCache") exitWith {
+            diag_log "ALiVE airside: buildAirsideCache not compiled yet, airside exclusion inactive (addons/main needs a rebuild)";
+        };
+        [] call ALiVE_fnc_buildAirsideCache;
+    };
+};
+
 //Automated tests (define in script_mod.hpp)
 #ifdef AUTOMATED_TESTS
 [AUTOMATED_TESTS] spawn {
