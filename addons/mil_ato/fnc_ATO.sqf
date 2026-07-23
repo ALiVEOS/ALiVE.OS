@@ -2274,15 +2274,23 @@ switch(_operation) do {
                 private _placeAir = [_logic, "placeAir"] call MAINCLASS;
                 private _airCount = [_logic, "assets"] call MAINCLASS;
 
-                // ATO_PLACE_DBG (DIAG-STRIP): the plane placement block below only runs when the
-                // commander has fewer than two air assets, and the whole surrounding case is
-                // skipped once persistence has loaded. A class missing from the airfield is
-                // therefore ambiguous between "filtered out" and "the block never ran", and
-                // these two lines are the only way to tell those apart.
-                diag_log format ["ATO_PLACE_DBG gate placeAir=%1 airCount=%2 isCarrier=%3", _placeAir, count (_airCount select 1), _isCarrier];
-
                 if (_debug) then {
                     ["ATO %1 AIR ASSETS: %2",_logic, _airCount] call ALiVE_fnc_dump;
+                };
+
+                // DIAG-STRIP: settles whether this module places aircraft at all in a given
+                // mission. Both halves matter and neither is visible from the outcome: the
+                // block is skipped when Place Aircraft is off, AND skipped when the commander
+                // already holds two or more air assets, which is the usual case once adopted
+                // aircraft are counted. An airframe parked badly is therefore just as likely
+                // to have come from another module entirely.
+                if (_debug) then {
+                    ["ATO %1 DIAG-STRIP placement gate: placeAir=%2 airAssets=%3 isCarrier=%4 -> placementRuns=%5",
+                        _logic,
+                        _placeAir,
+                        count (_airCount select 1),
+                        _isCarrier,
+                        (count (_airCount select 1) < 2 && _placeAir && !_isCarrier)] call ALiVE_fnc_dump;
                 };
 
                 if (count (_airCount select 1) < 2 && _placeAir && !_isCarrier) then {
@@ -5618,10 +5626,25 @@ switch(_operation) do {
                                 };
                                 // DEBUG -------------------------------------------------------------------------------------
 
+                                // DIAG-STRIP: a tasked drone that reaches the runway without an
+                                // operator cannot fly, holds its slot, and every aircraft tasked
+                                // behind it queues forever. The branch it takes through this case
+                                // decides whether it is ever handed to createVehicleCrew, so log
+                                // that decision rather than inferring it from the outcome.
+                                if (_debug) then {
+                                    ["ATO %1 DIAG-STRIP aircraftStart entry: class=%2 isDrone=%3 profileActive=%4 crewProfile=%5 crewGroupBad=%6",
+                                        _logic,
+                                        _vehicleClass,
+                                        [_vehicleClass] call _fnc_isDroneClass,
+                                        [_profile,"active",false] call ALiVE_fnc_hashGet,
+                                        !isNil "_crewProfile",
+                                        _crewGroupBad] call ALiVE_fnc_dump;
+                                };
+
                                 if !([_profile,"active"] call ALiVE_fnc_hashGet) then {
 
                                     // Assign crew if not UAV
-                                    if !(_vehicleClass isKindOf "UAV") then {
+                                    if !([_vehicleClass] call _fnc_isDroneClass) then {
                                         [_crewProfile,_profile] call ALIVE_fnc_createProfileVehicleAssignment;
                                     };
 
