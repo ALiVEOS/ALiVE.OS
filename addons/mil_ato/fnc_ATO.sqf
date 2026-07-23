@@ -2461,11 +2461,6 @@ switch(_operation) do {
                     // Place planes
                     private _airClasses = [0,_faction,"Plane"] call ALiVE_fnc_findVehicleType;
 
-                    // ATO_PLACE_DBG (DIAG-STRIP): the pool BEFORE the unarmed strip. A class
-                    // absent here never came back from findVehicleType at all, which is a
-                    // faction question and nothing to do with the filter below.
-                    diag_log format ["ATO_PLACE_DBG pool faction=%1 preFilter=%2", _faction, _airClasses];
-
                     // Remove unarmed classes
                     {
                         if !([_x] call ALiVE_fnc_isArmed) then {
