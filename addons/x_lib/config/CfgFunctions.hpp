@@ -1993,6 +1993,13 @@ class isArmed
 	RECOMPILE;
 };
 
+class getAircraftCapabilities
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_getAircraftCapabilities.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class isEnemyNear
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_isEnemyNear.sqf";

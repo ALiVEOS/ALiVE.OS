@@ -297,67 +297,59 @@ ALiVE_fnc_isVTOL = {
 
 ALiVE_fnc_getAircraftRoles = {
     params [
-        ["_class", "", ["",objNull]]
+        ["_class", "", ["",objNull]],
+        // Optional. Magazines actually fitted, e.g. a profile's pylonLoadout
+        // snapshot. Merged with the config scan, which only ever sees each
+        // pylon's default attachment and so under-reports a refitted aircraft.
+        ["_loadout", [], [[]]]
     ];
 
     if (_class isEqualType objNull) then {_class = typeof _class};
 
     // Attack aircraft have air to surface capability
     // Fighter aircraft have air to air capability
-    // Recon aircraft are armed but have surveillance capability?
+    // Recon aircraft can actually find things - see the sensor note below
     // Multi-role aircraft have both attack and fighter
+    //
+    // Roles are now derived from ALiVE_fnc_getAircraftCapabilities rather than
+    // guessed here. The rule this replaces credited ANY helicopter faster than
+    // 200 km/h as a reconnaissance platform, and every vanilla transport clears
+    // that bar - Ghost Hawk and Taru at 300, Mohawk at 250 - which is why troop
+    // carriers were being sent on reconnaissance and attack sorties they had no
+    // way to fly.
     private _result = [];
-    private _cas = false;
-    private _recce = false;
-    private _attack = false;
-    private _fighter = false;
+    private _caps = [_class, _loadout] call ALiVE_fnc_getAircraftCapabilities;
 
-    private _maxSpeed = _class call ALIVE_fnc_configGetVehicleMaxSpeed;
-
-    // Enable all (fast) helos to act as Recon platforms
-    if (_class isKindOf "Helicopter" && _maxSpeed > 200) then {
-        _recce = true;
+    // Recon needs something to observe with. Target-acquisition sensors are the
+    // honest discriminator: attack and scout airframes carry them, transports
+    // carry only a radar warning receiver.
+    //
+    // "sensorsUnknown" means the airframe declares no sensor component at all,
+    // which is how older and modded content presents. Those stay eligible - a
+    // strict test there would quietly shrink the fleet on RHS or CUP, and an
+    // empty pool is a worse failure than an imperfect pick.
+    if ("sensors" in _caps || {"sensorsUnknown" in _caps}) then {
+        _result pushBack "Recon";
     };
 
-    // Go through weapons and check for guns and cameras
-    private _weapons = _class call BIS_fnc_weaponsEntityType;
-    {
-        if (_x iskindof ["CannonCore", configFile >> "CfgWeapons"]) then {
-            _cas = true;
-        };
-        if (_x iskindof ["Laserdesignator_mounted", configFile >> "CfgWeapons"]) then {
-            _recce = true;
-        };
-    } forEach _weapons;
+    // Anything that can hit a ground target can be sent against one. Note that
+    // a gun counts: a gun-only aircraft could previously never be selected for
+    // anything at all, because the role it was given was never requested.
+    if (["gun", "agGuided", "agUnguided"] findIf {_x in _caps} > -1) then {
+        _result pushBack "Attack";
+    };
 
-    // Go through magazines and ammo and check capability for attack (AGM) and fighter (AAM)
-    private _magazines = _class call BIS_fnc_magazinesEntityType;
-    {
+    // Air-to-air, and only for fixed wing - the dispatcher restricts counter-air
+    // tasking to planes regardless, so granting it to helicopters only produced
+    // candidates that were then filtered out.
+    if ("aa" in _caps && {_class isKindOf "Plane"}) then {
+        _result pushBack "Fighter";
+    };
 
-        private _ammoCfg = configFile >> "CfgAmmo" >> (getText(configFile >> "CfgMagazines" >> _x >> "ammo"));
-
-        // Check for AGM and AA missiles
-        private _maxLockSpeed = getNumber(_ammoCfg >> "missileLockMaxSpeed"); // New A3 1.70 targeting
-        private _airLock = getNumber(_ammoCfg >> "airLock"); // legacy targeting
-        private _laserDesignate = getText(_ammoCfg >> "simulation") == "laserDesignate";
-        if (_maxLockSpeed > 0 || _airlock > 0) then {
-            if (_maxLockSpeed < 150 || (_airlock == 1 && !_laserDesignate)) then {
-                _attack = true;
-                _cas = true;
-                if ((_airlock == 1 && !_laserDesignate) && _class iskindof "Plane") then {
-                    _fighter = true;
-                };
-            } else {
-                _fighter = true;
-            };
-        };
-
-    } forEach _magazines;
-
-    if (_cas) then {_result pushback "CAS"};
-    if (_recce) then {_result pushback "Recon"};
-    if (_attack) then {_result pushback "Attack"};
-    if (_fighter) then {_result pushback "Fighter"};
+    // Retained for anything reading the stored roles. The dispatcher does not
+    // request "CAS" - gun-armed aircraft reach close air support through
+    // "Attack" above.
+    if ("gun" in _caps) then { _result pushBack "CAS" };
 
     _result
 };
@@ -1193,9 +1185,31 @@ switch(_operation) do {
 
                 };
 
-                // Check role of aircraft
-                private _roles = [_vehicleClass] call ALiVE_fnc_getAircraftRoles;
+                // Check role of aircraft. The fitted loadout is passed alongside the
+                // class because a config scan only sees each pylon's default
+                // attachment - an aircraft rearmed in the Editor or from an arsenal
+                // reads as though it still carries whatever it shipped with. The
+                // snapshot is captured at virtualisation and replayed on spawn, so
+                // it is the closest thing available to what the aircraft is really
+                // carrying.
+                private _fittedLoadout = [_vehicleProfile,"pylonLoadout",[]] call ALiVE_fnc_hashGet;
+                private _roles = [_vehicleClass, _fittedLoadout] call ALiVE_fnc_getAircraftRoles;
                 [_asset,"roles",_roles] call ALiVE_fnc_hashSet;
+
+                // Report what each airframe was credited with and why. Capability is
+                // read from config, and third-party aircraft vary in how completely
+                // they declare sensors and ordnance - so rather than assert this
+                // works on any given mod, make it checkable: turn on Debug and the
+                // log states, per airframe, exactly what was detected.
+                //
+                // An aircraft that declares no sensor component at all reports
+                // sensorsUnknown and is left eligible on purpose. That keeps mods
+                // which predate or ignore the sensor overhaul working as they do
+                // today rather than quietly dropping out of the roster.
+                if (_debug) then {
+                    private _caps = [_vehicleClass, _fittedLoadout] call ALiVE_fnc_getAircraftCapabilities;
+                    ["ATO %1 - %2 capabilities %3 -> roles %4 (fitted loadout: %5)", _logic, _vehicleClass, _caps, _roles, count _fittedLoadout] call ALiVE_fnc_dump;
+                };
 
                 if (_type == "entity") then {
 
