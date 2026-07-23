@@ -493,6 +493,14 @@ private _fnc_safeReposition = {
     params ["_veh", "_pos", ["_dir", -1]];
     // Null-safe: de-virtualized / destroyed profiles yield objNull here (the RPT `type= empty` no-op).
     if (isNull _veh || {!alive _veh}) exitWith {};
+    // Never move an airframe a player is sitting in. Everything below is a
+    // teleport: setPosATL onto the parking slot, attitude forced upright and
+    // velocity zeroed. Done to an aircraft somebody is flying, that is a yank
+    // out of the sky onto the apron. Leaving it where it is costs the commander
+    // one parking slot; the alternative costs a player their aircraft.
+    if ((crew _veh) findIf {isPlayer _x} > -1) exitWith {
+        diag_log format ["ATO_HANGAR_DBG safeReposition SKIPPED type=%1 -- player aboard", typeOf _veh];
+    };
     // mil_ato item6 -- INTERIM detonation fix (2026-07-03). This is the ONLY route that teleports a
     // LIVE airframe onto its hangar startPos (the slot IS the hangar interior by design). The detonation
     // fuse was the settle re-arming damage on a still-clipping frame: because `allowDamage false`
@@ -4586,11 +4594,148 @@ switch(_operation) do {
                                         _ammo = _avail / count _ammo;
                                     };
 
+                                    // An airframe with a player in it is off limits, however
+                                    // suitable it looks on paper. Nothing downstream expects a
+                                    // human in the seat: the crew boards with moveInAny, which
+                                    // quietly finds no seat at all in a single seater and leaves
+                                    // the commander believing a sortie launched that never did,
+                                    // and the return leg teleports the airframe back to its
+                                    // parking slot with whoever is aboard still inside it.
+                                    //
+                                    // Only spawned aircraft can be occupied, so this costs
+                                    // nothing for the virtualised majority of the roster.
+                                    private _playerOccupied = false;
+                                    private _assetClass = [_aircraft,"vehicleClass",""] call ALiVE_fnc_hashGet;
+                                    // Set when the aircraft is somewhere it cannot fly from and
+                                    // is on its way back. Held out of selection until it arrives.
+                                    private _returnHome = false;
+                                    // A profile marked spawned whose object has gone reports
+                                    // zero fuel and a position at map origin, and it is the zero
+                                    // fuel that keeps a destroyed aircraft out of the running.
+                                    // That is left exactly as it was, but the bogus position
+                                    // must not reach the home check below, which would read it
+                                    // as an aircraft stranded in the sea off the map corner.
+                                    private _liveObjMissing = false;
+
                                     if (_active) then {
                                         private _vehicleObj = [_profile, "vehicle"] call ALiVE_fnc_hashGet;
                                         _damage = damage _vehicleObj;
                                         _fuel = fuel _vehicleObj;
                                         _currentPosition = getposATL _vehicleObj;
+
+                                        if (isNull _vehicleObj) then {
+                                            _liveObjMissing = true;
+                                        } else {
+                                            // Seated crew covers the ordinary case. The second
+                                            // test covers a drone being flown from a terminal,
+                                            // where the operator is nowhere near the airframe
+                                            // and so never appears in its crew.
+                                            _playerOccupied = (crew _vehicleObj) findIf {isPlayer _x} > -1;
+
+                                            if !(_playerOccupied) then {
+                                                private _uavOperator = (UAVControl _vehicleObj) param [0, objNull];
+                                                _playerOccupied = !isNull _uavOperator && {isPlayer _uavOperator};
+                                            };
+                                        };
+                                    };
+
+                                    if (_playerOccupied && _debug) then {
+                                        ["ATO %1 %2 skipped: player aboard", _logic, _assetClass] call ALiVE_fnc_dump;
+                                    };
+
+                                    // Home reconciliation. startPos is written once when the
+                                    // aircraft joins the roster and never revisited, so an
+                                    // airframe a player has flown and left somewhere else is
+                                    // still being measured against a hangar it is no longer in.
+                                    // Everything downstream reads that distance: an aircraft
+                                    // more than 15 m from startPos is taken to be already
+                                    // airborne, so it gets tasked with no takeoff run, and the
+                                    // return leg then teleports it back to a slot it never
+                                    // left from.
+                                    //
+                                    // Only an idle aircraft is reconciled. One in the middle of
+                                    // a sortie is away from its parking slot for a good reason.
+                                    // The isNil guard is not paranoia: source files are picked up
+                                    // live under file patching but a new CfgFunctions entry only
+                                    // exists after a rebuild, so this file can legitimately run
+                                    // for a while before the function it calls is compiled.
+                                    // Skipping reconciliation entirely in that window leaves
+                                    // behaviour exactly as it was rather than throwing.
+                                    //
+                                    // The verdict is remembered against the position it was made
+                                    // at. Working out whether somewhere is an airfield means
+                                    // sweeping for runway objects over a wide radius, and an
+                                    // aircraft left standing where it cannot fly from is not
+                                    // going to move on its own while a player is beside it.
+
+                                    // Without this the same sweep would run again on every
+                                    // request for as long as it sat there.
+                                    private _strandedAt = [_aircraft,"strandedAt",[]] call ALiVE_fnc_hashGet;
+
+                                    if (count _strandedAt > 1 && {_strandedAt distance _currentPosition < 25}) then {
+                                        _returnHome = true;
+                                    } else {
+
+                                    if (!isNil "ALiVE_fnc_isAirfieldPosition"
+                                        && {!_liveObjMissing}
+                                        && {_currentOp == ""}
+                                        && {!_playerOccupied}
+                                        && {_position distance _currentPosition > 100}) then {
+
+                                        private _atAirfield = [_currentPosition, _assetClass] call ALiVE_fnc_isAirfieldPosition;
+
+                                        if (_atAirfield) then {
+                                            [_aircraft,"strandedAt",[]] call ALiVE_fnc_hashSet;
+                                            // Parked somewhere it can legitimately operate from,
+                                            // so adopt it as the new home rather than dragging
+                                            // the airframe back across the map. Direction is
+                                            // taken as it sits: it was landed and parked by a
+                                            // person, which is a better heading than anything
+                                            // inferred from a hangar it is not in.
+                                            [_aircraft,"startPos",_currentPosition] call ALiVE_fnc_hashSet;
+                                            if (_active) then {
+                                                private _vObj = [_profile, "vehicle"] call ALiVE_fnc_hashGet;
+                                                if !(isNull _vObj) then {
+                                                    [_aircraft,"startDir",direction _vObj] call ALiVE_fnc_hashSet;
+                                                };
+                                            };
+                                            // The airport it answers to changes with it, or the
+                                            // taxi and ILS lookups keep resolving against the
+                                            // field it flew away from.
+                                            [_aircraft,"airportID",[_currentPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashSet;
+                                            _position = _currentPosition;
+
+                                            if (_debug) then {
+                                                ["ATO %1 %2 re-homed to %3", _logic, _assetClass, _currentPosition] call ALiVE_fnc_dump;
+                                            };
+                                        } else {
+                                            // Sitting somewhere it cannot operate from. Send it
+                                            // home and keep it out of the running until it is
+                                            // there, rather than ordering a takeoff from a field.
+                                            //
+                                            // Nobody is watching a virtualised airframe, so the
+                                            // profile is simply put back where it belongs. If it
+                                            // is spawned it stays visibly put: a plane vanishing
+                                            // in front of a player is worse than a commander
+                                            // being one aircraft short.
+                                            _returnHome = true;
+
+                                            if !(_active) then {
+                                                [_profile, "position", _position] call ALiVE_fnc_profileVehicle;
+                                                [_aircraft,"currentPos",_position] call ALiVE_fnc_hashSet;
+                                            } else {
+                                                // Spawned, so it stays where it is and the verdict
+                                                // is remembered against this spot. It gets tested
+                                                // again the moment it moves more than 25 m.
+                                                [_aircraft,"strandedAt",_currentPosition] call ALiVE_fnc_hashSet;
+                                            };
+
+                                            if (_debug) then {
+                                                ["ATO %1 %2 stranded off-airfield at %3, returning to %4 (spawned=%5)", _logic, _assetClass, _currentPosition, _position, _active] call ALiVE_fnc_dump;
+                                            };
+                                        };
+                                    };
+
                                     };
 
                                     if (_debug) then {
@@ -4611,7 +4756,7 @@ switch(_operation) do {
                                     };
 
                                     // If an asset is parked or flying a CAP (and the request is not CAP) then the aircraft is available (or if CAS is requested)
-                                    if (_crewAvailable) then {
+                                    if (_crewAvailable && !_playerOccupied && !_returnHome) then {
 
                                         // Get active event type
                                         if (_currentOp != "") then {

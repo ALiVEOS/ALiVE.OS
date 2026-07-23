@@ -149,6 +149,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_getRunwayCentreline.sqf";
                 RECOMPILE;
             };
+            class isAirfieldPosition {
+                description = "True when a position is a recognised airfield for a given airframe: on or beside a runway, or on a helipad for rotary and VTOL";
+                file = "\x\alive\addons\main\fnc_isAirfieldPosition.sqf";
+                RECOMPILE;
+            };
             class findRunwayClear {
                 description = "Returns input position unchanged when clear of runway/taxiway segments by `_clearance`m beyond halfWidth, or a perpendicular-nudged position otherwise. One-shot waypoint / unit-sweep helper";
                 file = "\x\alive\addons\main\fnc_findRunwayClear.sqf";
