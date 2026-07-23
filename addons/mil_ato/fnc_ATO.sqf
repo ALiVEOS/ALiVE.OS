@@ -4241,7 +4241,12 @@ switch(_operation) do {
                                     private _type = "CAP";
                                     private _range = if ((getMarkerSize _x) select 0 < (getMarkerSize _x) select 1) then {(getMarkerSize _x) select 0} else {(getMarkerSize _x) select 1};
                                     private _args = [
-                                        "WHITE",                // ROE
+                                        // Fire at will. Combat air patrol exists to engage what
+                                        // it finds, and WHITE is hold fire, so the aircraft
+                                        // orbited over contacts without ever shooting. Not RED:
+                                        // that also grants engage at will, which lets a fighter
+                                        // abandon its patrol to chase something across the map.
+                                        "YELLOW",               // ROE
                                         DEFAULT_OP_HEIGHT,
                                         DEFAULT_SPEED,
                                         DEFAULT_MIN_WEAP_STATE,
@@ -5946,7 +5951,11 @@ switch(_operation) do {
                                     _wp setWaypointLoiterType "CIRCLE";
                                     _wp setWaypointLoiterRadius (_eventRange * 0.7);
                                     _wp setWaypointTimeout [_eventDuration,_eventDuration,_eventDuration];
-                                    _wp setWaypointBehaviour "SAFE";
+                                    // Behaviour is deliberately left as the AWARE set with the
+                                    // rest of the sortie waypoints. This used to force SAFE here,
+                                    // which alone would be survivable, but combined with the hold
+                                    // fire rules of arrival it produced a patrol that circled over
+                                    // contacts and never engaged one. Do not put SAFE back.
                                     // _wp setWaypointCompletionRadius _eventRange;
                                 };
                             };
