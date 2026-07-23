@@ -94,7 +94,7 @@
     <Chinesesimp>阵营</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_FACTION_COMMENT">
-    <English>Seeds this module's aircraft list and permanently fixes its side — e.g. OPF_F. Factions from synced AI Commanders are added automatically, but only from Commanders whose side is friendly to this one; the rest are dropped without warning. An unrecognised classname does not error, it falls back to EAST. A synced Faction Compiler overrides this.</English>
+    <English>Seeds this module's aircraft list and permanently fixes its side, e.g. OPF_F. Factions from synced AI Commanders are added automatically, but only from Commanders whose side is friendly to this one; the rest are dropped without warning. An unrecognised classname does not error, it falls back to EAST. A synced Faction Compiler overrides this.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_TYPES">
     <English>Available ATOs:</English>
@@ -108,7 +108,7 @@
     <Chinesesimp>空域标记</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_ATO_AIRSPACE_COMMENT">
-    <English>Marker names bounding this module's airspace, comma-separated, no spaces or quotes — e.g. marker1,marker2. Aircraft are never synced to this module: any armed aircraft of a managed faction already sitting inside one of these markers is adopted. Leave blank for the whole map. If none of the names match a real marker the module silently fails to start, so check the spelling.</English>
+    <English>Marker names bounding this module's airspace, comma-separated, no spaces or quotes, e.g. marker1,marker2. Aircraft are never synced to this module: any armed aircraft of a managed faction already sitting inside one of these markers is adopted. Leave blank for the whole map. If none of the names match a real marker the module silently fails to start, so check the spelling.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_USAGE">
     <English>Place a MACC module to provide Combat Air Patrol and Defensive Counter-Air over your airspace. Sync it to an AI Commander module to enable Recce, Strike, Close Air Support and OCA requests. A Military AI Commander module must be present somewhere in the mission or MACC will not start.</English>

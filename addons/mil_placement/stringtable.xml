@@ -66,7 +66,7 @@
     <Russian>Маркер TAOR:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_TAOR_COMMENT">
-    <English>Restricts placement to objectives inside this marker (or markers). Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes — e.g. marker1,marker2. Leave blank to use the entire map.</English>
+    <English>Restricts placement to objectives inside this marker (or markers). Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes, e.g. marker1,marker2. Leave blank to use the entire map.</English>
     <Chinese>將部署限制在此標記（或多個標記）內的目標。輸入編輯器中放置的標記的確切名稱。多個標記：用逗號分隔，無空格，無引號 — 例如 marker1,marker2。留空表示使用整張地圖。</Chinese>
     <Chinesesimp>将部署限制在此标记（或多个标记）内的目标。输入编辑器中放置的标记的确切名称。多个标记：用逗号分隔，无空格，无引号 — 例如 marker1,marker2。留空表示使用整张地图。</Chinesesimp>
     <Spanish>Restringe el despliegue a los objetivos dentro de este marcador (o marcadores). Introduce el nombre del marcador tal como está colocado en el editor. Varios marcadores: sepáralos con coma, sin espacios ni comillas — p. ej. marker1,marker2. Déjalo en blanco para usar todo el mapa.</Spanish>
@@ -84,7 +84,7 @@
     <Russian>Маркер чёрного списка:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_BLACKLIST_COMMENT">
-    <English>Excludes objectives inside this marker (or markers) from placement. Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes — e.g. marker1,marker2.</English>
+    <English>Excludes objectives inside this marker (or markers) from placement. Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes, e.g. marker1,marker2.</English>
     <Chinese>將此標記（或多個標記）內的目標排除在部署之外。輸入編輯器中放置的標記的確切名稱。多個標記：用逗號分隔，無空格，無引號 — 例如 marker1,marker2。</Chinese>
     <Chinesesimp>将此标记（或多个标记）内的目标排除在部署之外。输入编辑器中放置的标记的确切名称。多个标记：用逗号分隔，无空格，无引号 — 例如 marker1,marker2。</Chinesesimp>
     <Spanish>Excluye los objetivos dentro de este marcador (o marcadores) del despliegue. Introduce el nombre del marcador tal como está colocado en el editor. Varios marcadores: sepáralos con coma, sin espacios ni comillas — p. ej. marker1,marker2.</Spanish>
@@ -265,7 +265,7 @@
     <Russian>Процент активного патрулирования:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_ACTIVE_PATROL_PERCENT_COMMENT">
-    <English>Of the units active at mission start, what percentage actively patrols (vs garrisons buildings near the objective). 100% = all patrol; 0% = all garrison. Only affects active units — see 'Readiness' for the active vs reserve split.</English>
+    <English>Of the units active at mission start, what percentage actively patrols (vs garrisons buildings near the objective). 100% = all patrol; 0% = all garrison. Only affects active units; see 'Readiness' for the active vs reserve split.</English>
     <Chinese>任務開始時現役單位中，主動巡邏的百分比（相對於駐守目標附近建築物）。100% = 全部巡邏；0% = 全部駐守。僅影響現役單位 — 請參閱「戰備」以了解現役與預備隊的分配。</Chinese>
     <Chinesesimp>任务开始时现役单位中，主动巡逻的百分比（相对于驻守目标附近建筑）。100% = 全部巡逻；0% = 全部驻守。仅影响现役单位 — 参见"战备"了解现役与预备队的分配。</Chinesesimp>
     <Spanish>De las unidades activas al inicio de la misión, qué porcentaje patrulla activamente (en lugar de guarnecer edificios cerca del objetivo). 100% = todas patrullan; 0% = todas guarnecen. Solo afecta a unidades activas — ver 'Disponibilidad' para la división activa vs reserva.</Spanish>
@@ -391,7 +391,7 @@
     <Russian>Размещать юниты:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACEMENT_COMMENT">
-    <English>Place Units: spawns both units and registers objectives. Objectives Only: registers objectives for an AI Commander without placing any units — useful when OPCOM manages forces separately.</English>
+    <English>Place Units: spawns both units and registers objectives. Objectives Only: registers objectives for an AI Commander without placing any units, which is useful when OPCOM manages forces separately.</English>
     <Chinese>放置單位：同時生成單位並註冊目標。僅目標：為 AI 指揮官註冊目標但不放置任何單位 — 當 OPCOM 單獨管理部隊時很有用。</Chinese>
     <Chinesesimp>放置单位：同时生成单位并注册目标。仅目标：为 AI 指挥官注册目标但不放置任何单位 — 当 OPCOM 单独管理部队时很有用。</Chinesesimp>
     <Spanish>Colocar unidades: genera unidades y registra objetivos. Solo objetivos: registra objetivos para un comandante IA sin colocar unidades — útil cuando OPCOM gestiona las fuerzas por separado.</Spanish>
@@ -508,7 +508,7 @@
     <Russian>Весовой состав сил:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_TYPE_COMMENT">
-    <English>Preferred composition of the force. Weighted towards the selected type but not exclusive — other unit types will still appear in smaller numbers.</English>
+    <English>Preferred composition of the force. Weighted towards the selected type but not exclusive, other unit types will still appear in smaller numbers.</English>
     <Chinese>部隊的首選組成。偏向所選類型但非獨佔 — 其他單位類型仍會以較少數量出現。</Chinese>
     <Chinesesimp>部队的首选组成。偏向所选类型但非独占 — 其他单位类型仍会以较少数量出现。</Chinesesimp>
     <Spanish>Composición preferida de la fuerza. Ponderada hacia el tipo seleccionado pero no exclusiva — otros tipos de unidad seguirán apareciendo en menor número.</Spanish>
@@ -912,7 +912,7 @@
     <Russian>Размещать припасы:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACE_SUPPLIES_COMMENT">
-    <English>Places faction-appropriate supply boxes inside storage buildings at objectives. Does not affect the AI logistics system — for AI resupply use the Military Logistics module.</English>
+    <English>Places faction-appropriate supply boxes inside storage buildings at objectives. Does not affect the AI logistics system; for AI resupply use the Military Logistics module.</English>
     <Chinese>在目標處的儲存建築內放置適合該陣營的物資箱。不影響 AI 後勤系統 — AI 補給請使用軍事後勤模組。</Chinese>
     <Chinesesimp>在目标处的存储建筑内放置适合该阵营的物资箱。不影响 AI 后勤系统 — AI 补给请使用军事后勤模块。</Chinesesimp>
     <Spanish>Coloca cajas de suministros apropiadas para la facción dentro de los edificios de almacenamiento en los objetivos. No afecta al sistema de logística de la IA — para el reabastecimiento de la IA usa el módulo de Logística militar.</Spanish>
@@ -930,7 +930,7 @@
     <Russian>Размещать фоновый транспорт:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_VEHICLE_AMOUNT_COMMENT">
-    <English>Spawns parked vehicles at objectives to add visual density. These are uncrewed and static — they do not patrol or respond to combat.</English>
+    <English>Spawns parked vehicles at objectives to add visual density. These are uncrewed and static; they do not patrol or respond to combat.</English>
     <Chinese>在目標處生成停放的車輛以增加視覺密度。這些車輛無人駕駛且靜態 — 不會巡邏或對戰鬥做出反應。</Chinese>
     <Chinesesimp>在目标处生成停放的车辆以增加视觉密度。这些车辆无人驾驶且静态 — 不会巡逻或对战斗做出反应。</Chinesesimp>
     <Spanish>Genera vehículos aparcados en los objetivos para añadir densidad visual. No tienen tripulación y son estáticos — no patrullan ni responden al combate.</Spanish>
@@ -1163,7 +1163,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_CUSTOM_MODE_COMMENT">
-    <English>How the custom class lists below merge into the global static-data registry. Replace (default) overwrites each faction's existing entry with the user-supplied list — matches the legacy init.sqf hashSet override pattern. Append keeps the existing entries and adds the user-supplied list on top, deduped — useful when extending stock factions with mod classes without losing the defaults. WARNING: legacy hashSet calls in init.sqf / staticData.sqf execute AFTER module init and silently overwrite this setting. Use either the Eden picker or legacy init-time hashSet for a given faction, not both.</English>
+    <English>How the custom class lists below merge into the global static-data registry. Replace (default) overwrites each faction's existing entry with the user-supplied list, matching the legacy init.sqf hashSet override pattern. Append keeps the existing entries and adds the user-supplied list on top, deduped, which is useful when extending stock factions with mod classes without losing the defaults. WARNING: legacy hashSet calls in init.sqf / staticData.sqf execute AFTER module init and silently overwrite this setting. Use either the Eden picker or legacy init-time hashSet for a given faction, not both.</English>
     <Chinese>下方自訂類別清單如何合併進全域靜態資料表。取代（預設）以使用者提供的清單覆蓋每個派系既有的項目 — 與舊式 init.sqf hashSet 覆寫模式相符。附加保留既有項目,並在其上加入使用者提供的清單並去重 — 適合在擴充原始派系時加入模組類別,而不失去預設值。</Chinese>
     <Chinesesimp>下方自定义类别清单如何合并进全局静态数据表。取代（默认）以用户提供的清单覆盖每个派系既有的项目 — 与旧式 init.sqf hashSet 覆写模式相符。附加保留既有项目,并在其上加入用户提供的清单并去重 — 适合在扩充原始派系时加入模组类别,而不失去默认值。</Chinesesimp>
     <Spanish>Cómo se combinan las listas de clases personalizadas con el registro global de datos estáticos. Replace (predeterminado) sobrescribe la entrada existente de cada facción con la lista proporcionada — equivale al patrón heredado de hashSet en init.sqf. Append conserva las entradas existentes y añade encima la lista proporcionada, deduplicada — útil para ampliar facciones estándar con clases de mods sin perder los valores predeterminados.</Spanish>
@@ -1183,7 +1183,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_CUSTOM_SUPPORTS_COMMENT">
-    <English>Per-faction overrides for the ambient support-vehicle pool (ALIVE_factionDefaultSupports) — the ammo / fuel / repair / medical trucks placed near military objectives. Tick classes from the listbox; type extra mod classes into the override field with FACTION=class1,class2;FACTION2=class3 syntax. Replace mode wipes the faction's stock list with your selection; Append mode adds your selection on top of stock entries. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <English>Per-faction overrides for the ambient support-vehicle pool (ALIVE_factionDefaultSupports), the ammo / fuel / repair / medical trucks placed near military objectives. Tick classes from the listbox; type extra mod classes into the override field with FACTION=class1,class2;FACTION2=class3 syntax. Replace mode wipes the faction's stock list with your selection; Append mode adds your selection on top of stock entries. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
     <Chinese>對環境支援載具池（ALIVE_factionDefaultSupports）進行各派系覆寫 — 即放置於軍事目標附近的彈藥 / 燃料 / 維修 / 醫療卡車。在列表框中勾選類別;在覆寫欄位以 FACTION=class1,class2;FACTION2=class3 語法輸入額外的模組類別。取代模式會以您的選擇清除該派系的原始清單;附加模式則在原始項目之上加入您的選擇。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>对环境支援载具池（ALIVE_factionDefaultSupports）进行各派系覆写 — 即放置于军事目标附近的弹药 / 燃料 / 维修 / 医疗卡车。在列表框中勾选类别;在覆写字段以 FACTION=class1,class2;FACTION2=class3 语法输入额外的模组类别。取代模式会以您的选择清除该派系的原始清单;附加模式则在原始项目之上加入您的选择。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Reemplazos por facción del pool de vehículos de apoyo ambientales (ALIVE_factionDefaultSupports) — los camiones de munición / combustible / reparación / medical colocados cerca de objetivos militares. Marca clases en el listbox; introduce clases de mods adicionales en el campo override con la sintaxis FACTION=class1,class2;FACTION2=class3. El modo Replace borra la lista estándar de la facción con tu selección; el modo Append añade tu selección encima de las entradas estándar. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
@@ -1203,7 +1203,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_CUSTOM_SUPPLIES_COMMENT">
-    <English>Per-faction overrides for the random supply-box pool (ALIVE_factionDefaultSupplies) — the ammo / weapon / specialist crates placed near military objectives. Tick classes from the listbox; type extra mod classes into the override field with FACTION=class1,class2;FACTION2=class3 syntax. Replace mode wipes the faction's stock list with your selection; Append mode adds your selection on top of stock entries. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <English>Per-faction overrides for the random supply-box pool (ALIVE_factionDefaultSupplies), the ammo / weapon / specialist crates placed near military objectives. Tick classes from the listbox; type extra mod classes into the override field with FACTION=class1,class2;FACTION2=class3 syntax. Replace mode wipes the faction's stock list with your selection; Append mode adds your selection on top of stock entries. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
     <Chinese>對隨機補給箱池（ALIVE_factionDefaultSupplies）進行各派系覆寫 — 即放置於軍事目標附近的彈藥 / 武器 / 專業裝備箱。在列表框中勾選類別;在覆寫欄位以 FACTION=class1,class2;FACTION2=class3 語法輸入額外的模組類別。取代模式會以您的選擇清除該派系的原始清單;附加模式則在原始項目之上加入您的選擇。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>对随机补给箱池（ALIVE_factionDefaultSupplies）进行各派系覆写 — 即放置于军事目标附近的弹药 / 武器 / 专业装备箱。在列表框中勾选类别;在覆写字段以 FACTION=class1,class2;FACTION2=class3 语法输入额外的模组类别。取代模式会以您的选择清除该派系的原始清单;附加模式则在原始项目之上加入您的选择。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Reemplazos por facción del pool de cajas de suministros aleatorias (ALIVE_factionDefaultSupplies) — las cajas de munición / armas / especialistas colocadas cerca de objetivos militares. Marca clases en el listbox; introduce clases de mods adicionales en el campo override con la sintaxis FACTION=class1,class2;FACTION2=class3. El modo Replace borra la lista estándar de la facción con tu selección; el modo Append añade tu selección encima de las entradas estándar. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
@@ -1239,7 +1239,7 @@
     <Russian>Выполнить один раз для юнита:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_ON_EACH_SPAWN_ONCE_COMMENT">
-    <English>Yes: the SQF hook runs only on the first spawn of each unit profile — useful for one-time setup like adding event handlers. No: runs every time the profile re-spawns after being virtual.</English>
+    <English>Yes: the SQF hook runs only on the first spawn of each unit profile, which is useful for one-time setup like adding event handlers. No: runs every time the profile re-spawns after being virtual.</English>
     <Chinese>是：SQF 鉤子只在每個單位設定檔的首次生成時執行 — 適用於一次性設定如新增事件處理器。否：每次設定檔在虛擬化後重新生成時都執行。</Chinese>
     <Chinesesimp>是：SQF 钩子只在每个单位配置文件的首次生成时执行 — 适用于一次性设置如添加事件处理器。否：每次配置文件在虚拟化后重新生成时都执行。</Chinesesimp>
     <Spanish>Sí: el gancho SQF se ejecuta solo en la primera aparición de cada perfil de unidad — útil para configuración puntual como añadir manejadores de eventos. No: se ejecuta cada vez que el perfil reaparece tras estar virtual.</Spanish>

@@ -30,7 +30,7 @@
     <Russian>Включить отладку:</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_DEBUG_COMMENT">
-    <English>Enables Military Logistics module debug — diag_log dumps of reinforcement requests, pool deductions and transport assignments.</English>
+    <English>Enables Military Logistics module debug: diag_log dumps of reinforcement requests, pool deductions and transport assignments.</English>
     <Chinese>啟用軍事後勤模組調試 — 將增援請求、力量池扣減和運輸指派記錄到 diag_log。</Chinese>
     <Chinesesimp>启用军事后勤模块调试 — 将增援请求、力量池扣减和运输指派记录到 diag_log。</Chinesesimp>
     <Spanish>Activa la depuración del módulo de Logística militar — vuelca al diag_log las solicitudes de refuerzo, las deducciones del pool y las asignaciones de transporte.</Spanish>
@@ -374,7 +374,7 @@
     <Russian>Авиатранспортные средства:</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_LIMIT_COMMENT">
-    <English>Which air transport vehicles the commander can call on. Side and Faction (default) — any helicopter or transport plane belonging to the same side may be used, regardless of faction. Faction Only — restricts the pool to vehicles from the exact same faction as the commander. NOTE: this setting only filters the side-default pool. The Override Air Transport list below is faction-keyed, so its entries always apply to that faction regardless of this setting — a Faction Only setup will still see your override classes.</English>
+    <English>Which air transport vehicles the commander can call on. Side and Faction (default): any helicopter or transport plane belonging to the same side may be used, regardless of faction. Faction Only: restricts the pool to vehicles from the exact same faction as the commander. NOTE: this setting only filters the side-default pool. The Override Air Transport list below is faction-keyed, so its entries always apply to that faction regardless of this setting, and a Faction Only setup will still see your override classes.</English>
     <Chinese>指揮官可呼叫哪些空中運輸載具。陣營與派系（預設）— 同方任何直升機或運輸機都可使用，不論派系。僅派系 — 池僅限與指揮官相同派系的載具。</Chinese>
     <Chinesesimp>指挥官可呼叫哪些空中运输载具。阵营与派系（默认）— 同方任何直升机或运输机都可使用，不论派系。仅派系 — 池仅限与指挥官相同派系的载具。</Chinesesimp>
     <Spanish>Qué vehículos de transporte aéreo puede convocar el comandante. Bando y facción (predeterminado) — cualquier helicóptero o avión de transporte del mismo bando, independientemente de la facción. Solo facción — restringe el pool a vehículos exactamente de la misma facción que el comandante.</Spanish>
@@ -394,7 +394,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_HELI_DEPART_AIRFIELD_COMMENT">
-    <English>No (default): transport helicopters launch from the supply network's held objective nearest the force HQ, as before. Yes: helicopter insertions launch from — and return to — the nearest friendly airfield instead (a held objective within 1000m of a runway), when one exists; if none qualifies the default departure is used. Combat paradrops always use the default departure.</English>
+    <English>No (default): transport helicopters launch from the supply network's held objective nearest the force HQ, as before. Yes: helicopter insertions launch from, and return to, the nearest friendly airfield instead (a held objective within 1000m of a runway), when one exists; if none qualifies the default departure is used. Combat paradrops always use the default departure.</English>
     <Chinese>否（預設）：運輸直升機一如既往從補給網路中最靠近部隊指揮部的據守目標出發。是：直升機運送改為從最近的友方機場出發並返回該處（跑道 1000 公尺範圍內的據守目標），若存在的話；若無符合條件者則使用預設出發點。戰鬥傘降一律使用預設出發點。</Chinese>
     <Chinesesimp>否（默认）：运输直升机一如既往从补给网络中最靠近部队指挥部的据守目标出发。是：直升机运送改为从最近的友方机场出发并返回该处（跑道 1000 米范围内的据守目标），若存在的话；若无符合条件者则使用默认出发点。战斗伞降一律使用默认出发点。</Chinesesimp>
     <Spanish>No (predeterminado): los helicópteros de transporte despegan del objetivo controlado de la red de suministro más cercano al cuartel general, como hasta ahora. Sí: las inserciones en helicóptero despegan desde — y regresan a — el aeródromo amigo más cercano (un objetivo controlado a menos de 1000 m de una pista), cuando existe; si ninguno cumple los requisitos se usa la salida predeterminada. Los lanzamientos paracaidistas de combate siempre usan la salida predeterminada.</Spanish>
@@ -414,7 +414,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ML_CUSTOM_MODE_COMMENT">
-    <English>How the custom class lists below merge into the global static-data registry. Replace (default) overwrites each faction's existing entry with the user-supplied list — matches the legacy init.sqf hashSet override pattern. Append keeps the existing entries and adds the user-supplied list on top, deduped — useful when extending stock factions with mod classes without losing the defaults. WARNING: legacy hashSet calls in init.sqf / staticData.sqf execute AFTER module init and silently overwrite this setting. Use either the Eden picker or legacy init-time hashSet for a given faction, not both.</English>
+    <English>How the custom class lists below merge into the global static-data registry. Replace (default) overwrites each faction's existing entry with the user-supplied list, matching the legacy init.sqf hashSet override pattern. Append keeps the existing entries and adds the user-supplied list on top, deduped, which is useful when extending stock factions with mod classes without losing the defaults. WARNING: legacy hashSet calls in init.sqf / staticData.sqf execute AFTER module init and silently overwrite this setting. Use either the Eden picker or legacy init-time hashSet for a given faction, not both.</English>
     <Chinese>下方自訂類別清單如何合併進全域靜態資料表。取代（預設）以使用者提供的清單覆蓋每個派系既有的項目 — 與舊式 init.sqf hashSet 覆寫模式相符。附加保留既有項目，並在其上加入使用者提供的清單並去重 — 適合在擴充原始派系時加入模組類別,而不失去預設值。</Chinese>
     <Chinesesimp>下方自定义类别清单如何合并进全局静态数据表。取代（默认）以用户提供的清单覆盖每个派系既有的项目 — 与旧式 init.sqf hashSet 覆写模式相符。附加保留既有项目,并在其上加入用户提供的清单并去重 — 适合在扩充原始派系时加入模组类别,而不失去默认值。</Chinesesimp>
     <Spanish>Cómo se combinan las listas de clases personalizadas con el registro global de datos estáticos. Replace (predeterminado) sobrescribe la entrada existente de cada facción con la lista proporcionada — equivale al patrón heredado de hashSet en init.sqf. Append conserva las entradas existentes y añade encima la lista proporcionada, deduplicada — útil para ampliar facciones estándar con clases de mods sin perder los valores predeterminados.</Spanish>
@@ -537,7 +537,7 @@
     <Russian>Уменьшить силу (потеря объекта):</Russian>
 </Key>
 <Key ID="STR_ALIVE_ML_START_FORCE_STRENGTH_DEC_COMMENT">
-    <English>When an objective is lost, OPCOM will decrease the force cap used to bring in 'replacements' — shrinking the available force as territory is given up.</English>
+    <English>When an objective is lost, OPCOM will decrease the force cap used to bring in 'replacements', shrinking the available force as territory is given up.</English>
     <Chinese>失去目標時，OPCOM 會降低用於引入「補充兵」的兵力上限 — 隨著領土被放棄，可用兵力縮減。</Chinese>
     <Chinesesimp>失去目标时，OPCOM 会降低用于引入「补充兵」的兵力上限 — 随着领土被放弃，可用兵力缩减。</Chinesesimp>
     <Spanish>Cuando se pierde un objetivo, OPCOM reducirá el límite de fuerza usado para traer «reemplazos» — encogiendo la fuerza disponible a medida que se cede territorio.</Spanish>

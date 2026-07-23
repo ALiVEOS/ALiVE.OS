@@ -156,10 +156,10 @@
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_WEST_COMMENT">
     <English>Initial hostility level of civilians toward the BLUFOR side (0-200 scale; higher = more hostile).
 
-• Low (0) — civilians start neutral; hostility builds only from insurgent activity.
-• Medium (30) — mild pre-existing animosity; some settlements begin wary.
-• High (60) — strong pre-existing hostility; most settlements begin unfriendly.
-• Extreme (130) — population begins actively hostile; hearts-and-minds work is much harder.</English>
+• Low (0): civilians start neutral; hostility builds only from insurgent activity.
+• Medium (30): mild pre-existing animosity; some settlements begin wary.
+• High (60): strong pre-existing hostility; most settlements begin unfriendly.
+• Extreme (130): population begins actively hostile; hearts-and-minds work is much harder.</English>
 
     <Chinese>平民對 BLUFOR 陣營的初始敵意（0-200 級別；數值愈高愈敵對）。
 
@@ -251,10 +251,10 @@
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_EAST_COMMENT">
     <English>Initial hostility level of civilians toward the OPFOR side (0-200 scale; higher = more hostile).
 
-• Low (0) — civilians start neutral; hostility builds only from insurgent activity.
-• Medium (30) — mild pre-existing animosity; some settlements begin wary.
-• High (60) — strong pre-existing hostility; most settlements begin unfriendly.
-• Extreme (130) — population begins actively hostile; hearts-and-minds work is much harder.</English>
+• Low (0): civilians start neutral; hostility builds only from insurgent activity.
+• Medium (30): mild pre-existing animosity; some settlements begin wary.
+• High (60): strong pre-existing hostility; most settlements begin unfriendly.
+• Extreme (130): population begins actively hostile; hearts-and-minds work is much harder.</English>
 
     <Chinese>平民對 OPFOR 陣營的初始敵意（0-200 級別；數值愈高愈敵對）。
 
@@ -346,10 +346,10 @@
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_INDEP_COMMENT">
     <English>Initial hostility level of civilians toward the Independent side (0-200 scale; higher = more hostile).
 
-• Low (0) — civilians start neutral; hostility builds only from insurgent activity.
-• Medium (30) — mild pre-existing animosity; some settlements begin wary.
-• High (60) — strong pre-existing hostility; most settlements begin unfriendly.
-• Extreme (130) — population begins actively hostile; hearts-and-minds work is much harder.</English>
+• Low (0): civilians start neutral; hostility builds only from insurgent activity.
+• Medium (30): mild pre-existing animosity; some settlements begin wary.
+• High (60): strong pre-existing hostility; most settlements begin unfriendly.
+• Extreme (130): population begins actively hostile; hearts-and-minds work is much harder.</English>
 
     <Chinese>平民對 Independent 陣營的初始敵意（0-200 級別；數值愈高愈敵對）。
 
@@ -648,7 +648,7 @@
     <Russian>Фракции (ручное переопределение):</Russian>
 </Key>
 <Key ID="STR_ALIVE_CIV_POP_FACTIONS_MANUAL_COMMENT">
-    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes — e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
+    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes, e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
     <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
     <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
     <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
@@ -728,7 +728,7 @@
     <Russian>Фракция толпы:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_CROWD_FACTION_COMMENT">
-    <English>Optional. Select a single civilian faction to use for ambient crowd spawns. Specifying a faction improves performance; leave unset to have the crowd activator pick a faction per building from nearby civilians. Factions from mods not currently loaded appear as "(unrecognised)" — the stored value is preserved regardless.</English>
+    <English>Optional. Select a single civilian faction to use for ambient crowd spawns. Specifying a faction improves performance; leave unset to have the crowd activator pick a faction per building from nearby civilians. Factions from mods not currently loaded appear as "(unrecognised)", but the stored value is preserved regardless.</English>
 
     <Chinese>選填。選擇一個單一平民派系用於環境人群生成。指定派系可提升效能；留空則由人群啟動器依附近平民為每棟建築選擇派系。目前未載入的模組派系會顯示為「(unrecognised)」——無論如何會保留儲存值。</Chinese>
     <Chinesesimp>可选。选择一个单一平民阵营用于环境人群生成。指定阵营可提升性能；留空则由人群启动器按附近平民为每栋建筑选择阵营。当前未加载的模组阵营会显示为「(unrecognised)」——无论如何都会保留存储值。</Chinesesimp>
@@ -770,10 +770,10 @@
 <Key ID="STR_ALIVE_CIV_POP_HOSTILITY_CHANCE_COMMENT">
     <English>Probability that giving humanitarian rations or water to a civilian decreases sector hostility.
 
-• Low (20%) — each aid action has a 1-in-5 chance of helping.
-• Medium (40%) — balanced default for most campaigns.
-• High (60%) — aid usually helps; fast hearts-and-minds progression.
-• Extreme (80%) — aid almost always helps; trivial to flip sector mood.</English>
+• Low (20%): each aid action has a 1-in-5 chance of helping.
+• Medium (40%): balanced default for most campaigns.
+• High (60%): aid usually helps; fast hearts-and-minds progression.
+• Extreme (80%): aid almost always helps; trivial to flip sector mood.</English>
 
     <Chinese>向平民提供人道口糧或飲水時，降低該聚落敵意的機率。
 
@@ -903,7 +903,7 @@
     <Russian>Свои классы воды:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_WATER_ITEMS_COMMENT">
-    <English>Select water items civilians may receive as humanitarian aid. The list shows items from loaded mods (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — these are added to ALiVE's built-in defaults. Use the manual field below to include items from mods not currently loaded but expected at mission time. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <English>Select water items civilians may receive as humanitarian aid. The list shows items from loaded mods (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla), and these are added to ALiVE's built-in defaults. Use the manual field below to include items from mods not currently loaded but expected at mission time. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 
     <Chinese>選擇平民可作為人道援助接收的飲水物品。清單顯示已載入模組（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 這些項目會加到 ALiVE 內建預設之上。對於目前未載入但預期於任務時存在的模組物品，使用下方手動欄位。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>选择平民可作为人道援助接收的饮水物品。列表显示已加载模组（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 这些项目会加到 ALiVE 内置默认之上。对于当前未加载但预期于任务时存在的模组物品，使用下方手动字段。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
@@ -923,7 +923,7 @@
     <Russian>Свои классы пайков:</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_HUMRAT_ITEMS_COMMENT">
-    <English>Select ration items civilians may receive as humanitarian aid. The list shows items from loaded mods (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla) — these are added to ALiVE's built-in defaults. Use the manual field below to include items from mods not currently loaded but expected at mission time. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <English>Select ration items civilians may receive as humanitarian aid. The list shows items from loaded mods (ACE3, MGM Foods, KSS, S.O.G. Prairie Fire, vanilla), and these are added to ALiVE's built-in defaults. Use the manual field below to include items from mods not currently loaded but expected at mission time. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
 
     <Chinese>選擇平民可作為人道援助接收的口糧物品。清單顯示已載入模組（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 這些項目會加到 ALiVE 內建預設之上。對於目前未載入但預期於任務時存在的模組物品，使用下方手動欄位。 多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>选择平民可作为人道援助接收的口粮物品。列表显示已加载模组（ACE3、MGM Foods、KSS、S.O.G. Prairie Fire、原版）提供的物品 — 这些项目会加到 ALiVE 内置默认之上。对于当前未加载但预期于任务时存在的模组物品，使用下方手动字段。 多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
@@ -943,7 +943,7 @@
     <Russian>Классы (ручное переопределение):</Russian></Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_ITEMS_MANUAL_COMMENT">
-    <English>Optional. Type extra item classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes — e.g. mod_item_01,mod_item_02. Combined with the selection above at runtime.</English>
+    <English>Optional. Type extra item classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes, e.g. mod_item_01,mod_item_02. Combined with the selection above at runtime.</English>
 
     <Chinese>可選。輸入目前未載入但預期於任務時存在的模組物品類名。格式：逗號分隔的類名，無空格無引號 — 例如 mod_item_01,mod_item_02。執行時與上方選擇合併。</Chinese>
     <Chinesesimp>可选。输入当前未加载但预期于任务时存在的模组物品类名。格式：逗号分隔的类名，无空格无引号 — 例如 mod_item_01,mod_item_02。运行时与上方选择合并。</Chinesesimp>
@@ -5131,7 +5131,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_AMB_VEH_DRIVER_CHANCE_COMMENT">
-    <English>Probability that an "ambient" parked civilian vehicle borrows a nearby civilian as a static driver when it spawns. 0 = always empty (true ambient parked cars). 0.15 (default) = roughly 1 in 7 spawns get a sitting driver, giving towns some life without filling every car. 1 = every spawn with a nearby civ gets a driver. The driver does not drive — they sit in the seat with the engine off.</English>
+    <English>Probability that an "ambient" parked civilian vehicle borrows a nearby civilian as a static driver when it spawns. 0 = always empty (true ambient parked cars). 0.15 (default) = roughly 1 in 7 spawns get a sitting driver, giving towns some life without filling every car. 1 = every spawn with a nearby civ gets a driver. The driver does not drive; they sit in the seat with the engine off.</English>
     <Chinese>「環境」停放平民載具生成時，向附近平民借用一名靜態駕駛的機率。0 = 永遠空車（真正的環境停放車輛）。0.15（預設值）= 大約每 7 次生成有 1 次會有坐著的駕駛，讓城鎮有點生氣但不會每輛車都塞人。1 = 只要附近有平民，每次生成都會配駕駛。該駕駛不會開車 -- 他們只是坐在座位上，引擎關閉。</Chinese>
     <Chinesesimp>"环境"停放平民车辆生成时,借用附近平民作为静止驾驶员的概率。0 = 始终为空(真正的环境停放车辆)。0.15(默认)= 大约每 7 次生成中有 1 次会有坐着的驾驶员,让城镇有些生气,但不会让每辆车都坐满人。1 = 每次生成、只要附近有平民就会安排驾驶员。该驾驶员不会驾驶——只是坐在座位上,发动机熄火。</Chinesesimp>
     <Spanish>Probabilidad de que un vehículo civil aparcado "ambiental" tome prestado a un civil cercano como conductor estático al aparecer. 0 = siempre vacío (coches aparcados verdaderamente ambientales). 0.15 (por defecto) = aproximadamente 1 de cada 7 apariciones obtiene un conductor sentado, dando vida a los pueblos sin llenar cada coche. 1 = toda aparición con un civil cercano obtiene un conductor. El conductor no conduce: se sienta en el asiento con el motor apagado.</Spanish>

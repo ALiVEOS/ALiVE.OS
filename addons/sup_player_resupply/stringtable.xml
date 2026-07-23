@@ -114,7 +114,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_PR_RESTRICTION_TYPE_COMMENT">
-    <English>Controls which vehicles and groups are available to the player.\n\n• Side — shows the player's side-wide assets, narrowed to the active friendly factions (see Filter Friendly Factions below).\n• Faction — shows only assets from the player's own faction, or from the factions ticked in the Factions list below.</English>
+    <English>Controls which vehicles and groups are available to the player.\n\n• Side: shows the player's side-wide assets, narrowed to the active friendly factions (see Filter Friendly Factions below).\n• Faction: shows only assets from the player's own faction, or from the factions ticked in the Factions list below.</English>
     <Chinese>控制玩家可使用哪些載具與編組。\n\n• 陣營 -- 顯示玩家所屬陣營全體的資產，並縮限至現役友軍派系（見下方「篩選友軍派系」）。\n• 派系 -- 僅顯示玩家所屬派系的資產，或下方「派系」清單中勾選的派系資產。</Chinese>
     <Chinesesimp>控制玩家可用的载具与队伍。\n\n• 阵营 — 显示玩家整个阵营的资产,并缩小至当前活跃的友方派系(参见下方的“过滤友方派系”)。\n• 派系 — 仅显示玩家自身派系的资产,或下方派系列表中勾选的派系。</Chinesesimp>
     <Spanish>Controla qué vehículos y grupos están disponibles para el jugador.\n\n• Bando — muestra los activos de todo el bando del jugador, acotados a las facciones amigas activas (ver Filtrar Facciones Amigas más abajo).\n• Facción — muestra solo los activos de la facción propia del jugador, o de las facciones marcadas en la lista de Facciones más abajo.</Spanish>
@@ -172,7 +172,7 @@
     <Russian>Фракции (ручное переопределение):</Russian>
 </Key>
 <Key ID="STR_ALIVE_PR_FACTION_WHITELIST_MANUAL_COMMENT">
-    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes — e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
+    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes, e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
     <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
     <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
     <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>

@@ -84,7 +84,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_RECRUIT_COMMENT">
-    <English>Units of these factions will use Recruit-tier skill values (low accuracy, slow reactions, short detection range). Lowest preset — use for untrained militia or irregular forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <English>Units of these factions will use Recruit-tier skill values (low accuracy, slow reactions, short detection range). Lowest preset: use for untrained militia or irregular forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
     <Chinese>這些派系的單位將使用新兵階技能值（命中率低、反應慢、偵測範圍短）。最低預設 — 適用於未受訓民兵或非正規部隊。預設值固定。若要為派系指定精確的個別參數值,請使用下方的自訂技能值區塊。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>这些派系的单位将使用新兵阶技能值（命中率低、反应慢、侦测范围短）。最低预设 — 适用于未受训民兵或非正规部队。预设值固定。若要为派系指定精确的个别参数值,请使用下方的自定义技能值区块。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Las unidades de estas facciones usarán valores de habilidad de nivel Recluta (baja precisión, reacciones lentas, rango de detección corto). Preset más bajo — úsalo para milicias no entrenadas o fuerzas irregulares. Los valores del preset son fijos. Para asignar valores exactos por parámetro a una facción, usa la sección Valores de Habilidad Personalizados de abajo. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
@@ -144,7 +144,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_EXPERT_COMMENT">
-    <English>Units of these factions will use Expert-tier skill values (high accuracy, fast reactions, long detection range). Highest preset — use for top-tier special forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <English>Units of these factions will use Expert-tier skill values (high accuracy, fast reactions, long detection range). Highest preset: use for top-tier special forces. Preset values are fixed. To assign exact per-parameter values to a faction, use the Custom Skill Values section below instead. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
     <Chinese>這些派系的單位將使用專家階技能值（命中率高、反應快、偵測範圍長）。最高預設 — 適用於頂級特種部隊。預設值固定。若要為派系指定精確的個別參數值,請使用下方的自訂技能值區塊。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>这些派系的单位将使用专家阶技能值（命中率高、反应快、侦测范围长）。最高预设 — 适用于顶级特种部队。预设值固定。若要为派系指定精确的个别参数值,请使用下方的自定义技能值区块。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Las unidades de estas facciones usarán valores de habilidad de nivel Experto (alta precisión, reacciones rápidas, largo rango de detección). Preset más alto — úsalo para fuerzas especiales de élite. Los valores del preset son fijos. Para asignar valores exactos por parámetro a una facción, usa la sección Valores de Habilidad Personalizados de abajo. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
@@ -162,7 +162,7 @@
     <Russian>Фракции (ручное переопределение):</Russian>
 </Key>
 <Key ID="STR_ALIVE_AISKILL_FACTIONS_MANUAL_COMMENT">
-    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes — e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
+    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes, e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
     <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
     <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
     <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
@@ -182,7 +182,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_COMMENT">
-    <English>Factions whose units will receive the exact skill values you configure below. This section is independent of the preset tiers above — presets use fixed hardcoded values, while this section gives full control over each parameter. If a faction is also assigned to a preset tier, the custom values take precedence. Leave empty to apply no custom values. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
+    <English>Factions whose units will receive the exact skill values you configure below. This section is independent of the preset tiers above; presets use fixed hardcoded values, while this section gives full control over each parameter. If a faction is also assigned to a preset tier, the custom values take precedence. Leave empty to apply no custom values. Multi-select: left-click selects one row; Ctrl+left-click toggles individual rows; Shift+left-click selects a range.</English>
     <Chinese>這些派系的單位將套用您於下方設定的精確技能值。本區塊獨立於上方的預設階級 — 預設使用固定的硬編碼值,本區塊則對每個參數提供完整控制。若派系也被指定到某個預設階級,自訂值將優先生效。留空則不套用自訂值。多選:左鍵點擊選取單一項目;Ctrl+左鍵點擊切換個別項目;Shift+左鍵點擊選取範圍。</Chinese>
     <Chinesesimp>这些派系的单位将套用您于下方配置的精确技能值。本区块独立于上方的预设阶级 — 预设使用固定的硬编码值,本区块则对每个参数提供完整控制。若派系也被指定到某个预设阶级,自定义值将优先生效。留空则不套用自定义值。多选:左键点击选取单一项目;Ctrl+左键点击切换个别项目;Shift+左键点击选取范围。</Chinesesimp>
     <Spanish>Facciones cuyas unidades recibirán los valores de habilidad exactos que configures abajo. Esta sección es independiente de los presets de niveles de arriba — los presets usan valores codificados fijos, mientras que esta sección da control total sobre cada parámetro. Si una facción también está asignada a un preset de nivel, los valores personalizados tienen prioridad. Deja vacío para no aplicar valores personalizados. Selección múltiple: clic izquierdo selecciona una fila; Ctrl+clic izquierdo alterna filas individuales; Shift+clic izquierdo selecciona un rango.</Spanish>
@@ -302,7 +302,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_AISKILL_CUSTOM_ENDURANCE_COMMENT">
-    <English>No effect in Arma 3 — the endurance sub-skill has been ignored by the engine since early development. Value is accepted but never applied. This field will be removed in a future version.</English>
+    <English>No effect in Arma 3. The endurance sub-skill has been ignored by the engine since early development. Value is accepted but never applied. This field will be removed in a future version.</English>
     <Chinese>在 Arma 3 中無作用 — 耐力子技能自開發初期起即被引擎忽略。值會被接受但不會生效。此欄位將於未來版本移除。</Chinese>
     <Chinesesimp>在 Arma 3 中无作用 — 耐力子技能自开发初期起即被引擎忽略。值会被接受但不会生效。此字段将于未来版本移除。</Chinesesimp>
     <Spanish>Sin efecto en Arma 3 — la sub-habilidad de resistencia ha sido ignorada por el motor desde el desarrollo temprano. El valor se acepta pero nunca se aplica. Este campo se eliminará en una versión futura.</Spanish>

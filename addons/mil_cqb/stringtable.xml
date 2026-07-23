@@ -151,7 +151,7 @@
     <Russian>Фракции (ручное переопределение):</Russian>
 </Key>
 <Key ID="STR_ALIVE_CQB_FACTIONS_MANUAL_COMMENT">
-    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes — e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
+    <English>Optional. Type extra faction classnames for mods not currently loaded but expected at mission time. Format: comma-separated classnames with no spaces or quotes, e.g. OPF_F,rhs_faction_msv. Combined with the Factions multi-select above at runtime.</English>
     <Chinesesimp>可选。输入当前未加载的模组派系类名，格式：逗号分隔，无空格，无引号。</Chinesesimp>
     <Chinese>可選。輸入目前未載入的模組派系類名，格式：逗號分隔，無空格，無引號。</Chinese>
     <Spanish>Opcional. Escriba classnames de facciones adicionales para mods no cargados actualmente. Formato: nombres separados por comas, sin espacios ni comillas.</Spanish>
@@ -272,7 +272,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_BLACKLIST_COMMENT">
-    <English>Excludes buildings inside this marker (or markers) from CQB. Enter marker names separated by commas, no spaces, no quotes — e.g. marker1,marker2. Leave blank for no exclusions.</English>
+    <English>Excludes buildings inside this marker (or markers) from CQB. Enter marker names separated by commas, no spaces, no quotes, e.g. marker1,marker2. Leave blank for no exclusions.</English>
     <Chinesesimp>不存在CQB的标记</Chinesesimp>
     <Chinese>從 CQB 排除此標記（或多個標記）內的建築。輸入以逗號分隔的標記名稱,無空格、無引號 — 例如 marker1,marker2。留空表示無排除。</Chinese>
     <Spanish>Excluye los edificios dentro de este marcador (o marcadores) del CQB. Introduce los nombres de marcador separados por comas, sin espacios, sin comillas — p. ej. marker1,marker2. Deja vacío para no aplicar exclusiones.</Spanish>
@@ -292,7 +292,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_WHITELIST_COMMENT">
-    <English>Restricts CQB to buildings inside this marker (or markers). Enter marker names separated by commas, no spaces, no quotes — e.g. marker1,marker2. Leave blank for no restriction. Overridden if this module is synced to a Placement module.</English>
+    <English>Restricts CQB to buildings inside this marker (or markers). Enter marker names separated by commas, no spaces, no quotes, e.g. marker1,marker2. Leave blank for no restriction. Overridden if this module is synced to a Placement module.</English>
     <Chinesesimp>CQB将出现的标记</Chinesesimp>
     <Chinese>將 CQB 限制在此標記（或多個標記）內的建築。輸入以逗號分隔的標記名稱,無空格、無引號 — 例如 marker1,marker2。留空表示不限制。若此模組同步至放置模組,則被覆寫。</Chinese>
     <Spanish>Restringe el CQB a los edificios dentro de este marcador (o marcadores). Introduce los nombres de marcador separados por comas, sin espacios, sin comillas — p. ej. marker1,marker2. Deja vacío para no aplicar restricciones. Sobrescrito si este módulo se sincroniza a un módulo de Colocación.</Spanish>
@@ -673,7 +673,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_STATICWEAPONS_CLASSNAMES_COMMENT">
-    <English>Classnames of static weapons eligible to spawn in CQB areas. Separate multiple classnames with commas, no spaces, no quotes — e.g. B_HMG_01_high_F,O_Mortar_01_F. Defaults to a mix of HMG and mortar classnames.</English>
+    <English>Classnames of static weapons eligible to spawn in CQB areas. Separate multiple classnames with commas, no spaces, no quotes, e.g. B_HMG_01_high_F,O_Mortar_01_F. Defaults to a mix of HMG and mortar classnames.</English>
     <Chinesesimp>可以生成的静态武器</Chinesesimp>
     <Chinese>可生成於 CQB 區域的靜態武器類別名稱。多個類別名稱以逗號分隔,無空格、無引號 — 例如 B_HMG_01_high_F,O_Mortar_01_F。預設為 HMG 與迫擊砲類別的混合。</Chinese>
     <Spanish>Nombres de clase de armas estáticas elegibles para aparecer en áreas CQB. Separa varios nombres de clase con comas, sin espacios, sin comillas — p. ej. B_HMG_01_high_F,O_Mortar_01_F. Predeterminado: una mezcla de nombres de clase de HMG y mortero.</Spanish>
@@ -693,7 +693,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_UNIT_BLACKLIST_COMMENT">
-    <English>Prevents specific unit group classnames from being used by this CQB module. Enter group classnames separated by commas, no spaces, no quotes — e.g. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</English>
+    <English>Prevents specific unit group classnames from being used by this CQB module. Enter group classnames separated by commas, no spaces, no quotes, e.g. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</English>
     <Chinesesimp>本CQB模块的黑名单单位</Chinesesimp>
     <Chinese>防止特定單位小組類別名稱被此 CQB 模組使用。輸入以逗號分隔的小組類別名稱,無空格、無引號 — 例如 OPF_G_Inf_AT_F,OPF_G_Inf_AA_F。</Chinese>
     <Spanish>Evita que classnames específicos de grupos de unidades sean usados por este módulo CQB. Introduce los classnames de grupo separados por comas, sin espacios, sin comillas — p. ej. OPF_G_Inf_AT_F,OPF_G_Inf_AA_F.</Spanish>
@@ -734,7 +734,7 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CQB_ON_EACH_SPAWN_ONCE_COMMENT">
-    <English>Yes: the SQF hook runs only on the first spawn of each unit — useful for one-time setup like adding event handlers. No: runs every time the unit re-spawns.</English>
+    <English>Yes: the SQF hook runs only on the first spawn of each unit, which is useful for one-time setup like adding event handlers. No: runs every time the unit re-spawns.</English>
     <Chinese>是：SQF 鉤子僅在每個單位首次生成時執行 — 適用於一次性設定,例如新增事件處理器。否：每次單位重新生成時都執行。</Chinese>
     <Chinesesimp>是：SQF 钩子仅在每个单位首次生成时执行 — 适用于一次性设定,例如新增事件处理器。否：每次单位重新生成时都执行。</Chinesesimp>
     <Spanish>Sí: el hook SQF se ejecuta solo en la primera aparición de cada unidad — útil para configuraciones únicas como agregar manejadores de eventos. No: se ejecuta cada vez que la unidad reaparece.</Spanish>

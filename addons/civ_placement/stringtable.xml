@@ -30,7 +30,7 @@
     <Russian>Включить отладку:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_DEBUG_COMMENT">
-    <English>Enables Civilian Placement module debug — diag_log dumps of cluster generation, placement attempts and synced commander hand-offs.</English>
+    <English>Enables Civilian Placement module debug: diag_log dumps of cluster generation, placement attempts and synced commander hand-offs.</English>
     <Chinese>啟用民用部署模組調試 — 將集群生成、部署嘗試和同步指揮官移交記錄到 diag_log。</Chinese>
     <Chinesesimp>启用民用部署模块调试 — 将集群生成、部署尝试和同步指挥官移交记录到 diag_log。</Chinesesimp>
     <Spanish>Activa la depuración del módulo de despliegue civil — vuelca al diag_log la generación de clústeres, los intentos de despliegue y las transferencias al comandante sincronizado.</Spanish>
@@ -48,7 +48,7 @@
     <Russian>Маркер TAOR:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_TAOR_COMMENT">
-    <English>Restricts placement to objectives inside this marker (or markers). Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes — e.g. marker1,marker2. Leave blank to use the entire map.</English>
+    <English>Restricts placement to objectives inside this marker (or markers). Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes, e.g. marker1,marker2. Leave blank to use the entire map.</English>
     <Chinese>將部署限制在此標記（或多個標記）內的目標。輸入編輯器中放置的標記的確切名稱。多個標記：用逗號分隔，無空格，無引號 — 例如 marker1,marker2。留空表示使用整張地圖。</Chinese>
     <Chinesesimp>将部署限制在此标记（或多个标记）内的目标。输入编辑器中放置的标记的确切名称。多个标记：用逗号分隔，无空格，无引号 — 例如 marker1,marker2。留空表示使用整张地图。</Chinesesimp>
     <Spanish>Restringe el despliegue a los objetivos dentro de este marcador (o marcadores). Introduce el nombre del marcador tal como está colocado en el editor. Varios marcadores: sepáralos con coma, sin espacios ni comillas — p. ej. marker1,marker2. Déjalo en blanco para usar todo el mapa.</Spanish>
@@ -66,7 +66,7 @@
     <Russian>Маркер чёрного списка:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_BLACKLIST_COMMENT">
-    <English>Excludes objectives inside this marker (or markers) from placement. Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes — e.g. marker1,marker2.</English>
+    <English>Excludes objectives inside this marker (or markers) from placement. Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes, e.g. marker1,marker2.</English>
     <Chinese>將此標記（或多個標記）內的目標排除在部署之外。輸入編輯器中放置的標記的確切名稱。多個標記：用逗號分隔，無空格，無引號 — 例如 marker1,marker2。</Chinese>
     <Chinesesimp>将此标记（或多个标记）内的目标排除在部署之外。输入编辑器中放置的标记的确切名称。多个标记：用逗号分隔，无空格，无引号 — 例如 marker1,marker2。</Chinesesimp>
     <Spanish>Excluye los objetivos dentro de este marcador (o marcadores) del despliegue. Introduce el nombre del marcador tal como está colocado en el editor. Varios marcadores: sepáralos con coma, sin espacios ni comillas — p. ej. marker1,marker2.</Spanish>
@@ -174,7 +174,7 @@
     <Russian>Фильтр размера объекта:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_SIZE_FILTER_COMMENT">
-    <English>Restrict placement to objectives of certain sizes. The "Ignore..." options exclude objectives at or below the chosen size; the "Only..." options keep objectives at or above (or for the inverse "Only ... and smaller" entries, keep objectives at or below). Filtering nothing on a populous map is expensive — pick a sensible cap.</English>
+    <English>Restrict placement to objectives of certain sizes. The "Ignore..." options exclude objectives at or below the chosen size; the "Only..." options keep objectives at or above (or for the inverse "Only ... and smaller" entries, keep objectives at or below). Filtering nothing on a populous map is expensive, so pick a sensible cap.</English>
     <Chinese>將部署限制在特定大小的目標。「忽略...」選項排除選定大小及以下的目標；「只有...」選項保留選定大小及以上的目標（或對於反向的「只有...及更小」項目，保留選定大小及以下）。在密集地圖上不過濾代價高昂 — 選擇合理上限。</Chinese>
     <Chinesesimp>将部署限制在特定大小的目标。「忽略...」选项排除选定大小及以下的目标；「只有...」选项保留选定大小及以上的目标（或对于反向的「只有...及更小」项目，保留选定大小及以下）。在密集地图上不过滤代价高昂 — 选择合理上限。</Chinesesimp>
     <Spanish>Restringe el despliegue a objetivos de ciertos tamaños. Las opciones "Ignorar..." excluyen objetivos del tamaño elegido o inferior; las opciones "Solo..." mantienen objetivos del tamaño elegido o superior (o, en las inversas "Solo ... y menores", mantienen los del tamaño elegido o inferior). No filtrar nada en un mapa poblado es costoso — elige un límite razonable.</Spanish>
@@ -273,7 +273,7 @@
     <Russian>Фильтр приоритета объекта:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_PRIORITY_FILTER_COMMENT">
-    <English>Filter objectives below the selected priority — only objectives at or above the chosen priority will receive placement.</English>
+    <English>Filter objectives below the selected priority. Only objectives at or above the chosen priority will receive placement.</English>
     <Chinese>篩選低於選定優先級的目標 — 只有達到或高於所選優先級的目標才會接收部署。</Chinese>
     <Chinesesimp>筛选低于选定优先级的目标 — 只有达到或高于所选优先级的目标才会接收部署。</Chinesesimp>
     <Spanish>Filtra los objetivos por debajo de la prioridad seleccionada — solo los objetivos que igualen o superen la prioridad elegida recibirán despliegue.</Spanish>
@@ -327,7 +327,7 @@
     <Russian>Размещать юниты:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_PLACEMENT_COMMENT">
-    <English>Place Units: spawns both units and registers objectives. Objectives Only: registers objectives for an AI Commander without placing any units — useful when OPCOM manages forces separately.</English>
+    <English>Place Units: spawns both units and registers objectives. Objectives Only: registers objectives for an AI Commander without placing any units, which is useful when OPCOM manages forces separately.</English>
     <Chinese>放置單位：同時生成單位並註冊目標。僅目標：為 AI 指揮官註冊目標但不放置任何單位 — 當 OPCOM 單獨管理部隊時很有用。</Chinese>
     <Chinesesimp>放置单位：同时生成单位并注册目标。仅目标：为 AI 指挥官注册目标但不放置任何单位 — 当 OPCOM 单独管理部队时很有用。</Chinesesimp>
     <Spanish>Colocar unidades: genera unidades y registra objetivos. Solo objetivos: registra objetivos para un comandante IA sin colocar unidades — útil cuando OPCOM gestiona las fuerzas por separado.</Spanish>
@@ -444,7 +444,7 @@
     <Russian>Весовой состав сил:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_TYPE_COMMENT">
-    <English>Preferred composition of the force. Weighted towards the selected type but not exclusive — other unit types will still appear in smaller numbers.</English>
+    <English>Preferred composition of the force. Weighted towards the selected type but not exclusive, other unit types will still appear in smaller numbers.</English>
     <Chinese>部隊的首選組成。偏向所選類型但非獨佔 — 其他單位類型仍會以較少數量出現。</Chinese>
     <Chinesesimp>部队的首选组成。偏向所选类型但非独占 — 其他单位类型仍会以较少数量出现。</Chinesesimp>
     <Spanish>Composición preferida de la fuerza. Ponderada hacia el tipo seleccionado pero no exclusiva — otros tipos de unidad seguirán apareciendo en menor número.</Spanish>
@@ -940,7 +940,7 @@
     <Russian>Выполнить один раз для юнита:</Russian>
 </Key>
 <Key ID="STR_ALIVE_CP_ON_EACH_SPAWN_ONCE_COMMENT">
-    <English>Yes: the SQF hook runs only on the first spawn of each unit profile — useful for one-time setup like adding event handlers. No: runs every time the profile re-spawns after being virtual.</English>
+    <English>Yes: the SQF hook runs only on the first spawn of each unit profile, which is useful for one-time setup like adding event handlers. No: runs every time the profile re-spawns after being virtual.</English>
     <Chinese>是：SQF 鉤子只在每個單位設定檔的首次生成時執行 — 適用於一次性設定如新增事件處理器。否：每次設定檔在虛擬化後重新生成時都執行。</Chinese>
     <Chinesesimp>是：SQF 钩子只在每个单位配置文件的首次生成时执行 — 适用于一次性设置如添加事件处理器。否：每次配置文件在虚拟化后重新生成时都执行。</Chinesesimp>
     <Spanish>Sí: el gancho SQF se ejecuta solo en la primera aparición de cada perfil de unidad — útil para configuración puntual como añadir manejadores de eventos. No: se ejecuta cada vez que el perfil reaparece tras estar virtual.</Spanish>

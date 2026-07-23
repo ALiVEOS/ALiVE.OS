@@ -30,7 +30,7 @@
     <Russian>Включить отладку:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_DEBUG_COMMENT">
-    <English>Enables IED module debug — diag_log dumps of placement attempts, trigger events and detonation outcomes.</English>
+    <English>Enables IED module debug: diag_log dumps of placement attempts, trigger events and detonation outcomes.</English>
     <Chinese>啟用 IED 模組調試 — 將佈放嘗試、觸發事件和引爆結果記錄到 diag_log。</Chinese>
     <Chinesesimp>启用 IED 模块调试 — 将布放尝试、触发事件和引爆结果记录到 diag_log。</Chinesesimp>
     <Spanish>Activa la depuración del módulo de IED — vuelca al diag_log los intentos de colocación, eventos de activación y resultados de detonación.</Spanish>
@@ -66,7 +66,7 @@
     <Russian>Маркер TAOR:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_TAOR_COMMENT">
-    <English>Restricts IED and bomber placement to objectives inside this marker (or markers). Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes — e.g. marker1,marker2. Leave blank to use the entire map.</English>
+    <English>Restricts IED and bomber placement to objectives inside this marker (or markers). Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes, e.g. marker1,marker2. Leave blank to use the entire map.</English>
     <Chinese>將 IED 和炸彈客的佈放限制在此標記（或多個標記）內的目標。輸入編輯器中放置的標記的確切名稱。多個標記：用逗號分隔，無空格，無引號 — 例如 marker1,marker2。留空表示使用整張地圖。</Chinese>
     <Chinesesimp>将 IED 和炸弹客的布放限制在此标记（或多个标记）内的目标。输入编辑器中放置的标记的确切名称。多个标记：用逗号分隔，无空格，无引号 — 例如 marker1,marker2。留空表示使用整张地图。</Chinesesimp>
     <Spanish>Restringe la colocación de IED y terroristas suicidas a los objetivos dentro de este marcador (o marcadores). Introduce el nombre del marcador tal como está colocado en el editor. Varios marcadores: sepáralos con coma, sin espacios ni comillas — p. ej. marker1,marker2. Déjalo en blanco para usar todo el mapa.</Spanish>
@@ -84,7 +84,7 @@
     <Russian>Маркер чёрного списка:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_BLACKLIST_COMMENT">
-    <English>Excludes areas inside this marker (or markers) from IED and bomber placement. Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes — e.g. marker1,marker2.</English>
+    <English>Excludes areas inside this marker (or markers) from IED and bomber placement. Enter the marker name exactly as placed in the editor. Multiple markers: separate with a comma, no spaces, no quotes, e.g. marker1,marker2.</English>
     <Chinese>將此標記（或多個標記）內的區域排除在 IED 和炸彈客佈放之外。輸入編輯器中放置的標記的確切名稱。多個標記：用逗號分隔，無空格，無引號 — 例如 marker1,marker2。</Chinese>
     <Chinesesimp>将此标记（或多个标记）内的区域排除在 IED 和炸弹客布放之外。输入编辑器中放置的标记的确切名称。多个标记：用逗号分隔，无空格，无引号 — 例如 marker1,marker2。</Chinesesimp>
     <Spanish>Excluye las áreas dentro de este marcador (o marcadores) de la colocación de IED y terroristas suicidas. Introduce el nombre del marcador tal como está colocado en el editor. Varios marcadores: sepáralos con coma, sin espacios ni comillas — p. ej. marker1,marker2.</Spanish>
@@ -120,7 +120,7 @@
     <Russian>Интеграция:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_INTEGRATION_COMMENT">
-    <English>Who handles IED arming and detonation. The dropdown is populated from Cfg3rdPartyIEDs at Eden-open time — only mods that are actually loaded right now appear. Auto uses the first detected mine-mode integration; Force ALiVE keeps ALiVE's pipeline regardless; Defer to &lt;mod&gt; uses that specific mod's mode. See RPT for detection details at mission start.</English>
+    <English>Who handles IED arming and detonation. The dropdown is populated from Cfg3rdPartyIEDs at Eden-open time, so only mods that are actually loaded right now appear. Auto uses the first detected mine-mode integration; Force ALiVE keeps ALiVE's pipeline regardless; Defer to &lt;mod&gt; uses that specific mod's mode. See RPT for detection details at mission start.</English>
     <Chinese>誰處理 IED 的佈放和引爆。下拉選單在打開 Eden 時從 Cfg3rdPartyIEDs 填充 — 僅顯示目前實際載入的模組。自動 使用第一個偵測到的地雷模式整合；強制 ALiVE 無論如何都保留 ALiVE 的管線；委派給 &lt;模組&gt; 使用該特定模組的模式。任務開始時的偵測詳情請參閱 RPT。</Chinese>
     <Chinesesimp>谁处理 IED 的布放和引爆。下拉菜单在打开 Eden 时从 Cfg3rdPartyIEDs 填充 — 仅显示当前实际载入的模组。自动 使用第一个检测到的地雷模式集成；强制 ALiVE 无论如何都保留 ALiVE 的管线；委派给 &lt;模组&gt; 使用该特定模组的模式。任务开始时的检测详情请参阅 RPT。</Chinesesimp>
     <Spanish>Quién gestiona el armado y la detonación de los IED. El desplegable se rellena desde Cfg3rdPartyIEDs al abrir Eden — solo aparecen los mods cargados en ese momento. Automático usa la primera integración de modo mina detectada; Forzar ALiVE mantiene la canalización de ALiVE en cualquier caso; Delegar en &lt;mod&gt; usa el modo de ese mod específico. Consulta el RPT para detalles de detección al inicio de la misión.</Spanish>
@@ -246,7 +246,7 @@
     <Russian>(Необязательно) Класс пояса смертника:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_BOMBER_VEST_COMMENT">
-    <English>Vest class placed on suicide bombers. Accepts a single classname or a comma-separated list — one is chosen at random per bomber. Leave blank for the default ALiVE suicide vest. Example: V_ALiVE_Suicide_Vest,V_Chestrig_khk,V_BandollierBag_cbr</English>
+    <English>Vest class placed on suicide bombers. Accepts a single classname or a comma-separated list, and one is chosen at random per bomber. Leave blank for the default ALiVE suicide vest. Example: V_ALiVE_Suicide_Vest,V_Chestrig_khk,V_BandollierBag_cbr</English>
     <Chinese>放置在自殺炸彈客身上的背心類別。接受單一類別名稱或以逗號分隔的清單 — 每個炸彈客隨機選擇一個。留空使用預設 ALiVE 自殺背心。例如：V_ALiVE_Suicide_Vest,V_Chestrig_khk,V_BandollierBag_cbr</Chinese>
     <Chinesesimp>放置在自杀炸弹客身上的背心类别。接受单一类别名称或以逗号分隔的列表 — 每个炸弹客随机选择一个。留空使用默认 ALiVE 自杀背心。例如：V_ALiVE_Suicide_Vest,V_Chestrig_khk,V_BandollierBag_cbr</Chinesesimp>
     <Spanish>Clase de chaleco colocada en los terroristas suicidas. Acepta un único nombre de clase o una lista separada por comas — se elige uno al azar por terrorista. Déjalo en blanco para el chaleco suicida ALiVE por defecto. Ejemplo: V_ALiVE_Suicide_Vest,V_Chestrig_khk,V_BandollierBag_cbr</Spanish>
@@ -318,7 +318,7 @@
     <Russian>Вызов сапёра:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_ENGINEER_CHALLENGE_COMMENT">
-    <English>If No, engineers (mine detector / Explosive Specialist / CBA EOD trait) are fully immune to IED proximity detonation (legacy behaviour). If Yes, engineers accumulate trip pressure based on distance, stance, movement speed and skill — careless approach can detonate the IED before they defuse.</English>
+    <English>If No, engineers (mine detector / Explosive Specialist / CBA EOD trait) are fully immune to IED proximity detonation (legacy behaviour). If Yes, engineers accumulate trip pressure based on distance, stance, movement speed and skill, so a careless approach can detonate the IED before they defuse.</English>
     <Chinese>如果為 否，工兵（地雷偵測器／爆破專家／CBA EOD 特性）完全免疫 IED 近距引爆（傳統行為）。如果為 是，工兵會根據距離、姿勢、移動速度和技能累積觸發壓力 — 粗心接近可能在解除之前引爆 IED。</Chinese>
     <Chinesesimp>如果为 否，工兵（地雷检测器／爆破专家／CBA EOD 特性）完全免疫 IED 近距引爆（传统行为）。如果为 是，工兵会根据距离、姿势、移动速度和技能累积触发压力 — 粗心接近可能在解除之前引爆 IED。</Chinesesimp>
     <Spanish>Si es No, los ingenieros (detector de minas / Especialista en explosivos / rasgo CBA EOD) son totalmente inmunes a la detonación por proximidad de IED (comportamiento antiguo). Si es Sí, los ingenieros acumulan presión de activación según distancia, postura, velocidad de movimiento y habilidad — una aproximación descuidada puede detonar el IED antes de desactivarlo.</Spanish>
@@ -453,7 +453,7 @@
     <Russian>Придорожный СВУ - доп. классы:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_ROADIED_ADDITIONAL_COMMENT">
-    <English>Comma-separated extra classes ALWAYS appended on top of the road IED pool, regardless of what 'Auto-detect Source' does to the base list. Use this — instead of editing the base list — when you want your custom classnames preserved even if auto-detect swaps the base to a 3rd-party integration's classes. Example: Auto-detect Source = Auto, ALiVE picks an IED-providing mod, base list gets replaced with that mod's classes — entries here are still merged on top.</English>
+    <English>Comma-separated extra classes ALWAYS appended on top of the road IED pool, regardless of what 'Auto-detect Source' does to the base list. Use this (instead of editing the base list) when you want your custom classnames preserved even if auto-detect swaps the base to a 3rd-party integration's classes. Example: Auto-detect Source = Auto, ALiVE picks an IED-providing mod, base list gets replaced with that mod's classes, and entries here are still merged on top.</English>
     <Chinese>要合併到路邊 IED 池中的額外類別，以逗號分隔。始終附加在當前整合的類別之上（若未選擇整合，則附加到 ALiVE 預設值之上）。</Chinese>
     <Chinesesimp>要合并到路边 IED 池中的额外类别，以逗号分隔。始终附加在当前集成的类别之上（若未选择集成，则附加到 ALiVE 默认值之上）。</Chinesesimp>
     <Spanish>Clases adicionales separadas por comas para fusionar con el pool de IED de carretera. Siempre se añaden encima de las clases de la integración activa (o los valores predeterminados de ALiVE si no se selecciona integración).</Spanish>
@@ -471,7 +471,7 @@
     <Russian>Придорожный СВУ - источник авто:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_ROADIED_AUTODETECT_COMMENT">
-    <English>Whether the road IED pool should pull classes from the active 3rd-party integration. Auto: follow integration choice (replace defaults when integration is active and you haven't edited the base list; respect your edits otherwise). Yes: always merge integration classes (union, regardless of integration choice or edits). No: never use integration classes for this category — always use the base list.</English>
+    <English>Whether the road IED pool should pull classes from the active 3rd-party integration. Auto: follow integration choice (replace defaults when integration is active and you haven't edited the base list; respect your edits otherwise). Yes: always merge integration classes (union, regardless of integration choice or edits). No: never use integration classes for this category; always use the base list.</English>
     <Chinese>路邊 IED 池是否應從當前第三方整合中提取類別。自動：遵循整合選擇（當整合啟用且您未編輯基礎清單時替換預設值；否則尊重您的編輯）。是：始終合併整合類別（聯合，不論整合選擇或編輯）。否：此類別永不使用整合類別 — 始終使用基礎清單。</Chinese>
     <Chinesesimp>路边 IED 池是否应从当前第三方集成中提取类别。自动：遵循集成选择（当集成启用且您未编辑基础列表时替换默认值；否则尊重您的编辑）。是：始终合并集成类别（联合，不论集成选择或编辑）。否：此类别永不使用集成类别 — 始终使用基础列表。</Chinesesimp>
     <Spanish>Si el pool de IED de carretera debe tomar clases de la integración de terceros activa. Auto: sigue la elección de integración (reemplaza los predeterminados cuando la integración está activa y no has editado la lista base; respeta tus ediciones en caso contrario). Sí: siempre fusiona las clases de la integración (unión, independientemente de la elección o ediciones). No: nunca usa clases de integración para esta categoría — siempre la lista base.</Spanish>
@@ -498,7 +498,7 @@
     <Russian>Городской СВУ - доп. классы:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_URBANIED_ADDITIONAL_COMMENT">
-    <English>Comma-separated extra classes ALWAYS appended on top of the urban IED pool, regardless of what 'Auto-detect Source' does to the base list. Use this — instead of editing the base list — when you want your custom classnames preserved even if auto-detect swaps the base to a 3rd-party integration's classes. Example: Auto-detect Source = Auto, ALiVE picks an IED-providing mod, base list gets replaced with that mod's classes — entries here are still merged on top.</English>
+    <English>Comma-separated extra classes ALWAYS appended on top of the urban IED pool, regardless of what 'Auto-detect Source' does to the base list. Use this (instead of editing the base list) when you want your custom classnames preserved even if auto-detect swaps the base to a 3rd-party integration's classes. Example: Auto-detect Source = Auto, ALiVE picks an IED-providing mod, base list gets replaced with that mod's classes, and entries here are still merged on top.</English>
     <Chinese>要合併到城市 IED 池中的額外類別，以逗號分隔。始終附加在當前整合的類別之上（若未選擇整合，則附加到 ALiVE 預設值之上）。</Chinese>
     <Chinesesimp>要合并到城市 IED 池中的额外类别，以逗号分隔。始终附加在当前集成的类别之上（若未选择集成，则附加到 ALiVE 默认值之上）。</Chinesesimp>
     <Spanish>Clases adicionales separadas por comas para fusionar con el pool de IED urbano. Siempre se añaden encima de las clases de la integración activa (o los valores predeterminados de ALiVE si no se selecciona integración).</Spanish>
@@ -516,7 +516,7 @@
     <Russian>Городской СВУ - источник авто:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_URBANIED_AUTODETECT_COMMENT">
-    <English>Whether the urban IED pool should pull classes from the active 3rd-party integration. Auto: follow integration choice (replace defaults when integration is active and you haven't edited the base list; respect your edits otherwise). Yes: always merge integration classes (union, regardless of integration choice or edits). No: never use integration classes for this category — always use the base list.</English>
+    <English>Whether the urban IED pool should pull classes from the active 3rd-party integration. Auto: follow integration choice (replace defaults when integration is active and you haven't edited the base list; respect your edits otherwise). Yes: always merge integration classes (union, regardless of integration choice or edits). No: never use integration classes for this category; always use the base list.</English>
     <Chinese>城市 IED 池是否應從當前第三方整合中提取類別。自動：遵循整合選擇（當整合啟用且您未編輯基礎清單時替換預設值；否則尊重您的編輯）。是：始終合併整合類別（聯合，不論整合選擇或編輯）。否：此類別永不使用整合類別 — 始終使用基礎清單。</Chinese>
     <Chinesesimp>城市 IED 池是否应从当前第三方集成中提取类别。自动：遵循集成选择（当集成启用且您未编辑基础列表时替换默认值；否则尊重您的编辑）。是：始终合并集成类别（联合，不论集成选择或编辑）。否：此类别永不使用集成类别 — 始终使用基础列表。</Chinesesimp>
     <Spanish>Si el pool de IED urbano debe tomar clases de la integración de terceros activa. Auto: sigue la elección de integración (reemplaza los predeterminados cuando la integración está activa y no has editado la lista base; respeta tus ediciones en caso contrario). Sí: siempre fusiona las clases de la integración (unión, independientemente de la elección o ediciones). No: nunca usa clases de integración para esta categoría — siempre la lista base.</Spanish>
@@ -543,7 +543,7 @@
     <Russian>Хлам - доп. классы:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_CLUTTER_ADDITIONAL_COMMENT">
-    <English>Comma-separated extra classes ALWAYS appended on top of the camouflage clutter pool placed near IEDs, regardless of what 'Auto-detect Source' does to the base list. Use this — instead of editing the base list — when you want your custom classnames preserved even if auto-detect swaps the base to a 3rd-party integration's classes. Example: Auto-detect Source = Auto, ALiVE picks an IED-providing mod, base list gets replaced with that mod's clutter classes — entries here are still merged on top.</English>
+    <English>Comma-separated extra classes ALWAYS appended on top of the camouflage clutter pool placed near IEDs, regardless of what 'Auto-detect Source' does to the base list. Use this (instead of editing the base list) when you want your custom classnames preserved even if auto-detect swaps the base to a 3rd-party integration's classes. Example: Auto-detect Source = Auto, ALiVE picks an IED-providing mod, base list gets replaced with that mod's clutter classes, and entries here are still merged on top.</English>
     <Chinese>要合併到 IED 附近放置的偽裝雜物池中的額外類別，以逗號分隔。始終附加在當前整合的類別之上（若未選擇整合，則附加到 ALiVE 預設值之上）。</Chinese>
     <Chinesesimp>要合并到 IED 附近放置的伪装杂物池中的额外类别，以逗号分隔。始终附加在当前集成的类别之上（若未选择集成，则附加到 ALiVE 默认值之上）。</Chinesesimp>
     <Spanish>Clases adicionales separadas por comas para fusionar con el pool de relleno de camuflaje colocado cerca de los IED. Siempre se añaden encima de las clases de la integración activa (o los valores predeterminados de ALiVE si no se selecciona integración).</Spanish>
@@ -561,7 +561,7 @@
     <Russian>Хлам - источник авто:</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_CLUTTER_AUTODETECT_COMMENT">
-    <English>Whether the clutter pool should pull classes from the active 3rd-party integration. Auto: follow integration choice (replace defaults when integration is active and you haven't edited the base list; respect your edits otherwise). Yes: always merge integration classes (union, regardless of integration choice or edits). No: never use integration classes for this category — always use the base list.</English>
+    <English>Whether the clutter pool should pull classes from the active 3rd-party integration. Auto: follow integration choice (replace defaults when integration is active and you haven't edited the base list; respect your edits otherwise). Yes: always merge integration classes (union, regardless of integration choice or edits). No: never use integration classes for this category; always use the base list.</English>
     <Chinese>雜物池是否應從當前第三方整合中提取類別。自動：遵循整合選擇（當整合啟用且您未編輯基礎清單時替換預設值；否則尊重您的編輯）。是：始終合併整合類別（聯合，不論整合選擇或編輯）。否：此類別永不使用整合類別 — 始終使用基礎清單。</Chinese>
     <Chinesesimp>杂物池是否应从当前第三方集成中提取类别。自动：遵循集成选择（当集成启用且您未编辑基础列表时替换默认值；否则尊重您的编辑）。是：始终合并集成类别（联合，不论集成选择或编辑）。否：此类别永不使用集成类别 — 始终使用基础列表。</Chinesesimp>
     <Spanish>Si el pool de relleno debe tomar clases de la integración de terceros activa. Auto: sigue la elección de integración (reemplaza los predeterminados cuando la integración está activa y no has editado la lista base; respeta tus ediciones en caso contrario). Sí: siempre fusiona las clases de la integración (unión, independientemente de la elección o ediciones). No: nunca usa clases de integración para esta categoría — siempre la lista base.</Spanish>
@@ -570,7 +570,7 @@
     <Russian>Должен ли пул хлама брать классы из активной сторонней интеграции. Авто: следует выбору интеграции (заменяет значения по умолчанию, когда интеграция активна и вы не редактировали базовый список; иначе уважает ваши правки). Да: всегда объединяет классы интеграции (объединение, независимо от выбора или правок). Нет: никогда не использует классы интеграции для этой категории — всегда базовый список.</Russian>
 </Key>
 <Key ID="STR_ALIVE_IED_CLASSES_COMMENT">
-    <English>Classnames of objects used for IEDs and clutter. Separate multiple classnames with commas, no spaces, no quotes — e.g. ALIVE_IEDUrbanSmall_Remote_Ammo,Land_JunkPile_F. IED classnames must be valid ammo box or object classnames that function as proximity mines.&#10;&#10;BASE vs ADDITIONAL: this is the BASE list — what 'Auto-detect Source' acts on. The matching 'Additional Classes' field is ALWAYS appended on top, regardless of auto-detect. If you want your custom classnames to survive auto-detect swapping the base list to a mod's classes, put them in Additional instead of editing this list.&#10;&#10;OVERRIDE BEHAVIOUR: depending on the matching 'Auto-detect Source' setting below, this base list may be REPLACED or AUGMENTED by the picked 3rd-party integration's classes.&#10;  Auto + unedited list → REPLACED by integration's classes (if any).&#10;  Auto + edited list   → Your edits stand; integration is ignored.&#10;  Yes  + unedited list → REPLACED by integration's classes.&#10;  Yes  + edited list   → Your edits UNION integration's classes.&#10;  No                   → Always uses this exact list; integration ignored.&#10;Set Auto-detect Source = No to lock this list as the sole source.</English>
+    <English>Classnames of objects used for IEDs and clutter. Separate multiple classnames with commas, no spaces, no quotes, e.g. ALIVE_IEDUrbanSmall_Remote_Ammo,Land_JunkPile_F. IED classnames must be valid ammo box or object classnames that function as proximity mines.&#10;&#10;BASE vs ADDITIONAL: this is the BASE list, the one that 'Auto-detect Source' acts on. The matching 'Additional Classes' field is ALWAYS appended on top, regardless of auto-detect. If you want your custom classnames to survive auto-detect swapping the base list to a mod's classes, put them in Additional instead of editing this list.&#10;&#10;OVERRIDE BEHAVIOUR: depending on the matching 'Auto-detect Source' setting below, this base list may be REPLACED or AUGMENTED by the picked 3rd-party integration's classes.&#10;  Auto + unedited list → REPLACED by integration's classes (if any).&#10;  Auto + edited list   → Your edits stand; integration is ignored.&#10;  Yes  + unedited list → REPLACED by integration's classes.&#10;  Yes  + edited list   → Your edits UNION integration's classes.&#10;  No                   → Always uses this exact list; integration ignored.&#10;Set Auto-detect Source = No to lock this list as the sole source.</English>
     <Chinese>用於 IED 和雜物的物件類別名稱。多個類別名稱用逗號分隔，無空格，無引號 — 例如 ALIVE_IEDUrbanSmall_Remote_Ammo,Land_JunkPile_F。IED 類別名稱必須是有效的彈藥箱或作為近距地雷的物件類別名稱。&#10;&#10;覆寫行為：取決於下方對應的「自動偵測來源」設定，此基礎清單可能會被所選第三方整合的類別「取代」或「擴充」。&#10;  自動 + 未編輯清單 → 被整合的類別「取代」（如有）。&#10;  自動 + 已編輯清單 → 您的編輯保留；忽略整合。&#10;  是   + 未編輯清單 → 被整合的類別「取代」。&#10;  是   + 已編輯清單 → 您的編輯與整合的類別「聯合」。&#10;  否                   → 始終使用此精確清單；忽略整合。&#10;設 自動偵測來源 = 否 可將此清單鎖為唯一來源。</Chinese>
     <Chinesesimp>用于 IED 和杂物的对象类别名称。多个类别名称用逗号分隔，无空格，无引号 — 例如 ALIVE_IEDUrbanSmall_Remote_Ammo,Land_JunkPile_F。IED 类别名称必须是有效的弹药箱或作为近距地雷的对象类别名称。&#10;&#10;覆写行为：取决于下方对应的「自动检测来源」设置，此基础列表可能会被所选第三方集成的类别「替换」或「扩充」。&#10;  自动 + 未编辑列表 → 被集成的类别「替换」（如有）。&#10;  自动 + 已编辑列表 → 您的编辑保留；忽略集成。&#10;  是   + 未编辑列表 → 被集成的类别「替换」。&#10;  是   + 已编辑列表 → 您的编辑与集成的类别「联合」。&#10;  否                   → 始终使用此精确列表；忽略集成。&#10;设 自动检测来源 = 否 可将此列表锁为唯一来源。</Chinesesimp>
     <Spanish>Nombres de clase de los objetos usados para IED y relleno. Separa varios nombres de clase con comas, sin espacios ni comillas — p. ej. ALIVE_IEDUrbanSmall_Remote_Ammo,Land_JunkPile_F. Los nombres de clase de IED deben ser cajas de munición u objetos válidos que funcionen como minas de proximidad.&#10;&#10;COMPORTAMIENTO DE SUSTITUCIÓN: según la opción de «Fuente autodetect.» correspondiente debajo, esta lista base puede ser REEMPLAZADA o AMPLIADA por las clases de la integración de terceros elegida.&#10;  Auto + lista sin editar → REEMPLAZADA por las clases de la integración (si las hay).&#10;  Auto + lista editada    → Se mantienen tus ediciones; la integración se ignora.&#10;  Sí   + lista sin editar → REEMPLAZADA por las clases de la integración.&#10;  Sí   + lista editada    → Tus ediciones UNIÓN con las clases de la integración.&#10;  No                        → Siempre usa esta lista exacta; la integración se ignora.&#10;Pon «Fuente autodetect.» = No para bloquear esta lista como fuente única.</Spanish>
