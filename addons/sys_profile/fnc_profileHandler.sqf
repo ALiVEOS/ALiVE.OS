@@ -107,6 +107,7 @@ switch(_operation) do {
             // set defaults
             [_logic,"debug", false] call ALIVE_fnc_hashSet;
             [_logic,"profiles", +_blankHash] call ALIVE_fnc_hashSet;
+            [_logic,"profilesById", createHashMap] call ALIVE_fnc_hashSet;
             [_logic,"profilesByCompany", +_blankHash] call ALIVE_fnc_hashSet;
             [_logic,"profilesActive", []] call ALIVE_fnc_hashSet;
             [_logic,"profilesInActive", []] call ALIVE_fnc_hashSet;
@@ -227,14 +228,6 @@ switch(_operation) do {
             ] call ALIVE_fnc_hashCreate;
             [_logic,"profilesCatagorised",_profilesCatagorised] call ALIVE_fnc_hashSet;
         };
-
-        /*
-        VIEW - purely visual
-        */
-
-        /*
-        CONTROLLER  - coordination
-        */
     };
 
     case "destroy": {
@@ -289,7 +282,7 @@ switch(_operation) do {
 
             // loop the class hash and set vars on the state hash
             {
-                if(!(_x == "super") && !(_x == "class")) then {
+                if(!(_x in ["super", "class"])) then {
                     [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                 };
             } forEach (_logic select 1);
@@ -304,6 +297,18 @@ switch(_operation) do {
             {
                 [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
             } forEach (_args select 1);
+
+            // restore profile lookup map
+            // separate due to native hash not ALiVE hash
+            private _profiles = [_logic, "profiles"] call ALIVE_fnc_hashGet;
+            private _profilesById = createHashMap;
+            private _profileValues = _profiles select 2;
+
+            {
+                _profilesById set [_x, _profileValues select _forEachIndex];
+            } forEach (_profiles select 1);
+
+            [_logic,"profilesById", _profilesById] call ALIVE_fnc_hashSet;
         };
     };
 
@@ -331,6 +336,10 @@ switch(_operation) do {
 
             // store on main profiles hash
             [_profiles, _profileID, _profile] call ALIVE_fnc_hashSet;
+
+            // Maintain the native profile-ID index.
+            private _profilesById = [_logic,"profilesById"] call ALIVE_fnc_hashGet;
+            _profilesById set [_profileID, _profile];
 
             // store the position in the position index
             [_profilePositions, _profileID, _profilePosition] call ALIVE_fnc_hashSet;
@@ -514,6 +523,10 @@ switch(_operation) do {
 
             // remove on main profiles hash
             [_profiles, _profileID] call ALIVE_fnc_hashRem;
+
+            // Maintain the native profile-ID index.
+            private _profilesById = [_logic, "profilesById"] call ALIVE_fnc_hashGet;
+            _profilesById deleteAt _profileID;
 
             // remove from position index
             [_profilePositions, _profileID] call ALIVE_fnc_hashRem;
@@ -784,12 +797,8 @@ switch(_operation) do {
 
     case "getProfile": {
         if (_args isEqualType "") then {
-            private _profiles = [_logic, "profiles"] call ALIVE_fnc_hashGet;
-            private _index = (_profiles select 1) find _args;
-
-            if (_index != -1) then {
-                _result = (_profiles select 2) select _index;
-            };
+            private _profilesById = [_logic,"profilesById"] call ALIVE_fnc_hashGet;
+            _result = _profilesById get _args;
         };
     };
 
