@@ -3726,7 +3726,58 @@ switch(_operation) do {
                             if (_airspace isEqualType "") then {
                                 _airspacePos = getMarkerPos _airspace;
                             } else {
-                                _airspacePos = +_airspace;
+                                if (_airspace isEqualType []) then { _airspacePos = +_airspace };
+                            };
+
+                            // The broadcast quotes a grid, so it has to be a grid somebody could
+                            // act on. Two things went wrong before this guard. A blank or missing
+                            // marker name makes getMarkerPos hand back the map origin, which
+                            // reads out as grid 000000, and even when the airspace does resolve
+                            // it is the patrol boundary rather than the place support was asked
+                            // for, which on a whole-map airspace is meaningless.
+                            //
+                            // So prefer where the trouble actually is. Targets come through as
+                            // objects or as profile ids depending on who raised the request, and
+                            // both have to be resolved.
+                            private _fnc_degenerate = {
+                                params ["_p"];
+                                (count _p < 2) || {((abs (_p select 0)) < 1) && {(abs (_p select 1)) < 1}}
+                            };
+
+                            if ([_airspacePos] call _fnc_degenerate) then {
+                                private _atoArgs = _eventData param [4, []];
+                                private _targets = if (_atoArgs isEqualType [] && {count _atoArgs > 7}) then { _atoArgs select 7 } else { [] };
+                                if (_targets isEqualType []) then {
+                                    {
+                                        private _tp = [];
+                                        if (_x isEqualType objNull) then {
+                                            if !(isNull _x) then { _tp = getPosATL _x };
+                                        } else {
+                                            if (_x isEqualType "") then {
+                                                private _tprofile = [ALiVE_profileHandler, "getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                                                if !(isNil "_tprofile") then { _tp = [_tprofile,"position",[]] call ALiVE_fnc_hashGet };
+                                            };
+                                        };
+                                        if !([_tp] call _fnc_degenerate) exitWith { _airspacePos = _tp };
+                                    } forEach _targets;
+                                };
+                            };
+
+                            // Last resort, the commander's own position. Still not where the
+                            // support is wanted, but it is a real place on the map and it tells
+                            // listeners which commander is speaking, which grid 000000 does not.
+                            if ([_airspacePos] call _fnc_degenerate) then {
+                                private _hqb = [_logic, "HQBuilding"] call MAINCLASS;
+                                if (!isNil "_hqb" && {!isNull _hqb}) then { _airspacePos = position _hqb };
+                            };
+
+                            // Reaching here means the airspace, every target and the commander's
+                            // own building all failed to give a real position, which should not
+                            // happen. Log what the request carried so a stray grid 000000 can be
+                            // traced to its requester rather than guessed at.
+                            if ([_airspacePos] call _fnc_degenerate) then {
+                                diag_log format ["ATO grid unresolved: from=%1 type=%2 airspace=%3 eventType=%4",
+                                    [_event,"from",""] call ALiVE_fnc_hashGet, typeName _airspace, _airspace, _eventType];
                             };
 
                             //Radio Broadcast
