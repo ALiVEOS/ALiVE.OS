@@ -88,7 +88,14 @@ switch (_taskState) do {
 
                 _profile = [ALiVE_ProfileHandler, "getProfile",_x] call ALIVE_fnc_ProfileHandler;
                 _side = [_profile,"side"] call ALiVE_fnc_HashGet;
-                _isAA = [([_profile,"vehicleClass"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_isAA;
+                // Was ALiVE_fnc_isAA, which only asks whether a turret elevates past
+                // 65 degrees - satisfied by any hull with a high-elevation remote
+                // mount, armed or not, which is why unarmed cars and troop carriers
+                // were being handed out as suppression targets (#828). This asks
+                // whether the vehicle can actually engage aircraft. isAA is left
+                // alone because the virtual damage model relies on it meaning
+                // something else.
+                _isAA = [([_profile,"vehicleClass"] call ALiVE_fnc_HashGet)] call ALiVE_fnc_isAntiAirCapable;
 
                 count ([_profile,"entitiesInCommandOf",[]] call ALiVE_fnc_HashGet) > 0 && {_side == _Input1 && _isAA};
             }] call ALiVE_fnc_SortBy;

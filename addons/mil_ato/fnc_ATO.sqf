@@ -320,15 +320,29 @@ ALiVE_fnc_getAircraftRoles = {
     private _result = [];
     private _caps = [_class, _loadout] call ALiVE_fnc_getAircraftCapabilities;
 
-    // Recon needs something to observe with. Target-acquisition sensors are the
-    // honest discriminator: attack and scout airframes carry them, transports
-    // carry only a radar warning receiver.
+    // Recon takes two things: something to observe with, and being the sort of
+    // aircraft you would send to look.
+    //
+    // Sensors alone are not enough. Some third-party transports carry genuine
+    // observation hardware - RHS fits the CH-53E with a pilot camera, and both
+    // this check and ACE's own agree it has one - but a heavy-lift helicopter
+    // is still not what you send to scout. So the aircraft must also be armed,
+    // or be a drone, which is what separates a scout from a troop carrier that
+    // happens to have a camera.
     //
     // "sensorsUnknown" means the airframe declares no sensor component at all,
     // which is how older and modded content presents. Those stay eligible - a
     // strict test there would quietly shrink the fleet on RHS or CUP, and an
     // empty pool is a worse failure than an imperfect pick.
-    if ("sensors" in _caps || {"sensorsUnknown" in _caps}) then {
+    //
+    // The drone test needs both halves: isKindOf "UAV" misses the Darter, whose
+    // base inherits from Helicopter_Base_F rather than UAV, while the isUav
+    // config property resolves through inheritance and catches it.
+    private _canObserve = "sensors" in _caps || {"sensorsUnknown" in _caps};
+    private _isDrone = _class isKindOf "UAV"
+                    || {getNumber (configFile >> "CfgVehicles" >> _class >> "isUav") == 1};
+
+    if (_canObserve && {"armed" in _caps || _isDrone}) then {
         _result pushBack "Recon";
     };
 
@@ -354,28 +368,16 @@ ALiVE_fnc_getAircraftRoles = {
     _result
 };
 
+// Retained as a thin wrapper so anything still calling it keeps working. The
+// real test now lives in x_lib as ALiVE_fnc_isAntiAirCapable, because the player
+// suppression task in mil_c2istar needs the same answer and cannot reach a
+// function defined inside this module.
 ALiVE_fnc_isAntiAir = {
     params [
         ["_class", "", ["",objNull]]
     ];
 
-    private _result = false;
-
-    if (_class isEqualType objNull) then {_class = typeof _class};
-
-    private _threats = getArray(configFile >> "CfgVehicles" >> _class >> "threat");
-
-    private _cost = getNumber(configFile >> "CfgVehicles" >> _class >> "cost");
-    
-    if (typeName _threats == "ARRAY") then {
-    	if ((count _threats) > 0) then {
-        if (typeName (_threats select 2) == "SCALAR") then {
-         _result = (( _threats select 2 ) > 0.4) && ( _class iskindOf "LandVehicle" ) && ( _cost > 20000 );
-        };
-      };
-    };
-
-    _result
+    [_class] call ALiVE_fnc_isAntiAirCapable
 };
 
 ALiVE_fnc_DrawRunwayBlacklistMarkers = {
@@ -810,11 +812,6 @@ switch(_operation) do {
                 };
             } forEach (_args splitString "[]""', ");
 
-            // An empty result means one of two very different things. Nothing
-            // selected in the picker is a deliberate "fly nothing" and is
-            // honoured. Text that produced no recognisable type is a mistake -
-            // fall back to the full set and say so, rather than silently
-            // grounding the commander for the whole mission.
             if (count _parsed == 0 && {_args != ""}) then {
                 ["ATO %1 - Warning, no recognisable mission types in %2. Using the full set instead.", _logic, str _args] call ALiVE_fnc_dumpR;
                 _parsed = DEFAULT_ATO_TYPES;
@@ -827,6 +824,20 @@ switch(_operation) do {
         };
 
         _result = _logic getVariable [_operation, DEFAULT_ATO_TYPES];
+
+        // An empty list is indistinguishable from a broken module: every request
+        // is refused, the commander looks alive and flies nothing, and the only
+        // clue is one line in the log. That has now happened for two different
+        // reasons - a comparison that could never match, and an attribute that
+        // saved empty - so rather than guard each cause in turn, treat the state
+        // itself as impossible and say loudly when it is reached.
+        //
+        // A mission maker who wants no air missions does not place the commander.
+        if (_result isEqualType [] && {count _result == 0}) then {
+            ["ATO %1 - Warning, no air mission types are set for this commander, so nothing could be flown. Falling back to the full set - check the Available ATOs setting on the module.", _logic] call ALiVE_fnc_dumpR;
+            _result = +DEFAULT_ATO_TYPES;
+            _logic setVariable [_operation, _result];
+        };
     };
     case "origTypes": {
         if (_args isEqualType "") then {
@@ -847,6 +858,23 @@ switch(_operation) do {
     };
     case "objectiveObjectsCount": {
         _result = [_logic, _operation, _args, "0"] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // Whether this commander may use drones at all. Default true, matching the
+    // behaviour before the setting existed - the module has flown drones for
+    // years, with dedicated handling throughout for their lack of a crew.
+    case "useUAVs": {
+        if (_args isEqualType true) then {
+            _logic setVariable [_operation, _args];
+        } else {
+            _args = _logic getVariable [_operation, true];
+        };
+        if (_args isEqualType "") then {
+            if (_args == "true") then { _args = true; } else { _args = false; };
+            _logic setVariable [_operation, _args];
+        };
+        ASSERT_TRUE(_args isEqualType true,str _args);
+
+        _result = _args;
     };
     // Minutes allowed for a sortie. Blank or 0 keeps whatever the requesting
     // commander asked for. This single number drives the wait-for-pilot abort,
@@ -1024,7 +1052,15 @@ switch(_operation) do {
         // Check for AA sites
         {
             private _vehicle = _x;
-            if ((_vehicle iskindOf "AAA_System_01_base_F" || _vehicle iskindOf "SAM_System_01_base_F" || _vehicle iskindOf "SAM_System_02_base_F" || [_vehicle] call ALiVE_fnc_isAntiAir || [_vehicle] call ALiVE_fnc_isAA) && {str(side _vehicle) in _enemySides}) then {
+            // ALiVE_fnc_isAA is deliberately no longer consulted here. It asks only
+            // whether a turret elevates past 65 degrees and the vehicle is not
+            // artillery, which any hull with a high-elevation remote mount satisfies
+            // - armed or not. That was a second source of the wrongly-reported
+            // targets in #828. Its job is covered by the elevation fallback inside
+            // isAntiAir, which additionally requires the vehicle to be armed.
+            // isAA itself is left alone: it also feeds the virtual damage model and
+            // the commander's own assignments, which are not this scan's business.
+            if ((_vehicle iskindOf "AAA_System_01_base_F" || _vehicle iskindOf "SAM_System_01_base_F" || _vehicle iskindOf "SAM_System_02_base_F" || [_vehicle] call ALiVE_fnc_isAntiAir) && {str(side _vehicle) in _enemySides}) then {
                 private _tmpAS = [_airspace,[_vehicle],{_Input0 distance (getMarkerPos _x)},"ASCEND"] call ALiVE_fnc_SortBy;
                 private _tmp = [_airDefenses, (_tmpAS select 0), []] call ALiVE_fnc_hashGet;
                 _tmp pushbackUnique _vehicle;
@@ -1112,6 +1148,26 @@ switch(_operation) do {
             private _vehicleProfile = [ALiVE_ProfileHandler,'getProfile',_x] call ALiVE_fnc_ProfileHandler;
             private _vehicleClass = [_vehicleProfile,"vehicleClass",""] call ALIVE_fnc_HashGet;
             private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
+
+            // Skip drones when the mission maker has turned them off. Checked here
+            // rather than at selection so an excluded drone never joins the pool at
+            // all - otherwise it counts towards the airframe totals that decide
+            // whether the commander has enough aircraft to keep flying offensive
+            // missions.
+            //
+            // isKindOf "UAV" alone is not enough: the Darter's base inherits from
+            // Helicopter_Base_F rather than UAV, so the small reconnaissance drones
+            // slip past it. The isUav config property resolves through inheritance
+            // and catches them.
+            if !([_logic,"useUAVs"] call MAINCLASS) then {
+                private _isDroneAsset = _vehicleClass isKindOf "UAV"
+                                     || {getNumber (configFile >> "CfgVehicles" >> _vehicleClass >> "isUav") == 1};
+                if (_isDroneAsset) exitWith {
+                    if (_debug) then {
+                        ["ATO %1 ignoring %2 - drones are turned off for this commander", _logic, _vehicleClass] call ALiVE_fnc_dump;
+                    };
+                };
+            };
 
             // If Combat support asset, then do not register
             private _isCombatSupport = false;

@@ -136,6 +136,24 @@ if (_sqmValue != "") then {
     };
 };
 
+// Nothing stored anywhere - a freshly placed module, or one whose value was
+// lost. Tick everything rather than nothing.
+//
+// Eden does not apply an attribute's defaultValue to a custom controlsGroup the
+// way it does to a plain Edit or Combo: the control owns its own initial state.
+// Without this the listbox opened empty on a new module, and simply closing the
+// attributes window wrote that empty selection back - leaving a commander that
+// looked configured and refused every request. The faction picker handles the
+// same problem by taking an initial-default list; here every type is a valid
+// default, so the canonical rows serve directly.
+//
+// Built from those rows rather than repeating the attribute's defaultValue
+// string: two copies of one list drift apart, which is how offensive
+// counter-air ended up missing from one of them and unreachable for years.
+if (_raw == "") then {
+    _raw = _canonical joinString ",";
+};
+
 // ------------------------------------------------------------------------
 // 2. Parse into canonical tokens. splitString on every delimiter character
 //    covers CSV, SQF array literal, quoted or unquoted, spaced or not:

@@ -31,6 +31,12 @@
 <Key ID="STR_ALIVE_ATO_BROADCASTONRADIO_COMMENT">
     <English>HQ radio traffic, heard only by players on this module's own side: mission acknowledged or denied, aircraft lost, and base compromised. No silences all of it except the one-off 'forward airbase established' call at mission start, which always plays.</English>
 </Key>
+<Key ID="STR_ALIVE_ATO_USE_UAVS">
+    <English>Use Drones:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_USE_UAVS_COMMENT">
+    <English>Whether this commander may fly unmanned aircraft. They are adopted from the airspace like any other aircraft and need no aircrew, so a reconnaissance drone can be tasked while every pilot is busy. Set to No and drones in this airspace are left alone entirely, for anyone else to use.</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_SORTIE_DURATION">
     <English>Sortie Duration:</English>
 </Key>

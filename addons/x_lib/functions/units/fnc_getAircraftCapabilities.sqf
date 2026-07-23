@@ -167,9 +167,18 @@ private _ammoRoot = configFile >> "CfgAmmo";
             if !("antiRadiation" in _caps) then { _caps pushBack "antiRadiation" };
         };
 
+        // Only actual ordnance counts. Without this the lock values alone were
+        // enough, and a countermeasure or a door-gun round that happens to carry
+        // airLock=1 read as guided air-to-ground - which credited an RHS Chinook
+        // with an attack capability it does not have.
+        private _isOrdnance = _ammo isKindOf ["MissileBase", _ammoRoot]
+                           || {_ammo isKindOf ["RocketBase", _ammoRoot]}
+                           || {_ammo isKindOf ["BombCore", _ammoRoot]}
+                           || {_ammo isKindOf ["ShellBase", _ammoRoot]};
+
         private _airLock = getNumber (_aCfg >> "airLock");
         private _lockSpeed = getNumber (_aCfg >> "missileLockMaxSpeed");
-        private _guided = _lockSpeed > 0 || {_airLock > 0};
+        private _guided = _isOrdnance && {_lockSpeed > 0 || {_airLock > 0}};
 
         if (_guided) then {
             // Fast-target lock means it is meant for aircraft; slow or
@@ -180,9 +189,13 @@ private _ammoRoot = configFile >> "CfgAmmo";
                 if !("agGuided" in _caps) then { _caps pushBack "agGuided" };
             };
         } else {
-            // Anything that explodes but does not guide - rockets, bombs.
+            // Anything that explodes but does not guide - rockets, bombs. The
+            // ordnance test applies here too: without it, a countermeasure or a
+            // door-gun round with a little splash damage counted as an attack
+            // capability, which is how a heavy-lift transport ended up credited
+            // with one.
             private _hit = getNumber (_aCfg >> "indirectHit");
-            if (_hit > 0 && {!("agUnguided" in _caps)}) then {
+            if (_isOrdnance && {_hit > 0} && {!("agUnguided" in _caps)}) then {
                 _caps pushBack "agUnguided";
             };
         };

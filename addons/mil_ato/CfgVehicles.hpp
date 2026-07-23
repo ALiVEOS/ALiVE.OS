@@ -182,6 +182,21 @@ class CfgVehicles
                             class No { name = "No"; value = false; };
                         };
                 };
+                // Defaults to Yes - the module has flown drones for years and carries
+                // dedicated handling for their lack of a crew. The setting exists so a
+                // mission maker can say no, which was not previously possible.
+                class useUAVs : Combo
+                {
+                        property = "ALiVE_mil_ato_useUAVs";
+                        displayName = "$STR_ALIVE_ATO_USE_UAVS";
+                        tooltip = "$STR_ALIVE_ATO_USE_UAVS_COMMENT";
+                        defaultValue = """true""";
+                        class Values
+                        {
+                            class Yes { name = "Yes"; value = true; default = 1; };
+                            class No { name = "No"; value = false; };
+                        };
+                };
                 // Tempo controls. Both blank by default and blank means "as before",
                 // so an untouched mission is byte-identical in behaviour.
                 class sortieDuration : Edit

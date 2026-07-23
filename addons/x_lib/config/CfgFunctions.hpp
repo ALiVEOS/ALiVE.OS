@@ -2112,6 +2112,13 @@ class isAA
 	RECOMPILE;
 };
 
+class isAntiAirCapable
+{
+	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_isAntiAirCapable.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class isArtillery
 {
 	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_isArtillery.sqf";
