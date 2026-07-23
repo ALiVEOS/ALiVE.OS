@@ -558,16 +558,22 @@ if (count _found == 0 && {_preference in ["auto", "hangar"]} && _isPlane && !_is
 
 // Tier 3: apron (planes; helis as final fallback if no hangar fit).
 if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
-    private _surfaceAllowed = ["GdtAsphalt", "GdtConcrete", "GdtRoad"];
+    // Paved-surface match by SUBSTRING, case-insensitive. An exact-name list
+    // does not survive contact with real terrains: Stratis Air Station's apron
+    // reports GdtStratisConcrete, so an exact list rejected all 300 samples and
+    // this tier silently returned nothing on the map it is most needed on.
+    // The sibling ground validator hit the same wall and solved it this way, and
+    // it names GdtStratisConcrete in its own comment.
+    private _surfaceAllowed = ["asphalt", "concrete", "road", "runway", "pave", "tarmac"];
     // Random-sample inside _maxDistance, reject anything outside paved
     // surface, anything inside runway/taxiway exclusion, anything that
     // fails footprint or registry checks.
     for "_i" from 1 to 300 do {
         if (count _found > 0) exitWith {};
         private _pos = _centerPos getPos [random _maxDistance, random 360];
-        private _surface = surfaceType _pos;
+        private _surface = toLower (surfaceType _pos);
         if ((_surface select [0, 1]) == "#") then { _surface = _surface select [1] };
-        if !(_surface in _surfaceAllowed) then { continue };
+        if (_surfaceAllowed findIf {_surface find _x > -1} < 0) then { continue };
         if !([_pos] call _fnc_clearOfRunwayTaxiway) then { continue };
         if !([_pos, _minSeparation] call _fnc_registryClear) then { continue };
         // Aircraft on apron: orient roughly toward the runway if we
@@ -588,13 +594,17 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
 // stage 3 with relaxed surface set (helis can land on more surfaces
 // than ground vehicles can drive on, but slope still matters).
 if (count _found == 0 && {_preference in ["auto", "field"]}) then {
-    private _surfaceAllowed = ["GdtAsphalt", "GdtConcrete", "GdtDirt", "GdtGrass", "GdtRoad", "GdtRubble", "GdtSoil"];
+    // Blocklist rather than allowlist here, for the same reason as the apron
+    // tier above: an allowlist cannot know every terrain's bespoke surface
+    // names. Reject what an aircraft genuinely should not sit on and let the
+    // slope and footprint checks below do the real work.
+    private _surfaceBlocked = ["beach", "sand", "mud", "seabed", "swamp", "water"];
     for "_i" from 1 to 500 do {
         if (count _found > 0) exitWith {};
         private _pos = _centerPos getPos [random _maxDistance, random 360];
-        private _surface = surfaceType _pos;
+        private _surface = toLower (surfaceType _pos);
         if ((_surface select [0, 1]) == "#") then { _surface = _surface select [1] };
-        if !(_surface in _surfaceAllowed) then { continue };
+        if (_surfaceBlocked findIf {_surface find _x > -1} > -1) then { continue };
         // Slope / clear-around check.
         if ((_pos isFlatEmpty [-1, -1, 0.3, _hazardRadius, 0, false, objNull]) isEqualTo []) then { continue };
         // Runway / taxiway exclusion still applies in field tier - we
