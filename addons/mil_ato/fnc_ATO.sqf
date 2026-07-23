@@ -2712,6 +2712,13 @@ switch(_operation) do {
                             private _dronePos = +_droneCentre;
                             private _droneDir = random 360;
 
+                            private _dronePlaced = false;
+                            // Which step actually chose the spot. Worth recording: the
+                            // difference between a deliberate helipad and a position that
+                            // was merely shoved off the taxiway is invisible otherwise, and
+                            // they look identical in the log once placed.
+                            private _droneVia = "base centre fallback";
+
                             // Prefer a helipad if the base has one - it keeps the drone
                             // clear of the runway and looks deliberate rather than
                             // dropped in the middle of the field.
@@ -2719,8 +2726,53 @@ switch(_operation) do {
                                 if (_x isKindOf "HeliH") exitWith {
                                     _dronePos = position _x;
                                     _droneDir = direction _x;
+                                    _dronePlaced = true;
+                                    _droneVia = "helipad";
                                 };
                             } forEach ([_droneBase, "nodes"] call ALIVE_fnc_hashGet);
+
+                            // No helipad, so ask the air placement validator for a real
+                            // spot rather than falling back to the middle of the base.
+                            // That fallback is what put a drone on the taxiway, where it
+                            // stopped every aircraft trying to taxi out: the engine snags
+                            // fixed wing taxi pathfinding on anything parked within about
+                            // eight metres of the route, and the validator already applies
+                            // that clearance along with runway and taxiway exclusion,
+                            // footprint checks and a short lived registry that stops two
+                            // placements choosing the same spot.
+                            if (!_dronePlaced && {!isNil "ALiVE_fnc_findAirSpawnPosition"}) then {
+                                private _spot = [_droneClass, _droneCentre, 400, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                                if (count _spot >= 2) then {
+                                    _dronePos = +(_spot select 0);
+                                    // Ground it: a hangar tier spot carries the building's
+                                    // elevated origin and would float the drone in the roof.
+                                    _dronePos set [2, 0];
+                                    _droneDir = _spot select 1;
+                                    _dronePlaced = true;
+                                    _droneVia = "air spawn validator";
+                                };
+                            };
+
+                            // Keep it off the runway and the taxiways. Without a helipad the
+                            // position above falls back to the middle of the base, which on a
+                            // real airfield is as likely as not to be the taxiway, and a parked
+                            // drone sitting there blocks every aircraft trying to get out.
+                            //
+                            // Parking areas are deliberately still allowed: an apron is exactly
+                            // where a drone should sit. Only the surfaces aircraft have to move
+                            // along are cleared.
+                            //
+                            // The isNil guard covers the window where this file has been picked
+                            // up by file patching but the airside functions have not been
+                            // compiled yet; skipping the nudge leaves the old behaviour rather
+                            // than throwing.
+                            if (!isNil "ALiVE_fnc_airsideClear") then {
+                                private _clearPos = [_dronePos, [1,2]] call ALiVE_fnc_airsideClear;
+                                if (_debug && {(_clearPos distance2D _dronePos) > 1}) then {
+                                    ["ATO %1 - drone start position moved %2m clear of runway and taxiway", _logic, round (_clearPos distance2D _dronePos)] call ALiVE_fnc_dump;
+                                };
+                                _dronePos = _clearPos;
+                            };
 
                             private _droneProfile = [_droneClass,_droneSide,_droneFaction,_dronePos,_droneDir,false,_droneFaction] call ALIVE_fnc_createProfileVehicle;
 
@@ -2729,7 +2781,7 @@ switch(_operation) do {
                                 if (!isNil "_droneID" && {_droneID != ""}) then {
                                     [_logic,"registerProfile",[_droneID,_droneAirspace]] call MAINCLASS;
                                     if (_debug) then {
-                                        ["ATO %1 - placed drone %2 at %3", _logic, _droneClass, _dronePos] call ALiVE_fnc_dump;
+                                        ["ATO %1 - placed drone %2 at %3 via %4", _logic, _droneClass, _dronePos, _droneVia] call ALiVE_fnc_dump;
                                     };
                                 };
                             };
