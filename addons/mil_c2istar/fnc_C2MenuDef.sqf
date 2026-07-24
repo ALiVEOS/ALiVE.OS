@@ -66,7 +66,13 @@ if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
     ] call ALIVE_fnc_playerHasAccessItems;
 };
 
-if ([QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable) then {
+// Combat Support is isGlobal = 2, so its module logic is not in a dedicated
+// client's entities "Module_F" and isModuleAvailable(SUP_COMBATSUPPORT) reads
+// false there. That hid this entry on a dedicated server while it showed on a
+// listen host, where server and client are the same machine. NEO_radioLogic is
+// the Combat Support client logic and IS present on the client, so test that
+// instead of the module scan. (#958)
+if (!isNil "NEO_radioLogic") then {
     _csResult = [
         NEO_radioLogic getVariable ["combatsupport_item","LaserDesignators"],
         NEO_radioLogic getVariable ["combatsupport_item_custom",""],
@@ -213,7 +219,7 @@ if (_menuName == "C2ISTAR") then {
                      "",
                      -1,
                      true,
-                     [QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable && {_csResult} && {call ALIVE_fnc_combatSupportIsOperator}
+                     (!isNil "NEO_radioLogic") && {_csResult} && {call ALIVE_fnc_combatSupportIsOperator}
                 ],
                 ["Send SITREP",
                     {
