@@ -2544,7 +2544,45 @@ switch(_operation) do {
 
                                     } else {
 
-                                        // find a taxiway
+                                        // No hangar for this airframe. Ask the air placement
+                                        // validator for a real parking spot before falling back
+                                        // to the taxiway search below.
+                                        //
+                                        // That search is what put parked aircraft on the taxi
+                                        // route: it looks for taxiway objects on purpose, drops
+                                        // the aircraft within 75 m of one, and faces it along the
+                                        // taxiway. Aircraft trying to taxi out then stop dead,
+                                        // because the engine snags fixed wing taxi pathfinding on
+                                        // anything parked within about eight metres of the route.
+                                        //
+                                        // "apron" then "field", never "auto": the hangar tier
+                                        // animates doors on every candidate it inspects and takes
+                                        // an anti-race reservation, and neither belongs in a
+                                        // mission-start parking decision. Those two preferences
+                                        // cannot reach that tier. The validator also returns a
+                                        // heading pointing at the runway, which is a great deal
+                                        // more sensible than facing along a taxiway.
+                                        private _air = [];
+                                        if (!isNil "ALiVE_fnc_findAirSpawnPosition") then {
+                                            _air = [_vehicleClass, position _x, 400, "apron"] call ALiVE_fnc_findAirSpawnPosition;
+                                            if (count _air < 2) then {
+                                                _air = [_vehicleClass, position _x, 400, "field"] call ALiVE_fnc_findAirSpawnPosition;
+                                            };
+                                        };
+
+                                        if (count _air >= 2) then {
+                                            _posi = +(_air select 0);
+                                            // Ground it: some tiers carry a building's elevated origin.
+                                            _posi set [2, 0];
+                                            _dire = _air select 1;
+                                            if (_debug) then {
+                                                ["ATO %1 - %2 parked on apron at %3 facing %4", _logic, _vehicleClass, _posi, round _dire] call ALiVE_fnc_dump;
+                                            };
+                                        } else {
+
+                                        // Last resort only. Kept rather than deleted because on a
+                                        // terrain with no usable apron this is the difference
+                                        // between a badly parked aircraft and no aircraft at all.
                                         _runway = [];
                                         {
                                             if ( (str(_x) find "taxiway" != -1 && typeof _x == "") || str(_x) find "invisible" != -1 ) then {
@@ -2575,6 +2613,20 @@ switch(_operation) do {
 
                                             _posi = [position _x, 5, 200, 30, 0, 0.2, 0] call BIS_fnc_findSafePos;
                                             _dire = direction _x;
+                                        };
+
+                                        };
+
+                                        // Backstop for the fallback paths above, which have no
+                                        // notion of where aircraft need to move. Runway and
+                                        // taxiway only: an apron or hardstand is exactly where a
+                                        // parked aircraft belongs and must not be nudged off it.
+                                        if (!isNil "ALiVE_fnc_airsideClear" && {count _posi > 1}) then {
+                                            private _clearPos = [_posi, [1,2]] call ALiVE_fnc_airsideClear;
+                                            if (_debug && {(_clearPos distance2D _posi) > 1}) then {
+                                                ["ATO %1 - %2 start position moved %3m clear of runway and taxiway", _logic, _vehicleClass, round (_clearPos distance2D _posi)] call ALiVE_fnc_dump;
+                                            };
+                                            _posi = _clearPos;
                                         };
 
                                         if (_availablePlane) then {
