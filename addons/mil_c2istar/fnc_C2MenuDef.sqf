@@ -76,7 +76,8 @@ if (!isNil "NEO_radioLogic") then {
     _csResult = [
         NEO_radioLogic getVariable ["combatsupport_item","LaserDesignators"],
         NEO_radioLogic getVariable ["combatsupport_item_custom",""],
-        []
+        // the Combat Support Tablet (ALIVE_Tablet) always grants access, matching C2ISTAR / Player Resupply
+        ["ALIVE_Tablet"]
     ] call ALIVE_fnc_playerHasAccessItems;
 };
 
