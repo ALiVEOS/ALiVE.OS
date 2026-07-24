@@ -2315,9 +2315,11 @@ switch(_operation) do {
                     private _heliClasses = [0,_faction,"Helicopter"] call ALiVE_fnc_findVehicleType;
                     _heliClasses = _heliClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
-                    // Remove unarmed classes
+                    // Keep only helicopters the commander can actually task (same
+                    // capability test as the plane list below and the adoption gate).
+                    // isArmed counted hardpoints, so an unarmed transport read as armed.
                     {
-                        if !([_x] call ALiVE_fnc_isArmed) then {
+                        if (count ([_x] call ALiVE_fnc_getAircraftRoles) == 0) then {
                             _heliClasses set [_forEachIndex, -1];
                         };
                     } forEach _heliClasses;
@@ -2466,9 +2468,16 @@ switch(_operation) do {
                     // Place planes
                     private _airClasses = [0,_faction,"Plane"] call ALiVE_fnc_findVehicleType;
 
-                    // Remove unarmed classes
+                    // Keep only aircraft the commander can actually task, the same
+                    // capability test the adoption gate uses. isArmed counted pylon
+                    // slots rather than fitted ordnance, so a transport with a
+                    // countermeasure or defensive hardpoint read as armed and could be
+                    // picked here, then rammed into a hangar it does not fit and
+                    // destroyed on contact. Placing at least one flyable aircraft is the
+                    // whole point of this block, so anything that resolves to no role is
+                    // no use to it regardless.
                     {
-                        if !([_x] call ALiVE_fnc_isArmed) then {
+                        if (count ([_x] call ALiVE_fnc_getAircraftRoles) == 0) then {
                             _airClasses set [_forEachIndex, -1];
                         };
                     } forEach _airClasses;
