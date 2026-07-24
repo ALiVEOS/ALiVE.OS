@@ -295,78 +295,9 @@ ALiVE_fnc_isVTOL = {
     _result
 };
 
-ALiVE_fnc_getAircraftRoles = {
-    params [
-        ["_class", "", ["",objNull]],
-        // Optional. Magazines actually fitted, e.g. a profile's pylonLoadout
-        // snapshot. Merged with the config scan, which only ever sees each
-        // pylon's default attachment and so under-reports a refitted aircraft.
-        ["_loadout", [], [[]]]
-    ];
-
-    if (_class isEqualType objNull) then {_class = typeof _class};
-
-    // Attack aircraft have air to surface capability
-    // Fighter aircraft have air to air capability
-    // Recon aircraft can actually find things - see the sensor note below
-    // Multi-role aircraft have both attack and fighter
-    //
-    // Roles are now derived from ALiVE_fnc_getAircraftCapabilities rather than
-    // guessed here. The rule this replaces credited ANY helicopter faster than
-    // 200 km/h as a reconnaissance platform, and every vanilla transport clears
-    // that bar - Ghost Hawk and Taru at 300, Mohawk at 250 - which is why troop
-    // carriers were being sent on reconnaissance and attack sorties they had no
-    // way to fly.
-    private _result = [];
-    private _caps = [_class, _loadout] call ALiVE_fnc_getAircraftCapabilities;
-
-    // Recon takes two things: something to observe with, and being the sort of
-    // aircraft you would send to look.
-    //
-    // Sensors alone are not enough. Some third-party transports carry genuine
-    // observation hardware - RHS fits the CH-53E with a pilot camera, and both
-    // this check and ACE's own agree it has one - but a heavy-lift helicopter
-    // is still not what you send to scout. So the aircraft must also be armed,
-    // or be a drone, which is what separates a scout from a troop carrier that
-    // happens to have a camera.
-    //
-    // "sensorsUnknown" means the airframe declares no sensor component at all,
-    // which is how older and modded content presents. Those stay eligible - a
-    // strict test there would quietly shrink the fleet on RHS or CUP, and an
-    // empty pool is a worse failure than an imperfect pick.
-    //
-    // The drone test needs both halves: isKindOf "UAV" misses the Darter, whose
-    // base inherits from Helicopter_Base_F rather than UAV, while the isUav
-    // config property resolves through inheritance and catches it.
-    private _canObserve = "sensors" in _caps || {"sensorsUnknown" in _caps};
-    private _isDrone = _class isKindOf "UAV"
-                    || {getNumber (configFile >> "CfgVehicles" >> _class >> "isUav") == 1};
-
-    if (_canObserve && {"armed" in _caps || _isDrone}) then {
-        _result pushBack "Recon";
-    };
-
-    // Anything that can hit a ground target can be sent against one. Note that
-    // a gun counts: a gun-only aircraft could previously never be selected for
-    // anything at all, because the role it was given was never requested.
-    if (["gun", "agGuided", "agUnguided"] findIf {_x in _caps} > -1) then {
-        _result pushBack "Attack";
-    };
-
-    // Air-to-air, and only for fixed wing - the dispatcher restricts counter-air
-    // tasking to planes regardless, so granting it to helicopters only produced
-    // candidates that were then filtered out.
-    if ("aa" in _caps && {_class isKindOf "Plane"}) then {
-        _result pushBack "Fighter";
-    };
-
-    // Retained for anything reading the stored roles. The dispatcher does not
-    // request "CAS" - gun-armed aircraft reach close air support through
-    // "Attack" above.
-    if ("gun" in _caps) then { _result pushBack "CAS" };
-
-    _result
-};
+// ALiVE_fnc_getAircraftRoles now lives in x_lib beside the capability scan it
+// builds on, so mil_placement can consult it while placing aircraft. Defined
+// here, it did not exist until this module had run.
 
 // Retained as a thin wrapper so anything still calling it keeps working. The
 // real test now lives in x_lib as ALiVE_fnc_isAntiAirCapable, because the player
@@ -1264,7 +1195,35 @@ switch(_operation) do {
             //
             // A drone reaching this point has already passed the Use Drones check
             // above, so no second test is needed here.
-            if (([_vehicleClass] call ALiVE_fnc_isArmed) || _isDroneAsset) then {
+            // What can this airframe actually be asked to do? Worked out here rather than
+            // after adoption, because it is the admission test.
+            //
+            // An aircraft is only useful to the commander if it resolves to at least one
+            // role. Every role needs a weapon: reconnaissance needs sensors and armament,
+            // ground attack and close air support need a gun or air to ground ordnance,
+            // interception needs air to air missiles on a fixed wing. An unarmed transport
+            // satisfies none of them.
+            //
+            // Such an airframe used to be adopted anyway, because the armament test counts
+            // weapon pylons rather than what is hanging on them and a transport has plenty
+            // of hardpoints. It then sat in the roster permanently unmatched: holding a
+            // runway registration, drawing replenishment, and with its crew marked busy so
+            // those men were taken from the ground commander for the rest of the mission.
+            // Half the roster on a normal mission was made up of these.
+            //
+            // Worse, it made the commander look broken. Asked for air support it answered
+            // that no appropriate aircraft were available, which reads as "your aircraft
+            // were never picked up" when it actually meant "none of mine can do this job".
+            private _admitLoadout = [_vehicleProfile,"pylonLoadout",[]] call ALiVE_fnc_hashGet;
+            private _admitRoles = [_vehicleClass, _admitLoadout] call ALiVE_fnc_getAircraftRoles;
+
+            if (count _admitRoles == 0) then {
+                if (_debug) then {
+                    ["ATO %1 - not adopting %2: it resolves to no roles, so nothing could ever task it", _logic, _vehicleClass] call ALiVE_fnc_dump;
+                };
+            };
+
+            if ((([_vehicleClass] call ALiVE_fnc_isArmed) || _isDroneAsset) && {count _admitRoles > 0}) then {
 
                 // make sure vehicle is set to side of logic
                 [_vehicleProfile, "side", [_logic,"side"] call MAINCLASS] call ALiVE_fnc_profileVehicle;
@@ -1274,6 +1233,38 @@ switch(_operation) do {
                 [_asset,"airspace",_assetAirspace] call ALiVE_fnc_hashSet;
 
                 private _position = +([_vehicleProfile,"position"] call ALIVE_fnc_HashGet);
+
+                // Adopted aircraft are taken wherever they happen to be standing, and whatever
+                // placed them had no idea aircraft need to taxi past. A parked airframe on the
+                // runway or a taxiway stops every aircraft trying to get out, because the engine
+                // snags fixed wing taxi pathfinding on anything within about eight metres of the
+                // route, and a transport sitting across a threshold is the worst offender.
+                //
+                // Move it onto the open ground between the runway and the taxiways. That is where
+                // dispersed aircraft sit on a real airfield, so it reads as deliberate rather than
+                // dumped, and it keeps the movement surfaces clear.
+                //
+                // Runway and taxiway only: an apron, hardstand or helipad is a proper parking spot
+                // and is left exactly as placed.
+                if (!isNil "ALiVE_fnc_airsideClear" && {count _position > 1}) then {
+                    private _clearPos = [_position, [1,2]] call ALiVE_fnc_airsideClear;
+                    if ((_clearPos distance2D _position) > 1) then {
+                        if (_debug) then {
+                            ["ATO %1 - adopted %2 was on a movement surface, moved %3m onto open ground", _logic, _vehicleClass, round (_clearPos distance2D _position)] call ALiVE_fnc_dump;
+                        };
+                        _position = _clearPos;
+                        _position set [2, 0];
+                        // Keep the profile in step, or the airframe snaps back to the blocking
+                        // spot on its next despawn and respawn.
+                        [_vehicleProfile,"position",_position] call ALiVE_fnc_profileVehicle;
+                        // Move the live airframe too, unless somebody is aboard.
+                        private _liveVeh = [_vehicleProfile,"vehicle"] call ALiVE_fnc_hashGet;
+                        if (!isNil "_liveVeh" && {!isNull _liveVeh} && {alive _liveVeh} && {(crew _liveVeh) findIf {isPlayer _x} < 0}) then {
+                            _liveVeh setPosATL _position;
+                            _liveVeh setVelocity [0,0,0];
+                        };
+                    };
+                };
                 [_asset,"startPos",_position] call ALiVE_fnc_hashSet;
 
                 private _dir = [_vehicleProfile,"direction"] call ALIVE_fnc_HashGet;
@@ -1318,8 +1309,9 @@ switch(_operation) do {
                 // snapshot is captured at virtualisation and replayed on spawn, so
                 // it is the closest thing available to what the aircraft is really
                 // carrying.
-                private _fittedLoadout = [_vehicleProfile,"pylonLoadout",[]] call ALiVE_fnc_hashGet;
-                private _roles = [_vehicleClass, _fittedLoadout] call ALiVE_fnc_getAircraftRoles;
+                private _fittedLoadout = _admitLoadout;   // read once, above, as part of the admission test
+                // Already worked out above as the admission test; do not repeat the config read.
+                private _roles = _admitRoles;
                 [_asset,"roles",_roles] call ALiVE_fnc_hashSet;
 
                 // Keep the capability list too, not just the roles derived from it.

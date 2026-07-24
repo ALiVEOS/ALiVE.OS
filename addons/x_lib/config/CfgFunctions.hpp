@@ -2000,6 +2000,13 @@ class getAircraftCapabilities
 	RECOMPILE;
 };
 
+class getAircraftRoles
+{
+	file = "\x\alive\addons\x_lib\functions\units\fnc_getAircraftRoles.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class isEnemyNear
 {
 	file = "\x\alive\addons\x_lib\functions\units\fnc_isEnemyNear.sqf";
