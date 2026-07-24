@@ -116,6 +116,14 @@ switch(_operation) do {
                         if !(_singleOperator isEqualType true) then { _singleOperator = parseNumber format ["%1", _singleOperator] > 0; };
                         NEO_radioLogic setVariable ["combatsupport_singleoperator", _singleOperator, true];
 
+                        // Access items are set on the module logic by the Eden attribute expression, which runs
+                        // server-side with no broadcast flag. The client menu gates read them off NEO_radioLogic,
+                        // so on a dedicated server they never arrive and fall back to the LaserDesignators
+                        // default, silently ignoring the mission's access-item choice. Broadcast them like the
+                        // audio and single-operator attributes above. (#958)
+                        NEO_radioLogic setVariable ["combatsupport_item", NEO_radioLogic getVariable ["combatsupport_item","LaserDesignators"], true];
+                        NEO_radioLogic setVariable ["combatsupport_item_custom", NEO_radioLogic getVariable ["combatsupport_item_custom",""], true];
+
                         // When restricted, the SERVER owns a single operator slot per side and keeps
                         // it filled: if the slot is empty or its holder has left, hand it to another
                         // connected same-side player. This auto-fills at start (the first ready player
