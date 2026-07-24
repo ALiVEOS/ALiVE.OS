@@ -1409,7 +1409,12 @@ switch(_operation) do {
 
 
                                  } else {
-                                 	 _crewpos = selectRandom([_position, 100] call ALIVE_fnc_findIndoorHousePositions);
+                                 	 // Only override the crew position when there is actually somewhere indoor to
+                                 	 // put them. selectRandom [] returns nil, and assigning nil here would delete
+                                 	 // _crewPos (the recovery guard below rebinds it in the wrong scope), leaving
+                                 	 // it undefined when the crew is added. No indoor spot: keep the module default.
+                                 	 private _indoor = [_position, 100] call ALIVE_fnc_findIndoorHousePositions;
+                                 	 if (count _indoor > 0) then { _crewPos = selectRandom _indoor };
                                  };
 
                                  if (isNil "_crewPos") then {
@@ -6843,7 +6848,12 @@ switch(_operation) do {
 
 
                                  } else {
-                                 	 _crewpos = selectRandom([_startPosition, 100] call ALIVE_fnc_findIndoorHousePositions);
+                                 	 // Only override the crew position when there is actually somewhere indoor to
+                                 	 // put them. selectRandom [] returns nil, and assigning nil here would delete
+                                 	 // _crewPos (the recovery guard below rebinds it in the wrong scope), leaving
+                                 	 // it undefined when the crew is added. No indoor spot: keep the module default.
+                                 	 private _indoor = [_startPosition, 100] call ALIVE_fnc_findIndoorHousePositions;
+                                 	 if (count _indoor > 0) then { _crewPos = selectRandom _indoor };
                                  };
 
                                  if (isNil "_crewPos") then {
