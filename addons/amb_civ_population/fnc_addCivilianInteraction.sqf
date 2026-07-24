@@ -23,6 +23,13 @@ params ["_unit"];
 if (side _unit != CIVILIAN) exitWith {};
 if (_unit getVariable ["ALiVE_advciv_blacklist", false]) exitWith {};
 
+// Idempotence (#959). This per-civilian clientInit is no longer the sole attach path: a
+// client-side catch-all sweep in XEH_postInit also calls this to recover civilians whose
+// clientInit raced the interaction handler or never fired on a dedicated client. The
+// per-MACHINE "resolved" guard (addAction is local, so NEVER broadcast) lets both callers
+// run without stacking duplicate actions. Cheap skip here avoids re-spawning for handled civs.
+if (_unit getVariable ["ALiVE_civInteract_resolved", false]) exitWith {};
+
 // The interaction handler (ALiVE_civInteractHandler) is built per-machine and only after
 // the server's `waterItems` broadcast arrives (fnc_civInteract case "init"); it is never
 // publicVariable'd. On a non-host / JIP client a civilian's one-shot clientInit can fire
@@ -37,7 +44,18 @@ if (_unit getVariable ["ALiVE_advciv_blacklist", false]) exitWith {};
         sleep 0.5;
         (!isNil "ALiVE_civInteractHandler") || {diag_tickTime - _waitStart > 120} || {isNull _unit} || {!alive _unit}
     };
-    if (isNil "ALiVE_civInteractHandler" || {isNull _unit} || {!alive _unit}) exitWith {};
+    if (isNull _unit || {!alive _unit}) exitWith {};
+    if (isNil "ALiVE_civInteractHandler") exitWith {
+        // Handler never arrived inside the 120 s window. On a dedicated client the module
+        // handler can build minutes in (~228 s in the #959 repro), so this fires for civil-
+        // ians present early. The catch-all PFH re-attempts them once the handler exists;
+        // log so the miss is visible in the RPT instead of silently dropping the action.
+        ["[Civ Interact] handler wait timed out for %1 -- catch-all will retry", _unit] call ALiVE_fnc_dump;
+    };
+    // Claim this civ atomically (no suspension between read and write) so a near-simultaneous
+    // catch-all call for the same civ cannot stack a second action.
+    if (_unit getVariable ["ALiVE_civInteract_resolved", false]) exitWith {};
+    _unit setVariable ["ALiVE_civInteract_resolved", true];
     private _uiMode = missionNamespace getVariable ["ALiVE_amb_civ_population_UIMode", "AUTO"];
     private _hasAdvCiv = _unit getVariable ["ALiVE_advciv_active", false];
 
