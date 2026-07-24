@@ -86,9 +86,15 @@ switch(_operation) do {
             [_logic,"profileAttacksToSim", []] call ALiVE_fnc_hashSet;
             [_logic,"simulatingAttacks", false] call ALiVE_fnc_hashSet;
 
-            [_logic,"profilesToSpawn", []] call ALiVE_fnc_hashSet;
+            private _profileSpawnQueueState = createHashMapFromArray [
+                ["queue", []],
+                ["iterationsByProfile", createHashMap],
+                ["currentIteration", 0],
+                ["completedIteration", 0]
+            ];
+            [_logic,"profileSpawnQueueState",_profileSpawnQueueState] call ALiVE_fnc_hashSet;
             [_logic,"profilesToDespawn", []] call ALiVE_fnc_hashSet;
-            [_logic,"profilesInSpawnRange", []] call ALiVE_fnc_hashSet;
+            [_logic,"profileInRangeIterations", createHashMap] call ALiVE_fnc_hashSet;
             [_logic,"profileSpawnSources", []] call ALiVE_fnc_hashSet;
             [_logic,"profileLastSpawnTime", 0] call ALiVE_fnc_hashSet;
 
@@ -541,27 +547,31 @@ switch(_operation) do {
     };
     case "vehicleSpawnSettleSeconds": {
             if(typeName _args == "SCALAR") then {
-                    [_logic,"vehicleSpawnSettleSeconds",_args] call ALIVE_fnc_hashSet;
+                [_logic,"vehicleSpawnSettleSeconds",_args] call ALIVE_fnc_hashSet;
             };
             _result = [_logic,"vehicleSpawnSettleSeconds"] call ALIVE_fnc_hashGet;
     };
 
     case "state": {
-        private["_state"];
+        private _keysToIgnore = [
+            "super",
+            "class",
+            "profileSpawnQueueState",
+            "profilesToDespawn",
+            "profileInRangeIterations",
+            "profileSpawnSources",
+            "profileLastSpawnTime"
+        ];
 
-        if(typeName _args != "ARRAY") then {
+        if (typeName _args != "ARRAY") then {
 
             // Save state
 
-            _state = [] call ALIVE_fnc_hashCreate;
+            private _state = [] call ALIVE_fnc_hashCreate;
 
-            // BaseClassHash CHANGE
-            // loop the class hash and set vars on the state hash
             {
-                if(!(_x == "super") && !(_x == "class")) then {
-                    [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-                };
-            } forEach (_logic select 1);
+                [_state,_x,[_logic,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+            } forEach (_logic select 1) - _keysToIgnore;
 
             _result = _state;
 
@@ -570,16 +580,14 @@ switch(_operation) do {
 
             // Restore state
 
-            // BaseClassHash CHANGE
-            // loop the passed hash and set vars on the class hash
             {
                 [_logic,_x,[_args,_x] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-            } forEach (_args select 1);
+            } forEach (_args select 1) - _keysToIgnore;
         };
     };
 
     default {
-            _result = [_logic, _operation, _args] call SUPERCLASS;
+        _result = [_logic, _operation, _args] call SUPERCLASS;
     };
 
 };
