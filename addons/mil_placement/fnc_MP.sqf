@@ -1442,6 +1442,38 @@ switch(_operation) do {
                 _airClasses = [0,_faction,"Plane"] call ALiVE_fnc_findVehicleType;
                 _airClasses = _airClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
 
+                // Split the faction's aircraft into those that can fly a mission and those that
+                // cannot, so the airfield does not fill up with transports.
+                //
+                // Picking at random from the whole list meant a faction with several cargo
+                // variants could put four Hercules on the field and no ground attack aircraft at
+                // all. That was always untidy; it became a real problem once the air commander
+                // started refusing airframes that resolve to no role, because a bad draw leaves
+                // it with nothing to fly.
+                //
+                // Same capability model the air commander uses, so the two agree about what
+                // counts as useful. An empty loadout reads the class defaults, which is the right
+                // question here: nothing has been spawned yet to inspect.
+                private _combatClasses = _airClasses select {
+                    count ([_x, []] call ALiVE_fnc_getAircraftRoles) > 0
+                };
+                private _placedClasses = [];
+
+                // DIAG-STRIP: which of the faction's aircraft the air commander could
+                // actually use. An empty combat list against a non-empty plane list is
+                // the signal that a faction offers nothing taskable, which shows up
+                // later as an airfield of parked transports and an idle commander.
+                if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
+                    [
+                        "DIAG-STRIP MP aircraft weighting: faction=%1, taskable=%2 of %3, taskableClasses=%4",
+                        _faction,
+                        count _combatClasses,
+                        count _airClasses,
+                        _combatClasses
+                    ] call ALiVE_fnc_dump;
+                };
+
+
                 // Hangar placement is for FIXED-WING aircraft only. The
                 // pre-existing fallback `_airClasses = _airClasses +
                 // _heliClasses` produced helis sitting inside hangars when
@@ -1547,7 +1579,20 @@ switch(_operation) do {
                             private _bldModel = toLower(getText(configFile >> "CfgVehicles" >> _bldType >> "model"));
                             private _rollKeep = random 1;
                             if(_rollKeep > 0.3) then {
-                                _vehicleClass = (selectRandom _airClasses);
+                                // Favour aircraft that can actually be tasked, but leave room for the
+                                // occasional transport so a base still looks like it does more than fight.
+                                private _pool = if (count _combatClasses > 0 && {random 1 > 0.2}) then { _combatClasses } else { _airClasses };
+                                // Prefer something not already chosen, so six hangars do not end up
+                                // holding six of the same airframe. Once every type has had a turn this
+                                // relaxes on its own and repeats are allowed again.
+                                //
+                                // Recorded when picked rather than when placed, deliberately: a class
+                                // that will not fit the hangars fails every time, and remembering the
+                                // attempt lets the others have a go instead of retrying it per hangar.
+                                private _fresh = _pool select {!(_x in _placedClasses)};
+                                if (count _fresh > 0) then { _pool = _fresh };
+                                _vehicleClass = (selectRandom _pool);
+                                _placedClasses pushBackUnique _vehicleClass;
 
                                 // Validator handles bbox fit, door
                                 // verification, auto-orient, apron
