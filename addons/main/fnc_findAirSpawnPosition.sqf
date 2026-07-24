@@ -89,6 +89,12 @@ private _hw = _vehWid / 2;
 // hazard; estimate from longest bbox axis with a 0.55 factor (rotors
 // extend slightly beyond fuselage). For planes the wingspan IS the
 // width axis so use the longer axis directly with a small margin.
+// How much room a parked aircraft gets beyond its own extent, in metres.
+// Named so it can be tuned from init.sqf without a rebuild. Raising it makes
+// aircraft sit further from structures at the cost of finding fewer spots on a
+// cramped field; the tier simply returns nothing when it cannot oblige.
+if (isNil "ALiVE_airSpawn_clearanceMargin") then { ALiVE_airSpawn_clearanceMargin = 8 };
+
 private _hazardRadius = if (_isHeli) then {
     (_vehLen max _vehWid) * 0.55
 } else {
@@ -167,20 +173,32 @@ private _fnc_footprintClear = {
     // route via the ship-deck path upstream.
     if ({surfaceIsWater _x} count _samples > 0) exitWith { false };
 
-    private _sampleR = 0.5;
-    private _terrainHit = _samples findIf {
-        private _hits = nearestTerrainObjects [_x, _staticTerrainTypes, _sampleR + 0.5, false, true];
-        _hits = _hits - _ignore;
-        !(_hits isEqualTo [])
-    };
-    if (_terrainHit >= 0) exitWith { false };
+    // Sweep the WHOLE footprint, not nine dots on its edge.
+    //
+    // This used to test a one metre circle around each of the nine samples
+    // above, which for a transport with a forty metre span meant nine small
+    // dots on a twenty metre ring and enormous unchecked gaps between them. A
+    // hangar or an office block sitting in one of those gaps was missed
+    // entirely, the aircraft spawned inside it, and the pair detonated. That
+    // destroyed the air commander's own headquarters on one run and took the
+    // whole air component offline with it.
+    //
+    // One query at the hazard radius covers the area the aircraft actually
+    // occupies. It is also cheaper than nine, and it fails safe: if nothing
+    // clear can be found the tier simply returns nothing and the caller falls
+    // back, which is the correct outcome for "there is no room here".
+    // Clearance, not merely non-overlap. The hazard radius is the aircraft's own
+    // extent, so testing at exactly that distance accepts a wingtip a hand's
+    // breadth from a hangar wall: legal, but it looks wrong and leaves nothing
+    // for the settling the engine does on spawn. Add a margin so parked aircraft
+    // sit with visible room around them.
+    private _clearRadius = _hazardRadius + ALiVE_airSpawn_clearanceMargin;
 
-    private _classHit = _samples findIf {
-        private _hits = nearestObjects [_x, _classObstacles, _sampleR + 0.5];
-        _hits = _hits - _ignore;
-        !(_hits isEqualTo [])
-    };
-    if (_classHit >= 0) exitWith { false };
+    private _terrainHits = (nearestTerrainObjects [_pos, _staticTerrainTypes, _clearRadius, false, true]) - _ignore;
+    if !(_terrainHits isEqualTo []) exitWith { false };
+
+    private _classHits = (nearestObjects [_pos, _classObstacles, _clearRadius]) - _ignore;
+    if !(_classHits isEqualTo []) exitWith { false };
 
     true
 };
@@ -460,10 +478,57 @@ private _fnc_pointToSegmentDist2D = {
     sqrt ((_px-_qx)^2 + (_py-_qy)^2)
 };
 
+// A public road passes every other test here: it is paved, dead flat, and kept
+// clear of obstacles by design, which is precisely the profile the apron and
+// field tiers go looking for. Aircraft parked across one block traffic and look
+// wrong, so the road network has to be asked directly.
+//
+// Surface type cannot settle it. The apron tier accepts "road" as a paved
+// surface, and to the flatness check a road is indistinguishable from an ideal
+// parking spot.
+//
+// Airfield parking is exempt. Some terrains build aprons and hardstanding out of
+// road pieces, and refusing those outright would empty the apron tier on exactly
+// the maps where it earns its keep. Kind 3 is parking: somewhere aircraft are
+// meant to sit rather than a thoroughfare.
+private _fnc_clearOfRoad = {
+    params ["_pos"];
+
+    // Test the footprint, not only the centre. A wingtip overhanging the
+    // carriageway is still parked on the road.
+    private _onRoad = isOnRoad _pos
+        || {[0, 90, 180, 270] findIf {isOnRoad (_pos getPos [_hazardRadius, _x])} > -1};
+    if (!_onRoad) exitWith { true };
+
+    !isNil "ALiVE_fnc_isAirside"
+        && {!(ALiVE_airsideBounds isEqualTo [])}
+        && {[_pos, 0, [3]] call ALiVE_fnc_isAirside}
+};
+
 private _fnc_clearOfRunwayTaxiway = {
     params ["_pos"];
     private _taxiBuffer   = _hw + 8;   // half-width + AI taxi clearance
     private _runwayBuffer = _hw + 12;  // half-width + active runway clearance
+
+    // Ask the airfield model first, where one has been built.
+    //
+    // The segment lists below come from scanning for runway and taxiway OBJECTS,
+    // and on a terrain whose runway is painted into the ground texture rather than
+    // built from objects there is almost nothing to find. Stratis is exactly that
+    // case: the segments are a few sparse fragments, the gaps between them are wide
+    // open, and aircraft were being parked on the runway edge through one of them.
+    //
+    // The mission start airfield pass fits a proper centreline from whatever
+    // evidence the terrain does offer and stores it with a sensible width, plus the
+    // approach strips off each end. Runway and taxiway only: parking areas are
+    // where aircraft are supposed to sit, so kind 3 is deliberately not consulted.
+    // One condition, one exitWith, at the function's own level. Nesting the
+    // exitWith inside a then-block would exit only that block and the function
+    // would carry on and return true, silently ignoring the answer.
+    if (!isNil "ALiVE_fnc_isAirside"
+        && {!(ALiVE_airsideBounds isEqualTo [])}
+        && {[_pos, _hw + 8, [1,2]] call ALiVE_fnc_isAirside}) exitWith { false };
+
     if (_taxiwaySegments findIf {
         _x params ["_segStart", "_segEnd", "_segHW"];
         ([_pos, _segStart, _segEnd] call _fnc_pointToSegmentDist2D) < (_segHW + _taxiBuffer)
@@ -494,7 +559,14 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         // sits on, picked up via 2 m proximity) out of the obstacle
         // returns, so the helipad doesn't count as the obstacle that
         // blocks its own check.
-        private _ignore = [_x] + (nearestObjects [_padPos, ["House", "Building"], 2]);
+        // A helipad is a deliberate landing spot: whoever placed it accepted the
+        // buildings around it, and pads are very often tucked against a tower or a
+        // hangar. So ignore static structures across the whole footprint here rather
+        // than only those touching the pad. Vehicles are NOT ignored, so a pad that
+        // already has something parked on it is still rejected.
+        private _ignore = [_x]
+            + (nearestObjects [_padPos, ["House", "Building"], (_hazardRadius + ALiVE_airSpawn_clearanceMargin)])
+            + (nearestTerrainObjects [_padPos, _staticTerrainTypes, (_hazardRadius + ALiVE_airSpawn_clearanceMargin), false, true]);
         if !([_padPos, _padDir, _ignore] call _fnc_footprintClear) then { continue };
         _found = [_padPos, _padDir];
     } forEach _candidates;
@@ -574,6 +646,7 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
         private _surface = toLower (surfaceType _pos);
         if ((_surface select [0, 1]) == "#") then { _surface = _surface select [1] };
         if (_surfaceAllowed findIf {_surface find _x > -1} < 0) then { continue };
+        if !([_pos] call _fnc_clearOfRoad) then { continue };
         if !([_pos] call _fnc_clearOfRunwayTaxiway) then { continue };
         if !([_pos, _minSeparation] call _fnc_registryClear) then { continue };
         // Aircraft on apron: orient roughly toward the runway if we
@@ -607,6 +680,10 @@ if (count _found == 0 && {_preference in ["auto", "field"]}) then {
         if (_surfaceBlocked findIf {_surface find _x > -1} > -1) then { continue };
         // Slope / clear-around check.
         if ((_pos isFlatEmpty [-1, -1, 0.3, _hazardRadius, 0, false, objNull]) isEqualTo []) then { continue };
+        // Roads clear this tier's blocklist and its flatness test effortlessly,
+        // being neither sand nor sloped nor cluttered, so they need refusing by
+        // name here as well as on the apron.
+        if !([_pos] call _fnc_clearOfRoad) then { continue };
         // Runway / taxiway exclusion still applies in field tier - we
         // never want to drop an aircraft on an active path even by
         // random luck.
