@@ -251,6 +251,24 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "placePlanes": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["placePlanes", _args];
+        } else {
+            // Missions saved before this toggle existed have no placePlanes value.
+            // Fall back to the helicopter setting so those missions keep whatever air
+            // behaviour they had: a base that had all air on keeps its planes, and one
+            // that turned air off does not suddenly grow a hangar full of them.
+            _args = _logic getVariable ["placePlanes", ([_logic, "placeHelis"] call MAINCLASS)];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["placePlanes", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
     case "placeArtillery": {
         if (typeName _args == "BOOL") then {
             _logic setVariable ["placeArtillery", _args];
@@ -778,7 +796,7 @@ switch(_operation) do {
 
             private ["_debug","_clusters","_cluster","_HQClusters","_airClusters","_heliClusters","_vehicleClusters",
             "_countHQClusters","_countAirClusters","_countHeliClusters","_size","_type","_faction","_ambientVehicleAmount",
-            "_placeHelis","_placeArtillery","_placeSupplies","_factionConfig","_factionSideNumber","_side","_countProfiles","_vehicleClass",
+            "_placeHelis","_placePlanes","_placeArtillery","_placeSupplies","_factionConfig","_factionSideNumber","_side","_countProfiles","_vehicleClass",
             "_position","_direction","_unitBlackist","_vehicleBlacklist","_groupBlacklist","_heliClasses","_nodes",
             "_airClasses","_node","_buildings","_customInfantryCount","_customMotorisedCount","_customMechanisedCount",
             "_customArmourCount","_customSpecOpsCount","_countVehicleClusters","_createHQ","_createFieldHQ","_file",
@@ -875,6 +893,7 @@ switch(_operation) do {
             _createFieldHQ = [_logic, "createFieldHQ"] call MAINCLASS;
 
             _placeHelis = [_logic, "placeHelis"] call MAINCLASS;
+            _placePlanes = [_logic, "placePlanes"] call MAINCLASS;
             _placeArtillery = [_logic, "placeArtillery"] call MAINCLASS;
             _placeSupplies = [_logic, "placeSupplies"] call MAINCLASS;
             private _garrisonCompositions = ([_logic, "garrisonCompositions"] call MAINCLASS) in [true, "true"];
@@ -906,7 +925,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Size: %2 Type: %3 SideNum: %4 Side: %5 Faction: %6",_faction,_size,_type,_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
-                ["MP [%1] - Ambient Vehicles: %2 Create HQ: %3 Create Field HQ: %4 Place Helis: %5 Place Supplies: %6",_faction,_ambientVehicleAmount,_createHQ,_createFieldHQ,_placeHelis,_placeSupplies] call ALiVE_fnc_dump;
+                ["MP [%1] - Ambient Vehicles: %2 Create HQ: %3 Create Field HQ: %4 Place Helis: %5 Place Supplies: %6 Place Planes: %7",_faction,_ambientVehicleAmount,_createHQ,_createFieldHQ,_placeHelis,_placeSupplies,_placePlanes] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1437,7 +1456,7 @@ switch(_operation) do {
             _countCrewedAir = 0;
             _countUncrewedAir = 0;
 
-            if(_placeHelis) then {
+            if(_placePlanes) then {
 
                 _airClasses = [0,_faction,"Plane"] call ALiVE_fnc_findVehicleType;
                 _airClasses = _airClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
@@ -2388,7 +2407,7 @@ switch(_operation) do {
             _groups = _groups + _infantryGroups;
             private _infantryGroupEnd = count _groups;
 
-            if (_placeHelis) then {
+            if (_placeHelis || _placePlanes) then {
                 for "_i" from 0 to _countAir -1 do {
                     _group = ["Air",_faction] call ALIVE_fnc_configGetRandomGroup;
                     if!(_group == "FALSE") then {
