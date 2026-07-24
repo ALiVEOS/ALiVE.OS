@@ -2523,7 +2523,28 @@ switch(_operation) do {
 
                                     // Find safe place to put aircraft
                                     private ["_pavement","_runway","_position"];
-                                    if (([typeOf _x, "hangar"] call CBA_fnc_find != -1 || [typeOf _x, "Hangar"] call CBA_fnc_find != -1) && _vehicleClass iskindof "Plane") then {
+
+                                    // Does this aircraft actually fit the hangar building _x? A tent
+                                    // hangar is a hangar in name only against something the size of a
+                                    // C-130: the airframe clips through the structure and the collision
+                                    // destroys it the instant it spawns. Compare the two bounding boxes
+                                    // longest-to-longest and shortest-to-shortest (the local axes need
+                                    // not line up) plus roof height, and send anything that does not fit
+                                    // to the open-ground path below rather than into the wall. Same test
+                                    // the air spawn validator's own hangar tier uses.
+                                    private _fitsHangar = false;
+                                    private _isHangarBuilding = ([typeOf _x, "hangar"] call CBA_fnc_find != -1 || [typeOf _x, "Hangar"] call CBA_fnc_find != -1);
+                                    if (_isHangarBuilding && _vehicleClass iskindof "Plane") then {
+                                        ([_vehicleClass] call ALiVE_fnc_getVehicleBoundingBox) params ["_fitLen","_fitWid","_fitHt"];
+                                        private _hs = _x call BIS_fnc_boundingBoxDimensions;
+                                        private _hLong = (_hs select 0) max (_hs select 1);
+                                        private _hShort = (_hs select 0) min (_hs select 1);
+                                        _fitsHangar = (_hLong >= (_fitLen max _fitWid))
+                                                   && {_hShort >= (_fitLen min _fitWid)}
+                                                   && {!((count _hs >= 3) && {(_hs select 2) > 0 && {(_hs select 2) < _fitHt}})};
+                                    };
+
+                                    if (_fitsHangar) then {
                                         _posi = position _x;
                                         _dire = direction _x;
 
