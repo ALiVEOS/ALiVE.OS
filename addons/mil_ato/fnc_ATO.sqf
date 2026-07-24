@@ -1103,6 +1103,9 @@ switch(_operation) do {
 
         if ([_runways,_runway] call CBA_fnc_hashHasKey) then {
             [_runways, _runway, false] call ALIVE_fnc_hashSet;
+            // Reset the stale-lock clock too, so a completed sortie timestamp cannot
+            // make the next lock look overdue and get force-cleared.
+            [_runways, format ["lockTime_%1", _runway], 0] call ALIVE_fnc_hashSet;
             [_logic,"runways",_runways] call MAINCLASS;
         };
     };
@@ -1712,6 +1715,13 @@ switch(_operation) do {
             _logic setVariable ["analysisInProgress", false];
             _logic setVariable ["eventQueue", [] call ALIVE_fnc_hashCreate];
             _logic setVariable ["position", getposATL _logic];
+
+            // A runway lock is released when its aircraft becomes airborne. An
+            // aircraft that locks the runway and then gets stuck on the ground never
+            // releases it, and every queued sortie waits behind it. Break a lock held
+            // longer than this many seconds so the queue recovers on its own. isNil
+            // guarded so a console override survives a mission restart.
+            if (isNil "ALiVE_ATO_runwayLockTimeout") then { ALiVE_ATO_runwayLockTimeout = 180 };
 
             GVAR(threats) = [] call ALiVE_fnc_hashCreate;
             GVAR(lastCAP) = [] call ALiVE_fnc_hashCreate;
@@ -5339,6 +5349,19 @@ switch(_operation) do {
                             // if plane check to see if runway is busy, wait
                             _airportBusy = [_airports, _airportID] call ALiVE_fnc_hashGet;
 
+                            // Stale-lock break: a lock held past the timeout means the aircraft
+                            // that took it never cleared the runway (stuck on the ground), so free
+                            // it here rather than stall every queued sortie behind it.
+                            if (!isNil "_airportBusy" && {_airportBusy isEqualType true} && {_airportBusy}) then {
+                                private _lockedAt = [_airports, format ["lockTime_%1", _airportID], 0] call ALiVE_fnc_hashGet;
+                                if (_lockedAt > 0 && {!isNil "ALiVE_ATO_runwayLockTimeout"} && {(time - _lockedAt) > ALiVE_ATO_runwayLockTimeout}) then {
+                                    [_airports, _airportID, false] call ALiVE_fnc_hashSet;
+                                    [_logic,"runways",_airports] call MAINCLASS;
+                                    _airportBusy = false;
+                                    ["ATO %1 - runway %2 lock held %3s past timeout, force-cleared so queued aircraft can launch", _logic, _airportID, round (time - _lockedAt)] call ALiVE_fnc_dumpR;
+                                };
+                            };
+
                             // Check catapult is free
                             if (surfaceIsWater _startPosition && _isOnCarrier) then {
                                 _isUCAV = if (_vehicleClass isKindOf "B_UAV_05_F") then {true} else {false};
@@ -5371,6 +5394,7 @@ switch(_operation) do {
                                 If (_isPlane) then {
                                     // Mark airport as busy
                                     [_airports, _airportID, true] call ALiVE_fnc_hashSet;
+                                    [_airports, format ["lockTime_%1", _airportID], time] call ALiVE_fnc_hashSet;
                                     [_logic,"runways",_airports] call MAINCLASS;
 
                                     // Get Taxi position
@@ -5606,7 +5630,27 @@ switch(_operation) do {
                                     private _crewGroup = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
                                     if (isNil "_crewGroup" || {!(_crewGroup isEqualType grpNull)} || {isNull _crewGroup}) then {
                                         _crewGroupBad = true;
-                                        ["ATO %1 - crew profile %2 for aircraft %3 has an invalid group handle, aborting activation", _logic, _crewID, _profileID] call ALiVE_fnc_dumpR;
+                                        ["ATO %1 - crew profile %2 for aircraft %3 has an invalid group handle", _logic, _crewID, _profileID] call ALiVE_fnc_dumpR;
+                                    };
+                                };
+
+                                // Interim recovery for a stale crew group handle. The slot holds an
+                                // Object left by a despawn while the profile still reads active, so the
+                                // crew spawn further down is skipped and the sortie would abort for good,
+                                // grounding the airframe for the rest of the mission and retrying every
+                                // pass. Force the crew profile inactive and re-spawn it: profileEntity
+                                // only builds a fresh group when the profile is inactive, so this rebuilds
+                                // a clean one. Re-test, and fall through to the abort only if it is still
+                                // bad, so this is never worse than before. The crew-on-demand rework is
+                                // meant to own this lifecycle properly; this is a stopgap.
+                                if (_crewGroupBad && {!isNil "_crewProfile"}) then {
+                                    [_crewProfile,"active",false] call ALiVE_fnc_hashSet;
+                                    [_crewProfile,"locked",false] call ALiVE_fnc_hashSet;
+                                    [_crewProfile,"spawn"] call ALiVE_fnc_profileEntity;
+                                    private _rebuiltGroup = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
+                                    if (!isNil "_rebuiltGroup" && {_rebuiltGroup isEqualType grpNull} && {!isNull _rebuiltGroup}) then {
+                                        _crewGroupBad = false;
+                                        ["ATO %1 - crew profile %2 group rebuilt, sortie proceeding", _logic, _crewID] call ALiVE_fnc_dumpR;
                                     };
                                 };
 
@@ -6617,6 +6661,7 @@ switch(_operation) do {
                                 // Mark airport as busy for landing, and remember THIS landing took the lock
                                 // (the no-players quick-land path never locks - its completion must not unlock)
                                 [_airports, _airportID, true] call ALiVE_fnc_hashSet;
+                                [_airports, format ["lockTime_%1", _airportID], time] call ALiVE_fnc_hashSet;
                                 [_logic,"runways",_airports] call MAINCLASS;
                                 _vehicle setVariable [QGVAR(LANDINGLOCK), true];
 
