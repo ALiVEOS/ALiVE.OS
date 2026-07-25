@@ -6062,6 +6062,19 @@ switch(_operation) do {
                         };
                     };
 
+                    // A drone has no walking pilot to wait for, so it must not sit out the wait gate below,
+                    // which only advances on a driver boarding or the ~eventDuration/3 timeout - the site-3
+                    // path that stalled a recce drone about three minutes. Crew it immediately with its AI
+                    // operator so it is launch-ready this tick. createVehicleCrew adds only MISSING crew, so
+                    // it is a no-op when the drone is already crewed. (crew/launch-lifecycle)
+                    if (isNull (driver _vehicle) && {[_vehicle] call _fnc_isDroneClass}) then {
+                        private _cbefore = count (crew _vehicle);
+                        createVehicleCrew _vehicle;
+                        if (_debug) then {
+                            ["ATO %1 drone crewed immediately at launch (bypassed the site-3 stall): class=%2 crew %3 -> %4 driver=%5", _logic, typeOf _vehicle, _cbefore, count (crew _vehicle), (if (isNull (driver _vehicle)) then {"NONE"} else {typeOf (driver _vehicle)})] call ALiVE_fnc_dump;
+                        };
+                    };
+
                     // Wait for driver or time expiration
                     if ( !(isNull (driver _vehicle)) || {time > (_eventTime + ((_eventDuration/3)*60))} || {_isOnCarrier}) then {
 
