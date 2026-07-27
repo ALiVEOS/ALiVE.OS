@@ -4442,7 +4442,13 @@ switch(_operation) do {
                         private _useLogcom = (["ALiVE_MIL_LOGISTICS"] call ALiVE_fnc_isModuleAvailable)
                             && {!([_asset,"isOnCarrier",false] call ALiVE_fnc_hashGet)}
                             // Set by the sweep after LOGCOM failed us twice - take the proven path.
-                            && {!([_asset,"forceSelfCreate",false] call ALiVE_fnc_hashGet)};
+                            && {!([_asset,"forceSelfCreate",false] call ALiVE_fnc_hashGet)}
+                            // A virtual air base has no airfield for LOGCOM to deliver to -
+                            // it would route the replacement to the HQ and leave it on the
+                            // ground there. The self-create path below rebuilds at the
+                            // asset's own start position, which is the ingress point, and
+                            // registration works the flag out again from where it lands.
+                            && {!([_asset,"virtualBase",false] call ALiVE_fnc_hashGet)};
 
                         if (_useLogcom) then {
 
