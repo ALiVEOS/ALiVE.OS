@@ -86,17 +86,12 @@ switch(_operation) do {
             [_logic,"profileAttacksToSim", []] call ALiVE_fnc_hashSet;
             [_logic,"simulatingAttacks", false] call ALiVE_fnc_hashSet;
 
-            private _profileSpawnQueueState = createHashMapFromArray [
-                ["queue", []],
-                ["iterationsByProfile", createHashMap],
-                ["currentIteration", 0],
-                ["completedIteration", 0]
-            ];
-            [_logic,"profileSpawnQueueState",_profileSpawnQueueState] call ALiVE_fnc_hashSet;
-            [_logic,"profilesToDespawn", []] call ALiVE_fnc_hashSet;
-            [_logic,"profileInRangeIterations", createHashMap] call ALiVE_fnc_hashSet;
-            [_logic,"profileSpawnSources", []] call ALiVE_fnc_hashSet;
-            [_logic,"profileLastSpawnTime", 0] call ALiVE_fnc_hashSet;
+            private _profileActivationCoordinator = [nil,"create"] call ALiVE_fnc_profileActivationCoordinator;
+
+            private _playerProximityActivator = [nil,"create",[_logic]] call ALiVE_fnc_profileActivatorPlayerProximity;
+            [_profileActivationCoordinator,"registerActivator",_playerProximityActivator] call ALiVE_fnc_profileActivationCoordinator;
+
+            [_logic,"profileActivationCoordinator",_profileActivationCoordinator] call ALiVE_fnc_hashSet;
 
             // load static data
             call ALiVE_fnc_staticDataHandler;
@@ -249,12 +244,13 @@ switch(_operation) do {
             // start the profile simulator
             private _profileSimPerFrameID = [ALiVE_fnc_profileSimulator, 0, []] call CBA_fnc_addPerFrameHandler;
 
-            // start the profile spawners
+            // Start the profile activation pipeline.
             ALiVE_SpawnSources = [];
-            private _profileSpawnerPerFrameID = [ALiVE_fnc_profileSpawner, 0, []] call CBA_fnc_addPerFrameHandler;
+            private _profileActivationCoordinator = [_logic,"profileActivationCoordinator"] call ALiVE_fnc_hashGet;
+            private _profileActivationPerFrameID = [ALiVE_fnc_profileActivationTick,0,[_profileActivationCoordinator]] call CBA_fnc_addPerFrameHandler;
 
             [_logic,"profileSimulatorPerFrameID", _profileSimPerFrameID] call ALiVE_fnc_hashSet;
-            [_logic,"profileSpawnerPerFrameID", _profileSpawnerPerFrameID] call ALiVE_fnc_hashSet;
+            [_logic,"profileActivationPerFrameID",_profileActivationPerFrameID] call ALiVE_fnc_hashSet;
 
             // if persistent load data
             if(ALIVE_loadProfilesPersistent) then {
@@ -285,10 +281,12 @@ switch(_operation) do {
         if (isServer) then {
 
             private _profileSimulatorPerFrameID = [_logic,"profileSimulatorPerFrameID"] call ALiVE_fnc_hashGet;
-            private _profileSpawnerPerFrameID = [_logic,"profileSpawnerPerFrameID"] call ALiVE_fnc_hashGet;
+            private _profileActivationPerFrameID = [_logic,"profileActivationPerFrameID"] call ALiVE_fnc_hashGet;
+            private _profileActivationCoordinator = [_logic,"profileActivationCoordinator"] call ALiVE_fnc_hashGet;
 
             _profileSimulatorPerFrameID call CBA_fnc_removePerFrameHandler;
-            _profileSpawnerPerFrameID call CBA_fnc_removePerFrameHandler;
+            _profileActivationPerFrameID call CBA_fnc_removePerFrameHandler;
+            [_profileActivationCoordinator,"destroy"] call ALiVE_fnc_profileActivationCoordinator;
 
             [ALIVE_commandRouter, "pause", true] call ALIVE_fnc_commandRouter;
             [ALIVE_liveAnalysis, "pause", true] call ALIVE_fnc_liveAnalysis;
@@ -556,11 +554,8 @@ switch(_operation) do {
         private _keysToIgnore = [
             "super",
             "class",
-            "profileSpawnQueueState",
-            "profilesToDespawn",
-            "profileInRangeIterations",
-            "profileSpawnSources",
-            "profileLastSpawnTime"
+            "profileActivationCoordinator",
+            "profileActivationPerFrameID"
         ];
 
         if (typeName _args != "ARRAY") then {
