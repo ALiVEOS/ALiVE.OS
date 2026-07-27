@@ -251,6 +251,40 @@ class CfgVehicles
                         defaultValue = """""";
                         typeName = "STRING";
                 };
+                // ---- Virtual air base ----------------------------------------------
+                // For airspaces with no airfield in them at all. The commander needs a
+                // cluster of military buildings to call home; without one it never
+                // starts, and the faction has no air arm for the whole mission. An
+                // ingress point stands in for the field: aircraft wait virtualized
+                // there, launch airborne and return to it.
+                class HDR_INGRESS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_INGRESS"; displayName = "VIRTUAL AIR BASE"; };
+                class ingressMode : Combo
+                {
+                        property = "ALiVE_mil_ato_ingressMode";
+                        displayName = "$STR_ALIVE_ATO_INGRESS_MODE";
+                        tooltip = "$STR_ALIVE_ATO_INGRESS_MODE_COMMENT";
+                        defaultValue = """off""";
+                        class Values
+                        {
+                            class Off { name = "Off"; value = "off"; default = 1; };
+                            class Fallback { name = "Fallback (no usable airfield)"; value = "fallback"; };
+                        };
+                };
+                class ingressMarker : Edit
+                {
+                        property = "ALiVE_mil_ato_ingressMarker";
+                        displayName = "$STR_ALIVE_ATO_INGRESS_MARKER";
+                        tooltip = "$STR_ALIVE_ATO_INGRESS_MARKER_COMMENT";
+                        defaultValue = """""";
+                        typeName = "STRING";
+                };
+                class ingressCount : Edit
+                {
+                        property     = "ALiVE_mil_ato_ingressCount";
+                        displayName  = "$STR_ALIVE_ATO_INGRESS_COUNT";
+                        tooltip      = "$STR_ALIVE_ATO_INGRESS_COUNT_COMMENT";
+                        defaultValue = """6""";
+                };
                 // ---- Objective Objects (#875) ---------------------------------------
                 class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
                 // Airfield radar arrays are a strong thematic fit for ATO.

@@ -68,6 +68,24 @@
 <Key ID="STR_ALIVE_ATO_PILOTBUILDING_COMMENT">
     <English>Classname of a building within 50 m of this module where replacement aircrew appear, for example Land_Cargo_House_V3_F. Leave blank to pick a nearby building automatically. A classname that matches nothing within 50 m puts the crew out in the open at the module's own position, which is worse than leaving it blank.</English>
 </Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_MODE">
+    <English>Virtual Air Base:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_MODE_COMMENT">
+    <English>Lets this commander operate without an airfield. Fallback takes effect only when no usable airfield is found inside the airspace - with a field available it changes nothing. Its aircraft then wait virtualized at the ingress point, launch already airborne and return there, so no runway, taxiway or hangar is needed anywhere on the map.</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_MARKER">
+    <English>Ingress Point Marker:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_MARKER_COMMENT">
+    <English>Name of a map marker the fleet flies from and returns to. It does not have to sit inside the airspace marker - putting it offshore or over the border reads as aircraft arriving from a base elsewhere. Only used when Virtual Air Base is set to Fallback and no usable airfield was found. A name that matches no marker is reported at mission start and the fallback stays off.</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_COUNT">
+    <English>Ingress Fleet Size:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_COUNT_COMMENT">
+    <English>How many aircraft the ingress point holds, from 1 to 12. Six by default rather than one or two, because Minimum Aircraft For Offensive Missions (2 by default) suspends offensive tasking once the fleet has shrunk to that size - a small fleet degrades to defensive patrols after a couple of losses and never recovers.</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS">
     <English>Runway start position:</English>
     <Chinesesimp>跑道起始位置:</Chinesesimp>

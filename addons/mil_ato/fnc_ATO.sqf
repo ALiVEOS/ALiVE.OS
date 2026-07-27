@@ -39,6 +39,9 @@ Tupolov & Jman
 #define DEFAULT_FACTION "OPF_F"
 #define DEFAULT_AIRSPACE []
 #define DEFAULT_PILOTBUILDING ""
+#define DEFAULT_INGRESS_MODE "off"
+#define DEFAULT_INGRESS_MARKER ""
+#define DEFAULT_INGRESS_COUNT "6"
 #define DEFAULT_RUNWAYSTARTPOS ""
 #define DEFAULT_RUNWAYENDPOS ""
 #define DEFAULT_RUNWAYWIDTH ""
@@ -309,6 +312,59 @@ ALiVE_fnc_isAntiAir = {
     ];
 
     [_class] call ALiVE_fnc_isAntiAirCapable
+};
+
+// Where a commander with no airfield flies from. Empty array means the virtual
+// air base does not apply to this module, which is the answer for every mission
+// that has not asked for it - so every caller can treat an empty result as
+// "carry on exactly as before".
+//
+// Deliberately a plain lookup with no side effects: it is asked at startup to
+// report a mistyped marker, and again when the commander decides whether it has
+// a base at all, and the two must not be able to disagree.
+ALiVE_fnc_ATOIngressPos = {
+    params [["_logic", objNull, [objNull]]];
+
+    private _result = [];
+
+    if (isNull _logic) exitWith {_result};
+
+    private _mode = toLower ([_logic, "ingressMode"] call MAINCLASS);
+    if !(_mode == "fallback") exitWith {_result};
+
+    private _marker = [_logic, "ingressMarker"] call MAINCLASS;
+    if (_marker == "") exitWith {
+        ["ATO %1 - Warning, Virtual Air Base is set to Fallback but no ingress marker is named, so it cannot take effect. Set this module's Ingress Point Marker.", _logic] call ALiVE_fnc_dumpR;
+        _result
+    };
+
+    // Same test the airspace markers get: a misspelled name would otherwise
+    // survive as far as the position lookup, which answers [0,0,0] and puts the
+    // fleet in the corner of the map with nothing to explain it.
+    if (markerShape _marker == "") exitWith {
+        ["ATO %1 - Warning, ingress marker %2 does not exist. Check the spelling in this module's Ingress Point Marker setting.", _logic, _marker] call ALiVE_fnc_dumpR;
+        _result
+    };
+
+    private _pos = markerPos _marker;
+    _pos set [2, 0];
+
+    // Advisory only, both of them. A point off the edge of the map is almost
+    // certainly a mistake; a point over water is not - offshore reads perfectly
+    // well as aircraft arriving from a carrier or a base across the sea - but it
+    // is worth saying so, because a mission maker who meant to put the fleet on
+    // land will want to know.
+    if ((_pos select 0) < 0 || {(_pos select 0) > worldSize} || {(_pos select 1) < 0} || {(_pos select 1) > worldSize}) then {
+        ["ATO %1 - Warning, ingress marker %2 lies outside the map at %3.", _logic, _marker, _pos] call ALiVE_fnc_dumpR;
+    };
+
+    if (surfaceIsWater _pos) then {
+        ["ATO %1 - Information, ingress marker %2 is over water. Aircraft will still operate from it.", _logic, _marker] call ALiVE_fnc_dumpR;
+    };
+
+    _result = _pos;
+
+    _result
 };
 
 ALiVE_fnc_DrawRunwayBlacklistMarkers = {
@@ -887,6 +943,33 @@ switch(_operation) do {
     };
     case "pilotbuilding": {
         _result = [_logic,_operation,_args,DEFAULT_PILOTBUILDING] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // Whether this commander may stand in a virtual air base for a missing
+    // airfield. "fallback" only takes effect when the airspace holds nothing to
+    // fly from; "off" is the behaviour that has always applied.
+    case "ingressMode": {
+        _result = [_logic,_operation,_args,DEFAULT_INGRESS_MODE] call ALIVE_fnc_OOsimpleOperation;
+
+        // Anything else is a value nobody wrote deliberately - a hand-edited
+        // mission, or a mode from a later version. Say so and fall back to off
+        // rather than leaving the commander in a state that has no meaning. The
+        // corrected value is written back, so this is said once and not on every
+        // subsequent read.
+        if !(toLower _result in ["off","fallback"]) then {
+            ["ATO %1 - Warning, Virtual Air Base mode %2 is not recognised and has been treated as Off.", _logic, str _result] call ALiVE_fnc_dumpR;
+            _result = DEFAULT_INGRESS_MODE;
+            _logic setVariable [_operation, _result];
+        };
+    };
+    // Marker the virtual fleet flies from and returns to. It need not lie inside
+    // the airspace - a point offshore reads as aircraft arriving from elsewhere.
+    case "ingressMarker": {
+        _result = [_logic,_operation,_args,DEFAULT_INGRESS_MARKER] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // How many airframes the ingress point holds. Held as typed and decoded where
+    // it is used, like the other numeric text settings on this module.
+    case "ingressCount": {
+        _result = [_logic,_operation,_args,DEFAULT_INGRESS_COUNT] call ALIVE_fnc_OOsimpleOperation;
     };
     case "runwaystartpos": {
         _result = [_logic,_operation,_args,DEFAULT_RUNWAYSTARTPOS] call ALIVE_fnc_OOsimpleOperation;
@@ -1790,6 +1873,13 @@ switch(_operation) do {
                 [_logic, "airspace", [_marker]] call MAINCLASS;
             };
 
+            // Ask for the ingress point now, while the mission is still starting, so a
+            // marker name that matches nothing is reported here rather than an hour
+            // later when the commander turns out to have no aircraft. The answer is
+            // deliberately not kept: it is worked out again when the base is decided,
+            // and a single copy shared between the two could only ever go stale.
+            [_logic] call ALiVE_fnc_ATOIngressPos;
+
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
@@ -1807,6 +1897,9 @@ switch(_operation) do {
                 ["ATO - Runway Start Position: %1",[_logic, "runwaystartpos"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Runway End Position: %1",[_logic, "runwayendpos"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Runway Width: %1",[_logic, "runwaywidth"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ATO - Virtual Air Base: %1",[_logic, "ingressMode"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ATO - Ingress Point Marker: %1",[_logic, "ingressMarker"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ATO - Ingress Fleet Size: %1",[_logic, "ingressCount"] call MAINCLASS] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
