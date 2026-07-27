@@ -1054,41 +1054,48 @@ switch(_operation) do {
     };
 
     case "spawn": {
-        private _debug = _logic select 2 select 0; //[_logic,"debug"] call ALIVE_fnc_hashGet;
-        private _profileID = _logic select 2 select 4; //[_profile,"profileID"] call ALIVE_fnc_hashGet;
-        private _side = _logic select 2 select 3; //[_logic, "side"] call MAINCLASS;
-        private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
-        private _unitClasses = _logic select 2 select 11; //[_logic,"unitClasses"] call ALIVE_fnc_hashGet;
-        private _position = _logic select 2 select 2; //[_entityProfile,"position"] call ALIVE_fnc_hashGet;
-        private _positions = _logic select 2 select 18; //[_entityProfile,"positions"] call ALIVE_fnc_hashGet;
-        private _damages = _logic select 2 select 19; //[_logic,"damages"] call ALIVE_fnc_hashGet;
-        private _ranks = _logic select 2 select 20; //[_logic,"ranks"] call ALIVE_fnc_hashGet;
-        private _active = _logic select 2 select 1; //[_profile, "active"] call ALIVE_fnc_hashGet;
-        private _waypoints = _logic select 2 select 16; //[_entityProfile,"waypoints"] call ALIVE_fnc_hashGet;
-        private _waypointsCompleted = _logic select 2 select 17; //[_entityProfile,"waypointsCompleted"] call ALIVE_fnc_hashGet;
-        private _vehicleAssignments = _logic select 2 select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-        private _activeCommands = _logic select 2 select 26; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-        private _inactiveCommands = _logic select 2 select 27; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
-        private _vehiclesInCommandOf = _logic select 2 select 8; //[_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashSet;
-        private _vehiclesInCargoOf = _logic select 2 select 9; //[_profile,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;
-        private _locked = [_logic, "locked",false] call ALIVE_fnc_hashGet;
-        private _ignore_HC = [_logic, "ignore_HC",false] call ALIVE_fnc_hashGet;
-        private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet;
-        private _aiBehaviour = [_logic, "aiBehaviour", "AWARE"] call ALIVE_fnc_hashGet;
-        private _objectType = [_logic, "objectType", ""] call ALIVE_fnc_hashGet;
-        private _debugMarkers = [_logic, "debugMarkers", ""] call ALIVE_fnc_hashGet;
-        private _formation = selectRandom ["COLUMN","STAG COLUMN","WEDGE","ECH LEFT","ECH RIGHT","VEE","LINE"];
-        private _unitCount = 0;
-        private _units = [];
-        private _paraDrop = false;
-        private _spawnOnGround = false;
+        private _profileData = _logic select 2;
+        private _active = _profileData select 1;
 
         // not already active and spawning has not yet been triggered
-        if (!_active && {!_locked}) then {
+        if (!_active && {!([_logic,"locked",false] call ALIVE_fnc_hashGet)}) then {
+            private _debug = _profileData select 0; //[_logic,"debug"] call ALIVE_fnc_hashGet;
+            private _profileID = _profileData select 4; //[_profile,"profileID"] call ALIVE_fnc_hashGet;
+            private _side = _profileData select 3; //[_logic, "side"] call MAINCLASS;
+            private _unitClasses = _profileData select 11; //[_logic,"unitClasses"] call ALIVE_fnc_hashGet;
+            private _position = _profileData select 2; //[_entityProfile,"position"] call ALIVE_fnc_hashGet;
+            private _positions = _profileData select 18; //[_entityProfile,"positions"] call ALIVE_fnc_hashGet;
+            private _damages = _profileData select 19; //[_logic,"damages"] call ALIVE_fnc_hashGet;
+            private _ranks = _profileData select 20; //[_logic,"ranks"] call ALIVE_fnc_hashGet;
+            private _waypoints = _profileData select 16; //[_entityProfile,"waypoints"] call ALIVE_fnc_hashGet;
+            private _waypointsCompleted = _profileData select 17; //[_entityProfile,"waypointsCompleted"] call ALIVE_fnc_hashGet;
+            private _vehicleAssignments = _profileData select 7; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
+            private _activeCommands = _profileData select 26; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
+            private _inactiveCommands = _profileData select 27; //[_logic,"vehicleAssignments"] call ALIVE_fnc_hashGet;
+            private _vehiclesInCommandOf = _profileData select 8; //[_profile,"vehiclesInCommandOf",[]] call ALIVE_fnc_hashSet;
+            private _vehiclesInCargoOf = _profileData select 9; //[_profile,"vehiclesInCargoOf",[]] call ALIVE_fnc_hashSet;
+            ([_logic,["ignore_HC","isSPE","aiBehaviour"]] call ALiVE_fnc_hashGetMany) params [
+                ["_ignore_HC",false],
+                ["_isSPE",false],
+                ["_aiBehaviour","AWARE"]
+            ];
+            private _formation = selectRandom ["COLUMN","STAG COLUMN","WEDGE","ECH LEFT","ECH RIGHT","VEE","LINE"];
+            private _positionsCount = count _positions;
+            private _damagesCount = count _damages;
+            private _ranksCount = count _ranks;
+            private _unitCount = 0;
+            private _units = [];
+            private _paraDrop = false;
+            private _spawnOnGround = false;
+
+            if (isNil "_isSPE" || {typeName _isSPE != "BOOL"}) then {
+                _isSPE = false;
+            };
 
             // Indicate profile has been despawned and unlock for asynchronous waits
             [_logic, "locked",true] call ALIVE_fnc_HashSet;
 
+            private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
             private _group = createGroup _sideObject;
 
             // determine a suitable spawn position
@@ -1118,18 +1125,18 @@ switch(_operation) do {
                 if !(isnil "_x") then {
 
                     private _unitPosition = _position;
-                    if (count _positions > 0 && {_unitCount < count _positions} && {!_spawnOnGround}) then {
+                    if (_unitCount < _positionsCount && {!_spawnOnGround}) then {
                         _unitPosition = _positions select _unitCount;
                     };
                     if (count _unitPosition == 2) then {_unitPosition set [2,0]};
 
                     private _damage = 0;
-                    if (count _damages > 0 && {_unitCount < count _damages}) then {
+                    if (_unitCount < _damagesCount) then {
                         _damage = _damages select _unitCount;
                     };
 
                     private _rank = "PRIVATE";
-                    if (count _ranks > 0 && {_unitCount < count _ranks}) then {
+                    if (_unitCount < _ranksCount) then {
                         _rank = _ranks select _unitCount;
                         if (_rank isEqualTo "") then {_rank = "PRIVATE"};
                     };
@@ -1169,13 +1176,12 @@ switch(_operation) do {
                     _unit setVariable ["profileIndex", _unitCount];
 
                     // killed event handler
-                    private _eventID = _unit addMPEventHandler["MPKilled", ALIVE_fnc_profileKilledEventHandler];
+                    _unit addMPEventHandler["MPKilled", ALIVE_fnc_profileKilledEventHandler];
 
                     _units pushback _unit;
                     _unitCount = _unitCount + 1;
 
                     if(_paraDrop) then {
-
                         //Creating parachute on original position
                         private _parachute = createvehicle ["Steerable_Parachute_F",_unitPosition,[],0,"none"];
 
@@ -1201,12 +1207,11 @@ switch(_operation) do {
                             deletevehicle _parachute;
                         };
                     };
+
+                    sleep ALiVE_smoothSpawn;
                 };
-                sleep ALiVE_smoothSpawn;
             } forEach _unitClasses;
-            
-            if (isNil "_isSPE") then { _isSPE = false; };
-            if (typeName _isSPE != "BOOL") then { _isSPE = false; };
+
             if (_isSPE) then {
                 [_logic,"clearWaypoints"] call MAINCLASS;
                 [_logic,_group] call ALIVE_fnc_waypointsToProfileWaypoints;
@@ -1235,8 +1240,6 @@ switch(_operation) do {
             
             // create waypoints from profile waypoints
 
-            if (isNil "_isSPE") then { _isSPE = false; };
-            if (typeName _isSPE != "BOOL") then { _isSPE = false; };
             if !(_isSPE) then {
                 _waypoints append _waypointsCompleted;
                 [_waypoints, _group] call ALIVE_fnc_profileWaypointsToWaypoints;
@@ -1301,8 +1304,10 @@ switch(_operation) do {
             private _spawnCode = [_logic, "onEachSpawn", ""] call ALIVE_fnc_hashGet;
             if (_spawnCode != "") then {
                 private _spawnCodeCompiled = compile _spawnCode;
-                private _spawnOnce = [_logic, "onEachSpawnOnce", true] call ALIVE_fnc_hashGet;
-                private _hookFaction = [_logic, "faction", ""] call ALIVE_fnc_hashGet;
+                ([_logic,["onEachSpawnOnce","faction"]] call ALiVE_fnc_hashGetMany) params [
+                    ["_spawnOnce",true],
+                    ["_hookFaction",""]
+                ];
                 {
                     private _unit = _x;
                     if (!_spawnOnce || {!(_unit getVariable ["ALIVE_spawnCode_run", false])}) then {
@@ -1336,8 +1341,6 @@ switch(_operation) do {
 
         //Don't despawn player profiles
         if ([_logic, "isPlayer",false] call ALIVE_fnc_HashGet) exitwith {};
-
-        private _unitCount = 0;
 
         // not already inactive
         if (_active) then {
@@ -1411,7 +1414,6 @@ switch(_operation) do {
             };
 
             if !(_despawnPrevented) then {
-
                 [_logic,"active", false] call ALIVE_fnc_hashSet;
 
                 // update profile waypoints before despawn
@@ -1420,21 +1422,19 @@ switch(_operation) do {
 
                 [_logic] call ALIVE_fnc_vehicleAssignmentsToProfileVehicleAssignments;
 
-                _position = getPosATL _leader;
+                private _position = getPosATL _leader;
 
                 // update the profiles position
-                //[_logic,"position", _position] call ALIVE_fnc_hashSet;
                 [_logic,"position", _position] call MAINCLASS;
                 [_logic,"despawnPosition", _position] call ALIVE_fnc_hashSet;
 
                 // delete units
                 {
-                    private _unit = _x;
-                    _positions set [_unitCount, getPosATL _unit];
-                    _damages set [_unitCount, damage _unit];
-                    _ranks set [_unitCount, rank _unit];
-                    deleteVehicle _unit;
-                    _unitCount = _unitCount + 1;
+                    _positions set [_forEachIndex, getPosATL _x];
+                    _damages set [_forEachIndex, damage _x];
+                    _ranks set [_forEachIndex, rank _x];
+
+                    deleteVehicle _x;
                 } forEach _units;
 
                 // delete group
@@ -1442,8 +1442,6 @@ switch(_operation) do {
                 _group call ALiVE_fnc_DeleteGroupRemote;
 
                 [_logic,"leader", objNull] call ALIVE_fnc_hashSet;
-                [_logic,"positions", _positions] call ALIVE_fnc_hashSet;
-                [_logic,"damages", _damages] call ALIVE_fnc_hashSet;
                 // The "group" slot holds a Group, not an Object - the init reset
                 // above uses grpNull. Writing objNull here handed consumers an
                 // Object; hashGet does no type checking, so it survived all the
@@ -1454,10 +1452,10 @@ switch(_operation) do {
 
                 // process commands
                 if(count _activeCommands > 0) then {
-                    [ALIVE_commandRouter, "deactivate", _logic] call ALIVE_fnc_commandRouter;
+                    [ALIVE_commandRouter,"deactivate", _logic] call ALIVE_fnc_commandRouter;
                 };
                 if(count _inactiveCommands > 0) then {
-                    [ALIVE_commandRouter, "activate", [_logic, _inactiveCommands]] call ALIVE_fnc_commandRouter;
+                    [ALIVE_commandRouter,"activate", [_logic, _inactiveCommands]] call ALIVE_fnc_commandRouter;
                 };
 
                 // store the profile id on the in active profiles index
@@ -1491,8 +1489,6 @@ switch(_operation) do {
         private _active = _logic select 2 select 1; //[_logic,"active"] call ALIVE_fnc_hashGet;
         private _profileID = _logic select 2 select 4; //[_logic,"profileID"] call ALIVE_fnc_hashGet;
 
-        private _unitCount = 0;
-
         // DEBUG -------------------------------------------------------------------------------------
         if(_debug) then {
             ["Profile [%1] Destroying",_profileID] call ALIVE_fnc_dump;
@@ -1515,7 +1511,6 @@ switch(_operation) do {
             {
                 private _unit = _x;
                 deleteVehicle _unit;
-                _unitCount = _unitCount + 1;
             } forEach _units;
 
             // delete group

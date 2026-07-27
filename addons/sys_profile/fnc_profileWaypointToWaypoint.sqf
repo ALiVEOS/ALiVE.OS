@@ -28,32 +28,30 @@ ARJay
 
 params ["_profileWaypoint","_group",["_setCurrent", false]];
 
-private _pathfindingEnabled = [MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet;
-
 if (isnil "_profileWaypoint" || {!(_profileWaypoint isequaltype [])}) exitwith {
     ["- ALiVE_fnc_ProfileWaypointToWaypoint retrieved wrong input: %1!",_this] call ALiVE_fnc_dump;
 };
 
-private _position = [_profileWaypoint,"position"] call ALIVE_fnc_hashGet;
-private _radius = [_profileWaypoint,"radius"] call ALIVE_fnc_hashGet;
-private _type = [_profileWaypoint,"type"] call ALIVE_fnc_hashGet;
-private _speed = [_profileWaypoint,"speed"] call ALIVE_fnc_hashGet;
-private _completionRadius = [_profileWaypoint,"completionRadius"] call ALIVE_fnc_hashGet;
-private _timeout = [_profileWaypoint,"timeout"] call ALIVE_fnc_hashGet;
-private _formation = [_profileWaypoint,"formation"] call ALIVE_fnc_hashGet;
-private _combatMode = [_profileWaypoint,"combatMode"] call ALIVE_fnc_hashGet;
-private _behaviour = [_profileWaypoint,"behaviour"] call ALIVE_fnc_hashGet;
-private _description = [_profileWaypoint,"description"] call ALIVE_fnc_hashGet;
-private _attachVehicle = [_profileWaypoint,"attachVehicle"] call ALIVE_fnc_hashGet;
-private _waypointStatements = [_profileWaypoint,"statements"] call ALIVE_fnc_hashGet;
-private _waypointName = [_profileWaypoint,"name"] call ALiVE_fnc_hashGet;
+([_profileWaypoint,["position","radius","type","speed","completionRadius","timeout","formation","combatMode","behaviour","description","attachVehicle","statements","name"]] call ALiVE_fnc_hashGetMany) params [
+    "_position",
+    "_radius",
+    "_type",
+    "_speed",
+    "_completionRadius",
+    "_timeout",
+    "_formation",
+    "_combatMode",
+    "_behaviour",
+    "_description",
+    "_attachVehicle",
+    "_waypointStatements",
+    "_waypointName"
+];
 
 // If the leader is in a land vehicle, snap waypoints to nearest road within 200m - do not do this if pathfinding enabled
-if (
-    !isNull (assignedVehicle leader _group) &&
-    (assignedVehicle leader _group) isKindOf "LandVehicle"
-) then {
-    if (!_pathfindingEnabled) then {
+private _assignedVehicle = assignedVehicle leader _group;
+if (!isNull _assignedVehicle && {_assignedVehicle isKindOf "LandVehicle"}) then {
+    if !([MOD(profileSystem),"pathfinding"] call ALiVE_fnc_hashGet) then {
         private _road = [_position, 200] call BIS_fnc_nearestRoad;
         if !(isNull _road) then {
             _position = (getPos _road) select [0, 2];
@@ -85,7 +83,7 @@ if !(_attachVehicle == "") then {
     _waypoint waypointAttachVehicle _attachVehicle;
 };
 
-if (typeName _waypointStatements == "ARRAY") then {
+if (_waypointStatements isEqualType []) then {
     _waypoint setWaypointStatements _waypointStatements;
 };
 

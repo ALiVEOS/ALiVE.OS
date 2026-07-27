@@ -31,29 +31,16 @@ private _cycleWaypoints = [];
 
 // add all waypoints but cycle first
 {
-    private _waypoint = _x;
-    private _waypointType = [_waypoint,"type",""] call ALiVE_fnc_HashGet;
+    private _waypointType = [_x,"type",""] call ALiVE_fnc_hashGet;
 
     if (_waypointType != "CYCLE") then {
-        if (_forEachIndex == 0) then {
-            // set first waypoint as current
-            [_waypoint, _group, true] call ALIVE_fnc_profileWaypointToWaypoint;
-        } else {
-            [_waypoint, _group] call ALIVE_fnc_profileWaypointToWaypoint;
-        };
+        [_x,_group,_forEachIndex == 0] call ALIVE_fnc_profileWaypointToWaypoint;
     } else {
-        _cycleWaypoints pushback _waypoint;
+        _cycleWaypoints pushBack _x;
     };
 } forEach _waypoints;
 
 // add cycle waypoints at the end to avoid stuck groups
 {
-    private _cycleWaypoint = _x;
-
-    if (_forEachIndex == 0) then {
-        // set first waypoint as current
-        [_cycleWaypoint, _group, true] call ALIVE_fnc_profileWaypointToWaypoint;
-    } else {
-        [_cycleWaypoint, _group] call ALIVE_fnc_profileWaypointToWaypoint;
-    };
+    [_x,_group,_forEachIndex == 0] call ALIVE_fnc_profileWaypointToWaypoint;
 } forEach _cycleWaypoints;
