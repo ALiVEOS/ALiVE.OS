@@ -1016,6 +1016,28 @@ switch(_operation) do {
 
         _result = _args;
     };
+    // Whether this commander ended up standing a virtual air base in for a missing
+    // airfield. Decided once at startup and read all over the sortie cycle, which
+    // has to know not to look for runways, taxiways and hangars that are not there.
+    case "virtualBaseActive": {
+        if (_args isEqualType true) then {
+            _logic setVariable ["virtualBaseActive", _args];
+        } else {
+            _args = _logic getVariable ["virtualBaseActive", false];
+        };
+        if (_args isEqualType "") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["virtualBaseActive", _args];
+        };
+        ASSERT_TRUE(_args isEqualType true,str _args);
+
+        _result = _args;
+    };
+    // The ingress point itself, resolved from the marker at startup. Empty unless a
+    // virtual air base is in use.
+    case "ingressPos": {
+        _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
+    };
     case "assets": {
         _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -1984,10 +2006,6 @@ switch(_operation) do {
                  _airClusters = [(ALIVE_clustersMil select 2), _airspace] call ALIVE_fnc_clustersInsideMarker;
             };
 
-            if (count _airClusters == 0) exitWith {
-                ["ATO - Warning no usable military buildings within airspace found, the ATO module for %1 may be incorrectly configured.", _faction] call ALiVE_fnc_dumpR;
-            };
-
             // Select the nearest cluster to the module or use Aircraft Carrier
             private _position = getposATL _logic;
 
@@ -1996,9 +2014,45 @@ switch(_operation) do {
                 _isCarrier = true;
             };
 
-            // Sort clusters by distance
-            private _tmp = [_airclusters,[_position],{_Input0 distance ([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet)},"ASCEND"] call ALiVE_fnc_SortBy;
-            private _baseCluster = _tmp select 0;
+            // Where this commander operates from when the airspace holds nothing to
+            // fly from. Empty for every mission that has not asked for it.
+            private _ingressPos = [_logic] call ALiVE_fnc_ATOIngressPos;
+            [_logic,"ingressPos",_ingressPos] call MAINCLASS;
+
+            // A carrier is a real base with a real deck, so it settles the question
+            // before the fallback is considered at all.
+            private _virtualBase = (count _airClusters == 0) && {count _ingressPos > 0} && {!_isCarrier};
+            [_logic,"virtualBaseActive",_virtualBase] call MAINCLASS;
+
+            if (count _airClusters == 0 && {!_virtualBase}) exitWith {
+                ["ATO - Warning no usable military buildings within airspace found, the ATO module for %1 may be incorrectly configured.", _faction] call ALiVE_fnc_dumpR;
+            };
+
+            private _baseCluster = [] call ALiVE_fnc_hashCreate;
+
+            if (_virtualBase) then {
+
+                // Nothing on the ground to sort, so describe the base rather than
+                // finding it. Everything downstream asks a cluster for its centre,
+                // its size and its identity, and those three answers are all a
+                // commander flying from an ingress point actually needs.
+                //
+                // The centre is the module's own position, not the marker: the HQ,
+                // the aircrew and the radio all belong where the mission maker put
+                // the module, and the marker is only where the aircraft are.
+                [_baseCluster,"center",_position] call ALiVE_fnc_hashSet;
+                [_baseCluster,"size",150] call ALiVE_fnc_hashSet;
+                [_baseCluster,"nodes",[]] call ALiVE_fnc_hashSet;
+                [_baseCluster,"clusterID",format ["ATO_VIRTUAL_%1", [_logic,"side"] call MAINCLASS]] call ALiVE_fnc_hashSet;
+
+                ["ATO %1 - No usable airfield within the airspace; operating a virtual air base with an ingress point at %2.", _logic, _ingressPos] call ALiVE_fnc_dumpR;
+
+            } else {
+
+                // Sort clusters by distance
+                private _tmp = [_airclusters,[_position],{_Input0 distance ([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet)},"ASCEND"] call ALiVE_fnc_SortBy;
+                _baseCluster = _tmp select 0;
+            };
 
             // Always use the carrier as the base if the module is close to the carrier
             if (_isCarrier) then {
@@ -2199,7 +2253,10 @@ switch(_operation) do {
             // Set the base location
             [_logic,"currentBase", _baseCluster] call MAINCLASS;
 
-            if(count _modules > 0 && !_isCarrier) then {
+            // A virtual base has no ground to hold: its cluster describes the module's
+            // own position and has no nodes. Handing that to the ground commander as a
+            // strategic objective would send troops to garrison an empty field.
+            if(count _modules > 0 && !_isCarrier && !_virtualBase) then {
                 // Tell OPCOM this is a high priority reserve objective
                 private _opcom = selectRandom _modules;
                 private _id = format["OPCOM_%1_objective_%2",[_opcom,"opcomID"] call ALiVE_fnc_hashGet, format["ATO_%1",ceil(random 1000)]];
@@ -2812,6 +2869,99 @@ switch(_operation) do {
                             [_logic,"registerProfile",[_profileID,_baseAirspace]] call MAINCLASS;
                         };
                     } forEach _aprofiles;
+                };
+
+                // With no airfield anywhere in the airspace there is nothing to adopt
+                // and nothing for the block above to park, so the fleet is created at
+                // the ingress point instead. These are ordinary profiles in every
+                // respect - real airframes with real aircrew - they simply sit
+                // virtualized at a point on the map rather than on an apron, and are
+                // released into the air rather than down a runway.
+                if ([_logic,"virtualBaseActive"] call MAINCLASS) then {
+
+                    private _ingressPos = [_logic,"ingressPos"] call MAINCLASS;
+
+                    if (count _ingressPos == 0) then {
+                        ["ATO %1 - Warning, virtual air base is active but the ingress point resolved to nothing, so no aircraft were created.", _logic] call ALiVE_fnc_dumpR;
+                    } else {
+
+                        private _ingressMarker = [_logic,"ingressMarker"] call MAINCLASS;
+                        private _ingressDir = if (markerShape _ingressMarker != "") then {markerDir _ingressMarker} else {0};
+
+                        // Same decode as the other numeric text settings on this module.
+                        // Held to a dozen: past that the fleet stops being a squadron and
+                        // starts being a profile-count problem.
+                        private _ingressCountStr = [_logic,"ingressCount"] call MAINCLASS;
+                        private _ingressCount = if (typeName _ingressCountStr == "STRING" && {_ingressCountStr != ""}) then { (round (parseNumber _ingressCountStr)) max 1 min 12 } else { 6 };
+
+                        private _ingressSide = [_logic, "side"] call MAINCLASS;
+                        private _ingressFaction = [_logic, "faction"] call MAINCLASS;
+                        private _ingressAirspace = _airspace select 0;
+
+                        // Same capability test the adoption gate and the physical
+                        // placement path use: an airframe that resolves to no role is no
+                        // use to the commander however well it flies.
+                        private _ingressClasses = ([0,_ingressFaction,"Plane"] call ALiVE_fnc_findVehicleType) - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+                        _ingressClasses = _ingressClasses select {count ([_x] call ALiVE_fnc_getAircraftRoles) > 0};
+
+                        // Plenty of factions catalogue no fixed wing aircraft at all.
+                        // Rotary flies from a point on the map just as happily, and a
+                        // commander with helicopters is a great deal better than one with
+                        // nothing.
+                        private _ingressRotary = false;
+                        if (count _ingressClasses == 0) then {
+                            _ingressRotary = true;
+                            _ingressClasses = ([0,_ingressFaction,"Helicopter"] call ALiVE_fnc_findVehicleType) - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
+                            _ingressClasses = _ingressClasses select {count ([_x] call ALiVE_fnc_getAircraftRoles) > 0};
+                        };
+
+                        if (count _ingressClasses == 0) then {
+                            ["ATO %1 - Warning, virtual air base is active but faction %2 has no aircraft that resolve to a role, so none were created.", _logic, _ingressFaction] call ALiVE_fnc_dumpR;
+                        } else {
+
+                            private _ingressProfiles = [];
+
+                            for "_i" from 0 to (_ingressCount - 1) do {
+
+                                // Spread along the line rather than stacked on the marker:
+                                // nothing is watching them while they are virtualized, but
+                                // a player who flies out to the point should see a flight
+                                // line rather than one airframe wearing five others.
+                                private _slotPos = [(_ingressPos select 0) + (_i * 40), _ingressPos select 1, 0];
+                                private _vehicleClass = selectRandom _ingressClasses;
+
+                                if (_ingressRotary) then {
+                                    private _tmp = [_vehicleClass,_ingressSide,_ingressFaction,"CAPTAIN",_slotPos,_ingressDir,false,_ingressFaction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    {
+                                        if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
+                                            _ingressProfiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
+                                        };
+                                    } forEach _tmp;
+                                } else {
+                                    private _tmp = [_vehicleClass,_ingressSide,_ingressFaction,_slotPos,_ingressDir,false,_ingressFaction] call ALIVE_fnc_createProfileVehicle;
+                                    if !(isNil "_tmp") then {
+                                        _ingressProfiles pushback ([_tmp, "profileID"] call ALIVE_fnc_hashGet);
+                                    };
+                                };
+                            };
+
+                            // No airside nudge on the way in. There is no runway or
+                            // taxiway to be clear of, and the whole point of the ingress
+                            // point is that the aircraft stay exactly where it is.
+                            {
+                                private _profileID = _x;
+                                private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
+
+                                if !(isnil "_profile") then {
+                                    [_logic,"registerProfile",[_profileID,_ingressAirspace]] call MAINCLASS;
+                                };
+                            } forEach _ingressProfiles;
+
+                            if (_debug) then {
+                                ["ATO %1 - %2 aircraft created at the ingress point %3 facing %4 (rotary: %5)", _logic, count _ingressProfiles, _ingressPos, round _ingressDir, _ingressRotary] call ALiVE_fnc_dump;
+                            };
+                        };
+                    };
                 };
 
                 // Place drones. Separate from placing crewed aircraft on purpose:
