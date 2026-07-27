@@ -1342,6 +1342,24 @@ switch(_operation) do {
 
                 private _position = +([_vehicleProfile,"position"] call ALIVE_fnc_HashGet);
 
+                // Does this airframe belong to the virtual air base? Worked out from
+                // where it is standing rather than taken as a parameter, so every route
+                // into registration gets the same answer: the fleet created at startup,
+                // a replacement the commander builds for itself, an aircraft handed over
+                // by the logistics commander, and the whole roster on a persistent
+                // mission being registered again from a save.
+                //
+                // Everything below that assumes runways, taxiways, hangars and airport
+                // identifiers keys off this one flag.
+                private _virtualBase = false;
+                if (([_logic,"virtualBaseActive"] call MAINCLASS) && {count _position > 1}) then {
+                    private _ingressPos = [_logic,"ingressPos"] call MAINCLASS;
+                    if (count _ingressPos > 1 && {_position distance2D _ingressPos < 500}) then {
+                        _virtualBase = true;
+                    };
+                };
+                [_asset,"virtualBase",_virtualBase] call ALiVE_fnc_hashSet;
+
                 // Adopted aircraft are taken wherever they happen to be standing, and whatever
                 // placed them had no idea aircraft need to taxi past. A parked airframe on the
                 // runway or a taxiway stops every aircraft trying to get out, because the engine
@@ -1354,7 +1372,11 @@ switch(_operation) do {
                 //
                 // Runway and taxiway only: an apron, hardstand or helipad is a proper parking spot
                 // and is left exactly as placed.
-                if (!isNil "ALiVE_fnc_airsideClear" && {count _position > 1}) then {
+                //
+                // Skipped for the virtual air base: there is no runway and no taxiway
+                // out at the ingress point, so the only thing the nudge could do is
+                // move the airframe off the spot it was deliberately put on.
+                if (!isNil "ALiVE_fnc_airsideClear" && {count _position > 1} && {!_virtualBase}) then {
                     private _clearPos = [_position, [1,2]] call ALiVE_fnc_airsideClear;
                     if ((_clearPos distance2D _position) > 1) then {
                         if (_debug) then {
@@ -1392,12 +1414,23 @@ switch(_operation) do {
 
                 if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) ) then {
 
-                    // Get airportID
-                    private _airportID = [_position] call ALiVE_fnc_getNearestAirportID;
-                    [_asset,"airportID",_airportID] call ALiVE_fnc_hashSet;
-                    [_logic,"addRunway",_airportID] call MAINCLASS;
+                    // A virtual aircraft is given no airport identifier at all. The
+                    // nearest one could be half a map away and belong to the other side,
+                    // and every taxi, ILS and runway-lock lookup would then answer
+                    // against a field this aircraft has never been to. Leaving the key
+                    // absent is what tells the sortie cycle to skip those lookups.
+                    if !(_virtualBase) then {
+                        // Get airportID
+                        private _airportID = [_position] call ALiVE_fnc_getNearestAirportID;
+                        [_asset,"airportID",_airportID] call ALiVE_fnc_hashSet;
+                        [_logic,"addRunway",_airportID] call MAINCLASS;
+                    };
 
                 } else {
+
+                    // Kept for the virtual air base too. An invisible pad costs nothing
+                    // and it keeps the rotary landing paths pointed at somewhere the
+                    // aircraft can actually put down.
 
                     // Heli or VTOL?
                     // Get HeliH object
@@ -1472,8 +1505,19 @@ switch(_operation) do {
                                 _crewPos = + _atoPosition;
 
 
+                                if (_virtualBase) then {
+
+                                    // Aircrew live beside their aircraft out at the ingress
+                                    // point. There is nothing out there to look inside, and
+                                    // the module's own position - where the search below
+                                    // would otherwise leave them - can be the far side of
+                                    // the map from the flight line.
+                                    _crewPos = _position getPos [8 + random 8, random 360];
+
+                                } else {
+
                                 if !(_isOnCarrier) then {
-                                
+
                                  // if pilotbuilding is defined
                                  private _pilotbuilding = [_logic, "pilotbuilding"] call MAINCLASS;
                                  
@@ -1538,6 +1582,8 @@ switch(_operation) do {
                                     private _bridge = (_position nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
                                     _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]); // entities are saved as ATL positions
                                     // ["ATO PLACE CREW AT %1 (pos: %2)", _crewpos, _position] call ALiVE_fnc_dump;
+                                };
+
                                 };
 
                                 // Check for no building?
