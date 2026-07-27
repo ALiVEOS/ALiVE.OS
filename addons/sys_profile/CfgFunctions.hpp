@@ -211,8 +211,23 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileSimulator.sqf";
                 RECOMPILE;
             };
+            class profileActivationCoordinator {
+                description = "Owns profile activation claims and queues";
+                file = "\x\alive\addons\sys_profile\fnc_profileActivationCoordinator.sqf";
+                RECOMPILE;
+            };
+            class profileActivatorPlayerProximity {
+                description = "Traditional player-distance profile activator";
+                file = "\x\alive\addons\sys_profile\fnc_profileActivatorPlayerProximity.sqf";
+                RECOMPILE;
+            };
+            class profileActivationTick {
+                description = "Per-frame profile activation pipeline";
+                file = "\x\alive\addons\sys_profile\fnc_profileActivationTick.sqf";
+                RECOMPILE;
+            };
             class profileSpawner {
-                description = "profileSpawner";
+                description = "Executes queued profile spawn and despawn transitions";
                 file = "\x\alive\addons\sys_profile\fnc_profileSpawner.sqf";
                 RECOMPILE;
             };
