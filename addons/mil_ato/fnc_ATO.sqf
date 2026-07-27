@@ -5187,7 +5187,14 @@ switch(_operation) do {
                                         _returnHome = true;
                                     } else {
 
+                                    //
+                                    // A virtual aircraft is left out of this entirely.
+                                    // Its home is a point on the map with no runway data
+                                    // anywhere near it, so the test can only ever answer
+                                    // that it is not an airfield - and the aircraft would
+                                    // be declared stranded on the very spot it belongs.
                                     if (!isNil "ALiVE_fnc_isAirfieldPosition"
+                                        && {!([_aircraft,"virtualBase",false] call ALiVE_fnc_hashGet)}
                                         && {!_liveObjMissing}
                                         && {_currentOp == ""}
                                         && {!_playerOccupied}
@@ -5488,6 +5495,15 @@ switch(_operation) do {
                             };
                         };
 
+                        // A ground takeoff needs a runway, and an aircraft flying from an
+                        // ingress point has none. A player can fly out to the marker and
+                        // watch it, which is exactly the case the check above is for, so
+                        // this has to be settled by where the aircraft lives rather than
+                        // by who is looking at it.
+                        if ([_selectedAsset,"virtualBase",false] call ALiVE_fnc_hashGet) then {
+                            _takeoff = false;
+                        };
+
                         // Add entity profile ID
                         _eventFriendlyProfiles pushback _profileID;
 
@@ -5655,6 +5671,7 @@ switch(_operation) do {
                 private _aircraftReady = [_aircraft,"ready",false] call ALiVE_fnc_hashGet;
                 private _isOnCarrier = [_aircraft,"isOnCarrier",false] call ALiVE_fnc_hashGet;
                 private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
+                private _virtualBase = [_aircraft,"virtualBase",false] call ALiVE_fnc_hashGet;
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
@@ -5698,7 +5715,11 @@ switch(_operation) do {
                 if !(_aircraftReady) then {
 
                     // Prep aircraft (launch if not spawned)
-                    if (_takeoff) then {
+                    // A virtual aircraft never takes the runway branch - the tasking
+                    // already refuses to ask it for a ground takeoff - but the runway
+                    // lock, the catapult search and the ILS taxi lookup all live in
+                    // there, so say so here rather than rely on that holding.
+                    if (_takeoff && !_virtualBase) then {
 
                         private _airportBusy = false;
                         private _airportID = 0;
@@ -6252,7 +6273,14 @@ switch(_operation) do {
                                 private _taxiDir = [_profile,"direction"] call ALiVE_fnc_hashGet;
                                 _taxiPosition set [2,300];
 
-                                if (_isPlane) then {
+                                // Not for a virtual aircraft. It holds no airport
+                                // identifier, so the default here would go and find the
+                                // nearest real airfield and launch the sortie from there
+                                // instead - which on most terrains is somewhere the
+                                // faction has never been, and quite possibly the enemy's.
+                                // Launching straight up from the ingress point, which is
+                                // what the parked position above already says, is right.
+                                if (_isPlane && !_virtualBase) then {
                                     // Set position relative to TaxiOff (but 300m up)
                                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                                     private _taxiPositions = [_airportID, "ilsTaxiOff",4,_startPosition] call ALiVE_fnc_getAirportTaxiPos;
@@ -7108,6 +7136,7 @@ switch(_operation) do {
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
                 private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
+                private _virtualBase = [_aircraft,"virtualBase",false] call ALiVE_fnc_hashGet;
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
                 if(_count == 0) exitWith {
@@ -7185,7 +7214,11 @@ switch(_operation) do {
                     _vehicle setVelocity [0,0,0];
 
                     // Set position if plane to taxi position
-                    if (_vehicle iskindOf "Plane") then {
+                    // Never for a virtual aircraft: with no airport identifier of its
+                    // own the lookup falls back to the nearest real field, and the
+                    // returning aircraft would be set down on a taxiway belonging to
+                    // somebody else. It goes back to the ingress point below instead.
+                    if (_vehicle iskindOf "Plane" && !_virtualBase) then {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                         private _taxiPositions = [_airportID, "ilsTaxiIn",0,_startPosition] call ALiVE_fnc_getAirportTaxiPos;
 
@@ -7219,6 +7252,18 @@ switch(_operation) do {
                                 private _atoPosition = position _logic;
                                 private _crewpos = +_startPosition;
                                 _crewPos = + _atoPosition;
+
+                                if (_virtualBase) then {
+
+                                    // Aircrew stay with their aircraft at the ingress
+                                    // point. There is nothing out there to walk into, and
+                                    // the module's own position - where the search below
+                                    // sends them - can be the far side of the map, which
+                                    // would march the pilots off across country after
+                                    // every sortie and leave the aircraft without a crew.
+                                    _crewPos = _startPosition getPos [8 + random 8, random 360];
+
+                                } else {
                         				
                         				
                                  // if pilotbuilding is defined
@@ -7281,6 +7326,8 @@ switch(_operation) do {
 											              // DEBUG -------------------------------------------------------------------------------------
                                  };
 
+                                 };
+
                         // tell crew to move to nearest building
                         if (_isOnCarrier) then {
                                 private _bridge = (_startPosition nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
@@ -7312,10 +7359,31 @@ switch(_operation) do {
 
                     //Move back to original position (safe reposition - guards against hangar detonation)
                     private _startDir = [_aircraft,"startDir"] call ALiVE_fnc_hashGet;
-                    if !(_isOnCarrier) then {
-                        [_vehicle, [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1], _startDir] call _fnc_safeReposition;
+                    if (_virtualBase) then {
+
+                        // The safe reposition earns its name by asking the air spawn
+                        // validator for a clear parking spot and then forcing the frame
+                        // down to ground level, which is what keeps an airframe from
+                        // detonating inside its hangar. At an ingress point there is no
+                        // hangar to be inside, and often no ground either - a point
+                        // offshore resolves to sea level, and that is where the aircraft
+                        // would be put down.
+                        //
+                        // Write the profile back to the ingress point instead. That is
+                        // the position the availability test measures against, so this is
+                        // the step that closes the sortie loop and makes the aircraft
+                        // askable for again.
+                        [_profile,"position",_startPosition] call ALiVE_fnc_profileVehicle;
+                        [_profile,"despawnPosition",_startPosition] call ALiVE_fnc_profileVehicle;
+                        [_profile,"direction",_startDir] call ALiVE_fnc_profileVehicle;
+
                     } else {
-                        _vehicle setDir _startDir;
+
+                        if !(_isOnCarrier) then {
+                            [_vehicle, [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1], _startDir] call _fnc_safeReposition;
+                        } else {
+                            _vehicle setDir _startDir;
+                        };
                     };
 
                     // Airport is no longer busy - but only release the lock THIS landing took.
