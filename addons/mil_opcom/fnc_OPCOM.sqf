@@ -943,7 +943,9 @@ switch (_operation) do {
         // cooldown, independent of the 90s maneuver cooldown above. [0,0] (Normal,
         // or no artillery module) skips this block entirely - maneuver behaviour
         // is unchanged, so this is additive and default-off.
-        private _artyRate = missionNamespace getVariable [format ["ALIVE_MilArtillery_requestRate_%1", toUpper str _side], [0,0]];
+        // _side is already the side TEXT here ("EAST"), so str would wrap it in
+        // quote characters and build a key the artillery module never publishes
+        private _artyRate = missionNamespace getVariable [format ["ALIVE_MilArtillery_requestRate_%1", toUpper _side], [0,0]];
         if ((_artyRate select 0) > 0 && {["ALiVE_mil_artillery"] call ALiVE_fnc_IsModuleAvailable}) then {
             private _artyMax = _artyRate select 0;
             private _artyCd = _artyRate select 1;
