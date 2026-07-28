@@ -87,7 +87,7 @@
     <English>Virtual Air Base Slots:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_COUNT_COMMENT">
-    <English>How many aircraft sit on the off-map airfield, from 1 to 12. Each slot holds a specific airframe, and an aircraft lost on operations is rebuilt into its own slot as the same type. Six by default rather than one or two, because Minimum Aircraft For Offensive Missions (2 by default) suspends offensive tasking once the fleet has shrunk to that size - a small fleet degrades to defensive patrols after a couple of losses and never recovers. With Fall Forward Onto Captured Airfield set, an aircraft gives up its slot when it moves onto the captured field, so the off-map base empties as the squadron relocates.</English>
+    <English>How many aircraft sit on the off-map airfield, from 1 to 12. A larger figure is treated as 12, which is also as many as Virtual Air Base Slot Aircraft can name. Each slot holds a specific airframe, and an aircraft lost on operations is rebuilt into its own slot as the same type. Six by default rather than one or two, because Minimum Aircraft For Offensive Missions (2 by default) suspends offensive tasking once the fleet has shrunk to that size - a small fleet degrades to defensive patrols after a couple of losses and never recovers. With Fall Forward Onto Captured Airfield set, an aircraft gives up its slot when it moves onto the captured field, so the off-map base empties as the squadron relocates.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_SLOTCLASSES">
     <English>Virtual Air Base Slot Aircraft:</English>

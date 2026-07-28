@@ -165,9 +165,17 @@ if (_raw != "") then {
 
 // ---- Walk CfgVehicles for this faction's aircraft -------------------------
 //
-// Each row: [displayName, classname, isPlane, isHeli]. Display name leads so a
+// Each row: [displayName, classname], and nothing else. Display name leads so a
 // plain array sort orders the list the way the user reads it, which is how the
 // faction picker this descends from does its ordering too.
+//
+// Two strings and no more, because the whole array goes through `sort`. That is
+// documented for numbers, strings and arrays of those, so a boolean carried
+// along as a third element is only safe while no two rows ever tie on the first
+// one - which the de-duplication below happens to guarantee today. Resting a
+// sort on a de-duplication pass staying correct is the sort of arrangement that
+// holds until somebody edits one of them. The family of an airframe is a config
+// read, so it is done where it is needed instead.
 //
 // Drones are left out on purpose. They are placed by their own setting on the
 // air commander, they carry no aircrew, and a slot is an airframe with a crew
@@ -187,12 +195,7 @@ private _allRows = [];
             if (!_isDrone) then {
                 private _displayName = getText (_cfg >> "displayName");
                 if (_displayName == "") then { _displayName = _classname; };
-                _allRows pushBack [
-                    _displayName,
-                    _classname,
-                    _classname isKindOf "Plane",
-                    _classname isKindOf "Helicopter"
-                ];
+                _allRows pushBack [_displayName, _classname];
             };
         };
     };
@@ -239,7 +242,11 @@ private _populateFn = {
     private _slotSelections = _display getVariable ["alive_slotSelections", []];
     private _currentSlot    = _display getVariable ["alive_currentSlot", 0];
     private _familyMode     = _display getVariable ["alive_familyMode", "ALL"];
-    private _slotCount      = _display getVariable ["alive_slotCount", 12];
+    // The stored count is authoritative and always set before any of this can
+    // run; the selections array is padded to the same length, so it stands in
+    // without naming a number that a differently-sized clone of this picker
+    // would silently disagree with.
+    private _slotCount      = _display getVariable ["alive_slotCount", count _slotSelections];
 
     _display setVariable ["alive_populating", true];
 
@@ -253,11 +260,11 @@ private _populateFn = {
     private _selectedIdx = _autoIdx;
 
     {
-        _x params ["_displayName", "_classname", "_isPlane", "_isHeli"];
+        _x params ["_displayName", "_classname"];
 
         private _show = switch (_familyMode) do {
-            case "PLANE": { _isPlane };
-            case "HELI":  { _isHeli };
+            case "PLANE": { _classname isKindOf "Plane" };
+            case "HELI":  { _classname isKindOf "Helicopter" };
             default       { true };
         };
 
@@ -327,7 +334,7 @@ _listCtrl ctrlAddEventHandler ["LBSelChanged", {
 
     private _slotSelections = _disp getVariable ["alive_slotSelections", []];
     private _currentSlot    = _disp getVariable ["alive_currentSlot", 0];
-    private _slotCount      = _disp getVariable ["alive_slotCount", 12];
+    private _slotCount      = _disp getVariable ["alive_slotCount", count _slotSelections];
     while {count _slotSelections < _slotCount} do { _slotSelections pushBack ""; };
     _slotSelections set [_currentSlot, _classname];
     _disp setVariable ["alive_slotSelections", _slotSelections];
@@ -344,7 +351,7 @@ if (!isNull _filterNextCtrl) then {
         private _disp = _btn getVariable "alive_disp";
         if (isNull _disp) exitWith {};
         private _currentSlot = _disp getVariable ["alive_currentSlot", 0];
-        private _slotCount   = _disp getVariable ["alive_slotCount", 12];
+        private _slotCount   = _disp getVariable ["alive_slotCount", count (_disp getVariable ["alive_slotSelections", []])];
         _currentSlot = (_currentSlot + 1) mod _slotCount;
         _disp setVariable ["alive_currentSlot", _currentSlot];
         private _populateFn = _disp getVariable ["alive_populateFn", {}];
