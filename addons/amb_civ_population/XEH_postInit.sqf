@@ -453,8 +453,9 @@ if (hasInterface) then {
     }, 0.5, []] call CBA_fnc_addPerFrameHandler;
 
     // Weapon-aim civ-pressure handler. Runs alongside the approach-
-    // freeze handler. Per-frame at 0.25 s for finer 2 s sustained-aim
-    // detection than approach-freeze's 0.5 s tick.
+    // freeze handler. Per-frame at 0.25 s for finer sustained-aim
+    // detection (civWeaponAimHoldTime, default 2 s) than approach-
+    // freeze's 0.5 s tick.
     //
     // Trigger gates, cheap-to-expensive:
     //   1. Module attribute civWeaponAimRange > 0 (0 disables system).
@@ -464,7 +465,8 @@ if (hasInterface) then {
     //   5. Civilian under the player's cursor (cursorObject).
     //   6. Civilian has line-of-sight to the player (eye-to-eye, civ
     //      side - the civ has to actually see the threat).
-    //   7. All conditions sustained for 2 s before reaction fires.
+    //   7. All conditions sustained for civWeaponAimHoldTime (default
+    //      2 s) before reaction fires.
     //
     // Hysteresis on the hold-time clear: brief cursor flicker (one or
     // a few ticks of cursorObject momentarily missing the civ during
@@ -478,6 +480,7 @@ if (hasInterface) then {
         if (isNull player || {!alive player}) exitWith {};
 
         private _aimRange = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimRange", 15];
+        private _aimHoldTime = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimHoldTime", 2];
         if (_aimRange <= 0) exitWith {};
         if (vehicle player != player) exitWith {};
         if (currentWeapon player == "") exitWith {};
@@ -513,7 +516,7 @@ if (hasInterface) then {
                         _civ setVariable ["ALiVE_advciv_aimedAtSince", time, true];
                     };
                     private _heldFor = time - (_civ getVariable ["ALiVE_advciv_aimedAtSince", time]);
-                    if (_heldFor >= 2 && {isNil {_civ getVariable "ALiVE_advciv_aimReactFired"}}) then {
+                    if (_heldFor >= _aimHoldTime && {isNil {_civ getVariable "ALiVE_advciv_aimReactFired"}}) then {
                         private _hostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
                         private _bucket = switch (true) do {
                             case (_hostility < 20):  { "Friendly" };

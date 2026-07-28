@@ -120,6 +120,13 @@ class CfgVehicles {
                 tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_RANGE_COMMENT";
                 defaultValue = """15""";
             };
+            class civWeaponAimHoldTime : Edit
+            {
+                property     = "ALiVE_amb_civ_population_civWeaponAimHoldTime";
+                displayName  = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME";
+                tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_COMMENT";
+                defaultValue = """2""";
+            };
             class civVehicleStopOnAim : Combo
             {
                 property     = "ALiVE_amb_civ_population_civVehicleStopOnAim";
