@@ -68,6 +68,9 @@
 <Key ID="STR_ALIVE_ATO_PILOTBUILDING_COMMENT">
     <English>Classname of a building within 50 m of this module where replacement aircrew appear, for example Land_Cargo_House_V3_F. Leave blank to pick a nearby building automatically. A classname that matches nothing within 50 m puts the crew out in the open at the module's own position, which is worse than leaving it blank.</English>
 </Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_HDR">
+    <English>VIRTUAL AIR BASE</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_MODE">
     <English>Virtual Air Base:</English>
 </Key>
@@ -78,7 +81,7 @@
     <English>Ingress Point Marker:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_MARKER_COMMENT">
-    <English>Name of a map marker the fleet flies from and returns to. It does not have to sit inside the airspace marker - putting it offshore or over the border reads as aircraft arriving from a base elsewhere. Only used when Virtual Air Base is set to Fallback and no usable airfield was found. A name that matches no marker is reported at mission start and the fallback stays off.</English>
+    <English>Name of a map marker the fleet flies from and returns to. It does not have to sit inside the airspace marker - putting it offshore or over the border reads as aircraft arriving from a base elsewhere. Only used when Virtual Air Base is set to Fallback and no usable airfield was found. A name that matches no marker is reported at mission start and the fallback stays off. Pick open ground: a marker placed on or beside a real airfield elsewhere on the map will park the fleet on that apron, while it still operates virtually and ignores the runway beside it.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_COUNT">
     <English>Ingress Fleet Size:</English>

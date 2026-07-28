@@ -1434,8 +1434,15 @@ switch(_operation) do {
 
                     // Heli or VTOL?
                     // Get HeliH object
+                    //
+                    // nearestObject has no range limit, so it will happily answer with a
+                    // pad on the other side of the airfield - or, for a flight line whose
+                    // aircraft stand forty metres apart, with the pad just created for the
+                    // aircraft in the next slot. Every airframe then shares one pad and
+                    // they all try to recover onto the same square of ground. Anything
+                    // further off than a pad's own footprint is not this aircraft's pad.
                     private _helipad = nearestObject [_position, "HeliH"];
-                    if (isNull _helipad) then {
+                    if (isNull _helipad || {(_helipad distance2D _position) > 25}) then {
                         // create an invisble helipad
                         _helipad = "Land_HelipadEmpty_F" createvehicle _position;
                     };
@@ -1941,13 +1948,6 @@ switch(_operation) do {
                 [_logic, "airspace", [_marker]] call MAINCLASS;
             };
 
-            // Ask for the ingress point now, while the mission is still starting, so a
-            // marker name that matches nothing is reported here rather than an hour
-            // later when the commander turns out to have no aircraft. The answer is
-            // deliberately not kept: it is worked out again when the base is decided,
-            // and a single copy shared between the two could only ever go stale.
-            [_logic] call ALiVE_fnc_ATOIngressPos;
-
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;
@@ -2278,7 +2278,16 @@ switch(_operation) do {
 
                 } else {
 
-                    _hqBuilding = ([_baseCluster,"nodes"] call ALiVE_fnc_hashGet) select 0;
+                    // A cluster with no nodes answers nil here, and assigning nil deletes
+                    // the variable rather than emptying it - the read a few lines down
+                    // then throws and takes the rest of startup with it, so the commander
+                    // never gets a base at all. The virtual air base is exactly such a
+                    // cluster: it describes a position and has nothing standing on it.
+                    // Leave the objNull it was initialised with instead.
+                    private _nodes = [_baseCluster,"nodes",[]] call ALiVE_fnc_hashGet;
+                    if (count _nodes > 0) then {
+                        _hqBuilding = _nodes select 0;
+                    };
 
                 };
 
@@ -2942,7 +2951,17 @@ switch(_operation) do {
 
                         private _ingressSide = [_logic, "side"] call MAINCLASS;
                         private _ingressFaction = [_logic, "faction"] call MAINCLASS;
+                        // Which airspace the fleet answers to. The module's own position
+                        // is the synthetic base centre, so ask which marker contains it
+                        // the same way the physical path does; the first marker is only
+                        // the fallback for a base that lies outside all of them.
                         private _ingressAirspace = _airspace select 0;
+                        private _ingressBaseCentre = [([_logic, "currentBase"] call MAINCLASS),"center",position _logic] call ALiVE_fnc_hashGet;
+                        {
+                            if (_ingressBaseCentre inArea _x) exitWith {
+                                _ingressAirspace = _x;
+                            };
+                        } forEach _airspace;
 
                         // Same capability test the adoption gate and the physical
                         // placement path use: an airframe that resolves to no role is no
@@ -5699,7 +5718,7 @@ switch(_operation) do {
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
 
-                    if (_isPlane) then {
+                    if (_isPlane && !_virtualBase) then {
 
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
 
@@ -6258,7 +6277,7 @@ switch(_operation) do {
                                     [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
 
                                     // unlock runway
-                                    if (_isPlane) then {
+                                    if (_isPlane && !_virtualBase) then {
                                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                                         [_logic, "unlockRunway", _airportID] call MAINCLASS;
                                     };
@@ -6655,7 +6674,7 @@ switch(_operation) do {
 
 
                                 // Unlock runway
-                                if (_vehicleClass iskindof "Plane" && (_isVTOL < 3)) then {
+                                if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) && !_virtualBase) then {
                                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                                     [_logic, "unlockRunway", _airportID] call MAINCLASS;
                                 };
@@ -6698,6 +6717,7 @@ switch(_operation) do {
                 private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
                 private _isOnCarrier = [_aircraft,"isOnCarrier",false] call ALiVE_fnc_hashGet;
                 private _launched = [_aircraft,"launched", false] call ALiVE_fnc_hashGet;
+                private _virtualBase = [_aircraft,"virtualBase",false] call ALiVE_fnc_hashGet;
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
                 if(_count == 0) exitWith {
@@ -6710,8 +6730,10 @@ switch(_operation) do {
                     };
 
                     // Unlock runway
-                    private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
-                    [_logic, "unlockRunway", _airportID] call MAINCLASS;
+                    if !(_virtualBase) then {
+                        private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
+                        [_logic, "unlockRunway", _airportID] call MAINCLASS;
+                    };
 
                     // set state to event complete
                     if(_playerRequested) then {
@@ -6747,7 +6769,7 @@ switch(_operation) do {
                 // If aircraft is airborne, unlock runway once
                 if ( (getposATL _vehicle) select 2 > 50 && (getposASL _vehicle) select 2 > 50 && !_launched) then {
                     // Unlock runway now
-                    if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) ) then {
+                    if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) && !_virtualBase) then {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                         [_logic, "unlockRunway", _airportID] call MAINCLASS;
                     };
@@ -6998,6 +7020,7 @@ switch(_operation) do {
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
                 private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
+                private _virtualBase = [_aircraft,"virtualBase",false] call ALiVE_fnc_hashGet;
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
@@ -7012,7 +7035,11 @@ switch(_operation) do {
                     };
 
                     // Unlock runway
-                    if (_isPlane ) then {
+                    // Never for a virtual aircraft: it holds no airport identifier, so
+                    // the default would resolve some real field and release a lock this
+                    // aircraft never took - and on a module flying a mix of virtual and
+                    // delivered airframes, that is another aircraft's lock.
+                    if (_isPlane && !_virtualBase) then {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                         [_logic, "unlockRunway", _airportID] call MAINCLASS;
                     };
@@ -7036,7 +7063,12 @@ switch(_operation) do {
                     private _playersInRange = [_startPosition, 1000] call ALiVE_fnc_anyPlayersInRange;
 
                     // If players are around then execute landing
-                    if (_playersInRange > 0) then {
+                    // A virtual aircraft always takes the quick path below, watched or
+                    // not. The landing proper needs an airport to lock, to land at and
+                    // to release afterwards, and the one it would find is a real field
+                    // it has no claim on. The quick path sets the aircraft down at the
+                    // ingress point, which is where it belongs either way.
+                    if (_playersInRange > 0 && !_virtualBase) then {
 
                         if (_isPlane) then {
 
@@ -7157,8 +7189,10 @@ switch(_operation) do {
                     };
 
                     // Unlock runway
-                    private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
-                    [_logic, "unlockRunway", _airportID] call MAINCLASS;
+                    if !(_virtualBase) then {
+                        private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
+                        [_logic, "unlockRunway", _airportID] call MAINCLASS;
+                    };
 
                     // set state to event complete
                     [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
@@ -7373,12 +7407,31 @@ switch(_operation) do {
                         // detonating inside its hangar. At an ingress point there is no
                         // hangar to be inside, and often no ground either - a point
                         // offshore resolves to sea level, and that is where the aircraft
-                        // would be put down.
+                        // would be put down. So the move is made here instead.
                         //
-                        // Write the profile back to the ingress point instead. That is
-                        // the position the availability test measures against, so this is
-                        // the step that closes the sortie loop and makes the aircraft
-                        // askable for again.
+                        // It has to be the object that moves. A profile's position is a
+                        // snapshot taken from the aircraft at despawn - the profile
+                        // follows the object, never the other way about - so writing the
+                        // profile alone would be overwritten by the aircraft's real
+                        // position the moment it virtualises, and the aircraft would be
+                        // recorded wherever it happened to be when the sortie ended.
+                        //
+                        // The recall can also fire while the aircraft is still in the
+                        // air, with the engine shut down a few lines above, so without
+                        // this it is left falling.
+                        private _playerAboard = (crew _vehicle) findIf {isPlayer _x};
+                        if (!isNull _vehicle && {alive _vehicle} && {_playerAboard < 0}) then {
+                            _vehicle setDir _startDir;
+                            _vehicle setPosATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
+                            _vehicle setVectorUp [0,0,1];
+                            _vehicle setVelocity [0,0,0];
+                        };
+
+                        // Belt and braces for the case where there is no object to move,
+                        // which is the usual one: the aircraft is recovered virtualized
+                        // with nobody watching. The ingress point is the position the
+                        // availability test measures against, so this is the step that
+                        // closes the sortie loop and makes the aircraft askable for again.
                         [_profile,"position",_startPosition] call ALiVE_fnc_profileVehicle;
                         [_profile,"despawnPosition",_startPosition] call ALiVE_fnc_profileVehicle;
                         [_profile,"direction",_startDir] call ALiVE_fnc_profileVehicle;
@@ -7397,7 +7450,7 @@ switch(_operation) do {
                     // through here and unconditionally unlock, releasing a lock still held by an
                     // OUTBOUND plane waiting at ilsTaxiIn for its pilot - the next tasking then
                     // passed the busy gate and teleported a second airframe onto it.
-                    if (_isPlane && {_vehicle getVariable [QGVAR(LANDINGLOCK), false]}) then {
+                    if (_isPlane && !_virtualBase && {_vehicle getVariable [QGVAR(LANDINGLOCK), false]}) then {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                         // Mark airport as not busy
                         [_logic, "unlockRunway", _airportID] call MAINCLASS;

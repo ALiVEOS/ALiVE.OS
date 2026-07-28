@@ -257,7 +257,7 @@ class CfgVehicles
                 // starts, and the faction has no air arm for the whole mission. An
                 // ingress point stands in for the field: aircraft wait virtualized
                 // there, launch airborne and return to it.
-                class HDR_INGRESS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_INGRESS"; displayName = "VIRTUAL AIR BASE"; };
+                class HDR_INGRESS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_INGRESS"; displayName = "$STR_ALIVE_ATO_INGRESS_HDR"; };
                 class ingressMode : Combo
                 {
                         property = "ALiVE_mil_ato_ingressMode";
