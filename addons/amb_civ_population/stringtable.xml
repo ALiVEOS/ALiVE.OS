@@ -4979,6 +4979,26 @@
     <Chinesesimp>玩家必须持续瞄准平民多久(以秒计),平民才会做出反应。设为 0 则立即反应。默认:2。</Chinesesimp>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_DYNAMIC">
+    <English>Dynamic Weapon Aim Hold Time:</English>
+    <French>Duree de visee dynamique:</French>
+    <Portuguese>Tempo de mira dinamico:</Portuguese>
+    <Russian>Динамическое время удержания прицела:</Russian>
+    <Spanish>Tiempo de punteria dinamico:</Spanish>
+    <Chinese>動態武器瞄準持續時間:</Chinese>
+    <Chinesesimp>动态武器瞄准持续时间:</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_DYNAMIC_COMMENT">
+    <English>Scales the Weapon Aim Hold Time by each civilian's hostility, from x0.75 for Friendly up to x2.5 for Hostile, with a stable random variation of +/-20% per civilian. Compliant civilians stop quickly; defiant ones hold out longer. Default: No.</English>
+    <French>Multiplie la Duree de maintien de la visee selon l'hostilite de chaque civil, de x0.75 (amical) a x2.5 (hostile), avec une variation aleatoire stable de +/-20% par civil. Les civils dociles s'arretent vite; les recalcitrants resistent plus longtemps. Par defaut: Non.</French>
+    <Portuguese>Multiplica o Tempo de manutencao da mira pela hostilidade de cada civil, de x0.75 (amigavel) a x2.5 (hostil), com uma variacao aleatoria estavel de +/-20% por civil. Civis cooperantes param depressa; civis desafiadores resistem mais tempo. Padrao: Nao.</Portuguese>
+    <Russian>Умножает Время удержания прицела в зависимости от враждебности каждого гражданского: от x0.75 (дружественный) до x2.5 (враждебный), со стабильным случайным разбросом +/-20% на каждого гражданского. Покладистые останавливаются быстро; вызывающие сопротивляются дольше. По умолчанию: Нет.</Russian>
+    <Spanish>Multiplica el Tiempo de mantener la punteria segun la hostilidad de cada civil, desde x0.75 (amistoso) hasta x2.5 (hostil), con una variacion aleatoria estable de +/-20% por civil. Los civiles complacientes se detienen rapido; los desafiantes aguantan mas. Predeterminado: No.</Spanish>
+    <Chinese>依每名平民的敵意調整武器瞄準持續時間,從 x0.75(友好)到 x2.5(敵對),並附加每名平民固定的 +/-20% 隨機變化。順從的平民很快停下;反抗的平民堅持更久。預設:否。</Chinese>
+    <Chinesesimp>依每名平民的敌意调整武器瞄准持续时间,从 x0.75(友好)到 x2.5(敌对),并附加每名平民固定的 +/-20% 随机变化。顺从的平民很快停下;反抗的平民坚持更久。默认:否。</Chinesesimp>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CIV_POP_VEHICLE_STOP_ON_AIM">
     <English>Vehicle Stops on Aim/Gesture:</English>
     <French>Vehicule s'arrete sur arme/geste:</French>

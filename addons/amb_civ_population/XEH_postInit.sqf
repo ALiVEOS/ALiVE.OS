@@ -481,6 +481,7 @@ if (hasInterface) then {
 
         private _aimRange = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimRange", 15];
         private _aimHoldTime = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimHoldTime", 2];
+        private _aimHoldDynamic = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimHoldTimeDynamic", false];
         if (_aimRange <= 0) exitWith {};
         if (vehicle player != player) exitWith {};
         if (currentWeapon player == "") exitWith {};
@@ -516,7 +517,31 @@ if (hasInterface) then {
                         _civ setVariable ["ALiVE_advciv_aimedAtSince", time, true];
                     };
                     private _heldFor = time - (_civ getVariable ["ALiVE_advciv_aimedAtSince", time]);
-                    if (_heldFor >= _aimHoldTime && {isNil {_civ getVariable "ALiVE_advciv_aimReactFired"}}) then {
+                    // Dynamic mode: scale the hold time by the civ's
+                    // hostility (compliant civs stop quickly, defiant
+                    // civs hold out) plus a stable per-civ +/-20% roll
+                    // so individuals differ. Jitter is broadcast once
+                    // and deliberately never cleaned up - it is the
+                    // civ's "personality" and must match across
+                    // clients and re-aims.
+                    private _holdThreshold = _aimHoldTime;
+                    if (_aimHoldDynamic) then {
+                        private _jitter = _civ getVariable "ALiVE_advciv_aimHoldJitter";
+                        if (isNil "_jitter") then {
+                            _jitter = 0.8 + random 0.4;
+                            _civ setVariable ["ALiVE_advciv_aimHoldJitter", _jitter, true];
+                        };
+                        private _holdHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
+                        private _holdFactor = switch (true) do {
+                            case (_holdHostility < 20):  { 0.75 };
+                            case (_holdHostility < 40):  { 1 };
+                            case (_holdHostility < 60):  { 1.5 };
+                            case (_holdHostility < 80):  { 2 };
+                            default                      { 2.5 };
+                        };
+                        _holdThreshold = _aimHoldTime * _holdFactor * _jitter;
+                    };
+                    if (_heldFor >= _holdThreshold && {isNil {_civ getVariable "ALiVE_advciv_aimReactFired"}}) then {
                         private _hostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
                         private _bucket = switch (true) do {
                             case (_hostility < 20):  { "Friendly" };
