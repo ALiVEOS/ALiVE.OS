@@ -6363,7 +6363,22 @@ switch(_operation) do {
 
                     } else {
                         // if parked assign crew to vehicle if necessary, if at home move to ilsTaxiOut position at 300 feet, spawn aircraft at speed
-                        if (_startPosition distance _currentPosition < 15) then {
+                        //
+                        // Measured in plan for an aircraft off the Virtual Air Base, for the
+                        // same reason the selection test is: its home is an XY point, and
+                        // the height it sits at is whatever the despawn snapshot recorded -
+                        // six hundred metres when it was recovered over water. Counting that
+                        // height against it says the aircraft is not at home, and with the
+                        // runway branch already closed to virtual aircraft there is then no
+                        // way out at all: neither launch fires, and the sortie sits holding
+                        // its slot for the rest of the mission.
+                        private _atHome = if (_virtualBase) then {
+                            _startPosition distance2D _currentPosition < 15
+                        } else {
+                            _startPosition distance _currentPosition < 15
+                        };
+
+                        if (_atHome) then {
 
                             private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
                             private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
