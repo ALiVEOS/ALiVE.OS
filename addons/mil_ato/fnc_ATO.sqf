@@ -42,6 +42,7 @@ Tupolov & Jman
 #define DEFAULT_INGRESS_MODE "off"
 #define DEFAULT_INGRESS_MARKER ""
 #define DEFAULT_INGRESS_COUNT "6"
+#define DEFAULT_INGRESS_FALLFORWARD false
 #define DEFAULT_RUNWAYSTARTPOS ""
 #define DEFAULT_RUNWAYENDPOS ""
 #define DEFAULT_RUNWAYWIDTH ""
@@ -971,6 +972,23 @@ switch(_operation) do {
     case "ingressCount": {
         _result = [_logic,_operation,_args,DEFAULT_INGRESS_COUNT] call ALIVE_fnc_OOsimpleOperation;
     };
+    // Whether this commander should move onto a real airfield once its own side
+    // takes one. Only means anything to a commander that ended up flying from a
+    // virtual air base in the first place.
+    case "ingressFallForward": {
+        if (_args isEqualType true) then {
+            _logic setVariable ["ingressFallForward", _args];
+        } else {
+            _args = _logic getVariable ["ingressFallForward", DEFAULT_INGRESS_FALLFORWARD];
+        };
+        if (_args isEqualType "") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["ingressFallForward", _args];
+        };
+        ASSERT_TRUE(_args isEqualType true,str _args);
+
+        _result = _args;
+    };
     case "runwaystartpos": {
         _result = [_logic,_operation,_args,DEFAULT_RUNWAYSTARTPOS] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -1017,8 +1035,14 @@ switch(_operation) do {
         _result = _args;
     };
     // Whether this commander ended up standing a virtual air base in for a missing
-    // airfield. Decided once at startup and read all over the sortie cycle, which
-    // has to know not to look for runways, taxiways and hangars that are not there.
+    // airfield. Settled at startup, and cleared again if the commander later falls
+    // forward onto a real one.
+    //
+    // Only two things read it after startup: registration, which uses it to decide
+    // whether an aircraft belongs to the virtual base, and the one-shot fleet
+    // creation. The sortie cycle asks each aircraft rather than the module, so an
+    // aircraft still standing off the map keeps its own answer whatever the module
+    // has moved on to.
     case "virtualBaseActive": {
         if (_args isEqualType true) then {
             _logic setVariable ["virtualBaseActive", _args];
@@ -1028,6 +1052,24 @@ switch(_operation) do {
         if (_args isEqualType "") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
             _logic setVariable ["virtualBaseActive", _args];
+        };
+        ASSERT_TRUE(_args isEqualType true,str _args);
+
+        _result = _args;
+    };
+    // Whether this commander has already moved onto a captured airfield. Set once
+    // and never cleared for the rest of the session: the aircraft, the crews and
+    // the base cluster have all been moved by then, and there is nothing off the
+    // map to go back to. Never written from the Editor.
+    case "fellForward": {
+        if (_args isEqualType true) then {
+            _logic setVariable ["fellForward", _args];
+        } else {
+            _args = _logic getVariable ["fellForward", false];
+        };
+        if (_args isEqualType "") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["fellForward", _args];
         };
         ASSERT_TRUE(_args isEqualType true,str _args);
 
@@ -2000,6 +2042,7 @@ switch(_operation) do {
                 ["ATO - Virtual Air Base: %1",[_logic, "ingressMode"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Ingress Point Marker: %1",[_logic, "ingressMarker"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Ingress Fleet Size: %1",[_logic, "ingressCount"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ATO - Fall Forward: %1",[_logic, "ingressFallForward"] call MAINCLASS] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -2096,6 +2139,14 @@ switch(_operation) do {
             // fly from. Empty for every mission that has not asked for it.
             private _ingressPos = [_logic] call ALiVE_fnc_ATOIngressPos;
             [_logic,"ingressPos",_ingressPos] call MAINCLASS;
+
+            // Falling forward is a thing a commander flying from off the map does once
+            // it has somewhere real to go. Asked for without the virtual air base it
+            // has nothing to move, and would sit there doing nothing with no hint as to
+            // why, so say so plainly.
+            if (([_logic,"ingressFallForward"] call MAINCLASS) && {toLower ([_logic,"ingressMode"] call MAINCLASS) != "fallback"}) then {
+                ["ATO %1 - Warning, Fall Forward Onto Captured Airfield is set but Virtual Air Base is not set to Fallback, so it can never take effect.", _logic] call ALiVE_fnc_dumpR;
+            };
 
             // A carrier is a real base with a real deck, so it settles the question
             // before the fallback is considered at all.

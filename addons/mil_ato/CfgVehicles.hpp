@@ -285,6 +285,21 @@ class CfgVehicles
                         tooltip      = "$STR_ALIVE_ATO_INGRESS_COUNT_COMMENT";
                         defaultValue = """6""";
                 };
+                // A virtual air base is a way of starting a campaign the faction would
+                // otherwise have no air arm in at all. Once its ground forces have taken
+                // a real airfield, there is no reason to keep flying from off the map.
+                class ingressFallForward : Combo
+                {
+                        property = "ALiVE_mil_ato_ingressFallForward";
+                        displayName = "$STR_ALIVE_ATO_INGRESS_FALLFORWARD";
+                        tooltip = "$STR_ALIVE_ATO_INGRESS_FALLFORWARD_COMMENT";
+                        defaultValue = """false""";
+                        class Values
+                        {
+                            class No { name = "No"; value = false; default = 1; };
+                            class Yes { name = "Yes"; value = true; };
+                        };
+                };
                 // ---- Objective Objects (#875) ---------------------------------------
                 class HDR_OBJECTIVES : ALiVE_ModuleSubTitle { property = "ALiVE_mil_ato_HDR_OBJECTIVES"; displayName = "$STR_ALIVE_OBJECTIVE_HDR"; };
                 // Airfield radar arrays are a strong thematic fit for ATO.

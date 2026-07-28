@@ -89,6 +89,12 @@
 <Key ID="STR_ALIVE_ATO_INGRESS_COUNT_COMMENT">
     <English>How many aircraft sit on the off-map airfield, from 1 to 12. Each slot holds a specific airframe, and an aircraft lost on operations is rebuilt into its own slot as the same type. Six by default rather than one or two, because Minimum Aircraft For Offensive Missions (2 by default) suspends offensive tasking once the fleet has shrunk to that size - a small fleet degrades to defensive patrols after a couple of losses and never recovers.</English>
 </Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_FALLFORWARD">
+    <English>Fall Forward Onto Captured Airfield:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_FALLFORWARD_COMMENT">
+    <English>Moves this commander onto a real airfield once its own side holds one. Applies only when Virtual Air Base is set to Fallback and actually took effect - given a real airfield from the start it does nothing. The commander watches for the first friendly-held airfield among its AI Commanders' objectives and stands up on it: aircraft still on the ground are flown forward as they come free, and from then on it operates as any airfield-based commander does, including drawing replacement aircraft from the Logistics Commander. The move happens once for the session and is not undone if the airfield is later lost. After a save is reloaded the commander looks again, so it falls forward once more if the field is still held, and stays off the map if it is not.</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_RUNWAYSTARTPOS">
     <English>Runway start position:</English>
     <Chinesesimp>跑道起始位置:</Chinesesimp>
