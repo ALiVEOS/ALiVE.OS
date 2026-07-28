@@ -1172,6 +1172,13 @@ switch(_operation) do {
     // for the same reason the slot roster is: a running total kept alongside the
     // thing it counts is a second account that can disagree with the first.
     //
+    // What the last two mean depends on the mode. Under Fallback the marker empties
+    // as the squadron walks forward, so the last number falls to zero and the one
+    // before it rises to meet the fleet size. Under Permanent nothing converts: the
+    // whole marker fleet stays counted as off the map for the rest of the mission,
+    // and the converted figure only ever counts airframes that were never marker
+    // aircraft in the first place - the ones based at the real airfield.
+    //
     // The companion inspection point to the slot roster:
     //   [<module>, "fallForwardStatus"] call ALIVE_fnc_ATO
     case "fallForwardStatus": {
@@ -4826,9 +4833,19 @@ switch(_operation) do {
                             // there is no virtual base - would treat it as an ordinary
                             // airfield aircraft and hand it the nearest airport to the
                             // marker, which may well be the enemy's.
+                            //
+                            // Not under Permanent. There the marker fleet is meant to
+                            // keep coming, so a slot lost is rebuilt back at the marker:
+                            // leaving the position alone means it is built at its own
+                            // slot, and registration - which still says a marker fleet
+                            // flies - marks it as a marker aircraft again. The slot
+                            // number survives with it, because nothing below treats this
+                            // as a forward rebuild.
                             private _rebuiltForward = false;
 
-                            if (([_logic,"fellForward"] call MAINCLASS) && {[_asset,"virtualBase",false] call ALiVE_fnc_hashGet}) then {
+                            if (([_logic,"fellForward"] call MAINCLASS)
+                                && {toLower ([_logic,"ingressMode"] call MAINCLASS) != "permanent"}
+                                && {[_asset,"virtualBase",false] call ALiVE_fnc_hashGet}) then {
                                 ([_logic,"fallForwardParkPos",_vehicleClass] call MAINCLASS) params ["_forwardPos","_forwardDir"];
 
                                 if (count _forwardPos > 1) then {
@@ -4964,10 +4981,16 @@ switch(_operation) do {
 
         if !([_logic,"ingressFallForward"] call MAINCLASS) exitWith {};
 
-        // Nothing to move once the commander is already on a real field. This also
-        // closes the door behind the move: the flag is cleared as part of falling
-        // forward, so a second check cannot start a second one.
-        if !([_logic,"virtualBaseActive"] call MAINCLASS) exitWith {};
+        // Having moved is what closes the door, rather than the marker fleet going
+        // quiet. Under Permanent the fleet never does go quiet - it keeps flying in
+        // for the rest of the mission - so the record of the move is the only thing
+        // that can stop this looking for a second one.
+        if ([_logic,"fellForward"] call MAINCLASS) exitWith {};
+
+        // Only a commander standing on ground it made up has anywhere to move to.
+        // One already based at a real airfield is where it wants to be, whether or
+        // not a permanent marker fleet is flying in alongside.
+        if !([_logic,"syntheticBase"] call MAINCLASS) exitWith {};
 
         private _debug = [_logic, "debug"] call MAINCLASS;
         private _side = [_logic, "side"] call MAINCLASS;
@@ -5080,11 +5103,14 @@ switch(_operation) do {
         _args params ["_objective","_airfieldPos"];
 
         // Two checks could find the same airfield in the same pass, and the second
-        // must not run the cutover again over the top of the first.
-        if !([_logic,"virtualBaseActive"] call MAINCLASS) exitWith {};
+        // must not run the cutover again over the top of the first. Having moved is
+        // the thing to ask about: under Permanent the marker fleet carries on flying
+        // afterwards, so its flag says nothing about whether this has already run.
+        if ([_logic,"fellForward"] call MAINCLASS) exitWith {};
 
         private _debug = [_logic, "debug"] call MAINCLASS;
         private _side = [_logic, "side"] call MAINCLASS;
+        private _ingressMode = toLower ([_logic,"ingressMode"] call MAINCLASS);
         private _objectiveID = [_objective,"objectiveID",""] call ALiVE_fnc_hashGet;
 
         // A real base needs a real cluster: it is what the commander hands out as its
@@ -5138,11 +5164,28 @@ switch(_operation) do {
         private _airportID = [_airfieldPos] call ALiVE_fnc_getNearestAirportID;
         [_logic,"addRunway",_airportID] call MAINCLASS;
 
-        // This order matters. Registration treats an aircraft as belonging to the
-        // virtual base only while the module says one is active, so clearing that
-        // first means anything registered from here on is an ordinary airfield
-        // aircraft. No path may see both flags true at once.
-        [_logic,"virtualBaseActive",false] call MAINCLASS;
+        // The home is real ground from here on under either mode - that is what
+        // falling forward means - so this stops being a made-up base whatever else
+        // changes.
+        [_logic,"syntheticBase",false] call MAINCLASS;
+
+        // Whether the marker fleet closes depends on what was asked for.
+        //
+        // Under Fallback it does, and the order matters: registration treats an
+        // aircraft as belonging to the marker fleet only while the module says one
+        // flies, so clearing that before recording the move means anything
+        // registered from here on is an ordinary airfield aircraft.
+        //
+        // Under Permanent it stays open, and both flags are true together for the
+        // rest of the session. Everything that reads them is written for that: the
+        // sweep and the rebuild redirect both stand down, and registration keeps
+        // marking aircraft that appear at the marker as marker aircraft. That is the
+        // whole point of the mode - the squadron flying in from off the map is the
+        // pressure, and taking a field does not call it off.
+        if (_ingressMode != "permanent") then {
+            [_logic,"virtualBaseActive",false] call MAINCLASS;
+        };
+
         [_logic,"fellForward",true] call MAINCLASS;
 
         [_logic,"fallForwardPos",_airfieldPos] call MAINCLASS;
@@ -5212,6 +5255,13 @@ switch(_operation) do {
     case "fallForwardSweep": {
 
         if !([_logic,"fellForward"] call MAINCLASS) exitWith {};
+
+        // Nothing comes forward under Permanent. The marker fleet is not a stopgap
+        // waiting for somewhere better - it is what the mode exists to provide, and
+        // the captured field is somewhere else to fly from rather than somewhere to
+        // withdraw to. Emptying the marker would quietly turn Permanent into
+        // Fallback the first time the ground war went well.
+        if (toLower ([_logic,"ingressMode"] call MAINCLASS) == "permanent") exitWith {};
 
         private _debug = [_logic, "debug"] call MAINCLASS;
         private _assets = [_logic,"assets"] call MAINCLASS;
