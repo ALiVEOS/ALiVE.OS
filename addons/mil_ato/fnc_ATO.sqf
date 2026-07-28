@@ -1768,7 +1768,11 @@ switch(_operation) do {
                 [_assets,_x,_asset] call ALiVE_fnc_hashSet;
 
                 // Register asset in airspace
-                _airspaceAssets pushback _x;
+                // Unique, matching the restore path: registering the same aircraft twice
+                // should leave one entry, not two. Nothing does that today, but the list
+                // is walked to decide what the commander has, and a duplicate would count
+                // one airframe as two.
+                _airspaceAssets pushbackUnique _x;
 
                 if (_debug) then {
                     ["ATO %1 registered %2 (%3) as an asset.", _logic, _x, _vehicleClass] call ALiVE_fnc_dump;
@@ -4195,7 +4199,22 @@ switch(_operation) do {
                 // votes are weighted by unit count, so a couple of passing enemy
                 // scout profiles can't outvote the garrison.
                 private _probePos = [_baseCluster,"center"] call ALiVE_fnc_hashGet;
-                if (!isNil "_HQ" && {!isNull _HQ}) then { _probePos = getPosATL _HQ; };
+
+                // A commander with no HQ building of its own falls back to the centre of
+                // its base cluster, and for one flying from off the map that centre was
+                // the module's own position - quiet ground, wherever the mission maker
+                // put it. Falling forward moves the cluster onto a contested airfield, so
+                // without this the probe follows it into the fight, the first counter
+                // attack there reads as this commander's own base being overrun, and it
+                // stops both accepting requests and offering aircraft for as long as the
+                // enemy is on the field. Keep probing where it probed before.
+                if (isNil "_HQ" || {isNull _HQ}) then {
+                    if ([_logic,"fellForward"] call MAINCLASS) then {
+                        _probePos = getposATL _logic;
+                    };
+                } else {
+                    _probePos = getPosATL _HQ;
+                };
 
                 private _dominantFaction = [_probePos, 500, true, true] call ALiVE_fnc_getDominantFaction;
 
@@ -4461,7 +4480,22 @@ switch(_operation) do {
                 };
 
                 private _probePos = [_baseCluster,"center"] call ALiVE_fnc_hashGet;
-                if (!isNil "_HQ" && {!isNull _HQ}) then { _probePos = getPosATL _HQ; };
+
+                // A commander with no HQ building of its own falls back to the centre of
+                // its base cluster, and for one flying from off the map that centre was
+                // the module's own position - quiet ground, wherever the mission maker
+                // put it. Falling forward moves the cluster onto a contested airfield, so
+                // without this the probe follows it into the fight, the first counter
+                // attack there reads as this commander's own base being overrun, and it
+                // stops both accepting requests and offering aircraft for as long as the
+                // enemy is on the field. Keep probing where it probed before.
+                if (isNil "_HQ" || {isNull _HQ}) then {
+                    if ([_logic,"fellForward"] call MAINCLASS) then {
+                        _probePos = getposATL _logic;
+                    };
+                } else {
+                    _probePos = getPosATL _HQ;
+                };
 
                 private _dominantFaction = [_probePos, 500, true, true] call ALiVE_fnc_getDominantFaction;
 
@@ -4697,6 +4731,28 @@ switch(_operation) do {
                             private _dir = [_asset,"startDir"] call ALiVE_fnc_hashGet;
                             private _baseAirspace = [_asset,"airspace"] call ALiVE_fnc_hashGet;
 
+                            // An aircraft lost while it was still flying from off the map
+                            // is rebuilt at the airfield instead, if the commander has
+                            // moved by the time the replacement is built. Rebuilding it
+                            // out at the marker would put it somewhere the commander no
+                            // longer operates from, and registration - which now says
+                            // there is no virtual base - would treat it as an ordinary
+                            // airfield aircraft and hand it the nearest airport to the
+                            // marker, which may well be the enemy's.
+                            private _rebuiltForward = false;
+
+                            if (([_logic,"fellForward"] call MAINCLASS) && {[_asset,"virtualBase",false] call ALiVE_fnc_hashGet}) then {
+                                ([_logic,"fallForwardParkPos",_vehicleClass] call MAINCLASS) params ["_forwardPos","_forwardDir"];
+
+                                if (count _forwardPos > 1) then {
+                                    _position = _forwardPos;
+                                    _dir = _forwardDir;
+                                    _rebuiltForward = true;
+
+                                    ["ATO %1 - Virtual Air Base slot %2 lost while off the map; rebuilt forward at %3", _logic, [_asset,"vabSlot",0] call ALiVE_fnc_hashGet, _position] call ALiVE_fnc_dumpR;
+                                };
+                            };
+
                             private _plane = if (_vehicleClass isKindOf "Plane") then {1} else {0};
                             private _heli = if (_vehicleClass isKindOf "Helicopter") then {1} else {0};
 
@@ -4751,7 +4807,13 @@ switch(_operation) do {
                             // logistics commander is not offered virtual aircraft at all,
                             // so every one of them is rebuilt here. Aircraft that came
                             // from a real airfield carry no slot and fall straight past.
+                            //
+                            // One that was rebuilt forward keeps no slot either. It has
+                            // been built at the airfield, registered as an ordinary
+                            // aircraft of that field, and has no more to do with the
+                            // flight line off the map than a converted one does.
                             private _lostSlot = [_asset,"vabSlot",0] call ALiVE_fnc_hashGet;
+                            if (_rebuiltForward) then { _lostSlot = 0; };
                             if (_lostSlot isEqualType 0 && {_lostSlot > 0} && {!(_aircraft isEqualType "")}) then {
                                 [_aircraft,"vabSlot",_lostSlot] call ALiVE_fnc_hashSet;
                                 ["ATO %1 - Virtual Air Base slot %2 rebuilt: %3", _logic, _lostSlot, _vehicleClass] call ALiVE_fnc_dumpR;
@@ -5013,6 +5075,177 @@ switch(_operation) do {
         // Nothing about flying sorties needs the HQ to be at the airfield.
     };
 
+    // Somewhere to park one aircraft at the airfield the commander has moved onto.
+    // Returns [position, direction].
+    //
+    // Shared by the aircraft already in the air fleet and by replacements built for
+    // losses, so the two cannot end up parking to different rules.
+    case "fallForwardParkPos": {
+
+        private _parkClass = _args;
+        private _fallForwardPos = [_logic,"fallForwardPos"] call MAINCLASS;
+
+        private _parkPos = [];
+        private _parkDir = random 360;
+
+        if (count _fallForwardPos > 1) then {
+
+            // Apron rather than automatic: the hangar tier animates doors on every
+            // building it inspects and takes a short reservation on the spot it picks,
+            // and neither belongs in a housekeeping move. It also hands back a heading
+            // pointing at the runway.
+            if (!isNil "ALiVE_fnc_findAirSpawnPosition") then {
+                private _spot = [_parkClass, _fallForwardPos, 600, "apron"] call ALiVE_fnc_findAirSpawnPosition;
+                if (count _spot >= 2) then {
+                    _parkPos = +(_spot select 0);
+                    // Ground it: some tiers carry a building's elevated origin.
+                    _parkPos set [2, 0];
+                    _parkDir = _spot select 1;
+                };
+            };
+
+            // Nothing the validator liked. Better to stand the aircraft on open ground
+            // somewhere near the field than to leave it off the map.
+            if (count _parkPos == 0) then {
+                _parkPos = _fallForwardPos getPos [80 + random 120, random 360];
+                _parkPos set [2, 0];
+            };
+        };
+
+        _result = [_parkPos, _parkDir];
+    };
+
+    // Bring one aircraft forward from the off-map base to the captured airfield.
+    //
+    // One per pass, and only aircraft that are standing still: idle, not spawned, and
+    // at their own place. An aircraft in the middle of a sortie is away for a reason,
+    // and a spawned one must never be moved by writing its profile - the profile is a
+    // snapshot taken from the aircraft at despawn and follows it, never the reverse,
+    // which is the same rule the recovery leg works to.
+    case "fallForwardSweep": {
+
+        if !([_logic,"fellForward"] call MAINCLASS) exitWith {};
+
+        private _debug = [_logic, "debug"] call MAINCLASS;
+        private _assets = [_logic,"assets"] call MAINCLASS;
+
+        // Found first, converted afterwards. Picking inside the walk and acting there
+        // too would mean an exitWith that reads as though it stops the search when it
+        // only stops the branch it sits in.
+        private _targetID = "";
+        private _skipped = 0;
+
+        {
+            if (_targetID == "") then {
+                private _asset = [_assets, _x] call ALiVE_fnc_hashGet;
+
+                if !(isNil "_asset") then {
+                    if ([_asset,"virtualBase",false] call ALiVE_fnc_hashGet) then {
+
+                        private _ready = ([_asset,"currentOp",""] call ALiVE_fnc_hashGet) == "";
+                        private _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+
+                        if (_ready && {!isNil "_profile"}) then {
+                            if !([_profile,"active",false] call ALiVE_fnc_hashGet) then {
+
+                                private _profilePos = [_profile,"position",[]] call ALiVE_fnc_hashGet;
+                                private _startPos = [_asset,"startPos",[]] call ALiVE_fnc_hashGet;
+
+                                if (count _profilePos > 1 && {count _startPos > 1} && {_profilePos distance2D _startPos < 15}) then {
+                                    _targetID = _x;
+                                } else {
+                                    _skipped = _skipped + 1;
+                                };
+                            } else {
+                                _skipped = _skipped + 1;
+                            };
+                        } else {
+                            _skipped = _skipped + 1;
+                        };
+                    };
+                };
+            };
+        } forEach (_assets select 1);
+
+        if (_targetID == "") exitWith {
+            if (_debug && {_skipped > 0}) then {
+                ["ATO %1 - Fall forward sweep: %2 aircraft not ready to move (flying, spawned, or away from their slot).", _logic, _skipped] call ALiVE_fnc_dump;
+            };
+        };
+
+        private _asset = [_assets, _targetID] call ALiVE_fnc_hashGet;
+        private _profile = [ALIVE_profileHandler, "getProfile", _targetID] call ALIVE_fnc_profileHandler;
+        private _vehicleClass = [_asset,"vehicleClass",""] call ALiVE_fnc_hashGet;
+
+        ([_logic,"fallForwardParkPos",_vehicleClass] call MAINCLASS) params ["_parkPos","_parkDir"];
+
+        if (count _parkPos == 0) exitWith {
+            ["ATO %1 - Fall forward sweep: no forward position available, %2 stays where it is.", _logic, _vehicleClass] call ALiVE_fnc_dumpR;
+        };
+
+        // The aircraft is updated where it stands rather than registered afresh.
+        // Registration builds a new asset from scratch, and for an airframe that has
+        // never flown it would also build a second aircrew: the crew link is only made
+        // at first launch (see the two createProfileVehicleAssignment calls in
+        // aircraftStart), so the "has it got a crew" gate in registerProfile reads
+        // empty and makes another. The first crew would stay profiled and marked busy
+        // for the rest of the mission, denying those men to the ground commander.
+        // Everything registration would refresh is written here instead, and the
+        // aircraft keeps the crew, airspace, roles and capabilities it already had.
+        private _oldSlot = [_asset,"vabSlot",0] call ALiVE_fnc_hashGet;
+
+        [_profile,"position",_parkPos] call ALiVE_fnc_profileVehicle;
+        [_profile,"despawnPosition",_parkPos] call ALiVE_fnc_profileVehicle;
+        [_profile,"direction",_parkDir] call ALiVE_fnc_profileVehicle;
+
+        // The aircrew move with their aircraft.
+        private _crewID = [_asset,"crewID",""] call ALiVE_fnc_hashGet;
+        if (_crewID != "") then {
+            private _crewProfile = [ALIVE_profileHandler, "getProfile", _crewID] call ALIVE_fnc_profileHandler;
+            if !(isNil "_crewProfile") then {
+                private _crewPos = _parkPos getPos [8 + random 8, random 360];
+                [_crewProfile,"position",_crewPos] call ALIVE_fnc_profileEntity;
+                [_crewProfile,"despawnPosition",_crewPos] call ALIVE_fnc_profileEntity;
+            };
+        };
+
+        [_asset,"startPos",_parkPos] call ALiVE_fnc_hashSet;
+        [_asset,"startDir",_parkDir] call ALiVE_fnc_hashSet;
+        [_asset,"virtualBase",false] call ALiVE_fnc_hashSet;
+
+        private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
+
+        if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) ) then {
+
+            // It answers to a real airport now, so the taxi, ILS and runway-lock
+            // lookups have something true to resolve against.
+            private _airportID = [_parkPos] call ALiVE_fnc_getNearestAirportID;
+            [_asset,"airportID",_airportID] call ALiVE_fnc_hashSet;
+            [_logic,"addRunway",_airportID] call MAINCLASS;
+
+        } else {
+
+            // Same rule as registration: anything further off than a pad's own
+            // footprint belongs to another aircraft, so give this one its own.
+            private _helipad = nearestObject [_parkPos, "HeliH"];
+            if (isNull _helipad || {(_helipad distance2D _parkPos) > 25}) then {
+                _helipad = "Land_HelipadEmpty_F" createvehicle _parkPos;
+            };
+            [_asset,"helipad", position _helipad] call ALiVE_fnc_hashSet;
+        };
+
+        // The slot roster describes the flight line at the off-map base, and this
+        // aircraft has left it. Said out loud first, so the trail from slot to
+        // forward-deployed airframe survives in the log even though the roster no
+        // longer carries it.
+        ["ATO %1 - Virtual Air Base slot %2 forward deployed: %3 (%4) to %5", _logic, _oldSlot, _vehicleClass, _targetID, _parkPos] call ALiVE_fnc_dumpR;
+
+        [_asset,"vabSlot",0] call ALiVE_fnc_hashSet;
+
+        [_assets,_targetID,_asset] call ALiVE_fnc_hashSet;
+        [_logic,"assets",_assets] call MAINCLASS;
+    };
+
     // Airspace Management
     case "monitor": {
         if (isServer) then {
@@ -5074,6 +5307,12 @@ switch(_operation) do {
                         if (time > _lastFallForwardCheck + 60) then {
                             _logic setVariable ["lastFallForwardCheck", time];
                             [_logic,"fallForwardCheck"] call MAINCLASS;
+
+                            // One aircraft a minute walks the fleet forward over the
+                            // quarter of an hour after the move, rather than teleporting
+                            // a squadron across the map in a single frame. Aircraft out
+                            // on task simply come up on a later pass.
+                            [_logic,"fallForwardSweep"] call MAINCLASS;
                         };
 
                     };
