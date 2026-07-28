@@ -268,6 +268,7 @@ class CfgVehicles
                         {
                             class Off { name = "Off"; value = "off"; default = 1; };
                             class Fallback { name = "Fallback (no usable airfield)"; value = "fallback"; };
+                            class Permanent { name = "Permanent (always on)"; value = "permanent"; };
                         };
                 };
                 class ingressMarker : Edit

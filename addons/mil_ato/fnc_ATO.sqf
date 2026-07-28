@@ -336,11 +336,11 @@ ALiVE_fnc_ATOIngressPos = {
     if (isNull _logic) exitWith {_result};
 
     private _mode = toLower ([_logic, "ingressMode"] call MAINCLASS);
-    if !(_mode == "fallback") exitWith {_result};
+    if !(_mode in ["fallback","permanent"]) exitWith {_result};
 
     private _marker = [_logic, "ingressMarker"] call MAINCLASS;
     if (_marker == "") exitWith {
-        ["ATO %1 - Warning, Virtual Air Base is set to Fallback but no ingress marker is named, so it cannot take effect. Set this module's Ingress Point Marker.", _logic] call ALiVE_fnc_dumpR;
+        ["ATO %1 - Warning, Virtual Air Base is set to %2 but no ingress marker is named, so it cannot take effect. Set this module's Virtual Air Base Ingress Marker.", _logic, _mode] call ALiVE_fnc_dumpR;
         _result
     };
 
@@ -950,9 +950,11 @@ switch(_operation) do {
     case "pilotbuilding": {
         _result = [_logic,_operation,_args,DEFAULT_PILOTBUILDING] call ALIVE_fnc_OOsimpleOperation;
     };
-    // Whether this commander may stand in a virtual air base for a missing
-    // airfield. "fallback" only takes effect when the airspace holds nothing to
-    // fly from; "off" is the behaviour that has always applied.
+    // How this commander uses a virtual air base. "fallback" stands one in only
+    // when the airspace holds nothing to fly from; "permanent" keeps one open
+    // whatever else the faction owns, so a squadron arrives from off the map
+    // alongside anything based on it; "off" is the behaviour that has always
+    // applied.
     case "ingressMode": {
         _result = [_logic,_operation,_args,DEFAULT_INGRESS_MODE] call ALIVE_fnc_OOsimpleOperation;
 
@@ -961,7 +963,7 @@ switch(_operation) do {
         // rather than leaving the commander in a state that has no meaning. The
         // corrected value is written back, so this is said once and not on every
         // subsequent read.
-        if !(toLower _result in ["off","fallback"]) then {
+        if !(toLower _result in ["off","fallback","permanent"]) then {
             ["ATO %1 - Warning, Virtual Air Base mode %2 is not recognised and has been treated as Off.", _logic, str _result] call ALiVE_fnc_dumpR;
             _result = DEFAULT_INGRESS_MODE;
             _logic setVariable [_operation, _result];
@@ -1040,10 +1042,17 @@ switch(_operation) do {
         _result = _args;
     };
     // Whether this commander ended up standing a virtual air base in for a missing
-    // airfield. Settled at startup, and cleared again if the commander later falls
-    // forward onto a real one.
+    // airfield. This one asks a single question: does a fleet fly from the marker?
     //
-    // Only two things read it after startup: registration, which uses it to decide
+    // Under Fallback that stops being true the moment the commander moves onto a
+    // captured field. Under Permanent it never stops being true - the marker fleet
+    // is the point of the setting, and it keeps arriving whatever else the faction
+    // has taken.
+    //
+    // Whether the commander's home is made-up ground is a different question, and
+    // syntheticBase below answers that one.
+    //
+    // Only two things read this after startup: registration, which uses it to decide
     // whether an aircraft belongs to the virtual base, and the one-shot fleet
     // creation. The sortie cycle asks each aircraft rather than the module, so an
     // aircraft still standing off the map keeps its own answer whatever the module
@@ -1057,6 +1066,31 @@ switch(_operation) do {
         if (_args isEqualType "") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
             _logic setVariable ["virtualBaseActive", _args];
+        };
+        ASSERT_TRUE(_args isEqualType true,str _args);
+
+        _result = _args;
+    };
+    // Whether this commander's home cluster is a description rather than a place:
+    // made up because there was no airfield to have. That is a different question
+    // from whether a fleet flies from the marker, and the two only travel together
+    // under Fallback.
+    //
+    // It is what decides that the base cluster has to be invented, that the ground
+    // commander must not be offered it as an objective, that a commander with no
+    // clusters at all can still start, and that there is somewhere better to move
+    // to. A commander keeping a permanent virtual air base alongside a real airfield
+    // answers false here: its home is that airfield, and there is nothing made up
+    // about it.
+    case "syntheticBase": {
+        if (_args isEqualType true) then {
+            _logic setVariable ["syntheticBase", _args];
+        } else {
+            _args = _logic getVariable ["syntheticBase", false];
+        };
+        if (_args isEqualType "") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["syntheticBase", _args];
         };
         ASSERT_TRUE(_args isEqualType true,str _args);
 
@@ -2201,26 +2235,45 @@ switch(_operation) do {
             private _ingressPos = [_logic] call ALiVE_fnc_ATOIngressPos;
             [_logic,"ingressPos",_ingressPos] call MAINCLASS;
 
+            private _ingressMode = toLower ([_logic,"ingressMode"] call MAINCLASS);
+
             // Falling forward is a thing a commander flying from off the map does once
-            // it has somewhere real to go. Asked for without the virtual air base it
-            // has nothing to move, and would sit there doing nothing with no hint as to
-            // why, so say so plainly.
-            if (([_logic,"ingressFallForward"] call MAINCLASS) && {toLower ([_logic,"ingressMode"] call MAINCLASS) != "fallback"}) then {
-                ["ATO %1 - Warning, Fall Forward Onto Captured Airfield is set but Virtual Air Base is not set to Fallback, so it can never take effect.", _logic] call ALiVE_fnc_dumpR;
+            // it has somewhere real to go. Asked for without any virtual air base at
+            // all it has nothing to move, and would sit there doing nothing with no
+            // hint as to why, so say so plainly.
+            if (([_logic,"ingressFallForward"] call MAINCLASS) && {!(_ingressMode in ["fallback","permanent"])}) then {
+                ["ATO %1 - Warning, Fall Forward Onto Captured Airfield is set but Virtual Air Base is Off, so it can never take effect.", _logic] call ALiVE_fnc_dumpR;
             };
 
-            // A carrier is a real base with a real deck, so it settles the question
-            // before the fallback is considered at all.
-            private _virtualBase = (count _airClusters == 0) && {count _ingressPos > 0} && {!_isCarrier};
-            [_logic,"virtualBaseActive",_virtualBase] call MAINCLASS;
+            // Two separate questions, and only Fallback answers both the same way.
+            //
+            // A carrier settles the matter before either is asked, under both modes. A
+            // deck is an airfield: the carrier path further down rewrites the base
+            // cluster outright, and the sortie cycle keys taxi, launch and recovery off
+            // whether an aircraft is on that carrier. A second fleet standing on open
+            // ground under the same module would be sharing one base with the deck, and
+            // nothing downstream is built to tell them apart.
+            private _ingressUsable = (count _ingressPos > 0) && {!_isCarrier};
 
-            if (count _airClusters == 0 && {!_virtualBase}) exitWith {
+            // Is the home this commander reports a real place, or one made up because
+            // there was nothing to have? Only the absence of an airfield makes it up.
+            private _syntheticBase = _ingressUsable && {count _airClusters == 0};
+
+            // Does a fleet fly in from the marker? Under Fallback only when there was
+            // no airfield to fly from; under Permanent always, whatever else the
+            // faction owns.
+            private _virtualFleet = _ingressUsable && {_syntheticBase || {_ingressMode == "permanent"}};
+
+            [_logic,"syntheticBase",_syntheticBase] call MAINCLASS;
+            [_logic,"virtualBaseActive",_virtualFleet] call MAINCLASS;
+
+            if (count _airClusters == 0 && {!_syntheticBase}) exitWith {
                 ["ATO - Warning no usable military buildings within airspace found, the ATO module for %1 may be incorrectly configured.", _faction] call ALiVE_fnc_dumpR;
             };
 
             private _baseCluster = [] call ALiVE_fnc_hashCreate;
 
-            if (_virtualBase) then {
+            if (_syntheticBase) then {
 
                 // Nothing on the ground to sort, so describe the base rather than
                 // finding it. Everything downstream asks a cluster for its centre,
@@ -2242,6 +2295,14 @@ switch(_operation) do {
                 // Sort clusters by distance
                 private _tmp = [_airclusters,[_position],{_Input0 distance ([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet)},"ASCEND"] call ALiVE_fnc_SortBy;
                 _baseCluster = _tmp select 0;
+
+                // A real airfield and a marker fleet at the same time - this is what
+                // Permanent asks for. The commander is based on the ground it found and
+                // runs its own aircraft from there, and a second squadron flies in from
+                // off the map on top of that.
+                if (_virtualFleet) then {
+                    ["ATO %1 - Operating from the airfield at %2 and keeping a permanent virtual air base at %3.", _logic, [_baseCluster,"center",[0,0,0]] call ALiVE_fnc_HashGet, _ingressPos] call ALiVE_fnc_dumpR;
+                };
             };
 
             // Always use the carrier as the base if the module is close to the carrier
@@ -2452,10 +2513,27 @@ switch(_operation) do {
             // Set the base location
             [_logic,"currentBase", _baseCluster] call MAINCLASS;
 
-            // A virtual base has no ground to hold: its cluster describes the module's
+            // A marker sitting on the commander's own airfield is almost certainly not
+            // what was meant. Aircraft standing within half a kilometre of the marker
+            // are taken to be part of the marker fleet when they are registered, so
+            // putting it on the apron makes the airfield's own aircraft answer as
+            // though they had flown in from off the map - no runway, no taxi, launched
+            // airborne. Advisory: a mission maker who wants exactly that is entitled
+            // to it.
+            if (_virtualFleet && {!_syntheticBase}) then {
+                private _homeCentre = [_baseCluster,"center",[0,0,0]] call ALiVE_fnc_HashGet;
+                if (count _homeCentre > 1 && {_ingressPos distance2D _homeCentre < 1000}) then {
+                    ["ATO %1 - Warning, the permanent ingress marker at %2 sits on this commander's own airfield at %3. Aircraft parked within 500m of the marker will be treated as marker aircraft and will not use the runway.", _logic, _ingressPos, _homeCentre] call ALiVE_fnc_dumpR;
+                };
+            };
+
+            // A made-up base has no ground to hold: its cluster describes the module's
             // own position and has no nodes. Handing that to the ground commander as a
-            // strategic objective would send troops to garrison an empty field.
-            if(count _modules > 0 && !_isCarrier && !_virtualBase) then {
+            // strategic objective would send troops to garrison an empty field. A
+            // commander keeping a permanent marker fleet alongside a real airfield is a
+            // different matter - that airfield is somewhere worth defending, and it is
+            // offered like any other.
+            if(count _modules > 0 && !_isCarrier && !_syntheticBase) then {
                 // Tell OPCOM this is a high priority reserve objective
                 private _opcom = selectRandom _modules;
                 private _id = format["OPCOM_%1_objective_%2",[_opcom,"opcomID"] call ALiVE_fnc_hashGet, format["ATO_%1",ceil(random 1000)]];
@@ -3070,12 +3148,18 @@ switch(_operation) do {
                     } forEach _aprofiles;
                 };
 
-                // With no airfield anywhere in the airspace there is nothing to adopt
-                // and nothing for the block above to park, so the fleet is created at
-                // the ingress point instead. These are ordinary profiles in every
-                // respect - real airframes with real aircrew - they simply sit
-                // virtualized at a point on the map rather than on an apron, and are
-                // released into the air rather than down a runway.
+                // The marker fleet. Under Fallback it exists because there was no
+                // airfield to adopt or park at, and it is all the commander has. Under
+                // Permanent it exists because it was asked for, and it stands alongside
+                // whatever was adopted or placed at a real field above.
+                //
+                // Either way these are ordinary profiles - real airframes with real
+                // aircrew - that simply sit virtualized at a point on the map rather
+                // than on an apron, and are released into the air rather than down a
+                // runway. The block above has already had its say about physical
+                // aircraft and counted what the commander held before any of this
+                // existed, so asking for a marker fleet can never cost the commander
+                // the aircraft it would otherwise have placed.
                 if ([_logic,"virtualBaseActive"] call MAINCLASS) then {
 
                     private _ingressPos = [_logic,"ingressPos"] call MAINCLASS;
@@ -3095,10 +3179,13 @@ switch(_operation) do {
 
                         private _ingressSide = [_logic, "side"] call MAINCLASS;
                         private _ingressFaction = [_logic, "faction"] call MAINCLASS;
-                        // Which airspace the fleet answers to. The module's own position
-                        // is the synthetic base centre, so ask which marker contains it
-                        // the same way the physical path does; the first marker is only
-                        // the fallback for a base that lies outside all of them.
+                        // Which airspace the fleet answers to: whichever marker contains
+                        // the commander's home, asked the same way the physical path
+                        // asks it. That home is the module's own position when the base
+                        // was made up, and a real airfield under Permanent - the right
+                        // answer either way, because it is the airspace the commander
+                        // itself belongs to. The first marker is only the fallback for a
+                        // home that lies outside all of them.
                         private _ingressAirspace = _airspace select 0;
                         private _ingressBaseCentre = [([_logic, "currentBase"] call MAINCLASS),"center",position _logic] call ALiVE_fnc_hashGet;
                         {
