@@ -1038,6 +1038,38 @@ switch(_operation) do {
     case "ingressPos": {
         _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
     };
+    // The Virtual Air Base roster: one entry per slot, [slot, class, profileID],
+    // in slot order.
+    //
+    // Worked out from the aircraft themselves every time it is asked for, and
+    // never written down. A stored copy would be a second account of the same
+    // thing, and the two would part company the first time an aircraft was lost
+    // and rebuilt. It also means the roster is simply correct after a save is
+    // reloaded, because the aircraft come back carrying their own slot numbers.
+    //
+    // This is the inspection point for a mission maker who wants to see what the
+    // commander is actually holding:
+    //   [<module>, "virtualBaseSlots"] call ALIVE_fnc_ATO
+    case "virtualBaseSlots": {
+        private _slots = [];
+        private _slotAssets = [_logic,"assets"] call MAINCLASS;
+
+        {
+            private _slotAsset = [_slotAssets, _x] call ALiVE_fnc_hashGet;
+
+            if !(isNil "_slotAsset") then {
+                private _slotNumber = [_slotAsset,"vabSlot",0] call ALiVE_fnc_hashGet;
+
+                // Aircraft that never came from the virtual air base carry no slot
+                // at all, and a module can hold both kinds at once.
+                if (_slotNumber isEqualType 0 && {_slotNumber > 0}) then {
+                    _slots pushBack [_slotNumber, [_slotAsset,"vehicleClass",""] call ALiVE_fnc_hashGet, _x];
+                };
+            };
+        } forEach (_slotAssets select 1);
+
+        _result = [_slots, [], {_x select 0}, "ASCEND"] call ALiVE_fnc_SortBy;
+    };
     case "assets": {
         _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -2984,9 +3016,15 @@ switch(_operation) do {
                             ["ATO %1 - Warning, virtual air base is active but faction %2 has no aircraft that resolve to a role, so none were created.", _logic, _ingressFaction] call ALiVE_fnc_dumpR;
                         } else {
 
+                            // Slot number, profile and airframe type, one entry per
+                            // slot. The base holds a numbered flight line rather than a
+                            // pool: slot 3 is a particular aircraft of a particular
+                            // type, and it stays that way for the rest of the mission.
                             private _ingressProfiles = [];
 
                             for "_i" from 0 to (_ingressCount - 1) do {
+
+                                private _slotNumber = _i + 1;
 
                                 // Spread along the line rather than stacked on the marker:
                                 // nothing is watching them while they are virtualized, but
@@ -2999,13 +3037,13 @@ switch(_operation) do {
                                     private _tmp = [_vehicleClass,_ingressSide,_ingressFaction,"CAPTAIN",_slotPos,_ingressDir,false,_ingressFaction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
                                     {
                                         if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {
-                                            _ingressProfiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
+                                            _ingressProfiles pushback [_slotNumber, [_x,"profileID"] call ALiVE_fnc_hashGet, _vehicleClass];
                                         };
                                     } forEach _tmp;
                                 } else {
                                     private _tmp = [_vehicleClass,_ingressSide,_ingressFaction,_slotPos,_ingressDir,false,_ingressFaction] call ALIVE_fnc_createProfileVehicle;
                                     if !(isNil "_tmp") then {
-                                        _ingressProfiles pushback ([_tmp, "profileID"] call ALIVE_fnc_hashGet);
+                                        _ingressProfiles pushback [_slotNumber, [_tmp, "profileID"] call ALIVE_fnc_hashGet, _vehicleClass];
                                     };
                                 };
                             };
@@ -3014,11 +3052,41 @@ switch(_operation) do {
                             // taxiway to be clear of, and the whole point of the ingress
                             // point is that the aircraft stay exactly where it is.
                             {
-                                private _profileID = _x;
+                                _x params ["_slotNumber","_profileID","_slotClass"];
                                 private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
 
                                 if !(isnil "_profile") then {
                                     [_logic,"registerProfile",[_profileID,_ingressAirspace]] call MAINCLASS;
+
+                                    // Mark whatever registration actually took on. A
+                                    // crewed helicopter is handed over as its entity, and
+                                    // the aircraft that ends up on the roster is the one
+                                    // underneath it, so the identifier offered here is not
+                                    // necessarily the one the asset is filed against.
+                                    //
+                                    // An airframe registration turned away - no role it
+                                    // could be given - leaves no asset to mark, and so
+                                    // goes unreported below. That is the intended
+                                    // reading: the slot was not filled.
+                                    private _slotVehicleIDs = [_profileID];
+                                    if (([_profile,"type"] call ALiVE_fnc_hashGet) == "entity") then {
+                                        _slotVehicleIDs = [_profile,"vehiclesInCommandOf",[]] call ALiVE_fnc_hashGet;
+                                    };
+
+                                    private _registered = [_logic,"assets"] call MAINCLASS;
+
+                                    {
+                                        private _slotAsset = [_registered, _x] call ALiVE_fnc_hashGet;
+                                        if !(isNil "_slotAsset") then {
+                                            [_slotAsset,"vabSlot",_slotNumber] call ALiVE_fnc_hashSet;
+
+                                            // Logged whether or not debug is on. This is
+                                            // the record of what the commander was given,
+                                            // and it is the only account of it that exists
+                                            // before the first sortie is flown.
+                                            ["ATO %1 - Virtual Air Base slot %2: %3 (%4)", _logic, _slotNumber, _slotClass, _x] call ALiVE_fnc_dumpR;
+                                        };
+                                    } forEach _slotVehicleIDs;
                                 };
                             } forEach _ingressProfiles;
 
@@ -4563,6 +4631,22 @@ switch(_operation) do {
                             // Add aircraft to maintenance
                             if !(_aircraft isEqualType "") then {
                                 [_aircraft,"maintenance",time] call ALiVE_fnc_hashSet;
+                            };
+
+                            // The replacement inherits the lost aircraft's slot. A
+                            // Virtual Air Base slot is a particular airframe rather than
+                            // a space in a pool, and the rebuild above is made from the
+                            // lost aircraft's own class, so the type in a slot holds
+                            // steady however many times it is shot down.
+                            //
+                            // This is the only place the mark has to be reapplied: the
+                            // logistics commander is not offered virtual aircraft at all,
+                            // so every one of them is rebuilt here. Aircraft that came
+                            // from a real airfield carry no slot and fall straight past.
+                            private _lostSlot = [_asset,"vabSlot",0] call ALiVE_fnc_hashGet;
+                            if (_lostSlot isEqualType 0 && {_lostSlot > 0} && {!(_aircraft isEqualType "")}) then {
+                                [_aircraft,"vabSlot",_lostSlot] call ALiVE_fnc_hashSet;
+                                ["ATO %1 - Virtual Air Base slot %2 rebuilt: %3", _logic, _lostSlot, _vehicleClass] call ALiVE_fnc_dumpR;
                             };
 
                             if (_debug) then {
