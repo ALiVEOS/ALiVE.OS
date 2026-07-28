@@ -5416,11 +5416,30 @@ switch(_operation) do {
                                             };
                                         };
 
+                                        // Is the aircraft standing in its own place? For one
+                                        // that belongs to a real airfield this is a point in
+                                        // three dimensions and is left exactly as it was.
+                                        //
+                                        // For one from the Virtual Air Base its home is an XY
+                                        // point on the map. The height it comes back at is
+                                        // whatever the despawn snapshot happened to record -
+                                        // near ground over land, six hundred metres over water
+                                        // - so measuring in three dimensions would hang the
+                                        // answer on a number nothing sets deliberately, and an
+                                        // aircraft recovered over the sea would never read as
+                                        // home again. Slots sit forty metres apart, so fifteen
+                                        // metres in plan still picks out one aircraft's own.
+                                        private _atHome = if ([_aircraft,"virtualBase",false] call ALiVE_fnc_hashGet) then {
+                                            _position distance2D _currentPosition < 15
+                                        } else {
+                                            _position distance _currentPosition < 15
+                                        };
+
                                         // Don't reroute an aircraft twice
                                         if !([_aircraft,"reroute", false] call ALiVE_fnc_hashGet) then {
 
                                             // If parked and not doing anything add, if on CAP and request is DCA,CAS,SEAD then reroute, if its CAS and currently on CAS don't reroute - make sure aircraft is fit for purpose
-                                            if ( ( ((_position distance _currentPosition < 15) && _currentOp == "") || (_currentOp == "CAP" && _eventType in ["DCA","CAS","SEAD"]) || (_currentOp != "CAS" && _eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
+                                            if ( ( (_atHome && _currentOp == "") || (_currentOp == "CAP" && _eventType in ["DCA","CAS","SEAD"]) || (_currentOp != "CAS" && _eventType == "CAS") ) && (_fuel > _eventMinFuel && _ammo > _eventMinWeap && _damage < 0.5)) then {
 
                                                 [_aircraft,"currentPos",_currentPosition] call ALiVE_fnc_hashSet;
                                                 [_aircraft,"profileID",_x] call ALiVE_fnc_hashSet;
@@ -7503,12 +7522,27 @@ switch(_operation) do {
                         // The recall can also fire while the aircraft is still in the
                         // air, with the engine shut down a few lines above, so without
                         // this it is left falling.
-                        private _playerAboard = (crew _vehicle) findIf {isPlayer _x};
-                        if (!isNull _vehicle && {alive _vehicle} && {_playerAboard < 0}) then {
-                            _vehicle setDir _startDir;
-                            _vehicle setPosATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
-                            _vehicle setVectorUp [0,0,1];
-                            _vehicle setVelocity [0,0,0];
+                        // Nullity is settled by the outer test before anything asks the
+                        // aircraft a question about itself.
+                        if (!isNull _vehicle) then {
+
+                            private _playerAboard = (crew _vehicle) findIf {isPlayer _x};
+
+                            if (alive _vehicle && {_playerAboard < 0}) then {
+                                _vehicle setDir _startDir;
+
+                                // Over water there is no ground to stand the aircraft on
+                                // and no settled meaning for a height above terrain, so
+                                // put it up where the launch leg puts it and let it sit
+                                // there for the few seconds before the profile system
+                                // takes it back. Should the sea claim it first, the slot
+                                // rebuilds itself - but that is a backstop, not a plan.
+                                private _recoveryHeight = if (surfaceIsWater _startPosition) then {600} else {(_startPosition select 2) + 1};
+
+                                _vehicle setPosATL [_startPosition select 0, _startPosition select 1, _recoveryHeight];
+                                _vehicle setVectorUp [0,0,1];
+                                _vehicle setVelocity [0,0,0];
+                            };
                         };
 
                         // Belt and braces for the case where there is no object to move,
