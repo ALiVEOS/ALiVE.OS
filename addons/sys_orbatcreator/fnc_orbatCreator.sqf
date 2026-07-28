@@ -1124,12 +1124,14 @@ switch(_operation) do {
                 // process in reverse order to have higher ranks higher in the list
                 for "_i" from (count _cfgRanks - 1) to 0 step -1 do {
                     _rank = _cfgRanks select _i;
+                    // class name is the engine rank identifier (locale-independent), displayName is localized
+                    _rankName = toUpper (configName _rank);
                     _rankDisplayName = getText (_rank >> "displayName");
                     _rankImage = getText (_rank >> "texture");
 
-                    if (_rankDisplayName != "General") then {
+                    if (_rankName != "GENERAL") then {
                         _index = _selectedGroupUnitRank lbAdd _rankDisplayName;
-                        _selectedGroupUnitRank lbSetData [_index,toUpper _rankDisplayName];
+                        _selectedGroupUnitRank lbSetData [_index,_rankName];
                         _selectedGroupUnitRank lbSetPicture [_index,_rankImage];
                     };
                 };
