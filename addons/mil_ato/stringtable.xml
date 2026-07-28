@@ -75,19 +75,19 @@
     <English>Virtual Air Base:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_MODE_COMMENT">
-    <English>Lets this air commander operate without an airfield on the map. Its aircraft fly in from a virtual air base off the map: they launch already airborne from the ingress marker and return there. Fallback takes effect only when no usable airfield is found inside the airspace - with a real airfield available it changes nothing.</English>
+    <English>Lets this air commander operate without an airfield on the map. Its aircraft fly in from a virtual air base off the map: they launch already airborne from the ingress marker and return there. Fallback takes effect only when no usable airfield is found inside the airspace - with a real airfield available it changes nothing. It need not last the whole mission either: see Fall Forward Onto Captured Airfield.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_MARKER">
     <English>Virtual Air Base Ingress Marker:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_MARKER_COMMENT">
-    <English>Where aircraft from the off-map base enter and leave the map. Name a marker here. It does not have to sit inside the airspace marker - putting it offshore or over the border reads as aircraft arriving from a base elsewhere. Only used when Virtual Air Base is set to Fallback and no usable airfield was found. A name that matches no marker is reported at mission start and the fallback stays off. Pick open ground: a marker placed on or beside a real airfield elsewhere on the map will park the fleet on that apron, while it still operates virtually and ignores the runway beside it.</English>
+    <English>Where aircraft from the off-map base enter and leave the map. Name a marker here. It does not have to sit inside the airspace marker - putting it offshore or over the border reads as aircraft arriving from a base elsewhere. Only used when Virtual Air Base is set to Fallback and no usable airfield was found. A name that matches no marker is reported at mission start and the fallback stays off. Pick open ground: a marker placed on or beside a real airfield elsewhere on the map will park the fleet on that apron, while it still operates virtually and ignores the runway beside it. The marker stops being used once the commander has fallen forward onto a captured airfield.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_COUNT">
     <English>Virtual Air Base Slots:</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_COUNT_COMMENT">
-    <English>How many aircraft sit on the off-map airfield, from 1 to 12. Each slot holds a specific airframe, and an aircraft lost on operations is rebuilt into its own slot as the same type. Six by default rather than one or two, because Minimum Aircraft For Offensive Missions (2 by default) suspends offensive tasking once the fleet has shrunk to that size - a small fleet degrades to defensive patrols after a couple of losses and never recovers.</English>
+    <English>How many aircraft sit on the off-map airfield, from 1 to 12. Each slot holds a specific airframe, and an aircraft lost on operations is rebuilt into its own slot as the same type. Six by default rather than one or two, because Minimum Aircraft For Offensive Missions (2 by default) suspends offensive tasking once the fleet has shrunk to that size - a small fleet degrades to defensive patrols after a couple of losses and never recovers. With Fall Forward Onto Captured Airfield set, an aircraft gives up its slot when it moves onto the captured field, so the off-map base empties as the squadron relocates.</English>
 </Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_FALLFORWARD">
     <English>Fall Forward Onto Captured Airfield:</English>
