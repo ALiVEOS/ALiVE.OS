@@ -89,6 +89,12 @@
 <Key ID="STR_ALIVE_ATO_INGRESS_COUNT_COMMENT">
     <English>How many aircraft sit on the off-map airfield, from 1 to 12. Each slot holds a specific airframe, and an aircraft lost on operations is rebuilt into its own slot as the same type. Six by default rather than one or two, because Minimum Aircraft For Offensive Missions (2 by default) suspends offensive tasking once the fleet has shrunk to that size - a small fleet degrades to defensive patrols after a couple of losses and never recovers. With Fall Forward Onto Captured Airfield set, an aircraft gives up its slot when it moves onto the captured field, so the off-map base empties as the squadron relocates.</English>
 </Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_SLOTCLASSES">
+    <English>Virtual Air Base Slot Aircraft:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_INGRESS_SLOTCLASSES_COMMENT">
+    <English>Names the aircraft in each slot. Cycle to a slot, pick an airframe, or leave it on Auto and the commander draws one for you - Auto for every slot is exactly the behaviour with this untouched. The list is built from the faction this module was LAST SAVED with, so set Faction first, then close and reopen the module's attributes to refresh it. Slots past the Virtual Air Base Slots figure are ignored. Anything can be named, including transports and cargo aircraft, but an airframe the commander can find no job for will be built at the marker and then never flown - it is reported at mission start when that happens.</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_INGRESS_FALLFORWARD">
     <English>Fall Forward Onto Captured Airfield:</English>
 </Key>

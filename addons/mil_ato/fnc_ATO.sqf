@@ -42,6 +42,7 @@ Tupolov & Jman
 #define DEFAULT_INGRESS_MODE "off"
 #define DEFAULT_INGRESS_MARKER ""
 #define DEFAULT_INGRESS_COUNT "6"
+#define DEFAULT_INGRESS_SLOTCLASSES ""
 #define DEFAULT_INGRESS_FALLFORWARD false
 // How close a held objective has to be to a runway's ILS point before it counts as
 // being that airfield. Same figure and same reasoning as the logistics commander's
@@ -978,6 +979,12 @@ switch(_operation) do {
     // it is used, like the other numeric text settings on this module.
     case "ingressCount": {
         _result = [_logic,_operation,_args,DEFAULT_INGRESS_COUNT] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // Which airframe stands in each slot, as pipe-separated classnames in slot
+    // order. An empty token is a slot the commander picks for itself, so blank
+    // leaves the whole flight line to it.
+    case "ingressSlotClasses": {
+        _result = [_logic,_operation,_args,DEFAULT_INGRESS_SLOTCLASSES] call ALIVE_fnc_OOsimpleOperation;
     };
     // Whether this commander should move onto a real airfield once its own side
     // takes one. Only means anything to a commander that ended up flying from a
@@ -2144,6 +2151,7 @@ switch(_operation) do {
                 ["ATO - Virtual Air Base: %1",[_logic, "ingressMode"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Ingress Point Marker: %1",[_logic, "ingressMarker"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Ingress Fleet Size: %1",[_logic, "ingressCount"] call MAINCLASS] call ALiVE_fnc_dump;
+                ["ATO - Ingress Slot Aircraft: %1",[_logic, "ingressSlotClasses"] call MAINCLASS] call ALiVE_fnc_dump;
                 ["ATO - Fall Forward: %1",[_logic, "ingressFallForward"] call MAINCLASS] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
@@ -3218,6 +3226,13 @@ switch(_operation) do {
                             _ingressClasses = _ingressClasses select {count ([_x] call ALiVE_fnc_getAircraftRoles) > 0};
                         };
 
+                        // Which airframe the mission maker asked for in each slot, read
+                        // once. splitString drops trailing separators, so a picker with
+                        // only the first slot named comes back one token long - pad it
+                        // out rather than reading past the end for every later slot.
+                        private _slotClassTokens = ([_logic,"ingressSlotClasses"] call MAINCLASS) splitString "|";
+                        while {count _slotClassTokens < _ingressCount} do { _slotClassTokens pushBack ""; };
+
                         if (count _ingressClasses == 0) then {
                             ["ATO %1 - Warning, virtual air base is active but faction %2 has no aircraft that resolve to a role, so none were created.", _logic, _ingressFaction] call ALiVE_fnc_dumpR;
                         } else {
@@ -3237,9 +3252,51 @@ switch(_operation) do {
                                 // a player who flies out to the point should see a flight
                                 // line rather than one airframe wearing five others.
                                 private _slotPos = [(_ingressPos select 0) + (_i * 40), _ingressPos select 1, 0];
-                                private _vehicleClass = selectRandom _ingressClasses;
 
-                                if (_ingressRotary) then {
+                                // A named airframe wins over the draw. Checked rather
+                                // than trusted: the picker only offers real aircraft, but
+                                // a value typed by hand, or carried over from a mission
+                                // saved against a different faction or mod set, is not
+                                // constrained by it.
+                                private _vehicleClass = "";
+                                private _slotToken = _slotClassTokens select _i;
+
+                                if (_slotToken != "") then {
+                                    if !(isClass (configFile >> "CfgVehicles" >> _slotToken)) then {
+                                        ["ATO %1 - Warning, slot %2 names aircraft %3 which does not exist. The commander will pick for that slot instead.", _logic, _slotNumber, _slotToken] call ALiVE_fnc_dumpR;
+                                    } else {
+                                        if !(_slotToken isKindOf "Air") then {
+                                            ["ATO %1 - Warning, slot %2 names %3 which is not an aircraft. The commander will pick for that slot instead.", _logic, _slotNumber, _slotToken] call ALiVE_fnc_dumpR;
+                                        } else {
+                                            _vehicleClass = _slotToken;
+
+                                            // Said loudly, and the choice still stands. An
+                                            // airframe the commander can find no job for is
+                                            // refused at registration, so the slot is built
+                                            // and then never appears on the roster or flies
+                                            // anything - which looks like the setting being
+                                            // ignored unless somebody says otherwise. It is
+                                            // not quietly swapped for something else: the
+                                            // mission maker asked for this aircraft.
+                                            if (count ([_vehicleClass] call ALiVE_fnc_getAircraftRoles) == 0) then {
+                                                ["ATO %1 - Warning, slot %2 names %3, which resolves to no role the commander can task. It will be built at the ingress point and never flown.", _logic, _slotNumber, _vehicleClass] call ALiVE_fnc_dumpR;
+                                            };
+                                        };
+                                    };
+                                };
+
+                                if (_vehicleClass == "") then {
+                                    _vehicleClass = selectRandom _ingressClasses;
+                                };
+
+                                // Which creator to use follows the airframe rather than
+                                // the fleet. With everything left on Auto the pool is all
+                                // one family by construction, so this reaches the same
+                                // creator the fleet-wide test used to; naming a helicopter
+                                // among fixed wing is what makes the difference.
+                                private _slotRotary = _vehicleClass isKindOf "Helicopter";
+
+                                if (_slotRotary) then {
                                     private _tmp = [_vehicleClass,_ingressSide,_ingressFaction,"CAPTAIN",_slotPos,_ingressDir,false,_ingressFaction,false] call ALIVE_fnc_createProfilesCrewedVehicle;
                                     {
                                         if ([_x,"type"] call ALiVE_fnc_hashGet == "entity") then {

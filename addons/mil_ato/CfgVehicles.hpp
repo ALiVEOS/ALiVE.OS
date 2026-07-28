@@ -286,6 +286,18 @@ class CfgVehicles
                         tooltip      = "$STR_ALIVE_ATO_INGRESS_COUNT_COMMENT";
                         defaultValue = """6""";
                 };
+                // Which airframe stands in each slot. Blank leaves the whole flight
+                // line to the commander, which is what it has always done.
+                class ingressSlotClasses
+                {
+                        property     = "ALiVE_mil_ato_ingressSlotClasses";
+                        displayName  = "$STR_ALIVE_ATO_INGRESS_SLOTCLASSES";
+                        tooltip      = "$STR_ALIVE_ATO_INGRESS_SLOTCLASSES_COMMENT";
+                        control      = "ALiVE_ATOAircraftSlotChoice";
+                        typeName     = "STRING";
+                        expression   = "_this setVariable ['ingressSlotClasses', _value];";
+                        defaultValue = """""";
+                };
                 // A virtual air base is a way of starting a campaign the faction would
                 // otherwise have no air arm in at all. Once its ground forces have taken
                 // a real airfield, there is no reason to keep flying from off the map.
