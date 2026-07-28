@@ -43,6 +43,11 @@ Tupolov & Jman
 #define DEFAULT_INGRESS_MARKER ""
 #define DEFAULT_INGRESS_COUNT "6"
 #define DEFAULT_INGRESS_FALLFORWARD false
+// How close a held objective has to be to a runway's ILS point before it counts as
+// being that airfield. Same figure and same reasoning as the logistics commander's
+// airfield departure test - see AIRFIELD_OBJECTIVE_RADIUS at mil_logistics
+// fnc_ML.sqf:82 - so the two agree on what holding an airfield means.
+#define ATO_AIRFIELD_OBJECTIVE_RADIUS 1000
 #define DEFAULT_RUNWAYSTARTPOS ""
 #define DEFAULT_RUNWAYENDPOS ""
 #define DEFAULT_RUNWAYWIDTH ""
@@ -1080,6 +1085,19 @@ switch(_operation) do {
     case "ingressPos": {
         _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
     };
+    // Where the commander moved to when it fell forward, and which of the ground
+    // commander's objectives it adopted as its home. Both empty until that happens.
+    case "fallForwardPos": {
+        _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
+    };
+    case "fallForwardObjectiveID": {
+        _result = [_logic,_operation,_args,""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // Every fixed runway on the terrain, as ILS points. Read from config once and
+    // kept, because the terrain's runways are not going to move.
+    case "fallForwardILS": {
+        _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
+    };
     // The Virtual Air Base roster: one entry per slot, [slot, class, profileID],
     // in slot order.
     //
@@ -1111,6 +1129,45 @@ switch(_operation) do {
         } forEach (_slotAssets select 1);
 
         _result = [_slots, [], {_x select 0}, "ASCEND"] call ALiVE_fnc_SortBy;
+    };
+    // Where the commander stands on moving forward, in one line:
+    // [virtual base active, fell forward, forward position, aircraft converted,
+    // aircraft still off the map].
+    //
+    // The two counts are taken from the aircraft rather than tallied as they move,
+    // for the same reason the slot roster is: a running total kept alongside the
+    // thing it counts is a second account that can disagree with the first.
+    //
+    // The companion inspection point to the slot roster:
+    //   [<module>, "fallForwardStatus"] call ALIVE_fnc_ATO
+    case "fallForwardStatus": {
+        private _converted = 0;
+        private _remaining = 0;
+        private _statusAssets = [_logic,"assets"] call MAINCLASS;
+
+        {
+            private _statusAsset = [_statusAssets, _x] call ALiVE_fnc_hashGet;
+
+            if !(isNil "_statusAsset") then {
+                if ([_statusAsset,"virtualBase",false] call ALiVE_fnc_hashGet) then {
+                    _remaining = _remaining + 1;
+                } else {
+                    // Only counts as converted on a commander that has actually moved;
+                    // otherwise this is just an ordinary airfield aircraft.
+                    if ([_logic,"fellForward"] call MAINCLASS) then {
+                        _converted = _converted + 1;
+                    };
+                };
+            };
+        } forEach (_statusAssets select 1);
+
+        _result = [
+            [_logic,"virtualBaseActive"] call MAINCLASS,
+            [_logic,"fellForward"] call MAINCLASS,
+            [_logic,"fallForwardPos"] call MAINCLASS,
+            _converted,
+            _remaining
+        ];
     };
     case "assets": {
         _result = [_logic,_operation,_args,[]] call ALIVE_fnc_OOsimpleOperation;
@@ -4748,6 +4805,214 @@ switch(_operation) do {
         };
     };
 
+    // Has this commander's own side taken an airfield yet?
+    //
+    // Asked on a slow timer while the commander is still flying from off the map.
+    // The answer comes from the ground commander's own objectives rather than from
+    // sweeping the terrain: OPCOM already knows what it holds, and an airfield it
+    // has not been told about is not one the faction can be said to own.
+    case "fallForwardCheck": {
+
+        if !([_logic,"ingressFallForward"] call MAINCLASS) exitWith {};
+
+        // Nothing to move once the commander is already on a real field. This also
+        // closes the door behind the move: the flag is cleared as part of falling
+        // forward, so a second check cannot start a second one.
+        if !([_logic,"virtualBaseActive"] call MAINCLASS) exitWith {};
+
+        private _debug = [_logic, "debug"] call MAINCLASS;
+        private _side = [_logic, "side"] call MAINCLASS;
+
+        // Fixed runway ILS points, padded to 3D. Built once - the terrain's config
+        // does not change while the mission runs.
+        private _ilsPositions = [_logic,"fallForwardILS"] call MAINCLASS;
+
+        if (count _ilsPositions == 0) then {
+            private _candidatePositions = [];
+            private _primaryILS = getArray (configFile >> "CfgWorlds" >> worldName >> "ilsPosition");
+            if (count _primaryILS >= 2) then {
+                if (count _primaryILS < 3) then { _primaryILS = _primaryILS + [0]; };
+                _candidatePositions pushBack _primaryILS;
+            };
+            private _secondaryAirports = (configFile >> "CfgWorlds" >> worldName >> "SecondaryAirports");
+            for "_i" from 0 to ((count _secondaryAirports) - 1) do {
+                private _ils = getArray ((_secondaryAirports select _i) >> "ilsPosition");
+                if (count _ils >= 2) then {
+                    if (count _ils < 3) then { _ils = _ils + [0]; };
+                    _candidatePositions pushBack _ils;
+                };
+            };
+
+            // Skip runway points in the water (broken configs, seaplane bases)
+            _candidatePositions = _candidatePositions select { !surfaceIsWater _x };
+
+            _ilsPositions = _candidatePositions;
+            [_logic,"fallForwardILS",_ilsPositions] call MAINCLASS;
+        };
+
+        if (count _ilsPositions == 0) exitWith {
+            if (_debug) then {
+                ["ATO %1 - Fall forward: this terrain declares no usable runways, so there is nothing to move onto.", _logic] call ALiVE_fnc_dump;
+            };
+        };
+
+        // The ground commanders this module answers to. Startup has long finished by
+        // the time this runs, so the handler is either there or the module is not one.
+        private _objectives = [];
+        {
+            private _handler = _x getVariable "handler";
+
+            if !(isNil "_handler") then {
+                if (([_handler,"side"] call ALiVE_fnc_hashGet) isEqualTo _side) then {
+                    _objectives append ([_handler,"objectives",[]] call ALiVE_fnc_hashGet);
+                };
+            };
+        } forEach (synchronizedObjects _logic);
+
+        // Controlled rather than reserve. An airfield taken half an hour ago is
+        // precisely the objective OPCOM is least likely to have got round to
+        // designating a reserve, and waiting for that designation would hold the
+        // commander off the map long after its own troops were parked on the runway.
+        // The substantive test of ownership is the other two checks the predicate
+        // makes - the assigned section still being alive, and no enemy standing on it.
+        private _heldObjectives = _objectives select {
+            [_x, _side, 300, false] call ALiVE_fnc_isHeldObjective
+        };
+
+        private _bestObjective = nil;
+        private _bestCenter = [];
+        private _bestILS = [];
+        private _bestDist = 1e10;
+        private _modulePos = getposATL _logic;
+
+        {
+            private _objective = _x;
+            private _objCenter = [_objective, "center"] call ALIVE_fnc_hashGet;
+
+            private _matchedILS = [];
+            {
+                if (_objCenter distance2D _x <= ATO_AIRFIELD_OBJECTIVE_RADIUS) exitWith { _matchedILS = _x; };
+            } forEach _ilsPositions;
+
+            // Nearest to the module rather than first found, so a faction holding two
+            // airfields moves onto the same one every time the mission is played.
+            if (count _matchedILS > 1) then {
+                private _dist = _objCenter distance2D _modulePos;
+                if (_dist < _bestDist) then {
+                    _bestDist = _dist;
+                    _bestObjective = _objective;
+                    _bestCenter = _objCenter;
+                    _bestILS = _matchedILS;
+                };
+            };
+        } forEach _heldObjectives;
+
+        if (_debug) then {
+            ["ATO %1 - Fall forward check: %2 runway points, %3 objectives, %4 held, match: %5",
+                _logic, count _ilsPositions, count _objectives, count _heldObjectives,
+                (if (isNil "_bestObjective") then {"none"} else {str _bestCenter})] call ALiVE_fnc_dump;
+        };
+
+        if !(isNil "_bestObjective") then {
+            ["ATO %1 - Fall forward: friendly-held airfield found at objective %2 (%3), runway at %4.",
+                _logic,
+                [_bestObjective,"objectiveID",""] call ALiVE_fnc_hashGet,
+                _bestCenter,
+                _bestILS] call ALiVE_fnc_dumpR;
+
+            [_logic,"fallForward",[_bestObjective,_bestILS]] call MAINCLASS;
+        };
+    };
+
+    // Stand the commander up on the airfield its side has taken. One way: there is
+    // nothing off the map to go back to once the aircraft and crews have moved.
+    case "fallForward": {
+
+        _args params ["_objective","_airfieldPos"];
+
+        // Two checks could find the same airfield in the same pass, and the second
+        // must not run the cutover again over the top of the first.
+        if !([_logic,"virtualBaseActive"] call MAINCLASS) exitWith {};
+
+        private _debug = [_logic, "debug"] call MAINCLASS;
+        private _side = [_logic, "side"] call MAINCLASS;
+        private _objectiveID = [_objective,"objectiveID",""] call ALiVE_fnc_hashGet;
+
+        // A real base needs a real cluster: it is what the commander hands out as its
+        // home, and what the aircraft-placing and HQ code reads for nodes and size.
+        // Take the best description of the field available, in descending order of
+        // how much it actually knows about the place.
+        private _baseCluster = [] call ALiVE_fnc_hashCreate;
+        private _clusterTier = "synthetic";
+
+        // Every air cluster on the map, not just those inside the airspace marker -
+        // the whole point is that this airfield lies outside it.
+        private _airClusters = ALIVE_clustersMilAir select 2;
+
+        if (count _airClusters > 0) then {
+            private _sorted = [_airClusters,[_airfieldPos],{_Input0 distance ([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet)},"ASCEND"] call ALiVE_fnc_SortBy;
+            private _nearest = _sorted select 0;
+
+            // Only if it is actually this airfield. The nearest air cluster on a map
+            // with one airfield is that airfield however far away it is.
+            if (([_nearest,"center",[0,0,0]] call ALiVE_fnc_HashGet) distance2D _airfieldPos < 1500) then {
+                _baseCluster = _nearest;
+                _clusterTier = "nearest";
+            };
+        };
+
+        if (_clusterTier == "synthetic") then {
+            // Nothing catalogued, so build a cluster from whatever is standing there,
+            // the same way a carrier's base is described.
+            private _found = [(AGLtoASL _airfieldPos) nearObjects ["Strategic",700]] call ALiVE_fnc_findClusters;
+
+            if (count _found > 0) then {
+                _baseCluster = _found select 0;
+                [_baseCluster,"center", [[_baseCluster,"nodes"] call ALiVE_fnc_hashGet] call ALiVE_fnc_findClusterCenter] call ALiVE_fnc_hashSet;
+                [_baseCluster,"size",[_baseCluster,"size"] call ALiVE_fnc_cluster] call ALiVE_fnc_hashSet;
+                _clusterTier = "radius";
+            };
+        };
+
+        if (_clusterTier == "synthetic") then {
+            // Describe the field rather than find it, exactly as the virtual base did.
+            [_baseCluster,"center",_airfieldPos] call ALiVE_fnc_hashSet;
+            [_baseCluster,"size",300] call ALiVE_fnc_hashSet;
+            [_baseCluster,"nodes",[]] call ALiVE_fnc_hashSet;
+            [_baseCluster,"clusterID",format ["ATO_FORWARD_%1", _side]] call ALiVE_fnc_hashSet;
+        };
+
+        [_logic,"currentBase", _baseCluster] call MAINCLASS;
+
+        // The commander now answers to a real airport, so the runway it holds is one
+        // the sortie cycle can lock, land at and release like any other.
+        private _airportID = [_airfieldPos] call ALiVE_fnc_getNearestAirportID;
+        [_logic,"addRunway",_airportID] call MAINCLASS;
+
+        // This order matters. Registration treats an aircraft as belonging to the
+        // virtual base only while the module says one is active, so clearing that
+        // first means anything registered from here on is an ordinary airfield
+        // aircraft. No path may see both flags true at once.
+        [_logic,"virtualBaseActive",false] call MAINCLASS;
+        [_logic,"fellForward",true] call MAINCLASS;
+
+        [_logic,"fallForwardPos",_airfieldPos] call MAINCLASS;
+        [_logic,"fallForwardObjectiveID",_objectiveID] call MAINCLASS;
+
+        // No objective is offered to the ground commander here. This airfield was
+        // found by reading that commander's own objectives, so one already exists and
+        // is held - adding another would be a duplicate claim on the same ground.
+        // Record which one was adopted instead.
+        ["ATO %1 - Fall forward complete: operating from %2 (airport %3, cluster %4), adopting objective %5. Aircraft still off the map will move up as they come free.",
+            _logic, _airfieldPos, _airportID, _clusterTier, _objectiveID] call ALiVE_fnc_dumpR;
+
+        // The HQ deliberately stays where the mission maker put it. It is the probe
+        // point for the base-captured test, and where replacement aircrew appear -
+        // moving it into a field taken half an hour ago would make the first
+        // counter-attack there read as the commander's own base being overrun.
+        // Nothing about flying sorties needs the HQ to be at the airfield.
+    };
+
     // Airspace Management
     case "monitor": {
         if (isServer) then {
@@ -4797,6 +5062,18 @@ switch(_operation) do {
 
                             };
 
+                        };
+
+                        // Whether the side has taken an airfield yet is a question about
+                        // a ground war, which moves far more slowly than the sortie
+                        // queue this loop exists to service. Asking once a minute is
+                        // ample, and it keeps a config read and an objective sweep off
+                        // the ten-second cycle.
+                        private _lastFallForwardCheck = _logic getVariable ["lastFallForwardCheck", -1000];
+
+                        if (time > _lastFallForwardCheck + 60) then {
+                            _logic setVariable ["lastFallForwardCheck", time];
+                            [_logic,"fallForwardCheck"] call MAINCLASS;
                         };
 
                     };
