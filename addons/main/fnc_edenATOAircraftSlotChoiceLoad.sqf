@@ -137,7 +137,25 @@ if (_sqmValue != "") then {
 };
 
 if (_raw != "") then {
-    private _parts = _raw splitString "|";
+
+    // Split by hand rather than with splitString, which discards EVERY empty
+    // token - leading and interior, not merely trailing. The separator positions
+    // are the slot numbers here, so an empty token is a slot left on Auto and has
+    // to survive. Drop it and every named slot slides toward the front of the
+    // flight line, and the dialog re-ticks the shifted state, confirming the
+    // wrong answer back to the mission maker before the mission is ever run.
+    private _parts = [];
+    private _accum = "";
+    {
+        if (_x == "|") then {
+            _parts pushBack _accum;
+            _accum = "";
+        } else {
+            _accum = _accum + _x;
+        };
+    } forEach ((toArray _raw) apply {toString [_x]});
+    _parts pushBack _accum;
+
     {
         if (_forEachIndex < _slotCount) then {
             _slotSelections set [_forEachIndex, _x];
@@ -252,7 +270,16 @@ private _populateFn = {
         };
     } forEach _allRows;
 
-    _listCtrl lbSetCurSel _selectedIdx;
+    // Move the tick only when there is somewhere honest to move it to. If the
+    // slot holds an aircraft the current family filter hides, the fallback index
+    // is the Auto row - and selecting it would say the slot is unset. Whether
+    // that lie reaches the stored state depends on when the engine dispatches
+    // LBSelChanged: fired inline, the populating flag suppresses it; fired after
+    // this function returns, the flag is already down and the slot is wiped.
+    // Not selecting anything settles the question without needing the answer.
+    if !(_selectedIdx == _autoIdx && {_selectedClass != ""}) then {
+        _listCtrl lbSetCurSel _selectedIdx;
+    };
 
     // Update labels.
     private _filterLabelCtrl     = _display controlsGroupCtrl 1200;

@@ -49,6 +49,19 @@ Tupolov & Jman
 // airfield departure test - see AIRFIELD_OBJECTIVE_RADIUS at mil_logistics
 // fnc_ML.sqf:82 - so the two agree on what holding an airfield means.
 #define ATO_AIRFIELD_OBJECTIVE_RADIUS 1000
+// Virtual Air Base flight line. Slots are laid out along +X from the ingress
+// marker at ATO_VAB_SLOT_PITCH metres, and registration treats an aircraft as
+// belonging to the marker fleet if it stands within ATO_VAB_SLOT_RADIUS of it.
+//
+// INVARIANT: ATO_VAB_SLOT_RADIUS > ATO_VAB_SLOT_PITCH * (ATO_VAB_MAX_SLOTS - 1)
+// Currently 500 > 440. Widen the radius before widening the line, or the far end
+// of a full flight line registers as an ordinary airfield aircraft and tries to
+// take off from open ground. The 500 also appears verbatim in the operator
+// warning about a marker on the commander's own airfield, which a macro cannot
+// reach - update both together.
+#define ATO_VAB_MAX_SLOTS   12
+#define ATO_VAB_SLOT_PITCH  40
+#define ATO_VAB_SLOT_RADIUS 500
 #define DEFAULT_RUNWAYSTARTPOS ""
 #define DEFAULT_RUNWAYENDPOS ""
 #define DEFAULT_RUNWAYWIDTH ""
@@ -1533,7 +1546,7 @@ switch(_operation) do {
                 private _virtualBase = false;
                 if (([_logic,"virtualBaseActive"] call MAINCLASS) && {count _position > 1}) then {
                     private _ingressPos = [_logic,"ingressPos"] call MAINCLASS;
-                    if (count _ingressPos > 1 && {_position distance2D _ingressPos < 500}) then {
+                    if (count _ingressPos > 1 && {_position distance2D _ingressPos < ATO_VAB_SLOT_RADIUS}) then {
                         _virtualBase = true;
                     };
                 };
@@ -3190,7 +3203,7 @@ switch(_operation) do {
                         // Held to a dozen: past that the fleet stops being a squadron and
                         // starts being a profile-count problem.
                         private _ingressCountStr = [_logic,"ingressCount"] call MAINCLASS;
-                        private _ingressCount = if (typeName _ingressCountStr == "STRING" && {_ingressCountStr != ""}) then { (round (parseNumber _ingressCountStr)) max 1 min 12 } else { 6 };
+                        private _ingressCount = if (typeName _ingressCountStr == "STRING" && {_ingressCountStr != ""}) then { (round (parseNumber _ingressCountStr)) max 1 min ATO_VAB_MAX_SLOTS } else { 6 };
 
                         private _ingressSide = [_logic, "side"] call MAINCLASS;
                         private _ingressFaction = [_logic, "faction"] call MAINCLASS;
@@ -3227,10 +3240,30 @@ switch(_operation) do {
                         };
 
                         // Which airframe the mission maker asked for in each slot, read
-                        // once. splitString drops trailing separators, so a picker with
-                        // only the first slot named comes back one token long - pad it
-                        // out rather than reading past the end for every later slot.
-                        private _slotClassTokens = ([_logic,"ingressSlotClasses"] call MAINCLASS) splitString "|";
+                        // once.
+                        //
+                        // Split by hand rather than with splitString, which discards
+                        // EVERY empty token - leading and interior, not merely trailing.
+                        // Here the separator positions are the slot numbers, so an empty
+                        // token is a slot left on Auto and has to survive: drop it and
+                        // every named slot slides toward the front of the flight line the
+                        // moment one before it is left on Auto, and the log then reports
+                        // the shifted assignment as though it were what was asked for.
+                        private _slotClassRaw = [_logic,"ingressSlotClasses"] call MAINCLASS;
+                        private _slotClassTokens = [];
+                        private _slotAccum = "";
+                        {
+                            if (_x == "|") then {
+                                _slotClassTokens pushBack _slotAccum;
+                                _slotAccum = "";
+                            } else {
+                                _slotAccum = _slotAccum + _x;
+                            };
+                        } forEach ((toArray _slotClassRaw) apply {toString [_x]});
+                        _slotClassTokens pushBack _slotAccum;
+
+                        // Still needed: a setting shorter than the fleet, and the blank
+                        // setting, both come back short.
                         while {count _slotClassTokens < _ingressCount} do { _slotClassTokens pushBack ""; };
 
                         if (count _ingressClasses == 0) then {
@@ -3251,7 +3284,7 @@ switch(_operation) do {
                                 // nothing is watching them while they are virtualized, but
                                 // a player who flies out to the point should see a flight
                                 // line rather than one airframe wearing five others.
-                                private _slotPos = [(_ingressPos select 0) + (_i * 40), _ingressPos select 1, 0];
+                                private _slotPos = [(_ingressPos select 0) + (_i * ATO_VAB_SLOT_PITCH), _ingressPos select 1, 0];
 
                                 // A named airframe wins over the draw. Checked rather
                                 // than trusted: the picker only offers real aircraft, but
@@ -3278,8 +3311,17 @@ switch(_operation) do {
                                             // ignored unless somebody says otherwise. It is
                                             // not quietly swapped for something else: the
                                             // mission maker asked for this aircraft.
+                                            //
+                                            // A helicopter costs more than a wasted slot. Its
+                                            // aircrew is made by the crewed-vehicle creator
+                                            // before registration ever sees the airframe, so
+                                            // refusing it leaves that crew profiled and marked
+                                            // busy with nothing to fly - men the ground
+                                            // commander never gets back. A fixed wing airframe
+                                            // has no crew at that point, so it costs only the
+                                            // slot.
                                             if (count ([_vehicleClass] call ALiVE_fnc_getAircraftRoles) == 0) then {
-                                                ["ATO %1 - Warning, slot %2 names %3, which resolves to no role the commander can task. It will be built at the ingress point and never flown.", _logic, _slotNumber, _vehicleClass] call ALiVE_fnc_dumpR;
+                                                ["ATO %1 - Warning, slot %2 names %3, which resolves to no role the commander can task. It will be built at the ingress point and never flown, and if it is a helicopter its aircrew is created, marked busy and never reclaimed.", _logic, _slotNumber, _vehicleClass] call ALiVE_fnc_dumpR;
                                             };
                                         };
                                     };
