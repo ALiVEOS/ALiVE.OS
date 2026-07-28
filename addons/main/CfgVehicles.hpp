@@ -1134,6 +1134,38 @@ class Cfg3DEN
         };
 
 
+        // ALiVE_ATOAircraftSlotChoice:
+        //   Names the aircraft in each Virtual Air Base slot on mil_ato.
+        //   Same substrate as ALiVE_FactionSlotChoice above - one
+        //   single-select listbox, a slot cycle on idc 1210 and a second
+        //   cycle on idc 1211 - so only the two handler scripts differ.
+        //
+        //   The listbox holds the module faction's own aircraft rather
+        //   than factions, drones excluded: those are placed by their own
+        //   setting on the air commander and carry no aircrew, so they are
+        //   not the sort of thing a slot holds.
+        //
+        //   The first row is Auto, whose lbData is empty. A slot left on
+        //   it is one the commander picks for itself, which is how every
+        //   slot starts.
+        //
+        //   The second cycle filters by airframe family - All, Fixed
+        //   wing, Rotary - rather than by side. Every aircraft in this
+        //   list belongs to one faction, so a side filter would have
+        //   nothing to do.
+        //
+        //   Storage shape: twelve pipe-separated tokens, e.g.
+        //   "B_Plane_CAS_01_F||O_Heli_Attack_02_F|||||||||". Slots past
+        //   the module's Virtual Air Base Slots figure are ignored at
+        //   runtime. Unlike the faction picker there is no legacy
+        //   per-slot fan-out - nothing has ever read these by individual
+        //   attribute name, so the one string is the whole story.
+        class ALiVE_ATOAircraftSlotChoice: ALiVE_FactionSlotChoice {
+            attributeLoad = "[_this, 'ingressSlotClasses', 12, 'faction', _value, '$STR_ALIVE_ATO_INGRESS_SLOTCLASSES'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenATOAircraftSlotChoiceLoad.sqf'";
+            attributeSave = "[_this, 'ingressSlotClasses', 12] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenATOAircraftSlotChoiceSave.sqf'";
+        };
+
+
         // ALiVE_FactionStaticDataChoice family:
         //   Lets a mission-maker override the per-faction static-data
         //   registries (mil_logistics ground / air transport / airdrop
