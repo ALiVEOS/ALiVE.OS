@@ -560,13 +560,23 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         // returns, so the helipad doesn't count as the obstacle that
         // blocks its own check.
         // A helipad is a deliberate landing spot: whoever placed it accepted the
-        // buildings around it, and pads are very often tucked against a tower or a
-        // hangar. So ignore static structures across the whole footprint here rather
-        // than only those touching the pad. Vehicles are NOT ignored, so a pad that
-        // already has something parked on it is still rejected.
+        // structures around it, and pads are very often tucked against a tower or a
+        // hangar and ringed by camp set-dressing (HESCO, sandbags, sack piles). So
+        // ignore static structures across the whole footprint, and also ignore the
+        // class-table clutter (junk props, non-terrain-tagged barriers) - but that
+        // clutter only out in the clearance MARGIN, beyond the aircraft's own hazard
+        // radius, where nothing the aircraft physically occupies can reach it. Clutter
+        // standing inside the rotor/fuselage disc still rejects the pad, and vehicles
+        // (AllVehicles) are never ignored at any distance, so a pad with something
+        // parked on it - or an obstacle actually in the rotor's way - is still refused.
+        // Completes cb3776ae, which widened the sweep to the whole disc and excused
+        // House/Building + terrain-tagged clutter to match, but left the class-query
+        // clutter (runtime-spawned camp props) with no ignore term, so deliberate pads
+        // were rejected and helis dropped onto open dirt beside the camp.
         private _ignore = [_x]
             + (nearestObjects [_padPos, ["House", "Building"], (_hazardRadius + ALiVE_airSpawn_clearanceMargin)])
-            + (nearestTerrainObjects [_padPos, _staticTerrainTypes, (_hazardRadius + ALiVE_airSpawn_clearanceMargin), false, true]);
+            + (nearestTerrainObjects [_padPos, _staticTerrainTypes, (_hazardRadius + ALiVE_airSpawn_clearanceMargin), false, true])
+            + ((nearestObjects [_padPos, (_classObstacles - ["AllVehicles"]), (_hazardRadius + ALiVE_airSpawn_clearanceMargin)]) select { (_padPos distance2D _x) > _hazardRadius });
         if !([_padPos, _padDir, _ignore] call _fnc_footprintClear) then { continue };
         _found = [_padPos, _padDir];
     } forEach _candidates;
