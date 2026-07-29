@@ -453,8 +453,9 @@ if (hasInterface) then {
     }, 0.5, []] call CBA_fnc_addPerFrameHandler;
 
     // Weapon-aim civ-pressure handler. Runs alongside the approach-
-    // freeze handler. Per-frame at 0.25 s for finer 2 s sustained-aim
-    // detection than approach-freeze's 0.5 s tick.
+    // freeze handler. Per-frame at 0.25 s for finer sustained-aim
+    // detection (civWeaponAimHoldTime, default 2 s) than approach-
+    // freeze's 0.5 s tick.
     //
     // Trigger gates, cheap-to-expensive:
     //   1. Module attribute civWeaponAimRange > 0 (0 disables system).
@@ -464,7 +465,8 @@ if (hasInterface) then {
     //   5. Civilian under the player's cursor (cursorObject).
     //   6. Civilian has line-of-sight to the player (eye-to-eye, civ
     //      side - the civ has to actually see the threat).
-    //   7. All conditions sustained for 2 s before reaction fires.
+    //   7. All conditions sustained for civWeaponAimHoldTime (default
+    //      2 s) before reaction fires.
     //
     // Hysteresis on the hold-time clear: brief cursor flicker (one or
     // a few ticks of cursorObject momentarily missing the civ during
@@ -478,6 +480,8 @@ if (hasInterface) then {
         if (isNull player || {!alive player}) exitWith {};
 
         private _aimRange = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimRange", 15];
+        private _aimHoldTime = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimHoldTime", 2];
+        private _aimHoldDynamic = missionNamespace getVariable ["ALiVE_amb_civ_population_WeaponAimHoldTimeDynamic", false];
         if (_aimRange <= 0) exitWith {};
         if (vehicle player != player) exitWith {};
         if (currentWeapon player == "") exitWith {};
@@ -513,7 +517,31 @@ if (hasInterface) then {
                         _civ setVariable ["ALiVE_advciv_aimedAtSince", time, true];
                     };
                     private _heldFor = time - (_civ getVariable ["ALiVE_advciv_aimedAtSince", time]);
-                    if (_heldFor >= 2 && {isNil {_civ getVariable "ALiVE_advciv_aimReactFired"}}) then {
+                    // Dynamic mode: scale the hold time by the civ's
+                    // hostility (compliant civs stop quickly, defiant
+                    // civs hold out) plus a stable per-civ +/-20% roll
+                    // so individuals differ. Jitter is broadcast once
+                    // and deliberately never cleaned up - it is the
+                    // civ's "personality" and must match across
+                    // clients and re-aims.
+                    private _holdThreshold = _aimHoldTime;
+                    if (_aimHoldDynamic) then {
+                        private _jitter = _civ getVariable "ALiVE_advciv_aimHoldJitter";
+                        if (isNil "_jitter") then {
+                            _jitter = 0.8 + random 0.4;
+                            _civ setVariable ["ALiVE_advciv_aimHoldJitter", _jitter, true];
+                        };
+                        private _holdHostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
+                        private _holdFactor = switch (true) do {
+                            case (_holdHostility < 20):  { 0.75 };
+                            case (_holdHostility < 40):  { 1 };
+                            case (_holdHostility < 60):  { 1.5 };
+                            case (_holdHostility < 80):  { 2 };
+                            default                      { 2.5 };
+                        };
+                        _holdThreshold = _aimHoldTime * _holdFactor * _jitter;
+                    };
+                    if (_heldFor >= _holdThreshold && {isNil {_civ getVariable "ALiVE_advciv_aimReactFired"}}) then {
                         private _hostility = _civ getVariable ["ALiVE_CivPop_Hostility", 30];
                         private _bucket = switch (true) do {
                             case (_hostility < 20):  { "Friendly" };

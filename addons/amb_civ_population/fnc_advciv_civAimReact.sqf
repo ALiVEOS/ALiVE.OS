@@ -5,8 +5,8 @@ SCRIPT(advciv_civAimReact);
 Function: ALIVE_fnc_advciv_civAimReact
 Description:
     Server-side civilian aim-pressure reaction dispatch. Triggered when a
-    player sustains weapon aim on a civilian for 2 s (per the aim-pressure
-    handler in XEH_postInit.sqf). Reaction varies by the civilian's
+    player sustains weapon aim on a civilian for civWeaponAimHoldTime
+    (default 2 s, per the aim-pressure handler in XEH_postInit.sqf). Reaction varies by the civilian's
     hostility bucket, mirroring the bucket model used by the hostility
     indicator and Gather Intel arc.
 

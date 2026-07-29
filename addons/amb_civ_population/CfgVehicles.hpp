@@ -120,6 +120,25 @@ class CfgVehicles {
                 tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_RANGE_COMMENT";
                 defaultValue = """15""";
             };
+            class civWeaponAimHoldTime : Edit
+            {
+                property     = "ALiVE_amb_civ_population_civWeaponAimHoldTime";
+                displayName  = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME";
+                tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_COMMENT";
+                defaultValue = """2""";
+            };
+            class civWeaponAimHoldTimeDynamic : Combo
+            {
+                property     = "ALiVE_amb_civ_population_civWeaponAimHoldTimeDynamic";
+                displayName  = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_DYNAMIC";
+                tooltip      = "$STR_ALIVE_CIV_POP_WEAPON_AIM_HOLD_TIME_DYNAMIC_COMMENT";
+                defaultValue = """false""";
+                class Values
+                {
+                    class Yes { name = "Yes"; value = true; };
+                    class No  { name = "No";  value = false; default = 1; };
+                };
+            };
             class civVehicleStopOnAim : Combo
             {
                 property     = "ALiVE_amb_civ_population_civVehicleStopOnAim";
