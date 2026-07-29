@@ -13,7 +13,7 @@ Author:
 SpyderBlack723
 ---------------------------------------------------------------------------- */
 
-if (ALiVE_gamePaused) exitWith {};
+if (isGamePaused) exitWith {};
 
 private _args = _this select 0;
 _args params ["_coordinator"];
