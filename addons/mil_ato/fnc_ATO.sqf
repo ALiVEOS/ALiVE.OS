@@ -512,6 +512,89 @@ private _fnc_safeReposition = {
     };
 };
 
+// ---------------------------------------------------------------------------
+// Crew on demand (park cold). Aircraft register with a crew RECIPE, not a crew.
+// _fnc_raiseCrew mints the sized crew beside the airframe at launch; _fnc_standDownCrew
+// tears it down on return. Resident / LOGCOM crew (atoOwnsCrew=false) are made and
+// removed the old way by the caller and are never touched here.
+// ---------------------------------------------------------------------------
+private _fnc_raiseCrew = {
+    params ["_asset", "_aircraftProfile"];
+    if !([_asset,"atoOwnsCrew",false] call ALiVE_fnc_hashGet) exitWith {};           // resident crew: not ours to make
+    private _crewCount = [_asset,"crewCount",0] call ALiVE_fnc_hashGet;
+    private _crewClass = [_asset,"crewClass",""] call ALiVE_fnc_hashGet;
+    if (_crewCount <= 0 || {_crewClass isEqualTo ""}) exitWith {};                    // no recipe: nothing to raise
+
+    // Already up? A crewID that still resolves to a live profile is a re-poll of the
+    // same launch. A non-empty id that no longer resolves is stale from a prior despawn:
+    // clear it and mint fresh, or the sortie aborts every pass and grounds the airframe.
+    private _crewID = [_asset,"crewID",""] call ALiVE_fnc_hashGet;
+    if !(_crewID isEqualTo "") then {
+        private _existing = [ALIVE_profileHandler, "getProfile", _crewID] call ALIVE_fnc_profileHandler;
+        if !(isNil "_existing") exitWith {};
+        [_asset,"crewID",""] call ALiVE_fnc_hashSet;
+    };
+
+    private _startPos = [_asset,"startPos",[]] call ALiVE_fnc_hashGet;
+    if (count _startPos < 2) exitWith {};                                            // no known parking slot
+    if (isNil "_aircraftProfile") exitWith {};                                        // no airframe profile: fail safe
+    private _side    = [_aircraftProfile,"side"] call ALiVE_fnc_hashGet;
+    private _faction = [_aircraftProfile,"faction"] call ALiVE_fnc_hashGet;
+    // Beside the airframe, not at a distant pilot building: the old ~40s "waiting on the
+    // pilot" was the walk in. A few metres off the parking slot boards in seconds.
+    private _crewPos = _startPos getPos [6, random 360];
+    // Carrier: keep the crew on the island structure, not a radial offset that can fall off the deck.
+    if ([_asset,"isOnCarrier",false] call ALiVE_fnc_hashGet) then {
+        private _bridge = (_startPos nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
+        if !(isNil "_bridge") then { _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]); };
+    };
+
+    private _entityID = [ALIVE_profileHandler, "getNextInsertEntityID"] call ALIVE_fnc_profileHandler;
+    private _crewProfile = [nil, "create"] call ALIVE_fnc_profileEntity;
+    [_crewProfile, "init"] call ALIVE_fnc_profileEntity;
+    [_crewProfile, "profileID", format ["%1-%2", _faction, _entityID]] call ALIVE_fnc_profileEntity;
+    [_crewProfile, "position", _crewPos] call ALIVE_fnc_profileEntity;
+    [_crewProfile, "side", _side] call ALIVE_fnc_profileEntity;
+    [_crewProfile, "faction", _faction] call ALIVE_fnc_profileEntity;
+    [_crewProfile, "busy", true] call ALIVE_fnc_profileEntity;
+    [_crewProfile, "ignore_HC", true] call ALIVE_fnc_profileEntity;
+    [_crewProfile, "despawnPosition", _crewPos] call ALIVE_fnc_profileEntity;
+    [_crewProfile, "isSPE", false] call ALIVE_fnc_profileEntity;
+    [_crewProfile, "aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
+    for "_i" from 0 to _crewCount - 1 do {
+        [_crewProfile, "addUnit", [_crewClass, _crewPos, 0, "CAPTAIN"]] call ALIVE_fnc_profileEntity;
+    };
+
+    // Register only AFTER the recipe is populated. Registering an empty profile (as this line used
+    // to, above the addUnit loop) exposes it to the 1 Hz profileSystem distance spawner; with a
+    // player parked on the airfield that spawner can spawn the still-empty crew synchronously (an
+    // empty unitClasses has no per-unit sleep), minting a real but UNIT-LESS group the seating path
+    // can never board. Populate first, then register.
+    [ALIVE_profileHandler, "registerProfile", _crewProfile] call ALIVE_fnc_profileHandler;
+
+    [_asset, "crewID", ([_crewProfile, "profileID"] call ALIVE_fnc_profileEntity)] call ALiVE_fnc_hashSet;
+};
+
+private _fnc_standDownCrew = {
+    params ["_asset", "_aircraftProfile"];
+    if !([_asset,"atoOwnsCrew",false] call ALiVE_fnc_hashGet) exitWith { false };     // resident crew: caller keeps them
+    private _crewID = [_asset,"crewID",""] call ALiVE_fnc_hashGet;
+    if (_crewID isEqualTo "") exitWith { true };                                     // nothing raised
+    private _crewProfile = [ALIVE_profileHandler, "getProfile", _crewID] call ALIVE_fnc_profileHandler;
+    if !(isNil "_crewProfile") then {
+        // Sever the crew<->airframe assignment BEFORE the despawn. A crew profile still
+        // linked to the (preventDespawn) airframe will not despawn, and the pair drift
+        // apart into the orphaned-crew / empty-respawn bug. Nil-safe on airframe loss.
+        if !(isNil "_aircraftProfile") then {
+            [_crewProfile, _aircraftProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
+        };
+        [_crewProfile, "despawn"] call ALIVE_fnc_profileEntity;
+        [ALIVE_profileHandler, "unregisterProfile", _crewID] call ALIVE_fnc_profileHandler;
+    };
+    [_asset, "crewID", ""] call ALiVE_fnc_hashSet;
+    true
+};
+
 switch(_operation) do {
     default {
         _result = [_logic, _operation, _args] call SUPERCLASS;
@@ -1233,6 +1316,14 @@ switch(_operation) do {
 
                 private _asset = [] call ALIVE_fnc_hashCreate;
                 [_asset,"vehicleClass",_vehicleClass] call ALiVE_fnc_hashSet;
+                // Crew-on-demand defaults (park cold). Every asset starts with an empty
+                // crew recipe and no ATO-owned crew; the recipe is filled below for a plane
+                // ATO must crew itself. Predates-this saves without these keys read as false/0/""
+                // via the hashGet defaults at every read site.
+                [_asset,"crewID",""] call ALiVE_fnc_hashSet;
+                [_asset,"crewClass",""] call ALiVE_fnc_hashSet;
+                [_asset,"crewCount",0] call ALiVE_fnc_hashSet;
+                [_asset,"atoOwnsCrew",false] call ALiVE_fnc_hashSet;
                 [_asset,"airspace",_assetAirspace] call ALiVE_fnc_hashSet;
 
                 private _position = +([_vehicleProfile,"position"] call ALIVE_fnc_HashGet);
@@ -1357,119 +1448,19 @@ switch(_operation) do {
                             // Check to see if the vehicle has a crew, if not create
                             if (count ([_profile,"entitiesInCommandOf"] call ALiVE_fnc_hashGet) == 0) then {
 
-                                private _side = [_profile,"side"] call ALiVE_fnc_hashGet;
-                                private _faction = [_profile,"faction"] call ALiVE_fnc_hashGet;
-                                private _crewpos = +_position;
-                                
-                                
-                                private ["_crewPos","_thispos"];
-                                private _atoPosition = position _logic;
-                                _crewPos = + _atoPosition;
-
-
-                                if !(_isOnCarrier) then {
-                                
-                                 // if pilotbuilding is defined
-                                 private _pilotbuilding = [_logic, "pilotbuilding"] call MAINCLASS;
-                                 
-
-                                 if (count _pilotbuilding >0) then {
-                                 	
-	                                  // DEBUG -------------------------------------------------------------------------------------
-												            if(_debug) then {
-											                  ["ATO - Pilot Building Class: %1",_pilotbuilding] call ALiVE_fnc_dump;
-											                  ["ATO - ATO Module Position: %1", _atoPosition] call ALiVE_fnc_dump;
-											              };
-	                                  // DEBUG ------------------------------------------------------------------------------------- 
-                                  
-                                    private _vnbuildings = nearestObjects [_atoPosition, [_pilotbuilding], 50];
-                                    
-	                                    // DEBUG -------------------------------------------------------------------------------------
-														          if(_debug) then {
-												                ["ATO - Count Nearby Buildings: %1", count _vnbuildings] call ALiVE_fnc_dump;
-												              };
-		                                  // DEBUG ------------------------------------------------------------------------------------- 
-
-                                    if (count _vnbuildings > 0) then {
-                                    	
-	                                    // DEBUG -------------------------------------------------------------------------------------
-														          if(_debug) then {
-												                ["ATO - Nearby Buildings: %1", _vnbuildings] call ALiVE_fnc_dump;
-												              };
-		                                  // DEBUG ------------------------------------------------------------------------------------- 
-                                    	
-	                                     private _thisbuilding = selectRandom _vnbuildings;
-	                                     _thispos = [_thisbuilding,1] call ALIVE_fnc_findIndoorHousePositions;
-	                                     if (count _thispos > 0) then {
-	                                      _crewPos = selectRandom _thispos;
-			                                    // DEBUG -------------------------------------------------------------------------------------
-														              if(_debug) then {
-			                                      	["ATO - Building Selected: %1", _thispos] call ALiVE_fnc_dump;
-			                                    }; 
-			                                    // DEBUG ------------------------------------------------------------------------------------- 
-		                                   };   
-                                    };
-
-
-                                 } else {
-                                 	 // Only override the crew position when there is actually somewhere indoor to
-                                 	 // put them. selectRandom [] returns nil, and assigning nil here would delete
-                                 	 // _crewPos (the recovery guard below rebinds it in the wrong scope), leaving
-                                 	 // it undefined when the crew is added. No indoor spot: keep the module default.
-                                 	 private _indoor = [_position, 100] call ALIVE_fnc_findIndoorHousePositions;
-                                 	 if (count _indoor > 0) then { _crewPos = selectRandom _indoor };
-                                 };
-
-                                 if (isNil "_crewPos") then {
-                                     _crewPos = _atoPosition getpos [10 + (random 15), random 360];
-										  	            // DEBUG -------------------------------------------------------------------------------------
-											            	if(_debug) then {
-											             		["ATO - No Buildings Nearby With House Positions. Set Random Crew Position: %1", _crewPos] call ALiVE_fnc_dump;
-											            	};
-											              // DEBUG -------------------------------------------------------------------------------------
-                                 };
-
-                                } else {
-                                    private _bridge = (_position nearObjects ["Land_Carrier_01_island_02_F",700]) select 0;
-                                    _crewPos = ASLtoATL (_bridge modelToWorld [-2.43359,1.98047,0]); // entities are saved as ATL positions
-                                    // ["ATO PLACE CREW AT %1 (pos: %2)", _crewpos, _position] call ALiVE_fnc_dump;
-                                };
-
-                                // Check for no building?
-
-                                private _entityID = [ALIVE_profileHandler, "getNextInsertEntityID"] call ALIVE_fnc_profileHandler;
-                                private _profileEntity = [nil, "create"] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "init"] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "profileID", format["%1-%2",_faction,_entityID]] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "position", _crewPos] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "side", _side] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "faction", _faction] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "busy", true] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "ignore_HC", true] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "despawnPosition", _crewPos] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "isSPE", false] call ALIVE_fnc_profileEntity;
-                                [_profileEntity, "aiBehaviour", "SAFE"] call ALIVE_fnc_profileEntity;
-                                
-                                
-                                [ALIVE_profileHandler, "registerProfile", _profileEntity] call ALIVE_fnc_profileHandler;
-
-                                // Create the vehicle's crew
-                                private _crew = _vehicleClass call ALIVE_fnc_configGetVehicleCrew;
+                                // Park cold: store a crew RECIPE (class + count). _fnc_raiseCrew mints the crew
+                                // beside the airframe at launch instead of pre-spawning it here to mill
+                                // about the airfield. crewID stays "" until raiseCrew fills it.
+                                private _crewClass = _vehicleClass call ALIVE_fnc_configGetVehicleCrew;
                                 private _vehiclePositions = [_vehicleClass] call ALIVE_fnc_configGetVehicleEmptyPositions;
                                 private _countCrewPositions = 0;
-
-                                // count all non cargo positions
+                                // count all non cargo positions (driver + gunner + observer + AI turrets)
                                 for "_i" from 0 to count _vehiclePositions -3 do {
                                     _countCrewPositions = _countCrewPositions + (_vehiclePositions select _i);
                                 };
-
-                                // for all crew positions add units to the entity group
-                                for "_i" from 0 to _countCrewPositions -1 do {
-                                    [_profileEntity, "addUnit", [_crew,_crewPos,0,"CAPTAIN"]] call ALIVE_fnc_profileEntity;
-                                };
-
-                                // Store the crew as a profileID
-                                [_asset,"crewID",([_profileEntity, "profileID"] call ALIVE_fnc_profileEntity)] call ALiVE_fnc_hashSet;
+                                [_asset,"crewClass",_crewClass] call ALiVE_fnc_hashSet;
+                                [_asset,"crewCount",_countCrewPositions] call ALiVE_fnc_hashSet;
+                                [_asset,"atoOwnsCrew",true] call ALiVE_fnc_hashSet;
                             };
                         };
                     };
@@ -3144,10 +3135,47 @@ switch(_operation) do {
         // Mirror the self-create tail so the maintenance cycle sees identical state.
         [_aircraft, "maintenance", time] call ALiVE_fnc_hashSet;
 
-        if (_debug) then {
-            ["ATO - adopted LOGCOM-delivered %1 (entity %2, vehicle %3) for event %4.",
-                [_asset,"vehicleClass"] call ALiVE_fnc_hashGet, _entityID, _vehicleID, _eventID] call ALiVE_fnc_dumpR;
+        // Land the adopted airframe. LOGCOM delivers it flying (engine-on, ~300m ingress) and the
+        // adoption above only restores the ASSET-HASH geometry, never the physical airframe, so it
+        // hovers over the base indefinitely. Drop the profile engineOn (so the flying-start cannot
+        // re-air it - same root as the RTB flicker) and ground the live airframe onto the restored
+        // parking slot via the same safe reposition the return path uses.
+        private _vehProfile = [ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler;
+        if !(isNil "_vehProfile") then {
+            private _pPos = [_aircraft,"startPos",[]] call ALiVE_fnc_hashGet;
+            private _pDir = [_aircraft,"startDir",0] call ALiVE_fnc_hashGet;
+            [_vehProfile,"engineOn",false] call ALiVE_fnc_profileVehicle;
+            // Snap the PROFILE home, not only a live airframe. LOGCOM delivers the replacement
+            // flying at its ingress point (~1000m over a remote outpost); if it is virtualized
+            // (no player near it) there is no live object to safeReposition, so without this the
+            // profile sits out at the delivery point and only ever appears there. Set the profile
+            // position + despawn snapshot to the base parking slot so it belongs to the base; the
+            // engineOff spawn then grounds it there.
+            if (count _pPos >= 2) then {
+                private _homePos = [_pPos select 0, _pPos select 1, 0];
+                [_vehProfile,"position",_homePos] call ALiVE_fnc_profileVehicle;
+                [_vehProfile,"despawnPosition",_homePos] call ALiVE_fnc_profileVehicle;
+                [_vehProfile,"direction",_pDir] call ALiVE_fnc_profileVehicle;
+            };
+            // If it IS spawned right now (a player is watching it hover in), physically ground it.
+            private _liveVeh = [_vehProfile,"vehicle"] call ALiVE_fnc_hashGet;
+            if (!isNil "_liveVeh" && {!isNull _liveVeh} && {count _pPos >= 2}) then {
+                [_liveVeh, [_pPos select 0, _pPos select 1, (_pPos select 2) + 1], _pDir] call _fnc_safeReposition;
+            };
         };
+
+        // Delivery-state visibility (airframe-loss chain): LOGCOM delivers the replacement FLYING at
+        // its ingress altitude (~1000m); if a HELI is not grounded + crew re-seated fast enough it
+        // falls out of the sky (crew ejects, airframe crashes). Log the live pos (z = ALTITUDE), crew
+        // count, and damage at adoption so that failure is one grep away. RPT only (no sidechat spam).
+        private _adVc  = [_asset,"vehicleClass"] call ALiVE_fnc_hashGet;
+        private _adVeh = [[ALIVE_profileHandler, "getProfile", _vehicleID] call ALIVE_fnc_profileHandler, "vehicle"] call ALiVE_fnc_hashGet;
+        private _adLive = !isNil "_adVeh" && {!isNull _adVeh};
+        ["ATO - adopted LOGCOM-delivered %1 (entity %2, vehicle %3) for event %4 -- livePos=%5 crew=%6 dmg=%7",
+            _adVc, _entityID, _vehicleID, _eventID,
+            (if (_adLive) then {getPosATL _adVeh} else {"virtual"}),
+            (if (_adLive) then {count crew _adVeh} else {-1}),
+            (if (_adLive) then {damage _adVeh} else {-1})] call ALiVE_fnc_dump;
     };
 
     // Handle status request
@@ -4988,9 +5016,16 @@ switch(_operation) do {
                                         private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
                                         private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
                                         if (isNil "_crewProfile") then {
+                                            // Park cold: an ATO-owned airframe carrying a valid crew recipe is
+                                            // available even with no live crew profile - raiseCrew mints it at launch.
+                                            private _hasRecipe = ([_aircraft,"atoOwnsCrew",false] call ALiVE_fnc_hashGet)
+                                                && {([_aircraft,"crewCount",0] call ALiVE_fnc_hashGet) > 0}
+                                                && {!(([_aircraft,"crewClass",""] call ALiVE_fnc_hashGet) isEqualTo "")};
+                                            if (!_hasRecipe) then {
                                             _crewAvailable = false;
                                             if (_debug) then {
                                                 ["ATO %1 %2 Crew unavailable!", _logic, _crewID] call ALiVE_fnc_dump;
+                                            };
                                             };
                                         };
                                     };
@@ -5687,6 +5722,8 @@ switch(_operation) do {
 
                                 // If not active then assign crew and spawn else move crew into aircraft
                                 private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
+                                // Crew on demand: raise the sized crew beside the airframe now (park cold).
+                                [_aircraft, _profile] call _fnc_raiseCrew;
                                 private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
                                 private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
 
@@ -5700,10 +5737,21 @@ switch(_operation) do {
                                 // abort path already used for a missing crew profile.
                                 private _crewGroupBad = false;
                                 if (!isNil "_crewProfile" && {[_profile,"active",false] call ALiVE_fnc_hashGet}) then {
-                                    private _crewGroup = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
-                                    if (isNil "_crewGroup" || {!(_crewGroup isEqualType grpNull)} || {isNull _crewGroup}) then {
-                                        _crewGroupBad = true;
-                                        ["ATO %1 - crew profile %2 for aircraft %3 has an invalid group handle", _logic, _crewID, _profileID] call ALiVE_fnc_dumpR;
+                                    // Crew on demand: an active AIRCRAFT no longer implies a live crew.
+                                    // A raised-but-unspawned crew profile sits at active=false with a
+                                    // grpNull group (the init default) until the aircraft-active branch
+                                    // below spawns it, so a null group here is the normal pre-spawn
+                                    // state, not corruption. Only a crew that reads ACTIVE with a bad
+                                    // slot is genuinely corrupt (an Object left by a despawn that would
+                                    // throw "Type Object, expected Group" at addVehicle). Gate on
+                                    // crew-active so crew on demand spawns cleanly instead of tripping
+                                    // this warning and the stopgap rebuild every launch.
+                                    if ([_crewProfile,"active",false] call ALiVE_fnc_hashGet) then {
+                                        private _crewGroup = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
+                                        if (isNil "_crewGroup" || {!(_crewGroup isEqualType grpNull)} || {isNull _crewGroup}) then {
+                                            _crewGroupBad = true;
+                                            ["ATO %1 - crew profile %2 for aircraft %3 has an invalid group handle", _logic, _crewID, _profileID] call ALiVE_fnc_dumpR;
+                                        };
                                     };
                                 };
 
@@ -5806,22 +5854,43 @@ switch(_operation) do {
                                         // Move crew into aircraft
                                         private _group = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
 
+                                        // A null/invalid crew group here (crew (re)spawned on this same tick, or a
+                                        // resident crew whose group went null) must NOT reach addVehicle / orderGetIn
+                                        // below - both silently no-op on a grpNull handle and the airframe then waits
+                                        // on a pilot that never arrives (the gunship null-group case, and the F-22 active-but-empty-crew case). Rebuild the crew
+                                        // (force inactive + respawn, as the stale-group recovery above does) and re-read.
+                                        if (isNil "_group" || {!(_group isEqualType grpNull)} || {isNull _group} || {([_crewProfile,"active",false] call ALiVE_fnc_hashGet) && {(count units _group) == 0}}) then {
+                                            [_crewProfile,"active",false] call ALiVE_fnc_hashSet;
+                                            [_crewProfile,"locked",false] call ALiVE_fnc_hashSet;
+                                            [_crewProfile,"spawn"] call ALIVE_fnc_profileEntity;
+                                            _group = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
+                                        };
+
                                         // DEBUG -------------------------------------------------------------------------------------
                                         if(_debug) then {
-                                            ["ATO %3 - MOVING CREW (%4) TO AIRCRAFT (%1 - %2)", _profileID, _vehicleClass, _logic, _group] call ALiVE_fnc_dump;
+                                            ["ATO %3 - MOVING CREW (%4, %5 units) TO AIRCRAFT (%1 - %2)", _profileID, _vehicleClass, _logic, _group, count units _group] call ALiVE_fnc_dump;
                                         };
                                         // DEBUG -------------------------------------------------------------------------------------
 
-                                        // diag_log _group;
-                                        _group addVehicle _vehicleObj;
+                                        if (!isNil "_group" && {_group isEqualType grpNull} && {!isNull _group} && {(count units _group) > 0}) then {
+                                            _group addVehicle _vehicleObj;
 
-                                        if (_isOnCarrier) then { // AI can't run to plane on carrier deck
-                                            {
-                                                _x moveInAny _vehicleObj;
-                                            } forEach (units _group);
-
+                                            // Seat the crew directly (moveInAny) rather than walk them in (orderGetIn)
+                                            // for anything teleported to a taxi/launch point right after this: every
+                                            // PLANE (the setPos below jumps it to ilsTaxiIn), ATO-raised crew (freshly
+                                            // minted beside the airframe, no reason to walk), and carriers. orderGetIn
+                                            // ordered the crew to the PARKED spot and the plane then teleported away,
+                                            // stranding them on "waiting on the pilot" all sortie; seated crew ride the
+                                            // teleport. Resident land helis (never teleported) keep the walk.
+                                            if (_isOnCarrier || _isPlane || {[_aircraft,"atoOwnsCrew",false] call ALiVE_fnc_hashGet}) then {
+                                                { _x moveInAny _vehicleObj } forEach (units _group);
+                                            } else {
+                                                (units _group) orderGetIn true;
+                                            };
                                         } else {
-                                            (units _group) orderGetIn true;
+                                            if (_debug) then {
+                                                ["ATO %1 - %2 has no live crew group after rebuild; leaving for the next pass", _logic, _profileID] call ALiVE_fnc_dump;
+                                            };
                                         };
                                     };
 
@@ -5933,6 +6002,8 @@ switch(_operation) do {
                             // If not active and not a UAV then launch, else go take off normally.
                             if !([_profile,"active"] call ALiVE_fnc_hashGet) then {
 
+                                // Crew on demand: raise the sized crew beside the airframe now (park cold).
+                                [_aircraft, _profile] call _fnc_raiseCrew;
                                 private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
                                 private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
 
@@ -6072,6 +6143,64 @@ switch(_operation) do {
                         createVehicleCrew _vehicle;
                         if (_debug) then {
                             ["ATO %1 drone crewed immediately at launch (bypassed the site-3 stall): class=%2 crew %3 -> %4 driver=%5", _logic, typeOf _vehicle, _cbefore, count (crew _vehicle), (if (isNull (driver _vehicle)) then {"NONE"} else {typeOf (driver _vehicle)})] call ALiVE_fnc_dump;
+                        };
+                    };
+
+                    // Crew-on-demand BACKSTOP: a cold-parked airframe (atoOwnsCrew) can reach this
+                    // ready-branch with ready=true set upstream WITHOUT ever passing the prep block that
+                    // raises + seats its crew. On the flying-start path, when the airframe's recorded
+                    // startPos is far (>15m) from where it actually sits on its pad, the <15m launch gate
+                    // is skipped and the else merely flips ready=true, so _fnc_raiseCrew never fired. The
+                    // wait gate below only moveInAny's an ALREADY-existing group, so a cold heli with an
+                    // empty group boards nobody and times out on "waiting on the pilot". Mint + spawn +
+                    // seat the crew here, mirroring the prep-block MOVING CREW path, so the stall is caught
+                    // no matter which upstream path set ready. No-op for drones (createVehicleCrew crews
+                    // them), for resident / LOGCOM crew (atoOwnsCrew=false: raiseCrew exitWiths), and for
+                    // an airframe that already has a live driver.
+                    if (!isNull _vehicle && {isNull (driver _vehicle)} && {!([_vehicle] call _fnc_isDroneClass)} && {[_aircraft,"atoOwnsCrew",false] call ALiVE_fnc_hashGet}) then {
+                        // Raise the sized crew beside the airframe (idempotent: exitWiths if a live crew
+                        // profile already resolves for this launch, and re-mints a stale one).
+                        [_aircraft, _vehProfile] call _fnc_raiseCrew;
+                        private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
+                        private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
+
+                        if (!isNil "_crewProfile") then {
+                            // Link crew<->airframe so the despawn / standDownCrew lifecycle stays balanced.
+                            [_crewProfile,_vehProfile] call ALIVE_fnc_createProfileVehicleAssignment;
+
+                            // Spawn the crew profile if it is not live yet.
+                            if !([_crewProfile,"active"] call ALiVE_fnc_hashGet) then {
+                                [_crewProfile,"spawn"] call ALIVE_fnc_profileEntity;
+                            };
+
+                            private _crewGroup = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
+                            // Same null / wrong-type / active-but-empty rebuild guard as the MOVING CREW
+                            // block: a bad group must be rebuilt before seating or moveInAny silently no-ops
+                            // and the airframe waits on a pilot that never comes.
+                            if (isNil "_crewGroup" || {!(_crewGroup isEqualType grpNull)} || {isNull _crewGroup} || {([_crewProfile,"active",false] call ALiVE_fnc_hashGet) && {(count units _crewGroup) == 0}}) then {
+                                [_crewProfile,"active",false] call ALiVE_fnc_hashSet;
+                                [_crewProfile,"locked",false] call ALiVE_fnc_hashSet;
+                                [_crewProfile,"spawn"] call ALIVE_fnc_profileEntity;
+                                _crewGroup = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
+                            };
+
+                            if (!isNil "_crewGroup" && {_crewGroup isEqualType grpNull} && {!isNull _crewGroup} && {(count units _crewGroup) > 0}) then {
+                                _crewGroup addVehicle _vehicle;
+                                // atoOwnsCrew crew are minted beside the airframe: seat them directly
+                                // (moveInAny), exactly as the MOVING CREW block does for ATO-owned crew.
+                                { _x moveInAny _vehicle } forEach (units _crewGroup);
+                                if (_debug) then {
+                                    ["ATO %3 - crew-on-demand BACKSTOP seated crew (%4, %5 units) into cold airframe (%1 - %2)", _profileID, _vehicleClass, _logic, _crewGroup, count units _crewGroup] call ALiVE_fnc_dump;
+                                };
+                            } else {
+                                if (_debug) then {
+                                    ["ATO %1 - crew-on-demand BACKSTOP: %2 has no live crew group after rebuild; leaving for the next pass", _logic, _profileID] call ALiVE_fnc_dump;
+                                };
+                            };
+
+                            // Refresh the group handle the wait gate below reads, so its moveInAny and
+                            // launch checks see the freshly seated crew on this same pass.
+                            _grp = group _vehicle;
                         };
                     };
 
@@ -6338,6 +6467,18 @@ switch(_operation) do {
                                     _vehicle setDir _startDir;
                                     _vehicle setposATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
                                 };
+
+                                // Crew on demand: tear the never-boarded crew down and clear ready in the
+                                // SAME pass that frees the airframe. Clearing currentOp below makes this
+                                // airframe re-selectable; without also clearing crewID (via standDownCrew)
+                                // and ready, a re-task racing ahead of the eventComplete catch-all would
+                                // re-adopt a crew about to be despawned (null group), or skip the prep block
+                                // entirely (stale ready) and never re-mint. Doing all three here makes
+                                // re-mint deterministic; the eventComplete catch-all stays an idempotent
+                                // backstop. standDownCrew is nil-safe on the profile and no-ops on empty
+                                // crewID / resident crew.
+                                [_aircraft, _vehProfile] call _fnc_standDownCrew;
+                                [_aircraft,"ready",false] call ALiVE_fnc_hashSet;
 
                                 // remove currentOp from vehicle
                                 [_aircraft,"currentOp",""] call ALiVE_fnc_hashSet;
@@ -6938,7 +7079,12 @@ switch(_operation) do {
                         // Crew should be unassigned from aircraft
                         _grp leaveVehicle _vehicle;
 
-
+                        // Crew on demand: an ATO-owned crew is torn down here (assignment severed
+                        // BEFORE despawn, then despawned + unregistered). Resident / LOGCOM crew
+                        // (atoOwnsCrew=false) keep the original walk-home handling below.
+                        if ([_aircraft,"atoOwnsCrew",false] call ALiVE_fnc_hashGet) then {
+                            [_aircraft, _profile] call _fnc_standDownCrew;
+                        } else {
                         				private ["_crewPos","_thispos"];
                                 private _atoPosition = position _logic;
                                 private _crewpos = +_startPosition;
@@ -7025,6 +7171,7 @@ switch(_operation) do {
                             [_crewProfile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
                             [_crewProfile,"spawnType",[]] call ALiVE_fnc_profileEntity;
                         };
+                        };
                     } else {
                         {
                             _vehicle deleteVehicleCrew _x;
@@ -7033,6 +7180,12 @@ switch(_operation) do {
 
                     // Turn off engine
                     _vehicle engineOn false;
+                    // The PROFILE engineOn must drop too, not just the live vehicle: sys_profile's
+                    // flying-start re-airs any profile that spawns with engineOn=true to 300m
+                    // (fnc_profileVehicle.sqf ~494-498). Left true on a returned frame that
+                    // safeReposition just grounded, the next despawn/respawn shoved it back into
+                    // the sky - the RTB ground<->air flicker.
+                    [_profile,"engineOn",false] call ALiVE_fnc_profileVehicle;
 
                     //Move back to original position (safe reposition - guards against hangar detonation)
                     private _startDir = [_aircraft,"startDir"] call ALiVE_fnc_hashGet;
@@ -7085,8 +7238,28 @@ switch(_operation) do {
                     if (isNil "_aircraft") exitWith {
                 	    ["ATO - eventComplete has no valid _aircraft"] call ALiVE_fnc_dump;
                     }; 
+                    // Capture the reroute flag BEFORE the reset below. A reroute funnels the OLD
+                    // event through eventComplete too (its state is set at the reroute site), but
+                    // the airframe keeps flying to its new task with the SAME crew. Standing that
+                    // crew down here would strip a still-flying re-tasked aircraft and hang it on
+                    // "waiting on the pilot" with a null crew group for the rest of the mission.
+                    private _wasRerouted = [_aircraft,"reroute",false] call ALiVE_fnc_hashGet;
                     //reset if rerouted
                     [_aircraft,"reroute",false] call ALiVE_fnc_hashSet;
+                    // Crew on demand: catch-all teardown. Every abort, boarding timeout and
+                    // aircraft-lost bailout funnels through eventComplete, so tearing an ATO-owned
+                    // crew down here covers all of them (and clears crewID so the gate frees the
+                    // airframe, breaking the re-select/re-abort loop). No-op if the successful-
+                    // landing path already stood it down, or if it is resident crew. SKIP on a
+                    // reroute - the aircraft is continuing, not returning; it keeps its crew.
+                    private _acProfile = [ALIVE_profileHandler, "getProfile", _aircraftID] call ALIVE_fnc_profileHandler;
+                    if (!_wasRerouted) then {
+                        [_aircraft, _acProfile] call _fnc_standDownCrew;
+                        // Backstop the boarding-timeout ready-reset: any non-reroute completion that
+                        // frees the airframe must leave ready==false, or the next tasking skips the
+                        // prep block (the only raiseCrew sites) and hangs on a null crew group.
+                        [_aircraft,"ready",false] call ALiVE_fnc_hashSet;
+                    };
                     [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
                 };
 
@@ -7192,6 +7365,18 @@ switch(_operation) do {
                     if (_generateTasks && _C2ISTARisAvailable) then {
                         [_logic, "requestCSARPlayerTask", _asset] call MAINCLASS;
                     };
+
+                    // Airframe-loss visibility: log WHICH airframe was lost + whether it triggers a
+                    // LOGCOM resupply, so the destruction -> resupply -> re-adopt chain is traceable
+                    // end to end. RPT only (no sidechat spam).
+                    ["ATO %1 - AIRFRAME LOST: %2 (%3) removed from ATO assets%4", _logic, _profileID,
+                        ([_asset,"vehicleClass",""] call ALiVE_fnc_hashGet),
+                        (if ([_logic,"resupply"] call MAINCLASS) then {" -- queuing LOGCOM resupply"} else {" -- no resupply (module setting off)"})] call ALiVE_fnc_dump;
+
+                    // Crew on demand: the airframe is gone; tear down any orphaned ATO-owned crew.
+                    // AFTER the CSAR request above, which fabricates its own rescue pilot and does
+                    // not use this crew profile, so despawning it here is safe (must-fix #2).
+                    [_asset] call _fnc_standDownCrew;
 
                     // remove it from airspace assets first
                     private _airspace = [_asset,"airspace"] call ALiVE_fnc_hashGet;

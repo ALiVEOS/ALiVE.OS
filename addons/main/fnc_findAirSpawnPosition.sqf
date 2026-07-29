@@ -554,6 +554,18 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         if (count _found > 0) exitWith {};
         private _padPos = position _x;
         private _padDir = direction _x;
+        // Own-pad fast-path: this validator is also re-run when a heli that is ALREADY
+        // parked on a pad is tasked (the spawn re-validates its position). If a candidate
+        // pad is essentially where the airframe already sits, it is THIS aircraft's pad -
+        // accept it outright, ahead of the registry and footprint rejections, so a sibling
+        // heli reserved-on or parked-near an adjacent pad cannot evict this airframe from
+        // the pad it already owns and dump it onto open ground (the pad then sitting empty).
+        // GATED on a live Air vehicle actually at the point: only a genuine re-validation of a
+        // parked airframe qualifies. A fresh placement request (mil_placement placeHelis passes
+        // the pad itself as the target; sys_profile respawn) has no live airframe there yet, so
+        // it must fall through to the registry + footprint + occupied-pad checks rather than
+        // bypassing them (else a heli could be placed on a pad already holding a vehicle).
+        if (_padPos distance2D _centerPos < 3 && {(nearestObjects [_centerPos, ["Air"], 5]) isNotEqualTo []}) exitWith { _found = [_padPos, _padDir]; };
         if !([_padPos, _minSeparation] call _fnc_registryClear) then { continue };
         // Filter the helipad object itself (and any host building it
         // sits on, picked up via 2 m proximity) out of the obstacle
