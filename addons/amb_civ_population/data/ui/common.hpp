@@ -368,7 +368,7 @@ class CivInteract_RscButton
 	h = 0.039216;
 	shadow = 2;
 	font = "PuristaMedium";
-	sizeEx = "(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)";
+	sizeEx = "0.024 * safezoneH";
 	offsetX = 0.003;
 	offsetY = 0.003;
 	offsetPressedX = 0.000;
