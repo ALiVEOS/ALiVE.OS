@@ -452,6 +452,24 @@
     <Portuguese>Permite que comandantes visualizem transmissão ao vivo de unidades aéreas amigas</Portuguese>
     <Russian>Разрешает командирам просматривать прямую трансляцию с дружественных воздушных подразделений</Russian>
 </Key>
+<Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_PLAYER_OBJECTIVES">
+    <English>Allow Player Objectives:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_PLAYER_OBJECTIVES_COMMENT">
+    <English>Allow players to designate, cancel and reprioritise commander objectives from the Operations tablet view</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_OBJECTIVE_COOLDOWN">
+    <English>Player Objective Cooldown:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_OBJECTIVE_COOLDOWN_COMMENT">
+    <English>Seconds a player must wait between designating objectives</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_MAX_PLAYER_OBJECTIVES">
+    <English>Max Player Objectives:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_SCOM_OPS_MAX_PLAYER_OBJECTIVES_COMMENT">
+    <English>Maximum simultaneous player-designated objectives per side</English>
+</Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_C2ISTAR_SCOM_INTEL_LIMIT">
     <English>Limit Intel:</English>

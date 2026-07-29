@@ -184,6 +184,57 @@ switch (_operation) do {
 
     };
 
+    case "scomOpsAllowPlayerObjectives": {
+
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["scomOpsAllowPlayerObjectives", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsAllowPlayerObjectives", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["scomOpsAllowPlayerObjectives", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+
+    };
+
+    case "scomOpsObjectiveCooldown": {
+
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["scomOpsObjectiveCooldown", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsObjectiveCooldown", 300];
+        };
+        if (typeName _args == "STRING") then {
+                _args = parseNumber _args;
+                _logic setVariable ["scomOpsObjectiveCooldown", _args];
+        };
+        ASSERT_TRUE(typeName _args == "SCALAR",str _args);
+
+        _result = _args;
+
+    };
+
+    case "scomOpsMaxPlayerObjectives": {
+
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["scomOpsMaxPlayerObjectives", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsMaxPlayerObjectives", 3];
+        };
+        if (typeName _args == "STRING") then {
+                _args = parseNumber _args;
+                _logic setVariable ["scomOpsMaxPlayerObjectives", _args];
+        };
+        ASSERT_TRUE(typeName _args == "SCALAR",str _args);
+
+        _result = _args;
+
+    };
+
     case "intelLimit": {
 
         _result = [_logic,_operation,_args,DEFAULT_SCOM_LIMIT,["SIDE","FACTION","ALL"]] call ALIVE_fnc_OOsimpleOperation;
@@ -245,6 +296,12 @@ switch (_operation) do {
             ALIVE_commandHandler = [nil,"create"] call ALIVE_fnc_commandHandler;
             [ALIVE_commandHandler, "init"] call ALIVE_fnc_commandHandler;
             [ALIVE_commandHandler, "debug", _debug] call ALIVE_fnc_commandHandler;
+
+            // player-objectives config + per-player cooldown registry
+            [ALIVE_commandHandler, "playerObjectivesEnabled", [_logic,"scomOpsAllowPlayerObjectives"] call MAINCLASS] call ALiVE_fnc_hashSet;
+            [ALIVE_commandHandler, "playerObjectiveCooldown", [_logic,"scomOpsObjectiveCooldown"] call MAINCLASS] call ALiVE_fnc_hashSet;
+            [ALIVE_commandHandler, "maxPlayerObjectives", [_logic,"scomOpsMaxPlayerObjectives"] call MAINCLASS] call ALiVE_fnc_hashSet;
+            [ALIVE_commandHandler, "playerObjectiveCooldowns", [] call ALIVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
 
         };
 

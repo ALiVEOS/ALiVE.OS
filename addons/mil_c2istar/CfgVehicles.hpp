@@ -445,6 +445,34 @@ class CfgVehicles {
                                     class Yes { name = "Yes"; value = "true"; };
                             };
                     };
+                    class scomOpsAllowPlayerObjectives : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_scomOpsAllowPlayerObjectives";
+                            displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_PLAYER_OBJECTIVES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SCOM_OPS_ALLOW_PLAYER_OBJECTIVES_COMMENT";
+                            defaultValue = """false""";
+                            class Values
+                            {
+                                    class No  { name = "No";  value = "false"; };
+                                    class Yes { name = "Yes"; value = "true"; };
+                            };
+                    };
+                    class scomOpsObjectiveCooldown : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_scomOpsObjectiveCooldown";
+                            displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_OBJECTIVE_COOLDOWN";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SCOM_OPS_OBJECTIVE_COOLDOWN_COMMENT";
+                            defaultValue = """300""";
+                            typeName = "NUMBER";
+                    };
+                    class scomOpsMaxPlayerObjectives : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_scomOpsMaxPlayerObjectives";
+                            displayName = "$STR_ALIVE_C2ISTAR_SCOM_OPS_MAX_PLAYER_OBJECTIVES";
+                            tooltip = "$STR_ALIVE_C2ISTAR_SCOM_OPS_MAX_PLAYER_OBJECTIVES_COMMENT";
+                            defaultValue = """3""";
+                            typeName = "NUMBER";
+                    };
 
                     class SPACER_ROLE_INTEL : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_ROLE_INTEL"; displayName = " "; };
                     class scomIntelLimit : Combo
