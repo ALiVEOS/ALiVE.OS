@@ -58,6 +58,21 @@ switch(_profileType) do {
     };
     case "vehicle": {
         [_profile, "handleDeath"] call ALIVE_fnc_profileVehicle;
+
+        // Airframe-loss visibility: unlike the entity branch above, the vehicle branch unregisters a
+        // killed vehicle profile SILENTLY (no PROFILE_KILLED event), so a destroyed ATO airframe left
+        // NO rpt trace and had to be reverse-engineered from Un-Register lines + coordinates. Log AIR
+        // profile deaths (rare enough not to spam) with position + killer so the destruction is one
+        // grep away. RPT only (ALIVE_fnc_dump, no sidechat).
+        private _vClass = _profile select 2 select 6;
+        if (!isNil "_vClass" && {_vClass isEqualType ""} && {_vClass isKindOf "Air"}) then {
+            private _vId  = _profile select 2 select 4;
+            private _vPos = _profile select 2 select 2;
+            private _killerType = if (isNull _killer) then {"unknown"} else {typeOf _killer};
+            private _killerSide = if (isNull _killer) then {"?"} else {str side group _killer};
+            ["ALIVE airframe-loss: %1 (%2) DESTROYED at %3 by %4 (side %5)", _vId, _vClass, _vPos, _killerType, _killerSide] call ALIVE_fnc_dump;
+        };
+
         // not sure about this, it will remove the profile and the vehicle wreck will remain
         // will need to have dead vehicle cleanup scripts
         [ALIVE_profileHandler, "unregisterProfile", _profile] call ALIVE_fnc_profileHandler;
