@@ -4483,7 +4483,8 @@ switch(_operation) do {
             if(_factionFound) then {
 
                 private ["_eventQueue","_response","_responseItem","_playerRequested","_eventData","_logEvent","_playerID",
-                "_eventState","_eventType","_eventForceMakeup","_requestID","_transportProfiles","_position","_playerRequestProfileID","_profile"];
+                "_eventState","_eventType","_eventForceMakeup","_requestID","_transportProfiles","_position","_playerRequestProfileID","_profile",
+                "_positions","_eventCargoProfiles","_transportVehiclesProfiles","_armourProfiles","_mechanisedProfiles","_motorisedProfiles"];
 
                 // get the event data for this player
 
@@ -4523,6 +4524,50 @@ switch(_operation) do {
                                         };
 
                                     } forEach _transportProfiles;
+
+                                };
+
+                                // A self-transporting vehicle group (armour / mechanised / motorised
+                                // driving its own vehicles) has no transportProfiles, so the tablet
+                                // would read "Enroute Unknown". Fall back to the actual moving vehicle
+                                // and cargo profiles for a live position. Runs only when the
+                                // transportProfiles pass produced nothing, so infantry / escort-truck
+                                // convoys keep their existing (authoritative truck) position.
+                                if(count _positions == 0) then {
+
+                                    _eventCargoProfiles = [_x, "cargoProfiles"] call ALIVE_fnc_hashGet;
+                                    _transportVehiclesProfiles = [_x, "transportVehiclesProfiles"] call ALIVE_fnc_hashGet;
+                                    _armourProfiles = [_eventCargoProfiles, 'armour'] call ALIVE_fnc_hashGet;
+                                    _mechanisedProfiles = [_eventCargoProfiles, 'mechanised'] call ALIVE_fnc_hashGet;
+                                    _motorisedProfiles = [_eventCargoProfiles, 'motorised'] call ALIVE_fnc_hashGet;
+
+                                    {
+                                        _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                        if!(isNil "_profile") then {
+                                            _positions pushBack (_profile select 2 select 2);
+                                        };
+                                    } forEach _transportVehiclesProfiles;
+
+                                    {
+                                        _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
+                                        if!(isNil "_profile") then {
+                                            _positions pushBack (_profile select 2 select 2);
+                                        };
+                                    } forEach _armourProfiles;
+
+                                    {
+                                        _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
+                                        if!(isNil "_profile") then {
+                                            _positions pushBack (_profile select 2 select 2);
+                                        };
+                                    } forEach _mechanisedProfiles;
+
+                                    {
+                                        _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
+                                        if!(isNil "_profile") then {
+                                            _positions pushBack (_profile select 2 select 2);
+                                        };
+                                    } forEach _motorisedProfiles;
 
                                 };
 
@@ -9589,6 +9634,30 @@ switch(_operation) do {
                     };
                 };
 
+                // Track a genuine foot convoy's progress to the destination. Only when the event has
+                // NO transport, armour, mechanised, motorised, plane or heli profiles (i.e. the cargo
+                // is infantry travelling on foot) is the infantry bucket counted; otherwise completion
+                // follows the existing vehicle/carrier waypoints untouched. Without this a truckless
+                // foot convoy reaches _waypointsNotCompleted 0 with _waypointsCompleted 0 and is
+                // reported LOST instead of arriving.
+                if(count _transportProfiles == 0 && count _armourProfiles == 0 && count _mechanisedProfiles == 0 && count _motorisedProfiles == 0 && count _planeProfiles == 0 && count _heliProfiles == 0) then {
+                    {
+                        _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
+                        if!(isNil "_profile") then {
+
+                            _completed = [_logic,"checkWaypointCompleted",_profile] call MAINCLASS;
+
+                            if!(_completed) then {
+                                _waypointsNotCompleted = _waypointsNotCompleted + 1;
+                            }else{
+                                _waypointsCompleted = _waypointsCompleted + 1;
+                            };
+
+                        };
+
+                    } forEach _infantryProfiles;
+                };
+
                 {
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
@@ -11273,10 +11342,25 @@ switch(_operation) do {
 
                                     switch(_itemCategory) do {
                                         case "Infantry":{
-                                            _infantryProfiles pushback _profileIDs;
+                                            // A group tagged Infantry but carrying organic vehicles (e.g. a
+                                            // Spearhead CDLC armour platoon whose category class name did not
+                                            // resolve to "Armored" and fell through to the Infantry default)
+                                            // must self-transport as armour on a GROUND (PR_STANDARD) convoy,
+                                            // not be dismounted onto foot. On air paths (heli insert / airdrop)
+                                            // it stays infantry so insertion + the #947 carrierless fallback
+                                            // are untouched.
+                                            if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
+                                                _infantryProfiles pushback _profileIDs;
+                                            } else {
+                                                _armourProfiles pushback _profileIDs;
+                                            };
                                         };
                                         case "Support":{
-                                            _infantryProfiles pushback _profileIDs;
+                                            if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
+                                                _infantryProfiles pushback _profileIDs;
+                                            } else {
+                                                _armourProfiles pushback _profileIDs;
+                                            };
                                         };
                                         case "SpecOps":{
                                             //If the spec op team, does not have a vehicle (like submarines in A3 vanilla)
@@ -11307,8 +11391,13 @@ switch(_operation) do {
                                             [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
                                         };
                                         default {
-                                            ["ML - WARNING: No item category defined for group %1, using infantry.",_group] call ALIVE_fnc_dump;
-                                            _infantryProfiles pushback _profileIDs;
+                                            if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
+                                                ["ML - WARNING: No item category defined for group %1, using infantry.",_group] call ALIVE_fnc_dump;
+                                                _infantryProfiles pushback _profileIDs;
+                                            } else {
+                                                ["ML - WARNING: No item category defined for group %1 but it carries vehicles, self-transporting as armour.",_group] call ALIVE_fnc_dump;
+                                                _armourProfiles pushback _profileIDs;
+                                            };
                                         };
                                     };
 
