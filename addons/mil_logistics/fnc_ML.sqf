@@ -7759,20 +7759,39 @@ switch(_operation) do {
 
                             // #460 - honour a caller-specified airframe (ATO replacement); see the plane block above.
                             private _requestedClass = [_event, "requestVehicleClass", ""] call ALIVE_fnc_hashGet;
-                            if (_requestedClass != "" && {_requestedClass isKindOf "Helicopter"}) then {
+                            private _replacementHeli = (_requestedClass != "" && {_requestedClass isKindOf "Helicopter"});
+                            if (_replacementHeli) then {
                                 _heliClasses = [_requestedClass];
                             };
 
                             for "_i" from 0 to _eventForceHeli -1 do {
 
                                 _position = [_remotePosition getPos [random(200), random(360)]] call _fnc_snapToLand;   // FIX: keep air-crew spawn off the sea
-                                _position set [2,1000];
+                                // A rotary ATO-replacement (#460) is delivered GROUNDED so its crew can seat
+                                // before the airframe falls. An empty, pilotless helicopter dropped at 1000m
+                                // has no lift and free-falls, arriving as a crashed, crew-less husk. Only
+                                // fixed-wing and normal reinforcement helis keep the 1000m air ingress: a
+                                // plane holds altitude via its spawn velocity push, and a normal reinforcement
+                                // heli has no requestVehicleClass so _replacementHeli is false. Leave the
+                                // snapToLand ground z for the replacement heli; the engine-off spawn (create
+                                // call below) grounds it via findAirSpawnPosition.
+                                if !(_replacementHeli) then { _position set [2,1000]; };
 
                                 if(count _heliClasses > 0) then {
 
                                     _vehicleClass = selectRandom _heliClasses;
 
-                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    // engineOn=false for a rotary ATO-replacement (#460) so profileVehicle takes
+                                    // the engine-off (CAN_COLLIDE) branch, runs findAirSpawnPosition, grounds it
+                                    // (z=0.5), and its crew entity seats on the ground with no free-fall -
+                                    // mirroring the proven ATO self-create heli path. Normal reinforcement helis
+                                    // (_replacementHeli false) keep engine-on 1000m air ingress. The MOVE waypoint
+                                    // below still flies it in.
+                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,!_replacementHeli,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+
+                                    if (_debug && _replacementHeli) then {
+                                        ["ML - #460 replacement heli %1 delivered GROUNDED at %2 (engine-off; grounds + crews before flying in, no free-fall)", _vehicleClass, _position] call ALIVE_fnc_dump;
+                                    };
 
                                     _profileIDs = [];
                                     {
