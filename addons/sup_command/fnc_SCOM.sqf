@@ -1644,6 +1644,11 @@ switch (_operation) do {
 
                     [_logic,"commandState",_commandState] call MAINCLASS;
 
+                    // disarm the group view's map click for the round-trip
+
+                    private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                    _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
                     private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
                     lbClear _editList;
 

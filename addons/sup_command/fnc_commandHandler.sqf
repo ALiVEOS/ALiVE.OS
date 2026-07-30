@@ -1103,8 +1103,14 @@ switch(_operation) do {
             // analysis cycle, and front array position makes it the first
             // pick within its state bucket
 
+            // monotonic counter keeps IDs unique even when two designations
+            // drain from the remoteExec queue in the same server frame
+
+            private _counter = ([_logic,"playerObjectiveCounter",0] call ALiVE_fnc_hashGet) + 1;
+            [_logic,"playerObjectiveCounter",_counter] call ALiVE_fnc_hashSet;
+
             private _opcomID = [_opcom,"opcomID",""] call ALiVE_fnc_hashGet;
-            private _objectiveID = format ["%1_player_obj_%2", _opcomID, floor (diag_tickTime * 1000)];
+            private _objectiveID = format ["%1_player_obj_%2", _opcomID, _counter];
 
             [_opcom,"addObjective",[_objectiveID,_pos,100,"custom",100,"unassigned","none",_opcomID,true,true]] call ALiVE_fnc_OPCOM;
             [_cooldowns,_playerID,time] call ALiVE_fnc_hashSet;
@@ -1120,6 +1126,13 @@ switch(_operation) do {
         if (_args isEqualType []) then {
 
             _args params ["_playerID","_selOpcom","_objectiveID"];
+
+            // same server-side gate as opsAddObjective - the tablet UI is not
+            // the only way to reach this op
+
+            if !([_logic,"playerObjectivesEnabled",false] call ALiVE_fnc_hashGet) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Player objectives are disabled"]] call MAINCLASS;
+            };
 
             private _opcom = [_logic,"opsFindOPCOM", _selOpcom select 0] call MAINCLASS;
 
@@ -1152,6 +1165,13 @@ switch(_operation) do {
         if (_args isEqualType []) then {
 
             _args params ["_playerID","_selOpcom","_objectiveID","_direction"];
+
+            // same server-side gate as opsAddObjective - reordering the
+            // commander's priority queue is exactly what the toggle gates
+
+            if !([_logic,"playerObjectivesEnabled",false] call ALiVE_fnc_hashGet) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Player objectives are disabled"]] call MAINCLASS;
+            };
 
             private _opcom = [_logic,"opsFindOPCOM", _selOpcom select 0] call MAINCLASS;
 
