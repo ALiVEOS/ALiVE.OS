@@ -101,6 +101,78 @@ private _hazardRadius = if (_isHeli) then {
     (_vehLen max _vehWid) * 0.5 + 0.5
 };
 
+// Paved-surface allowlist + linear-strip discriminator, hoisted to function
+// scope so BOTH the apron tier and the field tier can consult it.
+//
+// A taxiway or runway is a NARROW paved band; an apron is a BROAD paved area. On
+// Stratis the apron, taxiway and runway are all one terrain surface
+// (GdtStratisConcrete), so a surface allowlist cannot tell them apart, and the
+// object/capsule model _fnc_clearOfRunwayTaxiway relies on has coverage gaps a
+// wide airframe lands in (14 sparse taxiway capsules over a 1.3 km field). Ask
+// the ground directly instead: probe the paved surface at the aircraft's own
+// footprint half-extent along four opposing axes; if the centre is paved but
+// some axis runs off the pavement at BOTH ends, the pavement is a band narrower
+// than the airframe is wide on that axis - a taxiway/runway strip - so reject
+// it. A broad apron, or an apron edge/corner (only the outward side runs off,
+// the inward end of each through-axis stays paved), is accepted. It never
+// consults the capsule cache, so a gap cannot defeat it, and it scales with the
+// aircraft (a wide transport demands wide pavement, a small fighter is content
+// with a narrower hardstand) at a cost of at most eight surfaceType reads.
+private _pavedSurfaces = ["asphalt", "concrete", "road", "runway", "pave", "tarmac"];
+private _fnc_pavedAt = {
+    params ["_p"];
+    private _s = toLower (surfaceType _p);
+    if ((_s select [0, 1]) == "#") then { _s = _s select [1] };
+    _pavedSurfaces findIf {_s find _x > -1} >= 0
+};
+private _fnc_onNarrowStrip = {
+    params ["_pos"];
+    // Self-guard: only a paved CENTRE can be a strip, so this is inert on the
+    // field tier's open-ground (non-paved) samples and can never misfire there.
+    if (!([_pos] call _fnc_pavedAt)) exitWith { false };
+    private _probe = _hazardRadius;
+    ([0, 45, 90, 135] findIf {
+        private _a = _x;
+        !([_pos getPos [_probe, _a]]        call _fnc_pavedAt) &&
+        {!([_pos getPos [_probe, _a + 180]] call _fnc_pavedAt)}
+    }) >= 0
+};
+
+// A "wide" airframe is a large VTOL / transport whose wing or rotor span fits no
+// helipad and no hangar, so the cascade drops it to the apron and field tiers.
+// On Stratis those tiers park it wrong: apron, taxiway and runway share one
+// concrete paint so the paved-surface allowlist cannot tell an apron from a
+// taxiway, and the taxiway capsules have coverage gaps a wide span lands in, so a
+// 29 m Blackfish ends up with a wingtip over a live taxiway or its belly on a
+// road. Helis are excluded (they take real pads at tier 1, and a pad-less heli
+// must not be pushed to a distant field, b0675164); a normal fighter (~17 m span)
+// stays below the threshold and keeps the apron. Dimension-based, so it is
+// independent of VTOL config inheritance - a re-classed airframe (DAO_Gunship_B)
+// that no longer isKindOf a VTOL base is still caught on its ~29 m span alone.
+// Tunable from init.sqf without a rebuild.
+if (isNil "ALiVE_airSpawn_wideAirframeSpan") then { ALiVE_airSpawn_wideAirframeSpan = 24 };
+private _wideAirframe = _isPlane && {(_vehLen max _vehWid) >= ALiVE_airSpawn_wideAirframeSpan};
+
+// Whole-footprint OFF-PAVEMENT + OFF-ROAD test for a wide airframe. The capsule
+// taxiway model has coverage gaps, and the surface allowlist cannot separate an
+// apron from a taxiway where they share one paint, so neither can keep a wing off
+// a movement surface. The ground itself can: a movement surface is paved, open
+// dispersal is not, and a road answers isOnRoad. Sample the footprint - centre, a
+// 12-point perimeter ring at the hazard radius (~15 m for the Blackfish, i.e. the
+// wingtip arc; the 30-degree spacing is a ~7.6 m chord, finer than any Stratis
+// taxiway is wide, so a wing overhang cannot slip between probes) and a 6-point
+// mid ring - and reject if ANY sample is paved OR on a road. What survives stands
+// wholly on open, non-paved, non-road ground and by construction cannot overhang
+// a concrete taxiway/runway nor sit on a road. Surface-based, so a capsule gap
+// cannot defeat it. Reuses _fnc_pavedAt and _hazardRadius, both in scope here.
+private _fnc_footprintOffPavement = {
+    params ["_pos"];
+    private _pts = [_pos];
+    { _pts pushBack (_pos getPos [_hazardRadius, _x]) } forEach [0,30,60,90,120,150,180,210,240,270,300,330];
+    { _pts pushBack (_pos getPos [_hazardRadius * 0.6, _x]) } forEach [0,60,120,180,240,300];
+    (_pts findIf { isOnRoad _x || {[_x] call _fnc_pavedAt} }) < 0
+};
+
 // ------------------------------------------------------------------------
 // Obstacle tables. Same shape as the ground validator's lists - keep in
 // sync with addons/main/fnc_findVehicleSpawnPosition.sqf when adding
@@ -650,8 +722,105 @@ if (count _found == 0 && {_preference in ["auto", "hangar"]} && _isPlane && !_is
     };
 };
 
+// Tier 2.5: wide-airframe open dispersal (large plane / VTOL).
+//
+// A wide VTOL (Blackfish-class, ~29 m span) fits no helipad and no hangar, so it
+// falls to the apron and field tiers where Stratis's uniform concrete paint and
+// gap-riddled taxiway capsules park it half over a movement surface or on a road
+// (RPT-proven: a wing over a taxiway from a grass dispersal, a belly on a dirt
+// road, a straddle of the concrete taxiway). Ask the ground under the WHOLE
+// footprint instead: an airframe standing entirely on open, non-paved, non-road
+// ground cannot overhang a concrete taxiway/runway nor sit on a road, whatever
+// the capsule coverage.
+//
+// GRACEFUL: a PREFERENCE pass, not a hard gate. It searches the SAME _maxDistance
+// the apron/field tiers use (no radius relaxation - a distant field was
+// explicitly rejected), so any spot it finds is in taxi range of the field. If no
+// fully-off-pavement open spot exists nearby it finds nothing, count stays 0, and
+// the tiers below run unchanged as the fallback. Scoped to wide PLANES only, so
+// every heli taking a real pad at tier 1 and every normal plane on the apron are
+// untouched.
+if (count _found == 0 && _wideAirframe && {_preference in ["auto", "apron", "field"]}) then {
+    private _openDir = if (count _runwaySegments > 0) then {
+        private _seg = _runwaySegments select 0;
+        (_seg select 0) getDir (_seg select 1)
+    } else {
+        random 360
+    };
+    for "_i" from 1 to 500 do {
+        if (count _found > 0) exitWith {};
+        private _pos = _centerPos getPos [random _maxDistance, random 360];
+        // Whole footprint off pavement and off road - the decisive test.
+        if !([_pos] call _fnc_footprintOffPavement) then { continue };
+        // Slope / clear-around, identical to the field tier so behaviour matches.
+        if ((_pos isFlatEmpty [-1, -1, 0.3, _hazardRadius, 0, false, objNull]) isEqualTo []) then { continue };
+        // Belt-and-suspenders: object/capsule taxiway model too (a terrain whose
+        // taxiway is built from objects on non-paved ground would pass the surface
+        // test but not this), plus sibling deconfliction and the full
+        // obstacle / water / building footprint sweep the other tiers apply.
+        if !([_pos] call _fnc_clearOfRunwayTaxiway) then { continue };
+        if !([_pos, _minSeparation] call _fnc_registryClear) then { continue };
+        if !([_pos, _openDir] call _fnc_footprintClear) then { continue };
+        _found = [_pos, _openDir];
+    };
+};
+
 // Tier 3: apron (planes; helis as final fallback if no hangar fit).
 if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
+    // Parking pre-pass. buildAirsideCache infers where aircraft are meant to
+    // SIT - authored ALiVE_parking tags, the far ends of taxi routes, and the
+    // hangar and helipad discs - and stores them as kind-3 capsules. Unlike the
+    // random paved sample below, these sit OFF the runway and taxiway movement
+    // surfaces by construction, which is what a wide VTOL needs when every real
+    // pad is taken: a hardstand near the field rather than a broad concrete
+    // sample that _fnc_onNarrowStrip (weak on Stratis's uniform concrete) and
+    // the capsule-gapped taxiway exclusion can both wave through onto a live
+    // taxiway. Prefer a real parking disc; the random loop stays as the fallback
+    // when every disc is blocked.
+    //
+    // Trust the kind-3 classification and skip the narrow-strip test here (a
+    // parking disc is meant to be broad), but still run footprint, registry and
+    // runway/taxiway checks so a mis-inferred or occupied disc self-rejects: a
+    // helipad disc already holding an aircraft, a hangar-centre disc (a BUILDING
+    // terrain hit), or a taxi tail that is really a runway hold point on a
+    // kind-2 taxiway. The registry check deconflicts sibling VTOLs, one airframe
+    // per parking spot.
+    if (!isNil "ALiVE_airsideCapsules" && {!(ALiVE_airsideCapsules isEqualTo [])}) then {
+        private _parkDir = if (count _runwaySegments > 0) then {
+            private _seg = _runwaySegments select 0;
+            (_seg select 0) getDir (_seg select 1)
+        } else {
+            random 360
+        };
+        {
+            if (count _found > 0) exitWith {};
+            private _caps = _x;
+            private _capCount = (count _caps) / 8;
+            for "_j" from 0 to (_capCount - 1) do {
+                if (count _found > 0) exitWith {};
+                private _c = _j * 8;
+                if ((_caps select (_c + 7)) == 3) then {
+                    private _pCentre = [_caps select _c, _caps select (_c + 1), 0];
+                    if ((_pCentre distance2D _centerPos) <= _maxDistance) then {
+                        private _r = _caps select (_c + 4);
+                        private _cands = [_pCentre];
+                        if (_r > (_hazardRadius + 4)) then {
+                            private _ring = (_r - _hazardRadius) min (_r * 0.6);
+                            { _cands pushBack (_pCentre getPos [_ring, _x]) } forEach [0, 60, 120, 180, 240, 300];
+                        };
+                        {
+                            if (count _found > 0) exitWith {};
+                            private _pos = _x;
+                            if ([_pos] call _fnc_clearOfRoad && {[_pos] call _fnc_clearOfRunwayTaxiway} && {[_pos, _minSeparation] call _fnc_registryClear} && {[_pos, _parkDir] call _fnc_footprintClear}) then {
+                                _found = [_pos, _parkDir];
+                            };
+                        } forEach _cands;
+                    };
+                };
+            };
+        } forEach ALiVE_airsideCapsules;
+    };
+
     // Paved-surface match by SUBSTRING, case-insensitive. An exact-name list
     // does not survive contact with real terrains: Stratis Air Station's apron
     // reports GdtStratisConcrete, so an exact list rejected all 300 samples and
@@ -668,6 +837,11 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
         private _surface = toLower (surfaceType _pos);
         if ((_surface select [0, 1]) == "#") then { _surface = _surface select [1] };
         if (_surfaceAllowed findIf {_surface find _x > -1} < 0) then { continue };
+        // Reject a narrow taxiway/runway strip the capsule model missed (planes
+        // only -- a heli lifts vertically and does not taxi a departure path, so
+        // a heli on a strip does not stall take-offs, and gating here keeps a
+        // pad-less heli off the distant-field fallback b0675164 fixed).
+        if (_isPlane && {[_pos] call _fnc_onNarrowStrip}) then { continue };
         if !([_pos] call _fnc_clearOfRoad) then { continue };
         if !([_pos] call _fnc_clearOfRunwayTaxiway) then { continue };
         if !([_pos, _minSeparation] call _fnc_registryClear) then { continue };
@@ -700,6 +874,11 @@ if (count _found == 0 && {_preference in ["auto", "field"]}) then {
         private _surface = toLower (surfaceType _pos);
         if ((_surface select [0, 1]) == "#") then { _surface = _surface select [1] };
         if (_surfaceBlocked findIf {_surface find _x > -1} > -1) then { continue };
+        // A flat concrete taxiway/runway strip in a capsule gap passes this
+        // blocklist and the isFlatEmpty test below; reject it here too, because
+        // the apron tier's apron->field retry and the auto-cascade both feed the
+        // field tier (planes only, same reasoning as the apron tier).
+        if (_isPlane && {[_pos] call _fnc_onNarrowStrip}) then { continue };
         // Slope / clear-around check.
         if ((_pos isFlatEmpty [-1, -1, 0.3, _hazardRadius, 0, false, objNull]) isEqualTo []) then { continue };
         // Roads clear this tier's blocklist and its flatness test effortlessly,

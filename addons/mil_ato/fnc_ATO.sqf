@@ -443,7 +443,7 @@ private _fnc_isDroneClass = {
 // re-enabled (with the maintenance repair applied) once the engine has settled
 // any overlap - setDamage is blocked while allowDamage is false.
 private _fnc_safeReposition = {
-    params ["_veh", "_pos", ["_dir", -1]];
+    params ["_veh", "_pos", ["_dir", -1], ["_slotAssets", []], ["_slotID", ""]];
     // Null-safe: de-virtualized / destroyed profiles yield objNull here (the RPT `type= empty` no-op).
     if (isNull _veh || {!alive _veh}) exitWith {};
     // Never move an airframe a player is sitting in. Everything below is a
@@ -476,6 +476,44 @@ private _fnc_safeReposition = {
     // the RHS open hangar), so setPosATL at that z floats the plane up in the roof (and that 5 m roof-clip
     // WAS the detonation). Force terrain level so it sits on the apron -- boardable and clear of the roof.
     _target set [2, 0];
+    // Durable home-slot deconfliction for co-located siblings. Two ATO assets can be
+    // seeded with the SAME home parking slot; on RTB both teleport onto that one spot and
+    // detonate (RPT: two RHS_A10 sharing [1739.79,5226], returner settled dmg~0.96). A
+    // positional check cannot help -- the sibling holding the slot is usually AIRBORNE on
+    // task, so its profile is off the spatial grid and its live object is miles away, and
+    // nearestObjects / getNearProfiles at the slot see nothing. Instead give every asset
+    // seeded into the same ~15 m cell a DETERMINISTIC rank (stable-sorted profileIDs) and
+    // march ranks above 0 one airframe-length sideways off the anchor. Rank 0 keeps the
+    // exact slot; the assignment depends only on WHICH assets share the cell, never on who
+    // is physically present, so it holds while the slot owner is airborne. No asset context
+    // (adoption / legacy callers pass []) or a lone occupant -> _target is left as FASP
+    // resolved it. The isEqualType [] guard skips a persisted hash's "_id" metadata key.
+    if (count _slotAssets >= 3 && {!(_slotID isEqualTo "")} && {count _pos >= 2}) then {
+        private _cell = [floor ((_pos select 0) / 15), floor ((_pos select 1) / 15)];
+        private _sharers = [];
+        {
+            private _a = [_slotAssets, _x] call ALiVE_fnc_hashGet;
+            if (!isNil "_a" && {_a isEqualType []}) then {
+                private _sp = [_a, "startPos", []] call ALiVE_fnc_hashGet;
+                if (count _sp >= 2 && {[floor ((_sp select 0) / 15), floor ((_sp select 1) / 15)] isEqualTo _cell}) then {
+                    _sharers pushBack _x;
+                };
+            };
+        } forEach (_slotAssets select 1);
+        if (count _sharers > 1) then {
+            _sharers sort true;
+            private _rank = _sharers find _slotID;
+            if (_rank > 0) then {
+                private _pdir = if (_dir >= 0) then { _dir } else { 0 };
+                private _bbr = boundingBoxReal _veh;
+                private _sep = ((((_bbr select 1) select 0) - ((_bbr select 0) select 0)) max (((_bbr select 1) select 1) - ((_bbr select 0) select 1))) + 6;
+                if (_sep < 12) then { _sep = 22 };
+                _target set [0, (_target select 0) + (_sep * _rank) * sin (_pdir + 90)];
+                _target set [1, (_target select 1) + (_sep * _rank) * cos (_pdir + 90)];
+                diag_log format ["ATO_HANGAR_DBG slotRank type=%1 id=%2 rank=%3 of=%4 sep=%5 target=%6", typeOf _veh, _slotID, _rank, count _sharers, _sep, _target];
+            };
+        };
+    };
     _veh allowDamage false;
     if (_dir >= 0) then { _veh setDir _dir; };
     _veh setPosATL _target;
@@ -1385,12 +1423,53 @@ switch(_operation) do {
 
                 } else {
 
-                    // Heli or VTOL?
-                    // Get HeliH object
-                    private _helipad = nearestObject [_position, "HeliH"];
-                    if (isNull _helipad) then {
+                    // Heli or VTOL.
+                    //
+                    // The raw mil_placement point is where the airframe was AUTHORED, not
+                    // where it can safely sit. On a field whose taxiways are painted texture
+                    // rather than objects (Stratis) the capsule-based airsideClear above leaves
+                    // gap-taxiway spots untouched, so a heli - or worse a wide VTOL like the
+                    // reclassed Blackfish - ends up with an invisible pad stamped straight onto
+                    // the taxiway, blocking every departing aircraft.
+                    //
+                    // Route through the shared air-spawn validator instead: it hands helis the
+                    // nearest REAL helipad (footprint-checked, one airframe per pad via the
+                    // session registry, so sibling AH-64s deconflict onto distinct pads), and a
+                    // big VTOL a clear paved apron or open field spot OFF the movement surfaces
+                    // when no pad fits. Carrier-based airframes are the exception - the deck is
+                    // the parking surface, and an airfield search at sea would drag them off it.
+                    private _padPos = _position;
+                    if (!_isOnCarrier && {!isNil "ALiVE_fnc_findAirSpawnPosition"}) then {
+                        private _spot = [_vehicleClass, _position, 400, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                        if (count _spot >= 2) then {
+                            _padPos = +(_spot select 0);
+                            _padPos set [2, 0];
+                            if (_debug) then {
+                                ["ATO %1 - %2 parked %3m off placement point onto a validated spot", _logic, _vehicleClass, round (_padPos distance2D _position)] call ALiVE_fnc_dump;
+                            };
+                            // Move the asset's own start point onto the validated spot, and keep
+                            // the profile (and any live unmanned airframe) in step so it does not
+                            // snap back to the blocking spot on its next despawn and respawn.
+                            // Mirrors the airsideClear relocation above.
+                            _position = +_padPos;
+                            [_asset,"startPos",_position] call ALiVE_fnc_hashSet;
+                            [_vehicleProfile,"position",_position] call ALiVE_fnc_profileVehicle;
+                            private _liveVeh = [_vehicleProfile,"vehicle"] call ALiVE_fnc_hashGet;
+                            if (!isNil "_liveVeh" && {!isNull _liveVeh} && {alive _liveVeh} && {(crew _liveVeh) findIf {isPlayer _x} < 0}) then {
+                                _liveVeh setPosATL _position;
+                                _liveVeh setVelocity [0,0,0];
+                            };
+                        };
+                    };
+
+                    // Store the pad. If the validator landed the airframe on a real HeliH,
+                    // adopt that pad outright; otherwise (apron/field spot, or the search
+                    // returned nothing and _padPos is still the raw point) stamp an invisible
+                    // pad on the chosen spot so the asset always has a helipad field.
+                    private _helipad = nearestObject [_padPos, "HeliH"];
+                    if (isNull _helipad || {(position _helipad) distance2D _padPos > 3}) then {
                         // create an invisble helipad
-                        _helipad = "Land_HelipadEmpty_F" createvehicle _position;
+                        _helipad = "Land_HelipadEmpty_F" createvehicle _padPos;
                     };
                     [_asset,"helipad", position _helipad] call ALiVE_fnc_hashSet;
 
@@ -3102,6 +3181,26 @@ switch(_operation) do {
                     if !(isNil "_p") then { [_p, "busy", false] call ALiVE_fnc_hashSet; };
                 } forEach _x;
             } forEach _delivered;
+        };
+
+        // The airframe profile can be lost mid-transport (destroyed en route): it is un-registered and
+        // ML's cargo GC then prunes the dead vehicle ID out of the delivered pair, leaving only the pilot.
+        // A blank _vehicleID here means a crew husk with no surviving aircraft arrived. Registering that
+        // orphan pilot (below) then aborting at the vehicle lookup would strand it AND - resupplyPending
+        // was already consumed at the top of this handler - dead-end the resupply. Instead release the
+        // arrived crew and re-queue the loss via the PROVEN self-create path (forceSelfCreate, so the retry
+        // does not re-enter LOGCOM delivery and collide again). Runs BEFORE registerProfile so no orphan
+        // pilot is ever adopted.
+        if (_vehicleID == "") exitWith {
+            ["ATO - LOGCOM delivery for event %1 arrived with crew %2 but no surviving airframe (lost in transit); releasing crew and re-queuing a self-create replacement.", _eventID, _entityID] call ALiVE_fnc_dumpR;
+            {
+                {
+                    private _p = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                    if !(isNil "_p") then { [_p, "busy", false] call ALiVE_fnc_hashSet; };
+                } forEach _x;
+            } forEach _delivered;
+            [_asset,"forceSelfCreate",true] call ALiVE_fnc_hashSet;
+            [_logic,"resupplyList",_asset] call MAINCLASS;
         };
 
         // Adopt via the ENTITY profile. registerProfile only stamps crewID (and busies the
@@ -6462,7 +6561,7 @@ switch(_operation) do {
                                 //Move back to original position (safe reposition - guards against hangar detonation)
                                 private _startDir = [_aircraft,"startDir"] call ALiVE_fnc_hashGet;
                                 if !(_isOnCarrier) then {
-                                    [_vehicle, _startPosition, _startDir] call _fnc_safeReposition;
+                                    [_vehicle, _startPosition, _startDir, _assets, _aircraftID] call _fnc_safeReposition;
                                 } else {
                                     _vehicle setDir _startDir;
                                     _vehicle setposATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
@@ -7190,7 +7289,7 @@ switch(_operation) do {
                     //Move back to original position (safe reposition - guards against hangar detonation)
                     private _startDir = [_aircraft,"startDir"] call ALiVE_fnc_hashGet;
                     if !(_isOnCarrier) then {
-                        [_vehicle, [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1], _startDir] call _fnc_safeReposition;
+                        [_vehicle, [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1], _startDir, _assets, _aircraftID] call _fnc_safeReposition;
                     } else {
                         _vehicle setDir _startDir;
                     };
