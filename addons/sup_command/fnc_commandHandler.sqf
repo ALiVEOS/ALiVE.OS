@@ -1140,6 +1140,12 @@ switch(_operation) do {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
             };
 
+            // parity with opsAddObjective/opsSendObjectives - asymmetric
+            // commanders are scoped out of all player-objective interaction
+            if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Objectives view not available for asymmetric commanders"]] call MAINCLASS;
+            };
+
             private _objective = [_opcom,"getObjectiveByID",_objectiveID] call ALiVE_fnc_OPCOM;
 
             if (isnil "_objective") exitwith {
@@ -1177,6 +1183,13 @@ switch(_operation) do {
 
             if (isnil "_opcom") exitwith {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
+            };
+
+            // parity with opsAddObjective/opsSendObjectives - asymmetric
+            // commanders are scoped out of all player-objective interaction, so
+            // a crafted event cannot reorder their objective queue
+            if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Objectives view not available for asymmetric commanders"]] call MAINCLASS;
             };
 
             // recompute the index server-side - the FSM churns the array, a

@@ -1800,6 +1800,12 @@ switch (_operation) do {
             // commander's de-facto priority queue (selectordersbystate picks the
             // first match per state), and every async consumer resolves
             // objectives by ID or hash reference, so reordering is safe mid-run.
+            //
+            // INVOKE UNSCHEDULED ONLY: the deleteAt+insert is two statements, so a
+            // scheduler yield between them would let an observer (an OPCOM analyze
+            // pass) transiently see the array with this objective absent, skipping
+            // it for one cycle. The current callers are all unscheduled; a future
+            // scheduled caller must wrap this op or make the move atomic.
             private _objective = _objectives deleteAt _objectiveIndex;
             _objectives insert [_newIndex, [_objective]];
         };
@@ -2894,8 +2900,10 @@ switch (_operation) do {
             ["_insertAtFront", false, [false]]
         ];
 
-        // playerCreated must stay AFTER _rev - opcom.fsm reads opcom_state
-        // positionally (_x select 2 select 5), so the first ten keys are fixed
+        // playerCreated must stay AFTER _rev. The FSMs read the objective value
+        // array POSITIONALLY: objectiveID(0), center(1), size(2), objectiveType(3),
+        // priority(4) and opcom_state(5) are all read by index in opcom.fsm/tacom.fsm.
+        // NEVER reorder keys 0-9; only ever append new keys after _rev.
         private _objective = [[
             ["objectiveID", _id],
             ["center", _pos],
