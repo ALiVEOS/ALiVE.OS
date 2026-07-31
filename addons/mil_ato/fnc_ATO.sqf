@@ -1660,6 +1660,11 @@ switch(_operation) do {
     };
     case "requestPlayerTask": {
 
+        // _debug is not a function-level variable here (params are only _logic /
+        // _operation / _args), and this case is re-entered via call MAINCLASS, so
+        // without this read the debug logs below silently never fire.
+        private _debug = [_logic, "debug"] call MAINCLASS;
+
         private _type = _args select 0;
         private _targets = +(_args select 1);
         private _friendly = "";
@@ -1669,9 +1674,17 @@ switch(_operation) do {
         };
 
         // 1st target will be handled by ATO, check other targets for player
-        if (_type != "SEAD" && _type != "DefendHQ") then {
+        if (_type != "SEAD" && _type != "DefendHQ" && _type != "Laze") then {
             _targets set [0, -1];
             _targets = _targets - [-1];
+        };
+
+        // Laze pairs to the sortie's PRIMARY target only. Keeping just target 0
+        // (alive) stops the dedupe loop below falling through to a secondary slot,
+        // which can be objNull (resolved from a dead profile) and would create a
+        // task that instantly auto-succeeds.
+        if (_type == "Laze") then {
+            _targets = (_targets select [0,1]) select {!isNull _x && {alive _x}};
         };
 
         if (isNil QGVAR(playerRequests)) then {
@@ -1708,6 +1721,23 @@ switch(_operation) do {
             } else {
                 _destination = position _target;
                 _enemyFaction = faction _target;
+            };
+
+            // Buildings carry no usable faction ("" or "Default"); fall back to the
+            // faction that holds the ground, but only if it is actually hostile to us.
+            // A friendly or civilian dominant faction would mis-colour the task and,
+            // under Constant auto-tasking, poison the side's enemy-faction config, so
+            // reject those and keep the OPF_F default. Laze only; other types unchanged.
+            if (_type == "Laze" && {_enemyFaction in ["","Default"]}) then {
+                _enemyFaction = "OPF_F";
+                private _domFaction = [_destination, 3000] call ALiVE_fnc_getDominantFaction;
+                if (!isNil "_domFaction" && {_domFaction != ""}) then {
+                    private _sideObj = [[_logic,"side"] call MAINCLASS] call ALIVE_fnc_sideTextToObject;
+                    private _domSide = _domFaction call ALiVE_fnc_factionSide;
+                    if (_domSide != civilian && {(_sideObj getFriend _domSide) < 0.6}) then {
+                        _enemyFaction = _domFaction;
+                    };
+                };
             };
 
             // Don't send request if destination isn't defined
@@ -1760,6 +1790,12 @@ switch(_operation) do {
 
             if (_type == "CAS") then {
                 _taskData pushback _friendly;
+            };
+
+            // Laze payload at _taskData index 12: [this sortie's own decoy lasers
+            // (excluded from the player-laze scan), strike window in seconds].
+            if (_type == "Laze") then {
+                _taskData pushback (_args param [2,[[],900]]);
             };
 
             private _event = ["TASK_GENERATE", _taskData, "ATO"] call ALIVE_fnc_event;
@@ -6437,6 +6473,10 @@ switch(_operation) do {
 
                                         _wp setWaypointType "SAD";
 
+                                        // Collect this sortie's decoy lasers so the paired laze
+                                        // task can exclude them from its player-designation scan.
+                                        private _atoLazeDecoys = [];
+
                                         {
                                             if (_forEachIndex < 3) then {
 
@@ -6450,6 +6490,7 @@ switch(_operation) do {
 
                                                 private _laze = _lazor createVehicle getPos _x;
                                                 _laze attachTo [_dummy,[-15 + (random 30),-15 + (random 30), 1]];
+                                                _atoLazeDecoys pushBack _laze;
 
                                                 //["ATO Created lazer %1 and attached it to %2!",_laze,_dummy] call ALiVE_fnc_dumpR;
 
@@ -6477,6 +6518,16 @@ switch(_operation) do {
                                                 //_wp setWaypointStatements ["true", "diag_log ['GroupLeader: ', this]; diag_log ['Units: ', thislist]"];
                                             };
                                         } forEach _eventTargets;
+
+                                        // A Strike sortie is now genuinely inbound against these
+                                        // buildings (airframe spawned with a driver aboard per the
+                                        // launch gate above, SAD targeting and decoy lasers set).
+                                        // Hand the primary target to players as a laze-assist task.
+                                        // Strike only: OCA/DCA/SEAD share this branch, but their
+                                        // task copy would be wrong and SEAD raises its own task.
+                                        if (_eventType == "Strike" && {_generateTasks} && {_C2ISTARisAvailable}) then {
+                                            [_logic, "requestPlayerTask", ["Laze", _eventTargets, [_atoLazeDecoys, _eventDuration * 60]]] call MAINCLASS;
+                                        };
                                     } else {
                                         _wp waypointAttachVehicle _targetObject;
                                         _wp setWaypointType "DESTROY";

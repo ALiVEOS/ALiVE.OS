@@ -366,6 +366,11 @@ class CfgFunctions {
                 file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskCAS.sqf";
                 RECOMPILE;
             };
+            class taskLaze {
+                description = "Task Laze Target for Air Strike";
+                file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskLaze.sqf";
+                RECOMPILE;
+            };
             class taskDestroyVehicles {
                 description = "Task Destroy Vehicles";
                 file = "\x\alive\addons\mil_c2istar\tasks\fnc_taskDestroyVehicles.sqf";
