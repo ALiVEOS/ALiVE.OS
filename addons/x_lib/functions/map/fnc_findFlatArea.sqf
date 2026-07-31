@@ -28,6 +28,7 @@ BON INF
 
 Peer reviewed:
 HighHead
+Jman
 ---------------------------------------------------------------------------- */
 private ["_position","_radius","_pos","_maxgradient","_gradientarea","_debug"];
 
@@ -37,8 +38,13 @@ if(count _this > 1) then {_radius = _this select 1;} else {_radius = 2;};
 if(count _this > 2) then {_gradientarea = _this select 2} else {_gradientarea = 5};   // in metres
 if(count _this > 3) then {_maxgradient = _this select 3} else {_maxgradient = 0.1};   // in [0,1]
 
-if (isnil "_position" || {count _position < 2}) then {
+if (isnil "_position" || {!(_position isEqualType [])} || {count _position < 2}) exitWith {
+    // Bail on bad input instead of falling through: the 3000-iteration loop below reads
+    // (_position select 0/1) every pass, so a nil/short position spammed thousands of
+    // "Undefined variable _position" errors per call. Return [] (the normal no-flat-area
+    // result) so callers handle it as "not found".
     ["ALiVE_fnc_findFlatArea retrieved wrong input %1 from %2!",_this,_fnc_scriptNameParent] call ALiVE_fnc_Dump;
+    []
 };
 
 _debug = false;

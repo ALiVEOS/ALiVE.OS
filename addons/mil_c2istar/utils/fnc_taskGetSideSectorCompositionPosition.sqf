@@ -19,6 +19,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_taskLocation","_taskLocationType","_side","_targetPosition","_sideSectors","_sortedSectors","_countSectors",
@@ -68,9 +69,12 @@ if(count _sideSectors > 0) then {
 
     if(_countSectors > 0) then {
 
-        if(_taskLocationType == "Map" || _taskLocationType == "Short") then {
-            _targetSector = _spawnSectors select 0;
-        };
+        // Default to the nearest sector so an unrecognised or empty _taskLocationType
+        // (some auto-task callers, e.g. taskCSAR, pass one outside Map/Short/Medium/Long)
+        // still resolves a target sector. Without this default _targetSector was left
+        // undefined, erroring at the hashGet below and cascading a nil position into
+        // findFlatArea - heavy RPT spam. Map/Short already wanted the nearest sector.
+        _targetSector = _spawnSectors select 0;
 
         if(_taskLocationType == "Medium") then {
             _targetSector = _spawnSectors select (floor(_countSectors/2));
