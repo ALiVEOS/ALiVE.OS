@@ -184,6 +184,57 @@ switch (_operation) do {
 
     };
 
+    case "scomOpsAllowPlayerObjectives": {
+
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["scomOpsAllowPlayerObjectives", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsAllowPlayerObjectives", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["scomOpsAllowPlayerObjectives", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+
+    };
+
+    case "scomOpsObjectiveCooldown": {
+
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["scomOpsObjectiveCooldown", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsObjectiveCooldown", 300];
+        };
+        if (typeName _args == "STRING") then {
+                _args = parseNumber _args;
+                _logic setVariable ["scomOpsObjectiveCooldown", _args];
+        };
+        ASSERT_TRUE(typeName _args == "SCALAR",str _args);
+
+        _result = _args;
+
+    };
+
+    case "scomOpsMaxPlayerObjectives": {
+
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["scomOpsMaxPlayerObjectives", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsMaxPlayerObjectives", 3];
+        };
+        if (typeName _args == "STRING") then {
+                _args = parseNumber _args;
+                _logic setVariable ["scomOpsMaxPlayerObjectives", _args];
+        };
+        ASSERT_TRUE(typeName _args == "SCALAR",str _args);
+
+        _result = _args;
+
+    };
+
     case "intelLimit": {
 
         _result = [_logic,_operation,_args,DEFAULT_SCOM_LIMIT,["SIDE","FACTION","ALL"]] call ALIVE_fnc_OOsimpleOperation;
@@ -220,6 +271,26 @@ switch (_operation) do {
 
     };
 
+    case "objMarkers": {
+
+        // objectives-layer markers get their own slot - "marker" is a single
+        // list shared by the intel and ops views and its cleanup loops never
+        // reset it, so sharing it would clobber the group markers
+
+        _result = [_logic,_operation,_args,DEFAULT_MARKER] call ALIVE_fnc_OOsimpleOperation;
+
+    };
+
+    case "clearObjMarkers": {
+
+        {
+            deleteMarkerLocal _x;
+        } foreach ([_logic,"objMarkers"] call MAINCLASS);
+
+        [_logic,"objMarkers",[]] call MAINCLASS;
+
+    };
+
     case "init": {
 
         //Only one init per instance is allowed
@@ -245,6 +316,12 @@ switch (_operation) do {
             ALIVE_commandHandler = [nil,"create"] call ALIVE_fnc_commandHandler;
             [ALIVE_commandHandler, "init"] call ALIVE_fnc_commandHandler;
             [ALIVE_commandHandler, "debug", _debug] call ALIVE_fnc_commandHandler;
+
+            // player-objectives config + per-player cooldown registry
+            [ALIVE_commandHandler, "playerObjectivesEnabled", [_logic,"scomOpsAllowPlayerObjectives"] call MAINCLASS] call ALiVE_fnc_hashSet;
+            [ALIVE_commandHandler, "playerObjectiveCooldown", [_logic,"scomOpsObjectiveCooldown"] call MAINCLASS] call ALiVE_fnc_hashSet;
+            [ALIVE_commandHandler, "maxPlayerObjectives", [_logic,"scomOpsMaxPlayerObjectives"] call MAINCLASS] call ALiVE_fnc_hashSet;
+            [ALIVE_commandHandler, "playerObjectiveCooldowns", [] call ALIVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
 
         };
 
@@ -347,6 +424,12 @@ switch (_operation) do {
             [_commandState,"opsGroupWaypointsSelectedValues",[]] call ALIVE_fnc_hashSet;
             [_commandState,"opsGroupWaypointsSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
             [_commandState,"opsGroupWaypointsSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
+
+            [_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashSet;
+            [_commandState,"opsObjectivesData",[]] call ALIVE_fnc_hashSet;
+            [_commandState,"opsObjectivesMeta",[]] call ALIVE_fnc_hashSet;
+            [_commandState,"opsObjectivesSelectedID",""] call ALIVE_fnc_hashSet;
+            [_commandState,"opsObjectiveDesignatePos",[]] call ALIVE_fnc_hashSet;
 
             [_commandState,"opsWPProfiledTypeOptions",["Move","Cycle"]] call ALIVE_fnc_hashSet;
             [_commandState,"opsWPProfiledTypeValues",["MOVE","CYCLE"]] call ALIVE_fnc_hashSet;
@@ -505,6 +588,12 @@ switch (_operation) do {
 
                 };
 
+                case "OPS_OBJECTIVES": {
+
+                    [_logic,"enableOpsObjectives", _data] call MAINCLASS;
+
+                };
+
                 default {
 
                     [_logic,_type, _data] call MAINCLASS;
@@ -604,8 +693,13 @@ switch (_operation) do {
                 deleteMarkerLocal _x;
             } foreach _markers;
 
+            [_logic,"clearObjMarkers"] call MAINCLASS;
+
             [_commandState,"opsGroupWaypoints", []] call ALIVE_fnc_hashSet;
             [_commandState,"opsGroupPlannedWaypoints", []] call ALIVE_fnc_hashSet;
+            [_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashSet;
+            [_commandState,"opsObjectivesSelectedID",""] call ALIVE_fnc_hashSet;
+            [_commandState,"opsObjectiveDesignatePos",[]] call ALIVE_fnc_hashSet;
 
         };
 
@@ -1534,6 +1628,233 @@ switch (_operation) do {
 
                     // map click on reset
                     // do nothing
+
+                };
+
+                case "OPS_VIEW_OBJECTIVES": {
+
+                    // switch the ops view to the selected commander's
+                    // objectives - request a fresh snapshot from the server
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+                    [_commandState,"opsViewMode","OBJECTIVES"] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsObjectivesSelectedID",""] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsObjectiveDesignatePos",[]] call ALIVE_fnc_hashSet;
+
+                    [_logic,"commandState",_commandState] call MAINCLASS;
+
+                    // disarm the group view's map click for the round-trip
+
+                    private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                    _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
+                    lbClear _editList;
+
+                    [_logic,"enableOpsWaiting", true] call MAINCLASS;
+
+                    private _selOpcom = [_commandState,"opsOPCOMSelectedValue"] call ALIVE_fnc_hashGet;
+                    private _playerID = getPlayerUID player;
+
+                    ["OPS_GET_OBJECTIVES", [_playerID,_selOpcom]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+                };
+
+                case "OPS_VIEW_GROUPS": {
+
+                    // back to the group command view
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+                    [_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsObjectivesSelectedID",""] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsObjectiveDesignatePos",[]] call ALIVE_fnc_hashSet;
+
+                    [_logic,"commandState",_commandState] call MAINCLASS;
+
+                    [_logic,"clearObjMarkers"] call MAINCLASS;
+
+                    {
+                        private _button = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x);
+                        _button ctrlShow false;
+                    } foreach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3,SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR2,SCOMTablet_CTRL_BR3];
+
+                    private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                    _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
+                    lbClear _editList;
+
+                    [_logic,"enableOpsWaiting", true] call MAINCLASS;
+
+                    // re-enter the group flow through the existing server path
+
+                    private _selOpcom = [_commandState,"opsOPCOMSelectedValue"] call ALIVE_fnc_hashGet;
+                    private _playerID = getPlayerUID player;
+
+                    ["OPS_OPCOM_SELECT", [_playerID,_selOpcom]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+                };
+
+                case "OPS_OBJECTIVE_LIST_SELECT": {
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+                    private _selectedIndex = _args select 0 select 1;
+                    private _objectiveData = [_commandState,"opsObjectivesData"] call ALIVE_fnc_hashGet;
+
+                    if (_selectedIndex >= 0 && {_selectedIndex < count _objectiveData}) then {
+
+                        private _objective = _objectiveData select _selectedIndex;
+
+                        [_commandState,"opsObjectivesSelectedID",_objective select 0] call ALIVE_fnc_hashSet;
+                        [_logic,"commandState",_commandState] call MAINCLASS;
+
+                        private _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+
+                        ctrlMapAnimClear _map;
+                        _map ctrlMapAnimAdd [0.5, ctrlMapScale _map, _objective select 1];
+                        ctrlMapAnimCommit _map;
+
+                        [_logic,"enableOpsObjectiveActions"] call MAINCLASS;
+
+                    };
+
+                };
+
+                case "OPS_OBJECTIVE_DESIGNATE": {
+
+                    // arm the map for placement
+
+                    private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                    _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_OBJECTIVE_MAP_CLICK',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    [_logic,"setOpsStatus", "Click map to place objective"] call MAINCLASS;
+
+                    private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
+                    _buttonR1 ctrlSetText "Confirm Position";
+                    _buttonR1 ctrlEnable false;
+                    _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_CONFIRM',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
+                    _buttonR2 ctrlSetText "Cancel Designation";
+                    _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_DESIGNATE_CANCEL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                };
+
+                case "OP_OBJECTIVE_MAP_CLICK": {
+
+                    private _button = _args select 0 select 1;
+                    private _posX = _args select 0 select 2;
+                    private _posY = _args select 0 select 3;
+
+                    if (_button == 0) then {
+
+                        private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+                        private _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                        private _position = _map ctrlMapScreenToWorld [_posX, _posY];
+
+                        [_commandState,"opsObjectiveDesignatePos",_position] call ALIVE_fnc_hashSet;
+                        [_logic,"commandState",_commandState] call MAINCLASS;
+
+                        // re-clicking moves the placement marker
+
+                        deleteMarkerLocal "ALiVE_SCOM_OBJ_DESIGNATE";
+
+                        private _m = createMarkerLocal ["ALiVE_SCOM_OBJ_DESIGNATE", _position];
+                        _m setMarkerShapeLocal "ICON";
+                        _m setMarkerTypeLocal "mil_objective";
+                        _m setMarkerColorLocal "ColorOrange";
+                        _m setMarkerTextLocal "New Objective";
+
+                        private _objMarkers = [_logic,"objMarkers"] call MAINCLASS;
+                        if !(_m in _objMarkers) then {
+                            _objMarkers pushback _m;
+                            [_logic,"objMarkers",_objMarkers] call MAINCLASS;
+                        };
+
+                        [_logic,"setOpsStatus", "Confirm to designate objective"] call MAINCLASS;
+
+                        private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
+                        _buttonR1 ctrlEnable true;
+
+                    };
+
+                };
+
+                case "OPS_OBJECTIVE_CONFIRM": {
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+                    private _position = [_commandState,"opsObjectiveDesignatePos"] call ALIVE_fnc_hashGet;
+
+                    if (_position isEqualTo []) exitwith {};
+
+                    [_commandState,"opsObjectiveDesignatePos",[]] call ALIVE_fnc_hashSet;
+                    [_logic,"commandState",_commandState] call MAINCLASS;
+
+                    private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                    _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    [_logic,"enableOpsWaiting", true] call MAINCLASS;
+
+                    private _selOpcom = [_commandState,"opsOPCOMSelectedValue"] call ALIVE_fnc_hashGet;
+                    private _playerID = getPlayerUID player;
+
+                    ["OPS_ADD_OBJECTIVE", [_playerID,_selOpcom,_position]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+                };
+
+                case "OPS_OBJECTIVE_DESIGNATE_CANCEL": {
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+                    [_commandState,"opsObjectiveDesignatePos",[]] call ALIVE_fnc_hashSet;
+                    [_logic,"commandState",_commandState] call MAINCLASS;
+
+                    private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                    _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    // re-render from the cached snapshot
+
+                    [_logic,"renderOpsObjectives"] call MAINCLASS;
+
+                };
+
+                case "OPS_OBJECTIVE_CANCEL": {
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+                    private _selectedID = [_commandState,"opsObjectivesSelectedID"] call ALIVE_fnc_hashGet;
+
+                    if (_selectedID == "") exitwith {};
+
+                    [_logic,"enableOpsWaiting", true] call MAINCLASS;
+
+                    private _selOpcom = [_commandState,"opsOPCOMSelectedValue"] call ALIVE_fnc_hashGet;
+                    private _playerID = getPlayerUID player;
+
+                    ["OPS_CANCEL_OBJECTIVE", [_playerID,_selOpcom,_selectedID]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
+
+                };
+
+                case "OPS_OBJECTIVE_MOVE_UP";
+                case "OPS_OBJECTIVE_MOVE_DOWN": {
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+                    private _selectedID = [_commandState,"opsObjectivesSelectedID"] call ALIVE_fnc_hashGet;
+
+                    if (_selectedID == "") exitwith {};
+
+                    private _direction = if (_action == "OPS_OBJECTIVE_MOVE_UP") then {-1} else {1};
+
+                    private _selOpcom = [_commandState,"opsOPCOMSelectedValue"] call ALIVE_fnc_hashGet;
+                    private _playerID = getPlayerUID player;
+
+                    ["OPS_MOVE_OBJECTIVE", [_playerID,_selOpcom,_selectedID,_direction]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
                 };
 
@@ -2849,6 +3170,8 @@ switch (_operation) do {
             deleteMarkerLocal _x;
         } foreach _markers;
 
+        [_logic,"clearObjMarkers"] call MAINCLASS;
+
         // call reset
 
         if!(_isInstantJoinMode || _isSpectateMode) then {
@@ -2857,11 +3180,19 @@ switch (_operation) do {
 
         };
 
-        // add map draw eh
+        // add map draw eh - remove any previous one first, this runs on every
+        // tablet open and ctrlAddEventHandler stacks otherwise
 
-        _editMap ctrlAddEventHandler ["Draw",{
+        private _drawEH = _editMap getVariable ["SCOM_opsDrawEH", -1];
+        if (_drawEH != -1) then {
+            _editMap ctrlRemoveEventHandler ["Draw", _drawEH];
+        };
+
+        _drawEH = _editMap ctrlAddEventHandler ["Draw",{
             [ALiVE_SUP_COMMAND,"opsDrawWaypoints", _this] call ALiVE_fnc_SCOM;
         }];
+
+        _editMap setVariable ["SCOM_opsDrawEH", _drawEH];
     };
 
     case "resetOps": {
@@ -2876,6 +3207,14 @@ switch (_operation) do {
         [_commandState,"opsGroupWaypoints",[]] call ALIVE_fnc_hashSet;
         [_commandState,"opsGroupPlannedWaypoints",[]] call ALIVE_fnc_hashSet;
         [_commandState,"opsGroupWaypointsPlanned",false] call ALIVE_fnc_hashSet;
+
+        // reset the objectives view
+
+        [_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashSet;
+        [_commandState,"opsObjectivesData",[]] call ALIVE_fnc_hashSet;
+        [_commandState,"opsObjectivesMeta",[]] call ALIVE_fnc_hashSet;
+        [_commandState,"opsObjectivesSelectedID",""] call ALIVE_fnc_hashSet;
+        [_commandState,"opsObjectiveDesignatePos",[]] call ALIVE_fnc_hashSet;
 
 
         //[_logic,"commandState",_commandState] call MAINCLASS;
@@ -3285,6 +3624,212 @@ switch (_operation) do {
 
             };
 
+            // objectives entry point - offered whether or not this commander
+            // has free groups, gated by the mission-maker toggle
+
+            if ([_logic,"scomOpsAllowPlayerObjectives"] call MAINCLASS) then {
+                private _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
+                _buttonR3 ctrlShow true;
+                _buttonR3 ctrlSetText "View Objectives";
+                _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_VIEW_OBJECTIVES',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+            };
+
+        };
+
+    };
+
+    case "enableOpsObjectives": {
+
+        // server snapshot of the selected commander's objectives has arrived
+
+        if (_args isEqualType []) then {
+
+            private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+            // drop stale replies if the player already switched back to groups
+
+            if (([_commandState,"opsViewMode",""] call ALIVE_fnc_hashGet) != "OBJECTIVES") exitwith {};
+
+            (_args select 1) params ["_selOpcom","_objectiveData","_meta"];
+
+            [_commandState,"opsObjectivesData",_objectiveData] call ALIVE_fnc_hashSet;
+            [_commandState,"opsObjectivesMeta",_meta] call ALIVE_fnc_hashSet;
+
+            [_logic,"commandState",_commandState] call MAINCLASS;
+
+            [_logic,"renderOpsObjectives"] call MAINCLASS;
+
+        };
+
+    };
+
+    case "renderOpsObjectives": {
+
+        // draw the objectives list + map overlay from the cached snapshot.
+        // list order = array order = the commander's priority queue
+
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+        private _objectiveData = [_commandState,"opsObjectivesData"] call ALIVE_fnc_hashGet;
+        private _meta = [_commandState,"opsObjectivesMeta"] call ALIVE_fnc_hashGet;
+        private _selectedID = [_commandState,"opsObjectivesSelectedID"] call ALIVE_fnc_hashGet;
+
+        if (_meta isEqualTo []) then {_meta = [false,0,false,""]};
+        _meta params ["_playerObjectivesEnabled","_cooldownRemaining","_maxReached","_statusText"];
+
+        // markers
+
+        [_logic,"clearObjMarkers"] call MAINCLASS;
+
+        private _objMarkers = [];
+
+        {
+            _x params ["_objectiveID","_center","_size","_opcom_state","_objectiveType","_playerCreated"];
+
+            private _opcomColor = switch (_opcom_state) do {
+                case "unassigned": {"ColorWhite"};
+                case "idle": {"ColorYellow"};
+                case "reserve";
+                case "reserving": {"ColorGreen"};
+                case "defend";
+                case "defending": {"ColorBlue"};
+                case "attack";
+                case "attacking": {"ColorRed"};
+                default {"ColorWhite"};
+            };
+
+            private _m = createMarkerLocal [format["ALiVE_SCOM_OBJ_%1",_forEachIndex], _center];
+            _m setMarkerShapeLocal "Ellipse";
+            _m setMarkerBrushLocal (if (_playerCreated) then {"Cross"} else {"FDiagonal"});
+            _m setMarkerSizeLocal [_size, _size];
+            _m setMarkerColorLocal _opcomColor;
+            _m setMarkerAlphaLocal 1;
+
+            _objMarkers pushback _m;
+
+            private _icon = createMarkerLocal [format["ALiVE_SCOM_OBJ_%1_icon",_forEachIndex], _center];
+            _icon setMarkerShapeLocal "ICON";
+            _icon setMarkerTypeLocal "mil_objective";
+            _icon setMarkerColorLocal (if (_playerCreated) then {"ColorOrange"} else {_opcomColor});
+            _icon setMarkerSizeLocal [0.7,0.7];
+            _icon setMarkerTextLocal (format["%1%2", _forEachIndex + 1, if (_playerCreated) then {" P"} else {""}]);
+
+            _objMarkers pushback _icon;
+
+        } foreach _objectiveData;
+
+        [_logic,"objMarkers",_objMarkers] call MAINCLASS;
+
+        // list
+
+        private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
+        lbClear _editList;
+
+        {
+            _x params ["_objectiveID","_center","_size","_opcom_state","_objectiveType","_playerCreated"];
+
+            _editList lbAdd format["%1. %2 [%3]%4", _forEachIndex + 1, _objectiveType, toUpper _opcom_state, if (_playerCreated) then {" *PLAYER*"} else {""}];
+        } foreach _objectiveData;
+
+        _editList ctrlSetEventHandler ["LBSelChanged", "['OPS_OBJECTIVE_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        // neutral map click while not designating
+
+        private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+        _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        // buttons
+
+        private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
+        _buttonR1 ctrlShow true;
+        _buttonR1 ctrlSetText "Designate Objective";
+        _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_DESIGNATE',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+        _buttonR1 ctrlEnable (_playerObjectivesEnabled && {!_maxReached} && {_cooldownRemaining <= 0});
+
+        private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
+        _buttonR2 ctrlShow true;
+        _buttonR2 ctrlEnable true;
+        _buttonR2 ctrlSetText "Refresh";
+        _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_VIEW_OBJECTIVES',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        private _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
+        _buttonR3 ctrlShow true;
+        _buttonR3 ctrlSetText "View Groups";
+        _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_VIEW_GROUPS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        {
+            private _button = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x);
+            _button ctrlShow false;
+        } foreach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3];
+
+        // status - explicit server message wins, otherwise show why
+        // designation is unavailable
+
+        if (_statusText == "") then {
+            if (_cooldownRemaining > 0) then {
+                _statusText = format["Objective cooldown: %1s", ceil _cooldownRemaining];
+            } else {
+                if (_maxReached) then {_statusText = "Maximum player objectives reached"};
+            };
+        };
+
+        [_logic,"setOpsStatus", _statusText] call MAINCLASS;
+
+        // restore selection by ID - the array may have shifted since
+
+        if (_selectedID != "") then {
+            private _selectedIndex = _objectiveData findIf { (_x select 0) == _selectedID };
+
+            if (_selectedIndex != -1) then {
+                _editList lbSetCurSel _selectedIndex;
+            } else {
+                [_commandState,"opsObjectivesSelectedID",""] call ALIVE_fnc_hashSet;
+                [_logic,"commandState",_commandState] call MAINCLASS;
+            };
+        };
+
+    };
+
+    case "enableOpsObjectiveActions": {
+
+        // context buttons for the selected objective
+
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+        private _objectiveData = [_commandState,"opsObjectivesData"] call ALIVE_fnc_hashGet;
+        private _selectedID = [_commandState,"opsObjectivesSelectedID"] call ALIVE_fnc_hashGet;
+
+        private _selectedIndex = _objectiveData findIf { (_x select 0) == _selectedID };
+
+        if (_selectedIndex == -1) exitwith {
+            {
+                private _button = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x);
+                _button ctrlShow false;
+            } foreach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3];
+        };
+
+        private _playerCreated = (_objectiveData select _selectedIndex) select 5;
+
+        private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
+        _buttonL1 ctrlShow true;
+        _buttonL1 ctrlSetText "Move Priority Up";
+        _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_MOVE_UP',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+        _buttonL1 ctrlEnable (_selectedIndex > 0);
+
+        private _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
+        _buttonL2 ctrlShow true;
+        _buttonL2 ctrlSetText "Move Priority Down";
+        _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_MOVE_DOWN',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+        _buttonL2 ctrlEnable (_selectedIndex < (count _objectiveData - 1));
+
+        private _buttonL3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL3);
+
+        if (_playerCreated) then {
+            _buttonL3 ctrlShow true;
+            _buttonL3 ctrlSetText "Cancel Objective";
+            _buttonL3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_OBJECTIVE_CANCEL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+        } else {
+            _buttonL3 ctrlShow false;
         };
 
     };

@@ -181,6 +181,30 @@ switch(_operation) do {
 
                 };
 
+                case "OPS_GET_OBJECTIVES": {
+
+                    [_logic,"opsGetObjectives", _data] call MAINCLASS;
+
+                };
+
+                case "OPS_ADD_OBJECTIVE": {
+
+                    [_logic,"opsAddObjective", _data] call MAINCLASS;
+
+                };
+
+                case "OPS_CANCEL_OBJECTIVE": {
+
+                    [_logic,"opsCancelObjective", _data] call MAINCLASS;
+
+                };
+
+                case "OPS_MOVE_OBJECTIVE": {
+
+                    [_logic,"opsMoveObjective", _data] call MAINCLASS;
+
+                };
+
                 default {
 
                     [_logic,_type, _data] call MAINCLASS;
@@ -936,6 +960,241 @@ switch(_operation) do {
             ["OPCOM_OBJECTIVES", [_playerID,_objectiveData]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
 
         };
+    };
+
+    case "opsFindOPCOM": {
+
+        // resolve a selected-opcom ID to its live OPCOM handler, nil if gone
+
+        private _selOpcomID = _args;
+
+        if (!isnil "OPCOM_instances") then {
+            private _index = OPCOM_instances findIf { ([_x,"opcomID",""] call ALiVE_fnc_hashGet) == _selOpcomID };
+            if (_index != -1) then {
+                _result = OPCOM_instances select _index;
+            };
+        };
+
+    };
+
+    case "opsSendObjectives": {
+
+        // pack the selected commander's objectives IN ARRAY ORDER (array order
+        // is the commander's priority queue) and reply with a full snapshot -
+        // every mutation op ends here so the client never tracks indices
+
+        if (_args isEqualType []) then {
+
+            _args params ["_playerID","_selOpcom",["_statusText","",[""]]];
+
+            private _selOpcomID = _selOpcom select 0;
+            private _opcom = [_logic,"opsFindOPCOM", _selOpcomID] call MAINCLASS;
+
+            private _objectiveData = [];
+
+            if (isnil "_opcom") then {
+                if (_statusText == "") then {_statusText = "Commander no longer available"};
+            } else {
+                if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") then {
+                    if (_statusText == "") then {_statusText = "Objectives view not available for asymmetric commanders"};
+                } else {
+                    {
+                        _objectiveData pushBack [
+                            [_x,"objectiveID",""] call ALiVE_fnc_hashGet,
+                            [_x,"center",[]] call ALiVE_fnc_hashGet,
+                            [_x,"size",150] call ALiVE_fnc_hashGet,
+                            [_x,"opcom_state","unassigned"] call ALiVE_fnc_hashGet,
+                            [_x,"objectiveType","unknown"] call ALiVE_fnc_hashGet,
+                            [_x,"playerCreated",false] call ALiVE_fnc_hashGet
+                        ];
+                    } foreach ([_opcom,"objectives",[]] call ALiVE_fnc_HashGet);
+                };
+            };
+
+            private _enabled = [_logic,"playerObjectivesEnabled",false] call ALiVE_fnc_hashGet;
+            private _cooldown = [_logic,"playerObjectiveCooldown",300] call ALiVE_fnc_hashGet;
+            private _maxObjectives = [_logic,"maxPlayerObjectives",3] call ALiVE_fnc_hashGet;
+            private _cooldowns = [_logic,"playerObjectiveCooldowns"] call ALiVE_fnc_hashGet;
+
+            private _cooldownRemaining = 0;
+            if (!isnil "_cooldowns") then {
+                private _lastDesignation = [_cooldowns,_playerID,-999999] call ALiVE_fnc_hashGet;
+                _cooldownRemaining = 0 max (_cooldown - (time - _lastDesignation));
+            };
+
+            private _playerObjectiveCount = [_logic,"opsCountPlayerObjectives", _selOpcom select 2] call MAINCLASS;
+            private _maxReached = _playerObjectiveCount >= _maxObjectives;
+
+            private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            ["OPS_OBJECTIVES", [_playerID,[_selOpcom,_objectiveData,[_enabled,_cooldownRemaining,_maxReached,_statusText]]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+
+        };
+
+    };
+
+    case "opsCountPlayerObjectives": {
+
+        // player-designated objectives currently active across all commanders
+        // of the given side
+
+        private _side = _args;
+        private _count = 0;
+
+        if (!isnil "OPCOM_instances") then {
+            {
+                if (([_x,"side",""] call ALiVE_fnc_hashGet) == _side) then {
+                    _count = _count + ({[_x,"playerCreated",false] call ALiVE_fnc_hashGet} count ([_x,"objectives",[]] call ALiVE_fnc_HashGet));
+                };
+            } foreach OPCOM_instances;
+        };
+
+        _result = _count;
+
+    };
+
+    case "opsGetObjectives": {
+
+        if (_args isEqualType []) then {
+
+            _args params ["_playerID","_selOpcom"];
+
+            [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
+
+        };
+
+    };
+
+    case "opsAddObjective": {
+
+        if (_args isEqualType []) then {
+
+            _args params ["_playerID","_selOpcom","_pos"];
+
+            // server-side enforcement - the client greying is cosmetic only
+
+            private _enabled = [_logic,"playerObjectivesEnabled",false] call ALiVE_fnc_hashGet;
+            if !(_enabled) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Player objectives are disabled"]] call MAINCLASS;
+            };
+
+            private _cooldown = [_logic,"playerObjectiveCooldown",300] call ALiVE_fnc_hashGet;
+            private _cooldowns = [_logic,"playerObjectiveCooldowns"] call ALiVE_fnc_hashGet;
+            private _lastDesignation = [_cooldowns,_playerID,-999999] call ALiVE_fnc_hashGet;
+
+            if (time - _lastDesignation < _cooldown) exitwith {
+                private _remaining = ceil (_cooldown - (time - _lastDesignation));
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,format ["Objective cooldown: %1s remaining", _remaining]]] call MAINCLASS;
+            };
+
+            private _maxObjectives = [_logic,"maxPlayerObjectives",3] call ALiVE_fnc_hashGet;
+            private _playerObjectiveCount = [_logic,"opsCountPlayerObjectives", _selOpcom select 2] call MAINCLASS;
+
+            if (_playerObjectiveCount >= _maxObjectives) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Maximum player objectives reached"]] call MAINCLASS;
+            };
+
+            private _opcom = [_logic,"opsFindOPCOM", _selOpcom select 0] call MAINCLASS;
+
+            if (isnil "_opcom" || {([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric"}) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
+            };
+
+            // front-insert as unassigned - OPCOM classifies it on the next
+            // analysis cycle, and front array position makes it the first
+            // pick within its state bucket
+
+            // monotonic counter keeps IDs unique even when two designations
+            // drain from the remoteExec queue in the same server frame
+
+            private _counter = ([_logic,"playerObjectiveCounter",0] call ALiVE_fnc_hashGet) + 1;
+            [_logic,"playerObjectiveCounter",_counter] call ALiVE_fnc_hashSet;
+
+            private _opcomID = [_opcom,"opcomID",""] call ALiVE_fnc_hashGet;
+            private _objectiveID = format ["%1_player_obj_%2", _opcomID, _counter];
+
+            [_opcom,"addObjective",[_objectiveID,_pos,100,"custom",100,"unassigned","none",_opcomID,true,true]] call ALiVE_fnc_OPCOM;
+            [_cooldowns,_playerID,time] call ALiVE_fnc_hashSet;
+
+            [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Objective designated"]] call MAINCLASS;
+
+        };
+
+    };
+
+    case "opsCancelObjective": {
+
+        if (_args isEqualType []) then {
+
+            _args params ["_playerID","_selOpcom","_objectiveID"];
+
+            // same server-side gate as opsAddObjective - the tablet UI is not
+            // the only way to reach this op
+
+            if !([_logic,"playerObjectivesEnabled",false] call ALiVE_fnc_hashGet) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Player objectives are disabled"]] call MAINCLASS;
+            };
+
+            private _opcom = [_logic,"opsFindOPCOM", _selOpcom select 0] call MAINCLASS;
+
+            if (isnil "_opcom") exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
+            };
+
+            private _objective = [_opcom,"getObjectiveByID",_objectiveID] call ALiVE_fnc_OPCOM;
+
+            if (isnil "_objective") exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Objective no longer exists"]] call MAINCLASS;
+            };
+
+            // only player-designated objectives may be cancelled
+
+            if !([_objective,"playerCreated",false] call ALiVE_fnc_hashGet) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Only player-designated objectives can be cancelled"]] call MAINCLASS;
+            };
+
+            [_opcom,"removeObjective",_objectiveID] call ALiVE_fnc_OPCOM;
+
+            [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Objective cancelled"]] call MAINCLASS;
+
+        };
+
+    };
+
+    case "opsMoveObjective": {
+
+        if (_args isEqualType []) then {
+
+            _args params ["_playerID","_selOpcom","_objectiveID","_direction"];
+
+            // same server-side gate as opsAddObjective - reordering the
+            // commander's priority queue is exactly what the toggle gates
+
+            if !([_logic,"playerObjectivesEnabled",false] call ALiVE_fnc_hashGet) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Player objectives are disabled"]] call MAINCLASS;
+            };
+
+            private _opcom = [_logic,"opsFindOPCOM", _selOpcom select 0] call MAINCLASS;
+
+            if (isnil "_opcom") exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
+            };
+
+            // recompute the index server-side - the FSM churns the array, a
+            // client-held index may be stale by the time the event arrives
+
+            private _objectives = [_opcom,"objectives",[]] call ALiVE_fnc_HashGet;
+            private _index = _objectives findIf { ([_x,"objectiveID",""] call ALiVE_fnc_hashGet) == _objectiveID };
+
+            if (_index == -1) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Objective no longer exists"]] call MAINCLASS;
+            };
+
+            [_opcom,"reorderObjective",[_objectiveID,_index + _direction]] call ALiVE_fnc_OPCOM;
+
+            [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
+
+        };
+
     };
 
     default {

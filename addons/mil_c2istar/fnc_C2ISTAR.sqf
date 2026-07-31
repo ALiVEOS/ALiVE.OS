@@ -395,6 +395,48 @@ switch(_operation) do {
 
         _result = _args;
     };
+    case "scomOpsAllowPlayerObjectives": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["scomOpsAllowPlayerObjectives", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsAllowPlayerObjectives", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["scomOpsAllowPlayerObjectives", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    case "scomOpsObjectiveCooldown": {
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["scomOpsObjectiveCooldown", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsObjectiveCooldown", 300];
+        };
+        if (typeName _args == "STRING") then {
+                _args = parseNumber _args;
+                _logic setVariable ["scomOpsObjectiveCooldown", _args];
+        };
+        ASSERT_TRUE(typeName _args == "SCALAR",str _args);
+
+        _result = _args;
+    };
+    case "scomOpsMaxPlayerObjectives": {
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["scomOpsMaxPlayerObjectives", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsMaxPlayerObjectives", 3];
+        };
+        if (typeName _args == "STRING") then {
+                _args = parseNumber _args;
+                _logic setVariable ["scomOpsMaxPlayerObjectives", _args];
+        };
+        ASSERT_TRUE(typeName _args == "SCALAR",str _args);
+
+        _result = _args;
+    };
     case "scomIntelLimit": {
         _result = [_logic,_operation,_args,DEFAULT_SCOM_LIMIT,["SIDE","FACTION","ALL"]] call ALIVE_fnc_OOsimpleOperation;
     };
@@ -1127,13 +1169,16 @@ switch(_operation) do {
         [_gm, "debug", _debug] call ALIVE_fnc_GM;
         [_gm, "init",[]] call ALIVE_fnc_GM;
 
-        private["_scomOpsLimit","_scomIntelLimit","_scomOpsAllowSpectate","_scomOpsAllowJoin","_scomOpsAllowImageIntelligence","_scom"];
+        private["_scomOpsLimit","_scomIntelLimit","_scomOpsAllowSpectate","_scomOpsAllowJoin","_scomOpsAllowImageIntelligence","_scomOpsAllowPlayerObjectives","_scomOpsObjectiveCooldown","_scomOpsMaxPlayerObjectives","_scom"];
 
         _scomOpsLimit = [_logic, "scomOpsLimit"] call MAINCLASS;
         _scomIntelLimit = [_logic, "scomIntelLimit"] call MAINCLASS;
         _scomOpsAllowSpectate = [_logic, "scomOpsAllowSpectate"] call MAINCLASS;
         _scomOpsAllowJoin = [_logic, "scomOpsAllowInstantJoin"] call MAINCLASS;
         _scomOpsAllowImageIntelligence = [_logic, "scomOpsAllowImageIntelligence"] call MAINCLASS;
+        _scomOpsAllowPlayerObjectives = [_logic, "scomOpsAllowPlayerObjectives"] call MAINCLASS;
+        _scomOpsObjectiveCooldown = [_logic, "scomOpsObjectiveCooldown"] call MAINCLASS;
+        _scomOpsMaxPlayerObjectives = [_logic, "scomOpsMaxPlayerObjectives"] call MAINCLASS;
 
         _scom = [nil, "create"] call ALIVE_fnc_SCOM;
         [_scom, "opsLimit", _scomOpsLimit] call ALIVE_fnc_SCOM;
@@ -1141,6 +1186,9 @@ switch(_operation) do {
         [_scom, "scomOpsAllowSpectate", _scomOpsAllowSpectate] call ALIVE_fnc_SCOM;
         [_scom, "scomOpsAllowInstantJoin", _scomOpsAllowJoin] call ALIVE_fnc_SCOM;
         [_scom, "scomOpsAllowImageIntelligence", _scomOpsAllowImageIntelligence] call ALIVE_fnc_SCOM;
+        [_scom, "scomOpsAllowPlayerObjectives", _scomOpsAllowPlayerObjectives] call ALIVE_fnc_SCOM;
+        [_scom, "scomOpsObjectiveCooldown", _scomOpsObjectiveCooldown] call ALIVE_fnc_SCOM;
+        [_scom, "scomOpsMaxPlayerObjectives", _scomOpsMaxPlayerObjectives] call ALIVE_fnc_SCOM;
         [_scom, "debug", _debug] call ALIVE_fnc_SCOM;
         [_scom, "init",[]] call ALIVE_fnc_SCOM;
 

@@ -1782,6 +1782,31 @@ switch (_operation) do {
         };
     };
 
+    case "reorderObjective": {
+        if !(isServer) exitwith {[_logic,_operation,_args] remoteExec ["ALiVE_fnc_OPCOM",2]};
+
+        _args params [
+            ["_objectiveID", "", [""]],
+            ["_newIndex", 0, [0]]
+        ];
+
+        private _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
+        private _objectiveIndex = _objectives findIf { ([_x,"objectiveID",""] call ALiVE_fnc_HashGet) == _objectiveID };
+
+        if (_objectiveIndex != -1) then {
+            _newIndex = 0 max _newIndex min (count _objectives - 1);
+
+            // in-place move on the live array reference. Array position is the
+            // commander's de-facto priority queue (selectordersbystate picks the
+            // first match per state), and every async consumer resolves
+            // objectives by ID or hash reference, so reordering is safe mid-run.
+            private _objective = _objectives deleteAt _objectiveIndex;
+            _objectives insert [_newIndex, [_objective]];
+        };
+
+        _result = _objectives;
+    };
+
     case "findReinforcementBase": {
             _AO = [];
             _FOB = [];
@@ -2488,7 +2513,8 @@ switch (_operation) do {
                 _objectivesGlobal = [];
                 {
                     if ([_x,"persistent",false] call ALIVE_fnc_HashGet) then {
-                        _objectivesGlobal = _objectivesGlobal + ([_x, "objectives",[]] call ALiVE_fnc_HashGet);
+                        // player-designated objectives are session-only by design
+                        _objectivesGlobal = _objectivesGlobal + (([_x, "objectives",[]] call ALiVE_fnc_HashGet) select {!([_x,"playerCreated",false] call ALiVE_fnc_HashGet)});
                     };
                 } foreach OPCOM_INSTANCES;
 
@@ -2863,9 +2889,13 @@ switch (_operation) do {
             ["_priority", 100, [-1]],
             ["_opcomState", "unassigned", [""]],
             ["_clusterID", "none", [""]],
-            ["_opcomID", [_logic,"opcomID", ""] call ALiVE_fnc_HashGet, [""]]
+            ["_opcomID", [_logic,"opcomID", ""] call ALiVE_fnc_HashGet, [""]],
+            ["_playerCreated", false, [false]],
+            ["_insertAtFront", false, [false]]
         ];
 
+        // playerCreated must stay AFTER _rev - opcom.fsm reads opcom_state
+        // positionally (_x select 2 select 5), so the first ten keys are fixed
         private _objective = [[
             ["objectiveID", _id],
             ["center", _pos],
@@ -2876,7 +2906,8 @@ switch (_operation) do {
             ["clusterID", _clusterID],
             ["opcomID", _opcomID],
             ["deleted", false],
-            ["_rev", ""]
+            ["_rev", ""],
+            ["playerCreated", _playerCreated]
         ]] call ALIVE_fnc_hashCreate;
 
         if (_debug) then {
@@ -2884,7 +2915,16 @@ switch (_operation) do {
         };
 
         private _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
-        _objectives pushback _objective;
+
+        // hashGet returns the live array reference, so mutating in place is
+        // visible to the FSMs without a HashSet. Front insertion puts the
+        // objective first in its opcom_state bucket (selectordersbystate takes
+        // the first array-order match), making it the commander's top priority.
+        if (_insertAtFront) then {
+            _objectives insert [0, [_objective]];
+        } else {
+            _objectives pushback _objective;
+        };
 
         _result = _objective;
     };
