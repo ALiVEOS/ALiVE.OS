@@ -61,6 +61,12 @@
 <Key ID="STR_ALIVE_ATO_MIN_ASSETS_COMMENT">
     <English>Once this many aircraft or fewer remain, the commander stops flying offensive missions and keeps only Combat Air Patrol and Defensive Counter-Air until numbers recover. Leave blank for the default, which is 4 aircraft when the roster was restored from a save and 2 otherwise.</English>
 </Key>
+<Key ID="STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES">
+    <English>Maximum Concurrent Offensive Sorties:</English>
+</Key>
+<Key ID="STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES_COMMENT">
+    <English>How many offensive missions (Strike, Reconnaissance, CAS, OCA, SEAD) this commander may have running at once. Each offensive mission keeps its target present in the world until the mission ends, so this limit also bounds how many of those targets exist at any time. Requests beyond the limit are turned down and the requesting commander simply asks again later. Combat Air Patrol and Defensive Counter-Air are never limited. Leave blank for no limit.</English>
+</Key>
 <Key ID="STR_ALIVE_ATO_PILOTBUILDING">
     <English>Pilot Ready Room:</English>
     <Chinesesimp>飞行员准备室</Chinesesimp>

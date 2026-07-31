@@ -225,7 +225,7 @@ class CfgVehicles
                             class No { name = "No"; value = false; };
                         };
                 };
-                // Tempo controls. Both blank by default and blank means "as before",
+                // Tempo controls. All blank by default and blank means "as before",
                 // so an untouched mission is byte-identical in behaviour.
                 class sortieDuration : Edit
                 {
@@ -239,6 +239,13 @@ class CfgVehicles
                         property = "ALiVE_mil_ato_minAssetsForOffensive";
                         displayName = "$STR_ALIVE_ATO_MIN_ASSETS";
                         tooltip = "$STR_ALIVE_ATO_MIN_ASSETS_COMMENT";
+                        defaultValue = """""";
+                };
+                class maxConcurrentSorties : Edit
+                {
+                        property = "ALiVE_mil_ato_maxConcurrentSorties";
+                        displayName = "$STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES";
+                        tooltip = "$STR_ALIVE_ATO_MAX_CONCURRENT_SORTIES_COMMENT";
                         defaultValue = """""";
                 };
                 // Aircrew, not runway geometry - this was previously filed under the

@@ -54,6 +54,12 @@ Tupolov & Jman
 // in any switch, and nothing raises it - so it fell through to a plain loiter.
 // Removed so this agrees with the Eden picker, which only offers types that exist.
 #define DEFAULT_ATO_TYPES ["CAP","DCA","SEAD","CAS","Strike","Recce","OCA"]
+// The offensive taskings: these force-spawn their target profiles with
+// preventDespawn until the sortie completes, so they are the ones the sortie
+// cap counts and the ones whose targets are actively despawned on completion.
+// CAP passes no targets; DCA targets are real intruder aircraft already in the
+// world - neither force-spawns, so neither is capped or cleaned up here.
+#define OFFENSIVE_ATO_TYPES ["SEAD","CAS","Strike","Recce","OCA"]
 #define DEFAULT_REGISTRY_ID ""
 #define DEFAULT_OP_HEIGHT 750
 #define DEFAULT_OP_DURATION 25
@@ -992,6 +998,13 @@ switch(_operation) do {
     // Airframes remaining at or below which offensive tasking is suspended in
     // favour of defensive patrols. Blank or 0 keeps the built-in behaviour.
     case "minAssetsForOffensive": {
+        _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // How many offensive sorties (Strike/Recce/CAS/OCA/SEAD) this commander may
+    // run at once. Each offensive sortie holds its target present in the world
+    // until it ends, so this also bounds how many of those targets exist. Blank
+    // or 0 means no limit.
+    case "maxConcurrentSorties": {
         _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
     case "objectiveObjectsChance": {
@@ -3917,7 +3930,33 @@ switch(_operation) do {
 
                         private _available = false;
 
-                        if(_eventType in _types) then {
+                        // Offensive sortie cap (bounds the force-spawned-target pile-up): every
+                        // offensive tasking force-spawns its target profiles with preventDespawn
+                        // until the sortie completes, so the number of concurrent offensive
+                        // sorties bounds the number of force-held real targets. Only engaged when
+                        // a positive limit is set; blank / 0 leaves the commander uncapped. CAP/DCA
+                        // spawn nothing and are never counted. Soft bound: scheduled SQF can
+                        // interleave two requests between count and enqueue, so a one-over
+                        // overshoot is possible - never unbounded.
+                        private _capOK = true;
+                        private _activeOffensive = 0;
+                        private _maxOffensive = 0;
+                        if (_eventType in OFFENSIVE_ATO_TYPES) then {
+                            _maxOffensive = parseNumber ([_logic,"maxConcurrentSorties"] call MAINCLASS);
+                            if (_maxOffensive > 0) then {
+                                private _capQueue = [_logic, "eventQueue"] call MAINCLASS;
+                                {
+                                    private _xData  = [_x,"data"] call ALiVE_fnc_hashGet;
+                                    private _xState = [_x,"state","requested"] call ALiVE_fnc_hashGet;
+                                    if ((_xData select 0) in OFFENSIVE_ATO_TYPES && {_xState != "eventComplete"}) then {
+                                        _activeOffensive = _activeOffensive + 1;
+                                    };
+                                } forEach (_capQueue select 2);
+                                if (_activeOffensive >= _maxOffensive) then { _capOK = false; };
+                            };
+                        };
+
+                        if(_eventType in _types && _capOK) then {
 
                             _available = true;
 
@@ -4049,12 +4088,23 @@ switch(_operation) do {
 
                         }else{
 
-                            // nothing left after non allowed types ruled out
-                            // DEBUG -------------------------------------------------------------------------------------
-                            if(_debug) then {
-                                ["ATO %2 - ATO type %1 is not in list of ATOs supported %3", _eventType, _logic, _types] call ALiVE_fnc_dump;
+                            if (_eventType in _types && !_capOK) then {
+                                // Cap refusal: always-on but rate-limited (one line / 5 min), so a
+                                // saturated cap is visible in a normal mission's RPT rather than
+                                // hidden behind the debug flag. OPCOM re-raises the tasking on a
+                                // later analysis cycle, so the request is simply skipped.
+                                if (time - (_logic getVariable ["ALiVE_ATO_capRefusalLastLog", -3600]) > 300) then {
+                                    _logic setVariable ["ALiVE_ATO_capRefusalLastLog", time];
+                                    ["ATO %1 - offensive sortie cap reached (%2/%3), %4 request refused", _logic, _activeOffensive, _maxOffensive, _eventType] call ALiVE_fnc_dump;
+                                };
+                            } else {
+                                // nothing left after non allowed types ruled out
+                                // DEBUG -------------------------------------------------------------------------------------
+                                if(_debug) then {
+                                    ["ATO %2 - ATO type %1 is not in list of ATOs supported %3", _eventType, _logic, _types] call ALiVE_fnc_dump;
+                                };
+                                // DEBUG -------------------------------------------------------------------------------------
                             };
-                            // DEBUG -------------------------------------------------------------------------------------
                         };
                     }else{
 
@@ -4815,6 +4865,40 @@ switch(_operation) do {
             _requestAnalysis call ALIVE_fnc_inspectHash;
         };
         // DEBUG -------------------------------------------------------------------------------------
+
+
+        // Stale-event reaper: any offensive event that has not completed within
+        // max(3600s, 3x sortie duration) of being requested is force-completed - long past
+        // every healthy state (aircraftTravel's arrival test and aircraftReturnWait's RTB
+        // flag notably have no timeout of their own, and a sortie stuck pre-launch that long
+        // is equally wedged). A wedged event holds a sortie-cap slot and its preventDespawn
+        // targets forever, so reaping frees the slot AND routes the leaked targets through the
+        // eventComplete despawn in one stroke.
+        if (_eventType in OFFENSIVE_ATO_TYPES && {_eventState != "eventComplete"}) then {
+            private _reapDuration = if (isNil "_eventDuration" || {!(_eventDuration isEqualType 0)}) then {0} else {_eventDuration};
+            private _reapCeiling = 3600 max (3 * _reapDuration * 60);
+            private _reapBase = if (isNil "_eventTime" || {!(_eventTime isEqualType 0)}) then {time} else {_eventTime};
+            if (time > _reapBase + _reapCeiling) then {
+                // Clear the tasked asset FIRST: eventComplete never clears currentOp, and a
+                // dangling currentOp pointing at a removed event makes the later asset-selection
+                // pass hashGet-select against an empty array. Guarded on currentOp == this event
+                // so a re-tasked airframe's live assignment is never stomped.
+                if (count _eventFriendlyProfiles > 0) then {
+                    private _reapAircraftID = _eventFriendlyProfiles select 0;
+                    private _reapAircraft = [_assets, _reapAircraftID] call ALiVE_fnc_hashGet;
+                    if (!isNil "_reapAircraft" && {([_reapAircraft,"currentOp",""] call ALiVE_fnc_hashGet) == _eventID}) then {
+                        [_reapAircraft,"currentOp",""] call ALiVE_fnc_hashSet;
+                        [_reapAircraft,"ready",false] call ALiVE_fnc_hashSet;
+                        [_reapAircraft,"maintenance",time] call ALiVE_fnc_hashSet;
+                        [_assets, _reapAircraftID, _reapAircraft] call ALiVE_fnc_hashSet;
+                    };
+                };
+                ["ATO %1 - stale %2 event %3 reaped (state %4, age %5s) - forcing completion", _logic, _eventType, _eventID, _eventState, floor (time - _reapBase)] call ALiVE_fnc_dump;
+                [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                _eventState = "eventComplete";
+            };
+        };
 
 
         // react according to current event state
@@ -7404,6 +7488,15 @@ switch(_operation) do {
                     // reroute - the aircraft is continuing, not returning; it keeps its crew.
                     private _acProfile = [ALIVE_profileHandler, "getProfile", _aircraftID] call ALIVE_fnc_profileHandler;
                     if (!_wasRerouted) then {
+                        // Clear the airframe's leaked preventDespawn BEFORE standing the crew down.
+                        // The crew despawn inside standDownCrew vetoes itself while any linked profile
+                        // (here the airframe) still carries the flag, which would orphan the live crew.
+                        // An aborted sortie kept this flag forever - only the successful-landing path
+                        // cleared it - leaking a permanently-real parked aircraft. A rerouted airframe
+                        // is still flying its new task, so it keeps its flag (this branch is !_wasRerouted).
+                        if (!isNil "_acProfile") then {
+                            [_acProfile,"spawnType",[]] call ALiVE_fnc_profileVehicle;
+                        };
                         [_aircraft, _acProfile] call _fnc_standDownCrew;
                         // Backstop the boarding-timeout ready-reset: any non-reroute completion that
                         // frees the airframe must leave ready==false, or the next tasking skips the
@@ -7413,14 +7506,70 @@ switch(_operation) do {
                     [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
                 };
 
-                // despawn any existing targets
+                // Clear preventDespawn on every target, then actively despawn the force-spawned
+                // ones. Two passes: the despawn ops also check the flag on LINKED profiles, so a
+                // linked crew+vehicle pair cleared and despawned in one loop would silently no-op
+                // on the first of the two. Pass 1 clears every flag, pass 2 despawns.
                 if (count _eventEnemyProfiles > 0) then {
+                    private _targetProfiles = [];
                     {
                         private _targetProfile = [ALiVE_profileHandler, "getProfile", _x] call ALiVE_fnc_ProfileHandler;
                         if !(isNil "_targetProfile") then {
                             [_targetProfile,"spawnType",[]] call ALiVE_fnc_hashSet;
+                            _targetProfiles pushBack _targetProfile;
                         };
                     } forEach _eventEnemyProfiles;
+
+                    // Pass 2 - active despawn - runs for offensive events only: DCA's enemyProfiles
+                    // are other systems' live intruder aircraft (never ATO force-spawns), so they are
+                    // never despawned here; CAP carries no targets. Pass 1's flag-clear above still
+                    // runs for every type (pre-existing behaviour). Mirror the sys_profile sweep
+                    // guards: airborne profiles never despawn, players (incl. jet/heli at their larger
+                    // radii) never see the pop, crewed vehicles despawn via their crew entity.
+                    if (_eventType in OFFENSIVE_ATO_TYPES) then {
+                        // Do not yank a target another in-flight offensive sortie still holds: collect
+                        // every target id referenced by another non-complete offensive event and skip it.
+                        private _otherHeldTargets = [];
+                        {
+                            private _oData = [_x,"data"] call ALiVE_fnc_hashGet;
+                            private _oState = [_x,"state","requested"] call ALiVE_fnc_hashGet;
+                            if (([_x,"id"] call ALiVE_fnc_hashGet) != _eventID && {(_oData select 0) in OFFENSIVE_ATO_TYPES} && {_oState != "eventComplete"}) then {
+                                _otherHeldTargets append ([_x,"enemyProfiles",[]] call ALiVE_fnc_hashGet);
+                            };
+                        } forEach (_eventQueue select 2);
+                        {
+                            private _targetProfile = _x;
+                            if (!((_targetProfile select 2 select 4) in _otherHeldTargets) && {[_targetProfile,"active"] call ALiVE_fnc_hashGet}) then {
+                                private _tLeader = _targetProfile select 2 select 10;   // entity: leader, vehicle: the vehicle
+                                if (!isNull _tLeader && {(getPos _tLeader) select 2 < 3}) then {
+                                    private _tPos = [_targetProfile,"position"] call ALiVE_fnc_hashGet;
+                                    if !([_tPos, ALIVE_spawnRadius, ALIVE_spawnRadiusJet, ALIVE_spawnRadiusHeli] call ALiVE_fnc_anyPlayersInRangeIncludeAir) then {
+                                        if (([_targetProfile,"type"] call ALiVE_fnc_hashGet) == "entity") then {
+                                            [_targetProfile,"despawn"] call ALiVE_fnc_profileEntity;
+                                        } else {
+                                            private _assignments = [_targetProfile,"vehicleAssignments"] call ALiVE_fnc_hashGet;
+                                            if (isNil "_assignments" || {(_assignments select 1) isEqualTo []}) then {
+                                                [_targetProfile,"despawn"] call ALiVE_fnc_profileVehicle;
+                                            } else {
+                                                // Crewed vehicle: the sweep contract forbids despawning the
+                                                // vehicle directly; despawn its crew ENTITY profile, which
+                                                // cascades to the assigned vehicle. Without this the guard
+                                                // above silently skips exactly the crewed drone/vehicle
+                                                // targets the pile-up was reported on.
+                                                private _linked = [_targetProfile] call ALIVE_fnc_vehicleAssignmentsGetLinkedProfiles;
+                                                {
+                                                    if (([_x,"type"] call ALiVE_fnc_hashGet) == "entity") then {
+                                                        [_x,"spawnType",[]] call ALiVE_fnc_hashSet;
+                                                        [_x,"despawn"] call ALiVE_fnc_profileEntity;
+                                                    };
+                                                } forEach (_linked select 2);
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        } forEach _targetProfiles;
+                    };
                 };
 
                 // Register finish time of last CAP
