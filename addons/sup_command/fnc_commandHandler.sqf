@@ -207,7 +207,13 @@ switch(_operation) do {
 
                 default {
 
-                    [_logic,_type, _data] call MAINCLASS;
+                    // every client-reachable event has an explicit case above; never
+                    // forward an arbitrary client-supplied string as an operation name
+                    // (would let a crafted event invoke "destroy" / "init" / "debug")
+
+                    if (_debug) then {
+                        ["Command Handler - unknown event type %1 dropped", _type] call ALiVE_fnc_dump;
+                    };
 
                 };
 
@@ -224,6 +230,15 @@ switch(_operation) do {
             _args params ["_playerID","_limit","_side","_faction"];
 
             private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
+
+            // never trust the client-sent limit/side/faction - a crafted event could
+            // pass "ALL" to enumerate every commander. Re-derive from the caller.
+
+            _limit = [_logic,"opsLimit","SIDE"] call ALiVE_fnc_hashGet;
+            private _callerPlayer = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            if (isNull _callerPlayer) exitWith {};
+            _side = [_logic,"opsPlayerSideText",_callerPlayer] call MAINCLASS;
+            _faction = faction _callerPlayer;
 
             // get opcoms available by limit set on intel
 
@@ -271,9 +286,19 @@ switch(_operation) do {
 
         if (_args isEqualType []) then {
 
-             _args params ["_playerID","_selOpcom"];
-	     private _selOpcomID = (_selOpcom select 0);
-	     private _side = (_selOpcom select 2);
+            _args params [["_playerID","",[""]],["_selOpcom",[],[[]]]];
+
+            if (count _selOpcom < 3) exitWith {};
+
+            private _selOpcomID = (_selOpcom select 0);
+            private _side = (_selOpcom select 2);
+
+            // authorize the caller for this commander before returning its group state
+            private _opcom = [_logic,"opsFindOPCOM", _selOpcomID] call MAINCLASS;
+            if !([_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS) exitWith {
+                private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                ["OPS_GROUPS", [_playerID,_side,[]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+            };
 			
             // get groups state for the selected opcom
 
@@ -334,6 +359,11 @@ switch(_operation) do {
 
             if (!isnil "_profile") then {
 
+                if !([_logic,"opsCallerAuthorizedForProfile",[_playerID,_profile]] call MAINCLASS) exitwith {
+                    private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                    ["OPS_RESET", []] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+                };
+
                 // send the data back to the players SCOM tablet
 
                 private _waypoints = _profile select 2 select 16;               // waypoints
@@ -376,6 +406,11 @@ switch(_operation) do {
 
             if !(isnil "_profile") then {
 
+                if !([_logic,"opsCallerAuthorizedForProfile",[_playerID,_profile]] call MAINCLASS) exitwith {
+                    private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                    ["OPS_RESET", []] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+                };
+
                 // send the data back to the players SCOM tablet
 
                 private _waypoints = _profile select 2 select 16; // waypoints
@@ -415,6 +450,11 @@ switch(_operation) do {
             private _profile = [MOD(profileHandler), "getProfile", _profileID] call ALiVE_fnc_profileHandler;
 
             if (!isnil "_profile") then {
+
+                if !([_logic,"opsCallerAuthorizedForProfile",[_playerID,_profile]] call MAINCLASS) exitwith {
+                    private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                    ["OPS_RESET", []] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+                };
 
                 // clear waypoints
 
@@ -457,6 +497,11 @@ switch(_operation) do {
             private _profile = [MOD(profileHandler), "getProfile", _profileID] call ALiVE_fnc_profileHandler;
 
             if (!isnil "_profile") then {
+
+                if !([_logic,"opsCallerAuthorizedForProfile",[_playerID,_profile]] call MAINCLASS) exitwith {
+                    private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                    ["OPS_RESET", []] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+                };
 
                 // set busy
 
@@ -563,6 +608,17 @@ switch(_operation) do {
 
             if (!isnil "_profile") then {
 
+                if !([_logic,"opsCallerAuthorizedForProfile",[_playerID,_profile]] call MAINCLASS) exitwith {
+                    private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                    ["OPS_RESET", [_playerID,[]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+                };
+
+                // enforce the Instant Join toggle server-side, not just in the UI
+                if !([_logic,"scomOpsAllowInstantJoin",false] call ALiVE_fnc_hashGet) exitwith {
+                    private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                    ["OPS_RESET", [_playerID,[]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+                };
+
                 private _faction = _profile select 2 select 29;                 // faction
                 private _position = _profile select 2 select 2;                 // position
                 private _vehiclesInCommandOf = _profile select 2 select 8;      // vehiclesInCommandOf
@@ -622,6 +678,17 @@ switch(_operation) do {
 
             if !(isnil "_profile") then {
 
+                if !([_logic,"opsCallerAuthorizedForProfile",[_playerID,_profile]] call MAINCLASS) exitwith {
+                    private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                    ["OPS_RESET", [_playerID,[]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+                };
+
+                // enforce the Spectate toggle server-side, not just in the UI
+                if !([_logic,"scomOpsAllowSpectate",false] call ALiVE_fnc_hashGet) exitwith {
+                    private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                    ["OPS_RESET", [_playerID,[]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+                };
+
                 private _faction = _profile select 2 select 29;
                 private _position = _profile select 2 select 2;
                 private _vehiclesInCommandOf = _profile select 2 select 8;
@@ -664,16 +731,28 @@ switch(_operation) do {
 
     case "opsLockGroup": {
 
-        private _eventData = _args;
+        if (_args isEqualType []) then {
 
-        _eventData params ["_playerID","_profileID","_lock"];
+            _args params [["_playerID","",[""]],["_profileID","",[""]],["_lock",false,[false]]];
 
-        private _profile = [MOD(profileHandler),"getProfile", _profileID] call ALiVE_fnc_profileHandler;
+            private _profile = [MOD(profileHandler),"getProfile", _profileID] call ALiVE_fnc_profileHandler;
 
-        [_profile,"busy", _lock] call ALiVE_fnc_hashSet;
+            if (isnil "_profile") exitwith {
+                private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                ["OPS_RESET", [_playerID,[]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+            };
 
-        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
-        ["OPS_GROUP_LOCK_UPDATED", [_playerID,[_profileID,_lock]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+            if !([_logic,"opsCallerAuthorizedForProfile",[_playerID,_profile]] call MAINCLASS) exitwith {
+                private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                ["OPS_RESET", [_playerID,[]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+            };
+
+            [_profile,"busy", _lock] call ALiVE_fnc_hashSet;
+
+            private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            ["OPS_GROUP_LOCK_UPDATED", [_playerID,[_profileID,_lock]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+
+        };
 
     };
 
@@ -684,6 +763,15 @@ switch(_operation) do {
             _args params ["_playerID","_type","_limit","_side","_faction"];
 
             private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
+
+            // never trust the client-sent limit/side/faction - re-derive from the
+            // caller against the authoritative Intel-tab limit
+
+            _limit = [_logic,"intelLimit","SIDE"] call ALiVE_fnc_hashGet;
+            private _callerPlayer = [_playerID] call ALiVE_fnc_getPlayerByUID;
+            if (isNull _callerPlayer) exitWith {};
+            _side = [_logic,"opsPlayerSideText",_callerPlayer] call MAINCLASS;
+            _faction = faction _callerPlayer;
 
             switch (_type) do {
 
@@ -826,6 +914,12 @@ switch(_operation) do {
 
                 case "IMINT": {
 
+                    // enforce the Image Intelligence toggle server-side, not just in the UI
+                    if !([_logic,"scomOpsAllowImageIntelligence",false] call ALiVE_fnc_hashGet) exitwith {
+                        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                        ["IMINT_SOURCES_AVAILABLE", [_playerID,[]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+                    };
+
                     private ["_sources","_transportArray","_casArray"];
 
                     // return all possible IMINT sources
@@ -905,10 +999,19 @@ switch(_operation) do {
 
         if (_args isEqualType []) then {
 
-            _args params ["_playerID","_selOpcom"];
-			
-	    private _selOpcomID = (_selOpcom select 0);
+            _args params [["_playerID","",[""]],["_selOpcom",[],[[]]]];
+
+            if (count _selOpcom < 1) exitWith {};
+
+            private _selOpcomID = (_selOpcom select 0);
             private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
+
+            // authorize the caller for this commander before returning objective intel
+            private _authOpcom = [_logic,"opsFindOPCOM", _selOpcomID] call MAINCLASS;
+            if !([_logic,"opsCallerAuthorizedForOpcom",[_playerID,_authOpcom,"intelLimit"]] call MAINCLASS) exitWith {
+                private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+                ["OPCOM_OBJECTIVES", [_playerID,[]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
+            };
 
             // get objective state by selected opcom
 
@@ -968,12 +1071,102 @@ switch(_operation) do {
 
         private _selOpcomID = _args;
 
+        if !(_selOpcomID isEqualType "") exitWith {};   // crafted non-string id - treat as not found
+
         if (!isnil "OPCOM_instances") then {
             private _index = OPCOM_instances findIf { ([_x,"opcomID",""] call ALiVE_fnc_hashGet) == _selOpcomID };
             if (_index != -1) then {
                 _result = OPCOM_instances select _index;
             };
         };
+
+    };
+
+    case "opsPlayerSideText": {
+
+        // ALiVE side text (EAST/WEST/GUER) for a player unit - server-side mirror
+        // of the client chain in fnc_SCOM init (keep the two in sync)
+
+        private _unit = _args;
+        _result = "";
+
+        if (isNull _unit) exitWith {};
+
+        private _sideNumber = [side group _unit] call ALIVE_fnc_sideObjectToNumber;
+        private _sideText = [_sideNumber] call ALIVE_fnc_sideNumberToText;
+
+        if (_sideText == "CIV") then {
+            private _factionSide = (faction _unit) call ALiVE_fnc_factionSide;
+            _sideNumber = [_factionSide] call ALIVE_fnc_sideObjectToNumber;
+            _sideText = [_sideNumber] call ALIVE_fnc_sideNumberToText;
+        };
+
+        _result = _sideText;
+
+    };
+
+    case "opsCallerAuthorizedForOpcom": {
+
+        // may the authenticated player direct or inspect this already-resolved
+        // commander, under the server-side limit at _limitKey ("opsLimit" for the
+        // Ops tab, "intelLimit" for the Intel tab). "ALL" is the GM cross-side mode
+
+        _args params ["_playerID","_opcom",["_limitKey","opsLimit",[""]]];
+
+        _result = true;
+
+        if (isnil "_opcom") exitWith {};    // no commander to protect - the op's own missing path answers
+
+        private _limit = [_logic,_limitKey,"SIDE"] call ALiVE_fnc_hashGet;
+        if (_limit == "ALL") exitWith {};
+
+        _result = false;
+
+        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+        if (isNull _player) exitWith {};
+
+        if (_limit == "FACTION") then {
+            _result = (faction _player) in ([_opcom,"factions",[]] call ALiVE_fnc_hashGet);
+        } else {
+            _result = ([_logic,"opsPlayerSideText",_player] call MAINCLASS) == ([_opcom,"side",""] call ALiVE_fnc_hashGet);
+        };
+
+    };
+
+    case "opsCallerAuthorizedForProfile": {
+
+        // gate for group/profile ops - honours the same limit the list builder used
+        // (ALL passes, FACTION compares faction, otherwise side) so a crafted event
+        // cannot reach a profile the tablet would never have listed
+
+        _args params ["_playerID","_profile"];
+
+        _result = false;
+
+        if (isnil "_profile") exitWith {};
+
+        private _limit = [_logic,"opsLimit","SIDE"] call ALiVE_fnc_hashGet;
+        if (_limit == "ALL") exitWith {_result = true};
+
+        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+        if (isNull _player) exitWith {};
+
+        if (_limit == "FACTION") then {
+            _result = (faction _player) == (_profile select 2 select 29);
+        } else {
+            _result = ([_logic,"opsPlayerSideText",_player] call MAINCLASS) == (_profile select 2 select 3);
+        };
+
+    };
+
+    case "opsSendObjectivesDenied": {
+
+        // reply with an EMPTY objectives snapshot - never packs commander data
+
+        _args params ["_playerID","_selOpcom"];
+
+        private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
+        ["OPS_OBJECTIVES", [_playerID,[_selOpcom,[],[false,0,false,"Not authorized for this commander"]]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
 
     };
 
@@ -990,11 +1183,26 @@ switch(_operation) do {
             private _selOpcomID = _selOpcom select 0;
             private _opcom = [_logic,"opsFindOPCOM", _selOpcomID] call MAINCLASS;
 
+            // single reply sink for the objectives flow - deny when the caller is not
+            // authorized for a resolved commander, so no pre-gate reply path (e.g. the
+            // "objectives disabled" branch of the mutation ops) can leak its objectives
+            if (!isnil "_opcom" && {!([_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS)}) exitwith {
+                [_logic,"opsSendObjectivesDenied",[_playerID,_selOpcom]] call MAINCLASS;
+            };
+
             private _objectiveData = [];
 
             if (isnil "_opcom") then {
                 if (_statusText == "") then {_statusText = "Commander no longer available"};
             } else {
+                // rebuild the selection tuple from the resolved commander so the quota
+                // count and the echoed label are authoritative, not client-supplied
+                _selOpcom = [
+                    [_opcom,"opcomID",_selOpcomID] call ALiVE_fnc_hashGet,
+                    [_opcom,"name",""] call ALiVE_fnc_hashGet,
+                    [_opcom,"side",""] call ALiVE_fnc_hashGet
+                ];
+
                 if (([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric") then {
                     if (_statusText == "") then {_statusText = "Objectives view not available for asymmetric commanders"};
                 } else {
@@ -1022,8 +1230,11 @@ switch(_operation) do {
                 _cooldownRemaining = 0 max (_cooldown - (time - _lastDesignation));
             };
 
-            private _playerObjectiveCount = [_logic,"opsCountPlayerObjectives", _selOpcom select 2] call MAINCLASS;
-            private _maxReached = _playerObjectiveCount >= _maxObjectives;
+            // only count against a resolved commander's side - never a client-supplied one
+            private _maxReached = false;
+            if (!isnil "_opcom") then {
+                _maxReached = ([_logic,"opsCountPlayerObjectives", _selOpcom select 2] call MAINCLASS) >= _maxObjectives;
+            };
 
             private _player = [_playerID] call ALiVE_fnc_getPlayerByUID;
             ["OPS_OBJECTIVES", [_playerID,[_selOpcom,_objectiveData,[_enabled,_cooldownRemaining,_maxReached,_statusText]]]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToClient", _player];
@@ -1056,7 +1267,15 @@ switch(_operation) do {
 
         if (_args isEqualType []) then {
 
-            _args params ["_playerID","_selOpcom"];
+            _args params [["_playerID","",[""]],["_selOpcom",[],[[]]]];
+
+            if (count _selOpcom < 3) exitwith {};
+
+            private _opcom = [_logic,"opsFindOPCOM", _selOpcom select 0] call MAINCLASS;
+
+            if !([_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS) exitwith {
+                [_logic,"opsSendObjectivesDenied",[_playerID,_selOpcom]] call MAINCLASS;
+            };
 
             [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
 
@@ -1068,7 +1287,9 @@ switch(_operation) do {
 
         if (_args isEqualType []) then {
 
-            _args params ["_playerID","_selOpcom","_pos"];
+            _args params [["_playerID","",[""]],["_selOpcom",[],[[]]],["_pos",[],[[]]]];
+
+            if (count _selOpcom < 3 || {count _pos < 2}) exitwith {};
 
             // server-side enforcement - the client greying is cosmetic only
 
@@ -1076,6 +1297,21 @@ switch(_operation) do {
             if !(_enabled) exitwith {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Player objectives are disabled"]] call MAINCLASS;
             };
+
+            // resolve + authorize the commander first, so the quota and side used
+            // below come from the real commander, not the client-supplied triple
+
+            private _opcom = [_logic,"opsFindOPCOM", _selOpcom select 0] call MAINCLASS;
+
+            if !([_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS) exitwith {
+                [_logic,"opsSendObjectivesDenied",[_playerID,_selOpcom]] call MAINCLASS;
+            };
+
+            if (isnil "_opcom" || {([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric"}) exitwith {
+                [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
+            };
+
+            private _opcomSide = [_opcom,"side",""] call ALiVE_fnc_hashGet;
 
             private _cooldown = [_logic,"playerObjectiveCooldown",300] call ALiVE_fnc_hashGet;
             private _cooldowns = [_logic,"playerObjectiveCooldowns"] call ALiVE_fnc_hashGet;
@@ -1087,16 +1323,10 @@ switch(_operation) do {
             };
 
             private _maxObjectives = [_logic,"maxPlayerObjectives",3] call ALiVE_fnc_hashGet;
-            private _playerObjectiveCount = [_logic,"opsCountPlayerObjectives", _selOpcom select 2] call MAINCLASS;
+            private _playerObjectiveCount = [_logic,"opsCountPlayerObjectives", _opcomSide] call MAINCLASS;
 
             if (_playerObjectiveCount >= _maxObjectives) exitwith {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,"Maximum player objectives reached"]] call MAINCLASS;
-            };
-
-            private _opcom = [_logic,"opsFindOPCOM", _selOpcom select 0] call MAINCLASS;
-
-            if (isnil "_opcom" || {([_opcom,"controltype",""] call ALiVE_fnc_hashGet) == "asymmetric"}) exitwith {
-                [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
             };
 
             // front-insert as unassigned - OPCOM classifies it on the next
@@ -1125,7 +1355,9 @@ switch(_operation) do {
 
         if (_args isEqualType []) then {
 
-            _args params ["_playerID","_selOpcom","_objectiveID"];
+            _args params [["_playerID","",[""]],["_selOpcom",[],[[]]],["_objectiveID","",[""]]];
+
+            if (count _selOpcom < 3) exitwith {};
 
             // same server-side gate as opsAddObjective - the tablet UI is not
             // the only way to reach this op
@@ -1135,6 +1367,10 @@ switch(_operation) do {
             };
 
             private _opcom = [_logic,"opsFindOPCOM", _selOpcom select 0] call MAINCLASS;
+
+            if !([_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS) exitwith {
+                [_logic,"opsSendObjectivesDenied",[_playerID,_selOpcom]] call MAINCLASS;
+            };
 
             if (isnil "_opcom") exitwith {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;
@@ -1170,7 +1406,9 @@ switch(_operation) do {
 
         if (_args isEqualType []) then {
 
-            _args params ["_playerID","_selOpcom","_objectiveID","_direction"];
+            _args params [["_playerID","",[""]],["_selOpcom",[],[[]]],["_objectiveID","",[""]],["_direction",0,[0]]];
+
+            if (count _selOpcom < 3) exitwith {};
 
             // same server-side gate as opsAddObjective - reordering the
             // commander's priority queue is exactly what the toggle gates
@@ -1180,6 +1418,10 @@ switch(_operation) do {
             };
 
             private _opcom = [_logic,"opsFindOPCOM", _selOpcom select 0] call MAINCLASS;
+
+            if !([_logic,"opsCallerAuthorizedForOpcom",[_playerID,_opcom,"opsLimit"]] call MAINCLASS) exitwith {
+                [_logic,"opsSendObjectivesDenied",[_playerID,_selOpcom]] call MAINCLASS;
+            };
 
             if (isnil "_opcom") exitwith {
                 [_logic,"opsSendObjectives",[_playerID,_selOpcom,""]] call MAINCLASS;

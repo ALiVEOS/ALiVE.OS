@@ -323,6 +323,16 @@ switch (_operation) do {
             [ALIVE_commandHandler, "maxPlayerObjectives", [_logic,"scomOpsMaxPlayerObjectives"] call MAINCLASS] call ALiVE_fnc_hashSet;
             [ALIVE_commandHandler, "playerObjectiveCooldowns", [] call ALIVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
 
+            // mirror the tab limits onto the server handler so caller-side authorization
+            // reads the authoritative Eden value, never a client-supplied one
+            [ALIVE_commandHandler, "opsLimit", [_logic,"opsLimit"] call MAINCLASS] call ALiVE_fnc_hashSet;
+            [ALIVE_commandHandler, "intelLimit", [_logic,"intelLimit"] call MAINCLASS] call ALiVE_fnc_hashSet;
+
+            // mirror the feature toggles too so the server enforces them, not just the UI
+            [ALIVE_commandHandler, "scomOpsAllowInstantJoin", [_logic,"scomOpsAllowInstantJoin"] call MAINCLASS] call ALiVE_fnc_hashSet;
+            [ALIVE_commandHandler, "scomOpsAllowSpectate", [_logic,"scomOpsAllowSpectate"] call MAINCLASS] call ALiVE_fnc_hashSet;
+            [ALIVE_commandHandler, "scomOpsAllowImageIntelligence", [_logic,"scomOpsAllowImageIntelligence"] call MAINCLASS] call ALiVE_fnc_hashSet;
+
         };
 
         if (hasInterface) then {
