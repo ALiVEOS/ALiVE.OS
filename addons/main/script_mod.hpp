@@ -61,7 +61,16 @@
 #ifdef RECOMPILE
     #undef RECOMPILE
 #endif
-#define RECOMPILE recompile = 1
+// Addon functions are compiled when their configs are loaded. Recompiling the
+// complete function library at every mission start also recompiles it for the
+// main-menu mission, briefly blocking the UI each time the menu is entered.
+// Keep hot-reload available for local source-development builds without making
+// public development/release builds pay that cost.
+#ifdef ALIVE_DEV_RECOMPILE_FUNCTIONS
+    #define RECOMPILE recompile = 1
+#else
+    #define RECOMPILE recompile = 0
+#endif
 #define MODULE_AUTHOR QUOTE(ALiVE Mod Team)
 #define MACRO_ADDITEM(ITEM,COUNT) class _xx_##ITEM { \
     name = #ITEM; \
