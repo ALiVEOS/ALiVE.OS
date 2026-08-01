@@ -232,13 +232,17 @@ if (_menuName == "C2ISTAR") then {
                             case "Mapbag01": {
                                 createDialog "RscDisplayALIVESITREP";
 
+                                private _uiW = (safezoneW / safezoneH) min 1.2;
+                                private _uiH = _uiW / 1.2;
+                                private _uiX = safezoneX + (safezoneW - _uiW) / 2;
+                                private _uiY = safezoneY + (safezoneH - _uiH) / 2;
                                 private _ctrlBackground = ((findDisplay 90001) displayCtrl 90002);
                                 _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                                 _ctrlBackground ctrlSetPosition [
-                                    0.15 * safezoneW + safezoneX,
-                                    -0.242 * safezoneH + safezoneY,
-                                    0.72 * safezoneW,
-                                    1.372 * safezoneH
+                                    0.15 * _uiW + _uiX,
+                                    -0.242 * _uiH + _uiY,
+                                    0.72 * _uiW,
+                                    1.372 * _uiH
                                 ];
                                 _ctrlBackground ctrlCommit 0;
                             };
@@ -265,13 +269,17 @@ if (_menuName == "C2ISTAR") then {
                             case "Mapbag01": {
                                 createDialog "RscDisplayALIVEPATROLREP";
 
+                                private _uiW = (safezoneW / safezoneH) min 1.2;
+                                private _uiH = _uiW / 1.2;
+                                private _uiX = safezoneX + (safezoneW - _uiW) / 2;
+                                private _uiY = safezoneY + (safezoneH - _uiH) / 2;
                                 private _ctrlBackground = ((findDisplay 90002) displayCtrl 90003);
                                 _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                                 _ctrlBackground ctrlSetPosition [
-                                    0.15 * safezoneW + safezoneX,
-                                    -0.242 * safezoneH + safezoneY,
-                                    0.72 * safezoneW,
-                                    1.372 * safezoneH
+                                    0.15 * _uiW + _uiX,
+                                    -0.242 * _uiH + _uiY,
+                                    0.72 * _uiW,
+                                    1.372 * _uiH
                                 ];
                                 _ctrlBackground ctrlCommit 0;
                             };

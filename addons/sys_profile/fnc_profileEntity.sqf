@@ -847,9 +847,26 @@ switch(_operation) do {
     };
 
     case "mergePositions": {
+        private _type = _logic select 2 select 5;
+
+        // A vehicle profile occasionally reached this group operation through
+        // an OPCOM vehicle bucket. Slot 18 is `canFire` on vehicles, which was
+        // the source of "Type Bool, expected Array". Route it to the matching
+        // vehicle operation instead of treating the boolean as unit positions.
+        if (_type == "vehicle") exitWith {
+            [_logic,"mergePositions"] call ALiVE_fnc_profileVehicle;
+        };
+
         private _position = _logic select 2 select 2; //[_logic,"position"] call ALIVE_fnc_hashGet;
         private _unitCount = [_logic,"unitCount"] call MAINCLASS;
         private _positions = _logic select 2 select 18; //[_logic,"positions"] call ALIVE_fnc_hashGet;
+
+        // Repair a malformed entity profile defensively. This keeps one bad
+        // saved profile from producing the same error every simulator tick.
+        if !(_positions isEqualType []) then {
+            _positions = [];
+            [_logic,"positions",_positions] call ALiVE_fnc_hashSet;
+        };
 
         //["ENTITY %1 mergePosition: %2",_logic select 2 select 4,_position] call ALIVE_fnc_dump;
 

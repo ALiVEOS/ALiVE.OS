@@ -4,6 +4,10 @@ private
     "_artyRoundCountLb", "_artyDispersionText", "_artyDispersionSlider", "_artyUnitLb", "_artyRateDelayText", "_artyRateDelaySlider",
     "_battery", "_ord", "_count", "_countArray"
 ];
+private _uiH = 1.14 * safezoneH;
+private _uiW = 1.2 * _uiH;
+private _uiX = safezoneX + (safezoneW - _uiW) / 2;
+private _uiY = safezoneY + (safezoneH - _uiH) / 2;
 
   	    _has_SPE_leFH18 = false;
   	    {
@@ -36,6 +40,7 @@ _battery = _artyArray select (lbCurSel _artyUnitLb) select 0;
 _ord = _artyOrdnanceTypeLb lbData (lbCurSel _artyOrdnanceTypeLb);
 _count = 0;
 _countArray = [];
+{ _x ctrlSetBackgroundColor [0, 0, 0, 0] } forEach [_artyRateOfFireLb, _artyRoundCountLb];
 
 {
     if ((_x select 0) == _ord) then
@@ -51,6 +56,7 @@ if (_count >= 24) then { _countArray pushback ("24 ROUNDS") };
 
 if (count _countArray > 0) then
 {
+    { _x ctrlSetBackgroundColor [0.047, 0.047, 0.047, 0.72] } forEach [_artyRateOfFireLb, _artyRoundCountLb];
     //Texts
     _artyRateOfFireText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>RATE OF FIRE</t>";
     _artyRoundCountText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>ROUND COUNT</t>";
@@ -71,7 +77,7 @@ if (count _countArray > 0) then
     } forEach _countArray;
 
     //Slider
-    _artyDispersionSlider ctrlSetPosition [0.270903 * safezoneW + safezoneX, 0.710018 * safezoneH + safezoneY, (0.105833 * safezoneW), (0.0280024 * safezoneH)];
+    _artyDispersionSlider ctrlSetPosition [0.270903 * _uiW + _uiX, 0.710018 * _uiH + _uiY, (0.105833 * _uiW), (0.0280024 * _uiH)];
     _artyDispersionSlider sliderSetRange [0, 500];
     _artyDispersionSlider sliderSetspeed [1, 50];
     _artyDispersionSlider sliderSetPosition 0;

@@ -1,9 +1,9 @@
-#define GUI_GRID_X  (0)
-#define GUI_GRID_Y  (0)
-#define GUI_GRID_W  (0.025)
-#define GUI_GRID_H  (0.04)
-#define GUI_GRID_WAbs (1)
-#define GUI_GRID_HAbs (1)
+#define GUI_GRID_HAbs        (1.14 * safezoneH)
+#define GUI_GRID_WAbs        (1.2 * GUI_GRID_HAbs)
+#define GUI_GRID_W           (GUI_GRID_WAbs / 40)
+#define GUI_GRID_H           (GUI_GRID_HAbs / 25)
+#define GUI_GRID_X           (safezoneX + (safezoneW - GUI_GRID_WAbs) / 2)
+#define GUI_GRID_Y           (safezoneY + (safezoneH - GUI_GRID_HAbs) / 2)
 
 class RscPicture;
 
@@ -48,7 +48,7 @@ class C2Tablet_RscText
     type = 13;
     style = 0x00;
     colorBackground[] = { 0, 0, 0, 0 };
-    size = "((safeZoneW / 75) + (safeZoneH / 225))";
+    size = 0.5 * GUI_GRID_H;
     x = "safeZoneX + (safeZoneW / 6)";
     y = "safeZoneY + (safeZoneH / 6)";
     w = "safeZoneW / 5";
@@ -87,7 +87,7 @@ class C2Tablet_RscListBox {
     type = 5;
     style = 0 + 0x10;
     font = "PuristaMedium";
-    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    sizeEx = 0.5 * GUI_GRID_H;
     x = "safeZoneX + (safeZoneW / 5)";
     y = "safeZoneY + (safeZoneH / 2.25)";
     w = "(safeZoneW / 10)";
@@ -130,7 +130,7 @@ class C2Tablet_RscGUIListBox : C2Tablet_RscListBox {
     colorSelectBackground[] = {0.333,0.333,0.333,1};
     colorSelectBackground2[] = {0.333,0.333,0.333,1};
     period = 0;
-    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    sizeEx = 0.5 * GUI_GRID_H;
     class ListScrollBar
     {
         color[] = {1, 1, 1, 0.6};
@@ -180,7 +180,7 @@ class C2Tablet_RscComboBox
     colorActive[] = {0,0,0,1};
     colorDisabled[] = {0,0,0,0.3};
     font = "PuristaMedium";
-    sizeEx = "(safeZoneH / 100) + (safeZoneH / 100)";
+    sizeEx = 0.5 * GUI_GRID_H;
 };
 
 // #698 real CT_BUTTON (type 1) base for the Terrain toggle. The tablet's other buttons are
@@ -224,7 +224,7 @@ class C2Tablet_RscRealButton
     animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
     period = 0.4;
     font = "PuristaMedium";
-    size = "(safeZoneW / 125) + (safeZoneH / 125)";
+    size = 0.5 * GUI_GRID_H;
     text = "";
     soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
     soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
@@ -298,7 +298,7 @@ class C2Tablet_RscButton
     animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
     period = 0.4;
     font = "PuristaMedium";
-    size = "(safeZoneW / 125) + (safeZoneH / 125)";
+    size = 0.5 * GUI_GRID_H;
     text = "";
     soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
     soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};

@@ -1,4 +1,8 @@
 private ["_display", "_map"];
+private _uiH = 1.14 * safezoneH;
+private _uiW = 1.2 * _uiH;
+private _uiX = safezoneX + (safezoneW - _uiW) / 2;
+private _uiY = safezoneY + (safezoneH - _uiH) / 2;
 _display = findDisplay 655555;
 _map = _display displayCtrl 655560;
 
@@ -55,9 +59,10 @@ else
 };
 
 //Re-initialize Controls
-{ _x ctrlSetPosition [1, 1, (safeZoneW / 1000), (safeZoneH / 1000)]; _x ctrlCommit 0; } forEach [_casFlyHeightSlider, _casRadiusSlider];
+        { _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_casFlyHeightSlider, _casRadiusSlider];
 { _x ctrlSetText "" } forEach [_casTaskText, _casTaskHelpText, _casROEText, _casFlyHeighSliderText, _casRadiusSliderText, _casAttackRunText];
 { lbClear _x } forEach [_casTaskLb,_casAttackRunLB, _casROELb];
+{ _x ctrlSetBackgroundColor [0, 0, 0, 0] } forEach [_casAttackRunLB, _casROELb];
 
 if (_status != "KILLED") then
 {
@@ -85,9 +90,9 @@ if (_status != "KILLED") then
 
     //Sliders
     _casFlyHeighSliderText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>Altitude: Medium</t>";
-    _casFlyHeighSliderText ctrlSetPosition [0.397304 * safezoneW + safezoneX, 0.514 * safezoneH + safezoneY, (0.105169 * safezoneW), (0.028 * safezoneH)];
+        _casFlyHeighSliderText ctrlSetPosition [0.397304 * _uiW + _uiX, 0.514 * _uiH + _uiY, (0.105169 * _uiW), (0.028 * _uiH)];
     _casFlyHeighSliderText ctrlCommit 0;
-    _casFlyHeightSlider ctrlSetPosition [0.402708 * safezoneW + safezoneX, 0.5508 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
+        _casFlyHeightSlider ctrlSetPosition [0.402708 * _uiW + _uiX, 0.5508 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
     _casFlyHeightSlider ctrlCommit 0;
 
     _casFlyHeightSlider sliderSetRange [1, 3];

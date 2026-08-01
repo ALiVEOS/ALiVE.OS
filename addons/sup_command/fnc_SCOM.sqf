@@ -408,7 +408,16 @@ switch (_operation) do {
             // ops state
 
             [_commandState,"opsGroupInstantJoin",false] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinContinuation",false] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinPlayerID",getPlayerUID player] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinProfileID",""] call ALIVE_fnc_hashSet;
             [_commandState,"opsGroupInstantJoinPlayerPosition",position player] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinOriginalPlayer",player] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinOriginalGroup",group player] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinOriginalGroupSide",side group player] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinOriginalWasLeader",(leader group player) isEqualTo player] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinCandidates",[]] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
 
             [_commandState,"opsGroupSpectate",false] call ALIVE_fnc_hashSet;
             [_commandState,"opsGroupSpectatePlayerPosition",position player] call ALIVE_fnc_hashSet;
@@ -424,6 +433,7 @@ switch (_operation) do {
             [_commandState,"opsGroupsValues",[]] call ALIVE_fnc_hashSet;
             [_commandState,"opsGroupsSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
             [_commandState,"opsGroupsSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupsReturnProfileID",""] call ALIVE_fnc_hashSet;
 
             [_commandState,"opsGroupSelectedProfile",[]] call ALIVE_fnc_hashSet;
             [_commandState,"opsGroupWaypoints",[]] call ALIVE_fnc_hashSet;
@@ -443,7 +453,7 @@ switch (_operation) do {
 
             [_commandState,"opsWPProfiledTypeOptions",["Move","Cycle"]] call ALIVE_fnc_hashSet;
             [_commandState,"opsWPProfiledTypeValues",["MOVE","CYCLE"]] call ALIVE_fnc_hashSet;
-            [_commandState,"opsWPNonProfiledTypeOptions",["Move","SAD","Cycle","Load","Land - Engines Off","Land - Engines On","TR Unload"]] call ALIVE_fnc_hashSet;
+            [_commandState,"opsWPNonProfiledTypeOptions",["Move","Attack / Search & Destroy","Cycle","Load","Land - Engines Off","Land - Engines On","Transport Unload"]] call ALIVE_fnc_hashSet;
             [_commandState,"opsWPNonProfiledTypeValues",["MOVE","SAD","CYCLE","LOAD","LAND OFF","LAND HOVER","TR UNLOAD"]] call ALIVE_fnc_hashSet;
             [_commandState,"opsWPTypeOptions",[]] call ALIVE_fnc_hashSet;
             [_commandState,"opsWPTypeValues",[]] call ALIVE_fnc_hashSet;
@@ -466,6 +476,56 @@ switch (_operation) do {
             [_commandState,"opsWPBehaviourSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
 
             [_logic,"commandState",_commandState] call MAINCLASS;
+
+            if (isNil {missionNamespace getVariable "ALiVE_SCOMJoinDeathPending"}) then {
+                missionNamespace setVariable ["ALiVE_SCOMJoinDeathPending",false];
+            };
+            if (isNil {missionNamespace getVariable "ALiVE_SCOMJoinRespawnRequested"}) then {
+                missionNamespace setVariable ["ALiVE_SCOMJoinRespawnRequested",false];
+            };
+            [_logic,"installOpsJoinPlayerHandlers",[]] call MAINCLASS;
+
+            // Use mission event handlers so the continuation survives the
+            // engine replacing the local player object during multiplayer
+            // respawn. No UI or player code is installed on a headless server.
+            if ((missionNamespace getVariable ["ALiVE_SCOMJoinKilledEH",-1]) < 0) then {
+                private _killedEH = addMissionEventHandler ["EntityKilled",{
+                    params ["_killed"];
+                    if (hasInterface && {!isNil "ALIVE_SUP_COMMAND"}) then {
+                        private _commandState = [ALIVE_SUP_COMMAND,"commandState"] call ALIVE_fnc_SCOM;
+                        private _joinedPlayer = [_commandState,"opsGroupInstantJoinOriginalPlayer",objNull] call ALiVE_fnc_hashGet;
+                        if (_killed isEqualTo _joinedPlayer) then {
+                            [ALIVE_SUP_COMMAND,"handleOpsJoinKilled",[_killed]] call ALIVE_fnc_SCOM;
+                        };
+                    };
+                }];
+                missionNamespace setVariable ["ALiVE_SCOMJoinKilledEH",_killedEH];
+            };
+
+            if ((missionNamespace getVariable ["ALiVE_SCOMJoinRespawnEH",-1]) < 0) then {
+                private _respawnEH = addMissionEventHandler ["EntityRespawned",{
+                    params ["_newUnit","_corpse"];
+                    if (hasInterface && {missionNamespace getVariable ["ALiVE_SCOMJoinDeathPending",false]} && {!isNil "ALIVE_SUP_COMMAND"}) then {
+                        private _commandState = [ALIVE_SUP_COMMAND,"commandState"] call ALIVE_fnc_SCOM;
+                        private _joinedPlayer = [_commandState,"opsGroupInstantJoinOriginalPlayer",objNull] call ALiVE_fnc_hashGet;
+                        if (_corpse isEqualTo _joinedPlayer) then {
+                            [_newUnit,_corpse] spawn {
+                                params ["_newUnit","_corpse"];
+                                private _deadline = diag_tickTime + 15;
+                                waitUntil {
+                                    sleep 0.05;
+                                    (_newUnit isEqualTo player && {local _newUnit}) || {diag_tickTime >= _deadline}
+                                };
+                                if (_newUnit isEqualTo player && {local _newUnit} && {!isNil "ALIVE_SUP_COMMAND"}) then {
+                                    [ALIVE_SUP_COMMAND,"installOpsJoinPlayerHandlers",[]] call ALIVE_fnc_SCOM;
+                                    [ALIVE_SUP_COMMAND,"handleOpsJoinRespawn",[_newUnit,_corpse]] spawn ALIVE_fnc_SCOM;
+                                };
+                            };
+                        };
+                    };
+                }];
+                missionNamespace setVariable ["ALiVE_SCOMJoinRespawnEH",_respawnEH];
+            };
 
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -576,13 +636,85 @@ switch (_operation) do {
 
                 case "OPS_PROFILE_WAYPOINTS_UPDATED": {
 
-                    [_logic,"enableGroupWaypointEdit", _data] call MAINCLASS;
+                    // Applying is a completed action. Return to the group list
+                    // instead of leaving the player trapped in the editor.
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _selectedProfile = [_commandState,"opsGroupsSelectedValue",[]] call ALiVE_fnc_hashGet;
+                    private _groups = [_commandState,"opsGroups",[]] call ALiVE_fnc_hashGet;
+
+                    if (count _selectedProfile >= 2) then {
+                        private _profileID = _selectedProfile select 0;
+                        [_commandState,"opsGroupsReturnProfileID",_profileID] call ALiVE_fnc_hashSet;
+                        {
+                            private _category = _x;
+                            private _categoryIndex = _forEachIndex;
+                            private _groupIndex = _category findIf {count _x >= 2 && {(_x select 0) == _profileID}};
+                            if (_groupIndex >= 0) exitWith {
+                                private _groupData = _category select _groupIndex;
+                                if (count _groupData > 2) then {_groupData set [2,true]} else {_groupData pushBack true};
+                                _category set [_groupIndex,_groupData];
+                                _groups set [_categoryIndex,_category];
+                            };
+                        } forEach _groups;
+                        [_commandState,"opsGroups",_groups] call ALiVE_fnc_hashSet;
+                        [_logic,"commandState",_commandState] call MAINCLASS;
+                    };
+
+                    ["OPS_CANCEL_EDIT_WAYPOINTS",[]] call ALIVE_fnc_SCOMTabletOnAction;
 
                 };
 
                 case "OPS_GROUP_JOIN_READY": {
 
-                    [_logic,"enableOpsJoinGroup", _data] spawn MAINCLASS;
+                    [_logic,"renderOpsJoinSelection", _data] call MAINCLASS;
+
+                };
+
+                case "OPS_JOIN_HANDOFF": {
+
+                    [_logic,"applyOpsJoinHandoff", _data] spawn MAINCLASS;
+
+                };
+
+                case "OPS_JOIN_HANDOFF_RESULT": {
+
+                    missionNamespace setVariable ["ALiVE_SCOMJoinHandoffResult",_data];
+
+                };
+
+                case "OPS_APPLY_GROUP_LEADERSHIP": {
+
+                    [_logic,"applyOpsGroupLeadership",_data] call MAINCLASS;
+
+                };
+
+                case "OPS_APPLY_TAKEOVER_WAYPOINTS": {
+
+                    [_logic,"applyOpsTakeoverWaypoints",_data] call MAINCLASS;
+
+                };
+
+                case "OPS_RECREATE_TAKEOVER_UNIT": {
+
+                    [_logic,"applyOpsRecreateTakeoverUnit",_data] call MAINCLASS;
+
+                };
+
+                case "OPS_JOIN_RESTORE": {
+
+                    [_logic,"applyOpsJoinRestore", _data] spawn MAINCLASS;
+
+                };
+
+                case "OPS_JOIN_RESTORE_RESULT": {
+
+                    missionNamespace setVariable ["ALiVE_SCOMJoinRestoreResult",_data];
+
+                };
+
+                case "OPS_JOIN_RESPAWN_READY": {
+
+                    [_logic,"resumeOpsJoinAfterRespawn",_data] spawn MAINCLASS;
 
                 };
 
@@ -685,6 +817,33 @@ switch (_operation) do {
 
             _commandState = [_logic,"commandState"] call MAINCLASS;
 
+            // Closing the tablet while the Instant Join chooser is preparing or
+            // open must never leave the original player hidden at the profile.
+            private _opsViewMode = [_commandState,"opsViewMode","GROUPS"] call ALiVE_fnc_hashGet;
+            if (_opsViewMode in ["JOIN_UNIT_WAIT","JOIN_UNIT_SELECT"]) then {
+                private _originalPlayer = [_commandState,"opsGroupInstantJoinOriginalPlayer",player] call ALiVE_fnc_hashGet;
+                private _initialPosition = [_commandState,"opsGroupInstantJoinPlayerPosition",[]] call ALiVE_fnc_hashGet;
+                private _playerID = [_commandState,"opsGroupInstantJoinPlayerID",getPlayerUID player] call ALiVE_fnc_hashGet;
+                private _isContinuation = [_commandState,"opsGroupInstantJoinContinuation",false] call ALiVE_fnc_hashGet;
+
+                if (!isNull _originalPlayer) then {
+                    if (!_isContinuation && {_initialPosition isEqualType []} && {count _initialPosition >= 2}) then {
+                        _originalPlayer setPos _initialPosition;
+                    };
+                    [_originalPlayer,false] call ALIVE_fnc_adminGhost;
+                    if (!_isContinuation) then {_originalPlayer allowDamage true};
+                };
+
+                [_commandState,"opsGroupInstantJoin",false] call ALiVE_fnc_hashSet;
+                [_commandState,"opsGroupInstantJoinContinuation",false] call ALiVE_fnc_hashSet;
+                [_commandState,"opsGroupInstantJoinCandidates",[]] call ALiVE_fnc_hashSet;
+                if (_isContinuation) then {
+                    ["OPS_CANCEL_JOIN_ACTIVE",[_playerID]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+                } else {
+                    ["OPS_CANCEL_JOIN_PREP",[_playerID,_initialPosition]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+                };
+            };
+
             // reset IMINT
 
             [_commandState,"intelListValues",[]] call ALiVE_fnc_hashSet;
@@ -748,13 +907,17 @@ switch (_operation) do {
 
                         case "Mapbag01": {
                             createDialog "SCOMTablet";
+                            private _uiW = (safezoneW / safezoneH) min 1.2;
+                            private _uiH = _uiW / 1.2;
+                            private _uiX = safezoneX + (safezoneW - _uiW) / 2;
+                            private _uiY = safezoneY + (safezoneH - _uiH) / 2;
                             private _ctrlBackground = ((findDisplay 12001) displayCtrl 12002);
                             _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                             _ctrlBackground ctrlSetPosition [
-                                0.15 * safezoneW + safezoneX,
-                                -0.242 * safezoneH + safezoneY,
-                                0.72 * safezoneW,
-                                1.372 * safezoneH
+                                0.15 * _uiW + _uiX,
+                                -0.242 * _uiH + _uiY,
+                                0.72 * _uiW,
+                                1.372 * _uiH
                             ];
                             _ctrlBackground ctrlCommit 0;
                         };
@@ -783,13 +946,17 @@ switch (_operation) do {
 
                         case "Mapbag01": {
                             createDialog "SCOMTablet";
+                            private _uiW = (safezoneW / safezoneH) min 1.2;
+                            private _uiH = _uiW / 1.2;
+                            private _uiX = safezoneX + (safezoneW - _uiW) / 2;
+                            private _uiY = safezoneY + (safezoneH - _uiH) / 2;
                             private _ctrlBackground = ((findDisplay 12001) displayCtrl 12002);
                             _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                             _ctrlBackground ctrlSetPosition [
-                                0.15 * safezoneW + safezoneX,
-                                -0.242 * safezoneH + safezoneY,
-                                0.72 * safezoneW,
-                                1.372 * safezoneH
+                                0.15 * _uiW + _uiX,
+                                -0.242 * _uiH + _uiY,
+                                0.72 * _uiW,
+                                1.372 * _uiH
                             ];
                             _ctrlBackground ctrlCommit 0;
                         };
@@ -1210,34 +1377,46 @@ switch (_operation) do {
                     _selectedList = _args select 0 select 0;
                     _selectedIndex = _args select 0 select 1;
 
-                    if(_selectedIndex >= 0) then {
+                    _listOptions = [_commandState,"opsGroupsOptions"] call ALIVE_fnc_hashGet;
+                    _listValues = [_commandState,"opsGroupsValues"] call ALIVE_fnc_hashGet;
 
-                        // store the selected item in the state
+                    if(_selectedIndex >= 0 && {_selectedIndex < count _listValues}) then {
 
-                        _listOptions = [_commandState,"opsGroupsOptions"] call ALIVE_fnc_hashGet;
-                        _listValues = [_commandState,"opsGroupsValues"] call ALIVE_fnc_hashGet;
+                        // Section headers use an empty value and are not groups.
                         _selectedOption = _listOptions select _selectedIndex;
                         _selectedValue = _listValues select _selectedIndex;
 
-                        [_commandState,"opsGroupsSelectedIndex",_selectedIndex] call ALIVE_fnc_hashSet;
-                        [_commandState,"opsGroupsSelectedValue",_selectedValue] call ALIVE_fnc_hashSet;
+                        if (_selectedValue isEqualTo []) then {
+                            [_commandState,"opsGroupsSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
+                            [_commandState,"opsGroupsSelectedValue",DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
+                            [_logic,"commandState",_commandState] call MAINCLASS;
 
-                        [_logic,"commandState",_commandState] call MAINCLASS;
+                            {
+                                private _control = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x);
+                                _control ctrlShow false;
+                            } forEach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3,SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR2];
+                        } else {
+                            [_commandState,"opsGroupsSelectedIndex",_selectedIndex] call ALIVE_fnc_hashSet;
+                            [_commandState,"opsGroupsSelectedValue",_selectedValue] call ALIVE_fnc_hashSet;
 
-                        // move the map to the selected profile
+                            [_logic,"commandState",_commandState] call MAINCLASS;
 
-                        _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                            // move the map to the selected profile
 
-                        ctrlMapAnimClear _map;
-                        _map ctrlMapAnimAdd [0.5, ctrlMapScale _map, _selectedValue select 1];
-                        ctrlMapAnimCommit _map;
+                            _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
 
-                        [_logic,"enableGroupSelected"] call MAINCLASS;
+                            ctrlMapAnimClear _map;
+                            _map ctrlMapAnimAdd [0.5, ctrlMapScale _map, _selectedValue select 1];
+                            ctrlMapAnimCommit _map;
+
+                            [_logic,"enableGroupSelected"] call MAINCLASS;
+                        };
 
                     };
                 };
 
-                case "OP_EDIT_MAP_CLICK": {
+                case "OP_EDIT_MAP_CLICK";
+                case "OP_EDIT_MAP_DOUBLE_CLICK": {
 
                     // on right map click
 
@@ -1273,15 +1452,17 @@ switch (_operation) do {
                         _dist = ((ctrlMapScale _map) * worldSize) / 100;
 
                         {
-                            _position = _x select 1;
-                            if(_cursorPosition distance2D _position < _dist) exitWith {
-                                _selectedIndex = _forEachIndex;
+                            if (count _x >= 2) then {
+                                _position = _x select 1;
+                                if(_cursorPosition distance2D _position < _dist) exitWith {
+                                    _selectedIndex = _forEachIndex;
+                                };
                             };
                         } foreach _listValues;
 
                         // if profile found set the list to the selected profile
 
-                        if(_selectedIndex > 0) then {
+                        if(_selectedIndex >= 0) then {
 
                             _editList lbSetCurSel _selectedIndex;
 
@@ -1291,6 +1472,12 @@ switch (_operation) do {
                             [_commandState,"opsGroupsSelectedIndex",_selectedIndex] call ALIVE_fnc_hashSet;
                             [_commandState,"opsGroupsSelectedValue",_selectedValue] call ALIVE_fnc_hashSet;
 
+                            [_logic,"commandState",_commandState] call MAINCLASS;
+
+                            if (_action == "OP_EDIT_MAP_DOUBLE_CLICK") then {
+                                ["OPS_EDIT_WAYPOINTS",[]] call ALIVE_fnc_SCOMTabletOnAction;
+                            };
+
                         };
 
                     };
@@ -1299,41 +1486,148 @@ switch (_operation) do {
 
                 case "OPS_JOIN_GROUP": {
 
-                    // a group has been selected for instant join
-
                     private _commandState = [_logic,"commandState"] call MAINCLASS;
-
-                    private _selectedProfile = [_commandState,"opsGroupsSelectedValue"] call ALIVE_fnc_hashGet;
+                    private _selectedProfile = [_commandState,"opsGroupsSelectedValue",[]] call ALIVE_fnc_hashGet;
+                    if (count _selectedProfile < 2) exitWith {};
 
                     [_commandState,"opsGroupInstantJoin",true] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinContinuation",false] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinPlayerID",getPlayerUID player] call ALIVE_fnc_hashSet;
                     [_commandState,"opsGroupInstantJoinPlayerPosition",position player] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinOriginalPlayer",player] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinOriginalGroup",group player] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinOriginalGroupSide",side group player] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinOriginalWasLeader",(leader group player) isEqualTo player] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinCandidates",[]] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsViewMode","JOIN_UNIT_WAIT"] call ALIVE_fnc_hashSet;
 
                     [_logic,"commandState",_commandState] call MAINCLASS;
 
                     private _profileID = _selectedProfile select 0;
+                    [_commandState,"opsGroupInstantJoinProfileID",_profileID] call ALIVE_fnc_hashSet;
+                    [_logic,"commandState",_commandState] call MAINCLASS;
 
-                    private _faction = [_logic,"faction"] call MAINCLASS;
+                    private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                    _editMap ctrlSetEventHandler ["MouseButtonDblClick", ""];
 
                     private _playerID = getPlayerUID player;
 
-                    // display text to player
-
-                    private _line1 = "<t size='1.5' color='#68a7b7' align='center'>Moving position...</t><br/><br/>";
-                    ["openSplash",0.25] call ALIVE_fnc_displayMenu;
-                    ["setSplashText",_line1] call ALIVE_fnc_displayMenu;
-
-                    // must be locally executed, protect player from explosives
-                    // invisibility is done serverside
-
+                    // Keep the tablet open while the server activates the profile
+                    // and returns every unit that can be controlled.
                     player allowDamage false;
+                    [_logic,"setOpsStatus","Preparing group units..."] call MAINCLASS;
 
-                    // send the event to get further data from the command handler
+                    {
+                        private _control = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x);
+                        _control ctrlShow false;
+                    } forEach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3,SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR2,SCOMTablet_CTRL_BR3];
+
+                    private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
+                    _title ctrlSetText "Operations: Preparing Instant Join";
+
+                    private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
+                    _back ctrlShow true;
+                    _back ctrlSetText "Back to Groups";
+                    _back ctrlSetEventHandler ["MouseButtonClick","['OPS_CANCEL_JOIN_SELECTION',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    private _abort = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuAbort);
+                    _abort ctrlSetText "Cancel";
+                    _abort buttonSetAction "['OPS_CANCEL_JOIN_SELECTION',[]] call ALIVE_fnc_SCOMTabletOnAction";
 
                     ["OPS_JOIN_GROUP", [_playerID,_profileID]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer", 2];
 
-                    // close the tablet
+                };
 
-                    closeDialog 0;
+                case "OPS_JOIN_UNIT_LIST_SELECT": {
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _selectedIndex = _args select 0 select 1;
+                    private _candidates = [_commandState,"opsGroupInstantJoinCandidates",[]] call ALiVE_fnc_hashGet;
+
+                    if (_selectedIndex >= 0 && {_selectedIndex < count _candidates}) then {
+                        [_commandState,"opsGroupInstantJoinSelectedIndex",_selectedIndex] call ALIVE_fnc_hashSet;
+                        [_logic,"commandState",_commandState] call MAINCLASS;
+
+                        private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
+                        _buttonL1 ctrlShow true;
+                        _buttonL1 ctrlSetText "Take Control";
+                        _buttonL1 ctrlSetEventHandler ["MouseButtonClick","['OPS_JOIN_SELECTED_UNIT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                        private _unit = _candidates select _selectedIndex;
+                        private _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                        ctrlMapAnimClear _map;
+                        _map ctrlMapAnimAdd [0.3,0.1,position _unit];
+                        ctrlMapAnimCommit _map;
+                    };
+
+                };
+
+                case "OPS_JOIN_SELECTED_UNIT": {
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _candidates = [_commandState,"opsGroupInstantJoinCandidates",[]] call ALiVE_fnc_hashGet;
+                    private _selectedIndex = [_commandState,"opsGroupInstantJoinSelectedIndex",DEFAULT_SELECTED_INDEX] call ALiVE_fnc_hashGet;
+                    if (_selectedIndex < 0 && {_args isEqualType []} && {count _args > 0} && {(_args select 0) isEqualType []} && {count (_args select 0) > 1}) then {
+                        _selectedIndex = _args select 0 select 1;
+                    };
+
+                    if (_selectedIndex >= 0 && {_selectedIndex < count _candidates}) then {
+                        private _unit = _candidates select _selectedIndex;
+                        if (!isNull _unit && {alive _unit} && {!isPlayer _unit}) then {
+                            [_commandState,"opsGroupInstantJoinContinuation",false] call ALiVE_fnc_hashSet;
+                            [_commandState,"opsViewMode","JOIN_ACTIVE"] call ALIVE_fnc_hashSet;
+                            [_logic,"commandState",_commandState] call MAINCLASS;
+
+                            private _line1 = "<t size='1.5' color='#68a7b7' align='center'>Taking control...</t><br/><br/>";
+                            ["openSplash",0.25] call ALIVE_fnc_displayMenu;
+                            ["setSplashText",_line1] call ALIVE_fnc_displayMenu;
+                            closeDialog 0;
+
+                            [_logic,"enableOpsJoinGroup",[getPlayerUID player,[_unit]]] spawn MAINCLASS;
+                        };
+                    };
+
+                };
+
+                case "OPS_CANCEL_JOIN_SELECTION": {
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _originalPlayer = [_commandState,"opsGroupInstantJoinOriginalPlayer",player] call ALiVE_fnc_hashGet;
+                    private _initialPosition = [_commandState,"opsGroupInstantJoinPlayerPosition",[]] call ALiVE_fnc_hashGet;
+                    private _playerID = [_commandState,"opsGroupInstantJoinPlayerID",getPlayerUID player] call ALiVE_fnc_hashGet;
+                    private _isContinuation = [_commandState,"opsGroupInstantJoinContinuation",false] call ALiVE_fnc_hashGet;
+
+                    [_commandState,"opsGroupInstantJoin",false] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinContinuation",false] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinCandidates",[]] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupInstantJoinSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashSet;
+                    [_logic,"commandState",_commandState] call MAINCLASS;
+
+                    if (!isNull _originalPlayer) then {
+                        if (!_isContinuation && {_initialPosition isEqualType []} && {count _initialPosition >= 2}) then {
+                            _originalPlayer setPos _initialPosition;
+                        };
+                        [_originalPlayer,false] call ALIVE_fnc_adminGhost;
+                        if (!_isContinuation) then {_originalPlayer allowDamage true};
+                    };
+
+                    if (_isContinuation) then {
+                        ["OPS_CANCEL_JOIN_ACTIVE",[_playerID]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+                    } else {
+                        ["OPS_CANCEL_JOIN_PREP",[_playerID,_initialPosition]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+                    };
+
+                    private _abort = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuAbort);
+                    _abort ctrlSetText "Close";
+                    _abort buttonSetAction "closeDialog 0";
+
+                    private _groups = [_commandState,"opsGroups",[]] call ALiVE_fnc_hashGet;
+                    private _selectedOpcom = [_commandState,"opsOPCOMSelectedValue",[]] call ALiVE_fnc_hashGet;
+                    if (count _selectedOpcom >= 3) then {
+                        ["OPS_GROUPS",[getPlayerUID _originalPlayer,_selectedOpcom select 2,_groups]] call ALIVE_fnc_SCOMTabletEventToClient;
+                    };
 
                 };
 
@@ -1341,15 +1635,14 @@ switch (_operation) do {
 
                     private ["_commandState","_initialPosition","_line1","_playerID","_requestID","_event","_faction","_buttonL1"];
 
-                    // close the tablet
-
-                    closeDialog 0;
-
                     _commandState = [_logic,"commandState"] call MAINCLASS;
 
                     [_commandState,"opsGroupInstantJoin",false] call ALIVE_fnc_hashSet;
 
                     [_logic,"commandState",_commandState] call MAINCLASS;
+
+                    // The active join loop restores the original player body.
+                    closeDialog 0;
 
                 };
 
@@ -1476,22 +1769,28 @@ switch (_operation) do {
 
                     private _commandState = [_logic,"commandState"] call MAINCLASS;
 
-                    private _selectedProfile = [_commandState,"opsGroupsSelectedValue"] call ALIVE_fnc_hashGet;
+                    private _selectedProfile = [_commandState,"opsGroupsSelectedValue",[]] call ALIVE_fnc_hashGet;
+                    if (count _selectedProfile < 2) exitWith {};
+
+                    [_commandState,"opsViewMode","WAYPOINTS"] call ALIVE_fnc_hashSet;
+                    [_logic,"commandState",_commandState] call MAINCLASS;
 
                     private _profileID = _selectedProfile select 0;
 
-                    private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
-                    _buttonL1 ctrlShow false;
+                    {
+                        private _button = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x);
+                        _button ctrlShow false;
+                    } foreach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3,SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR2,SCOMTablet_CTRL_BR3];
 
-                    private _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
-                    _buttonL2 ctrlShow false;
+                    private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
+                    _title ctrlSetText "Operations: Orders - click map to add; select an order to edit";
 
-                    private _buttonL3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL3);
-                    _buttonL3 ctrlShow false;
+                    private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+                    _editMap ctrlSetEventHandler ["MouseButtonDblClick",""];
 
                     private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
                     _back ctrlShow true;
-                    _back ctrlSetText "Back";
+                    _back ctrlSetText "Back to Groups";
                     _back ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     // show waiting until response comes back
@@ -1509,8 +1808,10 @@ switch (_operation) do {
                 case "OPS_CANCEL_EDIT_WAYPOINTS": {
 
                     _commandState = [_logic,"commandState"] call MAINCLASS;
+                    [_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashSet;
                     _groups = [_commandState,"opsGroups", []] call ALiVE_fnc_hashGet;
-                    _side = [_commandState,"opsOPCOMSelectedValue"] call ALiVE_fnc_hashGet;
+                    private _selectedOpcom = [_commandState,"opsOPCOMSelectedValue"] call ALiVE_fnc_hashGet;
+                    _side = _selectedOpcom select 2;
 
                     // enable/disable interface controls
 
@@ -1542,9 +1843,25 @@ switch (_operation) do {
                     [_commandState,"opsGroupWaypoints", []] call ALIVE_fnc_hashSet;
                     [_commandState,"opsGroupPlannedWaypoints", []] call ALIVE_fnc_hashSet;
                     [_commandState,"opsGroupWaypointsPlanned", false] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupWaypointsSelectedOptions", []] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupWaypointsSelectedValues", []] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupWaypointsSelectedIndex", DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupWaypointsSelectedValue", DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
 
                     [_commandState,"opsGroupsSelectedIndex", DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
                     [_commandState,"opsGroupsSelectedValue", DEFAULT_SELECTED_VALUE] call ALIVE_fnc_hashSet;
+
+                    // Back means abandon the local edit session. Clear the list and
+                    // restore the shared left button before the Groups view reuses it.
+                    lbClear _waypointList;
+                    private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
+                    private _buttonL1DefaultPosition = _buttonL1 getVariable ["SCOM_defaultPosition",[]];
+                    if (count _buttonL1DefaultPosition == 4) then {
+                        _buttonL1 ctrlSetPosition _buttonL1DefaultPosition;
+                        _buttonL1 ctrlCommit 0;
+                    };
+                    _buttonL1 ctrlSetTooltip "";
+                    _buttonL1 ctrlShow false;
 
                     // delete profile markers, they are created again once list is reshown
 
@@ -1594,7 +1911,7 @@ switch (_operation) do {
                         _waypointOptions = [_commandState,"opsGroupWaypointsSelectedOptions"] call ALIVE_fnc_hashGet;
                         _waypoints = [_commandState,"opsGroupWaypointsSelectedValues"] call ALIVE_fnc_hashGet;
 
-                        _newWaypointOption = format["Waypoint %1 [%2]",count(_waypoints),"MOVE"];
+                        _newWaypointOption = format["Order %1: %2",count(_waypoints) + 1,"Move"];
                         _newWaypointValue = [_position, 100] call ALIVE_fnc_createProfileWaypoint;
 
                         //_newWaypointValue call ALIVE_fnc_inspectHash;
@@ -1613,21 +1930,28 @@ switch (_operation) do {
                         [_commandState,"opsGroupPlannedWaypoints",_plannedWaypoints] call ALIVE_fnc_hashSet;
                         [_commandState,"opsGroupWaypointsPlanned",true] call ALIVE_fnc_hashSet;
 
+                        private _newWaypointIndex = count(_waypoints) - 1;
+                        [_commandState,"opsGroupWaypointsSelectedIndex",_newWaypointIndex] call ALIVE_fnc_hashSet;
+                        [_commandState,"opsGroupWaypointsSelectedValue",_newWaypointValue select 2] call ALIVE_fnc_hashSet;
+
                         [_logic,"commandState",_commandState] call MAINCLASS;
+
+                        _waypointList lbSetCurSel _newWaypointIndex;
+                        [_logic,"enableWaypointSelected"] call MAINCLASS;
 
                         private["_backButton","_buttonR2","_buttonR3"];
 
                         _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
-                        _backButton ctrlShow false;
+                        _backButton ctrlShow true;
 
                         _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Clear Waypoint Changes";
+                        _buttonR2 ctrlSetText "Discard Order Changes";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Waypoint Changes";
+                        _buttonR3 ctrlSetText "Apply Orders";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -1658,6 +1982,7 @@ switch (_operation) do {
 
                     private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
                     _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                    _editMap ctrlSetEventHandler ["MouseButtonDblClick",""];
 
                     private _editList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
                     lbClear _editList;
@@ -1895,7 +2220,7 @@ switch (_operation) do {
 
                         // move the map to the selected profile
 
-                        _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditRight);
+                        _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
 
                         ctrlMapAnimClear _map;
                         _map ctrlMapAnimAdd [0.5, ctrlMapScale _map, _selectedValue select 0];
@@ -1904,6 +2229,85 @@ switch (_operation) do {
                         [_logic, "enableWaypointSelected"] call MAINCLASS;
 
                     };
+                };
+
+                case "OPS_DELETE_WAYPOINT": {
+
+                    private _commandState = [_logic,"commandState"] call MAINCLASS;
+                    private _selectedIndex = [_commandState,"opsGroupWaypointsSelectedIndex",-1] call ALIVE_fnc_hashGet;
+                    private _waypoints = [_commandState,"opsGroupWaypointsSelectedValues",[]] call ALIVE_fnc_hashGet;
+
+                    if (_selectedIndex >= 0 && {_selectedIndex < count _waypoints}) then {
+
+                        _waypoints deleteAt _selectedIndex;
+
+                        private _typeOptions = [_commandState,"opsWPTypeOptions",[]] call ALIVE_fnc_hashGet;
+                        private _typeValues = [_commandState,"opsWPTypeValues",[]] call ALIVE_fnc_hashGet;
+                        private _waypointOptions = [];
+
+                        {
+                            private _typeValue = _x select 2;
+                            private _typeIndex = _typeValues find _typeValue;
+                            private _typeLabel = if (_typeIndex >= 0) then {
+                                _typeOptions select _typeIndex
+                            } else {
+                                _typeValue
+                            };
+
+                            _waypointOptions pushBack format["Order %1: %2",_forEachIndex + 1,_typeLabel];
+                        } forEach _waypoints;
+
+                        // The editable arrays are authoritative until Apply. Rebuild the
+                        // drawn chain so removing an active or planned order immediately
+                        // removes the matching segment.
+                        private _groupWaypoints = _waypoints apply {_x select 0};
+
+                        [_commandState,"opsGroupWaypointsSelectedOptions",_waypointOptions] call ALIVE_fnc_hashSet;
+                        [_commandState,"opsGroupWaypointsSelectedValues",_waypoints] call ALIVE_fnc_hashSet;
+                        [_commandState,"opsGroupWaypoints",_groupWaypoints] call ALIVE_fnc_hashSet;
+                        [_commandState,"opsGroupPlannedWaypoints",[]] call ALIVE_fnc_hashSet;
+                        [_commandState,"opsGroupWaypointsPlanned",true] call ALIVE_fnc_hashSet;
+
+                        private _waypointList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_WaypointList);
+                        lbClear _waypointList;
+                        {
+                            _waypointList lbAdd _x;
+                        } forEach _waypointOptions;
+
+                        if (count _waypoints > 0) then {
+                            private _newIndex = _selectedIndex min (count _waypoints - 1);
+                            [_commandState,"opsGroupWaypointsSelectedIndex",_newIndex] call ALIVE_fnc_hashSet;
+                            [_commandState,"opsGroupWaypointsSelectedValue",_waypoints select _newIndex] call ALIVE_fnc_hashSet;
+                            [_logic,"commandState",_commandState] call MAINCLASS;
+
+                            _waypointList lbSetCurSel _newIndex;
+                            [_logic,"enableWaypointSelected"] call MAINCLASS;
+                        } else {
+                            [_commandState,"opsGroupWaypointsSelectedIndex",-1] call ALIVE_fnc_hashSet;
+                            [_commandState,"opsGroupWaypointsSelectedValue",[]] call ALIVE_fnc_hashSet;
+                            [_logic,"commandState",_commandState] call MAINCLASS;
+
+                            {
+                                private _control = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x);
+                                _control ctrlShow false;
+                            } forEach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_WaypointTypeList,SCOMTablet_CTRL_WaypointSpeedList,SCOMTablet_CTRL_WaypointFormationList,SCOMTablet_CTRL_WaypointBehavourList];
+                        };
+
+                        private _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
+                        _backButton ctrlShow true;
+
+                        private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
+                        _buttonR2 ctrlShow true;
+                        _buttonR2 ctrlSetText "Discard Order Changes";
+                        _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                        private _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
+                        _buttonR3 ctrlShow true;
+                        _buttonR3 ctrlSetText "Apply Orders";
+                        _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+                    };
+
                 };
 
                 case "OPS_WP_TYPE_LIST_SELECT": {
@@ -1938,19 +2342,27 @@ switch (_operation) do {
                         _waypoints set [_waypointSelectedIndex,_waypointSelected];
                         [_commandState,"opsGroupWaypointsSelectedValues",_waypoints] call ALIVE_fnc_hashSet;
 
+                        private _waypointOptions = [_commandState,"opsGroupWaypointsSelectedOptions"] call ALIVE_fnc_hashGet;
+                        private _updatedOption = format["Order %1: %2",_waypointSelectedIndex + 1,_selectedOption];
+                        _waypointOptions set [_waypointSelectedIndex,_updatedOption];
+                        [_commandState,"opsGroupWaypointsSelectedOptions",_waypointOptions] call ALIVE_fnc_hashSet;
+
+                        private _waypointList = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_WaypointList);
+                        _waypointList lbSetText [_waypointSelectedIndex,_updatedOption];
+
                         [_logic,"commandState",_commandState] call MAINCLASS;
 
                         _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
-                        _backButton ctrlShow false;
+                        _backButton ctrlShow true;
 
                         _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Clear Waypoint Changes";
+                        _buttonR2 ctrlSetText "Discard Order Changes";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Waypoint Changes";
+                        _buttonR3 ctrlSetText "Apply Orders";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -1991,16 +2403,16 @@ switch (_operation) do {
                         [_logic,"commandState",_commandState] call MAINCLASS;
 
                         _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
-                        _backButton ctrlShow false;
+                        _backButton ctrlShow true;
 
                         _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Clear Waypoint Changes";
+                        _buttonR2 ctrlSetText "Discard Order Changes";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Waypoint Changes";
+                        _buttonR3 ctrlSetText "Apply Orders";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -2041,16 +2453,16 @@ switch (_operation) do {
                         [_logic,"commandState",_commandState] call MAINCLASS;
 
                         _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
-                        _backButton ctrlShow false;
+                        _backButton ctrlShow true;
 
                         _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Clear Waypoint Changes";
+                        _buttonR2 ctrlSetText "Discard Order Changes";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Waypoint Changes";
+                        _buttonR3 ctrlSetText "Apply Orders";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -2091,16 +2503,16 @@ switch (_operation) do {
                         [_logic,"commandState",_commandState] call MAINCLASS;
 
                         _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
-                        _backButton ctrlShow false;
+                        _backButton ctrlShow true;
 
                         _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                         _buttonR2 ctrlShow true;
-                        _buttonR2 ctrlSetText "Clear Waypoint Changes";
+                        _buttonR2 ctrlSetText "Discard Order Changes";
                         _buttonR2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                         _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
                         _buttonR3 ctrlShow true;
-                        _buttonR3 ctrlSetText "Apply Waypoint Changes";
+                        _buttonR3 ctrlSetText "Apply Orders";
                         _buttonR3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_APPLY_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                     };
@@ -2177,8 +2589,14 @@ switch (_operation) do {
                     private _buttonR2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR2);
                     _buttonR2 ctrlShow false;
 
+                    private _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
+                    _buttonR3 ctrlShow false;
+
                     private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
                     _buttonR1 ctrlShow false;
+
+                    private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
+                    _buttonL1 ctrlShow false;
 
                     // show waiting until response comes back
 
@@ -2291,6 +2709,14 @@ switch (_operation) do {
         _rightMap ctrlShow false;
 
         _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
+        private _buttonL1DefaultPosition = _buttonL1 getVariable ["SCOM_defaultPosition",[]];
+        if (_buttonL1DefaultPosition isEqualTo []) then {
+            _buttonL1 setVariable ["SCOM_defaultPosition",ctrlPosition _buttonL1];
+        } else {
+            _buttonL1 ctrlSetPosition _buttonL1DefaultPosition;
+            _buttonL1 ctrlCommit 0;
+        };
+        _buttonL1 ctrlSetTooltip "";
         _buttonL1 ctrlShow false;
 
         _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
@@ -3155,6 +3581,14 @@ switch (_operation) do {
         _intelTypeList ctrlShow false;
 
         _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
+        private _buttonL1DefaultPosition = _buttonL1 getVariable ["SCOM_defaultPosition",[]];
+        if (_buttonL1DefaultPosition isEqualTo []) then {
+            _buttonL1 setVariable ["SCOM_defaultPosition",ctrlPosition _buttonL1];
+        } else {
+            _buttonL1 ctrlSetPosition _buttonL1DefaultPosition;
+            _buttonL1 ctrlCommit 0;
+        };
+        _buttonL1 ctrlSetTooltip "";
         _buttonL1 ctrlShow false;
 
         _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
@@ -3258,14 +3692,13 @@ switch (_operation) do {
         // once the list of opcom instances has been loaded
         // display the available OPCOM sides
 
-        // display the reset button so the user can restart
+        private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
+        _title ctrlSetText "Operations: Select Commander";
+
+        // this is the first page; Close already provides the exit action
 
         _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
-        _back ctrlShow true;
-
-        _back ctrlSetText "Back";
-
-        _back ctrlSetEventHandler ["MouseButtonClick", "['OPS_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+        _back ctrlShow false;
 
         if(typeName _args == "ARRAY") then {
 
@@ -3311,6 +3744,12 @@ switch (_operation) do {
 
                 _opsTypeList ctrlSetEventHandler ["LBSelChanged", "['OPS_OPCOM_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
+                // Most missions expose one commander. Skip a redundant choice
+                // while preserving the list for missions that expose several.
+                if (count(_opcomOptions) == 1) then {
+                    _opsTypeList lbSetCurSel 0;
+                };
+
             } else {
 
                 [_logic,"setOpsStatus", "No OPCOM instances found"] call MAINCLASS;
@@ -3334,6 +3773,14 @@ switch (_operation) do {
 
             _selectedSide = _args select 1;
             _groupData = _args select 2;
+
+            private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
+            _title ctrlSetText "Operations: Groups - double-click a group to issue orders";
+
+            private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
+            _back ctrlShow true;
+            _back ctrlSetText "Change Commander";
+            _back ctrlSetEventHandler ["MouseButtonClick", "['OPS_RESET',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
             if(count(_groupData) > 0) then {
 
@@ -3362,7 +3809,7 @@ switch (_operation) do {
                 _editList ctrlShow true;
 
                 lbClear _editList;
-                _editList lbSetCurSel 0;
+                _editList lbSetCurSel -1;
 
                 _options = [];
                 _values = [];
@@ -3396,213 +3843,72 @@ switch (_operation) do {
                     };
                 };
 
+                private _categories = [
+                    [_infantry,"Infantry","%1_inf"],
+                    [_motorised,"Motorised","%1_motor_inf"],
+                    [_mechanized,"Mechanized","%1_mech_inf"],
+                    [_armor,"Armor","%1_armor"],
+                    [_air,"Air","%1_air"],
+                    [_sea,"Naval","%1_unknown"],
+                    [_artillery,"Artillery","%1_art"],
+                    [_AAA,"Anti-Air","%1_mech_inf"]
+                ];
+
+                private _unlockedCount = 0;
+                private _lockedCount = 0;
                 {
-                    _profileID = _x select 0;
-                    _position = _x select 1;
-                    _label = _profileID splitString "_";
-                    _label = _label select ((count _label) - 1);
+                    {
+                        private _locked = if (count _x > 2) then {_x select 2} else {false};
+                        if (_locked) then {_lockedCount = _lockedCount + 1} else {_unlockedCount = _unlockedCount + 1};
+                    } forEach (_x select 0);
+                } forEach _categories;
 
-                    _option = format ["Infantry Group %1", _label];
-                    _options pushBack (_option);
-                    _values pushBack (_x);
-
-                    _editList lbAdd _option;
-
-                    _profileMarker = format["%1_inf",_typePrefix];
-
-                    _m = createMarkerLocal [format[MTEMPLATE,_label], _position];
-                    _m setMarkerShapeLocal "ICON";
-                    _m setMarkerSizeLocal [0.5,0.5];
-                    _m setMarkerTypeLocal _profileMarker;
-                    _m setMarkerColorLocal _color;
-                    _m setMarkerAlphaLocal _alpha;
-                    _m setMarkerTextLocal format["e%1",_label];
-
-                    _markers pushback _m;
-
-                } forEach _infantry;
-
+                // Render unlocked commander groups first and locked player-owned
+                // groups in their own persistent battlegroup section, listed
+                // first so the player's assigned formations are immediately visible.
                 {
-                    _profileID = _x select 0;
-                    _position = _x select 1;
-                    _label = _profileID splitString "_";
-                    _label = _label select ((count _label) - 1);
+                    _x params ["_sectionLocked","_sectionTitle","_sectionCount"];
 
-                    _option = format ["Motorised Group %1", _label];
-                    _options pushBack (_option);
-                    _values pushBack (_x);
+                    if (_sectionCount > 0) then {
+                        private _headerIndex = _editList lbAdd _sectionTitle;
+                        _editList lbSetColor [_headerIndex, if (_sectionLocked) then {[1,0.65,0.15,1]} else {[0.75,0.85,0.75,1]}];
+                        _options pushBack _sectionTitle;
+                        _values pushBack [];
 
-                    _editList lbAdd _option;
+                        {
+                            _x params ["_categoryGroups","_categoryLabel","_markerTemplate"];
 
-                    _profileMarker = format["%1_motor_inf",_typePrefix];
+                            {
+                                private _locked = if (count _x > 2) then {_x select 2} else {false};
 
-                    _m = createMarkerLocal [format[MTEMPLATE, format["%1", _label]], _position];
-                    _m setMarkerShapeLocal "ICON";
-                    _m setMarkerSizeLocal [0.5,0.5];
-                    _m setMarkerTypeLocal _profileMarker;
-                    _m setMarkerColorLocal _color;
-                    _m setMarkerAlphaLocal _alpha;
-                    _m setMarkerTextLocal format["e%1",_label];
+                                if (_locked == _sectionLocked) then {
+                                    _profileID = _x select 0;
+                                    _position = _x select 1;
+                                    _label = _profileID splitString "_";
+                                    _label = _label select ((count _label) - 1);
 
-                    _markers pushback _m;
+                                    _option = format ["  %1 Group %2",_categoryLabel,_label];
+                                    _options pushBack _option;
+                                    _values pushBack _x;
+                                    _editList lbAdd _option;
 
-                } forEach _motorised;
-
-                {
-                    _profileID = _x select 0;
-                    _position = _x select 1;
-                    _label = _profileID splitString "_";
-                    _label = _label select ((count _label) - 1);
-
-                    _option = format ["Mechanized Group %1", _label];
-                    _options pushBack (_option);
-                    _values pushBack (_x);
-
-                    _editList lbAdd _option;
-
-                    _profileMarker = format["%1_mech_inf",_typePrefix];
-
-                    _m = createMarkerLocal [format[MTEMPLATE, format["%1", _label]], _position];
-                    _m setMarkerShapeLocal "ICON";
-                    _m setMarkerSizeLocal [0.5,0.5];
-                    _m setMarkerTypeLocal _profileMarker;
-                    _m setMarkerColorLocal _color;
-                    _m setMarkerAlphaLocal _alpha;
-                    _m setMarkerTextLocal format["e%1",_label];
-
-                    _markers pushback _m;
-
-                } forEach _mechanized;
-
-                {
-                    _profileID = _x select 0;
-                    _position = _x select 1;
-                    _label = _profileID splitString "_";
-                    _label = _label select ((count _label) - 1);
-
-                    _option = format ["Armor Group %1", _label];
-                    _options pushBack (_option);
-                    _values pushBack (_x);
-
-                    _editList lbAdd _option;
-
-                    _profileMarker = format["%1_armor",_typePrefix];
-
-                    _m = createMarkerLocal [format[MTEMPLATE, format["%1", _label]], _position];
-                    _m setMarkerShapeLocal "ICON";
-                    _m setMarkerSizeLocal [0.5,0.5];
-                    _m setMarkerTypeLocal _profileMarker;
-                    _m setMarkerColorLocal _color;
-                    _m setMarkerAlphaLocal _alpha;
-                    _m setMarkerTextLocal format["e%1",_label];
-
-                    _markers pushback _m;
-
-                } forEach _armor;
-
-                {
-                    _profileID = _x select 0;
-                    _position = _x select 1;
-                    _label = _profileID splitString "_";
-                    _label = _label select ((count _label) - 1);
-
-                    _option = format ["Air Group %1", _label];
-                    _options pushBack (_option);
-                    _values pushBack (_x);
-
-                    _editList lbAdd _option;
-
-                    _profileMarker = format["%1_air",_typePrefix];
-
-                    _m = createMarkerLocal [format[MTEMPLATE, format["%1", _label]], _position];
-                    _m setMarkerShapeLocal "ICON";
-                    _m setMarkerSizeLocal [0.5,0.5];
-                    _m setMarkerTypeLocal _profileMarker;
-                    _m setMarkerColorLocal _color;
-                    _m setMarkerAlphaLocal _alpha;
-                    _m setMarkerTextLocal format["e%1",_label];
-
-                    _markers pushback _m;
-
-                } forEach _air;
-
-                {
-                    _profileID = _x select 0;
-                    _position = _x select 1;
-                    _label = _profileID splitString "_";
-                    _label = _label select ((count _label) - 1);
-
-                    _option = format ["Naval Group %1", _label];
-                    _options pushBack (_option);
-                    _values pushBack (_x);
-
-                    _editList lbAdd _option;
-
-                    _profileMarker = format["%1_unknown",_typePrefix];
-
-                    _m = createMarkerLocal [format[MTEMPLATE, format["%1", _label]], _position];
-                    _m setMarkerShapeLocal "ICON";
-                    _m setMarkerSizeLocal [0.5,0.5];
-                    _m setMarkerTypeLocal _profileMarker;
-                    _m setMarkerColorLocal _color;
-                    _m setMarkerAlphaLocal _alpha;
-                    _m setMarkerTextLocal format["e%1",_label];
-
-                    _markers pushback _m;
-
-                } forEach _sea;
-
-                {
-                    _profileID = _x select 0;
-                    _position = _x select 1;
-                    _label = _profileID splitString "_";
-                    _label = _label select ((count _label) - 1);
-
-                    _option = format ["Artillery Group %1", _label];
-                    _options pushBack (_option);
-                    _values pushBack (_x);
-
-                    _editList lbAdd _option;
-
-                    _profileMarker = format["%1_art",_typePrefix];
-
-                    _m = createMarkerLocal [format[MTEMPLATE, format["%1", _label]], _position];
-                    _m setMarkerShapeLocal "ICON";
-                    _m setMarkerSizeLocal [0.5,0.5];
-                    _m setMarkerTypeLocal _profileMarker;
-                    _m setMarkerColorLocal _color;
-                    _m setMarkerAlphaLocal _alpha;
-                    _m setMarkerTextLocal format["e%1",_label];
-
-                    _markers pushback _m;
-
-                } forEach _artillery;
-
-                {
-                    _profileID = _x select 0;
-                    _position = _x select 1;
-                    _label = _profileID splitString "_";
-                    _label = _label select ((count _label) - 1);
-
-                    _option = format ["Anti-Air Group %1", _forEachIndex + 1];
-                    _options pushBack (_option);
-                    _values pushBack (_x);
-
-                    _editList lbAdd _option;
-
-                    _profileMarker = format["%1_mech_inf",_typePrefix];
-
-                    _m = createMarkerLocal [format[MTEMPLATE, format["%1", _label]], _position];
-                    _m setMarkerShapeLocal "ICON";
-                    _m setMarkerSizeLocal [0.5,0.5];
-                    _m setMarkerTypeLocal _profileMarker;
-                    _m setMarkerColorLocal _color;
-                    _m setMarkerAlphaLocal _alpha;
-                    _m setMarkerTextLocal format["e%1",_label];
-
-                    _markers pushback _m;
-
-                } forEach _AAA;
+                                    _profileMarker = format[_markerTemplate,_typePrefix];
+                                    _m = createMarkerLocal [format[MTEMPLATE,_profileID],_position];
+                                    _m setMarkerShapeLocal "ICON";
+                                    _m setMarkerSizeLocal [0.5,0.5];
+                                    _m setMarkerTypeLocal _profileMarker;
+                                    _m setMarkerColorLocal (if (_sectionLocked) then {"ColorOrange"} else {_color});
+                                    _m setMarkerAlphaLocal _alpha;
+                                    _m setMarkerTextLocal format["%1%2",if (_sectionLocked) then {"P"} else {"e"},_label];
+                                    _markers pushback _m;
+                                };
+                            } forEach _categoryGroups;
+                        } forEach _categories;
+                    };
+                } forEach [
+                    [true,"PLAYER BATTLEGROUP (LOCKED)",_lockedCount],
+                    [false,"AI COMMANDER GROUPS",_unlockedCount]
+                ];
 
 
                 // store the marker state for clearing later
@@ -3617,12 +3923,32 @@ switch (_operation) do {
                 // set the event handler for the list selection event
 
                 _editList ctrlSetEventHandler ["LBSelChanged", "['OPS_GROUP_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                _editList ctrlSetEventHandler ["LBDblClick", "['OPS_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                _editList ctrlSetTooltip "Select for group actions. Double-click to issue orders.";
+
+                private _returnProfileID = [_commandState,"opsGroupsReturnProfileID",""] call ALiVE_fnc_hashGet;
+                private _returnGroupIndex = if (_returnProfileID != "") then {
+                    _values findIf {count _x >= 2 && {(_x select 0) == _returnProfileID}}
+                } else {
+                    -1
+                };
+                private _groupIndexToSelect = if (_returnGroupIndex >= 0) then {
+                    _returnGroupIndex
+                } else {
+                    _values findIf {count _x >= 2}
+                };
+
+                [_commandState,"opsGroupsReturnProfileID",""] call ALiVE_fnc_hashSet;
+                [_logic,"commandState",_commandState] call MAINCLASS;
+
+                if (_groupIndexToSelect >= 0) then {_editList lbSetCurSel _groupIndexToSelect};
 
                 // set the event handler for the map selection event
 
                 _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
 
                 _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_EDIT_MAP_CLICK',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+                _editMap ctrlSetEventHandler ["MouseButtonDblClick", "['OP_EDIT_MAP_DOUBLE_CLICK',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                 // hide the loading status text
 
@@ -3679,6 +4005,9 @@ switch (_operation) do {
         // list order = array order = the commander's priority queue
 
         private _commandState = [_logic,"commandState"] call MAINCLASS;
+
+        private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
+        _title ctrlSetText "Operations: Commander Objectives";
 
         private _objectiveData = [_commandState,"opsObjectivesData"] call ALIVE_fnc_hashGet;
         private _meta = [_commandState,"opsObjectivesMeta"] call ALIVE_fnc_hashGet;
@@ -3747,6 +4076,7 @@ switch (_operation) do {
 
         private _editMap = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
         _editMap ctrlSetEventHandler ["MouseButtonDown", "['OP_MAP_CLICK_NULL',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+        _editMap ctrlSetEventHandler ["MouseButtonDblClick",""];
 
         // buttons
 
@@ -3874,6 +4204,11 @@ switch (_operation) do {
 
             private _commandState = [_logic,"commandState"] call MAINCLASS;
 
+            // A double-click can open the order editor while the single-click
+            // profile request is still in flight. Do not let that stale reply
+            // replace the editor with the group-action buttons.
+            if (([_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashGet) != "GROUPS") exitwith {};
+
             private _profileData = _args select 1;
 
             if !(_profileData isEqualTo []) then {
@@ -3912,7 +4247,7 @@ switch (_operation) do {
 
         private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
         _buttonL1 ctrlShow true;
-        _buttonL1 ctrlSetText "Edit Group Waypoints";
+        _buttonL1 ctrlSetText "Issue Orders";
         _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
         private _allowSpectate = [_logic,"scomOpsAllowSpectate"] call MAINCLASS;
@@ -3952,9 +4287,7 @@ switch (_operation) do {
         };
 
         private _buttonL3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL3);
-        _buttonL3 ctrlShow true;
-        _buttonL3 ctrlSetText "More actions...";
-        _buttonL3 ctrlSetEventHandler ["MouseButtonClick", "['OPS_MORE_OPTIONS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+        _buttonL3 ctrlShow false;
 
     };
 
@@ -3970,6 +4303,13 @@ switch (_operation) do {
         if(typeName _args == "ARRAY") then {
 
             _commandState = [_logic,"commandState"] call MAINCLASS;
+
+            // Ignore a delayed waypoint response after the player has already
+            // returned to the group or objective view.
+            if (([_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashGet) != "WAYPOINTS") exitwith {};
+
+            private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
+            _title ctrlSetText "Operations: Orders - click map to add; select an order to edit";
 
             // hide the loading status text
 
@@ -4020,7 +4360,14 @@ switch (_operation) do {
                 _waypointsValues = [];
 
                 {
-                    _option = format["Waypoint %1 [%2]",_forEachIndex,_x select 2];
+                    private _orderTypeValue = _x select 2;
+                    private _orderTypeLabel = switch (_orderTypeValue) do {
+                        case "MOVE": {"Move"};
+                        case "SAD": {"Attack / Search & Destroy"};
+                        case "TR UNLOAD": {"Transport Unload"};
+                        default {_orderTypeValue};
+                    };
+                    _option = format["Order %1: %2",_forEachIndex + 1,_orderTypeLabel];
 
                     _waypointsOptions pushBack _option;
                     _waypointsValues pushBack _x;
@@ -4063,6 +4410,14 @@ switch (_operation) do {
                 [_commandState,"opsGroupSelectedProfile",_profile] call ALIVE_fnc_hashSet;
                 [_commandState,"opsGroupWaypoints",_groupWaypoints] call ALIVE_fnc_hashSet;
 
+                private _lastWaypointIndex = count(_waypointsValues) - 1;
+                if (_lastWaypointIndex >= 0) then {
+                    [_commandState,"opsGroupWaypointsSelectedIndex",_lastWaypointIndex] call ALIVE_fnc_hashSet;
+                    [_commandState,"opsGroupWaypointsSelectedValue",_waypointsValues select _lastWaypointIndex] call ALIVE_fnc_hashSet;
+                };
+
+                [_logic,"commandState",_commandState] call MAINCLASS;
+
 /*
                 // move profile marker to refreshed position
                 _selectedIndex = [_commandState,"opsGroupsSelectedIndex"] call ALIVE_fnc_hashGet;
@@ -4082,17 +4437,22 @@ switch (_operation) do {
 
                 // enable interface elements for interacting with profile
 
-                private["_buttonR1","_buttonL2","_buttonR2","_buttonR3","_waypointTypeList","_waypointSpeedList","_waypointFormationList","_waypointBehaviourList"];
+                private["_buttonR1","_buttonL1","_buttonL2","_buttonR2","_buttonR3","_waypointTypeList","_waypointSpeedList","_waypointFormationList","_waypointBehaviourList"];
 
                 _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
                 _buttonR1 ctrlShow true;
-                _buttonR1 ctrlSetText "Clear All Waypoints";
+                _buttonR1 ctrlSetText "Clear All Orders";
                 _buttonR1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_CLEAR_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                 _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
                 _backButton ctrlShow true;
+                _backButton ctrlSetText "Back to Groups";
+                _backButton ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
                 // disable interface elements for interacting with profile
+
+                _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
+                _buttonL1 ctrlShow false;
 
                 _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
                 _buttonL2 ctrlShow false;
@@ -4131,6 +4491,13 @@ switch (_operation) do {
                 _waypointBehaviourList lbSetCurSel -1;
                 _waypointBehaviourList ctrlSetEventHandler ["LBSelChanged", ""];
 
+                // Put the most recent order straight into the editor. New map
+                // clicks do the same, so changing Move to Attack takes one click.
+                if (_lastWaypointIndex >= 0) then {
+                    _waypointList lbSetCurSel _lastWaypointIndex;
+                    [_logic,"enableWaypointSelected"] call MAINCLASS;
+                };
+
 
             } else {
 
@@ -4149,27 +4516,35 @@ switch (_operation) do {
         _eventData params ["_profileID","_lock"];
 
         private _commandState = [_logic,"commandState"] call MAINCLASS;
-        private _selectedProfileData = [_commandState,"opsGroupsSelectedValue"] call ALiVE_fnc_hashGet;
-        private _selectedProfileID = _selectedProfileData select 0;
+        private _groups = [_commandState,"opsGroups",[]] call ALiVE_fnc_hashGet;
 
-        if (_profileID == _selectedProfileID) then {
-
-            private _buttonL2 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL2);
-            _buttonL2 ctrlShow true;
-
-            if (_lock) then {
-
-                _buttonL2 ctrlSetText "Unlock Group for AI Commander Control";
-                _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,false]] call ALIVE_fnc_SCOMTabletOnAction"];
-
-            } else {
-
-                _buttonL2 ctrlSetText "Lock Group from AI Commander Control";
-                _buttonL2 ctrlSetEventHandler ["MouseButtonClick", "['OPS_LOCK_GROUP',[_this,true]] call ALIVE_fnc_SCOMTabletOnAction"];
-
+        {
+            private _category = _x;
+            private _categoryIndex = _forEachIndex;
+            private _groupIndex = _category findIf {count _x >= 2 && {(_x select 0) == _profileID}};
+            if (_groupIndex >= 0) exitWith {
+                private _groupData = _category select _groupIndex;
+                if (count _groupData > 2) then {
+                    _groupData set [2,_lock];
+                } else {
+                    _groupData pushBack _lock;
+                };
+                _category set [_groupIndex,_groupData];
+                _groups set [_categoryIndex,_category];
             };
+        } forEach _groups;
 
-        };
+        [_commandState,"opsGroups",_groups] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupsSelectedIndex",DEFAULT_SELECTED_INDEX] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupsSelectedValue",DEFAULT_SELECTED_VALUE] call ALiVE_fnc_hashSet;
+        [_logic,"commandState",_commandState] call MAINCLASS;
+
+        // Re-render immediately so the group visibly moves between the AI
+        // Commander and Player Battlegroup sections.
+        private _playerID = getPlayerUID player;
+        private _selectedOpcom = [_commandState,"opsOPCOMSelectedValue"] call ALiVE_fnc_hashGet;
+        private _side = _selectedOpcom select 2;
+        ["OPS_GROUPS",[_playerID,_side,_groups]] call ALiVE_fnc_SCOMTabletEventToClient;
 
     };
 
@@ -4246,6 +4621,20 @@ switch (_operation) do {
                     };
                 };
             } foreach _plannedWaypoints;
+
+            // Overlay the incoming segment for the selected order so the map
+            // selection is as obvious as the highlighted row in the list.
+            private _selectedOrderIndex = [_commandState,"opsGroupWaypointsSelectedIndex",DEFAULT_SELECTED_INDEX] call ALiVE_fnc_hashGet;
+            private _editableOrders = [_commandState,"opsGroupWaypointsSelectedValues",[]] call ALiVE_fnc_hashGet;
+            if (_selectedOrderIndex >= 0 && {_selectedOrderIndex < count _editableOrders}) then {
+                private _selectedStart = if (_selectedOrderIndex > 0) then {
+                    (_editableOrders select (_selectedOrderIndex - 1)) select 0
+                } else {
+                    _profilePos
+                };
+                private _selectedEnd = (_editableOrders select _selectedOrderIndex) select 0;
+                _map drawLine [_selectedStart,_selectedEnd,[1,0.65,0.15,1]];
+            };
         };
 
     };
@@ -4292,7 +4681,7 @@ switch (_operation) do {
             if(_selectedWaypointType == _x) then {
                 _selectedWaypointTypeIndex = _forEachIndex;
             };
-            _waypointTypeList lbAdd format["%1", _opsWPTypeOptions select _forEachIndex];
+            _waypointTypeList lbAdd format["Order: %1", _opsWPTypeOptions select _forEachIndex];
         } forEach _opsWPTypeValues;
 
         _waypointTypeList lbSetCurSel _selectedWaypointTypeIndex;
@@ -4311,7 +4700,7 @@ switch (_operation) do {
             if(_selectedWaypointSpeed == _x) then {
                 _selectedWaypointSpeedIndex = _forEachIndex;
             };
-            _waypointSpeedList lbAdd format["%1", _opsWPSpeedOptions select _forEachIndex];
+            _waypointSpeedList lbAdd format["Speed: %1", _opsWPSpeedOptions select _forEachIndex];
         } forEach _opsWPSpeedValues;
 
         _waypointSpeedList lbSetCurSel _selectedWaypointSpeedIndex;
@@ -4330,7 +4719,7 @@ switch (_operation) do {
             if(_selectedWaypointFormation == _x) then {
                 _selectedWaypointFormationIndex = _forEachIndex;
             };
-            _waypointFormationList lbAdd format["%1", _opsWPFormationOptions select _forEachIndex];
+            _waypointFormationList lbAdd format["Formation: %1", _opsWPFormationOptions select _forEachIndex];
         } forEach _opsWPFormationValues;
 
         _waypointFormationList lbSetCurSel _selectedWaypointFormationIndex;
@@ -4349,7 +4738,7 @@ switch (_operation) do {
             if(_selectedWaypointBehaviour == _x) then {
                 _selectedWaypointBehaviourIndex = _forEachIndex;
             };
-            _waypointBehaviourList lbAdd format["%1", _opsWPBehaviourOptions select _forEachIndex];
+            _waypointBehaviourList lbAdd format["Behaviour: %1", _opsWPBehaviourOptions select _forEachIndex];
         } forEach _opsWPBehaviourValues;
 
         _waypointBehaviourList lbSetCurSel _selectedWaypointBehaviourIndex;
@@ -4358,100 +4747,789 @@ switch (_operation) do {
 
         _waypointBehaviourList ctrlSetEventHandler ["LBSelChanged", "['OPS_WP_BEHAVIOUR_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
 
+        private _buttonL1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BL1);
+        if ((_buttonL1 getVariable ["SCOM_defaultPosition",[]]) isEqualTo []) then {
+            _buttonL1 setVariable ["SCOM_defaultPosition",ctrlPosition _buttonL1];
+        };
+
+        // The Behavior list occupies the normal BL1 slot. Reuse BL1 as a compact
+        // delete button in the otherwise empty column before the right-side actions.
+        private _buttonR1 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR1);
+        private _buttonR3 = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_BR3);
+        private _behaviourPosition = ctrlPosition _waypointBehaviourList;
+        private _buttonR1Position = ctrlPosition _buttonR1;
+        private _buttonR3Position = ctrlPosition _buttonR3;
+        private _deleteLeft = (_behaviourPosition select 0) + (_behaviourPosition select 2);
+        private _deleteAvailableWidth = (_buttonR1Position select 0) - _deleteLeft;
+        private _deleteAvailableHeight = ((_buttonR3Position select 1) + (_buttonR3Position select 3)) - (_buttonR1Position select 1);
+        private _deleteHorizontalGap = _deleteAvailableWidth * 0.12;
+        private _deleteVerticalGap = (_buttonR1Position select 3) * 0.18;
+        private _deleteX = _deleteLeft + _deleteHorizontalGap;
+        private _deleteY = (_buttonR1Position select 1) + _deleteVerticalGap;
+        private _deleteWidth = (_deleteAvailableWidth - (2 * _deleteHorizontalGap)) max 0.001;
+        private _deleteHeight = (_deleteAvailableHeight - (2 * _deleteVerticalGap)) max 0.001;
+        _buttonL1 ctrlSetPosition [_deleteX,_deleteY,_deleteWidth,_deleteHeight];
+        _buttonL1 ctrlCommit 0;
+        _buttonL1 ctrlShow true;
+        _buttonL1 ctrlSetText "Delete";
+        _buttonL1 ctrlSetTooltip "Delete Selected Order";
+        _buttonL1 ctrlSetEventHandler ["MouseButtonClick", "['OPS_DELETE_WAYPOINT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        private _backButton = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
+        _backButton ctrlShow true;
+        _backButton ctrlSetText "Back to Groups";
+        _backButton ctrlSetEventHandler ["MouseButtonClick", "['OPS_CANCEL_EDIT_WAYPOINTS',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+    };
+
+    case "renderOpsJoinSelection": {
+
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+        if !([_commandState,"opsGroupInstantJoin",false] call ALiVE_fnc_hashGet) exitWith {};
+        if (([_commandState,"opsViewMode","GROUPS"] call ALiVE_fnc_hashGet) != "JOIN_UNIT_WAIT") exitWith {};
+
+        private _candidates = [];
+        if (_args isEqualType [] && {count _args > 1} && {(_args select 1) isEqualType []}) then {
+            _candidates = (_args select 1) select {!isNull _x && {alive _x} && {!isPlayer _x}};
+        };
+
+        if (_candidates isEqualTo []) exitWith {
+            private _originalPlayer = [_commandState,"opsGroupInstantJoinOriginalPlayer",player] call ALiVE_fnc_hashGet;
+            private _initialPosition = [_commandState,"opsGroupInstantJoinPlayerPosition",[]] call ALiVE_fnc_hashGet;
+            private _playerID = [_commandState,"opsGroupInstantJoinPlayerID",getPlayerUID player] call ALiVE_fnc_hashGet;
+            private _isContinuation = [_commandState,"opsGroupInstantJoinContinuation",false] call ALiVE_fnc_hashGet;
+                if (!isNull _originalPlayer) then {
+                    if (!_isContinuation && {_initialPosition isEqualType []} && {count _initialPosition >= 2}) then {_originalPlayer setPos _initialPosition};
+                    [_originalPlayer,false] call ALIVE_fnc_adminGhost;
+                    _originalPlayer allowDamage true;
+            };
+
+            if (_isContinuation) then {
+                ["OPS_CANCEL_JOIN_ACTIVE",[_playerID]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+            } else {
+                ["OPS_CANCEL_JOIN_PREP",[_playerID,_initialPosition]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+            };
+
+            [_commandState,"opsGroupInstantJoin",false] call ALIVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinContinuation",false] call ALIVE_fnc_hashSet;
+            [_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashSet;
+            [_logic,"commandState",_commandState] call MAINCLASS;
+
+            private _abort = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuAbort);
+            _abort ctrlSetText "Close";
+            _abort buttonSetAction "closeDialog 0";
+
+            private _groups = [_commandState,"opsGroups",[]] call ALiVE_fnc_hashGet;
+            private _selectedOpcom = [_commandState,"opsOPCOMSelectedValue",[]] call ALiVE_fnc_hashGet;
+            if (count _selectedOpcom >= 3) then {
+                ["OPS_GROUPS",[getPlayerUID _originalPlayer,_selectedOpcom select 2,_groups]] call ALIVE_fnc_SCOMTabletEventToClient;
+                [_logic,"setOpsStatus","No available units in this group"] call MAINCLASS;
+            };
+        };
+
+        [_commandState,"opsGroupInstantJoinCandidates",_candidates] call ALIVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
+        [_commandState,"opsViewMode","JOIN_UNIT_SELECT"] call ALIVE_fnc_hashSet;
+        [_logic,"commandState",_commandState] call MAINCLASS;
+
+        [_logic,"setOpsStatus","Select a unit or double-click to take control"] call MAINCLASS;
+
+        private _title = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_Title);
+        _title ctrlSetText "Operations: Choose Instant Join Unit";
+
+        private _list = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditList);
+        _list ctrlShow true;
+        lbClear _list;
+
+        {
+            private _candidateUnit = _x;
+            private _unitClass = typeOf _candidateUnit;
+            private _unitName = getText (configFile >> "CfgVehicles" >> _unitClass >> "displayName");
+            if (_unitName == "") then {_unitName = _unitClass};
+
+            private _positionText = "On foot";
+            private _assignedVehicle = vehicle _candidateUnit;
+            if (_assignedVehicle != _candidateUnit) then {
+                private _vehicleClass = typeOf _assignedVehicle;
+                private _vehicleName = getText (configFile >> "CfgVehicles" >> _vehicleClass >> "displayName");
+                if (_vehicleName == "") then {_vehicleName = _vehicleClass};
+
+                private _seatText = "Crew";
+                private _crewEntries = (fullCrew [_assignedVehicle,"",true]) select {(_x select 0) isEqualTo _candidateUnit};
+                if !(_crewEntries isEqualTo []) then {
+                    private _crewEntry = _crewEntries select 0;
+                    private _crewRole = toLower (_crewEntry select 1);
+                    _seatText = switch (_crewRole) do {
+                        case "driver": {"Driver"};
+                        case "commander": {"Commander"};
+                        case "gunner": {"Gunner"};
+                        case "cargo": {format ["Passenger %1",(_crewEntry select 2) + 1]};
+                        case "turret": {"Turret"};
+                        default {"Crew"};
+                    };
+                };
+                _positionText = format ["%1 in %2",_seatText,_vehicleName];
+            };
+
+            private _isGroupLeader = (leader group _candidateUnit) isEqualTo _candidateUnit;
+            private _label = format ["%1%2 (%3) - %4",if (_isGroupLeader) then {"[LEADER] "} else {""},_unitName,_unitClass,_positionText];
+            private _index = _list lbAdd _label;
+            _list lbSetTooltip [_index,_label];
+            if (_isGroupLeader) then {_list lbSetColor [_index,[1,0.65,0.15,1]]};
+        } forEach _candidates;
+
+        _list lbSetCurSel -1;
+        _list ctrlSetEventHandler ["LBSelChanged","['OPS_JOIN_UNIT_LIST_SELECT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+        _list ctrlSetEventHandler ["LBDblClick","['OPS_JOIN_SELECTED_UNIT',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        private _map = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_EditMap);
+        _map ctrlShow true;
+        _map ctrlSetEventHandler ["MouseButtonDown",""];
+        _map ctrlSetEventHandler ["MouseButtonDblClick",""];
+        ctrlMapAnimClear _map;
+        _map ctrlMapAnimAdd [0.3,0.1,position (_candidates select 0)];
+        ctrlMapAnimCommit _map;
+
+        {
+            private _control = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,_x);
+            _control ctrlShow false;
+        } forEach [SCOMTablet_CTRL_BL1,SCOMTablet_CTRL_BL2,SCOMTablet_CTRL_BL3,SCOMTablet_CTRL_BR1,SCOMTablet_CTRL_BR2,SCOMTablet_CTRL_BR3];
+
+        private _back = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuBack);
+        _back ctrlShow true;
+        _back ctrlSetText "Back to Groups";
+        _back ctrlSetEventHandler ["MouseButtonClick","['OPS_CANCEL_JOIN_SELECTION',[_this]] call ALIVE_fnc_SCOMTabletOnAction"];
+
+        private _abort = SCOM_getControl(SCOMTablet_CTRL_MainDisplay,SCOMTablet_CTRL_SubMenuAbort);
+        _abort ctrlSetText "Cancel";
+        _abort buttonSetAction "['OPS_CANCEL_JOIN_SELECTION',[]] call ALIVE_fnc_SCOMTabletOnAction";
+
     };
 
     case "enableOpsJoinGroup": {
 
-        private["_commandState","_unit","_faction","_nearestTown","_factionName","_title","_text","_line1","_group","_initialPosition",
-        "_instantJoinState"];
-
-        _commandState = [_logic,"commandState"] call MAINCLASS;
-
-        // once the data has returned from the command handler
-        // enable remote controlled join of the group
-
-        if(typeName _args == "ARRAY") then {
-
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+        private _unit = objNull;
+        if (_args isEqualType [] && {count _args > 1} && {(_args select 1) isEqualType []} && {count (_args select 1) > 0}) then {
             _unit = _args select 1 select 0;
+        };
 
-            //_unit = call compile format["%1",_unit];
+        private _originalPlayer = [_commandState,"opsGroupInstantJoinOriginalPlayer",player] call ALiVE_fnc_hashGet;
+        private _playerID = [_commandState,"opsGroupInstantJoinPlayerID",getPlayerUID player] call ALiVE_fnc_hashGet;
+        private _handoffSucceeded = false;
+        private _deathContinuation = false;
 
-            _group = group _unit;
+        private _readyDeadline = diag_tickTime + 15;
+        waitUntil {
+            sleep 0.1;
+            (!isNull _unit && {alive _unit} && {!isNull group _unit} && {simulationEnabled _unit}) || {diag_tickTime >= _readyDeadline}
+        };
 
-            //_duration = 1000;
+        if (!isNull _unit && {alive _unit} && {!isNull _originalPlayer}) then {
+            private _group = group _unit;
+            private _faction = faction _unit;
+            private _nearestTown = [position _unit] call ALIVE_fnc_taskGetNearestLocationName;
+            private _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
+            private _title = "<t size='1.5' color='#68a7b7' shadow='1'>Joining Group</t><br/>";
+            private _text = format["%1<t>%2 group %3 near %4</t>",_title,_factionName,_group,_nearestTown];
 
-            if!(isNil "_unit") then {
+            ["openSideTopSmall"] call ALIVE_fnc_displayMenu;
+            ["setSideTopSmallText",_text] call ALIVE_fnc_displayMenu;
 
-                //[_logic,"commandState",_commandState] call MAINCLASS;
+            // Use the real player object for the target role. This is the same
+            // body-replacement model as WS_PlayerTakeover: the server joins the
+            // player to the AI group and the client applies the reserved role.
+            missionNamespace setVariable ["ALiVE_SCOMJoinHandoffResult",[false,"PENDING"]];
+            ["OPS_TAKEOVER_UNIT",[_playerID,_unit]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
 
-                _faction = faction _unit;
-                _nearestTown = [position _unit] call ALIVE_fnc_taskGetNearestLocationName;
-                _factionName = getText((_faction call ALiVE_fnc_configGetFactionClass) >> "displayName");
+            private _controlDeadline = diag_tickTime + 30;
+            waitUntil {
+                sleep 0.1;
+                private _result = missionNamespace getVariable ["ALiVE_SCOMJoinHandoffResult",[false,"PENDING"]];
+                (_result param [1,"PENDING"] != "PENDING") || {diag_tickTime >= _controlDeadline}
+            };
 
-                _title = "<t size='1.5' color='#68a7b7' shadow='1'>Joining Group</t><br/>";
-                _text = format["%1<t>%2 group %3 near %4</t>",_title,_factionName,_group,_nearestTown];
-
-                ["openSideTopSmall"] call ALIVE_fnc_displayMenu;
-                ["setSideTopSmallText",_text] call ALIVE_fnc_displayMenu;
-
-                player remoteControl _unit;
-                //_unit enableFatigue false;
-
-                [_unit,"FIRST_PERSON"] call ALIVE_fnc_switchCamera;
-
-                //player hideObjectGlobal true; // done serverside
-
+            private _handoffResult = missionNamespace getVariable ["ALiVE_SCOMJoinHandoffResult",[false,"PENDING"]];
+            if (_handoffResult param [0,false]) then {
+                _handoffSucceeded = true;
+                sleep 0.25;
                 ["closeSplash"] call ALIVE_fnc_displayMenu;
 
-                waitUntil{
-                    sleep 1;
-                    if((player distance _unit) > 100) then {
-                        //_newPosition = (getpos _unit) getpos [10, random 360];
-                        player setPos (position _unit);
-                    };
-                    !(alive player) || {!(alive _unit)} || {!([_commandState,"opsGroupInstantJoin"] call ALIVE_fnc_hashGet)}
+                waitUntil {
+                    sleep 0.25;
+                    !(alive _originalPlayer) || {isNull _originalPlayer} || {!([_commandState,"opsGroupInstantJoin",false] call ALIVE_fnc_hashGet)} || {missionNamespace getVariable ["ALiVE_SCOMJoinDeathPending",false]}
                 };
 
-                if(alive player) then {
-
-                    // player is alive, move them back to initial position and notify them of what's happening
-
-                    _initialPosition = [_commandState,"opsGroupInstantJoinPlayerPosition"] call ALIVE_fnc_hashGet;
-                    _instantJoinState = [_commandState,"opsGroupInstantJoin"] call ALIVE_fnc_hashGet;
-
-                    if(_instantJoinState) then {
-                        _line1 = "<t size='1.5' color='#68a7b7' align='center'>You have been killed...</t><br/><br/>";
-                    }else{
-                        _line1 = "<t size='1.5' color='#68a7b7' align='center'>Reverting...</t><br/><br/>";
-                    };
+                private _instantJoinState = [_commandState,"opsGroupInstantJoin",false] call ALIVE_fnc_hashGet;
+                if (_instantJoinState && {isNull _originalPlayer || {!alive _originalPlayer} || {missionNamespace getVariable ["ALiVE_SCOMJoinDeathPending",false]}}) then {
+                    [_logic,"handleOpsJoinKilled",[_originalPlayer]] call MAINCLASS;
+                    _deathContinuation = true;
+                } else {
+                    private _line1 = "<t size='1.5' color='#68a7b7' align='center'>Returning to your body...</t><br/><br/>";
 
                     ["openSplash",0.25] call ALIVE_fnc_displayMenu;
                     ["setSplashText",_line1] call ALIVE_fnc_displayMenu;
 
-                    player setPos _initialPosition;
-
+                    missionNamespace setVariable ["ALiVE_SCOMJoinRestoreResult",[false,"PENDING"]];
+                    ["OPS_CANCEL_JOIN_ACTIVE",[_playerID]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+                    private _restoreDeadline = diag_tickTime + 30;
+                    waitUntil {
+                        sleep 0.1;
+                        private _result = missionNamespace getVariable ["ALiVE_SCOMJoinRestoreResult",[false,"PENDING"]];
+                        (_result param [1,"PENDING"] != "PENDING") || {diag_tickTime >= _restoreDeadline}
+                    };
+                    ["closeSplash"] call ALIVE_fnc_displayMenu;
                 };
+            };
+        };
 
-                sleep 2;
+        // The respawn event handler owns the next phase. Keep the takeover
+        // profile pinned and preserve the chooser state until a new body exists.
+        if (_deathContinuation) exitWith {};
 
-                // revert camera and control back to player unit
-
-                ["closeSplash"] call ALIVE_fnc_displayMenu;
-
-                [player,false] call ALIVE_fnc_adminGhost;
-                player allowDamage true;
-
-                objNull remoteControl _unit;
-
-                [true] call ALIVE_fnc_revertCamera;
-
-                // store state
-
-                [_commandState,"opsGroupInstantJoin",false] call ALIVE_fnc_hashSet;
-
+        // Roll back a partially completed transaction as well as a clean reject.
+        if (!_handoffSucceeded) then {
+            if (!isNull _originalPlayer) then {
+                missionNamespace setVariable ["ALiVE_SCOMJoinRestoreResult",[false,"PENDING"]];
+                ["OPS_CANCEL_JOIN_ACTIVE",[_playerID]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+                private _restoreDeadline = diag_tickTime + 20;
+                waitUntil {
+                    sleep 0.1;
+                    private _result = missionNamespace getVariable ["ALiVE_SCOMJoinRestoreResult",[false,"PENDING"]];
+                    (_result param [1,"PENDING"] != "PENDING") || {diag_tickTime >= _restoreDeadline}
+                };
             };
 
+            private _failureText = "<t size='1.5' color='#d68b7c' align='center'>Unable to join this unit.</t><br/><br/>";
+            ["setSplashText",_failureText] call ALIVE_fnc_displayMenu;
+            sleep 2;
+            ["closeSplash"] call ALIVE_fnc_displayMenu;
         };
+
+        [_commandState,"opsGroupInstantJoin",false] call ALIVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinContinuation",false] call ALIVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinCandidates",[]] call ALIVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinSelectedIndex",DEFAULT_SELECTED_INDEX] call ALIVE_fnc_hashSet;
+        [_commandState,"opsViewMode","GROUPS"] call ALIVE_fnc_hashSet;
+        [_logic,"commandState",_commandState] call MAINCLASS;
+
+    };
+
+    case "installOpsJoinPlayerHandlers": {
+
+        if (!hasInterface || {isNull player}) exitWith {};
+        private _registeredPlayer = missionNamespace getVariable ["ALiVE_SCOMJoinEHPlayer",objNull];
+        if (_registeredPlayer isEqualTo player) exitWith {};
+
+        if (!isNull _registeredPlayer) then {
+            private _oldKilledEH = missionNamespace getVariable ["ALiVE_SCOMJoinPlayerKilledEH",-1];
+            private _oldRespawnEH = missionNamespace getVariable ["ALiVE_SCOMJoinPlayerRespawnEH",-1];
+            if (_oldKilledEH >= 0) then {_registeredPlayer removeEventHandler ["Killed",_oldKilledEH]};
+            if (_oldRespawnEH >= 0) then {_registeredPlayer removeEventHandler ["Respawn",_oldRespawnEH]};
+        };
+
+        private _killedEH = player addEventHandler ["Killed",{
+            params ["_unit"];
+            if (_unit isEqualTo player && {!isNil "ALIVE_SUP_COMMAND"}) then {
+                [ALIVE_SUP_COMMAND,"handleOpsJoinKilled",[_unit]] call ALIVE_fnc_SCOM;
+            };
+        }];
+        private _respawnEH = player addEventHandler ["Respawn",{
+            params ["_newUnit","_corpse"];
+            [_newUnit,_corpse] spawn {
+                params ["_newUnit","_corpse"];
+                private _deadline = diag_tickTime + 15;
+                waitUntil {
+                    sleep 0.05;
+                    (_newUnit isEqualTo player && {local _newUnit}) || {diag_tickTime >= _deadline}
+                };
+                if (_newUnit isEqualTo player && {local _newUnit} && {!isNil "ALIVE_SUP_COMMAND"}) then {
+                    [ALIVE_SUP_COMMAND,"installOpsJoinPlayerHandlers",[]] call ALIVE_fnc_SCOM;
+                    [ALIVE_SUP_COMMAND,"handleOpsJoinRespawn",[_newUnit,_corpse]] spawn ALIVE_fnc_SCOM;
+                };
+            };
+        }];
+
+        missionNamespace setVariable ["ALiVE_SCOMJoinEHPlayer",player];
+        missionNamespace setVariable ["ALiVE_SCOMJoinPlayerKilledEH",_killedEH];
+        missionNamespace setVariable ["ALiVE_SCOMJoinPlayerRespawnEH",_respawnEH];
+
+    };
+
+    case "handleOpsJoinKilled": {
+
+        if (!hasInterface) exitWith {};
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+        if !([_commandState,"opsGroupInstantJoin",false] call ALiVE_fnc_hashGet) exitWith {};
+        if (([_commandState,"opsViewMode","GROUPS"] call ALiVE_fnc_hashGet) != "JOIN_ACTIVE") exitWith {};
+        if (missionNamespace getVariable ["ALiVE_SCOMJoinDeathPending",false]) exitWith {};
+
+        private _killed = if (_args isEqualType [] && {count _args > 0}) then {_args select 0} else {player};
+        private _joinedPlayer = [_commandState,"opsGroupInstantJoinOriginalPlayer",objNull] call ALiVE_fnc_hashGet;
+        if (isNull _killed || {!(_killed isEqualTo _joinedPlayer)}) exitWith {};
+        private _playerID = [_commandState,"opsGroupInstantJoinPlayerID",getPlayerUID player] call ALiVE_fnc_hashGet;
+
+        // This only affects the next respawn. BASE/INSTANT modes bypass the
+        // mission delay; GROUP/SIDE modes still complete through their normal
+        // engine path and are caught by EntityRespawned below.
+        setPlayerRespawnTime 0;
+        missionNamespace setVariable ["ALiVE_SCOMJoinDeathPending",true];
+        missionNamespace setVariable ["ALiVE_SCOMJoinRespawnRequested",false];
+        [_commandState,"opsGroupInstantJoinContinuation",true] call ALiVE_fnc_hashSet;
+        [_commandState,"opsViewMode","JOIN_DEAD"] call ALiVE_fnc_hashSet;
+        [_logic,"commandState",_commandState] call MAINCLASS;
+
+        private _line1 = "<t size='1.5' color='#68a7b7' align='center'>You have been killed...</t><br/><br/><t align='center'>Preparing another unit from this group.</t>";
+        ["openSplash",0.25] call ALIVE_fnc_displayMenu;
+        ["setSplashText",_line1] call ALIVE_fnc_displayMenu;
+        ["OPS_JOIN_PLAYER_KILLED",[_playerID,_killed]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+
+    };
+
+    case "handleOpsJoinRespawn": {
+
+        if (!hasInterface || {!(missionNamespace getVariable ["ALiVE_SCOMJoinDeathPending",false])}) exitWith {};
+        if (missionNamespace getVariable ["ALiVE_SCOMJoinRespawnRequested",false]) exitWith {};
+        _args params ["_newPlayer","_corpse"];
+        if (isNull _newPlayer) exitWith {};
+
+        private _deadline = diag_tickTime + 15;
+        waitUntil {
+            sleep 0.05;
+            (_newPlayer isEqualTo player && {local _newPlayer} && {getPlayerUID _newPlayer != ""}) || {diag_tickTime >= _deadline}
+        };
+        if !(_newPlayer isEqualTo player && {local _newPlayer}) exitWith {};
+
+        missionNamespace setVariable ["ALiVE_SCOMJoinRespawnRequested",true];
+        _newPlayer allowDamage false;
+        _newPlayer hideObject true;
+        sleep 0.2;
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+        private _playerID = [_commandState,"opsGroupInstantJoinPlayerID",getPlayerUID _newPlayer] call ALiVE_fnc_hashGet;
+        ["OPS_JOIN_PLAYER_RESPAWNED",[_playerID,_newPlayer,_corpse]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+
+    };
+
+    case "resumeOpsJoinAfterRespawn": {
+
+        if (!hasInterface || {!(_args isEqualType [])} || {count _args < 4}) exitWith {};
+        _args params ["_playerID","_profileID","_newPlayer","_candidates"];
+        if (isNull _newPlayer) exitWith {};
+        private _playerDeadline = diag_tickTime + 20;
+        waitUntil {
+            sleep 0.05;
+            (_newPlayer isEqualTo player && {local _newPlayer} && {getPlayerUID player == _playerID}) || {diag_tickTime >= _playerDeadline}
+        };
+        if (!(_newPlayer isEqualTo player) || {!local _newPlayer} || {getPlayerUID player != _playerID}) exitWith {};
+
+        private _commandState = [_logic,"commandState"] call MAINCLASS;
+        [_commandState,"opsGroupInstantJoin",true] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinContinuation",true] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinPlayerID",_playerID] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinProfileID",_profileID] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinPlayerPosition",position _newPlayer] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinOriginalPlayer",_newPlayer] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinOriginalGroup",group _newPlayer] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinOriginalGroupSide",side group _newPlayer] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinOriginalWasLeader",(leader group _newPlayer) isEqualTo _newPlayer] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinCandidates",[]] call ALiVE_fnc_hashSet;
+        [_commandState,"opsGroupInstantJoinSelectedIndex",DEFAULT_SELECTED_INDEX] call ALiVE_fnc_hashSet;
+        [_commandState,"opsViewMode","JOIN_UNIT_WAIT"] call ALiVE_fnc_hashSet;
+        [_commandState,"commandInterface","OPS"] call ALiVE_fnc_hashSet;
+        [_logic,"commandState",_commandState] call MAINCLASS;
+
+        _newPlayer allowDamage false;
+        private _displayDeadline = diag_tickTime + 12;
+        waitUntil {
+            if (isNull (findDisplay SCOMTablet_CTRL_MainDisplay)) then {
+                ["OPEN_OPS",[]] call ALIVE_fnc_SCOMTabletOnAction;
+            };
+            sleep 0.25;
+            !isNull (findDisplay SCOMTablet_CTRL_MainDisplay) || {diag_tickTime >= _displayDeadline}
+        };
+
+        if (isNull (findDisplay SCOMTablet_CTRL_MainDisplay)) exitWith {
+            missionNamespace setVariable ["ALiVE_SCOMJoinDeathPending",false];
+            missionNamespace setVariable ["ALiVE_SCOMJoinRespawnRequested",false];
+            [_commandState,"opsGroupInstantJoin",false] call ALiVE_fnc_hashSet;
+            [_commandState,"opsGroupInstantJoinContinuation",false] call ALiVE_fnc_hashSet;
+            [_commandState,"opsViewMode","GROUPS"] call ALiVE_fnc_hashSet;
+            [_logic,"commandState",_commandState] call MAINCLASS;
+            ["OPS_CANCEL_JOIN_ACTIVE",[_playerID]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+            ["closeSplash"] call ALIVE_fnc_displayMenu;
+        };
+
+        sleep 0.1;
+        missionNamespace setVariable ["ALiVE_SCOMJoinDeathPending",false];
+        missionNamespace setVariable ["ALiVE_SCOMJoinRespawnRequested",false];
+        [_logic,"renderOpsJoinSelection",[_playerID,_candidates]] call MAINCLASS;
+        ["closeSplash"] call ALIVE_fnc_displayMenu;
+
+    };
+
+    case "applyOpsGroupLeadership": {
+
+        if (_args isEqualType [] && {count _args >= 2}) then {
+            _args params ["_targetGroup","_leader",["_forceFollow",false]];
+            if (!isNull _targetGroup && {!isNull _leader} && {local _targetGroup} && {_leader in units _targetGroup}) then {
+                _targetGroup selectLeader _leader;
+                if (_forceFollow) then {
+                    {
+                        if (!(_x isEqualTo _leader) && {alive _x} && {!isPlayer _x}) then {
+                            doStop _x;
+                            _x doFollow _leader;
+                        };
+                    } forEach units _targetGroup;
+                };
+            };
+        };
+
+    };
+
+    case "applyOpsTakeoverWaypoints": {
+
+        if (_args isEqualType [] && {count _args >= 2}) then {
+            _args params ["_targetGroup","_mode",["_snapshot",[]]];
+            if (!isNull _targetGroup && {local _targetGroup}) then {
+                private _waypointCount = count waypoints _targetGroup;
+                if (_waypointCount > 0) then {
+                    for "_i" from (_waypointCount - 1) to 0 step -1 do {
+                        deleteWaypoint [_targetGroup,_i];
+                    };
+                };
+                if (_mode == "RESTORE" && {!(_snapshot isEqualTo [])}) then {
+                    [_snapshot,_targetGroup] call ALiVE_fnc_profileWaypointsToWaypoints;
+                };
+            };
+        };
+
+    };
+
+    case "applyOpsRecreateTakeoverUnit": {
+
+        _args params ["_resultKey","_targetGroup","_snapshot","_profileID","_profileIndex","_wasLeader"];
+        private _publish = {
+            params ["_value"];
+            if (isServer) then {
+                missionNamespace setVariable [_resultKey,_value];
+            } else {
+                missionNamespace setVariable [_resultKey,_value,2];
+            };
+        };
+
+        if (_resultKey == "" || {isNull _targetGroup} || {!local _targetGroup} || {!(_snapshot isEqualType [])} || {count _snapshot < 11}) exitWith {
+            [[false,"RECREATE_GROUP_NOT_LOCAL",objNull]] call _publish;
+        };
+
+        _snapshot params [
+            "_class","_position","_direction","_identity","_loadout","_savedDamage",
+            "_vehicle","_vehicleRole","_savedSkill","_savedUnitPos","_ignoreHC"
+        ];
+        if (_class == "" || {!isClass (configFile >> "CfgVehicles" >> _class)} || {!(_class isKindOf "CAManBase")} || {count _position < 2}) exitWith {
+            [[false,"RECREATE_CLASS_OR_POSITION_INVALID",objNull]] call _publish;
+        };
+
+        private _spawnPos = +_position;
+        private _candidatePos = _position findEmptyPosition [1,20,_class];
+        if (count _candidatePos >= 2) then {_spawnPos = _candidatePos};
+        private _replacement = _targetGroup createUnit [_class,_spawnPos,[],0,"NONE"];
+        if (isNull _replacement) exitWith {
+            [[false,"RECREATE_CREATEUNIT_FAILED",objNull]] call _publish;
+        };
+
+        _replacement allowDamage false;
+        _identity params [
+            ["_rank","PRIVATE",[""]],["_name","",[""]],["_face","",[""]],
+            ["_speaker","",[""]],["_pitch",1,[0]]
+        ];
+        if (_face != "") then {_replacement setFace _face};
+        if (_speaker != "") then {_replacement setSpeaker _speaker};
+        _replacement setPitch _pitch;
+        if (_name != "") then {_replacement setName _name};
+        _replacement setRank _rank;
+        if (count _loadout > 0) then {_replacement setUnitLoadout _loadout};
+        _replacement setSkill _savedSkill;
+        _replacement setUnitPos _savedUnitPos;
+        _replacement setDir _direction;
+        _replacement setPosATL _position;
+        _replacement setDamage (_savedDamage min 0.95);
+        _replacement setVariable ["profileID",_profileID,true];
+        _replacement setVariable ["profileIndex",_profileIndex,true];
+        _replacement setVariable ["ALiVE_ignore_HC",_ignoreHC,true];
+        _replacement setVariable ["ALiVE_SCOMTakeoverUID",nil,true];
+        _replacement addMPEventHandler ["MPKilled",ALIVE_fnc_profileKilledEventHandler];
+
+        if (!isNull _vehicle && {alive _vehicle} && {count _vehicleRole > 0}) then {
+            switch (toLower (_vehicleRole param [0,"",[""]])) do {
+                case "driver": {_replacement assignAsDriver _vehicle; _replacement moveInDriver _vehicle};
+                case "gunner": {_replacement assignAsGunner _vehicle; _replacement moveInGunner _vehicle};
+                case "commander": {_replacement assignAsCommander _vehicle; _replacement moveInCommander _vehicle};
+                case "turret": {
+                    private _turretPath = _vehicleRole param [2,[],[[]]];
+                    _replacement assignAsTurret [_vehicle,_turretPath];
+                    _replacement moveInTurret [_vehicle,_turretPath];
+                };
+                case "cargo": {
+                    private _cargoIndex = _vehicleRole param [1,-1,[0]];
+                    if (_cargoIndex >= 0) then {
+                        _replacement assignAsCargoIndex [_vehicle,_cargoIndex];
+                        _replacement moveInCargo [_vehicle,_cargoIndex];
+                    } else {
+                        _replacement assignAsCargo _vehicle;
+                        _replacement moveInCargo _vehicle;
+                    };
+                };
+            };
+            [_replacement] orderGetIn true;
+        };
+
+        if (_wasLeader) then {
+            _targetGroup selectLeader _replacement;
+            {
+                if (!(_x isEqualTo _replacement) && {alive _x} && {!isPlayer _x}) then {
+                    doStop _x;
+                    _x doFollow _replacement;
+                };
+            } forEach units _targetGroup;
+        } else {
+            _replacement doFollow leader _targetGroup;
+        };
+        _replacement allowDamage true;
+
+        private _success = alive _replacement && {group _replacement isEqualTo _targetGroup} && {(!_wasLeader) || {leader _targetGroup isEqualTo _replacement}};
+        [[_success,if (_success) then {""} else {"RECREATE_STATE_NOT_APPLIED"},_replacement]] call _publish;
+
+    };
+
+    case "applyOpsJoinHandoff": {
+
+        _args params ["_playerID","_handoffPlayer","_selectedUnit","_targetGroup","_targetState"];
+        if (!hasInterface || {isNull _handoffPlayer} || {!(_handoffPlayer isEqualTo player)} || {getPlayerUID player != _playerID}) exitWith {};
+
+        _targetState params ["_position","_direction","_identity","_loadout","_damage","_vehicle","_vehicleRole"];
+        private _deadline = diag_tickTime + 10;
+        waitUntil {
+            sleep 0.1;
+            (group player isEqualTo _targetGroup) || {diag_tickTime >= _deadline}
+        };
+
+        private _success = group player isEqualTo _targetGroup;
+        private _failureReason = if (_success) then {""} else {"GROUP_JOIN_FAILED"};
+        if (_success) then {
+            player allowDamage false;
+            moveOut player;
+            unassignVehicle player;
+
+            private _unlockTakeoverVehicle = {
+                params ["_vehicle"];
+                if (isNull _vehicle) exitWith {};
+                _vehicle setVehicleLock "UNLOCKED";
+                if (local _vehicle) then {
+                    _vehicle lockDriver false;
+                    _vehicle lockCargo false;
+                    {_vehicle lockTurret [_x,false]} forEach (allTurrets [_vehicle,true]);
+                };
+            };
+
+            private _crewRowMatchesRole = {
+                params ["_crewRow","_expectedRole"];
+                private _expectedKind = toLower (_expectedRole param [0,"",[""]]);
+                private _actualKind = toLower (_crewRow param [1,"",[""]]);
+
+                switch (_expectedKind) do {
+                    case "driver": {_actualKind == "driver"};
+                    case "gunner": {_actualKind == "gunner"};
+                    case "commander": {_actualKind == "commander"};
+                    case "turret": {
+                        private _expectedTurretPath = _expectedRole param [2,[],[[]]];
+                        private _actualTurretPath = _crewRow param [3,[],[[]]];
+                        _actualTurretPath isEqualTo _expectedTurretPath
+                    };
+                    case "cargo": {
+                        private _expectedCargoIndex = _expectedRole param [1,-1,[0]];
+                        private _actualCargoIndex = _crewRow param [2,-1,[0]];
+                        _expectedCargoIndex >= 0 && {_actualKind == "cargo"} && {_actualCargoIndex == _expectedCargoIndex}
+                    };
+                    default {false};
+                };
+            };
+
+            private _unitOccupiesExactRole = {
+                params ["_unit","_expectedVehicle","_expectedRole"];
+                if (isNull _unit || {isNull _expectedVehicle} || {!(vehicle _unit isEqualTo _expectedVehicle)}) exitWith {false};
+
+                private _crewRows = fullCrew [_expectedVehicle,"",false];
+                (_crewRows findIf {
+                    (_x param [0,objNull,[objNull]]) isEqualTo _unit && {
+                        [_x,_expectedRole] call _crewRowMatchesRole
+                    }
+                }) >= 0
+            };
+
+            if (count _identity >= 5) then {
+                _identity params ["_rank","_name","_face","_speaker","_pitch"];
+                if (_face != "") then {player setFace _face};
+                if (_speaker != "") then {player setSpeaker _speaker};
+                player setPitch _pitch;
+                if (_name != "") then {player setName _name};
+                player setRank _rank;
+            };
+            if (count _loadout > 0) then {player setUnitLoadout _loadout};
+            player setDir _direction;
+
+            if (!isNull _vehicle && {alive _vehicle} && {count _vehicleRole > 0}) then {
+                [_vehicle] call _unlockTakeoverVehicle;
+                private _oldOccupantVacated = !([_selectedUnit,_vehicle,_vehicleRole] call _unitOccupiesExactRole);
+                if (!_oldOccupantVacated) then {
+                    diag_log format [
+                        "[TAKEOVER] SEAT_VACATE_WAIT selectedOwner=%1 vehicleOwner=%2 role=%3",
+                        owner _selectedUnit,
+                        owner _vehicle,
+                        _vehicleRole
+                    ];
+
+                    private _vacateDeadline = diag_tickTime + 3;
+                    waitUntil {
+                        _oldOccupantVacated = !([_selectedUnit,_vehicle,_vehicleRole] call _unitOccupiesExactRole);
+                        private _done = _oldOccupantVacated || {diag_tickTime >= _vacateDeadline};
+                        if (!_done) then {sleep 0.05};
+                        _done
+                    };
+                };
+
+                private _moveIssued = false;
+                if (_oldOccupantVacated) then {
+                    private _roleKind = toLower (_vehicleRole param [0,"",[""]]);
+                    switch (_roleKind) do {
+                        case "driver": {
+                            player assignAsDriver _vehicle;
+                            player moveInDriver _vehicle;
+                            _moveIssued = true;
+                        };
+                        case "gunner": {
+                            player assignAsGunner _vehicle;
+                            player moveInGunner _vehicle;
+                            _moveIssued = true;
+                        };
+                        case "commander": {
+                            player assignAsCommander _vehicle;
+                            player moveInCommander _vehicle;
+                            _moveIssued = true;
+                        };
+                        case "turret": {
+                            private _turretPath = _vehicleRole param [2,[],[[]]];
+                            player assignAsTurret [_vehicle,_turretPath];
+                            player moveInTurret [_vehicle,_turretPath];
+                            _moveIssued = true;
+                        };
+                        case "cargo": {
+                            private _cargoIndex = _vehicleRole param [1,-1,[0]];
+                            if (_cargoIndex >= 0) then {
+                                player assignAsCargoIndex [_vehicle,_cargoIndex];
+                                player moveInCargo [_vehicle,_cargoIndex];
+                                _moveIssued = true;
+                            };
+                        };
+                    };
+                };
+
+                private _seatApplied = _moveIssued && {[player,_vehicle,_vehicleRole] call _unitOccupiesExactRole};
+                if (_moveIssued && {!_seatApplied}) then {
+                    diag_log format [
+                        "[TAKEOVER] SEAT_APPLY_WAIT playerOwner=%1 vehicleOwner=%2 role=%3",
+                        owner player,
+                        owner _vehicle,
+                        _vehicleRole
+                    ];
+
+                    private _seatDeadline = diag_tickTime + 3;
+                    waitUntil {
+                        _seatApplied = [player,_vehicle,_vehicleRole] call _unitOccupiesExactRole;
+                        private _done = _seatApplied || {diag_tickTime >= _seatDeadline};
+                        if (!_done) then {sleep 0.05};
+                        _done
+                    };
+                };
+
+                _success = _seatApplied;
+                if (_seatApplied) then {
+                    [_vehicle] call _unlockTakeoverVehicle;
+                } else {
+                    _failureReason = "SEAT_MOVE_FAILED";
+                };
+            } else {
+                player setPosATL _position;
+                _success = (player distance2D _position) < 15;
+                if (!_success) then {_failureReason = "POSITION_APPLY_FAILED"};
+            };
+
+            if (_success) then {player setDamage (_damage min 0.95)};
+            player allowDamage true;
+        };
+
+        ["OPS_JOIN_HANDOFF_COMPLETE",[_playerID,_selectedUnit,_success,_failureReason]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
+
+    };
+
+    case "applyOpsJoinRestore": {
+
+        _args params ["_playerID","_handoffPlayer","_originalGroup","_originalState"];
+        if (!hasInterface || {isNull _handoffPlayer} || {!(_handoffPlayer isEqualTo player)} || {getPlayerUID player != _playerID}) exitWith {};
+
+        _originalState params ["_position","_direction","_identity","_loadout","_damage","_vehicle","_vehicleRole"];
+        private _deadline = diag_tickTime + 10;
+        waitUntil {
+            sleep 0.1;
+            (group player isEqualTo _originalGroup) || {diag_tickTime >= _deadline}
+        };
+
+        private _success = group player isEqualTo _originalGroup;
+        moveOut player;
+        unassignVehicle player;
+        player allowDamage false;
+
+        if (count _identity >= 5) then {
+            _identity params ["_rank","_name","_face","_speaker","_pitch"];
+            if (_face != "") then {player setFace _face};
+            if (_speaker != "") then {player setSpeaker _speaker};
+            player setPitch _pitch;
+            if (_name != "") then {player setName _name};
+            player setRank _rank;
+        };
+        if (count _loadout > 0) then {player setUnitLoadout _loadout};
+        player setDir _direction;
+
+        private _placedInVehicle = false;
+        if (!isNull _vehicle && {alive _vehicle} && {count _vehicleRole > 0}) then {
+            private _roleKind = toLower (_vehicleRole param [0,"",[""]]);
+            switch (_roleKind) do {
+                case "driver": {player assignAsDriver _vehicle; player moveInDriver _vehicle};
+                case "gunner": {player assignAsGunner _vehicle; player moveInGunner _vehicle};
+                case "commander": {player assignAsCommander _vehicle; player moveInCommander _vehicle};
+                case "turret": {
+                    private _turretPath = _vehicleRole param [2,[],[[]]];
+                    player assignAsTurret [_vehicle,_turretPath];
+                    player moveInTurret [_vehicle,_turretPath];
+                };
+                case "cargo": {
+                    private _cargoIndex = _vehicleRole param [1,-1,[0]];
+                    if (_cargoIndex >= 0) then {
+                        player assignAsCargoIndex [_vehicle,_cargoIndex];
+                        player moveInCargo [_vehicle,_cargoIndex];
+                    } else {
+                        player assignAsCargo _vehicle;
+                        player moveInCargo _vehicle;
+                    };
+                };
+            };
+            _placedInVehicle = vehicle player isEqualTo _vehicle;
+        };
+        if (!_placedInVehicle) then {player setPosATL _position};
+
+        player setDamage (_damage min 0.95);
+        player allowDamage true;
+        [player,false] call ALIVE_fnc_adminGhost;
+        ["OPS_JOIN_RESTORE_COMPLETE",[_playerID,_success]] remoteExecCall ["ALiVE_fnc_SCOMTabletEventToServer",2];
 
     };
 
