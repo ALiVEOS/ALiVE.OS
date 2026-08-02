@@ -1556,7 +1556,56 @@ switch(_operation) do {
 
                 if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) ) then {
 
-                    // Get airportID
+                    // Fixed-wing footprint safety. airsideClear above only pushed the plane off the
+                    // runway/taxiway capsules; it makes no spatial query, so a plane authored inside a
+                    // hangar or stacked on a sibling/wreck is left to detonate on spawn (RPT: an RHS_A10
+                    // placed inside a Land_TentHangar_V1_F, lost at [1954,5629.5] before any sortie flew).
+                    // Route through the same validator the heli branch and the hangar-populate path
+                    // already trust -- but ONLY when the authored spot is actually blocked, and never on
+                    // a carrier deck, so a plane already on a clear apron/hardstand is left as placed.
+                    // Mode 'apron' then 'field', never 'auto' (the auto hangar tier animates doors and
+                    // takes a 60s reservation, unfit for a mission-start parking decision).
+                    if (!_isOnCarrier && {!isNil "ALiVE_fnc_findAirSpawnPosition"}) then {
+                        private _ownVeh = [_vehicleProfile,"vehicle"] call ALiVE_fnc_hashGet;
+                        if (isNil "_ownVeh") then { _ownVeh = objNull };
+                        private _bb = [_vehicleClass] call ALiVE_fnc_getVehicleBoundingBox;   // [length,width,height]
+                        private _clearR = ((((_bb select 0) max (_bb select 1)) / 2) + 3) max 6;
+                        // Structures, aircraft (live sibling or wreck), ground vehicles and map-baked
+                        // buildings within the footprint -- the load-bearing subset of the validator's own
+                        // obstacle set (findAirSpawnPosition.sqf:186-196), plus a terrain-object sweep so a
+                        // map-baked hangar is not missed. Own airframe excluded so it never relocates
+                        // because it detected itself; infantry are not treated as obstacles here.
+                        private _hits = (nearestObjects [_position, ["Building","House","Air","LandVehicle","Wreck_Base"], _clearR])
+                                      + (nearestTerrainObjects [_position, ["BUILDING"], _clearR, false, true]);
+                        if ((_hits findIf { !(_x isEqualTo _ownVeh) }) >= 0) then {
+                            private _air = [_vehicleClass, _position, 400, "apron"] call ALiVE_fnc_findAirSpawnPosition;
+                            if (count _air < 2) then {
+                                _air = [_vehicleClass, _position, 400, "field"] call ALiVE_fnc_findAirSpawnPosition;
+                            };
+                            if (count _air >= 2) then {
+                                if (_debug) then {
+                                    ["ATO %1 - adopted plane %2 was on a blocked spot, moved %3m onto validated parking", _logic, _vehicleClass, round ((_air select 0) distance2D _position)] call ALiVE_fnc_dump;
+                                };
+                                _position = +(_air select 0);
+                                _position set [2, 0];
+                                private _pDir = _air select 1;
+                                // Keep asset startPos/startDir, the profile, and any live unmanned airframe
+                                // in step, or it snaps back to the blocking spot on its next despawn (mirrors
+                                // the heli branch relocation just below).
+                                [_asset,"startPos",_position] call ALiVE_fnc_hashSet;
+                                [_asset,"startDir",_pDir] call ALiVE_fnc_hashSet;
+                                [_vehicleProfile,"position",_position] call ALiVE_fnc_profileVehicle;
+                                [_vehicleProfile,"direction",_pDir] call ALiVE_fnc_profileVehicle;
+                                if (!isNull _ownVeh && {alive _ownVeh} && {(crew _ownVeh) findIf {isPlayer _x} < 0}) then {
+                                    _ownVeh setPosATL _position;
+                                    _ownVeh setDir _pDir;
+                                    _ownVeh setVelocity [0,0,0];
+                                };
+                            };
+                        };
+                    };
+
+                    // Get airportID  (now uses the final, validated _position)
                     private _airportID = [_position] call ALiVE_fnc_getNearestAirportID;
                     [_asset,"airportID",_airportID] call ALiVE_fnc_hashSet;
                     [_logic,"addRunway",_airportID] call MAINCLASS;
