@@ -471,7 +471,7 @@ private _fnc_safeReposition = {
     // + pool-health (mirror fnc_profileVehicle.sqf:922-978) is OVERHAUL-SCOPE. findAirSpawnPosition is
     // still called below (harmless -- it also opens the hangar doors).
     private _target = _pos;
-    private _air = [typeOf _veh, _target, 200, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+    private _air = [typeOf _veh, _target, 200, "auto", _veh] call ALiVE_fnc_findAirSpawnPosition;
     // ATO_HANGAR_DBG (DIAG-STRIP): raw findAirSpawnPosition return -- shows whether it gave [] (no relocation, target stays the in-geometry hangar point) or an actual clear point.
     diag_log format ["ATO_HANGAR_DBG FASP type=%1 reqPos=%2 count=%3 return=%4", typeOf _veh, _target, count _air, _air];
     if (count _air >= 2) then {

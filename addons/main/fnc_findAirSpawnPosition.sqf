@@ -38,6 +38,10 @@ Parameters:
     _this select 2: NUMBER - search radius (default 500 m).
     _this select 3: STRING - "auto" / "helipad" / "hangar" / "apron" /
                              "field" (default "auto").
+    _this select 4: OBJECT - the aircraft's own live airframe, passed ONLY when
+                             re-validating an already-parked heli so it keeps its
+                             own pad (a sibling cannot evict it). A fresh placement
+                             passes objNull (default) and deconflicts normally.
 
 Returns:
     ARRAY [_pos, _dir] on success, [] on failure.
@@ -66,7 +70,8 @@ params [
     ["_vehicleClass", "", [""]],
     ["_centerPos", [0,0,0], [[]], [2,3]],
     ["_maxDistance", 500, [0]],
-    ["_preference", "auto", [""]]
+    ["_preference", "auto", [""]],
+    ["_ownVeh", objNull, [objNull]]
 ];
 
 if (_vehicleClass == "" || count _centerPos < 2) exitWith { [] };
@@ -626,18 +631,19 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         if (count _found > 0) exitWith {};
         private _padPos = position _x;
         private _padDir = direction _x;
-        // Own-pad fast-path: this validator is also re-run when a heli that is ALREADY
-        // parked on a pad is tasked (the spawn re-validates its position). If a candidate
-        // pad is essentially where the airframe already sits, it is THIS aircraft's pad -
-        // accept it outright, ahead of the registry and footprint rejections, so a sibling
-        // heli reserved-on or parked-near an adjacent pad cannot evict this airframe from
-        // the pad it already owns and dump it onto open ground (the pad then sitting empty).
-        // GATED on a live Air vehicle actually at the point: only a genuine re-validation of a
-        // parked airframe qualifies. A fresh placement request (mil_placement placeHelis passes
-        // the pad itself as the target; sys_profile respawn) has no live airframe there yet, so
-        // it must fall through to the registry + footprint + occupied-pad checks rather than
-        // bypassing them (else a heli could be placed on a pad already holding a vehicle).
-        if (_padPos distance2D _centerPos < 3 && {(nearestObjects [_centerPos, ["Air"], 5]) isNotEqualTo []}) exitWith { _found = [_padPos, _padDir]; };
+        // Own-pad fast-path: this validator is re-run when a heli that is ALREADY parked on a
+        // pad is re-validated (the ATO reposition-on-return path passes its live airframe). If a
+        // candidate pad is essentially where THIS aircraft's OWN airframe already sits, accept it
+        // outright, ahead of the registry and footprint rejections, so a sibling heli reserved-on
+        // or parked-near an adjacent pad cannot evict this airframe from the pad it owns and dump
+        // it onto open ground (the pad then sitting empty).
+        // GATED on the caller's OWN airframe (_ownVeh) being at this pad - NOT "any Air nearby".
+        // The old any-Air proxy misfired when a sibling was DISPLACED onto this aircraft's authored
+        // pad: a fresh placement then grabbed the occupied pad via this fast-path and spawned one
+        // airframe on top of another. A fresh placement passes objNull (no own airframe yet), so it
+        // now correctly falls through to the registry + footprint + occupied-pad checks below and
+        // deconflicts onto a distinct pad.
+        if (_padPos distance2D _centerPos < 3 && {!isNull _ownVeh} && {alive _ownVeh} && {_ownVeh distance2D _padPos < 5}) exitWith { _found = [_padPos, _padDir]; };
         if !([_padPos, _minSeparation] call _fnc_registryClear) then { continue };
         // Filter the helipad object itself (and any host building it
         // sits on, picked up via 2 m proximity) out of the obstacle
@@ -657,7 +663,13 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         // House/Building + terrain-tagged clutter to match, but left the class-query
         // clutter (runtime-spawned camp props) with no ignore term, so deliberate pads
         // were rejected and helis dropped onto open dirt beside the camp.
-        private _ignore = [_x]
+        // Ignore our OWN airframe when re-validating in place: if the fast-path above missed
+        // because a large airframe's model origin sits >5m from the HeliH point, the footprint
+        // sweep must not reject the pad on the craft's own hull and evict it onto open ground.
+        // objNull (a fresh placement) adds nothing, so a SIBLING parked on the pad is still rejected.
+        private _ignore = [_x];
+        if (!isNull _ownVeh) then { _ignore pushBack _ownVeh };
+        _ignore = _ignore
             + (nearestObjects [_padPos, ["House", "Building"], (_hazardRadius + ALiVE_airSpawn_clearanceMargin)])
             + (nearestTerrainObjects [_padPos, _staticTerrainTypes, (_hazardRadius + ALiVE_airSpawn_clearanceMargin), false, true])
             + ((nearestObjects [_padPos, (_classObstacles - ["AllVehicles"]), (_hazardRadius + ALiVE_airSpawn_clearanceMargin)]) select { (_padPos distance2D _x) > _hazardRadius });
