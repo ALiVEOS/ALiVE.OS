@@ -460,12 +460,6 @@ private _fnc_safeReposition = {
     if ((crew _veh) findIf {isPlayer _x} > -1) exitWith {
         diag_log format ["ATO_HANGAR_DBG safeReposition SKIPPED type=%1 -- player aboard", typeOf _veh];
     };
-    // Serialise per airframe. safeReposition teleports now and lets a settle thread decide 8 s
-    // later; the landing, adoption and hover-watchdog paths can each call it on the SAME frame
-    // inside that window, racing two settle threads to re-arm / despawn / ground one airframe.
-    // Hold a busy flag across the settle window so a second caller is a no-op.
-    if (_veh getVariable ["ATO_reposBusy", false]) exitWith {};
-    _veh setVariable ["ATO_reposBusy", true];
     // mil_ato item6 -- INTERIM detonation fix (2026-07-03). This is the ONLY route that teleports a
     // LIVE airframe onto its hangar startPos (the slot IS the hangar interior by design). The detonation
     // fuse was the settle re-arming damage on a still-clipping frame: because `allowDamage false`
@@ -534,16 +528,11 @@ private _fnc_safeReposition = {
     // ATO_HANGAR_DBG (DIAG-STRIP)
     diag_log format ["ATO_HANGAR_DBG safeReposition type=%1 target=%2 insideBldg=%3", typeOf _veh, _target, (count (nearestObjects [_target, ["House","Building"], 6]) > 0)];
     _veh setVariable ["ATO_reposT", time];
-    // Add the loss-trace handler once per airframe -- repeat repositions must not stack EHs.
-    if !(_veh getVariable ["ATO_killedEHAdded", false]) then {
-        _veh setVariable ["ATO_killedEHAdded", true];
-        _veh addEventHandler ["Killed", { params ["_u"]; diag_log format ["ATO_HANGAR_DBG KILLED type=%1 at=%2 sinceReposition=%3", typeOf _u, getPosATL _u, (time - (_u getVariable ["ATO_reposT", time]))]; }];
-    };
-    [_veh, _target, _pos] spawn {
-        params ["_v", "_tgt", "_home"];
+    _veh addEventHandler ["Killed", { params ["_u"]; diag_log format ["ATO_HANGAR_DBG KILLED type=%1 at=%2 sinceReposition=%3", typeOf _u, getPosATL _u, (time - (_u getVariable ["ATO_reposT", time]))]; }];
+    [_veh, _target] spawn {
+        params ["_v", "_tgt"];
         sleep 8;
-        if (isNull _v) exitWith {};
-        if !(alive _v) exitWith { _v setVariable ["ATO_reposBusy", false]; };
+        if (isNull _v || {!alive _v}) exitWith {};
         // The clip signal is the SETTLED HEIGHT, not damage (allowDamage false suppresses damage -> reads 0)
         // and not building-proximity (the hangar origin sits ~5 m up, inside any proximity radius even when
         // the plane is correctly grounded). A frame grounded on the apron settles at z~0-2; a frame still
@@ -555,49 +544,15 @@ private _fnc_safeReposition = {
         // ATO_HANGAR_DBG (DIAG-STRIP): state at settle-end BEFORE deciding.
         diag_log format ["ATO_HANGAR_DBG settleEnd type=%1 dmg=%2 z=%3 insideBldg=%4", typeOf _v, damage _v, _z, _clip];
         if (_clip) then {
-            // Still elevated after the settle: the frame was set down inside geometry and the physics
-            // separation flung it skyward. The old behaviour kept it there, invulnerable -- which strands
-            // a crewed airframe hovering over the base for the rest of the mission (RPT: a LOGCOM-delivered
-            // AH-64 held at z=48 from adoption to mission end, never taskable, un-killable). Never re-arm
-            // here -- a residual overlap resolves into a one-shot kill.
-            //
-            // Prefer virtualizing it: a profiled frame cannot hover, and it re-spawns grounded when next
-            // needed. Re-assert the intended home on the profile FIRST -- profileVehicle snapshots
-            // position/despawnPosition from the live (floating) frame, so without this the virtualized
-            // profile would strand at the bad spot and respawn straight back into the geometry.
-            private _pid  = _v getVariable ["profileID", ""];
-            private _prof = if (_pid != "") then { [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler } else { objNull };
-            if (!isNil "_prof" && {_prof isEqualType []}) then {
-                if (count _home >= 2) then {
-                    private _hp = [_home select 0, _home select 1, 0];
-                    [_prof, "position", _hp] call ALiVE_fnc_profileVehicle;
-                    [_prof, "despawnPosition", _hp] call ALiVE_fnc_profileVehicle;
-                };
-                [_prof, "despawn"] call ALiVE_fnc_profileVehicle;
-            };
-            // Despawn is vetoed for a preventDespawn frame (fnc_profileVehicle) and there is no profile to
-            // despawn on the legacy path; in both cases the live frame is still here and still elevated.
-            // Do not leave it floating -- drop it onto a validator-cleared ground spot searched from the
-            // clean home (not the bad settle point), and keep it invulnerable.
-            if (!isNull _v && {alive _v} && {(getPosATL _v) select 2 > 3.5}) then {
-                private _from = if (count _home >= 2) then { _home } else { _tgt };
-                private _spot = [typeOf _v, _from, 400, "auto", _v] call ALiVE_fnc_findAirSpawnPosition;
-                private _g    = if (count _spot >= 2) then { +(_spot select 0) } else { +_from };
-                _g set [2, 0];
-                _v setPosATL _g;
-                _v setVectorUp [0,0,1];
-                _v setVelocity [0,0,0];
-                _v allowDamage false;
-                diag_log format ["ATO_HANGAR_DBG settleClip type=%1 at=%2 -- despawn unavailable, forced onto clear ground, kept invulnerable", typeOf _v, getPosATL _v];
-            } else {
-                diag_log format ["ATO_HANGAR_DBG settleDespawn type=%1 pid=%2 z=%3 -- placed in geometry, virtualized to pool (no floating frame)", typeOf _v, _pid, _z];
-            };
+            // Still elevated/clipping -- NEVER re-arm damage (re-arming resolves the overlap into a one-shot
+            // kill). Keep it invulnerable + intact + sim-ON, parked so the ATO pool can still reuse it.
+            _v allowDamage false;
+            diag_log format ["ATO_HANGAR_DBG settleClip type=%1 at=%2 -- still elevated (z=%3), kept invulnerable (no re-arm)", typeOf _v, _p, _z];
         } else {
             // Grounded and clear -- safe to re-arm damage and apply the maintenance repair.
             _v allowDamage true;
             _v setDamage 0;
         };
-        if (!isNull _v) then { _v setVariable ["ATO_reposBusy", false]; };
     };
 };
 
@@ -682,88 +637,6 @@ private _fnc_standDownCrew = {
     };
     [_asset, "crewID", ""] call ALiVE_fnc_hashSet;
     true
-};
-
-// ---------------------------------------------------------------------------
-// Airborne-idle watchdog (always-on, rate-limited). A placement or crew failure
-// can leave an airframe stuck in the air, crewed and idle, hovering over the base
-// for the rest of the mission (RPT: a LOGCOM-delivered AH-64 held at z=48). The
-// settle path fixes the known cause; this is the catch-all for anything else.
-// Started once per logic: every 30 s it scans this module's air assets and, past a
-// grace window, safe-repositions any frame that is genuinely stuck in the air (which
-// grounds it, or virtualizes it if it was placed in geometry).
-//
-// The idle tell is currentOp == "" -- an asset off every sortie. Waypoint count is
-// NOT usable: aircraftReturn / aircraftReturnWait / aircraftLanding all hold airborne
-// with an empty waypoint list, so grounding on that would snap returning aircraft out
-// of the sky. Carrier assets are skipped (getPosATL over deep water reads above the
-// seabed, so a deck-parked jet looks airborne), and "airborne" is measured RELATIVE
-// to the asset's own home slot z so a rooftop/elevated parking spot is not mistaken
-// for a hover. A short back-off stops a frame whose slot is permanently fouled from
-// being teleported every cycle for the whole mission.
-// ---------------------------------------------------------------------------
-if !(_logic getVariable ["ATO_hoverWatchStarted", false]) then {
-    _logic setVariable ["ATO_hoverWatchStarted", true];
-    [_logic, _fnc_safeReposition] spawn {
-        params ["_logic", "_fnc_safeReposition"];
-        private _grace = 120;   // seconds airborne+idle before acting (rides out transients)
-        while {!isNull _logic} do {
-            sleep 30;
-            private _assets = [_logic, "assets"] call MAINCLASS;
-            if (!isNil "_assets" && {_assets isEqualType []} && {count _assets > 1}) then {
-                {
-                    private _aircraft = [_assets, _x] call ALiVE_fnc_hashGet;
-                    if (!isNil "_aircraft" && {_aircraft isEqualType []}) then {
-                        private _currentOp = [_aircraft, "currentOp", ""] call ALiVE_fnc_hashGet;
-                        private _onCarrier = [_aircraft, "isOnCarrier", false] call ALiVE_fnc_hashGet;
-                        // Only ever touch a genuinely idle, land-based asset. Anything on a sortie
-                        // (currentOp set, through return + landing) or on a carrier is left alone.
-                        if (_currentOp isEqualTo "" && !_onCarrier) then {
-                            private _pid  = [_aircraft, "profileID", ""] call ALiVE_fnc_hashGet;
-                            private _prof = if (_pid != "") then { [ALIVE_profileHandler, "getProfile", _pid] call ALIVE_fnc_profileHandler } else { objNull };
-                            if (!isNil "_prof" && {_prof isEqualType []}) then {
-                                private _veh = [_prof, "vehicle"] call ALiVE_fnc_hashGet;
-                                if (!isNil "_veh" && {!isNull _veh} && {alive _veh}) then {
-                                    private _sp        = [_aircraft, "startPos", []] call ALiVE_fnc_hashGet;
-                                    private _homeZ     = if (count _sp >= 3) then { _sp select 2 } else { 0 };
-                                    private _z         = (getPosATL _veh) select 2;
-                                    private _hasPlayer = (crew _veh) findIf {isPlayer _x} > -1;
-                                    // Airborne relative to where this frame is meant to sit, not absolute z.
-                                    if ((_z - _homeZ) > 20 && !_hasPlayer) then {
-                                        private _since = _veh getVariable ["ATO_hoverSince", -1];
-                                        if (_since < 0) then { _since = time; _veh setVariable ["ATO_hoverSince", time]; };
-                                        if (time - _since > _grace) then {
-                                            private _tries = _veh getVariable ["ATO_hoverTries", 0];
-                                            if (_tries < 3) then {
-                                                private _last = _veh getVariable ["ATO_hoverLogged", -99999];
-                                                if (time - _last > 300) then {
-                                                    _veh setVariable ["ATO_hoverLogged", time];
-                                                    diag_log format ["ATO HOVER-WATCH type=%1 pid=%2 z=%3 aboveHome=%4 idleFor=%5s try=%6 -- grounding", typeOf _veh, _pid, round _z, round (_z - _homeZ), round (time - _since), _tries + 1];
-                                                };
-                                                if (count _sp >= 2) then {
-                                                    private _sd = [_aircraft, "startDir", getDir _veh] call ALiVE_fnc_hashGet;
-                                                    [_veh, [_sp select 0, _sp select 1, (_sp select 2) + 1], _sd] call _fnc_safeReposition;
-                                                    _veh setVariable ["ATO_hoverTries", _tries + 1];
-                                                    _veh setVariable ["ATO_hoverSince", -1];   // reset only after a real attempt
-                                                };
-                                            };
-                                            // _tries >= 3: slot is permanently fouled. Stop cycling; the
-                                            // throttled log above already recorded it. hoverSince stays set
-                                            // so we do not re-log, and no further teleports fire.
-                                        };
-                                    } else {
-                                        // Parked where it belongs (or a player took it). Clear state.
-                                        _veh setVariable ["ATO_hoverSince", -1];
-                                        _veh setVariable ["ATO_hoverTries", 0];
-                                    };
-                                };
-                            };
-                        };
-                    };
-                } forEach (_assets select 1);
-            };
-        };
-    };
 };
 
 switch(_operation) do {
@@ -1556,56 +1429,7 @@ switch(_operation) do {
 
                 if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) ) then {
 
-                    // Fixed-wing footprint safety. airsideClear above only pushed the plane off the
-                    // runway/taxiway capsules; it makes no spatial query, so a plane authored inside a
-                    // hangar or stacked on a sibling/wreck is left to detonate on spawn (RPT: an RHS_A10
-                    // placed inside a Land_TentHangar_V1_F, lost at [1954,5629.5] before any sortie flew).
-                    // Route through the same validator the heli branch and the hangar-populate path
-                    // already trust -- but ONLY when the authored spot is actually blocked, and never on
-                    // a carrier deck, so a plane already on a clear apron/hardstand is left as placed.
-                    // Mode 'apron' then 'field', never 'auto' (the auto hangar tier animates doors and
-                    // takes a 60s reservation, unfit for a mission-start parking decision).
-                    if (!_isOnCarrier && {!isNil "ALiVE_fnc_findAirSpawnPosition"}) then {
-                        private _ownVeh = [_vehicleProfile,"vehicle"] call ALiVE_fnc_hashGet;
-                        if (isNil "_ownVeh") then { _ownVeh = objNull };
-                        private _bb = [_vehicleClass] call ALiVE_fnc_getVehicleBoundingBox;   // [length,width,height]
-                        private _clearR = ((((_bb select 0) max (_bb select 1)) / 2) + 3) max 6;
-                        // Structures, aircraft (live sibling or wreck), ground vehicles and map-baked
-                        // buildings within the footprint -- the load-bearing subset of the validator's own
-                        // obstacle set (findAirSpawnPosition.sqf:186-196), plus a terrain-object sweep so a
-                        // map-baked hangar is not missed. Own airframe excluded so it never relocates
-                        // because it detected itself; infantry are not treated as obstacles here.
-                        private _hits = (nearestObjects [_position, ["Building","House","Air","LandVehicle","Wreck_Base"], _clearR])
-                                      + (nearestTerrainObjects [_position, ["BUILDING"], _clearR, false, true]);
-                        if ((_hits findIf { !(_x isEqualTo _ownVeh) }) >= 0) then {
-                            private _air = [_vehicleClass, _position, 400, "apron"] call ALiVE_fnc_findAirSpawnPosition;
-                            if (count _air < 2) then {
-                                _air = [_vehicleClass, _position, 400, "field"] call ALiVE_fnc_findAirSpawnPosition;
-                            };
-                            if (count _air >= 2) then {
-                                if (_debug) then {
-                                    ["ATO %1 - adopted plane %2 was on a blocked spot, moved %3m onto validated parking", _logic, _vehicleClass, round ((_air select 0) distance2D _position)] call ALiVE_fnc_dump;
-                                };
-                                _position = +(_air select 0);
-                                _position set [2, 0];
-                                private _pDir = _air select 1;
-                                // Keep asset startPos/startDir, the profile, and any live unmanned airframe
-                                // in step, or it snaps back to the blocking spot on its next despawn (mirrors
-                                // the heli branch relocation just below).
-                                [_asset,"startPos",_position] call ALiVE_fnc_hashSet;
-                                [_asset,"startDir",_pDir] call ALiVE_fnc_hashSet;
-                                [_vehicleProfile,"position",_position] call ALiVE_fnc_profileVehicle;
-                                [_vehicleProfile,"direction",_pDir] call ALiVE_fnc_profileVehicle;
-                                if (!isNull _ownVeh && {alive _ownVeh} && {(crew _ownVeh) findIf {isPlayer _x} < 0}) then {
-                                    _ownVeh setPosATL _position;
-                                    _ownVeh setDir _pDir;
-                                    _ownVeh setVelocity [0,0,0];
-                                };
-                            };
-                        };
-                    };
-
-                    // Get airportID  (now uses the final, validated _position)
+                    // Get airportID
                     private _airportID = [_position] call ALiVE_fnc_getNearestAirportID;
                     [_asset,"airportID",_airportID] call ALiVE_fnc_hashSet;
                     [_logic,"addRunway",_airportID] call MAINCLASS;
