@@ -7804,6 +7804,20 @@ switch(_operation) do {
                     // not use this crew profile, so despawning it here is safe (must-fix #2).
                     [_asset] call _fnc_standDownCrew;
 
+                    // Clear the lost airframe's wreck from its home slot. The LOGCOM replacement
+                    // inherits the SAME slot and returns straight to it; without this it arrives on
+                    // top of its predecessor's wreck and detonates (RPT: a replacement UAV lost on
+                    // arrival at [1945.59,5436.09], ~8 min after the original died on that slot). This
+                    // fires ~4s after the loss, well before the replacement flies in. Only DEAD air
+                    // objects are removed, so a live sibling parked nearby is left untouched. The CSAR
+                    // request above runs first and deletes its own chosen crashsite, so clearing whatever
+                    // dead air is left here is safe (deleteVehicle on an already-gone object is a no-op).
+                    // Mirrors the wreck-clear the non-LOGCOM self-create path already does before it spawns.
+                    private _lostSlot = [_asset,"startPos",[]] call ALiVE_fnc_hashGet;
+                    if (count _lostSlot >= 2) then {
+                        { if (!alive _x) then { deleteVehicle _x } } forEach (nearestObjects [_lostSlot, ["Air"], 8]);
+                    };
+
                     // remove it from airspace assets first
                     private _airspace = [_asset,"airspace"] call ALiVE_fnc_hashGet;
                     private _as = [[_logic,"airspaceAssets"] call MAINCLASS, _airspace] call ALiVE_fnc_hashGet;
