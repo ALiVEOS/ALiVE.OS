@@ -848,12 +848,21 @@ switch(_operation) do {
 
     case "mergePositions": {
         private _type = _logic select 2 select 5;
+        private _profileID = _logic select 2 select 4;
 
         // A vehicle profile occasionally reached this group operation through
         // an OPCOM vehicle bucket. Slot 18 is `canFire` on vehicles, which was
         // the source of "Type Bool, expected Array". Route it to the matching
         // vehicle operation instead of treating the boolean as unit positions.
         if (_type == "vehicle") exitWith {
+            // Log the offending profile once so the upstream seeding stays
+            // traceable, without spamming the diag every simulator tick.
+            private _logged = missionNamespace getVariable ["ALIVE_profileMergePositionsLoggedIDs", []];
+            if !(_profileID in _logged) then {
+                _logged pushBack _profileID;
+                missionNamespace setVariable ["ALIVE_profileMergePositionsLoggedIDs", _logged];
+                ["fnc_profileEntity mergePositions: vehicle profile %1 re-routed to profileVehicle (slot 18 is canFire, not positions)", _profileID] call ALiVE_fnc_dump;
+            };
             [_logic,"mergePositions"] call ALiVE_fnc_profileVehicle;
         };
 
@@ -864,6 +873,13 @@ switch(_operation) do {
         // Repair a malformed entity profile defensively. This keeps one bad
         // saved profile from producing the same error every simulator tick.
         if !(_positions isEqualType []) then {
+            // Log the malformed profile once (see the re-route note above).
+            private _logged = missionNamespace getVariable ["ALIVE_profileMergePositionsLoggedIDs", []];
+            if !(_profileID in _logged) then {
+                _logged pushBack _profileID;
+                missionNamespace setVariable ["ALIVE_profileMergePositionsLoggedIDs", _logged];
+                ["fnc_profileEntity mergePositions: entity profile %1 had a malformed positions field (%2), repaired to []", _profileID, _positions] call ALiVE_fnc_dump;
+            };
             _positions = [];
             [_logic,"positions",_positions] call ALiVE_fnc_hashSet;
         };
