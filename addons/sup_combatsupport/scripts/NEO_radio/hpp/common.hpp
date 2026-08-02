@@ -1,9 +1,9 @@
-#define GUI_GRID_X  (0)
-#define GUI_GRID_Y  (0)
-#define GUI_GRID_W  (0.025)
-#define GUI_GRID_H  (0.04)
-#define GUI_GRID_WAbs (1)
-#define GUI_GRID_HAbs (1)
+#define GUI_GRID_HAbs        (1.14 * safezoneH)
+#define GUI_GRID_WAbs        (1.2 * GUI_GRID_HAbs)
+#define GUI_GRID_W           (GUI_GRID_WAbs / 40)
+#define GUI_GRID_H           (GUI_GRID_HAbs / 25)
+#define GUI_GRID_X           (safezoneX + (safezoneW - GUI_GRID_WAbs) / 2)
+#define GUI_GRID_Y           (safezoneY + (safezoneH - GUI_GRID_HAbs) / 2)
 
 // Combat Support tablet font sizing (referenced by the list/button controls in main.hpp).
 // Lists previously drew the glyph at the full row height, so the text looked oversized
@@ -11,10 +11,10 @@
 // list heights (so the visible row count never drifts by monitor), while CS_LIST_SIZE
 // shrinks just the glyph within the row. CS_BTN_SIZE is the fixed button/caption size.
 // Tune the leading multipliers, then rebuild sup_combatsupport.
-#define CS_LIST_FORMULA ((safeZoneW / 75) + (safeZoneH / 275))
+#define CS_LIST_FORMULA (0.5 * GUI_GRID_H)
 #define CS_LIST_SIZE (0.85 * CS_LIST_FORMULA)   // list / combo glyph height (was 1.0 * formula)
 #define CS_LIST_ROW  (1.0 * CS_LIST_FORMULA)    // list row height (lower for tighter rows)
-#define CS_BTN_SIZE  (0.9 * GUI_GRID_H)         // button / caption glyph (was 0.8)
+#define CS_BTN_SIZE  (0.5 * GUI_GRID_H)         // button / caption glyph
 
 class RscPicture;
 
@@ -74,7 +74,7 @@ class NEO_RscText
     type = 13;
     style = 0x00;
     colorBackground[] = { 0, 0, 0, 0 };
-    size = "((safeZoneW / 75) + (safeZoneH / 225))";
+    size = 0.5 * GUI_GRID_H;
     x = "safeZoneX + (safeZoneW / 6)";
     y = "safeZoneY + (safeZoneH / 6)";
     w = "safeZoneW / 5";
@@ -119,7 +119,7 @@ class NEO_RscListBox {
     type = 5;
     style = 0 + 0x10;
     font = "PuristaMedium";
-    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    sizeEx = 0.5 * GUI_GRID_H;
     x = "safeZoneX + (safeZoneW / 5)";
     y = "safeZoneY + (safeZoneH / 2.25)";
     w = "(safeZoneW / 10)";
@@ -162,7 +162,7 @@ class NEO_RscGUIListBox : NEO_RscListBox {
     colorSelectBackground[] = {0.6, 0.839, 0.47, 0.3};
     colorSelectBackground2[] = {0.6, 0.839, 0.47, 1};
     period = 0;
-    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    sizeEx = 0.5 * GUI_GRID_H;
 class ListScrollBar
     {
         color[] = {1, 1, 1, 0.6};
@@ -215,7 +215,7 @@ class NEO_RscComboBox
     colorActive[] = {0,0,0,1};
     colorDisabled[] = {0,0,0,0.3};
     font = "PuristaMedium";
-    sizeEx = "(safeZoneH / 100) + (safeZoneH / 100)";
+    sizeEx = 0.5 * GUI_GRID_H;
 };
 
 
@@ -258,7 +258,7 @@ class NEO_RscButton
   animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
     period = 0.4;
     font = "PuristaMedium";
-    size = "(safeZoneW / 125) + (safeZoneH / 125)";
+    size = 0.5 * GUI_GRID_H;
     text = "";
  soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
  soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};

@@ -49,13 +49,15 @@ if (is3DEN) then {
     // events into one run.
     // CfgFunctions may not be compiled in pure-Eden mode (no scenario
     // = no mission preInit = BI's own CfgFunctions phase may be skipped).
-    // Inline-compile the validator here via compile preprocessFileLineNumbers
-    // so it's guaranteed available when the EHs fire. CfgFunctions entry
-    // still registered for completeness / runtime callers.
+    // Inline-compile the validators that use editor-local names, and only fill
+    // missing CfgFunctions globals. In normal mission contexts those globals
+    // are compileFinal and must not be overwritten.
     ALiVE_edenFactionValidator = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenValidateOpcomFactions.sqf";
     ALiVE_edenValidateFactionCompilerSync = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenValidateFactionCompilerSync.sqf";
     // leaf function (config reads + get3DENAttribute only, no ALiVE deps)
-    ALIVE_fnc_edenArtilleryDependencyCheck = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenArtilleryDependencyCheck.sqf";
+    if (isNil "ALIVE_fnc_edenArtilleryDependencyCheck") then {
+        ALIVE_fnc_edenArtilleryDependencyCheck = compile preprocessFileLineNumbers "\x\alive\addons\main\fnc_edenArtilleryDependencyCheck.sqf";
+    };
 
     // Viability Eden chain. Inline-compile the helper functions
     // the assessor reaches transitively, plus the assessor itself,
@@ -69,12 +71,12 @@ if (is3DEN) then {
     // assessor itself. All are leaf functions (no further ALiVE
     // deps) -- verified by grepping ALI(V|v)E_fnc_ across their
     // sources.
-    ALIVE_fnc_hashCreate              = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\data\fnc_hashCreate.sqf";
-    ALIVE_fnc_hashSet                 = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\data\fnc_hashSet.sqf";
-    ALIVE_fnc_hashGet                 = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\data\fnc_hashGet.sqf";
-    ALIVE_fnc_dump                    = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\logging\fnc_dump.sqf";
-    ALIVE_fnc_assessIndexViability    = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_assessIndexViability.sqf";
-    ALIVE_fnc_indexViabilityEdenCheck = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_indexViabilityEdenCheck.sqf";
+    if (isNil "ALIVE_fnc_hashCreate") then { ALIVE_fnc_hashCreate = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\data\fnc_hashCreate.sqf"; };
+    if (isNil "ALIVE_fnc_hashSet") then { ALIVE_fnc_hashSet = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\data\fnc_hashSet.sqf"; };
+    if (isNil "ALIVE_fnc_hashGet") then { ALIVE_fnc_hashGet = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\data\fnc_hashGet.sqf"; };
+    if (isNil "ALIVE_fnc_dump") then { ALIVE_fnc_dump = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\logging\fnc_dump.sqf"; };
+    if (isNil "ALIVE_fnc_assessIndexViability") then { ALIVE_fnc_assessIndexViability = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_assessIndexViability.sqf"; };
+    if (isNil "ALIVE_fnc_indexViabilityEdenCheck") then { ALIVE_fnc_indexViabilityEdenCheck = compile preprocessFileLineNumbers "\x\alive\addons\fnc_analysis\fnc_indexViabilityEdenCheck.sqf"; };
 
     // #887 artillery-donor dropdown (FactionChoice "artilleryOnly" flag):
     // the Eden load handler runs the isArtillery chain to keep only
@@ -83,10 +85,10 @@ if (is3DEN) then {
     // isMagazineOfOrdnanceType; isArtillery additionally needs the hash
     // trio compiled above for its per-class result cache. No other ALiVE
     // deps (verified by grepping the sources).
-    ALIVE_fnc_isArtillery              = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\vehicles\fnc_isArtillery.sqf";
-    ALIVE_fnc_getArtyRounds            = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\config\fnc_getArtyRounds.sqf";
-    ALIVE_fnc_getArtyMagazines         = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\config\fnc_getArtyMagazines.sqf";
-    ALIVE_fnc_isMagazineOfOrdnanceType = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\config\fnc_isMagazineOfOrdnanceType.sqf";
+    if (isNil "ALIVE_fnc_isArtillery") then { ALIVE_fnc_isArtillery = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\vehicles\fnc_isArtillery.sqf"; };
+    if (isNil "ALIVE_fnc_getArtyRounds") then { ALIVE_fnc_getArtyRounds = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\config\fnc_getArtyRounds.sqf"; };
+    if (isNil "ALIVE_fnc_getArtyMagazines") then { ALIVE_fnc_getArtyMagazines = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\config\fnc_getArtyMagazines.sqf"; };
+    if (isNil "ALIVE_fnc_isMagazineOfOrdnanceType") then { ALIVE_fnc_isMagazineOfOrdnanceType = compile preprocessFileLineNumbers "\x\alive\addons\x_lib\functions\config\fnc_isMagazineOfOrdnanceType.sqf"; };
     ["ALiVE 3DEN: inline-compiled validators; OPCOM=%1, compilerSync=%2, hashCreate=%3, hashSet=%4, hashGet=%5, dump=%6, assessor=%7, edenViability=%8",
         typeName ALiVE_edenFactionValidator,
         typeName ALiVE_edenValidateFactionCompilerSync,

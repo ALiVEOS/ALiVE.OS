@@ -1,4 +1,8 @@
 private ["_display", "_map", "_lb", "_index", "_supportMarker", "_artyMarkers", "_sitRepButton"];
+private _uiH = 1.14 * safezoneH;
+private _uiW = 1.2 * _uiH;
+private _uiX = safezoneX + (safezoneW - _uiW) / 2;
+private _uiY = safezoneY + (safezoneH - _uiH) / 2;
 _display = findDisplay 655555;
 _map = _display displayCtrl 655560;
 _lb = _this select 0;
@@ -79,15 +83,27 @@ _artyDispersionText = _display displayCtrl 655608;
 _artyDispersionSlider = _display displayCtrl 655609;
 _artyRateDelayText = _display displayCtrl 655611;
 _artyRateDelaySlider = _display displayCtrl 655612;
+private _listBackground = [0.047, 0.047, 0.047, 0.72];
+private _transportControls = [_transportUnitLb, _transportTaskLb, _transportUnitText, _transportTaskText, _transportHelpUnitText, _transportHelpTaskText, _transportConfirmButton, _transportBaseButton, _transportSmokeFoundButton, _transportSmokeNotFoundButton, _transportSlider, _transportSliderText, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _transportComboText, _objectLb];
+private _casControls = [_casUnitLb, _casUnitText, _casHelpUnitText, _casConfirmButton, _casBaseButton, _casTaskLb, _casTaskText, _casTaskHelpText, _casFlyHeightSlider, _casFlyHeighSliderText, _casRadiusSlider, _casRadiusSliderText, _casAttackRunText, _casAttackRunLB, _casROELb, _casROEText];
+private _artyControls = [_artyUnitLb, _artyUnitText, _artyHelpUnitText, _artyConfirmButton, _artyBaseButton, _artyOrdnanceTypeText, _artyOrdnanceTypeLb, _artyRateOfFireText, _artyRateOfFireLb, _artyRoundCountText, _artyRoundCountLb, _artyMoveButton, _artyDontMoveButton, _artyDispersionText, _artyDispersionSlider, _artyRateDelayText, _artyRateDelaySlider];
 
 //Re-initialize Controls
+// These three categories reuse the same coordinates. Hiding inactive controls is
+// essential: a transparent/disabled list box can still be later in the UI draw
+// order and cover or intercept the active category's rows.
+{ _x ctrlShow false } forEach (_transportControls + _casControls + _artyControls);
 { (_x select 0) ctrlSetEventHandler [(_x select 1), ""] } forEach [[_map, "MouseButtonDown"]];
 uinamespace setVariable ["NEO_radioMapClickArmed", false]; // #698 map-click handler just cleared - mirror for the terrain toggle
-{ _x ctrlSetPosition [1, 1, (safeZoneW / 1000), (safeZoneH / 1000)]; _x ctrlCommit 0; } forEach [_transportConfirmButton, _transportBaseButton, _transportSmokeFoundButton, _transportSmokeNotFoundButton, _transportSlider, _transportSliderText, _casConfirmButton, _casBaseButton, _casFlyHeightSlider, _casRadiusSlider, _artyConfirmButton, _artyMoveButton, _artyDontMoveButton, _artyDispersionSlider, _artyBaseButton, _artyRateDelaySlider, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
+{ _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_transportConfirmButton, _transportBaseButton, _transportSmokeFoundButton, _transportSmokeNotFoundButton, _transportSlider, _transportSliderText, _casConfirmButton, _casBaseButton, _casFlyHeightSlider, _casRadiusSlider, _artyConfirmButton, _artyMoveButton, _artyDontMoveButton, _artyDispersionSlider, _artyBaseButton, _artyRateDelaySlider, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
 { _x ctrlSetText "" } forEach [_transportUnitText, _transportTaskText, _transportHelpUnitText, _transportHelpTaskText, _transportSliderText, _casUnitText, _casHelpUnitText, _casTaskText, _casROEText,_casTaskHelpText, _casFlyHeighSliderText, _casRadiusSliderText, _casAttackRunText, _artyUnitText, _artyHelpUnitText, _artyOrdnanceTypeText, _artyRateOfFireText, _artyRoundCountText, _artyDispersionText, _artyRateDelayText, _transportComboText];
 { _x ctrlEnable false; } forEach [_transportUnitLb, _transportTaskLb, _casUnitLb, _casTaskLb, _casROELb, _casAttackRunLB, _artyUnitLb, _artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
 _sitRepButton ctrlEnable false; // no unit selected yet - each unit handler re-enables it
 { lbClear _x } forEach [_transportUnitLb, _transportTaskLb, _casUnitLb, _casTaskLb, _casROELb, _casAttackRunLB, _artyUnitLb, _artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo, _objectLb];
+// Transport, CAS and artillery controls deliberately occupy the same layout slots.
+// Disabled list boxes still paint their background, so clear every category before
+// enabling the selected one to prevent opaque panels from stacking over its content.
+{ _x ctrlSetBackgroundColor [0, 0, 0, 0] } forEach [_transportUnitLb, _transportTaskLb, _casUnitLb, _casTaskLb, _casROELb, _casAttackRunLB, _artyUnitLb, _artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb];
 
 //Markers
 { uinamespace setVariable [_x, nil] } forEach ["NEO_transportMarkerCreated", "NEO_casMarkerCreated", "NEO_artyMarkerCreated"];
@@ -98,16 +114,18 @@ switch (toUpper (_lb lbText _index)) do
 {
     case "TRANSPORT" :
     {
+        { _x ctrlShow true } forEach _transportControls;
         private ["_transportArray"];
         _transportArray = NEO_radioLogic getVariable [format ["NEO_radioTrasportArray_%1", playerSide], []];
 
         if ((count _transportArray > 0) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" })) then
         {
+            { _x ctrlSetBackgroundColor _listBackground } forEach [_transportUnitLb, _transportTaskLb];
             _transportUnitText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>UNIT</t>";
             _transportHelpUnitText ctrlSetStructuredText parseText "<t color='#FFFF00' size='0.7' font='PuristaMedium'>Select a unit</t>";
             //done
-            _transportConfirmButton ctrlEnable false; _transportConfirmButton ctrlSetPosition [0.519796* safezoneW + safezoneX, 0.6848 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _transportConfirmButton ctrlCommit 0;
-            _transportBaseButton ctrlEnable false; _transportBaseButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6512 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _transportBaseButton ctrlCommit 0;
+    _transportConfirmButton ctrlEnable false; _transportConfirmButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6848 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportConfirmButton ctrlCommit 0;
+    _transportBaseButton ctrlEnable false; _transportBaseButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6512 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportBaseButton ctrlCommit 0;
 
             if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) then
             {
@@ -144,16 +162,18 @@ switch (toUpper (_lb lbText _index)) do
 
     case "CAS" :
     {
+        { _x ctrlShow true } forEach _casControls;
         private ["_casArray"];
         _casArray = NEO_radioLogic getVariable [format ["NEO_radioCasArray_%1", playerSide], []];
 
         if ((count _casArray > 0) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" }) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" })) then
         {
+            { _x ctrlSetBackgroundColor _listBackground } forEach [_casUnitLb, _casTaskLb];
             _casUnitText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>UNIT</t>";
             _casHelpUnitText ctrlSetStructuredText parseText "<t color='#FFFF00' size='0.7' font='PuristaMedium'>Select a unit</t>";
             //done
-            _casConfirmButton ctrlEnable false; _casConfirmButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6848 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _casConfirmButton ctrlCommit 0;
-            _casBaseButton ctrlEnable false; _casBaseButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6512 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _casBaseButton ctrlCommit 0;
+    _casConfirmButton ctrlEnable false; _casConfirmButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6848 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _casConfirmButton ctrlCommit 0;
+    _casBaseButton ctrlEnable false; _casBaseButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6512 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _casBaseButton ctrlCommit 0;
 
             _casUnitLb ctrlEnable true;
             lbClear _casUnitLb;
@@ -175,6 +195,7 @@ switch (toUpper (_lb lbText _index)) do
 
     case "ARTY" :
     {
+        { _x ctrlShow true } forEach _artyControls;
     	
     	
   	    _has_SPE_leFH18 = false;
@@ -196,11 +217,12 @@ switch (toUpper (_lb lbText _index)) do
 
         if ((count _artyArray > 0) && (isNil { NEO_radioLogic getVariable "NEO_radioTalkWithPilot" })) then
         {
+            { _x ctrlSetBackgroundColor _listBackground } forEach [_artyUnitLb, _artyOrdnanceTypeLb];
             _artyUnitText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>BATTERY</t>";
             _artyHelpUnitText ctrlSetStructuredText parseText "<t color='#FFFF00' size='0.7' font='PuristaMedium'>Select a battery</t>";
             //done
-            _artyConfirmButton ctrlEnable false; _artyConfirmButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6848 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyConfirmButton ctrlCommit 0;
-            _artyBaseButton ctrlEnable false; _artyBaseButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6512 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyBaseButton ctrlCommit 0;
+    _artyConfirmButton ctrlEnable false; _artyConfirmButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6848 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _artyConfirmButton ctrlCommit 0;
+    _artyBaseButton ctrlEnable false; _artyBaseButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6512 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _artyBaseButton ctrlCommit 0;
 
             if (!isNil { NEO_radioLogic getVariable "NEO_radioTalkWithArty" }) then
             {

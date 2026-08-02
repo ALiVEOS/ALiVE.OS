@@ -128,67 +128,100 @@ if (count _waypoints == 0 && {!_parkedAir}) then {
 
     //defaults
     private _startPos = _pos;
-    private _type = "MOVE";
     private _speed = "LIMITED";
     private _formation = "COLUMN";
+    private _routePositions = [];
+    private _minimumWaypointSeparation = (10 min ((_radius max 0) * 0.1)) max 3;
 
-    for "_i" from 0 to 4 do {
-        if (count _locations > 0) then {
-            private _location = selectRandom _locations;
-            
-            _locations deleteAt (_locations find _location);
-            _pos = position _location;
+    // Generate distinct patrol nodes before adding the CYCLE return. A bounded
+    // retry avoids duplicate/near-duplicate nodes from random, road, shoreline,
+    // or location snapping without risking an unbounded scheduler loop.
+    for "_i" from 0 to 3 do {
+        private _accepted = false;
+        private _candidate = [];
+        private _attempt = 0;
 
-            if (_debug) then {
-                ["ALIVE_fnc_ambientMovement selected the location %1 at %2 as waypoint-index %3 for profileID %4!",_location,_pos,_i,_profileID] call ALiVE_fnc_Dump;
-            };
-        } else {
-            //to be done: min distance to avoid waypoints too close together
-            _pos = [_startPos,_radius] call CBA_fnc_RandPos;
+        while {_attempt < 20 && {!_accepted}} do {
+            _attempt = _attempt + 1;
 
-            if (_vehicleObjectType == "Ship") then {
-                // #943 - boats keep their ambient waypoints ON water. The land
-                // relocation below hands a spawned boat shoreline waypoints its
-                // engine AI can never reach, halting it against the beach.
-                if !(surfaceIsWater _pos) then {
-                    _pos = [_pos] call ALiVE_fnc_getClosestSea;
-                };
-                if !(surfaceIsWater _pos) then { _pos = _startPos; };
-            } else {
-                if (surfaceIsWater _pos) then {
-                    _pos = [_pos] call ALiVE_fnc_getClosestLand;
-                };
-            };
-
-            if (_debug) then {
-                ["ALIVE_fnc_ambientMovement didn't find have locations available on waypoint-index %2 for profileID %3! Selecting random position %1!",_pos,_i,_profileID] call ALiVE_fnc_Dump;
-            };
-        };
-
-        if (_roads) then {
-            private _roadsArray = _pos nearRoads 200;
-
-            if (count _roadsArray > 0) then {
-                _pos = getposATL (selectRandom _roadsArray);
+            if (count _locations > 0) then {
+                private _location = selectRandom _locations;
+                _locations deleteAt (_locations find _location);
+                _candidate = position _location;
 
                 if (_debug) then {
-                    ["ALIVE_fnc_ambientMovement selected a road at %1 as waypoint-index %2 for profileID %3!",_pos,_i, _profileID] call ALiVE_fnc_Dump;
+                    ["ALIVE_fnc_ambientMovement selected the location %1 at %2 as waypoint-index %3 for profileID %4!",_location,_candidate,_i,_profileID] call ALiVE_fnc_Dump;
                 };
             } else {
-                //For ambientmovement keep motorized, mechanized or armored groups on road or default to startposition (which is likely near a road) 
-                _pos = _startPos;
+                _candidate = [_startPos,_radius] call CBA_fnc_RandPos;
+
+                if (_vehicleObjectType == "Ship") then {
+                    // #943 - boats keep their ambient waypoints ON water. The land
+                    // relocation below hands a spawned boat shoreline waypoints its
+                    // engine AI can never reach, halting it against the beach.
+                    if !(surfaceIsWater _candidate) then {
+                        _candidate = [_candidate] call ALiVE_fnc_getClosestSea;
+                    };
+                    if !(surfaceIsWater _candidate) then {_candidate = _startPos};
+                } else {
+                    if (surfaceIsWater _candidate) then {
+                        _candidate = [_candidate] call ALiVE_fnc_getClosestLand;
+                    };
+                };
 
                 if (_debug) then {
-                    ["ALIVE_fnc_ambientMovement has no roads on waypoint-index %2 for profileID %3! Defaulting to startposition %1!",_pos,_i, _profileID] call ALiVE_fnc_Dump;
+                    ["ALIVE_fnc_ambientMovement didn't find have locations available on waypoint-index %2 for profileID %3! Selecting random position %1!",_candidate,_i,_profileID] call ALiVE_fnc_Dump;
+                };
+            };
+
+            if (_roads) then {
+                private _roadsArray = _candidate nearRoads 200;
+
+                if (count _roadsArray > 0) then {
+                    _candidate = getPosATL (selectRandom _roadsArray);
+
+                    if (_debug) then {
+                        ["ALIVE_fnc_ambientMovement selected a road at %1 as waypoint-index %2 for profileID %3!",_candidate,_i,_profileID] call ALiVE_fnc_Dump;
+                    };
+                } else {
+                    // Keep motorized, mechanized, and armored groups on a road or
+                    // reject this candidate and retry from another random position.
+                    _candidate = _startPos;
+
+                    if (_debug) then {
+                        ["ALIVE_fnc_ambientMovement has no roads on waypoint-index %2 for profileID %3! Rejecting candidate at startposition %1!",_candidate,_i,_profileID] call ALiVE_fnc_Dump;
+                    };
+                };
+            };
+
+            if (count _candidate >= 2) then {
+                private _tooClose = (_candidate distance2D _startPos) < _minimumWaypointSeparation;
+                if (!_tooClose) then {
+                    _tooClose = (_routePositions findIf {(_candidate distance2D _x) < _minimumWaypointSeparation}) >= 0;
+                };
+                if (!_tooClose) then {
+                    _accepted = true;
+                    _routePositions pushBack _candidate;
                 };
             };
         };
+    };
 
-        //Loop last Waypoint
-        if (_i == 4) then {_pos = _startPos; _type = "CYCLE"};
+    if !(_routePositions isEqualTo []) then {
+        _routePositions pushBack _startPos;
+        private _routeCount = count _routePositions;
 
-        _profileWaypoint = [_pos, 20, _type, _speed, 50, [], _formation, "NO CHANGE", _behaviour] call ALIVE_fnc_createProfileWaypoint;
-        [_profileWaypoint,"statements",["true","_disableSimulation = true;"]] call ALIVE_fnc_hashSet;
-        [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
+        {
+            private _previousIndex = if (_forEachIndex == 0) then {_routeCount - 1} else {_forEachIndex - 1};
+            private _nextIndex = if (_forEachIndex == (_routeCount - 1)) then {0} else {_forEachIndex + 1};
+            private _shortestLeg = ((_x distance2D (_routePositions select _previousIndex)) min (_x distance2D (_routePositions select _nextIndex)));
+            // Adjacent radii total at most 90% of their leg, leaving a gap that
+            // prevents a CYCLE route from completing two waypoints at once.
+            private _completionRadius = 50 min (_shortestLeg * 0.45);
+            private _type = if (_forEachIndex == (_routeCount - 1)) then {"CYCLE"} else {"MOVE"};
+            private _profileWaypoint = [_x,20,_type,_speed,_completionRadius,[],_formation,"NO CHANGE",_behaviour] call ALIVE_fnc_createProfileWaypoint;
+            [_profileWaypoint,"statements",["true","_disableSimulation = true;"]] call ALIVE_fnc_hashSet;
+            [_profile,"addWaypoint",_profileWaypoint] call ALIVE_fnc_profileEntity;
+        } forEach _routePositions;
     };
 };

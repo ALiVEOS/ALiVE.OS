@@ -2,6 +2,10 @@ private
 [
     "_display", "_artyRateOfFireLb", "_rate", "_artyRoundCountLb", "_artyRateDelayText", "_artyRateDelaySlider"
 ];
+private _uiH = 1.14 * safezoneH;
+private _uiW = 1.2 * _uiH;
+private _uiX = safezoneX + (safezoneW - _uiW) / 2;
+private _uiY = safezoneY + (safezoneH - _uiH) / 2;
 _display = findDisplay 655555;
 _artyRateOfFireLb = _this select 0;
 _rate = _artyRateOfFireLb lbText (lbCurSel _artyRateOfFireLb);
@@ -13,7 +17,7 @@ if (_rate == "STAGGERED") then
 {
     _artyRateDelayText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>DELAY - 5/30s</t>";
 
-    _artyRateDelaySlider ctrlSetPosition [0.404129 * safezoneW + safezoneX, 0.710018 * safezoneH + safezoneY, (0.105833 * safezoneW), (0.0280024 * safezoneH)];
+    _artyRateDelaySlider ctrlSetPosition [0.404129 * _uiW + _uiX, 0.710018 * _uiH + _uiY, (0.105833 * _uiW), (0.0280024 * _uiH)];
     _artyRateDelaySlider sliderSetRange [5, 30];
     _artyRateDelaySlider sliderSetspeed [1, 10];
     _artyRateDelaySlider sliderSetPosition 5;
@@ -22,6 +26,6 @@ if (_rate == "STAGGERED") then
 else
 {
     _artyRateDelayText ctrlSetText "";
-    _artyRateDelaySlider ctrlSetPosition [safeZoneX + (safeZoneW / 2), safeZoneY + (safeZoneH / 2), (safeZoneW / 1000), (safeZoneH / 1000)];
+    _artyRateDelaySlider ctrlSetPosition [_uiX + (_uiW / 2), _uiY + (_uiH / 2), (_uiW / 1000), (_uiH / 1000)];
     _artyRateDelaySlider ctrlCommit 0;
 };

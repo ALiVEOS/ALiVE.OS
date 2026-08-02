@@ -4,6 +4,10 @@ private
     "_supportMarker", "_slider", "_sliderText", "_transportHeightCombo", "_transportSpeedCombo", "_transportRoeCombo", "_transportComboText", "_flyingProperties",
     "_height", "_speed", "_roeIndex", "_roe"
 ];
+private _uiH = 1.14 * safezoneH;
+private _uiW = 1.2 * _uiH;
+private _uiX = safezoneX + (safezoneW - _uiW) / 2;
+private _uiY = safezoneY + (safezoneH - _uiH) / 2;
 _display = findDisplay 655555;
 _map = _display displayCtrl 655560;
 _transportBaseButton = _display displayCtrl 655575;
@@ -64,14 +68,14 @@ _transportSmokeNotFoundButton = _display displayCtrl 655577;
 
 if (_chopper getVariable "NEO_radioTrasportUnitStatus" == "SMOKECONF") then
 {
-    _transportSmokeFoundButton ctrlEnable true; _transportSmokeFoundButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6176 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _transportSmokeFoundButton ctrlCommit 0;
-    _transportSmokeNotFoundButton ctrlEnable true; _transportSmokeNotFoundButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.584 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _transportSmokeNotFoundButton ctrlCommit 0;
+        _transportSmokeFoundButton ctrlEnable true; _transportSmokeFoundButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6176 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportSmokeFoundButton ctrlCommit 0;
+        _transportSmokeNotFoundButton ctrlEnable true; _transportSmokeNotFoundButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.584 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _transportSmokeNotFoundButton ctrlCommit 0;
 }
 else
 
 {
-    _transportSmokeFoundButton ctrlEnable false; _transportSmokeFoundButton ctrlSetPosition [safeZoneX + (safeZoneW / 1000), safeZoneY + (safeZoneH / 1.425), (safeZoneW / 1000), (safeZoneH / 1000)]; _transportSmokeFoundButton ctrlCommit 0;
-    _transportSmokeNotFoundButton ctrlEnable false; _transportSmokeNotFoundButton ctrlSetPosition [safeZoneX + (safeZoneW / 1000), safeZoneY + (safeZoneH / 1.375), (safeZoneW / 1000), (safeZoneH / 1000)]; _transportSmokeNotFoundButton ctrlCommit 0;
+        _transportSmokeFoundButton ctrlEnable false; _transportSmokeFoundButton ctrlSetPosition [_uiX + (_uiW / 1000), _uiY + (_uiH / 1.425), (_uiW / 1000), (_uiH / 1000)]; _transportSmokeFoundButton ctrlCommit 0;
+        _transportSmokeNotFoundButton ctrlEnable false; _transportSmokeNotFoundButton ctrlSetPosition [_uiX + (_uiW / 1000), _uiY + (_uiH / 1.375), (_uiW / 1000), (_uiH / 1000)]; _transportSmokeNotFoundButton ctrlCommit 0;
 };
 
 //Transport Tasks
@@ -87,7 +91,7 @@ if ([(configFile >> "CfgVehicles" >> typeOf _chopper >> "slingLoadMaxCargoMass")
 
 
 //Re-initialize Controls
-{ _x ctrlSetPosition [1, 1, (safeZoneW / 1000), (safeZoneH / 1000)]; _x ctrlCommit 0; } forEach [_slider, _sliderText, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo];
+        { _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_slider, _sliderText, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo];
 { _x ctrlSetText "" } forEach [_sliderText, _transportTaskText, _transportHelpTaskText, _transportComboText];
 { lbClear _x } forEach [_transportTaskLb, _transportHeightCombo, _transportSpeedCombo, _transportRoeCombo];
 
@@ -118,10 +122,10 @@ if (_status != "KILLED") then
     uinamespace setVariable ["NEO_radioMapClickArmed", true]; // #698 mirror the map-click handler state for the terrain toggle
 
     //ComboBoxes
-    _transportHeightCombo ctrlEnable true; _transportHeightCombo ctrlSetPosition [0.278525 * safezoneW + safezoneX, 0.64 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)]; _transportHeightCombo ctrlCommit 0;
-    _transportSpeedCombo ctrlEnable true; _transportSpeedCombo ctrlSetPosition [0.401017 * safezoneW + safezoneX, 0.64 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)]; _transportSpeedCombo ctrlCommit 0;
-    _transportRoeCombo ctrlEnable true; _transportRoeCombo ctrlSetPosition [0.339153 * safezoneW + safezoneX, 0.696 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)]; _transportRoeCombo ctrlCommit 0;
-    _transportComboText ctrlSetText "Behaviour"; _transportComboText ctrlSetPosition [0.363898 * safezoneW + safezoneX, 0.598 * safezoneH + safezoneY, (0.0494915 * safezoneW), (0.028 * safezoneH)]; _transportComboText ctrlCommit 0;
+        _transportHeightCombo ctrlEnable true; _transportHeightCombo ctrlSetPosition [0.278525 * _uiW + _uiX, 0.64 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)]; _transportHeightCombo ctrlCommit 0;
+        _transportSpeedCombo ctrlEnable true; _transportSpeedCombo ctrlSetPosition [0.401017 * _uiW + _uiX, 0.64 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)]; _transportSpeedCombo ctrlCommit 0;
+        _transportRoeCombo ctrlEnable true; _transportRoeCombo ctrlSetPosition [0.339153 * _uiW + _uiX, 0.696 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)]; _transportRoeCombo ctrlCommit 0;
+        _transportComboText ctrlSetText "Behaviour"; _transportComboText ctrlSetPosition [0.363898 * _uiW + _uiX, 0.598 * _uiH + _uiY, (0.0494915 * _uiW), (0.028 * _uiH)]; _transportComboText ctrlCommit 0;
 
     lbClear _transportHeightCombo;
     {
