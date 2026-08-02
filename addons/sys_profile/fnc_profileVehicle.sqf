@@ -673,6 +673,20 @@ switch (_operation) do {
             _vehicle setFuel _fuel;
             _vehicle engineOn _engineOn;
 
+            // #460 - a self-operating UAV airframe must come up with its own AI operator.
+            // createVehicle never seats UAV crew, so a delivered/adopted drone spawns
+            // pilotless; the virtual simulator then commands it engine-on toward its fly-in
+            // waypoint and it materialises airborne at the air floor with nobody to fly it,
+            // lost within seconds (RPT: a delivered B_T_UAV_03 crashed ~18s after spawn,
+            // the engine self-attributing the loss as "by B_T_UAV_03 (side UNKNOWN)").
+            // createVehicleCrew only fills EMPTY seats -> a no-op for a manned airframe that
+            // already has one. isKindOf "UAV" alone misses drones whose base does not inherit
+            // UAV (e.g. the Darter), so pair it with the isUav config check -- the idiom ATO
+            // already uses for its own createVehicleCrew self-create path.
+            if (_vehicleClass isKindOf "UAV" || {getNumber (configFile >> "CfgVehicles" >> _vehicleClass >> "isUav") == 1}) then {
+                createVehicleCrew _vehicle;
+            };
+
             // #460 / #441 - restore a pylon loadout a module captured before
             // virtualisation (e.g. ATO adopting an editor-placed aircraft).
             // createVehicle only ever gives the config default, so reapply the
