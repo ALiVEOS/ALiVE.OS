@@ -2440,6 +2440,15 @@ switch(_operation) do {
                     private _faction = [_logic, "faction"] call MAINCLASS;
                     private _aprofiles = [];
 
+                    // Single-authority slot reservation for this whole placement pass. Every aircraft
+                    // placed (helis first, then planes) records its footprint [pos, radius] here, so each
+                    // new plane's spot is vetted against ALL siblings placed THIS instant -- not just what
+                    // findAirSpawnPosition's 60s registry can see (it is blind to the profiled siblings
+                    // created moments earlier, which is why co-located aircraft kept spawning on the same
+                    // apron and detonating). One authority seeing every placement is the escape from the
+                    // per-aircraft deconfliction trap that sank the downstream placement fixes.
+                    private _reservedSlots = [];
+
                     // Place Helis
                     private _heliClasses = [0,_faction,"Helicopter"] call ALiVE_fnc_findVehicleType;
                     _heliClasses = _heliClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
@@ -2498,6 +2507,10 @@ switch(_operation) do {
                                             _aprofiles pushback ([_x,"profileID"] call ALiVE_fnc_hashGet);
                                         };
                                     } forEach _tmp;
+
+                                    // Seed the shared reservation with this helipad (radius = the parked
+                                    // helo's own footprint) so a plane is never parked on top of it.
+                                    _reservedSlots pushBack [_pos, 10];
                                 };
                             };
                         } forEach _nodes;
@@ -2627,6 +2640,13 @@ switch(_operation) do {
 
                         private _firstbuilding = true;
 
+                        // Hard ceiling on planes created for this field. The raw hangar-node count
+                        // massively over-counts real parking (tent-hangar nodes are hangars in name
+                        // only), so it is bounded; the per-spot reservation check below then refines the
+                        // actual number down to the field's genuinely distinct, span-spaced parking.
+                        private _planeCap = (count _buildings) min 8;
+                        private _planesPlaced = 0;
+
                         {
                             // Check hangar is not allocated to a plane
                             private _nearbyObj = nearestObjects [position _x, ["Plane","Helicopter"], 20];
@@ -2634,7 +2654,7 @@ switch(_operation) do {
                             private _availablePlane = true;
 
                             if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
-                                if (_firstbuilding || random 1 > 0.30) then {
+                                if ((_firstbuilding || random 1 > 0.30) && {_planesPlaced < _planeCap}) then {
 
                                     private _posi = [0,0,0];
                                     private _dire = 0;
@@ -2808,6 +2828,31 @@ switch(_operation) do {
                                         };
                                     };
 
+                                    // Single-authority deconfliction. Vet the finalised spot against every
+                                    // slot reserved THIS pass (placed helis + earlier planes), sized to the
+                                    // airframe's span so a wide airframe (item 23) gets a full-width berth. A
+                                    // clash means findAirSpawnPosition handed back a spot a just-created
+                                    // sibling already owns -- it is blind to that sibling's fresh profile,
+                                    // which is why co-located aircraft kept spawning on the same apron and
+                                    // detonating. Drop this (synthetic filler) aircraft rather than stack it.
+                                    // Create-time only: nothing already placed is ever moved (that avoids the
+                                    // relocate-churn and the profile-touch freeze the reverted fixes caused).
+                                    // Radius = the airframe's half-span plus a small buffer; the clash test
+                                    // SUMS the two radii so two footprints can never overlap -- a wide gunship
+                                    // gets a full gunship's berth even parked next to a fighter, guaranteeing
+                                    // no wingtip interpenetration (the thing that detonated them).
+                                    private _span = 8;
+                                    if (_availablePlane && {!isNil "ALiVE_fnc_getVehicleBoundingBox"}) then {
+                                        ([_vehicleClass] call ALiVE_fnc_getVehicleBoundingBox) params ["_bbLen","_bbWid"];
+                                        _span = (((_bbLen max _bbWid) / 2) + 3) max 8;
+                                    };
+                                    if (_availablePlane && {(_reservedSlots findIf { (_x select 0) distance2D _posi < ((_x select 1) + _span) }) != -1}) then {
+                                        _availablePlane = false;
+                                        if (_debug) then {
+                                            ["ATO %1 - %2 dropped: parking spot %3 clashed a reserved slot (field kept deconflicted)", _logic, _vehicleClass, _posi] call ALiVE_fnc_dump;
+                                        };
+                                    };
+
                                     if (_availablePlane) then {
                                         // Place a hangar
 
@@ -2817,6 +2862,9 @@ switch(_operation) do {
                                         private _tmp = [_vehicleClass,_side,_faction,_posi,_dire,false,_faction] call ALIVE_fnc_createProfileVehicle;
                                         // _tmp call ALIVE_fnc_inspectHash;
                                         _aprofiles pushback ([_tmp, "profileID"] call ALIVE_fnc_hashGet);
+                                        // Record the taken slot so the next sibling this pass deconflicts against it.
+                                        _reservedSlots pushBack [_posi, _span];
+                                        _planesPlaced = _planesPlaced + 1;
                                     };
 
                                 };
