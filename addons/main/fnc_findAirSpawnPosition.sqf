@@ -72,8 +72,18 @@ params [
     ["_maxDistance", 500, [0]],
     ["_preference", "auto", [""]],
     ["_ownVeh", objNull, [objNull]],
-    ["_ownerID", "", [""]]
+    ["_ownerID", "", [""]],
+    ["_ignoreObjects", [], [[]]],
+    ["_clearanceMargin", -1, [0]]
 ];
+
+
+// Objects the caller knows are not real obstacles for THIS placement. The case that matters:
+// a crewed profile spawns its CREW first, standing on the very spot the vehicle is about to be
+// validated against, so the aircraft's own pilots reject its own pad and it cascades to open
+// ground. Those crew are moved into the hull moments later, so they never actually occupy it.
+// Strictly a widening of the existing _ownVeh exemption - it can never reject a spot accepted today.
+_ignoreObjects = _ignoreObjects select { !isNull _x };
 
 if (_vehicleClass == "" || count _centerPos < 2) exitWith { [] };
 
@@ -100,6 +110,12 @@ private _hw = _vehWid / 2;
 // aircraft sit further from structures at the cost of finding fewer spots on a
 // cramped field; the tier simply returns nothing when it cannot oblige.
 if (isNil "ALiVE_airSpawn_clearanceMargin") then { ALiVE_airSpawn_clearanceMargin = 8 };
+
+// Per-call clearance margin. -1 keeps the global default. A caller that has already failed the
+// normal search can retry with a smaller courtesy margin (0 = the airframe's own true footprint,
+// no extra breathing room) rather than fall through to a last resort that parks on a taxiway.
+// Resolved AFTER the global's lazy init above, or the first call of the mission would read nil.
+private _clearMargin = if (_clearanceMargin < 0) then { ALiVE_airSpawn_clearanceMargin } else { _clearanceMargin };
 
 private _hazardRadius = if (_isHeli) then {
     (_vehLen max _vehWid) * 0.55
@@ -237,6 +253,8 @@ private _fnc_registryClear = {
 // ------------------------------------------------------------------------
 private _fnc_footprintClear = {
     params ["_pos", "_dir", ["_ignore", []]];
+    // Caller-supplied non-obstacles (see _ignoreObjects above) apply at every tier.
+    _ignore = _ignore + _ignoreObjects;
 
     // 9-sample sweep at the hazard radius.
     private _samples = [
@@ -276,7 +294,7 @@ private _fnc_footprintClear = {
     // breadth from a hangar wall: legal, but it looks wrong and leaves nothing
     // for the settling the engine does on spawn. Add a margin so parked aircraft
     // sit with visible room around them.
-    private _clearRadius = _hazardRadius + ALiVE_airSpawn_clearanceMargin;
+    private _clearRadius = _hazardRadius + _clearMargin;
 
     private _terrainHits = (nearestTerrainObjects [_pos, _staticTerrainTypes, _clearRadius, false, true]) - _ignore;
     if !(_terrainHits isEqualTo []) exitWith { false };
@@ -677,9 +695,9 @@ if (count _found == 0 && {_preference in ["auto", "helipad"]} && {_isHeli || _is
         private _ignore = [_x];
         if (!isNull _ownVeh) then { _ignore pushBack _ownVeh };
         _ignore = _ignore
-            + (nearestObjects [_padPos, ["House", "Building"], (_hazardRadius + ALiVE_airSpawn_clearanceMargin)])
-            + (nearestTerrainObjects [_padPos, _staticTerrainTypes, (_hazardRadius + ALiVE_airSpawn_clearanceMargin), false, true])
-            + ((nearestObjects [_padPos, (_classObstacles - ["AllVehicles"]), (_hazardRadius + ALiVE_airSpawn_clearanceMargin)]) select { (_padPos distance2D _x) > _hazardRadius });
+            + (nearestObjects [_padPos, ["House", "Building"], (_hazardRadius + _clearMargin)])
+            + (nearestTerrainObjects [_padPos, _staticTerrainTypes, (_hazardRadius + _clearMargin), false, true])
+            + ((nearestObjects [_padPos, (_classObstacles - ["AllVehicles"]), (_hazardRadius + _clearMargin)]) select { (_padPos distance2D _x) > _hazardRadius });
         if !([_padPos, _padDir, _ignore] call _fnc_footprintClear) then { continue };
         _found = [_padPos, _padDir];
     } forEach _candidates;

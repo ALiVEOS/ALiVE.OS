@@ -564,10 +564,27 @@ switch (_operation) do {
                         // to the profile position with the existing
                         // vehicleSpawnSettleSeconds safety window.
                         if !(_isSPE) then {
-                            // Phase 2a: pass this profile's id as the registry owner token so its OWN
-                            // prior pad reservation does not evict it on respawn (objNull ownVeh - the
-                            // vehicle is not created yet on this spawn path).
-                            private _airResult = [_vehicleClass, _position, 200, "auto", objNull, _profileID] call ALiVE_fnc_findAirSpawnPosition;
+                            // Pass this profile's id as the registry owner token so its OWN prior
+                            // reservation does not evict it on respawn (objNull ownVeh - the vehicle is
+                            // not created yet on this spawn path).
+                            //
+                            // Also hand over this profile's OWN crew as non-obstacles. A crewed profile
+                            // spawns its crew FIRST, standing on the exact spot the vehicle is validated
+                            // against, so the aircraft's own pilots rejected its own helipad and it
+                            // cascaded onto open ground (leaving the pad empty). They are moved into the
+                            // hull moments later, so they never really occupy it. A SIBLING's crew is not
+                            // in this list and still blocks, so deconfliction is unaffected.
+                            private _ownCrew = [];
+                            {
+                                private _entProfile = [ALIVE_profileHandler, "getProfile", (_x select 1)] call ALIVE_fnc_profileHandler;
+                                if (!isNil "_entProfile" && {_entProfile isEqualType []} && {(_entProfile select 2 select 5) == "entity"}) then {
+                                    private _grp = [_entProfile,"group"] call ALiVE_fnc_hashGet;
+                                    if (!isNil "_grp" && {_grp isEqualType grpNull} && {!isNull _grp}) then {
+                                        _ownCrew append (units _grp);
+                                    };
+                                };
+                            } forEach (([_logic,"vehicleAssignments"] call ALiVE_fnc_hashGet) param [2, []]);
+                            private _airResult = [_vehicleClass, _position, 200, "auto", objNull, _profileID, _ownCrew] call ALiVE_fnc_findAirSpawnPosition;
                             if (count _airResult >= 2) then {
                                 _position = _airResult select 0;
                                 _direction = _airResult select 1;

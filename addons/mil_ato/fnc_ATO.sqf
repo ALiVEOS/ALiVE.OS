@@ -2778,11 +2778,37 @@ switch(_operation) do {
                                         // cannot reach that tier. The validator also returns a
                                         // heading pointing at the runway, which is a great deal
                                         // more sensible than facing along a taxiway.
+                                        // Span drives both the extra search rungs and the open-ground fallback
+                                        // below. "Wide" is the tiltrotor/transport class of airframe that no
+                                        // hangar or apron on a cramped field can take.
+                                        private _fbSpan = 12;
+                                        private _wideAirframe = false;
+                                        if (!isNil "ALiVE_fnc_getVehicleBoundingBox") then {
+                                            ([_vehicleClass] call ALiVE_fnc_getVehicleBoundingBox) params ["_fbLen","_fbWid"];
+                                            _fbSpan = (((_fbLen max _fbWid) / 2) + 4) max 12;
+                                            _wideAirframe = (_fbLen max _fbWid) >= 24;
+                                        };
+
                                         private _air = [];
                                         if (!isNil "ALiVE_fnc_findAirSpawnPosition") then {
                                             _air = [_vehicleClass, position _x, 400, "apron"] call ALiVE_fnc_findAirSpawnPosition;
                                             if (count _air < 2) then {
                                                 _air = [_vehicleClass, position _x, 400, "field"] call ALiVE_fnc_findAirSpawnPosition;
+                                            };
+                                            // A WIDE airframe (a big tiltrotor is half again the span of a
+                                            // fighter) fails both tiers on a cramped field and used to drop
+                                            // through to a fallback that deliberately parks on a TAXIWAY,
+                                            // blocking every departure. For those only, retry asking for the
+                                            // aircraft's own true footprint with no courtesy room, then over a
+                                            // wider area. Still fully validated: clear of runways, taxiways,
+                                            // buildings and other aircraft. Ordinary aircraft are left on the
+                                            // original two rungs so their placement and the mission-start cost
+                                            // are unchanged - these searches are not cheap.
+                                            if (count _air < 2 && {_wideAirframe}) then {
+                                                _air = [_vehicleClass, position _x, 400, "field", objNull, "", [], 0] call ALiVE_fnc_findAirSpawnPosition;
+                                                if (count _air < 2) then {
+                                                    _air = [_vehicleClass, position _x, 600, "field", objNull, "", [], 0] call ALiVE_fnc_findAirSpawnPosition;
+                                                };
                                             };
                                         };
 
@@ -2799,18 +2825,59 @@ switch(_operation) do {
                                         // Last resort only. Kept rather than deleted because on a
                                         // terrain with no usable apron this is the difference
                                         // between a badly parked aircraft and no aircraft at all.
+                                        //
+                                        // Open ground first, anchored on the hangar we were trying to use.
+                                        // The old last resort anchored on a TAXIWAY object and searched
+                                        // around it, which is how a wide tiltrotor ended up sitting across
+                                        // the taxi route. Sample rings outward from the hangar and keep the
+                                        // first spot that is genuinely clear for THIS airframe's span: off
+                                        // every runway, taxiway and parking capsule, off roads, flat, and
+                                        // with no structure inside its own footprint. Nearest passing spot
+                                        // wins so the aircraft stays with the airfield it belongs to.
                                         _runway = [];
+                                        private _openSpot = [];
+                                        private _anchor = position _x;
+                                        // Ordinary aircraft stay near the field (the old fallback searched 75m);
+                                        // only a wide airframe, which has nowhere else to go, may range further.
+                                        private _rings = if (_wideAirframe) then { [60,100,150,220,300,400,500,600] } else { [60,100,150,220] };
                                         {
-                                            if ( (str(_x) find "taxiway" != -1 && typeof _x == "") || str(_x) find "invisible" != -1 ) then {
-                                                _runway pushback _x;
+                                            private _ring = _x;
+                                            if (count _openSpot == 0) then {
+                                                for "_a" from 0 to 330 step 30 do {
+                                                    if (count _openSpot == 0) then {
+                                                        private _p = _anchor getPos [_ring, _a];
+                                                        _p set [2, 0];
+                                                        private _airside = false;
+                                                        if (!isNil "ALiVE_fnc_isAirside") then {
+                                                            _airside = [_p, _fbSpan, [1,2,3]] call ALiVE_fnc_isAirside;
+                                                        };
+                                                        // Test the footprint, not just the centre: a wingtip
+                                                        // over the carriageway is still parked on the road.
+                                                        private _onRoad = isOnRoad _p
+                                                            || {[0,90,180,270] findIf {isOnRoad (_p getPos [_fbSpan, _x])} > -1};
+                                                        if (!_airside
+                                                            && {!_onRoad}
+                                                            && {!surfaceIsWater _p}
+                                                            && {(count (_p isFlatEmpty [-1, -1, 0.3, _fbSpan, 0, false, objNull])) > 0}
+                                                            && {(count (nearestObjects [_p, ["House","Building"], _fbSpan])) == 0}
+                                                            // Trees, rocks, walls and forest borders are what a spot
+                                                            // this far from the apron actually runs into; the object
+                                                            // sweep above does not see terrain-placed clutter.
+                                                            && {(count (nearestTerrainObjects [_p, ["TREE","SMALL TREE","BUSH","FOREST","FOREST BORDER","ROCK","ROCKS","WALL","FENCE","BUILDING","HOUSE","RUIN","POWER LINES"], _fbSpan, false, true])) == 0}
+                                                            && {(count (nearestObjects [_p, ["Air"], _fbSpan + 6])) == 0}) then {
+                                                            _openSpot = _p;
+                                                        };
+                                                    };
+                                                };
                                             };
-                                        } forEach (nearestObjects [position _x, [], 400]);
+                                        } forEach _rings;
 
-                                        if (count _runway > 0) then {
-                                            // ["Cannot find hangar, choosing safe taxiway from: %1", _runway] call ALiVE_fnc_dump;
-                                            _pavement = selectRandom _runway;
-                                            _posi = [position _pavement, 0, 75, 20, 0, 0.2, 0] call BIS_fnc_findSafePos;
-                                            _dire = direction _pavement;
+                                        if (count _openSpot > 0) then {
+                                            _posi = _openSpot;
+                                            _dire = direction _x;
+                                            if (_debug) then {
+                                                ["ATO %1 - %2 no validated spot, parked on clear open ground at %3 (%4m from the hangar, off all movement surfaces)", _logic, _vehicleClass, _posi, round (_posi distance2D _anchor)] call ALiVE_fnc_dump;
+                                            };
                                         } else {
 
                                             // No safe place for plane, try to place VTOL instead
@@ -6627,9 +6694,18 @@ switch(_operation) do {
                                         // isNull checks on _eventTargets (waypoint / CAS / validity) stay
                                         // type-safe.
                                         private _vehicle = objNull;
-                                        private _profileID = _eventEnemyProfiles select _forEachIndex;
-                                        private _targetProfile = [ALiVE_profileHandler, "getProfile", _profileID] call ALiVE_fnc_ProfileHandler;
-                                        if !(isNil "_targetProfile") then {
+                                        // The two lists are walked in step, but the enemy-profile list can be
+                                        // the shorter of the two. Reading past its end yields nothing, and in
+                                        // SQF that leaves the variable UNDEFINED rather than nil, so the lookup
+                                        // below threw and the whole target-resolution pass aborted - leaving an
+                                        // unresolved entry behind for the sortie to fly against. Take the id
+                                        // only when there is one, and fall through to no target otherwise.
+                                        private _profileID = _eventEnemyProfiles param [_forEachIndex, ""];
+                                        private _targetProfile = objNull;
+                                        if !(_profileID isEqualTo "") then {
+                                            _targetProfile = [ALiVE_profileHandler, "getProfile", _profileID] call ALiVE_fnc_ProfileHandler;
+                                        };
+                                        if (!isNil "_targetProfile" && {_targetProfile isEqualType []}) then {
                                             private _type = [_targetProfile,"type"] call ALiVE_fnc_hashGet;
                                             if (_type == "entity") then {
                                                 _vehicle = [_targetProfile,"leader"] call ALiVE_fnc_hashGet;
@@ -7047,6 +7123,46 @@ switch(_operation) do {
                         ["ATO %3 - Aircraft (%1 - %2) has no more waypoints.", _profileID, typeof _vehicle, _logic] call ALiVE_fnc_dump;
                     };
                     _missionComplete = true;
+
+                    // Hand the aircraft something to fly RIGHT NOW. Completing the tasking only sets the
+                    // return state; the actual homeward waypoint and the stand-down of its combat AI are
+                    // applied on the NEXT pass over this event. In that gap a jet has no guidance at all
+                    // and is still hunting, which is long enough at strike speed to fly itself into the
+                    // ground - every fixed-wing sortie in one test was lost this way, seconds after
+                    // finishing its task. Give it an immediate move order towards home and take it out of
+                    // the fight here; the return handling then proceeds exactly as before and replaces
+                    // this holding order with the proper landing approach.
+                    private _sentHome = false;
+                    if (!isNull _vehicle && {alive _vehicle}) then {
+                        private _grpNow = group _vehicle;
+                        if (!isNull _grpNow) then {
+                            private _homeNow = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
+                            if (!isNil "_homeNow" && {_homeNow isEqualType []} && {count _homeNow > 1}) then {
+                                _sentHome = true;
+                                _grpNow enableAttack false;
+                                {
+                                    _x disableAI "TARGET";
+                                    _x disableAI "AUTOTARGET";
+                                    _x setCombatMode "BLUE";
+                                } forEach (units _grpNow);
+                                _vehicle doMove [_homeNow select 0, _homeNow select 1, 300];
+                                if (_debug) then {
+                                    ["ATO %3 - Aircraft (%1 - %2) lost its waypoints, sent home and taken out of the fight until the return leg takes over", _profileID, typeof _vehicle, _logic] call ALiVE_fnc_dump;
+                                };
+                            };
+                        };
+                    };
+                    // Never leave the skip silent: an aircraft that loses its waypoints and is NOT sent
+                    // home flies on unguided and hits terrain within seconds, so if any guard above
+                    // refuses, say which one rather than looking identical to having no fix at all.
+                    if (!_sentHome) then {
+                        ["ATO %1 - Aircraft (%2) lost its waypoints but was NOT sent home [nullVeh=%3 alive=%4 nullGrp=%5 startPos=%6]",
+                            _logic, _profileID,
+                            isNull _vehicle,
+                            (!isNull _vehicle && {alive _vehicle}),
+                            (isNull (group _vehicle)),
+                            ([_aircraft,"startPos","MISSING"] call ALiVE_fnc_hashGet)] call ALiVE_fnc_dump;
+                    };
                 };
 
                 // Check to see if target is still there

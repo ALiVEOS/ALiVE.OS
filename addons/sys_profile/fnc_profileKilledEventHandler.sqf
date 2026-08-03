@@ -67,7 +67,11 @@ switch(_profileType) do {
         private _vClass = _profile select 2 select 6;
         if (!isNil "_vClass" && {_vClass isEqualType ""} && {_vClass isKindOf "Air"}) then {
             private _vId  = _profile select 2 select 4;
-            private _vPos = _profile select 2 select 2;
+            // Where it ACTUALLY died. The profile's stored position is only refreshed at spawn/despawn
+            // and by the virtual simulator, so for a live flying aircraft it still holds the spot it
+            // took off from - which made three in-flight crashes 2km out read as if they had happened
+            // on their own parking spots, to the centimetre. Read the object.
+            private _vPos = if (!isNull _unit) then { getPosATL _unit } else { _profile select 2 select 2 };
             private _killerType = if (isNull _killer) then {"unknown"} else {typeOf _killer};
             private _killerSide = if (isNull _killer) then {"?"} else {str side group _killer};
             // Disambiguate the loss so the RPT is not left to interpretation (which caused fixes
