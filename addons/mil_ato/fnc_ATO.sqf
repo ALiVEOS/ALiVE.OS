@@ -629,7 +629,7 @@ private _fnc_standDownCrew = {
         // Sever the crew<->airframe assignment BEFORE the despawn. A crew profile still
         // linked to the (preventDespawn) airframe will not despawn, and the pair drift
         // apart into the orphaned-crew / empty-respawn bug. Nil-safe on airframe loss.
-        if !(isNil "_aircraftProfile") then {
+        if (!isNil "_aircraftProfile" && {_aircraftProfile isEqualType []}) then {
             [_crewProfile, _aircraftProfile] call ALIVE_fnc_removeProfileVehicleAssignment;
         };
         [_crewProfile, "despawn"] call ALIVE_fnc_profileEntity;
@@ -1405,8 +1405,19 @@ switch(_operation) do {
                         // Move the live airframe too, unless somebody is aboard.
                         private _liveVeh = [_vehicleProfile,"vehicle"] call ALiVE_fnc_hashGet;
                         if (!isNil "_liveVeh" && {!isNull _liveVeh} && {alive _liveVeh} && {(crew _liveVeh) findIf {isPlayer _x} < 0}) then {
+                            // F2: guard the live teleport against collision damage, re-arm only once settled
+                            // and grounded (mirrors _fnc_safeReposition); a frame left elevated/clipping stays
+                            // invulnerable instead of cashing the overlap as a lethal hit.
+                            _liveVeh allowDamage false;
                             _liveVeh setPosATL _position;
                             _liveVeh setVelocity [0,0,0];
+                            [_liveVeh] spawn {
+                                params ["_v"];
+                                sleep 8;
+                                if (isNull _v || {!alive _v}) exitWith {};
+                                if (((getPosATL _v) select 2) > 3.5) exitWith { _v allowDamage false; };
+                                _v allowDamage true;
+                            };
                         };
                     };
                 };
@@ -1452,8 +1463,40 @@ switch(_operation) do {
                     // when no pad fits. Carrier-based airframes are the exception - the deck is
                     // the parking surface, and an airfield search at sea would drag them off it.
                     private _padPos = _position;
-                    if (!_isOnCarrier && {!isNil "ALiVE_fnc_findAirSpawnPosition"}) then {
-                        private _spot = [_vehicleClass, _position, 400, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                    private _liveVeh = [_vehicleProfile,"vehicle"] call ALiVE_fnc_hashGet;
+                    if (isNil "_liveVeh") then { _liveVeh = objNull; };
+
+                    // PHASE 1 - no teleport for an ALREADY-LIVE airframe. sys_profile's own spawn path
+                    // validated its spot via findAirSpawnPosition BEFORE createVehicle, and the airsideClear
+                    // pre-pass above already lifted it off any runway/taxiway, so it is already correctly
+                    // parked. Re-validating it here would evict it from its OWN pad - the session registry
+                    // treats the airframe's own 60s reservation as "occupied" - and then setPosATL-slide the
+                    // live airframe to a worse spot: the observed "parked Xm off placement point" teleport.
+                    // Accept it where it stands; keep the profile + startPos in step so it never snaps back on
+                    // a later despawn. Only a NOT-YET-LIVE profile is validated below (no live object to slide).
+                    if (!isNull _liveVeh) then {
+                        // Resync the pad to the live hull only when the hull is actually AT the profile
+                        // position. An airframe the airsideClear pre-pass could NOT physically move (a player
+                        // aboard, or a dead hull) has its profile already corrected OFF the movement surface
+                        // while the hull still sits ON it, so trusting getPosATL there would re-stamp the pad
+                        // on the taxiway. In that case keep the already-corrected _position (_padPos stays
+                        // = _position from above). Same guard as the airsideClear live-move.
+                        if (alive _liveVeh && {(crew _liveVeh) findIf {isPlayer _x} < 0}) then {
+                            _padPos = getPosATL _liveVeh;
+                            _padPos set [2, 0];
+                            _position = +_padPos;
+                            [_asset,"startPos",_position] call ALiVE_fnc_hashSet;
+                            [_vehicleProfile,"position",_position] call ALiVE_fnc_profileVehicle;
+                        };
+                        if (_debug) then {
+                            ["ATO %1 - %2 accepted live airframe in place at %3 (no re-validate, no teleport)", _logic, _vehicleClass, _position] call ALiVE_fnc_dump;
+                        };
+                    };
+
+                    if (isNull _liveVeh && {!_isOnCarrier} && {!isNil "ALiVE_fnc_findAirSpawnPosition"}) then {
+                        // NOT-YET-LIVE profile only: validate before it spawns. _liveVeh is objNull here, so
+                        // the 5th arg is objNull (a fresh spot needs no own-hull exemption).
+                        private _spot = [_vehicleClass, _position, 400, "auto", _liveVeh, (_vehicleProfile select 2 select 4)] call ALiVE_fnc_findAirSpawnPosition;
                         if (count _spot >= 2) then {
                             _padPos = +(_spot select 0);
                             _padPos set [2, 0];
@@ -1467,11 +1510,11 @@ switch(_operation) do {
                             _position = +_padPos;
                             [_asset,"startPos",_position] call ALiVE_fnc_hashSet;
                             [_vehicleProfile,"position",_position] call ALiVE_fnc_profileVehicle;
-                            private _liveVeh = [_vehicleProfile,"vehicle"] call ALiVE_fnc_hashGet;
-                            if (!isNil "_liveVeh" && {!isNull _liveVeh} && {alive _liveVeh} && {(crew _liveVeh) findIf {isPlayer _x} < 0}) then {
-                                _liveVeh setPosATL _position;
-                                _liveVeh setVelocity [0,0,0];
-                            };
+                            // No live-airframe move here: this branch only runs for a NOT-YET-LIVE profile
+                            // (isNull _liveVeh gate above), so setting the profile position is enough -
+                            // sys_profile materialises it on the validated spot on its next spawn. An
+                            // already-live airframe is handled by the accept-in-place branch above and is
+                            // never slid, which is what removed the visible teleport.
                         };
                     };
 
@@ -1483,6 +1526,10 @@ switch(_operation) do {
                     if (isNull _helipad || {(position _helipad) distance2D _padPos > 3}) then {
                         // create an invisble helipad
                         _helipad = "Land_HelipadEmpty_F" createvehicle _padPos;
+                        // F3: createVehicle snaps the pad ~3.7m off _padPos; pin it back onto the intended
+                        // point so the stored helipad field matches startPos exactly. Only ever moves the
+                        // freshly-created invisible pad, never a real HeliH (that branch is skipped).
+                        _helipad setPosATL [_padPos select 0, _padPos select 1, 0];
                     };
                     [_asset,"helipad", position _helipad] call ALiVE_fnc_hashSet;
 
@@ -1531,7 +1578,10 @@ switch(_operation) do {
                     // The freeze is seeded when an airframe's crewID ends up being its own vehicle id;
                     // this Debug-gated line records the registered profile id/type against the vehicle
                     // profile id so the mis-stamp path can be pinned. Read-only, no behaviour change.
-                    if (_debug) then {
+                    // F9: keep the Debug trace, but ALSO fire always-on when the stamped crewID equals the
+                    // vehicle id (the collision case that seeds the freeze / broken crew), so the next test
+                    // pins the source without Debug enabled.
+                    if (_debug || {_profileID isEqualTo (_vehicleProfile select 2 select 4)}) then {
                         ["ALIVE ATO crewID write [register/entity]: %1 crewID<-%2 (registered profileType=%3, vehicleProfileID=%4)", _vehicleClass, _profileID, _type, (_vehicleProfile select 2 select 4)] call ALiVE_fnc_dump;
                     };
                     // Set the entity as busy so OPCOM doesn't use it
@@ -2498,7 +2548,6 @@ switch(_operation) do {
                                 // Check helipad is not allocated to unarmed heli
                                 private _nearbyObj = nearestObjects [position _helipad, ["Helicopter"], 10];
                                 private _nearbyProfiles = [position _helipad, 10, [_side,"vehicle","Helicopter"]] call ALIVE_fnc_getNearProfiles;
-
                                 if (count _nearbyObj == 0 && count _nearbyProfiles == 0) then {
 
                                     private _vehicleClass = _heliClasses call BIS_fnc_selectRandom;
@@ -6042,7 +6091,7 @@ switch(_operation) do {
                                         private _crewGroup = [_crewProfile,"group"] call ALiVE_fnc_hashGet;
                                         if (isNil "_crewGroup" || {!(_crewGroup isEqualType grpNull)} || {isNull _crewGroup}) then {
                                             _crewGroupBad = true;
-                                            ["ATO %1 - crew profile %2 for aircraft %3 has an invalid group handle", _logic, _crewID, _profileID] call ALiVE_fnc_dumpR;
+                                            ["ATO %1 - crew profile %2 for aircraft %3 has an invalid group handle", _logic, _crewID, _profileID] call ALiVE_fnc_dump;
                                         };
                                     };
                                 };
@@ -7588,7 +7637,10 @@ switch(_operation) do {
                         if (!isNil "_acProfile") then {
                             [_acProfile,"spawnType",[]] call ALiVE_fnc_profileVehicle;
                         };
-                        [_aircraft, _acProfile] call _fnc_standDownCrew;
+                        // F1: _acProfile is nil (SQF nil-assignment -> undefined var) when the airframe
+                        // profile is already gone (aircraft lost before landing). Coerce to objNull at the
+                        // call site so the crew still stands down for a lost aircraft instead of throwing.
+                        [_aircraft, (if (isNil "_acProfile") then {objNull} else {_acProfile})] call _fnc_standDownCrew;
                         // Backstop the boarding-timeout ready-reset: any non-reroute completion that
                         // frees the airframe must leave ready==false, or the next tasking skips the
                         // prep block (the only raiseCrew sites) and hangs on a null crew group.

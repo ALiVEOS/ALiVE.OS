@@ -71,7 +71,8 @@ params [
     ["_centerPos", [0,0,0], [[]], [2,3]],
     ["_maxDistance", 500, [0]],
     ["_preference", "auto", [""]],
-    ["_ownVeh", objNull, [objNull]]
+    ["_ownVeh", objNull, [objNull]],
+    ["_ownerID", "", [""]]
 ];
 
 if (_vehicleClass == "" || count _centerPos < 2) exitWith { [] };
@@ -212,7 +213,13 @@ ALiVE_airSpawnRegistry = ALiVE_airSpawnRegistry select { (_x select 2) + 60 > _n
 private _fnc_registryClear = {
     params ["_pos", "_minSeparation"];
     private _occupied = ALiVE_airSpawnRegistry findIf {
-        (_pos distance2D (_x select 0)) < _minSeparation
+        // Own reservations are exempt (Phase 2a): a profile re-validating on respawn - or ATO reserving
+        // a pad that its own sys_profile spawn then re-validates moments later - must not see its OWN
+        // 60s reservation as "occupied" and evict itself off its pad (the self-eviction that kept adopted
+        // airframes off empty pads). _ownerID "" (every caller that passes no owner, plus the shared
+        // flying-ingress entries which carry no 4th element) never matches, so those stay unchanged.
+        ((_pos distance2D (_x select 0)) < _minSeparation)
+        && {!(_ownerID != "" && {(_x param [3, ""]) isEqualTo _ownerID})}
     };
     _occupied < 0
 };
@@ -910,7 +917,15 @@ if (count _found == 0 && {_preference in ["auto", "field"]}) then {
 
 // Reserve the chosen position in the session registry.
 if (count _found > 0) then {
-    ALiVE_airSpawnRegistry pushBack [_found select 0, _vehicleClass, _now];
+    ALiVE_airSpawnRegistry pushBack [_found select 0, _vehicleClass, _now, _ownerID];
+};
+
+// F9 (DIAG-STRIP): log a validator failure so the next over-subscribed test can confirm whether
+// F4a's _ownVeh pass cleared the []. Read-only, fires only on failure. Strip with the ATO air diags.
+if (count _found == 0 && {_preference != "helipad"}) then {
+    // NOTE: the "helipad"-pref probe (Phase 2c pad search) returns [] whenever no empty pad is nearby -
+    // the common case - so it is excluded here to avoid spamming; only the auto/apron/field misses log.
+    ["ALIVE FASP returned [] for %1 at %2 (pref=%3 ownVeh=%4 maxDist=%5)", _vehicleClass, _centerPos, _preference, (if (isNull _ownVeh) then {"objNull"} else {typeOf _ownVeh}), _maxDistance] call ALiVE_fnc_dump;
 };
 
 _found

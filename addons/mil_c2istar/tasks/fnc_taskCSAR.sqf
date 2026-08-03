@@ -243,6 +243,12 @@ switch (_taskState) do {
 
             ["C2ISTAR - Task CSAR - Created profile %1 with units %2!",_crewID,_units] call ALiVE_fnc_Dump;
 
+            // F9 (DIAG-STRIP): the CSAR survivor was seen Un-Registered ~7s after creation (no one to
+            // rescue). Log its placement against any on-fire airframe nearby so the next test shows whether
+            // it is being spawned into the burning crash site (the F8 hypothesis). Read-only; strip later.
+            private _fireVeh = (nearestObjects [_targetPosition, ["Air"], 25]) select { damage _x > 0.9 };
+            ["ALIVE CSAR survivor %1 (%2) placed at %3; burning airframe(s) within 25m: %4 -- watch for a ~7s Un-Register", _crewID, _units, _targetPosition, (_fireVeh apply {[typeOf _x, round (_targetPosition distance2D _x)]})] call ALiVE_fnc_Dump;
+
             _dialogOption = _dialogOptions select _choice; // Downed Pilot rescue or Crashsite recovery
 
             // format the dialog options

@@ -564,7 +564,10 @@ switch (_operation) do {
                         // to the profile position with the existing
                         // vehicleSpawnSettleSeconds safety window.
                         if !(_isSPE) then {
-                            private _airResult = [_vehicleClass, _position, 200, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                            // Phase 2a: pass this profile's id as the registry owner token so its OWN
+                            // prior pad reservation does not evict it on respawn (objNull ownVeh - the
+                            // vehicle is not created yet on this spawn path).
+                            private _airResult = [_vehicleClass, _position, 200, "auto", objNull, _profileID] call ALiVE_fnc_findAirSpawnPosition;
                             if (count _airResult >= 2) then {
                                 _position = _airResult select 0;
                                 _direction = _airResult select 1;
