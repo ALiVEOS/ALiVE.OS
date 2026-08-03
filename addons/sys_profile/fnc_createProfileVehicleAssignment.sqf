@@ -24,6 +24,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 params ["_profileEntity","_profileVehicle",["_append", false]];
@@ -60,6 +61,23 @@ private _unitIndexes = [_profileEntity, "unitIndexes"] call ALIVE_fnc_profileEnt
 private _currentEntityAssignments = [_profileEntity, "vehicleAssignments"] call ALIVE_fnc_hashGet;
 private _currentVehicleAssignments = [_profileVehicle, "vehicleAssignments"] call ALIVE_fnc_hashGet;
 private _vehicleID = _profileVehicle select 2 select 4; //[_profileVehicle, "profileID"] call ALIVE_fnc_hashGet;
+
+// Refuse a malformed self-referential / vehicle-in-entity-slot assignment. The crew ("entity")
+// argument must be a genuine entity profile distinct from the vehicle. If it is the SAME profile as
+// the vehicle, or is itself vehicle-typed, the resulting assignment points a vehicle at itself in
+// its own vehicleAssignments. profileVehicleAssignmentsSetAllPositions then feeds that vehicle
+// profile into profileEntity "mergePositions", which re-routes back into profileVehicle
+// "mergePositions" and recurses without bound, hard-freezing the sim thread. ATO produces exactly
+// this (vehicle,vehicle) case when an airframe's crewID is its own vehicle id. Reject at creation
+// (log once). exitWith is correct here: this is function top-level, matching the guards above.
+if (_entityID isEqualTo _vehicleID || { (_profileEntity select 2 select 5) == "vehicle" }) exitWith {
+    private _logged = missionNamespace getVariable ["ALIVE_createVehAssignRejectLogged", []];
+    if !(_vehicleID in _logged) then {
+        _logged pushBack _vehicleID;
+        missionNamespace setVariable ["ALIVE_createVehAssignRejectLogged", _logged];
+        ["fnc_createProfileVehicleAssignment: rejected malformed assignment (entity %1, vehicle %2, entityType %3) -- entity arg equals or is the vehicle; would seed a mergePositions recursion", _entityID, _vehicleID, (_profileEntity select 2 select 5)] call ALiVE_fnc_dump;
+    };
+};
 
 // get indexes of units that are already assigned to vehicles
 private _usedIndexes = _currentEntityAssignments call ALIVE_fnc_profileVehicleAssignmentGetUsedIndexes;

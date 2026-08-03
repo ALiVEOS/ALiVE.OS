@@ -1527,6 +1527,13 @@ switch(_operation) do {
                 if (_type == "entity") then {
 
                     [_asset,"crewID",_profileID] call ALiVE_fnc_hashSet;
+                    // INSTRUMENT (mergePositions freeze source): trace what crewID this branch stamps.
+                    // The freeze is seeded when an airframe's crewID ends up being its own vehicle id;
+                    // this Debug-gated line records the registered profile id/type against the vehicle
+                    // profile id so the mis-stamp path can be pinned. Read-only, no behaviour change.
+                    if (_debug) then {
+                        ["ALIVE ATO crewID write [register/entity]: %1 crewID<-%2 (registered profileType=%3, vehicleProfileID=%4)", _vehicleClass, _profileID, _type, (_vehicleProfile select 2 select 4)] call ALiVE_fnc_dump;
+                    };
                     // Set the entity as busy so OPCOM doesn't use it
                     [_profile,"busy",true] call ALIVE_fnc_profileEntity;
 
@@ -5994,6 +6001,24 @@ switch(_operation) do {
                                 private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
                                 private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
 
+                                // INSTRUMENT (mergePositions freeze source): the sim hard-freeze is seeded when
+                                // crewID resolves to the airframe's OWN (vehicle-typed) profile, so the
+                                // createProfileVehicleAssignment call further down gets (vehicle,vehicle). Log that
+                                // anomaly once per aircraft (fires ONLY when malformed) so the mis-stamp source stays
+                                // pinnable even with Debug off. Read-only; the layer-b guard in
+                                // createProfileVehicleAssignment neutralises the seed regardless of this log.
+                                if (!isNil "_crewProfile") then {
+                                    private _crewType = _crewProfile select 2 select 5;
+                                    if (_crewType == "vehicle" || { _crewID isEqualTo _profileID }) then {
+                                        private _seen = missionNamespace getVariable ["ALIVE_ATOCrewIDMisstampLogged", []];
+                                        if !(_profileID in _seen) then {
+                                            _seen pushBack _profileID;
+                                            missionNamespace setVariable ["ALIVE_ATOCrewIDMisstampLogged", _seen];
+                                            ["ALIVE ATO crewID mis-stamp: aircraft %1 (%2) crewID=%3 resolves to a %4 profile (crewID==aircraftID:%5) -- would seed a self-referential vehicleAssignment (mergePositions freeze)", _profileID, _vehicleClass, _crewID, _crewType, (_crewID isEqualTo _profileID)] call ALiVE_fnc_dump;
+                                        };
+                                    };
+                                };
+
                                 // When the aircraft profile is already active its crew must be live
                                 // too, so an invalid group handle there means the crew profile is
                                 // corrupt rather than merely unspawned. A crew profile that has been
@@ -6273,6 +6298,24 @@ switch(_operation) do {
                                 [_aircraft, _profile] call _fnc_raiseCrew;
                                 private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
                                 private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
+
+                                // INSTRUMENT (mergePositions freeze source): the sim hard-freeze is seeded when
+                                // crewID resolves to the airframe's OWN (vehicle-typed) profile, so the
+                                // createProfileVehicleAssignment call further down gets (vehicle,vehicle). Log that
+                                // anomaly once per aircraft (fires ONLY when malformed) so the mis-stamp source stays
+                                // pinnable even with Debug off. Read-only; the layer-b guard in
+                                // createProfileVehicleAssignment neutralises the seed regardless of this log.
+                                if (!isNil "_crewProfile") then {
+                                    private _crewType = _crewProfile select 2 select 5;
+                                    if (_crewType == "vehicle" || { _crewID isEqualTo _profileID }) then {
+                                        private _seen = missionNamespace getVariable ["ALIVE_ATOCrewIDMisstampLogged", []];
+                                        if !(_profileID in _seen) then {
+                                            _seen pushBack _profileID;
+                                            missionNamespace setVariable ["ALIVE_ATOCrewIDMisstampLogged", _seen];
+                                            ["ALIVE ATO crewID mis-stamp: aircraft %1 (%2) crewID=%3 resolves to a %4 profile (crewID==aircraftID:%5) -- would seed a self-referential vehicleAssignment (mergePositions freeze)", _profileID, _vehicleClass, _crewID, _crewType, (_crewID isEqualTo _profileID)] call ALiVE_fnc_dump;
+                                        };
+                                    };
+                                };
 
                                 if (isNil "_crewProfile" && !([_vehicleClass] call _fnc_isDroneClass)) exitWith {
                                     // abort mission
