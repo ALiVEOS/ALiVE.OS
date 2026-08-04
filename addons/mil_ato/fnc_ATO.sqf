@@ -5061,6 +5061,15 @@ switch(_operation) do {
                         [_reapAircraft,"currentOp",""] call ALiVE_fnc_hashSet;
                         [_reapAircraft,"ready",false] call ALiVE_fnc_hashSet;
                         [_reapAircraft,"maintenance",time] call ALiVE_fnc_hashSet;
+                        // If this aircraft had reserved a runway to land on, give it back. Reaping the
+                        // tasking without releasing the reservation left the strip locked for good, and
+                        // left a stale claim that a later landing could have used to release a runway
+                        // belonging to someone else.
+                        private _reapHeld = [_reapAircraft,"landingLockHeld",-1] call ALiVE_fnc_hashGet;
+                        if (_reapHeld isEqualType 0 && {_reapHeld >= 0}) then {
+                            [_logic, "unlockRunway", _reapHeld] call MAINCLASS;
+                            [_reapAircraft,"landingLockHeld",-1] call ALiVE_fnc_hashSet;
+                        };
                         [_assets, _reapAircraftID, _reapAircraft] call ALiVE_fnc_hashSet;
                     };
                 };
@@ -7366,6 +7375,9 @@ switch(_operation) do {
 
                             // if plane check to see if runway is busy, wait
                             _airportBusy = [_airports, _airportID] call ALiVE_fnc_hashGet;
+                            // An airfield with no reservation recorded yet reads as nothing rather than
+                            // false, which left the checks below reading a variable that was not there.
+                            if (isNil "_airportBusy") then {_airportBusy = false};
 
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
@@ -7381,6 +7393,12 @@ switch(_operation) do {
                                 [_airports, format ["lockTime_%1", _airportID], time] call ALiVE_fnc_hashSet;
                                 [_logic,"runways",_airports] call MAINCLASS;
                                 _vehicle setVariable [QGVAR(LANDINGLOCK), true];
+                                // Record the claim against the ASSET as well. The marker on the aircraft
+                                // cannot be read once the aircraft is gone, which is exactly when we need
+                                // to know whether this landing owned the runway before releasing it.
+                                [_aircraft,"landingLockHeld",_airportID] call ALiVE_fnc_hashSet;
+                                [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
+                                [_logic, "assets", _assets] call MAINCLASS;
 
                                 if (_airportID < 100) then {
                                     _vehicle landAt _airportID;
@@ -7447,6 +7465,12 @@ switch(_operation) do {
                     };
 
                     _vehicle setVariable [QGVAR(LANDING),time];
+                    // Also record it against the ASSET. The copy on the aircraft itself disappears
+                    // with the aircraft if it is ever virtualised mid-approach, and the landing
+                    // watchdog needs a start time that outlives the airframe.
+                    [_aircraft,"landingStart",time] call ALiVE_fnc_hashSet;
+                    [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
+                    [_logic, "assets", _assets] call MAINCLASS;
 
                 };
             };
@@ -7489,7 +7513,71 @@ switch(_operation) do {
                 private _vehicle = [_profile,"vehicle"] call ALiVE_fnc_hashGet;
                 private _grp = group _vehicle;
 
-                private _landingTime = _vehicle getVariable [QGVAR(LANDING), time];
+                // An aircraft that goes away partway through its approach never finishes landing, and
+                // until it does the runway stays locked and everything behind it circles indefinitely.
+                // Nothing here could ever recover: the aircraft is gone so it can never report itself
+                // down, and the five minute safety net below read its start time OFF THE AIRCRAFT,
+                // falling back to the current time once it no longer existed, so the deadline moved
+                // forward every check and never arrived. Treat a missing aircraft as down, free the
+                // runway and finish the tasking so the next aircraft can land.
+                // Note how long the aircraft has been absent, timed from when it FIRST went missing
+                // rather than from when the landing began. An aircraft on its landing circuit can
+                // legitimately drop out of the world for a while when it flies beyond the range things
+                // are kept real in, and comes back on its own; only one that stays gone has really been
+                // lost. Timing from the start of the landing would have written off the first of those
+                // on the very next check.
+                private _missingSince = [_aircraft,"landingMissingSince",-1] call ALiVE_fnc_hashGet;
+                private _isGone = isNull _vehicle && {!([_profile,"active",false] call ALiVE_fnc_hashGet)};
+                if (!_isGone) then {
+                    if (_missingSince isEqualType 0 && {_missingSince >= 0}) then {
+                        [_aircraft,"landingMissingSince",-1] call ALiVE_fnc_hashSet;
+                        [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
+                        [_logic, "assets", _assets] call MAINCLASS;
+                        _missingSince = -1;
+                    };
+                } else {
+                    if !(_missingSince isEqualType 0 && {_missingSince >= 0}) then {
+                        [_aircraft,"landingMissingSince",time] call ALiVE_fnc_hashSet;
+                        [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
+                        [_logic, "assets", _assets] call MAINCLASS;
+                        _missingSince = time;
+                    };
+                };
+
+                if (_isGone && {(time - _missingSince) > 60}) exitWith {
+                    // Only release the runway if THIS landing was the one holding it. Helicopters and
+                    // the quick-land path never take the lock, and releasing one they do not own would
+                    // free the strip under an aircraft still waiting to take off.
+                    private _heldAirport = [_aircraft,"landingLockHeld",-1] call ALiVE_fnc_hashGet;
+                    if (_heldAirport isEqualType 0 && {_heldAirport >= 0}) then {
+                        [_logic, "unlockRunway", _heldAirport] call MAINCLASS;
+                        [_aircraft,"landingLockHeld",-1] call ALiVE_fnc_hashSet;
+                    };
+                    // Park the airframe properly rather than just closing the tasking: put it back at its
+                    // home spot, engine off, and give it the usual turnaround before it can be tasked
+                    // again. Leaving the engine running had it come back in mid air on its next spawn.
+                    [_aircraft,"landingMissingSince",-1] call ALiVE_fnc_hashSet;
+                    [_profile,"engineOn",false] call ALiVE_fnc_profileVehicle;
+                    if (!isNil "_startPosition" && {_startPosition isEqualType []}) then {
+                        // Copies, not the asset's own array: the spawner edits the height of the
+                        // position it is handed, and handing it the original would quietly rewrite
+                        // the aircraft's recorded home spot.
+                        [_profile,"position",+_startPosition] call ALiVE_fnc_profileVehicle;
+                        [_profile,"despawnPosition",+_startPosition] call ALiVE_fnc_profileVehicle;
+                    };
+                    [_aircraft,"currentOp",""] call ALiVE_fnc_hashSet;
+                    [_aircraft,"ready",false] call ALiVE_fnc_hashSet;
+                    [_aircraft,"maintenance",time] call ALiVE_fnc_hashSet;
+                    [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
+                    [_logic, "assets", _assets] call MAINCLASS;
+                    [_event, "state", "eventComplete"] call ALIVE_fnc_hashSet;
+                    [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
+                    ["ATO %1 - Aircraft (%2) is no longer present while landing, returned to its home spot and the tasking closed (runway released: %3)", _logic, _aircraftID, (_heldAirport isEqualType 0 && {_heldAirport >= 0})] call ALiVE_fnc_dump;
+                };
+
+                // Prefer the asset's copy of the landing start: it survives the aircraft, so the
+                // safety net below is a real deadline rather than one that keeps moving.
+                private _landingTime = [_aircraft,"landingStart", (_vehicle getVariable [QGVAR(LANDING), time])] call ALiVE_fnc_hashGet;
 
                 private _landed = _vehicle getVariable [QGVAR(LANDED),false];
                 private _touchDown = _vehicle getVariable [QGVAR(LANDEDTOUCHDOWN),0];
@@ -7690,12 +7778,26 @@ switch(_operation) do {
                     // through here and unconditionally unlock, releasing a lock still held by an
                     // OUTBOUND plane waiting at ilsTaxiIn for its pilot - the next tasking then
                     // passed the busy gate and teleported a second airframe onto it.
-                    if (_isPlane && {_vehicle getVariable [QGVAR(LANDINGLOCK), false]}) then {
-                        private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
-                        // Mark airport as not busy
-                        [_logic, "unlockRunway", _airportID] call MAINCLASS;
+                    // Consult the claim recorded against the ASSET first, and release the runway this
+                    // landing actually took. The marker on the aircraft is lost the moment the
+                    // airframe is virtualised and rebuilt mid-approach, and reading only that marker
+                    // meant a returning aircraft could finish its landing without ever releasing the
+                    // runway it had reserved, leaving the strip locked and every following aircraft
+                    // circling. The asset outlives the airframe, so it is the reliable record.
+                    private _claimedAirport = [_aircraft,"landingLockHeld",-1] call ALiVE_fnc_hashGet;
+                    if (_claimedAirport isEqualType 0 && {_claimedAirport >= 0}) then {
+                        [_logic, "unlockRunway", _claimedAirport] call MAINCLASS;
+                    } else {
+                        if (_isPlane && {!isNull _vehicle} && {_vehicle getVariable [QGVAR(LANDINGLOCK), false]}) then {
+                            private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
+                            // Mark airport as not busy
+                            [_logic, "unlockRunway", _airportID] call MAINCLASS;
+                        };
                     };
-                    _vehicle setVariable [QGVAR(LANDINGLOCK), false];
+                    if !(isNull _vehicle) then { _vehicle setVariable [QGVAR(LANDINGLOCK), false]; };
+                    // Clear the asset-side copy of the claim too, so a later landing that loses its
+                    // aircraft cannot release a runway on the strength of a stale marker.
+                    [_aircraft,"landingLockHeld",-1] call ALiVE_fnc_hashSet;
 
                     // Reset landing values
                     _vehicle setVariable [QGVAR(LANDED),false];
