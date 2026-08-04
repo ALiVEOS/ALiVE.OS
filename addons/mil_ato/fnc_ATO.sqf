@@ -7154,7 +7154,11 @@ switch(_operation) do {
                                     _x disableAI "AUTOTARGET";
                                     _x setCombatMode "BLUE";
                                 } forEach (units _grpNow);
-                                _vehicle doMove [_homeNow select 0, _homeNow select 1, 300];
+                                // Sent through the shared move helper rather than ordered directly.
+                                // A move order only takes effect where the aircraft is being run, and
+                                // an aircraft handed to a headless client is not being run here, so
+                                // ordering it from the server would quietly do nothing at all.
+                                [_vehicle, [_homeNow select 0, _homeNow select 1, 300]] call ALiVE_fnc_doMoveRemote;
                                 if (_debug) then {
                                     ["ATO %3 - Aircraft (%1 - %2) lost its waypoints, sent home and taken out of the fight until the return leg takes over", _profileID, typeof _vehicle, _logic] call ALiVE_fnc_dump;
                                 };
