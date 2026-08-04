@@ -26,11 +26,15 @@ PREPMAIN(ZEUSinit);
 }, true] call CBA_fnc_addClassEventHandler;
 
 // Work out where every airfield's runways, taxiways and parking are, once, on
-// the server, and broadcast the result. Nothing consumes it yet, so this adds
-// no behaviour: what it does add is a line in the log per airfield saying what
-// was actually found, which is the only way the terrain-dependent gaps become
-// visible. Parking in particular is inferred rather than declared by the game,
-// and on some terrains it will resolve to nothing.
+// the server, and broadcast the result, so that aircraft are not later parked or
+// routed across an active runway. Parking in particular is inferred rather than
+// declared by the game, and on some terrains it will resolve to nothing, which is
+// why each airfield reports what was actually found.
+//
+// Only worth doing if ALiVE is actually running the mission. Everything that reads
+// this comes from an ALiVE module, so on a mission with none placed the survey was
+// pure cost, and on a map with several airfields that was seconds of stutter while
+// loading for people who were only previewing terrain from the editor.
 //
 // Waits for the mission to start so terrain objects and any mission-authored
 // runway tags exist to be found.
@@ -43,6 +47,13 @@ if (isServer) then {
         waitUntil {time > 0};
         if (isNil "ALiVE_fnc_buildAirsideCache") exitWith {
             diag_log "ALiVE airside: buildAirsideCache not compiled yet, airside exclusion inactive (addons/main needs a rebuild)";
+        };
+        // Modules are placed in the editor, so they exist long before the mission starts
+        // running. Reading placement rather than waiting on their own start-up avoids
+        // racing them. isKindOf walks the class hierarchy, so this finds any ALiVE module
+        // whatever it is, without needing to know their names.
+        if (((entities "Module_F") findIf {_x isKindOf "ModuleAliveBase"}) < 0) exitWith {
+            diag_log "ALiVE airside: no ALiVE module placed, skipping the airfield survey";
         };
         [] call ALiVE_fnc_buildAirsideCache;
     };

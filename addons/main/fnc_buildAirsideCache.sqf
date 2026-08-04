@@ -88,6 +88,14 @@ private _fnc_addCandidate = {
     params ["_pos"];
     if (count _pos < 2) exitWith {};
     private _p = [_pos select 0, _pos select 1, 0];
+    // A terrain with no airfield still answers the config read, it just answers with
+    // the map origin. That is not a place, and surveying it costs as much as surveying
+    // a real airfield before the result is thrown away, so refuse it here. Anything off
+    // the map is refused for the same reason.
+    private _px = _p select 0;
+    private _py = _p select 1;
+    if (_px < 50 && {_py < 50}) exitWith {};
+    if (_px < 0 || {_py < 0} || {_px > worldSize} || {_py > worldSize}) exitWith {};
     // 600 m dedupe. Two config entries for the same field are common, and
     // building it twice would double every object sweep.
     if ((_candidates findIf {(_x distance2D _p) < 600}) < 0) then {
@@ -167,8 +175,15 @@ private _fnc_buildOne = {
         // unfiltered object sweeps plus a location query, and calling
         // getRunwayCentreline as well would silently double that because it
         // calls this same function internally.
-        private _geom = [_centre, ALiVE_airsideSearchRadius] call ALiVE_fnc_getAirfieldGeometry;
-        _geom params [["_runways", []], ["_taxiways", []]];
+        // Ask for runways and taxiways only. The broad no-go zones this can also work out
+        // are the most expensive part of the survey and nothing here reads them, so they
+        // were being found and thrown away on every airfield of every mission.
+        private _geom = [_centre, ALiVE_airsideSearchRadius, false] call ALiVE_fnc_getAirfieldGeometry;
+        // Take the swept object list back as well and reuse it below. The survey has just
+        // looked at everything within a mile and a half of the field, and this was then
+        // sweeping exactly the same area again for parking and hangars, doubling the single
+        // most expensive part of the work on every airfield.
+        _geom params [["_runways", []], ["_taxiways", []], ["_zonesUnused", []], ["_sweptObjs", []]];
 
         // ----------------------------------------------------------------
         // Runway axis. Best available source wins.
@@ -299,7 +314,8 @@ private _fnc_buildOne = {
 
         // Authored tags first. This is the only exact source, and it mirrors
         // the ALiVE_runway and ALiVE_taxiway convention already in use.
-        private _near = nearestObjects [_centre, [], ALiVE_airsideSearchRadius];
+        // Reuse what the survey already swept rather than sweeping the same ground again.
+        private _near = _sweptObjs;
         {
             if (_x getVariable ["ALiVE_parking", false]) then {
                 private _r = _x getVariable ["ALiVE_parkingRadius", 30];
@@ -333,7 +349,13 @@ private _fnc_buildOne = {
         // single field can produce hundreds of near-identical discs. This is
         // the pathfinder's inner loop, so collapse them on a coarse grid and
         // then cap what survives.
-        private _seen = [];
+        // Drop duplicates by snapping each to a coarse grid. This used to hold the ones
+        // already kept in a plain list and search the whole list for every new one, so the
+        // work grew with the square of the count: a field with a handful of taxiways cost
+        // almost nothing, while a big one with several hundred cost tens of thousands of
+        // comparisons and was the reason busy airfields stalled the game while loading.
+        // A lookup table answers the same question in one step regardless of size.
+        private _seen = createHashMap;
         private _packed = [];
         private _capCount = (count _caps) / 8;
         for "_j" from 0 to (_capCount - 1) do {
@@ -344,7 +366,7 @@ private _fnc_buildOne = {
                 round ((_caps select (_c + 2)) / 25),
                 round ((_caps select (_c + 3)) / 25)];
             if !(_key in _seen) then {
-                _seen pushBack _key;
+                _seen set [_key, true];
                 _packed append (_caps select [_c, 8]);
             };
         };

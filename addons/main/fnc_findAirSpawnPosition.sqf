@@ -562,7 +562,9 @@ private _fnc_orientHangar = {
 // ------------------------------------------------------------------------
 // Runway / taxiway exclusion check for the apron tier.
 // ------------------------------------------------------------------------
-private _airfieldGeom = [_centerPos, _maxDistance max 500] call ALiVE_fnc_getAirfieldGeometry;
+// Runways and taxiways only. This runs on every air placement, and the wider survey
+// of the whole airfield area is not read here.
+private _airfieldGeom = [_centerPos, _maxDistance max 500, false] call ALiVE_fnc_getAirfieldGeometry;
 _airfieldGeom params ["_runwaySegments", "_taxiwaySegments"];
 
 private _fnc_pointToSegmentDist2D = {

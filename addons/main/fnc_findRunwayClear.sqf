@@ -85,7 +85,8 @@ private _z = if (count _pos > 2) then { _pos select 2 } else { 0 };
 private _segments = if (count _segmentsOverride > 0) then {
     _segmentsOverride
 } else {
-    private _geom = [_pos, _searchRadius] call ALiVE_fnc_getAirfieldGeometry;
+    // Runways and taxiways only, so skip the wider survey of the airfield area.
+    private _geom = [_pos, _searchRadius, false] call ALiVE_fnc_getAirfieldGeometry;
     _geom params [["_runways", []], ["_taxiways", []]];
     _runways + _taxiways
 };

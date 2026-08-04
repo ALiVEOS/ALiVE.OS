@@ -29,9 +29,14 @@ Description:
 Parameters:
     _this select 0: ARRAY  - centre [x, y, z] for the search.
     _this select 1: NUMBER - search radius in metres (default 500).
+    _this select 2: BOOL   - work out the wide airfield no-go zones as well
+                             (default true). This is the most expensive part of
+                             the function: it sweeps a wider area and inspects the
+                             name of every object it finds. A caller that reads only
+                             runways and taxiways should pass false.
 
 Returns:
-    ARRAY [_runwaySegments, _taxiwaySegments, _airfieldZones] where each
+    ARRAY [_runwaySegments, _taxiwaySegments, _airfieldZones, _sweptObjects] where each
     entry is an array of [_startPos, _endPos, _halfWidth] tuples.
     _airfieldZones are degenerate (start == end) segments centred on
     `nearestLocations` Airport / NameAirportArea entries, with the
@@ -41,6 +46,9 @@ Returns:
     that shouldn't place ground compositions on airfields. Callers
     that only need runway / taxiway segments can keep params-
     destructuring two fields; the 3rd is additive.
+    _sweptObjects is everything the search found in radius, handed back so a
+    caller needing to inspect the same objects does not sweep the area twice.
+    Empty when the zone work is skipped is NOT the case - it is always returned.
 
 Examples:
     (begin example)
@@ -59,7 +67,13 @@ Peer Reviewed:
 
 params [
     ["_centerPos", [0,0,0], [[]], [2,3]],
-    ["_radius", 500, [0]]
+    ["_radius", 500, [0]],
+    // Whether to work out the broad no-go zones around the field as well as its runways
+    // and taxiways. Finding those zones is the most expensive thing this does, because it
+    // sweeps a wider area and inspects the name of every object it finds, so a caller that
+    // only wants runways and taxiways can say so and skip it. Defaults to doing the work,
+    // so every existing caller behaves exactly as before.
+    ["_needZones", true, [true]]
 ];
 
 private _runways       = [];
@@ -162,7 +176,9 @@ private _taggedObjs = nearestObjects [_centerPos, [], _radius];
 // Half-width = larger of the two location extents. Conservative
 // over the rectangular footprint but cheap and reliable.
 // ------------------------------------------------------------------------
-private _airportLocs = nearestLocations [_centerPos, ["Airport"], _radius + 500];
+private _airportLocs = if (_needZones) then {
+    nearestLocations [_centerPos, ["Airport"], _radius + 500]
+} else { [] };
 
 // Tier 4b - object-class detection for airfield infrastructure. Some
 // maps (vanilla Stratis Air Station included) don't tag their air
@@ -174,18 +190,20 @@ private _airportLocs = nearestLocations [_centerPos, ["Airport"], _radius + 500]
 // zone half-width grows with the number of matches so a dense cluster
 // of airfield infrastructure produces one larger no-go area rather
 // than dozens of overlapping small ones.
-private _airfieldInfraObjects = (nearestObjects [_centerPos, [], _radius + 200]) select {
-    private _str = toLower (str _x);
-    private _isInfra =
-        ([_str, "papi"]            call CBA_fnc_find) != -1 ||
-        ([_str, "runwaylight"]     call CBA_fnc_find) != -1 ||
-        ([_str, "runway_edge"]     call CBA_fnc_find) != -1 ||
-        ([_str, "airport"]         call CBA_fnc_find) != -1 ||
-        ([_str, "hangar"]          call CBA_fnc_find) != -1 ||
-        ([_str, "tower_small"]     call CBA_fnc_find) != -1 ||
-        ([_str, "controltower"]    call CBA_fnc_find) != -1;
-    _isInfra
-};
+private _airfieldInfraObjects = if (_needZones) then {
+    // The widest sweep in this function, and it looks at the name of every single thing it
+    // finds. Only the zones need it, so a caller that does not want them pays none of it.
+    (nearestObjects [_centerPos, [], _radius + 200]) select {
+        private _str = toLower (str _x);
+        (_str find "papi") != -1
+        || {(_str find "runwaylight")  != -1}
+        || {(_str find "runway_edge")  != -1}
+        || {(_str find "airport")      != -1}
+        || {(_str find "hangar")       != -1}
+        || {(_str find "tower_small")  != -1}
+        || {(_str find "controltower") != -1}
+    }
+} else { [] };
 if (count _airfieldInfraObjects > 0) then {
     // Find bbox of detected infrastructure to size the no-go zone
     private _xs = _airfieldInfraObjects apply { (getPosATL _x) select 0 };
@@ -212,4 +230,8 @@ if (count _airfieldInfraObjects > 0) then {
     };
 } forEach _airportLocs;
 
-[_runways, _taxiways, _airfieldZones]
+// The list of everything found around the field is handed back as well. Sweeping a
+// square kilometre and a half is the most expensive thing here, and a caller that needs
+// to look at those same objects for its own purposes would otherwise sweep the identical
+// area a second time. Appended last, so nothing reading the first three is affected.
+[_runways, _taxiways, _airfieldZones, _taggedObjs]

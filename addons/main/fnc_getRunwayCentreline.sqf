@@ -68,7 +68,8 @@ params [
     ["_radius", 1500, [0]]
 ];
 
-private _geom = [_position, _radius] call ALiVE_fnc_getAirfieldGeometry;
+// Runways only, so skip the wider survey of the airfield area.
+private _geom = [_position, _radius, false] call ALiVE_fnc_getAirfieldGeometry;
 if (isNil "_geom" || {!(_geom isEqualType [])} || {count _geom == 0}) exitWith { [] };
 
 private _runways = _geom select 0;
