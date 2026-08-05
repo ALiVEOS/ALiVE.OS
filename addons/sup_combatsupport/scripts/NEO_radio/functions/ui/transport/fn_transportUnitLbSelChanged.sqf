@@ -4,10 +4,7 @@ private
     "_supportMarker", "_slider", "_sliderText", "_transportHeightCombo", "_transportSpeedCombo", "_transportRoeCombo", "_transportComboText", "_flyingProperties",
     "_height", "_speed", "_roeIndex", "_roe"
 ];
-private _uiH = 1.14 * safezoneH;
-private _uiW = 1.2 * _uiH;
-private _uiX = safezoneX + (safezoneW - _uiW) / 2;
-private _uiY = safezoneY + (safezoneH - _uiH) / 2;
+([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
 _display = findDisplay 655555;
 _map = _display displayCtrl 655560;
 _transportBaseButton = _display displayCtrl 655575;

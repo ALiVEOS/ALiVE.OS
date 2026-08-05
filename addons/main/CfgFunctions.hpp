@@ -139,6 +139,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_activateReserve.sqf";
                 RECOMPILE;
             };
+            class tabletBox {
+                description = "Returns [x,y,w,h] of the screen box every ALiVE tablet is drawn in, so script-positioned artwork matches the GUI_GRID layout the controls use";
+                file = "\x\alive\addons\main\fnc_tabletBox.sqf";
+                RECOMPILE;
+            };
             class getAirfieldGeometry {
                 description = "Returns runway and taxiway segments around a position (mil_ato attrs + ALiVE_runway tags + BI substring matches)";
                 file = "\x\alive\addons\main\fnc_getAirfieldGeometry.sqf";

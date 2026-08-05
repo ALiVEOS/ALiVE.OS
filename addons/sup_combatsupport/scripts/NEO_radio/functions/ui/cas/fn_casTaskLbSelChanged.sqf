@@ -1,8 +1,5 @@
 private ["_lb", "_index", "_display", "_map"];
-private _uiH = 1.14 * safezoneH;
-private _uiW = 1.2 * _uiH;
-private _uiX = safezoneX + (safezoneW - _uiW) / 2;
-private _uiY = safezoneY + (safezoneH - _uiH) / 2;
+([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
 _lb = _this select 0;
 _index = _this select 1;
 _display = findDisplay 655555;

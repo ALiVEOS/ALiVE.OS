@@ -1,9 +1,4 @@
-#define GUI_GRID_HAbs        (1.14 * safezoneH)
-#define GUI_GRID_WAbs        (1.2 * GUI_GRID_HAbs)
-#define GUI_GRID_W           (GUI_GRID_WAbs / 40)
-#define GUI_GRID_H           (GUI_GRID_HAbs / 25)
-#define GUI_GRID_X           (safezoneX + (safezoneW - GUI_GRID_WAbs) / 2)
-#define GUI_GRID_Y           (safezoneY + (safezoneH - GUI_GRID_HAbs) / 2)
+#include "\x\alive\addons\main\data\ui\gui_grid.hpp"
 
 // Combat Support tablet font sizing (referenced by the list/button controls in main.hpp).
 // Lists previously drew the glyph at the full row height, so the text looked oversized
