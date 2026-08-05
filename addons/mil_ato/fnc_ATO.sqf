@@ -6599,6 +6599,18 @@ switch(_operation) do {
                         private _crewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
                         private _crewProfile = [ALIVE_profileHandler, "getProfile",_crewID] call ALIVE_fnc_profileHandler;
 
+                        // A crewID that resolves to anything other than an ENTITY is a mis-stamp,
+                        // and the commonest one is an airframe stamped as its own crew. Left
+                        // unchecked it hands a vehicle profile to createProfileVehicleAssignment
+                        // and then to entity spawn, where the schema does not match: the aircraft
+                        // never spawns and nothing says why. isNil alone does not catch it,
+                        // because the wrong profile is still a profile.
+                        if (!isNil "_crewProfile" && {([_crewProfile,"type","" ] call ALiVE_fnc_hashGet) != "entity"}) then {
+                            ["Warning ATO - aircraft %1 has crewID %2 which is not aircrew (type %3); ignoring it rather than trying to fly the aircraft as its own crew", [_vehProfile,"profileID",""] call ALiVE_fnc_hashGet, _crewID, [_crewProfile,"type",""] call ALiVE_fnc_hashGet] call ALiVE_fnc_dump;
+                            [_aircraft,"crewID",""] call ALiVE_fnc_hashSet;
+                            _crewProfile = nil;
+                        };
+
                         if (!isNil "_crewProfile") then {
                             // Link crew<->airframe so the despawn / standDownCrew lifecycle stays balanced.
                             [_crewProfile,_vehProfile] call ALIVE_fnc_createProfileVehicleAssignment;
