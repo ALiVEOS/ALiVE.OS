@@ -59,17 +59,6 @@ private _originalFaction = _prefix;
 private _isInferredRedirect = false;
 private _compiledFaction = "";
 
-// A faction whose categories were overridden keeps its own name everywhere, so
-// there is no mapping to route through. Point the realiser at it directly. A
-// group class that is not one of the compiled ones comes back empty and falls
-// through to the config path below, which is the same safety the mapping route
-// already relies on.
-if(!isNil "ALIVE_factionGroupOverrides") then {
-    if(_prefix in (ALIVE_factionGroupOverrides select 1)) then {
-        _compiledFaction = _prefix;
-    };
-};
-
 // Check to see if faction has a mapping
 if(!isNil "ALIVE_factionCustomMappings") then {
     if(_prefix in (ALIVE_factionCustomMappings select 1)) then {

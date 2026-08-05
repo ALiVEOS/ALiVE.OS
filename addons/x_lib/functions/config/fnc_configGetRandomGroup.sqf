@@ -39,23 +39,7 @@ params [
 
 _customGroup = false;
 
-// A Faction Compiler set to override categories publishes its groups here rather
-// than into the redirect table, so the faction being overridden never has to
-// become a redirect source. Checked on the category the caller actually asked
-// for, before any redirect gets a chance to rename it, and a miss falls straight
-// through to the code below unchanged.
-if(!isNil "ALIVE_factionGroupOverrides") then {
-    if(_faction in (ALIVE_factionGroupOverrides select 1)) then {
-        private _override = [ALIVE_factionGroupOverrides, _faction] call ALIVE_fnc_hashGet;
-        private _overrideGroups = [_override, _type, []] call ALIVE_fnc_hashGet;
-        if(count _overrideGroups > 0) then {
-            _groupName = _overrideGroups select floor(random count _overrideGroups);
-            _customGroup = true;
-        };
-    };
-};
-
-if(!_customGroup && {!isNil "ALIVE_factionCustomMappings"}) then {
+if(!isNil "ALIVE_factionCustomMappings") then {
     if(_faction in (ALIVE_factionCustomMappings select 1)) then {
         _customMappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
         // _customMappings call ALIVE_fnc_inspectHash;

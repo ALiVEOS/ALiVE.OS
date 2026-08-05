@@ -30,15 +30,6 @@ if (isNil "ALIVE_compiledFactions") then {
     ALIVE_compiledFactions = [] call ALIVE_fnc_hashCreate;
 };
 
-// Overridden categories live in their own table, keyed by faction id and by the
-// plain ALiVE category name. Kept apart from ALIVE_factionCustomMappings on
-// purpose: that table means "this faction redirects somewhere else", and putting
-// an ordinary faction in it would drag every reader of it onto a path it has
-// never taken for that faction. A mission with no compiler never creates this.
-if (isNil "ALIVE_factionGroupOverrides") then {
-    ALIVE_factionGroupOverrides = [] call ALIVE_fnc_hashCreate;
-};
-
 private _debug = [(_logic getVariable ["debug", false])] call _parseBool;
 private _deleteTemplates = [(_logic getVariable ["deleteTemplates", true])] call _parseBool;
 private _overrideMode = _logic getVariable ["overrideMode", "NewFaction"];
@@ -91,23 +82,6 @@ if !(_proxyFaction isEqualType "") then {
 };
 if (_proxyFaction isEqualTo "") then {
     _proxyFaction = "OPF_F";
-};
-
-// Override categories only means anything against a faction that exists. Refuse
-// here rather than further down, so a mistyped id leaves the template groups
-// exactly where they were placed instead of stranding them on the map after the
-// capture loop has already taken them.
-if (_isOverride && {!(isClass (configFile >> "CfgFactionClasses" >> _factionId)) && {!(isClass (missionConfigFile >> "CfgFactionClasses" >> _factionId))}}) exitWith {
-    _logic setVariable ["factionId", _requestedFactionId, true];
-    _logic setVariable ["compiledFactionId", "", true];
-    _logic setVariable ["compiledProxyFaction", "", true];
-    _logic setVariable ["compiledFactionSide", "", true];
-    _logic setVariable ["compiledFactionDisplayName", _displayName, true];
-    _logic setVariable ["compiledFactionGroupCount", 0, true];
-    _logic setVariable ["compiledFactionError", format ["Override categories: no faction %1", _factionId], true];
-    ["Warning Faction compiler [%1] cannot override categories of %2 because no such faction is loaded - check the Faction ID, nothing was compiled", _displayName, _factionId] call ALIVE_fnc_dump;
-    [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
-    false
 };
 
 private _moduleSourceId = netId _logic;
@@ -304,52 +278,52 @@ if (_groupIndex == 0) exitWith {
     _logic setVariable ["compiledFactionDisplayName", _displayName, true];
     _logic setVariable ["compiledFactionGroupCount", 0, true];
     _logic setVariable ["compiledFactionError", "No template groups captured", true];
-    // Not behind the debug setting. A compiler with nothing synced to it is the
-    // most likely first-time mistake, and it used to fail in complete silence.
-    ["Warning Faction compiler [%1] found no template groups - sync a category helper to this module, and one unit from each template group to that helper", _displayName] call ALIVE_fnc_dump;
+    if (_debug) then {
+        ["Faction compiler [%1] found no template groups", _factionId] call ALIVE_fnc_dump;
+    };
     [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
     false
 };
 
-// Warn, do not refuse, when the templates are the wrong side for the faction
-// being overridden. Refusing this late would strand the captured units on the
-// map, and a mission maker may have a reason for the mismatch.
-if (_isOverride) then {
-    private _factionConfig = configFile >> "CfgFactionClasses" >> _factionId;
-    if (isNumber (_factionConfig >> "side")) then {
-        private _targetSide = [getNumber (_factionConfig >> "side")] call ALIVE_fnc_sideNumberToText;
-        if !(_targetSide isEqualTo _sideText) then {
-            ["Warning Faction compiler [%1] template groups are %2 but faction %3 is %4 - the groups were still compiled, but they will fight for %3", _displayName, _sideText, _factionId, _targetSide] call ALIVE_fnc_dump;
-        };
-    };
+private _typeMappings = [] call ALIVE_fnc_hashCreate;
+{
+    [_typeMappings, _x, _x] call ALIVE_fnc_hashSet;
+} forEach _standardCategories;
+
+// Decide whether to write a fresh mapping (NewFaction mode, or
+// OverrideCategories with no existing mapping to merge into) or
+// merge into an existing curated/inferred mapping. In merge mode
+// we mutate the existing mapping in place so categories not
+// touched by this compiler keep their original group lists from
+// the curated config.
+private _existingMapping = if (_isOverride && {!isNil "ALIVE_factionCustomMappings"} && {_factionId in (ALIVE_factionCustomMappings select 1)}) then {
+    [ALIVE_factionCustomMappings, _factionId] call ALIVE_fnc_hashGet
+} else {
+    nil
 };
 
-// In override mode nothing is written to ALIVE_factionCustomMappings at all.
-// The faction keeps its own name and its own config groups, and only the
-// categories captured here are diverted, through ALIVE_factionGroupOverrides.
-// NewFaction mode is untouched and still writes a mapping as it always has.
-private _mapping = nil;
-if (_isOverride) then {
-    private _overrideGroups = [] call ALIVE_fnc_hashCreate;
-    private _overriddenNames = [];
+private _mapping = if (!isNil "_existingMapping") then {
+    // Merge: replace only the categories that have compiled groups,
+    // keep everything else (Inferred flag, GroupFactionTypes, other
+    // categories' group lists, etc.). Set CompiledFaction so the
+    // dispatch in fnc_createProfilesFromGroupConfig routes through
+    // the compiler; non-compiled categories' group classes still
+    // resolve through the standard config path on fallback.
+    private _existingGroups = [_existingMapping, "Groups", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashGet;
     {
         private _category = _x;
         private _categoryGroups = [_groupsByCategory, _category, []] call ALIVE_fnc_hashGet;
-        // Only categories that actually captured something. A category present
-        // but empty would shadow the faction's own groups with nothing.
         if (count _categoryGroups > 0) then {
-            [_overrideGroups, _category, _categoryGroups] call ALIVE_fnc_hashSet;
-            _overriddenNames pushBack _category;
+            [_existingGroups, _category, _categoryGroups] call ALIVE_fnc_hashSet;
         };
     } forEach _standardCategories;
-    [ALIVE_factionGroupOverrides, _factionId, _overrideGroups] call ALIVE_fnc_hashSet;
-    _logic setVariable ["compiledOverrideCategories", _overriddenNames, true];
+    [_existingMapping, "Groups", _existingGroups] call ALIVE_fnc_hashSet;
+    [_existingMapping, "CompiledFaction", true] call ALIVE_fnc_hashSet;
+    [_existingMapping, "DisplayName", _displayName] call ALIVE_fnc_hashSet;
+    [_existingMapping, "SourceModule", _logic] call ALIVE_fnc_hashSet;
+    [_existingMapping, "SourceModuleId", _moduleSourceId] call ALIVE_fnc_hashSet;
+    _existingMapping
 } else {
-    private _typeMappings = [] call ALIVE_fnc_hashCreate;
-    {
-        [_typeMappings, _x, _x] call ALIVE_fnc_hashSet;
-    } forEach _standardCategories;
-
     private _newMapping = [] call ALIVE_fnc_hashCreate;
     [_newMapping, "Side", _sideText] call ALIVE_fnc_hashSet;
     [_newMapping, "GroupSideName", _sideText] call ALIVE_fnc_hashSet;
@@ -362,7 +336,7 @@ if (_isOverride) then {
     [_newMapping, "DisplayName", _displayName] call ALIVE_fnc_hashSet;
     [_newMapping, "SourceModule", _logic] call ALIVE_fnc_hashSet;
     [_newMapping, "SourceModuleId", _moduleSourceId] call ALIVE_fnc_hashSet;
-    _mapping = _newMapping;
+    _newMapping
 };
 
 private _factionData = [] call ALIVE_fnc_hashCreate;
@@ -372,24 +346,14 @@ private _factionData = [] call ALIVE_fnc_hashCreate;
 [_factionData, "side", _sideText] call ALIVE_fnc_hashSet;
 [_factionData, "groupsByCategory", _groupsByCategory] call ALIVE_fnc_hashSet;
 [_factionData, "compiledGroups", _compiledGroups] call ALIVE_fnc_hashSet;
-// Override mode publishes no vehicle inventory. These two lists are read at one
-// place only, and a non-empty pair there makes the captured classes the faction's
-// ONLY vehicles for every transport, logistics and ambient query. Overriding a
-// category should change which groups the faction fields in it, not empty out the
-// faction's motor pool.
-if (_isOverride) then {
-    [_factionData, "unitClasses", []] call ALIVE_fnc_hashSet;
-    [_factionData, "vehicleClasses", []] call ALIVE_fnc_hashSet;
-} else {
-    [_factionData, "unitClasses", _unitClasses] call ALIVE_fnc_hashSet;
-    [_factionData, "vehicleClasses", _vehicleClasses] call ALIVE_fnc_hashSet;
-};
+[_factionData, "unitClasses", _unitClasses] call ALIVE_fnc_hashSet;
+[_factionData, "vehicleClasses", _vehicleClasses] call ALIVE_fnc_hashSet;
 [_factionData, "sourceModule", _logic] call ALIVE_fnc_hashSet;
 [_factionData, "sourceModuleId", _moduleSourceId] call ALIVE_fnc_hashSet;
 [ALIVE_compiledFactions, _factionId, _factionData] call ALIVE_fnc_hashSet;
-// Only NewFaction mode registers a mapping. Override mode deliberately leaves
-// the redirect table alone.
-if (!isNil "_mapping") then {
+// Only write to ALIVE_factionCustomMappings when we built a fresh
+// mapping. In merge mode the existing entry was mutated in place.
+if (isNil "_existingMapping") then {
     [ALIVE_factionCustomMappings, _factionId, _mapping] call ALIVE_fnc_hashSet;
 };
 
@@ -421,15 +385,10 @@ if (_deleteTemplates) then {
     } forEach _templateVehicles;
 };
 
-// Not behind the debug setting. This one line is what tells anyone reading a log
-// which of the two modes actually ran, and its absence is what made the original
-// report impossible to diagnose from the outside.
-private _modeLabel = if (_isOverride) then {
-    format ["override-categories (%1)", (_logic getVariable ["compiledOverrideCategories", []]) joinString ", "]
-} else {
-    format ["new-faction (proxy %1)", _proxyFaction]
+if (_debug) then {
+    private _modeLabel = if (!isNil "_existingMapping") then {"override-categories (merged into existing mapping)"} else {format ["new-faction (proxy %1)", _proxyFaction]};
+    ["Faction compiler [%1] registered %2 groups for side %3 - mode: %4", _factionId, _groupIndex, _sideText, _modeLabel] call ALIVE_fnc_dump;
 };
-["Faction compiler [%1] registered %2 groups for side %3 - mode: %4", _factionId, _groupIndex, _sideText, _modeLabel] call ALIVE_fnc_dump;
 
 [_logic, false, _moduleID] call ALIVE_fnc_dumpModuleInit;
 true
