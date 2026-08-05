@@ -1610,11 +1610,22 @@ switch(_operation) do {
                                                     } else {
                                                         _faction = [getposATL _house, 250,true] call ALiVE_fnc_getDominantFaction;
 
+                                                        // Which scan answered, and with what, is the only way to tell a
+                                                        // house garrisoned from its own neighbourhood apart from one that
+                                                        // borrowed a faction from well outside it (#976)
+                                                        if (_debug && {!isnil "_faction"}) then {
+                                                            ["CQB Population: Dominant faction %1 detected on close scan (250m) of house at %2",_faction,getposATL _house] call ALiVE_fnc_Dump;
+                                                        };
+
                                                         // Close scan found nothing - houses activate at spawnDistance,
                                                         // so retry at the house's activation radius before giving up
                                                         if (isnil "_faction") then {
                                                             private _wideScan = 250 max (_spawn + _staticRange);
                                                             _faction = [getposATL _house, _wideScan,true] call ALiVE_fnc_getDominantFaction;
+
+                                                            if (_debug && {!isnil "_faction"}) then {
+                                                                ["CQB Population: Dominant faction %1 detected on wide scan (%2m) of house at %3 - nothing within 250m",_faction,_wideScan,getposATL _house] call ALiVE_fnc_Dump;
+                                                            };
 
                                                             // Still no non-civilian profile or group in range - spawn
                                                             // NOTHING instead of defaulting to the module factions list
