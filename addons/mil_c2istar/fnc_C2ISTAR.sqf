@@ -1977,8 +1977,8 @@ switch(_operation) do {
                         case "Mapbag01": {
                             createDialog "C2Tablet";
 
-                            private _uiW = (safezoneW / safezoneH) min 1.2;
-                            private _uiH = _uiW / 1.2;
+                            private _uiH = 1.14 * safezoneH;
+                            private _uiW = 1.2 * _uiH;
                             private _uiX = safezoneX + (safezoneW - _uiW) / 2;
                             private _uiY = safezoneY + (safezoneH - _uiH) / 2;
                             private _ctrlBackground = ((findDisplay 70001) displayCtrl 70002);

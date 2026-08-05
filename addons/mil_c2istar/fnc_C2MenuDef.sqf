@@ -232,8 +232,8 @@ if (_menuName == "C2ISTAR") then {
                             case "Mapbag01": {
                                 createDialog "RscDisplayALIVESITREP";
 
-                                private _uiW = (safezoneW / safezoneH) min 1.2;
-                                private _uiH = _uiW / 1.2;
+                                private _uiH = 1.14 * safezoneH;
+                                private _uiW = 1.2 * _uiH;
                                 private _uiX = safezoneX + (safezoneW - _uiW) / 2;
                                 private _uiY = safezoneY + (safezoneH - _uiH) / 2;
                                 private _ctrlBackground = ((findDisplay 90001) displayCtrl 90002);
@@ -269,8 +269,8 @@ if (_menuName == "C2ISTAR") then {
                             case "Mapbag01": {
                                 createDialog "RscDisplayALIVEPATROLREP";
 
-                                private _uiW = (safezoneW / safezoneH) min 1.2;
-                                private _uiH = _uiW / 1.2;
+                                private _uiH = 1.14 * safezoneH;
+                                private _uiW = 1.2 * _uiH;
                                 private _uiX = safezoneX + (safezoneW - _uiW) / 2;
                                 private _uiY = safezoneY + (safezoneH - _uiH) / 2;
                                 private _ctrlBackground = ((findDisplay 90002) displayCtrl 90003);
