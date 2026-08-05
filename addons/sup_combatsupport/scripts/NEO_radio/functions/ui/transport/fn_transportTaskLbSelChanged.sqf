@@ -73,7 +73,7 @@ _task = switch (_lb lbText _index) do
         _objectLb ctrlEnable false;
         _slider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
         _slider ctrlCommit 0;
-        _sliderText ctrlSetText "Height: 20/50";
+        _sliderText ctrlSetText "Height: 25/50";
         _sliderText ctrlSetPosition [0.225 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)];
         _sliderText ctrlCommit 0;
 

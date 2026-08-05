@@ -604,6 +604,10 @@ class FSM
                                          "sleep 0.01};" \n
                                          "};  " \n
                                          "" \n
+                                         "// Give the outbound leg a cruise height like every other task link does." \n
+                                         "// Without this the transit runs on whatever altitude the previous task left" \n
+                                         "// behind, and the AI arrives already committed to its own approach profile." \n
+                                         "_chopper flyinheight 100;" \n
                                          "[_chopper,_pos] call ALiVE_fnc_doMoveRemote;" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
@@ -1765,11 +1769,11 @@ class FSM
                                         to="__16";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote;"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"[_chopper,_alt] spawn {" \n
-                                         "	params [""_chopper"",""_alt""];" \n
-                                         "	sleep 1;" \n
-                                         "    _chopper flyinheight _alt;" \n
-                                         "};"/*%FSM</ACTION""">*/;
+                                        action=/*%FSM<ACTION""">*/"// Setting the height once here does nothing: this link fires when the AI has" \n
+                                         "// already finished its move, so there is no flight left for the order to shape" \n
+                                         "// and the aircraft keeps the altitude its own approach chose. Hand off to a" \n
+                                         "// loop that holds the asked-for height for as long as the task lasts." \n
+                                         "[_chopper,_alt,_pos] spawn NEO_fnc_transportInsertionHold;"/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
