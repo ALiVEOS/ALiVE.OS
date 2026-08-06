@@ -316,6 +316,23 @@ switch(_operation) do {
         {
             missionNamespace setVariable [format ["ALIVE_MilArtillery_requestRate_%1", _x], _logic getVariable ["requestRateCfg", [0,0]]];
         } forEach _final;
+
+        // A module with nothing synced to it serves every side no other module has
+        // claimed, but it resolves an empty side list, so the loop above published
+        // nothing for it. The commander then read the default and skipped the whole
+        // multi-target fan-out, which meant the Call-for-fire rate lever did nothing
+        // at all in the unsynced setup - the very one the setup notes recommend.
+        // Publish for the sides this module actually covers, matching sideInScope.
+        if (count _final == 0
+            && {((synchronizedObjects _logic) findIf { (typeOf _x) == "ALiVE_mil_OPCOM" }) == -1}) then {
+            private _rate = _logic getVariable ["requestRateCfg", [0,0]];
+            {
+                private _side = _x;
+                if ((_claims findIf { (_x select 0) == _side }) == -1) then {
+                    missionNamespace setVariable [format ["ALIVE_MilArtillery_requestRate_%1", _side], _rate];
+                };
+            } forEach ["EAST", "WEST", "GUER"];
+        };
         // counter-battery requests inherit the commander's control type -
         // asymmetric commanders answer with mortars only (processRequest gate).
         // Built from the arbitrated set so a lost side can't linger here
