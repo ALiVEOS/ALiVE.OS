@@ -605,10 +605,15 @@ class FSM
                                          "};  " \n
                                          "" \n
                                          "// Give the outbound leg a cruise height like every other task link does." \n
-                                         "// Without this the transit runs on whatever altitude the previous task left" \n
-                                         "// behind, and the AI arrives already committed to its own approach profile." \n
                                          "_chopper flyinheight 100;" \n
                                          "[_chopper,_pos] call ALiVE_fnc_doMoveRemote;" \n
+                                         "" \n
+                                         "// An aircraft that has already parked will not climb to a new height, so" \n
+                                         "// the height the player asked for has to be taken up while it is still on" \n
+                                         "// the way in. This watches the distance and does that. It issues no orders," \n
+                                         "// so the insertion callout further on is untouched." \n
+                                         "_chopper setVariable [""NEO_radioInsertionRun"", (_chopper getVariable [""NEO_radioInsertionRun"", 0]) + 1];" \n
+                                         "[_chopper, _alt, _pos, _chopper getVariable [""NEO_radioInsertionRun"", 0]] spawn NEO_fnc_transportInsertionHold;" \n
                                          ""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -1769,11 +1774,9 @@ class FSM
                                         to="__16";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"_chopper call ALiVE_fnc_unitReadyRemote;"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/"// Setting the height once here does nothing: this link fires when the AI has" \n
-                                         "// already finished its move, so there is no flight left for the order to shape" \n
-                                         "// and the aircraft keeps the altitude its own approach chose. Hand off to a" \n
-                                         "// loop that holds the asked-for height for as long as the task lasts." \n
-                                         "[_chopper,_alt,_pos] spawn NEO_fnc_transportInsertionHold;"/*%FSM</ACTION""">*/;
+                                        action=/*%FSM<ACTION""">*/"// Nothing to do here. The height is taken up on the way in, by the watcher" \n
+                                         "// started at dispatch, because an aircraft that has already parked will not" \n
+                                         "// climb to a new one."/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
                         };
