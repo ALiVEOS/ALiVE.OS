@@ -574,7 +574,9 @@ switch(_operation) do {
     case "addPendingWaypoint": {
       _args params ["_insertionMethod","_waypoint", ["_ready", false]];
 
-      private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
+      // Same default as the advance case below: the first waypoint queued against a
+      // profile finds no list there yet, and without a default the push would throw.
+      private _pendingWaypoints = [_logic,"pendingWaypointPaths",[]] call ALiVE_fnc_hashGet;
       private _pendingPath = [_ready,_insertionMethod,[],_waypoint];
       private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet; 
       if (isNil "_isSPE") then { _isSPE = false; };
@@ -628,7 +630,13 @@ switch(_operation) do {
     };
 
     case "advancePendingWaypoints": {
-        private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
+        // Default to an empty list. Asked for a key it does not hold, the hash returns
+        // nothing at all, and assigning nothing in this language leaves the variable
+        // UNDEFINED rather than empty - so counting it a few lines down threw, and the
+        // whole flush was abandoned. A profile that had never queued a waypoint hit this
+        // every time it was asked to advance one: the path was drawn and the unit never
+        // moved.
+        private _pendingWaypoints = [_logic,"pendingWaypointPaths",[]] call ALiVE_fnc_hashGet;
 
         // #943 - boat profiles need their terminal order waypoint kept on water (below).
         // Commanding-a-ship entities and ship vehicle profiles qualify; groups riding a
