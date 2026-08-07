@@ -1573,17 +1573,51 @@ switch(_operation) do {
 
                 if (_type == "entity") then {
 
-                    [_asset,"crewID",_profileID] call ALiVE_fnc_hashSet;
-                    // INSTRUMENT (mergePositions freeze source): trace what crewID this branch stamps.
-                    // The freeze is seeded when an airframe's crewID ends up being its own vehicle id;
-                    // this Debug-gated line records the registered profile id/type against the vehicle
-                    // profile id so the mis-stamp path can be pinned. Read-only, no behaviour change.
-                    // F9: keep the Debug trace, but ALSO fire always-on when the stamped crewID equals the
-                    // vehicle id (the collision case that seeds the freeze / broken crew), so the next test
-                    // pins the source without Debug enabled.
-                    if (_debug || {_profileID isEqualTo (_vehicleProfile select 2 select 4)}) then {
-                        ["ALIVE ATO crewID write [register/entity]: %1 crewID<-%2 (registered profileType=%3, vehicleProfileID=%4)", _vehicleClass, _profileID, _type, (_vehicleProfile select 2 select 4)] call ALiVE_fnc_dump;
+                    // Take the crew from the airframe's own record rather than from the id that
+                    // was handed in. This branch was reached with that id naming the AIRFRAME's
+                    // vehicle profile, so an aircraft was registered as its own crew: it then
+                    // spawned with no group, the send-home guard correctly refused it, and it
+                    // flew into the ground four seconds later.
+                    //
+                    // The mis-stamp also defeated the crew check that should have caught it. That
+                    // check only refuses an aircraft whose crew profile fails to RESOLVE, and a
+                    // vehicle id resolves perfectly well, so a crewless aircraft was passed as
+                    // ready to fly.
+                    //
+                    // The airframe has always known its own crew. Every affected aircraft carried
+                    // exactly one entity in entitiesInCommandOf: the crew it was placed with.
+                    private _airframeID = _vehicleProfile select 2 select 4;
+                    private _residentCrew = [_vehicleProfile,"entitiesInCommandOf",[]] call ALiVE_fnc_hashGet;
+                    if !(_residentCrew isEqualType []) then {_residentCrew = []};
+
+                    private _crewID = "";
+                    private _c = 0;
+                    while {(_c < (count _residentCrew)) && {_crewID isEqualTo ""}} do {
+                        private _candidateID = _residentCrew select _c;
+                        if ((_candidateID isEqualType "") && {!(_candidateID isEqualTo _airframeID)}) then {
+                            private _candidate = [ALiVE_ProfileHandler,'getProfile',_candidateID] call ALiVE_fnc_ProfileHandler;
+                            if !(isNil "_candidate") then {
+                                if (([_candidate,"type",""] call ALiVE_fnc_hashGet) isEqualTo "entity") then {
+                                    _crewID = _candidateID;
+                                };
+                            };
+                        };
+                        _c = _c + 1;
                     };
+
+                    if (_crewID isEqualTo "") then {
+                        // Say which condition failed rather than stamping something that resolves.
+                        // With no crew id and no crew recipe the availability check keeps this
+                        // airframe on the ground, which is the outcome we want - an aircraft that
+                        // cannot be crewed must not be offered for a sortie.
+                        ["ATO %1 - %2 (%3) came in as crewed but its airframe lists no crew entity, so it will not be offered for tasking until one appears", _logic, _vehicleClass, _airframeID] call ALiVE_fnc_dump;
+                    } else {
+                        [_asset,"crewID",_crewID] call ALiVE_fnc_hashSet;
+                        if (_debug) then {
+                            ["ATO %1 - %2 (%3) crewed by %4", _logic, _vehicleClass, _airframeID, _crewID] call ALiVE_fnc_dump;
+                        };
+                    };
+
                     // Set the entity as busy so OPCOM doesn't use it
                     [_profile,"busy",true] call ALIVE_fnc_profileEntity;
 
