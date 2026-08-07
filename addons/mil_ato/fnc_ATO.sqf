@@ -6946,6 +6946,33 @@ switch(_operation) do {
                                 [ALIVE_eventLog, "addEvent",_logEvent] call ALIVE_fnc_eventLog;
                             };
 
+                            // Hold the aircraft and its crew real for the whole sortie. This was only
+                            // ever done on the branches that spawn an aircraft fresh, so one that was
+                            // already sitting on its pad took off with nothing holding it at all, and
+                            // in a full mission not a single aircraft was protected. Unheld, the pair
+                            // can be put away mid-sortie: that is how a crew has been taken out of an
+                            // aircraft flying at 588 km/h, and how an airframe has been removed three
+                            // seconds into its landing roll and put back in the air at 300 m.
+                            //
+                            // Both halves are needed. The crew is a separate record with its own flag,
+                            // and the check that decides whether a crew can be put away reads the
+                            // crew's own value as well as the aircraft's, so holding only the aircraft
+                            // still leaves the crew free to go.
+                            //
+                            // Released again when the sortie ends: on a normal landing further down,
+                            // and on an abort in the same place that already releases the aircraft.
+                            private _sortieProfile = [ALIVE_profileHandler, "getProfile", _profileID] call ALIVE_fnc_profileHandler;
+                            if !(isNil "_sortieProfile") then {
+                                [_sortieProfile,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileVehicle;
+                            };
+                            private _sortieCrewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
+                            if ((_sortieCrewID isEqualType "") && {!(_sortieCrewID isEqualTo "")}) then {
+                                private _sortieCrew = [ALIVE_profileHandler, "getProfile", _sortieCrewID] call ALIVE_fnc_profileHandler;
+                                if !(isNil "_sortieCrew") then {
+                                    [_sortieCrew,"spawnType",["preventDespawn"]] call ALiVE_fnc_profileEntity;
+                                };
+                            };
+
                             [_event, "state", "aircraftTravel"] call ALIVE_fnc_hashSet;
                             [_eventQueue, _eventID, _event] call ALIVE_fnc_hashSet;
                         } else {
@@ -7632,6 +7659,21 @@ switch(_operation) do {
                 private _landed = _vehicle getVariable [QGVAR(LANDED),false];
                 private _touchDown = _vehicle getVariable [QGVAR(LANDEDTOUCHDOWN),0];
 
+                // Drop the record's engine flag the moment the wheels are actually down, rather
+                // than waiting for the landing to be signed off. An aircraft that gets put away
+                // with its engine still flagged on comes back FLYING, and is pushed up to 300 m
+                // if the height it was stored at was near the ground. Measured: an aircraft that
+                // had already touched down reappeared at 306 m and had to fly the whole approach
+                // again. The two places that already clear this only run once the landing has
+                // completed, and the rollout is exactly the part it never reaches.
+                if ((!isNull _vehicle) && {(isTouchingGround _vehicle) || {_touchDown > 0}}) then {
+                    if !(isNil "_profile") then {
+                        if ([_profile,"engineOn",false] call ALiVE_fnc_hashGet) then {
+                            [_profile,"engineOn",false] call ALiVE_fnc_profileVehicle;
+                        };
+                    };
+                };
+
                 // Tailhook for carrier landings
                 if (_isOnCarrier && _isPlane && !_landed) then {
                     [_vehicle] spawn {
@@ -7904,6 +7946,18 @@ switch(_operation) do {
                         // is still flying its new task, so it keeps its flag (this branch is !_wasRerouted).
                         if (!isNil "_acProfile") then {
                             [_acProfile,"spawnType",[]] call ALiVE_fnc_profileVehicle;
+                        };
+                        // Release the crew as well. A crew that came with the aircraft is not stood
+                        // down here at all (the aircraft keeps it), so nothing else would ever let it
+                        // go, and it would sit real for the rest of the mission. Crew that this module
+                        // raised itself is removed outright a few lines down, so clearing it first is
+                        // harmless there.
+                        private _abortCrewID = [_aircraft,"crewID",""] call ALiVE_fnc_hashGet;
+                        if ((_abortCrewID isEqualType "") && {!(_abortCrewID isEqualTo "")}) then {
+                            private _abortCrew = [ALIVE_profileHandler, "getProfile", _abortCrewID] call ALIVE_fnc_profileHandler;
+                            if !(isNil "_abortCrew") then {
+                                [_abortCrew,"spawnType",[]] call ALiVE_fnc_profileEntity;
+                            };
                         };
                         // F1: _acProfile is nil (SQF nil-assignment -> undefined var) when the airframe
                         // profile is already gone (aircraft lost before landing). Coerce to objNull at the
