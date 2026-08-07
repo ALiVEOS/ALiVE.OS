@@ -69,13 +69,26 @@ if(!isNil "ALIVE_factionCustomMappings") then {
                     if(count _groups > 0) then {
                         _groupName = _groups select floor(random count _groups);
                     }else{
+                        // The category is listed for this faction but holds nothing, so
+                        // nothing can be picked and the config path below is skipped.
+                        // Both sibling branches say so; this one used to fail in silence,
+                        // which is why an empty category could quietly stop a faction
+                        // fielding anything and take a live regression to track down.
+                        ["Warning Side: %1 Faction: %3 lists %2 but has no groups in it, so nothing will spawn for that category",_side,_type,_faction] call ALIVE_fnc_dump;
                         _groupName = "FALSE";
                     };
 
                     _customGroup = true;
 
                 } else {
-                    ["Warning Side: %1 Faction: %3 could not find a %2 group",_side,_type,_faction] call ALIVE_fnc_dump;
+                    // A compiled faction only lists the categories its templates
+                    // actually captured, so every other category arriving here is the
+                    // designed hand-off to the faction's own config, not a fault. Left
+                    // unguarded it warns on every lookup for every untouched category
+                    // and reads as though the faction were broken.
+                    if !([_customMappings, "CompiledFaction", false] call ALIVE_fnc_hashGet) then {
+                        ["Warning Side: %1 Faction: %3 could not find a %2 group",_side,_type,_faction] call ALIVE_fnc_dump;
+                    };
                     _factionConfig = _faction call ALiVE_fnc_configGetFactionClass;
 
                     _factionSide = getNumber(_factionConfig >> "side");

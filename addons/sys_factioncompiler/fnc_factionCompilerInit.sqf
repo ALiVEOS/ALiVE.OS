@@ -324,14 +324,43 @@ private _mapping = if (!isNil "_existingMapping") then {
     [_existingMapping, "SourceModuleId", _moduleSourceId] call ALIVE_fnc_hashSet;
     _existingMapping
 } else {
+    // Overriding a faction that has no mapping of its own lands here rather than in
+    // the merge branch above, and the two lines below used to make that unusable.
+    //
+    // The redirect: Override mode ignores the Proxy Faction setting, so pointing the
+    // redirect at the proxy sent every lookup for a category we did NOT capture off to
+    // a different faction's groups. It points at the faction being overridden instead,
+    // so its untouched categories still resolve against its own config.
+    //
+    // The category list: every standard category is seeded empty further up, and a
+    // category that is PRESENT but EMPTY is worse than one that is absent. The group
+    // lookup treats it as authoritative, hands back a sentinel and never falls through
+    // to the faction's real groups, so overriding Air alone silently emptied Infantry,
+    // Armored and the rest. The merge branch already guards against this; this one did
+    // not, and that is the whole of the reported fault.
+    //
+    // Both are confined to Override mode so New Faction keeps behaving exactly as it did.
+    private _redirectFaction = if (_isOverride) then {_factionId} else {_proxyFaction};
+
+    private _mappingGroups = _groupsByCategory;
+    if (_isOverride) then {
+        _mappingGroups = [] call ALIVE_fnc_hashCreate;
+        {
+            private _categoryGroups = [_groupsByCategory, _x, []] call ALIVE_fnc_hashGet;
+            if (count _categoryGroups > 0) then {
+                [_mappingGroups, _x, _categoryGroups] call ALIVE_fnc_hashSet;
+            };
+        } forEach _standardCategories;
+    };
+
     private _newMapping = [] call ALIVE_fnc_hashCreate;
     [_newMapping, "Side", _sideText] call ALIVE_fnc_hashSet;
     [_newMapping, "GroupSideName", _sideText] call ALIVE_fnc_hashSet;
     [_newMapping, "FactionName", _factionId] call ALIVE_fnc_hashSet;
-    [_newMapping, "ConfigFactionName", _proxyFaction] call ALIVE_fnc_hashSet;
-    [_newMapping, "GroupFactionName", _proxyFaction] call ALIVE_fnc_hashSet;
+    [_newMapping, "ConfigFactionName", _redirectFaction] call ALIVE_fnc_hashSet;
+    [_newMapping, "GroupFactionName", _redirectFaction] call ALIVE_fnc_hashSet;
     [_newMapping, "GroupFactionTypes", _typeMappings] call ALIVE_fnc_hashSet;
-    [_newMapping, "Groups", _groupsByCategory] call ALIVE_fnc_hashSet;
+    [_newMapping, "Groups", _mappingGroups] call ALIVE_fnc_hashSet;
     [_newMapping, "CompiledFaction", true] call ALIVE_fnc_hashSet;
     [_newMapping, "DisplayName", _displayName] call ALIVE_fnc_hashSet;
     [_newMapping, "SourceModule", _logic] call ALIVE_fnc_hashSet;
@@ -386,7 +415,19 @@ if (_deleteTemplates) then {
 };
 
 if (_debug) then {
-    private _modeLabel = if (!isNil "_existingMapping") then {"override-categories (merged into existing mapping)"} else {format ["new-faction (proxy %1)", _proxyFaction]};
+    // Report the mode that was actually chosen. This used to be worked out from
+    // whether a mapping already existed, so overriding a faction that had none
+    // reported itself as building a new faction, which is exactly the opposite of
+    // what it was doing and sent a diagnosis down the wrong path.
+    private _modeLabel = if (_isOverride) then {
+        if (!isNil "_existingMapping") then {
+            "override-categories (merged into existing mapping)"
+        } else {
+            format ["override-categories (first mapping for %1)", _factionId]
+        };
+    } else {
+        format ["new-faction (proxy %1)", _proxyFaction]
+    };
     ["Faction compiler [%1] registered %2 groups for side %3 - mode: %4", _factionId, _groupIndex, _sideText, _modeLabel] call ALIVE_fnc_dump;
 };
 
