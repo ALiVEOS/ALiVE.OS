@@ -58,6 +58,27 @@ _result = [
 _otherResult = false;
 _csResult = false;
 
+// A player who has instant joined another unit IS that unit now, and the unit
+// they joined is not carrying the tablet that got them there. The gate above
+// therefore hides every commander entry from them, including Operations, which
+// is the only place an active join can be ended. They are left as the unit they
+// joined with no way back.
+//
+// While a join is active, the honest answer to "should this player have
+// Operations" is that they already do: they are in the middle of using it. So
+// let that ONE entry through. Nothing else is opened, because nothing else is
+// needed to undo this, and the tablet requirement is otherwise the point.
+//
+// Read exactly the way the death handler reads it (sup_command/fnc_SCOM.sqf:494).
+private _joinActive = false;
+if (!isNil "ALIVE_SUP_COMMAND") then {
+    private _joinState = [ALIVE_SUP_COMMAND,"commandState"] call ALIVE_fnc_SCOM;
+    if (!isNil "_joinState") then {
+        _joinActive = [_joinState,"opsGroupInstantJoin",false] call ALiVE_fnc_hashGet;
+        if !(_joinActive isEqualType false) then {_joinActive = false};
+    };
+};
+
 if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
     _otherResult = [
         [MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR,
@@ -211,7 +232,9 @@ if (_menuName == "C2ISTAR") then {
                      "",
                      -1,
                      true,
-                     _result
+                     // Also shown mid-join, so the player can get back to their
+                     // own body. See _joinActive above.
+                     _result || _joinActive
                 ],
                 ["Combat Support",
                     {["radio"] call ALIVE_fnc_radioAction},
