@@ -1438,6 +1438,22 @@ switch(_operation) do {
 
                 [_asset,"isOnCarrier", _isOnCarrier] call ALiVE_fnc_hashSet;
 
+                // DELIBERATELY still asks about the vertical-landing number here, where the
+                // landing code below no longer does. The two are answering different
+                // questions and the difference matters.
+                //
+                // Here the question is WHERE THE AIRCRAFT PARKS. Everything that checks a
+                // parking spot is survivable lives in the else branch: the shared air-spawn
+                // validator, the footprint test, the one-airframe-per-pad registry and the
+                // no-teleport rule for an airframe that is already on the ground. This branch
+                // does none of that, because a conventional aircraft is left where the
+                // placement module authored it.
+                //
+                // Send a semi-vertical aircraft down this branch and it loses all of it. Tried
+                // on 2026-08-10 and a gunship destroyed itself while parked, stationary, a
+                // minute after the mission began.
+                //
+                // Below, the question is HOW IT GETS BACK DOWN, and there a plane is a plane.
                 if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) ) then {
 
                     // Get airportID
@@ -5833,7 +5849,22 @@ switch(_operation) do {
                 private _currentPosition = [_aircraft,"currentPos"] call ALiVE_fnc_hashGet;
                 private _aircraftReady = [_aircraft,"ready",false] call ALiVE_fnc_hashGet;
                 private _isOnCarrier = [_aircraft,"isOnCarrier",false] call ALiVE_fnc_hashGet;
-                private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
+                // A plane needs a runway to get down, whatever its config claims about being
+                // able to land vertically.
+                //
+                // This used to also require the vertical-landing number to be below three, so
+                // an aircraft declaring semi-vertical was handled as a helicopter on the way
+                // home: told to land straight down onto a helipad. A fixed-wing gunship
+                // measured on 2026-08-10 declares exactly three, and does what any plane told
+                // to hover does. It slowed to a stop at eighty metres, went backwards, and
+                // fell out of the sky. Nothing caught it either, because the check that spots
+                // an aircraft safely down only applies to helicopters, and a gunship is not
+                // one. It fell between the two.
+                //
+                // Deliberately NOT applied where the aircraft is PARKED. See the comment on
+                // the placement branch: parking one of these as a plane skips every check
+                // that its spot is survivable, and destroys it on the ground instead.
+                private _isPlane = _vehicleClass iskindof "Plane";
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
@@ -6447,7 +6478,7 @@ switch(_operation) do {
                         // if parked assign crew to vehicle if necessary, if at home move to ilsTaxiOut position at 300 feet, spawn aircraft at speed
                         if (_startPosition distance _currentPosition < 15) then {
 
-                            private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
+                            private _isPlane = _vehicleClass iskindof "Plane";
                             private _profile = [ALIVE_profileHandler, "getProfile",_profileID] call ALIVE_fnc_profileHandler;
 
                             // If not active and not a UAV then launch, else go take off normally.
@@ -7018,7 +7049,7 @@ switch(_operation) do {
 
 
                                 // Unlock runway
-                                if (_vehicleClass iskindof "Plane" && (_isVTOL < 3)) then {
+                                if (_vehicleClass iskindof "Plane") then {
                                     private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                                     [_logic, "unlockRunway", _airportID] call MAINCLASS;
                                 };
@@ -7110,7 +7141,7 @@ switch(_operation) do {
                 // If aircraft is airborne, unlock runway once
                 if ( (getposATL _vehicle) select 2 > 50 && (getposASL _vehicle) select 2 > 50 && !_launched) then {
                     // Unlock runway now
-                    if (_vehicleClass iskindof "Plane" && (_isVTOL < 3) ) then {
+                    if (_vehicleClass iskindof "Plane" ) then {
                         private _airportID = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
                         [_logic, "unlockRunway", _airportID] call MAINCLASS;
                     };
@@ -7404,7 +7435,7 @@ switch(_operation) do {
                 private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
-                private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
+                private _isPlane = _vehicleClass iskindof "Plane";
 
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
                 if(_count == 0) exitWith {
@@ -7565,7 +7596,7 @@ switch(_operation) do {
                 private _startPosition = [_aircraft,"startPos"] call ALiVE_fnc_hashGet;
                 private _vehicleClass = [_aircraft,"vehicleClass"] call ALiVE_fnc_hashGet;
                 private _isVTOL = [_vehicleClass] call ALiVE_fnc_isVTOL;
-                private _isPlane = _vehicleClass iskindof "Plane" && (_isVTOL < 3);
+                private _isPlane = _vehicleClass iskindof "Plane";
                 private _count = [_logic, "checkEvent", _event] call MAINCLASS;
 
                 if(_count == 0) exitWith {
