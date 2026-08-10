@@ -7815,7 +7815,34 @@ switch(_operation) do {
                         if (_isOnCarrier) then {
                             _vehicle setposATL [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1];
                         } else {
-                            _vehicle setposATL _taxiPosition;
+                            // Never put an arriving aircraft on top of one already there. On a
+                            // terrain with no ILS data the taxi point resolves to the runway
+                            // threshold itself, so every arrival passes through the same few
+                            // square metres, and two aircraft in that spot together detonate on
+                            // contact. Four airframes have been lost that way.
+                            //
+                            // The departure side of this same teleport has carried an occupancy
+                            // check since it killed a pair the same way. It relocates to a clear
+                            // spot because a departing aircraft has to end up somewhere sensible.
+                            // Arrivals need less: this position is held for only a couple of
+                            // seconds before the aircraft is moved on to its own stand, so when
+                            // the spot is taken the right answer is simply not to use it. The
+                            // aircraft stays where it rolled to a stop, which is already clear,
+                            // and gets collected from there moments later.
+                            private _bbr = boundingBoxReal _vehicle;
+                            private _sep = ((((_bbr select 1) select 0) - ((_bbr select 0) select 0))
+                                        max (((_bbr select 1) select 1) - ((_bbr select 0) select 1))) + 6;
+                            private _blockers = (nearestObjects [_taxiPosition, ["Air"], _sep]) select {
+                                alive _x && {!(_x isEqualTo _vehicle)}
+                            };
+                            if (count _blockers == 0) then {
+                                _vehicle setposATL _taxiPosition;
+                            } else {
+                                // Always logged. An arrival finding the spot taken is worth seeing
+                                // in any report that comes back, not just with Debug on.
+                                ["ATO %1 - %2 arrived to find the taxi point held by %3; left where it stopped instead.",
+                                    _logic, typeof _vehicle, (_blockers apply {typeof _x})] call ALiVE_fnc_dump;
+                            };
                         };
                     };
 
