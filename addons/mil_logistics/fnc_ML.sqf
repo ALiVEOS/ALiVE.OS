@@ -1101,10 +1101,42 @@ switch(_operation) do {
                     _active = false;
                 };
 
-                private _isActive = _profile select 2 select 1;
+                // Watch the AIRFRAME, not the pilot. Every caller hands this watchdog the
+                // pilot ENTITY profile, and the stand-down flag read above is set on that
+                // same entity profile, so the handle is right. Index 10 is the vehicle
+                // OBJECT only on a VEHICLE profile though - on an entity profile it is the
+                // group leader, so this used to measure the man. Fuel of a person is always
+                // 1, his height above ground is nought and his speed is nought while he
+                // stands, so neither the fuel-starvation branch nor the sustained-hover
+                // branch below could ever reach its threshold. Measured in a live mission:
+                // "fuel=1 heightAGL=0.00138855 speed=0" repeating unchanged to eight
+                // decimal places, which is a stationary infantryman, not a helicopter.
+                // Reach the aircraft through the entity's command list instead.
+                private _heliProfile = [];
+                private _inCommandOf = _profile select 2 select 8;      // vehiclesInCommandOf
+                if ((_inCommandOf isEqualType []) && {count _inCommandOf > 0}) then {
+                    private _vehProfile = [ALIVE_profileHandler, "getProfile", _inCommandOf select 0] call ALIVE_fnc_profileHandler;
+                    // Only ever measure a VEHICLE profile. Silently reading the wrong kind of
+                    // profile is the whole reason this watchdog never worked, so refuse rather
+                    // than repeat it quietly.
+                    if (!isNil "_vehProfile" && {(_vehProfile select 2 select 5) isEqualTo "vehicle"}) then {
+                        _heliProfile = _vehProfile;
+                    };
+                };
+
+                // No aircraft left to watch. The transport profile can be destroyed at the
+                // drop-off while its pilot profile survives, and with the pilot as the only
+                // handle this loop then polled a stranded man for the rest of the mission.
+                if (count _heliProfile == 0) exitWith {
+                    ["ML - spawnHelicopterFuelWatchdog: Profile %1 has no airframe left, exiting",
+                        _profileID] call ALiVE_fnc_dump;
+                    _active = false;
+                };
+
+                private _isActive = _heliProfile select 2 select 1;
 
                 if (_isActive) then {
-                    private _heli = _profile select 2 select 10;
+                    private _heli = _heliProfile select 2 select 10;
 
                     if (!isNull _heli && alive _heli) then {
 
