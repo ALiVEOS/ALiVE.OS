@@ -3812,6 +3812,19 @@ switch(_operation) do {
         _map = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_Map);
         _map ctrlShow true;
 
+        // Give the map its click back. Sending a request turns clicking off so the
+        // player cannot move a destination that is already on its way, and showing
+        // the map again here was not enough on its own: the control was visible but
+        // still carrying the do-nothing handler.
+        //
+        // Nothing else put it back either. The only other place that restores it sits
+        // in the delivery-type-changed handler, so it fired when the player picked a
+        // DIFFERENT type and never when they asked for the same one twice. Ask for two
+        // air drops in a row and the second one had a map that could not be clicked,
+        // while a convoy in between appeared to fix it.
+        _map ctrlSetEventHandler ["MouseButtonDown", "['MAP_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
+        uinamespace setVariable ["PRMapClickMode", "MAP_CLICK"]; // keep the terrain toggle in step (#698)
+
         _deliveryTitle = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_DeliveryTypeTitle);
         _deliveryTitle ctrlShow true;
 
