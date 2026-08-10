@@ -7546,6 +7546,8 @@ switch(_operation) do {
                     // with the aircraft if it is ever virtualised mid-approach, and the landing
                     // watchdog needs a start time that outlives the airframe.
                     [_aircraft,"landingStart",time] call ALiVE_fnc_hashSet;
+                    // Fresh landing, so it is owed its one second chance again.
+                    [_aircraft,"landingRetried",false] call ALiVE_fnc_hashSet;
                     [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
                     [_logic, "assets", _assets] call MAINCLASS;
 
@@ -7693,8 +7695,56 @@ switch(_operation) do {
                     _landed = true;
                 };
 
+                // The five minute net below used to fire wherever the aircraft happened to be.
+                // Everything after it assumes the wheels are down: the engine is switched off,
+                // the speed is zeroed and the airframe is put back on its parking spot. An A-10
+                // measured at 324 metres and 224 km/h was declared landed by this timer and was
+                // destroyed in the same second.
+                //
+                // So check it is actually down before using the net. One that is still flying is
+                // told to land again and given another five minutes, once. If it is still up
+                // after that it is brought in anyway rather than left circling: this branch is
+                // also where the runway is handed back, so a landing that never finishes keeps
+                // the strip shut behind it.
+                private _netExpired = time > (_landingTime + 300);
+
+                if (_netExpired && {!_landed}) then {
+                    private _reallyDown = (!isNull _vehicle)
+                        && {(speed _vehicle) < 30}
+                        && {(isTouchingGround _vehicle) || {((getPosATL _vehicle) select 2) < 3}};
+
+                    if (!_reallyDown) then {
+                        if !([_aircraft,"landingRetried",false] call ALiVE_fnc_hashGet) then {
+
+                            [_aircraft,"landingRetried",true] call ALiVE_fnc_hashSet;
+                            [_aircraft,"landingStart",time] call ALiVE_fnc_hashSet;
+                            [_assets,_aircraftID,_aircraft] call ALiVE_fnc_hashSet;
+                            [_logic, "assets", _assets] call MAINCLASS;
+
+                            if (!isNull _vehicle) then {
+                                _vehicle land "NONE";
+                                private _retryAirport = [_aircraft,"airportID",[_startPosition] call ALiVE_fnc_getNearestAirportID] call ALiVE_fnc_hashGet;
+                                if (_retryAirport < 100) then {
+                                    _vehicle landAt _retryAirport;
+                                } else {
+                                    _vehicle landAt (nearestObject [_startPosition, "AirportBase"]);
+                                };
+                            };
+
+                            // Always logged, not just with Debug on. An aircraft needing a second
+                            // approach is worth seeing in any report that comes back.
+                            ["ATO %1 - %2 was still flying at %3m and %4km/h when its landing ran out of time. Told to land again; it will be brought in regardless if it is still up in five minutes.",
+                                _logic, typeof _vehicle,
+                                round ((getPosATL _vehicle) select 2),
+                                round (speed _vehicle)] call ALiVE_fnc_dump;
+
+                            _netExpired = false;
+                        };
+                    };
+                };
+
                 // Check to see if aircraft is in vicinty of starting position
-                if(_landed || time > (_landingTime + 300) ) then {
+                if(_landed || _netExpired ) then {
 
                     // DEBUG -------------------------------------------------------------------------------------
                     if(_debug) then {
