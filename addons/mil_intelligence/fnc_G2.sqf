@@ -297,13 +297,27 @@ switch(_operation) do {
 
             // calculate group size
             private _vehiclesInCommandOf = _profile select 2 select 8;
-            if (_vehiclesInCommandOf isequalto []) then {
+
+            // A crew can still name a vehicle whose profile has since been unregistered,
+            // for instance a transport broken up at its drop-off while its pilots carry on
+            // standing there. getProfile then returns nothing, and a private assigned from
+            // an expression that returns nothing is left UNDEFINED rather than empty, so
+            // reading it below threw and the group type was never set. That took the whole
+            // report down with it, not just the type, and the group quietly stopped being
+            // reported at all. Resolve it first and treat a crew with no vehicle as what it
+            // now is, which is men on the ground.
+            private _vehicleInCommandOf = [];
+            if !(_vehiclesInCommandOf isEqualTo []) then {
+                private _resolved = [ALiVE_profileHandler,"getProfile", _vehiclesInCommandOf select 0] call ALiVE_fnc_profileHandler;
+                if (!isNil "_resolved") then { _vehicleInCommandOf = _resolved };
+            };
+
+            if (_vehicleInCommandOf isEqualTo []) then {
                 private _units = _profile select 2 select 21;
                 _groupSize = count _units;
                 _groupType = "infantry";
             } else {
                 _groupSize = count _vehiclesInCommandOf;
-                private _vehicleInCommandOf = [ALiVE_profileHandler,"getProfile", _vehiclesInCommandOf select 0] call ALiVE_fnc_profileHandler;
                 _groupType = [_vehicleInCommandOf,"objectType"] call ALiVE_fnc_hashGet;
             };
         } else {
