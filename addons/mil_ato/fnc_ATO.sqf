@@ -7539,7 +7539,6 @@ switch(_operation) do {
 
                                 _vehicle land "LAND";
                                 _vehicle landat _helipad;
-                                 doGetOut (driver _vehicle);
 
                             } else {
 
@@ -7548,9 +7547,28 @@ switch(_operation) do {
                                 _wp setWaypointBehaviour "CARELESS";
                                 _wp setWaypointCombatMode "BLUE";
                                 _wp setWaypointType "TR UNLOAD";
-                                doGetOut (driver _vehicle);
 
                             };
+
+                            // Both branches above used to order the pilot out in the same breath
+                            // as the order to land, before the aircraft had gone anywhere. He
+                            // left one that was still flying, and it came down without him.
+                            // Measured on returning gunships: the seat emptied while the crewman
+                            // stayed alive, then the airframe slowed, went backwards at eighty
+                            // metres and hit the ground. Nothing was gained by asking early. The
+                            // crew is already taken out properly further down, once the landing
+                            // has actually finished, and the engine's own signal for that moment
+                            // is described as firing when an AI pilot would get out anyway.
+                            //
+                            // Those two signals say the aircraft touched down, and then that it
+                            // came to a stop. They were registered only on the runway side, so
+                            // anything landing on a pad had no way to report either. The only
+                            // other route to counting as down tests for a helicopter, which left
+                            // a plane-shaped aircraft on this path waiting out the five minute
+                            // net. Measured: every pad landing reported a touchdown time of
+                            // zero while every runway landing reported a real one.
+                            _vehicle addEventHandler ["LandedStopped", {(_this select 0) setVariable [QGVAR(LANDED),true]}];
+                            _vehicle addEventHandler ["LandedTouchDown", {(_this select 0) setVariable [QGVAR(LANDEDTOUCHDOWN),time]}];
 
                             // DEBUG -------------------------------------------------------------------------------------
                             if(_debug) then {
