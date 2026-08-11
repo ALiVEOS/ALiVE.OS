@@ -71,10 +71,14 @@ _csResult = false;
 //
 // Read exactly the way the death handler reads it (sup_command/fnc_SCOM.sqf:494).
 private _joinActive = false;
+private _joinDiag = "no ALIVE_SUP_COMMAND";     // DIAG-STRIP (#989)
 if (!isNil "ALIVE_SUP_COMMAND") then {
     private _joinState = [ALIVE_SUP_COMMAND,"commandState"] call ALIVE_fnc_SCOM;
-    if (!isNil "_joinState") then {
+    if (isNil "_joinState") then {
+        _joinDiag = "commandState nil";          // DIAG-STRIP (#989)
+    } else {
         _joinActive = [_joinState,"opsGroupInstantJoin",false] call ALiVE_fnc_hashGet;
+        _joinDiag = format ["flag=%1 (%2)", _joinActive, typeName _joinActive];   // DIAG-STRIP (#989)
         if !(_joinActive isEqualType false) then {_joinActive = false};
     };
 };
@@ -108,6 +112,16 @@ if (typeName _params == typeName []) then {
     _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
 } else {
     _menuName = _params;
+};
+
+// DIAG-STRIP (#989): reports what the menu sees AT THE MOMENT IT DECIDES, which a
+// console reading cannot, because that samples a different instant. It also answers
+// the prior question: if NO line appears when the menu is opened as the joined unit,
+// this function is not being re-run and no condition inside it can matter.
+// Gate: ALiVE_mil_c2istar_debug = true.
+if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+    ["C2MENU DIAG-STRIP (#989): menu=%1 tabletResult=%2 joinActive=%3 (%4) playerIs=%5",
+        _menuName, _result, _joinActive, _joinDiag, typeOf player] call ALiVE_fnc_dump;
 };
 //-----------------------------------------------------------------------------
 /*
