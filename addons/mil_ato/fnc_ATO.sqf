@@ -7710,21 +7710,6 @@ switch(_operation) do {
                 private _landed = _vehicle getVariable [QGVAR(LANDED),false];
                 private _touchDown = _vehicle getVariable [QGVAR(LANDEDTOUCHDOWN),0];
 
-                // The engine reports the landing finished while the aircraft is still taxiing.
-                // Measured on four landings out of four: the tasking closed between fifteen and
-                // twenty four seconds after the wheels touched, with the aircraft doing 32km/h
-                // and accelerating away down the strip. Taking it at that moment snatches it off
-                // the runway in front of anyone watching, and throws away the taxi to its stand
-                // that the engine was part way through flying.
-                //
-                // So trust that signal only once the aircraft has actually stopped. The two
-                // rules below still raise the flag on their own terms, so one that taxis forever
-                // and a helicopter sitting on the ground are both unaffected. This only stops us
-                // parking one that is still rolling.
-                if (_landed && {!isNull _vehicle} && {(abs (speed _vehicle)) >= 5}) then {
-                    _landed = false;
-                };
-
                 // Drop the record's engine flag the moment the wheels are actually down, rather
                 // than waiting for the landing to be signed off. An aircraft that gets put away
                 // with its engine still flagged on comes back FLYING, and is pushed up to 300 m
