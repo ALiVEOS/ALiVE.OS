@@ -17,11 +17,28 @@ if (_aliveVersion isEqualTo "") then {
 };
 private _buildType = getText (configFile >> "CfgPatches" >> QUOTE(ADDON) >> "buildType");
 if (_buildType isEqualTo "") then { _buildType = BUILDTYPE; };
+//
+// Arma reports its own version as one integer, 222 for 2.22, and printing that
+// straight out gives "Arma 222.153995", which is not how the version is written
+// anywhere else and not what a reporter will quote back. Split it, keeping the
+// leading zero so 2.06 does not come out as 2.6. Anything unexpected is printed
+// as-is rather than risking an error in the earliest hook we have.
+private _fmtArmaVersion = {
+    params ["_raw"];
+
+    if !(_raw isEqualType 0) exitWith {str _raw};
+
+    private _minor = _raw mod 100;
+    private _minorStr = str _minor;
+    if (_minor < 10) then { _minorStr = "0" + _minorStr; };
+
+    format ["%1.%2", floor (_raw / 100), _minorStr]
+};
 private _builtFor = [CLUSTERBUILD];
-["ALiVE %1 %2 | built for Arma %3.%4 | running on %5.%6",
+["ALiVE %1 %2 | built for Arma %3 build %4 | running on %5 build %6",
     _aliveVersion, _buildType,
-    _builtFor select 2, _builtFor select 3,
-    productVersion select 2, productVersion select 3] call ALiVE_fnc_dump;
+    [_builtFor select 2] call _fmtArmaVersion, _builtFor select 3,
+    [productVersion select 2] call _fmtArmaVersion, productVersion select 3] call ALiVE_fnc_dump;
 
 // Airside exclusion cache. Declared at the earliest hook on every machine so
 // the hot path can read plain globals rather than fall back to a getVariable,
