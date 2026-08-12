@@ -150,7 +150,15 @@ _menus =
                 ["call ALiVE_fnc_C2MenuDef", "C2ISTAR", 1],
                 -1,
                 true,
-                _result || _csResult || _otherResult
+                // Also shown mid-join. Operations is the only way to end an instant
+                // join, and it lives behind this entry, so opening it up further in
+                // is no use while the door itself is shut. The unit a player takes
+                // over carries none of the three items tested here, so all three
+                // read false and the way back disappears with them. Traced in a
+                // reporter's log: as the joined unit the menu was built as "main"
+                // twice and never once as "C2ISTAR", so the entry below was never
+                // even reached. See _joinActive above.
+                _result || _csResult || _otherResult || _joinActive
             ]
         ]
     ]
