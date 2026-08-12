@@ -5,8 +5,13 @@
 #define MAJOR 3
 #define MINOR 2
 #define PATCHLVL 0
-// BUILD should be YYMMDDR eg 1311211
+// BUILD should be YYMMDDR eg 1311211. Stamped by the packing step on every
+// build, so a log identifies exactly which one an install came from.
 #define BUILD 2604133
+// DEV between releases, RELEASE when one is cut. Moves at the same moment MINOR
+// or PATCHLVL does, and back again straight after. Reported at startup so a
+// report says which kind of build it came from without anyone having to ask.
+#define BUILDTYPE "DEV"
 
 #define CLUSTERBUILD "Arma 3","Arma3",222,153995,"Stable"
 

@@ -2,6 +2,27 @@
 
 LOG(MSG_INIT);
 
+// One line saying exactly what this install is, first thing in the log. Which
+// build a report came from has had to be worked out from which diagnostic lines
+// happen to be present, and getting that wrong has cost a reporter a wasted test
+// run more than once.
+//
+// The version is read from the packed config rather than from the macro, so it
+// reports what actually shipped. With file patching on, the loose source and the
+// packed config can disagree, and it is the packed one a report is really about.
+// The macro is only a fallback for when the config cannot be read at all.
+private _aliveVersion = getText (configFile >> "CfgPatches" >> QUOTE(ADDON) >> "versionStr");
+if (_aliveVersion isEqualTo "") then {
+    _aliveVersion = format ["%1.%2.%3.%4", MAJOR, MINOR, PATCHLVL, BUILD];
+};
+private _buildType = getText (configFile >> "CfgPatches" >> QUOTE(ADDON) >> "buildType");
+if (_buildType isEqualTo "") then { _buildType = BUILDTYPE; };
+private _builtFor = [CLUSTERBUILD];
+["ALiVE %1 %2 | built for Arma %3.%4 | running on %5.%6",
+    _aliveVersion, _buildType,
+    _builtFor select 2, _builtFor select 3,
+    productVersion select 2, productVersion select 3] call ALiVE_fnc_dump;
+
 // Airside exclusion cache. Declared at the earliest hook on every machine so
 // the hot path can read plain globals rather than fall back to a getVariable,
 // and so anything reaching the test before the server has finished building
