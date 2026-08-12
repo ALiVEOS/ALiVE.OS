@@ -17,3 +17,7 @@ __pycache__/
 /addons/missions/MPScenarios/ALiVE_Operation_Cobra.SPE_Normandy/ALiVE Operation Cobra v.1.00.5.txt
 /addons/alive.lnk
 utils/tools/ALIVE_push_to_game.ps1
+
+# Build-number counter written by the packing step. Untracked on purpose:
+# it must survive a checkout, which resets every tracked file.
+.buildstamp
