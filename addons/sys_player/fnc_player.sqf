@@ -36,6 +36,7 @@ See Also:
 
 Author:
 Tupolov
+Jman
 
 Peer reviewed:
 nil
@@ -227,7 +228,7 @@ switch(_operation) do {
                         if (_logic getvariable "saveLoadout") then {
                             player addEventHandler ["Put", {
                                 private ["_gearHash","_unit"];
-                                diag_log _this;
+                                TRACE_1("SYS_PLAYER PUT EVENT",_this);
                                 // Get player gear
                                 _gearHash = [MOD(sys_player), "setGear", [player]] call ALIVE_fnc_player;
                                 _unit = _this select 0;
@@ -236,7 +237,7 @@ switch(_operation) do {
                             }];
                             player addEventHandler ["Take", {
                                 private ["_gearHash","_unit"];
-                                diag_log _this;
+                                TRACE_1("SYS_PLAYER TAKE EVENT",_this);
                                 _unit = _this select 0;
                                 // Get player gear
                                 _gearHash = [MOD(sys_player), "setGear", [player]] call ALIVE_fnc_player;
