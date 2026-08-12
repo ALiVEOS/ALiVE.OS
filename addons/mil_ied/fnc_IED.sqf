@@ -50,6 +50,7 @@ See Also:
 
 Author:
 Tupolov, modificationss by Trapw0w
+Jman
 
 Peer reviewed:
 nil
@@ -516,65 +517,30 @@ switch(_operation) do {
                     // area discovery, so behaviour stays consistent with what users
                     // see for those modules.
                     //
-                    // Each entry in `_locations` is now a tuple [pos, size, label]
+                    // Each entry in `_locations` is a tuple [pos, size, label]
                     // rather than an engine LOCATION handle. The downstream
                     // setupTriggers loop and persistence path consume the tuple
                     // shape directly. Best-effort label resolves from a nearby
                     // engine Name* entry if one exists within 200m, else falls
                     // back to a grid-coord synthetic name.
                     //
-                    // Cluster discovery depends on `ALIVE_civilianSettlementBuildingTypes`
-                    // being populated for the current terrain — done by
-                    // staticDataHandler (per-terrain staticData file under
-                    // `addons/main/static/`, or hardcoded blocks in Maps.hpp
-                    // for known world names). If neither path populated the
-                    // list (rare: a terrain entirely unknown to ALiVE), fall
-                    // back to the legacy engine `nearestLocations` source so
-                    // the module doesn't leave the mission with zero IEDs.
+                    // Working the settlements out is no longer done here. It
+                    // moved into its own function so the answer can come from
+                    // whichever source is cheapest, and so the terrain's own
+                    // pre-built clusters get used when they exist. See that
+                    // function for the order the sources are tried in and why.
                     private _mapInfo = [] call ALIVE_fnc_getMapInfo;
                     _center = _mapInfo select 0;
                     private _radius = _mapInfo select 2;
 
-                    call ALiVE_fnc_staticDataHandler;
-
-                    private _clusters = [];
-                    if (!isNil "ALIVE_civilianSettlementBuildingTypes" && {count ALIVE_civilianSettlementBuildingTypes > 0}) then {
-                        _clusters = [ALIVE_civilianSettlementBuildingTypes] call ALIVE_fnc_findTargets;
-                        _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
-                    };
-
-                    if (count _clusters > 0) then {
-                        _locations = _clusters apply {
-                            private _pos = [_x, "center"] call ALIVE_fnc_cluster;
-                            private _size = [_x, "size"] call ALIVE_fnc_cluster;
-                            if (_size < 250) then { _size = 250 };
-                            private _nearLoc = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"], 200]) select 0;
-                            private _label = if (!isNil "_nearLoc" && {!(_nearLoc isEqualTo locationNull)}) then {
-                                text _nearLoc
-                            } else {
-                                format ["Area_%1", mapGridPosition _pos]
-                            };
-                            [_pos, _size, _label]
-                        };
-                    } else {
-                        // Fallback: legacy engine nearestLocations source.
-                        // Convert to the same [pos, size, label] tuple shape so
-                        // downstream code can stay uniform.
-                        if (_debug) then {
-                            ["ALIVE IED - cluster building-types unpopulated for this terrain; falling back to engine nearestLocations"] call ALiVE_fnc_dump;
-                        };
-                        private _engineLocs = nearestLocations [_center, ["NameCityCapital","NameCity","NameVillage","Strategic"], _radius];
-                        _locations = _engineLocs apply {
-                            private _pos = position _x;
-                            private _size = (size _x) select 0;
-                            if (_size < 250) then { _size = 250 };
-                            [_pos, _size, text _x]
-                        };
-                    };
-
-                    if (_debug) then {
-                        ["ALIVE IED - location source returned %1 population centres", count _locations] call ALiVE_fnc_dump;
-                    };
+                    // Where the towns come from now lives in its own function,
+                    // which tries the cheapest source first. This module used to
+                    // work the settlements out from scratch every time a mission
+                    // started, which on a dense terrain was eighty five seconds
+                    // of a two minute wait, and it was the only module doing so:
+                    // the same answer already ships with the terrain and every
+                    // other module just reads it.
+                    _locations = [_center, _radius, _debug] call ALIVE_fnc_IEDLocationSource;
 
                     // TAOR / blacklist filtering. The legacy `validateLocations`
                     // helper is built for engine LOCATION / OBJECT inputs; the
