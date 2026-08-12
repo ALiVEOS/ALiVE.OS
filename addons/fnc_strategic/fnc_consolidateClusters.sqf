@@ -28,6 +28,7 @@ See Also:
 
 Author:
 Wolffy.au
+Jman
 Peer Review:
 nil
 ---------------------------------------------------------------------------- */
@@ -59,7 +60,17 @@ _result = _master;
     {
         // if duplicate of master list - remove
         // if already nullified -1 - remove
-        if(str _out != "-1" && str _x != "-1" && str _out != str _x) then {
+        //
+        // These three tests used to be written with str, which serialises an
+        // entire cluster, node list and all, just to ask whether a slot holds
+        // the number -1 and whether two slots are the same cluster. On a real
+        // terrain that ran a couple of hundred thousand times and was the bulk
+        // of the time this function spent. isEqualTo answers the sentinel on a
+        // type check, and the self-pair is a reference match rather than merely
+        // a value one, because _result above is an alias of _master and the
+        // subtraction further down rebuilds the list while keeping the same
+        // cluster references. isEqualRef needs Arma 2.12.
+        if(!(_out isEqualTo -1) && {!(_x isEqualTo -1)} && {!(_out isEqualRef _x)}) then {
             // check for cluster within master cluster
             private ["_out_nodes","_nodes","_out_center","_x_center","_out_prio","_x_prio"];
             _out_center = [_out, "center"] call ALiVE_fnc_cluster;
