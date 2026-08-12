@@ -145,6 +145,21 @@ switch (_operation) do {
             } forEach _groupPlayerIDs;
         };
 
+        // DIAG-STRIP (#992): the test above wants a record carrying BOTH parent "None" and
+        // current "Y". Dump what was actually retrieved, so a log separates "the records are
+        // there and the test rejects them" from "nothing came back for this group at all",
+        // which would be a different fault needing a different fix.
+        // Gate: ALiVE_c2istar_taskDiag = true.
+        if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+            ["[C2ISTAR #992 DIAG] lookup group=%1 groupTasks=%2 matched=%3",
+                _groupID, count _groupTasks, count _currentTask] call ALiVE_fnc_dump;
+            {
+                ["[C2ISTAR #992 DIAG]   record id=%1 state=%2 current=%3 parent=%4 source=%5",
+                    _x param [0, ""], _x param [8, ""], _x param [10, ""],
+                    _x param [11, ""], _x param [12, ""]] call ALiVE_fnc_dump;
+            } forEach _groupTasks;
+        };
+
         _result = _currentTask;
     };
     case "getTaskManagedParams": {
@@ -395,6 +410,15 @@ switch (_operation) do {
         };
 
         private _taskID = format ["OPORD_%1_%2", _groupID, floor (diag_tickTime * 10)];
+
+        // DIAG-STRIP (#992): this site and the one in the task request handler mint the same
+        // ID shape, so an ID alone cannot say whether an order came from someone pressing the
+        // menu or from the commander raising it unprompted. The tag can. Orders appearing
+        // between a player's clicks mean a second source is running.
+        // Gate: ALiVE_c2istar_taskDiag = true.
+        if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+            ["[C2ISTAR #992 DIAG] minted by=TABLET id=%1 group=%2", _taskID, _groupID] call ALiVE_fnc_dump;
+        };
         private _taskPlayers = [_playerIDs, _playerNames];
         private _task = [_taskID, _requestPlayerID, _side, _faction, _taskType, "Map", _taskLocation, _taskPlayers, _enemyFaction, "Y", "Group"];
 
@@ -526,6 +550,15 @@ switch (_operation) do {
         ];
 
         private _currentTask = ["getGroupCurrentParentTask", [_groupID]] call MAINCLASS;
+
+        // DIAG-STRIP (#992): says whether the replace branch below was entered at all. The
+        // only delete in this flow sits inside it, so a log showing found=false on every
+        // request is the whole of the reported fault. Gate: ALiVE_c2istar_taskDiag = true.
+        if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+            ["[C2ISTAR #992 DIAG] requestOrder group=%1 replaceRequested=%2 foundCurrent=%3",
+                _groupID, _replaceCurrent, !(_currentTask isEqualTo [])] call ALiVE_fnc_dump;
+        };
+
         private _excludedPosition = [];
         private _excludedReservationKey = [];
         private _excludedGeneratedTaskTypes = [];

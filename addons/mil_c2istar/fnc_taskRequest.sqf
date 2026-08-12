@@ -233,6 +233,13 @@ if (_autoGenerateStrategicTasks) then {
                 ];
 
                 _requestID = format["OPORD_%1_%2", _groupID, floor (diag_tickTime * 10)];
+
+                // DIAG-STRIP (#992): pairs with the tag at the tablet's own mint site. Both
+                // produce the same ID shape, so only the tag says which raised a given order.
+                // Gate: ALiVE_c2istar_taskDiag = true.
+                if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                    ["[C2ISTAR #992 DIAG] minted by=COMMANDER id=%1 group=%2", _requestID, _groupID] call ALiVE_fnc_dump;
+                };
                 _taskFaction = _groupFaction;
                 _taskPlayers = [_groupPlayerIDs, _groupPlayerNames];
                 _apply = "Group";
