@@ -36,6 +36,6 @@ private _mission = format["ALiVE_%1_%2",missionName,worldName];
 
 _data = profileNamespace getVariable _mission;
 
-_result = if (isnil "_data") then {false} else {[_data,_id] call ALiVE_fnc_HashGet};
+_result = if (isnil "_data") then {false} else {[_data,_id,false] call ALiVE_fnc_HashGet};
 
 _result
