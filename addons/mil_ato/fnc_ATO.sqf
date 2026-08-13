@@ -1928,6 +1928,21 @@ switch(_operation) do {
     // Main process
     // Set module variables and attributes
     case "init": {
+
+        // DIAG-STRIP (load time): this module takes two to four minutes to start on a busy
+        // mission and writes nothing at all while it does, so there has been no way to say
+        // which part of it is slow. These marks bracket each stage. Bounded: one line per
+        // stage per module instance, a handful in total, and only during startup.
+        private _atoDiagT0 = diag_tickTime;
+        private _atoDiagLast = _atoDiagT0;
+        private _fnc_atoDiagMark = {
+            params ["_stage"];
+            private _now = diag_tickTime;
+            ["ATO DIAG - %1: %2s for this stage, %3s since init began", _stage,
+                (round ((_now - _atoDiagLast) * 100)) / 100,
+                (round ((_now - _atoDiagT0) * 100)) / 100] call ALiVE_fnc_dump;
+            _atoDiagLast = _now;
+        };
         if (isServer) then {
 
             // if server, initialise module game logic
@@ -2398,14 +2413,38 @@ switch(_operation) do {
             private _modulesAir = [];
             private _opcoms =[];
 
+            ["setup before OPCOM wait"] call _fnc_atoDiagMark;
             // get modules settings and air assets from syncronised OPCOM instances -------------------------------------------------------------------
             {
                 private _module = _x;
 
-                waituntil {
+                // Wait for the commander to finish starting up.
+                //
+                // Ask with a default, so a commander that has not written the flag yet reads
+                // as not ready rather than as nothing at all. Asking without one hands back
+                // nothing, and a test that is neither true nor false never comes good. Every
+                // other wait of this kind in the mod passes the default; this was the only
+                // one that did not.
+                //
+                // No pause inside the test either. It used to wait ten seconds before each
+                // look, so a commander that had been ready for several minutes still cost ten
+                // seconds, and that again for every commander this one is tied to. Measured at
+                // twenty six seconds of doing nothing on a mission where the commanders had
+                // finished long beforehand. The test costs almost nothing to run, so run it.
+                //
+                // The clock is there so that a commander which never finishes cannot hold the
+                // air side back for the whole mission with nothing in the log to say why.
+                private _waitStart = diag_tickTime;
+                if (_debug) then {
                     ["ATO %1 waiting for OPCOM %2", _logic, [_module,"module"] call ALIVE_fnc_hashGet] call ALiVE_fnc_dump;
-                    sleep 10;
-                    [_module, "startupComplete"] call ALiVE_fnc_hashGet;
+                };
+
+                waituntil {
+                    ([_module, "startupComplete", false] call ALiVE_fnc_hashGet) || {diag_tickTime - _waitStart > 120}
+                };
+
+                if !([_module, "startupComplete", false] call ALiVE_fnc_hashGet) then {
+                    ["ATO %1 - Warning, gave up waiting for AI Commander %2 after 120 seconds", _logic, [_module,"module"] call ALIVE_fnc_hashGet] call ALiVE_fnc_dumpR;
                 };
 
                 private _moduleSide = [_module,"side"] call ALiVE_fnc_HashGet;
@@ -2419,6 +2458,7 @@ switch(_operation) do {
                     // factions never merged. _modules is not read after this loop.
                 };
 
+                ["waited for OPCOM"] call _fnc_atoDiagMark;
                 // Register side with clients
                 MOD(Require) setVariable [format["ALIVE_MIL_ATO_AVAIL_%1", _moduleSide], true, true];
 
@@ -2481,6 +2521,7 @@ switch(_operation) do {
                         ["ATO %1 OPCOM has %3 air assets: %2", _logic, _modulesAir, count _modulesAir] call ALiVE_fnc_dump;
                 };
 
+                ["gathered profiles"] call _fnc_atoDiagMark;
                 // Go through all profiles and register them ---------------------------------------------------------------------------------------------------
                 {
                     private _profileID = _x;
@@ -2503,6 +2544,7 @@ switch(_operation) do {
                     };
                 } forEach _modulesAir;
 
+                ["registered profiles"] call _fnc_atoDiagMark;
                 // If there are no armed air assets and place Air is true then place at least one armed plane or heli ------------------------------------
                 private _placeAir = [_logic, "placeAir"] call MAINCLASS;
                 private _airCount = [_logic, "assets"] call MAINCLASS;
@@ -2556,6 +2598,7 @@ switch(_operation) do {
                     // per-aircraft deconfliction trap that sank the downstream placement fixes.
                     private _reservedSlots = [];
 
+                    ["checked air assets"] call _fnc_atoDiagMark;
                     // Place Helis
                     private _heliClasses = [0,_faction,"Helicopter"] call ALiVE_fnc_findVehicleType;
                     _heliClasses = _heliClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
@@ -2713,6 +2756,7 @@ switch(_operation) do {
                         };
                     };
 
+                    ["placed helis"] call _fnc_atoDiagMark;
                     // Place planes
                     private _airClasses = [0,_faction,"Plane"] call ALiVE_fnc_findVehicleType;
 
