@@ -1132,7 +1132,6 @@ switch(_operation) do {
                         "damages",
                         "positions",
                         "isPlayer",
-                        "objectType",
                         "unitCount",
                         "ranks",
                         "side",
