@@ -1671,9 +1671,12 @@ switch(_operation) do {
             //
             // Per-cluster distribution: ceil(_aaCount / _clusterCount) slots
             // per cluster, capped at _aaCount total. Each slot validated via
-            // findCompositionSpawnPosition mode="ato" with envelope=10m
+            // findCompositionSpawnPosition mode="field" with envelope=10m
             // (unit footprint, not a composition envelope) so AA lands
-            // on a clear non-runway / non-taxiway position. Crewed via
+            // on a clear non-runway / non-taxiway position. The mode is
+            // spelled out below where the call is made; it is field, not
+            // ato, and the difference matters because field keeps the
+            // building check that ato skips. Crewed via
             // createProfileVehicle - the profile system populates the gun /
             // launcher crew and the engine AI engages incoming aircraft.
             //

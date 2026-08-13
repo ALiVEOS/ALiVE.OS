@@ -52,12 +52,16 @@ Description:
 Parameters:
     _this select 0: ARRAY   - centre position [x, y, z]. Required.
     _this select 1: NUMBER  - search radius in metres. Default 200.
-    _this select 2: NUMBER  - composition envelope radius in metres
-                              (clear-circle requirement around the
-                              picked position). Default 30.
-                              Pass a larger value for big compositions
-                              (Field HQ ~50m, large camps ~60m). Smaller
-                              for outposts (~20m) and roadblocks (~15m).
+    _this select 2: NUMBER  - composition envelope in metres, as returned
+                              by ALiVE_fnc_getCompositionRadius. This is a
+                              DIAMETER, not a radius - that function doubles
+                              the furthest object distance and adds five.
+                              The checks below halve it and add an overhang
+                              allowance to get the distance the composition
+                              actually reaches. Do not treat this value as a
+                              clear-circle radius; doing so asks for roughly
+                              twice the clearance needed and rejects almost
+                              every position on wooded terrain. Default 30.
     _this select 3: STRING  - exclusion mode (see above). Default
                               "military".
     _this select 4: NUMBER  - preferred direction in degrees [0, 360].
@@ -256,9 +260,40 @@ private _onAirfieldSurface = {
 // ------------------------------------------------------------------------
 // Helper: candidate position passes all envelope clearance checks?
 // ------------------------------------------------------------------------
+// DIAG-STRIP (camps): tally of which rule turned candidates away, counted
+// rather than logged. When a search fails there is currently no way to tell
+// whether every candidate was in water, on a road, or blocked by an object,
+// and the per-candidate trace below cannot be left on to find out because it
+// writes a line for every sample and a wide search takes over a thousand.
+// One summary line at the end costs nothing and answers the question.
+private _rejectCounts = [0,0,0,0,0,0,0,0,0,0,0,0];
+private _rejectNames = ["bounds","runway","helipad","road","obstacle","water-centre","water-edge","slope-normal","slope-inner","slope-outer","surface","rock"];
+
 private _candidateClear = {
     params ["_p", "_env"];
     private _envHalf = _env / 2;
+    // How far the composition's objects can actually reach from the anchor.
+    //
+    // The envelope handed in is a DIAMETER: getCompositionRadius doubles the
+    // furthest object distance and adds five. So the objects themselves only
+    // reach about half of it. The checks below used to treat the whole figure
+    // as a reach, which asked for roughly twice the clearance in every
+    // direction, four times the area. On a wooded map that is a clearing that
+    // does not exist, and every candidate was refused.
+    //
+    // Simply halving it would bring back the problem that caused the doubling
+    // in the first place: object positions are measured from their centres, so
+    // one sitting right on the edge still hangs past it, and camps were
+    // clipping runways. Half plus an allowance for that overhang is the honest
+    // figure. The allowance is a judgement, not a measurement: five metres for
+    // small compositions rising to ten for large ones.
+    //
+    // Worth knowing before changing it: at envelope 10 this comes to exactly
+    // 10, which is what the old code used, so the many callers that search in
+    // tight sweeps at that size behave identically to before. Only genuinely
+    // large compositions move.
+    private _bboxPad   = (5 max (_envHalf * 0.5)) min 10;
+    private _clearReach = _envHalf + _bboxPad;
 
     // 0. World-bounds rejection. When the caller's centre is near the
     // map edge, getPos [random radius, random angle] can land outside
@@ -274,38 +309,39 @@ private _candidateClear = {
         {(_p select 1) < 0} || {(_p select 1) > _wsz}
     ) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: outside world bounds (worldSize=%2)", _p, _wsz] call ALiVE_fnc_dump };
+        _rejectCounts set [0, (_rejectCounts select 0) + 1];
         false
     };
 
-    // External-feature exclusions (1-3 below) use FULL envelope as the
-    // rejection radius, not envHalf. Composition objects extend from the
-    // anchor `_p` out to `_env` in any direction; if a runway / helipad /
-    // road sits within `_env` of `_p`, the composition's outer objects
-    // can land on top of it. Using envHalf under-rejected by half the
-    // envelope - e.g. a 30m-envelope AA bunker placed with its centre
-    // 16m from a runway centreline would pass envHalf=15m but its outer
-    // sandbags reach up to 14m PAST the runway centreline, blocking the
-    // runway. Internal samples (slope, water perimeter, bbox intrusion)
-    // still use envHalf because those test the inside of the footprint.
+    // External-feature exclusions (1-3 below) keep things like runways and
+    // roads clear of the composition's outermost objects, so they measure
+    // against `_clearReach` - how far those objects actually reach - rather
+    // than the envelope, which is a diameter. See the note where _clearReach
+    // is worked out for why the earlier full-envelope version rejected almost
+    // everything. Internal samples (slope, water perimeter) keep using
+    // _envHalf, because those test the inside of the footprint.
     //
     // 1. Runway / taxiway exclusion. Caller can scale the rejection
-    // radius via `_runwayClearanceMul` - default 1.0 (strict, full env);
+    // radius via `_runwayClearanceMul` - default 1.0 (strict);
     // mil_ato AA passes ~0.6 to allow placement on tight airfields where
     // the strict rule would skip the spawn entirely.
-    if (_excludeRunways && {[_p, _env * _runwayClearanceMul] call _onAirfieldSurface}) exitWith {
-        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: airfield surface (clearance=%2m, mul=%3)", _p, _env * _runwayClearanceMul, _runwayClearanceMul] call ALiVE_fnc_dump };
+    if (_excludeRunways && {[_p, _clearReach * _runwayClearanceMul] call _onAirfieldSurface}) exitWith {
+        if (_debug) then { ["[ALiVE CompSpawn]   reject %1: airfield surface (clearance=%2m, mul=%3)", _p, _clearReach * _runwayClearanceMul, _runwayClearanceMul] call ALiVE_fnc_dump };
+        _rejectCounts set [1, (_rejectCounts select 1) + 1];
         false
     };
 
     // 2. Helipad exclusion (any HeliH within envelope)
-    if (_excludeHelipads && {count (_p nearObjects ["HeliH", _env + 10]) > 0}) exitWith {
+    if (_excludeHelipads && {count (_p nearObjects ["HeliH", _clearReach + 10]) > 0}) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: helipad nearby", _p] call ALiVE_fnc_dump };
+        _rejectCounts set [2, (_rejectCounts select 2) + 1];
         false
     };
 
     // 3. Road exclusion (field mode only)
-    if (_excludeRoads && {count (_p nearRoads (_env + 5)) > 0}) exitWith {
+    if (_excludeRoads && {count (_p nearRoads (_clearReach + 5)) > 0}) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: road nearby (field mode)", _p] call ALiVE_fnc_dump };
+        _rejectCounts set [3, (_rejectCounts select 3) + 1];
         false
     };
 
@@ -340,18 +376,35 @@ private _candidateClear = {
     // buildings lining the street are still tolerated.
     private _isRoadblock = (_mode == "roadblock");
     if (_excludeBuildings || _isRoadblock) then {
-        // Same envelope-vs-envHalf rationale as the runway / helipad
-        // exclusions above: composition objects extend to FULL envelope
-        // from the anchor, so any building whose bbox sits within `_env`
-        // of `_p` could be clipped by an outer composition object. The
-        // +15 padding on the search radius is to catch building CENTRES
-        // outside the envelope but with bboxes that extend inside.
+        // Same reasoning as the runway / helipad exclusions above: measure
+        // against how far the composition's objects actually reach. The +15
+        // padding on the search radius catches objects whose centres sit
+        // outside that reach but whose bulk extends inside it.
         // Roadblock narrows the intrusion radius to the composition core but
         // searches a fixed 35m so large buildings whose footprint reaches the
         // road point are still caught.
-        private _intrudeRadius       = if (_isRoadblock) then { 6 } else { _env };
-        private _buildingCheckRadius = if (_isRoadblock) then { 35 } else { (_env + 15) max 25 };
+        private _intrudeRadius       = if (_isRoadblock) then { 6 } else { _clearReach };
+        private _buildingCheckRadius = if (_isRoadblock) then { 35 } else { (_clearReach + 15) max 25 };
         private _allHits = nearestObjects [_p, [], _buildingCheckRadius];
+
+        // Trees and undergrowth do not block a composition, because the
+        // spawner clears them: it hides the vegetation and scenery categories
+        // across the footprint as it builds. Counting them as obstacles meant
+        // refusing perfectly good ground on account of trees that were about
+        // to be removed anyway, and on a jungle map that is nearly all ground.
+        // Measured on Cam Lao Nam at a rejected site: of 280 objects within
+        // range, every one cleared the size test below and 277 were vegetation.
+        // Taking them out left three.
+        //
+        // The list is deliberately the same one the spawner hides, so the two
+        // cannot drift apart: exempt exactly what will be cleared, nothing more.
+        // Rocks are NOT exempted even though the spawner hides those too. That
+        // asymmetry is on purpose. Hiding a boulder field reads far worse than
+        // hiding trees, and AI pathing was found reaching into rock the spawner
+        // had removed, so rocks keep rejecting the position outright further
+        // down rather than being quietly deleted.
+        private _vegExempt = nearestTerrainObjects [_p, ["TREE","SMALL TREE","BUSH","FOREST BORDER","FOREST SQUARE","FOREST TRIANGLE","FOREST"], _buildingCheckRadius, false];
+        if (count _vegExempt > 0) then { _allHits = _allHits - _vegExempt };
 
         _buildingIntruders = _allHits select {
             // Avoid exitWith inside a select-predicate code block - in some
@@ -381,6 +434,7 @@ private _candidateClear = {
     };
     if (count _buildingIntruders > 0) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: %2 obstacle bbox(s) intersect envelope: first=%3", _p, count _buildingIntruders, typeOf (_buildingIntruders select 0)] call ALiVE_fnc_dump };
+        _rejectCounts set [4, (_rejectCounts select 4) + 1];
         false
     };
 
@@ -401,10 +455,12 @@ private _candidateClear = {
     };
     if (_waterCentre) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: water surface", _p] call ALiVE_fnc_dump };
+        _rejectCounts set [5, (_rejectCounts select 5) + 1];
         false
     };
     if (_waterEdge) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: water within envelope perimeter", _p] call ALiVE_fnc_dump };
+        _rejectCounts set [6, (_rejectCounts select 6) + 1];
         false
     };
 
@@ -434,6 +490,7 @@ private _candidateClear = {
     private _normalZ = _normal select 2;
     if (_normalZ < _normalZMin) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: surfaceNormal Z %2 < %3 (mode %4)", _p, _normalZ, _normalZMin, _mode] call ALiVE_fnc_dump };
+        _rejectCounts set [7, (_rejectCounts select 7) + 1];
         false
     };
 
@@ -470,6 +527,7 @@ private _candidateClear = {
     private _innerLo = selectMin _innerSamples;
     if (_innerHi - _innerLo > _maxDelta) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: composition slope-delta %2m > %3m max at %4m radius (mode %5)", _p, _innerHi - _innerLo, _maxDelta, _innerRadius, _mode] call ALiVE_fnc_dump };
+        _rejectCounts set [8, (_rejectCounts select 8) + 1];
         false
     };
 
@@ -479,6 +537,7 @@ private _candidateClear = {
     private _outerLo = selectMin _outerSamples;
     if (_outerHi - _outerLo > _neighbourhoodMaxDelta) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: neighbourhood slope-delta %2m > %3m max at %4m radius (mode %5)", _p, _outerHi - _outerLo, _neighbourhoodMaxDelta, _outerRadius, _mode] call ALiVE_fnc_dump };
+        _rejectCounts set [9, (_rejectCounts select 9) + 1];
         false
     };
 
@@ -486,6 +545,7 @@ private _candidateClear = {
     private _surface = surfaceType _p;
     if (_surface in ["#GdtBeach", "#GdtMud", "#GdtSeabed", "#GdtStratisBeach", "#GdtStratisMud", "#GdtStratisSeabed"]) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: surface %2", _p, _surface] call ALiVE_fnc_dump };
+        _rejectCounts set [10, (_rejectCounts select 10) + 1];
         false
     };
 
@@ -511,6 +571,7 @@ private _candidateClear = {
     };
     if (_rockBlocked >= 0) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn]   reject %1: rock footprint intrudes (rock %2)", _p, typeOf (_nearRocks select _rockBlocked)] call ALiVE_fnc_dump };
+        _rejectCounts set [11, (_rejectCounts select 11) + 1];
         false
     };
 
@@ -660,6 +721,31 @@ for "_i" from 1 to _maxAttempts do {
 
 if (count _result == 0 && _debug) then {
     ["[ALiVE CompSpawn] EXIT FAIL: %1 attempts exhausted (envelope=%2 mode=%3 radius=%4 centre=%5)", _maxAttempts, _envelope, _mode, _radius, _centerPos] call ALiVE_fnc_dump;
+};
+
+// DIAG-STRIP (camps): when a search comes back with nothing, say which rule
+// was doing the turning away. Without this a failed search reports only that
+// it failed, and the per-candidate trace above cannot be left switched on to
+// find out because a wide search writes over a thousand lines.
+//
+// Only for searches of 50m and wider, and that gate is doing real work rather
+// than being cautious. Seven of the callers use this inside their own sweeps,
+// trying position after position where failing is simply how the loop moves
+// on, and every one of those asks for 20 to 25m. Every caller that asks once
+// and means it asks for 60m or more. Printing on the narrow ones would add
+// hundreds of lines to every mission start. On the wide ones it is at most a
+// line per objective that could not be placed, which is the thing we want to
+// know about anyway.
+if (count _result == 0 && {_radius >= 50 || _callerDebug || _debug}) then {
+    private _reasons = "";
+    {
+        if (_x > 0) then {
+            _reasons = _reasons + format ["%1%2=%3", if (_reasons == "") then {""} else {", "}, _rejectNames select _forEachIndex, _x];
+        };
+    } forEach _rejectCounts;
+    if (_reasons == "") then { _reasons = "none recorded" };
+    ["[ALiVE CompSpawn] FAIL centre=%1 mode=%2 radius=%3m envelope=%4m after %5 tries - turned away by: %6",
+        _centerPos, _mode, _radius, _envelope, _maxAttempts, _reasons] call ALiVE_fnc_dump;
 };
 
 _result

@@ -1184,8 +1184,22 @@ switch(_operation) do {
                 };
             };
 
+            // DIAG-STRIP (load time): a run of this mission spent seventeen seconds and
+            // more between the artillery line above and the sea patrol line below with
+            // nothing written in between, so the log could not say where it went. These
+            // two brackets close that gap. They fire ONCE per civ_placement instance,
+            // never per lookup: the group lookup they are timing is called from seventy
+            // places across the mod including live task and air tasking paths, and the
+            // dump function writes to the log whether or not anyone asked, so timing it
+            // at the call site here is the only way to get a number without writing to
+            // every log forever.
+            private _diagT0 = diag_tickTime;
+
             // place any batteries the group pull could not provide
             call _fnc_placeFallbackArtillery;
+
+            private _diagArty = diag_tickTime - _diagT0;
+            private _diagT1 = diag_tickTime;
 
             if(_countMotorized > 0) then {
 
@@ -1241,6 +1255,21 @@ switch(_operation) do {
                     _groups pushback _group;
                 };
             };
+
+            // DIAG-STRIP (load time): closing bracket for the note above. Reports how
+            // long picking the groups took and how many picks that was, so the cost per
+            // lookup can be worked out rather than guessed at. Motorized is listed twice
+            // when the first pass found nothing and the fallback ran, so the lookup count
+            // is a floor rather than an exact figure.
+            private _diagGroups = diag_tickTime - _diagT1;
+            private _diagPicks = _countMotorized + _countInfantry + _countAir + _countSpecOps;
+            ["CP DIAG [%1] - group selection %2s over %3+ lookups (motor %4, inf %5, air %6, spec %7) = %8s each; fallback artillery %9s",
+                _faction,
+                (round (_diagGroups * 100)) / 100,
+                _diagPicks,
+                _countMotorized, _countInfantry, _countAir, _countSpecOps,
+                if (_diagPicks > 0) then { (round ((_diagGroups / _diagPicks) * 1000)) / 1000 } else { 0 },
+                (round (_diagArty * 100)) / 100] call ALiVE_fnc_dump;
 
             _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;
             _infantryGroups = _infantryGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;

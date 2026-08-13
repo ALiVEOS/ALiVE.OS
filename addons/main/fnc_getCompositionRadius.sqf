@@ -16,8 +16,13 @@ Description:
 
     Used by callers feeding ALiVE_fnc_findCompositionSpawnPosition - small
     camps get tight envelopes (~15m) while large field HQs get bigger ones
-    (~60m). The validator's road / helipad / building exclusions all scale
-    automatically because they're expressed as `_envHalf + N`.
+    (~60m).
+
+    THE RETURNED VALUE IS A DIAMETER. Anything treating it as a clearance
+    radius asks for about twice what the composition needs, and four times
+    the area. The validator halves it and adds an overhang allowance before
+    using it; do the same in any new caller. This was got wrong once and the
+    result was every Random Camp on a wooded map silently failing to place.
 
 Parameters:
     0: CONFIG or STRING - composition config or its config-path string
@@ -61,7 +66,14 @@ private _maxDist = 0;
 for "_i" from 0 to ((count _config) - 1) do {
     private _item = _config select _i;
     if (isClass _item) then {
-        private _pos = getArray (_item >> "position");
+        // Clutter cutters are invisible ground markers that flatten grass
+        // where a composition sits. They are routinely placed wider than the
+        // structures they serve, so measuring to them inflates the envelope
+        // and makes the composition look far bigger than it is. On the jungle
+        // camp this was measured on, one of these set the whole envelope at
+        // 44m while the outermost real object, a fence, sat at 39m.
+        private _itemVeh = toLower (getText (_item >> "vehicle"));
+        private _pos = if (_itemVeh find "cluttercutter" >= 0) then { [] } else { getArray (_item >> "position") };
         if (count _pos >= 2) then {
             private _dx = _pos select 0;
             private _dy = _pos select 1;

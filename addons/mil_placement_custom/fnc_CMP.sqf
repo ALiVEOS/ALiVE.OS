@@ -2014,8 +2014,9 @@ switch(_operation) do {
             //
             // Single-objective: _aaCount slots distributed around _position
             // (the objective centre). Each slot validated via
-            // findCompositionSpawnPosition mode="ato" with envelope=10m so
-            // AA lands on a clear non-runway / non-taxiway position.
+            // findCompositionSpawnPosition mode="field" with envelope=10m so
+            // AA lands on a clear non-runway / non-taxiway position. Field,
+            // not ato: field keeps the building check that ato skips.
             // Crewed via createProfileVehicle - profile system populates
             // the gun / launcher crew and engine AI engages incoming
             // aircraft.
