@@ -1002,7 +1002,7 @@
     <Russian>Группы пехоты гарнизона:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_COMMENT">
-    <English>Additional infantry groups spawned at each objective to garrison and patrol buildings. Low/Medium/High resolve to roughly 1-2, 3-4 or 5-6 groups per objective when enough infantry groups exist. These are not a Force Size cap and can multiply the final unit count across many objectives.</English>
+    <English>Additional infantry groups spawned at each objective to garrison and patrol buildings. Levels resolve to roughly 1-2 (Low) up to 5-6 (High) groups per objective when enough infantry groups exist. These are not a Force Size cap and can multiply the final unit count across many objectives.</English>
     <Chinese>分配到每個目標內駐防和巡邏建築物的步兵組數量。如果沒有生成步兵組，則沒有效果。</Chinese>
     <Chinesesimp>分配到每个目标内驻防和巡逻建筑物的步兵组数量。如果没有生成步兵组，则没有效果。</Chinesesimp>
     <Spanish>Número de grupos de infantería asignados a guarnecer y patrullar edificios dentro de cada objetivo. No tiene efecto si no se generan grupos de infantería.</Spanish>
@@ -1028,6 +1028,16 @@
     <Portuguese>Baixo (1-2 grupos)</Portuguese>
     <Russian>Низко (1-2 группы)</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMLOW">
+    <English>Medium-Low (2-3 Groups)</English>
+    <Chinese>中低（2-3 組）</Chinese>
+    <Chinesesimp>中低(2-3组)</Chinesesimp>
+    <Spanish>Medio-bajo (2-3 grupos)</Spanish>
+    <French>Moyen-faible (2-3 groupes)</French>
+    <Portuguese>Médio-baixo (2-3 grupos)</Portuguese>
+    <Russian>Средне-низко (2-3 группы)</Russian>
+</Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUM">
     <English>Medium (3-4 Groups)</English>
     <Chinese>中等（3-4 組）</Chinese>
@@ -1036,6 +1046,16 @@
     <French>Moyen (3-4 groupes)</French>
     <Portuguese>Médio (3-4 grupos)</Portuguese>
     <Russian>Средне (3-4 группы)</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMHIGH">
+    <English>Medium-High (4-5 Groups)</English>
+    <Chinese>中高（4-5 組）</Chinese>
+    <Chinesesimp>中高(4-5组)</Chinesesimp>
+    <Spanish>Medio-alto (4-5 grupos)</Spanish>
+    <French>Moyen-élevé (4-5 groupes)</French>
+    <Portuguese>Médio-alto (4-5 grupos)</Portuguese>
+    <Russian>Средне-высоко (4-5 групп)</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_HIGH">
     <English>High (5-6 Groups)</English>
