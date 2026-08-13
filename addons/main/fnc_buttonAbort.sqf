@@ -471,13 +471,25 @@ if (_mode == "SAVESERVERYO" && isServer && ALiVE_sys_data_DISABLED) then {
 
 // Function run on server
 if (_mode == "SAVESERVERYO" && isServer) exitWith {
+
+    // Only accept save requests from admins or UIDs on the sys_data save allowlist (#873)
+    private _requester = [_adminUID] call ALIVE_fnc_getPlayerByUID;
+    private _authorised = !isMultiplayer
+        || {hasInterface && {call ALiVE_fnc_isServerAdmin}}
+        || {_adminUID in (missionNamespace getVariable ["ALiVE_sys_data_saveAllowlist",[]])}
+        || {!isNull _requester && {(admin owner _requester) > 0}};
+
+    if !(_authorised) exitWith {
+        ["Exit - Server save request from unauthorised UID %1 - ignoring",_adminUID] call ALiVE_fnc_dump;
+    };
+
     // Save server data
     [_saveServer,_exitServer,_adminUID] spawn {
         private ["_saveServer","_exitServer"];
         _saveServer = _this select 0;
         _exitServer = _this select 1;
         _adminUID = _this select 2;
-        WaitUntil {sleep 1; (count ([] call BIS_fnc_ListPlayers)) == 1};
+        WaitUntil {sleep 1; (count ([] call BIS_fnc_ListPlayers)) <= 1};
         [_adminUID] call _saveServer;
         [_adminUID] call _exitServer;
         "serversaved" call BIS_fnc_endMission;
@@ -518,6 +530,9 @@ if ((_mode == "SAVE" || _mode == "REMSAVE") && hasInterface) then {
 };
 
 
+// Server save may also be triggered by a UID on the sys_data save allowlist (#873)
+private _saveAllowed = (call ALiVE_fnc_isServerAdmin) || {hasInterface && {(getPlayerUID player) in (missionNamespace getVariable ["ALiVE_sys_data_saveAllowlist",[]])}};
+
 // Check client for admin
 if (call ALiVE_fnc_isServerAdmin) then {
 
@@ -537,14 +552,19 @@ if (call ALiVE_fnc_isServerAdmin) then {
 
     };
 
+};
+
+// Check client for admin or save allowlist
+if (_saveAllowed) then {
+
     if (_mode == "SERVERSAVE") then {
 
         ["Exit - Abort / Save by Admin"] call ALiVE_fnc_dump;
 
         ["Exit - Broadcasting abort call to all players"] call ALiVE_fnc_dump;
 
-        // Save all players
-        [["REMSAVE"],"ALiVE_fnc_buttonAbort",true,false] call BIS_fnc_MP;
+        // Save all players (pass the initiator's UID so they stay behind for the server save)
+        [["REMSAVE",getPlayerUID player],"ALiVE_fnc_buttonAbort",true,false] call BIS_fnc_MP;
 
         ["Exit - Trigger Server abort call"] call ALiVE_fnc_dump;
 
@@ -566,13 +586,22 @@ switch (_mode) do {
         "abort" call BIS_fnc_endMission;
     };
     case "REMSAVE" : {
-        if !(call ALiVE_fnc_isServerAdmin) then {
+        // Exactly one player stays behind for the server's player-count
+        // wait: the initiator when the save request carries a UID, else
+        // the admin (legacy REMSAVE). Keeping both would strand the
+        // count above 1 and stall the save.
+        private _staysBehind = if (_adminUID != "") then {
+            (getPlayerUID player) == _adminUID
+        } else {
+            call ALiVE_fnc_isServerAdmin
+        };
+        if !(_staysBehind) then {
             ["Exit - [%1] !(Admin) Ending mission",_mode] call ALiVE_fnc_dump;
             "saved" call BIS_fnc_endMission;
         };
     };
     case "SERVERSAVE": {
-        if (call ALiVE_fnc_isServerAdmin) then {
+        if (_saveAllowed) then {
             ["Exit - [%1] (Admin) Ending mission",_mode] call ALiVE_fnc_dump;
             //"serversaved" call BIS_fnc_endMission;
         };
