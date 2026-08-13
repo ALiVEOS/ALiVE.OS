@@ -1938,9 +1938,15 @@ switch(_operation) do {
         private _fnc_atoDiagMark = {
             params ["_stage"];
             private _now = diag_tickTime;
-            ["ATO DIAG - %1: %2s for this stage, %3s since init began", _stage,
-                (round ((_now - _atoDiagLast) * 100)) / 100,
-                (round ((_now - _atoDiagT0) * 100)) / 100] call ALiVE_fnc_dump;
+            // Gated on the module debug attribute, off by default, as every other
+            // working diagnostic in the mod is. The clock below is updated whether or
+            // not the line is written, so switching debug on mid-startup still gives
+            // truthful stage times rather than one enormous first reading.
+            if (!isNil "_debug" && {_debug}) then {
+                ["DIAG-STRIP ATO DIAG - %1: %2s for this stage, %3s since init began", _stage,
+                    (round ((_now - _atoDiagLast) * 100)) / 100,
+                    (round ((_now - _atoDiagT0) * 100)) / 100] call ALiVE_fnc_dump;
+            };
             _atoDiagLast = _now;
         };
         if (isServer) then {

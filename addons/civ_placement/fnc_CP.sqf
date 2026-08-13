@@ -1109,6 +1109,7 @@ switch(_operation) do {
                             private _cPos = [_cluster, "center"] call ALIVE_fnc_hashGet;
                             if (isNil "_cPos" || {typeName _cPos != "ARRAY"}) then { _cPos = [0,0,0] };
 
+                            ALiVE_DIAG_artyWanted = ALiVE_DIAG_artyWanted + _sectionSize;
                             private _gunsPlaced = 0;
                             for "_g" from 1 to _sectionSize do {
                                 private _safePos = [];
@@ -1118,6 +1119,7 @@ switch(_operation) do {
                                     private _radius = _x;
                                     for "_a" from 0 to 5 do {
                                         private _cand = _cPos getPos [_radius, (_a * 60) + random 60];
+                                        ALiVE_DIAG_artyCalls = ALiVE_DIAG_artyCalls + 1;
                                         private _res = [_cand, 25, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
                                         if (count _res >= 2) then {
                                             private _testPos = _res select 0;
@@ -1137,6 +1139,7 @@ switch(_operation) do {
                                     [_artyClass, _side, _artySourceFaction, "PRIVATE", _safePos, _safeDir, false, _artySourceFaction] call ALIVE_fnc_createProfilesCrewedVehicle;
                                     _countProfiles = _countProfiles + 2;
                                     _gunsPlaced = _gunsPlaced + 1;
+                                    ALiVE_DIAG_artyPlaced = ALiVE_DIAG_artyPlaced + 1;
                                 };
                             };
 
@@ -1193,6 +1196,17 @@ switch(_operation) do {
             // dump function writes to the log whether or not anyone asked, so timing it
             // at the call site here is the only way to get a number without writing to
             // every log forever.
+            // DIAG-STRIP (load time): this fallback is nearly the whole of the module startup
+            // cost, and it swings from four seconds to thirty between instances doing much the
+            // same work. That spread says some guns are found a home straight away while others
+            // are searched for and never placed at all. Counting what was asked for, what was
+            // placed, and how many searches it took tells the two apart. There is no other way
+            // to see it: the search reports its failures only for wide searches, and these are
+            // narrow ones.
+            ALiVE_DIAG_artyCalls = 0;
+            ALiVE_DIAG_artyWanted = 0;
+            ALiVE_DIAG_artyPlaced = 0;
+
             private _diagT0 = diag_tickTime;
 
             // place any batteries the group pull could not provide
@@ -1263,13 +1277,21 @@ switch(_operation) do {
             // is a floor rather than an exact figure.
             private _diagGroups = diag_tickTime - _diagT1;
             private _diagPicks = _countMotorized + _countInfantry + _countAir + _countSpecOps;
-            ["CP DIAG [%1] - group selection %2s over %3+ lookups (motor %4, inf %5, air %6, spec %7) = %8s each; fallback artillery %9s",
-                _faction,
-                (round (_diagGroups * 100)) / 100,
-                _diagPicks,
-                _countMotorized, _countInfantry, _countAir, _countSpecOps,
-                if (_diagPicks > 0) then { (round ((_diagGroups / _diagPicks) * 1000)) / 1000 } else { 0 },
-                (round (_diagArty * 100)) / 100] call ALiVE_fnc_dump;
+            if (!isNil "_debug" && {_debug}) then {
+                ["DIAG-STRIP CP DIAG [%1] - group selection %2s over %3+ lookups (motor %4, inf %5, air %6, spec %7) = %8s each; fallback artillery %9s",
+                    _faction,
+                    (round (_diagGroups * 100)) / 100,
+                    _diagPicks,
+                    _countMotorized, _countInfantry, _countAir, _countSpecOps,
+                    if (_diagPicks > 0) then { (round ((_diagGroups / _diagPicks) * 1000)) / 1000 } else { 0 },
+                    (round (_diagArty * 100)) / 100] call ALiVE_fnc_dump;
+            };
+
+            if (!isNil "_debug" && {_debug}) then {
+                ["DIAG-STRIP CP DIAG [%1] - artillery: %2 guns wanted, %3 placed, %4 searches run (%5 per gun placed)",
+                    _faction, ALiVE_DIAG_artyWanted, ALiVE_DIAG_artyPlaced, ALiVE_DIAG_artyCalls,
+                    if (ALiVE_DIAG_artyPlaced > 0) then { round (ALiVE_DIAG_artyCalls / ALiVE_DIAG_artyPlaced) } else { -1 }] call ALiVE_fnc_dump;
+            };
 
             _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;
             _infantryGroups = _infantryGroups - ALiVE_PLACEMENT_GROUPBLACKLIST;
