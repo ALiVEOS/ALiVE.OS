@@ -296,6 +296,13 @@ switch (_operation) do {
                     [_args,QGVAR(DAMAGE),[_x] call ALiVE_fnc_getObjectDamage] call ALiVE_fnc_HashSet;
                     [_args,QGVAR(POINTDAMAGE),[_x] call ALiVE_fnc_getObjectPointDamage] call ALiVE_fnc_HashSet;
 
+                    //Only stored when opted in, so default saves are unchanged
+                    if ((_x getVariable [QGVAR(NOREMAP),false]) isEqualTo true) then {
+                        [_args,QGVAR(NOREMAP),true] call ALiVE_fnc_HashSet;
+                    } else {
+                        [_args,QGVAR(NOREMAP)] call ALiVE_fnc_HashRem;
+                    };
+
                     //Set dynamic data (to fight errors on loading back existing data from DB)
                     if (!isnil {_x getvariable QGVAR(CONTAINER)} && {!isnull (_x getvariable QGVAR(CONTAINER))}) then {
                         [_args,QGVAR(CONTAINER),(_x getvariable QGVAR(CONTAINER)) getvariable QGVAR(ID)] call ALiVE_fnc_HashSet;
@@ -1074,20 +1081,28 @@ switch (_operation) do {
                     //Get 2D position without altering original data
                     private _position = +([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet); _position resize 2;
 
-                    //Filter existing objects of same type in a 1m² radius
-                    private _near = nearestObjects [_position,[_type],20];
+                    //Objects flagged to skip remapping are always recreated (stacked/adjacent fortifications)
+                    private _noRemap = [_args,QGVAR(NOREMAP),false] call ALiVE_fnc_hashGet;
+                    //DB backends round-trip BOOLs as quoted strings (see mil_ied convertString)
+                    if (_noRemap isEqualType "") then {_noRemap = _noRemap == "true"};
                     private _exists = [];
-                    {
-                        if (_position distance2D _x < 1) then {
-                            _exists pushback _x;
-                        };
-                    } foreach _near;
+
+                    if !(_noRemap) then {
+                        //Filter existing objects of same type in a 1m² radius
+                        private _near = nearestObjects [_position,[_type],20];
+                        {
+                            if (_position distance2D _x < 1) then {
+                                _exists pushback _x;
+                            };
+                        } foreach _near;
+                    };
 
                     if (count _exists == 0) then {
                         TRACE_1("ALiVE SYS LOGISTICS Creating non existing object from store!",_x);
 
                         _object = _type createVehicle ([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet);
                         _object setvariable [QGVAR(ID),_x,true];
+                        if (_noRemap) then {_object setVariable [QGVAR(NOREMAP),true,true]};
                         _object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
                         _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
@@ -1175,6 +1190,7 @@ switch (_operation) do {
                 [QGVAR(DAMAGE),"ASL_DA"],
                 [QGVAR(POINTDAMAGE),"ASL_HP"],
                 [QGVAR(CONTAINER),"ASL_CO"],
+                [QGVAR(NOREMAP),"ASL_NR"],
                 ["_rev","_rev"]
             ];
 
