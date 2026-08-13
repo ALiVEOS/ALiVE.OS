@@ -317,6 +317,11 @@ if (_mapBounds != 0) then {
     _result = "ALiVEClient" callExtension format['staticData~%1|[ALIVE_mapBounds, worldName, %2] call ALIVE_fnc_hashSet;',worldName,_mapBounds];
 };
 
+// Set the composition environment selected on the indexer module
+if (!isNil "ALiVE_mapCompositionType") then {
+    _result = "ALiVEClient" callExtension format['staticData~%1|ALiVE_mapCompositionType = "%2";',worldName,ALiVE_mapCompositionType];
+};
+
 {
     private ["_array","_arrayActual","_result"];
     _array = _x select 0;

@@ -46,5 +46,13 @@
     <English>If map indexer crashes, try changing the operating system selection here.</English>
     <Chinesesimp>如果映射索引器崩溃，请尝试在这里更改操作系统选择。</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_INDEXER_ENVIRONMENT">
+    <English>Composition Environment:</English>
+    <Chinesesimp>阵地布局环境:</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_INDEXER_ENVIRONMENT_COMMENT">
+    <English>Environment used to select ALiVE compositions on this map. Written to the exported static data, so it no longer needs to be added by hand after indexing.</English>
+    <Chinesesimp>用于在此地图上选择ALiVE阵地布局的环境。会写入导出的静态数据，索引后无需再手动添加。</Chinesesimp>
+</Key>
 
 </Container></Package></Project>

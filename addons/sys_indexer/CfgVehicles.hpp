@@ -68,6 +68,27 @@ class CfgVehicles {
                                     class Win10 { name = "Windows 10"; value = 1; };
                                 };
                         };
+                        class environment : Combo
+                        {
+                                property = "ALiVE_sys_indexer_environment";
+                                displayName = "$STR_ALIVE_INDEXER_ENVIRONMENT";
+                                tooltip = "$STR_ALIVE_INDEXER_ENVIRONMENT_COMMENT";
+                                // Values match the composition sets shipped with the
+                                // composition PBOs (see fnc_getCompositions). Urban is
+                                // the base set and what the search falls back to, so it
+                                // stays the default.
+                                typeName = "STRING";
+                                defaultValue = """Urban""";
+                                class Values
+                                {
+                                    class Urban { name = "Urban"; value = "Urban"; };
+                                    class Woodland { name = "Woodland"; value = "Woodland"; };
+                                    class Desert { name = "Desert"; value = "Desert"; };
+                                    class Jungle { name = "Jungle"; value = "Jungle"; };
+                                    class Pacific { name = "Pacific"; value = "Pacific"; };
+                                    class Bocage { name = "Bocage"; value = "Bocage"; };
+                                };
+                        };
                         class ModuleDescription : ModuleDescription {};
                 };
         };
