@@ -86,76 +86,74 @@ switch (_operation) do {
         private _groupTasks = [ALIVE_taskHandler, "getTasksByGroup", _groupID] call ALiVE_fnc_taskHandler;
         private _currentTask = [];
 
+        // The "current" marker never sits on the top of a task. Every task is built
+        // with its top marked not current and carrying no parent, and the marker
+        // handed to a step underneath it that names the top as its parent. Asking a
+        // single record to be both could never match anything, so a group always
+        // read as having nothing on, and asking the commander for a different order
+        // added one alongside the old one instead of replacing it (#992). Confirmed
+        // by a reporter trace on both a dedicated server and singleplayer: thirteen
+        // lookups, none of which matched, against task lists growing to nine.
+        //
+        // Match the marker, then walk back up to the top of the task, because the
+        // caller deletes whatever comes back and only the top takes the whole thing
+        // with it. Handing back a step would strand the top and its siblings.
+        //
+        // Only a task given to this group speaks for this group. The commander's own
+        // generated tasks are handed to every player on a side, so reading one of
+        // those as "this group is busy" would mark every group busy at once and stop
+        // anyone being given an order at all.
+        //
+        // No early exit here on purpose. A group should only ever have one task on the
+        // go, but if it somehow has two, the later one is the one the player just asked
+        // for, so that is the one to answer with. Deliberate, not a missing exit.
         {
-            _x params [
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "_taskState",
-                "",
-                "_taskCurrent",
-                "_parent"
-            ];
+            if (_x isEqualType [] && {count _x > 12}) then {
+                private _taskState = _x param [8, "", [""]];
+                private _applyType = _x param [9, "", [""]];
+                private _taskCurrent = _x param [10, "", [""]];
+                private _parent = _x param [11, "", [""]];
 
-            if (_parent == "None" && {_taskCurrent == "Y"} && {!(_taskState in ["Succeeded", "Failed", "Canceled"])}) exitWith {
-                _currentTask = _x;
+                if (_taskCurrent == "Y"
+                    && {_applyType == "Group"}
+                    && {!(_taskState in ["Succeeded", "Failed", "Canceled"])}) then {
+
+                    if (_parent == "None") then {
+                        // A task built by hand on the tablet has no steps beneath it,
+                        // so it carries the marker itself. That is the one shape the
+                        // old test did match, and it goes on matching.
+                        _currentTask = _x;
+                    } else {
+                        private _parentTask = [ALIVE_taskHandler, "getTask", _parent] call ALiVE_fnc_taskHandler;
+
+                        // Only accept a top that the task list still holds and that is
+                        // itself parentless. Anything else leaves the group reading as
+                        // free, which is how this behaved before, rather than handing
+                        // the caller something it would then delete.
+                        if (!isNil "_parentTask"
+                            && {_parentTask isEqualType []}
+                            && {count _parentTask > 12}
+                            && {(_parentTask param [11, "", [""]]) == "None"}) then {
+                            _currentTask = _parentTask;
+                        };
+                    };
+                };
             };
         } forEach _groupTasks;
 
-        if (_currentTask isEqualTo []) then {
-            private _groupPlayerIDs = [];
-
-            {
-                private _playerGroupID = [format ["%1", group _x], " ", "_"] call CBA_fnc_replace;
-                if (_playerGroupID == _groupID) then {
-                    _groupPlayerIDs pushBackUnique (getPlayerUID _x);
-                };
-            } forEach (allPlayers - entities "HeadlessClient_F");
-
-            {
-                private _playerTasks = [ALIVE_taskHandler, "getTasksByPlayer", _x] call ALiVE_fnc_taskHandler;
-
-                {
-                    _x params [
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "_taskState",
-                        "",
-                        "_taskCurrent",
-                        "_parent"
-                    ];
-
-                    if (_parent == "None" && {_taskCurrent == "Y"} && {!(_taskState in ["Succeeded", "Failed", "Canceled"])}) exitWith {
-                        _currentTask = _x;
-                    };
-                } forEach _playerTasks;
-
-                if !(_currentTask isEqualTo []) exitWith {};
-            } forEach _groupPlayerIDs;
-        };
-
-        // DIAG-STRIP (#992): the test above wants a record carrying BOTH parent "None" and
-        // current "Y". Dump what was actually retrieved, so a log separates "the records are
-        // there and the test rejects them" from "nothing came back for this group at all",
-        // which would be a different fault needing a different fix.
+        // DIAG-STRIP (#992): says what this group was holding and which of it the test above
+        // picked, so a log tells apart "found the one on the go" from "found nothing", and
+        // if it found nothing, whether that is because the group genuinely had nothing on or
+        // because the records are there and are being turned away. Carries the assignment
+        // type, since that is what now separates a task given to this group from one the
+        // commander handed to the whole side.
         // Gate: ALiVE_c2istar_taskDiag = true.
         if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
             ["[C2ISTAR #992 DIAG] lookup group=%1 groupTasks=%2 matched=%3",
-                _groupID, count _groupTasks, count _currentTask] call ALiVE_fnc_dump;
+                _groupID, count _groupTasks, _currentTask param [0, "<none>"]] call ALiVE_fnc_dump;
             {
-                ["[C2ISTAR #992 DIAG]   record id=%1 state=%2 current=%3 parent=%4 source=%5",
-                    _x param [0, ""], _x param [8, ""], _x param [10, ""],
+                ["[C2ISTAR #992 DIAG]   record id=%1 state=%2 apply=%3 current=%4 parent=%5 source=%6",
+                    _x param [0, ""], _x param [8, ""], _x param [9, ""], _x param [10, ""],
                     _x param [11, ""], _x param [12, ""]] call ALiVE_fnc_dump;
             } forEach _groupTasks;
         };
