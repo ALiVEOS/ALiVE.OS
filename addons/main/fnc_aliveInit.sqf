@@ -263,11 +263,27 @@ if (hasInterface) then {
             if (!isNil "ALiVE_initGateModules") then { _gateNames = ALiVE_initGateModules };
 
             private _names = [];
+            private _others = [];
             {
-                if (_x isEqualType [] && {count _x > 1} && {(_x select 0) in _gateNames}) then {
-                    _names pushBackUnique (_x select 1);
+                if (_x isEqualType [] && {count _x > 1}) then {
+                    if ((_x select 0) in _gateNames) then {
+                        _names pushBackUnique (_x select 1);
+                    } else {
+                        _others pushBackUnique (_x select 1);
+                    };
                 };
             } forEach _busy;
+
+            // If none of the modules the wait depends on is actually running, name whatever is.
+            //
+            // One the wait does not count can still hold everyone up, by sitting ahead of one it
+            // does. Modules start in priority order, so the air commander at 190 runs before
+            // player options at 200, and player options is the last thing the wait waits for.
+            // Measured on Cam Lao Nam: the air commander took seventy seconds while the screen
+            // sat at 92 per cent naming player options, which had not started and which takes a
+            // tenth of a second once it does. The share done was right; the name beside it was
+            // not.
+            if (_names isEqualTo []) then { _names = _others };
 
             private _what = "Getting started";
             if (count _names > 0) then {
