@@ -129,6 +129,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_findCompositionSpawnPosition.sqf";
                 RECOMPILE;
             };
+            class findBatterySpawnPosition {
+                description = "Finds one clear spot for a gun in a battery, spread from the guns already placed - one wide validator search in place of the thirty six narrow ring searches each placement module had grown its own copy of";
+                file = "\x\alive\addons\main\fnc_findBatterySpawnPosition.sqf";
+                RECOMPILE;
+            };
             class getCompositionRadius {
                 description = "Returns cached composition diameter in metres - walks CfgGroups>Empty config, doubles max-from-origin object distance, adds 5m buffer";
                 file = "\x\alive\addons\main\fnc_getCompositionRadius.sqf";

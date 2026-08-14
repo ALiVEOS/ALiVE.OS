@@ -1938,6 +1938,18 @@ switch(_operation) do {
 
             // (fallback artillery block moved below the force-assembly loop -
             // it consumes the shortfall counted there)
+            // Started here so the figures below are this run of this module, not whatever
+            // another placement module left behind. The search count is shared with them,
+            // since the searching itself is shared, so read it as work done rather than as
+            // this module alone.
+            if (isNil "ALiVE_DIAG_artyWanted") then { ALiVE_DIAG_artyWanted = 0 };
+            if (isNil "ALiVE_DIAG_artyPlaced") then { ALiVE_DIAG_artyPlaced = 0 };
+            if (isNil "ALiVE_DIAG_artyCalls") then { ALiVE_DIAG_artyCalls = 0 };
+
+            private _artyDiagWantedAt = ALiVE_DIAG_artyWanted;
+            private _artyDiagPlacedAt = ALiVE_DIAG_artyPlaced;
+            private _artyDiagCallsAt  = ALiVE_DIAG_artyCalls;
+
             private _fnc_placeFallbackArtillery = {
             if (_artilleryFallback > 0 && {!isNil "_clusters"} && {count _clusters > 0}) then {
                 private _artySourceFaction = if (_artilleryFaction != "") then {_artilleryFaction} else {_faction};
@@ -1967,36 +1979,28 @@ switch(_operation) do {
                         if (isNil "_cPos" || {typeName _cPos != "ARRAY"}) then { _cPos = [0,0,0] };
 
                         private _gunsPlaced = 0;
+                        ALiVE_DIAG_artyWanted = ALiVE_DIAG_artyWanted + _sectionSize;
                         for "_g" from 1 to _sectionSize do {
                             private _safePos = [];
                             private _safeDir = 0;
-                            {
-                                if (count _safePos > 0) exitWith {};
-                                private _radius = _x;
-                                // 6 bearings per ring (60-degree sectors with
-                                // jitter) - one random bearing per ring was
-                                // striking out entirely in broken terrain
-                                for "_a" from 0 to 5 do {
-                                    private _cand = _cPos getPos [_radius, (_a * 60) + random 60];
-                                    private _res = [_cand, 25, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
-                                    if (count _res >= 2) then {
-                                        private _testPos = _res select 0;
-                                        private _clash = false;
-                                        { if (_testPos distance2D _x < 25) exitWith { _clash = true } } forEach _usedArtyPositions;
-                                        if (!_clash) then {
-                                            _safePos = _testPos;
-                                            _safeDir = _res select 1;
-                                        };
-                                    };
-                                    if (count _safePos > 0) exitWith {};
-                                };
-                            } forEach [50, 80, 110, 140, 170, 200];
+
+                            // One wide search across the whole area, rather than thirty six narrow ones
+                            // creeping outwards ring by ring. Same ground, a fraction of the work, and the
+                            // guns end up spread across it instead of sitting on rings. See the helper for
+                            // what the old way was costing.
+                            private _res = [_cPos, 200, 10, _usedArtyPositions, 25, _debug] call ALiVE_fnc_findBatterySpawnPosition;
+
+                            if (count _res >= 2) then {
+                                _safePos = _res select 0;
+                                _safeDir = _res select 1;
+                            };
 
                             if (count _safePos > 0) then {
                                 _usedArtyPositions pushBack _safePos;
                                 [_artyClass, _side, _artySourceFaction, "PRIVATE", _safePos, _safeDir, false, _artySourceFaction] call ALIVE_fnc_createProfilesCrewedVehicle;
                                 _countProfiles = _countProfiles + 2;
                                 _gunsPlaced = _gunsPlaced + 1;
+                                ALiVE_DIAG_artyPlaced = ALiVE_DIAG_artyPlaced + 1;
                             };
                         };
 
@@ -2371,6 +2375,20 @@ switch(_operation) do {
             // defined earlier in init where the AA machinery lives; calling it
             // here means the shortfall above is populated)
             call _fnc_placeFallbackArtillery;
+
+            // DIAG-STRIP: how much work the battery placement actually cost. mil_placement
+            // had no figure of its own, so the searching here was invisible and only
+            // civ_placement ever reported any, which read as no artillery at all on a
+            // mission where this module was placing all of it.
+            if (!isNil "_debug" && {_debug}) then {
+                private _wanted = ALiVE_DIAG_artyWanted - _artyDiagWantedAt;
+                private _placed = ALiVE_DIAG_artyPlaced - _artyDiagPlacedAt;
+                private _calls  = ALiVE_DIAG_artyCalls  - _artyDiagCallsAt;
+
+                ["DIAG-STRIP MP DIAG [%1] - artillery: %2 guns wanted, %3 placed, %4 searches run (%5 per gun placed)",
+                    _faction, _wanted, _placed, _calls,
+                    if (_placed > 0) then { round (_calls / _placed) } else { -1 }] call ALiVE_fnc_dump;
+            };
 
             if(_countMotorized > 0) then {
 
