@@ -1070,13 +1070,36 @@ switch (_operation) do {
 
             _taskPlayers = _taskPlayers select 0;
 
-            // if the task is set to side application
-            // replace the current player list with all
-            // players from the side
+            // A side task goes to everyone on that side who is still taking tasks they
+            // did not ask for.
+            //
+            // The opt-out is read here rather than in each place that raises a task,
+            // because this runs after all of them and used to replace whatever they
+            // passed with the plain side list, undoing any filtering they had done. So a
+            // group that had asked to be left alone was handed rescues, air taskings,
+            // counter battery and convoy protection regardless of what the raiser
+            // intended. Reading it once here covers every one of them, and anything
+            // added later.
+            //
+            // Falls back to the plain list if the filter cannot answer, so a task is
+            // never sent to nobody by accident.
             if (_taskApplyType == "Side") then {
-                private _sidePlayers = [_taskSide] call ALiVE_fnc_getPlayersDataSource;
-                _task set [7, [_sidePlayers select 1, _sidePlayers select 0]];
-                _taskPlayers = _sidePlayers select 1;
+                // Only the server can answer who has opted out. An empty answer from it
+                // means everyone on the side has, which is a real result and is left to
+                // stand. Anywhere else the question cannot be asked at all, so fall back
+                // rather than read silence as a no.
+                private _sidePlayers = [];
+                if (isServer) then {
+                    _sidePlayers = ["getAutoOrderSidePlayers", [_taskSide]] call ALiVE_fnc_playerOrders;
+                };
+
+                if (isNil "_sidePlayers" || {!(_sidePlayers isEqualType [])} || {count _sidePlayers < 2}) then {
+                    private _everyone = [_taskSide] call ALiVE_fnc_getPlayersDataSource;
+                    _sidePlayers = [_everyone select 1, _everyone select 0];
+                };
+
+                _task set [7, _sidePlayers];
+                _taskPlayers = _sidePlayers select 0;
             };
 
             // if the task is set to group application
@@ -1252,13 +1275,36 @@ switch (_operation) do {
             private _updateTasks = [_tasksToDispatch, "update"] call ALIVE_fnc_hashGet;
             private _deleteTasks = [_tasksToDispatch, "delete"] call ALIVE_fnc_hashGet;
 
-            // if the task is set to side application
-            // replace the current player list with all
-            // players from the side
+            // A side task goes to everyone on that side who is still taking tasks they
+            // did not ask for.
+            //
+            // The opt-out is read here rather than in each place that raises a task,
+            // because this runs after all of them and used to replace whatever they
+            // passed with the plain side list, undoing any filtering they had done. So a
+            // group that had asked to be left alone was handed rescues, air taskings,
+            // counter battery and convoy protection regardless of what the raiser
+            // intended. Reading it once here covers every one of them, and anything
+            // added later.
+            //
+            // Falls back to the plain list if the filter cannot answer, so a task is
+            // never sent to nobody by accident.
             if (_taskApplyType == "Side") then {
-                private _sidePlayers = [_taskSide] call ALiVE_fnc_getPlayersDataSource;
-                _updatedTask set [7, [_sidePlayers select 1, _sidePlayers select 0]];
-                _updatedTaskPlayers = _sidePlayers select 1;
+                // Only the server can answer who has opted out. An empty answer from it
+                // means everyone on the side has, which is a real result and is left to
+                // stand. Anywhere else the question cannot be asked at all, so fall back
+                // rather than read silence as a no.
+                private _sidePlayers = [];
+                if (isServer) then {
+                    _sidePlayers = ["getAutoOrderSidePlayers", [_taskSide]] call ALiVE_fnc_playerOrders;
+                };
+
+                if (isNil "_sidePlayers" || {!(_sidePlayers isEqualType [])} || {count _sidePlayers < 2}) then {
+                    private _everyone = [_taskSide] call ALiVE_fnc_getPlayersDataSource;
+                    _sidePlayers = [_everyone select 1, _everyone select 0];
+                };
+
+                _updatedTask set [7, _sidePlayers];
+                _updatedTaskPlayers = _sidePlayers select 0;
             };
 
             // if the task is set to group application
