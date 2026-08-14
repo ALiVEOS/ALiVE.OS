@@ -312,10 +312,17 @@ switch(_operation) do {
     };
 
     case "pause": {
+        // Asking with no value reports the current state rather than changing it.
+        //
+        // This used to read and write the "debug" key, copied from the debug handler just
+        // below. Pausing therefore switched the module's debug output on, which happens every
+        // time a server empties and auto-pauses. The paused state is stored below, so there is
+        // nothing to write here.
+        //
+        // Read with a default, because a hashGet with no default returns nil for a key that
+        // has never been set, and the check underneath would then fail on the first call.
         if(typeName _args != "BOOL") then {
-                _args = [_logic,"debug"] call ALIVE_fnc_hashGet;
-        } else {
-                [_logic,"debug",_args] call ALIVE_fnc_hashSet;
+                _args = [_logic,"paused",false] call ALIVE_fnc_hashGet;
         };
         ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
