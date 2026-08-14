@@ -23,6 +23,21 @@ Jman
 
 private _result = false;
 
+// Every early return below assigns _result rather than handing its value to exitWith.
+//
+// exitWith leaves the block it is written in, not the function, so inside one of these
+// case blocks it ends the case and its value is thrown away. This function answers with
+// _result on the last line, so an exitWith carrying a value simply left _result at the
+// false it starts as, and the caller was handed a boolean where it expected a list.
+//
+// That is what selectEligibleGroup did whenever no group was eligible. The caller in
+// fnc_taskRequest guards with isEqualTo [], which a boolean sails straight through, and
+// the next line read element nine of it: "Error select: Type Bool, expected Array".
+// Reported from a dedicated server on 2026-08-14.
+//
+// exitWith inside the helper blocks further down is a different thing and is correct
+// there, because those blocks really do answer with their own last value.
+
 params [
     ["_operation", "", [""]],
     ["_args", [], [[]]]
@@ -44,12 +59,12 @@ switch (_operation) do {
             ["_player", objNull, [objNull]]
         ];
 
-        if (isNull _player) exitWith {[]};
+        if (isNull _player) exitWith {_result = []};
 
         private _group = group _player;
         private _groupPlayers = (units _group) select {isPlayer _x};
 
-        if (_groupPlayers isEqualTo []) exitWith {[]};
+        if (_groupPlayers isEqualTo []) exitWith {_result = []};
 
         private _requestPlayer = leader _group;
         if !(isPlayer _requestPlayer) then {
@@ -81,7 +96,7 @@ switch (_operation) do {
             ["_groupID", "", [""]]
         ];
 
-        if (_groupID == "" || {isNil "ALIVE_taskHandler"}) exitWith {[]};
+        if (_groupID == "" || {isNil "ALIVE_taskHandler"}) exitWith {_result = []};
 
         private _groupTasks = [ALIVE_taskHandler, "getTasksByGroup", _groupID] call ALiVE_fnc_taskHandler;
         private _currentTask = [];
@@ -165,7 +180,7 @@ switch (_operation) do {
             ["_taskID", "", [""]]
         ];
 
-        if (_taskID == "" || {isNil "ALIVE_taskHandler"}) exitWith {[]};
+        if (_taskID == "" || {isNil "ALIVE_taskHandler"}) exitWith {_result = []};
 
         private _managedTaskParams = [ALIVE_taskHandler, "managedTaskParams"] call ALiVE_fnc_hashGet;
         if (!isNil "_managedTaskParams" && {_taskID in (_managedTaskParams select 1)}) then {
@@ -180,7 +195,7 @@ switch (_operation) do {
         ];
 
         private _logic = missionNamespace getVariable ["ALIVE_MIL_C2ISTAR", objNull];
-        if (isNull _logic) exitWith {["None", "OPF_F"]};
+        if (isNull _logic) exitWith {_result = ["None", "OPF_F"]};
 
         _result = switch (_side) do {
             case "EAST": {
@@ -199,7 +214,7 @@ switch (_operation) do {
             ["_side", "", [""]]
         ];
 
-        if !(isServer) exitWith {[[], []]};
+        if !(isServer) exitWith {_result = [[], []]};
 
         private _playerIDs = [];
         private _playerNames = [];
@@ -230,7 +245,7 @@ switch (_operation) do {
             ["_destination", [], [[]]]
         ];
 
-        if !(isServer) exitWith {[]};
+        if !(isServer) exitWith {_result = []};
 
         private _groupsByID = [] call ALiVE_fnc_hashCreate;
         private _candidates = [];
@@ -273,7 +288,7 @@ switch (_operation) do {
             };
         } forEach (allPlayers - entities "HeadlessClient_F");
 
-        if (_candidates isEqualTo []) exitWith {[]};
+        if (_candidates isEqualTo []) exitWith {_result = []};
 
         _candidates = [_candidates, [], {
             private _factionSort = if (_x select 0) then {0} else {1};
@@ -290,9 +305,9 @@ switch (_operation) do {
             ["_excludedReservationKeys", [], [[]]]
         ];
 
-        if !(isServer) exitWith {false};
-        if (_groupData isEqualTo []) exitWith {false};
-        if (isNil "ALIVE_taskHandler") exitWith {false};
+        if !(isServer) exitWith {_result = false};
+        if (_groupData isEqualTo []) exitWith {_result = false};
+        if (isNil "ALIVE_taskHandler") exitWith {_result = false};
 
         _groupData params [
             "",
@@ -316,7 +331,7 @@ switch (_operation) do {
             };
         } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
 
-        if (_opcom isEqualTo []) exitWith {false};
+        if (_opcom isEqualTo []) exitWith {_result = false};
 
         if (isNil QGVAR(playerRequests)) then {
             GVAR(playerRequests) = [] call ALiVE_fnc_hashCreate;
@@ -400,7 +415,7 @@ switch (_operation) do {
             };
         };
 
-        if (_taskType == "" || {_taskLocation isEqualTo []}) exitWith {false};
+        if (_taskType == "" || {_taskLocation isEqualTo []}) exitWith {_result = false};
 
         private _currentTargets = [GVAR(playerRequests), _taskType, []] call ALiVE_fnc_hashGet;
         if !(_reservationKey in _currentTargets) then {
@@ -530,10 +545,10 @@ switch (_operation) do {
             ["_excludedRootTaskID", "", [""]]
         ];
 
-        if !(isServer) exitWith {false};
-        if (_groupData isEqualTo []) exitWith {false};
-        if (isNil "ALIVE_autoGeneratedTasks" || {ALIVE_autoGeneratedTasks isEqualTo []}) exitWith {false};
-        if (isNil "ALIVE_taskHandler") exitWith {false};
+        if !(isServer) exitWith {_result = false};
+        if (_groupData isEqualTo []) exitWith {_result = false};
+        if (isNil "ALIVE_autoGeneratedTasks" || {ALIVE_autoGeneratedTasks isEqualTo []}) exitWith {_result = false};
+        if (isNil "ALIVE_taskHandler") exitWith {_result = false};
 
         _groupData params [
             "",
