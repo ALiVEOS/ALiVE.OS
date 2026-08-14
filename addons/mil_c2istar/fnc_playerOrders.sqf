@@ -286,8 +286,8 @@ switch (_operation) do {
         _args params [
             ["_groupData", [], [[]]],
             ["_enemyFaction", "OPF_F", [""]],
-            ["_excludedPosition", [], [[]]],
-            ["_excludedReservationKey", []]
+            ["_excludedPositions", [], [[]]],
+            ["_excludedReservationKeys", [], [[]]]
         ];
 
         if !(isServer) exitWith {false};
@@ -335,7 +335,7 @@ switch (_operation) do {
         };
 
         private _getUnreservedObjective = {
-            params ["_objectives", "_taskType", "_fallbackPos", "_excludedReservationKey"];
+            params ["_objectives", "_taskType", "_fallbackPos", "_excludedReservationKeys"];
 
             private _currentTargets = [GVAR(playerRequests), _taskType, []] call ALiVE_fnc_hashGet;
             private _selectedObjective = [];
@@ -343,7 +343,7 @@ switch (_operation) do {
 
             {
                 private _reservationKey = [_x, _fallbackPos] call _getObjectiveReservationKey;
-                private _isExcludedReservation = !(_excludedReservationKey isEqualTo []) && {_reservationKey isEqualTo _excludedReservationKey};
+                private _isExcludedReservation = (_excludedReservationKeys findIf {_reservationKey isEqualTo _x}) > -1;
 
                 if !(_reservationKey in _currentTargets) then {
                     if !(_isExcludedReservation) exitWith {
@@ -357,13 +357,14 @@ switch (_operation) do {
         };
 
         private _filterObjectives = {
-            params ["_objectives", "_fallbackPos", "_excludedPosition"];
+            params ["_objectives", "_fallbackPos", "_excludedPositions"];
 
-            if (_excludedPosition isEqualTo []) exitWith {_objectives};
+            if (_excludedPositions isEqualTo []) exitWith {_objectives};
 
             _objectives select {
                 private _objectiveCenter = [_x, "center", _fallbackPos] call ALiVE_fnc_hashGet;
-                _objectiveCenter isEqualTo [] || {_objectiveCenter distance2D _excludedPosition > 10}
+                _objectiveCenter isEqualTo []
+                    || {(_excludedPositions findIf {_objectiveCenter distance2D _x <= 10}) < 0}
             }
         };
 
@@ -371,10 +372,10 @@ switch (_operation) do {
         private _taskLocation = [];
         private _reservationKey = [];
         private _objectives = +([_opcom, "nearestObjectives", [_groupPos, "attacking"]] call ALiVE_fnc_OPCOM);
-        _objectives = [_objectives, _groupPos, _excludedPosition] call _filterObjectives;
+        _objectives = [_objectives, _groupPos, _excludedPositions] call _filterObjectives;
 
         if !(_objectives isEqualTo []) then {
-            private _objectiveSelection = [_objectives, "CaptureObjective", _groupPos, _excludedReservationKey] call _getUnreservedObjective;
+            private _objectiveSelection = [_objectives, "CaptureObjective", _groupPos, _excludedReservationKeys] call _getUnreservedObjective;
             private _objective = _objectiveSelection select 0;
 
             if !(_objective isEqualTo []) then {
@@ -386,9 +387,9 @@ switch (_operation) do {
 
         if (_taskType == "") then {
             _objectives = +([_opcom, "nearestObjectives", [_groupPos, "defending"]] call ALiVE_fnc_OPCOM);
-            _objectives = [_objectives, _groupPos, _excludedPosition] call _filterObjectives;
+            _objectives = [_objectives, _groupPos, _excludedPositions] call _filterObjectives;
             if !(_objectives isEqualTo []) then {
-                private _objectiveSelection = [_objectives, "MilDefence", _groupPos, _excludedReservationKey] call _getUnreservedObjective;
+                private _objectiveSelection = [_objectives, "MilDefence", _groupPos, _excludedReservationKeys] call _getUnreservedObjective;
                 private _objective = _objectiveSelection select 0;
 
                 if !(_objective isEqualTo []) then {
@@ -432,16 +433,75 @@ switch (_operation) do {
                 [GVAR(playerRequests), _taskType, _currentTargets] call ALiVE_fnc_hashSet;
             };
         } else {
+            // Remember what this order sent the group to, so asking for a different one
+            // can steer away from it.
+            //
+            // The record has to be started when there is not one already. An order raised
+            // from the tablet is built by generateTask, which never starts one, so the
+            // test below was never true and neither of these was ever written down. Every
+            // later request then read back nothing to avoid, leaving it free to hand back
+            // the objective the group had just been given. The commander's own orders
+            // start the record the same way before writing to it.
             private _managedTaskParams = [ALIVE_taskHandler, "managedTaskParams"] call ALiVE_fnc_hashGet;
-            if (!isNil "_managedTaskParams" && {_taskID in (_managedTaskParams select 1)}) then {
-                private _taskParams = [_managedTaskParams, _taskID] call ALiVE_fnc_hashGet;
-                [_taskParams, "strategicObjectivePosition", _taskLocation] call ALiVE_fnc_hashSet;
-                [_taskParams, "strategicReservationKey", _reservationKey] call ALiVE_fnc_hashSet;
-                [_managedTaskParams, _taskID, _taskParams] call ALiVE_fnc_hashSet;
+            private _remembered = false;
+
+            if (!isNil "_managedTaskParams") then {
+                if !(_taskID in (_managedTaskParams select 1)) then {
+                    [_managedTaskParams, _taskID, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
+                };
+
+                if (_taskID in (_managedTaskParams select 1)) then {
+                    private _taskParams = [_managedTaskParams, _taskID] call ALiVE_fnc_hashGet;
+                    [_taskParams, "strategicObjectivePosition", _taskLocation] call ALiVE_fnc_hashSet;
+                    [_taskParams, "strategicReservationKey", _reservationKey] call ALiVE_fnc_hashSet;
+                    [_managedTaskParams, _taskID, _taskParams] call ALiVE_fnc_hashSet;
+                    _remembered = true;
+                };
             };
+
+            // DIAG-STRIP (#992): says whether this order was written down well enough for
+            // the next request to avoid it. remembered=false means the next request has
+            // nothing to steer away from and can hand back the same objective.
+            // Gate: ALiVE_c2istar_taskDiag = true.
+            if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                ["[C2ISTAR #992 DIAG] remembered id=%1 ok=%2 key=%3 pos=%4",
+                    _taskID, _remembered, _reservationKey, _taskLocation] call ALiVE_fnc_dump;
+            };
+
+            ["rememberOrder", [_groupID, _taskLocation, _reservationKey, _taskType]] call MAINCLASS;
 
             _result = true;
         };
+    };
+    case "rememberOrder": {
+        // Keep a short list of what this group has just been sent to do, so asking for a
+        // different order can steer away from more than the one thing it is holding.
+        //
+        // Avoiding only the current order is not enough. With a handful of objectives to
+        // choose from, the one before last comes straight back, so asking repeatedly walks
+        // a short circle rather than finding anything new. Measured on a test mission: the
+        // third request handed back the identical task and place as the first.
+        _args params [
+            ["_groupID", "", [""]],
+            ["_position", [], [[]]],
+            ["_reservationKey", [], [[], ""]],
+            ["_taskType", "", [""]]
+        ];
+
+        if (_groupID == "") exitWith {};
+
+        if (isNil QGVAR(orderHistory)) then {
+            GVAR(orderHistory) = [] call ALiVE_fnc_hashCreate;
+        };
+
+        private _recent = [GVAR(orderHistory), _groupID, []] call ALiVE_fnc_hashGet;
+        _recent = [[_position, _reservationKey, _taskType]] + _recent;
+
+        // Four is enough to break the short circles without ruling out so much that a
+        // small mission runs out of things to offer.
+        if (count _recent > 4) then { _recent resize 4 };
+
+        [GVAR(orderHistory), _groupID, _recent] call ALiVE_fnc_hashSet;
     };
     case "createGeneratedTaskForGroup": {
         _args params [
@@ -512,6 +572,7 @@ switch (_operation) do {
                     _excludedGeneratedTaskTypes pushBack _taskType;
                 };
             } else {
+                ["rememberOrder", [_groupID, [], [], _taskType]] call MAINCLASS;
                 _created = true;
             };
         };
@@ -557,10 +618,29 @@ switch (_operation) do {
                 _groupID, _replaceCurrent, !(_currentTask isEqualTo [])] call ALiVE_fnc_dump;
         };
 
-        private _excludedPosition = [];
-        private _excludedReservationKey = [];
+        // What to steer away from, taken from the last few orders this group was given
+        // rather than only the one it is holding. See the rememberOrder case above for
+        // why one is not enough.
+        private _excludedPositions = [];
+        private _excludedReservationKeys = [];
         private _excludedGeneratedTaskTypes = [];
         private _excludedTaskRootID = "";
+
+        if !(isNil QGVAR(orderHistory)) then {
+            {
+                _x params [["_pastPosition", []], ["_pastKey", []], ["_pastType", ""]];
+
+                if !(_pastPosition isEqualTo []) then { _excludedPositions pushBackUnique _pastPosition };
+                if !(_pastKey isEqualTo []) then { _excludedReservationKeys pushBackUnique _pastKey };
+                if (_pastType != "") then { _excludedGeneratedTaskTypes pushBackUnique _pastType };
+            } forEach ([GVAR(orderHistory), _groupID, []] call ALiVE_fnc_hashGet);
+        };
+
+        // Kept apart so the order being replaced can still be avoided on its own if
+        // avoiding the whole recent run turns up nothing to do.
+        private _currentPositions = [];
+        private _currentReservationKeys = [];
+        private _currentTaskTypes = [];
 
         if !(_currentTask isEqualTo []) then {
             private _taskID = _currentTask select 0;
@@ -574,19 +654,50 @@ switch (_operation) do {
                 _excludedTaskRootID = _rootTaskID;
 
                 if (_rootTaskID find "OPORD_AUTO_" == 0 && {_currentTaskType != ""}) then {
-                    _excludedGeneratedTaskTypes pushBack _currentTaskType;
+                    _currentTaskTypes pushBackUnique _currentTaskType;
+                    _excludedGeneratedTaskTypes pushBackUnique _currentTaskType;
                 };
             } else {
                 _excludedTaskRootID = _taskID;
             };
 
+            private _positionFromRecord = false;
+            private _thisPosition = [];
+            private _thisReservationKey = [];
+
             if !(_currentTaskParams isEqualTo []) then {
-                _excludedPosition = [_currentTaskParams, "strategicObjectivePosition", []] call ALiVE_fnc_hashGet;
-                _excludedReservationKey = [_currentTaskParams, "strategicReservationKey", []] call ALiVE_fnc_hashGet;
+                _thisPosition = [_currentTaskParams, "strategicObjectivePosition", []] call ALiVE_fnc_hashGet;
+                _thisReservationKey = [_currentTaskParams, "strategicReservationKey", []] call ALiVE_fnc_hashGet;
+                _positionFromRecord = !(_thisPosition isEqualTo []);
             };
 
-            if (_excludedPosition isEqualTo []) then {
-                _excludedPosition = _currentTask param [3, [], [[]]];
+            if (_thisPosition isEqualTo []) then {
+                _thisPosition = _currentTask param [3, [], [[]]];
+            };
+
+            if !(_thisPosition isEqualTo []) then {
+                _currentPositions pushBackUnique _thisPosition;
+                _excludedPositions pushBackUnique _thisPosition;
+            };
+            if !(_thisReservationKey isEqualTo []) then {
+                _currentReservationKeys pushBackUnique _thisReservationKey;
+                _excludedReservationKeys pushBackUnique _thisReservationKey;
+            };
+
+            // DIAG-STRIP (#992): the other half of the pair above. This says what the
+            // request is actually steering away from. A missing key with a position that
+            // came from the task rather than the record means only the ten metre position
+            // test is doing any work. Both missing means nothing is being avoided at all,
+            // and the same objective can come back however often it is asked for.
+            // Gate: ALiVE_c2istar_taskDiag = true.
+            if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                ["[C2ISTAR #992 DIAG] avoiding id=%1 recordFound=%2 key=%3 pos=%4 posFromRecord=%5",
+                    _taskID,
+                    !(_currentTaskParams isEqualTo []),
+                    _excludedReservationKeys,
+                    _excludedPositions,
+                    _positionFromRecord
+                ] call ALiVE_fnc_dump;
             };
 
             if !(_replaceCurrent) exitWith {
@@ -615,14 +726,28 @@ switch (_operation) do {
             || {ALIVE_autoGeneratedTasks isEqualTo []}
             || {((ALIVE_autoGeneratedTasks apply {toUpper _x}) arrayIntersect ["CAPTUREOBJECTIVE","MILDEFENCE"]) isNotEqualTo []};
 
+        // Look for something new first, steering away from the whole recent run. If that
+        // leaves nothing to offer, try again steering away only from the order being
+        // replaced, which is how it behaved before. Repeating somewhere from a while back
+        // is better than handing back nothing at all.
         private _created = false;
-        if (_strategicAllowed) then {
-            _created = ["createStrategicTaskForGroup", [_groupData, _enemyFaction, _excludedPosition, _excludedReservationKey]] call MAINCLASS;
-        };
 
-        if !(_created) then {
-            _created = ["createGeneratedTaskForGroup", [_groupData, _enemyFaction, _excludedGeneratedTaskTypes, _excludedTaskRootID]] call MAINCLASS;
-        };
+        {
+            _x params ["_tryPositions", "_tryKeys", "_tryTypes"];
+
+            if (_strategicAllowed) then {
+                _created = ["createStrategicTaskForGroup", [_groupData, _enemyFaction, _tryPositions, _tryKeys]] call MAINCLASS;
+            };
+
+            if !(_created) then {
+                _created = ["createGeneratedTaskForGroup", [_groupData, _enemyFaction, _tryTypes, _excludedTaskRootID]] call MAINCLASS;
+            };
+
+            if (_created) exitWith {};
+        } forEach [
+            [_excludedPositions, _excludedReservationKeys, _excludedGeneratedTaskTypes],
+            [_currentPositions, _currentReservationKeys, _currentTaskTypes]
+        ];
 
         if (_created) then {
             ["notify", [_player, "OPCOM has assigned a new order to your group."]] call MAINCLASS;
