@@ -123,6 +123,12 @@
     <Russian>Включает сохранение задач игрока C2ISTAR во внешней базе данных</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_C2ISTAR_AUTO_PLAYER_TASKS">
+    <English>Automatic Player Tasks:</English>
+</Key>
+<Key ID="STR_ALIVE_C2ISTAR_AUTO_PLAYER_TASKS_COMMENT">
+    <English>Whether players are given tasks they did not ask for. Set to No and nothing arrives unprompted from anywhere in ALiVE: no rescues, air taskings, counter battery, convoy protection or commander orders. Orders a player requests from the tablet still work. Each module keeps its own setting for silencing just that source; this one covers them all, including anything added later. Can also be turned on and off during a mission from the commander menu.</English>
+</Key>
 <Key ID="STR_ALIVE_C2ISTAR_AUTOGEN_BLUFOR">
     <English>Auto Task BLU:</English>
     <Chinese>自動任務(藍軍):</Chinese>

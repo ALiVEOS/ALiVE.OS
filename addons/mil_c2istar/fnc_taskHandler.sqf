@@ -411,6 +411,20 @@ switch (_operation) do {
         private _debug = [_logic, "debug", false] call ALIVE_fnc_hashGet;
         private _eventData = _args;
 
+        // One switch turns off every automatic player task, whichever part of ALiVE
+        // raised it. This is the single point they all arrive at: rescues, air taskings,
+        // counter battery, convoy protection and the commander's own. Anything added
+        // later arrives here too, so it is covered without being told about.
+        //
+        // Tasks a player asks for do not come through here at all. The tablet builds one
+        // directly, so asking for an order still works with this turned off, which is the
+        // point: it silences what arrives unasked, not what is requested.
+        if (!isNil "ALiVE_c2istar_autoPlayerTasks" && {!ALiVE_c2istar_autoPlayerTasks}) exitWith {
+            if (_debug) then {
+                ["Task Handler - automatic player tasks are turned off, task not generated"] call ALiVE_fnc_dump;
+            };
+        };
+
         // DEBUG -------------------------------------------------------------------------------------
         if (_debug) then {
             ["----------------------------------------------------------------------------------------"] call ALIVE_fnc_dump;

@@ -344,6 +344,16 @@ if (_menuName == "C2_PLAYER_ORDERS") then {
         private _optedOut = group player getVariable [QGVAR(playerOrdersOptOut), false];
         private _toggleLabel = if (_optedOut) then {"Opt In to OPCOM Orders"} else {"Opt Out of OPCOM Orders"};
 
+        // Whether tasks arrive unasked at all, for everyone, as set on the module and
+        // changeable here. Reads the live value rather than the module attribute so it
+        // shows what is true now, including a change someone else just made.
+        private _autoTasks = true;
+        if (!isNil "ALiVE_c2istar_autoPlayerTasks") then { _autoTasks = ALiVE_c2istar_autoPlayerTasks };
+        // Belt and braces: anything that is not a plain yes or no reads as on, so the
+        // menu never shows the wrong thing because of how the setting arrived.
+        if !(_autoTasks isEqualType true) then { _autoTasks = true };
+        private _autoTasksLabel = if (_autoTasks) then {"Stop Automatic Tasks (all players)"} else {"Allow Automatic Tasks (all players)"};
+
         // Whether this group already has an order on the go, so only the entry that can
         // actually do something is offered.
         //
@@ -395,6 +405,15 @@ if (_menuName == "C2_PLAYER_ORDERS") then {
                     "",
                     -1,
                     _hasOrder,
+                    _result
+                ],
+                [_autoTasksLabel,
+                    {["toggleAutoPlayerTasks", []] call ALiVE_fnc_playerOrders},
+                    "",
+                    "Turn off every task that arrives without being asked for, for every player on every side. Orders you request from this menu still work.",
+                    "",
+                    -1,
+                    true,
                     _result
                 ],
                 [_toggleLabel,

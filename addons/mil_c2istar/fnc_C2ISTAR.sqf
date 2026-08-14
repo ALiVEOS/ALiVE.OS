@@ -225,6 +225,29 @@ switch(_operation) do {
         // items (default behaviour, only category items apply).
         _result = [_logic,_operation,_args,DEFAULT_C2_ITEM_CUSTOM] call ALIVE_fnc_OOsimpleOperation;
     };
+    // One switch for every automatic player task, whichever part of ALiVE raises it.
+    // Each module keeps its own switch for silencing just that source; this silences
+    // the lot without having to find them all. Tasks a player asks for are untouched.
+    case "autoPlayerTasks": {
+        // The editor stores a Yes or No as text, and the shared setter throws away
+        // anything whose type does not match the default it is handed, puts the default
+        // in its place, and writes that back onto the module. Handing it a plain yes or
+        // no where the editor had stored text therefore discarded a No and stamped a Yes
+        // over it, so the setting could never take. The auto task settings next door
+        // avoid this by keeping everything as text on the way through.
+        //
+        // So: text in, text stored, and settled to a plain yes or no on the way out, so
+        // nothing else has to know any of this.
+        if (_args isEqualType true) then { _args = ["false", "true"] select _args };
+
+        private _value = [_logic, _operation, _args, "true"] call ALIVE_fnc_OOsimpleOperation;
+
+        if (_value isEqualType true) then {
+            _result = _value;
+        } else {
+            _result = (toLower (_value + "")) in ["true", "yes", "1"];
+        };
+    };
     case "autoGenerateBlufor": {
 
         if (typeName _args == "BOOL") then {
@@ -1079,6 +1102,12 @@ switch(_operation) do {
             ["ALiVE_fnc_C2ISTAR WARNING: multiple ALiVE_mil_c2istar modules detected. The singleton global ALIVE_MIL_C2ISTAR is being overwritten - only the last-initialised module's configuration will be active. Place a single C2ISTAR module per mission."] call ALiVE_fnc_DumpR;
         };
         ALIVE_MIL_C2ISTAR = _logic;
+
+// Read once into a global so the task handler and the menu can both see it without
+// reaching for the module every time. The server broadcasts it so a change made from
+// the menu reaches everyone.
+ALiVE_c2istar_autoPlayerTasks = [_logic, "autoPlayerTasks"] call MAINCLASS;
+if (isServer) then { publicVariable "ALiVE_c2istar_autoPlayerTasks" };
 
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;
         private _vipPanicTimeout = [_logic, "vipPanicTimeout"] call MAINCLASS;

@@ -118,6 +118,18 @@ class CfgVehicles {
                     };
 
                     class SPACER_AUTOTASK_DEFAULTS : ALiVE_ModuleSubTitle { property = "ALiVE_mil_c2istar_SPACER_AUTOTASK_DEFAULTS"; displayName = " "; };
+                    class autoPlayerTasks : Combo
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_autoPlayerTasks";
+                            displayName = "$STR_ALIVE_C2ISTAR_AUTO_PLAYER_TASKS";
+                            tooltip = "$STR_ALIVE_C2ISTAR_AUTO_PLAYER_TASKS_COMMENT";
+                            defaultValue = """true""";
+                            class Values
+                            {
+                                    class No  { name = "No";  value = false; };
+                                    class Yes { name = "Yes"; value = true; default = 1; };
+                            };
+                    };
                     class autoGenerateBlufor : Combo
                     {
                             property = "ALiVE_MIL_C2ISTAR_autoGenerateBlufor";

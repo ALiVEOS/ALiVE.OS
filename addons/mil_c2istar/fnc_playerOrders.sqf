@@ -473,6 +473,25 @@ switch (_operation) do {
             _result = true;
         };
     };
+    case "toggleAutoPlayerTasks": {
+        // Flipped from the commander menu. Held on the server and sent out, so every
+        // machine agrees and the menu shows the same thing to everyone.
+        if !(isServer) exitWith {
+            [_operation, _args] remoteExec ["ALiVE_fnc_playerOrders", 2];
+        };
+
+        private _now = true;
+        if (!isNil "ALiVE_c2istar_autoPlayerTasks") then { _now = ALiVE_c2istar_autoPlayerTasks };
+
+        ALiVE_c2istar_autoPlayerTasks = !_now;
+        publicVariable "ALiVE_c2istar_autoPlayerTasks";
+
+        if (!isNil "ALIVE_MIL_C2ISTAR") then {
+            [ALIVE_MIL_C2ISTAR, "autoPlayerTasks", ALiVE_c2istar_autoPlayerTasks] call ALiVE_fnc_C2ISTAR;
+        };
+
+        ["C2ISTAR - automatic player tasks turned %1", [ "off", "on" ] select ALiVE_c2istar_autoPlayerTasks] call ALiVE_fnc_dump;
+    };
     case "rememberOrder": {
         // Keep a short list of what this group has just been sent to do, so asking for a
         // different order can steer away from more than the one thing it is holding.
