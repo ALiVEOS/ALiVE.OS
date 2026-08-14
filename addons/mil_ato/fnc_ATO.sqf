@@ -1759,9 +1759,26 @@ switch(_operation) do {
             // Don' specify a player
             private _playerID =  "ATO";
 
-            // All players in side
-            private _sidePlayers = [_side] call ALiVE_fnc_getPlayersDataSource;
-            _sidePlayers = [_sidePlayers select 1,_sidePlayers select 0];
+            // Everyone on the side who is still taking orders they did not ask for.
+            //
+            // A group that has opted out of automatic orders was still being handed
+            // rescues, because this raises its task directly rather than going through
+            // the commander, and the opt-out was only ever read on the commander's own
+            // routes. Opting out is meant to stop tasks arriving unasked, whichever part
+            // of ALiVE raises them, so it is read here too now.
+            //
+            // Falls back to the plain side list when C2ISTAR is absent, since the opt-out
+            // cannot exist without it and a rescue should still be offered.
+            private _sidePlayers = [];
+
+            if (["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) then {
+                _sidePlayers = ["getAutoOrderSidePlayers", [_side]] call ALiVE_fnc_playerOrders;
+            };
+
+            if (isNil "_sidePlayers" || {!(_sidePlayers isEqualType [])} || {count _sidePlayers < 2}) then {
+                _sidePlayers = [_side] call ALiVE_fnc_getPlayersDataSource;
+                _sidePlayers = [_sidePlayers select 1,_sidePlayers select 0];
+            };
 
             private _current = "Y";
             private _apply = "Side";
@@ -1774,8 +1791,12 @@ switch(_operation) do {
                 _taskData pushback _crewID;
             };
 
-            private _event = ['TASK_GENERATE', _taskData, "ATO"] call ALIVE_fnc_event;
-            [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+            // With everyone on the side opted out there is nobody to send it to, so none
+            // is raised rather than one going out to an empty list.
+            if !((_sidePlayers param [0, []]) isEqualTo []) then {
+                private _event = ['TASK_GENERATE', _taskData, "ATO"] call ALIVE_fnc_event;
+                [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+            };
         };
     };
     case "requestPlayerTask": {
@@ -1875,9 +1896,20 @@ switch(_operation) do {
             // Don' specify a player
             private _playerID =  "ATO";
 
-            // All players in side
-            private _sidePlayers = [_side] call ALiVE_fnc_getPlayersDataSource;
-            _sidePlayers = [_sidePlayers select 1, _sidePlayers select 0];
+            // Everyone on the side who is still taking orders they did not ask for. Same
+            // reasoning as the rescue above: opting out is meant to stop tasks arriving
+            // unasked, and air tasks were reaching opted-out groups because they are
+            // raised here rather than through the commander.
+            private _sidePlayers = [];
+
+            if (["ALiVE_mil_c2istar"] call ALiVE_fnc_isModuleAvailable) then {
+                _sidePlayers = ["getAutoOrderSidePlayers", [_side]] call ALiVE_fnc_playerOrders;
+            };
+
+            if (isNil "_sidePlayers" || {!(_sidePlayers isEqualType [])} || {count _sidePlayers < 2}) then {
+                _sidePlayers = [_side] call ALiVE_fnc_getPlayersDataSource;
+                _sidePlayers = [_sidePlayers select 1, _sidePlayers select 0];
+            };
 
             private _current = "Y";
             private _apply = "Side";
@@ -1918,8 +1950,11 @@ switch(_operation) do {
                 _taskData pushback (_args param [2,[[],900]]);
             };
 
-            private _event = ["TASK_GENERATE", _taskData, "ATO"] call ALIVE_fnc_event;
-            [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+            // Nobody left on the side taking them, so none is raised.
+            if !((_sidePlayers param [0, []]) isEqualTo []) then {
+                private _event = ["TASK_GENERATE", _taskData, "ATO"] call ALIVE_fnc_event;
+                [ALIVE_eventLog, "addEvent",_event] call ALIVE_fnc_eventLog;
+            };
 
             [GVAR(playerRequests), _type, _currentTargets] call ALiVE_fnc_hashSet;
         };
