@@ -344,6 +344,37 @@ if (_menuName == "C2_PLAYER_ORDERS") then {
         private _optedOut = group player getVariable [QGVAR(playerOrdersOptOut), false];
         private _toggleLabel = if (_optedOut) then {"Opt In to OPCOM Orders"} else {"Opt Out of OPCOM Orders"};
 
+        // Whether this group already has an order on the go, so only the entry that can
+        // actually do something is offered.
+        //
+        // Asking for a new order while holding one did nothing but explain itself
+        // afterwards, and asking for a different one without holding anything did nothing
+        // at all. Both stayed selectable, so both read as broken.
+        //
+        // Read from the copy of the task list this machine already keeps, which the server
+        // keeps in step as tasks are created, changed and removed. Nothing new has to be
+        // sent and there is no separate flag to fall out of date. Orders are named after
+        // the group they belong to, which is how one is told from another player's.
+        private _hasOrder = false;
+
+        if !(isNil "ALIVE_taskHandlerClient") then {
+            private _groupID = [format ["%1", group player], " ", "_"] call CBA_fnc_replace;
+            private _tasks = [ALIVE_taskHandlerClient, "tasks"] call ALiVE_fnc_hashGet;
+
+            if (!isNil "_tasks" && {_tasks isEqualType []} && {count _tasks > 2}) then {
+                _hasOrder = ((_tasks select 1) findIf {
+                    ((_x find "OPORD_") == 0)
+                    && {(_x find _groupID) > -1}
+                    && {
+                        // Finished, given up on or cancelled orders stay in the list, so
+                        // only one still being worked on counts.
+                        private _record = [_tasks, _x, []] call ALiVE_fnc_hashGet;
+                        (_record param [6, ""]) in ["Created", "Assigned"]
+                    }
+                }) > -1;
+            };
+        };
+
         _menus set [count _menus,
         [
             ["C2_PLAYER_ORDERS", "OPCOM Orders", "popup"],
@@ -354,7 +385,7 @@ if (_menuName == "C2_PLAYER_ORDERS") then {
                     "Ask OPCOM for a new task for your player group.",
                     "",
                     -1,
-                    true,
+                    !_hasOrder,
                     _result
                 ],
                 ["Request Different Order",
@@ -363,7 +394,7 @@ if (_menuName == "C2_PLAYER_ORDERS") then {
                     "Cancel the current group order and ask OPCOM for a different one.",
                     "",
                     -1,
-                    true,
+                    _hasOrder,
                     _result
                 ],
                 [_toggleLabel,
