@@ -339,8 +339,19 @@ if (count _victimPlayers > 0) then {
                 _tasked pushBack _entityID;
                 _logic setVariable [_taskedVar, _tasked];
 
-                private _sidePlayers = [_vSideText] call ALiVE_fnc_getPlayersDataSource;
-                _sidePlayers = [_sidePlayers select 1, _sidePlayers select 0];
+                // Everyone on the side who is still taking tasks they did not ask for.
+                // C2ISTAR leaves the opted-out off the list when it hands a side task
+                // round, so this only saves raising one that nobody would receive.
+                private _sidePlayers = [];
+
+                if (isServer) then {
+                    _sidePlayers = ["getAutoOrderSidePlayers", [_vSideText]] call ALiVE_fnc_playerOrders;
+                };
+
+                if (isNil "_sidePlayers" || {!(_sidePlayers isEqualType [])} || {count _sidePlayers < 2}) then {
+                    private _everyone = [_vSideText] call ALiVE_fnc_getPlayersDataSource;
+                    _sidePlayers = [_everyone select 1, _everyone select 0];
+                };
                 // attribute the task to a victim of THIS side - with two
                 // hostile sides in the impact area the first victim overall
                 // may belong to the other one
@@ -349,8 +360,11 @@ if (count _victimPlayers > 0) then {
                 private _revealPos = ([_entityProfile,"position"] call ALiVE_fnc_hashGet) getPos [50 + random 150, random 360];
                 private _requestID = format ["ARTY_%1_%2", _entityID, floor time];
                 private _taskData = [_requestID, "ARTY", _vSideText, _vFaction, "DestroyVehicles", "NULL", _revealPos, _sidePlayers, _batFaction, "Y", "Side", +_vehicleIDs];
-                private _tEvent = ["TASK_GENERATE", _taskData, "MilArtillery"] call ALIVE_fnc_event;
-                [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
+                // Nobody on the side is taking them, so none is raised.
+                if !((_sidePlayers param [0, []]) isEqualTo []) then {
+                    private _tEvent = ["TASK_GENERATE", _taskData, "MilArtillery"] call ALIVE_fnc_event;
+                    [ALIVE_eventLog, "addEvent", _tEvent] call ALIVE_fnc_eventLog;
+                };
 
                 if (_debug) then {
                     ["ALiVE MIL_ARTILLERY - destroy-artillery task raised for %1 against battery %2", _vSideText, _entityID] call ALiVE_fnc_dump;

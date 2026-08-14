@@ -3891,7 +3891,23 @@ switch(_operation) do {
                     } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
 
                     // Protect task - to the convoy's own side
-                    private _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                    // Everyone on the side who is still taking tasks they did not ask
+                    // for. C2ISTAR leaves the opted-out off the list when it hands a
+                    // side task round, so this only saves raising one nobody would
+                    // receive. The count test below then does that on its own.
+                    private _ownPlayers = [];
+
+                    if (isServer) then {
+                        _ownPlayers = ["getAutoOrderSidePlayers", [_eventSide]] call ALiVE_fnc_playerOrders;
+                        if (_ownPlayers isEqualType [] && {count _ownPlayers > 1}) then {
+                            _ownPlayers = [_ownPlayers select 1, _ownPlayers select 0];
+                        };
+                    };
+
+                    if (isNil "_ownPlayers" || {!(_ownPlayers isEqualType [])} || {count _ownPlayers < 2}) then {
+                        _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                    };
+
                     if (count (_ownPlayers select 1) > 0) then {
                         private _enemyFaction = _hostileOpcomFaction;
                         if (_enemyFaction == "") then {
@@ -8202,7 +8218,23 @@ switch(_operation) do {
                                 } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
 
                                 // Protect task - to the delivering heli's own side
-                                private _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                                // Everyone on the side who is still taking tasks they did not ask for.
+                                // C2ISTAR leaves the opted-out off the list when it hands a side task
+                                // round, so this only saves raising one nobody would receive. The count
+                                // test below then does that on its own.
+                                private _ownPlayers = [];
+
+                                if (isServer) then {
+                                    _ownPlayers = ["getAutoOrderSidePlayers", [_eventSide]] call ALiVE_fnc_playerOrders;
+                                    if (_ownPlayers isEqualType [] && {count _ownPlayers > 1}) then {
+                                        _ownPlayers = [_ownPlayers select 1, _ownPlayers select 0];
+                                    };
+                                };
+
+                                if (isNil "_ownPlayers" || {!(_ownPlayers isEqualType [])} || {count _ownPlayers < 2}) then {
+                                    _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                                };
+
                                 if (count (_ownPlayers select 1) > 0) then {
                                     private _enemyFaction = _hostileOpcomFaction;
                                     if (_enemyFaction == "") then {
