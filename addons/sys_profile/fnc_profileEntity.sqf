@@ -600,7 +600,16 @@ switch(_operation) do {
             private _profileSide = [_logic,"side"] call ALiVE_fnc_hashGet;   // for side-coloured debug-draw of the route
             private _pathfindingProcedure = [_logic] call ALiVE_fnc_profileGetPathfindingProcedure;
 
-            [ALiVE_Pathfinder,"findPath",[_startPosition, _pathFindingProcedure, _waypoint, _previousWaypoint, [_profileID,_pendingPath,_profileSide],{
+            // The first point of a route has nothing before it. Setting a variable to nil
+            // leaves it undefined rather than empty, so naming it here threw "Undefined
+            // variable" every time and the route was never asked for at all, leaving that
+            // profile to move without one. The line above dodges it by testing the name as
+            // a string; this one could not, because it reads the value.
+            //
+            // Hand over the nil keyword instead, which the pathfinder reads as "nothing
+            // before this" exactly as intended. Same trap, and the same answer, as the
+            // resupply dispatch in mil_logistics.
+            private _findPathArgs = [_startPosition, _pathFindingProcedure, _waypoint, nil, [_profileID,_pendingPath,_profileSide],{
                 params ["_callbackArgs","_path"];
 
                 _callbackArgs params ["_profileID","_pendingPath"];
@@ -611,7 +620,11 @@ switch(_operation) do {
                     _pendingPath set [2,_path];
                     [_profile,"advancePendingWaypoints"] call ALIVE_fnc_profileEntity;
                 };
-            }]] call ALiVE_fnc_pathfinder;
+            }];
+
+            if !(isNil "_previousWaypoint") then { _findPathArgs set [3, _previousWaypoint] };
+
+            [ALiVE_Pathfinder,"findPath",_findPathArgs] call ALiVE_fnc_pathfinder;
 
             // Front-insert used to rebuild every stored route point here as a
             // not-ready "addWaypoint" job, meaning to re-path the existing legs from
