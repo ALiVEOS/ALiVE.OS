@@ -79,12 +79,44 @@ if(!isNil "ALIVE_factionCustomMappings") then {
 
 // ["Group faction: %1",_prefix] call ALIVE_fnc_dump;
 
+// Groups built by the faction compiler are handed back here. The test that returns them has to
+// stand on its own at the foot of the function, not inside the block above: leaving a block early
+// ends that block and nothing else, so written the other way round the answer was set aside and
+// the search below ran anyway. It then looked for a compiled group by name among the ordinary
+// ones, where it was never going to be, and came back with nothing at all. A faction built this
+// way placed not one unit, and said nothing about it. The same rule is written out in full at the
+// head of ALiVE_fnc_inferFactionMapping.
+//
+// The groups themselves were being built correctly the whole time. They are registered as they
+// are made, so this only stops the list of them being thrown away.
+private _compiledProfiles = [];
+
 if !(_compiledFaction isEqualTo "") then {
-    private _compiledProfiles = [_groupClass, _position, _direction, _spawnGoodPosition, _compiledFaction, _busy, _isSPE, _aiBehaviour, _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_factionCompilerCreateProfilesFromGroup;
-    if (count _compiledProfiles > 0) exitWith {_compiledProfiles};
+    _compiledProfiles = [_groupClass, _position, _direction, _spawnGoodPosition, _compiledFaction, _busy, _isSPE, _aiBehaviour, _onEachSpawn, _onEachSpawnOnce] call ALIVE_fnc_factionCompilerCreateProfilesFromGroup;
 };
 
+if (count _compiledProfiles > 0) exitWith {_compiledProfiles};
+
 private _config = [_prefix, _groupClass] call ALIVE_fnc_configGetGroup;
+
+// Never leave a group that resolved to nothing unsaid. A name matching neither a compiled group
+// nor an ordinary one places nobody, and until now the only sign of it was an objective that came
+// up empty. Two full server logs were sent for this fault without either of them carrying a line
+// about it.
+//
+// To the log only. This runs once per group per objective, so on a faulty faction it is hundreds
+// of lines, and the louder channel puts each one on the startup screen in front of players and
+// keeps only the last five, which would push out the faults that screen exists to show. Placement
+// already raises its own once-per-faction warning there when nothing usable was found at all.
+//
+// Both names are given because they are often different and each answers a different question.
+// The one chosen on the module is how anyone finds the module to correct; the one searched is
+// where it was actually looked for, which is what explains the miss when a faction redirects to
+// another faction's groups.
+if (count _config == 0) then {
+    ["Warning, no group matching '%1' found. Faction chosen: %2, groups searched under: %3. Nothing will be placed for it.",
+        _groupClass, _originalFaction, _prefix] call ALiVE_fnc_dump;
+};
 
 // ["Group Config: %1 %2",_config,_groupClass] call ALIVE_fnc_dump;
 
