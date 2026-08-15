@@ -42,4 +42,36 @@
     <English>Advanced usage - if you wish to copy the parent class of existing units, rather than existing class, select Yes. No by default.</English>
     <Chinesesimp>高级用法-如果要复制现有单位的父本,而不是现有类,请选择是.默认情况下为否.</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE">
+    <English>Arsenal Type:</English>
+    <Chinesesimp>军械库类型:</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_COMMENT">
+    <English>Select which arsenal is used to edit ORBAT unit loadouts.</English>
+    <Chinesesimp>选择用于编辑ORBAT单位装备的军械库.</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_BIS">
+    <English>Virtual Arsenal</English>
+    <Chinesesimp>Virtual军械库</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_ACE">
+    <English>ACE Arsenal</English>
+    <Chinesesimp>ACE军械库</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_SAVE">
+    <English>Save Changes</English>
+    <Chinesesimp>保存更改</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_ACE_UNAVAILABLE">
+    <English>ACE mod is not currently loaded</English>
+    <Chinesesimp>ACE模组当前未加载</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_RUNTIME_UNAVAILABLE">
+    <English>ACE Arsenal is unavailable. Falling back to Virtual Arsenal.</English>
+    <Chinesesimp>ACE军械库不可用.将改用Virtual军械库.</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_RUNTIME_FAILED">
+    <English>ACE Arsenal could not be opened.</English>
+    <Chinesesimp>无法打开ACE军械库.</Chinesesimp>
+</Key>
 </Container></Package></Project>

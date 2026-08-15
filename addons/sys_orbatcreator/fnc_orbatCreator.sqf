@@ -102,6 +102,24 @@ switch(_operation) do {
 
         [_logic,"prefix", _prefix] call MAINCLASS;
 
+        private _arsenalType = _logic getVariable ["arsenalType", "BIS"];
+        if !(_arsenalType isEqualType "") then {
+            _arsenalType = "BIS";
+        };
+        _arsenalType = toUpper _arsenalType;
+
+        if !(_arsenalType in ["BIS", "ACE"]) then {
+            _arsenalType = "BIS";
+        };
+
+        if (_arsenalType == "ACE" && {!([_logic,"isACEArsenalAvailable"] call MAINCLASS)}) then {
+            ["STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_RUNTIME_UNAVAILABLE"] call ALiVE_fnc_dump;
+            systemChat (localize "STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_RUNTIME_UNAVAILABLE");
+            _arsenalType = "BIS";
+        };
+
+        [_logic,"arsenalType", _arsenalType] call MAINCLASS;
+
         // data init
 
         // load static data
@@ -170,6 +188,7 @@ switch(_operation) do {
         [_state,"customUnits", _customUnits] call ALiVE_fnc_hashSet;
 
         [_state,"activeInteface", ""] call ALiVE_fnc_hashSet;
+        [_state,"activeDisplay", displayNull] call ALiVE_fnc_hashSet;
         [_state,"selectedFaction", ""] call ALiVE_fnc_hashSet;
 
         [_state,"factionEditor_treeDisplayType", ""] call ALiVE_fnc_hashSet;
@@ -181,6 +200,11 @@ switch(_operation) do {
         [_state,"unitEditor_selectedUnit", ""] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_unitToSelect", ""] call ALiVE_fnc_hashSet;
         [_state,"unitEditor_arsenalOpen", false] call ALiVE_fnc_hashSet;
+        [_state,"unitEditor_arsenalClosing", false] call ALiVE_fnc_hashSet;
+        [_state,"unitEditor_arsenalDisplay", displayNull] call ALiVE_fnc_hashSet;
+        [_state,"unitEditor_arsenalReopenPending", false] call ALiVE_fnc_hashSet;
+        [_state,"unitEditor_arsenalTransitionId", 0] call ALiVE_fnc_hashSet;
+        _logic setVariable ["aceArsenalDisplayHandler", -1];
 
         [_state,"editVehicle_vehicle", ""] call ALiVE_fnc_hashSet;
         [_state,"editVehicle_selectedCrewBySlot", +_tmpHash] call ALiVE_fnc_hashSet;
@@ -201,8 +225,10 @@ switch(_operation) do {
 
         waitUntil {time > 0 && {!isnull player} && {!isnil "ALiVE_STATIC_DATA_LOADED"}};
 
-        [_logic,"openInterface", "Faction_Editor"] spawn MAINCLASS;
-        ["Preload"] call BIS_fnc_arsenal;
+        [_logic,"openInterface", ["Faction_Editor"]] call MAINCLASS;
+        if (([_logic,"arsenalType"] call MAINCLASS) == "BIS") then {
+            ["Preload"] call BIS_fnc_arsenal;
+        };
 
         // initialise main menu
 
@@ -278,6 +304,22 @@ switch(_operation) do {
         };
 
     };
+    case "arsenalType": {
+
+        if (_args isEqualType "") then {
+            _logic setVariable [_operation, toUpper _args];
+            _result = toUpper _args;
+        } else {
+            _result = _logic getVariable [_operation, "BIS"];
+        };
+
+    };
+    case "isACEArsenalAvailable": {
+
+        _result = isClass (configFile >> "CfgPatches" >> "ace_arsenal")
+            && {!isNil "ace_arsenal_fnc_openBox"};
+
+    };
     case "state": {
 
         if (_args isEqualType []) then {
@@ -307,17 +349,29 @@ switch(_operation) do {
 
     case "openInterface": {
 
-        private _interface = _args;
+        _args params ["_interface", ["_closeCurrentDialog", false]];
 
         private _state = [_logic,"state"] call MAINCLASS;
+        private _currentDisplay = [_state,"activeDisplay"] call ALiVE_fnc_hashGet;
+
+        if (_closeCurrentDialog && {!isNull _currentDisplay}) exitWith {
+
+            _currentDisplay closeDisplay 0;
+
+            [{
+                isNull (_this select 2)
+            }, {
+                params ["_logic","_interface"];
+                [_logic,"openInterface", [_interface, false]] call MAINCLASS;
+            }, [_logic,_interface,_currentDisplay]] call CBA_fnc_waitUntilAndExecute;
+        };
+
+        private _newDisplay = displayNull;
 
         switch (_interface) do {
 
             case "Faction_Editor": {
-
-                closeDialog 0;
-                sleep 0.001; // bis pls
-                createDialog "ALiVE_orbatCreator_interface_factionEditor";
+                _newDisplay = createDialog ["ALiVE_orbatCreator_interface_factionEditor"];
 
                 // if reopening orbat creator
                 // init background
@@ -326,76 +380,28 @@ switch(_operation) do {
                 if (isnull _background) then {
                     [_logic,"enableUnitEditorBackground", true] call MAINCLASS;
                 };
-
             };
 
-            case "Create_Faction": {
-
-                createDialog "ALiVE_orbatCreator_interface_createFaction";
-
-            };
-
-            case "Edit_Faction": {
-
-                createDialog "ALiVE_orbatCreator_interface_editFaction";
-
-            };
-
-            case "Copy_Faction": {
-
-                createDialog "ALiVE_orbatCreator_interface_createFaction";
-
-            };
-
-            case "Unit_Editor": {
-
-                closeDialog 0;
-                sleep 0.03; // bis pls
-                createDialog "ALiVE_orbatCreator_interface_unitEditor";
-
-            };
-
-            case "Create_Unit": {
-
-                createDialog "ALiVE_orbatCreator_interface_createUnit";
-
-            };
-
-            case "Unit_Editor_Edit_Properties": {
-
-                createDialog "ALiVE_orbatCreator_interface_editUnit";
-
-            };
-
-            case "Edit_Vehicle": {
-
-                createDialog "ALiVE_orbatCreator_interface_editVehicle";
-
-            };
-
-            case "Group_Editor": {
-
-                closeDialog 0;
-                sleep 0.001; // bis pls
-                createDialog "ALiVE_orbatCreator_interface_groupEditor";
-
-            };
-
-            case "Create_Group": {
-
-                createDialog "ALiVE_orbatCreator_interface_createGroup";
-
-            };
-
-            case "Edit_Group": {
-
-                createDialog "ALiVE_orbatCreator_interface_editGroup";
-
-            };
+            case "Create_Faction": { _newDisplay = createDialog ["ALiVE_orbatCreator_interface_createFaction"] };
+            case "Edit_Faction": { _newDisplay = createDialog ["ALiVE_orbatCreator_interface_editFaction"] };
+            case "Copy_Faction": { _newDisplay = createDialog ["ALiVE_orbatCreator_interface_createFaction"] };
+            case "Unit_Editor": { _newDisplay = createDialog ["ALiVE_orbatCreator_interface_unitEditor"] };
+            case "Create_Unit": { _newDisplay = createDialog ["ALiVE_orbatCreator_interface_createUnit"] };
+            case "Unit_Editor_Edit_Properties": { _newDisplay = createDialog ["ALiVE_orbatCreator_interface_editUnit"] };
+            case "Edit_Vehicle": { _newDisplay = createDialog ["ALiVE_orbatCreator_interface_editVehicle"] };
+            case "Group_Editor": { _newDisplay = createDialog ["ALiVE_orbatCreator_interface_groupEditor"] };
+            case "Create_Group": { _newDisplay = createDialog ["ALiVE_orbatCreator_interface_createGroup"] };
+            case "Edit_Group": { _newDisplay = createDialog ["ALiVE_orbatCreator_interface_editGroup"] };
 
         };
 
-        [_logic,"onLoad", _interface] call MAINCLASS;
+        [_state,"activeDisplay",_newDisplay] call ALiVE_fnc_hashSet;
+
+        [{
+            params ["_logic","_interface"];
+            [_logic,"onLoad", _interface] call MAINCLASS;
+        }, [_logic, _interface]] call CBA_fnc_execNextFrame;
+
         [_state,"activeInteface", _interface] call ALiVE_fnc_hashSet;
 
     };
@@ -408,13 +414,6 @@ switch(_operation) do {
         switch (_interface) do {
 
             case "Faction_Editor": {
-
-                private [
-                    "_faction","_factionDisplayName","_factionConfigName","_factionFlag",
-                    "_index","_sideText","_sideTextLong","_marker","_markerClass","_markerName",
-                    "_markerIcon","_factionConfig","_factionConfigFlag","_factionConfigDisplayName",
-                    "_factionConfigMarkerName"
-                ];
 
                 private _display = findDisplay OC_DISPLAY_FACTIONEDITOR;
                 _display displayAddEventHandler ["unload", "['onUnload', ['Faction_Editor',_this]] call ALiVE_fnc_orbatCreatorOnAction"];
@@ -458,12 +457,6 @@ switch(_operation) do {
 
             case "Create_Faction": {
 
-                private [
-                    "_index","_marker","_markerClass","_markerName","_markerIcon",
-                    "_factionConfig","_factionConfigSide","_factionConfigFlag",
-                    "_factionConfigDisplayName","_factionConfigMarkerName"
-                ];
-
                 private _display = findDisplay OC_DISPLAY_CREATEFACTION;
                 _display displayAddEventHandler ["unload", "['onUnload', ['Create_Faction',_this]] call ALiVE_fnc_orbatCreatorOnAction"];
 
@@ -486,14 +479,14 @@ switch(_operation) do {
                 private _markerPath = configFile >> "CfgMarkers";
 
                 for "_i" from 0 to (count _markerPath - 1) do {
-                    _marker = _markerPath select _i;
+                    private _marker = _markerPath select _i;
 
                     if (isClass _marker) then {
-                        _markerClass = getText (_marker >> "markerClass");
+                        private _markerClass = getText (_marker >> "markerClass");
 
                         if (_markerClass == "Flags") then {
-                            _markerName = getText (_marker >> "name");
-                            _markerIcon = getText (_marker >> "icon");
+                            private _markerName = getText (_marker >> "name");
+                            private _markerIcon = getText (_marker >> "icon");
 
                             _allFlags pushback [_markerName,_markerIcon];
                         };
@@ -503,15 +496,15 @@ switch(_operation) do {
                 private _factionPath = configFile >> "CfgFactionClasses";
 
                 for "_i" from 0 to (count _factionPath - 1) do {
-                    _factionConfig = _factionPath select _i;
+                    private _factionConfig = _factionPath select _i;
 
                     if (isClass _factionConfig) then {
-                        _factionConfigSide = getNumber (_factionConfig >> "side");
-                        _factionConfigFlag = getText (_factionConfig >> "flag");
+                        private _factionConfigSide = getNumber (_factionConfig >> "side");
+                        private _factionConfigFlag = getText (_factionConfig >> "flag");
 
                         if (_factionConfigSide >= 0 && {_factionConfigSide <= 3} && {!(_factionConfigFlag in _allFlags)}) then {
-                            _factionConfigDisplayName = getText (_factionConfig >> "displayName");
-                            _factionConfigMarkerName = format ["Flag - %1", _factionConfigDisplayName];
+                            private _factionConfigDisplayName = getText (_factionConfig >> "displayName");
+                            private _factionConfigMarkerName = format ["Flag - %1", _factionConfigDisplayName];
 
                             _allFlags pushback [_factionConfigMarkerName,_factionConfigFlag];
                         };
@@ -521,7 +514,7 @@ switch(_operation) do {
                 {
                     _x params ["_name","_path"];
 
-                    _index = _inputFlag lbAdd _name;
+                    private _index = _inputFlag lbAdd _name;
                     _inputFlag lbSetData [_index,_path];
                     _inputFlag lbSetPicture [_index,_path];
                 } foreach _allFlags;
@@ -654,6 +647,7 @@ switch(_operation) do {
 
                 private _display = findDisplay OC_DISPLAY_UNITEDITOR;
                 _display displayAddEventHandler ["unload", "['onUnload', ['Unit_Editor',_this]] call ALiVE_fnc_orbatCreatorOnAction"];
+                _display displayAddEventHandler ["KeyDown", "['onUnitEditorDiagnosticKey', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
                 // init class list
 
@@ -674,7 +668,7 @@ switch(_operation) do {
                 private _classList_button1 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_ONE );
                 _classList_button1 ctrlSetText "New";
                 _classList_button1 ctrlSetTooltip "Create new unit for selected faction";
-                _classList_button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Create_Unit'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _classList_button1 ctrlSetEventHandler ["MouseButtonDown","['openInterface', ['Create_Unit']] call ALiVE_fnc_orbatCreatorOnAction"];
                 _classList_button1 ctrlShow true;
 
                 private _classList_button2 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_TWO );
@@ -687,7 +681,7 @@ switch(_operation) do {
                 private _classList_button3 = OC_getControl( OC_DISPLAY_UNITEDITOR , OC_UNITEDITOR_CLASSLIST_BUTTON_THREE );
                 _classList_button3 ctrlSetText "Edit Properties";
                 _classList_button3 ctrlSetTooltip "Edit selected unit properties";
-                _classList_button3 ctrlSetEventHandler ["MouseButtonDown","['openInterface', 'Unit_Editor_Edit_Properties'] call ALiVE_fnc_orbatCreatorOnAction"];
+                _classList_button3 ctrlSetEventHandler ["MouseButtonDown","['openInterface', ['Unit_Editor_Edit_Properties']] call ALiVE_fnc_orbatCreatorOnAction"];
                 _classList_button3 ctrlShow true;
                 _classList_button3 ctrlEnable false;
 
@@ -739,6 +733,53 @@ switch(_operation) do {
                     _cam cameraEffect ["Internal", "Back"];
                 } else {
                     [_logic,"enableUnitEditorBackground", true] call MAINCLASS;
+                };
+
+                [{
+                    params ["_state"];
+
+                    private _camera = [_state,"unitEditor_interfaceCamera"] call ALiVE_fnc_hashGet;
+                    private _display = [_state,"activeDisplay"] call ALiVE_fnc_hashGet;
+                    private _interface = [_state,"activeInteface"] call ALiVE_fnc_hashGet;
+
+                    if (isNull _camera || {isNull _display} || {_interface != "Unit_Editor"}) exitWith {};
+
+                    _camera cameraEffect ["Internal", "Back"];
+
+                }, [_state]] call CBA_fnc_execNextFrame;
+
+                // The Arsenal can issue a delayed closeDialog after its display
+                // has unloaded. Only clear transition protection if this exact
+                // replacement display remains active for the stabilization period.
+                if ([_state,"unitEditor_arsenalClosing"] call ALiVE_fnc_hashGet) then {
+                    [_state,"unitEditor_arsenalReopenPending", false] call ALiVE_fnc_hashSet;
+
+                    private _transitionId = [_state,"unitEditor_arsenalTransitionId"] call ALiVE_fnc_hashGet;
+
+                    [{
+                        params ["_state","_display","_transitionId"];
+
+                        private _activeDisplay = [_state,"activeDisplay"] call ALiVE_fnc_hashGet;
+                        private _arsenalClosing = [_state,"unitEditor_arsenalClosing"] call ALiVE_fnc_hashGet;
+                        private _currentTransitionId = [_state,"unitEditor_arsenalTransitionId"] call ALiVE_fnc_hashGet;
+
+                        if (
+                            _currentTransitionId == _transitionId
+                            && {_arsenalClosing}
+                            && {!isNull _display}
+                            && {_activeDisplay isEqualTo _display}
+                        ) then {
+                            private _camera = [_state,"unitEditor_interfaceCamera"] call ALiVE_fnc_hashGet;
+
+                            if (!isNull _camera) then {
+                                _camera cameraEffect ["Internal", "Back"];
+                            };
+
+                            [_state,"unitEditor_arsenalOpen", false] call ALiVE_fnc_hashSet;
+                            [_state,"unitEditor_arsenalClosing", false] call ALiVE_fnc_hashSet;
+                            [_state,"unitEditor_arsenalDisplay", displayNull] call ALiVE_fnc_hashSet;
+                        };
+                    }, [_state,_display,_transitionId], 3] call CBA_fnc_waitAndExecute;
                 };
 
             };
@@ -1347,6 +1388,13 @@ switch(_operation) do {
         _eventData params ["_display","_exitCode"];
 
         private _state = [_logic,"state"] call MAINCLASS;
+        private _parentDisplay = displayNull;
+
+        if (!isNull _display) then {
+            _parentDisplay = displayParent _display;
+        };
+
+        [_state,"activeDisplay",_parentDisplay] call ALiVE_fnc_hashSet;
 
         switch (_interface) do {
 
@@ -1372,11 +1420,23 @@ switch(_operation) do {
 
             case "Unit_Editor": {
 
-                if (_exitCode == 2) then {
-                    private _arsenalOpen = [_state,"unitEditor_arsenalOpen"] call ALiVE_fnc_hashGet;
+                private _arsenalOpen = [_state,"unitEditor_arsenalOpen"] call ALiVE_fnc_hashGet;
+                private _arsenalClosing = [_state,"unitEditor_arsenalClosing"] call ALiVE_fnc_hashGet;
+                private _reopenPending = [_state,"unitEditor_arsenalReopenPending"] call ALiVE_fnc_hashGet;
 
+                if (_exitCode == 2) then {
                     if (!_arsenalOpen) then {
                         [_logic,"enableUnitEditorBackground", false] call MAINCLASS;
+                    } else {
+                        if (_arsenalClosing && {!_reopenPending}) then {
+                            [_state,"unitEditor_arsenalReopenPending", true] call ALiVE_fnc_hashSet;
+
+                            [{
+                                params ["_logic","_state"];
+                                [_state,"unitEditor_arsenalReopenPending", false] call ALiVE_fnc_hashSet;
+                                [_logic,"openInterface", ["Unit_Editor", false]] call MAINCLASS;
+                            }, [_logic,_state]] call CBA_fnc_execNextFrame;
+                        };
                     };
                 };
 
@@ -1431,112 +1491,84 @@ switch(_operation) do {
 
     case "onMenuStripButtonClicked": {
 
-        _args params ["_control","_menuPath"];
+        private _menuPath = _args select 1;
 
         private _op = menuData [OC_COMMON_MENUSTRIP,_menuPath];
+        private _state = [_logic,"state"] call MAINCLASS;
 
         switch (_op) do {
 
             case "orbatCreatorClose": {
+                private _arsenalOpen = [_state,"unitEditor_arsenalOpen"] call ALiVE_fnc_hashGet;
+                private _arsenalClosing = [_state,"unitEditor_arsenalClosing"] call ALiVE_fnc_hashGet;
 
-                [_logic,"closeOrbatCreator"] call MAINCLASS;
-
+                if !(_arsenalOpen && {_arsenalClosing}) then {
+                    [_logic,"closeOrbatCreator"] call MAINCLASS;
+                };
             };
 
             case "factionEditorOpen": {
-
-                [_logic,"openInterface", "Faction_Editor"] spawn MAINCLASS;
-
+                [_logic,"openInterface", ["Faction_Editor", true]] call MAINCLASS;
             };
 
             case "unitEditorOpen": {
-
-                [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
-
+                [_logic,"openInterface", ["Unit_Editor", true]] call MAINCLASS;
             };
 
             case "groupEditorOpen": {
-
-                [_logic,"openInterface", "Group_Editor"] spawn MAINCLASS;
-
+                [_logic,"openInterface", ["Group_Editor", true]] call MAINCLASS;
             };
 
             case "exportFaction": {
-
                 [_logic,"exportConfig", "Faction"] call MAINCLASS;
-
             };
 
             case "exportCrates": {
-
                 [_logic,"exportConfig", "Crates"] call MAINCLASS;
-
             };
 
             case "exportImages": {
-
                 [_logic,"exportConfig", "Images"] call MAINCLASS;
-
             };
 
             case "exportUnitsSelected": {
-
                 [_logic,"exportConfig", "UnitsSelected"] call MAINCLASS;
-
             };
 
             case "exportUnitsAll": {
-
                 [_logic,"exportConfig", "UnitsAll"] call MAINCLASS;
-
             };
 
             case "exportUnitsClasses": {
-
                 [_logic,"exportConfig", "UnitsClasses"] call MAINCLASS;
-
             };
 
             case "exportGroupsSelected": {
-
                 [_logic,"exportConfig", "GroupsSelected"] call MAINCLASS;
-
             };
 
             case "exportGroupsAll": {
-
                 [_logic,"exportConfig", "GroupsAll"] call MAINCLASS;
-
             };
 
             case "exportGroupsAllStaticData": {
-
                 [_logic,"exportConfig", "GroupsAllStaticData"] call MAINCLASS;
-
             };
 
             case "exportFull": {
-
                 [_logic,"exportConfig", "Full"] call MAINCLASS;
-
             };
 
             case "exportCfgPatches": {
-
                 [_logic,"exportConfig", "CfgPatches"] call MAINCLASS;
-
             };
 
             case "exportFullWrite": {
-
                 [_logic,"exportConfig", "FullWrite"] call MAINCLASS;
-
             };
 
             case "exportFullWriteImages": {
-
                 [_logic,"exportConfig", "FullWriteImages"] call MAINCLASS;
-
             };
         };
 
@@ -3347,19 +3379,19 @@ switch(_operation) do {
 
     case "onFactionEditorNewClicked": {
 
-        [_logic,"openInterface", "Create_Faction"] spawn MAINCLASS;
+        [_logic,"openInterface", ["Create_Faction"]] call MAINCLASS;
 
     };
 
     case "onFactionEditorEditClicked": {
 
-        [_logic,"openInterface", "Edit_Faction"] spawn MAINCLASS;
+        [_logic,"openInterface", ["Edit_Faction"]] call MAINCLASS;
 
     };
 
     case "onFactionEditorCopyClicked": {
 
-        [_logic,"openInterface", "Copy_Faction"] spawn MAINCLASS;
+        [_logic,"openInterface", ["Copy_Faction"]] call MAINCLASS;
 
     };
 
@@ -3766,6 +3798,34 @@ switch(_operation) do {
 
     // unit editor
 
+    case "maintainUnitEditorCamera": {
+
+        _args params ["_transitionId"];
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _currentTransitionId = [_state,"unitEditor_arsenalTransitionId"] call ALiVE_fnc_hashGet;
+        private _arsenalClosing = [_state,"unitEditor_arsenalClosing"] call ALiVE_fnc_hashGet;
+
+        if (
+            _currentTransitionId != _transitionId
+            || {!_arsenalClosing}
+        ) exitWith {};
+
+        private _camera = [_state,"unitEditor_interfaceCamera"] call ALiVE_fnc_hashGet;
+        private _display = [_state,"activeDisplay"] call ALiVE_fnc_hashGet;
+        private _interface = [_state,"activeInteface"] call ALiVE_fnc_hashGet;
+
+        if (!isNull _camera && {!isNull _display} && {_interface == "Unit_Editor"}) then {
+            _camera cameraEffect ["Internal", "Back"];
+        };
+
+        [{
+            params ["_logic","_transitionId"];
+            [_logic,"maintainUnitEditorCamera", [_transitionId]] call MAINCLASS;
+        }, [_logic,_transitionId]] call CBA_fnc_execNextFrame;
+
+    };
+
     case "enableUnitEditorBackground": {
 
         private _enable = _args;
@@ -3959,8 +4019,18 @@ switch(_operation) do {
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _activeUnit = [_state,"unitEditor_activeUnitObject"] call ALiVE_fnc_hashGet;
+        private _arsenalType = [_logic,"arsenalType"] call MAINCLASS;
+
+        [_state,"unitEditor_arsenalClosing", false] call ALiVE_fnc_hashSet;
+        [_state,"unitEditor_arsenalDisplay", displayNull] call ALiVE_fnc_hashSet;
 
         if (_activeUnit isKindOf "Man") then {
+
+            private _transitionId = ([_state,"unitEditor_arsenalTransitionId"] call ALiVE_fnc_hashGet) + 1;
+            [_state,"unitEditor_arsenalTransitionId", _transitionId] call ALiVE_fnc_hashSet;
+
+            // Opening an Arsenal can synchronously unload the Unit Editor.
+            [_state,"unitEditor_arsenalOpen", true] call ALiVE_fnc_hashSet;
 
             // hide buttons
 
@@ -3971,197 +4041,288 @@ switch(_operation) do {
                 _x ctrlShow false;
             } foreach _displayControls;
 
-            // open interface
+            if (_arsenalType == "ACE") then {
 
-            ["Open",[true,objNull,_activeUnit]] call BIS_fnc_arsenal;
+                private _handlerId = ["ace_arsenal_displayOpened", {
+                    private _display = _this select 0;
+                    private _logic = MOD(orbatCreator);
 
-            [_logic,_state] spawn {
-                private [
-                    "_face","_index","_voice","_faceIdentityType",
-                    "_facesForIdentity","_unitInsignia","_voiceIdentityType",
-                    "_voicesForIdentity"
-                ];
+                    if (isNull _logic) exitWith {};
 
-                params ["_logic","_state"];
-
-                private _selUnit = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
-                private _selUnitData = [_logic,"getCustomUnit", _selUnit] call MAINCLASS;
-
-                private _selUnitIdenityTypes = [_selUnitData,"identityTypes"] call ALiVE_fnc_hashGet;
-                private _selUnitFace = [_selUnitIdenityTypes,"face"] call ALiVE_fnc_hashGet;
-                private _selUnitVoice = [_selUnitIdenityTypes,"voice"] call ALiVE_fnc_hashGet;
-                private _selUnitInsignia = [_selUnitIdenityTypes,"insignia"] call ALiVE_fnc_hashGet;
-
-                waitUntil {!isNull (findDisplay -1)};
-                disableSerialization;
-
-                // a3\addons\ui_f\hpp\defineResinclDesign
-
-                private _displayArsenal = findDisplay -1;
-
-                // set button actions
-
-                private _closeButton = _displayArsenal displayCtrl 44448;
-                _closeButton ctrlSetText "Cancel Changes";
-                (ctrlParent _closeButton) displayAddEventHandler ["Unload", "['onUnitEditorArsenalClosed', false] call ALiVE_fnc_orbatCreatorOnAction"];
-
-                private _ctrlButtonOK = _displayArsenal displayctrl 44346;
-                _ctrlButtonOK ctrlShow true;
-                _ctrlButtonOK ctrlEnable true;
-                _ctrlButtonOK ctrlSetText "Save Changes";
-                _ctrlButtonOK buttonSetAction "['onUnitEditorArsenalClosed', true] call ALiVE_fnc_orbatCreatorOnAction";
-
-                // hide unneeded buttons
-
-                private _ctrlButtonSave = _displayArsenal displayctrl 44146;
-                _ctrlButtonSave ctrlSetTooltip "Save loadout to arsenal.";
-                //_ctrlButtonSave ctrlEnable false;
-
-                private _ctrlButtonLoad = _displayArsenal displayctrl 44147;
-                _ctrlButtonLoad ctrlSetTooltip "Load loadout from arsenal.";
-                //_ctrlButtonLoad ctrlEnable false;
-
-                private _ctrlButtonExport = _displayArsenal displayctrl 44148;
-                _ctrlButtonExport ctrlSetTooltip "Export loadout to clipboard.";
-                //_ctrlButtonExport ctrlEnable false;
-
-                private _ctrlButtonImport = _displayArsenal displayctrl 44149;
-                _ctrlButtonImport ctrlSetTooltip "Import loadout from clipboard.";
-                //_ctrlButtonImport ctrlEnable false;
-
-                private _iconList = 960;
-
-                // fill faces list if blank
-
-                private _ctrlListFaces = _displayArsenal displayCtrl (15 + _iconList);
-                lbClear _ctrlListFaces;
-                _ctrlListFaces ctrlSetEventHandler ["LBSelChanged","['onCreateUnitUnitFaceChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
-
-                private _allFaceTypes = [_logic,"getFacesByIdentityType"] call MAINCLASS;
-
-                private _faceIdentityTypes = _allFaceTypes select 1;
-                private _facesArray = _allFaceTypes select 2;
-
-                for "_i" from 0 to (count _faceIdentityTypes - 1) do {
-                    _faceIdentityType = _faceIdentityTypes select _i;
-                    _facesForIdentity = _facesArray select _i;
-
-                    private _faceDisplayName = _faceIdentityType;
-                    switch (tolower _faceIdentityType) do {
-                        // vanilla
-                        case "head_tk": {_faceDisplayName = "Persian"};
-                        case "head_tk_camo_arid": {_faceDisplayName = "Persian (Camo,Arid)"};
-                        case "head_tk_camo_lush": {_faceDisplayName = "Persian (Camo,Lush)"};
-                        case "head_tk_camo_semiarid": {_faceDisplayName = "Persian (Camo,Semi-Arid)"};
-                        case "head_nato": {_faceDisplayName = "NATO"};
-                        case "head_euro": {_faceDisplayName = "European"};
-                        case "head_nato_camo_arid": {_faceDisplayName = "NATO (Camo,Arid)"};
-                        case "head_nato_camo_lush": {_faceDisplayName = "NATO (Camo,Lush)"};
-                        case "head_nato_camo_semiarid": {_faceDisplayName = "NATO (Camo,Semi-Arid)"};
-                        case "head_african": {_faceDisplayName = "African"};
-                        case "head_greek": {_faceDisplayName = "Greek"};
-                        case "head_greek_camo_arid": {_faceDisplayName = "Greek (Camo,Arid)"};
-                        case "head_greek_camo_lush": {_faceDisplayName = "Greek (Camo,Lush)"};
-                        case "head_greek_camo_semiarid": {_faceDisplayName = "Greek (Camo,Semi-Arid)"};
-                        case "head_rangemaster": {_faceDisplayName = "Rangemaster"};
-                        case "head_asian": {_faceDisplayName = "Asian"};
-                        case "head_tanoan": {_faceDisplayName = "Tanoan"};
-
-                        // cup
-
-                        // rhs
+                    private _handlerId = _logic getVariable ["aceArsenalDisplayHandler", -1];
+                    if (_handlerId >= 0) then {
+                        ["ace_arsenal_displayOpened", _handlerId] call CBA_fnc_removeEventHandler;
+                        _logic setVariable ["aceArsenalDisplayHandler", -1];
                     };
 
-                    _index = _ctrlListFaces lbAdd _faceDisplayName;
-                    _ctrlListFaces lbSetData [_index, str [_faceIdentityType,_facesForIdentity]];
+                    [_logic,"onUnitEditorAceArsenalOpened", _display] call MAINCLASS;
+                }] call CBA_fnc_addEventHandler;
 
-                    if (_faceIdentityType == _selUnitFace) then {
-                        _ctrlListFaces lbSetCurSel _i;
+                _logic setVariable ["aceArsenalDisplayHandler", _handlerId];
+                [_activeUnit, _activeUnit, true] call ace_arsenal_fnc_openBox;
+
+                [_logic] spawn {
+                    params ["_logic"];
+                    sleep 5;
+
+                    private _handlerId = _logic getVariable ["aceArsenalDisplayHandler", -1];
+                    if (_handlerId >= 0) then {
+                        ["ace_arsenal_displayOpened", _handlerId] call CBA_fnc_removeEventHandler;
+                        _logic setVariable ["aceArsenalDisplayHandler", -1];
+                        [_logic,"onUnitEditorAceArsenalFailed"] call MAINCLASS;
                     };
                 };
 
-                // fill voices list if blank
+            } else {
 
-                private _ctrlListVoices = _displayArsenal displayCtrl (16 + _iconList);
-                lbClear _ctrlListVoices;
-                _ctrlListVoices ctrlSetEventHandler ["LBSelChanged","['onCreateUnitUnitVoiceChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                // open interface
 
-                private _voicesByIdentityType = [_logic,"getVoicesByIdentityType"] call MAINCLASS;
+                ["Open", [true,objNull,_activeUnit]] call BIS_fnc_arsenal;
 
-                private _voiceIdentityTypes = _voicesByIdentityType select 1;
-                private _voicesArray = _voicesByIdentityType select 2;
+                [{ !isNull (findDisplay -1) }, {
+                    private [
+                        "_face","_index","_voice","_faceIdentityType",
+                        "_facesForIdentity","_unitInsignia","_voiceIdentityType",
+                        "_voicesForIdentity"
+                    ];
 
-                for "_i" from 0 to (count _voiceIdentityTypes - 1) do {
-                    _voiceIdentityType = _voiceIdentityTypes select _i;
-                    _voicesForIdentity = _voicesArray select _i;
+                    params ["_logic","_state"];
 
-                    // manual mapped languages
+                    private _selUnit = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
+                    private _selUnitData = [_logic,"getCustomUnit", _selUnit] call MAINCLASS;
 
-                    private _voiceDisplayName = _voiceIdentityType;
+                    private _selUnitIdenityTypes = [_selUnitData,"identityTypes"] call ALiVE_fnc_hashGet;
+                    private _selUnitFace = [_selUnitIdenityTypes,"face"] call ALiVE_fnc_hashGet;
+                    private _selUnitVoice = [_selUnitIdenityTypes,"voice"] call ALiVE_fnc_hashGet;
+                    private _selUnitInsignia = [_selUnitIdenityTypes,"insignia"] call ALiVE_fnc_hashGet;
 
-                    switch (tolower _voiceIdentityType) do {
-                        // vanilla
-                        case "languageeng_f": {_voiceDisplayName = "English"};
-                        case "languageengb_f": {_voiceDisplayName = "English (British)"};
-                        case "languagegre_f": {_voiceDisplayName = "English (Altian)"};
-                        case "languageper_f": {_voiceDisplayName = "Farsi"};
-                        case "languageengvr_f": {_voiceDisplayName = "English (VR)"};
-                        case "languagegrevr_f": {_voiceDisplayName = "English (Altian,VR)"};
-                        case "languagepervr_f": {_voiceDisplayName = "Farsi (VR)"};
-                        case "languagechi_f": {_voiceDisplayName = "Chinese"};
-                        case "languagefre_f": {_voiceDisplayName = "French"};
-                        case "languageengfre_f": {_voiceDisplayName = "English (French)"};
+                    disableSerialization;
 
-                        // cup
-                        case "cup_d_language_ru": {_voiceDisplayName = "Russian (CUP)"};
+                    // a3\addons\ui_f\hpp\defineResinclDesign
 
-                        // rhs
-                        case "languagerus": {_voiceDisplayName = "Russian (RHS)"};
+                    private _displayArsenal = findDisplay -1;
+                    [_state,"unitEditor_arsenalDisplay",_displayArsenal] call ALiVE_fnc_hashSet;
+
+                    // set button actions
+
+                    private _closeButton = _displayArsenal displayCtrl 44448;
+                    _closeButton ctrlSetText "Cancel Changes";
+                    (ctrlParent _closeButton) displayAddEventHandler ["Unload", "['onUnitEditorArsenalClosed', false] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                    private _ctrlButtonOK = _displayArsenal displayctrl 44346;
+                    _ctrlButtonOK ctrlShow true;
+                    _ctrlButtonOK ctrlEnable true;
+                    _ctrlButtonOK ctrlSetText "Save Changes";
+                    _ctrlButtonOK buttonSetAction "['onUnitEditorArsenalClosed', true] call ALiVE_fnc_orbatCreatorOnAction";
+
+                    // hide unneeded buttons
+
+                    private _ctrlButtonSave = _displayArsenal displayctrl 44146;
+                    _ctrlButtonSave ctrlSetTooltip "Save loadout to arsenal.";
+                    //_ctrlButtonSave ctrlEnable false;
+
+                    private _ctrlButtonLoad = _displayArsenal displayctrl 44147;
+                    _ctrlButtonLoad ctrlSetTooltip "Load loadout from arsenal.";
+                    //_ctrlButtonLoad ctrlEnable false;
+
+                    private _ctrlButtonExport = _displayArsenal displayctrl 44148;
+                    _ctrlButtonExport ctrlSetTooltip "Export loadout to clipboard.";
+                    //_ctrlButtonExport ctrlEnable false;
+
+                    private _ctrlButtonImport = _displayArsenal displayctrl 44149;
+                    _ctrlButtonImport ctrlSetTooltip "Import loadout from clipboard.";
+                    //_ctrlButtonImport ctrlEnable false;
+
+                    private _iconList = 960;
+
+                    // fill faces list if blank
+
+                    private _ctrlListFaces = _displayArsenal displayCtrl (15 + _iconList);
+                    lbClear _ctrlListFaces;
+                    _ctrlListFaces ctrlSetEventHandler ["LBSelChanged","['onCreateUnitUnitFaceChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                    private _allFaceTypes = [_logic,"getFacesByIdentityType"] call MAINCLASS;
+
+                    private _faceIdentityTypes = _allFaceTypes select 1;
+                    private _facesArray = _allFaceTypes select 2;
+
+                    for "_i" from 0 to (count _faceIdentityTypes - 1) do {
+                        _faceIdentityType = _faceIdentityTypes select _i;
+                        _facesForIdentity = _facesArray select _i;
+
+                        private _faceDisplayName = _faceIdentityType;
+                        switch (tolower _faceIdentityType) do {
+                            // vanilla
+                            case "head_tk": {_faceDisplayName = "Persian"};
+                            case "head_tk_camo_arid": {_faceDisplayName = "Persian (Camo,Arid)"};
+                            case "head_tk_camo_lush": {_faceDisplayName = "Persian (Camo,Lush)"};
+                            case "head_tk_camo_semiarid": {_faceDisplayName = "Persian (Camo,Semi-Arid)"};
+                            case "head_nato": {_faceDisplayName = "NATO"};
+                            case "head_euro": {_faceDisplayName = "European"};
+                            case "head_nato_camo_arid": {_faceDisplayName = "NATO (Camo,Arid)"};
+                            case "head_nato_camo_lush": {_faceDisplayName = "NATO (Camo,Lush)"};
+                            case "head_nato_camo_semiarid": {_faceDisplayName = "NATO (Camo,Semi-Arid)"};
+                            case "head_african": {_faceDisplayName = "African"};
+                            case "head_greek": {_faceDisplayName = "Greek"};
+                            case "head_greek_camo_arid": {_faceDisplayName = "Greek (Camo,Arid)"};
+                            case "head_greek_camo_lush": {_faceDisplayName = "Greek (Camo,Lush)"};
+                            case "head_greek_camo_semiarid": {_faceDisplayName = "Greek (Camo,Semi-Arid)"};
+                            case "head_rangemaster": {_faceDisplayName = "Rangemaster"};
+                            case "head_asian": {_faceDisplayName = "Asian"};
+                            case "head_tanoan": {_faceDisplayName = "Tanoan"};
+
+                            // cup
+
+                            // rhs
+                        };
+
+                        _index = _ctrlListFaces lbAdd _faceDisplayName;
+                        _ctrlListFaces lbSetData [_index, str [_faceIdentityType,_facesForIdentity]];
+
+                        if (_faceIdentityType == _selUnitFace) then {
+                            _ctrlListFaces lbSetCurSel _i;
+                        };
                     };
 
-                    _index = _ctrlListVoices lbAdd _voiceDisplayName;
-                    _ctrlListVoices lbSetData [_index, str [_voiceIdentityType,_voicesForIdentity]];
+                    // fill voices list if blank
 
-                    if (_voiceIdentityType == _SelUnitVoice) then {
-                        _ctrlListVoices lbSetCurSel _i;
+                    private _ctrlListVoices = _displayArsenal displayCtrl (16 + _iconList);
+                    lbClear _ctrlListVoices;
+                    _ctrlListVoices ctrlSetEventHandler ["LBSelChanged","['onCreateUnitUnitVoiceChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+
+                    private _voicesByIdentityType = [_logic,"getVoicesByIdentityType"] call MAINCLASS;
+
+                    private _voiceIdentityTypes = _voicesByIdentityType select 1;
+                    private _voicesArray = _voicesByIdentityType select 2;
+
+                    for "_i" from 0 to (count _voiceIdentityTypes - 1) do {
+                        _voiceIdentityType = _voiceIdentityTypes select _i;
+                        _voicesForIdentity = _voicesArray select _i;
+
+                        // manual mapped languages
+
+                        private _voiceDisplayName = _voiceIdentityType;
+
+                        switch (tolower _voiceIdentityType) do {
+                            // vanilla
+                            case "languageeng_f": {_voiceDisplayName = "English"};
+                            case "languageengb_f": {_voiceDisplayName = "English (British)"};
+                            case "languagegre_f": {_voiceDisplayName = "English (Altian)"};
+                            case "languageper_f": {_voiceDisplayName = "Farsi"};
+                            case "languageengvr_f": {_voiceDisplayName = "English (VR)"};
+                            case "languagegrevr_f": {_voiceDisplayName = "English (Altian,VR)"};
+                            case "languagepervr_f": {_voiceDisplayName = "Farsi (VR)"};
+                            case "languagechi_f": {_voiceDisplayName = "Chinese"};
+                            case "languagefre_f": {_voiceDisplayName = "French"};
+                            case "languageengfre_f": {_voiceDisplayName = "English (French)"};
+
+                            // cup
+                            case "cup_d_language_ru": {_voiceDisplayName = "Russian (CUP)"};
+
+                            // rhs
+                            case "languagerus": {_voiceDisplayName = "Russian (RHS)"};
+                        };
+
+                        _index = _ctrlListVoices lbAdd _voiceDisplayName;
+                        _ctrlListVoices lbSetData [_index, str [_voiceIdentityType,_voicesForIdentity]];
+
+                        if (_voiceIdentityType == _SelUnitVoice) then {
+                            _ctrlListVoices lbSetCurSel _i;
+                        };
                     };
-                };
 
-                // fill insignia list if blank
+                    // fill insignia list if blank
 
-                private _ctrlListInsignia = _displayArsenal displayCtrl (17 + _iconList);
-                lbClear _ctrlListInsignia;
-                _ctrlListInsignia ctrlSetEventHandler ["LBSelChanged","['onCreateUnitUnitInsigniaChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
+                    private _ctrlListInsignia = _displayArsenal displayCtrl (17 + _iconList);
+                    lbClear _ctrlListInsignia;
+                    _ctrlListInsignia ctrlSetEventHandler ["LBSelChanged","['onCreateUnitUnitInsigniaChanged', _this] call ALiVE_fnc_orbatCreatorOnAction"];
 
-                private _cfgUnitInsignia = configFile >> "cfgunitinsignia";
+                    private _cfgUnitInsignia = configFile >> "cfgunitinsignia";
 
-                _index = _ctrlListInsignia lbAdd "<None>";
-                _ctrlListInsignia lbSetData [_index, ""];
+                    _index = _ctrlListInsignia lbAdd "<None>";
+                    _ctrlListInsignia lbSetData [_index, ""];
 
-                for "_i" from 0 to (count _cfgUnitInsignia - 1) do {
-                    _unitInsignia = _cfgUnitInsignia select _i;
+                    for "_i" from 0 to (count _cfgUnitInsignia - 1) do {
+                        _unitInsignia = _cfgUnitInsignia select _i;
 
-                    if (isclass _unitInsignia) then {
-                        _index = _ctrlListInsignia lbAdd ([_unitInsignia] call bis_fnc_displayname);
-                        _ctrlListInsignia lbSetData [_index, configname _unitInsignia];
-                        _ctrlListInsignia lbSetPicture [_index, getText(_unitInsignia >> "texture")];
+                        if (isclass _unitInsignia) then {
+                            _index = _ctrlListInsignia lbAdd ([_unitInsignia] call bis_fnc_displayname);
+                            _ctrlListInsignia lbSetData [_index, configname _unitInsignia];
+                            _ctrlListInsignia lbSetPicture [_index, getText(_unitInsignia >> "texture")];
+                        };
                     };
-                };
 
-                [_ctrlListInsignia,_selUnitInsignia] call ALiVE_fnc_listSelectData;
-
+                    [_ctrlListInsignia,_selUnitInsignia] call ALiVE_fnc_listSelectData;
+                }, [_logic,_state]] call CBA_fnc_waitUntilAndExecute;
 
             };
-
-            [_state,"unitEditor_arsenalOpen", true] call ALiVE_fnc_hashSet;
 
         };
 
     };
 
+    case "onUnitEditorAceArsenalOpened": {
+
+        private _display = _args;
+        disableSerialization;
+        private _state = [_logic,"state"] call MAINCLASS;
+        [_state,"unitEditor_arsenalDisplay",_display] call ALiVE_fnc_hashSet;
+
+        private _closeButton = _display displayCtrl 1001;
+        if (!isNull _closeButton) then {
+            _closeButton ctrlSetText (localize "STR_ALIVE_ORBATCREATOR_ARSENAL_SAVE");
+            _closeButton ctrlSetEventHandler [
+                "ButtonClick",
+                "(ctrlParent (_this select 0)) closeDisplay 1"
+            ];
+        };
+
+        _display displayAddEventHandler [
+            "Unload",
+            "['onUnitEditorArsenalClosed', ((_this select 1) == 1)] call ALiVE_fnc_orbatCreatorOnAction"
+        ];
+
+    };
+
+    case "onUnitEditorDiagnosticKey": {
+
+        private _key = _args select 1;
+        _result = false;
+
+        if (_key == 1) then {
+            private _state = [_logic,"state"] call MAINCLASS;
+            private _arsenalClosing = [_state,"unitEditor_arsenalClosing"] call ALiVE_fnc_hashGet;
+
+            if (_arsenalClosing) then {
+                // Escape is an explicit request to leave the Unit Editor. End
+                // transition protection before Arma unloads the display so the
+                // unload handler follows the normal exit path instead of
+                // creating another recovery display.
+                [_state,"unitEditor_arsenalOpen", false] call ALiVE_fnc_hashSet;
+                [_state,"unitEditor_arsenalClosing", false] call ALiVE_fnc_hashSet;
+                [_state,"unitEditor_arsenalDisplay", displayNull] call ALiVE_fnc_hashSet;
+                [_state,"unitEditor_arsenalReopenPending", false] call ALiVE_fnc_hashSet;
+            };
+        };
+
+    };
+
+    case "onUnitEditorAceArsenalFailed": {
+
+        private _state = [_logic,"state"] call MAINCLASS;
+        private _transitionId = [_state,"unitEditor_arsenalTransitionId"] call ALiVE_fnc_hashGet;
+        [_state,"unitEditor_arsenalClosing", true] call ALiVE_fnc_hashSet;
+        [_state,"unitEditor_arsenalDisplay", displayNull] call ALiVE_fnc_hashSet;
+        [_logic,"maintainUnitEditorCamera", [_transitionId]] call MAINCLASS;
+
+        systemChat (localize "STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_RUNTIME_FAILED");
+        [_logic,"openInterface", ["Unit_Editor", true]] call MAINCLASS;
+
+    };
+
     case "onUnitEditorEditVehicleClicked": {
 
-        [_logic,"openInterface", "Edit_Vehicle"] spawn MAINCLASS;
+        [_logic,"openInterface", ["Edit_Vehicle"]] call MAINCLASS;
 
     };
 
@@ -4171,8 +4332,14 @@ switch(_operation) do {
 
         private _state = [_logic,"state"] call MAINCLASS;
         private _arsenalOpen = [_state,"unitEditor_arsenalOpen"] call ALiVE_fnc_hashGet;
+        private _arsenalClosing = [_state,"unitEditor_arsenalClosing"] call ALiVE_fnc_hashGet;
+        private _arsenalDisplay = [_state,"unitEditor_arsenalDisplay"] call ALiVE_fnc_hashGet;
+        private _transitionId = [_state,"unitEditor_arsenalTransitionId"] call ALiVE_fnc_hashGet;
 
-        if (_arsenalOpen) then {
+        if (_arsenalOpen && {!_arsenalClosing}) then {
+
+            [_state,"unitEditor_arsenalClosing", true] call ALiVE_fnc_hashSet;
+            [_logic,"maintainUnitEditorCamera", [_transitionId]] call MAINCLASS;
 
             private _selectedUnitClassname = [_state,"unitEditor_selectedUnit"] call ALiVE_fnc_hashGet;
 
@@ -4189,28 +4356,53 @@ switch(_operation) do {
 
                 // save face, voice, insignia
 
-                private _displayArsenal = findDisplay -1;
-                private _iconList = 960;
-
-                private _ctrlListFaces = _displayArsenal displayCtrl (15 + _iconList);
-                private _ctrlListVoices = _displayArsenal displayCtrl (16 + _iconList);
-                private _ctrlListInsignia = _displayArsenal displayCtrl (17 + _iconList);
-
                 private _identityTypes = [_selectedUnitData,"identityTypes"] call ALiVE_fnc_hashGet;
 
-                if (lbCurSel _ctrlListFaces > -1) then {
-                    private _selFaceData = call compile (OC_ctrlGetSelData( _ctrlListFaces ));
-                    [_identityTypes,"face", _selFaceData select 0] call ALiVE_fnc_hashSet;
-                };
+                if (([_logic,"arsenalType"] call MAINCLASS) == "ACE") then {
+                    private _face = face _activeUnit;
+                    private _faceConfig = configFile >> "CfgFaces" >> "Man_A3" >> _face;
+                    private _faceIdentityTypes = getArray (_faceConfig >> "identityTypes");
+                    private _storedFaceIdentityType = [_identityTypes,"face"] call ALiVE_fnc_hashGet;
 
-                if (lbCurSel _ctrlListVoices > -1) then {
-                    private _selVoice = call compile (OC_ctrlGetSelData( _ctrlListVoices ));
-                    [_identityTypes,"voice", _selVoice select 0] call ALiVE_fnc_hashSet;
-                };
+                    if (_storedFaceIdentityType in _faceIdentityTypes) then {
+                        [_identityTypes,"face",_storedFaceIdentityType] call ALiVE_fnc_hashSet;
+                    } else {
+                        if (count _faceIdentityTypes > 0) then {
+                            [_identityTypes,"face",_faceIdentityTypes select 0] call ALiVE_fnc_hashSet;
+                        };
+                    };
 
-                if (lbCurSel _ctrlListInsignia > -1) then {
-                    private _selInsignia = OC_ctrlGetSelData( _ctrlListInsignia );
-                    [_identityTypes,"insignia", _selInsignia] call ALiVE_fnc_hashSet;
+                    private _voiceIdentityType = [_logic,"getVoiceIdentityType", speaker _activeUnit] call MAINCLASS;
+                    if (_voiceIdentityType != "") then {
+                        [_identityTypes,"voice",_voiceIdentityType] call ALiVE_fnc_hashSet;
+                    };
+
+                    private _insignia = [_activeUnit] call BIS_fnc_getUnitInsignia;
+                    if (_insignia isEqualType "") then {
+                        [_identityTypes,"insignia",_insignia] call ALiVE_fnc_hashSet;
+                    };
+                } else {
+                    private _displayArsenal = findDisplay -1;
+                    private _iconList = 960;
+
+                    private _ctrlListFaces = _displayArsenal displayCtrl (15 + _iconList);
+                    private _ctrlListVoices = _displayArsenal displayCtrl (16 + _iconList);
+                    private _ctrlListInsignia = _displayArsenal displayCtrl (17 + _iconList);
+
+                    if (lbCurSel _ctrlListFaces > -1) then {
+                        private _selFaceData = call compile (OC_ctrlGetSelData( _ctrlListFaces ));
+                        [_identityTypes,"face", _selFaceData select 0] call ALiVE_fnc_hashSet;
+                    };
+
+                    if (lbCurSel _ctrlListVoices > -1) then {
+                        private _selVoice = call compile (OC_ctrlGetSelData( _ctrlListVoices ));
+                        [_identityTypes,"voice", _selVoice select 0] call ALiVE_fnc_hashSet;
+                    };
+
+                    if (lbCurSel _ctrlListInsignia > -1) then {
+                        private _selInsignia = OC_ctrlGetSelData( _ctrlListInsignia );
+                        [_identityTypes,"insignia", _selInsignia] call ALiVE_fnc_hashSet;
+                    };
                 };
 
             };
@@ -4222,10 +4414,26 @@ switch(_operation) do {
             // reopen interface
             // if user pressed escape it closed all open dialogs -- bis pls
 
-            closeDialog 0;
-            [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+            [{
+                params ["_logic","_arsenalDisplay"];
+                isNull _arsenalDisplay
+            }, {
+                params ["_logic"];
 
-            [_state,"unitEditor_arsenalOpen", false] call ALiVE_fnc_hashSet;
+                // Allow the Arsenal's close/Escape event to finish before
+                // creating a replacement dialog.
+                [{
+                    params ["_logic"];
+                    [_logic,"openInterface", ["Unit_Editor", true]] call MAINCLASS;
+                }, [_logic]] call CBA_fnc_execNextFrame;
+            }, [_logic,_arsenalDisplay], 5, {
+                params ["_logic"];
+
+                [{
+                    params ["_logic"];
+                    [_logic,"openInterface", ["Unit_Editor", true]] call MAINCLASS;
+                }, [_logic]] call CBA_fnc_execNextFrame;
+            }] call CBA_fnc_waitUntilAndExecute;
 
         };
 
@@ -5574,7 +5782,7 @@ switch(_operation) do {
             [_logic,"addCustomUnit", _newUnit] call MAINCLASS;
         };
 
-        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+        [_logic,"openInterface", ["Unit_Editor"]] call MAINCLASS;
 
         [_state,"unitEditor_unitToSelect", _unit] call ALiVE_fnc_hashSet;
 
@@ -5601,13 +5809,13 @@ switch(_operation) do {
 
     case "onGroupEditorGroupsNewClicked": {
 
-        [_logic,"openInterface", "Create_Group"] spawn MAINCLASS;
+        [_logic,"openInterface", ["Create_Group"]] call MAINCLASS;
 
     };
 
     case "onGroupEditorGroupsEditClicked": {
 
-        [_logic,"openInterface", "Edit_Group"] spawn MAINCLASS;
+        [_logic,"openInterface", ["Edit_Group"]] call MAINCLASS;
 
     };
 
@@ -5703,7 +5911,7 @@ switch(_operation) do {
             [_logic,"addCustomUnit", _newUnit] call MAINCLASS;
         };
 
-        [_logic,"openInterface", "Unit_Editor"] spawn MAINCLASS;
+        [_logic,"openInterface", ["Unit_Editor", true]] call MAINCLASS;
 
         [_state,"unitEditor_unitToSelect", _asset] call ALiVE_fnc_hashSet;
 
