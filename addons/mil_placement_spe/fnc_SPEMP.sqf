@@ -426,7 +426,22 @@ switch(_operation) do {
 		            // DEBUG -------------------------------------------------------------------------------------
 		            if(_debug) then {
 		                ["SPEMP Got Defined Infantry Group: %1", _group] call ALiVE_fnc_dump;
-		                ["SPEMP Group Name: %1", configName _group] call ALiVE_fnc_dump;
+		                // A class that matched nothing comes back as an empty array rather than a
+		                // config entry, and asking an array for its config name throws. The guard
+		                // below already knows that; this line did not, so a group name that could
+		                // not be found took the whole module down before it reported itself
+		                // finished, which left the startup screen with nothing to wait for.
+		                if (count _group > 0) then {
+		                    ["SPEMP Group Name: %1", configName _group] call ALiVE_fnc_dump;
+		                };
+		            };
+		            // A name that matches nothing is a mistake in the mission, not a detail of
+		            // this module's inner workings, so it is said whether or not debug is on. It
+		            // is the one thing worth knowing here: the module goes on to place nothing,
+		            // and without this the only clue is an objective that came up empty.
+		            if (count _group == 0) then {
+		                ["SPEMP Warning, no group matching '%1' in faction %2. Check the Infantry Group Classname on this module. Nothing will be placed for it.",
+		                    _infantryClass, _faction] call ALiVE_fnc_dumpR;
 		            };
 		            // DEBUG ------------------------------------------------------------------------------------- 	
 	             if(count _group > 0) then {
