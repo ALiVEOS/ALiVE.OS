@@ -135,7 +135,12 @@ class CfgVehicles {
                         class factionsManual : Edit
                         {
                                 property     = "ALiVE_mil_opcom_factionsManual";
-                                displayName  = "Factions (manual override):";
+                                // Not an override. Whatever is typed here is ADDED to the
+                                // selection above, which is what the tooltip has always said
+                                // and what the runtime does. The old label said override and
+                                // was read that way, by someone who then found the commander
+                                // controlling both their faction and the one they had removed.
+                                displayName  = "Additional Factions (by name):";
                                 tooltip      = "Optional. Type extra faction classnames here for mods not currently loaded but expected at mission time (e.g. when authoring for someone else's modset), or to supplement the visual selection above. Format: SQF array literal like [""rhs_faction_xyz""] or comma-separated like rhs_faction_xyz,uk3cb_faction_abc. Combined (unioned) with the Factions multi-select at runtime.";
                                 defaultValue = """""";
                         };

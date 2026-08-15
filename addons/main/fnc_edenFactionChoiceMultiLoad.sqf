@@ -65,6 +65,17 @@ Parameters:
                       / pr_factionWhitelist / skillFactions* etc.). Optional;
                       callers that don't pass it get the legacy logic-var /
                       display.value resolution path.
+    _supplementVarName : STRING - optional. The EDITOR PROPERTY name (the full
+                      ALiVE_<module>_<attribute> form, NOT the logic variable
+                      name) of a companion field on the same module whose
+                      contents are ADDED to whatever is ticked here rather than
+                      replacing it. Where that field names anything, the runtime
+                      has factions to work with and will not fall back, so the
+                      _initialDefault pre-tick is stood down and the list is left
+                      as the mission maker set it. Read with get3DENAttribute
+                      because a plain Edit field with no expression is not a
+                      logic variable while the mission is being built. Defaults
+                      to "" (no companion field, pre-tick behaves as before).
     _titleStr       : STRING - localised title text or $STR_ key applied to
                       the controlsGroup's Title sub-control (idc 101).
                       Defaults to "Factions:". Each variant's attributeLoad
@@ -85,7 +96,8 @@ Jman
 
 // ------------------------------------------------------------------------
 // Unpack invocation. Variant control classes call:
-//   [_display, _allowedSides, _varName, _initialDefault, _value, _title, _tooltip] ...
+//   [_display, _allowedSides, _varName, _initialDefault, _value, _title, _tooltip,
+//    _supplementVarName] ...
 // (where _value is the engine-auto-populated SQM value for the attribute).
 // Legacy direct call (just the display) kept compatible.
 // ------------------------------------------------------------------------
@@ -96,6 +108,10 @@ private _initialDefault = [];
 private _sqmValue = "";
 private _titleStr = "Factions:";
 private _tooltipStr = "";
+// Optional name of a companion field on the same module that is ADDED to whatever is ticked
+// here. Where one is named and holds something, the pre-tick below is stood down. Empty for
+// every consumer that has no such field, which is all of them but the AI Commander.
+private _supplementVarName = "";
 if (typeName _this == "ARRAY") then {
     _display = _this select 0;
     if (count _this > 1 && {typeName (_this select 1) == "ARRAY"}) then {
@@ -115,6 +131,9 @@ if (typeName _this == "ARRAY") then {
     };
     if (count _this > 6 && {typeName (_this select 6) == "STRING"}) then {
         _tooltipStr = _this select 6;
+    };
+    if (count _this > 7 && {typeName (_this select 7) == "STRING"}) then {
+        _supplementVarName = _this select 7;
     };
 } else {
     _display = _this;
@@ -237,7 +256,69 @@ if (_value != "") then {
 // _initialDefault (mil_cqb / sup_player_resupply / sys_aiskill /
 // amb_civ_population) keep "user can persist empty" semantics
 // because the seed never fires for them.
-if (count _selectedFactions == 0 && {count _initialDefault > 0}) then {
+//
+// Not, however, when a companion field beside this one already names something. That field is
+// added to what is ticked here rather than replacing it, so anything in it means the runtime
+// has something to work with and will NOT fall back. Pre-ticking anyway told someone who had
+// deselected the default and typed a faction of their own that the default was coming back,
+// and because a pre-tick becomes real as soon as the module is saved, it then did: they ended
+// up commanding their own faction AND the default. Reported exactly that way.
+// Read as an EDITOR ATTRIBUTE, not a logic variable. A plain Edit field with no expression
+// never reaches the logic while the mission is being built; its value is applied at mission
+// start, which is where the commander itself reads it. Asking the logic for it here always
+// answers with nothing, and the test below would never once be true. The same trap is written
+// up in fnc_edenTaskTypeChoiceLoad for the control type field, which has the same shape.
+// More than one field can be named, separated by commas, because more than one can stop the
+// fallback. The commander looks at the field beside this list and, failing that, at four older
+// single-faction slots kept so that missions built before this list existed still work. Any of
+// them holding a faction means no fallback, so any of them must stand the suggestion down. On a
+// mission carried over from those older slots, checking only the field beside the list would
+// show the default ticked while the commander quietly ran something else.
+private _supplementHasValue = false;
+{
+    private _supplementProperty = _x;
+
+    // Every module being edited, judged one at a time. Editing several commanders together and
+    // reading only the first would suggest a default that is wrong for the rest, and the saving
+    // side writes to all of them. Each one is judged where it is read, rather than picking a
+    // value out and judging it afterwards: a module whose slot holds NONE would otherwise be
+    // taken as the answer for the whole selection, found to say nothing, and hide a real faction
+    // held by another. NONE is not a hypothetical value here, it is what the older single
+    // faction slots shipped with and it is still sitting in missions built on them.
+    {
+        private _attr = _x get3DENAttribute _supplementProperty;
+        private _raw = if (_attr isEqualType [] && {count _attr > 0}) then { _attr select 0 } else { "" };
+
+        // Judged the same way the commander judges it, so the two cannot disagree. Anything
+        // amounting to nothing once brackets, quotes and spaces come off, or saying NONE, is not
+        // a faction, and the commander falls back exactly as if the slot were empty. Testing for
+        // a bare empty string instead would call NONE a faction, stand the suggestion down, and
+        // leave someone looking at an empty list for a commander running the default.
+        private _names = [];
+        if (_raw isEqualType []) then {
+            _names = _raw;
+        } else {
+            if (_raw isEqualType "") then { _names = [_raw] call ALiVE_fnc_parseArrayFromString };
+        };
+
+        {
+            if (typeName _x == "STRING") then {
+                private _t = _x;
+                while {count _t > 0 && {(_t select [0, 1]) == " "}} do { _t = _t select [1] };
+                while {count _t > 0 && {(_t select [count _t - 1, 1]) == " "}} do { _t = _t select [0, count _t - 1] };
+                if (!(_t in ["", "NONE"])) then { _supplementHasValue = true };
+            };
+        } forEach _names;
+
+        // One is enough. Written directly in the loop body so it ends the loop, which is the
+        // form this file blesses at its head and the form the pickers next door use.
+        if (_supplementHasValue) exitWith {};
+    } forEach _selected;
+
+    if (_supplementHasValue) exitWith {};
+} forEach (if (_supplementVarName == "") then { [] } else { _supplementVarName splitString "," });
+
+if (count _selectedFactions == 0 && {count _initialDefault > 0} && {!_supplementHasValue}) then {
     {
         if (typeName _x == "STRING" && {_x != ""}) then {
             _selectedFactions pushBack _x;
@@ -419,6 +500,12 @@ private _tickIdxs = +_unrecognisedTickIdxs;
 //    Ctrl+click / Shift+click then adds/removes from the selection.
 // ------------------------------------------------------------------------
 { _ctrl lbSetSelected [_x, true] } forEach _tickIdxs;
+
+// Whatever is ticked here, suggested or chosen, is saved as it stands. Deciding on the way out
+// whether a tick was really meant was tried and is a trap: by then the field beside the list may
+// have been filled in during the same sitting, and dropping the tick on the strength of what was
+// true when the panel opened loses a faction the commander would have used. The decision belongs
+// here, once, where it is made against what is actually stored.
 
 // ------------------------------------------------------------------------
 // Diagnostic logging - same shape as single-select handler. Helps debug
