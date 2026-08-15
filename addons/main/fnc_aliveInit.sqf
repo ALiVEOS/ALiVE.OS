@@ -20,6 +20,7 @@ See Also:
 Author:
 Wolffy.au
 Tupolov
+Jman
 Peer Reviewed:
 nil
 ---------------------------------------------------------------------------- */
@@ -132,7 +133,15 @@ if (isServer) then {
         // count them.
         private _gate = ALiVE_initGateModules;
 
-        while {isNil QMOD(REQUIRE_INITIALISED)} do {
+        // The same ceiling the screens use, and for the same reason. A module that throws before
+        // it reports in never clears the signal this waits on, and without a limit this counts
+        // entities and broadcasts to every machine once a second for the rest of the session,
+        // long after the last screen has given up and stopped listening. Set well beyond the
+        // fifteen minutes a screen waits, so it is still feeding them for as long as anyone is
+        // actually watching, and stops once nobody is.
+        private _deadline = diag_tickTime + 1800;
+
+        while {isNil QMOD(REQUIRE_INITIALISED) && {diag_tickTime < _deadline}} do {
             private _placed = (entities "Module_F") select {(typeOf _x) in _gate};
             private _done = _placed select {_x getVariable ["startupComplete", false]};
 
@@ -190,9 +199,14 @@ if (hasInterface) then {
             params ["_back", "_panel"];
             disableSerialization;
 
+            // Half an hour, and deliberately far longer than the loop's own ceiling. This is the
+            // last resort for the case where the loop itself is gone, so it must never be the
+            // thing that decides when the screen clears in the ordinary run of events.
             private _deadline = diag_tickTime + 1800;
             waitUntil {!isNil QMOD(REQUIRE_INITIALISED) || {diag_tickTime > _deadline}};
-            uiSleep 4;
+            // Longer than the loop leaves either of its closing frames up, so the loop always
+            // gets to finish its say and this finds both controls already gone.
+            uiSleep 10;
 
             { if (!isNull _x) then { ctrlDelete _x } } forEach [_panel, _back];
         };
@@ -249,7 +263,20 @@ if (hasInterface) then {
         // or never expiring at all.
         private _activitySeen = [];
 
-        while {isNil QMOD(REQUIRE_INITIALISED)} do {
+        // How long anyone is asked to look at an opaque screen over a world that is usually
+        // already playable. Reported from a live session: a placement module threw while starting
+        // up, so it never said it had finished, and the screen stayed. The player could fire his
+        // gun and went into Zeus to escape it, which is the useful part of the report, because
+        // the backstop above would have cleared it eventually and he did not wait. Half an hour
+        // is not a rescue if nobody is willing to sit through it.
+        //
+        // Fifteen minutes against a slowest measured start of eight and a half, so a genuinely
+        // slow machine still finishes on its own. Cutting a real start short costs little: this
+        // only takes the screen away, nothing here stops the modules, and they carry on setting
+        // the mission up behind it.
+        private _deadline = diag_tickTime + 900;
+
+        while {isNil QMOD(REQUIRE_INITIALISED) && {diag_tickTime < _deadline}} do {
             private _busy = [];
             if (!isNil "ALiVE_initRunning") then { _busy = +ALiVE_initRunning };
 
@@ -464,22 +491,59 @@ if (hasInterface) then {
                 _minsEnd, ["", "s"] select (_minsEnd > 1), _secsEnd];
         };
 
-        [_panel, format [
-            "<t align='center'><img image='\x\alive\addons\main\logo_alive.paa' size='14'/></t>"
-            + "<br /><br /><t align='center' size='1.7' color='#57b98a'>Ready</t>"
-            + "<br /><t align='center' size='1.05' color='#8fa0ab'>The mission is set up. Good hunting.</t>"
-            + "<br /><br /><t align='center'>%1</t>"
-            + "<br /><t align='center' size='1.4' color='#57b98a'>%3</t>"
-            + "<br /><t align='center' size='1.05' color='#8fa0ab'>%2</t>",
-            _fullBar,
-            _tookText,
-            "100%"
-        ]] call _show;
+        // Only say it is ready if it actually is. Coming off the ceiling above means something
+        // never finished, and telling someone the mission is set up when a module stopped part
+        // way through would send them looking for a fault in the wrong place.
+        if (isNil QMOD(REQUIRE_INITIALISED)) then {
+            // Name it on screen rather than sending someone to a log for it. This machine already
+            // holds the answer, and the wait above has been showing it every half second. "Military
+            // Placement never finished" is something a player can report; "a module stopped, go and
+            // read a log" is how a report never gets made.
+            private _stuck = "something that did not give its name";
+            if (!isNil "ALiVE_initRunning") then {
+                private _stillGoing = [];
+                {
+                    if (_x isEqualType [] && {count _x > 1}) then {
+                        _stillGoing pushBackUnique (_x select 1);
+                    };
+                } forEach ALiVE_initRunning;
+                if !(_stillGoing isEqualTo []) then { _stuck = _stillGoing joinString ", " };
+            };
 
-        uiSleep 1.5;
+            [_panel, format [
+                "<t align='center'><img image='\x\alive\addons\main\logo_alive.paa' size='14'/></t>"
+                + "<br /><br /><t align='center' size='1.7' color='#f2a541'>Gave up waiting</t>"
+                + "<br /><br /><t align='center' size='1.05' color='#8fa0ab'>This never reported that it had finished</t>"
+                + "<br /><t align='center' size='1.15' color='#e4ebf0'>%1</t>"
+                + "<br /><br /><t align='center' size='1.05' color='#8fa0ab'>The screen is coming down rather than keeping you here. Parts of the mission may not be set up, and it is worth reporting.</t>"
+                + "<br /><br /><t align='center' size='1.05' color='#8fa0ab'>%2</t>",
+                _stuck,
+                _tookText
+            ]] call _show;
 
-        ctrlDelete _panel;
-        ctrlDelete _back;
+            ["ALiVE startup screen gave up after %1 - still waiting on: %2", _tookText, _stuck] call ALiVE_fnc_dump;
+
+            uiSleep 6;
+        } else {
+            [_panel, format [
+                "<t align='center'><img image='\x\alive\addons\main\logo_alive.paa' size='14'/></t>"
+                + "<br /><br /><t align='center' size='1.7' color='#57b98a'>Ready</t>"
+                + "<br /><t align='center' size='1.05' color='#8fa0ab'>The mission is set up. Good hunting.</t>"
+                + "<br /><br /><t align='center'>%1</t>"
+                + "<br /><t align='center' size='1.4' color='#57b98a'>%3</t>"
+                + "<br /><t align='center' size='1.05' color='#8fa0ab'>%2</t>",
+                _fullBar,
+                _tookText,
+                "100%"
+            ]] call _show;
+
+            uiSleep 1.5;
+        };
+
+        // Guarded the same way the backstop above guards its own removal. Either of these can
+        // already be gone, and asking a null control to delete itself is an error rather than a
+        // quiet no-op.
+        { if (!isNull _x) then { ctrlDelete _x } } forEach [_panel, _back];
     };
 };
 
