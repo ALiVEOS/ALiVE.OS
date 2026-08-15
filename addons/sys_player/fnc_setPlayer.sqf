@@ -29,7 +29,7 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_logic","_args","_player","_find","_saveLoadout","_saveHealth","_savePosition","_saveScores","_data","_playerHash","_result","_data"];
+private ["_logic","_args","_player","_puid","_find","_saveLoadout","_saveHealth","_savePosition","_saveScores","_data","_playerHash","_result","_data"];
 
 _logic = _this param [0, objNull, [objNull,[]]];
 _args = _this param [1, objNull, [objNull,[],"",0,true,false]];
@@ -37,6 +37,13 @@ _args = _this param [1, objNull, [objNull,[],"",0,true,false]];
 _data =  [];
 
 _player = _args select 0;
+
+// Optional explicit UID. Only the HandleDisconnect save in ALiVE_fnc_player
+// supplies it, because getPlayerUID returns "" once the engine has detached
+// the dropping player (Inferno #885). Every other caller - the Abort button
+// and the sys_data_pns autosave, both of which run with the unit still in
+// play - omits it and gets the old getPlayerUID behaviour.
+_puid = _args param [1, getPlayerUID _player, [""]];
 
 _playerHash = [] call CBA_fnc_hashCreate;
 
@@ -91,9 +98,17 @@ TRACE_5("SYS_PLAYER SET",_saveLoadout,_saveHealth,_savePosition,_saveScores, cou
     [_playerHash, _key, _value] call CBA_fnc_hashSet;
 } foreach _data;
 
+// UNIT_DATA reads puid off the unit, which is already blank on a
+// HandleDisconnect save - stamp the UID we were given so the stored record
+// stays identifiable. Only when we actually got one, so callers that rely
+// on the unit-derived puid are unaffected.
+if (_puid != "") then {
+    [_playerHash, "puid", _puid] call CBA_fnc_hashSet;
+};
+
 // Add gear data to player's hash
 private ["_gearHash","_addGear"];
-_gearHash = [GVAR(gear_data), getPlayerUID _player, "NONE"] call ALIVE_fnc_hashGet;
+_gearHash = [GVAR(gear_data), _puid, "NONE"] call ALIVE_fnc_hashGet;
 
 _addGear = {
     [_playerHash, _key, _value] call ALIVE_fnc_hashSet;

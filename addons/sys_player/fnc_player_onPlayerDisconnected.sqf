@@ -3,7 +3,13 @@
  * fnc_player_onPlayerDisconnected.sqf
  *
  * Description:
- * handled onPlayerDisconnected event for sys_player, saving player data when they disconnect
+ * Saves player data on request. Despite the name this is NOT bound to an
+ * engine disconnect event - main's PlayerDisconnected EH runs
+ * ALiVE_fnc_onPlayerDisconnected (a player count decrement) and never reaches
+ * here. The real callers are the Abort button (main\fnc_buttonAbort.sqf, both
+ * the player and __SERVER__ paths) and the sys_data_pns autosave
+ * (sys_data_pns\fnc_autosave.sqf), all with the unit still in play. Saves on
+ * an actual drop are handled by the HandleDisconnect EH in ALiVE_fnc_player.
  *
  * Created by Tupolov
  * Creation date: 06/08/2013
