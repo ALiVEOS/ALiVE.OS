@@ -360,11 +360,17 @@ switch (_operation) do {
                 private _reservationKey = [_x, _fallbackPos] call _getObjectiveReservationKey;
                 private _isExcludedReservation = (_excludedReservationKeys findIf {_reservationKey isEqualTo _x}) > -1;
 
-                if !(_reservationKey in _currentTargets) then {
-                    if !(_isExcludedReservation) exitWith {
-                        _selectedObjective = _x;
-                        _selectedReservationKey = _reservationKey;
-                    };
+                // Both tests in one, so the stop below leaves the loop rather than a block
+                // sitting inside it. Written as a test within a test, the stop was already the
+                // last thing in the inner block and so did nothing at all: the loop carried on
+                // and every later objective that passed overwrote the one just chosen. These
+                // arrive nearest first, so what came back was the furthest acceptable
+                // objective rather than the nearest, and asking for a different order sent
+                // groups steadily further out. Reported as objectives five to eight kilometres
+                // away when nearer ones were free.
+                if (!(_reservationKey in _currentTargets) && {!_isExcludedReservation}) exitWith {
+                    _selectedObjective = _x;
+                    _selectedReservationKey = _reservationKey;
                 };
             } forEach _objectives;
 
