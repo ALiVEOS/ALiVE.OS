@@ -62,8 +62,10 @@ _result = true;
         "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster, "state", _cluster] call ALIVE_fnc_cluster;',worldName,_type];
 
         "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"clusterID","c_%3"] call ALIVE_fnc_hashSet;',worldName,_type,_count];
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"center",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"center"] call ALIVE_fnc_hashGet];
-        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"size",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"size"] call ALIVE_fnc_hashGet];
+        // Same accessor requirement as fnc_staticClusterOutput - a merged cluster's
+        // center/size are invalidated until read through ALIVE_fnc_cluster.
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"center",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"center"] call ALIVE_fnc_cluster];
+        "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"size",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"size"] call ALIVE_fnc_cluster];
         "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"type","%3"] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"type"] call ALIVE_fnc_hashGet];
         "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"priority",%3] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"priority"] call ALIVE_fnc_hashGet];
         "ALiVEClient" callExtension format['clusterData~%1|%2|[_cluster,"debugColor","%3"] call ALIVE_fnc_hashSet;',worldName,_type,[_x,"debugColor"] call ALIVE_fnc_hashGet];

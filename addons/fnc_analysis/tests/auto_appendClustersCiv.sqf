@@ -86,25 +86,46 @@ if(isNil "ALIVE_clustersCiv" && isNil "ALIVE_loadedCivClusters") then {
 
 _gridData = [] call ALIVE_fnc_hashCreate;
 
+// Static cluster files baked before the accessor fix in fnc_strategic carry clusters whose
+// centre was never recomputed after a consolidate merge - it is stored as []. Handing that
+// to positionToGridIndex is the "_position select 1" zero divisor in fnc_sectorGrid
+// (upstream #812). The shipped clusters.* files already in the wild still contain these,
+// and the accessor fix cannot heal a file that is already written, so the only thing that
+// keeps an old index loadable is skipping the entry here and saying why.
+private _centerIsUsable = {
+    params ["_center","_id"];
+
+    private _usable = _center isEqualType [] && {count _center >= 2} && {(_center select 0) isEqualType 0} && {(_center select 1) isEqualType 0};
+
+    if !(_usable) then {
+        ["auto_appendClustersCiv - cluster %1 skipped, its stored centre is not a position (%2). Re-index this terrain to regenerate the static cluster file.",_id,_center] call ALIVE_fnc_dump;
+    };
+
+    _usable
+};
+
 {
     _cluster = _x;
     _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
     _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-    _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
-    _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
 
-    if(_sectorID in (_gridData select 1)) then {
-        _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
-    }else{
-        _sectorData = [] call ALIVE_fnc_hashCreate;
-        [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "power", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
+    if ([_clusterCenter,_clusterID] call _centerIsUsable) then {
+
+        _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
+        _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
+
+        if(_sectorID in (_gridData select 1)) then {
+            _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
+        }else{
+            _sectorData = [] call ALIVE_fnc_hashCreate;
+            [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "power", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
     };
 
     _consolidated = [_sectorData, "consolidated"] call ALIVE_fnc_hashGet;
@@ -114,7 +135,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     //_sectorData call ALIVE_fnc_inspectHash;
 
     [_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
-
+    };
 
 } forEach (ALIVE_clustersCiv select 2);
 
@@ -123,21 +144,24 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     _cluster = _x;
     _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
     _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-    _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
-    _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
 
-    if(_sectorID in (_gridData select 1)) then {
-        _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
-    }else{
-        _sectorData = [] call ALIVE_fnc_hashCreate;
-        [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "power", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
+    if ([_clusterCenter,_clusterID] call _centerIsUsable) then {
+
+        _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
+        _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
+
+        if(_sectorID in (_gridData select 1)) then {
+            _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
+        }else{
+            _sectorData = [] call ALIVE_fnc_hashCreate;
+            [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "power", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
     };
 
     _power = [_sectorData, "power"] call ALIVE_fnc_hashGet;
@@ -147,7 +171,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     //_sectorData call ALIVE_fnc_inspectHash;
 
     [_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
-
+    };
 
 } forEach (ALIVE_clustersCivPower select 2);
 
@@ -156,21 +180,24 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     _cluster = _x;
     _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
     _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-    _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
-    _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
 
-    if(_sectorID in (_gridData select 1)) then {
-        _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
-    }else{
-        _sectorData = [] call ALIVE_fnc_hashCreate;
-        [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "power", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
+    if ([_clusterCenter,_clusterID] call _centerIsUsable) then {
+
+        _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
+        _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
+
+        if(_sectorID in (_gridData select 1)) then {
+            _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
+        }else{
+            _sectorData = [] call ALIVE_fnc_hashCreate;
+            [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "power", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
     };
 
     _comms = [_sectorData, "comms"] call ALIVE_fnc_hashGet;
@@ -180,7 +207,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     //_sectorData call ALIVE_fnc_inspectHash;
 
     [_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
-
+    };
 
 } forEach (ALIVE_clustersCivComms select 2);
 
@@ -189,21 +216,24 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     _cluster = _x;
     _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
     _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-    _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
-    _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
 
-    if(_sectorID in (_gridData select 1)) then {
-        _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
-    }else{
-        _sectorData = [] call ALIVE_fnc_hashCreate;
-        [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "power", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
+    if ([_clusterCenter,_clusterID] call _centerIsUsable) then {
+
+        _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
+        _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
+
+        if(_sectorID in (_gridData select 1)) then {
+            _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
+        }else{
+            _sectorData = [] call ALIVE_fnc_hashCreate;
+            [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "power", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
     };
 
     _marine = [_sectorData, "marine"] call ALIVE_fnc_hashGet;
@@ -213,7 +243,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     //_sectorData call ALIVE_fnc_inspectHash;
 
     [_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
-
+    };
 
 } forEach (ALIVE_clustersCivMarine select 2);
 
@@ -222,21 +252,24 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     _cluster = _x;
     _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
     _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-    _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
-    _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
 
-    if(_sectorID in (_gridData select 1)) then {
-        _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
-    }else{
-        _sectorData = [] call ALIVE_fnc_hashCreate;
-        [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "power", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
+    if ([_clusterCenter,_clusterID] call _centerIsUsable) then {
+
+        _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
+        _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
+
+        if(_sectorID in (_gridData select 1)) then {
+            _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
+        }else{
+            _sectorData = [] call ALIVE_fnc_hashCreate;
+            [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "power", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
     };
 
     _fuel = [_sectorData, "fuel"] call ALIVE_fnc_hashGet;
@@ -246,7 +279,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     //_sectorData call ALIVE_fnc_inspectHash;
 
     [_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
-
+    };
 
 } forEach (ALIVE_clustersCivFuel select 2);
 
@@ -255,21 +288,24 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     _cluster = _x;
     _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
     _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-    _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
-    _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
 
-    if(_sectorID in (_gridData select 1)) then {
-        _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
-    }else{
-        _sectorData = [] call ALIVE_fnc_hashCreate;
-        [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "power", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
+    if ([_clusterCenter,_clusterID] call _centerIsUsable) then {
+
+        _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
+        _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
+
+        if(_sectorID in (_gridData select 1)) then {
+            _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
+        }else{
+            _sectorData = [] call ALIVE_fnc_hashCreate;
+            [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "power", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
     };
 
     _construction = [_sectorData, "construction"] call ALIVE_fnc_hashGet;
@@ -279,7 +315,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     //_sectorData call ALIVE_fnc_inspectHash;
 
     [_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
-
+    };
 
 } forEach (ALIVE_clustersCivConstruction select 2);
 
@@ -288,21 +324,24 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     _cluster = _x;
     _clusterCenter = [_cluster, "center"] call ALIVE_fnc_hashGet;
     _clusterID = [_cluster, "clusterID"] call ALIVE_fnc_hashGet;
-    _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
-    _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
 
-    if(_sectorID in (_gridData select 1)) then {
-        _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
-    }else{
-        _sectorData = [] call ALIVE_fnc_hashCreate;
-        [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "power", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
-        [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
+    if ([_clusterCenter,_clusterID] call _centerIsUsable) then {
+
+        _sectorID = [_grid, "positionToGridIndex", _clusterCenter] call ALIVE_fnc_sectorGrid;
+        _sectorID = format["%1_%2",_sectorID select 0, _sectorID select 1];
+
+        if(_sectorID in (_gridData select 1)) then {
+            _sectorData = [_gridData, _sectorID] call ALIVE_fnc_hashGet;
+        }else{
+            _sectorData = [] call ALIVE_fnc_hashCreate;
+            [_sectorData, "consolidated", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "power", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "comms", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "marine", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "fuel", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "rail", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "construction", []] call ALIVE_fnc_hashSet;
+            [_sectorData, "settlement", []] call ALIVE_fnc_hashSet;
     };
 
     _settlement = [_sectorData, "settlement"] call ALIVE_fnc_hashGet;
@@ -312,7 +351,7 @@ _gridData = [] call ALIVE_fnc_hashCreate;
     //_sectorData call ALIVE_fnc_inspectHash;
 
     [_gridData, _sectorID, _sectorData] call ALIVE_fnc_hashSet;
-
+    };
 
 } forEach (ALIVE_clustersCivSettlement select 2);
 
