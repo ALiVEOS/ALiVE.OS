@@ -310,14 +310,44 @@ private _mapping = if (!isNil "_existingMapping") then {
     // the compiler; non-compiled categories' group classes still
     // resolve through the standard config path on fallback.
     private _existingGroups = [_existingMapping, "Groups", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashGet;
+
+    // The second half of this, and the reason a captured category used to be ignored.
+    //
+    // A faction may send a category somewhere else on the way to a lookup. This one asks for
+    // its armour under vn_b_group_armor_army and its special forces under vn_b_group_men_sog,
+    // so that categories it lists no groups for fall through to the faction's own. Others hand
+    // over a list of group names outright instead of a single name. Either way it is consulted
+    // BEFORE the lists written below, so a list stored under Armored was then asked for under
+    // vn_b_group_armor_army, never found, and the faction's own groups answered instead. Every
+    // category captured here looked as though it had been ignored, which is what was reported:
+    // the module said it had taken five groups and the mission filled up with the stock ones.
+    //
+    // So a captured category is made to point at itself. A category that was NOT captured keeps
+    // whatever it had, because that is still how it reaches the faction's own groups. Both the
+    // single name and the list have to be stood aside for a captured category, since neither
+    // will match the name its list was stored under.
+    //
+    // Both writes are driven off the SAME test in the SAME pass on purpose. Written apart they
+    // could drift, and a category left with a name of its own but no list to find would resolve
+    // to the bare word Armored as though it were a group, and place nobody at all, without a
+    // word said. That is worse than the fault being fixed here.
+    private _existingTypes = [_existingMapping, "GroupFactionTypes", [] call ALIVE_fnc_hashCreate] call ALIVE_fnc_hashGet;
+
     {
         private _category = _x;
         private _categoryGroups = [_groupsByCategory, _category, []] call ALIVE_fnc_hashGet;
         if (count _categoryGroups > 0) then {
             [_existingGroups, _category, _categoryGroups] call ALIVE_fnc_hashSet;
+            [_existingTypes, _category, _category] call ALIVE_fnc_hashSet;
         };
     } forEach _standardCategories;
+
     [_existingMapping, "Groups", _existingGroups] call ALIVE_fnc_hashSet;
+    // Written back deliberately. Asking for a key that is not there hands back a copy of the
+    // default rather than something attached to the mapping, so without this the work above
+    // would be lost on a faction that had nothing of its own to say about categories.
+    [_existingMapping, "GroupFactionTypes", _existingTypes] call ALIVE_fnc_hashSet;
+
     [_existingMapping, "CompiledFaction", true] call ALIVE_fnc_hashSet;
     [_existingMapping, "DisplayName", _displayName] call ALIVE_fnc_hashSet;
     [_existingMapping, "SourceModule", _logic] call ALIVE_fnc_hashSet;
