@@ -1984,6 +1984,24 @@ switch(_operation) do {
             };
             _atoDiagLast = _now;
         };
+
+        // Put the module's own airspace out of sight on every machine that has a screen.
+        //
+        // This used to sit in the branch below that only runs when the machine is NOT the
+        // server, which is fine on a dedicated server but wrong everywhere else: in single
+        // player, and on a listen server the host is playing on, the player's machine IS the
+        // server, so that branch never ran and the airspace stayed painted across the map for
+        // the whole mission.
+        //
+        // The setting is read through the module rather than straight off it. Straight off it it
+        // is still the comma separated text the mission maker typed, and it is the read that
+        // turns it into the list of marker names wanted here. Reading a second time returns the
+        // same list, so the branches below are unaffected.
+        if (hasInterface) then {
+            private _airspaceAreas = [_logic, "airspace", _logic getVariable ["airspace", DEFAULT_AIRSPACE]] call MAINCLASS;
+            if (_airspaceAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _airspaceAreas};
+        };
+
         if (isServer) then {
 
             // if server, initialise module game logic
@@ -2103,9 +2121,7 @@ switch(_operation) do {
 
             [_logic,"start"] call MAINCLASS;
         } else {
-            // Make any markers invisible
             [_logic, "airspace", _logic getVariable ["airspace", DEFAULT_AIRSPACE]] call MAINCLASS;
-            {_x setMarkerAlpha 0} forEach (_logic getVariable ["airspace", DEFAULT_AIRSPACE]);
         };
     };
 

@@ -376,6 +376,26 @@ switch(_operation) do {
     };
     // Main process
     case "init": {
+
+        // Put the module's own areas out of sight on every machine that has a screen.
+        //
+        // This used to sit in the branch below that only runs when the machine is NOT the
+        // server, which is fine on a dedicated server but wrong everywhere else: in single
+        // player, and on a listen server the host is playing on, the player's machine IS the
+        // server, so that branch never ran and the areas stayed painted across the map for
+        // the whole mission.
+        //
+        // Both settings are read through the module rather than straight off it. Straight off it
+        // they are still the comma separated text the mission maker typed, and it is the read
+        // that turns them into the list of marker names wanted here. Reading a second time
+        // returns the same list, so the branches below are unaffected.
+        if (hasInterface) then {
+            private _taorAreas      = [_logic, "taor",      _logic getVariable ["taor",      DEFAULT_TAOR]] call MAINCLASS;
+            private _blacklistAreas = [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
+            if (_taorAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _taorAreas};
+            if (_blacklistAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _blacklistAreas};
+        };
+
         if (isServer) then {
 
             // if server, initialise module game logic
@@ -399,8 +419,6 @@ switch(_operation) do {
         } else {
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
-            {_x setMarkerAlpha 0} foreach (_logic getVariable ["taor", DEFAULT_TAOR]);
-            {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_TAOR]);
         };
     };
     case "start": {
