@@ -355,7 +355,15 @@ switch (_operation) do {
             _id = _object getvariable QGVAR(ID);
 
             if (isnil "_id") then {
-                _id = format["%1_%2%3",typeof _object, floor(getposATL _object select 0),floor(getposATL _object select 1)];
+                private _pos = getposATL _object;
+                _id = format["%1_%2%3",typeof _object, floor(_pos select 0),floor(_pos select 1)];
+
+                //Objects opting out of remapping get a height component, so same type objects
+                //stacked in one grid cell do not share a store key and overwrite each other
+                if ((_object getVariable [QGVAR(NOREMAP),false]) isEqualTo true) then {
+                    _id = format["%1_%2",_id,floor((_pos select 2) * 10)];
+                };
+
                 _object setvariable [QGVAR(ID),_id,true];
             };
 
@@ -1054,6 +1062,19 @@ switch (_operation) do {
 
                 _id = [MOD(SYS_LOGISTICS),"id",_x] call ALiVE_fnc_logistics;
                 _args = [GVAR(STORE),_id] call ALiVE_fnc_HashGet;
+
+                //Flagged objects saved before the height component existed sit
+                //under the flat TYPE_XY key - retry that and migrate the ID
+                if (isnil "_args" && {(_x getVariable [QGVAR(NOREMAP),false]) isEqualTo true}) then {
+                    private _posFlat = getposATL _x;
+                    private _flatId = format["%1_%2%3", typeof _x, floor(_posFlat select 0), floor(_posFlat select 1)];
+                    private _flatArgs = [GVAR(STORE),_flatId] call ALiVE_fnc_HashGet;
+                    if !(isnil "_flatArgs") then {
+                        _id = _flatId;
+                        _x setVariable [QGVAR(ID),_id,true];
+                        _args = _flatArgs;
+                    };
+                };
 
                 if !(isnil "_args") then {
                     private ["_pos","_vDirUp","_container","_cargo"];

@@ -233,13 +233,13 @@
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_DISABLEPERSISTENCE_COMMENT">
-    <English>Disables saving and restoring logistics object state between sessions. When enabled, objects moved or repositioned via ALiVE logistics will not persist. Requires the ALiVE Data module to have any effect.</English>
-    <Chinese>停用在場次間儲存與還原後勤物件狀態。啟用後，透過 ALiVE 後勤移動或重新放置的物件將不會保留。需要 ALiVE 資料模組才能生效。</Chinese>
-    <Chinesesimp>禁用在会话间保存与恢复后勤物件状态。启用后，通过 ALiVE 后勤移动或重新放置的物件将不会保留。需要 ALiVE 数据模块才能生效。</Chinesesimp>
-    <Spanish>Desactiva el guardado y la restauración del estado de los objetos de logística entre sesiones. Al activarlo, los objetos movidos o reposicionados mediante la logística ALiVE no persistirán. Requiere el módulo de Datos ALiVE para surtir efecto.</Spanish>
-    <French>Désactive la sauvegarde et la restauration de l'état des objets de logistique entre les sessions. Lorsqu'activé, les objets déplacés ou repositionnés via la logistique ALiVE ne persisteront pas. Nécessite le module Données ALiVE pour produire un effet.</French>
-    <Portuguese>Desativa o salvamento e a restauração do estado dos objetos de logística entre sessões. Quando ativado, objetos movidos ou reposicionados via logística ALiVE não persistirão. Requer o módulo de Dados ALiVE para ter efeito.</Portuguese>
-    <Russian>Отключает сохранение и восстановление состояния логистических объектов между сессиями. При включении объекты, перемещённые или переставленные через логистику ALiVE, не сохранятся. Для эффекта требуется модуль данных ALiVE.</Russian>
+    <English>Disables saving and restoring logistics object state between sessions. When enabled, objects moved or repositioned via ALiVE logistics will not persist. Requires the ALiVE Data module to have any effect. A single object can set ALiVE_sys_logistics_NOREMAP to true to always be recreated from the save instead of being matched onto a nearby object of the same type.</English>
+    <Chinese>停用在場次間儲存與還原後勤物件狀態。啟用後，透過 ALiVE 後勤移動或重新放置的物件將不會保留。需要 ALiVE 資料模組才能生效。個別物件可將 ALiVE_sys_logistics_NOREMAP 設為 true，使其一律從存檔重新建立，而非被對應到附近的同類型物件。</Chinese>
+    <Chinesesimp>禁用在会话间保存与恢复后勤物件状态。启用后，通过 ALiVE 后勤移动或重新放置的物件将不会保留。需要 ALiVE 数据模块才能生效。单个物件可将 ALiVE_sys_logistics_NOREMAP 设为 true，使其始终从存档重新创建，而不是被匹配到附近的同类型物件。</Chinesesimp>
+    <Spanish>Desactiva el guardado y la restauración del estado de los objetos de logística entre sesiones. Al activarlo, los objetos movidos o reposicionados mediante la logística ALiVE no persistirán. Requiere el módulo de Datos ALiVE para surtir efecto. Un objeto concreto puede establecer ALiVE_sys_logistics_NOREMAP en true para recrearse siempre desde el guardado en lugar de asociarse a un objeto cercano del mismo tipo.</Spanish>
+    <French>Désactive la sauvegarde et la restauration de l'état des objets de logistique entre les sessions. Lorsqu'activé, les objets déplacés ou repositionnés via la logistique ALiVE ne persisteront pas. Nécessite le module Données ALiVE pour produire un effet. Un objet donné peut définir ALiVE_sys_logistics_NOREMAP à true pour être toujours recréé depuis la sauvegarde au lieu d'être associé à un objet proche du même type.</French>
+    <Portuguese>Desativa o salvamento e a restauração do estado dos objetos de logística entre sessões. Quando ativado, objetos movidos ou reposicionados via logística ALiVE não persistirão. Requer o módulo de Dados ALiVE para ter efeito. Um objeto individual pode definir ALiVE_sys_logistics_NOREMAP como true para ser sempre recriado a partir do salvamento em vez de ser associado a um objeto próximo do mesmo tipo.</Portuguese>
+    <Russian>Отключает сохранение и восстановление состояния логистических объектов между сессиями. При включении объекты, перемещённые или переставленные через логистику ALiVE, не сохранятся. Для эффекта требуется модуль данных ALiVE. Отдельный объект может задать ALiVE_sys_logistics_NOREMAP равным true, чтобы всегда воссоздаваться из сохранения, а не сопоставляться с ближайшим объектом того же типа.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_LOGISTICS_BLACKLIST">
