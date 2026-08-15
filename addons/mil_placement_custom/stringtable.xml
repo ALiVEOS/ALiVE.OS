@@ -319,8 +319,13 @@
     <Russian>Резервное автозаполнение для выбора состава размещения. Если выбор пуст и этот параметр установлен в "Да", рядом с модулем создаётся случайный состав класса FieldHQ (проверяется валидатором, трёхуровневый поиск 50 м / 200 м / 500 м). Если в выборе есть отметка или переопределение класса, этот переключатель игнорируется, и выбранный состав имеет приоритет. Используйте, когда точке нужен штаб, но конкретный состав не важен.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CMP_USAGE">
-    <English>Place the Custom Military Objective module in the editor, select the desired Size, Priority and force composition. Custom factions can be entered in the text box (separated by a comma).</English>
-    <Chinesesimp>将“自定义军事目标”模块放入编辑器中,选择所需的大小、优先级和部队组成。可以在文本框中输入自定义派别(用逗号分隔)。</Chinesesimp>
+    <English>Place the Custom Military Objective module in the editor and set the size, priority and force composition you want. Choose one or more factions in Force Factions, or leave it empty to take them from a synced AI Commander. To use a faction of your own, sync a Custom Faction Compiler module to this one.</English>
+    <Chinese>在編輯器中放置自訂軍事目標模組，設定所需的大小、優先級與兵力組成。在「兵力陣營」中選擇一個或多個陣營，或留空以沿用同步的AI指揮官的陣營。若要使用自訂陣營，請將自訂陣營編譯器模組同步至此模組。</Chinese>
+    <Chinesesimp>在编辑器中放置自定义军事目标模块，设定所需的大小、优先级与兵力组成。在“兵力阵营”中选择一个或多个阵营，或留空以沿用同步的AI指挥官的阵营。若要使用自定义阵营，请将自定义阵营编译器模块同步至此模块。</Chinesesimp>
+    <Spanish>Coloque el módulo Objetivo Militar Personalizado en el editor y ajuste el tamaño, la prioridad y la composición de fuerzas que desee. Elija una o más facciones en Facciones de la Fuerza, o déjelo vacío para tomarlas de un Comandante IA sincronizado. Para usar una facción propia, sincronice un módulo Compilador de Facciones Personalizadas con este.</Spanish>
+    <French>Placez le module Objectif militaire personnalisé dans l'éditeur et réglez la taille, la priorité et la composition des forces voulues. Choisissez une ou plusieurs factions dans Factions de la force, ou laissez vide pour les reprendre d'un Commandant IA synchronisé. Pour utiliser votre propre faction, synchronisez un module Compilateur de factions personnalisées avec celui-ci.</French>
+    <Portuguese>Coloque o módulo Objetivo Militar Personalizado no editor e defina o tamanho, a prioridade e a composição de forças pretendidos. Escolha uma ou mais facções em Facções da Força, ou deixe vazio para as obter de um Comandante IA sincronizado. Para usar uma facção própria, sincronize um módulo Compilador de Facções Personalizadas com este.</Portuguese>
+    <Russian>Разместите модуль Custom Military Objective в редакторе и задайте нужные размер, приоритет и состав сил. Выберите одну или несколько фракций в поле фракций сил или оставьте его пустым, чтобы взять их у синхронизированного ИИ-командующего. Чтобы использовать свою фракцию, синхронизируйте с этим модулем модуль компилятора пользовательских фракций.</Russian>
 </Key>
 <Key ID="STR_ALIVE_CMP_READINESS_LEVEL">
     <English>Readiness:</English>
