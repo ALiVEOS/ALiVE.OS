@@ -1409,7 +1409,17 @@ switch(_operation) do {
                             // were the explode-on-spawn source. Returns []
                             // if every candidate failed - skip this node.
                             _vehicleClass = (selectRandom _heliClasses);
-                            private _airResult = [_vehicleClass, position _x, 200, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                            // Widened from 200 to 400. When this search finds nowhere to park, the whole block
+                            // below is skipped and the helicopter is never created at all, so a node that cannot
+                            // be satisfied quietly costs the mission an aircraft with nothing said about it.
+                            //
+                            // Measured on Cam Lao Nam: at 200 it failed 13 to 18 times a run against 35 to 39
+                            // helicopters actually placed, so a quarter to a third of them were going missing. The
+                            // air commander asks the same question at 400 and has not failed once across a whole
+                            // evening of runs. Widening was also measured for cost and is close to free: doubling
+                            // the radius moved the search by about a tenth, because the time goes on checking each
+                            // candidate rather than on covering ground.
+                            private _airResult = [_vehicleClass, position _x, 400, "auto"] call ALiVE_fnc_findAirSpawnPosition;
                             if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
                                 [
                                     "DIAG-STRIP MP helipad-node: nodeType=%1, nodePos=%2, vehClass=%3, airResultCount=%4",
