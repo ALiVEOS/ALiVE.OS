@@ -480,60 +480,6 @@ switch (_operation) do {
     // param / admin menu read, and drives the grid's own enableDebugMarkers op
     // (which builds the coloured sector rectangles, or tears them down).
     // (#pathfinding-draw 2026-06-01)
-    // Draw one route as a dot at each point joined by a line, coloured by the side it
-    // belongs to. Shared by the live draw as routes are worked out and by the sweep that
-    // fills the map in when the toggle is switched on, so the two always look the same.
-    case "drawPath": {
-        _args params [["_path", [], [[]]], ["_sideText", "UNKNOWN", [""]]];
-
-        // A single point means the start and the goal share a subsector. Drawing it
-        // leaves a dot with no line, and it is the bulk of finished routes.
-        if (count _path < 2) exitWith {};
-
-        private _pathMarkers = [_logic, "pathDrawMarkers", []] call ALiVE_fnc_hashGet;
-
-        private _drawColor = switch (toUpper _sideText) do {
-            case "WEST": { "ColorWEST" };   // BLUFOR
-            case "EAST": { "ColorEAST" };   // OPFOR
-            case "GUER": { "ColorGUER" };   // Independent
-            case "CIV":  { "ColorCIV"  };   // Civilian
-            default      { "ColorUNKNOWN" };
-        };
-
-        // Tagged per draw so one route's markers cannot collide with the next. Counting
-        // the markers already down keeps that true within a single frame, which matters
-        // for the sweep because it draws many routes at once.
-        private _tag = format ["ALiVE_pf_path_%1_%2", diag_frameNo, count _pathMarkers];
-        private _line = [];
-
-        {
-            private _mName = format ["%1_%2", _tag, _forEachIndex];
-            private _m = createMarker [_mName, _x];
-            _m setMarkerShape "ICON";
-            _m setMarkerType "hd_dot";
-            _m setMarkerSize [0.5, 0.5];
-            _m setMarkerColor _drawColor;
-            _m setMarkerAlpha 0.7;
-            _pathMarkers pushBack _mName;
-            _line pushBack (_x select 0);
-            _line pushBack (_x select 1);
-        } forEach _path;
-
-        // One polyline joins the dots so the route reads as a line rather than a scatter.
-        // setMarkerPolyline needs a flat, even-length list of at least two points.
-        if (count _line >= 4) then {
-            private _plName = format ["%1_line", _tag];
-            createMarker [_plName, _path select 0];
-            _plName setMarkerShape "POLYLINE";
-            _plName setMarkerPolyline _line;
-            _plName setMarkerColor _drawColor;
-            _plName setMarkerAlpha 0.8;
-            _pathMarkers pushBack _plName;
-        };
-
-        [_logic, "pathDrawMarkers", _pathMarkers] call ALiVE_fnc_hashSet;
-    };
-
     case "setDrawGrid": {
         private _enable = if (_args isEqualType true) then { _args } else { false };
         missionNamespace setVariable ["ALiVE_pathfinding_drawGrid", _enable];
@@ -549,44 +495,6 @@ switch (_operation) do {
     case "setDrawPaths": {
         private _enable = if (_args isEqualType true) then { _args } else { false };
         missionNamespace setVariable ["ALiVE_pathfinding_drawPaths", _enable];
-
-        // Switching this on used to leave the map blank until something worked out a
-        // fresh route, because the only thing that drew was the working-out itself. On a
-        // quiet mission that could be a long wait, or never, so the option looked broken
-        // when it was not. Fill the map in from the routes already planned instead.
-        //
-        // Nothing has to be recorded for this. Every profile already keeps the route it is
-        // following, expanded to path points, as part of moving about, so it is simply
-        // read back. The cost is one pass at the moment the option is chosen, and nothing
-        // at all while it is off. Points already passed are dropped as units move, so what
-        // is shown is the road ahead rather than everywhere anything has ever been.
-        if (_enable && {!isNil "ALIVE_profileHandler"}) then {
-            private _profiles = [ALIVE_profileHandler, "getProfiles"] call ALIVE_fnc_profileHandler;
-
-            if (!isNil "_profiles" && {_profiles isEqualType []} && {count _profiles > 2}) then {
-                {
-                    private _profile = _x;
-
-                    if (_profile isEqualType [] && {count _profile >= 3}) then {
-                        private _sideText = [_profile, "side", "UNKNOWN"] call ALiVE_fnc_hashGet;
-                        private _route = [];
-
-                        // Start the line where the profile is now, so the route reads as
-                        // the road ahead of it rather than a line floating off in front.
-                        private _here = [_profile, "position", []] call ALiVE_fnc_hashGet;
-                        if (_here isEqualType [] && {count _here >= 2}) then { _route pushBack _here };
-
-                        {
-                            private _pos = [_x, "position", []] call ALiVE_fnc_hashGet;
-                            if (_pos isEqualType [] && {count _pos >= 2}) then { _route pushBack _pos };
-                        } forEach ([_profile, "waypoints", []] call ALiVE_fnc_hashGet);
-
-                        [_logic, "drawPath", [_route, _sideText]] call ALiVE_fnc_pathfinder;
-                    };
-                } forEach (_profiles select 2);
-            };
-        };
-
         if (!_enable) then {
             private _pathMarkers = [_logic, "pathDrawMarkers", []] call ALiVE_fnc_hashGet;
             { deleteMarker _x } forEach _pathMarkers;
@@ -1226,11 +1134,47 @@ switch (_operation) do {
             // Only draw/log actual routes (>= 2 nodes). A 1-node "path" means start
             // and goal share a subsector (len 0) - drawing it leaves an orphaned dot
             // with no line, and it's the bulk of completed paths (log noise too).
-            // Drawing is shared with the sweep that fills the map in when the toggle is
-            // switched on, so both look the same. Off by default = zero cost, the flag
-            // short-circuits before anything is made.
-            if (missionNamespace getVariable ["ALiVE_pathfinding_drawPaths", false]) then {
-                [_logic, "drawPath", [_result, _callbackArgs param [2, "UNKNOWN"]]] call ALiVE_fnc_pathfinder;
+            if (missionNamespace getVariable ["ALiVE_pathfinding_drawPaths", false] && {_result isEqualType []} && {count _result > 1}) then {
+                private _pathMarkers = [_logic, "pathDrawMarkers", []] call ALiVE_fnc_hashGet;
+                // Colour the route by the requesting profile's side (threaded as
+                // the 3rd callbackArgs element from fnc_profileEntity's findPath
+                // call). Standard A3 side marker colours; unknown -> ColorUNKNOWN.
+                private _drawColor = switch (toUpper (_callbackArgs param [2, "UNKNOWN"])) do {
+                    case "WEST": { "ColorWEST" };   // BLUFOR
+                    case "EAST": { "ColorEAST" };   // OPFOR
+                    case "GUER": { "ColorGUER" };   // Independent
+                    case "CIV":  { "ColorCIV"  };   // Civilian
+                    default      { "ColorUNKNOWN" };
+                };
+                private _tag = format ["ALiVE_pf_path_%1_%2", diag_frameNo, count _pathMarkers];
+                // Drop a dot at each node and collect a flat [x1,y1,x2,y2,...]
+                // coordinate list for the connecting polyline.
+                private _line = [];
+                {
+                    private _mName = format ["%1_%2", _tag, _forEachIndex];
+                    private _m = createMarker [_mName, _x];
+                    _m setMarkerShape "ICON";
+                    _m setMarkerType "hd_dot";
+                    _m setMarkerSize [0.5, 0.5];
+                    _m setMarkerColor _drawColor;
+                    _m setMarkerAlpha 0.7;
+                    _pathMarkers pushBack _mName;
+                    _line pushBack (_x select 0);
+                    _line pushBack (_x select 1);
+                } forEach _result;
+                // Link the nodes with a single polyline marker so the route reads
+                // as a line rather than a scatter of dots. setMarkerPolyline needs
+                // a flat, even-length array of >= 2 points (>= 4 numbers).
+                if (count _line >= 4) then {
+                    private _plName = format ["%1_line", _tag];
+                    createMarker [_plName, _result select 0];
+                    _plName setMarkerShape "POLYLINE";
+                    _plName setMarkerPolyline _line;
+                    _plName setMarkerColor _drawColor;
+                    _plName setMarkerAlpha 0.8;
+                    _pathMarkers pushBack _plName;
+                };
+                [_logic, "pathDrawMarkers", _pathMarkers] call ALiVE_fnc_hashSet;
             };
 
             [_callbackArgs,_result] spawn _callback;
