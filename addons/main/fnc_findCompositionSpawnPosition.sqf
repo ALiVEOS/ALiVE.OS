@@ -14,7 +14,8 @@ Description:
       1. CENTRE - if the supplied position is already clear (envelope-aware
          footprint, exclusion zones for the requested mode), use it as-is.
          Most callers pre-pick a cluster centre so this often wins.
-      2. SAMPLE - random toss within radius (up to 200 attempts), each
+      2. SAMPLE - random toss within radius (200-1200 attempts, scaled
+         by radius - see _maxAttempts), each
          candidate validated against envelope clearance + exclusion zones.
       3. ROAD ALIGN (mode=="roadblock" only) - additionally require a road
          within envelope-half + 5 m and snap orientation to road heading.
@@ -707,16 +708,37 @@ if (_mode == "roadblock") exitWith {
 // matters most when _radius is large (search-cap-expanded scenarios)
 // where the outer annulus is where unobstructed terrain typically lives.
 // ------------------------------------------------------------------------
+// The candidate checks are engine geometry queries with no suspension
+// points, but in a scheduled context the 3ms scheduler slice still
+// preempts the loop every few candidates and resumes it next frame. On
+// a dedicated server mid-init that stretches one 667-attempt search to
+// 30s+ of wall time (issue #1008); on a hosted client the loading
+// screen pauses the sim and the same search takes a second. Running
+// the attempts in unscheduled tick-budgeted chunks lets each chunk
+// finish inside one frame: the 3ms budget is only checked between
+// candidates, so a chunk costs the budget plus whichever candidate was
+// still in flight when it expired - about 2ms on the observed numbers,
+// per-candidate cost varying ~10x with envelope and map object density.
+// The chunking keeps the scheduler in control between chunks.
+// directCall is the same unscheduled-execution idiom sys_profile uses
+// (fnc_profileSystem.sqf:164, fnc_profileEntity.sqf:547).
 private _result = [];
-for "_i" from 1 to _maxAttempts do {
-    private _angle = random 360;
-    private _dist  = sqrt (random 1) * _radius;
-    private _candidate = _centerPos getPos [_dist, _angle];
-    if ([_candidate, _envelope] call _candidateClear) exitWith {
-        private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
-        _result = [_candidate, _dir];
-        if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _candidate] call ALiVE_fnc_dump };
-    };
+private _i = 0;
+while {_i < _maxAttempts && {count _result == 0}} do {
+    [{
+        private _chunkEnd = diag_tickTime + 0.003;
+        while {_i < _maxAttempts && {count _result == 0} && {diag_tickTime < _chunkEnd}} do {
+            _i = _i + 1;
+            private _angle = random 360;
+            private _dist  = sqrt (random 1) * _radius;
+            private _candidate = _centerPos getPos [_dist, _angle];
+            if ([_candidate, _envelope] call _candidateClear) then {
+                private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
+                _result = [_candidate, _dir];
+                if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _candidate] call ALiVE_fnc_dump };
+            };
+        };
+    }] call CBA_fnc_directCall;
 };
 
 if (count _result == 0 && _debug) then {
