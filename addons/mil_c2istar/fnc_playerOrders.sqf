@@ -302,7 +302,8 @@ switch (_operation) do {
             ["_groupData", [], [[]]],
             ["_enemyFaction", "OPF_F", [""]],
             ["_excludedPositions", [], [[]]],
-            ["_excludedReservationKeys", [], [[]]]
+            ["_excludedReservationKeys", [], [[]]],
+            ["_excludedTaskTypes", [], [[]]]
         ];
 
         if !(isServer) exitWith {_result = false};
@@ -395,7 +396,13 @@ switch (_operation) do {
         private _objectives = +([_opcom, "nearestObjectives", [_groupPos, "attacking"]] call ALiVE_fnc_OPCOM);
         _objectives = [_objectives, _groupPos, _excludedPositions] call _filterObjectives;
 
-        if !(_objectives isEqualTo []) then {
+        // A kind of job that has just been handed out is passed over here, the same as a
+        // place is. This is the half that was missing: only two kinds of order can come from
+        // the commander's objectives, and this route is tried before any other on every
+        // request, so once it started succeeding it won every time and handed out the same
+        // kind of job over and over. Ruling both out leaves nothing to offer, which is the
+        // signal to fall through to the ordinary task list, where the choice is wider.
+        if (!("CaptureObjective" in _excludedTaskTypes) && {!(_objectives isEqualTo [])}) then {
             private _objectiveSelection = [_objectives, "CaptureObjective", _groupPos, _excludedReservationKeys] call _getUnreservedObjective;
             private _objective = _objectiveSelection select 0;
 
@@ -406,7 +413,7 @@ switch (_operation) do {
             };
         };
 
-        if (_taskType == "") then {
+        if (_taskType == "" && {!("MilDefence" in _excludedTaskTypes)}) then {
             _objectives = +([_opcom, "nearestObjectives", [_groupPos, "defending"]] call ALiVE_fnc_OPCOM);
             _objectives = [_objectives, _groupPos, _excludedPositions] call _filterObjectives;
             if !(_objectives isEqualTo []) then {
@@ -554,8 +561,14 @@ switch (_operation) do {
         _recent = [[_position, _reservationKey, _taskType]] + _recent;
 
         // Four is enough to break the short circles without ruling out so much that a
-        // small mission runs out of things to offer.
-        if (count _recent > 4) then { _recent resize 4 };
+        // small mission runs out of things to offer. Kept at four at least, even where the
+        // setting for repeating a kind of job is lower, because places are avoided as far
+        // back as this list goes and shortening it would let a group be sent somewhere it
+        // has just come from. A setting above four lengthens it to match, or the setting
+        // would silently do nothing past the fourth.
+        private _keep = 4;
+        if (!isNil "ALiVE_c2istar_orderRepeatBlock") then { _keep = _keep max ALiVE_c2istar_orderRepeatBlock };
+        if (count _recent > _keep) then { _recent resize _keep };
 
         [GVAR(orderHistory), _groupID, _recent] call ALiVE_fnc_hashSet;
     };
@@ -682,13 +695,20 @@ switch (_operation) do {
         private _excludedGeneratedTaskTypes = [];
         private _excludedTaskRootID = "";
 
+        // How many requests back a kind of job stays ruled out for. Places are always
+        // avoided as far back as the list goes, because sending a group somewhere it has
+        // just come from is never wanted. What kind of job to offer is a matter of taste, so
+        // it is a setting: nought lets the same kind come straight back.
+        private _typeBlock = 2;
+        if (!isNil "ALiVE_c2istar_orderRepeatBlock") then { _typeBlock = ALiVE_c2istar_orderRepeatBlock };
+
         if !(isNil QGVAR(orderHistory)) then {
             {
                 _x params [["_pastPosition", []], ["_pastKey", []], ["_pastType", ""]];
 
                 if !(_pastPosition isEqualTo []) then { _excludedPositions pushBackUnique _pastPosition };
                 if !(_pastKey isEqualTo []) then { _excludedReservationKeys pushBackUnique _pastKey };
-                if (_pastType != "") then { _excludedGeneratedTaskTypes pushBackUnique _pastType };
+                if (_pastType != "" && {_forEachIndex < _typeBlock}) then { _excludedGeneratedTaskTypes pushBackUnique _pastType };
             } forEach ([GVAR(orderHistory), _groupID, []] call ALiVE_fnc_hashGet);
         };
 
@@ -808,7 +828,7 @@ switch (_operation) do {
             _x params ["_tryPositions", "_tryKeys", "_tryTypes"];
 
             if (_strategicAllowed) then {
-                _created = ["createStrategicTaskForGroup", [_groupData, _enemyFaction, _tryPositions, _tryKeys]] call MAINCLASS;
+                _created = ["createStrategicTaskForGroup", [_groupData, _enemyFaction, _tryPositions, _tryKeys, _tryTypes]] call MAINCLASS;
             };
 
             if !(_created) then {

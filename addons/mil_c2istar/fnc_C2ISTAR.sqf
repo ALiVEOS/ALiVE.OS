@@ -73,6 +73,9 @@ Peer Reviewed:
 // Default sector-update interval, in MINUTES (case "runEvery" multiplies by 60 to seconds)
 #define DEFAULT_RUN_EVERY 2
 #define DEFAULT_TASK_MIN_DISTANCE 0
+// How many requests back a kind of order stays ruled out for when a player asks for a
+// different one. Two gives something else at least twice before the same kind can return.
+#define DEFAULT_ORDER_REPEAT_BLOCK 2
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
 #define DEFAULT_TASK_AO_RADIUS 0
 #define DEFAULT_FILTER_ENEMY_FACTIONS true
@@ -828,6 +831,19 @@ switch(_operation) do {
         // minutes was wrongly used as seconds.
         _result = floor(_result * 60);
     };
+    case "orderRepeatBlock": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["orderRepeatBlock", _args];
+        };
+
+        _result = _logic getVariable ["orderRepeatBlock", DEFAULT_ORDER_REPEAT_BLOCK];
+        // The editor may hand a number back as text, same as the settings around it.
+        if (typeName _result == "STRING") then { _result = parseNumber _result; };
+    };
     case "taskMinDistance": {
         if (typeName _args == "STRING") then {
             _args = parseNumber _args;
@@ -1108,6 +1124,11 @@ switch(_operation) do {
 // the menu reaches everyone.
 ALiVE_c2istar_autoPlayerTasks = [_logic, "autoPlayerTasks"] call MAINCLASS;
 if (isServer) then { publicVariable "ALiVE_c2istar_autoPlayerTasks" };
+
+// Same again for how long a kind of order is passed over. Read where a request is handled,
+// which runs on the server, but broadcast so it reads the same everywhere.
+ALiVE_c2istar_orderRepeatBlock = [_logic, "orderRepeatBlock"] call MAINCLASS;
+if (isServer) then { publicVariable "ALiVE_c2istar_orderRepeatBlock" };
 
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;
         private _vipPanicTimeout = [_logic, "vipPanicTimeout"] call MAINCLASS;

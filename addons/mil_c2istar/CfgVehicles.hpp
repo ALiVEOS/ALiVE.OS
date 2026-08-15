@@ -92,6 +92,14 @@ class CfgVehicles {
                                     class Yes { name = "Yes"; value = "true"; };
                             };
                     };
+                    class orderRepeatBlock : Edit
+                    {
+                            property = "ALiVE_MIL_C2ISTAR_orderRepeatBlock";
+                            displayName = "$STR_ALIVE_C2ISTAR_ORDER_REPEAT_BLOCK";
+                            tooltip = "$STR_ALIVE_C2ISTAR_ORDER_REPEAT_BLOCK_COMMENT";
+                            defaultValue = """2""";
+                            typeName = "NUMBER";
+                    };
                     class taskMinDistance : Edit
                     {
                             property = "ALiVE_MIL_C2ISTAR_taskMinDistance";
