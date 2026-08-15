@@ -718,6 +718,7 @@ switch (_operation) do {
         private _currentReservationKeys = [];
         private _currentTaskTypes = [];
         private _refused = false;
+        private _replacedTaskID = "";
 
         if !(_currentTask isEqualTo []) then {
             private _taskID = _currentTask select 0;
@@ -795,9 +796,12 @@ switch (_operation) do {
                 _refused = true;
             };
 
+            // Noted rather than removed here. Removing it before knowing whether there is
+            // anything to put in its place is what left a group holding nothing at all when
+            // neither way of building an order came up with one. It is taken away below,
+            // once there is a replacement in hand.
             if !(_refused) then {
-                private _event = ["TASK_DELETE", [_taskID, _requestPlayerID, _side], "C2ISTAR"] call ALiVE_fnc_event;
-                [ALIVE_eventLog, "addEvent", _event] call ALiVE_fnc_eventLog;
+                _replacedTaskID = _taskID;
             };
         };
 
@@ -842,9 +846,27 @@ switch (_operation) do {
         ];
 
         if (_created) then {
+            // Only once there is something to put in its place. Asking for the old order to be
+            // taken away up front already worked out in practice, because these are handed off
+            // to be dealt with shortly rather than done on the spot, so the replacement was
+            // usually built first anyway. What it could not survive was finding no replacement
+            // at all: the request had already given the order away and had nothing to hand
+            // back, so a group that asked for something different ended up with none. That
+            // failing case is what changes here. Holding on to it this long costs nothing while
+            // choosing, since the orders already out are filtered to ignore this one.
+            if (_replacedTaskID != "") then {
+                private _event = ["TASK_DELETE", [_replacedTaskID, _requestPlayerID, _side], "C2ISTAR"] call ALiVE_fnc_event;
+                [ALIVE_eventLog, "addEvent", _event] call ALiVE_fnc_eventLog;
+            };
+
             ["notify", [_player, "OPCOM has assigned a new order to your group."]] call MAINCLASS;
         } else {
-            ["notify", [_player, "OPCOM has no suitable order for your group right now."]] call MAINCLASS;
+            private _keptMessage = "OPCOM has no suitable order for your group right now.";
+            if (_replacedTaskID != "") then {
+                _keptMessage = "OPCOM has no other order for your group right now, so your current one stands.";
+            };
+
+            ["notify", [_player, _keptMessage]] call MAINCLASS;
         };
     };
     case "toggleOptOut": {
