@@ -1652,8 +1652,14 @@ ALiVE_fnc_INS_registerInstallationOnBuilding = {
     // nearby may all still be virtual and invisible to it. A run that only ever
     // reports zero means the flag has no source, and the civilian question that
     // reads it can never answer anything but "no, no one".
-    diag_log format ["[ALiVE DIAG-STRIP INS-CONTACT] %1 spawned man/men within 50m of %2, %3 civilian(s) flagged",
-        count _nearMen, typeOf _building, _civFlagged];
+    // The building itself rather than just its class. Two installations landing on the same
+    // building is the leading explanation for #1003, where an IED factory registers here but
+    // then has no composition and no way to disable it: the furniture pass exits silently when
+    // a building already carries some, and the hold action is refused when one of the same kind
+    // is already on it. A class name cannot tell two huts apart, so the log could not show a
+    // collision. The object reference carries a unique id and can.
+    diag_log format ["[ALiVE DIAG-STRIP INS-CONTACT] %1 spawned man/men within 50m of %2, %3 civilian(s) flagged, installations on it: %4",
+        count _nearMen, _building, _civFlagged, _building getVariable [_installationVar, []]];
 };
 
 ALiVE_fnc_INS_getBuildingInstallations = {
@@ -2059,6 +2065,21 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
         private _blacklist = ["tower","cage","platform","trench","bridge"];
 
         //["Building selected: %1 | %2",typeOf _h, _h] call ALiVE_fnc_DumpR;
+
+        // Already carrying an installation, so leave it alone.
+        //
+        // Two installations on one building look fine while they are being placed and then fail
+        // silently. The second one finds the building already furnished, so the furniture pass
+        // returns empty without a word, and the hold action is refused because one of the same
+        // kind is already attached. The result is an IED factory that is registered, marked on
+        // the map, and has nothing in it and no way to disable it (#1003).
+        //
+        // Checked first because it is the cheapest test here, and because a building that is
+        // already taken should not cost an indoor-position sweep to reject.
+        if !(([_h] call ALiVE_fnc_INS_getBuildingInstallations) isEqualTo []) then {
+            _buildings set [_index,objNull];
+            continue
+        };
 
         private _buildingPositions = [getposATL _h,5] call ALIVE_fnc_findIndoorHousePositions;
         
