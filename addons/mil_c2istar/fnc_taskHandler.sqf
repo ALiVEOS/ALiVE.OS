@@ -1891,6 +1891,14 @@ switch (_operation) do {
                     [_managedTasks, _x] call ALIVE_fnc_hashRem;
                 } forEach _managedTasksToRemove;
 
+                // DIAG-STRIP #1002: heartbeat. An error thrown anywhere below ends this
+                // waitUntil for good, and every managed task then sits at its current
+                // stage for the rest of the mission looking exactly like a completion
+                // check that never fires. If these lines stop, the thread died.
+                if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                    ["[C2ISTAR #1002 DIAG] manager cycle: %1 managed task(s)", count (_managedTasks select 1)] call ALIVE_fnc_dump;
+                };
+
                 if (count (_managedTasks select 1) > 0) then {
                     // for each of the tasks
                     {
@@ -1969,7 +1977,14 @@ switch (_operation) do {
                                 // them from the client task menu (#934). TASK_DELETE
                                 // unregisters the root + all children, releases the managed
                                 // task params, and dispatches the removal to clients.
-                                [_logic, "TASK_DELETE", [_rootTaskID, (_task select 1), _taskSide]] call MAINCLASS;
+                                // The requesting player comes off _mainTask, which the guard
+                                // at the top of this iteration has already proved is an array.
+                                // Reading it off the lookup above instead was the one place in
+                                // this branch still doing so unguarded: when that lookup came
+                                // back with nothing, select threw, the waitUntil ended, and the
+                                // manager stopped re-checking every task it held -- each one
+                                // left open at its current stage for the rest of the mission.
+                                [_logic, "TASK_DELETE", [_rootTaskID, (_mainTask select 1), _taskSide]] call MAINCLASS;
 
                                 // DIAG-STRIP #942: prove the teardown really removed the root task --
                                 // stillActive must read false here. true means stale activeTasks keys
