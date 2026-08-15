@@ -282,6 +282,18 @@ switch(_operation) do {
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call ALiVE_fnc_CQB;
             [_logic, "whitelist", _logic getVariable ["whitelist", DEFAULT_WHITELIST]] call ALiVE_fnc_CQB;
 
+            // Put the areas out of sight here, as every other module with a blacklist does.
+            // These are the mission maker's own markers and they are meant to be a setting, not
+            // scenery, so they are hidden rather than drawn. This used to wait until the server
+            // had finished building the whole mission, which is far and away the longest thing
+            // ALiVE does, and as that got quicker the moment moved from while you were standing
+            // in the world to while you were still reading the briefing. The markers then went
+            // out under the reader, which looks like a fault and was reported as one.
+            if (hasInterface) then {
+                {_x setMarkerAlpha 0} forEach (_logic getVariable ["blacklist", DEFAULT_BLACKLIST]);
+                {_x setMarkerAlpha 0} forEach (_logic getVariable ["whitelist", DEFAULT_WHITELIST]);
+            };
+
             /*
             MODEL - no visual just reference data
             - server side object only
@@ -560,11 +572,10 @@ switch(_operation) do {
                 //Activate Debug only serverside
                 //[_logic, "debug", _debug] call ALiVE_fnc_CQB;
 
-                //Delete markers
-                [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call ALiVE_fnc_CQB;
-                {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_BLACKLIST]);
-                [_logic, "whitelist", _logic getVariable ["whitelist", DEFAULT_WHITELIST]] call ALiVE_fnc_CQB;
-                {_x setMarkerAlpha 0} foreach (_logic getVariable ["whitelist", DEFAULT_WHITELIST]);
+                // The areas are read and put out of sight up at module init now, alongside every
+                // other module that owns a blacklist, so there is nothing left to do here. The
+                // two calls that stood here read the same two settings that had already been
+                // read further up and set them to what they already were.
             };
 
             TRACE_TIME(QUOTE(COMPONENT),[]); // 8
