@@ -457,6 +457,22 @@ switch (_operation) do {
             // later request then read back nothing to avoid, leaving it free to hand back
             // the objective the group had just been given. The commander's own orders
             // start the record the same way before writing to it.
+            // Where the order actually sent the group, which is not always where it was
+            // reserved. The part that picks an objective and the part that builds the task
+            // choose for themselves, and a capture task runs its own search and takes the
+            // first objective with live enemy on it. So the group can be sent somewhere the
+            // picker never chose. Writing the reservation down meant the next request steered
+            // away from a place nobody had been, leaving the place they had just been sent to
+            // free to come straight back. Seen twice running against the same objective.
+            //
+            // The objective that was reserved is still avoided, by its reservation, so
+            // nothing is let through by recording where the group actually went instead.
+            // That matters most for a defence order, which can be built as much as a
+            // kilometre from the objective it was reserved against, far enough that the
+            // position it records will never match an objective again.
+            private _builtLocation = _createdTask param [3, [], [[]]];
+            if (_builtLocation isEqualTo []) then { _builtLocation = _taskLocation };
+
             private _managedTaskParams = [ALIVE_taskHandler, "managedTaskParams"] call ALiVE_fnc_hashGet;
             private _remembered = false;
 
@@ -467,7 +483,7 @@ switch (_operation) do {
 
                 if (_taskID in (_managedTaskParams select 1)) then {
                     private _taskParams = [_managedTaskParams, _taskID] call ALiVE_fnc_hashGet;
-                    [_taskParams, "strategicObjectivePosition", _taskLocation] call ALiVE_fnc_hashSet;
+                    [_taskParams, "strategicObjectivePosition", _builtLocation] call ALiVE_fnc_hashSet;
                     [_taskParams, "strategicReservationKey", _reservationKey] call ALiVE_fnc_hashSet;
                     [_managedTaskParams, _taskID, _taskParams] call ALiVE_fnc_hashSet;
                     _remembered = true;
@@ -479,11 +495,11 @@ switch (_operation) do {
             // nothing to steer away from and can hand back the same objective.
             // Gate: ALiVE_c2istar_taskDiag = true.
             if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
-                ["[C2ISTAR #992 DIAG] remembered id=%1 ok=%2 key=%3 pos=%4",
-                    _taskID, _remembered, _reservationKey, _taskLocation] call ALiVE_fnc_dump;
+                ["[C2ISTAR #992 DIAG] remembered id=%1 ok=%2 key=%3 pos=%4 reserved=%5",
+                    _taskID, _remembered, _reservationKey, _builtLocation, _taskLocation] call ALiVE_fnc_dump;
             };
 
-            ["rememberOrder", [_groupID, _taskLocation, _reservationKey, _taskType]] call MAINCLASS;
+            ["rememberOrder", [_groupID, _builtLocation, _reservationKey, _taskType]] call MAINCLASS;
 
             _result = true;
         };
@@ -675,6 +691,7 @@ switch (_operation) do {
         private _currentPositions = [];
         private _currentReservationKeys = [];
         private _currentTaskTypes = [];
+        private _refused = false;
 
         if !(_currentTask isEqualTo []) then {
             private _taskID = _currentTask select 0;
@@ -734,17 +751,32 @@ switch (_operation) do {
                 ] call ALiVE_fnc_dump;
             };
 
-            if !(_replaceCurrent) exitWith {
+            // Both of these turn a request down, and both were written as exitWith. That leaves
+            // the block it is written in, not the request, and both sit inside the block above
+            // handling an existing task. So the group was told it could not have another order
+            // and then given one anyway, on top of the one it already had and with nothing
+            // deleted. That is the fault this issue was raised for. It stayed hidden because
+            // the tablet greys the entry out while a group holds a task, but that is decided
+            // from the client's own copy of the task list, so a server can still be asked in
+            // the gap before the client has caught up.
+            if !(_replaceCurrent) then {
                 ["notify", [_player, "Your group already has an active task."]] call MAINCLASS;
+                _refused = true;
             };
 
-            if !(_isPlayerOrderTask) exitWith {
+            if (!_refused && {!_isPlayerOrderTask}) then {
                 ["notify", [_player, "Your group already has a non-OPCOM task and cannot reroll it here."]] call MAINCLASS;
+                _refused = true;
             };
 
-            private _event = ["TASK_DELETE", [_taskID, _requestPlayerID, _side], "C2ISTAR"] call ALiVE_fnc_event;
-            [ALIVE_eventLog, "addEvent", _event] call ALiVE_fnc_eventLog;
+            if !(_refused) then {
+                private _event = ["TASK_DELETE", [_taskID, _requestPlayerID, _side], "C2ISTAR"] call ALiVE_fnc_event;
+                [ALIVE_eventLog, "addEvent", _event] call ALiVE_fnc_eventLog;
+            };
         };
+
+        // Stops the request itself, which is what the two refusals above meant to do.
+        if (_refused) exitWith {};
 
         private _sideSettings = ["getSideSettings", [_side]] call MAINCLASS;
         private _enemyFaction = _sideSettings param [1, "OPF_F"];
