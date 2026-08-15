@@ -614,6 +614,17 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if ([_logic, "debug"] call MAINCLASS) then {
+                    // Draw the markers here, once, now that every trigger has been stored.
+                    //
+                    // They used to appear by accident: rebuilding them was a side effect of READING the
+                    // debug setting, and the setting is read once per trigger while they are being
+                    // saved, so the set was torn down and redrawn once per IED until placement ended.
+                    // That is what made them flicker, and it cost the module almost its entire startup.
+                    // Now that a read leaves them alone, nothing else would ever draw them: the only
+                    // other call that does runs at module init, before a single trigger exists, so it
+                    // has nothing to draw.
+                    [_logic, "createMarkers"] call MAINCLASS;
+
                     ["ALIVE IED - Startup completed"] call ALIVE_fnc_dump;
                     ["ALIVE IED - Count IED Triggers %1", count ([GVAR(STORE), "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet select 1)] call ALIVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
@@ -909,6 +920,19 @@ switch(_operation) do {
                 _result = _logic getVariable [_operation, DEFAULT_CLUTTER];
         };
         case "debug": {
+            // Asking whether debug is on must not rebuild the map.
+            //
+            // Everything below used to run on every call, including the calls that only want to
+            // READ the flag. Those are written as [_logic, "debug"] call MAINCLASS and read like a
+            // harmless getter, but each one deleted every marker this module had drawn and drew
+            // them all again. storeTrigger asks once per IED area as it saves it, and removeIED
+            // asks again on the way out, so the whole set was torn down and rebuilt once per IED
+            // while they were being placed. That is the flickering circles, and the work grows
+            // with the number already placed.
+            // A read arrives as the objNull placeholder this function defaults _args to, so that,
+            // and not isNil, is what tells a read from a set. isNil is never true here.
+            private _wasSet = !(_args isEqualType objNull);
+
             if (typeName _args == "BOOL") then {
                 _logic setVariable ["debug", _args, true];
             } else {
@@ -930,11 +954,14 @@ switch(_operation) do {
             };
             ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
-            [_logic,"deleteMarkers"] call MAINCLASS;
+            // Only when a value was actually handed in. A read leaves the markers alone.
+            if (_wasSet) then {
+                [_logic,"deleteMarkers"] call MAINCLASS;
 
-            if (_args) then {
-                // Mark each IED, Bomber, VB-IED?
-                [_logic,"createMarkers"] call MAINCLASS;
+                if (_args) then {
+                    // Mark each IED, Bomber, VB-IED?
+                    [_logic,"createMarkers"] call MAINCLASS;
+                };
             };
             _result = _args;
         };
