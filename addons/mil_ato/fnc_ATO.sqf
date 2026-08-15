@@ -7315,6 +7315,47 @@ switch(_operation) do {
                     // Check waypoint
                     if (time > (_eventTime + (_eventDuration*60)) ) then {
                         _missionComplete = true;
+                    } else {
+                        // Keep the target known for as long as the sortie is on task. The crew are
+                        // told about the target once, back at the airbase, minutes and kilometres
+                        // before they arrive, and nothing renewed it from then on. What a crew knows
+                        // about a contact fades with time and distance, so by the time they are
+                        // overhead they can be holding almost nothing on a man lying still in cover,
+                        // and a target they do not hold is one they will not attack. A vehicle is
+                        // big enough to find again unaided, which is why this showed as aircraft
+                        // ignoring infantry while still engaging armour on the same sortie.
+                        //
+                        // Only refreshed once knowledge has actually decayed, so an attack already
+                        // under way is not interrupted by re-pointing the crew every pass. Issued
+                        // the same way as the original order at launch.
+                        if (count _eventTargets > 0) then {
+                            private _target = _eventTargets select 0;
+                            private _grpNow = group _vehicle;
+                            if (_target isEqualType objNull && {!isNull _target} && {alive _target} && {!isNull _grpNow}) then {
+                                if ((_grpNow knowsAbout _target) < 4) then {
+                                    _grpNow reveal [_target, 4];
+                                    (units _grpNow) doTarget _target;
+                                };
+                                // Re-assert the weapons-free state set at launch, in case anything
+                                // quiesced the group while it was in transit.
+                                _grpNow enableAttack true;
+                                {
+                                    _x enableAI "TARGET";
+                                    _x enableAI "AUTOTARGET";
+                                    _x setCombatMode _eventROE;
+                                } forEach (units _grpNow);
+
+                                // Position goes unrecorded for the whole time an aircraft is on
+                                // task, which is exactly the stretch anyone investigating a sortie
+                                // needs to see. Without it there is no way to tell a genuine attack
+                                // run from an aircraft loitering out of range.
+                                if (_debug) then {
+                                    ["ATO %5 - Aircraft (%1 - %2) on task %3m from target, knows %4",
+                                        _profileID, typeof _vehicle, round (_vehicle distance2D _target),
+                                        (_grpNow knowsAbout _target), _logic] call ALiVE_fnc_dump;
+                                };
+                            };
+                        };
                     };
                 } else {
                     if (_debug) then {
