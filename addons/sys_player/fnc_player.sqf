@@ -354,10 +354,22 @@ switch(_operation) do {
                     GVAR(disconnectEH) = addMissionEventHandler ["HandleDisconnect", {
                         params ["_unit","_id","_uid","_name"];
 
+                        // "checkPlayer" sets the kicked flag on the unit so the
+                        // wrong-class kick does not overwrite a good save, but the
+                        // only place that ever cleared it again was the Abort path
+                        // in ALIVE_fnc_player_onPlayerDisconnected. A kicked slot
+                        // therefore stayed flagged, and every later player in it
+                        // silently lost their disconnect save. Honour it once here,
+                        // then clear it so the flag does not outlive the kick.
+                        private _kicked = !isNull _unit && {_unit getVariable [QGVAR(kicked), false]};
+                        if (_kicked) then {
+                            _unit setVariable [QGVAR(kicked), false, true];
+                        };
+
                         private _save = _uid != ""
                             && {!isNull _unit}
                             && {MOD(sys_player) getVariable ["enablePlayerPersistence", false]}
-                            && {!(_unit getVariable [QGVAR(kicked), false])};
+                            && {!_kicked};
 
                         // #885 comment (UnRealxInferno): never persist a dead,
                         // downed or unconscious state - see PLAYER_STATE_UNSAVEABLE.
@@ -549,7 +561,15 @@ switch(_operation) do {
                             // the periodic autostore would otherwise write a dead
                             // player's state mid-window and restore it on rejoin.
                             if (PLAYER_STATE_UNSAVEABLE(_unit)) then {
-                                TRACE_2("SYS_PLAYER SAVE SKIPPED, UNIT NOT IN A SAVEABLE STATE",_unit,lifeState _unit);
+                                // Plain log, not TRACE - a release build compiles the
+                                // trace out, so there was no way to tell the guard
+                                // fired. autoStorePlayer walks the playable units
+                                // every DEFAULT_INTERVAL, so this repeats once per
+                                // interval while someone is down: keep it
+                                // informational and name the player, the state and
+                                // the fact the earlier save still stands, so a
+                                // repeat reads as the same player still down.
+                                ["SYS_PLAYER - SAVE SKIPPED FOR %1 (%2), UNIT IS %3 - LAST GOOD SAVE KEPT", name _unit, _puid, toUpper (lifeState _unit)] call ALiVE_fnc_dump;
                                 _result = false;
                             } else {
                                 _playerHash = [_logic, [_unit, _puid]] call ALIVE_fnc_setPlayer;

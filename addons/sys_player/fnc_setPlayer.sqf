@@ -29,7 +29,7 @@ Peer reviewed:
 nil
 ---------------------------------------------------------------------------- */
 
-private ["_logic","_args","_player","_puid","_find","_saveLoadout","_saveHealth","_savePosition","_saveScores","_data","_playerHash","_result","_data"];
+private ["_logic","_args","_player","_puid","_find","_saveLoadout","_saveHealth","_savePosition","_saveScores","_saveAmmo","_data","_playerHash","_result"];
 
 _logic = _this param [0, objNull, [objNull,[]]];
 _args = _this param [1, objNull, [objNull,[],"",0,true,false]];
