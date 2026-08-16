@@ -705,6 +705,18 @@ if (isServer) then {
     };
     
     
+    // How much the airfield survey was asked for while everything was being placed, and
+    // how much of that was answered without going back out to the map. One line, written
+    // once, at the moment placement is known to be finished. The survey is the widest
+    // sweep in the mod and reads the name of every object it finds, so whether callers
+    // repeat themselves decides whether caching it is worth anything at all.
+    if (!isNil "ALiVE_airfieldGeomCalls") then {
+        ["ALiVE airfield survey: %1 request(s) during startup, %2 answered from the last identical one, %3 full sweep(s)",
+            ALiVE_airfieldGeomCalls,
+            ALiVE_airfieldGeomHits,
+            ALiVE_airfieldGeomCalls - ALiVE_airfieldGeomHits] call ALiVE_fnc_dump;
+    };
+
     //This is the last module init to be run, therefore indicates that init of the defined modules above has passed on server
     MOD(REQUIRE_INITIALISED) = true;
     Publicvariable QMOD(REQUIRE_INITIALISED);

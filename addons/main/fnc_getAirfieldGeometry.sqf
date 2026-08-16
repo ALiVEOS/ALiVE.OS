@@ -76,6 +76,49 @@ params [
     ["_needZones", true, [true]]
 ];
 
+// ------------------------------------------------------------------------
+// Answer from the last identical survey where there was one.
+//
+// What this reads is static for a whole mission: runways do not move, tagged objects
+// are placed before it starts, and the module attributes are read as they were
+// authored. Recomputing on every call is harmless at run time, where an aircraft is
+// placed now and again, and very costly during placement, where every objective of
+// every module asks again and the widest sweep below looks at the name of every object
+// within a kilometre. That cost lands hardest on a dedicated server, where the mission
+// clock is running throughout placement and engine spatial queries are far dearer than
+// they are on a host sitting on the briefing map.
+//
+// Keyed on exactly what was asked for, so a caller can never be handed a survey of
+// somewhere else or of a smaller area than it requested.
+//
+// The result is SHARED, not copied. Every caller today only reads it; anything that
+// wants to modify it must take its own copy first.
+// ------------------------------------------------------------------------
+if (isNil "ALiVE_airfieldGeomCache") then {
+    ALiVE_airfieldGeomCache = createHashMap;
+    // Counted so the cache can be judged on evidence rather than on the assumption
+    // that callers repeat themselves. Two additions per call, at the top of the
+    // function and nowhere near the sweeps, and the totals are reported in one line
+    // when ALiVE finishes starting up. Timing anything INSIDE the searches is off the
+    // table: six operations added per iteration once took placement from 50 seconds
+    // to never finishing.
+    ALiVE_airfieldGeomCalls = 0;
+    ALiVE_airfieldGeomHits  = 0;
+};
+ALiVE_airfieldGeomCalls = ALiVE_airfieldGeomCalls + 1;
+private _cacheKey = format ["%1|%2|%3|%4", _centerPos select 0, _centerPos select 1, _radius, _needZones];
+private _cached = ALiVE_airfieldGeomCache get _cacheKey;
+if (!isNil "_cached") exitWith {
+    ALiVE_airfieldGeomHits = ALiVE_airfieldGeomHits + 1;
+    _cached
+};
+
+// Bounded, because each entry holds every object the sweep found and a long mission
+// would otherwise accumulate those references without limit. The repeats worth having
+// all arrive close together during placement, so emptying a full cache costs at most
+// one more survey each for whatever is still being asked about.
+if (count ALiVE_airfieldGeomCache > 256) then { ALiVE_airfieldGeomCache = createHashMap };
+
 private _runways       = [];
 private _taxiways      = [];
 private _airfieldZones = [];
@@ -234,4 +277,6 @@ if (count _airfieldInfraObjects > 0) then {
 // square kilometre and a half is the most expensive thing here, and a caller that needs
 // to look at those same objects for its own purposes would otherwise sweep the identical
 // area a second time. Appended last, so nothing reading the first three is affected.
-[_runways, _taxiways, _airfieldZones, _taggedObjs]
+private _result = [_runways, _taxiways, _airfieldZones, _taggedObjs];
+ALiVE_airfieldGeomCache set [_cacheKey, _result];
+_result
