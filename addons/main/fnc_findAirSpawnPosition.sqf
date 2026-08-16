@@ -58,7 +58,7 @@ Examples:
 
 See Also:
     ALiVE_fnc_getAirfieldGeometry, ALiVE_fnc_getVehicleBoundingBox,
-    ALiVE_fnc_findVehicleSpawnPosition
+    ALiVE_fnc_findVehicleSpawnPosition, ALiVE_fnc_buildAirsideCache
 
 Author:
     Jman
@@ -567,6 +567,78 @@ private _fnc_orientHangar = {
 private _airfieldGeom = [_centerPos, _maxDistance max 500, false] call ALiVE_fnc_getAirfieldGeometry;
 _airfieldGeom params ["_runwaySegments", "_taxiwaySegments"];
 
+// Heading of the runway aircraft parked here should line up with, or -1 when
+// nothing can supply one.
+//
+// The tiers below used to read this straight off the first runway segment, and on
+// most missions that segment has no length: only an authored runway attribute or a
+// tagged object produces one with two distinct ends, and where neither exists the
+// survey falls back to recording each runway p3d as a single point. Asking a point
+// for its bearing gives `pos getDir pos`, which is 0, so aircraft meant to line up
+// with the runway were lined up with due north instead, on every field that had
+// not been marked up by hand.
+//
+// First choice is the airside cache, which has already worked out a runway axis per
+// airfield from the best source available to it: an authored segment, else the
+// terrain's own ILS approach data, else a line fitted through the scattered runway
+// pieces. Capsule kind 1 is that axis and it is already in memory on every machine,
+// so reading it costs a lookup rather than another survey of the field.
+private _runwayHeading = -1;
+if (!isNil "ALiVE_airsideBounds" && {!(ALiVE_airsideBounds isEqualTo [])}
+    && {!isNil "ALiVE_airsideCapsules"}) then {
+    private _px = _centerPos select 0;
+    private _py = _centerPos select 1;
+    private _nearest = -1;
+    private _nearestDist = 1e10;
+    private _fieldCount = (count ALiVE_airsideBounds) / 4;
+    for "_f" from 0 to (_fieldCount - 1) do {
+        private _b = _f * 4;
+        private _dx = _px - (ALiVE_airsideBounds select _b);
+        private _dy = _py - (ALiVE_airsideBounds select (_b + 1));
+        // Squared, because this only ever gets compared against another of its own.
+        private _d = (_dx * _dx) + (_dy * _dy);
+        // Only a field this position actually sits on gets to speak for its runway.
+        // Nearest alone is not enough: an airstrip the cache never mapped would take
+        // its heading from an airport kilometres away and look confidently wrong,
+        // where falling through to the segments below reads the real one. Twice the
+        // stored radius, so a dispersal pad just outside the survey circle still
+        // counts. The squared radius is already in the cache at offset 3.
+        if (_d < _nearestDist && {_d <= (ALiVE_airsideBounds select (_b + 3)) * 4}) then {
+            _nearestDist = _d; _nearest = _f;
+        };
+    };
+    if (_nearest >= 0 && {_nearest < count ALiVE_airsideCapsules}) then {
+        private _caps = ALiVE_airsideCapsules select _nearest;
+        private _capCount = (count _caps) / 8;
+        for "_j" from 0 to (_capCount - 1) do {
+            private _c = _j * 8;
+            // Kind 1 is the runway. Its inverse squared length is 0 when the capsule
+            // collapsed to a disc, which means the cache could not find an axis for
+            // this field either, so there is no bearing to take from it.
+            if ((_caps select (_c + 7)) == 1 && {(_caps select (_c + 6)) > 0}) exitWith {
+                _runwayHeading = [_caps select _c, _caps select (_c + 1), 0]
+                          getDir [_caps select (_c + 2), _caps select (_c + 3), 0];
+            };
+        };
+    };
+};
+
+// The cache builds one airfield per frame from mission start, so an aircraft placed
+// in the first moments can arrive before it is ready. Fall back to the longest
+// segment the survey above returned, skipping any with no length rather than
+// believing the due north they would otherwise report.
+if (_runwayHeading < 0) then {
+    private _longestRunway = 0;
+    {
+        _x params ["_segStart", "_segEnd"];
+        private _segLen = _segStart distance2D _segEnd;
+        if (_segLen > 1 && {_segLen > _longestRunway}) then {
+            _longestRunway = _segLen;
+            _runwayHeading = _segStart getDir _segEnd;
+        };
+    } forEach _runwaySegments;
+};
+
 private _fnc_pointToSegmentDist2D = {
     params ["_p", "_a", "_b"];
     private _ax = _a select 0; private _ay = _a select 1;
@@ -780,12 +852,7 @@ if (count _found == 0 && {_preference in ["auto", "hangar"]} && _isPlane && !_is
 // every heli taking a real pad at tier 1 and every normal plane on the apron are
 // untouched.
 if (count _found == 0 && _wideAirframe && {_preference in ["auto", "apron", "field"]}) then {
-    private _openDir = if (count _runwaySegments > 0) then {
-        private _seg = _runwaySegments select 0;
-        (_seg select 0) getDir (_seg select 1)
-    } else {
-        random 360
-    };
+    private _openDir = if (_runwayHeading >= 0) then { _runwayHeading } else { random 360 };
     for "_i" from 1 to 500 do {
         if (count _found > 0) exitWith {};
         private _pos = _centerPos getPos [random _maxDistance, random 360];
@@ -825,12 +892,7 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
     // kind-2 taxiway. The registry check deconflicts sibling VTOLs, one airframe
     // per parking spot.
     if (!isNil "ALiVE_airsideCapsules" && {!(ALiVE_airsideCapsules isEqualTo [])}) then {
-        private _parkDir = if (count _runwaySegments > 0) then {
-            private _seg = _runwaySegments select 0;
-            (_seg select 0) getDir (_seg select 1)
-        } else {
-            random 360
-        };
+        private _parkDir = if (_runwayHeading >= 0) then { _runwayHeading } else { random 360 };
         {
             if (count _found > 0) exitWith {};
             private _caps = _x;
@@ -887,12 +949,7 @@ if (count _found == 0 && {_preference in ["auto", "apron"]}) then {
         // Aircraft on apron: orient roughly toward the runway if we
         // know one, otherwise random. Aircraft will be repositioned
         // by AI taxi when it engages.
-        private _dir = if (count _runwaySegments > 0) then {
-            private _seg = _runwaySegments select 0;
-            (_seg select 0) getDir (_seg select 1)
-        } else {
-            random 360
-        };
+        private _dir = if (_runwayHeading >= 0) then { _runwayHeading } else { random 360 };
         if !([_pos, _dir] call _fnc_footprintClear) then { continue };
         _found = [_pos, _dir];
     };
