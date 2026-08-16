@@ -269,31 +269,43 @@ private _onAirfieldSurface = {
 private _rejectCounts = [0,0,0,0,0,0,0,0,0,0,0,0];
 private _rejectNames = ["bounds","runway","helipad","road","obstacle","water-centre","water-edge","slope-normal","slope-inner","slope-outer","surface","rock"];
 
+// How far the composition's objects can actually reach from the anchor.
+//
+// The envelope handed in is a DIAMETER: getCompositionRadius doubles the
+// furthest object distance and adds five. So the objects themselves only
+// reach about half of it. The checks below used to treat the whole figure
+// as a reach, which asked for roughly twice the clearance in every
+// direction, four times the area. On a wooded map that is a clearing that
+// does not exist, and every candidate was refused.
+//
+// Simply halving it would bring back the problem that caused the doubling
+// in the first place: object positions are measured from their centres, so
+// one sitting right on the edge still hangs past it, and camps were
+// clipping runways. Half plus an allowance for that overhang is the honest
+// figure. The allowance is a judgement, not a measurement: five metres for
+// small compositions rising to ten for large ones.
+//
+// Worth knowing before changing it: at envelope 10 this comes to exactly
+// 10, which is what the old code used, so the many callers that search in
+// tight sweeps at that size behave identically to before. Only genuinely
+// large compositions move.
+//
+// Kept in one place because the airfield containment test further down has to
+// use the SAME reach as the per-candidate check. If the two ever disagreed, the
+// test could rule out a search that would actually have found somewhere.
+private _fnc_clearReach = {
+    params ["_env"];
+    private _envHalf = _env / 2;
+    _envHalf + ((5 max (_envHalf * 0.5)) min 10)
+};
+
 private _candidateClear = {
     params ["_p", "_env"];
     private _envHalf = _env / 2;
-    // How far the composition's objects can actually reach from the anchor.
-    //
-    // The envelope handed in is a DIAMETER: getCompositionRadius doubles the
-    // furthest object distance and adds five. So the objects themselves only
-    // reach about half of it. The checks below used to treat the whole figure
-    // as a reach, which asked for roughly twice the clearance in every
-    // direction, four times the area. On a wooded map that is a clearing that
-    // does not exist, and every candidate was refused.
-    //
-    // Simply halving it would bring back the problem that caused the doubling
-    // in the first place: object positions are measured from their centres, so
-    // one sitting right on the edge still hangs past it, and camps were
-    // clipping runways. Half plus an allowance for that overhang is the honest
-    // figure. The allowance is a judgement, not a measurement: five metres for
-    // small compositions rising to ten for large ones.
-    //
-    // Worth knowing before changing it: at envelope 10 this comes to exactly
-    // 10, which is what the old code used, so the many callers that search in
-    // tight sweeps at that size behave identically to before. Only genuinely
-    // large compositions move.
-    private _bboxPad   = (5 max (_envHalf * 0.5)) min 10;
-    private _clearReach = _envHalf + _bboxPad;
+    // Reach of the composition's objects from the anchor. Worked out by
+    // _fnc_clearReach above, where the reasoning behind the figure is written
+    // down, and shared with the airfield containment test so the two agree.
+    private _clearReach = [_env] call _fnc_clearReach;
 
     // 0. World-bounds rejection. When the caller's centre is near the
     // map edge, getPos [random radius, random angle] can land outside
@@ -608,6 +620,66 @@ private _findRoadCandidates = {
         };
         [getPosATL _x, _roadDir]
     }
+};
+
+// ------------------------------------------------------------------------
+// Give up before starting when the whole search area is inside an airfield.
+//
+// The airfield zones are circles, and so is the search area, so "can any candidate
+// here pass?" is answerable by comparing two circles rather than by sampling a
+// thousand points and watching every one of them fail. When the search circle sits
+// wholly inside a zone, no position within it can ever clear, and the loop below
+// cannot discover anything except that.
+//
+// This is not a theoretical saving. One cluster on a Cam Lao Nam dedicated run
+// spent 667 tries at 500m with every single candidate turned away by the airfield
+// check, to reach a conclusion available from one comparison per zone.
+//
+// It does NOT save the wider retry that follows. Growing the circle can push it
+// back out of containment, and on that same cluster it did: the 800m pass logged
+// five candidates getting past the airfield check, so that disc was not contained
+// and the loop below had to run. Only the first pass is saved here.
+//
+// Only segments with no length are considered, which is a CONSERVATIVE restriction
+// rather than a complete one. A real segment's exclusion is a capsule and a capsule
+// can contain a disc, so a containment that exists is sometimes missed. Nothing is
+// ever wrongly claimed, which is the property that matters, and the survey records
+// its runways and taxiways from terrain objects as single points anyway, so most of
+// them are caught by the same test.
+// ------------------------------------------------------------------------
+// _swallowed is declared out here, and the give-up below sits at the top level of
+// the file rather than inside the test. `exitWith` leaves the NEAREST enclosing
+// block, so an exit written inside the `then` below would only leave the `then`,
+// discard its own return value and fall straight through to the search it was
+// meant to prevent. The same rule is relied on deliberately elsewhere in this file.
+private _swallowed = false;
+if (_mode != "roadblock" && _excludeRunways) then {
+    private _reach = ([_envelope] call _fnc_clearReach) * _runwayClearanceMul;
+    // The same list the per-candidate check walks, and assembled on the same terms:
+    // runways and taxiways always, the wider airfield areas only in the modes that
+    // exclude them. Anything this list would reject everywhere is worth knowing now.
+    private _testable = _runwaySegments + _taxiwaySegments;
+    if (_excludeAirfieldArea) then { _testable = _testable + _airfieldZones };
+    {
+        _x params ["_zStart", "_zEnd", ["_zHalfWidth", 0]];
+        // Length of zero, so the per-candidate rule measures to the point itself and
+        // the exclusion really is a circle that can be compared with the search area.
+        if ((_zStart distance2D _zEnd) < 0.1
+            && {((_centerPos distance2D _zStart) + _radius) <= (_zHalfWidth + _reach)}) exitWith {
+            _swallowed = true;
+        };
+    } forEach _testable;
+};
+
+if (_swallowed) exitWith {
+    // Reported on the same terms as the failure it replaces, so a search that gives
+    // up here is as visible in the log as one that ground through the whole loop to
+    // arrive at the same answer.
+    if (_radius >= 50 || _callerDebug || _debug) then {
+        ["[ALiVE CompSpawn] FAIL centre=%1 mode=%2 radius=%3m envelope=%4m before trying - the whole search area is inside an airfield zone, no position in it could pass",
+            _centerPos, _mode, _radius, _envelope] call ALiVE_fnc_dump;
+    };
+    []
 };
 
 // ------------------------------------------------------------------------
