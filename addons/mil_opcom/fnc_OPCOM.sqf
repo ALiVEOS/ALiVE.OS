@@ -3840,7 +3840,13 @@ switch (_operation) do {
     };
 
     case "validateStartupState": {
-        _args params ["_opcomModule"];
+        // Taken off the commander itself, the way everything else below is. This used to be read
+        // from the arguments of the call, and the one place that makes the call passes none, so
+        // it was always nothing at all. Asking nothing what it is synchronised to answers with an
+        // empty list and no complaint, so the check compared the commander's factions against
+        // nothing and reported every one of them as unmatched, on every mission, whatever the
+        // synced placement modules actually offered.
+        private _opcomModule = [_logic, "module", objNull] call ALiVE_fnc_HashGet;
 
         _result = false;
 
