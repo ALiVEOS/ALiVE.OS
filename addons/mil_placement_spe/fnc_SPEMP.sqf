@@ -435,17 +435,18 @@ switch(_operation) do {
 		                    ["SPEMP Group Name: %1", configName _group] call ALiVE_fnc_dump;
 		                };
 		            };
-		            // A name that matches nothing is a mistake in the mission, not a detail of
-		            // this module's inner workings, so it is said whether or not debug is on. It
-		            // is the one thing worth knowing here: the module goes on to place nothing,
-		            // and without this the only clue is an objective that came up empty.
-		            if (count _group == 0) then {
-		                ["SPEMP Warning, no group matching '%1' in faction %2. Check the Infantry Group Classname on this module. Nothing will be placed for it.",
-		                    _infantryClass, _faction] call ALiVE_fnc_dumpR;
-		            };
+		            // A name this lookup cannot place is not necessarily a wrong one. It builds its
+		            // key from the faction exactly as the module has it, and a number of factions
+		            // file their groups in the config under a different name than the faction they
+		            // belong to, so a good name comes back empty for those. Handing it on rather
+		            // than dropping it here lets the spawn below decide, because that does resolve
+		            // the faction properly. Whether the name was really wrong is judged by what
+		            // comes back from it, further down.
 		            // DEBUG ------------------------------------------------------------------------------------- 	
 	             if(count _group > 0) then {
 	                _infantryGroups pushback configName _group;
+	             } else {
+	                _infantryGroups pushback _infantryClass;
 	             };
   					 } else {
   					    private _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;
