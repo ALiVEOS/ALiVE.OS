@@ -185,12 +185,17 @@ private _taggedObjs = nearestObjects [_centerPos, [], _radius];
 {
     if (typeOf _x == "") then {
         private _str = toLower (str _x);
-        // CBA_fnc_find expects [haystack, needle]. _str is the
-        // haystack (object string), the literals are needles.
-        private _isRunway  = (([_str, "runway_main"] call CBA_fnc_find) != -1)
-                          || (([_str, "runway_secondary"] call CBA_fnc_find) != -1)
-                          || (([_str, "runway_beton"] call CBA_fnc_find) != -1);
-        private _isTaxiway = ([_str, "taxiway"] call CBA_fnc_find) != -1;
+        // The engine's own string search rather than a function call, because this
+        // runs on every object the sweep found and there can be thousands of them
+        // on a wooded map. Four scripted calls each were costing more than the
+        // comparisons they performed. Tier 4b below has always done it this way.
+        // _str is already lower case and every needle is lower case, so the answers
+        // are the same ones. The braces make the alternatives lazy, so a runway
+        // stops being tested as soon as it matches.
+        private _isRunway  = ((_str find "runway_main") != -1)
+                          || {(_str find "runway_secondary") != -1}
+                          || {(_str find "runway_beton") != -1};
+        private _isTaxiway = (_str find "taxiway") != -1;
 
         if (_isRunway) then {
             private _pos = position _x;
