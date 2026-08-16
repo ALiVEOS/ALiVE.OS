@@ -39,9 +39,15 @@ if(isNil "ALIVE_firstModuleInit") then {
     ALIVE_moduleCount = 0;
     // Cleared alongside the module counter so a mission restarted without closing the
     // game starts fresh lists rather than inheriting the last run's.
-    ALiVE_initRunning = [];
-    ALiVE_initActivity = [];
-    ALiVE_initWarnings = [];
+    //
+    // Only on the machine that fills them. Everything that writes a name into these is server
+    // side, and everywhere else they hold what the server sent, so clearing them on a client
+    // threw that away with nothing left to put it back.
+    if (isServer) then {
+        ALiVE_initRunning = [];
+        ALiVE_initActivity = [];
+        ALiVE_initWarnings = [];
+    };
     [] call ALIVE_fnc_dumpLogo;
     ["Global INIT"] call ALiVE_fnc_dump;
     [true,"Global Init Timer Started","INIT"] call ALIVE_fnc_timer;

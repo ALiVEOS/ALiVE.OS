@@ -133,15 +133,15 @@ if (isServer) then {
         // count them.
         private _gate = ALiVE_initGateModules;
 
-        // The same ceiling the screens use, and for the same reason. A module that throws before
-        // it reports in never clears the signal this waits on, and without a limit this counts
-        // entities and broadcasts to every machine once a second for the rest of the session,
-        // long after the last screen has given up and stopped listening. Set well beyond the
-        // fifteen minutes a screen waits, so it is still feeding them for as long as anyone is
-        // actually watching, and stops once nobody is.
-        private _deadline = diag_tickTime + 1800;
+        // No ceiling. A screen now stays up for as long as the work keeps moving, and a machine
+        // joining late starts its own clock, so no fixed figure here can be trusted to outlive
+        // every screen. If this stopped first the share done would freeze, and a screen reading a
+        // frozen figure would call a healthy mission stalled, which is the very fault being fixed.
+        // Slowed rather than stopped once no ordinary start could still be running, so a mission
+        // that really has hung is not paying for this once a second forever.
+        private _fast = diag_tickTime + 1800;
 
-        while {isNil QMOD(REQUIRE_INITIALISED) && {diag_tickTime < _deadline}} do {
+        while {isNil QMOD(REQUIRE_INITIALISED)} do {
             private _placed = (entities "Module_F") select {(typeOf _x) in _gate};
             private _done = _placed select {_x getVariable ["startupComplete", false]};
 
@@ -150,7 +150,16 @@ if (isServer) then {
             };
             Publicvariable QMOD(INIT_PROGRESS);
 
-            uiSleep 1;
+            // Who is still outstanding, worked out from the same modules the share is counted from
+            // and sent on the same tick. The names used to travel by a separate route that reached
+            // a dedicated machine empty, so the screen sat on "Getting started" for sixteen minutes
+            // while this loop was reporting its share perfectly well. Sent as class names so each
+            // machine turns them into words in its own language, and re-sent every tick so nothing
+            // can clear it and leave it cleared.
+            MOD(INIT_WAITING) = (_placed - _done) apply {typeOf _x};
+            Publicvariable QMOD(INIT_WAITING);
+
+            uiSleep (if (diag_tickTime < _fast) then {1} else {5});
         };
     };
 };
@@ -274,9 +283,28 @@ if (hasInterface) then {
         // slow machine still finishes on its own. Cutting a real start short costs little: this
         // only takes the screen away, nothing here stops the modules, and they carry on setting
         // the mission up behind it.
+        // Give up when the work has stopped, not when the clock has run out. A large mission on a
+        // dedicated server honestly runs past a quarter of an hour, and cutting one short told the
+        // player his mission might be broken when it was only big. The clock is pushed forward
+        // every time the share done moves, so fifteen minutes now means fifteen minutes of nothing
+        // happening rather than fifteen minutes of waiting.
+        //
+        // Whether anything was ever heard is remembered too, because the two cases deserve
+        // different words at the end. Work that stopped is worth reporting; a machine that was
+        // never told anything cannot say whether the mission is healthy or not.
         private _deadline = diag_tickTime + 900;
+        private _lastProgress = -1;
+        private _sawProgress = false;
 
         while {isNil QMOD(REQUIRE_INITIALISED) && {diag_tickTime < _deadline}} do {
+            if (!isNil QMOD(INIT_PROGRESS)) then {
+                if (MOD(INIT_PROGRESS) != _lastProgress) then {
+                    _lastProgress = MOD(INIT_PROGRESS);
+                    _sawProgress = true;
+                    _deadline = diag_tickTime + 900;
+                };
+            };
+
             private _busy = [];
             if (!isNil "ALiVE_initRunning") then { _busy = +ALiVE_initRunning };
 
@@ -289,12 +317,42 @@ if (hasInterface) then {
             private _gateNames = [];
             if (!isNil "ALiVE_initGateModules") then { _gateNames = ALiVE_initGateModules };
 
+            // Taken from the channel that carries the share done, because that one demonstrably
+            // reaches a dedicated machine and the other one demonstrably did not. Class names are
+            // turned into readable ones here so each machine reads them in its own language.
             private _names = [];
+            if (!isNil QMOD(INIT_WAITING)) then {
+                // Counted, not just listed once. A mission commonly carries several of the same
+                // module, and four of them still going says something very different from one,
+                // which the name on its own cannot. Only shown when there is more than one, so
+                // the ordinary case reads as a plain name rather than everything gaining a "(1)".
+                private _kinds = [];
+                private _howMany = [];
+                {
+                    private _n = getText (configFile >> "CfgVehicles" >> _x >> "displayName");
+                    if ((_n find "$") == 0) then { _n = localize (_n select [1]) };
+                    if (_n == "") then { _n = _x };
+                    private _at = _kinds find _n;
+                    if (_at < 0) then {
+                        _kinds pushBack _n;
+                        _howMany pushBack 1;
+                    } else {
+                        _howMany set [_at, (_howMany select _at) + 1];
+                    };
+                } forEach MOD(INIT_WAITING);
+                {
+                    private _count = _howMany select _forEachIndex;
+                    _names pushBack (if (_count > 1) then { format ["%1 (%2)", _x, _count] } else { _x });
+                } forEach _kinds;
+            };
+
             private _others = [];
             {
                 if (_x isEqualType [] && {count _x > 1}) then {
                     if ((_x select 0) in _gateNames) then {
-                        _names pushBackUnique (_x select 1);
+                        // Only if the channel above brought nothing. It is the better source and
+                        // this one is kept for a machine that is its own server, where it works.
+                        if (isNil QMOD(INIT_WAITING)) then { _names pushBackUnique (_x select 1) };
                     } else {
                         _others pushBackUnique (_x select 1);
                     };
@@ -500,7 +558,17 @@ if (hasInterface) then {
             // Placement never finished" is something a player can report; "a module stopped, go and
             // read a log" is how a report never gets made.
             private _stuck = "something that did not give its name";
-            if (!isNil "ALiVE_initRunning") then {
+            if (!isNil QMOD(INIT_WAITING)) then {
+                private _outstanding = [];
+                {
+                    private _n = getText (configFile >> "CfgVehicles" >> _x >> "displayName");
+                    if ((_n find "$") == 0) then { _n = localize (_n select [1]) };
+                    if (_n == "") then { _n = _x };
+                    _outstanding pushBackUnique _n;
+                } forEach MOD(INIT_WAITING);
+                if !(_outstanding isEqualTo []) then { _stuck = _outstanding joinString ", " };
+            };
+            if (_stuck == "something that did not give its name" && {!isNil "ALiVE_initRunning"}) then {
                 private _stillGoing = [];
                 {
                     if (_x isEqualType [] && {count _x > 1}) then {
@@ -510,18 +578,35 @@ if (hasInterface) then {
                 if !(_stillGoing isEqualTo []) then { _stuck = _stillGoing joinString ", " };
             };
 
+            // Two different things end up here and they deserve different words. Work that was
+            // moving and then stopped is worth reporting. A machine that was never told anything
+            // cannot say whether the mission is healthy, and telling that player his mission may
+            // be broken is a guess dressed up as a finding.
+            private _headline = "Setup has stopped";
+            private _lead = "This stopped reporting that it was working";
+            private _claim = "The screen is coming down rather than keeping you here. Parts of the mission may not be set up, and it is worth reporting.";
+            if (!_sawProgress) then {
+                _headline = "Taking this screen down";
+                _lead = "Nothing reported its progress to this machine";
+                _claim = "The screen is coming down rather than keeping you here. The mission may well still be setting itself up behind it.";
+            };
+
             [_panel, format [
                 "<t align='center'><img image='\x\alive\addons\main\logo_alive.paa' size='14'/></t>"
-                + "<br /><br /><t align='center' size='1.7' color='#f2a541'>Gave up waiting</t>"
-                + "<br /><br /><t align='center' size='1.05' color='#8fa0ab'>This never reported that it had finished</t>"
-                + "<br /><t align='center' size='1.15' color='#e4ebf0'>%1</t>"
-                + "<br /><br /><t align='center' size='1.05' color='#8fa0ab'>The screen is coming down rather than keeping you here. Parts of the mission may not be set up, and it is worth reporting.</t>"
-                + "<br /><br /><t align='center' size='1.05' color='#8fa0ab'>%2</t>",
+                + "<br /><br /><t align='center' size='1.7' color='#f2a541'>%1</t>"
+                + "<br /><br /><t align='center' size='1.05' color='#8fa0ab'>%2</t>"
+                + "<br /><t align='center' size='1.15' color='#e4ebf0'>%3</t>"
+                + "<br /><br /><t align='center' size='1.05' color='#8fa0ab'>%4</t>"
+                + "<br /><br /><t align='center' size='1.05' color='#8fa0ab'>%5</t>",
+                _headline,
+                _lead,
                 _stuck,
+                _claim,
                 _tookText
             ]] call _show;
 
-            ["ALiVE startup screen gave up after %1 - still waiting on: %2", _tookText, _stuck] call ALiVE_fnc_dump;
+            // The text already begins with the word took, so it is not introduced again here.
+            ["ALiVE startup screen gave up - %1 - still waiting on: %2", _tookText, _stuck] call ALiVE_fnc_dump;
 
             uiSleep 6;
         } else {
