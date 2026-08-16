@@ -109,6 +109,25 @@ switch(_operation) do {
         };
         case "init": {
 
+            // Out of sight first, before anything else in here.
+            //
+            // Everything below waits on the line further down for the server to say the module
+            // exists, and a machine that is not the server cannot answer that itself. On a
+            // dedicated server that wait was measured at 78 seconds, against a briefing map that
+            // is gone long before, and the briefing map is the only time anyone sees these areas.
+            // So the hide was landing while the player watched the loading screen, and by the
+            // time the map could be opened again there was nothing left to notice.
+            //
+            // Nothing here needs the module to be ready. Both settings arrive with it when the
+            // mission loads, and reading them through the module only turns the comma separated
+            // text into the list of marker names.
+            if (hasInterface) then {
+                private _blacklistAreas = [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call ALiVE_fnc_CQB;
+                private _whitelistAreas = [_logic, "whitelist", _logic getVariable ["whitelist", DEFAULT_WHITELIST]] call ALiVE_fnc_CQB;
+                if (_blacklistAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _blacklistAreas};
+                if (_whitelistAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _whitelistAreas};
+            };
+
             if (isServer) then {
                 //if server, and no CQB master logic present yet, then initialise CQB master game logic on server and inform all clients
                 if (isnil QMOD(CQB)) then {
@@ -282,17 +301,8 @@ switch(_operation) do {
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call ALiVE_fnc_CQB;
             [_logic, "whitelist", _logic getVariable ["whitelist", DEFAULT_WHITELIST]] call ALiVE_fnc_CQB;
 
-            // Put the areas out of sight here, as every other module with a blacklist does.
-            // These are the mission maker's own markers and they are meant to be a setting, not
-            // scenery, so they are hidden rather than drawn. This used to wait until the server
-            // had finished building the whole mission, which is far and away the longest thing
-            // ALiVE does, and as that got quicker the moment moved from while you were standing
-            // in the world to while you were still reading the briefing. The markers then went
-            // out under the reader, which looks like a fault and was reported as one.
-            if (hasInterface) then {
-                {_x setMarkerAlpha 0} forEach (_logic getVariable ["blacklist", DEFAULT_BLACKLIST]);
-                {_x setMarkerAlpha 0} forEach (_logic getVariable ["whitelist", DEFAULT_WHITELIST]);
-            };
+            // The areas went out of sight at the top of this case, ahead of the wait for the
+            // server. The two reads above stay because the module uses both settings from here on.
 
             /*
             MODEL - no visual just reference data
