@@ -2491,17 +2491,29 @@ switch(_operation) do {
                 //
                 // The clock is there so that a commander which never finishes cannot hold the
                 // air side back for the whole mission with nothing in the log to say why.
+                //
+                // It was two minutes, which is far less time than a commander on a large mission
+                // honestly takes. Measured on a dedicated server on Cam Lao Nam: the commander was
+                // still working ten minutes in, so the air side gave up on it and carried on alone
+                // on every single run, and the warning below went out every time on a mission where
+                // nothing was wrong. Fifteen minutes now, which is the same span the startup screen
+                // allows before it decides nothing is happening, so the two agree about how long is
+                // too long rather than each picking a number.
+                private _commanderWait = 900;
                 private _waitStart = diag_tickTime;
                 if (_debug) then {
                     ["ATO %1 waiting for OPCOM %2", _logic, [_module,"module"] call ALIVE_fnc_hashGet] call ALiVE_fnc_dump;
                 };
 
                 waituntil {
-                    ([_module, "startupComplete", false] call ALiVE_fnc_hashGet) || {diag_tickTime - _waitStart > 120}
+                    ([_module, "startupComplete", false] call ALiVE_fnc_hashGet) || {diag_tickTime - _waitStart > _commanderWait}
                 };
 
                 if !([_module, "startupComplete", false] call ALiVE_fnc_hashGet) then {
-                    ["ATO %1 - Warning, gave up waiting for AI Commander %2 after 120 seconds", _logic, [_module,"module"] call ALIVE_fnc_hashGet] call ALiVE_fnc_dumpR;
+                    // How long it actually waited, rather than the setting, so the line says what
+                    // happened rather than what was configured.
+                    ["ATO %1 - Warning, gave up waiting for AI Commander %2 after %3 seconds", _logic,
+                        [_module,"module"] call ALIVE_fnc_hashGet, round (diag_tickTime - _waitStart)] call ALiVE_fnc_dumpR;
                 };
 
                 private _moduleSide = [_module,"side"] call ALiVE_fnc_HashGet;
