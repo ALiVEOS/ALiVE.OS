@@ -324,7 +324,12 @@ switch(_operation) do {
 
         case "positionToGridIndex": {
 
-            if (_args isEqualType []) then {
+            // Count as well as type. An empty array is still an array, so a cluster centre
+            // that was never recomputed after a consolidate merge is stored as [] and used
+            // to get past the type test and reach "_position select 1" below (upstream
+            // #812). Every caller reads two values out of what this case returns, so the
+            // check belongs here rather than in each of them.
+            if (_args isEqualType [] && {count _args > 1}) then {
 
                 private _position = _args;
                 private _positionX = _position select 0;
@@ -359,6 +364,16 @@ switch(_operation) do {
                     //["!!!!!POS OUTSIDE GRID: %1", _position] call ALiVE_fnc_dump;
                     _result = [0, 0];
                 };
+
+            } else {
+
+                // No position, so no grid index. [-1, -1] is an index no sector can match -
+                // gridIndexToSector already turns a negative index into its empty sector
+                // result - where the [0, 0] above would file the caller's entry in the
+                // corner of the map as though it belonged there.
+                ["sectorGrid - positionToGridIndex was given %1, which is not a position",_args] call ALiVE_fnc_dump;
+
+                _result = [-1, -1];
 
             };
 
