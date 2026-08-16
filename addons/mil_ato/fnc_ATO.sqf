@@ -442,6 +442,13 @@ private _fnc_isDroneClass = {
     (_v isKindOf "UAV") || {getNumber (configFile >> "CfgVehicles" >> _v >> "isUav") == 1}
 };
 
+// The hangar diagnostics below run inside spawned threads and event handlers, which
+// cannot see a module's private _debug, so it is mirrored into this global. Set true
+// by the "debug" accessor and never cleared: with more than one ATO module on a
+// mission, turning debug on for any of them turns this logging on. Declared here so
+// the gates further down can read it plainly without an isNil test each time.
+if (isNil "ALiVE_ATO_debug") then { ALiVE_ATO_debug = false };
+
 // Safe reposition for recycled / aborted aircraft: stops the airframe detonating
 // when it is teleported back into its hangar slot (the spawn position sits inside
 // the hangar shell). If a sibling already occupies the slot, drop into a clear
@@ -458,7 +465,9 @@ private _fnc_safeReposition = {
     // out of the sky onto the apron. Leaving it where it is costs the commander
     // one parking slot; the alternative costs a player their aircraft.
     if ((crew _veh) findIf {isPlayer _x} > -1) exitWith {
-        diag_log format ["ATO_HANGAR_DBG safeReposition SKIPPED type=%1 -- player aboard", typeOf _veh];
+        if (ALiVE_ATO_debug) then {
+            ["ATO_HANGAR_DBG safeReposition SKIPPED type=%1 -- player aboard", typeOf _veh] call ALiVE_fnc_dump;
+        };
     };
     // mil_ato item6 -- INTERIM detonation fix (2026-07-03). This is the ONLY route that teleports a
     // LIVE airframe onto its hangar startPos (the slot IS the hangar interior by design). The detonation
@@ -472,8 +481,10 @@ private _fnc_safeReposition = {
     // still called below (harmless -- it also opens the hangar doors).
     private _target = _pos;
     private _air = [typeOf _veh, _target, 200, "auto", _veh] call ALiVE_fnc_findAirSpawnPosition;
-    // ATO_HANGAR_DBG (DIAG-STRIP): raw findAirSpawnPosition return -- shows whether it gave [] (no relocation, target stays the in-geometry hangar point) or an actual clear point.
-    diag_log format ["ATO_HANGAR_DBG FASP type=%1 reqPos=%2 count=%3 return=%4", typeOf _veh, _target, count _air, _air];
+    // ATO_HANGAR_DBG: raw findAirSpawnPosition return -- shows whether it gave [] (no relocation, target stays the in-geometry hangar point) or an actual clear point.
+    if (ALiVE_ATO_debug) then {
+        ["ATO_HANGAR_DBG FASP type=%1 reqPos=%2 count=%3 return=%4", typeOf _veh, _target, count _air, _air] call ALiVE_fnc_dump;
+    };
     if (count _air >= 2) then {
         _target = _air select 0;
         if (_dir < 0) then { _dir = _air select 1; };
@@ -516,7 +527,9 @@ private _fnc_safeReposition = {
                 if (_sep < 12) then { _sep = 22 };
                 _target set [0, (_target select 0) + (_sep * _rank) * sin (_pdir + 90)];
                 _target set [1, (_target select 1) + (_sep * _rank) * cos (_pdir + 90)];
-                diag_log format ["ATO_HANGAR_DBG slotRank type=%1 id=%2 rank=%3 of=%4 sep=%5 target=%6", typeOf _veh, _slotID, _rank, count _sharers, _sep, _target];
+                if (ALiVE_ATO_debug) then {
+                    ["ATO_HANGAR_DBG slotRank type=%1 id=%2 rank=%3 of=%4 sep=%5 target=%6", typeOf _veh, _slotID, _rank, count _sharers, _sep, _target] call ALiVE_fnc_dump;
+                };
             };
         };
     };
@@ -525,10 +538,15 @@ private _fnc_safeReposition = {
     _veh setPosATL _target;
     _veh setVectorUp [0,0,1];
     _veh setVelocity [0,0,0];
-    // ATO_HANGAR_DBG (DIAG-STRIP)
-    diag_log format ["ATO_HANGAR_DBG safeReposition type=%1 target=%2 insideBldg=%3", typeOf _veh, _target, (count (nearestObjects [_target, ["House","Building"], 6]) > 0)];
-    _veh setVariable ["ATO_reposT", time];
-    _veh addEventHandler ["Killed", { params ["_u"]; diag_log format ["ATO_HANGAR_DBG KILLED type=%1 at=%2 sinceReposition=%3", typeOf _u, getPosATL _u, (time - (_u getVariable ["ATO_reposT", time]))]; }];
+    // ATO_HANGAR_DBG. The building sweep and the Killed handler exist only to feed
+    // this log, so both stay inside the gate: the sweep is a nearestObjects call per
+    // reposition, and the handler is added afresh every time an airframe comes back,
+    // so on a long mission they stack up on the same aircraft.
+    if (ALiVE_ATO_debug) then {
+        ["ATO_HANGAR_DBG safeReposition type=%1 target=%2 insideBldg=%3", typeOf _veh, _target, (count (nearestObjects [_target, ["House","Building"], 6]) > 0)] call ALiVE_fnc_dump;
+        _veh setVariable ["ATO_reposT", time];
+        _veh addEventHandler ["Killed", { params ["_u"]; ["ATO_HANGAR_DBG KILLED type=%1 at=%2 sinceReposition=%3", typeOf _u, getPosATL _u, (time - (_u getVariable ["ATO_reposT", time]))] call ALiVE_fnc_dump; }];
+    };
     [_veh, _target] spawn {
         params ["_v", "_tgt"];
         sleep 8;
@@ -541,13 +559,17 @@ private _fnc_safeReposition = {
         private _p = getPosATL _v;
         private _z = _p select 2;
         private _clip = _z > 3.5;
-        // ATO_HANGAR_DBG (DIAG-STRIP): state at settle-end BEFORE deciding.
-        diag_log format ["ATO_HANGAR_DBG settleEnd type=%1 dmg=%2 z=%3 insideBldg=%4", typeOf _v, damage _v, _z, _clip];
+        // ATO_HANGAR_DBG: state at settle-end BEFORE deciding.
+        if (ALiVE_ATO_debug) then {
+            ["ATO_HANGAR_DBG settleEnd type=%1 dmg=%2 z=%3 insideBldg=%4", typeOf _v, damage _v, _z, _clip] call ALiVE_fnc_dump;
+        };
         if (_clip) then {
             // Still elevated/clipping -- NEVER re-arm damage (re-arming resolves the overlap into a one-shot
             // kill). Keep it invulnerable + intact + sim-ON, parked so the ATO pool can still reuse it.
             _v allowDamage false;
-            diag_log format ["ATO_HANGAR_DBG settleClip type=%1 at=%2 -- still elevated (z=%3), kept invulnerable (no re-arm)", typeOf _v, _p, _z];
+            if (ALiVE_ATO_debug) then {
+                ["ATO_HANGAR_DBG settleClip type=%1 at=%2 -- still elevated (z=%3), kept invulnerable (no re-arm)", typeOf _v, _p, _z] call ALiVE_fnc_dump;
+            };
         } else {
             // Grounded and clear -- safe to re-arm damage and apply the maintenance repair.
             _v allowDamage true;
@@ -724,6 +746,11 @@ switch(_operation) do {
                 _logic setVariable ["debug", _args];
         };
         ASSERT_TRUE(_args isEqualType true,str _args);
+
+        // Mirror into the global the hangar diagnostics read (see its declaration
+        // above _fnc_safeReposition). This accessor is also the read path, so the
+        // global is established during init whether or not anything sets debug.
+        if (_args) then { ALiVE_ATO_debug = true };
 
         _result = _args;
     };
@@ -3143,8 +3170,13 @@ switch(_operation) do {
                                         // Place a hangar
 
                                         // Place Aircraft
-                                        // ATO_HANGAR_DBG (DIAG-STRIP): initial airframe placement. _posi is the hangar building position, reused later as the profile startPos by _fnc_safeReposition on return. PASSIVE log only -- deliberately does NOT call findAirSpawnPosition here (it opens hangar doors + reserves a 60s anti-race slot, which would perturb the real spawn); the FASP return is captured at reposition instead.
-                                        diag_log format ["ATO_HANGAR_DBG SPAWN class=%1 pos=%2 insideBldg=%3 bldgTypes=%4", _vehicleClass, _posi, (count (nearestObjects [_posi, ["House","Building"], 6]) > 0), (nearestObjects [_posi, ["House","Building"], 6] apply {typeOf _x})];
+                                        // ATO_HANGAR_DBG: initial airframe placement. _posi is the hangar building position, reused later as the profile startPos by _fnc_safeReposition on return. PASSIVE log only -- deliberately does NOT call findAirSpawnPosition here (it opens hangar doors + reserves a 60s anti-race slot, which would perturb the real spawn); the FASP return is captured at reposition instead.
+                                        // Gated because building the message alone costs two nearestObjects sweeps
+                                        // for every airframe placed, during the slowest stretch of module startup.
+                                        if (ALiVE_ATO_debug) then {
+                                            private _bldgs = nearestObjects [_posi, ["House","Building"], 6];
+                                            ["ATO_HANGAR_DBG SPAWN class=%1 pos=%2 insideBldg=%3 bldgTypes=%4", _vehicleClass, _posi, (count _bldgs > 0), (_bldgs apply {typeOf _x})] call ALiVE_fnc_dump;
+                                        };
                                         private _tmp = [_vehicleClass,_side,_faction,_posi,_dire,false,_faction] call ALIVE_fnc_createProfileVehicle;
                                         // _tmp call ALIVE_fnc_inspectHash;
                                         _aprofiles pushback ([_tmp, "profileID"] call ALIVE_fnc_hashGet);
@@ -6540,8 +6572,10 @@ switch(_operation) do {
                                                 _vehicleObj allowDamage false;
                                             };
                                             _vehicleObj setPos _taxiPosition;
-                                            // ATO_HANGAR_DBG (DIAG-STRIP): outbound await-pilot placement decision - this path had no diag before
-                                            diag_log format ["ATO_HANGAR_DBG OUTBOUND type=%1 reqPos=%2 finalPos=%3 occupiedOffset=%4", _vehicleClass, _requestedPos, _taxiPosition, _occupiedOffset];
+                                            // ATO_HANGAR_DBG: outbound await-pilot placement decision - this path had no diag before
+                                            if (ALiVE_ATO_debug) then {
+                                                ["ATO_HANGAR_DBG OUTBOUND type=%1 reqPos=%2 finalPos=%3 occupiedOffset=%4", _vehicleClass, _requestedPos, _taxiPosition, _occupiedOffset] call ALiVE_fnc_dump;
+                                            };
                                             if (_occupiedOffset) then {
                                                 _vehicleObj setVelocity [0,0,0];
                                                 [_vehicleObj] spawn {
@@ -6553,8 +6587,9 @@ switch(_operation) do {
                                                     // clipping and re-arming would resolve the overlap into a one-shot kill.
                                                     if (((getPosATL _v) select 2) > 3.5) then {
                                                         _v allowDamage false;
-                                                        // ATO_HANGAR_DBG (DIAG-STRIP)
-                                                        diag_log format ["ATO_HANGAR_DBG OUTBOUND settleClip type=%1 at=%2 -- kept invulnerable (no re-arm)", typeOf _v, getPosATL _v];
+                                                        if (ALiVE_ATO_debug) then {
+                                                            ["ATO_HANGAR_DBG OUTBOUND settleClip type=%1 at=%2 -- kept invulnerable (no re-arm)", typeOf _v, getPosATL _v] call ALiVE_fnc_dump;
+                                                        };
                                                     } else {
                                                         _v allowDamage true;
                                                     };
@@ -6676,8 +6711,10 @@ switch(_operation) do {
                                     _taxiPosition = [(_requestedPos select 0) + (200 * _launchTry) * sin (_taxiDir + 90), (_requestedPos select 1) + (200 * _launchTry) * cos (_taxiDir + 90), _requestedPos select 2];
                                     _launchTry = _launchTry + 1;
                                 };
-                                // ATO_HANGAR_DBG (DIAG-STRIP): outbound flying-start placement decision
-                                diag_log format ["ATO_HANGAR_DBG OUTBOUND flyStart type=%1 reqPos=%2 finalPos=%3 occupiedOffset=%4", _vehicleClass, _requestedPos, _taxiPosition, _occupiedOffset];
+                                // ATO_HANGAR_DBG: outbound flying-start placement decision
+                                if (ALiVE_ATO_debug) then {
+                                    ["ATO_HANGAR_DBG OUTBOUND flyStart type=%1 reqPos=%2 finalPos=%3 occupiedOffset=%4", _vehicleClass, _requestedPos, _taxiPosition, _occupiedOffset] call ALiVE_fnc_dump;
+                                };
 
                                 // Set profile information
                                 [_profile,"engineOn",true] call ALiVE_fnc_profileVehicle;
