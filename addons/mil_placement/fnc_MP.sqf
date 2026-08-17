@@ -1132,10 +1132,24 @@ switch(_operation) do {
                         };
                     };
                     _compResult = [];
+                    private _hqTierWon = -1;
                     {
                         if (count _compResult > 0) exitWith {};
                         _compResult = [_pos, _x, _envelope, "fieldhq"] call ALiVE_fnc_findCompositionSpawnPosition;
+                        if (count _compResult > 0) then { _hqTierWon = _forEachIndex };
                     } forEach _hqTiers;
+                    // Which tier of the widening search actually paid off. Every tier
+                    // after the first only runs because the one before it found
+                    // nothing, and it runs a bigger budget than the one that just
+                    // failed, so whether the wider tiers ever rescue a placement is
+                    // what decides if the retry earns its price.
+                    if (isNil "ALiVE_hqTierWins") then { ALiVE_hqTierWins = [0,0,0,0] };
+                    if (_hqTierWon < 0) then {
+                        ALiVE_hqTierWins set [3, (ALiVE_hqTierWins select 3) + 1];
+                    } else {
+                        private _s = _hqTierWon min 2;
+                        ALiVE_hqTierWins set [_s, (ALiVE_hqTierWins select _s) + 1];
+                    };
 
                     if (count _compResult > 0) then {
                         _compResult params ["_safePos", "_safeDir"];
@@ -1248,10 +1262,23 @@ switch(_operation) do {
                             private _campTiers = [500];
                             if (_campCap > 500) then { _campTiers pushBack _campCap };
                             _compResult = [];
+                            private _campTierWon = -1;
                             {
                                 if (count _compResult > 0) exitWith {};
                                 _compResult = [_pos, _x, _envelope, "field"] call ALiVE_fnc_findCompositionSpawnPosition;
+                                if (count _compResult > 0) then { _campTierWon = _forEachIndex };
                             } forEach _campTiers;
+                            // Same question as the field HQ tiers above. This one is
+                            // the expensive case: a camp that finds nothing at 500m
+                            // spends 667 tries doing it, then the widened search
+                            // spends another 1067 on the same answer.
+                            if (isNil "ALiVE_campTierWins") then { ALiVE_campTierWins = [0,0,0] };
+                            if (_campTierWon < 0) then {
+                                ALiVE_campTierWins set [2, (ALiVE_campTierWins select 2) + 1];
+                            } else {
+                                private _s = _campTierWon min 1;
+                                ALiVE_campTierWins set [_s, (ALiVE_campTierWins select _s) + 1];
+                            };
 
                             if (count _compResult > 0) then {
                                 _compResult params ["_safePos", "_safeDir"];

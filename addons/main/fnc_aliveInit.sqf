@@ -705,12 +705,24 @@ if (isServer) then {
     };
     
     
+    // Everything from here to the end of the placement diagnostics is for working ON the
+    // placement searches, not for running a mission with them. Eleven lines at every
+    // mission start is a lot to ask of somebody who did not want them, so they stay quiet
+    // unless asked for: set ALiVE_SEARCH_STARTUP_DIAG to true on the server before the
+    // mission loads. The counters behind them run either way, because they come to a few
+    // hundred array writes across a whole startup and gating those would cost more in
+    // complication than it saves in work.
+    //
+    // Same shape as the mil_placement and mil_cqb stage marks, so there is one habit to
+    // learn rather than three.
+    private _searchDiag = !isNil "ALiVE_SEARCH_STARTUP_DIAG" && {ALiVE_SEARCH_STARTUP_DIAG};
+
     // How much the airfield survey was asked for while everything was being placed, and
     // how much of that was answered without going back out to the map. One line, written
     // once, at the moment placement is known to be finished. The survey is the widest
     // sweep in the mod and reads the name of every object it finds, so whether callers
     // repeat themselves decides whether caching it is worth anything at all.
-    if (!isNil "ALiVE_airfieldGeomCalls") then {
+    if (_searchDiag && {!isNil "ALiVE_airfieldGeomCalls"}) then {
         ["ALiVE airfield survey: %1 request(s) during startup, %2 answered from the last identical one, %3 full sweep(s)",
             ALiVE_airfieldGeomCalls,
             ALiVE_airfieldGeomHits,
@@ -721,7 +733,7 @@ if (isServer) then {
     // the only way to judge a change to it is the total startup time, which moves by
     // about forty seconds between identical runs and so cannot see anything smaller.
     // This says outright whether the code is worth optimising any further.
-    if (!isNil "ALiVE_compSpawnProfile") then {
+    if (_searchDiag && {!isNil "ALiVE_compSpawnProfile"}) then {
         ["ALiVE composition search: %1 search(es) during startup, %2s in total",
             ALiVE_compSpawnProfile select 0,
             round ((ALiVE_compSpawnProfile select 1) * 10) / 10] call ALiVE_fnc_dump;
@@ -736,6 +748,108 @@ if (isServer) then {
             ALiVE_compSpawnProfile select 7,
             ALiVE_compSpawnProfile select 8,
             ALiVE_compSpawnProfile select 9] call ALiVE_fnc_dump;
+        // What the fruitless searches cost on their own. The total above cannot show
+        // this, and the two populations behave nothing alike: a search that finds
+        // nothing runs every attempt it is allowed, one that succeeds stops at the
+        // first position that passes. Until these are separated, the price of failure
+        // is a guess.
+        if (count ALiVE_compSpawnProfile > 17) then {
+            private _failN  = ALiVE_compSpawnProfile select 9;
+            private _failT  = ALiVE_compSpawnProfile select 10;
+            private _failC  = ALiVE_compSpawnProfile select 11;
+            private _failPre = ALiVE_compSpawnProfile select 14;
+            private _okC    = ALiVE_compSpawnProfile select 12;
+            private _okT    = ALiVE_compSpawnProfile select 13;
+            private _okPre  = ALiVE_compSpawnProfile select 15;
+            // The searches that went through the sampling loop and found somewhere,
+            // counted from the buckets rather than by subtraction so it is the same
+            // population the time was measured over. The centre bucket is left out on
+            // purpose: those never entered the loop.
+            private _okN = 0;
+            { _okN = _okN + (ALiVE_compSpawnProfile select _x) } forEach [3,4,5,6,7,8];
+            ["ALiVE composition search: %1 found nothing, costing %2s and turning away %3 candidate(s); %4 found somewhere, costing %5s and turning away %6",
+                _failN,
+                round (_failT * 10) / 10,
+                _failC,
+                _okN,
+                round (_okT * 10) / 10,
+                _okC] call ALiVE_fnc_dump;
+            // The part of those costs that no change to the sampling could recover.
+            // Every search pays for the airfield survey and the centre check before it
+            // tries a single candidate, and a widened retry pays for the survey again
+            // because the cache is keyed on radius. Quoting the totals above as though
+            // they were all available would overstate the prize by this much.
+            ["ALiVE composition search: of that, %1s went before sampling on the fruitless ones and %2s on the ones that found somewhere, which no change to the sampling can recover",
+                round (_failPre * 10) / 10,
+                round (_okPre * 10) / 10] call ALiVE_fnc_dump;
+            // Per candidate, which is the figure to trust: the seconds above are time
+            // spanned rather than consumed, because modules place in parallel and a
+            // descheduled script keeps counting. This one divides that out.
+            ["ALiVE composition search: %1ms per candidate while sampling on the fruitless searches, %2ms on the ones that found somewhere",
+                if ((_failC - _failN) > 0) then { round (((_failT - _failPre) / (_failC - _failN)) * 10000) / 10 } else { 0 },
+                if (_okC > 0) then { round (((_okT - _okPre) / _okC) * 10000) / 10 } else { 0 }] call ALiVE_fnc_dump;
+            // Everything the two populations above do not cover, named piece by piece so
+            // the figures can be checked rather than trusted. The three groups have to
+            // account for the remainder exactly; the last number is the arithmetic saying
+            // so, and anything other than zero means a search is returning without being
+            // counted and every average above is off.
+            private _centreN = ALiVE_compSpawnProfile select 2;
+            private _earlyN  = ALiVE_compSpawnProfile select 16;
+            private _roadN   = ALiVE_compSpawnProfile select 17;
+            ["ALiVE composition search: %1 of %2 outside both - %3 at the centre position, %4 ruled out before trying a candidate, %5 road-snapping; %6 unaccounted for, which must be 0",
+                (ALiVE_compSpawnProfile select 0) - _failN - _okN,
+                ALiVE_compSpawnProfile select 0,
+                _centreN,
+                _earlyN,
+                _roadN,
+                (ALiVE_compSpawnProfile select 0) - _failN - _okN - _centreN - _earlyN - _roadN] call ALiVE_fnc_dump;
+            // The seconds do not close the same way and are not meant to. Slots 10 and 13
+            // only cover searches that reached the sampling loop, so the difference from
+            // the total is what those three groups cost plus the per-failure reason
+            // breakdown, which is written after the clock is read. Expected to be small
+            // and positive; negative or large means the split is wrong.
+            ["ALiVE composition search: %1s of the total sits outside both - the centre hits, the early exits, the road-snapping searches and the per-failure reporting",
+                round (((ALiVE_compSpawnProfile select 1) - _failT - _okT) * 10) / 10] call ALiVE_fnc_dump;
+        };
+    };
+
+    // Which rule turned candidates away, over every search rather than only the failed
+    // wide ones the per-search line reports. The checks stop at the first rule that says
+    // no, so each count is only what the rules ahead of it let through - read them as
+    // "of the candidates that got this far", not as independent shares. What they price
+    // is the ORDER: the obstacle check sweeps every object nearby and measures each
+    // one's bulk, while water, slope and surface behind it are single engine reads, so
+    // every candidate those would have refused pays for the object sweep first. Putting
+    // the cheap rules first cannot change which positions pass.
+    if (_searchDiag && {!isNil "ALiVE_compSpawnRejectTotals"}) then {
+        ["ALiVE composition search: candidates turned away per rule %1 - in order: bounds, runway, helipad, road, obstacle, water-centre, water-edge, slope-normal, slope-inner, slope-outer, surface, rock",
+            ALiVE_compSpawnRejectTotals] call ALiVE_fnc_dump;
+    };
+
+    // Whether widening the search after a failure ever rescues a placement. Each wider
+    // tier only runs because the one before it came back empty, and it runs a bigger
+    // attempt budget than the one that just failed - so if the wider tiers almost never
+    // win, the retry is paying full price for an answer already given.
+    //
+    // Military placement only. Custom military placement runs its own ladders through the
+    // same search and is not counted here, so on a mission using it the searches that
+    // found nothing will come to more than these two lines can explain.
+    //
+    // A ladder that loses outright costs one fruitless search per tier it had, and the
+    // number of tiers is not printed here - the per-cluster warnings in mil_placement
+    // print "tried N tiers" alongside the list, and that is what closes the books.
+    if (_searchDiag && {!isNil "ALiVE_campTierWins"}) then {
+        ["ALiVE camp search tiers (military placement): %1 placed at 500m, %2 placed only after widening, %3 not placed at all",
+            ALiVE_campTierWins select 0,
+            ALiVE_campTierWins select 1,
+            ALiVE_campTierWins select 2] call ALiVE_fnc_dump;
+    };
+    if (_searchDiag && {!isNil "ALiVE_hqTierWins"}) then {
+        ["ALiVE field HQ search tiers (military placement): %1 placed at cluster size, %2 after one widening, %3 after two, %4 not placed at all",
+            ALiVE_hqTierWins select 0,
+            ALiVE_hqTierWins select 1,
+            ALiVE_hqTierWins select 2,
+            ALiVE_hqTierWins select 3] call ALiVE_fnc_dump;
     };
 
     //This is the last module init to be run, therefore indicates that init of the defined modules above has passed on server

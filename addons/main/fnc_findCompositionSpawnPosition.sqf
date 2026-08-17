@@ -144,7 +144,68 @@ if (_runwayClearanceMul <= 0) then { _runwayClearanceMul = 1.0 };
 // handful, the budget can come down a long way and every failed search gets
 // cheaper. If they are spread out to the end, cutting it would quietly cost
 // placements, and the budget stays.
-if (isNil "ALiVE_compSpawnProfile") then { ALiVE_compSpawnProfile = [0,0,0,0,0,0,0,0,0,0] };
+//
+// Slots 0 and 1 are the count and the total time, 2 to 8 say where the winner was
+// found, 9 counts the searches that found nothing. Slots 10 to 12 separate what the
+// fruitless searches cost from what the successful ones cost, which the total cannot
+// do and which matters because the two are not alike: a search that fails always runs
+// every attempt it is allowed, while one that succeeds stops at the first position
+// that passes. Sizing the two separately is the difference between guessing at the
+// price of failure and knowing it.
+//   10 - seconds spent in searches that found nothing
+//   11 - candidates those searches turned away
+//   12 - candidates turned away by the searches that did find somewhere
+//   13 - seconds spent in those successful searches
+//   14 - of slot 10, the seconds spent before sampling had started
+//   15 - of slot 13, the same
+//   16 - searches that returned before trying a single candidate: a centre position
+//        too short to use, or a search area lying wholly inside an airfield zone
+//   17 - road-snapping searches, which never enter the sampling loop at all
+// Slots 16 and 17 are there so the count closes: slot 0 has to come to slot 2 plus the
+// sum of buckets 3 to 8, plus slot 9, plus slots 16 and 17, with nothing left over.
+// Without them a search that correctly gave up early cannot be told apart from one that
+// returned without being counted, and the second of those would put every average out.
+// Slots 14 and 15 are the ones that stop this being misleading. Every search pays for
+// the airfield survey and the centre check before it samples a single candidate, and no
+// change to how candidates are tried can give any of that back. Without the split, the
+// cost of the fruitless searches reads as though all of it were recoverable.
+//
+// Both populations are measured at the same place and in the same unit, so the two
+// costs per candidate can be set against each other. Candidates are counted from the
+// reject tally rather than taken from the attempt budget: the centre check is a full
+// validation too, which is why a search allowed 667 tries reports 668 rejections, and
+// counting them keeps the figure right whatever the loop does later. The reporting takes
+// that centre check back off the fruitless divisor, because its cost sits ahead of the
+// split and would otherwise be divided into time that never contained it.
+//
+// Read the seconds as time spanned rather than time consumed - nine modules place at
+// once during startup and a descheduled script's clock keeps running. The figure that
+// survives that is the cost per candidate, which is why it is worth the counting.
+//
+// The length check rebuilds an array left behind by an older build: the function is
+// reloaded from source under -filePatching but the global it already wrote is not.
+if (isNil "ALiVE_compSpawnProfile" || {count ALiVE_compSpawnProfile < 18}) then {
+    ALiVE_compSpawnProfile = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+};
+
+// Which rule did the turning away, added up over every search that samples candidates,
+// rather than only the failed wide ones the per-search line further down reports. The
+// road-snapping searches are outside it: they return before this is folded in, and their
+// own road-slope refusals are counted nowhere. That is right for the question being
+// asked, because roadblock mode skips the envelope-wide obstacle check and so turns
+// candidates away on quite different terms from every other mode.
+// The checks stop at the first rule that says no, so each count is only what the rules
+// ahead of it let through - they are conditional, not independent shares, and have to be
+// read that way.
+// Worth having because the order is not free: the obstacle check sweeps every object
+// nearby and measures the bulk of each one, while the water, slope and surface checks
+// behind it are single engine reads. Every candidate those cheap rules would have
+// refused pays for the object sweep first. The verdict is an AND of rules that do not
+// depend on each other, so putting the cheap ones first cannot change which positions
+// pass, only which rule gets the credit - and these totals say what that is worth.
+if (isNil "ALiVE_compSpawnRejectTotals" || {count ALiVE_compSpawnRejectTotals < 12}) then {
+    ALiVE_compSpawnRejectTotals = [0,0,0,0,0,0,0,0,0,0,0,0];
+};
 private _fnc_profFound = {
     params ["_attempt"];
     private _slot = switch (true) do {
@@ -159,12 +220,22 @@ private _fnc_profFound = {
     ALiVE_compSpawnProfile set [_slot, (ALiVE_compSpawnProfile select _slot) + 1];
 };
 private _profT0 = diag_tickTime;
+// Seconds spent before sampling started. The -1 is a tripwire rather than a value that
+// ever gets reported: every search reaching the accounting block has passed through the
+// unconditional assignment at the top of the sampling stage, and every search that has
+// not has already returned. It is here so that adding a way out between that assignment
+// and the accounting block shows up as a negative total instead of a plausible wrong one.
+private _profPre = -1;
 private _fnc_profDone = {
     ALiVE_compSpawnProfile set [0, (ALiVE_compSpawnProfile select 0) + 1];
     ALiVE_compSpawnProfile set [1, (ALiVE_compSpawnProfile select 1) + (diag_tickTime - _profT0)];
 };
 
-if (count _centerPos < 2) exitWith { call _fnc_profDone; [] };
+if (count _centerPos < 2) exitWith {
+    call _fnc_profDone;
+    ALiVE_compSpawnProfile set [16, (ALiVE_compSpawnProfile select 16) + 1];
+    []
+};
 if (count _centerPos < 3) then { _centerPos = _centerPos + [0] };
 
 _mode = toLower _mode;
@@ -715,6 +786,10 @@ if (_mode != "roadblock" && _excludeRunways) then {
 
 if (_swallowed) exitWith {
     call _fnc_profDone;
+    // Counted apart from the fruitless searches below. It found nothing, but it found
+    // nothing without trying anything, so folding it in with the ones that ground
+    // through a whole budget would flatter the cost per candidate.
+    ALiVE_compSpawnProfile set [16, (ALiVE_compSpawnProfile select 16) + 1];
     // Reported on the same terms as the failure it replaces, so a search that gives
     // up here is as visible in the log as one that ground through the whole loop to
     // arrive at the same answer.
@@ -738,10 +813,14 @@ if (_mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear}) exit
 
 // Roadblock mode: handle separately (always road-snap).
 if (_mode == "roadblock") exitWith {
-    call _fnc_profDone;
+    // Counted here, timed at each of the three ways out below. The road search and the
+    // anchor validation ARE the cost of a roadblock search, and stopping the clock ahead
+    // of all of it put that cost into no total at all.
+    ALiVE_compSpawnProfile set [17, (ALiVE_compSpawnProfile select 17) + 1];
     private _candidates = [_centerPos, _radius] call _findRoadCandidates;
     if (count _candidates == 0) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: no road in radius (roadblock mode)"] call ALiVE_fnc_dump };
+        call _fnc_profDone;
         []
     };
 
@@ -807,10 +886,12 @@ if (_mode == "roadblock") exitWith {
 
     if (count _accepted == 0) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: no clear roadblock anchor across %1 road pieces (slope / clearance)", count _candidates] call ALiVE_fnc_dump };
+        call _fnc_profDone;
         []
     };
     _accepted params ["_fPos", "_fDir"];
     if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _fPos] call ALiVE_fnc_dump };
+    call _fnc_profDone;
     [_fPos, _fDir]
 };
 
@@ -825,6 +906,12 @@ if (_mode == "roadblock") exitWith {
 // matters most when _radius is large (search-cap-expanded scenarios)
 // where the outer annulus is where unobstructed terrain typically lives.
 // ------------------------------------------------------------------------
+// Sampling starts here. Deliberately no `private` - that would declare a second
+// variable and leave the reporting below reading the -1 it started with. Everything
+// ahead of this read is the airfield survey and the centre check, which every search
+// pays for and no change to the sampling could recover.
+_profPre = diag_tickTime - _profT0;
+
 private _result = [];
 for "_i" from 1 to _maxAttempts do {
     private _angle = random 360;
@@ -838,7 +925,33 @@ for "_i" from 1 to _maxAttempts do {
     };
 };
 
-if (count _result == 0) then { ALiVE_compSpawnProfile set [9, (ALiVE_compSpawnProfile select 9) + 1] };
+// Read the clock once and use the same value for both branches, so a search cannot end
+// up with its time and its outcome measured a moment apart. Taken here rather than at
+// the bottom of the file so the reason breakdown just below, which only a failed search
+// pays for, is not billed as search cost.
+private _profElapsed = diag_tickTime - _profT0;
+// One pass over the tally does both jobs: the exact number of candidates this search
+// turned away, and the running per-rule total across the whole startup.
+private _turnedAway = 0;
+{
+    _turnedAway = _turnedAway + _x;
+    ALiVE_compSpawnRejectTotals set [_forEachIndex, (ALiVE_compSpawnRejectTotals select _forEachIndex) + _x];
+} forEach _rejectCounts;
+
+// Count, seconds and candidates all move together out of one test, so no two of them
+// can end up describing different sets of searches.
+if (count _result == 0) then {
+    ALiVE_compSpawnProfile set [9,  (ALiVE_compSpawnProfile select 9) + 1];
+    ALiVE_compSpawnProfile set [10, (ALiVE_compSpawnProfile select 10) + _profElapsed];
+    ALiVE_compSpawnProfile set [11, (ALiVE_compSpawnProfile select 11) + _turnedAway];
+    ALiVE_compSpawnProfile set [14, (ALiVE_compSpawnProfile select 14) + _profPre];
+} else {
+    // The centre hit never reaches here, which is right: it is counted in its own
+    // bucket and never entered the sampling loop at all.
+    ALiVE_compSpawnProfile set [13, (ALiVE_compSpawnProfile select 13) + _profElapsed];
+    ALiVE_compSpawnProfile set [12, (ALiVE_compSpawnProfile select 12) + _turnedAway];
+    ALiVE_compSpawnProfile set [15, (ALiVE_compSpawnProfile select 15) + _profPre];
+};
 
 if (count _result == 0 && _debug) then {
     ["[ALiVE CompSpawn] EXIT FAIL: %1 attempts exhausted (envelope=%2 mode=%3 radius=%4 centre=%5)", _maxAttempts, _envelope, _mode, _radius, _centerPos] call ALiVE_fnc_dump;
