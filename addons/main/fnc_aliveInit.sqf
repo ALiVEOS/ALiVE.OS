@@ -717,6 +717,16 @@ if (isServer) then {
             ALiVE_airfieldGeomCalls - ALiVE_airfieldGeomHits] call ALiVE_fnc_dump;
     };
 
+    // What the composition search actually costs across a whole startup. Without this
+    // the only way to judge a change to it is the total startup time, which moves by
+    // about forty seconds between identical runs and so cannot see anything smaller.
+    // This says outright whether the code is worth optimising any further.
+    if (!isNil "ALiVE_compSpawnProfile") then {
+        ["ALiVE composition search: %1 search(es) during startup, %2s in total",
+            ALiVE_compSpawnProfile select 0,
+            round ((ALiVE_compSpawnProfile select 1) * 10) / 10] call ALiVE_fnc_dump;
+    };
+
     //This is the last module init to be run, therefore indicates that init of the defined modules above has passed on server
     MOD(REQUIRE_INITIALISED) = true;
     Publicvariable QMOD(REQUIRE_INITIALISED);

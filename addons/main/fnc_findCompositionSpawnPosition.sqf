@@ -122,7 +122,26 @@ params [
 // case for the relaxed mode.
 if (_runwayClearanceMul <= 0) then { _runwayClearanceMul = 1.0 };
 
-if (count _centerPos < 2) exitWith { [] };
+// How long this validator actually costs, in total, across a whole startup.
+//
+// We have been optimising this function for hours without knowing what share of
+// startup it accounts for. The gate figure cannot answer that: it varies by about
+// forty seconds between identical runs, which is larger than any change measured
+// against it, so single-run comparisons there measure noise. A running total does
+// not care about variance, and one run answers whether this code is worth any more
+// effort at all.
+//
+// Two clock reads per CALL, never inside the candidate loop. Inline timing in this
+// family is off the table: six operations per iteration once took placement from
+// fifty seconds to never finishing.
+if (isNil "ALiVE_compSpawnProfile") then { ALiVE_compSpawnProfile = [0,0,0] };
+private _profT0 = diag_tickTime;
+private _fnc_profDone = {
+    ALiVE_compSpawnProfile set [0, (ALiVE_compSpawnProfile select 0) + 1];
+    ALiVE_compSpawnProfile set [1, (ALiVE_compSpawnProfile select 1) + (diag_tickTime - _profT0)];
+};
+
+if (count _centerPos < 2) exitWith { call _fnc_profDone; [] };
 if (count _centerPos < 3) then { _centerPos = _centerPos + [0] };
 
 _mode = toLower _mode;
@@ -672,6 +691,7 @@ if (_mode != "roadblock" && _excludeRunways) then {
 };
 
 if (_swallowed) exitWith {
+    call _fnc_profDone;
     // Reported on the same terms as the failure it replaces, so a search that gives
     // up here is as visible in the log as one that ground through the whole loop to
     // arrive at the same answer.
@@ -686,6 +706,7 @@ if (_swallowed) exitWith {
 // Stage 1: try the centre position itself.
 // ------------------------------------------------------------------------
 if (_mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear}) exitWith {
+    call _fnc_profDone;
     private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
     if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _centerPos] call ALiVE_fnc_dump };
     [_centerPos, _dir]
@@ -693,6 +714,7 @@ if (_mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear}) exit
 
 // Roadblock mode: handle separately (always road-snap).
 if (_mode == "roadblock") exitWith {
+    call _fnc_profDone;
     private _candidates = [_centerPos, _radius] call _findRoadCandidates;
     if (count _candidates == 0) exitWith {
         if (_debug) then { ["[ALiVE CompSpawn] EXIT FAIL: no road in radius (roadblock mode)"] call ALiVE_fnc_dump };
@@ -820,4 +842,5 @@ if (count _result == 0 && {_radius >= 50 || _callerDebug || _debug}) then {
         _centerPos, _mode, _radius, _envelope, _maxAttempts, _reasons] call ALiVE_fnc_dump;
 };
 
+call _fnc_profDone;
 _result
