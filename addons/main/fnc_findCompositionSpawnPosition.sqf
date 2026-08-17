@@ -134,7 +134,30 @@ if (_runwayClearanceMul <= 0) then { _runwayClearanceMul = 1.0 };
 // Two clock reads per CALL, never inside the candidate loop. Inline timing in this
 // family is off the table: six operations per iteration once took placement from
 // fifty seconds to never finishing.
-if (isNil "ALiVE_compSpawnProfile") then { ALiVE_compSpawnProfile = [0,0,0] };
+// 0 calls, 1 total seconds, then where the winning position was found:
+// 2 at the centre (free), 3 within 10 tries, 4 within 50, 5 within 100,
+// 6 within 200, 7 within 400, 8 beyond 400, 9 never found.
+//
+// This exists to settle one question with evidence instead of a guess: the search
+// is allowed 667 tries at a 500m radius and 1067 at 800m, and nobody knows whether
+// that budget is doing anything. If the winners nearly all turn up in the first
+// handful, the budget can come down a long way and every failed search gets
+// cheaper. If they are spread out to the end, cutting it would quietly cost
+// placements, and the budget stays.
+if (isNil "ALiVE_compSpawnProfile") then { ALiVE_compSpawnProfile = [0,0,0,0,0,0,0,0,0,0] };
+private _fnc_profFound = {
+    params ["_attempt"];
+    private _slot = switch (true) do {
+        case (_attempt <= 0):   {2};
+        case (_attempt <= 10):  {3};
+        case (_attempt <= 50):  {4};
+        case (_attempt <= 100): {5};
+        case (_attempt <= 200): {6};
+        case (_attempt <= 400): {7};
+        default                 {8};
+    };
+    ALiVE_compSpawnProfile set [_slot, (ALiVE_compSpawnProfile select _slot) + 1];
+};
 private _profT0 = diag_tickTime;
 private _fnc_profDone = {
     ALiVE_compSpawnProfile set [0, (ALiVE_compSpawnProfile select 0) + 1];
@@ -707,6 +730,7 @@ if (_swallowed) exitWith {
 // ------------------------------------------------------------------------
 if (_mode != "roadblock" && {[_centerPos, _envelope] call _candidateClear}) exitWith {
     call _fnc_profDone;
+    [0] call _fnc_profFound;
     private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
     if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _centerPos] call ALiVE_fnc_dump };
     [_centerPos, _dir]
@@ -807,11 +831,14 @@ for "_i" from 1 to _maxAttempts do {
     private _dist  = sqrt (random 1) * _radius;
     private _candidate = _centerPos getPos [_dist, _angle];
     if ([_candidate, _envelope] call _candidateClear) exitWith {
+        [_i] call _fnc_profFound;
         private _dir = if (_preferredDir >= 0) then { _preferredDir } else { random 360 };
         _result = [_candidate, _dir];
         if (_debug) then { ["[ALiVE CompSpawn] placed (mode %1) at %2", _mode, _candidate] call ALiVE_fnc_dump };
     };
 };
+
+if (count _result == 0) then { ALiVE_compSpawnProfile set [9, (ALiVE_compSpawnProfile select 9) + 1] };
 
 if (count _result == 0 && _debug) then {
     ["[ALiVE CompSpawn] EXIT FAIL: %1 attempts exhausted (envelope=%2 mode=%3 radius=%4 centre=%5)", _maxAttempts, _envelope, _mode, _radius, _centerPos] call ALiVE_fnc_dump;

@@ -725,6 +725,17 @@ if (isServer) then {
         ["ALiVE composition search: %1 search(es) during startup, %2s in total",
             ALiVE_compSpawnProfile select 0,
             round ((ALiVE_compSpawnProfile select 1) * 10) / 10] call ALiVE_fnc_dump;
+        // Where the winning position was found, which is the only thing that can say
+        // whether the attempt budget of 667 to 1067 tries is earning its keep.
+        ["ALiVE composition search: found at centre %1, within 10 tries %2, 50 %3, 100 %4, 200 %5, 400 %6, beyond 400 %7, never %8",
+            ALiVE_compSpawnProfile select 2,
+            ALiVE_compSpawnProfile select 3,
+            ALiVE_compSpawnProfile select 4,
+            ALiVE_compSpawnProfile select 5,
+            ALiVE_compSpawnProfile select 6,
+            ALiVE_compSpawnProfile select 7,
+            ALiVE_compSpawnProfile select 8,
+            ALiVE_compSpawnProfile select 9] call ALiVE_fnc_dump;
     };
 
     //This is the last module init to be run, therefore indicates that init of the defined modules above has passed on server
