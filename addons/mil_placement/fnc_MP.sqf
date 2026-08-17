@@ -511,6 +511,37 @@ switch(_operation) do {
             _logic setVariable ["startupComplete", false];
             TRACE_1("After module init",_logic);
 
+            // DIAG-STRIP (load time): this module is the largest single cost in a
+            // dedicated startup and nobody has ever seen where inside it the time goes.
+            // The composition search, which we spent a night optimising, turned out to
+            // be 62s of a 490s startup, so the rest of this function holds the bulk of
+            // it. These marks bracket each stage of init so the next change is aimed at
+            // whatever is actually big.
+            //
+            // One line per stage per module instance, a dozen or so in total, and only
+            // during startup. Never inside a loop: inline timing in the placement path
+            // once took this module from fifty seconds to never finishing.
+            //
+            // Set ALiVE_MP_STARTUP_DIAG to true on the server before the mission starts
+            // to get these lines. Off by default, so a normal run pays nothing, the same
+            // way the CQB stage marks work.
+            private _mpDiagT0 = diag_tickTime;
+            private _mpDiagLast = _mpDiagT0;
+            private _fnc_mpDiagMark = {
+                params ["_stage", ["_detail", ""]];
+                private _now = diag_tickTime;
+                // The clock advances whether or not the line is written, so switching
+                // this on part way through still gives truthful stage times.
+                if (!isNil "ALiVE_MP_STARTUP_DIAG" && {ALiVE_MP_STARTUP_DIAG}) then {
+                    ["DIAG-STRIP MP DIAG - %1: %2s for this stage, %3s since init began%4",
+                        _stage,
+                        (round ((_now - _mpDiagLast) * 100)) / 100,
+                        (round ((_now - _mpDiagT0) * 100)) / 100,
+                        if (_detail == "") then {""} else {"   " + _detail}] call ALiVE_fnc_dump;
+                };
+                _mpDiagLast = _now;
+            };
+
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
 
@@ -585,6 +616,7 @@ switch(_operation) do {
             };
 
             waitUntil {!isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
+            ["waited for profile system, clusters and group config"] call _fnc_mpDiagMark;
 
             //Only spawn warning on version mismatch since map index changes were reduced
             //uncomment //_error = true; below for exit
@@ -687,7 +719,14 @@ switch(_operation) do {
                             // camps; small/sparse sectors still cap at 0-1.
                             {
                                 private _candidatePos = _x;
-                                private _tooClose = ({([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet) distance _candidatePos < _randomCampsMil} count _clustersX > 0);
+                                // findIf rather than count, because count has no reason to stop
+                                // and carries on testing every remaining cluster after it has
+                                // already found one that is too close. This runs for every
+                                // flat-empty position in every sector on the map, against a list
+                                // that GROWS as camps are added to it, and on a busy terrain it
+                                // is the single most expensive thing the module does. The answer
+                                // is the same either way: is there one within range, yes or no.
+                                private _tooClose = ((_clustersX findIf {([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet) distance _candidatePos < _randomCampsMil}) > -1);
 
                                 if (!_tooClose) then {
                                     private _campCenter = [_candidatePos,500] call ALiVE_fnc_findFlatArea;
@@ -711,9 +750,15 @@ switch(_operation) do {
                                 };
                             } foreach _flatEmpty;
 
-                            ALIVE_clustersMilLand = _data;
-
                         } foreach _sectors;
+
+                        // Published once, when every sector has contributed. This used to sit
+                        // inside the sector loop, so the global became an array as soon as the
+                        // FIRST sector finished and a second module instance waiting below could
+                        // be released onto a list that was still being built. It only ever got
+                        // away with it because the other instance happened to arrive late; a
+                        // faster machine, or fewer sectors, would race.
+                        ALIVE_clustersMilLand = _data;
                     } else {
                         waituntil {typeName ALIVE_clustersMilLand == "ARRAY"};
                     };
@@ -777,6 +822,7 @@ switch(_operation) do {
                 };
 
                 [_logic, "objectivesLand", _landClusters] call MAINCLASS;
+                ["gathered and filtered clusters", format ["%1 land clusters", count _landClusters]] call _fnc_mpDiagMark;
                 [_logic, "objectivesHQ", _HQClusters] call MAINCLASS;
                 [_logic, "objectivesAir", _airClusters] call MAINCLASS;
                 [_logic, "objectivesHeli", _heliClusters] call MAINCLASS;
@@ -1157,6 +1203,7 @@ switch(_operation) do {
                 ["MP [%1] - Objective objects placed: %2 of %3 (behaviour=%4)",
                     _faction, _countObjectiveObjects_MP, _objCount_MP, _objBehaviour_MP] call ALiVE_fnc_dump;
             };
+            ["HQ, field HQ and objective objects"] call _fnc_mpDiagMark;
 
             if (count _landClusters > 0) then {
                 private _campIndex = 0;
@@ -1283,6 +1330,7 @@ switch(_operation) do {
                     [_x,"nodes",nearestObjects [_pos,["static"],50]] call ALIVE_fnc_hashSet;
 
                 } foreach _landClusters;
+                ["random camps"] call _fnc_mpDiagMark;
             };
 
             // Spawn supplies in objectives
@@ -1364,6 +1412,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Supplies placed: %2",_faction,_countSupplies] call ALiVE_fnc_dump;
+                ["supplies"] call _fnc_mpDiagMark;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1487,6 +1536,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Heli units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedHelis,_countUncrewedHelis] call ALiVE_fnc_dump;
+                ["helicopters"] call _fnc_mpDiagMark;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1704,6 +1754,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Air units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedAir,_countUncrewedAir] call ALiVE_fnc_dump;
+                ["aircraft"] call _fnc_mpDiagMark;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1957,6 +2008,7 @@ switch(_operation) do {
                             if (_aaClasses != "") then {"picker"} else {"factionDefault"}
                         ] call ALiVE_fnc_dump;
                     };
+                    ["anti-air"] call _fnc_mpDiagMark;
                 } else {
                     if (_debug) then {
                         ["MP [%1] - AA spawn skipped: picker empty AND no ALIVE_factionDefaultAA entry for this faction", _faction] call ALiVE_fnc_dump;
@@ -2202,6 +2254,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Ambient land units placed: %2",_faction,_countLandUnits] call ALiVE_fnc_dump;
+                ["ambient land vehicles"] call _fnc_mpDiagMark;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -3227,6 +3280,7 @@ switch(_operation) do {
             };
 
             ["MP %2 - Total profiles created: %1",_countProfiles, _faction] call ALiVE_fnc_dump;
+            ["garrisons, guards and reserves", format ["%1 profiles in total", _countProfiles]] call _fnc_mpDiagMark;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
