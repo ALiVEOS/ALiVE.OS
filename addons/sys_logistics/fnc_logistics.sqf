@@ -1066,8 +1066,15 @@ switch (_operation) do {
 
                 //IDs are derived from class and position, so two objects can land on the same
                 //store key. The first one to match claims the entry - a later object keeps the
-                //position it was placed at instead of being stacked onto the one stored position
-                if !(_id in _existing) then {
+                //position it was placed at instead of being stacked onto the one stored position.
+                //
+                //Only objects the mission maker flagged play by that rule. Everything else keeps the
+                //behaviour it has always had, because losing the claim also skips the state pass
+                //further down, and that pass is what applies a stored destroyed state. Applied to
+                //every object, a pair that happened to share a key would leave one of them standing
+                //on a load that recorded it as wrecked.
+                private _objNoRemap = (_x getVariable [QGVAR(NOREMAP),false]) isEqualTo true;
+                if (!_objNoRemap || {!(_id in _existing)}) then {
                     _args = [GVAR(STORE),_id] call ALiVE_fnc_HashGet;
 
                     //Flagged objects saved before the height component existed sit
