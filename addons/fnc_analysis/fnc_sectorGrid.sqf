@@ -371,7 +371,16 @@ switch(_operation) do {
                 // gridIndexToSector already turns a negative index into its empty sector
                 // result - where the [0, 0] above would file the caller's entry in the
                 // corner of the map as though it belonged there.
-                ["sectorGrid - positionToGridIndex was given %1, which is not a position",_args] call ALiVE_fnc_dump;
+                // Said once for each distinct thing asked about, not once per asking. The index
+                // files already shipped for a number of terrains carry entries this rejects, and
+                // the commander walks them on every pass, so an unconditional line here writes for
+                // as long as the mission runs. Once is enough to find it; the rest is noise.
+                if (isNil "ALiVE_sectorGrid_badPositions") then {ALiVE_sectorGrid_badPositions = []};
+                private _seenKey = str _args;
+                if !(_seenKey in ALiVE_sectorGrid_badPositions) then {
+                    ALiVE_sectorGrid_badPositions pushBack _seenKey;
+                    ["sectorGrid - positionToGridIndex was given %1, which is not a position",_args] call ALiVE_fnc_dump;
+                };
 
                 _result = [-1, -1];
 
@@ -430,6 +439,13 @@ switch(_operation) do {
                 private _indexY = _gridIndex select 1;
 
                 _result = [];
+
+                // A position that could not be placed on the grid comes back as a negative index,
+                // which is meant to match nothing. Fanning out from it anyway reaches the corner of
+                // the map, because one of the nine neighbours of an index just off the edge is a
+                // real sector at zero. That is the same wrong answer the negative index exists to
+                // avoid, arrived at one step later.
+                if (_indexX < 0 || {_indexY < 0}) exitWith {};
 
                 // bottom-left
 
