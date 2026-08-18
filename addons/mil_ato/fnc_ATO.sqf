@@ -6066,6 +6066,14 @@ switch(_operation) do {
                             // if plane check to see if runway is busy, wait
                             _airportBusy = [_airports, _airportID] call ALiVE_fnc_hashGet;
 
+                            // An airfield with no reservation recorded yet reads as nothing rather
+                            // than false, and assigning nothing to a variable removes it, so the
+                            // false set a few lines above does not survive the read. Without this
+                            // the plain check further down has no variable to read and the sortie
+                            // stops there with a script error. Same guard, same reason, as the one
+                            // on the returning-aircraft path.
+                            if (isNil "_airportBusy") then {_airportBusy = false};
+
                             // Stale-lock break: a lock held past the timeout means the aircraft
                             // that took it never cleared the runway (stuck on the ground), so free
                             // it here rather than stall every queued sortie behind it.
