@@ -482,6 +482,13 @@ switch(_operation) do {
                     // Get the time of the last player save for a specific player
                     _puid = _args select 0;
                     _playerHash = [GVAR(player_data), _puid] call ALIVE_fnc_hashGet;
+                    // Somebody who drops before their slot resolves, or before their first save, has no
+                    // entry here, and asking for one that is not there removes the variable rather than
+                    // returning an empty one. The read below then takes the disconnect handler down with
+                    // it, and the flag that says this player has finished leaving is never cleared, so
+                    // their next connect walks straight through the gate that waits on it. Zero is the
+                    // honest answer to when they last saved: never.
+                    if (isNil "_playerHash") exitWith {_result = 0};
                     _result =  [_playerHash, "lastSaveTime"] call ALIVE_fnc_hashGet;
         };
         case "setPlayer": {

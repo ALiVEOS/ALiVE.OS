@@ -520,7 +520,7 @@ switch (_operation) do {
 			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
 			_homePos = (_civProfile select 2) select 10;
 			_individualHostility = (_civProfile select 2) select 12;
-			_townHostility = [_cluster, "posture"] call ALIVE_fnc_hashGet;	//_townHostility = (_cluster select 2) select 9; (Different)
+			_townHostility = [_cluster, "posture", 0] call ALIVE_fnc_hashGet;	//_townHostility = (_cluster select 2) select 9; (Different)
 
 			if (!isNil {[_civProfile,"ALiVE_PersistentName"] call ALiVE_fnc_hashGet}) then {
 				_name = [_civProfile,"ALiVE_PersistentName"] call ALiVE_fnc_hashGet;
@@ -544,7 +544,7 @@ switch (_operation) do {
 			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
 			_homePos = _civ getVariable ["ALiVE_homePos",position _civ];
 			_individualHostility = _civ getVariable ["ALiVE_CivPop_Hostility",30];
-			_townHostility = [_cluster, "posture"] call ALIVE_fnc_hashGet;
+			_townHostility = [_cluster, "posture", 0] call ALIVE_fnc_hashGet;
 			_name = name _civ;
 			_civInfo = [_homePos, _individualHostility, _townHostility,_name];
 		};
@@ -554,6 +554,13 @@ switch (_operation) do {
 		_insurgentCommands = ["alive_fnc_cc_suicide","alive_fnc_cc_suicidetarget","alive_fnc_cc_rogue","alive_fnc_cc_roguetarget","alive_fnc_cc_sabotage","alive_fnc_cc_getweapons"];
 		_agentsByCluster = [ALIVE_agentHandler, "agentsByCluster"] call ALIVE_fnc_hashGet;
 		_nearCivs = [_agentsByCluster, _clusterID] call ALIVE_fnc_hashGet;
+		// A cluster only gains a sub-hash here once one of its agents registers, so a town
+		// nobody has spawned into answers with nothing, and nothing assigned to a variable
+		// removes it. The count on the next line then has no variable to read and the whole
+		// reply dies, leaving the asking player on a dialog that never fills in. An empty
+		// hash is the honest answer: no agents registered for this town, so the loop below
+		// runs no times.
+		if (isNil "_nearCivs") then {_nearCivs = [] call ALIVE_fnc_hashCreate};
 
 		for "_i" from 0 to ((count (_nearCivs select 1)) - 1) do {
 			_agentID = (_nearCivs select 1) select _i;
@@ -734,7 +741,7 @@ switch (_operation) do {
 
 			//-- Set town hostility
 			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
-			_clusterHostility = [_cluster, "posture"] call ALIVE_fnc_hashGet;
+			_clusterHostility = [_cluster, "posture", 0] call ALIVE_fnc_hashGet;
 			[_cluster, "posture", (_clusterHostility + _townHostilityValue)] call ALIVE_fnc_hashSet;
 
 			//-- Set individual hostility

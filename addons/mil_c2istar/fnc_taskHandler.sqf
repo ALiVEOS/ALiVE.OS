@@ -1912,6 +1912,20 @@ switch (_operation) do {
                         private _parsedTaskSource = [_logic, "parseTaskSource", _mainTask select 12] call MAINCLASS;
                         _parsedTaskSource params ["_rootTaskID", "_taskType", "_taskStage"];
                         private _taskParams = [_managedTaskParams, _rootTaskID] call ALIVE_fnc_hashGet;
+                        // Same reasoning as the missing-record skip above, one step further along. A player
+                        // asking the commander for a different order tears the old one down in its own
+                        // thread, and that teardown releases the root's parameters before it sweeps the
+                        // children. Land between those two and a child is still listed while its parameters
+                        // are already gone, so this comes back with nothing and removes the variable. Every
+                        // read below assumes a hash, including the debug dump immediately after, and the
+                        // throw takes the manager down inside its own wait, which stops tasks being handed
+                        // out until somebody asks for one by hand.
+                        if (isNil "_taskParams") then {
+                            if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                                ["[C2ISTAR #942 DIAG] manager skip %1: managed parameters already released", _taskID] call ALIVE_fnc_dump;
+                            };
+                            continue
+                        };
 
                         // DEBUG -------------------------------------------------------------------------------------
                         if (_debug) then {

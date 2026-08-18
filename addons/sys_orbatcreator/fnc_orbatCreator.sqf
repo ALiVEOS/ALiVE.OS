@@ -2302,6 +2302,13 @@ switch(_operation) do {
         // exit
         //["CHECK %1, %2, %3", _unit, configname (inheritsFrom (_cfgVehicles >> _unit)), ([_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet)] call ALiVE_fnc_dump;
 
+        // A class name that is not a custom unit at all is already its own real class name,
+        // which is the whole question being asked here. Saying so and stopping matters because
+        // the walk below asks that same nothing for a parent, and the export then dies before
+        // writing anything at all. Reachable by renaming a custom unit another was built from,
+        // which leaves the second pointing at a name that has gone.
+        if (isNil "_unitData") exitWith {_result = _unit};
+
         if (isClass (_cfgVehicles >> _unit) && {(isnil "_unitData" || {getNumber(_cfgVehicles >> _unit >> "ALiVE_orbatCreator_owned") == 1} || {configname (inheritsFrom (_cfgVehicles >> _unit)) == ([_unitData,"inheritsFrom"] call ALiVE_fnc_hashGet)})}) exitWith {
             _result = _unit;
         };

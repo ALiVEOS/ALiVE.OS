@@ -2923,7 +2923,15 @@ switch(_operation) do {
 
                                     };
 
-                                    if(_payloadType == "Groups") then {
+                                    // Only nine of the factions this branch fires for have custom mappings recorded,
+                                    // and the branch fires for every faction whose name carries the mod prefix. Asking
+                                    // about one of the others answers with nothing, and the very next line hands that
+                                    // nothing back as the thing to look inside, which stops the request being built at
+                                    // all: no acknowledgement, and the resupply simply never turns up. Tested for the
+                                    // same way the same lookup is tested further up this file.
+                                    if(_payloadType == "Groups"
+                                        && {!isNil "ALIVE_factionCustomMappings"}
+                                        && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
 
                                         _customMappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
                                         _groups = [_customMappings, "Groups"] call ALIVE_fnc_hashGet;

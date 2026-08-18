@@ -845,6 +845,13 @@ switch(_operation) do {
 
         private _profilesByFactionByType = [_logic, "profilesByFactionByType"] call ALIVE_fnc_hashGet;
         private _profilesFactionType = [_profilesByFactionByType, _faction] call ALIVE_fnc_hashGet;
+        // A faction only appears here once one of its profiles has registered, so asking
+        // about one that has raised nothing yet answers with nothing, and that removes the
+        // variable rather than emptying it. The read below would then take this whole
+        // getter down, and the caller's own checks for an empty answer never get to run.
+        // Nothing is what the caller means by an empty list, which is what the sibling
+        // getter just above already returns.
+        if (isNil "_profilesFactionType") exitWith {_result = []};
 
         _result = [_profilesFactionType, _type] call ALIVE_fnc_hashGet;
     };
@@ -855,6 +862,13 @@ switch(_operation) do {
 
         private _profilesByFactionByVehicleType = [_logic, "profilesByFactionByVehicleType"] call ALIVE_fnc_hashGet;
         private _profilesFactionType = [_profilesByFactionByVehicleType, _faction] call ALIVE_fnc_hashGet;
+        // A faction only appears here once one of its profiles has registered, so asking
+        // about one that has raised nothing yet answers with nothing, and that removes the
+        // variable rather than emptying it. The read below would then take this whole
+        // getter down, and the caller's own checks for an empty answer never get to run.
+        // Nothing is what the caller means by an empty list, which is what the sibling
+        // getter just above already returns.
+        if (isNil "_profilesFactionType") exitWith {_result = []};
 
         _result = [_profilesFactionType, _type] call ALIVE_fnc_hashGet;
     };

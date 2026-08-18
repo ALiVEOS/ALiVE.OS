@@ -3519,7 +3519,7 @@ switch(_operation) do {
             { if ((_x select 0) == _eventSide) exitWith { _eventFaction = (_x select 1) select 0; }; } forEach _factions;
             if (_eventFaction == "" && {count _factions > 0}) then { _eventFaction = (_factions select 0 select 1) select 0; };
             private _registryID = [_logic, "registryID"] call MAINCLASS;
-            private _forcePool = [ALIVE_globalForcePool, _eventFaction] call ALIVE_fnc_hashGet;
+            private _forcePool = [ALIVE_globalForcePool, _eventFaction, 0] call ALIVE_fnc_hashGet;
             if (typeName _forcePool == "STRING") then { _forcePool = parseNumber _forcePool; };
             if (typeName _forcePool != "SCALAR") then { _forcePool = 0; };
             private _resupplyCost = 1 max (10 min (floor (_forcePool * 0.02)));
@@ -3722,7 +3722,7 @@ switch(_operation) do {
             };
 
             private _registryID = [_logic, "registryID"] call MAINCLASS;
-            private _forcePool = [ALIVE_globalForcePool, _eventFaction] call ALIVE_fnc_hashGet;
+            private _forcePool = [ALIVE_globalForcePool, _eventFaction, 0] call ALIVE_fnc_hashGet;
             if (typeName _forcePool == "STRING") then { _forcePool = parseNumber _forcePool; };
             if (typeName _forcePool != "SCALAR") then { _forcePool = 0; };
 
@@ -5071,7 +5071,7 @@ switch(_operation) do {
 
                 _type = [_logic, "type"] call MAINCLASS;
 
-                _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
+                _forcePool = [ALIVE_globalForcePool,_eventFaction, 0] call ALIVE_fnc_hashGet;
 
 
                 // DEBUG -------------------------------------------------------------------------------------
@@ -5364,7 +5364,7 @@ switch(_operation) do {
                 _type = [_logic, "type"] call MAINCLASS;
                 _forcePoolType = [_logic, "forcePoolType"] call MAINCLASS;
                 _registryID = [_logic, "registryID"] call MAINCLASS;
-                _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
+                _forcePool = [ALIVE_globalForcePool,_eventFaction, 0] call ALIVE_fnc_hashGet;
                 if(typeName _forcePool == "STRING") then {
                     _forcePool = parseNumber _forcePool;
                 };
@@ -5887,7 +5887,7 @@ switch(_operation) do {
         private _eventForceMakeup = _eventData select 3;
         private _eventType = _eventData select 4;
 
-        private _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
+        private _forcePool = [ALIVE_globalForcePool,_eventFaction, 0] call ALIVE_fnc_hashGet;
 
         private [
             "_playerID","_requestID","_payload","_emptyVehicles","_staticIndividuals","_joinIndividuals","_reinforceIndividuals","_staticGroups","_joinGroups","_reinforceGroups",
@@ -10718,7 +10718,7 @@ switch(_operation) do {
 	                // send radio broadcast
 	                _sideObject = [_eventSide] call ALIVE_fnc_sideTextToObject;
 	                _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
-	                _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
+	                _forcePool = [ALIVE_globalForcePool,_eventFaction, 0] call ALIVE_fnc_hashGet;
 
                     private _HQ = switch (_sideObject) do {
                         case WEST: {

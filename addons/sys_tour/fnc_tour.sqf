@@ -2532,7 +2532,11 @@ switch(_operation) do {
                         _target = "RoadCone_L_F" createVehicle _position;
                         hideObjectGlobal _target;
 
-                        if!(isNil "_unit") then {
+                        // The command list only holds an entry while that command is live, so an agent whose
+                        // command has already finished answers with nothing here, and the read straight after
+                        // would take the tour down with the player still hidden and moved. Asked for by name
+                        // instead, which skips this agent rather than the whole pass.
+                        if (!isNil "_unit" && {_id in (_activeCommands select 1)}) then {
 
                             _command = [_activeCommands,_id] call ALIVE_fnc_hashGet;
                             _command = _command select 1;
@@ -2851,7 +2855,7 @@ switch(_operation) do {
                     _size = [_x,"size"] call ALIVE_fnc_hashGet;
                     _priority = [_x,"priority"] call ALIVE_fnc_hashGet;
                     _type = [_x,"objectiveType"] call ALIVE_fnc_hashGet;
-                    _orders = [_x,"opcom_orders"] call ALIVE_fnc_hashGet;
+                    _orders = [_x,"opcom_orders",""] call ALIVE_fnc_hashGet;
                     _section = [_x,"section"] call ALIVE_fnc_hashGet;
                     _objectiveID = [_x,"objectiveID"] call ALIVE_fnc_hashGet;
 
