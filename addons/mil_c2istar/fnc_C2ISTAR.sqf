@@ -1081,6 +1081,15 @@ switch(_operation) do {
         // the server-side COP loop honours it too.
         ALiVE_mil_c2istar_debug = _debug;
 
+        // Same for the task diagnostics flag. Nothing in a mission sets
+        // ALiVE_c2istar_taskDiag -- it was console-only -- and the traces it gates sit
+        // in the task manager loop, which runs on the server, so asking a reporter for
+        // a log meant asking them to set a global server side first. Turning the
+        // module's Debug attribute on now raises it here too, on every machine init
+        // touches. Only ever raised, never cleared, so setting the flag by hand on a
+        // mission with Debug off still works.
+        if (_debug) then { ALiVE_c2istar_taskDiag = true; };
+
         // Distribute the consolidated auto-task faction picker into the six
         // per-slot vars the auto-task generator reads (autoGenerateBluforFaction
         // / ...EnemyFaction / OPF / IND). The Eden SAVE handler can't persist

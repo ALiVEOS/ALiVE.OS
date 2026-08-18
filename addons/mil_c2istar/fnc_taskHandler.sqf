@@ -1891,6 +1891,14 @@ switch (_operation) do {
                     [_managedTasks, _x] call ALIVE_fnc_hashRem;
                 } forEach _managedTasksToRemove;
 
+                // DIAG-STRIP #1002: heartbeat. An error thrown anywhere below ends this
+                // waitUntil for good, and every managed task then sits at its current
+                // stage for the rest of the mission looking exactly like a completion
+                // check that never fires. If these lines stop, the thread died.
+                if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                    ["[C2ISTAR #1002 DIAG] manager cycle: %1 managed task(s)", count (_managedTasks select 1)] call ALIVE_fnc_dump;
+                };
+
                 if (count (_managedTasks select 1) > 0) then {
                     // for each of the tasks
                     {
@@ -1983,7 +1991,15 @@ switch (_operation) do {
                                 // them from the client task menu (#934). TASK_DELETE
                                 // unregisters the root + all children, releases the managed
                                 // task params, and dispatches the removal to clients.
-                                [_logic, "TASK_DELETE", [_rootTaskID, (_task select 1), _taskSide]] call MAINCLASS;
+                                // The requesting player comes off _mainTask, which the guard
+                                // at the top of this iteration has already proved is an array.
+                                // Reading it off the lookup above instead: when that lookup
+                                // came back with nothing, select threw, the waitUntil ended,
+                                // and the manager stopped re-checking every task it held --
+                                // each one left open at its current stage for the rest of the
+                                // mission. Same source is used for the Constant regeneration
+                                // below, which had the identical problem.
+                                [_logic, "TASK_DELETE", [_rootTaskID, (_mainTask select 1), _taskSide]] call MAINCLASS;
 
                                 // DIAG-STRIP #942: prove the teardown really removed the root task --
                                 // stillActive must read false here. true means stale activeTasks keys
@@ -1993,13 +2009,25 @@ switch (_operation) do {
                                     ["[C2ISTAR #942 DIAG] teardown %1: stillActive=%2 activeLeft=%3", _rootTaskID, _rootTaskID in (_diagActiveTasks select 1), count (_diagActiveTasks select 1)] call ALIVE_fnc_dump;
                                 };
 
-                                private _autoGenerateSides = [_logic,"autoGenerateSides"] call ALIVE_fnc_hashGet;
-                                private _sideAutoGeneration = [_autoGenerateSides,_taskSide] call ALIVE_fnc_hashGet;
+                                // Both reads now carry a default, the way the pair in the else
+                                // branch below does. A side with no auto-generate entry -- the
+                                // init only writes EAST, WEST, GUER and CIV -- read back as
+                                // nothing, and the select on the next line took the manager down
+                                // before it ever reached the Constant branch. "None" is what the
+                                // init writes for a side that does not auto-generate.
+                                private _autoGenerateSides = [_logic,"autoGenerateSides",["", [], [], ""]] call ALIVE_fnc_hashGet;
+                                private _sideAutoGeneration = [_autoGenerateSides,_taskSide,["None",""]] call ALIVE_fnc_hashGet;
 
                                 if (_sideAutoGeneration select 0 == "Constant") then {
                                     uiSleep (10 + (random 50));
 
-                                    _task params ["", "_requestPlayerID", "", "", "_taskFaction"];
+                                    // Requesting player and faction come off _mainTask for the same
+                                    // reason the teardown above does: the root lookup they used to
+                                    // come off can return nothing now a running task is cancellable,
+                                    // and params against nothing ends the manager thread. Both
+                                    // records carry the same two values -- a child task is built
+                                    // from its parent's requester and faction.
+                                    _mainTask params ["", "_requestPlayerID", "", "", "_taskFaction"];
 
                                     private _taskEnemyFaction = [_taskParams, "enemyFaction"] call ALIVE_fnc_hashGet;
                                     private _generate = [format ["%1_%2", _taskSide, time], _requestPlayerID, _taskSide, _taskFaction, _taskEnemyFaction, _sideAutoGeneration select 0];
