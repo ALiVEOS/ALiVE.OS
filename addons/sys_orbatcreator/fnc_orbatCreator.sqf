@@ -2501,6 +2501,20 @@ switch(_operation) do {
             } foreach (_turrets select 2);
         } foreach (_customUnits select 2);
 
+        // Anything built from this unit is still pointing at the name it had a moment ago.
+        // Renaming rewrites the group and turret references but used to leave those parents
+        // behind, so a unit that inherited from this one was left naming a class that no
+        // longer exists. Exporting then walked up from that name looking for a real config
+        // entry and never found one. Removing a unit has always reparented its children the
+        // same way, a few hundred lines above; renaming one simply never did.
+        {
+            private _parent = [_x,"inheritsFrom"] call ALiVE_fnc_hashGet;
+
+            if (!isNil "_parent" && {_parent == _unitClassname}) then {
+                [_x,"inheritsFrom", _classname] call ALiVE_fnc_hashSet;
+            };
+        } foreach (_customUnits select 2);
+
         [_unit,"configName", _classname] call ALiVE_fnc_hashSet;
 
         [_customUnits,_unitClassname, nil] call ALiVE_fnc_hashSet;
