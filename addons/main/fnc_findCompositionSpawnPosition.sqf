@@ -297,7 +297,106 @@ private _maxAttempts       = if (_mode == "roadblock") then { 12 } else {
 // Airfield geometry - runway / taxiway segments to reject. Cached per
 // call (callers usually feed the same _centerPos for one camp/HQ pick).
 // ------------------------------------------------------------------------
-private _airfield = [_centerPos, _radius + 200] call ALiVE_fnc_getAirfieldGeometry;
+// Whether this search needs the wide half of the airfield survey. Measured over three
+// Khe Sanh runs, most of the time spent before a single candidate was tried went into
+// this call, and the rule it feeds turned away nothing at all. The widest part of it is
+// the zone work, which sweeps further than the rest and reads the name of every object it
+// finds, and most searches are nowhere near an airfield.
+//
+// The survey is NEVER skipped outright, and that is the whole design. What can be proved
+// here is narrower than it first looks: the places recorded during the build are the
+// places the build was SEEDED from, and seeding sees config airports, map locations and
+// module-drawn strips only. A runway found from a tagged object, or from the name of a
+// terrain piece, seeds nothing at all. So being out of reach of every recorded place is
+// no evidence that there is no runway here, and skipping on it would put a composition on
+// a runway with nothing in the log to say so.
+//
+// What it does prove is that no airport LOCATION is within reach, because those are a
+// seeding source and the arithmetic matches. That is exactly what the zone work looks for,
+// so that is the part which can go. Runways and taxiways are still found on every single
+// search, which makes the bad outcome impossible rather than unlikely.
+//
+// Reach is the furthest any tier looks. The module-drawn runway test compares a midpoint
+// at twice the radius it is handed, the airport-location query looks 500 beyond that
+// radius, and neither is always the wider: they cross at a caller radius of 300. Whichever
+// is larger covers both, and the ground each place was searched over is added on top.
+// The zones are read in exactly two places further down and both sit behind this flag,
+// so a mode that does not exclude airfield area never looks at them and should not pay to
+// find them. Air tasking is that mode: its guns and launchers go on the airfield on
+// purpose. Those searches sit on top of the module that seeded the place, so on geometry
+// alone they could never narrow, and they were paying the widest sweep for an answer they
+// then threw away.
+private _excludeAirfieldArea = !(_mode in ["ato"]);
+private _needZones = _excludeAirfieldArea;
+
+// Held apart from _needZones so the count reported at the end still means "no place the
+// build searched was within reach", rather than being quietly padded by every air task.
+private _narrowedByReach = false;
+
+if (_needZones && {!isNil "ALiVE_airsideCacheReady"} && {ALiVE_airsideCacheReady}
+    && {!isNil "ALiVE_airsideSurveyed"} && {count ALiVE_airsideSurveyed > 0}) then {
+    private _reach = (2 * (_radius + 200)) max (_radius + 700);
+    private _sw = ALiVE_airsideSurveyed;
+    _needZones = false;
+    // Stride 3: x, y, how far that place was searched. No exitWith, because there are a
+    // handful of places at most and a loop that always runs to the end cannot be broken by
+    // someone later moving a line into the wrong block.
+    for "_i" from 0 to ((count _sw) - 3) step 3 do {
+        if (!_needZones
+            && {(_centerPos distance2D [_sw select _i, _sw select (_i + 1)]) <= (_sw select (_i + 2)) + _reach}) then {
+            _needZones = true;
+        };
+    };
+    _narrowedByReach = !_needZones;
+};
+
+private _airfield = [_centerPos, _radius + 200, _needZones] call ALiVE_fnc_getAirfieldGeometry;
+
+if (_narrowedByReach) then {
+    ALiVE_airfieldGeomNarrowed = (if (isNil "ALiVE_airfieldGeomNarrowed") then {0} else {ALiVE_airfieldGeomNarrowed}) + 1;
+
+    // Runways and taxiways come back either way, so the only thing a narrowed survey can be
+    // short of is a zone, and a zone out here can only come from the infrastructure pass: a
+    // hangar or tower cluster sitting away from any airfield the build knew about. Set
+    // ALiVE_airsideGateAudit to true on the server and every narrowed search is run again in
+    // full and the difference reported, so the size of that deliberate loss is on the record
+    // rather than assumed. It costs the whole saving while it is on, which is why it is a
+    // switch: an audit run proves correctness, a plain run measures the gain, and one run
+    // cannot do both.
+    if (!isNil "ALiVE_airsideGateAudit" && {ALiVE_airsideGateAudit}) then {
+        // Counted before anything is compared, so the end-of-startup line can report that the
+        // audit ran even when it found nothing to report. A count that only appears once
+        // something is lost cannot tell a clean audit apart from an audit that never ran, and
+        // those two are exactly the readings that have to be told apart.
+        ALiVE_airfieldGeomAudited = (if (isNil "ALiVE_airfieldGeomAudited") then {0} else {ALiVE_airfieldGeomAudited}) + 1;
+        if (isNil "ALiVE_airfieldGeomNarrowedLost") then {ALiVE_airfieldGeomNarrowedLost = 0};
+
+        private _full = [_centerPos, _radius + 200, true] call ALiVE_fnc_getAirfieldGeometry;
+        _full     params ["_fRun", "_fTaxi", "_fZones"];
+        _airfield params ["_nRun", "_nTaxi", "_nZones"];
+
+        // These two cannot differ, by the design. Said out loud anyway, so that a later
+        // change which makes a runway or taxiway tier depend on the flag is caught here
+        // rather than by somebody finding a camp on a runway.
+        if (count _fRun != count _nRun || {count _fTaxi != count _nTaxi}) then {
+            ["ALiVE airside gate AUDIT WARNING: narrowed at %1 radius %2m gave runway %3 against %4 and taxiway %5 against %6, which cannot happen",
+                _centerPos, _radius, count _nRun, count _fRun, count _nTaxi, count _fTaxi] call ALiVE_fnc_dump;
+        };
+
+        // What the narrowing actually costs, counted rather than described. Whether a lost
+        // zone even reaches the ground being considered is the whole question: one sitting
+        // out at the edge of the sweep would have turned nothing away.
+        if (count _fZones > count _nZones) then {
+            ALiVE_airfieldGeomNarrowedLost = (if (isNil "ALiVE_airfieldGeomNarrowedLost") then {0} else {ALiVE_airfieldGeomNarrowedLost}) + 1;
+            {
+                _x params ["_zC", "_zEnd", ["_zHW", 0]];
+                ["ALiVE airside gate AUDIT: narrowed at %1 radius %2m lost a zone at %3 half-width %4m, %5m away, reaches the search area: %6",
+                    _centerPos, _radius, _zC, _zHW, round (_centerPos distance2D _zC),
+                    ((_centerPos distance2D _zC) <= (_zHW + _radius))] call ALiVE_fnc_dump;
+            } forEach _fZones;
+        };
+    };
+};
 _airfield params ["_runwaySegments", "_taxiwaySegments", ["_airfieldZones", []]];
 
 // Airfield-area exclusion: reject candidates inside ANY of the
@@ -306,7 +405,6 @@ _airfield params ["_runwaySegments", "_taxiwaySegments", ["_airfieldZones", []]]
 // ON the airfield by design. The runway / taxiway segment check still
 // runs - even in ato mode we don't want gun crews on the runway
 // centerline.
-private _excludeAirfieldArea = !(_mode in ["ato"]);
 
 if (_debug && {count _runwaySegments + count _taxiwaySegments + count _airfieldZones > 0}) then {
     ["[ALiVE CompSpawn]   airfield: %1 runway seg, %2 taxiway seg, %3 airport zone(s)", count _runwaySegments, count _taxiwaySegments, count _airfieldZones] call ALiVE_fnc_dump;

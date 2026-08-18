@@ -727,6 +727,21 @@ if (isServer) then {
             ALiVE_airfieldGeomCalls,
             ALiVE_airfieldGeomHits,
             ALiVE_airfieldGeomCalls - ALiVE_airfieldGeomHits] call ALiVE_fnc_dump;
+        // How many searches got the narrow survey because no place the build searched was
+        // anywhere near them. This is the figure that says whether the check earns anything,
+        // and it should be most of them. With the audit switched on it should read the same,
+        // because the audit changes what the narrowing costs, not how often it happens.
+        ["ALiVE airfield survey: %1 search(es) took the narrow form, no searched place within reach",
+            if (isNil "ALiVE_airfieldGeomNarrowed") then {0} else {ALiVE_airfieldGeomNarrowed}] call ALiVE_fnc_dump;
+        // Only written when the audit switch was on, so its presence also marks the run as
+        // an audited one and stops the figures above being read across that boundary. It
+        // reports the comparisons made as well as the losses found, because a clean audit
+        // and an audit that never ran would otherwise look the same from the log.
+        if (!isNil "ALiVE_airfieldGeomAudited") then {
+            ["ALiVE airfield survey: audit was on, %1 narrowed search(es) re-run in full, %2 of them lost a zone",
+                ALiVE_airfieldGeomAudited,
+                if (isNil "ALiVE_airfieldGeomNarrowedLost") then {0} else {ALiVE_airfieldGeomNarrowedLost}] call ALiVE_fnc_dump;
+        };
     };
 
     // What the composition search actually costs across a whole startup. Without this

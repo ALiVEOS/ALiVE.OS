@@ -50,6 +50,20 @@ private _builtFor = [CLUSTERBUILD];
 ALiVE_airsideBounds   = [];
 ALiVE_airsideCapsules = [];
 
+// Where the airfield search actually looked, and how far, recorded per place it looked
+// at rather than per airfield it found. Stride 3: x, y, radius searched.
+//
+// This exists because the bounds above cannot answer "could anything have been found
+// here". They measure the airfield features that survived a cap on how many are kept,
+// so on a busy field they come out smaller than the ground that was actually swept.
+// Anything deciding whether a search can be skipped has to measure against the ground.
+ALiVE_airsideSurveyed = [];
+
+// False until a build has finished, and set here so a restart cannot leave a stale true
+// standing. An empty list on its own says nothing: it reads the same before the build
+// has run as it does on a map with no airfields, and those two need opposite answers.
+ALiVE_airsideCacheReady = false;
+
 //Set ALiVE Interaction menu on custom userkey 20 and if none is defined fallback to 221 App key
 if ((count ActionKeys "User20") > 0) then {
     SELF_INTERACTION_KEY = [(ActionKeys "User20" select 0),[false,false,false]];

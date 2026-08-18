@@ -163,6 +163,12 @@ if (count _candidates == 0) exitWith {
     ALiVE_airsideCapsules = [];
     publicVariable "ALiVE_airsideBounds";
     publicVariable "ALiVE_airsideCapsules";
+    // Finished, having looked at nowhere. Ready says the build is over; the empty list of
+    // places searched is what stops anything treating that as "no airfields here", because
+    // seeding only sees config entries, map locations and module-drawn strips, and a field
+    // made of terrain objects alone would never have become a candidate to look at.
+    ALiVE_airsideCacheReady = true;
+    publicVariable "ALiVE_airsideCacheReady";
     ALiVE_airsideCacheBuilding = nil;
     ["ALiVE airside: no airfield candidates on %1, exclusion disabled", worldName] call ALiVE_fnc_dump;
 };
@@ -444,23 +450,56 @@ private _fnc_buildOne = {
 // almost immediately rather than two minutes in.
 private _bounds = [];
 private _allCaps = [];
+private _sweeps = [];
+// Read once and checked here rather than inside the handler. A mission sets this from its
+// own init and nothing obliges it to hand over a number, and a throw inside the handler
+// would stop it before it advances its index, leaving it retrying the same place every
+// frame with the build never finishing and nothing able to start it again.
+private _recordRadius = if (ALiVE_airsideSearchRadius isEqualType 0) then {
+    ALiVE_airsideSearchRadius max 1500
+} else { 1500 };
 private _idxRef = [0];
 
 [{
     params ["_args", "_handle"];
-    _args params ["_candidates", "_idxRef", "_bounds", "_allCaps", "_fnc_buildOne", "_fnc_pushCapsule"];
+    _args params ["_candidates", "_idxRef", "_bounds", "_allCaps", "_fnc_buildOne", "_fnc_pushCapsule", "_sweeps", "_recordRadius"];
     private _idx = _idxRef select 0;
 
     if (_idx >= count _candidates) exitWith {
         ALiVE_airsideBounds = _bounds;
         ALiVE_airsideCapsules = _allCaps;
+        ALiVE_airsideSurveyed = _sweeps;
         publicVariable "ALiVE_airsideBounds";
         publicVariable "ALiVE_airsideCapsules";
+        publicVariable "ALiVE_airsideSurveyed";
+        ALiVE_airsideCacheReady = true;
+        publicVariable "ALiVE_airsideCacheReady";
         ALiVE_airsideCacheBuilding = nil;
         ["ALiVE airside: cache ready, %1 airfield(s) on %2", (count _bounds) / 4, worldName] call ALiVE_fnc_dump;
+        // The places searched, which is what the composition search reasons about and is not
+        // the same as the airfields found: a field is reported at the centre of the pieces
+        // kept for it, and these are the points it was looked for from. Without this a
+        // narrowing cannot be traced back to the place that allowed it.
+        ["ALiVE airside: searched %1 place(s), as x, y, radius: %2", (count _sweeps) / 3, _sweeps] call ALiVE_fnc_dump;
         _handle call CBA_fnc_removePerFrameHandler;
     };
 
-    [_candidates select _idx, _bounds, _allCaps, _fnc_pushCapsule] call _fnc_buildOne;
+    private _cand = _candidates select _idx;
+    // Written before any of the work below, and written whatever that work returns. A
+    // place that yields no airfield features still had its ground searched, and anything
+    // deciding later whether a search can be skipped needs to know it was looked at.
+    // Recording it afterwards, or only on success, would leave exactly the places that
+    // came back empty looking as though nobody had ever been there.
+    // Floored at the default because a mission is allowed to lower the search radius from
+    // its own init, and this figure is no longer only about building the cache: the
+    // composition search reads it to decide how much of its own survey it can leave out.
+    // Recording a smaller number than was actually searched would narrow searches it should
+    // not, so the floor keeps the claim honest whatever the mission asked for.
+    _sweeps append [_cand select 0, _cand select 1, _recordRadius];
+
+    // Advanced before the work, not after. An error inside the build leaves the handler
+    // retrying the same place every frame, and with the record above that turned a stuck
+    // candidate into a list that grew without limit.
     _idxRef set [0, _idx + 1];
-}, 0, [_candidates, _idxRef, _bounds, _allCaps, _fnc_buildOne, _fnc_pushCapsule]] call CBA_fnc_addPerFrameHandler;
+    [_cand, _bounds, _allCaps, _fnc_pushCapsule] call _fnc_buildOne;
+}, 0, [_candidates, _idxRef, _bounds, _allCaps, _fnc_buildOne, _fnc_pushCapsule, _sweeps, _recordRadius]] call CBA_fnc_addPerFrameHandler;
