@@ -32,7 +32,13 @@ class CfgVehicles {
             author = MODULE_AUTHOR;
             class ModuleDescription
             {
-                description[] = {"$STR_ALIVE_LOGISTICSDISABLE_COMMENT","","$STR_ALIVE_LOGISTICSDISABLE_USAGE"};
+                description[] = {
+                        "$STR_ALIVE_LOGISTICSDISABLE_COMMENT",
+                        "",
+                        "$STR_ALIVE_LOGISTICSDISABLE_USAGE",
+                        "",
+                        "$STR_ALIVE_LOGISTICSDISABLE_USAGE_NOREMAP"
+                };
             };
             class Attributes : AttributesBase
             {
