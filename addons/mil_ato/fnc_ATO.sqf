@@ -7939,7 +7939,22 @@ switch(_operation) do {
                     };
                 };
 
-                if ( _vehicle iskindof "Helicopter" && ( (getposATL _vehicle) select 2 < 2 || (_isOnCarrier && (getposASL _vehicle) select 2 < 25) ) ) then {
+                // Being low is not the same as being down. This counted a helicopter as landed the
+                // moment it dropped below 2 metres, which is while the engine is still flying it down
+                // through the last of its descent. Everything that follows a landing then ran, and the
+                // airframe was put back where it launched from, so anyone watching the pad saw it jump
+                // sideways out of its own approach.
+                //
+                // A plane never had this: it waits three minutes from touchdown, which is its taxi. A
+                // helicopter has nothing to taxi, so the altitude alone was treated as enough. It now
+                // also has to be resting on something and to have stopped moving, which is what the
+                // rest of this function already means by down (see the same two tests a few lines
+                // below). Carrier decks keep the altitude-only form, because ground contact on a deck
+                // is not the same question and that path is not what changed here.
+                if ( _vehicle iskindof "Helicopter"
+                    && {(speed _vehicle) < 5}
+                    && {(isTouchingGround _vehicle) || {_isOnCarrier}}
+                    && { (getposATL _vehicle) select 2 < 2 || (_isOnCarrier && (getposASL _vehicle) select 2 < 25) } ) then {
                     _landed = true;
                 };
 
@@ -8185,7 +8200,19 @@ switch(_operation) do {
                     //Move back to original position (safe reposition - guards against hangar detonation)
                     private _startDir = [_aircraft,"startDir"] call ALiVE_fnc_hashGet;
                     if !(_isOnCarrier) then {
-                        [_vehicle, [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1], _startDir, _assets, _aircraftID] call _fnc_safeReposition;
+                        // A helicopter that has set itself down within a few metres of its own slot is
+                        // already where this would put it, and putting it there anyway is what somebody
+                        // watching the pad sees: a shuffle sideways and a spin onto a heading it was not
+                        // flying. Left alone it keeps the pose the engine landed it in, which is the whole
+                        // of what it was asked to do. Anything further out is still put back, which is what
+                        // this is here for, and nothing is being placed into a building because nothing is
+                        // being placed at all.
+                        private _alreadyHome = (_vehicle isKindOf "Helicopter")
+                            && {(_vehicle distance2D _startPosition) < 30};
+
+                        if !(_alreadyHome) then {
+                            [_vehicle, [_startPosition select 0, _startPosition select 1, (_startPosition select 2) + 1], _startDir, _assets, _aircraftID] call _fnc_safeReposition;
+                        };
                     } else {
                         _vehicle setDir _startDir;
                     };
