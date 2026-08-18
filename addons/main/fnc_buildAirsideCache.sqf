@@ -131,10 +131,30 @@ if (count _locTypes > 0) then {
 
 // Runways a mission author defined on a MACC module, which is the only source
 // here that is guaranteed correct for the terrain it was authored on.
+//
+// The module holds these as three strings, a start, an end and a width, and they are
+// read here on exactly the terms the airfield survey reads them so the two cannot
+// disagree about where a field is. What stood here asked for a "runway" variable that
+// nothing in the mod has ever written, so an authored field reached the survey and
+// never reached this cache, leaving everything downstream of it blind to a runway the
+// author had marked out by hand.
 {
-    private _rw = _x getVariable ["runway", []];
-    if (_rw isEqualType [] && {count _rw >= 2}) then {
-        [_rw select 0] call _fnc_addCandidate;
+    private _start = _x getVariable ["runwaystartpos", ""];
+    private _end   = _x getVariable ["runwayendpos",   ""];
+
+    if (_start != "" && {_end != ""}) then {
+        private _startArr = parseSimpleArray _start;
+        private _endArr   = parseSimpleArray _end;
+
+        // Seeded from the middle of the strip, which is the point the survey measures
+        // its own radius filter from.
+        if (count _startArr >= 2 && {count _endArr >= 2}) then {
+            [[
+                ((_startArr select 0) + (_endArr select 0)) / 2,
+                ((_startArr select 1) + (_endArr select 1)) / 2,
+                0
+            ]] call _fnc_addCandidate;
+        };
     };
 } forEach (entities "ALiVE_mil_ATO");
 
