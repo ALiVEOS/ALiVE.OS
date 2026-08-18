@@ -37,6 +37,7 @@ See Also:
 Author:
 Tupolov
 Jman
+Goldwep
 
 Peer reviewed:
 nil
@@ -384,6 +385,18 @@ switch(_operation) do {
                         if (_save) then {
                             [MOD(sys_player), "setPlayer", [_unit, _uid]] call ALIVE_fnc_player;
                             ["SYS_PLAYER - SAVED STATE ON DISCONNECT FOR %1", _name] call ALiVE_fnc_dump;
+                        };
+
+                        // Somebody who has gone is no longer loaded, and this is the only place that can
+                        // say so now. The flag is raised when a player's data finishes loading and the
+                        // connect side waits on it before going looking for their unit, but the only
+                        // place that ever lowered it again is the Abort path this handler exists because
+                        // nothing reaches. Left standing, the next connection reads a flag raised by the
+                        // session before, walks straight through the wait, and races the lookup that
+                        // wait is there to protect. Cleared whether or not the save above happened,
+                        // because either way they have left.
+                        if (_uid != "") then {
+                            MOD(sys_player) setVariable [_uid, false, true];
                         };
 
                         // Never claim the body - let the engine handle it as before
