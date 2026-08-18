@@ -172,6 +172,17 @@ if (typeName _pickerForParse == "STRING" && {_pickerForParse != ""} && {_pickerF
 };
 
 for "_j" from 1 to (count _roadpoints) do {
+    // Each roadpoint is tried on its own. The refusals below mean "this spot will not
+    // do", not "stop looking", but exitWith leaves the nearest enclosing block and
+    // inside a for loop that is the whole loop. One dead end, or one spot too near a
+    // roadblock already placed, abandoned every remaining roadpoint, so a cluster that
+    // HAS roads could still come back with nothing and be asked again a second later.
+    // Wrapping the body gives those refusals an iteration to leave instead of the loop.
+    //
+    // call with no argument passes _this straight through, so the blocks further down
+    // that read it are unaffected. The body is left at its original indent so the
+    // change reads as the two lines it actually is.
+    call {
 
     _roadpos = _roadpoints select (_j - 1);
     _vehicle = objNull;
@@ -442,6 +453,7 @@ for "_j" from 1 to (count _roadpoints) do {
     [_spawnedSafePos, _fac, _spawnedClass, _watchdogEnv, _debug]
         call ALIVE_fnc_RB_captureWatchdog;
 
+    };
 };
 
 _result;
