@@ -55,8 +55,11 @@ _result = format['%1 = [] call ALIVE_fnc_hashCreate;',_arrayName];
         _result = _result + '[_cluster, "state", _cluster] call ALIVE_fnc_cluster;';
 
         _result = _result + format['[_cluster,"clusterID","c_%1"] call ALIVE_fnc_hashSet;',_count];
-        _result = _result + format['[_cluster,"center",%1] call ALIVE_fnc_hashSet;',[_x,"center"] call ALIVE_fnc_hashGet];
-        _result = _result + format['[_cluster,"size",%1] call ALIVE_fnc_hashSet;',[_x,"size"] call ALIVE_fnc_hashGet];
+        // center/size through the cluster accessor so a merged cluster recomputes before
+        // being baked. Raw hashGet bakes the []/0 that consolidateClusters left behind,
+        // and the static file then hands [] to positionToGridIndex (upstream #812).
+        _result = _result + format['[_cluster,"center",%1] call ALIVE_fnc_hashSet;',[_x,"center"] call ALIVE_fnc_cluster];
+        _result = _result + format['[_cluster,"size",%1] call ALIVE_fnc_hashSet;',[_x,"size"] call ALIVE_fnc_cluster];
         _result = _result + format['[_cluster,"type","%1"] call ALIVE_fnc_hashSet;',[_x,"type"] call ALIVE_fnc_hashGet];
         _result = _result + format['[_cluster,"priority",%1] call ALIVE_fnc_hashSet;',[_x,"priority"] call ALIVE_fnc_hashGet];
         _result = _result + format['[_cluster,"debugColor","%1"] call ALIVE_fnc_hashSet;',[_x,"debugColor"] call ALIVE_fnc_hashGet];

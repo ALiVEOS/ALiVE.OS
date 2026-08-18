@@ -40,7 +40,12 @@ _clustersCopy = [];
 
 {
     _priority = [_x,"priority"] call ALIVE_fnc_hashGet;
-    _size = [_x,"size"] call ALIVE_fnc_hashGet;
+    // Read through the cluster accessor, not raw hashGet. A cluster whose nodes were
+    // replaced (consolidateClusters merge) has had center/size invalidated to []/0 and
+    // only recomputes when asked through ALIVE_fnc_cluster. A raw read copies the
+    // invalidated values straight into the copy, which is how ALIVE_clustersCivPower
+    // ended up holding clusters with center [] (upstream #812).
+    _size = [_x,"size"] call ALIVE_fnc_cluster;
     // If (greater than size filter OR less than inverse size filter) AND greater than priority filter
     if((((_sizeFilter>=0)&&(_size >= _sizeFilter))||((_sizeFilter<0)&&(_size <= -1*_sizeFilter))) && (_priority >= _priorityFilter)) then {
         _cluster = [nil, "create"] call ALIVE_fnc_cluster;
@@ -54,7 +59,7 @@ _clustersCopy = [];
         [_cluster,"nodes",_newNodes] call ALIVE_fnc_hashSet;
 
         [_cluster,"clusterID",[_x,"clusterID"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
-        [_cluster,"center",[_x,"center"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+        [_cluster,"center",[_x,"center"] call ALIVE_fnc_cluster] call ALIVE_fnc_hashSet;
         [_cluster,"size",_size] call ALIVE_fnc_hashSet;
         [_cluster,"type",[_x,"type"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
         [_cluster,"priority",_priority] call ALIVE_fnc_hashSet;
