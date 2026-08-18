@@ -37,6 +37,7 @@ See Also:
 Author:
 Tupolov
 Jman
+Goldwep
 
 Peer reviewed:
 nil
@@ -337,6 +338,72 @@ switch(_operation) do {
 
                 [ALiVE_fnc_autoStorePlayer, DEFAULT_INTERVAL, [DEFAULT_INTERVAL]] call CBA_fnc_addPerFrameHandler;
 
+                // Inferno #885: capture player state the moment they drop. This
+                // is the only save path in sys_player driven by an actual engine
+                // disconnect. ALIVE_fnc_player_onPlayerDisconnected is not wired
+                // to one despite the name - main's PlayerDisconnected EH
+                // (main\XEH_postServerInit.sqf) runs ALiVE_fnc_onPlayerDisconnected,
+                // which only decrements the player count. The sys_player function
+                // is called by the Abort button (main\fnc_buttonAbort.sqf) and by
+                // the sys_data_pns autosave, both with the unit still in play.
+                // So an alt-F4 or a timeout saved nothing at all: those players
+                // rejoined on the last autoStorePlayer pass, up to
+                // DEFAULT_INTERVAL stale. HandleDisconnect fires on the real
+                // drop and still receives the live unit object, which closes that
+                // window without a separate uid->unit map.
+                if (isNil QGVAR(disconnectEH)) then {
+                    GVAR(disconnectEH) = addMissionEventHandler ["HandleDisconnect", {
+                        params ["_unit","_id","_uid","_name"];
+
+                        // "checkPlayer" sets the kicked flag on the unit so the
+                        // wrong-class kick does not overwrite a good save, but the
+                        // only place that ever cleared it again was the Abort path
+                        // in ALIVE_fnc_player_onPlayerDisconnected. A kicked slot
+                        // therefore stayed flagged, and every later player in it
+                        // silently lost their disconnect save. Honour it once here,
+                        // then clear it so the flag does not outlive the kick.
+                        private _kicked = !isNull _unit && {_unit getVariable [QGVAR(kicked), false]};
+                        if (_kicked) then {
+                            _unit setVariable [QGVAR(kicked), false, true];
+                        };
+
+                        private _save = _uid != ""
+                            && {!isNull _unit}
+                            && {MOD(sys_player) getVariable ["enablePlayerPersistence", false]}
+                            && {!_kicked};
+
+                        // #885 comment (UnRealxInferno): never persist a dead,
+                        // downed or unconscious state - see PLAYER_STATE_UNSAVEABLE.
+                        // Bailing here keeps the disconnect-specific log; the
+                        // "setPlayer" case below repeats the check so the periodic
+                        // autoStorePlayer pass cannot store it either.
+                        if (_save && {PLAYER_STATE_UNSAVEABLE(_unit)}) then {
+                            _save = false;
+                            ["SYS_PLAYER - DISCONNECT SAVE SKIPPED, %1 IS NOT ALIVE", _name] call ALiVE_fnc_dump;
+                        };
+
+                        if (_save) then {
+                            [MOD(sys_player), "setPlayer", [_unit, _uid]] call ALIVE_fnc_player;
+                            ["SYS_PLAYER - SAVED STATE ON DISCONNECT FOR %1", _name] call ALiVE_fnc_dump;
+                        };
+
+                        // Somebody who has gone is no longer loaded, and this is the only place that can
+                        // say so now. The flag is raised when a player's data finishes loading and the
+                        // connect side waits on it before going looking for their unit, but the only
+                        // place that ever lowered it again is the Abort path this handler exists because
+                        // nothing reaches. Left standing, the next connection reads a flag raised by the
+                        // session before, walks straight through the wait, and races the lookup that
+                        // wait is there to protect. Cleared whether or not the save above happened,
+                        // because either way they have left.
+                        if (_uid != "") then {
+                            MOD(sys_player) setVariable [_uid, false, true];
+                        };
+
+                        // Never claim the body - let the engine handle it as before
+                        false
+                    }];
+                };
+
             };
 
             // Eventhandlers for other stuff here
@@ -493,12 +560,44 @@ switch(_operation) do {
         };
         case "setPlayer": {
                         // Set player data to player store
-                        private ["_playerHash","_unit"];
+                        private ["_playerHash","_unit","_puid"];
                         _unit  = _args select 0;
-                        _playerHash = [_logic, _args] call ALIVE_fnc_setPlayer;
-                        [GVAR(player_data), getplayerUID _unit] call ALIVE_fnc_hashRem;
-                        [GVAR(player_data), getplayerUID _unit, _playerHash] call ALIVE_fnc_hashSet;
-                        _result = _playerHash;
+                        // The HandleDisconnect save passes the UID explicitly:
+                        // getPlayerUID is already empty on a dropping unit, and an
+                        // empty key would file the record under "" and lose it on
+                        // rejoin. Every other caller omits it and keeps the old
+                        // getPlayerUID behaviour.
+                        _puid = _args param [1, getPlayerUID _unit, [""]];
+                        if (_puid == "") then {
+                            TRACE_1("SYS_PLAYER NO UID FOR PLAYER SAVE",_unit);
+                            _result = false;
+                        } else {
+                            // Inferno #885: this is the single choke point for the
+                            // server player store - autoStorePlayer, the Abort
+                            // button path, the sys_playeroptions manual save and
+                            // the HandleDisconnect save all land
+                            // here. Guarding it (rather than any one caller) is
+                            // what makes "leave the last good save standing" hold:
+                            // the periodic autostore would otherwise write a dead
+                            // player's state mid-window and restore it on rejoin.
+                            if (PLAYER_STATE_UNSAVEABLE(_unit)) then {
+                                // Plain log, not TRACE - a release build compiles the
+                                // trace out, so there was no way to tell the guard
+                                // fired. autoStorePlayer walks the playable units
+                                // every DEFAULT_INTERVAL, so this repeats once per
+                                // interval while someone is down: keep it
+                                // informational and name the player, the state and
+                                // the fact the earlier save still stands, so a
+                                // repeat reads as the same player still down.
+                                ["SYS_PLAYER - SAVE SKIPPED FOR %1 (%2), UNIT IS %3 - LAST GOOD SAVE KEPT", name _unit, _puid, toUpper (lifeState _unit)] call ALiVE_fnc_dump;
+                                _result = false;
+                            } else {
+                                _playerHash = [_logic, [_unit, _puid]] call ALIVE_fnc_setPlayer;
+                                [GVAR(player_data), _puid] call ALIVE_fnc_hashRem;
+                                [GVAR(player_data), _puid, _playerHash] call ALIVE_fnc_hashSet;
+                                _result = _playerHash;
+                            };
+                        };
         };
         case "checkPlayer": {
                    // Check to see if the player joining has the same class as the one stored in memory
