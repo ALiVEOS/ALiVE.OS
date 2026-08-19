@@ -30,26 +30,20 @@ private _result = nil;
 
 switch (_operation) do {
     case "create": {
-        private _profileSystem = _args param [0, MOD(profileSystem)];
-
         _result = createHashMapFromArray [
             ["id", "playerProximity"],
             ["implementation",ALiVE_fnc_profileActivatorPlayerProximity],
-            ["profileSystem", _profileSystem],
             ["iteration", 0],
             ["spawnSources", []],
-            ["spawnClaims", []],
-            ["retentionClaims", []]
+            ["claims", []]
         ];
     };
 
     case "tick": {
         private _spawnSources = _logic get "spawnSources";
-        private _spawnClaims = _logic get "spawnClaims";
-        private _retentionClaims = _logic get "retentionClaims";
+        private _claims = _logic get "claims";
 
-        _spawnClaims resize 0;
-        _retentionClaims resize 0;
+        _claims resize 0;
 
         private _iteration = _logic get "iteration";
         private _complete = false;
@@ -64,8 +58,7 @@ switch (_operation) do {
                 (allUnitsUAV select {isUavConnected _x}) +
                 ALiVE_SpawnSources;
 
-            private _profileSystem = _logic get "profileSystem";
-            private _zeusSpawn = [_profileSystem,"zeusSpawn"] call ALiVE_fnc_hashGet;
+            private _zeusSpawn = [MOD(profileSystem),"zeusSpawn"] call ALiVE_fnc_hashGet;
 
             if (_zeusSpawn) then {
                 _spawnSourcesUnfiltered append allCurators;
@@ -156,7 +149,7 @@ switch (_operation) do {
                                 { _vehiclesInCommandOf isEqualTo [] } &&
                                 { _vehiclesInCargoOf isEqualTo [] }
                             ) then {
-                                _spawnClaims pushBack (_profileData select 4);
+                                _claims pushBack (_profileData select 4);
                             };
                         };
                     } else {
@@ -171,7 +164,7 @@ switch (_operation) do {
                             };
                         };
 
-                        _retentionClaims pushBack (_profileData select 4);
+                        _claims pushBack (_profileData select 4);
                     };
                 };
             } forEach _profilesInDeactivationRange;
@@ -186,16 +179,14 @@ switch (_operation) do {
             _logic get "id",
             _iteration,
             _complete,
-            _spawnClaims,
-            _retentionClaims,
+            _claims,
             _collectDespawns
         ];
     };
 
     case "reset": {
         (_logic get "spawnSources") resize 0;
-        (_logic get "spawnClaims") resize 0;
-        (_logic get "retentionClaims") resize 0;
+        (_logic get "claims") resize 0;
         _logic set ["iteration",0];
         _result = true;
     };

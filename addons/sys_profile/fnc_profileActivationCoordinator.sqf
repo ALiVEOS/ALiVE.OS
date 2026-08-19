@@ -119,12 +119,12 @@ switch (_operation) do {
     };
 
     case "applyBatch": {
+        // Batch: [activatorID,iteration,complete,claims,collectDespawns]
         _args params [
             "_activatorID",
             "_iteration",
             "_complete",
-            "_spawnClaims",
-            "_retentionClaims",
+            "_claims",
             "_collectDespawns"
         ];
 
@@ -138,24 +138,13 @@ switch (_operation) do {
             _result = false;
         };
 
-        {
-            if (isNil {_activatorClaims get _x}) then {
-                private _claimCount = _claimCounts get _x;
-                _claimCounts set [
-                    _x,
-                    if (isNil "_claimCount") then {
-                        1
-                    } else {
-                        _claimCount + 1
-                    }
-                ];
-            };
-
-            _activatorClaims set [_x,_iteration];
-        } forEach _retentionClaims;
-
         private _spawnQueue = _logic get "spawnQueue";
         private _spawnQueueMembership = _logic get "spawnQueueMembership";
+        private _profilesById = [MOD(profileHandler),"profilesById"] call ALIVE_fnc_hashGet;
+
+        if (isNil "_profilesById" || {typeName _profilesById != "HASHMAP"}) then {
+            _profilesById = createHashMap;
+        };
 
         {
             if (isNil {_activatorClaims get _x}) then {
@@ -173,10 +162,37 @@ switch (_operation) do {
             _activatorClaims set [_x,_iteration];
 
             if (isNil {_spawnQueueMembership get _x}) then {
-                _spawnQueue pushBack _x;
-                _spawnQueueMembership set [_x,true];
+                private _profile = _profilesById get _x;
+
+                if (
+                    !isNil "_profile" &&
+                    {_profile isEqualType []} &&
+                    {count _profile > 2} &&
+                    {(_profile select 2) isEqualType []} &&
+                    {count (_profile select 2) > 5} &&
+                    {(_profile select 2 select 1) isEqualType false} &&
+                    {!(_profile select 2 select 1)}
+                ) then {
+                    private _profileData = _profile select 2;
+                    private _shouldQueue = (_profileData select 5) isEqualTo "entity";
+
+                    if (!_shouldQueue) then {
+                        private _vehicleAssignments = [_profile,"vehicleAssignments"] call ALiVE_fnc_hashGet;
+                        _shouldQueue =
+                            isNil "_vehicleAssignments" ||
+                            {!(_vehicleAssignments isEqualType [])} ||
+                            {count _vehicleAssignments <= 1} ||
+                            {!((_vehicleAssignments select 1) isEqualType [])} ||
+                            {(_vehicleAssignments select 1) isEqualTo []};
+                    };
+
+                    if (_shouldQueue) then {
+                        _spawnQueue pushBack _x;
+                        _spawnQueueMembership set [_x,true];
+                    };
+                };
             };
-        } forEach _spawnClaims;
+        } forEach _claims;
 
         if (_complete) then {
             _completedIterations set [_activatorID,_iteration];

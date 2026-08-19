@@ -1,3 +1,9 @@
+// Kept at top level so this one custom Eden attribute can inherit the engine
+// control classes without shadowing BI's built-in Cfg3DEN attribute classes.
+class ctrlControlsGroupNoScrollbars;
+class ctrlStatic;
+class ctrlCheckbox;
+
 class CfgVehicles {
     class Logic;
     class Module_F : Logic
@@ -41,12 +47,36 @@ class CfgVehicles {
                     class activeLimiter : Edit { property = "ALiVE_sys_profile_activeLimiter"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ACTIVE_LIMITER_COMMENT"; defaultValue = """144"""; };
                     class zeusSpawn : Combo { property = "ALiVE_sys_profile_zeusSpawn"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_ZEUSSPAWN_COMMENT"; defaultValue = """true"""; class Values { class Yes{name="Yes";value=true;default=1;}; class No{name="No";value=false;}; }; };
 
-                    // ---- Spawn Radii ----------------------------------------------------
-                    class HDR_SPAWN : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_SPAWN"; displayName = "SPAWN RADII"; };
-                    class spawnRadius : Edit { property = "ALiVE_sys_profile_spawnRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS_COMMENT"; defaultValue = """1500"""; };
-                    class spawnTypeHeliRadius : Edit { property = "ALiVE_sys_profile_spawnTypeHeliRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS_COMMENT"; defaultValue = """1500"""; };
-                    class spawnTypeJetRadius : Edit { property = "ALiVE_sys_profile_spawnTypeJetRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT"; defaultValue = """0"""; };
-                    class spawnRadiusUAV : Edit { property = "ALiVE_sys_profile_spawnRadiusUAV"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT"; defaultValue = """-1"""; };
+                    // ---- Profile Spawn Modes -------------------------------------------
+                    class HDR_SPAWN : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_HDR_SPAWN"; displayName = "PROFILE SPAWN MODES"; };
+                    class proximitySpawning
+                    {
+                            property = "ALiVE_sys_profile_proximitySpawning";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SETTINGS";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SPAWNING_COMMENT";
+                            control = "ALiVE_ProximitySpawningLocked";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['proximitySpawning', true, true];";
+                            defaultValue = "true";
+                    };
+                    class spawnRadius : Edit { property = "ALiVE_sys_profile_spawnRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_RADIUS_COMMENT"; expression = "_this setVariable ['spawnRadius', _value, true];"; defaultValue = """1500"""; };
+                    class spawnTypeHeliRadius : Edit { property = "ALiVE_sys_profile_spawnTypeHeliRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_HELI_RADIUS_COMMENT"; expression = "_this setVariable ['spawnTypeHeliRadius', _value, true];"; defaultValue = """1500"""; };
+                    class spawnTypeJetRadius : Edit { property = "ALiVE_sys_profile_spawnTypeJetRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS_COMMENT"; expression = "_this setVariable ['spawnTypeJetRadius', _value, true];"; defaultValue = """0"""; };
+                    class spawnRadiusUAV : Edit { property = "ALiVE_sys_profile_spawnRadiusUAV"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SPAWN_UAV_RADIUS_COMMENT"; expression = "_this setVariable ['spawnRadiusUAV', _value, true];"; defaultValue = """-1"""; };
+                    class SPACER_AIR_COMBAT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_SPACER_AIR_COMBAT"; displayName = " "; };
+                    class airCombatSpawning
+                    {
+                            property = "ALiVE_sys_profile_airCombatSpawning";
+                            displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_SETTINGS";
+                            tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_SPAWNING_COMMENT";
+                            control = "Checkbox";
+                            typeName = "BOOL";
+                            expression = "_this setVariable ['airCombatSpawning', _value, true];";
+                            defaultValue = "false";
+                    };
+                    class airCombatPlaneVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatPlaneVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatPlaneVehicleRadius', _value, true];"; defaultValue = """7000"""; };
+                    class airCombatHelicopterVehicleRadius : Edit { property = "ALiVE_sys_profile_airCombatHelicopterVehicleRadius"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS_COMMENT"; expression = "_this setVariable ['airCombatHelicopterVehicleRadius', _value, true];"; defaultValue = """5000"""; };
+                    class SPACER_POST_AIR_COMBAT : ALiVE_ModuleSubTitle { property = "ALiVE_sys_profile_SPACER_POST_AIR_COMBAT"; displayName = " "; };
                     class smoothSpawn : Edit { property = "ALiVE_sys_profile_smoothSpawn"; displayName = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN"; tooltip = "$STR_ALIVE_PROFILE_SYSTEM_SMOOTHSPAWN_COMMENT"; defaultValue = """0.3"""; };
                     class vehicleSpawnSettleSeconds : Combo
                     {
@@ -190,4 +220,74 @@ class CfgVehicles {
                 icon = "x\alive\addons\sys_profile\icon_sys_profile.paa";
                 picture = "x\alive\addons\sys_profile\icon_sys_profile.paa";
         };
+};
+
+// The only custom Eden control in this module: display Proximity Spawn as a
+// visibly checked but non-editable setting because proximity spawning is
+// mandatory. All other profile attributes use standard Eden controls.
+class Cfg3DEN
+{
+    class Attributes
+    {
+        class ALiVE_ProximitySpawningLocked: ctrlControlsGroupNoScrollbars
+        {
+            type = 15;
+            style = 0;
+            idc = -1;
+            x = 0;
+            y = 0;
+            w = "130 * (pixelW * pixelGrid * 0.5)";
+            h = "5 * (pixelH * pixelGrid * 0.5)";
+            colorBackground[] = {0, 0, 0, 0};
+            colorText[] = {1, 1, 1, 1};
+            text = "";
+            font = "RobotoCondensed";
+            sizeEx = "pixelH * pixelGrid * 2.2";
+            attributeLoad = "private _group = if (_this isEqualType []) then { _this select 0 } else { _this }; private _check = _group controlsGroupCtrl 3101; _check cbSetChecked true; _check ctrlEnable false;";
+            attributeSave = "true";
+
+            class VScrollbar {};
+            class HScrollbar {};
+
+            class controls
+            {
+                class Title: ctrlStatic
+                {
+                    idc = 3100;
+                    type = 0;
+                    style = 1;
+                    x = 0;
+                    y = 0;
+                    w = "48 * (pixelW * pixelGrid * 0.5)";
+                    h = "5 * (pixelH * pixelGrid * 0.5)";
+                    colorBackground[] = {0, 0, 0, 0};
+                    colorText[] = {1, 1, 1, 1};
+                    text = "$STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SETTINGS";
+                    tooltip = "$STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SPAWNING_COMMENT";
+                    font = "RobotoCondensedLight";
+                    sizeEx = "pixelH * pixelGrid * 2.4";
+                };
+
+                class Enabled: ctrlCheckbox
+                {
+                    idc = 3101;
+                    type = 77;
+                    style = 0;
+                    checked = 1;
+                    x = "50 * (pixelW * pixelGrid * 0.5)";
+                    y = 0;
+                    w = "5 * (pixelW * pixelGrid * 0.5)";
+                    h = "5 * (pixelH * pixelGrid * 0.5)";
+                    color[] = {1, 1, 1, 1};
+                    colorDisabled[] = {1, 1, 1, 0.25};
+                    colorBackground[] = {0, 0, 0, 0};
+                    colorBackgroundDisabled[] = {0, 0, 0, 0};
+                    textureChecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa";
+                    textureUnchecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa";
+                    textureDisabledChecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_checked_ca.paa";
+                    textureDisabledUnchecked = "A3\Ui_f\data\GUI\RscCommon\RscCheckBox\CheckBox_unchecked_ca.paa";
+                };
+            };
+        };
+    };
 };

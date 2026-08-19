@@ -142,10 +142,9 @@ if (
             [MOD(profileHandler),"getProfile",_profileID] call ALiVE_fnc_profileHandler
         };
 
-        private _invalid =
-            _stale ||
+        private _invalid = _stale ||
             {isNil "_profile"} ||
-            {_profile select 2 select 1} ||
+            {(_profile select 2) select 1} ||
             {[_profile,"locked",false] call ALiVE_fnc_hashGet};
 
         if (_invalid) then {
@@ -160,13 +159,14 @@ if (
     if (!isNil "_profileToSpawn") then {
         private _profileID = _spawnQueue deleteAt 0;
         _spawnQueueMembership deleteAt _profileID;
+
         private _profile = _profileToSpawn;
         private _profileData = _profile select 2;
-
         private _activeLimiter = [MOD(profileSystem),"activeLimiter"] call ALiVE_fnc_profileSystem;
         private _activeEntityCount = count ([MOD(profileHandler),"getActiveEntities"] call ALiVE_fnc_profileHandler);
+        private _spawnAllowed = _activeEntityCount < _activeLimiter;
 
-        if (_activeEntityCount < _activeLimiter) then {
+        if (_spawnAllowed) then {
             if ((_profileData select 5) == "entity") then {
                 [_profile,"spawn"] spawn ALiVE_fnc_profileEntity;
             } else {
