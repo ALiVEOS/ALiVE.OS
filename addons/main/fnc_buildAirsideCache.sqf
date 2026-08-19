@@ -88,6 +88,14 @@ private _fnc_addCandidate = {
     params ["_pos"];
     if (count _pos < 2) exitWith {};
     private _p = [_pos select 0, _pos select 1, 0];
+    // A terrain with no airfield still answers the config read, it just answers with
+    // the map origin. That is not a place, and surveying it costs as much as surveying
+    // a real airfield before the result is thrown away, so refuse it here. Anything off
+    // the map is refused for the same reason.
+    private _px = _p select 0;
+    private _py = _p select 1;
+    if (_px < 50 && {_py < 50}) exitWith {};
+    if (_px < 0 || {_py < 0} || {_px > worldSize} || {_py > worldSize}) exitWith {};
     // 600 m dedupe. Two config entries for the same field are common, and
     // building it twice would double every object sweep.
     if ((_candidates findIf {(_x distance2D _p) < 600}) < 0) then {
@@ -123,10 +131,30 @@ if (count _locTypes > 0) then {
 
 // Runways a mission author defined on a MACC module, which is the only source
 // here that is guaranteed correct for the terrain it was authored on.
+//
+// The module holds these as three strings, a start, an end and a width, and they are
+// read here on exactly the terms the airfield survey reads them so the two cannot
+// disagree about where a field is. What stood here asked for a "runway" variable that
+// nothing in the mod has ever written, so an authored field reached the survey and
+// never reached this cache, leaving everything downstream of it blind to a runway the
+// author had marked out by hand.
 {
-    private _rw = _x getVariable ["runway", []];
-    if (_rw isEqualType [] && {count _rw >= 2}) then {
-        [_rw select 0] call _fnc_addCandidate;
+    private _start = _x getVariable ["runwaystartpos", ""];
+    private _end   = _x getVariable ["runwayendpos",   ""];
+
+    if (_start != "" && {_end != ""}) then {
+        private _startArr = parseSimpleArray _start;
+        private _endArr   = parseSimpleArray _end;
+
+        // Seeded from the middle of the strip, which is the point the survey measures
+        // its own radius filter from.
+        if (count _startArr >= 2 && {count _endArr >= 2}) then {
+            [[
+                ((_startArr select 0) + (_endArr select 0)) / 2,
+                ((_startArr select 1) + (_endArr select 1)) / 2,
+                0
+            ]] call _fnc_addCandidate;
+        };
     };
 } forEach (entities "ALiVE_mil_ATO");
 
@@ -135,6 +163,12 @@ if (count _candidates == 0) exitWith {
     ALiVE_airsideCapsules = [];
     publicVariable "ALiVE_airsideBounds";
     publicVariable "ALiVE_airsideCapsules";
+    // Finished, having looked at nowhere. Ready says the build is over; the empty list of
+    // places searched is what stops anything treating that as "no airfields here", because
+    // seeding only sees config entries, map locations and module-drawn strips, and a field
+    // made of terrain objects alone would never have become a candidate to look at.
+    ALiVE_airsideCacheReady = true;
+    publicVariable "ALiVE_airsideCacheReady";
     ALiVE_airsideCacheBuilding = nil;
     ["ALiVE airside: no airfield candidates on %1, exclusion disabled", worldName] call ALiVE_fnc_dump;
 };
@@ -167,8 +201,15 @@ private _fnc_buildOne = {
         // unfiltered object sweeps plus a location query, and calling
         // getRunwayCentreline as well would silently double that because it
         // calls this same function internally.
-        private _geom = [_centre, ALiVE_airsideSearchRadius] call ALiVE_fnc_getAirfieldGeometry;
-        _geom params [["_runways", []], ["_taxiways", []]];
+        // Ask for runways and taxiways only. The broad no-go zones this can also work out
+        // are the most expensive part of the survey and nothing here reads them, so they
+        // were being found and thrown away on every airfield of every mission.
+        private _geom = [_centre, ALiVE_airsideSearchRadius, false] call ALiVE_fnc_getAirfieldGeometry;
+        // Take the swept object list back as well and reuse it below. The survey has just
+        // looked at everything within a mile and a half of the field, and this was then
+        // sweeping exactly the same area again for parking and hangars, doubling the single
+        // most expensive part of the work on every airfield.
+        _geom params [["_runways", []], ["_taxiways", []], ["_zonesUnused", []], ["_sweptObjs", []]];
 
         // ----------------------------------------------------------------
         // Runway axis. Best available source wins.
@@ -299,7 +340,8 @@ private _fnc_buildOne = {
 
         // Authored tags first. This is the only exact source, and it mirrors
         // the ALiVE_runway and ALiVE_taxiway convention already in use.
-        private _near = nearestObjects [_centre, [], ALiVE_airsideSearchRadius];
+        // Reuse what the survey already swept rather than sweeping the same ground again.
+        private _near = _sweptObjs;
         {
             if (_x getVariable ["ALiVE_parking", false]) then {
                 private _r = _x getVariable ["ALiVE_parkingRadius", 30];
@@ -333,7 +375,13 @@ private _fnc_buildOne = {
         // single field can produce hundreds of near-identical discs. This is
         // the pathfinder's inner loop, so collapse them on a coarse grid and
         // then cap what survives.
-        private _seen = [];
+        // Drop duplicates by snapping each to a coarse grid. This used to hold the ones
+        // already kept in a plain list and search the whole list for every new one, so the
+        // work grew with the square of the count: a field with a handful of taxiways cost
+        // almost nothing, while a big one with several hundred cost tens of thousands of
+        // comparisons and was the reason busy airfields stalled the game while loading.
+        // A lookup table answers the same question in one step regardless of size.
+        private _seen = createHashMap;
         private _packed = [];
         private _capCount = (count _caps) / 8;
         for "_j" from 0 to (_capCount - 1) do {
@@ -344,7 +392,7 @@ private _fnc_buildOne = {
                 round ((_caps select (_c + 2)) / 25),
                 round ((_caps select (_c + 3)) / 25)];
             if !(_key in _seen) then {
-                _seen pushBack _key;
+                _seen set [_key, true];
                 _packed append (_caps select [_c, 8]);
             };
         };
@@ -402,23 +450,56 @@ private _fnc_buildOne = {
 // almost immediately rather than two minutes in.
 private _bounds = [];
 private _allCaps = [];
+private _sweeps = [];
+// Read once and checked here rather than inside the handler. A mission sets this from its
+// own init and nothing obliges it to hand over a number, and a throw inside the handler
+// would stop it before it advances its index, leaving it retrying the same place every
+// frame with the build never finishing and nothing able to start it again.
+private _recordRadius = if (ALiVE_airsideSearchRadius isEqualType 0) then {
+    ALiVE_airsideSearchRadius max 1500
+} else { 1500 };
 private _idxRef = [0];
 
 [{
     params ["_args", "_handle"];
-    _args params ["_candidates", "_idxRef", "_bounds", "_allCaps", "_fnc_buildOne", "_fnc_pushCapsule"];
+    _args params ["_candidates", "_idxRef", "_bounds", "_allCaps", "_fnc_buildOne", "_fnc_pushCapsule", "_sweeps", "_recordRadius"];
     private _idx = _idxRef select 0;
 
     if (_idx >= count _candidates) exitWith {
         ALiVE_airsideBounds = _bounds;
         ALiVE_airsideCapsules = _allCaps;
+        ALiVE_airsideSurveyed = _sweeps;
         publicVariable "ALiVE_airsideBounds";
         publicVariable "ALiVE_airsideCapsules";
+        publicVariable "ALiVE_airsideSurveyed";
+        ALiVE_airsideCacheReady = true;
+        publicVariable "ALiVE_airsideCacheReady";
         ALiVE_airsideCacheBuilding = nil;
         ["ALiVE airside: cache ready, %1 airfield(s) on %2", (count _bounds) / 4, worldName] call ALiVE_fnc_dump;
+        // The places searched, which is what the composition search reasons about and is not
+        // the same as the airfields found: a field is reported at the centre of the pieces
+        // kept for it, and these are the points it was looked for from. Without this a
+        // narrowing cannot be traced back to the place that allowed it.
+        ["ALiVE airside: searched %1 place(s), as x, y, radius: %2", (count _sweeps) / 3, _sweeps] call ALiVE_fnc_dump;
         _handle call CBA_fnc_removePerFrameHandler;
     };
 
-    [_candidates select _idx, _bounds, _allCaps, _fnc_pushCapsule] call _fnc_buildOne;
+    private _cand = _candidates select _idx;
+    // Written before any of the work below, and written whatever that work returns. A
+    // place that yields no airfield features still had its ground searched, and anything
+    // deciding later whether a search can be skipped needs to know it was looked at.
+    // Recording it afterwards, or only on success, would leave exactly the places that
+    // came back empty looking as though nobody had ever been there.
+    // Floored at the default because a mission is allowed to lower the search radius from
+    // its own init, and this figure is no longer only about building the cache: the
+    // composition search reads it to decide how much of its own survey it can leave out.
+    // Recording a smaller number than was actually searched would narrow searches it should
+    // not, so the floor keeps the claim honest whatever the mission asked for.
+    _sweeps append [_cand select 0, _cand select 1, _recordRadius];
+
+    // Advanced before the work, not after. An error inside the build leaves the handler
+    // retrying the same place every frame, and with the record above that turned a stuck
+    // candidate into a list that grew without limit.
     _idxRef set [0, _idx + 1];
-}, 0, [_candidates, _idxRef, _bounds, _allCaps, _fnc_buildOne, _fnc_pushCapsule]] call CBA_fnc_addPerFrameHandler;
+    [_cand, _bounds, _allCaps, _fnc_pushCapsule] call _fnc_buildOne;
+}, 0, [_candidates, _idxRef, _bounds, _allCaps, _fnc_buildOne, _fnc_pushCapsule, _sweeps, _recordRadius]] call CBA_fnc_addPerFrameHandler;

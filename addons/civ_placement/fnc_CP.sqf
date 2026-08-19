@@ -202,7 +202,20 @@ switch(_operation) do {
         _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
     case "onEachSpawnOnce": {
-        _result = [_logic, _operation, _args, true] call ALIVE_fnc_OOsimpleOperation;
+        // The editor stores a yes or no here as text. The shared settings helper replaces
+        // any value whose type differs from the default it is handed, and writes that
+        // default back onto the module, so handing it a plain yes or no threw the setting
+        // away and stamped the default over it permanently. Keep it as text on the way
+        // through for that reason, and settle it on the way out so callers need not care.
+        if (_args isEqualType true) then { _args = ["false", "true"] select _args };
+
+        private _value = [_logic, _operation, _args, "true"] call ALIVE_fnc_OOsimpleOperation;
+
+        if (_value isEqualType true) then {
+            _result = _value;
+        } else {
+            _result = (toLower (_value + "")) in ["true", "yes", "1"];
+        };
     };
     // Return TAOR marker
     case "taor": {
@@ -363,6 +376,26 @@ switch(_operation) do {
     };
     // Main process
     case "init": {
+
+        // Put the module's own areas out of sight on every machine that has a screen.
+        //
+        // This used to sit in the branch below that only runs when the machine is NOT the
+        // server, which is fine on a dedicated server but wrong everywhere else: in single
+        // player, and on a listen server the host is playing on, the player's machine IS the
+        // server, so that branch never ran and the areas stayed painted across the map for
+        // the whole mission.
+        //
+        // Both settings are read through the module rather than straight off it. Straight off it
+        // they are still the comma separated text the mission maker typed, and it is the read
+        // that turns them into the list of marker names wanted here. Reading a second time
+        // returns the same list, so the branches below are unaffected.
+        if (hasInterface) then {
+            private _taorAreas      = [_logic, "taor",      _logic getVariable ["taor",      DEFAULT_TAOR]] call MAINCLASS;
+            private _blacklistAreas = [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
+            if (_taorAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _taorAreas};
+            if (_blacklistAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _blacklistAreas};
+        };
+
         if (isServer) then {
 
             // if server, initialise module game logic
@@ -386,8 +419,6 @@ switch(_operation) do {
         } else {
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
-            {_x setMarkerAlpha 0} foreach (_logic getVariable ["taor", DEFAULT_TAOR]);
-            {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_TAOR]);
         };
     };
     case "start": {
@@ -1109,34 +1140,29 @@ switch(_operation) do {
                             private _cPos = [_cluster, "center"] call ALIVE_fnc_hashGet;
                             if (isNil "_cPos" || {typeName _cPos != "ARRAY"}) then { _cPos = [0,0,0] };
 
+                            ALiVE_DIAG_artyWanted = ALiVE_DIAG_artyWanted + _sectionSize;
                             private _gunsPlaced = 0;
                             for "_g" from 1 to _sectionSize do {
                                 private _safePos = [];
                                 private _safeDir = 0;
-                                {
-                                    if (count _safePos > 0) exitWith {};
-                                    private _radius = _x;
-                                    for "_a" from 0 to 5 do {
-                                        private _cand = _cPos getPos [_radius, (_a * 60) + random 60];
-                                        private _res = [_cand, 25, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
-                                        if (count _res >= 2) then {
-                                            private _testPos = _res select 0;
-                                            private _clash = false;
-                                            { if (_testPos distance2D _x < 25) exitWith { _clash = true } } forEach _usedArtyPositions;
-                                            if (!_clash) then {
-                                                _safePos = _testPos;
-                                                _safeDir = _res select 1;
-                                            };
-                                        };
-                                        if (count _safePos > 0) exitWith {};
-                                    };
-                                } forEach [50, 80, 110, 140, 170, 200];
+
+                                // One wide search across the whole area, rather than thirty six narrow ones
+                                // creeping outwards ring by ring. Same ground, a fraction of the work, and the
+                                // guns end up spread across it instead of sitting on rings. See the helper for
+                                // what the old way was costing.
+                                private _res = [_cPos, 200, 10, _usedArtyPositions, 25, _debug] call ALiVE_fnc_findBatterySpawnPosition;
+
+                                if (count _res >= 2) then {
+                                    _safePos = _res select 0;
+                                    _safeDir = _res select 1;
+                                };
 
                                 if (count _safePos > 0) then {
                                     _usedArtyPositions pushBack _safePos;
                                     [_artyClass, _side, _artySourceFaction, "PRIVATE", _safePos, _safeDir, false, _artySourceFaction] call ALIVE_fnc_createProfilesCrewedVehicle;
                                     _countProfiles = _countProfiles + 2;
                                     _gunsPlaced = _gunsPlaced + 1;
+                                    ALiVE_DIAG_artyPlaced = ALiVE_DIAG_artyPlaced + 1;
                                 };
                             };
 
@@ -1184,8 +1210,33 @@ switch(_operation) do {
                 };
             };
 
+            // DIAG-STRIP (load time): a run of this mission spent seventeen seconds and
+            // more between the artillery line above and the sea patrol line below with
+            // nothing written in between, so the log could not say where it went. These
+            // two brackets close that gap. They fire ONCE per civ_placement instance,
+            // never per lookup: the group lookup they are timing is called from seventy
+            // places across the mod including live task and air tasking paths, and the
+            // dump function writes to the log whether or not anyone asked, so timing it
+            // at the call site here is the only way to get a number without writing to
+            // every log forever.
+            // DIAG-STRIP (load time): this fallback is nearly the whole of the module startup
+            // cost, and it swings from four seconds to thirty between instances doing much the
+            // same work. That spread says some guns are found a home straight away while others
+            // are searched for and never placed at all. Counting what was asked for, what was
+            // placed, and how many searches it took tells the two apart. There is no other way
+            // to see it: the search reports its failures only for wide searches, and these are
+            // narrow ones.
+            ALiVE_DIAG_artyCalls = 0;
+            ALiVE_DIAG_artyWanted = 0;
+            ALiVE_DIAG_artyPlaced = 0;
+
+            private _diagT0 = diag_tickTime;
+
             // place any batteries the group pull could not provide
             call _fnc_placeFallbackArtillery;
+
+            private _diagArty = diag_tickTime - _diagT0;
+            private _diagT1 = diag_tickTime;
 
             if(_countMotorized > 0) then {
 
@@ -1240,6 +1291,29 @@ switch(_operation) do {
                 if!(_group == "FALSE") then {
                     _groups pushback _group;
                 };
+            };
+
+            // DIAG-STRIP (load time): closing bracket for the note above. Reports how
+            // long picking the groups took and how many picks that was, so the cost per
+            // lookup can be worked out rather than guessed at. Motorized is listed twice
+            // when the first pass found nothing and the fallback ran, so the lookup count
+            // is a floor rather than an exact figure.
+            private _diagGroups = diag_tickTime - _diagT1;
+            private _diagPicks = _countMotorized + _countInfantry + _countAir + _countSpecOps;
+            if (!isNil "_debug" && {_debug}) then {
+                ["DIAG-STRIP CP DIAG [%1] - group selection %2s over %3+ lookups (motor %4, inf %5, air %6, spec %7) = %8s each; fallback artillery %9s",
+                    _faction,
+                    (round (_diagGroups * 100)) / 100,
+                    _diagPicks,
+                    _countMotorized, _countInfantry, _countAir, _countSpecOps,
+                    if (_diagPicks > 0) then { (round ((_diagGroups / _diagPicks) * 1000)) / 1000 } else { 0 },
+                    (round (_diagArty * 100)) / 100] call ALiVE_fnc_dump;
+            };
+
+            if (!isNil "_debug" && {_debug}) then {
+                ["DIAG-STRIP CP DIAG [%1] - artillery: %2 guns wanted, %3 placed, %4 searches run (%5 per gun placed)",
+                    _faction, ALiVE_DIAG_artyWanted, ALiVE_DIAG_artyPlaced, ALiVE_DIAG_artyCalls,
+                    if (ALiVE_DIAG_artyPlaced > 0) then { round (ALiVE_DIAG_artyCalls / ALiVE_DIAG_artyPlaced) } else { -1 }] call ALiVE_fnc_dump;
             };
 
             _groups = _groups - ALiVE_PLACEMENT_GROUPBLACKLIST;

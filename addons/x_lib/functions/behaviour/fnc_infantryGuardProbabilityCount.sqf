@@ -36,7 +36,13 @@ if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
             		      if (_countInfantry == 2) then { _guardProbabilityCount = 1; };
 							     	  if (_countInfantry > 2) then { _guardProbabilityCount = [1,2] call BIS_fnc_randomInt;};
             	};
-            	case "0.6": { 
+            	case "0.4": {
+            		      if (_countInfantry == 1) then { _guardProbabilityCount = 0; };
+            		      if (_countInfantry == 2) then { _guardProbabilityCount = 1; };
+            		      if (_countInfantry == 3) then { _guardProbabilityCount = 2; };
+								     	  if (_countInfantry > 3) then { _guardProbabilityCount = [2,3] call BIS_fnc_randomInt;};
+            	};
+            	case "0.6": {
             		      if (_countInfantry == 1) then { _guardProbabilityCount = 0; };
             		      if (_countInfantry == 2) then { _guardProbabilityCount = 1; };
             		      if (_countInfantry == 3) then { _guardProbabilityCount = 2; };
@@ -44,7 +50,15 @@ if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
 							     	  if (_countInfantry > 4) then { _guardProbabilityCount = [3,4] call BIS_fnc_randomInt;};
 							     	
             	};
-            	case "1": { 
+            	case "0.8": {
+            		      if (_countInfantry == 1) then { _guardProbabilityCount = 0; };
+            		      if (_countInfantry == 2) then { _guardProbabilityCount = 1; };
+            		      if (_countInfantry == 3) then { _guardProbabilityCount = 2; };
+            		      if (_countInfantry == 4) then { _guardProbabilityCount = 3; };
+            		      if (_countInfantry == 5) then { _guardProbabilityCount = 4; };
+								     	  if (_countInfantry > 5) then { _guardProbabilityCount = [4,5] call BIS_fnc_randomInt;};
+            	};
+            	case "1": {
              		      if (_countInfantry == 1) then { _guardProbabilityCount = 0; };
             		      if (_countInfantry == 2) then { _guardProbabilityCount = 1; };
             		      if (_countInfantry == 3) then { _guardProbabilityCount = 2; };

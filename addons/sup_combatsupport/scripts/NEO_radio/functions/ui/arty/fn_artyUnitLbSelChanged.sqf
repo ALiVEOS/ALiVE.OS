@@ -1,4 +1,5 @@
 private ["_display", "_map"];
+([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
 _display = findDisplay 655555;
 _map = _display displayCtrl 655560;
 
@@ -70,15 +71,15 @@ _sitRepButton ctrlEnable (_status != "KILLED");
 if (_status == "RESPONSE") then
 {
     // Get in Range on top, Don't Move below (positive option first)
-    _artyMoveButton ctrlEnable true; _artyMoveButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.584 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyMoveButton ctrlCommit 0;
+        _artyMoveButton ctrlEnable true; _artyMoveButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.584 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _artyMoveButton ctrlCommit 0;
     _artyMoveButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_artyMoveButtons"];
-    _artyDontMoveButton ctrlEnable true; _artyDontMoveButton ctrlSetPosition [0.519796 * safezoneW + safezoneX, 0.6176 * safezoneH + safezoneY, (0.216525 * safezoneW), (0.028 * safezoneH)]; _artyDontMoveButton ctrlCommit 0;
+        _artyDontMoveButton ctrlEnable true; _artyDontMoveButton ctrlSetPosition [0.519796 * _uiW + _uiX, 0.6176 * _uiH + _uiY, (0.216525 * _uiW), (0.028 * _uiH)]; _artyDontMoveButton ctrlCommit 0;
     _artyDontMoveButton ctrlSetEventHandler ["ButtonClick", "_this call NEO_fnc_artyMoveButtons"];
 }
 else
 {
-    _artyMoveButton ctrlEnable false; _artyMoveButton ctrlSetPosition [safeZoneX + (safeZoneW / 1000), safeZoneY + (safeZoneH / 1.425), (safeZoneW / 1000), (safeZoneH / 1000)]; _artyMoveButton ctrlCommit 0;
-    _artyDontMoveButton ctrlEnable false; _artyDontMoveButton ctrlSetPosition [safeZoneX + (safeZoneW / 1000), safeZoneY + (safeZoneH / 1.375), (safeZoneW / 1000), (safeZoneH / 1000)];  _artyDontMoveButton ctrlCommit 0;
+        _artyMoveButton ctrlEnable false; _artyMoveButton ctrlSetPosition [_uiX + (_uiW / 1000), _uiY + (_uiH / 1.425), (_uiW / 1000), (_uiH / 1000)]; _artyMoveButton ctrlCommit 0;
+        _artyDontMoveButton ctrlEnable false; _artyDontMoveButton ctrlSetPosition [_uiX + (_uiW / 1000), _uiY + (_uiH / 1.375), (_uiW / 1000), (_uiH / 1000)];  _artyDontMoveButton ctrlCommit 0;
 };
 
 //Markers
@@ -87,12 +88,14 @@ uinamespace setVariable ["NEO_artyMarkerCreated", nil];
 [[], 0] call NEO_fnc_supportDrawRing; // clear any dispersion ring from the previous target
 
 //Re-initialize Controls
-{ _x ctrlSetPosition [1, 1, (safeZoneW / 1000), (safeZoneH / 1000)]; _x ctrlCommit 0; } forEach [_artyDispersionSlider, _artyRateDelaySlider];
+        { _x ctrlSetPosition [1, 1, (_uiW / 1000), (_uiH / 1000)]; _x ctrlCommit 0; } forEach [_artyDispersionSlider, _artyRateDelaySlider];
 { _x ctrlSetText "" } forEach [_artyOrdnanceTypeText, _artyRateOfFireText, _artyRoundCountText, _artyDispersionText, _artyRateDelayText];
 { lbClear _x } forEach [_artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb];
+{ _x ctrlSetBackgroundColor [0, 0, 0, 0] } forEach [_artyOrdnanceTypeLb, _artyRateOfFireLb, _artyRoundCountLb];
 
 if (!(_status in ["KILLED", "MISSION", "RTB", "MOVE", "RESPONSE", "NOAMMO"]) && count _ord > 0) then
 {
+    _artyOrdnanceTypeLb ctrlSetBackgroundColor [0.047, 0.047, 0.047, 0.72];
     //Ordnance
     _artyOrdnanceTypeText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>ORDNANCE</t>";
     _artyOrdnanceTypeLb ctrlEnable true;

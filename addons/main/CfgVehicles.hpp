@@ -445,7 +445,12 @@ class Cfg3DEN
         // empty default is semantic opt-in, not a broken-state
         // placeholder.
         class ALiVE_FactionChoiceMulti_Military_Default_BLU_F: ALiVE_FactionChoiceMulti_Base {
-            attributeLoad = "[_this, [0,1,2], 'factions', ['BLU_F'], _value, '$STR_ALIVE_OPCOM_FACTIONS', '$STR_ALIVE_OPCOM_FACTIONS_COMMENT'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
+            // The eighth argument names the fields, comma separated, whose contents the commander
+            // will use INSTEAD of falling back: the manual field beside this list, and the four
+            // older single-faction slots kept for missions built before this list existed. Where
+            // any of them holds a faction there will be no fallback, so nothing is suggested here
+            // and the list is left exactly as the mission maker set it.
+            attributeLoad = "[_this, [0,1,2], 'factions', ['BLU_F'], _value, '$STR_ALIVE_OPCOM_FACTIONS', '$STR_ALIVE_OPCOM_FACTIONS_COMMENT', 'ALiVE_mil_opcom_factionsManual,ALiVE_mil_opcom_faction1,ALiVE_mil_opcom_faction2,ALiVE_mil_opcom_faction3,ALiVE_mil_opcom_faction4'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiLoad.sqf'";
             attributeSave = "[_this, 'factions'] call compile preprocessFileLineNumbers '\x\alive\addons\main\fnc_edenFactionChoiceMultiSave.sqf'";
         };
 

@@ -58,6 +58,31 @@ _result = [
 _otherResult = false;
 _csResult = false;
 
+// A player who has instant joined another unit IS that unit now, and the unit
+// they joined is not carrying the tablet that got them there. The gate above
+// therefore hides every commander entry from them, including Operations, which
+// is the only place an active join can be ended. They are left as the unit they
+// joined with no way back.
+//
+// While a join is active, the honest answer to "should this player have
+// Operations" is that they already do: they are in the middle of using it. So
+// let that ONE entry through. Nothing else is opened, because nothing else is
+// needed to undo this, and the tablet requirement is otherwise the point.
+//
+// Read exactly the way the death handler reads it (sup_command/fnc_SCOM.sqf:494).
+private _joinActive = false;
+private _joinDiag = "no ALIVE_SUP_COMMAND";     // DIAG-STRIP (#989)
+if (!isNil "ALIVE_SUP_COMMAND") then {
+    private _joinState = [ALIVE_SUP_COMMAND,"commandState"] call ALIVE_fnc_SCOM;
+    if (isNil "_joinState") then {
+        _joinDiag = "commandState nil";          // DIAG-STRIP (#989)
+    } else {
+        _joinActive = [_joinState,"opsGroupInstantJoin",false] call ALiVE_fnc_hashGet;
+        _joinDiag = format ["flag=%1 (%2)", _joinActive, typeName _joinActive];   // DIAG-STRIP (#989)
+        if !(_joinActive isEqualType false) then {_joinActive = false};
+    };
+};
+
 if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
     _otherResult = [
         [MOD(SUP_PLAYER_RESUPPLY),"pr_item"] call ALIVE_fnc_PR,
@@ -66,11 +91,18 @@ if ([QMOD(SUP_PLAYER_RESUPPLY)] call ALiVE_fnc_isModuleAvailable) then {
     ] call ALIVE_fnc_playerHasAccessItems;
 };
 
-if ([QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable) then {
+// Combat Support is isGlobal = 2, so its module logic is not in a dedicated
+// client's entities "Module_F" and isModuleAvailable(SUP_COMBATSUPPORT) reads
+// false there. That hid this entry on a dedicated server while it showed on a
+// listen host, where server and client are the same machine. NEO_radioLogic is
+// the Combat Support client logic and IS present on the client, so test that
+// instead of the module scan. (#958)
+if (!isNil "NEO_radioLogic") then {
     _csResult = [
         NEO_radioLogic getVariable ["combatsupport_item","LaserDesignators"],
         NEO_radioLogic getVariable ["combatsupport_item_custom",""],
-        []
+        // the Combat Support Tablet (ALIVE_Tablet) always grants access, matching C2ISTAR / Player Resupply
+        ["ALIVE_Tablet"]
     ] call ALIVE_fnc_playerHasAccessItems;
 };
 
@@ -80,6 +112,16 @@ if (typeName _params == typeName []) then {
     _menuRsc = if (count _params > 1) then {_params select 1} else {_menuRsc};
 } else {
     _menuName = _params;
+};
+
+// DIAG-STRIP (#989): reports what the menu sees AT THE MOMENT IT DECIDES, which a
+// console reading cannot, because that samples a different instant. It also answers
+// the prior question: if NO line appears when the menu is opened as the joined unit,
+// this function is not being re-run and no condition inside it can matter.
+// Gate: ALiVE_mil_c2istar_debug = true.
+if (!isNil "ALiVE_mil_c2istar_debug" && {ALiVE_mil_c2istar_debug}) then {
+    ["C2MENU DIAG-STRIP (#989): menu=%1 tabletResult=%2 joinActive=%3 (%4) playerIs=%5",
+        _menuName, _result, _joinActive, _joinDiag, typeOf player] call ALiVE_fnc_dump;
 };
 //-----------------------------------------------------------------------------
 /*
@@ -108,7 +150,15 @@ _menus =
                 ["call ALiVE_fnc_C2MenuDef", "C2ISTAR", 1],
                 -1,
                 true,
-                _result || _csResult || _otherResult
+                // Also shown mid-join. Operations is the only way to end an instant
+                // join, and it lives behind this entry, so opening it up further in
+                // is no use while the door itself is shut. The unit a player takes
+                // over carries none of the three items tested here, so all three
+                // read false and the way back disappears with them. Traced in a
+                // reporter's log: as the joined unit the menu was built as "main"
+                // twice and never once as "C2ISTAR", so the entry below was never
+                // even reached. See _joinActive above.
+                _result || _csResult || _otherResult || _joinActive
             ]
         ]
     ]
@@ -204,7 +254,9 @@ if (_menuName == "C2ISTAR") then {
                      "",
                      -1,
                      true,
-                     _result
+                     // Also shown mid-join, so the player can get back to their
+                     // own body. See _joinActive above.
+                     _result || _joinActive
                 ],
                 ["Combat Support",
                     {["radio"] call ALIVE_fnc_radioAction},
@@ -213,7 +265,7 @@ if (_menuName == "C2ISTAR") then {
                      "",
                      -1,
                      true,
-                     [QMOD(SUP_COMBATSUPPORT)] call ALiVE_fnc_isModuleAvailable && {_csResult} && {call ALIVE_fnc_combatSupportIsOperator}
+                     (!isNil "NEO_radioLogic") && {_csResult} && {call ALIVE_fnc_combatSupportIsOperator}
                 ],
                 ["Send SITREP",
                     {
@@ -225,13 +277,14 @@ if (_menuName == "C2ISTAR") then {
                             case "Mapbag01": {
                                 createDialog "RscDisplayALIVESITREP";
 
+                                ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
                                 private _ctrlBackground = ((findDisplay 90001) displayCtrl 90002);
                                 _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                                 _ctrlBackground ctrlSetPosition [
-                                    0.15 * safezoneW + safezoneX,
-                                    -0.242 * safezoneH + safezoneY,
-                                    0.72 * safezoneW,
-                                    1.372 * safezoneH
+                                    0.15 * _uiW + _uiX,
+                                    -0.242 * _uiH + _uiY,
+                                    0.72 * _uiW,
+                                    1.372 * _uiH
                                 ];
                                 _ctrlBackground ctrlCommit 0;
                             };
@@ -258,13 +311,14 @@ if (_menuName == "C2ISTAR") then {
                             case "Mapbag01": {
                                 createDialog "RscDisplayALIVEPATROLREP";
 
+                                ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
                                 private _ctrlBackground = ((findDisplay 90002) displayCtrl 90003);
                                 _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                                 _ctrlBackground ctrlSetPosition [
-                                    0.15 * safezoneW + safezoneX,
-                                    -0.242 * safezoneH + safezoneY,
-                                    0.72 * safezoneW,
-                                    1.372 * safezoneH
+                                    0.15 * _uiW + _uiX,
+                                    -0.242 * _uiH + _uiY,
+                                    0.72 * _uiW,
+                                    1.372 * _uiH
                                 ];
                                 _ctrlBackground ctrlCommit 0;
                             };
@@ -290,6 +344,47 @@ if (_menuName == "C2_PLAYER_ORDERS") then {
         private _optedOut = group player getVariable [QGVAR(playerOrdersOptOut), false];
         private _toggleLabel = if (_optedOut) then {"Opt In to OPCOM Orders"} else {"Opt Out of OPCOM Orders"};
 
+        // Whether tasks arrive unasked at all, for everyone, as set on the module and
+        // changeable here. Reads the live value rather than the module attribute so it
+        // shows what is true now, including a change someone else just made.
+        private _autoTasks = true;
+        if (!isNil "ALiVE_c2istar_autoPlayerTasks") then { _autoTasks = ALiVE_c2istar_autoPlayerTasks };
+        // Belt and braces: anything that is not a plain yes or no reads as on, so the
+        // menu never shows the wrong thing because of how the setting arrived.
+        if !(_autoTasks isEqualType true) then { _autoTasks = true };
+        private _autoTasksLabel = if (_autoTasks) then {"Stop Automatic Tasks (all players)"} else {"Allow Automatic Tasks (all players)"};
+
+        // Whether this group already has an order on the go, so only the entry that can
+        // actually do something is offered.
+        //
+        // Asking for a new order while holding one did nothing but explain itself
+        // afterwards, and asking for a different one without holding anything did nothing
+        // at all. Both stayed selectable, so both read as broken.
+        //
+        // Read from the copy of the task list this machine already keeps, which the server
+        // keeps in step as tasks are created, changed and removed. Nothing new has to be
+        // sent and there is no separate flag to fall out of date. Orders are named after
+        // the group they belong to, which is how one is told from another player's.
+        private _hasOrder = false;
+
+        if !(isNil "ALIVE_taskHandlerClient") then {
+            private _groupID = [format ["%1", group player], " ", "_"] call CBA_fnc_replace;
+            private _tasks = [ALIVE_taskHandlerClient, "tasks"] call ALiVE_fnc_hashGet;
+
+            if (!isNil "_tasks" && {_tasks isEqualType []} && {count _tasks > 2}) then {
+                _hasOrder = ((_tasks select 1) findIf {
+                    ((_x find "OPORD_") == 0)
+                    && {(_x find _groupID) > -1}
+                    && {
+                        // Finished, given up on or cancelled orders stay in the list, so
+                        // only one still being worked on counts.
+                        private _record = [_tasks, _x, []] call ALiVE_fnc_hashGet;
+                        (_record param [6, ""]) in ["Created", "Assigned"]
+                    }
+                }) > -1;
+            };
+        };
+
         _menus set [count _menus,
         [
             ["C2_PLAYER_ORDERS", "OPCOM Orders", "popup"],
@@ -300,13 +395,22 @@ if (_menuName == "C2_PLAYER_ORDERS") then {
                     "Ask OPCOM for a new task for your player group.",
                     "",
                     -1,
-                    true,
+                    !_hasOrder,
                     _result
                 ],
                 ["Request Different Order",
                     {["requestOrder", [player, true]] call ALiVE_fnc_playerOrders},
                     "",
                     "Cancel the current group order and ask OPCOM for a different one.",
+                    "",
+                    -1,
+                    _hasOrder,
+                    _result
+                ],
+                [_autoTasksLabel,
+                    {["toggleAutoPlayerTasks", []] call ALiVE_fnc_playerOrders},
+                    "",
+                    "Turn off every task that arrives without being asked for, for every player on every side. Orders you request from this menu still work.",
                     "",
                     -1,
                     true,

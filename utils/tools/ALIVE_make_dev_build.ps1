@@ -10,10 +10,15 @@
 #		for linking with the unpacked addons.	#
 #-----------------------------------------------#
 
+[CmdletBinding()]
+param(
+	[switch]$NoPause
+)
+
 # Settings -------------------------------------#
 
 $bi_game = "arma 3";
-$make_pbo_exe = "mikero\MakePbo.exe";
+$make_pbo_exe = Join-Path $PSScriptRoot "mikero\MakePbo.exe";
 $dev_mod_folder = "@ALiVE_dev";
 $dev_repo_path = "\x\alive\addons";
 $include_pbo_prefix = $false;
@@ -54,7 +59,9 @@ function EchoSpaced([string]$text) {
 function EndScript {
 	echo " ";
 	echo " ";
-	Read-Host "Press ENTER to continue";
+	if (!$NoPause) {
+		Read-Host "Press ENTER to continue";
+	};
 };
 
 # Script ---------------------------------------#
@@ -99,9 +106,11 @@ if ($game_dir -ne $null) { # Check game path
 			# Copy stringtable.xml file if available
 			CopyItem ($addon.fullname + "\stringtable.xml") ($addon_path + "\stringtable.xml");
 			
-			# Add config.cpp hook to dev path
+			# Add config.cpp hook to dev path. Local loose-source builds opt in
+			# automatically so SQF function bodies are refreshed on mission start.
+			# Packed public builds do not define this and avoid the menu-start cost.
 			if (Test-Path ($addon.fullname + "\config.cpp")) {
-				"#include <$dev_repo_path\$addon\config.cpp>" > ($addon_path + "\config.cpp");
+				"#define ALIVE_DEV_RECOMPILE_FUNCTIONS`r`n#include <$dev_repo_path\$addon\config.cpp>" > ($addon_path + "\config.cpp");
 			};
 			
 			# Compile addon to PBO

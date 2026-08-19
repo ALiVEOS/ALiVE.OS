@@ -23,6 +23,21 @@ Jman
 
 private _result = false;
 
+// Every early return below assigns _result rather than handing its value to exitWith.
+//
+// exitWith leaves the block it is written in, not the function, so inside one of these
+// case blocks it ends the case and its value is thrown away. This function answers with
+// _result on the last line, so an exitWith carrying a value simply left _result at the
+// false it starts as, and the caller was handed a boolean where it expected a list.
+//
+// That is what selectEligibleGroup did whenever no group was eligible. The caller in
+// fnc_taskRequest guards with isEqualTo [], which a boolean sails straight through, and
+// the next line read element nine of it: "Error select: Type Bool, expected Array".
+// Reported from a dedicated server on 2026-08-14.
+//
+// exitWith inside the helper blocks further down is a different thing and is correct
+// there, because those blocks really do answer with their own last value.
+
 params [
     ["_operation", "", [""]],
     ["_args", [], [[]]]
@@ -44,12 +59,12 @@ switch (_operation) do {
             ["_player", objNull, [objNull]]
         ];
 
-        if (isNull _player) exitWith {[]};
+        if (isNull _player) exitWith {_result = []};
 
         private _group = group _player;
         private _groupPlayers = (units _group) select {isPlayer _x};
 
-        if (_groupPlayers isEqualTo []) exitWith {[]};
+        if (_groupPlayers isEqualTo []) exitWith {_result = []};
 
         private _requestPlayer = leader _group;
         if !(isPlayer _requestPlayer) then {
@@ -81,68 +96,81 @@ switch (_operation) do {
             ["_groupID", "", [""]]
         ];
 
-        if (_groupID == "" || {isNil "ALIVE_taskHandler"}) exitWith {[]};
+        if (_groupID == "" || {isNil "ALIVE_taskHandler"}) exitWith {_result = []};
 
         private _groupTasks = [ALIVE_taskHandler, "getTasksByGroup", _groupID] call ALiVE_fnc_taskHandler;
         private _currentTask = [];
 
+        // The "current" marker never sits on the top of a task. Every task is built
+        // with its top marked not current and carrying no parent, and the marker
+        // handed to a step underneath it that names the top as its parent. Asking a
+        // single record to be both could never match anything, so a group always
+        // read as having nothing on, and asking the commander for a different order
+        // added one alongside the old one instead of replacing it (#992). Confirmed
+        // by a reporter trace on both a dedicated server and singleplayer: thirteen
+        // lookups, none of which matched, against task lists growing to nine.
+        //
+        // Match the marker, then walk back up to the top of the task, because the
+        // caller deletes whatever comes back and only the top takes the whole thing
+        // with it. Handing back a step would strand the top and its siblings.
+        //
+        // Only a task given to this group speaks for this group. The commander's own
+        // generated tasks are handed to every player on a side, so reading one of
+        // those as "this group is busy" would mark every group busy at once and stop
+        // anyone being given an order at all.
+        //
+        // No early exit here on purpose. A group should only ever have one task on the
+        // go, but if it somehow has two, the later one is the one the player just asked
+        // for, so that is the one to answer with. Deliberate, not a missing exit.
         {
-            _x params [
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "_taskState",
-                "",
-                "_taskCurrent",
-                "_parent"
-            ];
+            if (_x isEqualType [] && {count _x > 12}) then {
+                private _taskState = _x param [8, "", [""]];
+                private _applyType = _x param [9, "", [""]];
+                private _taskCurrent = _x param [10, "", [""]];
+                private _parent = _x param [11, "", [""]];
 
-            if (_parent == "None" && {_taskCurrent == "Y"} && {!(_taskState in ["Succeeded", "Failed", "Canceled"])}) exitWith {
-                _currentTask = _x;
+                if (_taskCurrent == "Y"
+                    && {_applyType == "Group"}
+                    && {!(_taskState in ["Succeeded", "Failed", "Canceled"])}) then {
+
+                    if (_parent == "None") then {
+                        // A task built by hand on the tablet has no steps beneath it,
+                        // so it carries the marker itself. That is the one shape the
+                        // old test did match, and it goes on matching.
+                        _currentTask = _x;
+                    } else {
+                        private _parentTask = [ALIVE_taskHandler, "getTask", _parent] call ALiVE_fnc_taskHandler;
+
+                        // Only accept a top that the task list still holds and that is
+                        // itself parentless. Anything else leaves the group reading as
+                        // free, which is how this behaved before, rather than handing
+                        // the caller something it would then delete.
+                        if (!isNil "_parentTask"
+                            && {_parentTask isEqualType []}
+                            && {count _parentTask > 12}
+                            && {(_parentTask param [11, "", [""]]) == "None"}) then {
+                            _currentTask = _parentTask;
+                        };
+                    };
+                };
             };
         } forEach _groupTasks;
 
-        if (_currentTask isEqualTo []) then {
-            private _groupPlayerIDs = [];
-
+        // DIAG-STRIP (#992): says what this group was holding and which of it the test above
+        // picked, so a log tells apart "found the one on the go" from "found nothing", and
+        // if it found nothing, whether that is because the group genuinely had nothing on or
+        // because the records are there and are being turned away. Carries the assignment
+        // type, since that is what now separates a task given to this group from one the
+        // commander handed to the whole side.
+        // Gate: ALiVE_c2istar_taskDiag = true.
+        if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+            ["[C2ISTAR #992 DIAG] lookup group=%1 groupTasks=%2 matched=%3",
+                _groupID, count _groupTasks, _currentTask param [0, "<none>"]] call ALiVE_fnc_dump;
             {
-                private _playerGroupID = [format ["%1", group _x], " ", "_"] call CBA_fnc_replace;
-                if (_playerGroupID == _groupID) then {
-                    _groupPlayerIDs pushBackUnique (getPlayerUID _x);
-                };
-            } forEach (allPlayers - entities "HeadlessClient_F");
-
-            {
-                private _playerTasks = [ALIVE_taskHandler, "getTasksByPlayer", _x] call ALiVE_fnc_taskHandler;
-
-                {
-                    _x params [
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "_taskState",
-                        "",
-                        "_taskCurrent",
-                        "_parent"
-                    ];
-
-                    if (_parent == "None" && {_taskCurrent == "Y"} && {!(_taskState in ["Succeeded", "Failed", "Canceled"])}) exitWith {
-                        _currentTask = _x;
-                    };
-                } forEach _playerTasks;
-
-                if !(_currentTask isEqualTo []) exitWith {};
-            } forEach _groupPlayerIDs;
+                ["[C2ISTAR #992 DIAG]   record id=%1 state=%2 apply=%3 current=%4 parent=%5 source=%6",
+                    _x param [0, ""], _x param [8, ""], _x param [9, ""], _x param [10, ""],
+                    _x param [11, ""], _x param [12, ""]] call ALiVE_fnc_dump;
+            } forEach _groupTasks;
         };
 
         _result = _currentTask;
@@ -152,7 +180,7 @@ switch (_operation) do {
             ["_taskID", "", [""]]
         ];
 
-        if (_taskID == "" || {isNil "ALIVE_taskHandler"}) exitWith {[]};
+        if (_taskID == "" || {isNil "ALIVE_taskHandler"}) exitWith {_result = []};
 
         private _managedTaskParams = [ALIVE_taskHandler, "managedTaskParams"] call ALiVE_fnc_hashGet;
         if (!isNil "_managedTaskParams" && {_taskID in (_managedTaskParams select 1)}) then {
@@ -167,7 +195,7 @@ switch (_operation) do {
         ];
 
         private _logic = missionNamespace getVariable ["ALIVE_MIL_C2ISTAR", objNull];
-        if (isNull _logic) exitWith {["None", "OPF_F"]};
+        if (isNull _logic) exitWith {_result = ["None", "OPF_F"]};
 
         _result = switch (_side) do {
             case "EAST": {
@@ -186,7 +214,7 @@ switch (_operation) do {
             ["_side", "", [""]]
         ];
 
-        if !(isServer) exitWith {[[], []]};
+        if !(isServer) exitWith {_result = [[], []]};
 
         private _playerIDs = [];
         private _playerNames = [];
@@ -217,7 +245,7 @@ switch (_operation) do {
             ["_destination", [], [[]]]
         ];
 
-        if !(isServer) exitWith {[]};
+        if !(isServer) exitWith {_result = []};
 
         private _groupsByID = [] call ALiVE_fnc_hashCreate;
         private _candidates = [];
@@ -260,7 +288,7 @@ switch (_operation) do {
             };
         } forEach (allPlayers - entities "HeadlessClient_F");
 
-        if (_candidates isEqualTo []) exitWith {[]};
+        if (_candidates isEqualTo []) exitWith {_result = []};
 
         _candidates = [_candidates, [], {
             private _factionSort = if (_x select 0) then {0} else {1};
@@ -273,13 +301,14 @@ switch (_operation) do {
         _args params [
             ["_groupData", [], [[]]],
             ["_enemyFaction", "OPF_F", [""]],
-            ["_excludedPosition", [], [[]]],
-            ["_excludedReservationKey", []]
+            ["_excludedPositions", [], [[]]],
+            ["_excludedReservationKeys", [], [[]]],
+            ["_excludedTaskTypes", [], [[]]]
         ];
 
-        if !(isServer) exitWith {false};
-        if (_groupData isEqualTo []) exitWith {false};
-        if (isNil "ALIVE_taskHandler") exitWith {false};
+        if !(isServer) exitWith {_result = false};
+        if (_groupData isEqualTo []) exitWith {_result = false};
+        if (isNil "ALIVE_taskHandler") exitWith {_result = false};
 
         _groupData params [
             "",
@@ -303,7 +332,7 @@ switch (_operation) do {
             };
         } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
 
-        if (_opcom isEqualTo []) exitWith {false};
+        if (_opcom isEqualTo []) exitWith {_result = false};
 
         if (isNil QGVAR(playerRequests)) then {
             GVAR(playerRequests) = [] call ALiVE_fnc_hashCreate;
@@ -322,7 +351,7 @@ switch (_operation) do {
         };
 
         private _getUnreservedObjective = {
-            params ["_objectives", "_taskType", "_fallbackPos", "_excludedReservationKey"];
+            params ["_objectives", "_taskType", "_fallbackPos", "_excludedReservationKeys"];
 
             private _currentTargets = [GVAR(playerRequests), _taskType, []] call ALiVE_fnc_hashGet;
             private _selectedObjective = [];
@@ -330,13 +359,19 @@ switch (_operation) do {
 
             {
                 private _reservationKey = [_x, _fallbackPos] call _getObjectiveReservationKey;
-                private _isExcludedReservation = !(_excludedReservationKey isEqualTo []) && {_reservationKey isEqualTo _excludedReservationKey};
+                private _isExcludedReservation = (_excludedReservationKeys findIf {_reservationKey isEqualTo _x}) > -1;
 
-                if !(_reservationKey in _currentTargets) then {
-                    if !(_isExcludedReservation) exitWith {
-                        _selectedObjective = _x;
-                        _selectedReservationKey = _reservationKey;
-                    };
+                // Both tests in one, so the stop below leaves the loop rather than a block
+                // sitting inside it. Written as a test within a test, the stop was already the
+                // last thing in the inner block and so did nothing at all: the loop carried on
+                // and every later objective that passed overwrote the one just chosen. These
+                // arrive nearest first, so what came back was the furthest acceptable
+                // objective rather than the nearest, and asking for a different order sent
+                // groups steadily further out. Reported as objectives five to eight kilometres
+                // away when nearer ones were free.
+                if (!(_reservationKey in _currentTargets) && {!_isExcludedReservation}) exitWith {
+                    _selectedObjective = _x;
+                    _selectedReservationKey = _reservationKey;
                 };
             } forEach _objectives;
 
@@ -344,13 +379,14 @@ switch (_operation) do {
         };
 
         private _filterObjectives = {
-            params ["_objectives", "_fallbackPos", "_excludedPosition"];
+            params ["_objectives", "_fallbackPos", "_excludedPositions"];
 
-            if (_excludedPosition isEqualTo []) exitWith {_objectives};
+            if (_excludedPositions isEqualTo []) exitWith {_objectives};
 
             _objectives select {
                 private _objectiveCenter = [_x, "center", _fallbackPos] call ALiVE_fnc_hashGet;
-                _objectiveCenter isEqualTo [] || {_objectiveCenter distance2D _excludedPosition > 10}
+                _objectiveCenter isEqualTo []
+                    || {(_excludedPositions findIf {_objectiveCenter distance2D _x <= 10}) < 0}
             }
         };
 
@@ -358,10 +394,16 @@ switch (_operation) do {
         private _taskLocation = [];
         private _reservationKey = [];
         private _objectives = +([_opcom, "nearestObjectives", [_groupPos, "attacking"]] call ALiVE_fnc_OPCOM);
-        _objectives = [_objectives, _groupPos, _excludedPosition] call _filterObjectives;
+        _objectives = [_objectives, _groupPos, _excludedPositions] call _filterObjectives;
 
-        if !(_objectives isEqualTo []) then {
-            private _objectiveSelection = [_objectives, "CaptureObjective", _groupPos, _excludedReservationKey] call _getUnreservedObjective;
+        // A kind of job that has just been handed out is passed over here, the same as a
+        // place is. This is the half that was missing: only two kinds of order can come from
+        // the commander's objectives, and this route is tried before any other on every
+        // request, so once it started succeeding it won every time and handed out the same
+        // kind of job over and over. Ruling both out leaves nothing to offer, which is the
+        // signal to fall through to the ordinary task list, where the choice is wider.
+        if (!("CaptureObjective" in _excludedTaskTypes) && {!(_objectives isEqualTo [])}) then {
+            private _objectiveSelection = [_objectives, "CaptureObjective", _groupPos, _excludedReservationKeys] call _getUnreservedObjective;
             private _objective = _objectiveSelection select 0;
 
             if !(_objective isEqualTo []) then {
@@ -371,11 +413,11 @@ switch (_operation) do {
             };
         };
 
-        if (_taskType == "") then {
+        if (_taskType == "" && {!("MilDefence" in _excludedTaskTypes)}) then {
             _objectives = +([_opcom, "nearestObjectives", [_groupPos, "defending"]] call ALiVE_fnc_OPCOM);
-            _objectives = [_objectives, _groupPos, _excludedPosition] call _filterObjectives;
+            _objectives = [_objectives, _groupPos, _excludedPositions] call _filterObjectives;
             if !(_objectives isEqualTo []) then {
-                private _objectiveSelection = [_objectives, "MilDefence", _groupPos, _excludedReservationKey] call _getUnreservedObjective;
+                private _objectiveSelection = [_objectives, "MilDefence", _groupPos, _excludedReservationKeys] call _getUnreservedObjective;
                 private _objective = _objectiveSelection select 0;
 
                 if !(_objective isEqualTo []) then {
@@ -386,7 +428,7 @@ switch (_operation) do {
             };
         };
 
-        if (_taskType == "" || {_taskLocation isEqualTo []}) exitWith {false};
+        if (_taskType == "" || {_taskLocation isEqualTo []}) exitWith {_result = false};
 
         private _currentTargets = [GVAR(playerRequests), _taskType, []] call ALiVE_fnc_hashGet;
         if !(_reservationKey in _currentTargets) then {
@@ -395,6 +437,15 @@ switch (_operation) do {
         };
 
         private _taskID = format ["OPORD_%1_%2", _groupID, floor (diag_tickTime * 10)];
+
+        // DIAG-STRIP (#992): this site and the one in the task request handler mint the same
+        // ID shape, so an ID alone cannot say whether an order came from someone pressing the
+        // menu or from the commander raising it unprompted. The tag can. Orders appearing
+        // between a player's clicks mean a second source is running.
+        // Gate: ALiVE_c2istar_taskDiag = true.
+        if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+            ["[C2ISTAR #992 DIAG] minted by=TABLET id=%1 group=%2", _taskID, _groupID] call ALiVE_fnc_dump;
+        };
         private _taskPlayers = [_playerIDs, _playerNames];
         private _task = [_taskID, _requestPlayerID, _side, _faction, _taskType, "Map", _taskLocation, _taskPlayers, _enemyFaction, "Y", "Group"];
 
@@ -410,16 +461,116 @@ switch (_operation) do {
                 [GVAR(playerRequests), _taskType, _currentTargets] call ALiVE_fnc_hashSet;
             };
         } else {
+            // Remember what this order sent the group to, so asking for a different one
+            // can steer away from it.
+            //
+            // The record has to be started when there is not one already. An order raised
+            // from the tablet is built by generateTask, which never starts one, so the
+            // test below was never true and neither of these was ever written down. Every
+            // later request then read back nothing to avoid, leaving it free to hand back
+            // the objective the group had just been given. The commander's own orders
+            // start the record the same way before writing to it.
+            // Where the order actually sent the group, which is not always where it was
+            // reserved. The part that picks an objective and the part that builds the task
+            // choose for themselves, and a capture task runs its own search and takes the
+            // first objective with live enemy on it. So the group can be sent somewhere the
+            // picker never chose. Writing the reservation down meant the next request steered
+            // away from a place nobody had been, leaving the place they had just been sent to
+            // free to come straight back. Seen twice running against the same objective.
+            //
+            // The objective that was reserved is still avoided, by its reservation, so
+            // nothing is let through by recording where the group actually went instead.
+            // That matters most for a defence order, which can be built as much as a
+            // kilometre from the objective it was reserved against, far enough that the
+            // position it records will never match an objective again.
+            private _builtLocation = _createdTask param [3, [], [[]]];
+            if (_builtLocation isEqualTo []) then { _builtLocation = _taskLocation };
+
             private _managedTaskParams = [ALIVE_taskHandler, "managedTaskParams"] call ALiVE_fnc_hashGet;
-            if (!isNil "_managedTaskParams" && {_taskID in (_managedTaskParams select 1)}) then {
-                private _taskParams = [_managedTaskParams, _taskID] call ALiVE_fnc_hashGet;
-                [_taskParams, "strategicObjectivePosition", _taskLocation] call ALiVE_fnc_hashSet;
-                [_taskParams, "strategicReservationKey", _reservationKey] call ALiVE_fnc_hashSet;
-                [_managedTaskParams, _taskID, _taskParams] call ALiVE_fnc_hashSet;
+            private _remembered = false;
+
+            if (!isNil "_managedTaskParams") then {
+                if !(_taskID in (_managedTaskParams select 1)) then {
+                    [_managedTaskParams, _taskID, [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashSet;
+                };
+
+                if (_taskID in (_managedTaskParams select 1)) then {
+                    private _taskParams = [_managedTaskParams, _taskID] call ALiVE_fnc_hashGet;
+                    [_taskParams, "strategicObjectivePosition", _builtLocation] call ALiVE_fnc_hashSet;
+                    [_taskParams, "strategicReservationKey", _reservationKey] call ALiVE_fnc_hashSet;
+                    [_managedTaskParams, _taskID, _taskParams] call ALiVE_fnc_hashSet;
+                    _remembered = true;
+                };
             };
+
+            // DIAG-STRIP (#992): says whether this order was written down well enough for
+            // the next request to avoid it. remembered=false means the next request has
+            // nothing to steer away from and can hand back the same objective.
+            // Gate: ALiVE_c2istar_taskDiag = true.
+            if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                ["[C2ISTAR #992 DIAG] remembered id=%1 ok=%2 key=%3 pos=%4 reserved=%5",
+                    _taskID, _remembered, _reservationKey, _builtLocation, _taskLocation] call ALiVE_fnc_dump;
+            };
+
+            ["rememberOrder", [_groupID, _builtLocation, _reservationKey, _taskType]] call MAINCLASS;
 
             _result = true;
         };
+    };
+    case "toggleAutoPlayerTasks": {
+        // Flipped from the commander menu. Held on the server and sent out, so every
+        // machine agrees and the menu shows the same thing to everyone.
+        if !(isServer) exitWith {
+            [_operation, _args] remoteExec ["ALiVE_fnc_playerOrders", 2];
+        };
+
+        private _now = true;
+        if (!isNil "ALiVE_c2istar_autoPlayerTasks") then { _now = ALiVE_c2istar_autoPlayerTasks };
+
+        ALiVE_c2istar_autoPlayerTasks = !_now;
+        publicVariable "ALiVE_c2istar_autoPlayerTasks";
+
+        if (!isNil "ALIVE_MIL_C2ISTAR") then {
+            [ALIVE_MIL_C2ISTAR, "autoPlayerTasks", ALiVE_c2istar_autoPlayerTasks] call ALiVE_fnc_C2ISTAR;
+        };
+
+        ["C2ISTAR - automatic player tasks turned %1", [ "off", "on" ] select ALiVE_c2istar_autoPlayerTasks] call ALiVE_fnc_dump;
+    };
+    case "rememberOrder": {
+        // Keep a short list of what this group has just been sent to do, so asking for a
+        // different order can steer away from more than the one thing it is holding.
+        //
+        // Avoiding only the current order is not enough. With a handful of objectives to
+        // choose from, the one before last comes straight back, so asking repeatedly walks
+        // a short circle rather than finding anything new. Measured on a test mission: the
+        // third request handed back the identical task and place as the first.
+        _args params [
+            ["_groupID", "", [""]],
+            ["_position", [], [[]]],
+            ["_reservationKey", [], [[], ""]],
+            ["_taskType", "", [""]]
+        ];
+
+        if (_groupID == "") exitWith {};
+
+        if (isNil QGVAR(orderHistory)) then {
+            GVAR(orderHistory) = [] call ALiVE_fnc_hashCreate;
+        };
+
+        private _recent = [GVAR(orderHistory), _groupID, []] call ALiVE_fnc_hashGet;
+        _recent = [[_position, _reservationKey, _taskType]] + _recent;
+
+        // Four is enough to break the short circles without ruling out so much that a
+        // small mission runs out of things to offer. Kept at four at least, even where the
+        // setting for repeating a kind of job is lower, because places are avoided as far
+        // back as this list goes and shortening it would let a group be sent somewhere it
+        // has just come from. A setting above four lengthens it to match, or the setting
+        // would silently do nothing past the fourth.
+        private _keep = 4;
+        if (!isNil "ALiVE_c2istar_orderRepeatBlock") then { _keep = _keep max ALiVE_c2istar_orderRepeatBlock };
+        if (count _recent > _keep) then { _recent resize _keep };
+
+        [GVAR(orderHistory), _groupID, _recent] call ALiVE_fnc_hashSet;
     };
     case "createGeneratedTaskForGroup": {
         _args params [
@@ -429,10 +580,10 @@ switch (_operation) do {
             ["_excludedRootTaskID", "", [""]]
         ];
 
-        if !(isServer) exitWith {false};
-        if (_groupData isEqualTo []) exitWith {false};
-        if (isNil "ALIVE_autoGeneratedTasks" || {ALIVE_autoGeneratedTasks isEqualTo []}) exitWith {false};
-        if (isNil "ALIVE_taskHandler") exitWith {false};
+        if !(isServer) exitWith {_result = false};
+        if (_groupData isEqualTo []) exitWith {_result = false};
+        if (isNil "ALIVE_autoGeneratedTasks" || {ALIVE_autoGeneratedTasks isEqualTo []}) exitWith {_result = false};
+        if (isNil "ALIVE_taskHandler") exitWith {_result = false};
 
         _groupData params [
             "",
@@ -490,6 +641,7 @@ switch (_operation) do {
                     _excludedGeneratedTaskTypes pushBack _taskType;
                 };
             } else {
+                ["rememberOrder", [_groupID, [], [], _taskType]] call MAINCLASS;
                 _created = true;
             };
         };
@@ -526,10 +678,47 @@ switch (_operation) do {
         ];
 
         private _currentTask = ["getGroupCurrentParentTask", [_groupID]] call MAINCLASS;
-        private _excludedPosition = [];
-        private _excludedReservationKey = [];
+
+        // DIAG-STRIP (#992): says whether the replace branch below was entered at all. The
+        // only delete in this flow sits inside it, so a log showing found=false on every
+        // request is the whole of the reported fault. Gate: ALiVE_c2istar_taskDiag = true.
+        if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+            ["[C2ISTAR #992 DIAG] requestOrder group=%1 replaceRequested=%2 foundCurrent=%3",
+                _groupID, _replaceCurrent, !(_currentTask isEqualTo [])] call ALiVE_fnc_dump;
+        };
+
+        // What to steer away from, taken from the last few orders this group was given
+        // rather than only the one it is holding. See the rememberOrder case above for
+        // why one is not enough.
+        private _excludedPositions = [];
+        private _excludedReservationKeys = [];
         private _excludedGeneratedTaskTypes = [];
         private _excludedTaskRootID = "";
+
+        // How many requests back a kind of job stays ruled out for. Places are always
+        // avoided as far back as the list goes, because sending a group somewhere it has
+        // just come from is never wanted. What kind of job to offer is a matter of taste, so
+        // it is a setting: nought lets the same kind come straight back.
+        private _typeBlock = 2;
+        if (!isNil "ALiVE_c2istar_orderRepeatBlock") then { _typeBlock = ALiVE_c2istar_orderRepeatBlock };
+
+        if !(isNil QGVAR(orderHistory)) then {
+            {
+                _x params [["_pastPosition", []], ["_pastKey", []], ["_pastType", ""]];
+
+                if !(_pastPosition isEqualTo []) then { _excludedPositions pushBackUnique _pastPosition };
+                if !(_pastKey isEqualTo []) then { _excludedReservationKeys pushBackUnique _pastKey };
+                if (_pastType != "" && {_forEachIndex < _typeBlock}) then { _excludedGeneratedTaskTypes pushBackUnique _pastType };
+            } forEach ([GVAR(orderHistory), _groupID, []] call ALiVE_fnc_hashGet);
+        };
+
+        // Kept apart so the order being replaced can still be avoided on its own if
+        // avoiding the whole recent run turns up nothing to do.
+        private _currentPositions = [];
+        private _currentReservationKeys = [];
+        private _currentTaskTypes = [];
+        private _refused = false;
+        private _replacedTaskID = "";
 
         if !(_currentTask isEqualTo []) then {
             private _taskID = _currentTask select 0;
@@ -543,32 +732,81 @@ switch (_operation) do {
                 _excludedTaskRootID = _rootTaskID;
 
                 if (_rootTaskID find "OPORD_AUTO_" == 0 && {_currentTaskType != ""}) then {
-                    _excludedGeneratedTaskTypes pushBack _currentTaskType;
+                    _currentTaskTypes pushBackUnique _currentTaskType;
+                    _excludedGeneratedTaskTypes pushBackUnique _currentTaskType;
                 };
             } else {
                 _excludedTaskRootID = _taskID;
             };
 
+            private _positionFromRecord = false;
+            private _thisPosition = [];
+            private _thisReservationKey = [];
+
             if !(_currentTaskParams isEqualTo []) then {
-                _excludedPosition = [_currentTaskParams, "strategicObjectivePosition", []] call ALiVE_fnc_hashGet;
-                _excludedReservationKey = [_currentTaskParams, "strategicReservationKey", []] call ALiVE_fnc_hashGet;
+                _thisPosition = [_currentTaskParams, "strategicObjectivePosition", []] call ALiVE_fnc_hashGet;
+                _thisReservationKey = [_currentTaskParams, "strategicReservationKey", []] call ALiVE_fnc_hashGet;
+                _positionFromRecord = !(_thisPosition isEqualTo []);
             };
 
-            if (_excludedPosition isEqualTo []) then {
-                _excludedPosition = _currentTask param [3, [], [[]]];
+            if (_thisPosition isEqualTo []) then {
+                _thisPosition = _currentTask param [3, [], [[]]];
             };
 
-            if !(_replaceCurrent) exitWith {
+            if !(_thisPosition isEqualTo []) then {
+                _currentPositions pushBackUnique _thisPosition;
+                _excludedPositions pushBackUnique _thisPosition;
+            };
+            if !(_thisReservationKey isEqualTo []) then {
+                _currentReservationKeys pushBackUnique _thisReservationKey;
+                _excludedReservationKeys pushBackUnique _thisReservationKey;
+            };
+
+            // DIAG-STRIP (#992): the other half of the pair above. This says what the
+            // request is actually steering away from. A missing key with a position that
+            // came from the task rather than the record means only the ten metre position
+            // test is doing any work. Both missing means nothing is being avoided at all,
+            // and the same objective can come back however often it is asked for.
+            // Gate: ALiVE_c2istar_taskDiag = true.
+            if (!isNil "ALiVE_c2istar_taskDiag" && {ALiVE_c2istar_taskDiag}) then {
+                ["[C2ISTAR #992 DIAG] avoiding id=%1 recordFound=%2 key=%3 pos=%4 posFromRecord=%5",
+                    _taskID,
+                    !(_currentTaskParams isEqualTo []),
+                    _excludedReservationKeys,
+                    _excludedPositions,
+                    _positionFromRecord
+                ] call ALiVE_fnc_dump;
+            };
+
+            // Both of these turn a request down, and both were written as exitWith. That leaves
+            // the block it is written in, not the request, and both sit inside the block above
+            // handling an existing task. So the group was told it could not have another order
+            // and then given one anyway, on top of the one it already had and with nothing
+            // deleted. That is the fault this issue was raised for. It stayed hidden because
+            // the tablet greys the entry out while a group holds a task, but that is decided
+            // from the client's own copy of the task list, so a server can still be asked in
+            // the gap before the client has caught up.
+            if !(_replaceCurrent) then {
                 ["notify", [_player, "Your group already has an active task."]] call MAINCLASS;
+                _refused = true;
             };
 
-            if !(_isPlayerOrderTask) exitWith {
+            if (!_refused && {!_isPlayerOrderTask}) then {
                 ["notify", [_player, "Your group already has a non-OPCOM task and cannot reroll it here."]] call MAINCLASS;
+                _refused = true;
             };
 
-            private _event = ["TASK_DELETE", [_taskID, _requestPlayerID, _side], "C2ISTAR"] call ALiVE_fnc_event;
-            [ALIVE_eventLog, "addEvent", _event] call ALiVE_fnc_eventLog;
+            // Noted rather than removed here. Removing it before knowing whether there is
+            // anything to put in its place is what left a group holding nothing at all when
+            // neither way of building an order came up with one. It is taken away below,
+            // once there is a replacement in hand.
+            if !(_refused) then {
+                _replacedTaskID = _taskID;
+            };
         };
+
+        // Stops the request itself, which is what the two refusals above meant to do.
+        if (_refused) exitWith {};
 
         private _sideSettings = ["getSideSettings", [_side]] call MAINCLASS;
         private _enemyFaction = _sideSettings param [1, "OPF_F"];
@@ -584,19 +822,51 @@ switch (_operation) do {
             || {ALIVE_autoGeneratedTasks isEqualTo []}
             || {((ALIVE_autoGeneratedTasks apply {toUpper _x}) arrayIntersect ["CAPTUREOBJECTIVE","MILDEFENCE"]) isNotEqualTo []};
 
+        // Look for something new first, steering away from the whole recent run. If that
+        // leaves nothing to offer, try again steering away only from the order being
+        // replaced, which is how it behaved before. Repeating somewhere from a while back
+        // is better than handing back nothing at all.
         private _created = false;
-        if (_strategicAllowed) then {
-            _created = ["createStrategicTaskForGroup", [_groupData, _enemyFaction, _excludedPosition, _excludedReservationKey]] call MAINCLASS;
-        };
 
-        if !(_created) then {
-            _created = ["createGeneratedTaskForGroup", [_groupData, _enemyFaction, _excludedGeneratedTaskTypes, _excludedTaskRootID]] call MAINCLASS;
-        };
+        {
+            _x params ["_tryPositions", "_tryKeys", "_tryTypes"];
+
+            if (_strategicAllowed) then {
+                _created = ["createStrategicTaskForGroup", [_groupData, _enemyFaction, _tryPositions, _tryKeys, _tryTypes]] call MAINCLASS;
+            };
+
+            if !(_created) then {
+                _created = ["createGeneratedTaskForGroup", [_groupData, _enemyFaction, _tryTypes, _excludedTaskRootID]] call MAINCLASS;
+            };
+
+            if (_created) exitWith {};
+        } forEach [
+            [_excludedPositions, _excludedReservationKeys, _excludedGeneratedTaskTypes],
+            [_currentPositions, _currentReservationKeys, _currentTaskTypes]
+        ];
 
         if (_created) then {
+            // Only once there is something to put in its place. Asking for the old order to be
+            // taken away up front already worked out in practice, because these are handed off
+            // to be dealt with shortly rather than done on the spot, so the replacement was
+            // usually built first anyway. What it could not survive was finding no replacement
+            // at all: the request had already given the order away and had nothing to hand
+            // back, so a group that asked for something different ended up with none. That
+            // failing case is what changes here. Holding on to it this long costs nothing while
+            // choosing, since the orders already out are filtered to ignore this one.
+            if (_replacedTaskID != "") then {
+                private _event = ["TASK_DELETE", [_replacedTaskID, _requestPlayerID, _side], "C2ISTAR"] call ALiVE_fnc_event;
+                [ALIVE_eventLog, "addEvent", _event] call ALiVE_fnc_eventLog;
+            };
+
             ["notify", [_player, "OPCOM has assigned a new order to your group."]] call MAINCLASS;
         } else {
-            ["notify", [_player, "OPCOM has no suitable order for your group right now."]] call MAINCLASS;
+            private _keptMessage = "OPCOM has no suitable order for your group right now.";
+            if (_replacedTaskID != "") then {
+                _keptMessage = "OPCOM has no other order for your group right now, so your current one stands.";
+            };
+
+            ["notify", [_player, _keptMessage]] call MAINCLASS;
         };
     };
     case "toggleOptOut": {

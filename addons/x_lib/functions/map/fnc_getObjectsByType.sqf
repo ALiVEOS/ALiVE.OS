@@ -73,9 +73,18 @@ _err = "raw object information not read correctly from file";
 ASSERT_DEFINED("_raw_objects",_err);
 ASSERT_TRUE(typeName _raw_objects == "ARRAY", _err);
 
+// Stage timings. This function is one half of the slowest step in ALiVE
+// startup, and the four lines below say which part of it the time went to:
+// building the lookup, matching the wanted names against it, gathering the
+// instances, or resolving each one to an object. Cheap to write, and they
+// save asking a reporter to run a long load a second time.
+["  objectsByType - index ready, %1 raw objects", count _raw_objects] call ALIVE_fnc_dump;
+
 _object_hash = [_raw_objects] call ALIVE_fnc_hashCreate;
 ASSERT_DEFINED("_object_hash",_err);
 ASSERT_TRUE(typeName _object_hash == "ARRAY", "_object_hash invalid");
+
+["  objectsByType - lookup built, %1 distinct names", count (_object_hash select 1)] call ALIVE_fnc_dump;
 
 _expanded = [];
 {
@@ -91,6 +100,8 @@ _expanded = [];
 } forEach (_object_hash select 1);
 
 
+["  objectsByType - names matched, %1 wanted", count _expanded] call ALIVE_fnc_dump;
+
 _data_array = [];
 {
     private["_name","_data"];
@@ -100,6 +111,8 @@ _data_array = [];
         _data_array = _data_array + _data;
     };
 } forEach _expanded;
+
+["  objectsByType - instances gathered, %1 entries", count _data_array] call ALIVE_fnc_dump;
 ASSERT_DEFINED("_data_array",_err);
 ASSERT_TRUE(typeName _data_array == "ARRAY", "_data_array invalid");
 

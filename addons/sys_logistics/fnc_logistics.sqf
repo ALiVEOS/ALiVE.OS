@@ -296,6 +296,13 @@ switch (_operation) do {
                     [_args,QGVAR(DAMAGE),[_x] call ALiVE_fnc_getObjectDamage] call ALiVE_fnc_HashSet;
                     [_args,QGVAR(POINTDAMAGE),[_x] call ALiVE_fnc_getObjectPointDamage] call ALiVE_fnc_HashSet;
 
+                    //Only stored when opted in, so default saves are unchanged
+                    if ((_x getVariable [QGVAR(NOREMAP),false]) isEqualTo true) then {
+                        [_args,QGVAR(NOREMAP),true] call ALiVE_fnc_HashSet;
+                    } else {
+                        [_args,QGVAR(NOREMAP)] call ALiVE_fnc_HashRem;
+                    };
+
                     //Set dynamic data (to fight errors on loading back existing data from DB)
                     if (!isnil {_x getvariable QGVAR(CONTAINER)} && {!isnull (_x getvariable QGVAR(CONTAINER))}) then {
                         [_args,QGVAR(CONTAINER),(_x getvariable QGVAR(CONTAINER)) getvariable QGVAR(ID)] call ALiVE_fnc_HashSet;
@@ -348,7 +355,17 @@ switch (_operation) do {
             _id = _object getvariable QGVAR(ID);
 
             if (isnil "_id") then {
-                _id = format["%1_%2%3",typeof _object, floor(getposATL _object select 0),floor(getposATL _object select 1)];
+                private _pos = getposATL _object;
+                _id = format["%1_%2%3",typeof _object, floor(_pos select 0),floor(_pos select 1)];
+
+                //Objects opting out of remapping get a height component, so same type objects
+                //stacked in one grid cell do not share a store key and overwrite each other.
+                //Half metre buckets offset by a quarter, so ground level sits in the middle of
+                //a bucket rather than on its edge and small z jitter cannot re-key the object
+                if ((_object getVariable [QGVAR(NOREMAP),false]) isEqualTo true) then {
+                    _id = format["%1_%2",_id,floor((_pos select 2) * 2 + 0.5)];
+                };
+
                 _object setvariable [QGVAR(ID),_id,true];
             };
 
@@ -1046,19 +1063,49 @@ switch (_operation) do {
                 private ["_id","_args"];
 
                 _id = [MOD(SYS_LOGISTICS),"id",_x] call ALiVE_fnc_logistics;
-                _args = [GVAR(STORE),_id] call ALiVE_fnc_HashGet;
 
-                if !(isnil "_args") then {
-                    private ["_pos","_vDirUp","_container","_cargo"];
+                //IDs are derived from class and position, so two objects can land on the same
+                //store key. The first one to match claims the entry - a later object keeps the
+                //position it was placed at instead of being stacked onto the one stored position.
+                //
+                //Only objects the mission maker flagged play by that rule. Everything else keeps the
+                //behaviour it has always had, because losing the claim also skips the state pass
+                //further down, and that pass is what applies a stored destroyed state. Applied to
+                //every object, a pair that happened to share a key would leave one of them standing
+                //on a load that recorded it as wrecked.
+                private _objNoRemap = (_x getVariable [QGVAR(NOREMAP),false]) isEqualTo true;
+                if (!_objNoRemap || {!(_id in _existing)}) then {
+                    _args = [GVAR(STORE),_id] call ALiVE_fnc_HashGet;
 
-                    TRACE_1("ALiVE SYS LOGISTICS Resetting state of editor placed object!",_x);
+                    //Flagged objects saved before the height component existed sit
+                    //under the flat TYPE_XY key - retry that and migrate the ID
+                    if (isnil "_args" && {(_x getVariable [QGVAR(NOREMAP),false]) isEqualTo true}) then {
+                        private _posFlat = getposATL _x;
+                        private _flatId = format["%1_%2%3", typeof _x, floor(_posFlat select 0), floor(_posFlat select 1)];
+                        private _flatArgs = [GVAR(STORE),_flatId] call ALiVE_fnc_HashGet;
+                        if (!(isnil "_flatArgs") && {!(_flatId in _existing)}) then {
+                            _id = _flatId;
+                            _x setVariable [QGVAR(ID),_id,true];
+                            _args = _flatArgs;
+                        };
+                    };
 
-                    //apply values
-                    _x setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
-                    _x setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
+                    if !(isnil "_args") then {
+                        private ["_pos","_vDirUp","_container","_cargo"];
 
-                    //remove in next step
-                    _existing pushback _id;
+                        TRACE_1("ALiVE SYS LOGISTICS Resetting state of editor placed object!",_x);
+
+                        //apply values
+                        _x setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
+                        _x setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
+
+                        //remove in next step, and mark the entry as claimed
+                        _existing pushback _id;
+                    };
+                } else {
+                    //Entry already claimed by an earlier object - flag this one so
+                    //the state-reset pass below leaves it where it was placed too
+                    _x setVariable [QGVAR(SKIPSTATE),true];
                 };
             } foreach _startObjects;
 
@@ -1074,20 +1121,35 @@ switch (_operation) do {
                     //Get 2D position without altering original data
                     private _position = +([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet); _position resize 2;
 
-                    //Filter existing objects of same type in a 1m² radius
-                    private _near = nearestObjects [_position,[_type],20];
+                    //Objects flagged to skip remapping are always recreated (stacked/adjacent fortifications)
+                    private _noRemap = [_args,QGVAR(NOREMAP),false] call ALiVE_fnc_hashGet;
+
+                    //DB backends round-trip BOOLs as quoted strings and sometimes as numbers.
+                    //Anything still not a BOOL here would throw at the check below and take the
+                    //rest of the store down with it, so narrow it before it gets used
+                    if (isnil "_noRemap") then {_noRemap = false};
+                    if (_noRemap isEqualType "") then {_noRemap = (toLower _noRemap) in ["true","1"]};
+                    if (_noRemap isEqualType 0) then {_noRemap = _noRemap != 0};
+                    if !(_noRemap isEqualType false) then {_noRemap = false};
+
                     private _exists = [];
-                    {
-                        if (_position distance2D _x < 1) then {
-                            _exists pushback _x;
-                        };
-                    } foreach _near;
+
+                    if !(_noRemap) then {
+                        //Filter existing objects of same type in a 1m² radius
+                        private _near = nearestObjects [_position,[_type],20];
+                        {
+                            if (_position distance2D _x < 1) then {
+                                _exists pushback _x;
+                            };
+                        } foreach _near;
+                    };
 
                     if (count _exists == 0) then {
                         TRACE_1("ALiVE SYS LOGISTICS Creating non existing object from store!",_x);
 
                         _object = _type createVehicle ([_args,QGVAR(POSITION)] call ALiVE_fnc_hashGet);
                         _object setvariable [QGVAR(ID),_x,true];
+                        if (_noRemap) then {_object setVariable [QGVAR(NOREMAP),true,true]};
                         _object setposATL ([_args,QGVAR(POSITION)] call ALiVE_fnc_HashGet);
                         _object setVectorDirAndUp ([_args,QGVAR(VECDIRANDUP)] call ALiVE_fnc_HashGet);
 
@@ -1117,6 +1179,13 @@ switch (_operation) do {
              //reset object state or delete if destroyed
              {
                 _args = [GVAR(STORE),_x getvariable QGVAR(ID)] call ALiVE_fnc_HashGet;
+
+                //Objects that lost the claim on a shared entry keep their placed
+                //state - applying the one entry to both would stack them again
+                if (_x getVariable [QGVAR(SKIPSTATE),false]) then {
+                    _x setVariable [QGVAR(SKIPSTATE),nil];
+                    _args = nil;
+                };
 
                 if !(isnil "_args") then {
 
@@ -1175,6 +1244,7 @@ switch (_operation) do {
                 [QGVAR(DAMAGE),"ASL_DA"],
                 [QGVAR(POINTDAMAGE),"ASL_HP"],
                 [QGVAR(CONTAINER),"ASL_CO"],
+                [QGVAR(NOREMAP),"ASL_NR"],
                 ["_rev","_rev"]
             ];
 

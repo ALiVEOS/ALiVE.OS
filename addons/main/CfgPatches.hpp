@@ -8,6 +8,10 @@ class CfgPatches {
         versionDesc = "ALiVE";
         //versionAct = "['MAIN',_this] execVM '\x\alive\addons\main\about.sqf';";
         VERSION_CONFIG;
+        // Read back at startup alongside the version. Kept in the config rather
+        // than read from the macro so it comes from what was actually packed:
+        // with file patching on, loose source and packed config can disagree.
+        buildType = BUILDTYPE;
         author = MODULE_AUTHOR;
         authors[] = {
             "AndrewKhan",

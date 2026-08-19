@@ -172,7 +172,7 @@ class CfgVehicles {
                         class guardProbability : Combo
                         {
                                 property = "ALiVE_mil_placement_custom_guardProbability"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_COMMENT"; defaultValue = """0.2""";
-                                class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_NONE";value="0";}; class LOW{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_LOW";value="0.2";default=1;}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUM";value="0.6";}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_HIGH";value="1";}; };
+                                class Values { class NONE{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_NONE";value="0";}; class LOW{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_LOW";value="0.2";default=1;}; class MEDIUMLOW{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMLOW";value="0.4";}; class MEDIUM{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUM";value="0.6";}; class MEDIUMHIGH{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMHIGH";value="0.8";}; class HIGH{name="$STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_HIGH";value="1";}; };
                         };
                         class guardRadius : Edit { property = "ALiVE_mil_placement_custom_guardRadius"; displayName = "$STR_ALIVE_MP_AMBIENT_GUARD_RADIUS"; tooltip = "$STR_ALIVE_MP_AMBIENT_GUARD_RADIUS_COMMENT"; defaultValue = """200"""; };
                         class guardPatrolPercentage : Combo

@@ -471,13 +471,37 @@ if (_mode == "SAVESERVERYO" && isServer && ALiVE_sys_data_DISABLED) then {
 
 // Function run on server
 if (_mode == "SAVESERVERYO" && isServer) exitWith {
+
+    // Only accept save requests from admins or UIDs on the sys_data save allowlist (#873)
+    //
+    // Every test here has to ask about the machine that ASKED for the save, not
+    // about this one. We are already inside the server branch, so asking whether
+    // this machine is an admin is asking about the server, and on a host that is
+    // always true - which would wave through every request and leave the check
+    // doing nothing at all. The second test therefore asks whether the requester
+    // is the host themselves, which is the case it was meant to cover.
+    private _requester = [_adminUID] call ALIVE_fnc_getPlayerByUID;
+    private _authorised = !isMultiplayer
+        || {hasInterface && {!isNull _requester && {_requester isEqualTo player}}}
+        || {_adminUID in (missionNamespace getVariable ["ALiVE_sys_data_saveAllowlist",[]])}
+        || {!isNull _requester && {(admin owner _requester) > 0}};
+
+    if !(_authorised) exitWith {
+        ["Exit - Server save request from unauthorised UID %1 - ignoring",_adminUID] call ALiVE_fnc_dump;
+    };
+
     // Save server data
     [_saveServer,_exitServer,_adminUID] spawn {
         private ["_saveServer","_exitServer"];
         _saveServer = _this select 0;
         _exitServer = _this select 1;
         _adminUID = _this select 2;
-        WaitUntil {sleep 1; (count ([] call BIS_fnc_ListPlayers)) == 1};
+        // Wait for everyone to leave before writing. One person is expected to
+        // remain, the one who asked for the save, so they can watch it finish.
+        // On a server someone is hosting from, the host is a player too and is
+        // also still here, so two remaining is the normal case there and waiting
+        // for one would wait for ever.
+        WaitUntil {sleep 1; (count ([] call BIS_fnc_ListPlayers)) <= ([1,2] select (isServer && hasInterface))};
         [_adminUID] call _saveServer;
         [_adminUID] call _exitServer;
         "serversaved" call BIS_fnc_endMission;
@@ -518,6 +542,9 @@ if ((_mode == "SAVE" || _mode == "REMSAVE") && hasInterface) then {
 };
 
 
+// Server save may also be triggered by a UID on the sys_data save allowlist (#873)
+private _saveAllowed = (call ALiVE_fnc_isServerAdmin) || {hasInterface && {(getPlayerUID player) in (missionNamespace getVariable ["ALiVE_sys_data_saveAllowlist",[]])}};
+
 // Check client for admin
 if (call ALiVE_fnc_isServerAdmin) then {
 
@@ -537,14 +564,19 @@ if (call ALiVE_fnc_isServerAdmin) then {
 
     };
 
+};
+
+// Check client for admin or save allowlist
+if (_saveAllowed) then {
+
     if (_mode == "SERVERSAVE") then {
 
         ["Exit - Abort / Save by Admin"] call ALiVE_fnc_dump;
 
         ["Exit - Broadcasting abort call to all players"] call ALiVE_fnc_dump;
 
-        // Save all players
-        [["REMSAVE"],"ALiVE_fnc_buttonAbort",true,false] call BIS_fnc_MP;
+        // Save all players (pass the initiator's UID so they stay behind for the server save)
+        [["REMSAVE",getPlayerUID player],"ALiVE_fnc_buttonAbort",true,false] call BIS_fnc_MP;
 
         ["Exit - Trigger Server abort call"] call ALiVE_fnc_dump;
 
@@ -566,13 +598,33 @@ switch (_mode) do {
         "abort" call BIS_fnc_endMission;
     };
     case "REMSAVE" : {
-        if !(call ALiVE_fnc_isServerAdmin) then {
+        // Exactly one player stays behind for the server's player-count
+        // wait: the initiator when the save request carries a UID, else
+        // the admin (legacy REMSAVE). Keeping both would strand the
+        // count above 1 and stall the save.
+        //
+        // The server has to be excluded from that decision outright. This
+        // runs on every machine, the server included, and a server that
+        // ends its own mission here kills the save it is about to write.
+        // On a dedicated server there is nobody playing, so asking whether
+        // the local player is the one who asked always comes back no, and
+        // the branch below would end the mission every time. The check that
+        // used to sit here happened to return true on the server, which is
+        // the only reason saving has worked until now.
+        private _staysBehind = isServer || {
+            if (_adminUID != "") then {
+                hasInterface && {(getPlayerUID player) isEqualTo _adminUID}
+            } else {
+                call ALiVE_fnc_isServerAdmin
+            }
+        };
+        if !(_staysBehind) then {
             ["Exit - [%1] !(Admin) Ending mission",_mode] call ALiVE_fnc_dump;
             "saved" call BIS_fnc_endMission;
         };
     };
     case "SERVERSAVE": {
-        if (call ALiVE_fnc_isServerAdmin) then {
+        if (_saveAllowed) then {
             ["Exit - [%1] (Admin) Ending mission",_mode] call ALiVE_fnc_dump;
             //"serversaved" call BIS_fnc_endMission;
         };

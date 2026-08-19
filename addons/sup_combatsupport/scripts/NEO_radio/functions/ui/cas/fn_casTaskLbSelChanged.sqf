@@ -1,4 +1,5 @@
 private ["_lb", "_index", "_display", "_map"];
+([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
 _lb = _this select 0;
 _index = _this select 1;
 _display = findDisplay 655555;
@@ -22,6 +23,7 @@ _casAttackRunText = _display displayCtrl 655614;
 _casAttackRunLB = _display displayCtrl 655613;
 _casROELb = _display displayCtrl 655615;
 _casROEText = _display displayCtrl 655616;
+private _listBackground = [0.047, 0.047, 0.047, 0.72];
 
 _show = switch (toUpper (_lb lbData _index)) do
 {
@@ -34,15 +36,17 @@ _casRadiusSlider = _display displayCtrl 655592;
 _casRadiusSliderText = _display displayCtrl 655593;
 _casAttackRunText ctrlSetText "";
 _casAttackRunLB ctrlEnable false;
+{ _x ctrlSetBackgroundColor [0, 0, 0, 0] } forEach [_casAttackRunLB, _casROELb];
 
 //Radius Slider
 if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOITER" || toUpper (_lb lbData _index) == "ATTACK") then
 {
+    _casAttackRunLB ctrlSetBackgroundColor _listBackground;
 
     _casRadiusSliderText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>CAS Radius: 500m</t>";
-    _casRadiusSliderText ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.514 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
+        _casRadiusSliderText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.514 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)];
     _casRadiusSliderText ctrlCommit 0;
-    _casRadiusSlider ctrlSetPosition [0.281002 * safezoneW + safezoneX, 0.5504 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
+        _casRadiusSlider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
     _casRadiusSlider ctrlCommit 0;
 
     _casFlyHeighSliderText ctrlCommit 0;
@@ -76,10 +80,11 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
         _casROELb ctrlEnable false;
         lbClear _casROELb;
     } else {
+        _casROELb ctrlSetBackgroundColor _listBackground;
         _casROEText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>RULES OF ENGAGEMENT</t>";
         // sits just left of the ROE list so "RULES OF ENGAGEMENT" reads flush with it;
         // wide (transparent bg, so the extra width is invisible) to stay on one line
-        _casROEText ctrlSetPosition [0.38 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.16 * safezoneW), (0.028 * safezoneH)];
+                _casROEText ctrlSetPosition [0.38 * _uiW + _uiX, 0.59 * _uiH + _uiY, (0.16 * _uiW), (0.028 * _uiH)];
         _casROEText ctrlCommit 0;
 
         _casROELb ctrlEnable true;
@@ -98,7 +103,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
     private _usableWeapons = [_veh] call NEO_fnc_casUsableWeapons;
     if (toUpper (_lb lbData _index) == "ATTACK") then {
         _casAttackRunText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>CHOOSE WEAPON</t>";
-        _casAttackRunText ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
+                _casAttackRunText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.59 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)];
         _casAttackRunText ctrlCommit 0;
 
         _casAttackRunLB ctrlEnable true;
@@ -124,7 +129,7 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
             // loiter never delivers ordnance - reuse the freed weapon list as a
             // loiter-duration picker (lbData carries seconds; Indefinite = -1)
             _casAttackRunText ctrlSetStructuredText parseText "<t color='#B4B4B4' size='0.8' font='PuristaMedium'>LOITER DURATION</t>";
-            _casAttackRunText ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.59 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.028 * safezoneH)];
+                _casAttackRunText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.59 * _uiH + _uiY, (0.0927966 * _uiW), (0.028 * _uiH)];
             _casAttackRunText ctrlCommit 0;
 
             _casAttackRunLB ctrlEnable true;
@@ -153,9 +158,9 @@ if (toUpper (_lb lbData _index) == "SAD" || toUpper (_lb lbData _index) == "LOIT
 else
 {
     _casRadiusSliderText ctrlSetText "";
-    _casRadiusSliderText ctrlSetPosition [safeZoneX + (safeZoneW / 2.255), safeZoneY + (safeZoneH / 1.48), (safeZoneW / 1000), (safeZoneH / 1000)];
+        _casRadiusSliderText ctrlSetPosition [_uiX + (_uiW / 2.255), _uiY + (_uiH / 1.48), (_uiW / 1000), (_uiH / 1000)];
     _casRadiusSliderText ctrlCommit 0;
-    _casRadiusSlider ctrlSetPosition [safeZoneX + (safeZoneW / 2.275), safeZoneY + (safeZoneH / 1.45), (safeZoneW / 1000), (safeZoneH / 1000)];
+        _casRadiusSlider ctrlSetPosition [_uiX + (_uiW / 2.275), _uiY + (_uiH / 1.45), (_uiW / 1000), (_uiH / 1000)];
     _casRadiusSlider ctrlCommit 0;
 
     _casAttackRunText ctrlSetText "";

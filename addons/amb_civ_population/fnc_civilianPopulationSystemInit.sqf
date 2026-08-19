@@ -170,6 +170,8 @@ if(isServer) then {
     private _civIntelGatherChance    = parseNumber (_logic getVariable ["civIntelGatherChance",    "30"]);
     private _civHostilityIndicator   = _logic getVariable ["civHostilityIndicator", "OFF"];
     private _civWeaponAimRange       = parseNumber (_logic getVariable ["civWeaponAimRange",       "15"]);
+    private _civWeaponAimHoldTime    = parseNumber (_logic getVariable ["civWeaponAimHoldTime",    "2"]);
+    private _civWeaponAimHoldTimeDyn = (_logic getVariable ["civWeaponAimHoldTimeDynamic", "false"]) isEqualTo "true";
     private _civVehicleStopOnAim     = (_logic getVariable ["civVehicleStopOnAim",     "true"]) isEqualTo "true";
     private _civHostilityDecayRate   = parseNumber (_logic getVariable ["civHostilityDecayRate",   "1"]);
 
@@ -230,6 +232,8 @@ if(isServer) then {
     ALiVE_amb_civ_population_IntelGatherChance = _civIntelGatherChance; publicVariable "ALiVE_amb_civ_population_IntelGatherChance";
     ALiVE_amb_civ_population_HostilityIndicator = _civHostilityIndicator; publicVariable "ALiVE_amb_civ_population_HostilityIndicator";
     ALiVE_amb_civ_population_WeaponAimRange = _civWeaponAimRange; publicVariable "ALiVE_amb_civ_population_WeaponAimRange";
+    ALiVE_amb_civ_population_WeaponAimHoldTime = _civWeaponAimHoldTime; publicVariable "ALiVE_amb_civ_population_WeaponAimHoldTime";
+    ALiVE_amb_civ_population_WeaponAimHoldTimeDynamic = _civWeaponAimHoldTimeDyn; publicVariable "ALiVE_amb_civ_population_WeaponAimHoldTimeDynamic";
     ALiVE_amb_civ_population_VehicleStopOnAim = _civVehicleStopOnAim; publicVariable "ALiVE_amb_civ_population_VehicleStopOnAim";
     ALiVE_amb_civ_population_HostilityDecayRate = _civHostilityDecayRate; publicVariable "ALiVE_amb_civ_population_HostilityDecayRate";
 

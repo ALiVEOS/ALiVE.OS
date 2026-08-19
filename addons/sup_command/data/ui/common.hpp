@@ -1,9 +1,4 @@
-#define GUI_GRID_X  (0)
-#define GUI_GRID_Y  (0)
-#define GUI_GRID_W  (0.025)
-#define GUI_GRID_H  (0.04)
-#define GUI_GRID_WAbs (1)
-#define GUI_GRID_HAbs (1)
+#include "\x\alive\addons\main\data\ui\gui_grid.hpp"
 
 class SCOMTablet_RscBackground
 {
@@ -31,7 +26,7 @@ class SCOMTablet_RscEdit
     y = "1";
     w = "safeZoneW / 25";
     h = "safeZoneH / 30";
-    sizeEx = 0.03;
+    sizeEx = 0.75 * GUI_GRID_H;
     font = "PuristaMedium";
     text = "";
     colorText[] = {1,1,1,1};
@@ -46,7 +41,7 @@ class SCOMTablet_RscText
     type = 13;
     style = 0x00;
     colorBackground[] = { 0, 0, 0, 0 };
-    size = "((safeZoneW / 75) + (safeZoneH / 225))";
+    size = 0.5 * GUI_GRID_H;
     x = "safeZoneX + (safeZoneW / 6)";
     y = "safeZoneY + (safeZoneH / 6)";
     w = "safeZoneW / 5";
@@ -122,7 +117,7 @@ class SCOMTablet_RscRealButton
     animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
     period = 0.4;
     font = "PuristaMedium";
-    size = "(safeZoneW / 125) + (safeZoneH / 125)";
+    size = 0.5 * GUI_GRID_H;
     text = "";
     soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
     soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
@@ -186,7 +181,7 @@ class SCOMTablet_RscButton
     animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
     period = 0.4;
     font = "PuristaMedium";
-    size = "(safeZoneW / 125) + (safeZoneH / 125)";
+    size = 0.5 * GUI_GRID_H;
     text = "";
     soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
     soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
@@ -228,7 +223,7 @@ class SCOMTablet_RscListNBox {
     type = 102;
     shadow = 0;
     font = "PuristaMedium";
-    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    sizeEx = 0.5 * GUI_GRID_H;
     x = "safeZoneX + (safeZoneW / 5)";
     y = "safeZoneY + (safeZoneH / 2.25)";
     w = "(safeZoneW / 10)";
@@ -269,7 +264,7 @@ class SCOMTablet_RscListBox {
     type = 5;
     style = 0 + 0x10;
     font = "PuristaMedium";
-    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    sizeEx = 0.5 * GUI_GRID_H;
     x = "safeZoneX + (safeZoneW / 5)";
     y = "safeZoneY + (safeZoneH / 2.25)";
     w = "(safeZoneW / 10)";
@@ -312,7 +307,7 @@ class SCOMTablet_RscGUIListBox : SCOMTablet_RscListBox {
     colorSelectBackground[] = {0.333,0.333,0.333,1};
     colorSelectBackground2[] = {0.333,0.333,0.333,1};
     period = 0;
-    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    sizeEx = 0.5 * GUI_GRID_H;
     class ListScrollBar
     {
         color[] = {1, 1, 1, 0.6};
@@ -362,7 +357,7 @@ class SCOMTablet_RscComboBox
     colorActive[] = {0,0,0,1};
     colorDisabled[] = {0,0,0,0.3};
     font = "PuristaMedium";
-    sizeEx = "(safeZoneH / 100) + (safeZoneH / 100)";
+    sizeEx = 0.5 * GUI_GRID_H;
 };
 
 class SCOMTablet_RscMap

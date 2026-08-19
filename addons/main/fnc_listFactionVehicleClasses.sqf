@@ -82,14 +82,11 @@ private _isVehicleKind = (_kind in ["land", "air", "support"]);
 // mission init when CBA cfgFunctions actually fires.
 if (isNil "ALIVE_factionDefaultTransport" || {isNil "ALIVE_factionDefaultContainers"}) then {
     ["ALIVE listFactionVehicleClasses: registries not loaded - lazy-loading Placement.hpp + Logistics.hpp"] call ALiVE_fnc_dump;
-    // Force-override the ALiVE hash wrappers - the cfgFunctions-
-    // registered originals aren't reliably callable in 3DEN editor
-    // context. CBA equivalents are functionally identical for the
-    // operations Logistics.hpp / Placement.hpp use. The real wrappers
-    // get reinstalled by cfgFunctions at mission preInit.
-    ALIVE_fnc_hashCreate = CBA_fnc_hashCreate;
-    ALIVE_fnc_hashSet    = CBA_fnc_hashSet;
-    ALIVE_fnc_hashGet    = CBA_fnc_hashGet;
+    // Fill only helpers that pure Eden did not receive from CfgFunctions.
+    // In normal mission contexts the registered functions are compileFinal.
+    if (isNil "ALIVE_fnc_hashCreate") then { ALIVE_fnc_hashCreate = CBA_fnc_hashCreate; };
+    if (isNil "ALIVE_fnc_hashSet") then { ALIVE_fnc_hashSet = CBA_fnc_hashSet; };
+    if (isNil "ALIVE_fnc_hashGet") then { ALIVE_fnc_hashGet = CBA_fnc_hashGet; };
     // Placement.hpp creates ALIVE_factionDefaultSupports / Supplies
     // which Logistics.hpp's CFP/RHS sub-includes reference. Must load
     // Placement FIRST to avoid undefined-hash errors in the cross-

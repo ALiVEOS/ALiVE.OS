@@ -53,10 +53,30 @@ _facs = [];
 
 {
     if ((_pos distance (getposATL (leader _x)) < _radius) && {{isPlayer _x} count (units _x) < 1}) then {
-        private _votes = 1;
-        if (_weighted) then { _votes = ({alive _x} count (units _x)) max 1; };
-        for "_i" from 1 to _votes do {
-            _facs pushback (faction(leader _x));
+        // Who HOLDS an area is decided by forces on the ground, not by aircrew. A pilot never
+        // dismounts and never contests anything, and is very often not even of the same faction as
+        // the aircraft: a modded or Creator DLC helicopter that does not define its own pilots
+        // inherits the base game ones, so two vanilla pilots parked in a friendly helicopter were
+        // outvoting a whole garrison and handing the area to a faction with no infantry there at
+        // all. Ignore a group whose every living member is airborne crew. Deliberately limited to
+        // aircraft: a static weapon gunner or troops holding a checkpoint from their vehicle are
+        // still holding the ground, so they keep their say. Drone operators sit inside their
+        // aircraft and are covered by the same test.
+        // Troops under a canopy still count: a parachute reports as an aircraft, and men dropping
+        // onto an objective are very much contesting it.
+        private _grounded = (units _x) select {
+            alive _x && {isNull (objectParent _x)
+                || {!((objectParent _x) isKindOf "Air")}
+                || {(objectParent _x) isKindOf "ParachuteBase"}}
+        };
+        if (count _grounded > 0) then {
+            // Weight by the men on the ground, not by everyone aboard, or a full squad sitting in a
+            // parked helicopter would still cast a vote each through the one crewman standing outside.
+            private _votes = 1;
+            if (_weighted) then { _votes = (count _grounded) max 1; };
+            for "_i" from 1 to _votes do {
+                _facs pushback (faction(leader _x));
+            };
         };
     };
 } foreach allgroups;

@@ -78,7 +78,7 @@ _mul = [];
 switch (typeName _tgt) do {
     case ("OBJECT") : {_pos = position _tgt};
     case ("ARRAY") : {
-        if (count _tgt == 0) exitwith {_pos = [0,0,0]};
+        if (count _tgt == 0) exitwith {_pos = [0,0,0]; _tgt = _pos};
 
         if (typeName (_tgt select 0) == "SCALAR") then {
             _pos = _tgt;

@@ -38,7 +38,7 @@ SpyderBlack723
 Jman
 ---------------------------------------------------------------------------- */
 
-if (ALiVE_gamePaused) exitwith {
+if (isGamePaused) exitwith {
     private _profiles = [MOD(profileHandler),"profiles"] call ALiVE_fnc_hashGet;
     {[_x,"timeLastSim", diag_tickTime] call ALiVE_fnc_hashSet} foreach (_profiles select 2);
 };
@@ -87,7 +87,7 @@ if (!_simAttacks) then {
 
         if (!isnil "_profile") then {
 
-            if (!_profileSystemPaused && !ALiVE_gamePaused) then {
+            if (!_profileSystemPaused && !isGamePaused) then {
                 // begin sim
 
                 private _locked = [_profile,"locked", false] call ALiVE_fnc_HashGet;
@@ -676,7 +676,7 @@ if (!_simAttacks) then {
 
             if (!isnil "_attack") then {
 
-                if (!_profileSystemPaused && !ALiVE_gamePaused) then {
+                if (!_profileSystemPaused && !isGamePaused) then {
 
                     private _cyclesLeft = [_attack,"cyclesLeft"] call ALiVE_fnc_hashGet;
                     private _timeLastSim = [_attack,"timeLastSim", diag_tickTime - 0.001] call ALiVE_fnc_hashGet;

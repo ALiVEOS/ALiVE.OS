@@ -68,6 +68,79 @@ ALiVE_fnc_INS_getHostilitySetting = {
                 [_opcom,_key,_default] call ALiVE_fnc_HashGet
 };
 
+// Shared classname tier ladder. Takes a flat list of vehicle
+// classnames and reports the tier of the heaviest one. Both callers
+// supply that list from what they have in hand: the recruitment
+// classifier below reads the classnames out of CfgGroups, the
+// hostility path (issue #991) reads them off live profiles. One
+// definition of what counts as light or medium, used by both.
+//
+// Classnames that aren't vehicles don't elevate the tier: men and
+// static weapons fall out of whichever tier the rest of the list
+// already has, so a plain rifle team classifies as "infantry". "Man"
+// is the same separator ALiVE uses in
+// ALiVE_fnc_createProfilesFromGroupConfig, so man and vehicle classes
+// are split the same way on both paths. See
+// ALiVE_fnc_INS_classifyGroupTier for what each tier covers.
+//
+// The exclusion list is tested BEFORE men are skipped, so an
+// asym_excludeKinds entry naming a Man-derived kind still excludes -
+// the attribute is mission-facing and gets to mean what it says.
+ALiVE_fnc_INS_classifyClassesTier = {
+                params [
+                    ["_classes", [], [[]]],
+                    ["_excludedKinds", ["Tank", "Plane", "Helicopter", "Ship"], [[]]]
+                ];
+
+                private _hasExcluded = false;
+                private _hasMedium = false;
+                private _hasLight = false;
+
+                {
+                    private _class = _x;
+                    if (_class isEqualType "" && {_class != ""}) then {
+                        // Mission-maker-configurable exclusion list.
+                        // Default keeps the legacy hard-coded list
+                        // (Tank / Plane / Helicopter / Ship) - missions
+                        // that don't touch the asym_excludeKinds attr
+                        // get identical behaviour to before #861.
+                        // Edit the attribute on mil_opcom to widen
+                        // (e.g. allow tanks for state-backed
+                        // insurgencies) or narrow the list.
+                        private _isExcluded = (_excludedKinds findIf {
+                            _class isKindOf _x
+                        }) >= 0;
+                        if (_isExcluded) then {
+                            _hasExcluded = true;
+                        } else {
+                            // Men don't elevate tier - a rifleman's
+                            // classname is a Man class, not a vehicle.
+                            // StaticWeapon units (MGs, mortars, AT
+                            // launchers) accompany infantry and don't
+                            // elevate tier either.
+                            if (!(_class isKindOf "Man") && {!(_class isKindOf "StaticWeapon")}) then {
+                                if (_class isKindOf "Car") then {
+                                    _hasLight = true;
+                                } else {
+                                    // Any other non-infantry, non-
+                                    // excluded vehicle - treated as
+                                    // medium (wheeled APC, armed
+                                    // truck, non-Car transport, and
+                                    // any heavy types the mission-
+                                    // maker has un-excluded).
+                                    _hasMedium = true;
+                                };
+                            };
+                        };
+                    };
+                } forEach _classes;
+
+                if (_hasExcluded) exitWith {"excluded"};
+                if (_hasMedium) exitWith {"medium"};
+                if (_hasLight) exitWith {"light"};
+                "infantry"
+};
+
 // Classify a CfgGroups group entry into a "tier" for the asymmetric-OPCOM
 // progressive recruitment feature (issue #355). Asymmetric forces
 // historically never get tanks, jets, helis, or boats - regardless of
@@ -90,6 +163,12 @@ ALiVE_fnc_INS_getHostilitySetting = {
 //   "infantry" - no vehicle units (beyond StaticWeapon, which counts
 //                as infantry equipment and does NOT elevate tier).
 //
+// Note: a CfgGroups unit entry's "vehicle" is the unit's own classname,
+// which for a rifleman is a Man class - it is not a "has a vehicle"
+// flag. The shared ladder skips Man classes for tier purposes (after
+// testing them against the exclusion list), so infantry groups land in
+// "infantry" as the tiers above describe.
+//
 // Returns: string tier, or "excluded" if any unit in the group would
 // cross the asymmetric-force capability cap.
 ALiVE_fnc_INS_classifyGroupTier = {
@@ -100,55 +179,21 @@ ALiVE_fnc_INS_classifyGroupTier = {
 
                 if (isNull _groupConfig) exitWith {"excluded"};
 
-                private _hasExcluded = false;
-                private _hasMedium = false;
-                private _hasLight = false;
+                // Pull the group's unit classnames out of config and hand
+                // them to the shared ladder, which sorts men from vehicles.
+                private _classes = [];
 
                 for "_i" from 0 to (count _groupConfig - 1) do {
                     private _unitConfig = _groupConfig select _i;
                     if (isClass _unitConfig) then {
                         private _vehicle = getText (_unitConfig >> "vehicle");
                         if (_vehicle != "") then {
-                            // Mission-maker-configurable exclusion list.
-                            // Default keeps the legacy hard-coded list
-                            // (Tank / Plane / Helicopter / Ship) - missions
-                            // that don't touch the asym_excludeKinds attr
-                            // get identical behaviour to before #861.
-                            // Edit the attribute on mil_opcom to widen
-                            // (e.g. allow tanks for state-backed
-                            // insurgencies) or narrow the list.
-                            private _isExcluded = (_excludedKinds findIf {
-                                _vehicle isKindOf _x
-                            }) >= 0;
-                            if (_isExcluded) then {
-                                _hasExcluded = true;
-                            } else {
-                                // StaticWeapon units (MGs, mortars, AT
-                                // launchers) accompany infantry but
-                                // don't elevate tier. They fall out of
-                                // whichever tier the group already has.
-                                if !(_vehicle isKindOf "StaticWeapon") then {
-                                    if (_vehicle isKindOf "Car") then {
-                                        _hasLight = true;
-                                    } else {
-                                        // Any other non-infantry, non-
-                                        // excluded vehicle - treated as
-                                        // medium (wheeled APC, armed
-                                        // truck, non-Car transport, and
-                                        // any heavy types the mission-
-                                        // maker has un-excluded).
-                                        _hasMedium = true;
-                                    };
-                                };
-                            };
+                            _classes pushBack _vehicle;
                         };
                     };
                 };
 
-                if (_hasExcluded) exitWith {"excluded"};
-                if (_hasMedium) exitWith {"medium"};
-                if (_hasLight) exitWith {"light"};
-                "infantry"
+                [_classes, _excludedKinds] call ALiVE_fnc_INS_classifyClassesTier
 };
 
 // Build a tiered group roster for a faction, usable by the asymmetric
@@ -303,8 +348,106 @@ ALiVE_fnc_INS_getNearestObjectiveByPosition = {
 
                 _nearestObjective
 };
+
+// Collect the classnames carried by a list of profiles. Accepts either
+// profile hashes or profileIDs (the objective "section" stores IDs).
+// Vehicle profiles contribute their vehicleClass; entity profiles
+// contribute their unitClasses plus the vehicleClass of every vehicle
+// profile they are linked to, so a boat crew yields the boat plus its
+// crew classnames.
+//
+// Only runs on hostility events, so the per-profile handler lookups are
+// a handful of resolutions per event, not a loop cost.
+//
+// Returns: array of classnames, [] if nothing resolves.
+ALiVE_fnc_INS_getProfileUnitClasses = {
+                params [["_profiles",[],[[]]]];
+
+                private _classes = [];
+                private _canResolve = !isNil "ALIVE_profileHandler";
+
+                {
+                    private _profile = _x;
+
+                    if (_profile isEqualType "") then {
+                        if (_canResolve) then {
+                            _profile = [ALIVE_profileHandler,"getProfile",_profile] call ALIVE_fnc_profileHandler;
+                        } else {
+                            _profile = nil;
+                        };
+                    };
+
+                    if (!isNil "_profile" && {_profile isEqualType []}) then {
+                        private _vehicleClass = [_profile,"vehicleClass",""] call ALiVE_fnc_HashGet;
+                        if (_vehicleClass isEqualType "" && {_vehicleClass != ""}) then {
+                            _classes pushBackUnique _vehicleClass;
+                        };
+                        {_classes pushBackUnique _x} foreach ([_profile,"unitClasses",[]] call ALiVE_fnc_HashGet);
+
+                        // An entity profile's unitClasses are man classes only -
+                        // the boat or truck the group arrived in is a separate
+                        // vehicle profile, referenced by ID. Without this hop
+                        // every entity profile would classify as "infantry" and
+                        // the multiplier would be stuck at 1 (#991's boat case).
+                        // vehiclesInCommandOf / vehiclesInCargoOf are arrays of
+                        // vehicle profileIDs (ALiVE_fnc_profileEntity :177/:476),
+                        // covering both crewing a vehicle and riding in one.
+                        if (_canResolve && {([_profile,"type",""] call ALiVE_fnc_HashGet) isEqualTo "entity"}) then {
+                            private _vehicleIDs = ([_profile,"vehiclesInCommandOf",[]] call ALiVE_fnc_HashGet) + ([_profile,"vehiclesInCargoOf",[]] call ALiVE_fnc_HashGet);
+                            {
+                                if (_x isEqualType "" && {_x != ""}) then {
+                                    private _vehicleProfile = [ALIVE_profileHandler,"getProfile",_x] call ALIVE_fnc_profileHandler;
+                                    if (!isNil "_vehicleProfile" && {_vehicleProfile isEqualType []}) then {
+                                        private _linkedClass = [_vehicleProfile,"vehicleClass",""] call ALiVE_fnc_HashGet;
+                                        if (_linkedClass isEqualType "" && {_linkedClass != ""}) then {
+                                            _classes pushBackUnique _linkedClass;
+                                        };
+                                    };
+                                };
+                            } foreach _vehicleIDs;
+                        };
+                    };
+                } foreach _profiles;
+
+                _classes
+};
+
+// Hostility weight for the units that carried an action out (issue
+// #991). Runs the same tier ladder the recruitment classifier uses, so
+// "light" and "medium" mean the same thing here as they do there.
+//
+// The ladder is deliberately shallow - the shift is already multiplied
+// by duration (up to 4x) and by the commander's
+// hostilityPresenceMultiplier, so this term only tilts the result:
+//   infantry / nothing resolved - 1    (baseline, shift unchanged)
+//   light (technicals, pickups) - 1.25
+//   medium (wheeled APCs, trucks) - 1.5
+//   excluded (boats, armour, air) - 2
+//
+// "excluded" is the recruitment classifier's word for what an
+// asymmetric commander will never field itself. It still won't recruit
+// those, but a mission-placed boat or truck delivering supplies is
+// exactly the case #991 was raised for, so here it carries the heaviest
+// weight rather than being ignored.
+//
+// The default exclusion list is used regardless of the OPCOM's
+// asym_excludeKinds attribute: that attribute governs what the
+// commander may recruit, not how much a delivery is worth.
+ALiVE_fnc_INS_getHostilityUnitMultiplier = {
+                params [["_classes",[],[[]]]];
+
+                if (_classes isEqualTo []) exitwith {1};
+
+                switch ([_classes] call ALiVE_fnc_INS_classifyClassesTier) do {
+                    case "light":    {1.25};
+                    case "medium":   {1.5};
+                    case "excluded": {2};
+                    default          {1};
+                };
+};
+
 ALiVE_fnc_INS_updateHostilityByPresence = {
-                params ["_timeTaken","_pos","_insurgentSides",["_baseShift",20],["_allSides",["EAST","WEST","GUER"]],["_objective",[]]];
+                params ["_timeTaken","_pos","_insurgentSides",["_baseShift",20],["_allSides",["EAST","WEST","GUER"]],["_objective",[]],["_actingProfiles",[],[[]]]];
 
                 _allSides = [_allSides] call ALiVE_fnc_INS_normalizeHostilitySides;
                 _insurgentSides = [_insurgentSides] call ALiVE_fnc_INS_normalizeHostilitySides;
@@ -314,7 +457,21 @@ ALiVE_fnc_INS_updateHostilityByPresence = {
                 private _elapsed = (time - _timeTaken) max 0;
                 private _durationMultiplier = ((floor (_elapsed / 120)) max 1) min 4;
                 private _presenceMultiplier = ([_objective,"hostilityPresenceMultiplier",1] call ALiVE_fnc_INS_getHostilitySetting) max 0;
-                private _shift = (_baseShift * _presenceMultiplier) * _durationMultiplier;
+
+                // Issue #991 - weight the shift by what carried the action out.
+                // Callers holding the acting profiles pass them; the rest fall
+                // back to the section the commander assigned to the objective.
+                // Nothing to resolve, or a plain rifle team, leaves the shift
+                // exactly as it was before this term existed.
+                private _actingClasses = [_actingProfiles] call ALiVE_fnc_INS_getProfileUnitClasses;
+                if (_actingClasses isEqualTo [] && {!(_objective isEqualTo [])}) then {
+                    // "section" is a flat array of profileIDs (see
+                    // ALiVE_fnc_OPCOM :3174) - exactly the resolver's input.
+                    _actingClasses = [[_objective,"section",[]] call ALiVE_fnc_HashGet] call ALiVE_fnc_INS_getProfileUnitClasses;
+                };
+                private _unitMultiplier = [_actingClasses] call ALiVE_fnc_INS_getHostilityUnitMultiplier;
+
+                private _shift = (_baseShift * _presenceMultiplier) * _durationMultiplier * _unitMultiplier;
 
                 // Sustained insurgent activity slowly normalizes support for the insurgency
                 // and makes the remaining combatant sides less welcome in the same area.
@@ -1404,7 +1561,12 @@ ALiVE_fnc_INS_recruit = {
 	                            _recruits = [_group, [_pos,10,_size,1,0,0,0,[],[_pos]] call BIS_fnc_findSafePos, random(360), true, _faction] call ALIVE_fnc_createProfilesFromGroupConfig;
 	                            {[_x, "setActiveCommand", ["ALIVE_fnc_ambientMovement","spawn",[_size + 200,"SAFE",[0,0,0]]]] call ALIVE_fnc_profileEntity} foreach _recruits;
 
-	                            [_timeTaken,_pos,[_side],10,_allSides,_objective] call ALiVE_fnc_INS_updateHostilityByPresence;
+	                            // The group just recruited is what carried this
+	                            // one out, so weight the shift by it (#991).
+	                            // If createProfilesFromGroupConfig returned []
+	                            // the resolver finds no classes and the call
+	                            // falls back to the objective's own section.
+	                            [_timeTaken,_pos,[_side],10,_allSides,_objective,_recruits] call ALiVE_fnc_INS_updateHostilityByPresence;
 
                             };
                         };
@@ -1490,8 +1652,14 @@ ALiVE_fnc_INS_registerInstallationOnBuilding = {
     // nearby may all still be virtual and invisible to it. A run that only ever
     // reports zero means the flag has no source, and the civilian question that
     // reads it can never answer anything but "no, no one".
-    diag_log format ["[ALiVE DIAG-STRIP INS-CONTACT] %1 spawned man/men within 50m of %2, %3 civilian(s) flagged",
-        count _nearMen, typeOf _building, _civFlagged];
+    // The building itself rather than just its class. Two installations landing on the same
+    // building is the leading explanation for #1003, where an IED factory registers here but
+    // then has no composition and no way to disable it: the furniture pass exits silently when
+    // a building already carries some, and the hold action is refused when one of the same kind
+    // is already on it. A class name cannot tell two huts apart, so the log could not show a
+    // collision. The object reference carries a unique id and can.
+    diag_log format ["[ALiVE DIAG-STRIP INS-CONTACT] %1 spawned man/men within 50m of %2, %3 civilian(s) flagged, installations on it: %4",
+        count _nearMen, _building, _civFlagged, _building getVariable [_installationVar, []]];
 };
 
 ALiVE_fnc_INS_getBuildingInstallations = {
@@ -1897,6 +2065,21 @@ ALiVE_fnc_INS_filterObjectiveBuildings = {
         private _blacklist = ["tower","cage","platform","trench","bridge"];
 
         //["Building selected: %1 | %2",typeOf _h, _h] call ALiVE_fnc_DumpR;
+
+        // Already carrying an installation, so leave it alone.
+        //
+        // Two installations on one building look fine while they are being placed and then fail
+        // silently. The second one finds the building already furnished, so the furniture pass
+        // returns empty without a word, and the hold action is refused because one of the same
+        // kind is already attached. The result is an IED factory that is registered, marked on
+        // the map, and has nothing in it and no way to disable it (#1003).
+        //
+        // Checked first because it is the cheapest test here, and because a building that is
+        // already taken should not cost an indoor-position sweep to reject.
+        if !(([_h] call ALiVE_fnc_INS_getBuildingInstallations) isEqualTo []) then {
+            _buildings set [_index,objNull];
+            continue
+        };
 
         private _buildingPositions = [getposATL _h,5] call ALIVE_fnc_findIndoorHousePositions;
         

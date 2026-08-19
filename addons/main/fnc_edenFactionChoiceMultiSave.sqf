@@ -82,6 +82,12 @@ private _selectedFactions = [];
 //    escaping needed (defensive str() handles edge cases anyway).
 //    Empty selection produces canonical "[]" not "" - see header.
 // ------------------------------------------------------------------------
+// What is ticked is written down as it stands, always. An earlier attempt at this dropped a
+// selection that matched the suggested default, on the reasoning that storing it or not came to
+// the same thing. It does not. The field beside the list is ADDED to it, so as soon as anything
+// is named there the fallback never happens, and a suggestion quietly dropped is a faction the
+// commander then never gets. Whether to suggest at all is decided once, on the way in, where the
+// answer cannot go stale.
 private _result = if (count _selectedFactions == 0) then {
     "[]"
 } else {

@@ -139,6 +139,26 @@ private _fnc_setNode = {
 
     private _size = _heuristicParams select 4;
     private _moveCost = ([_cameFromSector,_sector,_size] call _fnc_getMovementCost);
+
+    // Make airfield-surface cells dearer to cross for ground procedures, so the
+    // router bends around a runway rather than straight over it. The penalty
+    // goes on the movement cost, not the heuristic below: it is _moveCost that
+    // accumulates into _newCostSoFar and so decides the recorded predecessor,
+    // while the heuristic only orders which cells are explored first. A penalty
+    // on the heuristic would change exploration order and leave the crossing
+    // route in place.
+    //
+    // Air procedures are exempt: the aircraft need the runway.
+    if !(ALiVE_airsideBounds isEqualTo []) then {
+        private _procedure = _heuristicParams select 2;
+        private _canTraverseAir = (_procedure select 1) select 4;
+        // Half the cell as margin, so a cell centre just off a runway strip still
+        // counts when the cell itself straddles it.
+        if (!_canTraverseAir && {[_sector select 2, _size / 2] call ALiVE_fnc_isAirside}) then {
+            _moveCost = _moveCost * ALiVE_pathfinding_airsideWeight;
+        };
+    };
+
     private _priority = (_heuristicParams call _fnc_heuristic);
     private _newCostSoFar = _moveCost + (_costSoFarMap get (_cameFromSector select 0));
     private _sectorCostSoFar = _costSoFarMap get (_sector select 0);
@@ -421,6 +441,14 @@ switch (_operation) do {
         // beach/surf and must NOT be treated as water. isNil-guarded so a console
         // override (e.g. ALiVE_pathfinding_waterMargin = 0.5) survives a mission restart.
         if (isNil "ALiVE_pathfinding_waterMargin") then { ALiVE_pathfinding_waterMargin = 1.0 };
+        // How much dearer an airfield-surface cell is to cross, for ground procedures.
+        // A soft cost, not a hard block: grid cells are tens of metres, and a hard
+        // wall could sever a field that sits across a narrow neck (Stratis Air Station
+        // does exactly that) and starve the frontier into a dead route. Six is enough
+        // to bend a route around a runway when any way around exists, and to fall back
+        // to crossing when none does. isNil-guarded so a console override survives a
+        // mission restart. Set to 1 to disable the penalty entirely.
+        if (isNil "ALiVE_pathfinding_airsideWeight") then { ALiVE_pathfinding_airsideWeight = 6 };
         private _terrainGrid = [nil,"create", _pathfindingSize] call ALiVE_fnc_pathfindingGrid;
 
         _logic = [[

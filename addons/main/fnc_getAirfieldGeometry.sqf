@@ -29,9 +29,14 @@ Description:
 Parameters:
     _this select 0: ARRAY  - centre [x, y, z] for the search.
     _this select 1: NUMBER - search radius in metres (default 500).
+    _this select 2: BOOL   - work out the wide airfield no-go zones as well
+                             (default true). This is the most expensive part of
+                             the function: it sweeps a wider area and inspects the
+                             name of every object it finds. A caller that reads only
+                             runways and taxiways should pass false.
 
 Returns:
-    ARRAY [_runwaySegments, _taxiwaySegments, _airfieldZones] where each
+    ARRAY [_runwaySegments, _taxiwaySegments, _airfieldZones, _sweptObjects] where each
     entry is an array of [_startPos, _endPos, _halfWidth] tuples.
     _airfieldZones are degenerate (start == end) segments centred on
     `nearestLocations` Airport / NameAirportArea entries, with the
@@ -41,6 +46,9 @@ Returns:
     that shouldn't place ground compositions on airfields. Callers
     that only need runway / taxiway segments can keep params-
     destructuring two fields; the 3rd is additive.
+    _sweptObjects is everything the search found in radius, handed back so a
+    caller needing to inspect the same objects does not sweep the area twice.
+    Empty when the zone work is skipped is NOT the case - it is always returned.
 
 Examples:
     (begin example)
@@ -59,8 +67,57 @@ Peer Reviewed:
 
 params [
     ["_centerPos", [0,0,0], [[]], [2,3]],
-    ["_radius", 500, [0]]
+    ["_radius", 500, [0]],
+    // Whether to work out the broad no-go zones around the field as well as its runways
+    // and taxiways. Finding those zones is the most expensive thing this does, because it
+    // sweeps a wider area and inspects the name of every object it finds, so a caller that
+    // only wants runways and taxiways can say so and skip it. Defaults to doing the work,
+    // so every existing caller behaves exactly as before.
+    ["_needZones", true, [true]]
 ];
+
+// ------------------------------------------------------------------------
+// Answer from the last identical survey where there was one.
+//
+// What this reads is static for a whole mission: runways do not move, tagged objects
+// are placed before it starts, and the module attributes are read as they were
+// authored. Recomputing on every call is harmless at run time, where an aircraft is
+// placed now and again, and very costly during placement, where every objective of
+// every module asks again and the widest sweep below looks at the name of every object
+// within a kilometre. That cost lands hardest on a dedicated server, where the mission
+// clock is running throughout placement and engine spatial queries are far dearer than
+// they are on a host sitting on the briefing map.
+//
+// Keyed on exactly what was asked for, so a caller can never be handed a survey of
+// somewhere else or of a smaller area than it requested.
+//
+// The result is SHARED, not copied. Every caller today only reads it; anything that
+// wants to modify it must take its own copy first.
+// ------------------------------------------------------------------------
+if (isNil "ALiVE_airfieldGeomCache") then {
+    ALiVE_airfieldGeomCache = createHashMap;
+    // Counted so the cache can be judged on evidence rather than on the assumption
+    // that callers repeat themselves. Two additions per call, at the top of the
+    // function and nowhere near the sweeps, and the totals are reported in one line
+    // when ALiVE finishes starting up. Timing anything INSIDE the searches is off the
+    // table: six operations added per iteration once took placement from 50 seconds
+    // to never finishing.
+    ALiVE_airfieldGeomCalls = 0;
+    ALiVE_airfieldGeomHits  = 0;
+};
+ALiVE_airfieldGeomCalls = ALiVE_airfieldGeomCalls + 1;
+private _cacheKey = format ["%1|%2|%3|%4", _centerPos select 0, _centerPos select 1, _radius, _needZones];
+private _cached = ALiVE_airfieldGeomCache get _cacheKey;
+if (!isNil "_cached") exitWith {
+    ALiVE_airfieldGeomHits = ALiVE_airfieldGeomHits + 1;
+    _cached
+};
+
+// Bounded, because each entry holds every object the sweep found and a long mission
+// would otherwise accumulate those references without limit. The repeats worth having
+// all arrive close together during placement, so emptying a full cache costs at most
+// one more survey each for whatever is still being asked about.
+if (count ALiVE_airfieldGeomCache > 256) then { ALiVE_airfieldGeomCache = createHashMap };
 
 private _runways       = [];
 private _taxiways      = [];
@@ -128,12 +185,17 @@ private _taggedObjs = nearestObjects [_centerPos, [], _radius];
 {
     if (typeOf _x == "") then {
         private _str = toLower (str _x);
-        // CBA_fnc_find expects [haystack, needle]. _str is the
-        // haystack (object string), the literals are needles.
-        private _isRunway  = (([_str, "runway_main"] call CBA_fnc_find) != -1)
-                          || (([_str, "runway_secondary"] call CBA_fnc_find) != -1)
-                          || (([_str, "runway_beton"] call CBA_fnc_find) != -1);
-        private _isTaxiway = ([_str, "taxiway"] call CBA_fnc_find) != -1;
+        // The engine's own string search rather than a function call, because this
+        // runs on every object the sweep found and there can be thousands of them
+        // on a wooded map. Four scripted calls each were costing more than the
+        // comparisons they performed. Tier 4b below has always done it this way.
+        // _str is already lower case and every needle is lower case, so the answers
+        // are the same ones. The braces make the alternatives lazy, so a runway
+        // stops being tested as soon as it matches.
+        private _isRunway  = ((_str find "runway_main") != -1)
+                          || {(_str find "runway_secondary") != -1}
+                          || {(_str find "runway_beton") != -1};
+        private _isTaxiway = (_str find "taxiway") != -1;
 
         if (_isRunway) then {
             private _pos = position _x;
@@ -162,7 +224,9 @@ private _taggedObjs = nearestObjects [_centerPos, [], _radius];
 // Half-width = larger of the two location extents. Conservative
 // over the rectangular footprint but cheap and reliable.
 // ------------------------------------------------------------------------
-private _airportLocs = nearestLocations [_centerPos, ["Airport"], _radius + 500];
+private _airportLocs = if (_needZones) then {
+    nearestLocations [_centerPos, ["Airport"], _radius + 500]
+} else { [] };
 
 // Tier 4b - object-class detection for airfield infrastructure. Some
 // maps (vanilla Stratis Air Station included) don't tag their air
@@ -174,18 +238,20 @@ private _airportLocs = nearestLocations [_centerPos, ["Airport"], _radius + 500]
 // zone half-width grows with the number of matches so a dense cluster
 // of airfield infrastructure produces one larger no-go area rather
 // than dozens of overlapping small ones.
-private _airfieldInfraObjects = (nearestObjects [_centerPos, [], _radius + 200]) select {
-    private _str = toLower (str _x);
-    private _isInfra =
-        ([_str, "papi"]            call CBA_fnc_find) != -1 ||
-        ([_str, "runwaylight"]     call CBA_fnc_find) != -1 ||
-        ([_str, "runway_edge"]     call CBA_fnc_find) != -1 ||
-        ([_str, "airport"]         call CBA_fnc_find) != -1 ||
-        ([_str, "hangar"]          call CBA_fnc_find) != -1 ||
-        ([_str, "tower_small"]     call CBA_fnc_find) != -1 ||
-        ([_str, "controltower"]    call CBA_fnc_find) != -1;
-    _isInfra
-};
+private _airfieldInfraObjects = if (_needZones) then {
+    // The widest sweep in this function, and it looks at the name of every single thing it
+    // finds. Only the zones need it, so a caller that does not want them pays none of it.
+    (nearestObjects [_centerPos, [], _radius + 200]) select {
+        private _str = toLower (str _x);
+        (_str find "papi") != -1
+        || {(_str find "runwaylight")  != -1}
+        || {(_str find "runway_edge")  != -1}
+        || {(_str find "airport")      != -1}
+        || {(_str find "hangar")       != -1}
+        || {(_str find "tower_small")  != -1}
+        || {(_str find "controltower") != -1}
+    }
+} else { [] };
 if (count _airfieldInfraObjects > 0) then {
     // Find bbox of detected infrastructure to size the no-go zone
     private _xs = _airfieldInfraObjects apply { (getPosATL _x) select 0 };
@@ -212,4 +278,10 @@ if (count _airfieldInfraObjects > 0) then {
     };
 } forEach _airportLocs;
 
-[_runways, _taxiways, _airfieldZones]
+// The list of everything found around the field is handed back as well. Sweeping a
+// square kilometre and a half is the most expensive thing here, and a caller that needs
+// to look at those same objects for its own purposes would otherwise sweep the identical
+// area a second time. Appended last, so nothing reading the first three is affected.
+private _result = [_runways, _taxiways, _airfieldZones, _taggedObjs];
+ALiVE_airfieldGeomCache set [_cacheKey, _result];
+_result

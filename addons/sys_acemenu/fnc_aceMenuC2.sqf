@@ -93,12 +93,39 @@ private _action = [
 [player, 1, _menupath, _action] call ace_interact_menu_fnc_addActionToObject;
 
 // Operations item //
+// Operations is the ONLY place an instant join can be ended, and a player who
+// has taken over another unit is carrying that unit's kit rather than their own
+// tablet. Gating it on the item alone therefore strands them as the unit they
+// joined. The same exemption already exists on the CBA menu; without it here a
+// player using the ACE self interaction menu is still stuck, which is what a
+// tester reported after the first fix.
+//
+// Self-contained on purpose. ACE evaluates this long after everything around it
+// has gone out of scope, which is the same reason the Command View condition
+// below repeats its own item check rather than borrowing _c2Cond.
+private _opsCond = {
+    private _hasItem = ({
+        ([(toLower(str((assignedItems player) + (uniformItems player) + (backpackItems player) + (vestItems player)))), toLower(_x)] call CBA_fnc_find) > -1
+    } count MOD(MIL_C2ISTAR_Items)) > 0;
+
+    private _joinActive = false;
+    if (!isNil "ALIVE_SUP_COMMAND") then {
+        private _joinState = [ALIVE_SUP_COMMAND,"commandState"] call ALIVE_fnc_SCOM;
+        if (!isNil "_joinState") then {
+            private _flag = [_joinState,"opsGroupInstantJoin",false] call ALiVE_fnc_hashGet;
+            if (_flag isEqualType false) then { _joinActive = _flag };
+        };
+    };
+
+    _hasItem || _joinActive
+};
+
 private _action = [
     "C2_Operations",
     "Operations",
     QMENUICON2(c2,ops),
     {["OPEN_OPS",[]] call ALIVE_fnc_SCOMTabletOnAction},
-    _c2Cond
+    _opsCond
 ] call ace_interact_menu_fnc_createAction;
 
 [player, 1, _menupath, _action] call ace_interact_menu_fnc_addActionToObject;

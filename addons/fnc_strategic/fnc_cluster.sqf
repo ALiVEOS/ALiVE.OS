@@ -44,7 +44,7 @@ nil
 #define MAINCLASS ALIVE_fnc_cluster
 #define MTEMPLATE "ALiVE_CLUSTER_%1_%2"
 
-private ["_createMarkers","_deleteMarkers","_nodes","_center","_result"];
+private ["_createMarkers","_deleteMarkers","_positionIsUsable","_nodes","_center","_result"];
 
 params [
     ["_logic", objNull, [objNull,[]]],
@@ -57,6 +57,46 @@ TRACE_2("cluster - input",_operation,_args);
 _result = true;
 
 
+
+// Could this position be somewhere on a map at all.
+//
+// Terrain indexing can hand back a LIVE object for a placement it failed to locate, so neither
+// isNil nor isNull notices anything wrong: the object is real, its position is not. One terrain
+// ships three such placements, held in its index with a stand-in position, and asking the object
+// that came back where it was gave a point far off the map with a height that is not a number.
+// Saved, that put nodes into the cluster files that nothing can use, and a height that is not a
+// number poisons every distance and comparison it touches without ever raising a complaint.
+//
+// Asked the way round that makes a good position prove itself, deliberately. Every comparison
+// against a value that is not a number answers no, so a test asking whether a position is BAD
+// answers no as well and waves it through. Do not turn this into a negation.
+//
+// The lower limit is loose on purpose. Real objects do sit a little way past zero on some maps,
+// including the one this was found on, so anything near the edge has to pass.
+_positionIsUsable = {
+    private ["_p","_ok"];
+    _p = _this;
+
+    if !(_p isEqualType []) exitWith { false };
+    if (count _p < 2) exitWith { false };
+
+    _ok = ((_p select 0) isEqualType 0)
+        && {(_p select 1) isEqualType 0}
+        && {(_p select 0) > -5000}
+        && {(_p select 0) < 100000}
+        && {(_p select 1) > -5000}
+        && {(_p select 1) < 100000};
+
+    // Height only where there is one. This is the part that catches a height that is not a
+    // number, since it sits within limits no real terrain approaches.
+    if (_ok && {count _p > 2}) then {
+        _ok = ((_p select 2) isEqualType 0)
+            && {(_p select 2) > -100000}
+            && {(_p select 2) < 100000};
+    };
+
+    _ok
+};
 
 _deleteMarkers = {
     private ["_logic"];
@@ -206,14 +246,29 @@ switch(_operation) do {
 
             // nodes
             _data = [];
+            private _dropped = 0;
             {
                 if!(isNil "_x") then {
-                    _data set [count _data, [
-                        _x call ALIVE_fnc_findObjectIDString,
-                        position _x
-                    ]];
+                    private _nodePos = position _x;
+
+                    if (_nodePos call _positionIsUsable) then {
+                        _data set [count _data, [
+                            _x call ALIVE_fnc_findObjectIDString,
+                            _nodePos
+                        ]];
+                    } else {
+                        _dropped = _dropped + 1;
+                    };
                 };
             } forEach ([_logic, "nodes",[]] call ALIVE_fnc_hashGet);
+
+            // Said once for the cluster rather than once per node. A terrain whose index is
+            // genuinely broken produces these by the dozen, and saying so every time is how a
+            // real signal gets buried.
+            if (_dropped > 0) then {
+                ["CLUSTER %1 - %2 node(s) left out of the saved data, their position was not somewhere on the map. The terrain index is likely at fault for those objects.",
+                    [_logic, "clusterID", "?"] call ALIVE_fnc_hashGet, _dropped] call ALIVE_fnc_dump;
+            };
 
             _result = [_state, "nodes", _data] call ALIVE_fnc_hashSet;
         } else {
@@ -224,14 +279,24 @@ switch(_operation) do {
             // nodes
             _data = [];
             _nodes = [_args, "nodes"] call ALIVE_fnc_hashGet;
+            // The same test on the way back in, so a cluster file written before this existed
+            // cannot put a node nothing can use back into play.
+            private _droppedOnLoad = 0;
             {
                 private["_node"];
                 _objID = parseNumber(_x select 0);
-                if(_objID > 0) then {
+                if(_objID > 0 && {(_x select 1) call _positionIsUsable}) then {
                     _node = (_x select 1) nearestObject (parseNumber(_x select 0));
                     _data pushback _node;
-                }
+                } else {
+                    _droppedOnLoad = _droppedOnLoad + 1;
+                };
             } forEach _nodes;
+
+            if (_droppedOnLoad > 0) then {
+                ["CLUSTER %1 - %2 stored node(s) skipped, their position was not somewhere on the map.",
+                    [_logic, "clusterID", "?"] call ALIVE_fnc_hashGet, _droppedOnLoad] call ALIVE_fnc_dump;
+            };
             [_logic, "nodes", _data] call MAINCLASS;
         };
     };

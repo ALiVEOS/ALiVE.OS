@@ -71,7 +71,24 @@ _nonstrathouses = [];
     _isStrategic = (typeOf _obj) in _BuildingTypeStrategic;
     _houses = if (_isStrategic) then {_strathouses} else {_nonstrathouses};
 
-    if (!_absorbedCBApos && {!(([_obj] call ALiVE_fnc_getBuildingPositions) isEqualTo [])} && {!(_obj in _houses)}) then {
+    // Ask the engine the one question this needs, rather than building a list to measure it.
+    //
+    // This used to call getBuildingPositions and test the result for empty. That walks every
+    // position in the building, one engine call and a string comparison each, collects them
+    // into an array and throws the array away. Measured on Cam Lao Nam it ran 35,647 times and
+    // was the largest single cost in ALiVE startup: sorting took 465 seconds of a 556 second
+    // module init, and the module was 84% of the whole wait.
+    //
+    // Worse, it could never return empty here. Everything reaching this point came through
+    // getEnterableHouses, which admits a building only if isHouseEnterable passed, and that
+    // test is exactly "buildingPos 0 is not [0,0,0]". getBuildingPositions returns empty only
+    // in that same case. So the old line computed a constant at the cost of ten engine calls
+    // per building.
+    //
+    // Asking for position zero directly is the same question in one call. Kept as a test
+    // rather than removed, so this still behaves if it is ever handed a list that has not
+    // already been filtered.
+    if (!_absorbedCBApos && {!((_obj buildingPos 0) isEqualTo [0,0,0])} && {!(_obj in _houses)}) then {
         private ["_pos", "_collect"];
 
         _pos = getPosATL _obj;

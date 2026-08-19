@@ -327,8 +327,12 @@ class FSM
                          "        _cluster = [ALIVE_clusterHandler, ""getCluster"", _clusterID] call ALIVE_fnc_clusterHandler;" \n
                          "" \n
                          "        if !(isNil ""_cluster"") then {" \n
-                         "                 _clusterHostility = [_cluster, ""hostility""] call ALIVE_fnc_hashGet;" \n
-                         "                _clusterCasualties = [_cluster, ""casualties""] call ALIVE_fnc_hashGet;" \n
+                         "                // Ask with a fallback. Without one, a cluster that carries no hostility" \n
+                         "                // or casualty figures yet hands back nothing, which replaces the safe" \n
+                         "                // starting value set further up and leaves the addition below adding to" \n
+                         "                // nothing at all." \n
+                         "                _clusterHostility = [_cluster, ""hostility"", ["""",[],[],""""]] call ALIVE_fnc_hashGet;" \n
+                         "                _clusterCasualties = [_cluster, ""casualties"", ["""",[],[],""""]] call ALIVE_fnc_hashGet;" \n
                          "        };" \n
                          "    } forEach _settlementClusters;" \n
                          "" \n

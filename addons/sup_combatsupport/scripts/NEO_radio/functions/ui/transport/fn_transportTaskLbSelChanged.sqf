@@ -1,4 +1,5 @@
 private ["_display", "_text", "_lb", "_index", "_slider", "_sliderText", "_show", "_chopper"];
+([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
 _display = findDisplay 655555;
 _text = _display displayCtrl 655573;
 _lb = _this select 0;
@@ -40,13 +41,13 @@ _task = switch (_lb lbText _index) do
 {
     CASE "CIRCLE" :
     {
-        _objectLb ctrlSetPosition [safeZoneX + (safeZoneW / 2.275), safeZoneY + (safeZoneH / 1.45), (safeZoneW / 1000), (safeZoneH / 1000)];
+        _objectLb ctrlSetPosition [_uiX + (_uiW / 2.275), _uiY + (_uiH / 1.45), (_uiW / 1000), (_uiH / 1000)];
         _objectLb ctrlCommit 0;
         _objectLb ctrlEnable false;
-        _slider ctrlSetPosition [0.281002 * safezoneW + safezoneX, 0.5504 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
+        _slider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
         _slider ctrlCommit 0;
         _sliderText ctrlSetText "Radius: 200/300";
-        _sliderText ctrlSetPosition [0.225 * safezoneW + safezoneX, 0.52 * safezoneH + safezoneY, (0.19 * safezoneW), (0.028 * safezoneH)];
+        _sliderText ctrlSetPosition [0.225 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)];
         _sliderText ctrlCommit 0;
 
         _slider sliderSetRange [100, 300];
@@ -64,13 +65,13 @@ _task = switch (_lb lbText _index) do
     };
     CASE "INSERTION" :
     {
-        _objectLb ctrlSetPosition [safeZoneX + (safeZoneW / 2.275), safeZoneY + (safeZoneH / 1.45), (safeZoneW / 1000), (safeZoneH / 1000)];
+        _objectLb ctrlSetPosition [_uiX + (_uiW / 2.275), _uiY + (_uiH / 1.45), (_uiW / 1000), (_uiH / 1000)];
         _objectLb ctrlCommit 0;
         _objectLb ctrlEnable false;
-        _slider ctrlSetPosition [0.281002 * safezoneW + safezoneX, 0.5504 * safezoneH + safezoneY, (0.0927966 * safezoneW), (0.0196 * safezoneH)];
+        _slider ctrlSetPosition [0.281002 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.0927966 * _uiW), (0.0196 * _uiH)];
         _slider ctrlCommit 0;
-        _sliderText ctrlSetText "Height: 20/50";
-        _sliderText ctrlSetPosition [0.225 * safezoneW + safezoneX, 0.52 * safezoneH + safezoneY, (0.19 * safezoneW), (0.028 * safezoneH)];
+        _sliderText ctrlSetText "Height: 25/50";
+        _sliderText ctrlSetPosition [0.225 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)];
         _sliderText ctrlCommit 0;
 
         _slider sliderSetRange [2, 50];
@@ -90,12 +91,12 @@ _task = switch (_lb lbText _index) do
     CASE "SLINGLOAD" :
     {
         private ["_pos"];
-        _slider ctrlSetPosition [safeZoneX + (safeZoneW / 2.275), safeZoneY + (safeZoneH / 1.45), (safeZoneW / 1000), (safeZoneH / 1000)];
+        _slider ctrlSetPosition [_uiX + (_uiW / 2.275), _uiY + (_uiH / 1.45), (_uiW / 1000), (_uiH / 1000)];
         _slider ctrlCommit 0;
-        _objectLb ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.5504 * safezoneH + safezoneY, (0.22 * safezoneW), (0.028 * safezoneH)];
+        _objectLb ctrlSetPosition [0.280111 * _uiW + _uiX, 0.5504 * _uiH + _uiY, (0.22 * _uiW), (0.028 * _uiH)];
         _objectLb ctrlCommit 0;
         _sliderText ctrlSetText "Select cargo to lift:";
-        _sliderText ctrlSetPosition [0.280111 * safezoneW + safezoneX, 0.52 * safezoneH + safezoneY, (0.19 * safezoneW), (0.028 * safezoneH)]; // indent to line up with the cargo box below (was 0.225, flush with the section labels)
+        _sliderText ctrlSetPosition [0.280111 * _uiW + _uiX, 0.52 * _uiH + _uiY, (0.19 * _uiW), (0.028 * _uiH)]; // indent to line up with the cargo box below (was 0.225, flush with the section labels)
         _sliderText ctrlCommit 0;
 
         _pos = getMarkerPos (uinamespace getVariable ["NEO_transportMarkerCreated","unknown"]);
@@ -137,13 +138,13 @@ _task = switch (_lb lbText _index) do
     };
     CASE DEFAULT
     {
-        _objectLb ctrlSetPosition [safeZoneX + (safeZoneW / 2.275), safeZoneY + (safeZoneH / 1.45), (safeZoneW / 1000), (safeZoneH / 1000)];
+        _objectLb ctrlSetPosition [_uiX + (_uiW / 2.275), _uiY + (_uiH / 1.45), (_uiW / 1000), (_uiH / 1000)];
         _objectLb ctrlCommit 0;
         _objectLb ctrlEnable false;
-        _slider ctrlSetPosition [safeZoneX + (safeZoneW / 2.275), safeZoneY + (safeZoneH / 1.45), (safeZoneW / 1000), (safeZoneH / 1000)];
+        _slider ctrlSetPosition [_uiX + (_uiW / 2.275), _uiY + (_uiH / 1.45), (_uiW / 1000), (_uiH / 1000)];
         _slider ctrlCommit 0;
         _sliderText ctrlSetText "";
-        _sliderText ctrlSetPosition [safeZoneX + (safeZoneW / 2.255), safeZoneY + (safeZoneH / 1.48), (safeZoneW / 1000), (safeZoneH / 1000)];
+        _sliderText ctrlSetPosition [_uiX + (_uiW / 2.255), _uiY + (_uiH / 1.48), (_uiW / 1000), (_uiH / 1000)];
         _sliderText ctrlCommit 0;
     };
 };

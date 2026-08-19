@@ -119,6 +119,16 @@
                 <Chinesesimp>自定义对象计数和间隔。确保间隔值按升序排列。'triggers'将计算所有的missionobjects "EmptyDetector", 'entities'将计算实体"All", 'objects'将计算所有的missionobjects "All", 'activeScripts'将计算所有的活动脚本。其他的将被计算为YOURPARAM,也就是计算allDead。</Chinesesimp>
             </Key>
             <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_Data_saveAllowlist">
+                <English>Save Server Allowlist:</English>
+                <Chinesesimp>服务器保存白名单:</Chinesesimp>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
+            <Key ID="STR_ALIVE_Data_saveAllowlist_COMMENT">
+                <English>Comma separated list of Steam UIDs allowed to use the Save Server button without being logged in as admin. Leave empty to restrict saving to admins.</English>
+                <Chinesesimp>允许在未以管理员身份登录的情况下使用"保存服务器"按钮的Steam UID列表(逗号分隔)。留空则仅限管理员保存。</Chinesesimp>
+            </Key>
+            <!-- AI-translated; native-speaker review welcome -->
             <Key ID="STR_ALIVE_DATA_MENU">
                 <English>Persistent Data</English>
                 <Chinese>持久化資料</Chinese>

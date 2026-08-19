@@ -805,22 +805,40 @@
     <Russian>Размещает композицию полевого штаба (палатки, транспорт) рядом с модулем на ровной местности. Дополняет главный штаб как передовой командный пункт.</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACE_HELI">
-    <English>Place air units:</English>
-    <Chinese>放置空中單位：</Chinese>
-    <Chinesesimp>放置空中单位：</Chinesesimp>
-    <Spanish>Colocar unidades aéreas:</Spanish>
-    <French>Placer les unités aériennes:</French>
-    <Portuguese>Posicionar unidades aéreas:</Portuguese>
-    <Russian>Размещать авиаюниты:</Russian>
+    <English>Place helicopters:</English>
+    <Chinese>放置直升機：</Chinese>
+    <Chinesesimp>放置直升机：</Chinesesimp>
+    <Spanish>Colocar helicópteros:</Spanish>
+    <French>Placer les hélicoptères:</French>
+    <Portuguese>Posicionar helicópteros:</Portuguese>
+    <Russian>Размещать вертолёты:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_PLACE_HELI_COMMENT">
-    <English>Spawns helicopters and fixed-wing aircraft at helipads and hangars within military objectives. Requires suitable landing infrastructure to exist at objectives.</English>
-    <Chinese>在軍事目標內的直升機停機坪和機庫處生成直升機和固定翼飛機。需要目標處存在合適的降落基礎設施。</Chinese>
-    <Chinesesimp>在军事目标内的直升机停机坪和机库处生成直升机和固定翼飞机。需要目标处存在合适的降落基础设施。</Chinesesimp>
-    <Spanish>Genera helicópteros y aeronaves de ala fija en helipuertos y hangares dentro de los objetivos militares. Requiere que exista infraestructura de aterrizaje adecuada en los objetivos.</Spanish>
-    <French>Fait apparaître des hélicoptères et des avions à voilure fixe sur les hélipads et dans les hangars des objectifs militaires. Nécessite la présence d'infrastructures d'atterrissage adaptées aux objectifs.</French>
-    <Portuguese>Gera helicópteros e aeronaves de asa fixa em heliportos e hangares dentro dos objetivos militares. Requer infraestrutura de pouso adequada nos objetivos.</Portuguese>
-    <Russian>Создаёт вертолёты и самолёты на вертолётных площадках и в ангарах в пределах военных объектов. Требует наличия подходящей посадочной инфраструктуры на объектах.</Russian>
+    <English>Spawns helicopters at helipads within military objectives. Requires suitable landing infrastructure to exist at objectives.</English>
+    <Chinese>在軍事目標內的直升機停機坪處生成直升機。需要目標處存在合適的降落基礎設施。</Chinese>
+    <Chinesesimp>在军事目标内的直升机停机坪处生成直升机。需要目标处存在合适的降落基础设施。</Chinesesimp>
+    <Spanish>Genera helicópteros en helipuertos dentro de los objetivos militares. Requiere que exista infraestructura de aterrizaje adecuada en los objetivos.</Spanish>
+    <French>Fait apparaître des hélicoptères sur les hélipads des objectifs militaires. Nécessite la présence d'infrastructures d'atterrissage adaptées aux objectifs.</French>
+    <Portuguese>Gera helicópteros em heliportos dentro dos objetivos militares. Requer infraestrutura de pouso adequada nos objetivos.</Portuguese>
+    <Russian>Создаёт вертолёты на вертолётных площадках в пределах военных объектов. Требует наличия подходящей посадочной инфраструктуры на объектах.</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_PLACE_PLANE">
+    <English>Place aircraft:</English>
+    <Chinese>放置固定翼飛機：</Chinese>
+    <Chinesesimp>放置固定翼飞机：</Chinesesimp>
+    <Spanish>Colocar aeronaves:</Spanish>
+    <French>Placer les avions:</French>
+    <Portuguese>Posicionar aeronaves:</Portuguese>
+    <Russian>Размещать самолёты:</Russian>
+</Key>
+<Key ID="STR_ALIVE_MP_PLACE_PLANE_COMMENT">
+    <English>Spawns fixed-wing aircraft at hangars within military objectives. Requires suitable landing infrastructure to exist at objectives.</English>
+    <Chinese>在軍事目標內的機庫處生成固定翼飛機。需要目標處存在合適的降落基礎設施。</Chinese>
+    <Chinesesimp>在军事目标内的机库处生成固定翼飞机。需要目标处存在合适的降落基础设施。</Chinesesimp>
+    <Spanish>Genera aeronaves de ala fija en hangares dentro de los objetivos militares. Requiere que exista infraestructura de aterrizaje adecuada en los objetivos.</Spanish>
+    <French>Fait apparaître des avions à voilure fixe dans les hangars des objectifs militaires. Nécessite la présence d'infrastructures d'atterrissage adaptées aux objectifs.</French>
+    <Portuguese>Gera aeronaves de asa fixa em hangares dentro dos objetivos militares. Requer infraestrutura de pouso adequada nos objetivos.</Portuguese>
+    <Russian>Создаёт самолёты в ангарах в пределах военных объектов. Требует наличия подходящей посадочной инфраструктуры на объектах.</Russian>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_MP_PLACE_ARTILLERY">
@@ -984,7 +1002,7 @@
     <Russian>Группы пехоты гарнизона:</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_COMMENT">
-    <English>Additional infantry groups spawned at each objective to garrison and patrol buildings. Low/Medium/High resolve to roughly 1-2, 3-4 or 5-6 groups per objective when enough infantry groups exist. These are not a Force Size cap and can multiply the final unit count across many objectives.</English>
+    <English>Additional infantry groups spawned at each objective to garrison and patrol buildings. Levels resolve to roughly 1-2 (Low) up to 5-6 (High) groups per objective when enough infantry groups exist. These are not a Force Size cap and can multiply the final unit count across many objectives.</English>
     <Chinese>分配到每個目標內駐防和巡邏建築物的步兵組數量。如果沒有生成步兵組，則沒有效果。</Chinese>
     <Chinesesimp>分配到每个目标内驻防和巡逻建筑物的步兵组数量。如果没有生成步兵组，则没有效果。</Chinesesimp>
     <Spanish>Número de grupos de infantería asignados a guarnecer y patrullar edificios dentro de cada objetivo. No tiene efecto si no se generan grupos de infantería.</Spanish>
@@ -1010,6 +1028,16 @@
     <Portuguese>Baixo (1-2 grupos)</Portuguese>
     <Russian>Низко (1-2 группы)</Russian>
 </Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMLOW">
+    <English>Medium-Low (2-3 Groups)</English>
+    <Chinese>中低（2-3 組）</Chinese>
+    <Chinesesimp>中低(2-3组)</Chinesesimp>
+    <Spanish>Medio-bajo (2-3 grupos)</Spanish>
+    <French>Moyen-faible (2-3 groupes)</French>
+    <Portuguese>Médio-baixo (2-3 grupos)</Portuguese>
+    <Russian>Средне-низко (2-3 группы)</Russian>
+</Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUM">
     <English>Medium (3-4 Groups)</English>
     <Chinese>中等（3-4 組）</Chinese>
@@ -1018,6 +1046,16 @@
     <French>Moyen (3-4 groupes)</French>
     <Portuguese>Médio (3-4 grupos)</Portuguese>
     <Russian>Средне (3-4 группы)</Russian>
+</Key>
+<!-- AI-translated; native-speaker review welcome -->
+<Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_MEDIUMHIGH">
+    <English>Medium-High (4-5 Groups)</English>
+    <Chinese>中高（4-5 組）</Chinese>
+    <Chinesesimp>中高(4-5组)</Chinesesimp>
+    <Spanish>Medio-alto (4-5 grupos)</Spanish>
+    <French>Moyen-élevé (4-5 groupes)</French>
+    <Portuguese>Médio-alto (4-5 grupos)</Portuguese>
+    <Russian>Средне-высоко (4-5 групп)</Russian>
 </Key>
 <Key ID="STR_ALIVE_MP_AMBIENT_GUARD_AMOUNT_HIGH">
     <English>High (5-6 Groups)</English>

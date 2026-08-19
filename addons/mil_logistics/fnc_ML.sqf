@@ -1101,10 +1101,42 @@ switch(_operation) do {
                     _active = false;
                 };
 
-                private _isActive = _profile select 2 select 1;
+                // Watch the AIRFRAME, not the pilot. Every caller hands this watchdog the
+                // pilot ENTITY profile, and the stand-down flag read above is set on that
+                // same entity profile, so the handle is right. Index 10 is the vehicle
+                // OBJECT only on a VEHICLE profile though - on an entity profile it is the
+                // group leader, so this used to measure the man. Fuel of a person is always
+                // 1, his height above ground is nought and his speed is nought while he
+                // stands, so neither the fuel-starvation branch nor the sustained-hover
+                // branch below could ever reach its threshold. Measured in a live mission:
+                // "fuel=1 heightAGL=0.00138855 speed=0" repeating unchanged to eight
+                // decimal places, which is a stationary infantryman, not a helicopter.
+                // Reach the aircraft through the entity's command list instead.
+                private _heliProfile = [];
+                private _inCommandOf = _profile select 2 select 8;      // vehiclesInCommandOf
+                if ((_inCommandOf isEqualType []) && {count _inCommandOf > 0}) then {
+                    private _vehProfile = [ALIVE_profileHandler, "getProfile", _inCommandOf select 0] call ALIVE_fnc_profileHandler;
+                    // Only ever measure a VEHICLE profile. Silently reading the wrong kind of
+                    // profile is the whole reason this watchdog never worked, so refuse rather
+                    // than repeat it quietly.
+                    if (!isNil "_vehProfile" && {(_vehProfile select 2 select 5) isEqualTo "vehicle"}) then {
+                        _heliProfile = _vehProfile;
+                    };
+                };
+
+                // No aircraft left to watch. The transport profile can be destroyed at the
+                // drop-off while its pilot profile survives, and with the pilot as the only
+                // handle this loop then polled a stranded man for the rest of the mission.
+                if (count _heliProfile == 0) exitWith {
+                    ["ML - spawnHelicopterFuelWatchdog: Profile %1 has no airframe left, exiting",
+                        _profileID] call ALiVE_fnc_dump;
+                    _active = false;
+                };
+
+                private _isActive = _heliProfile select 2 select 1;
 
                 if (_isActive) then {
-                    private _heli = _profile select 2 select 10;
+                    private _heli = _heliProfile select 2 select 10;
 
                     if (!isNull _heli && alive _heli) then {
 
@@ -3487,7 +3519,7 @@ switch(_operation) do {
             { if ((_x select 0) == _eventSide) exitWith { _eventFaction = (_x select 1) select 0; }; } forEach _factions;
             if (_eventFaction == "" && {count _factions > 0}) then { _eventFaction = (_factions select 0 select 1) select 0; };
             private _registryID = [_logic, "registryID"] call MAINCLASS;
-            private _forcePool = [ALIVE_globalForcePool, _eventFaction] call ALIVE_fnc_hashGet;
+            private _forcePool = [ALIVE_globalForcePool, _eventFaction, 0] call ALIVE_fnc_hashGet;
             if (typeName _forcePool == "STRING") then { _forcePool = parseNumber _forcePool; };
             if (typeName _forcePool != "SCALAR") then { _forcePool = 0; };
             private _resupplyCost = 1 max (10 min (floor (_forcePool * 0.02)));
@@ -3690,7 +3722,7 @@ switch(_operation) do {
             };
 
             private _registryID = [_logic, "registryID"] call MAINCLASS;
-            private _forcePool = [ALIVE_globalForcePool, _eventFaction] call ALIVE_fnc_hashGet;
+            private _forcePool = [ALIVE_globalForcePool, _eventFaction, 0] call ALIVE_fnc_hashGet;
             if (typeName _forcePool == "STRING") then { _forcePool = parseNumber _forcePool; };
             if (typeName _forcePool != "SCALAR") then { _forcePool = 0; };
 
@@ -3859,7 +3891,23 @@ switch(_operation) do {
                     } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
 
                     // Protect task - to the convoy's own side
-                    private _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                    // Everyone on the side who is still taking tasks they did not ask
+                    // for. C2ISTAR leaves the opted-out off the list when it hands a
+                    // side task round, so this only saves raising one nobody would
+                    // receive. The count test below then does that on its own.
+                    private _ownPlayers = [];
+
+                    if (isServer) then {
+                        _ownPlayers = ["getAutoOrderSidePlayers", [_eventSide]] call ALiVE_fnc_playerOrders;
+                        if (_ownPlayers isEqualType [] && {count _ownPlayers > 1}) then {
+                            _ownPlayers = [_ownPlayers select 1, _ownPlayers select 0];
+                        };
+                    };
+
+                    if (isNil "_ownPlayers" || {!(_ownPlayers isEqualType [])} || {count _ownPlayers < 2}) then {
+                        _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                    };
+
                     if (count (_ownPlayers select 1) > 0) then {
                         private _enemyFaction = _hostileOpcomFaction;
                         if (_enemyFaction == "") then {
@@ -4483,7 +4531,8 @@ switch(_operation) do {
             if(_factionFound) then {
 
                 private ["_eventQueue","_response","_responseItem","_playerRequested","_eventData","_logEvent","_playerID",
-                "_eventState","_eventType","_eventForceMakeup","_requestID","_transportProfiles","_position","_playerRequestProfileID","_profile"];
+                "_eventState","_eventType","_eventForceMakeup","_requestID","_transportProfiles","_position","_playerRequestProfileID","_profile",
+                "_positions","_eventCargoProfiles","_transportVehiclesProfiles","_armourProfiles","_mechanisedProfiles","_motorisedProfiles"];
 
                 // get the event data for this player
 
@@ -4523,6 +4572,50 @@ switch(_operation) do {
                                         };
 
                                     } forEach _transportProfiles;
+
+                                };
+
+                                // A self-transporting vehicle group (armour / mechanised / motorised
+                                // driving its own vehicles) has no transportProfiles, so the tablet
+                                // would read "Enroute Unknown". Fall back to the actual moving vehicle
+                                // and cargo profiles for a live position. Runs only when the
+                                // transportProfiles pass produced nothing, so infantry / escort-truck
+                                // convoys keep their existing (authoritative truck) position.
+                                if(count _positions == 0) then {
+
+                                    _eventCargoProfiles = [_x, "cargoProfiles"] call ALIVE_fnc_hashGet;
+                                    _transportVehiclesProfiles = [_x, "transportVehiclesProfiles"] call ALIVE_fnc_hashGet;
+                                    _armourProfiles = [_eventCargoProfiles, 'armour'] call ALIVE_fnc_hashGet;
+                                    _mechanisedProfiles = [_eventCargoProfiles, 'mechanised'] call ALIVE_fnc_hashGet;
+                                    _motorisedProfiles = [_eventCargoProfiles, 'motorised'] call ALIVE_fnc_hashGet;
+
+                                    {
+                                        _profile = [ALIVE_profileHandler, "getProfile", _x] call ALIVE_fnc_profileHandler;
+                                        if!(isNil "_profile") then {
+                                            _positions pushBack (_profile select 2 select 2);
+                                        };
+                                    } forEach _transportVehiclesProfiles;
+
+                                    {
+                                        _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
+                                        if!(isNil "_profile") then {
+                                            _positions pushBack (_profile select 2 select 2);
+                                        };
+                                    } forEach _armourProfiles;
+
+                                    {
+                                        _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
+                                        if!(isNil "_profile") then {
+                                            _positions pushBack (_profile select 2 select 2);
+                                        };
+                                    } forEach _mechanisedProfiles;
+
+                                    {
+                                        _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
+                                        if!(isNil "_profile") then {
+                                            _positions pushBack (_profile select 2 select 2);
+                                        };
+                                    } forEach _motorisedProfiles;
 
                                 };
 
@@ -4978,7 +5071,7 @@ switch(_operation) do {
 
                 _type = [_logic, "type"] call MAINCLASS;
 
-                _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
+                _forcePool = [ALIVE_globalForcePool,_eventFaction, 0] call ALIVE_fnc_hashGet;
 
 
                 // DEBUG -------------------------------------------------------------------------------------
@@ -5271,7 +5364,7 @@ switch(_operation) do {
                 _type = [_logic, "type"] call MAINCLASS;
                 _forcePoolType = [_logic, "forcePoolType"] call MAINCLASS;
                 _registryID = [_logic, "registryID"] call MAINCLASS;
-                _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
+                _forcePool = [ALIVE_globalForcePool,_eventFaction, 0] call ALIVE_fnc_hashGet;
                 if(typeName _forcePool == "STRING") then {
                     _forcePool = parseNumber _forcePool;
                 };
@@ -5794,7 +5887,7 @@ switch(_operation) do {
         private _eventForceMakeup = _eventData select 3;
         private _eventType = _eventData select 4;
 
-        private _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
+        private _forcePool = [ALIVE_globalForcePool,_eventFaction, 0] call ALIVE_fnc_hashGet;
 
         private [
             "_playerID","_requestID","_payload","_emptyVehicles","_staticIndividuals","_joinIndividuals","_reinforceIndividuals","_staticGroups","_joinGroups","_reinforceGroups",
@@ -7714,20 +7807,39 @@ switch(_operation) do {
 
                             // #460 - honour a caller-specified airframe (ATO replacement); see the plane block above.
                             private _requestedClass = [_event, "requestVehicleClass", ""] call ALIVE_fnc_hashGet;
-                            if (_requestedClass != "" && {_requestedClass isKindOf "Helicopter"}) then {
+                            private _replacementHeli = (_requestedClass != "" && {_requestedClass isKindOf "Helicopter"});
+                            if (_replacementHeli) then {
                                 _heliClasses = [_requestedClass];
                             };
 
                             for "_i" from 0 to _eventForceHeli -1 do {
 
                                 _position = [_remotePosition getPos [random(200), random(360)]] call _fnc_snapToLand;   // FIX: keep air-crew spawn off the sea
-                                _position set [2,1000];
+                                // A rotary ATO-replacement (#460) is delivered GROUNDED so its crew can seat
+                                // before the airframe falls. An empty, pilotless helicopter dropped at 1000m
+                                // has no lift and free-falls, arriving as a crashed, crew-less husk. Only
+                                // fixed-wing and normal reinforcement helis keep the 1000m air ingress: a
+                                // plane holds altitude via its spawn velocity push, and a normal reinforcement
+                                // heli has no requestVehicleClass so _replacementHeli is false. Leave the
+                                // snapToLand ground z for the replacement heli; the engine-off spawn (create
+                                // call below) grounds it via findAirSpawnPosition.
+                                if !(_replacementHeli) then { _position set [2,1000]; };
 
                                 if(count _heliClasses > 0) then {
 
                                     _vehicleClass = selectRandom _heliClasses;
 
-                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,true,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+                                    // engineOn=false for a rotary ATO-replacement (#460) so profileVehicle takes
+                                    // the engine-off (CAN_COLLIDE) branch, runs findAirSpawnPosition, grounds it
+                                    // (z=0.5), and its crew entity seats on the ground with no free-fall -
+                                    // mirroring the proven ATO self-create heli path. Normal reinforcement helis
+                                    // (_replacementHeli false) keep engine-on 1000m air ingress. The MOVE waypoint
+                                    // below still flies it in.
+                                    _profiles = [_vehicleClass,_side,_eventFaction,"CAPTAIN",_position,random(360),false,_eventFaction,!_replacementHeli,true] call ALIVE_fnc_createProfilesCrewedVehicle;
+
+                                    if (_debug && _replacementHeli) then {
+                                        ["ML - #460 replacement heli %1 delivered GROUNDED at %2 (engine-off; grounds + crews before flying in, no free-fall)", _vehicleClass, _position] call ALIVE_fnc_dump;
+                                    };
 
                                     _profileIDs = [];
                                     {
@@ -8106,7 +8218,23 @@ switch(_operation) do {
                                 } forEach (missionNamespace getVariable ["OPCOM_instances", []]);
 
                                 // Protect task - to the delivering heli's own side
-                                private _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                                // Everyone on the side who is still taking tasks they did not ask for.
+                                // C2ISTAR leaves the opted-out off the list when it hands a side task
+                                // round, so this only saves raising one nobody would receive. The count
+                                // test below then does that on its own.
+                                private _ownPlayers = [];
+
+                                if (isServer) then {
+                                    _ownPlayers = ["getAutoOrderSidePlayers", [_eventSide]] call ALiVE_fnc_playerOrders;
+                                    if (_ownPlayers isEqualType [] && {count _ownPlayers > 1}) then {
+                                        _ownPlayers = [_ownPlayers select 1, _ownPlayers select 0];
+                                    };
+                                };
+
+                                if (isNil "_ownPlayers" || {!(_ownPlayers isEqualType [])} || {count _ownPlayers < 2}) then {
+                                    _ownPlayers = [_eventSide] call ALiVE_fnc_getPlayersDataSource;
+                                };
+
                                 if (count (_ownPlayers select 1) > 0) then {
                                     private _enemyFaction = _hostileOpcomFaction;
                                     if (_enemyFaction == "") then {
@@ -9589,6 +9717,30 @@ switch(_operation) do {
                     };
                 };
 
+                // Track a genuine foot convoy's progress to the destination. Only when the event has
+                // NO transport, armour, mechanised, motorised, plane or heli profiles (i.e. the cargo
+                // is infantry travelling on foot) is the infantry bucket counted; otherwise completion
+                // follows the existing vehicle/carrier waypoints untouched. Without this a truckless
+                // foot convoy reaches _waypointsNotCompleted 0 with _waypointsCompleted 0 and is
+                // reported LOST instead of arriving.
+                if(count _transportProfiles == 0 && count _armourProfiles == 0 && count _mechanisedProfiles == 0 && count _motorisedProfiles == 0 && count _planeProfiles == 0 && count _heliProfiles == 0) then {
+                    {
+                        _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
+                        if!(isNil "_profile") then {
+
+                            _completed = [_logic,"checkWaypointCompleted",_profile] call MAINCLASS;
+
+                            if!(_completed) then {
+                                _waypointsNotCompleted = _waypointsNotCompleted + 1;
+                            }else{
+                                _waypointsCompleted = _waypointsCompleted + 1;
+                            };
+
+                        };
+
+                    } forEach _infantryProfiles;
+                };
+
                 {
                     _profile = [ALIVE_profileHandler, "getProfile", _x select 0] call ALIVE_fnc_profileHandler;
                     if!(isNil "_profile") then {
@@ -10566,7 +10718,7 @@ switch(_operation) do {
 	                // send radio broadcast
 	                _sideObject = [_eventSide] call ALIVE_fnc_sideTextToObject;
 	                _factionName = getText((_eventFaction call ALiVE_fnc_configGetFactionClass) >> "displayName");
-	                _forcePool = [ALIVE_globalForcePool,_eventFaction] call ALIVE_fnc_hashGet;
+	                _forcePool = [ALIVE_globalForcePool,_eventFaction, 0] call ALIVE_fnc_hashGet;
 
                     private _HQ = switch (_sideObject) do {
                         case WEST: {
@@ -11273,10 +11425,25 @@ switch(_operation) do {
 
                                     switch(_itemCategory) do {
                                         case "Infantry":{
-                                            _infantryProfiles pushback _profileIDs;
+                                            // A group tagged Infantry but carrying organic vehicles (e.g. a
+                                            // Spearhead CDLC armour platoon whose category class name did not
+                                            // resolve to "Armored" and fell through to the Infantry default)
+                                            // must self-transport as armour on a GROUND (PR_STANDARD) convoy,
+                                            // not be dismounted onto foot. On air paths (heli insert / airdrop)
+                                            // it stays infantry so insertion + the #947 carrierless fallback
+                                            // are untouched.
+                                            if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
+                                                _infantryProfiles pushback _profileIDs;
+                                            } else {
+                                                _armourProfiles pushback _profileIDs;
+                                            };
                                         };
                                         case "Support":{
-                                            _infantryProfiles pushback _profileIDs;
+                                            if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
+                                                _infantryProfiles pushback _profileIDs;
+                                            } else {
+                                                _armourProfiles pushback _profileIDs;
+                                            };
                                         };
                                         case "SpecOps":{
                                             //If the spec op team, does not have a vehicle (like submarines in A3 vanilla)
@@ -11307,8 +11474,13 @@ switch(_operation) do {
                                             [_profile, "addWaypoint", _profileWaypoint] call ALIVE_fnc_profileEntity;
                                         };
                                         default {
-                                            ["ML - WARNING: No item category defined for group %1, using infantry.",_group] call ALIVE_fnc_dump;
-                                            _infantryProfiles pushback _profileIDs;
+                                            if (_containsVehicles == 0 || {_eventType != "PR_STANDARD"}) then {
+                                                ["ML - WARNING: No item category defined for group %1, using infantry.",_group] call ALIVE_fnc_dump;
+                                                _infantryProfiles pushback _profileIDs;
+                                            } else {
+                                                ["ML - WARNING: No item category defined for group %1 but it carries vehicles, self-transporting as armour.",_group] call ALIVE_fnc_dump;
+                                                _armourProfiles pushback _profileIDs;
+                                            };
                                         };
                                     };
 

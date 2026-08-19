@@ -481,7 +481,7 @@ switch (_operation) do {
 	};
 
 	case "getData": {
-		private ["_opcom","_nearestObjective","_civInfo","_clusterID","_agentProfile","_hostileCivInfo","_name","_objectiveInstallations","_objectiveActions"];
+		private ["_opcom","_nearestObjective","_civInfo","_clusterID","_cluster","_agentProfile","_hostileCivInfo","_name","_objectiveInstallations","_objectiveActions"];
 		_arguments params ["_player","_civ"];
 
 		_civPos = getPos _civ;
@@ -520,7 +520,9 @@ switch (_operation) do {
 			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
 			_homePos = (_civProfile select 2) select 10;
 			_individualHostility = (_civProfile select 2) select 12;
-			_townHostility = [_cluster, "posture"] call ALIVE_fnc_hashGet;	//_townHostility = (_cluster select 2) select 9; (Different)
+			// The town lookup answers with nothing for an id it no longer holds, and nothing
+			// assigned to a variable removes it, so this cannot be asked for straight.
+			_townHostility = if (isNil "_cluster") then {0} else {[_cluster, "posture", 0] call ALIVE_fnc_hashGet};	//_townHostility = (_cluster select 2) select 9; (Different)
 
 			if (!isNil {[_civProfile,"ALiVE_PersistentName"] call ALiVE_fnc_hashGet}) then {
 				_name = [_civProfile,"ALiVE_PersistentName"] call ALiVE_fnc_hashGet;
@@ -532,19 +534,49 @@ switch (_operation) do {
 			_civInfo = [_homePos, _individualHostility, _townHostility, _name];
 
 		} else {
+			// Which town this civilian belongs to. Nothing in the mod has ever written the
+			// variable asked for first, so this has always fallen through, and what it fell
+			// through to took whichever town happened to register first. That is how somebody
+			// could be told the mood of a town on the far side of the map. The read stays
+			// because it is the right question; it simply has no answer yet.
 			_clusterID = _civ getVariable ["ALiVE_clusterID",""];
 			if (_clusterID == "") then {
 				private _nearestAgent = [position _civ] call ALiVE_fnc_getNearestActiveAgent;
-            	if (count _nearestAgent > 0) then {
-                 	_clusterID = [_nearestAgent, "homeCluster"] call ALiVE_fnc_hashGet;
-				} else {
-					_clusterID = ([ALIVE_clusterHandler, "clusters"] call ALiVE_fnc_hashGet) select 1 select 0;
+				if (count _nearestAgent > 0) then {
+					_clusterID = [_nearestAgent, "homeCluster", ""] call ALiVE_fnc_hashGet;
 				};
 			};
-			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
+
+			// No agent near enough to borrow an answer from, so ask the towns directly. One pass
+			// over what is registered, nearest centre wins, and it only runs when the cheaper
+			// answers above came up empty.
+			if (_clusterID == "") then {
+				private _clusters = [ALIVE_clusterHandler, "clusters"] call ALiVE_fnc_hashGet;
+				private _civPos = position _civ;
+				private _best = -1;
+				{
+					private _centre = [((_clusters select 2) select _forEachIndex), "center", []] call ALiVE_fnc_hashGet;
+					if (count _centre >= 2) then {
+						private _d = _civPos distance2D _centre;
+						if (_best < 0 || {_d < _best}) then {
+							_best = _d;
+							_clusterID = _x;
+						};
+					};
+				} forEach (_clusters select 1);
+			};
+
+			// A mission with no towns registered at all leaves nothing to ask about, and the
+			// lookup answers with nothing for an id it does not hold, which would remove the
+			// variable and take the read below down with it.
+			if (_clusterID != "") then {
+				_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
+			};
 			_homePos = _civ getVariable ["ALiVE_homePos",position _civ];
 			_individualHostility = _civ getVariable ["ALiVE_CivPop_Hostility",30];
-			_townHostility = [_cluster, "posture"] call ALIVE_fnc_hashGet;
+			// The town lookup answers with nothing for an id it no longer holds, and nothing
+			// assigned to a variable removes it, so this cannot be asked for straight.
+			_townHostility = if (isNil "_cluster") then {0} else {[_cluster, "posture", 0] call ALIVE_fnc_hashGet};
 			_name = name _civ;
 			_civInfo = [_homePos, _individualHostility, _townHostility,_name];
 		};
@@ -554,6 +586,13 @@ switch (_operation) do {
 		_insurgentCommands = ["alive_fnc_cc_suicide","alive_fnc_cc_suicidetarget","alive_fnc_cc_rogue","alive_fnc_cc_roguetarget","alive_fnc_cc_sabotage","alive_fnc_cc_getweapons"];
 		_agentsByCluster = [ALIVE_agentHandler, "agentsByCluster"] call ALIVE_fnc_hashGet;
 		_nearCivs = [_agentsByCluster, _clusterID] call ALIVE_fnc_hashGet;
+		// A cluster only gains a sub-hash here once one of its agents registers, so a town
+		// nobody has spawned into answers with nothing, and nothing assigned to a variable
+		// removes it. The count on the next line then has no variable to read and the whole
+		// reply dies, leaving the asking player on a dialog that never fills in. An empty
+		// hash is the honest answer: no agents registered for this town, so the loop below
+		// runs no times.
+		if (isNil "_nearCivs") then {_nearCivs = [] call ALIVE_fnc_hashCreate};
 
 		for "_i" from 0 to ((count (_nearCivs select 1)) - 1) do {
 			_agentID = (_nearCivs select 1) select _i;
@@ -734,8 +773,12 @@ switch (_operation) do {
 
 			//-- Set town hostility
 			_cluster = [ALIVE_clusterHandler, "getCluster", _clusterID] call ALIVE_fnc_clusterHandler;
-			_clusterHostility = [_cluster, "posture"] call ALIVE_fnc_hashGet;
-			[_cluster, "posture", (_clusterHostility + _townHostilityValue)] call ALIVE_fnc_hashSet;
+			// Nothing to raise the mood of if the town has gone, and asking anyway would take
+			// this whole reply down after the player had already been answered.
+			if !(isNil "_cluster") then {
+				_clusterHostility = [_cluster, "posture", 0] call ALIVE_fnc_hashGet;
+				[_cluster, "posture", (_clusterHostility + _townHostilityValue)] call ALIVE_fnc_hashSet;
+			};
 
 			//-- Set individual hostility
 			_hostility = (_civProfile select 2) select 12;

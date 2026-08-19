@@ -129,6 +129,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\main\fnc_findCompositionSpawnPosition.sqf";
                 RECOMPILE;
             };
+            class findBatterySpawnPosition {
+                description = "Finds one clear spot for a gun in a battery, spread from the guns already placed - one wide validator search in place of the thirty six narrow ring searches each placement module had grown its own copy of";
+                file = "\x\alive\addons\main\fnc_findBatterySpawnPosition.sqf";
+                RECOMPILE;
+            };
             class getCompositionRadius {
                 description = "Returns cached composition diameter in metres - walks CfgGroups>Empty config, doubles max-from-origin object distance, adds 5m buffer";
                 file = "\x\alive\addons\main\fnc_getCompositionRadius.sqf";
@@ -137,6 +142,11 @@ class cfgFunctions {
             class activateReserve {
                 description = "Reserve-pool activation tick (one cluster per call) - shared across mil_placement / civ_placement / mil_placement_custom / civ_placement_custom via the cluster's reserveModuleClass hash entry";
                 file = "\x\alive\addons\main\fnc_activateReserve.sqf";
+                RECOMPILE;
+            };
+            class tabletBox {
+                description = "Returns [x,y,w,h] of the screen box every ALiVE tablet is drawn in, so script-positioned artwork matches the GUI_GRID layout the controls use";
+                file = "\x\alive\addons\main\fnc_tabletBox.sqf";
                 RECOMPILE;
             };
             class getAirfieldGeometry {

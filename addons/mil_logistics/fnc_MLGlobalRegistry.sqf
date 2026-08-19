@@ -128,7 +128,19 @@ switch(_operation) do {
 
                 if(typeName _data == "ARRAY") then {
 
-                    ALIVE_globalForcePool = _data;
+                    // Folded into what is already there rather than put in its place. Each module seeds
+                    // an allowance for its own faction a few lines above, and taking the saved pool
+                    // wholesale threw those away, so any faction added to a module since the save had no
+                    // allowance at all and every request for it was turned down, on that run and on every
+                    // run after. Saved figures still win where the save knows the faction, which is the
+                    // point of saving them; the seeds only survive where it does not.
+                    if (isNil "ALIVE_globalForcePool" || {count _data < 3}) then {
+                        ALIVE_globalForcePool = _data;
+                    } else {
+                        {
+                            [ALIVE_globalForcePool, _x, (_data select 2) select _forEachIndex] call ALIVE_fnc_hashSet;
+                        } forEach (_data select 1);
+                    };
 
 
                     // DEBUG -------------------------------------------------------------------------------------

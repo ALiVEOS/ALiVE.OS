@@ -41,7 +41,8 @@ private _csCond = {
     ([
         NEO_radioLogic getVariable ["combatsupport_item", "LaserDesignators"],
         NEO_radioLogic getVariable ["combatsupport_item_custom", ""],
-        []
+        // the Combat Support Tablet (ALIVE_Tablet) always grants access, matching C2ISTAR / Player Resupply
+        ["ALIVE_Tablet"]
     ] call ALIVE_fnc_playerHasAccessItems)
     && {call ALIVE_fnc_combatSupportIsOperator}
 };

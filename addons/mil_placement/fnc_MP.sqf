@@ -204,7 +204,20 @@ switch(_operation) do {
         _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
     case "onEachSpawnOnce": {
-        _result = [_logic, _operation, _args, true] call ALIVE_fnc_OOsimpleOperation;
+        // The editor stores a yes or no here as text. The shared settings helper replaces
+        // any value whose type differs from the default it is handed, and writes that
+        // default back onto the module, so handing it a plain yes or no threw the setting
+        // away and stamped the default over it permanently. Keep it as text on the way
+        // through for that reason, and settle it on the way out so callers need not care.
+        if (_args isEqualType true) then { _args = ["false", "true"] select _args };
+
+        private _value = [_logic, _operation, _args, "true"] call ALIVE_fnc_OOsimpleOperation;
+
+        if (_value isEqualType true) then {
+            _result = _value;
+        } else {
+            _result = (toLower (_value + "")) in ["true", "yes", "1"];
+        };
     };
 
     
@@ -246,6 +259,24 @@ switch(_operation) do {
         if (typeName _args == "STRING") then {
             if(_args == "true") then {_args = true;} else {_args = false;};
             _logic setVariable ["placeHelis", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    case "placePlanes": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["placePlanes", _args];
+        } else {
+            // Missions saved before this toggle existed have no placePlanes value.
+            // Fall back to the helicopter setting so those missions keep whatever air
+            // behaviour they had: a base that had all air on keeps its planes, and one
+            // that turned air off does not suddenly grow a hangar full of them.
+            _args = _logic getVariable ["placePlanes", ([_logic, "placeHelis"] call MAINCLASS)];
+        };
+        if (typeName _args == "STRING") then {
+            if(_args == "true") then {_args = true;} else {_args = false;};
+            _logic setVariable ["placePlanes", _args];
         };
         ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
@@ -452,6 +483,26 @@ switch(_operation) do {
     };
     // Main process
     case "init": {
+
+        // Put the module's own areas out of sight on every machine that has a screen.
+        //
+        // This used to sit in the branch below that only runs when the machine is NOT the
+        // server, which is fine on a dedicated server but wrong everywhere else: in single
+        // player, and on a listen server the host is playing on, the player's machine IS the
+        // server, so that branch never ran and the areas stayed painted across the map for
+        // the whole mission.
+        //
+        // Both settings are read through the module rather than straight off it. Straight off it
+        // they are still the comma separated text the mission maker typed, and it is the read
+        // that turns them into the list of marker names wanted here. Reading a second time
+        // returns the same list, so the branches below are unaffected.
+        if (hasInterface) then {
+            private _taorAreas      = [_logic, "taor",      _logic getVariable ["taor",      DEFAULT_TAOR]] call MAINCLASS;
+            private _blacklistAreas = [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
+            if (_taorAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _taorAreas};
+            if (_blacklistAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _blacklistAreas};
+        };
+
         if (isServer) then {
             // if server, initialise module game logic
             _logic setVariable ["super", SUPERCLASS];
@@ -459,6 +510,37 @@ switch(_operation) do {
             _logic setVariable ["moduleType", "ALIVE_MP"];
             _logic setVariable ["startupComplete", false];
             TRACE_1("After module init",_logic);
+
+            // DIAG-STRIP (load time): this module is the largest single cost in a
+            // dedicated startup and nobody has ever seen where inside it the time goes.
+            // The composition search, which we spent a night optimising, turned out to
+            // be 62s of a 490s startup, so the rest of this function holds the bulk of
+            // it. These marks bracket each stage of init so the next change is aimed at
+            // whatever is actually big.
+            //
+            // One line per stage per module instance, a dozen or so in total, and only
+            // during startup. Never inside a loop: inline timing in the placement path
+            // once took this module from fifty seconds to never finishing.
+            //
+            // Set ALiVE_MP_STARTUP_DIAG to true on the server before the mission starts
+            // to get these lines. Off by default, so a normal run pays nothing, the same
+            // way the CQB stage marks work.
+            private _mpDiagT0 = diag_tickTime;
+            private _mpDiagLast = _mpDiagT0;
+            private _fnc_mpDiagMark = {
+                params ["_stage", ["_detail", ""]];
+                private _now = diag_tickTime;
+                // The clock advances whether or not the line is written, so switching
+                // this on part way through still gives truthful stage times.
+                if (!isNil "ALiVE_MP_STARTUP_DIAG" && {ALiVE_MP_STARTUP_DIAG}) then {
+                    ["DIAG-STRIP MP DIAG - %1: %2s for this stage, %3s since init began%4",
+                        _stage,
+                        (round ((_now - _mpDiagLast) * 100)) / 100,
+                        (round ((_now - _mpDiagT0) * 100)) / 100,
+                        if (_detail == "") then {""} else {"   " + _detail}] call ALiVE_fnc_dump;
+                };
+                _mpDiagLast = _now;
+            };
 
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
@@ -494,8 +576,6 @@ switch(_operation) do {
         } else {
             [_logic, "taor", _logic getVariable ["taor", DEFAULT_TAOR]] call MAINCLASS;
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_TAOR]] call MAINCLASS;
-            {_x setMarkerAlpha 0} foreach (_logic getVariable ["taor", DEFAULT_TAOR]);
-            {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_TAOR]);
         };
     };
     case "start": {
@@ -536,6 +616,7 @@ switch(_operation) do {
             };
 
             waitUntil {!isnil "ALiVE_GROUP_CONFIG_DATA_GENERATED"};
+            ["waited for profile system, clusters and group config"] call _fnc_mpDiagMark;
 
             //Only spawn warning on version mismatch since map index changes were reduced
             //uncomment //_error = true; below for exit
@@ -638,7 +719,14 @@ switch(_operation) do {
                             // camps; small/sparse sectors still cap at 0-1.
                             {
                                 private _candidatePos = _x;
-                                private _tooClose = ({([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet) distance _candidatePos < _randomCampsMil} count _clustersX > 0);
+                                // findIf rather than count, because count has no reason to stop
+                                // and carries on testing every remaining cluster after it has
+                                // already found one that is too close. This runs for every
+                                // flat-empty position in every sector on the map, against a list
+                                // that GROWS as camps are added to it, and on a busy terrain it
+                                // is the single most expensive thing the module does. The answer
+                                // is the same either way: is there one within range, yes or no.
+                                private _tooClose = ((_clustersX findIf {([_x,"center",[0,0,0]] call ALiVE_fnc_HashGet) distance _candidatePos < _randomCampsMil}) > -1);
 
                                 if (!_tooClose) then {
                                     private _campCenter = [_candidatePos,500] call ALiVE_fnc_findFlatArea;
@@ -662,9 +750,15 @@ switch(_operation) do {
                                 };
                             } foreach _flatEmpty;
 
-                            ALIVE_clustersMilLand = _data;
-
                         } foreach _sectors;
+
+                        // Published once, when every sector has contributed. This used to sit
+                        // inside the sector loop, so the global became an array as soon as the
+                        // FIRST sector finished and a second module instance waiting below could
+                        // be released onto a list that was still being built. It only ever got
+                        // away with it because the other instance happened to arrive late; a
+                        // faster machine, or fewer sectors, would race.
+                        ALIVE_clustersMilLand = _data;
                     } else {
                         waituntil {typeName ALIVE_clustersMilLand == "ARRAY"};
                     };
@@ -728,6 +822,7 @@ switch(_operation) do {
                 };
 
                 [_logic, "objectivesLand", _landClusters] call MAINCLASS;
+                ["gathered and filtered clusters", format ["%1 land clusters", count _landClusters]] call _fnc_mpDiagMark;
                 [_logic, "objectivesHQ", _HQClusters] call MAINCLASS;
                 [_logic, "objectivesAir", _airClusters] call MAINCLASS;
                 [_logic, "objectivesHeli", _heliClusters] call MAINCLASS;
@@ -778,7 +873,7 @@ switch(_operation) do {
 
             private ["_debug","_clusters","_cluster","_HQClusters","_airClusters","_heliClusters","_vehicleClusters",
             "_countHQClusters","_countAirClusters","_countHeliClusters","_size","_type","_faction","_ambientVehicleAmount",
-            "_placeHelis","_placeArtillery","_placeSupplies","_factionConfig","_factionSideNumber","_side","_countProfiles","_vehicleClass",
+            "_placeHelis","_placePlanes","_placeArtillery","_placeSupplies","_factionConfig","_factionSideNumber","_side","_countProfiles","_vehicleClass",
             "_position","_direction","_unitBlackist","_vehicleBlacklist","_groupBlacklist","_heliClasses","_nodes",
             "_airClasses","_node","_buildings","_customInfantryCount","_customMotorisedCount","_customMechanisedCount",
             "_customArmourCount","_customSpecOpsCount","_countVehicleClusters","_createHQ","_createFieldHQ","_file",
@@ -875,6 +970,7 @@ switch(_operation) do {
             _createFieldHQ = [_logic, "createFieldHQ"] call MAINCLASS;
 
             _placeHelis = [_logic, "placeHelis"] call MAINCLASS;
+            _placePlanes = [_logic, "placePlanes"] call MAINCLASS;
             _placeArtillery = [_logic, "placeArtillery"] call MAINCLASS;
             _placeSupplies = [_logic, "placeSupplies"] call MAINCLASS;
             private _garrisonCompositions = ([_logic, "garrisonCompositions"] call MAINCLASS) in [true, "true"];
@@ -906,7 +1002,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Size: %2 Type: %3 SideNum: %4 Side: %5 Faction: %6",_faction,_size,_type,_factionSideNumber,_side,_faction] call ALiVE_fnc_dump;
-                ["MP [%1] - Ambient Vehicles: %2 Create HQ: %3 Create Field HQ: %4 Place Helis: %5 Place Supplies: %6",_faction,_ambientVehicleAmount,_createHQ,_createFieldHQ,_placeHelis,_placeSupplies] call ALiVE_fnc_dump;
+                ["MP [%1] - Ambient Vehicles: %2 Create HQ: %3 Create Field HQ: %4 Place Helis: %5 Place Supplies: %6 Place Planes: %7",_faction,_ambientVehicleAmount,_createHQ,_createFieldHQ,_placeHelis,_placeSupplies,_placePlanes] call ALiVE_fnc_dump;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1036,10 +1132,24 @@ switch(_operation) do {
                         };
                     };
                     _compResult = [];
+                    private _hqTierWon = -1;
                     {
                         if (count _compResult > 0) exitWith {};
                         _compResult = [_pos, _x, _envelope, "fieldhq"] call ALiVE_fnc_findCompositionSpawnPosition;
+                        if (count _compResult > 0) then { _hqTierWon = _forEachIndex };
                     } forEach _hqTiers;
+                    // Which tier of the widening search actually paid off. Every tier
+                    // after the first only runs because the one before it found
+                    // nothing, and it runs a bigger budget than the one that just
+                    // failed, so whether the wider tiers ever rescue a placement is
+                    // what decides if the retry earns its price.
+                    if (isNil "ALiVE_hqTierWins") then { ALiVE_hqTierWins = [0,0,0,0] };
+                    if (_hqTierWon < 0) then {
+                        ALiVE_hqTierWins set [3, (ALiVE_hqTierWins select 3) + 1];
+                    } else {
+                        private _s = _hqTierWon min 2;
+                        ALiVE_hqTierWins set [_s, (ALiVE_hqTierWins select _s) + 1];
+                    };
 
                     if (count _compResult > 0) then {
                         _compResult params ["_safePos", "_safeDir"];
@@ -1107,6 +1217,7 @@ switch(_operation) do {
                 ["MP [%1] - Objective objects placed: %2 of %3 (behaviour=%4)",
                     _faction, _countObjectiveObjects_MP, _objCount_MP, _objBehaviour_MP] call ALiVE_fnc_dump;
             };
+            ["HQ, field HQ and objective objects"] call _fnc_mpDiagMark;
 
             if (count _landClusters > 0) then {
                 private _campIndex = 0;
@@ -1151,10 +1262,23 @@ switch(_operation) do {
                             private _campTiers = [500];
                             if (_campCap > 500) then { _campTiers pushBack _campCap };
                             _compResult = [];
+                            private _campTierWon = -1;
                             {
                                 if (count _compResult > 0) exitWith {};
                                 _compResult = [_pos, _x, _envelope, "field"] call ALiVE_fnc_findCompositionSpawnPosition;
+                                if (count _compResult > 0) then { _campTierWon = _forEachIndex };
                             } forEach _campTiers;
+                            // Same question as the field HQ tiers above. This one is
+                            // the expensive case: a camp that finds nothing at 500m
+                            // spends 667 tries doing it, then the widened search
+                            // spends another 1067 on the same answer.
+                            if (isNil "ALiVE_campTierWins") then { ALiVE_campTierWins = [0,0,0] };
+                            if (_campTierWon < 0) then {
+                                ALiVE_campTierWins set [2, (ALiVE_campTierWins select 2) + 1];
+                            } else {
+                                private _s = _campTierWon min 1;
+                                ALiVE_campTierWins set [_s, (ALiVE_campTierWins select _s) + 1];
+                            };
 
                             if (count _compResult > 0) then {
                                 _compResult params ["_safePos", "_safeDir"];
@@ -1233,6 +1357,7 @@ switch(_operation) do {
                     [_x,"nodes",nearestObjects [_pos,["static"],50]] call ALIVE_fnc_hashSet;
 
                 } foreach _landClusters;
+                ["random camps"] call _fnc_mpDiagMark;
             };
 
             // Spawn supplies in objectives
@@ -1314,6 +1439,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Supplies placed: %2",_faction,_countSupplies] call ALiVE_fnc_dump;
+                ["supplies"] call _fnc_mpDiagMark;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1377,7 +1503,17 @@ switch(_operation) do {
                             // were the explode-on-spawn source. Returns []
                             // if every candidate failed - skip this node.
                             _vehicleClass = (selectRandom _heliClasses);
-                            private _airResult = [_vehicleClass, position _x, 200, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                            // Widened from 200 to 400. When this search finds nowhere to park, the whole block
+                            // below is skipped and the helicopter is never created at all, so a node that cannot
+                            // be satisfied quietly costs the mission an aircraft with nothing said about it.
+                            //
+                            // Measured on Cam Lao Nam: at 200 it failed 13 to 18 times a run against 35 to 39
+                            // helicopters actually placed, so a quarter to a third of them were going missing. The
+                            // air commander asks the same question at 400 and has not failed once across a whole
+                            // evening of runs. Widening was also measured for cost and is close to free: doubling
+                            // the radius moved the search by about a tenth, because the time goes on checking each
+                            // candidate rather than on covering ground.
+                            private _airResult = [_vehicleClass, position _x, 400, "auto"] call ALiVE_fnc_findAirSpawnPosition;
                             if (!isNil "ALiVE_mil_placement_debug" && {ALiVE_mil_placement_debug}) then {
                                 [
                                     "DIAG-STRIP MP helipad-node: nodeType=%1, nodePos=%2, vehClass=%3, airResultCount=%4",
@@ -1427,6 +1563,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Heli units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedHelis,_countUncrewedHelis] call ALiVE_fnc_dump;
+                ["helicopters"] call _fnc_mpDiagMark;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1437,7 +1574,7 @@ switch(_operation) do {
             _countCrewedAir = 0;
             _countUncrewedAir = 0;
 
-            if(_placeHelis) then {
+            if(_placePlanes) then {
 
                 _airClasses = [0,_faction,"Plane"] call ALiVE_fnc_findVehicleType;
                 _airClasses = _airClasses - ALiVE_PLACEMENT_VEHICLEBLACKLIST;
@@ -1644,6 +1781,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Air units placed: crewed:%2 uncrewed:%3",_faction,_countCrewedAir,_countUncrewedAir] call ALiVE_fnc_dump;
+                ["aircraft"] call _fnc_mpDiagMark;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -1652,9 +1790,12 @@ switch(_operation) do {
             //
             // Per-cluster distribution: ceil(_aaCount / _clusterCount) slots
             // per cluster, capped at _aaCount total. Each slot validated via
-            // findCompositionSpawnPosition mode="ato" with envelope=10m
+            // findCompositionSpawnPosition mode="field" with envelope=10m
             // (unit footprint, not a composition envelope) so AA lands
-            // on a clear non-runway / non-taxiway position. Crewed via
+            // on a clear non-runway / non-taxiway position. The mode is
+            // spelled out below where the call is made; it is field, not
+            // ato, and the difference matters because field keeps the
+            // building check that ato skips. Crewed via
             // createProfileVehicle - the profile system populates the gun /
             // launcher crew and the engine AI engages incoming aircraft.
             //
@@ -1894,6 +2035,7 @@ switch(_operation) do {
                             if (_aaClasses != "") then {"picker"} else {"factionDefault"}
                         ] call ALiVE_fnc_dump;
                     };
+                    ["anti-air"] call _fnc_mpDiagMark;
                 } else {
                     if (_debug) then {
                         ["MP [%1] - AA spawn skipped: picker empty AND no ALIVE_factionDefaultAA entry for this faction", _faction] call ALiVE_fnc_dump;
@@ -1903,6 +2045,18 @@ switch(_operation) do {
 
             // (fallback artillery block moved below the force-assembly loop -
             // it consumes the shortfall counted there)
+            // Started here so the figures below are this run of this module, not whatever
+            // another placement module left behind. The search count is shared with them,
+            // since the searching itself is shared, so read it as work done rather than as
+            // this module alone.
+            if (isNil "ALiVE_DIAG_artyWanted") then { ALiVE_DIAG_artyWanted = 0 };
+            if (isNil "ALiVE_DIAG_artyPlaced") then { ALiVE_DIAG_artyPlaced = 0 };
+            if (isNil "ALiVE_DIAG_artyCalls") then { ALiVE_DIAG_artyCalls = 0 };
+
+            private _artyDiagWantedAt = ALiVE_DIAG_artyWanted;
+            private _artyDiagPlacedAt = ALiVE_DIAG_artyPlaced;
+            private _artyDiagCallsAt  = ALiVE_DIAG_artyCalls;
+
             private _fnc_placeFallbackArtillery = {
             if (_artilleryFallback > 0 && {!isNil "_clusters"} && {count _clusters > 0}) then {
                 private _artySourceFaction = if (_artilleryFaction != "") then {_artilleryFaction} else {_faction};
@@ -1932,36 +2086,28 @@ switch(_operation) do {
                         if (isNil "_cPos" || {typeName _cPos != "ARRAY"}) then { _cPos = [0,0,0] };
 
                         private _gunsPlaced = 0;
+                        ALiVE_DIAG_artyWanted = ALiVE_DIAG_artyWanted + _sectionSize;
                         for "_g" from 1 to _sectionSize do {
                             private _safePos = [];
                             private _safeDir = 0;
-                            {
-                                if (count _safePos > 0) exitWith {};
-                                private _radius = _x;
-                                // 6 bearings per ring (60-degree sectors with
-                                // jitter) - one random bearing per ring was
-                                // striking out entirely in broken terrain
-                                for "_a" from 0 to 5 do {
-                                    private _cand = _cPos getPos [_radius, (_a * 60) + random 60];
-                                    private _res = [_cand, 25, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
-                                    if (count _res >= 2) then {
-                                        private _testPos = _res select 0;
-                                        private _clash = false;
-                                        { if (_testPos distance2D _x < 25) exitWith { _clash = true } } forEach _usedArtyPositions;
-                                        if (!_clash) then {
-                                            _safePos = _testPos;
-                                            _safeDir = _res select 1;
-                                        };
-                                    };
-                                    if (count _safePos > 0) exitWith {};
-                                };
-                            } forEach [50, 80, 110, 140, 170, 200];
+
+                            // One wide search across the whole area, rather than thirty six narrow ones
+                            // creeping outwards ring by ring. Same ground, a fraction of the work, and the
+                            // guns end up spread across it instead of sitting on rings. See the helper for
+                            // what the old way was costing.
+                            private _res = [_cPos, 200, 10, _usedArtyPositions, 25, _debug] call ALiVE_fnc_findBatterySpawnPosition;
+
+                            if (count _res >= 2) then {
+                                _safePos = _res select 0;
+                                _safeDir = _res select 1;
+                            };
 
                             if (count _safePos > 0) then {
                                 _usedArtyPositions pushBack _safePos;
                                 [_artyClass, _side, _artySourceFaction, "PRIVATE", _safePos, _safeDir, false, _artySourceFaction] call ALIVE_fnc_createProfilesCrewedVehicle;
                                 _countProfiles = _countProfiles + 2;
                                 _gunsPlaced = _gunsPlaced + 1;
+                                ALiVE_DIAG_artyPlaced = ALiVE_DIAG_artyPlaced + 1;
                             };
                         };
 
@@ -2135,6 +2281,7 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {
                 ["MP [%1] - Ambient land units placed: %2",_faction,_countLandUnits] call ALiVE_fnc_dump;
+                ["ambient land vehicles"] call _fnc_mpDiagMark;
             };
             // DEBUG -------------------------------------------------------------------------------------
 
@@ -2337,6 +2484,20 @@ switch(_operation) do {
             // here means the shortfall above is populated)
             call _fnc_placeFallbackArtillery;
 
+            // DIAG-STRIP: how much work the battery placement actually cost. mil_placement
+            // had no figure of its own, so the searching here was invisible and only
+            // civ_placement ever reported any, which read as no artillery at all on a
+            // mission where this module was placing all of it.
+            if (!isNil "_debug" && {_debug}) then {
+                private _wanted = ALiVE_DIAG_artyWanted - _artyDiagWantedAt;
+                private _placed = ALiVE_DIAG_artyPlaced - _artyDiagPlacedAt;
+                private _calls  = ALiVE_DIAG_artyCalls  - _artyDiagCallsAt;
+
+                ["DIAG-STRIP MP DIAG [%1] - artillery: %2 guns wanted, %3 placed, %4 searches run (%5 per gun placed)",
+                    _faction, _wanted, _placed, _calls,
+                    if (_placed > 0) then { round (_calls / _placed) } else { -1 }] call ALiVE_fnc_dump;
+            };
+
             if(_countMotorized > 0) then {
 
                 _motorizedGroups = [];
@@ -2388,7 +2549,7 @@ switch(_operation) do {
             _groups = _groups + _infantryGroups;
             private _infantryGroupEnd = count _groups;
 
-            if (_placeHelis) then {
+            if (_placeHelis || _placePlanes) then {
                 for "_i" from 0 to _countAir -1 do {
                     _group = ["Air",_faction] call ALIVE_fnc_configGetRandomGroup;
                     if!(_group == "FALSE") then {
@@ -3146,6 +3307,7 @@ switch(_operation) do {
             };
 
             ["MP %2 - Total profiles created: %1",_countProfiles, _faction] call ALiVE_fnc_dump;
+            ["garrisons, guards and reserves", format ["%1 profiles in total", _countProfiles]] call _fnc_mpDiagMark;
 
             // DEBUG -------------------------------------------------------------------------------------
             if(_debug) then {

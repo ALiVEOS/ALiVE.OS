@@ -23,8 +23,13 @@
     <Chinesesimp>武力势力</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_FACTION_COMMENT">
-    <English>Faction of the units to be placed (BLU_F,OPF_F)</English>
-    <Chinesesimp>待放置单元的系数(BLU_F,OPF_F)</Chinesesimp>
+    <English>Faction of the units to be placed. To use a faction of your own, sync a Custom Faction Compiler module rather than choosing from this list.</English>
+    <Chinese>要放置的單位所屬陣營。若要使用自訂陣營，請同步自訂陣營編譯器模組，而非從此清單中選擇。</Chinese>
+    <Chinesesimp>要放置的单位所属阵营。若要使用自定义阵营，请同步自定义阵营编译器模块，而非从此列表中选择。</Chinesesimp>
+    <Spanish>Facción de las unidades a colocar. Para usar una facción propia, sincronice un módulo Compilador de Facciones Personalizadas en lugar de elegir en esta lista.</Spanish>
+    <French>Faction des unités à placer. Pour utiliser votre propre faction, synchronisez un module Compilateur de factions personnalisées au lieu de choisir dans cette liste.</French>
+    <Portuguese>Facção das unidades a colocar. Para usar uma facção própria, sincronize um módulo Compilador de Facções Personalizadas em vez de escolher nesta lista.</Portuguese>
+    <Russian>Фракция размещаемых юнитов. Чтобы использовать свою фракцию, синхронизируйте модуль компилятора пользовательских фракций вместо выбора из этого списка.</Russian>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_PRIORITY">
     <English>Objective priority:</English>
@@ -75,8 +80,13 @@
     <Chinesesimp>如果设置为否，载具将拥有AI成员</Chinesesimp>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_USAGE">
-    <English>Place the Spearhead Custom Military Objective module in the editor, select the desired Size, Priority and force. Custom factions can be entered in the text box (separated by a comma).</English>
-    <Chinesesimp>在编辑器中放置Spearhead自定义军事目标模块，选择所需的大小，优先级和力量。可以在文本框中输入自定义派系(以逗号分隔)</Chinesesimp>
+    <English>Place the Spearhead Custom Military Objective module in the editor and set the size, priority and force you want. Choose the faction from the list. To use a faction of your own, sync a Custom Faction Compiler module to this one and its faction is used instead.</English>
+    <Chinese>在編輯器中放置Spearhead自訂軍事目標模組，設定所需的大小、優先級與兵力。從清單中選擇陣營。若要使用自訂陣營，請將自訂陣營編譯器模組同步至此模組，屆時會改用該陣營。</Chinese>
+    <Chinesesimp>在编辑器中放置Spearhead自定义军事目标模块，设定所需的大小、优先级与兵力。从列表中选择阵营。若要使用自定义阵营，请将自定义阵营编译器模块同步至此模块，届时会改用该阵营。</Chinesesimp>
+    <Spanish>Coloque el módulo Objetivo Militar Personalizado de Spearhead en el editor y ajuste el tamaño, la prioridad y la fuerza que desee. Elija la facción en la lista. Para usar una facción propia, sincronice un módulo Compilador de Facciones Personalizadas con este y se usará esa facción.</Spanish>
+    <French>Placez le module Objectif militaire personnalisé Spearhead dans l'éditeur et réglez la taille, la priorité et les forces voulues. Choisissez la faction dans la liste. Pour utiliser votre propre faction, synchronisez un module Compilateur de factions personnalisées avec celui-ci et sa faction sera utilisée.</French>
+    <Portuguese>Coloque o módulo Objetivo Militar Personalizado do Spearhead no editor e defina o tamanho, a prioridade e a força pretendidos. Escolha a facção na lista. Para usar uma facção própria, sincronize um módulo Compilador de Facções Personalizadas com este e essa facção será usada.</Portuguese>
+    <Russian>Разместите модуль Spearhead Custom Military Objective в редакторе и задайте нужные размер, приоритет и силы. Выберите фракцию из списка. Чтобы использовать свою фракцию, синхронизируйте с этим модулем модуль компилятора пользовательских фракций, и будет использована она.</Russian>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_ALLOW_PLAYER_TASK">
     <English>Allow player tasking:</English>

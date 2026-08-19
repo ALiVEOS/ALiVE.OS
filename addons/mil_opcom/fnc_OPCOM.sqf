@@ -276,7 +276,7 @@ switch (_operation) do {
 
         if (_usedDefaultFaction) then {
             [
-                "ALiVE OPCOM init WARNING: AI Commander '%1' has no factions configured (Factions multi-select empty AND Factions manual override empty). Defaulting to ['BLU_F']. Pick at least one faction in the Factions multi-select to silence this.",
+                "ALiVE OPCOM init WARNING: AI Commander '%1' has no factions configured (Factions multi-select empty AND Additional Factions empty). Defaulting to ['BLU_F']. Pick at least one faction in the Factions multi-select to silence this.",
                 _customName
             ] call ALiVE_fnc_Dump;
         };
@@ -943,7 +943,9 @@ switch (_operation) do {
         // cooldown, independent of the 90s maneuver cooldown above. [0,0] (Normal,
         // or no artillery module) skips this block entirely - maneuver behaviour
         // is unchanged, so this is additive and default-off.
-        private _artyRate = missionNamespace getVariable [format ["ALIVE_MilArtillery_requestRate_%1", toUpper str _side], [0,0]];
+        // _side is already the side TEXT here ("EAST"), so str would wrap it in
+        // quote characters and build a key the artillery module never publishes
+        private _artyRate = missionNamespace getVariable [format ["ALIVE_MilArtillery_requestRate_%1", toUpper _side], [0,0]];
         if ((_artyRate select 0) > 0 && {["ALiVE_mil_artillery"] call ALiVE_fnc_IsModuleAvailable}) then {
             private _artyMax = _artyRate select 0;
             private _artyCd = _artyRate select 1;
@@ -1780,6 +1782,37 @@ switch (_operation) do {
         };
     };
 
+    case "reorderObjective": {
+        if !(isServer) exitwith {[_logic,_operation,_args] remoteExec ["ALiVE_fnc_OPCOM",2]};
+
+        _args params [
+            ["_objectiveID", "", [""]],
+            ["_newIndex", 0, [0]]
+        ];
+
+        private _objectives = [_logic,"objectives", []] call ALiVE_fnc_HashGet;
+        private _objectiveIndex = _objectives findIf { ([_x,"objectiveID",""] call ALiVE_fnc_HashGet) == _objectiveID };
+
+        if (_objectiveIndex != -1) then {
+            _newIndex = 0 max _newIndex min (count _objectives - 1);
+
+            // in-place move on the live array reference. Array position is the
+            // commander's de-facto priority queue (selectordersbystate picks the
+            // first match per state), and every async consumer resolves
+            // objectives by ID or hash reference, so reordering is safe mid-run.
+            //
+            // INVOKE UNSCHEDULED ONLY: the deleteAt+insert is two statements, so a
+            // scheduler yield between them would let an observer (an OPCOM analyze
+            // pass) transiently see the array with this objective absent, skipping
+            // it for one cycle. The current callers are all unscheduled; a future
+            // scheduled caller must wrap this op or make the move atomic.
+            private _objective = _objectives deleteAt _objectiveIndex;
+            _objectives insert [_newIndex, [_objective]];
+        };
+
+        _result = _objectives;
+    };
+
     case "findReinforcementBase": {
             _AO = [];
             _FOB = [];
@@ -2486,7 +2519,8 @@ switch (_operation) do {
                 _objectivesGlobal = [];
                 {
                     if ([_x,"persistent",false] call ALIVE_fnc_HashGet) then {
-                        _objectivesGlobal = _objectivesGlobal + ([_x, "objectives",[]] call ALiVE_fnc_HashGet);
+                        // player-designated objectives are session-only by design
+                        _objectivesGlobal = _objectivesGlobal + (([_x, "objectives",[]] call ALiVE_fnc_HashGet) select {!([_x,"playerCreated",false] call ALiVE_fnc_HashGet)});
                     };
                 } foreach OPCOM_INSTANCES;
 
@@ -2861,9 +2895,15 @@ switch (_operation) do {
             ["_priority", 100, [-1]],
             ["_opcomState", "unassigned", [""]],
             ["_clusterID", "none", [""]],
-            ["_opcomID", [_logic,"opcomID", ""] call ALiVE_fnc_HashGet, [""]]
+            ["_opcomID", [_logic,"opcomID", ""] call ALiVE_fnc_HashGet, [""]],
+            ["_playerCreated", false, [false]],
+            ["_insertAtFront", false, [false]]
         ];
 
+        // playerCreated must stay AFTER _rev. The FSMs read the objective value
+        // array POSITIONALLY: objectiveID(0), center(1), size(2), objectiveType(3),
+        // priority(4) and opcom_state(5) are all read by index in opcom.fsm/tacom.fsm.
+        // NEVER reorder keys 0-9; only ever append new keys after _rev.
         private _objective = [[
             ["objectiveID", _id],
             ["center", _pos],
@@ -2874,7 +2914,8 @@ switch (_operation) do {
             ["clusterID", _clusterID],
             ["opcomID", _opcomID],
             ["deleted", false],
-            ["_rev", ""]
+            ["_rev", ""],
+            ["playerCreated", _playerCreated]
         ]] call ALIVE_fnc_hashCreate;
 
         if (_debug) then {
@@ -2882,7 +2923,16 @@ switch (_operation) do {
         };
 
         private _objectives = [_logic,"objectives"] call ALiVE_fnc_HashGet;
-        _objectives pushback _objective;
+
+        // hashGet returns the live array reference, so mutating in place is
+        // visible to the FSMs without a HashSet. Front insertion puts the
+        // objective first in its opcom_state bucket (selectordersbystate takes
+        // the first array-order match), making it the commander's top priority.
+        if (_insertAtFront) then {
+            _objectives insert [0, [_objective]];
+        } else {
+            _objectives pushback _objective;
+        };
 
         _result = _objective;
     };
@@ -3790,7 +3840,13 @@ switch (_operation) do {
     };
 
     case "validateStartupState": {
-        _args params ["_opcomModule"];
+        // Taken off the commander itself, the way everything else below is. This used to be read
+        // from the arguments of the call, and the one place that makes the call passes none, so
+        // it was always nothing at all. Asking nothing what it is synchronised to answers with an
+        // empty list and no complaint, so the check compared the commander's factions against
+        // nothing and reported every one of them as unmatched, on every mission, whatever the
+        // synced placement modules actually offered.
+        private _opcomModule = [_logic, "module", objNull] call ALiVE_fnc_HashGet;
 
         _result = false;
 

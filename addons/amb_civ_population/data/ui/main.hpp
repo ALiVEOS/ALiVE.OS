@@ -139,6 +139,7 @@ class ALiVE_CivilianInteraction {
             y = 0.7916 * safezoneH + safezoneY;
             w = 0.0525 * safezoneW;
             h = 0.028 * safezoneH;
+            sizeEx = "0.021 * safezoneH";
 			colorBackground[] = {0,0,0,0.5};
 			colorActive[] = {0,0,0,0.5};
 		};
@@ -151,6 +152,7 @@ class ALiVE_CivilianInteraction {
             y = 0.7916 * safezoneH + safezoneY;
             w = 0.0525 * safezoneW;
             h = 0.028 * safezoneH;
+            sizeEx = "0.021 * safezoneH";
 			colorBackground[] = {0,0,0,0.5};
 			colorActive[] = {0,0,0,0.5};
 		};
@@ -163,6 +165,7 @@ class ALiVE_CivilianInteraction {
             y = 0.7916 * safezoneH + safezoneY;
             w = 0.0525 * safezoneW;
             h = 0.028 * safezoneH;
+            sizeEx = "0.021 * safezoneH";
 			colorBackground[] = {0,0,0,0.5};
 			colorActive[] = {0,0,0,0.5};
 		};
@@ -175,6 +178,7 @@ class ALiVE_CivilianInteraction {
             y = 0.7916 * safezoneH + safezoneY;
             w = 0.0525 * safezoneW;
             h = 0.028 * safezoneH;
+            sizeEx = "0.021 * safezoneH";
 			colorBackground[] = {0,0,0,0.5};
 			colorActive[] = {0,0,0,0.5};
 		};
@@ -187,6 +191,7 @@ class ALiVE_CivilianInteraction {
             y = 0.7916 * safezoneH + safezoneY;
             w = 0.0525 * safezoneW;
             h = 0.028 * safezoneH;
+            sizeEx = "0.021 * safezoneH";
 			colorBackground[] = {0,0,0,0.5};
 			colorActive[] = {0,0,0,0.5};
 		};
@@ -199,6 +204,7 @@ class ALiVE_CivilianInteraction {
             y = 0.7916 * safezoneH + safezoneY;
             w = 0.0525 * safezoneW;
             h = 0.028 * safezoneH;
+            sizeEx = "0.021 * safezoneH";
 			colorBackground[] = {0,0,0,0.5};
 			colorActive[] = {0,0,0,0.5};
 		};
@@ -211,6 +217,7 @@ class ALiVE_CivilianInteraction {
             y = 0.7916 * safezoneH + safezoneY;
             w = 0.0525 * safezoneW;
             h = 0.028 * safezoneH;
+            sizeEx = "0.021 * safezoneH";
 			colorBackground[] = {0,0,0,0.5};
 			colorActive[] = {0,0,0,0.5};
 		};
@@ -223,6 +230,7 @@ class ALiVE_CivilianInteraction {
             y = 0.7916 * safezoneH + safezoneY;
             w = 0.0525 * safezoneW;
             h = 0.028 * safezoneH;
+            sizeEx = "0.021 * safezoneH";
 			colorBackground[] = {0,0,0,0.5};
 			colorActive[] = {0,0,0,0.5};
 		};

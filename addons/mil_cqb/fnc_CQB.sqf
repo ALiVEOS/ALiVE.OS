@@ -109,6 +109,25 @@ switch(_operation) do {
         };
         case "init": {
 
+            // Out of sight first, before anything else in here.
+            //
+            // Everything below waits on the line further down for the server to say the module
+            // exists, and a machine that is not the server cannot answer that itself. On a
+            // dedicated server that wait was measured at 78 seconds, against a briefing map that
+            // is gone long before, and the briefing map is the only time anyone sees these areas.
+            // So the hide was landing while the player watched the loading screen, and by the
+            // time the map could be opened again there was nothing left to notice.
+            //
+            // Nothing here needs the module to be ready. Both settings arrive with it when the
+            // mission loads, and reading them through the module only turns the comma separated
+            // text into the list of marker names.
+            if (hasInterface) then {
+                private _blacklistAreas = [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call ALiVE_fnc_CQB;
+                private _whitelistAreas = [_logic, "whitelist", _logic getVariable ["whitelist", DEFAULT_WHITELIST]] call ALiVE_fnc_CQB;
+                if (_blacklistAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _blacklistAreas};
+                if (_whitelistAreas isEqualType []) then {{_x setMarkerAlpha 0} forEach _whitelistAreas};
+            };
+
             if (isServer) then {
                 //if server, and no CQB master logic present yet, then initialise CQB master game logic on server and inform all clients
                 if (isnil QMOD(CQB)) then {
@@ -282,6 +301,9 @@ switch(_operation) do {
             [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call ALiVE_fnc_CQB;
             [_logic, "whitelist", _logic getVariable ["whitelist", DEFAULT_WHITELIST]] call ALiVE_fnc_CQB;
 
+            // The areas went out of sight at the top of this case, ahead of the wait for the
+            // server. The two reads above stay because the module uses both settings from here on.
+
             /*
             MODEL - no visual just reference data
             - server side object only
@@ -297,6 +319,47 @@ switch(_operation) do {
 
             if (isServer) then {
                 MOD(CQB) setVariable ["startupComplete", false,true];
+
+                // Where the startup time actually goes. CQB is the single largest cost in
+                // ALiVE startup on a large mission, measured between 243 and 353 seconds of a
+                // 320 to 430 second wait, and it says nothing at all between its start and its
+                // finish, so the log cannot show which stage is responsible.
+                //
+                // The TRACE_TIME markers already sat at these points but expand to nothing
+                // unless DEBUG_MODE_FULL is set when the addon is built, so they have never
+                // reported anything from a normal build.
+                //
+                // Counts are carried alongside the times because several stages here grow an
+                // array with + in a loop, which copies everything gathered so far on every
+                // pass. Times alone cannot tell that apart from work that is simply large.
+                //
+                // Gated on its own switch rather than on the module debug attribute, which would
+                // have been the obvious choice and is wrong here. Turning CQB debug on makes the
+                // init call below draw a map marker for every house the module holds, thousands of
+                // them, each broadcast to every machine and each costing a sector lookup, and it
+                // does that inside the stretch being measured. Measuring would have changed the
+                // measurement, and inflated it.
+                //
+                // Set ALiVE_CQB_STARTUP_DIAG to true on the server before the mission starts to get
+                // these lines. Off by default, so a normal run pays nothing.
+                //
+                // The clock is updated whether or not the line is written, so switching it on part
+                // way through still gives truthful stage times rather than one enormous first
+                // reading.
+                private _cqbDiagT0 = diag_tickTime;
+                private _cqbDiagLast = _cqbDiagT0;
+                private _fnc_cqbDiagMark = {
+                    params ["_stage", ["_detail", ""]];
+                    private _now = diag_tickTime;
+                    if (!isNil "ALiVE_CQB_STARTUP_DIAG" && {ALiVE_CQB_STARTUP_DIAG}) then {
+                        ["DIAG-STRIP CQB DIAG %1 - %2: %3s for this stage, %4s since init began%5",
+                            _type, _stage,
+                            (round ((_now - _cqbDiagLast) * 100)) / 100,
+                            (round ((_now - _cqbDiagT0) * 100)) / 100,
+                            if (_detail == "") then {""} else {"   " + _detail}] call ALiVE_fnc_dump;
+                    };
+                    _cqbDiagLast = _now;
+                };
 
                 //Set instance on main module
                 MOD(CQB) setVariable ["instances",(MOD(CQB) getVariable ["instances",[]]) + [_logic],true];
@@ -325,6 +388,7 @@ switch(_operation) do {
                 //Create Collection
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 1
+                ["setup"] call _fnc_cqbDiagMark;
 
                 private ["_collection","_center", "_radius","_objectives"];
 
@@ -340,6 +404,7 @@ switch(_operation) do {
 
                         if ((typeof _mod) in ["ALiVE_mil_placement","ALiVE_civ_placement","ALiVE_civ_placement_custom"]) then {
                             waituntil {_mod getVariable ["startupComplete", false]};
+                            [format ["waited for %1", typeOf _mod]] call _fnc_cqbDiagMark;
 
                             _obj = [_mod,"objectives",objNull,[]] call ALIVE_fnc_OOsimpleOperation;
                             _objectives = _objectives + _obj;
@@ -389,6 +454,8 @@ switch(_operation) do {
                 };
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 2
+                ["built the area list", format ["%1 areas, %2 objectives",
+                    count _collection, count _objectives]] call _fnc_cqbDiagMark;
 
                 private ["_houses","_total","_result","_debugColor"];
 
@@ -396,6 +463,8 @@ switch(_operation) do {
                 _houses = []; {_houses = _houses + ([_x select 0, _x select 1] call ALiVE_fnc_getEnterableHouses)} foreach _collection;
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 3
+                ["gathered enterable houses", format ["%1 houses from %2 areas",
+                    count _houses, count _collection]] call _fnc_cqbDiagMark;
 
                 _total = [_houses, _strategicTypes, _CQB_density, _CQB_spawn, [_logic, "blacklist"] call ALiVE_fnc_CQB, [_logic, "whitelist"] call ALiVE_fnc_CQB] call ALiVE_fnc_CQBsortStrategicHouses;
 
@@ -406,12 +475,16 @@ switch(_operation) do {
                 };
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 4
+                ["sorted strategic houses", format ["%1 kept of %2", count _result, count _houses]]
+                    call _fnc_cqbDiagMark;
 
                 //set default values on main CQB instance
                 [MOD(CQB), "allHouses", (MOD(CQB) getvariable ["allHouses",[]]) + _result] call ALiVE_fnc_CQB;
                 [MOD(CQB), "allFactions", (MOD(CQB) getvariable ["allFactions",[]]) + _factions] call ALiVE_fnc_CQB;
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 5
+                ["merged into the main instance", format ["%1 houses held in total",
+                    count (MOD(CQB) getVariable ["allHouses",[]])]] call _fnc_cqbDiagMark;
 
                 // Create CQB instance
                 _logic setVariable ["class", ALiVE_fnc_CQB];
@@ -434,6 +507,7 @@ switch(_operation) do {
                 [_logic, "debug",_debug] call ALiVE_fnc_CQB;
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 6
+                ["applied settings"] call _fnc_cqbDiagMark;
 
                 //Check if there is data in DB
                 _data = false call ALiVE_fnc_CQBLoadData;
@@ -454,6 +528,8 @@ switch(_operation) do {
                 };
 
                 TRACE_TIME(QUOTE(COMPONENT),[]); // 7
+                ["loaded saved state", if (_success) then {"from a save"} else {"nothing saved"}]
+                    call _fnc_cqbDiagMark;
 
                 /*
                 CONTROLLER  - coordination
@@ -464,6 +540,8 @@ switch(_operation) do {
                 [_logic, "active", true] call ALiVE_fnc_CQB;
 
                 //Indicate startup is done on server for that instance
+                ["started the controller"] call _fnc_cqbDiagMark;
+
                 _logic setVariable ["init",true,true];
                 _logic setVariable ["startupComplete",true,true];
 
@@ -504,11 +582,10 @@ switch(_operation) do {
                 //Activate Debug only serverside
                 //[_logic, "debug", _debug] call ALiVE_fnc_CQB;
 
-                //Delete markers
-                [_logic, "blacklist", _logic getVariable ["blacklist", DEFAULT_BLACKLIST]] call ALiVE_fnc_CQB;
-                {_x setMarkerAlpha 0} foreach (_logic getVariable ["blacklist", DEFAULT_BLACKLIST]);
-                [_logic, "whitelist", _logic getVariable ["whitelist", DEFAULT_WHITELIST]] call ALiVE_fnc_CQB;
-                {_x setMarkerAlpha 0} foreach (_logic getVariable ["whitelist", DEFAULT_WHITELIST]);
+                // The areas are read and put out of sight up at module init now, alongside every
+                // other module that owns a blacklist, so there is nothing left to do here. The
+                // two calls that stood here read the same two settings that had already been
+                // read further up and set them to what they already were.
             };
 
             TRACE_TIME(QUOTE(COMPONENT),[]); // 8
@@ -1610,11 +1687,22 @@ switch(_operation) do {
                                                     } else {
                                                         _faction = [getposATL _house, 250,true] call ALiVE_fnc_getDominantFaction;
 
+                                                        // Which scan answered, and with what, is the only way to tell a
+                                                        // house garrisoned from its own neighbourhood apart from one that
+                                                        // borrowed a faction from well outside it (#976)
+                                                        if (_debug && {!isnil "_faction"}) then {
+                                                            ["CQB Population: Dominant faction %1 detected on close scan (250m) of house at %2",_faction,getposATL _house] call ALiVE_fnc_Dump;
+                                                        };
+
                                                         // Close scan found nothing - houses activate at spawnDistance,
                                                         // so retry at the house's activation radius before giving up
                                                         if (isnil "_faction") then {
                                                             private _wideScan = 250 max (_spawn + _staticRange);
                                                             _faction = [getposATL _house, _wideScan,true] call ALiVE_fnc_getDominantFaction;
+
+                                                            if (_debug && {!isnil "_faction"}) then {
+                                                                ["CQB Population: Dominant faction %1 detected on wide scan (%2m) of house at %3 - nothing within 250m",_faction,_wideScan,getposATL _house] call ALiVE_fnc_Dump;
+                                                            };
 
                                                             // Still no non-civilian profile or group in range - spawn
                                                             // NOTHING instead of defaulting to the module factions list

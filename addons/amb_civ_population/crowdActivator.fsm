@@ -266,9 +266,21 @@ class FSM
                          "					  _agent setVariable [""ALiVE_clusterID"", _clusterID, false];" \n
                          "                 private _cluster = [_activeClusters, _clusterID,[]] call ALIVE_fnc_hashGet;" \n
                          "					" \n
-                         "                 private _clusterHostility = [_cluster, ""hostility"",[]] call ALiVE_fnc_hashGet;" \n
                          "" \n
-                         "                 _clusterHostilityLevel = [_clusterHostility, str(side (_player select 0)),0] call ALIVE_fnc_hashGet;" \n
+                         "                 // A cluster that is no longer active comes back as an empty array rather" \n
+                         "                 // than a hash, and reading hostility out of it took the next two lines" \n
+                         "                 // down with it. Fall back to the mission-wide figure, which is exactly" \n
+                         "                 // what the no-nearby-agent branch below already does." \n
+                         "                 private _clusterHostility = [];" \n
+                         "                 if (_cluster isEqualType [] && {count _cluster > 2}) then {" \n
+                         "                      _clusterHostility = [_cluster, ""hostility"",[]] call ALiVE_fnc_hashGet;" \n
+                         "                 };" \n
+                         "" \n
+                         "                 if (_clusterHostility isEqualType [] && {count _clusterHostility > 2}) then {" \n
+                         "                      _clusterHostilityLevel = [_clusterHostility, str(side (_player select 0)),0] call ALIVE_fnc_hashGet;" \n
+                         "                 } else {" \n
+                         "                      _clusterHostilityLevel = [ALIVE_civilianHostility, str(side (_player select 0)),0] call ALIVE_fnc_hashGet;" \n
+                         "                 };" \n
                          "            } else {" \n
                          "                 _clusterHostilityLevel = [ALIVE_civilianHostility, str(side (_player select 0)), 0] call ALIVE_fnc_hashGet;" \n
                          "            };" \n

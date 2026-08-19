@@ -64,6 +64,13 @@ class CfgVehicles {
                                 tooltip = "$STR_ALIVE_data_customPerfMonCode_COMMENT";
                                 defaultValue = """[['entities',150],['vehicles',300],['agents',450],['allDead',600],['objects',750],['triggers',900],['activeScripts',1050]]""";
                         };
+                        class saveAllowlist : Edit
+                        {
+                                property = "ALiVE_sys_data_saveAllowlist";
+                                displayName = "$STR_ALIVE_data_saveAllowlist";
+                                tooltip = "$STR_ALIVE_data_saveAllowlist_COMMENT";
+                                defaultValue = """""";
+                        };
                         class ModuleDescription : ModuleDescription {};
                 };
         };

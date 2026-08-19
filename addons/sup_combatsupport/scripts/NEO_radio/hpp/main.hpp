@@ -12,10 +12,10 @@ class NEO_resourceRadio
             class NEO_radioBackground : RscPicture
             {
                 idc = 655556;
-                x = 0.142424 * safezoneW + safezoneX;
-                y = 0.0632 * safezoneH + safezoneY;
-                w = 0.73 * safezoneW;
-                h = 0.84 * safezoneH;
+                x = 0.142424 * GUI_GRID_WAbs + GUI_GRID_X;
+                y = 0.0632 * GUI_GRID_HAbs + GUI_GRID_Y;
+                w = 0.73 * GUI_GRID_WAbs;
+                h = 0.84 * GUI_GRID_HAbs;
                 text = "x\alive\addons\main\data\ui\ALiVE_toughbook.paa";
                 moving = 0;
                 colorBackground[] = {0,0,0,0};
@@ -28,10 +28,10 @@ class NEO_resourceRadio
                 class NEO_radioMap : NEO_RscMap
                 {
                         idc = 655560;
-                        x = 0.519796 * safezoneW + safezoneX;
-                        y = 0.1584 * safezoneH + safezoneY;
-                        w = 0.216525 * safezoneW;
-                        h = 0.42 * safezoneH;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.1584 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.216525 * GUI_GRID_WAbs;
+                        h = 0.42 * GUI_GRID_HAbs;
                 };
 
                 //Main Support Title
@@ -39,10 +39,10 @@ class NEO_resourceRadio
                 {
                         idc = -1;
                         text = "Combat Support Available"; //--- ToDo: Localize;
-                        x = 0.271103 * safezoneW + safezoneX;
-                        y = 0.1584 * safezoneH + safezoneY;
-                        w = 0.159596 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.271103 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.1584 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.159596 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         class Attributes
                         {
@@ -62,10 +62,10 @@ class NEO_resourceRadio
                         idc = 655561;
                         text = "Close";
                         style = 2;
-                        x = 0.519796 * safezoneW + safezoneX;
-                        y = 0.7184 * safezoneH + safezoneY;
-                        w = 0.216525 * safezoneW;
-                        h = 0.028 * safezoneH;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.7184 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.216525 * GUI_GRID_WAbs;
+                        h = 0.028 * GUI_GRID_HAbs;
                         sizeEx = CS_BTN_SIZE;
                         colorBackground[] = {0.376,0.196,0.204,1};
                         colorText[] = {0.706,0.706,0.706,1};
@@ -78,11 +78,11 @@ class NEO_resourceRadio
                 class NEO_radioMainList : NEO_RscGUIListBox
                 {
                         idc = 655565;
-                        x = 0.271102 * safezoneW + safezoneX;
-                        y = 0.1892 * safezoneH + safezoneY;
-                        w = 0.241271 * safezoneW;
-                        h = 0.084 * safezoneH;
-                        colorBackground[] = {0,0,0,0};
+                        x = 0.271102 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.1892 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.241271 * GUI_GRID_WAbs;
+                        h = 0.084 * GUI_GRID_HAbs;
+                        colorBackground[] = {0.047,0.047,0.047,0.72};
                         colorActive[] = {0.384,0.439,0.341,1};
                         sizeEx = CS_LIST_SIZE;
                         rowHeight = CS_LIST_ROW;
@@ -95,10 +95,13 @@ class NEO_resourceRadio
                         idc = 655568;
                         sizeEx = CS_LIST_SIZE;
                         rowHeight = CS_LIST_ROW;
-                        x = 0.269865 * safezoneW + safezoneX;
-                        y = 0.3068 * safezoneH + safezoneY;
-                        w = 0.242507 * safezoneW;
-                        h = 0.084 * safezoneH;
+                        x = 0.269865 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.3068 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.242507 * GUI_GRID_WAbs;
+                        h = 0.084 * GUI_GRID_HAbs;
+                        // Category lists share screen space; only the active category
+                        // receives a shaded background at runtime.
+                        colorBackground[] = {0,0,0,0};
                         colorActive[] = {0.384,0.439,0.341,1};
                 };
 
@@ -108,11 +111,11 @@ class NEO_resourceRadio
                         idc = 655569;
                         sizeEx = CS_LIST_SIZE;
                         rowHeight = CS_LIST_ROW;
-                        x = 0.269865 * safezoneW + safezoneX;
-                        y = 0.4272 * safezoneH + safezoneY;
-                        w = 0.242507 * safezoneW;
-                        h = 0.09 * safezoneH; // ends ~0.517, clearing the sling-load message/cargo row at y=0.52 (0.15 overlapped it); boxed above by the TASK header ending ~0.4244
-                        colorBackground[] = {0,0,0,0}; // transparent - this list shares the y-slot with the CAS/ARTY controls (disabled+empty when they're active), so the extra height must never draw over them
+                        x = 0.269865 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.4272 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.242507 * GUI_GRID_WAbs;
+                        h = 0.09 * GUI_GRID_HAbs; // ends ~0.517, clearing the sling-load message/cargo row at y=0.52 (0.15 overlapped it); boxed above by the TASK header ending ~0.4244
+                        colorBackground[] = {0,0,0,0};
                         colorActive[] = {0.384,0.439,0.341,1};
                 };
 
@@ -120,10 +123,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportUnitText : NEO_RscText
                 {
                         idc = 655570;
-                        x = 0.271103 * safezoneW + safezoneX;
-                        y = 0.2732 * safezoneH + safezoneY;
-                        w = 0.0779492 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.271103 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.2732 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.0779492 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorText[] = {0.384,0.439,0.341,1};
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_BTN_SIZE;
@@ -134,10 +137,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportTaskText : NEO_radioTransportUnitText
                 {
                         idc = 655571;
-                        x = 0.271103 * safezoneW + safezoneX;
-                        y = 0.3936 * safezoneH + safezoneY;
-                        w = 0.0742373 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.271103 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.3936 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.0742373 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorText[] = {0.384,0.439,0.341,1};
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_BTN_SIZE;
@@ -148,10 +151,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportHelpUnitText : NEO_radioTransportUnitText
                 {
                         idc = 655572;
-                        x = 0.351527 * safezoneW + safezoneX;
-                        y = 0.2732 * safezoneH + safezoneY;
-                        w = 0.160845 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.351527 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.2732 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.160845 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         sizeEx = 0.6 * GUI_GRID_H;
                         text = "";
@@ -161,10 +164,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportHelpTaskText : NEO_radioTransportHelpUnitText
                 {
                         idc = 655573;
-                        x = 0.351525 * safezoneW + safezoneX;
-                        y = 0.3936 * safezoneH + safezoneY;
-                        w = 0.160845 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.351525 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.3936 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.160845 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         sizeEx = 0.6 * GUI_GRID_H;
                         text = "";
@@ -174,10 +177,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportConfirmButton : NEO_RscButton
                 {
                         idc = 655574;
-                        x = 0.519796 * safezoneW + safezoneX;
-                        y = 0.6848 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.6848 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         text = "Confirm";
                         colorBackground[] = {0.384,0.439,0.341,1};
                         sizeEx = CS_BTN_SIZE;
@@ -189,10 +192,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportBaseButton : NEO_radioTransportConfirmButton
                 {
                         idc = 655575;
-                        x = 0.519796 * safezoneW + safezoneX;
-                        y = 0.6512 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.6512 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         text = "Order Unit RTB";
                         colorBackground[] = {0.173,0.173,0.173,1};
                         colorBackgroundFocused[] = {0.173,0.173,0.173,1};
@@ -204,10 +207,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportSmokeFoundButton : NEO_radioTransportConfirmButton
                 {
                         idc = 655576;
-                        x = 1000 * safezoneW + safezoneX;
-                        y = 0.6176 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 1000 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.6176 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         text = "Confirm Smoke";
                         colorBackground[] = {0.431,0.494,0.596,1};
                         colorBackgroundFocused[] = {0.431,0.494,0.596,1};
@@ -219,10 +222,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportSmokeNotFoundButton : NEO_radioTransportBaseButton
                 {
                         idc = 655577;
-                        x = 0.519796 * safezoneW + safezoneX;
-                        y = 0.584 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.584 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         text = "New Smoke";
                         colorBackground[] = {0.722,0.439,0.282,1};
                         colorBackgroundFocused[] = {0.722,0.439,0.282,1};
@@ -234,10 +237,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportCircleSlider : NEO_RscSlider
                 {
                         idc = 655578;
-                        x = 0.281002 * safezoneW + safezoneX;
-                        y = 0.5504 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.281002 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.5504 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         colorText[] = {0.384,0.439,0.341,1};
                         colorActive[] = {0.384,0.439,0.341,1};
                         color[] = {0.384,0.439,0.341,1};
@@ -250,10 +253,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportCircleSliderText : NEO_radioTransportHelpUnitText
                 {
                         idc = 655579;
-                        x = 0.280111 * safezoneW + safezoneX;
-                        y = 0.514 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.280111 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.514 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         text = "";
                         colorText[] = {0.706,0.706,0.706,1};
                         colorBackground[] = {0,0,0,0};
@@ -274,10 +277,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportObjectCb : NEO_RscComboBox
                 {
                         idc = 655580;
-                        x = 0.281002 * safezoneW + safezoneX;
-                        y = 0.5504 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.281002 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.5504 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         colorSelectBackground[] = {0.384,0.439,0.341,1};
                         colorSelect[] = {0.023529, 0, 0.0313725, 1.000};
                         colorText[] = {0.384,0.439,0.341,1};
@@ -292,10 +295,10 @@ class NEO_resourceRadio
                 {
                         idc = 655633;
                         text = "Behaviour";
-                        x = 0.363898 * safezoneW + safezoneX;
-                        y = 0.598 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.363898 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.598 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         colorText[] = {0.706,0.706,0.706,1};
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_BTN_SIZE;
@@ -305,10 +308,10 @@ class NEO_resourceRadio
                 class NEO_radioTransportHeightCb : NEO_RscComboBox
                 {
                         idc = 655630;
-                        x = 0.278525 * safezoneW + safezoneX;
-                        y = 0.64 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.278525 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.64 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         colorSelectBackground[] = {0.384,0.439,0.341,1};
                         colorSelect[] = {0.023529, 0, 0.0313725, 1.000};
                         colorText[] = {0.384,0.439,0.341,1};
@@ -322,20 +325,20 @@ class NEO_resourceRadio
                 class NEO_radioTransportSpeedCb : NEO_radioTransportHeightCb
                 {
                         idc = 655631;
-                        x = 0.401017 * safezoneW + safezoneX;
-                        y = 0.64 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.401017 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.64 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                 };
 
                 //ROE
                 class NEO_radioTransportRoeCb : NEO_radioTransportHeightCb
                 {
                         idc = 655632;
-                        x = 0.339153 * safezoneW + safezoneX;
-                        y = 0.696 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.339153 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.696 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                 };
 
                 //=======================
@@ -343,10 +346,10 @@ class NEO_resourceRadio
                 class NEO_radioCasUnitList : NEO_RscGUIListBox
                 {
                         idc = 655582;
-                        x = 0.269865 * safezoneW + safezoneX;
-                        y = 0.3068 * safezoneH + safezoneY;
-                        w = 0.242507 * safezoneW;
-                        h = 0.084 * safezoneH;
+                        x = 0.269865 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.3068 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.242507 * GUI_GRID_WAbs;
+                        h = 0.084 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         colorActive[] = {0.384,0.439,0.341,1};
                         sizeEx = CS_LIST_SIZE;
@@ -357,10 +360,10 @@ class NEO_resourceRadio
                 class NEO_radioCasUnitText : NEO_RscText
                 {
                         idc = 655583;
-                        x = 0.271103 * safezoneW + safezoneX;
-                        y = 0.2732 * safezoneH + safezoneY;
-                        w = 0.0779492 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.271103 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.2732 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.0779492 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorText[] = {0.706,0.706,0.706,1};
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_BTN_SIZE;
@@ -371,10 +374,10 @@ class NEO_resourceRadio
                 class NEO_radioCasHelpUnitText : NEO_radioCasUnitText
                 {
                         idc = 655584;
-                        x = 0.351527 * safezoneW + safezoneX;
-                        y = 0.2732 * safezoneH + safezoneY;
-                        w = 0.160845 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.351527 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.2732 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.160845 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_LIST_SIZE;
                         rowHeight = CS_LIST_ROW;
@@ -385,10 +388,10 @@ class NEO_resourceRadio
                 class NEO_radioCasConfirmButton : NEO_radioTransportConfirmButton
                 {
                         idc = 655585;
-                        x = 0.519796 * safezoneW + safezoneX;
-                        y = 0.6848 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.6848 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         text = "Confirm";
                         colorBackground[] = {0.384,0.439,0.341,1};
                         colorBackgroundFocused[] = {0.384,0.439,0.341,1};
@@ -400,10 +403,10 @@ class NEO_resourceRadio
                 class NEO_radioCasBaseButton : NEO_radioCasConfirmButton
                 {
                         idc = 655586;
-                        x = 0.519796 * safezoneW + safezoneX;
-                        y = 0.6512 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.6512 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         text = "Order Unit RTB";
                         colorBackground[] = {0.173,0.173,0.173,1};
                         colorBackgroundFocused[] = {0.173,0.173,0.173,1};
@@ -414,10 +417,10 @@ class NEO_resourceRadio
                 {
                         idc = 655625;
                         enable = 0; // starts disabled - SITREP no-ops until a unit is selected (enabled in the unit handlers)
-                        x = 0.445231 * safezoneW + safezoneX;
-                        y = 0.150015 * safezoneH + safezoneY;
-                        w = 0.0597643 * safezoneW;
-                        h = 0.028 * safezoneH;
+                        x = 0.445231 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.150015 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.0597643 * GUI_GRID_WAbs;
+                        h = 0.028 * GUI_GRID_HAbs;
                         text = "SITREP";
                         action = "[] spawn fnc_getSitrep";
                         colorBackground[] = {0.384,0.439,0.341,1};
@@ -432,10 +435,10 @@ class NEO_resourceRadio
                 class NEO_radioTerrainButton : NEO_radioCasConfirmButton
                 {
                         idc = 655634;
-                        x = 0.686 * safezoneW + safezoneX;   // top-right of the header bezel (mirrors the logo), above the map
-                        y = 0.108 * safezoneH + safezoneY;   // on the light-grey header band (nudged down with the grid row)
-                        w = 0.0597643 * safezoneW;
-                        h = 0.028 * safezoneH;
+                        x = 0.686 * GUI_GRID_WAbs + GUI_GRID_X;   // top-right of the header bezel (mirrors the logo), above the map
+                        y = 0.108 * GUI_GRID_HAbs + GUI_GRID_Y;   // on the light-grey header band (nudged down with the grid row)
+                        w = 0.0597643 * GUI_GRID_WAbs;
+                        h = 0.028 * GUI_GRID_HAbs;
                         text = "Terrain";
                         periodFocus = 1e10; // never blink (periodFocus = 0 can fall back to the default focus-pulse)
                         periodOver = 1e10;
@@ -452,10 +455,10 @@ class NEO_resourceRadio
                 class NEO_radioGridLabel : NEO_RscText
                 {
                         idc = 655635;
-                        x = 0.5198 * safezoneW + safezoneX;
-                        y = 0.108 * safezoneH + safezoneY;
-                        w = 0.032 * safezoneW;
-                        h = 0.028 * safezoneH;
+                        x = 0.5198 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.108 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.032 * GUI_GRID_WAbs;
+                        h = 0.028 * GUI_GRID_HAbs;
                         text = "GRID";
                         sizeEx = CS_BTN_SIZE;
                         colorText[] = {0.25,0.25,0.25,1}; // darker grey - more visible on the light header band
@@ -467,10 +470,10 @@ class NEO_resourceRadio
                 class NEO_radioGridEdit : NEO_RscEdit
                 {
                         idc = 655636;
-                        x = 0.5518 * safezoneW + safezoneX;
-                        y = 0.10 * safezoneH + safezoneY; // extend up from the button row (bottom stays aligned at 0.136) for a taller, readable box
-                        w = 0.086 * safezoneW;
-                        h = 0.036 * safezoneH;
+                        x = 0.5518 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.10 * GUI_GRID_HAbs + GUI_GRID_Y; // extend up from the button row (bottom stays aligned at 0.136) for a taller, readable box
+                        w = 0.086 * GUI_GRID_WAbs;
+                        h = 0.036 * GUI_GRID_HAbs;
                         text = "";
                         sizeEx = 0.034; // larger, comfortably readable
                         colorText[] = {0.1,0.1,0.1,1}; // dark - readable on the light input box
@@ -482,10 +485,10 @@ class NEO_resourceRadio
                 class NEO_radioGridButton : NEO_radioTerrainButton
                 {
                         idc = 655637;
-                        x = 0.640 * safezoneW + safezoneX;
-                        y = 0.108 * safezoneH + safezoneY;
-                        w = 0.043 * safezoneW;
-                        h = 0.028 * safezoneH;
+                        x = 0.640 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.108 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.043 * GUI_GRID_WAbs;
+                        h = 0.028 * GUI_GRID_HAbs;
                         text = "Set";
                         period = 1e10; // freeze the focus blink (the inherited period 0.4 pulses while the button holds focus)
                         action = "[] call NEO_fnc_radioGridSetButton";
@@ -495,10 +498,10 @@ class NEO_resourceRadio
                 class NEO_radioCasTaskList : NEO_radioCasUnitList
                 {
                         idc = 655587;
-                        x = 0.269865 * safezoneW + safezoneX;
-                        y = 0.4272 * safezoneH + safezoneY;
-                        w = 0.242507 * safezoneW;
-                        h = 0.084 * safezoneH;
+                        x = 0.269865 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.4272 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.242507 * GUI_GRID_WAbs;
+                        h = 0.084 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         colorActive[] = {0.384,0.439,0.341,1};
                 sizeEx = CS_LIST_SIZE;
@@ -509,10 +512,10 @@ class NEO_resourceRadio
                 class NEO_radioCasTaskText : NEO_radioCasUnitText
                 {
                         idc = 655588;
-                        x = 0.271103 * safezoneW + safezoneX;
-                        y = 0.3936 * safezoneH + safezoneY;
-                        w = 0.0742373 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.271103 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.3936 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.0742373 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorText[] = {0.706,0.706,0.706,1};
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_BTN_SIZE;
@@ -523,10 +526,10 @@ class NEO_resourceRadio
                 class NEO_radioCasHelpTaskText : NEO_radioCasHelpUnitText
                 {
                         idc = 655589;
-                        x = 0.351525 * safezoneW + safezoneX;
-                        y = 0.3936 * safezoneH + safezoneY;
-                        w = 0.160845 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.351525 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.3936 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.160845 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         sizeEx = 0.6 * GUI_GRID_H;
                         text = "";
@@ -536,10 +539,10 @@ class NEO_resourceRadio
                 class NEO_radioCasFlyHeightSlider : NEO_radioTransportCircleSlider
                 {
                         idc = 655590;
-                        x = 0.402708 * safezoneW + safezoneX;
-                        y = 0.5508 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.402708 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.5508 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
             colorActive[] = {0.384,0.439,0.341,1};
                         color[] = {0.384,0.439,0.341,1};
                         colorDisabled[] = {0.384,0.439,0.341,1};
@@ -549,10 +552,10 @@ class NEO_resourceRadio
                 class NEO_radioCasFlyHeightText : NEO_radioTransportCircleSliderText
                 {
                         idc = 655591;
-                        x = 0.402708 * safezoneW + safezoneX;
-                        y = 0.5508 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.402708 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.5508 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         colorText[] = {0.706,0.706,0.706,1};
                         colorActive[] = {0.384,0.439,0.341,1};
                         sizeEx = CS_BTN_SIZE;
@@ -563,10 +566,10 @@ class NEO_resourceRadio
                 class NEO_radioCasRadiusSlider : NEO_radioTransportCircleSlider
                 {
                         idc = 655592;
-                        x = 0.281002 * safezoneW + safezoneX;
-                        y = 0.5504 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.281002 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.5504 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         colorText[] = {0.384,0.439,0.341,1};
                         colorActive[] = {0.384,0.439,0.341,1};
                         color[] = {0.384,0.439,0.341,1};
@@ -578,10 +581,10 @@ class NEO_resourceRadio
                 class NEO_radioCasRadiusText : NEO_radioTransportCircleSliderText
                 {
                         idc = 655593;
-                        x = 0.280111 * safezoneW + safezoneX;
-                        y = 0.514 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.280111 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.514 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         text = "";
                         colorText[] = {0.706,0.706,0.706,1};
                         colorBackground[] = {0,0,0,0};
@@ -591,10 +594,10 @@ class NEO_resourceRadio
                 class NEO_radioCasWeaponList : NEO_radioCasUnitList
                 {
                         idc = 655613;
-                        x = 0.269865 * safezoneW + safezoneX;
-                        y = 0.615 * safezoneH + safezoneY;
-                        w = 0.125 * safezoneW;
-                        h = 0.12 * safezoneH;
+                        x = 0.269865 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.615 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.125 * GUI_GRID_WAbs;
+                        h = 0.12 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         colorActive[] = {0.384,0.439,0.341,1};
                 sizeEx = CS_LIST_SIZE;
@@ -605,10 +608,10 @@ class NEO_resourceRadio
                 class NEO_radioCasWeaponText : NEO_radioCasUnitText
                 {
                         idc = 655614;
-                        x = 0.271103 * safezoneW + safezoneX;
-                        y = 0.59 * safezoneH + safezoneY;
-                        w = 0.028 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.271103 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.59 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.028 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorText[] = {0.706,0.706,0.706,1};
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_BTN_SIZE;
@@ -618,10 +621,10 @@ class NEO_resourceRadio
                 class NEO_radioCasROEList : NEO_radioCasUnitList
                 {
                         idc = 655615;
-                        x = 0.392 * safezoneW + safezoneX;
-                        y = 0.615 * safezoneH + safezoneY;
-                        w = 0.125 * safezoneW;
-                        h = 0.12 * safezoneH;
+                        x = 0.392 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.615 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.125 * GUI_GRID_WAbs;
+                        h = 0.12 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         colorActive[] = {0.384,0.439,0.341,1};
                 sizeEx = CS_LIST_SIZE;
@@ -632,10 +635,10 @@ class NEO_resourceRadio
                 class NEO_radioCasROEText : NEO_radioCasUnitText
                 {
                         idc = 655616;
-                        x = 0.402708 * safezoneW + safezoneX;
-                        y = 0.59 * safezoneH + safezoneY;
-                        w = 0.028 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.402708 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.59 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.028 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorText[] = {0.706,0.706,0.706,1};
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_BTN_SIZE;
@@ -644,10 +647,10 @@ class NEO_resourceRadio
                 class NEO_radioArtyUnitList : NEO_RscGUIListBox
                 {
                         idc = 655594;
-                        x = 0.269865 * safezoneW + safezoneX;
-                        y = 0.3068 * safezoneH + safezoneY;
-                        w = 0.242507 * safezoneW;
-                        h = 0.084 * safezoneH;
+                        x = 0.269865 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.3068 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.242507 * GUI_GRID_WAbs;
+                        h = 0.084 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         colorActive[] = {0.384,0.439,0.341,1};
                         sizeEx = CS_LIST_SIZE;
@@ -656,10 +659,10 @@ class NEO_resourceRadio
                 class NEO_radioArtyUnitText : NEO_RscText
                 {
                         idc = 655595;
-                        x = 0.271103 * safezoneW + safezoneX;
-                        y = 0.2732 * safezoneH + safezoneY;
-                        w = 0.0779492 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.271103 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.2732 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.0779492 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorText[] = {0.706,0.706,0.706,1};
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_BTN_SIZE;
@@ -668,10 +671,10 @@ class NEO_resourceRadio
                 class NEO_radioArtyHelpUnitText : NEO_radioArtyUnitText
                 {
                         idc = 655596;
-                        x = 0.351527 * safezoneW + safezoneX;
-                        y = 0.2732 * safezoneH + safezoneY;
-                        w = 0.160845 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.351527 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.2732 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.160845 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         sizeEx = CS_LIST_SIZE;
                         rowHeight = CS_LIST_ROW;
@@ -680,10 +683,10 @@ class NEO_resourceRadio
                 class NEO_radioArtyConfirmButton : NEO_radioTransportConfirmButton
                 {
                         idc = 655597;
-                        x = 0.519796 * safezoneW + safezoneX;
-                        y = 0.6848 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.6848 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         text = "Confirm";
                         colorBackground[] = {0.384,0.439,0.341,1};
                         colorBackgroundFocused[] = {0.384,0.439,0.341,1};
@@ -693,10 +696,10 @@ class NEO_resourceRadio
                 class NEO_radioArtyBaseButton : NEO_radioArtyConfirmButton
                 {
                         idc = 655610;
-                        x = 0.519796 * safezoneW + safezoneX;
-                        y = 0.6512 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.519796 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.6512 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         text = "Order Unit RTB";
                         colorBackground[] = {0.173,0.173,0.173,1};
                         sizeEx = CS_BTN_SIZE;
@@ -704,10 +707,10 @@ class NEO_resourceRadio
                 class NEO_radioArtyOrdnanceTypeText : NEO_radioArtyUnitText
                 {
                         idc = 655600;
-                        x = 0.271103 * safezoneW + safezoneX;
-                        y = 0.3936 * safezoneH + safezoneY;
-                        w = 0.0742373 * safezoneW;
-                        h = 0.0308 * safezoneH;
+                        x = 0.271103 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.3936 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.0742373 * GUI_GRID_WAbs;
+                        h = 0.0308 * GUI_GRID_HAbs;
                         colorText[] = {0.706,0.706,0.706,1};
                         colorBackground[] = {0,0,0,0};
                         colorBackgroundFocused[] = {0,0,0,0};
@@ -718,10 +721,10 @@ class NEO_resourceRadio
                 class NEO_radioArtyOrdnanceTypeLb : NEO_radioArtyUnitList
                 {
                         idc = 655601;
-                        x = 0.269865 * safezoneW + safezoneX;
-                        y = 0.4272 * safezoneH + safezoneY;
-                        w = 0.242507 * safezoneW;
-                        h = 0.084 * safezoneH;
+                        x = 0.269865 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.4272 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.242507 * GUI_GRID_WAbs;
+                        h = 0.084 * GUI_GRID_HAbs;
                         colorBackground[] = {0,0,0,0};
                         colorActive[] = {0.384,0.439,0.341,1};
                 sizeEx = CS_LIST_SIZE;
@@ -730,40 +733,40 @@ class NEO_resourceRadio
                 class NEO_radioArtyRateOfFireText : NEO_radioArtyOrdnanceTypeText
                 {
                         idc = 655602;
-                        x = 0.271103 * safezoneW + safezoneX;
-                        y = 0.52 * safezoneH + safezoneY;
-                        w = 0.080931 * safezoneW;
-                        h = 0.0280024 * safezoneH;
+                        x = 0.271103 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.52 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.080931 * GUI_GRID_WAbs;
+                        h = 0.0280024 * GUI_GRID_HAbs;
                 };
 
                 //Arty Rate Of Fire Lb
                 class NEO_radioArtyRateOfFireLb : NEO_radioArtyOrdnanceTypeLb
                 {
                         idc = 655603;
-                        x = 0.282108 * safezoneW + safezoneX;
-                        y = 0.55 * safezoneH + safezoneY;
-                        w = 0.0859113 * safezoneW;
-                        h = 0.0560048 * safezoneH;
+                        x = 0.282108 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.55 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.0859113 * GUI_GRID_WAbs;
+                        h = 0.0560048 * GUI_GRID_HAbs;
                 };
 
                 //Arty Round Count Text
                 class NEO_radioArtyRoundCountText : NEO_radioArtyOrdnanceTypeText
                 {
                         idc = 655604;
-                        x = 0.406618 * safezoneW + safezoneX;
-                        y = 0.52 * safezoneH + safezoneY;
-                        w = 0.080931 * safezoneW;
-                        h = 0.0280024 * safezoneH;
+                        x = 0.406618 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.52 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.080931 * GUI_GRID_WAbs;
+                        h = 0.0280024 * GUI_GRID_HAbs;
                 };
 
                 //Arty Round Count Lb
                 class NEO_radioArtyRoundCountLb : NEO_radioArtyOrdnanceTypeLb
                 {
                         idc = 655605;
-                        x = 0.404129 * safezoneW + safezoneX;
-                        y = 0.55 * safezoneH + safezoneY;
-                        w = 0.0859114 * safezoneW;
-                        h = 0.140012 * safezoneH;
+                        x = 0.404129 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.55 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.0859114 * GUI_GRID_WAbs;
+                        h = 0.140012 * GUI_GRID_HAbs;
                 };
                 class NEO_radioArtyMoveButton : NEO_radioTransportSmokeFoundButton
                 {
@@ -785,20 +788,20 @@ class NEO_resourceRadio
                 {
                         idc = 655608;
                         text = "";
-                        x = 0.270903 * safezoneW + safezoneX;
-                        y = 0.68 * safezoneH + safezoneY;
-                        w = 0.12 * safezoneW;
-                        h = 0.0280024 * safezoneH;
+                        x = 0.270903 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.68 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.12 * GUI_GRID_WAbs;
+                        h = 0.0280024 * GUI_GRID_HAbs;
                 };
 
                 //Arty Dispersion Slider
                 class NEO_radioArtyDispersionSlider : NEO_radioCasRadiusSlider
                 {
                         idc = 655609;
-                        x = 0.270903 * safezoneW + safezoneX;
-                        y = 0.710018 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.270903 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.710018 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         colorText[] = {0.384,0.439,0.341,1};
                         colorActive[] = {0.384,0.439,0.341,1};
                         color[] = {0.384,0.439,0.341,1};
@@ -809,20 +812,20 @@ class NEO_resourceRadio
                 {
                         idc = 655611;
                         text = "";
-                        x = 0.404129 * safezoneW + safezoneX;
-                        y = 0.68 * safezoneH + safezoneY;
-                        w = 0.105833 * safezoneW;
-                        h = 0.0280024 * safezoneH;
+                        x = 0.404129 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.68 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = 0.105833 * GUI_GRID_WAbs;
+                        h = 0.0280024 * GUI_GRID_HAbs;
                 };
 
                 //Arty Dispersion Slider
                 class NEO_radioArtyRateDelaySlider : NEO_radioCasRadiusSlider
                 {
                         idc = 655612;
-                        x = 0.404129 * safezoneW + safezoneX;
-                        y = 0.710018 * safezoneH + safezoneY;
-                        w = safeZoneW / 1000;
-                        h = safeZoneH / 1000;
+                        x = 0.404129 * GUI_GRID_WAbs + GUI_GRID_X;
+                        y = 0.710018 * GUI_GRID_HAbs + GUI_GRID_Y;
+                        w = GUI_GRID_WAbs / 1000;
+                        h = GUI_GRID_HAbs / 1000;
                         colorText[] = {0.384,0.439,0.341,1};
                         colorActive[] = {0.384,0.439,0.341,1};
                         color[] = {0.384,0.439,0.341,1};

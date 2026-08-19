@@ -173,6 +173,10 @@ switch(_operation) do {
             _result = [_logic,_operation,_args,false] call ALIVE_fnc_OOsimpleOperation;
         };
 
+        case "environment": {
+            _result = [_logic,_operation,_args,"Urban"] call ALIVE_fnc_OOsimpleOperation;
+        };
+
         case "start": {
             private ["_mapPath","_customStatic","_customMapBound"];
 
@@ -182,6 +186,13 @@ switch(_operation) do {
                 _customStatic = [_logic, "customStatic"] call MAINCLASS;
                 _customMapBound = [_logic, "customMapBound"] call MAINCLASS;
                 private _launch = [_logic, "OS"] call MAINCLASS;
+                private _environment = [_logic, "environment"] call MAINCLASS;
+
+                // Make the selected composition environment available to the
+                // static data export (and composition searches) without having
+                // to hand-edit staticData afterwards
+                ALiVE_mapCompositionType = _environment;
+
                 ALIVE_mapBounds = [] call ALIVE_fnc_hashCreate;
 
                 if (_customMapBound != 0) then {

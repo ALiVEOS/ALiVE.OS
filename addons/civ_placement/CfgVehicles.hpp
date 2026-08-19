@@ -240,7 +240,9 @@ class CfgVehicles {
                                 {
                                     class NONE { name = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_NONE"; value = "0"; };
                                     class LOW { name = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_LOW"; value = "0.2"; default = 1; };
+                                    class MEDIUMLOW { name = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_MEDIUMLOW"; value = "0.4"; };
                                     class MEDIUM { name = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_MEDIUM"; value = "0.6"; };
+                                    class MEDIUMHIGH { name = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_MEDIUMHIGH"; value = "0.8"; };
                                     class HIGH { name = "$STR_ALIVE_CP_CUSTOM_GUARD_AMOUNT_HIGH"; value = "1"; };
                                 };
                         };

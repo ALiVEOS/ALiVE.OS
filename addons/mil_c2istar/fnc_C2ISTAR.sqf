@@ -73,6 +73,9 @@ Peer Reviewed:
 // Default sector-update interval, in MINUTES (case "runEvery" multiplies by 60 to seconds)
 #define DEFAULT_RUN_EVERY 2
 #define DEFAULT_TASK_MIN_DISTANCE 0
+// How many requests back a kind of order stays ruled out for when a player asks for a
+// different one. Two gives something else at least twice before the same kind can return.
+#define DEFAULT_ORDER_REPEAT_BLOCK 2
 #define DEFAULT_VIP_PANIC_TIMEOUT 180
 #define DEFAULT_TASK_AO_RADIUS 0
 #define DEFAULT_FILTER_ENEMY_FACTIONS true
@@ -224,6 +227,29 @@ switch(_operation) do {
         // access-check time in fnc_C2MenuDef.sqf. Empty string = no custom
         // items (default behaviour, only category items apply).
         _result = [_logic,_operation,_args,DEFAULT_C2_ITEM_CUSTOM] call ALIVE_fnc_OOsimpleOperation;
+    };
+    // One switch for every automatic player task, whichever part of ALiVE raises it.
+    // Each module keeps its own switch for silencing just that source; this silences
+    // the lot without having to find them all. Tasks a player asks for are untouched.
+    case "autoPlayerTasks": {
+        // The editor stores a Yes or No as text, and the shared setter throws away
+        // anything whose type does not match the default it is handed, puts the default
+        // in its place, and writes that back onto the module. Handing it a plain yes or
+        // no where the editor had stored text therefore discarded a No and stamped a Yes
+        // over it, so the setting could never take. The auto task settings next door
+        // avoid this by keeping everything as text on the way through.
+        //
+        // So: text in, text stored, and settled to a plain yes or no on the way out, so
+        // nothing else has to know any of this.
+        if (_args isEqualType true) then { _args = ["false", "true"] select _args };
+
+        private _value = [_logic, _operation, _args, "true"] call ALIVE_fnc_OOsimpleOperation;
+
+        if (_value isEqualType true) then {
+            _result = _value;
+        } else {
+            _result = (toLower (_value + "")) in ["true", "yes", "1"];
+        };
     };
     case "autoGenerateBlufor": {
 
@@ -392,6 +418,48 @@ switch(_operation) do {
                 _logic setVariable ["scomOpsAllowImageIntelligence", _args];
         };
         ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    case "scomOpsAllowPlayerObjectives": {
+        if (typeName _args == "BOOL") then {
+            _logic setVariable ["scomOpsAllowPlayerObjectives", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsAllowPlayerObjectives", false];
+        };
+        if (typeName _args == "STRING") then {
+                if(_args == "true") then {_args = true;} else {_args = false;};
+                _logic setVariable ["scomOpsAllowPlayerObjectives", _args];
+        };
+        ASSERT_TRUE(typeName _args == "BOOL",str _args);
+
+        _result = _args;
+    };
+    case "scomOpsObjectiveCooldown": {
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["scomOpsObjectiveCooldown", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsObjectiveCooldown", 300];
+        };
+        if (typeName _args == "STRING") then {
+                _args = parseNumber _args;
+                _logic setVariable ["scomOpsObjectiveCooldown", _args];
+        };
+        ASSERT_TRUE(typeName _args == "SCALAR",str _args);
+
+        _result = _args;
+    };
+    case "scomOpsMaxPlayerObjectives": {
+        if (typeName _args == "SCALAR") then {
+            _logic setVariable ["scomOpsMaxPlayerObjectives", _args];
+        } else {
+            _args = _logic getVariable ["scomOpsMaxPlayerObjectives", 3];
+        };
+        if (typeName _args == "STRING") then {
+                _args = parseNumber _args;
+                _logic setVariable ["scomOpsMaxPlayerObjectives", _args];
+        };
+        ASSERT_TRUE(typeName _args == "SCALAR",str _args);
 
         _result = _args;
     };
@@ -763,6 +831,19 @@ switch(_operation) do {
         // minutes was wrongly used as seconds.
         _result = floor(_result * 60);
     };
+    case "orderRepeatBlock": {
+        if (typeName _args == "STRING") then {
+            _args = parseNumber _args;
+        };
+        if (typeName _args == "SCALAR") then {
+            _args = (_args max 0);
+            _logic setVariable ["orderRepeatBlock", _args];
+        };
+
+        _result = _logic getVariable ["orderRepeatBlock", DEFAULT_ORDER_REPEAT_BLOCK];
+        // The editor may hand a number back as text, same as the settings around it.
+        if (typeName _result == "STRING") then { _result = parseNumber _result; };
+    };
     case "taskMinDistance": {
         if (typeName _args == "STRING") then {
             _args = parseNumber _args;
@@ -1000,6 +1081,15 @@ switch(_operation) do {
         // the server-side COP loop honours it too.
         ALiVE_mil_c2istar_debug = _debug;
 
+        // Same for the task diagnostics flag. Nothing in a mission sets
+        // ALiVE_c2istar_taskDiag -- it was console-only -- and the traces it gates sit
+        // in the task manager loop, which runs on the server, so asking a reporter for
+        // a log meant asking them to set a global server side first. Turning the
+        // module's Debug attribute on now raises it here too, on every machine init
+        // touches. Only ever raised, never cleared, so setting the flag by hand on a
+        // mission with Debug off still works.
+        if (_debug) then { ALiVE_c2istar_taskDiag = true; };
+
         // Distribute the consolidated auto-task faction picker into the six
         // per-slot vars the auto-task generator reads (autoGenerateBluforFaction
         // / ...EnemyFaction / OPF / IND). The Eden SAVE handler can't persist
@@ -1037,6 +1127,17 @@ switch(_operation) do {
             ["ALiVE_fnc_C2ISTAR WARNING: multiple ALiVE_mil_c2istar modules detected. The singleton global ALIVE_MIL_C2ISTAR is being overwritten - only the last-initialised module's configuration will be active. Place a single C2ISTAR module per mission."] call ALiVE_fnc_DumpR;
         };
         ALIVE_MIL_C2ISTAR = _logic;
+
+// Read once into a global so the task handler and the menu can both see it without
+// reaching for the module every time. The server broadcasts it so a change made from
+// the menu reaches everyone.
+ALiVE_c2istar_autoPlayerTasks = [_logic, "autoPlayerTasks"] call MAINCLASS;
+if (isServer) then { publicVariable "ALiVE_c2istar_autoPlayerTasks" };
+
+// Same again for how long a kind of order is passed over. Read where a request is handled,
+// which runs on the server, but broadcast so it reads the same everywhere.
+ALiVE_c2istar_orderRepeatBlock = [_logic, "orderRepeatBlock"] call MAINCLASS;
+if (isServer) then { publicVariable "ALiVE_c2istar_orderRepeatBlock" };
 
         private _taskMinDistance = [_logic, "taskMinDistance"] call MAINCLASS;
         private _vipPanicTimeout = [_logic, "vipPanicTimeout"] call MAINCLASS;
@@ -1127,13 +1228,16 @@ switch(_operation) do {
         [_gm, "debug", _debug] call ALIVE_fnc_GM;
         [_gm, "init",[]] call ALIVE_fnc_GM;
 
-        private["_scomOpsLimit","_scomIntelLimit","_scomOpsAllowSpectate","_scomOpsAllowJoin","_scomOpsAllowImageIntelligence","_scom"];
+        private["_scomOpsLimit","_scomIntelLimit","_scomOpsAllowSpectate","_scomOpsAllowJoin","_scomOpsAllowImageIntelligence","_scomOpsAllowPlayerObjectives","_scomOpsObjectiveCooldown","_scomOpsMaxPlayerObjectives","_scom"];
 
         _scomOpsLimit = [_logic, "scomOpsLimit"] call MAINCLASS;
         _scomIntelLimit = [_logic, "scomIntelLimit"] call MAINCLASS;
         _scomOpsAllowSpectate = [_logic, "scomOpsAllowSpectate"] call MAINCLASS;
         _scomOpsAllowJoin = [_logic, "scomOpsAllowInstantJoin"] call MAINCLASS;
         _scomOpsAllowImageIntelligence = [_logic, "scomOpsAllowImageIntelligence"] call MAINCLASS;
+        _scomOpsAllowPlayerObjectives = [_logic, "scomOpsAllowPlayerObjectives"] call MAINCLASS;
+        _scomOpsObjectiveCooldown = [_logic, "scomOpsObjectiveCooldown"] call MAINCLASS;
+        _scomOpsMaxPlayerObjectives = [_logic, "scomOpsMaxPlayerObjectives"] call MAINCLASS;
 
         _scom = [nil, "create"] call ALIVE_fnc_SCOM;
         [_scom, "opsLimit", _scomOpsLimit] call ALIVE_fnc_SCOM;
@@ -1141,6 +1245,9 @@ switch(_operation) do {
         [_scom, "scomOpsAllowSpectate", _scomOpsAllowSpectate] call ALIVE_fnc_SCOM;
         [_scom, "scomOpsAllowInstantJoin", _scomOpsAllowJoin] call ALIVE_fnc_SCOM;
         [_scom, "scomOpsAllowImageIntelligence", _scomOpsAllowImageIntelligence] call ALIVE_fnc_SCOM;
+        [_scom, "scomOpsAllowPlayerObjectives", _scomOpsAllowPlayerObjectives] call ALIVE_fnc_SCOM;
+        [_scom, "scomOpsObjectiveCooldown", _scomOpsObjectiveCooldown] call ALIVE_fnc_SCOM;
+        [_scom, "scomOpsMaxPlayerObjectives", _scomOpsMaxPlayerObjectives] call ALIVE_fnc_SCOM;
         [_scom, "debug", _debug] call ALIVE_fnc_SCOM;
         [_scom, "init",[]] call ALIVE_fnc_SCOM;
 
@@ -1929,13 +2036,14 @@ switch(_operation) do {
                         case "Mapbag01": {
                             createDialog "C2Tablet";
 
+                            ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
                             private _ctrlBackground = ((findDisplay 70001) displayCtrl 70002);
                             _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                             _ctrlBackground ctrlSetPosition [
-                                0.15 * safezoneW + safezoneX,
-                                -0.242 * safezoneH + safezoneY,
-                                0.72 * safezoneW,
-                                1.372 * safezoneH
+                                0.15 * _uiW + _uiX,
+                                -0.242 * _uiH + _uiY,
+                                0.72 * _uiW,
+                                1.372 * _uiH
                             ];
                             _ctrlBackground ctrlCommit 0;
                         };

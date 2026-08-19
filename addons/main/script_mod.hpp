@@ -5,10 +5,15 @@
 #define MAJOR 3
 #define MINOR 2
 #define PATCHLVL 0
-// BUILD should be YYMMDDR eg 1311211
+// BUILD should be YYMMDDR eg 1311211. Stamped by the packing step on every
+// build, so a log identifies exactly which one an install came from.
 #define BUILD 2604133
+// DEV between releases, RELEASE when one is cut. Moves at the same moment MINOR
+// or PATCHLVL does, and back again straight after. Reported at startup so a
+// report says which kind of build it came from without anyone having to ask.
+#define BUILDTYPE "DEV"
 
-#define CLUSTERBUILD "Arma 3","Arma3",220,152984,"Stable"
+#define CLUSTERBUILD "Arma 3","Arma3",222,153995,"Stable"
 
 #define VERSION MAJOR.MINOR.PATCHLVL.BUILD
 #define VERSION_AR MAJOR,MINOR,PATCHLVL,BUILD
@@ -61,7 +66,16 @@
 #ifdef RECOMPILE
     #undef RECOMPILE
 #endif
-#define RECOMPILE recompile = 1
+// Addon functions are compiled when their configs are loaded. Recompiling the
+// complete function library at every mission start also recompiles it for the
+// main-menu mission, briefly blocking the UI each time the menu is entered.
+// Keep hot-reload available for local source-development builds without making
+// public development/release builds pay that cost.
+#ifdef ALIVE_DEV_RECOMPILE_FUNCTIONS
+    #define RECOMPILE recompile = 1
+#else
+    #define RECOMPILE recompile = 0
+#endif
 #define MODULE_AUTHOR QUOTE(ALiVE Mod Team)
 #define MACRO_ADDITEM(ITEM,COUNT) class _xx_##ITEM { \
     name = #ITEM; \

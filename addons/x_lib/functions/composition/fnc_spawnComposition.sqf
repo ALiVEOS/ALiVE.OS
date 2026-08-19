@@ -70,10 +70,29 @@ private _brokenCheckpoints = [
 ];
 
 
+// The config may arrive as an array path; resolve it before the clearing
+// below, which now needs to know how big the composition is. Nothing above
+// this point reads _config.
+if (typename _config == "ARRAY") then {
+    _config = [_config, configFile] call BIS_fnc_configPath;
+};
+
 // Hide Terrain objects around composition
 private _hideLocaly = false;
 private _flags = 12 call bis_fnc_decodeFlags2;
+// Clear ground to suit the composition rather than always twenty metres.
+// Twenty is fine for a checkpoint and far too little for a camp: the middle
+// came out clear while trees stood through the huts around the edge. The
+// envelope is a diameter, so halve it and allow a little past the outermost
+// object. Small compositions stay at twenty exactly as before.
+//
+// Guarded because x_lib declares no dependency on main, and this file already
+// reaches upward the same careful way elsewhere. If the function is not there,
+// behaviour is exactly what it was.
 private _radius = 20;
+if (!isNil "ALiVE_fnc_getCompositionRadius") then {
+    _radius = 20 max (((([_config] call ALiVE_fnc_getCompositionRadius) / 2) + 5));
+};
 private _hidingCode = switch (true) do
 {
     case (_hideLocaly && isServer):
@@ -113,10 +132,6 @@ private _hidingCode = switch (true) do
 }
 forEach _flags;
 
-
-if (typename _config == "ARRAY") then {
-    _config = [_config, configFile] call BIS_fnc_configPath;
-};
 
 /*
 if (configName _config in _brokenCheckpoints) then {

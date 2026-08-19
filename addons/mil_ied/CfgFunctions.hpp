@@ -101,6 +101,11 @@ class cfgFunctions {
                                 file = "\x\alive\addons\mil_ied\fnc_detectIEDIntegrations.sqf";
                                 RECOMPILE;
                         };
+                        class IEDLocationSource {
+                                description = "Population centres to place IEDs around, from the cheapest source that answers";
+                                file = "\x\alive\addons\mil_ied\fnc_IEDLocationSource.sqf";
+                                RECOMPILE;
+                        };
                         // Note: fnc_edenIntegrationChoiceLoad.sqf and
                         // fnc_edenIntegrationChoiceSave.sqf are deliberately NOT registered
                         // in CfgFunctions. CfgFunctions aren't compiled until mission

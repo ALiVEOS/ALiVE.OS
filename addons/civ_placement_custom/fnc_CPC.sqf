@@ -179,7 +179,20 @@ switch (_operation) do {
         _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
     case "onEachSpawnOnce": {
-        _result = [_logic, _operation, _args, true] call ALIVE_fnc_OOsimpleOperation;
+        // The editor stores a yes or no here as text. The shared settings helper replaces
+        // any value whose type differs from the default it is handed, and writes that
+        // default back onto the module, so handing it a plain yes or no threw the setting
+        // away and stamped the default over it permanently. Keep it as text on the way
+        // through for that reason, and settle it on the way out so callers need not care.
+        if (_args isEqualType true) then { _args = ["false", "true"] select _args };
+
+        private _value = [_logic, _operation, _args, "true"] call ALIVE_fnc_OOsimpleOperation;
+
+        if (_value isEqualType true) then {
+            _result = _value;
+        } else {
+            _result = (toLower (_value + "")) in ["true", "yes", "1"];
+        };
     };
 
     case "faction": {
@@ -788,24 +801,17 @@ switch (_operation) do {
                         for "_g" from 1 to _sectionSize do {
                             private _safePos = [];
                             private _safeDir = 0;
-                            {
-                                if (count _safePos > 0) exitWith {};
-                                private _radius = _x;
-                                for "_a" from 0 to 5 do {
-                                    private _cand = _cPos getPos [_radius, (_a * 60) + random 60];
-                                    private _res = [_cand, 25, 10, "field", random 360, _debug, 0.6] call ALiVE_fnc_findCompositionSpawnPosition;
-                                    if (count _res >= 2) then {
-                                        private _testPos = _res select 0;
-                                        private _clash = false;
-                                        { if (_testPos distance2D _x < 25) exitWith { _clash = true } } forEach _usedArtyPositions;
-                                        if (!_clash) then {
-                                            _safePos = _testPos;
-                                            _safeDir = _res select 1;
-                                        };
-                                    };
-                                    if (count _safePos > 0) exitWith {};
-                                };
-                            } forEach [50, 80, 110, 140, 170, 200];
+
+                            // One wide search across the whole area, rather than thirty six narrow ones
+                            // creeping outwards ring by ring. Same ground, a fraction of the work, and the
+                            // guns end up spread across it instead of sitting on rings. See the helper for
+                            // what the old way was costing.
+                            private _res = [_cPos, 200, 10, _usedArtyPositions, 25, _debug] call ALiVE_fnc_findBatterySpawnPosition;
+
+                            if (count _res >= 2) then {
+                                _safePos = _res select 0;
+                                _safeDir = _res select 1;
+                            };
                             if (count _safePos > 0) then {
                                 _usedArtyPositions pushBack _safePos;
                                 [_artyClass, _artySide, _artyFaction, "PRIVATE", _safePos, _safeDir, false, _artyFaction] call ALIVE_fnc_createProfilesCrewedVehicle;

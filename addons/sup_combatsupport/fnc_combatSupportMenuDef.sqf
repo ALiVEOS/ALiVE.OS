@@ -50,7 +50,8 @@ _menuRsc = "popup";
 _result = [
     NEO_radioLogic getVariable ["combatsupport_item","LaserDesignators"],
     NEO_radioLogic getVariable ["combatsupport_item_custom",""],
-    []
+    // the Combat Support Tablet (ALIVE_Tablet) always grants access, matching C2ISTAR / Player Resupply
+    ["ALIVE_Tablet"]
 ] call ALIVE_fnc_playerHasAccessItems;
 
 // #940 follow-up: in "first player only" mode, only the current per-side operator

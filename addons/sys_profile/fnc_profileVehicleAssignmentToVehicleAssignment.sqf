@@ -26,6 +26,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 ---------------------------------------------------------------------------- */
 
 private ["_vehicleAssignment","_profile","_orderGetIn","_profileType","_vehicle","_entityProfileID","_entityProfile",
@@ -44,18 +45,27 @@ if(_profileType == "vehicle") then {
     _entityProfile = [ALIVE_profileHandler, "getProfile", _entityProfileID] call ALIVE_fnc_profileHandler;
 
     if !(isnil "_entityProfile") then {
-        _entityProfileActive = _entityProfile select 2 select 1; //[_entityProfile,"active"] call ALIVE_fnc_hashGet;
 
-        if!(_entityProfileActive) then {
-            [_entityProfile,"spawn"] call ALIVE_fnc_profileEntity;
-        } else {
-            _units = _entityProfile select 2 select 21; //[_entityProfile,"units"] call ALIVE_fnc_hashGet;
-            _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
-            if (_orderGetIn) then {
-                [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMount;
+        // Assignment slot 1 must resolve to an ENTITY profile. If it resolves to a
+        // vehicle (or anything else), entity-spawn and the units read below would
+        // misread the vehicle schema (slot 18 canFire, slot 21 hasSimulated...) and
+        // crash; log the mis-dispatch and skip rather than take the wrong schema.
+        if ((_entityProfile select 2 select 5) == "entity") then {
+            _entityProfileActive = _entityProfile select 2 select 1; //[_entityProfile,"active"] call ALIVE_fnc_hashGet;
+
+            if!(_entityProfileActive) then {
+                [_entityProfile,"spawn"] call ALIVE_fnc_profileEntity;
             } else {
-                [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMoveIn;
+                _units = _entityProfile select 2 select 21; //[_entityProfile,"units"] call ALIVE_fnc_hashGet;
+                _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
+                if (_orderGetIn) then {
+                    [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMount;
+                } else {
+                    [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMoveIn;
+                };
             };
+        } else {
+            ["ALiVE VAtoVA: assignment slot 1 resolved to a non-entity profile (id %1, type %2) - skipping entity spawn. Assignment: %3", _entityProfile select 2 select 4, _entityProfile select 2 select 5, _vehicleAssignment] call ALiVE_fnc_dump;
         };
     };
 
@@ -65,18 +75,25 @@ if(_profileType == "vehicle") then {
     _vehicleProfile = [ALIVE_profileHandler, "getProfile", _vehicleProfileID] call ALIVE_fnc_profileHandler;
 
     if !(isnil "_vehicleProfile") then {
-        _vehicleProfileActive =  _vehicleProfile select 2 select 1; //[_vehicleProfile,"active"] call ALIVE_fnc_hashGet;
 
-        if!(_vehicleProfileActive) then {
-            [_vehicleProfile,"spawn"] call ALIVE_fnc_profileVehicle;
-        } else {
-            _vehicle = _vehicleProfile select 2 select 10; //[_vehicleProfile,"vehicle"] call ALIVE_fnc_hashGet;
-            _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
-            if (_orderGetIn) then {
-                [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMount;
+        // Symmetric guard: assignment slot 0 must resolve to a VEHICLE profile, or
+        // vehicle-spawn would misread the entity schema. Log and skip otherwise.
+        if ((_vehicleProfile select 2 select 5) == "vehicle") then {
+            _vehicleProfileActive =  _vehicleProfile select 2 select 1; //[_vehicleProfile,"active"] call ALIVE_fnc_hashGet;
+
+            if!(_vehicleProfileActive) then {
+                [_vehicleProfile,"spawn"] call ALIVE_fnc_profileVehicle;
             } else {
-                [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMoveIn;
+                _vehicle = _vehicleProfile select 2 select 10; //[_vehicleProfile,"vehicle"] call ALIVE_fnc_hashGet;
+                _unitAssignments = [_vehicleAssignment, _units] call ALIVE_fnc_profileVehicleAssignmentIndexesToUnits;
+                if (_orderGetIn) then {
+                    [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMount;
+                } else {
+                    [_unitAssignments, _vehicle] call ALIVE_fnc_vehicleMoveIn;
+                };
             };
+        } else {
+            ["ALiVE VAtoVA: assignment slot 0 resolved to a non-vehicle profile (id %1, type %2) - skipping vehicle spawn. Assignment: %3", _vehicleProfile select 2 select 4, _vehicleProfile select 2 select 5, _vehicleAssignment] call ALiVE_fnc_dump;
         };
     };
 };

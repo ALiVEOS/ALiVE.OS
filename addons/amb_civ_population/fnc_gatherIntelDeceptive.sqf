@@ -5,8 +5,9 @@ SCRIPT(gatherIntelDeceptive);
 Function: ALiVE_fnc_gatherIntelDeceptive
 
 Description:
-Places 2 to 4 decoy installation markers at random positions 800 to 2800 m
-from the given origin, styled identically to the real-intel reveal from
+Places 2 to 4 decoy installation markers at random positions 800 to 2000 m
+from the given origin, the same reach as the truthful path, styled
+identically to the real-intel reveal from
 ALiVE_fnc_OPCOMToggleInstallations (ColorRed ELLIPSE + mil_dot icon,
 alpha 0.5 fading over roughly 40 s). A player cannot distinguish a
 deceptive reveal from a truthful one at the time of placement; the
@@ -46,11 +47,18 @@ private _count = 2 + floor random 3;
 private _createdMarkers = [];
 
 for "_i" from 0 to (_count - 1) do {
-    // Decoy radius 800-2800 m, covering roughly the same order of
-    // magnitude as the real reveal's 2000 m so decoys feel plausible
-    // next to real markers on the map edge. Direction is random via
-    // CBA_fnc_randPos.
-    private _decoyPos = [_origin, 800 + random 2000] call CBA_fnc_randPos;
+    // Decoys go no further out than the truthful reveal can reach, which is the 2000 m passed to
+    // ALiVE_fnc_OPCOMToggleInstallations from the same origin a few lines away in the caller.
+    // They used to reach 2800 m, and a marker beyond 2000 m could therefore only ever be a decoy.
+    // With 2 to 4 of them placed at once that gave the lie away on most attempts, to anyone who
+    // had noticed, which is the sort of thing a community works out quickly and then shares.
+    //
+    // The floor is left alone: a decoy still has to be far enough away to be worth travelling to.
+    // It does mean a marker inside 800 m is always a truthful one, which is the same kind of tell
+    // pointing the other way, but a much weaker one, and closing it would need decoys to be drawn
+    // from wherever real installations happen to sit rather than from a distance at random.
+    // Direction is random via CBA_fnc_randPos.
+    private _decoyPos = [_origin, 800 + random 1200] call CBA_fnc_randPos;
     private _baseId = format ["alive_decoy_intel_%1_%2", diag_tickTime, _i];
 
     private _mEllipse = [_baseId, _decoyPos, "ELLIPSE", [150, 150], "ColorRed", "IED", "n_installation", "FDiagonal", 0, 0.5] call ALIVE_fnc_createMarkerGlobal;

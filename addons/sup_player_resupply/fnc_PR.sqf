@@ -172,7 +172,20 @@ switch(_operation) do {
         _result = _args;
     };
     case "pr_audio": {
-        _result = [_logic,_operation,_args,true] call ALIVE_fnc_OOsimpleOperation;
+        // The editor stores a yes or no here as text. The shared settings helper replaces
+        // any value whose type differs from the default it is handed, and writes that
+        // default back onto the module, so handing it a plain yes or no threw the setting
+        // away and stamped the default over it permanently. Keep it as text on the way
+        // through for that reason, and settle it on the way out so callers need not care.
+        if (_args isEqualType true) then { _args = ["false", "true"] select _args };
+
+        private _value = [_logic, _operation, _args, "true"] call ALIVE_fnc_OOsimpleOperation;
+
+        if (_value isEqualType true) then {
+            _result = _value;
+        } else {
+            _result = (toLower (_value + "")) in ["true", "yes", "1"];
+        };
     };
     case "countsAir": {
         _result = [_logic,_operation,_args,DEFAULT_COUNT_AIR] call ALIVE_fnc_OOsimpleOperation;
@@ -1740,13 +1753,14 @@ switch(_operation) do {
                         case "Mapbag01": {
                             createDialog "PRTablet";
 
+                            ([] call ALiVE_fnc_tabletBox) params ["_uiX","_uiY","_uiW","_uiH"];
                             private _ctrlBackground = ((findDisplay 60001) displayCtrl 60000);
                             _ctrlBackground ctrlsettext "x\alive\addons\main\data\ui\ALiVE_mapbag.paa";
                             _ctrlBackground ctrlSetPosition [
-                                0.15 * safezoneW + safezoneX,
-                                -0.242 * safezoneH + safezoneY,
-                                0.72 * safezoneW,
-                                1.372 * safezoneH
+                                0.15 * _uiW + _uiX,
+                                -0.242 * _uiH + _uiY,
+                                0.72 * _uiW,
+                                1.372 * _uiH
                             ];
                             _ctrlBackground ctrlCommit 0;
                         };
@@ -2909,7 +2923,15 @@ switch(_operation) do {
 
                                     };
 
-                                    if(_payloadType == "Groups") then {
+                                    // Only nine of the factions this branch fires for have custom mappings recorded,
+                                    // and the branch fires for every faction whose name carries the mod prefix. Asking
+                                    // about one of the others answers with nothing, and the very next line hands that
+                                    // nothing back as the thing to look inside, which stops the request being built at
+                                    // all: no acknowledgement, and the resupply simply never turns up. Tested for the
+                                    // same way the same lookup is tested further up this file.
+                                    if(_payloadType == "Groups"
+                                        && {!isNil "ALIVE_factionCustomMappings"}
+                                        && {_faction in (ALIVE_factionCustomMappings select 1)}) then {
 
                                         _customMappings = [ALIVE_factionCustomMappings, _faction] call ALIVE_fnc_hashGet;
                                         _groups = [_customMappings, "Groups"] call ALIVE_fnc_hashGet;
@@ -3810,6 +3832,19 @@ switch(_operation) do {
 
         _map = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_Map);
         _map ctrlShow true;
+
+        // Give the map its click back. Sending a request turns clicking off so the
+        // player cannot move a destination that is already on its way, and showing
+        // the map again here was not enough on its own: the control was visible but
+        // still carrying the do-nothing handler.
+        //
+        // Nothing else put it back either. The only other place that restores it sits
+        // in the delivery-type-changed handler, so it fired when the player picked a
+        // DIFFERENT type and never when they asked for the same one twice. Ask for two
+        // air drops in a row and the second one had a map that could not be clicked,
+        // while a convoy in between appeared to fix it.
+        _map ctrlSetEventHandler ["MouseButtonDown", "['MAP_CLICK',[_this]] call ALIVE_fnc_PRTabletOnAction"];
+        uinamespace setVariable ["PRMapClickMode", "MAP_CLICK"]; // keep the terrain toggle in step (#698)
 
         _deliveryTitle = PR_getControl(PRTablet_CTRL_MainDisplay,PRTablet_CTRL_DeliveryTypeTitle);
         _deliveryTitle ctrlShow true;

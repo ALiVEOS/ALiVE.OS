@@ -523,6 +523,31 @@
 
 	[ALIVE_generatedTasks, "SEAD", ["Suppress Enemy Air Defenses",_options]] call ALIVE_fnc_hashSet;
 
+// Laze Task
+
+	_options = [];
+
+	_tasksData = [] call ALIVE_fnc_hashCreate;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Support the Air Strike"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","Command has ordered an air strike on an enemy position near %2."] call ALIVE_fnc_hashSet;
+	[_tasksData,"Parent",_taskData] call ALIVE_fnc_hashSet;
+
+	_taskData = [] call ALIVE_fnc_hashCreate;
+	[_taskData,"title","Designate the Strike Target"] call ALIVE_fnc_hashSet;
+	[_taskData,"description","An air strike is inbound on the marked enemy position near %2. Get eyes on, mark the target with your laser designator and hold it on the target until the strike hits."] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_start",[["HQ","Air strike inbound near %2. Get your laser on the marked target and hold it steady. Over!"],["PLAYERS","Copy, moving to designate the target now, Out"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_laze",[["HQ","Good lase, we see your mark. Aircraft beginning the attack run. Over!"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_success",[["PLAYERS","Direct hit, target is down, Over"],["HQ","Good effect on target. Standby for further taskings, Out!"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"chat_failed",[["HQ","The strike window has closed and the aircraft are returning to base. Stand down, Out!"]]] call ALIVE_fnc_hashSet;
+	[_taskData,"reward",["forcePool",30]] call ALIVE_fnc_hashSet;
+	[_tasksData,"Designate",_taskData] call ALIVE_fnc_hashSet;
+
+	_options set [count _options,_tasksData];
+
+	[ALIVE_generatedTasks, "Laze", ["Support the Air Strike",_options]] call ALIVE_fnc_hashSet;
+
 // Intercept Task
 
 	_options = [];

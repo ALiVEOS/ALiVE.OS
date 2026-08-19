@@ -154,7 +154,20 @@ switch(_operation) do {
         _result = [_logic, _operation, _args, ""] call ALIVE_fnc_OOsimpleOperation;
     };
     case "onEachSpawnOnce": {
-        _result = [_logic, _operation, _args, true] call ALIVE_fnc_OOsimpleOperation;
+        // The editor stores a yes or no here as text. The shared settings helper replaces
+        // any value whose type differs from the default it is handed, and writes that
+        // default back onto the module, so handing it a plain yes or no threw the setting
+        // away and stamped the default over it permanently. Keep it as text on the way
+        // through for that reason, and settle it on the way out so callers need not care.
+        if (_args isEqualType true) then { _args = ["false", "true"] select _args };
+
+        private _value = [_logic, _operation, _args, "true"] call ALIVE_fnc_OOsimpleOperation;
+
+        if (_value isEqualType true) then {
+            _result = _value;
+        } else {
+            _result = (toLower (_value + "")) in ["true", "yes", "1"];
+        };
     };
 
     case "faction": {
@@ -413,11 +426,27 @@ switch(_operation) do {
 		            // DEBUG -------------------------------------------------------------------------------------
 		            if(_debug) then {
 		                ["SPEMP Got Defined Infantry Group: %1", _group] call ALiVE_fnc_dump;
-		                ["SPEMP Group Name: %1", configName _group] call ALiVE_fnc_dump;
+		                // A class that matched nothing comes back as an empty array rather than a
+		                // config entry, and asking an array for its config name throws. The guard
+		                // below already knows that; this line did not, so a group name that could
+		                // not be found took the whole module down before it reported itself
+		                // finished, which left the startup screen with nothing to wait for.
+		                if (count _group > 0) then {
+		                    ["SPEMP Group Name: %1", configName _group] call ALiVE_fnc_dump;
+		                };
 		            };
+		            // A name this lookup cannot place is not necessarily a wrong one. It builds its
+		            // key from the faction exactly as the module has it, and a number of factions
+		            // file their groups in the config under a different name than the faction they
+		            // belong to, so a good name comes back empty for those. Handing it on rather
+		            // than dropping it here lets the spawn below decide, because that does resolve
+		            // the faction properly. Whether the name was really wrong is judged by what
+		            // comes back from it, further down.
 		            // DEBUG ------------------------------------------------------------------------------------- 	
 	             if(count _group > 0) then {
 	                _infantryGroups pushback configName _group;
+	             } else {
+	                _infantryGroups pushback _infantryClass;
 	             };
   					 } else {
   					    private _group = ["Infantry",_faction] call ALIVE_fnc_configGetRandomGroup;

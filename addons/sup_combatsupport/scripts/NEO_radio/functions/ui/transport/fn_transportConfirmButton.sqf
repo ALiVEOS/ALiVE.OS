@@ -28,7 +28,8 @@ _task = _transportTaskLb lbText (lbCurSel _transportTaskLb);
 _marker = NEO_radioLogic getVariable "NEO_supportMarker";
 _pos = getMarkerPos _marker;
 _pos set [2, 0];
-_amnt = sliderPosition _slider;_location = _pos call BIS_fnc_posToGrid;
+// Round so the aircraft flies the whole number the player read off the slider
+_amnt = round (sliderPosition _slider);_location = _pos call BIS_fnc_posToGrid;
 
 
 //New Task Assigned

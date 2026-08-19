@@ -58,6 +58,12 @@ if (isnil "_logic") then {
 // Check data source
 GVAR(SOURCE) = _logic getVariable ["source","CouchDB"];
 
+// Parse the Save Server UID allowlist (comma separated Steam UIDs) and broadcast it (#873)
+if (isServer) then {
+    GVAR(saveAllowlist) = (_logic getVariable ["saveAllowlist",""]) splitString ", ";
+    publicVariable QGVAR(saveAllowlist);
+};
+
 TRACE_2("SYS_DATA",isDedicated, _logic);
 
 _moduleID = [_logic, true] call ALIVE_fnc_dumpModuleInit;

@@ -496,6 +496,56 @@ switch (_operation) do {
 
                     // Place them high enough so they don't crash
                     if ((_position select 2) < 50) then {_position set [2,300]};
+
+                    // Airborne-ingress deconfliction. This engine-on "FLY" branch is the one air-spawn
+                    // path that did NOT consult the shared occupancy registry: the engine-off branch below
+                    // (and ATO's launch + safeReposition) all route through ALiVE_fnc_findAirSpawnPosition,
+                    // which reserves the chosen spot in ALiVE_airSpawnRegistry for 60s so near-simultaneous
+                    // spawns never land on the same point. A LOGCOM air delivery / reinforcement spawns
+                    // engine-on and hits THIS branch, so two concurrent deliveries (or a delivery descending
+                    // onto a just-registered parking slot) were placed on top of each other and detonated on
+                    // contact. Keep this branch's own altitude (a real airborne ingress, not a parked
+                    // airframe) but honour the same registry: reject the ingress point when it is within
+                    // separation of a live registry entry OR a live air object BOTH in 2D AND within ~50m
+                    // vertically (so a ground-parked airframe far below never blocks it, and the ATO
+                    // flying-start launch at its own altitude is not spuriously nudged), spiral outward to a
+                    // clear spot at the SAME altitude, then reserve it. A solo delivery is clear at once and
+                    // unchanged, so the working plane fly-in adoption path is untouched.
+                    if (!_isSPE) then {
+                        if (isNil "ALiVE_airSpawnRegistry") then { ALiVE_airSpawnRegistry = []; };
+                        private _nowFly = diag_tickTime;
+                        ALiVE_airSpawnRegistry = ALiVE_airSpawnRegistry select { (_x select 2) + 60 > _nowFly };
+                        private _flyBbox = [_vehicleClass] call ALiVE_fnc_getVehicleBoundingBox;
+                        private _flySep = (((_flyBbox select 0) max (_flyBbox select 1)) + 6) max 30;
+                        private _origFlyPos = +_position;
+                        private _fnc_flyClear = {
+                            params ["_p"];
+                            private _pz = _p select 2;
+                            if (ALiVE_airSpawnRegistry findIf { (_p distance2D (_x select 0)) < _flySep && {abs (_pz - ((_x select 0) select 2)) < 50} } >= 0) exitWith { false };
+                            (nearestObjects [_p, ["Air"], _flySep] findIf { (alive _x) && {abs (_pz - ((getPosATL _x) select 2)) < 50} }) < 0
+                        };
+                        if !([_position] call _fnc_flyClear) then {
+                            private _flyAlt = _position select 2;
+                            private _flyFound = false;
+                            for "_ring" from 1 to 6 do {
+                                if (_flyFound) exitWith {};
+                                private _ringDist = _flySep * _ring;
+                                for "_ang" from 0 to 330 step 30 do {
+                                    private _cand = _position getPos [_ringDist, _ang];
+                                    _cand set [2, _flyAlt];
+                                    if ([_cand] call _fnc_flyClear) exitWith {
+                                        _position = _cand;
+                                        _flyFound = true;
+                                    };
+                                };
+                            };
+                        };
+                        ALiVE_airSpawnRegistry pushBack [_position, _vehicleClass, _nowFly];
+                        if (_debug) then {
+                            ["AIR-DECONFLICT [%1]: ingress=%2 -> final=%3 nudged=%4 (registry=%5 nearAir=%6 sep=%7m)", _vehicleClass, _origFlyPos, _position, !(_position isEqualTo _origFlyPos), count ALiVE_airSpawnRegistry, count (nearestObjects [_position, ["Air"], _flySep]), round _flySep] call ALIVE_fnc_dump;
+                        };
+                    };
+
                     if (_debug) then {
                         ["SPAWN VEHICLE IN AIR [%1] pos: %2",_profileID,_position] call ALIVE_fnc_dump;
                     };
@@ -514,7 +564,27 @@ switch (_operation) do {
                         // to the profile position with the existing
                         // vehicleSpawnSettleSeconds safety window.
                         if !(_isSPE) then {
-                            private _airResult = [_vehicleClass, _position, 200, "auto"] call ALiVE_fnc_findAirSpawnPosition;
+                            // Pass this profile's id as the registry owner token so its OWN prior
+                            // reservation does not evict it on respawn (objNull ownVeh - the vehicle is
+                            // not created yet on this spawn path).
+                            //
+                            // Also hand over this profile's OWN crew as non-obstacles. A crewed profile
+                            // spawns its crew FIRST, standing on the exact spot the vehicle is validated
+                            // against, so the aircraft's own pilots rejected its own helipad and it
+                            // cascaded onto open ground (leaving the pad empty). They are moved into the
+                            // hull moments later, so they never really occupy it. A SIBLING's crew is not
+                            // in this list and still blocks, so deconfliction is unaffected.
+                            private _ownCrew = [];
+                            {
+                                private _entProfile = [ALIVE_profileHandler, "getProfile", (_x select 1)] call ALIVE_fnc_profileHandler;
+                                if (!isNil "_entProfile" && {_entProfile isEqualType []} && {(_entProfile select 2 select 5) == "entity"}) then {
+                                    private _grp = [_entProfile,"group"] call ALiVE_fnc_hashGet;
+                                    if (!isNil "_grp" && {_grp isEqualType grpNull} && {!isNull _grp}) then {
+                                        _ownCrew append (units _grp);
+                                    };
+                                };
+                            } forEach (([_logic,"vehicleAssignments"] call ALiVE_fnc_hashGet) param [2, []]);
+                            private _airResult = [_vehicleClass, _position, 200, "auto", objNull, _profileID, _ownCrew] call ALiVE_fnc_findAirSpawnPosition;
                             if (count _airResult >= 2) then {
                                 _position = _airResult select 0;
                                 _direction = _airResult select 1;
@@ -622,6 +692,20 @@ switch (_operation) do {
             _vehicle setDir _direction;
             _vehicle setFuel _fuel;
             _vehicle engineOn _engineOn;
+
+            // #460 - a self-operating UAV airframe must come up with its own AI operator.
+            // createVehicle never seats UAV crew, so a delivered/adopted drone spawns
+            // pilotless; the virtual simulator then commands it engine-on toward its fly-in
+            // waypoint and it materialises airborne at the air floor with nobody to fly it,
+            // lost within seconds (RPT: a delivered B_T_UAV_03 crashed ~18s after spawn,
+            // the engine self-attributing the loss as "by B_T_UAV_03 (side UNKNOWN)").
+            // createVehicleCrew only fills EMPTY seats -> a no-op for a manned airframe that
+            // already has one. isKindOf "UAV" alone misses drones whose base does not inherit
+            // UAV (e.g. the Darter), so pair it with the isUav config check -- the idiom ATO
+            // already uses for its own createVehicleCrew self-create path.
+            if (_vehicleClass isKindOf "UAV" || {getNumber (configFile >> "CfgVehicles" >> _vehicleClass >> "isUav") == 1}) then {
+                createVehicleCrew _vehicle;
+            };
 
             // #460 / #441 - restore a pylon loadout a module captured before
             // virtualisation (e.g. ATO adopting an editor-placed aircraft).

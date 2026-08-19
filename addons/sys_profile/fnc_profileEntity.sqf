@@ -574,7 +574,9 @@ switch(_operation) do {
     case "addPendingWaypoint": {
       _args params ["_insertionMethod","_waypoint", ["_ready", false]];
 
-      private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
+      // Same default as the advance case below: the first waypoint queued against a
+      // profile finds no list there yet, and without a default the push would throw.
+      private _pendingWaypoints = [_logic,"pendingWaypointPaths",[]] call ALiVE_fnc_hashGet;
       private _pendingPath = [_ready,_insertionMethod,[],_waypoint];
       private _isSPE = [_logic, "isSPE", false] call ALIVE_fnc_hashGet; 
       if (isNil "_isSPE") then { _isSPE = false; };
@@ -598,7 +600,16 @@ switch(_operation) do {
             private _profileSide = [_logic,"side"] call ALiVE_fnc_hashGet;   // for side-coloured debug-draw of the route
             private _pathfindingProcedure = [_logic] call ALiVE_fnc_profileGetPathfindingProcedure;
 
-            [ALiVE_Pathfinder,"findPath",[_startPosition, _pathFindingProcedure, _waypoint, _previousWaypoint, [_profileID,_pendingPath,_profileSide],{
+            // The first point of a route has nothing before it. Setting a variable to nil
+            // leaves it undefined rather than empty, so naming it here threw "Undefined
+            // variable" every time and the route was never asked for at all, leaving that
+            // profile to move without one. The line above dodges it by testing the name as
+            // a string; this one could not, because it reads the value.
+            //
+            // Hand over the nil keyword instead, which the pathfinder reads as "nothing
+            // before this" exactly as intended. Same trap, and the same answer, as the
+            // resupply dispatch in mil_logistics.
+            private _findPathArgs = [_startPosition, _pathFindingProcedure, _waypoint, nil, [_profileID,_pendingPath,_profileSide],{
                 params ["_callbackArgs","_path"];
 
                 _callbackArgs params ["_profileID","_pendingPath"];
@@ -609,7 +620,11 @@ switch(_operation) do {
                     _pendingPath set [2,_path];
                     [_profile,"advancePendingWaypoints"] call ALIVE_fnc_profileEntity;
                 };
-            }]] call ALiVE_fnc_pathfinder;
+            }];
+
+            if !(isNil "_previousWaypoint") then { _findPathArgs set [3, _previousWaypoint] };
+
+            [ALiVE_Pathfinder,"findPath",_findPathArgs] call ALiVE_fnc_pathfinder;
 
             // Front-insert used to rebuild every stored route point here as a
             // not-ready "addWaypoint" job, meaning to re-path the existing legs from
@@ -628,7 +643,13 @@ switch(_operation) do {
     };
 
     case "advancePendingWaypoints": {
-        private _pendingWaypoints = [_logic,"pendingWaypointPaths"] call ALiVE_fnc_hashGet;
+        // Default to an empty list. Asked for a key it does not hold, the hash returns
+        // nothing at all, and assigning nothing in this language leaves the variable
+        // UNDEFINED rather than empty - so counting it a few lines down threw, and the
+        // whole flush was abandoned. A profile that had never queued a waypoint hit this
+        // every time it was asked to advance one: the path was drawn and the unit never
+        // moved.
+        private _pendingWaypoints = [_logic,"pendingWaypointPaths",[]] call ALiVE_fnc_hashGet;
 
         // #943 - boat profiles need their terminal order waypoint kept on water (below).
         // Commanding-a-ship entities and ship vehicle profiles qualify; groups riding a
@@ -847,9 +868,42 @@ switch(_operation) do {
     };
 
     case "mergePositions": {
+        private _type = _logic select 2 select 5;
+        private _profileID = _logic select 2 select 4;
+
+        // A vehicle profile occasionally reached this group operation through
+        // an OPCOM vehicle bucket. Slot 18 is `canFire` on vehicles, which was
+        // the source of "Type Bool, expected Array". Route it to the matching
+        // vehicle operation instead of treating the boolean as unit positions.
+        if (_type == "vehicle") exitWith {
+            // Log the offending profile once so the upstream seeding stays
+            // traceable, without spamming the diag every simulator tick.
+            private _logged = missionNamespace getVariable ["ALIVE_profileMergePositionsLoggedIDs", []];
+            if !(_profileID in _logged) then {
+                _logged pushBack _profileID;
+                missionNamespace setVariable ["ALIVE_profileMergePositionsLoggedIDs", _logged];
+                ["fnc_profileEntity mergePositions: vehicle profile %1 re-routed to profileVehicle (slot 18 is canFire, not positions)", _profileID] call ALiVE_fnc_dump;
+            };
+            [_logic,"mergePositions"] call ALiVE_fnc_profileVehicle;
+        };
+
         private _position = _logic select 2 select 2; //[_logic,"position"] call ALIVE_fnc_hashGet;
         private _unitCount = [_logic,"unitCount"] call MAINCLASS;
         private _positions = _logic select 2 select 18; //[_logic,"positions"] call ALIVE_fnc_hashGet;
+
+        // Repair a malformed entity profile defensively. This keeps one bad
+        // saved profile from producing the same error every simulator tick.
+        if !(_positions isEqualType []) then {
+            // Log the malformed profile once (see the re-route note above).
+            private _logged = missionNamespace getVariable ["ALIVE_profileMergePositionsLoggedIDs", []];
+            if !(_profileID in _logged) then {
+                _logged pushBack _profileID;
+                missionNamespace setVariable ["ALIVE_profileMergePositionsLoggedIDs", _logged];
+                ["fnc_profileEntity mergePositions: entity profile %1 had a malformed positions field (%2), repaired to []", _profileID, _positions] call ALiVE_fnc_dump;
+            };
+            _positions = [];
+            [_logic,"positions",_positions] call ALiVE_fnc_hashSet;
+        };
 
         //["ENTITY %1 mergePosition: %2",_logic select 2 select 4,_position] call ALIVE_fnc_dump;
 
@@ -1055,6 +1109,12 @@ switch(_operation) do {
 
     case "spawn": {
         private _profileData = _logic select 2;
+
+        // A non-entity profile reaching entity-spawn is a mis-dispatch
+        if ((_profileData select 5) != "entity") exitWith {
+            ["ALiVE profileEntity spawn: non-entity profile dispatched (id %1, type %2) - aborting before the entity slot reads.", _profileData select 4, _profileData select 5] call ALiVE_fnc_dump;
+        };
+
         private _active = _profileData select 1;
 
         // not already active and spawning has not yet been triggered

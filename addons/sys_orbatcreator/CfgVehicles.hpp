@@ -63,6 +63,21 @@ class CfgVehicles {
                                 class No { name = "No"; value = false; default = 1; };
                             };
                     };
+                    class arsenalType
+                    {
+                            property = "ALiVE_sys_orbatcreator_arsenalType";
+                            displayName = "$STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE";
+                            tooltip = "$STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_COMMENT";
+                            control = "ALiVE_ArsenalType";
+                            typeName = "STRING";
+                            defaultValue = """BIS""";
+                            expression = "_this setVariable ['arsenalType',_value];";
+                            class Values
+                            {
+                                class BIS { name = "$STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_BIS"; value = "BIS"; default = 1; };
+                                class ACE { name = "$STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_ACE"; value = "ACE"; };
+                            };
+                    };
                     class ModuleDescription : ModuleDescription {};
                 };
         };

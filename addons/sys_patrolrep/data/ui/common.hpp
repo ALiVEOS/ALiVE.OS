@@ -1,9 +1,4 @@
-#define GUI_GRID_X  (0)
-#define GUI_GRID_Y  (0)
-#define GUI_GRID_W  (0.025)
-#define GUI_GRID_H  (0.04)
-#define GUI_GRID_WAbs (1)
-#define GUI_GRID_HAbs (1)
+#include "\x\alive\addons\main\data\ui\gui_grid.hpp"
 
 class RscPicture;
 
@@ -106,7 +101,7 @@ class patrolrep_RscListBox {
     type = 5;
     style = 0 + 0x10;
     font = "PuristaMedium";
-    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    sizeEx = 0.5 * GUI_GRID_H;
     x = "safeZoneX + (safeZoneW / 5)";
     y = "safeZoneY + (safeZoneH / 2.25)";
     w = "(safeZoneW / 10)";
@@ -149,7 +144,7 @@ class patrolrep_RscGUIListBox : patrolrep_RscListBox {
     colorSelectBackground[] = {0.333,0.333,0.333,1};
     colorSelectBackground2[] = {0.333,0.333,0.333,1};
     period = 0;
-    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    sizeEx = 0.5 * GUI_GRID_H;
     class ListScrollBar
     {
         color[] = {1, 1, 1, 0.6};
@@ -167,7 +162,7 @@ class patrolrep_RscGUIListBox_multi
     style = 0x10 + 0x20;
     type = 5;
     font = "PuristaMedium";
-    sizeEx = (safeZoneH / 100) + (safeZoneH / 100);
+    sizeEx = 0.5 * GUI_GRID_H;
     x = "safeZoneX + (safeZoneW / 5)";
     y = "safeZoneY + (safeZoneH / 2.25)";
     w = "(safeZoneW / 10)";
@@ -238,7 +233,7 @@ class patrolrep_RscComboBox
     wholeHeight = 0.45;
     colorDisabled[] = {0,0,0,0};
     font = "PuristaMedium";
-    sizeEx = "(safeZoneH / 100) + (safeZoneH / 100)";
+    sizeEx = 0.5 * GUI_GRID_H;
 };
 
 // #698 real CT_BUTTON (type 1) base for the Terrain toggle. The report form's other buttons are
@@ -282,7 +277,7 @@ class patrolrep_RscRealButton
     animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
     period = 0.4;
     font = "PuristaMedium";
-    size = "(safeZoneW / 125) + (safeZoneH / 125)";
+    size = 0.5 * GUI_GRID_H;
     text = "";
     soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
     soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
@@ -346,7 +341,7 @@ class patrolrep_RscButton
     animTexturePressed = "#(argb,8,8,3)color(1,1,1,1)";
     period = 0.4;
     font = "PuristaMedium";
-    size = "(safeZoneW / 125) + (safeZoneH / 125)";
+    size = 0.5 * GUI_GRID_H;
     text = "";
     soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
     soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};

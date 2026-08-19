@@ -76,11 +76,25 @@ _vehicle = objNull;
 
 if (isnil QGVAR(ROADBLOCKS)) then {GVAR(ROADBLOCKS) = []};
 
-private _fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
+// A place with no road inside the search radius will never grow one. Road segments
+// are terrain objects, so an empty answer here is settled rather than a passing
+// miss, and it is worth remembering: the civilian placement spawn checker asks
+// again about every queued cluster once a second for as long as a player is near,
+// and on one Khe Sanh session a single road-free cluster turned that into seven
+// thousand identical lines in the log, each one preceded by a full pass over the
+// virtual population.
+//
+// Held as centre and radius, and only a search wholly CONTAINED by a remembered
+// failure is waved off: the roads within r of p can only be a subset of the roads
+// within R of P when r plus the distance between them comes to no more than R. A
+// wider search at the same place still runs, because it can reach a road the
+// narrower one could not, and that matters because the callers ask about the same
+// objective at different radii.
+//
+// Runtime only, deliberately not saved. A reload learns it again in one pass.
+if (isnil QGVAR(ROADBLOCKS_NOROADS)) then {GVAR(ROADBLOCKS_NOROADS) = []};
 
-if (isNil "_fac") exitWith {
-    ["Unable to find a dominant faction within %1 radius", _radius] call ALiVE_fnc_Dump;
-
+if ((GVAR(ROADBLOCKS_NOROADS) findIf {_radius + (_pos distance2D (_x select 0)) <= (_x select 1)}) > -1) exitWith {
     _result;
 };
 
@@ -94,7 +108,21 @@ _roads = _pos nearRoads (_radius + 20);
 _roads = _roads select {_x distance _pos >= (_radius - 10) || {isOnRoad _x} || {(str _x) find "invisible" == -1}};
 
 if (_roads isEqualTo []) exitWith {
-    ["No roads found for roadblock! Cannot create..."] call ALiVE_fnc_dump;
+    GVAR(ROADBLOCKS_NOROADS) pushBackUnique [_pos, _radius];
+
+    ["No roads found for roadblock at %1 within %2m! Cannot create...", _pos, _radius] call ALiVE_fnc_dump;
+
+    _result;
+};
+
+// Which faction is dominant decides the composition pool and the units, so it is
+// only worth a full pass over the virtual population once there is somewhere to
+// put a roadblock. Nothing between here and the road scan above reads it, and it
+// writes nothing outside itself, so waiting until now costs nothing.
+private _fac = [_pos, _radius] call ALiVE_fnc_getDominantFaction;
+
+if (isNil "_fac") exitWith {
+    ["Unable to find a dominant faction within %1 radius", _radius] call ALiVE_fnc_Dump;
 
     _result;
 };
@@ -144,6 +172,17 @@ if (typeName _pickerForParse == "STRING" && {_pickerForParse != ""} && {_pickerF
 };
 
 for "_j" from 1 to (count _roadpoints) do {
+    // Each roadpoint is tried on its own. The refusals below mean "this spot will not
+    // do", not "stop looking", but exitWith leaves the nearest enclosing block and
+    // inside a for loop that is the whole loop. One dead end, or one spot too near a
+    // roadblock already placed, abandoned every remaining roadpoint, so a cluster that
+    // HAS roads could still come back with nothing and be asked again a second later.
+    // Wrapping the body gives those refusals an iteration to leave instead of the loop.
+    //
+    // call with no argument passes _this straight through, so the blocks further down
+    // that read it are unaffected. The body is left at its original indent so the
+    // change reads as the two lines it actually is.
+    call {
 
     _roadpos = _roadpoints select (_j - 1);
     _vehicle = objNull;
@@ -414,6 +453,7 @@ for "_j" from 1 to (count _roadpoints) do {
     [_spawnedSafePos, _fac, _spawnedClass, _watchdogEnv, _debug]
         call ALIVE_fnc_RB_captureWatchdog;
 
+    };
 };
 
 _result;

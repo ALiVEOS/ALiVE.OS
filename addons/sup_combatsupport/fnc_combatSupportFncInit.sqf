@@ -11,6 +11,7 @@ NEO_fnc_supportSetTargetPos = compile preprocessFileLineNumbers "x\alive\addons\
 NEO_fnc_radioGridToPos = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_radioGridToPos.sqf";
 NEO_fnc_radioPosToGrid = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_radioPosToGrid.sqf";
 NEO_fnc_transportGunnerDefend = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_transportGunnerDefend.sqf";
+NEO_fnc_transportInsertionHold = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_transportInsertionHold.sqf";
 NEO_fnc_radioCreateMarker = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_createMarker.sqf";
 NEO_fnc_radioHint = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_radioHint.sqf";
 NEO_fnc_radioSupportAdd = compile preprocessFileLineNumbers "x\alive\addons\sup_combatsupport\scripts\NEO_radio\functions\misc\fn_supportAdd.sqf";

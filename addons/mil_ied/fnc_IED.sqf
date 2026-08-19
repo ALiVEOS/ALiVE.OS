@@ -50,6 +50,7 @@ See Also:
 
 Author:
 Tupolov, modificationss by Trapw0w
+Jman
 
 Peer reviewed:
 nil
@@ -516,65 +517,30 @@ switch(_operation) do {
                     // area discovery, so behaviour stays consistent with what users
                     // see for those modules.
                     //
-                    // Each entry in `_locations` is now a tuple [pos, size, label]
+                    // Each entry in `_locations` is a tuple [pos, size, label]
                     // rather than an engine LOCATION handle. The downstream
                     // setupTriggers loop and persistence path consume the tuple
                     // shape directly. Best-effort label resolves from a nearby
                     // engine Name* entry if one exists within 200m, else falls
                     // back to a grid-coord synthetic name.
                     //
-                    // Cluster discovery depends on `ALIVE_civilianSettlementBuildingTypes`
-                    // being populated for the current terrain — done by
-                    // staticDataHandler (per-terrain staticData file under
-                    // `addons/main/static/`, or hardcoded blocks in Maps.hpp
-                    // for known world names). If neither path populated the
-                    // list (rare: a terrain entirely unknown to ALiVE), fall
-                    // back to the legacy engine `nearestLocations` source so
-                    // the module doesn't leave the mission with zero IEDs.
+                    // Working the settlements out is no longer done here. It
+                    // moved into its own function so the answer can come from
+                    // whichever source is cheapest, and so the terrain's own
+                    // pre-built clusters get used when they exist. See that
+                    // function for the order the sources are tried in and why.
                     private _mapInfo = [] call ALIVE_fnc_getMapInfo;
                     _center = _mapInfo select 0;
                     private _radius = _mapInfo select 2;
 
-                    call ALiVE_fnc_staticDataHandler;
-
-                    private _clusters = [];
-                    if (!isNil "ALIVE_civilianSettlementBuildingTypes" && {count ALIVE_civilianSettlementBuildingTypes > 0}) then {
-                        _clusters = [ALIVE_civilianSettlementBuildingTypes] call ALIVE_fnc_findTargets;
-                        _clusters = [_clusters] call ALIVE_fnc_consolidateClusters;
-                    };
-
-                    if (count _clusters > 0) then {
-                        _locations = _clusters apply {
-                            private _pos = [_x, "center"] call ALIVE_fnc_cluster;
-                            private _size = [_x, "size"] call ALIVE_fnc_cluster;
-                            if (_size < 250) then { _size = 250 };
-                            private _nearLoc = (nearestLocations [_pos, ["NameCityCapital","NameCity","NameVillage","Strategic"], 200]) select 0;
-                            private _label = if (!isNil "_nearLoc" && {!(_nearLoc isEqualTo locationNull)}) then {
-                                text _nearLoc
-                            } else {
-                                format ["Area_%1", mapGridPosition _pos]
-                            };
-                            [_pos, _size, _label]
-                        };
-                    } else {
-                        // Fallback: legacy engine nearestLocations source.
-                        // Convert to the same [pos, size, label] tuple shape so
-                        // downstream code can stay uniform.
-                        if (_debug) then {
-                            ["ALIVE IED - cluster building-types unpopulated for this terrain; falling back to engine nearestLocations"] call ALiVE_fnc_dump;
-                        };
-                        private _engineLocs = nearestLocations [_center, ["NameCityCapital","NameCity","NameVillage","Strategic"], _radius];
-                        _locations = _engineLocs apply {
-                            private _pos = position _x;
-                            private _size = (size _x) select 0;
-                            if (_size < 250) then { _size = 250 };
-                            [_pos, _size, text _x]
-                        };
-                    };
-
-                    if (_debug) then {
-                        ["ALIVE IED - location source returned %1 population centres", count _locations] call ALiVE_fnc_dump;
-                    };
+                    // Where the towns come from now lives in its own function,
+                    // which tries the cheapest source first. This module used to
+                    // work the settlements out from scratch every time a mission
+                    // started, which on a dense terrain was eighty five seconds
+                    // of a two minute wait, and it was the only module doing so:
+                    // the same answer already ships with the terrain and every
+                    // other module just reads it.
+                    _locations = [_center, _radius, _debug] call ALIVE_fnc_IEDLocationSource;
 
                     // TAOR / blacklist filtering. The legacy `validateLocations`
                     // helper is built for engine LOCATION / OBJECT inputs; the
@@ -648,6 +614,17 @@ switch(_operation) do {
 
                 // DEBUG -------------------------------------------------------------------------------------
                 if ([_logic, "debug"] call MAINCLASS) then {
+                    // Draw the markers here, once, now that every trigger has been stored.
+                    //
+                    // They used to appear by accident: rebuilding them was a side effect of READING the
+                    // debug setting, and the setting is read once per trigger while they are being
+                    // saved, so the set was torn down and redrawn once per IED until placement ended.
+                    // That is what made them flicker, and it cost the module almost its entire startup.
+                    // Now that a read leaves them alone, nothing else would ever draw them: the only
+                    // other call that does runs at module init, before a single trigger exists, so it
+                    // has nothing to draw.
+                    [_logic, "createMarkers"] call MAINCLASS;
+
                     ["ALIVE IED - Startup completed"] call ALIVE_fnc_dump;
                     ["ALIVE IED - Count IED Triggers %1", count ([GVAR(STORE), "triggers", [] call ALiVE_fnc_hashCreate] call ALiVE_fnc_hashGet select 1)] call ALIVE_fnc_dump;
                     [] call ALIVE_fnc_timer;
@@ -943,6 +920,19 @@ switch(_operation) do {
                 _result = _logic getVariable [_operation, DEFAULT_CLUTTER];
         };
         case "debug": {
+            // Asking whether debug is on must not rebuild the map.
+            //
+            // Everything below used to run on every call, including the calls that only want to
+            // READ the flag. Those are written as [_logic, "debug"] call MAINCLASS and read like a
+            // harmless getter, but each one deleted every marker this module had drawn and drew
+            // them all again. storeTrigger asks once per IED area as it saves it, and removeIED
+            // asks again on the way out, so the whole set was torn down and rebuilt once per IED
+            // while they were being placed. That is the flickering circles, and the work grows
+            // with the number already placed.
+            // A read arrives as the objNull placeholder this function defaults _args to, so that,
+            // and not isNil, is what tells a read from a set. isNil is never true here.
+            private _wasSet = !(_args isEqualType objNull);
+
             if (typeName _args == "BOOL") then {
                 _logic setVariable ["debug", _args, true];
             } else {
@@ -964,11 +954,14 @@ switch(_operation) do {
             };
             ASSERT_TRUE(typeName _args == "BOOL",str _args);
 
-            [_logic,"deleteMarkers"] call MAINCLASS;
+            // Only when a value was actually handed in. A read leaves the markers alone.
+            if (_wasSet) then {
+                [_logic,"deleteMarkers"] call MAINCLASS;
 
-            if (_args) then {
-                // Mark each IED, Bomber, VB-IED?
-                [_logic,"createMarkers"] call MAINCLASS;
+                if (_args) then {
+                    // Mark each IED, Bomber, VB-IED?
+                    [_logic,"createMarkers"] call MAINCLASS;
+                };
             };
             _result = _args;
         };
