@@ -766,6 +766,26 @@ switch(_operation) do {
                     _landClusters = ALIVE_clustersMilLand select 2;
                     _landClusters = [_landClusters, _taor] call ALIVE_fnc_clustersInsideMarker;
                     _landClusters = [_landClusters, _blacklist] call ALIVE_fnc_clustersOutsideMarker;
+
+                    // Take our own copy, as every other cluster list here already does.
+                    //
+                    // The camp list is worked out once and handed to every placement module on
+                    // the mission, and this was the only one of the five not copied first. The
+                    // marker filters above hand back the same cluster objects either way, so on
+                    // a two-faction mission both modules were writing camp positions, seat
+                    // counts and reserve pools onto one shared set. Whichever ran second wiped
+                    // the first one's reserves and pointed the camps at itself, so one side's
+                    // garrisons were drawn from the other side's pool.
+                    //
+                    // The filter arguments are deliberately ones that cannot exclude anything.
+                    // Camps are not subject to the size and priority settings that apply to
+                    // military objectives, so passing those would quietly change which camps
+                    // are eligible. A size filter of 0 is the only value that can exclude
+                    // nothing, because copyClusters reads a negative one as an upper bound
+                    // rather than a lower one. Priority is documented as any integer, so its
+                    // floor is set far below any real value rather than at zero, which would
+                    // drop a cluster somebody had deliberately given a negative one.
+                    _landClusters = [_landClusters, 0, -999999] call ALIVE_fnc_copyClusters;
                 };
 
                 _clusters = [_clusters,_sizeFilter,_priorityFilter] call ALIVE_fnc_copyClusters;
