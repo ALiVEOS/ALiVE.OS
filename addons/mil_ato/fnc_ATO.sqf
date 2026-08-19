@@ -3435,6 +3435,7 @@ switch(_operation) do {
                 // Update ATO module and aircraft state
                 private _factions = ALIVE_globalATO select 1;
                 private _assets = [] call ALIVE_fnc_hashCreate;
+
                 private _as = [_logic,"airspaceAssets",[] call ALIVE_fnc_hashCreate] call ALiVE_fnc_ATO;
 
                 {
@@ -3455,6 +3456,7 @@ switch(_operation) do {
                             if !(isNil "_profile") then {
 
                                 private _vehicle = [_aircraft, _x] call ALiVE_fnc_hashGet;
+
                                 private _currentPosition = [_profile, "position"] call ALiVE_fnc_hashGet;
 
                                 // reset operation and current position, add runway
@@ -4353,7 +4355,15 @@ switch(_operation) do {
                     // DEBUG -------------------------------------------------------------------------------------
 
                     // if there are still assets available
-                    if ( count (_assets select 1) > 0 || (_loaded && count (_assets select 1) > 2) ) then {
+                    // Written as the exact opposite of the same test in the analysis below, so
+                    // the two gates cannot disagree about whether this commander has anything to
+                    // fly. The old form was "count > 0 OR (loaded AND count > 2)", where the first
+                    // half is true whenever the hash holds anything at all, including a saved but
+                    // empty roster that still carries its 2 record keys. So it answered yes to a
+                    // commander with no aircraft, and would have answered yes to one whose aircraft
+                    // were all set aside.
+                    private _held = count (_assets select 1);
+                    if !( _held == 0 || (_loaded && _held == 2) ) then {
 
                         private _available = false;
 
@@ -4656,6 +4666,12 @@ switch(_operation) do {
                     // DEBUG -------------------------------------------------------------------------------------
 
                     // Check to see if all existing assets are still available
+                    // Aircraft set aside at load are still in the stored roster, because setting
+                    // one aside must not edit the campaign save. They cannot be tasked though, so
+                    // they must not prop up the count that decides whether there are enough
+                    // aircraft left to keep flying offensive missions. Subtracted rather than
+                    // recounted, so that with nothing set aside every number below is exactly
+                    // what it was before, including the two extra records a saved roster carries.
                     if ( count (_assets select 1) == 0 || (_loaded && count (_assets select 1) == 2) ) then {
                         _available = false;
                     };
