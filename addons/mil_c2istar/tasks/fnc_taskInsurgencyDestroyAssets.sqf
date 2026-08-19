@@ -257,11 +257,14 @@ switch (_taskState) do {
         // friendly-disable proximity path (#697) call
         // fnc_INS_disableBuildingInstallations, which sets the
         // ALIVE_MIL_OPCOM_*_DISABLED flag on the building but leaves the
-        // building object alive. taskGetStateOfObjects only checks
-        // `alive _target`, so without this extension the task stays
-        // open forever once the target is disabled (player can't
-        // "destroy" something the installation references have already
-        // been stripped from). Reported as #905 (Ljas, 2026-05-26).
+        // building standing, so no destruction test of any kind will ever
+        // pass and without this extension the task stays open forever once
+        // the target is disabled (player can't "destroy" something the
+        // installation references have already been stripped from).
+        // Reported as #905 (Ljas, 2026-05-26). This stays task-specific on
+        // purpose: a disabled installation is a completion condition only
+        // for this task, where taskGetStateOfObjects answers the general
+        // question of whether the object is still there.
         if (!_allDestroyed) then {
             private _allDone = true;
             {
