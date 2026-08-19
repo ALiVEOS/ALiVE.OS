@@ -531,7 +531,19 @@ private _fnc_safeReposition = {
     // stays sim-ON + parked at startPos so the ATO pool can still reuse it. Clean relocate-to-clear-apron
     // + pool-health (mirror fnc_profileVehicle.sqf:922-978) is OVERHAUL-SCOPE. findAirSpawnPosition is
     // still called below (harmless -- it also opens the hangar doors).
-    private _target = _pos;
+    // Copy, do not alias. One caller passes the asset's stored home slot straight in
+    // (the pilot-timeout abort hands over the value read from the asset's startPos, and
+    // reading a hash gives back the stored array itself, not a copy). Without the copy,
+    // grounding the frame below and the sideways step further down are written INTO the
+    // stored slot, so the aircraft's home moves a little further sideways every time it
+    // comes back. Worse, the sideways step exists to keep aircraft that share a slot
+    // apart, and it decides who is sharing by which 15 m cell each one's home sits in.
+    // Once a moved home is written back, that decision is made from the moved value, so
+    // the arrangement it is trying to keep stable is exactly what it destabilises. It
+    // only happens when the search for somewhere better has already failed, which is on
+    // a busy airfield, which is when the slot sharing matters most. The other two callers
+    // build a fresh position before calling and were never affected.
+    private _target = +_pos;
     private _air = [typeOf _veh, _target, 200, "auto", _veh] call ALiVE_fnc_findAirSpawnPosition;
     // ATO_HANGAR_DBG: raw findAirSpawnPosition return -- shows whether it gave [] (no relocation, target stays the in-geometry hangar point) or an actual clear point.
     if (ALiVE_ATO_debug) then {
