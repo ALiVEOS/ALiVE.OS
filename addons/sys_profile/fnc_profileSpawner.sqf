@@ -31,6 +31,7 @@ private _claimState = _coordinator get "claimState";
 private _activators = _claimState select 0;
 private _completedIterations = _claimState select 1;
 private _claimCounts = _claimState select 2;
+private _profilesById = [MOD(profileHandler),"profilesById"] call ALiVE_fnc_hashGet;
 
 ///////////////////////////////////////
 //          Despawn Profiles
@@ -64,7 +65,7 @@ if !(_despawnQueue isEqualTo []) then {
         _despawnQueue deleteAt 0;
 
         if (isNil {_claimCounts get _profileID}) then {
-            private _profile = [MOD(profileHandler),"getProfile",_profileID] call ALiVE_fnc_profileHandler;
+            private _profile = _profilesById get _profileID;
 
             if (!isNil "_profile") then {
                 private _profileData = _profile select 2;
@@ -139,7 +140,7 @@ if (
         private _profile = if (_stale) then {
             nil
         } else {
-            [MOD(profileHandler),"getProfile",_profileID] call ALiVE_fnc_profileHandler
+            _profilesById get _profileID
         };
 
         private _invalid = _stale ||
@@ -188,7 +189,7 @@ if (
                 {(_profileData select 5) == "entity"}
             ) then {
                 {
-                    private _vehicleProfile = [MOD(profileHandler),"getProfile",_x] call ALiVE_fnc_profileHandler;
+                    private _vehicleProfile = _profilesById get _x;
 
                     if (!isNil "_vehicleProfile") then {
                         [MOD(profileHandler),"unregisterProfile",_vehicleProfile] call ALiVE_fnc_profileHandler;

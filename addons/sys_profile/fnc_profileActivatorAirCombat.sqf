@@ -75,7 +75,7 @@ switch (_operation) do {
     };
 
     case "tick": {
-        private _profileHandler = MOD(profileHandler);
+        private _profilesById = [MOD(profileHandler),"profilesById"] call ALIVE_fnc_hashGet;
         private _scanPhase = _logic get "scanPhase";
         private _candidateIDs = _logic get "candidateIDs";
         private _candidateIDIndex = _logic get "candidateIDIndex";
@@ -144,7 +144,7 @@ switch (_operation) do {
                         private _profileID = _candidateIDs select _candidateIDIndex;
                         _candidateIDIndex = _candidateIDIndex + 1;
 
-                        private _profile = [_profileHandler,"getProfile", _profileID] call ALiVE_fnc_profileHandler;
+                        private _profile = _profilesById get _profileID;
 
                         if (!isNil "_profile") then {
                             private _profileData = _profile select 2;
@@ -192,7 +192,7 @@ switch (_operation) do {
                                     if (_entitiesInCommandOf isEqualType []) then {
                                         {
                                             private _entityProfileID = _x;
-                                            private _entityProfile = [_profileHandler,"getProfile", _entityProfileID] call ALiVE_fnc_profileHandler;
+                                            private _entityProfile = _profilesById get _entityProfileID;
 
                                             if (!isNil "_entityProfile") then {
                                                 private _entityProfileData = _entityProfile select 2;
@@ -302,7 +302,7 @@ switch (_operation) do {
 
             if (_cargoClaimQueue isNotEqualTo []) then {
                 private _cargoProfileID = _cargoClaimQueue deleteAt 0;
-                private _cargoProfile = [_profileHandler,"getProfile",_cargoProfileID] call ALiVE_fnc_profileHandler;
+                private _cargoProfile = _profilesById get _cargoProfileID;
 
                 if (!isNil "_cargoProfile") then {
                     private _cargoProfileData = _cargoProfile select 2;
@@ -326,7 +326,7 @@ switch (_operation) do {
 
                         if (_rangeSeenState == 0) then {
                             private _rangeState = 2;
-                            private _profile = [_profileHandler,"getProfile",_rangeProfileID] call ALiVE_fnc_profileHandler;
+                            private _profile = _profilesById get _rangeProfileID;
 
                             if (!isNil "_profile") then {
                                 private _profileData = _profile select 2;
@@ -374,7 +374,7 @@ switch (_operation) do {
                                             if (_inRange) then {
                                                 {
                                                     private _entityProfileID = _x;
-                                                    private _entityProfile = [_profileHandler,"getProfile",_entityProfileID] call ALiVE_fnc_profileHandler;
+                                                    private _entityProfile = _profilesById get _entityProfileID;
 
                                                     if (!isNil "_entityProfile") then {
                                                         private _entityProfileData = _entityProfile select 2;
