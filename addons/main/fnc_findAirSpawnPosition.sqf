@@ -811,6 +811,45 @@ if (count _found == 0 && {_preference in ["auto", "hangar"]} && _isPlane && !_is
             // Vertical clearance for rotor / tail.
             if ((count _hangarSize >= 3) && {(_hangarSize select 2) > 0 && (_hangarSize select 2) < _vehHt}) then { continue };
 
+            // Is anything already parked in the bay?
+            //
+            // The bbox-fit test above says the aircraft FITS the hangar. It said
+            // nothing about whether the hangar was empty, and until now nothing else
+            // asked, so a returning aircraft was set down on top of whatever was
+            // already in there and the pair detonated.
+            //
+            // Only vehicles are looked for, deliberately. The full obstacle sweep the
+            // other tiers run would cost five spatial queries per candidate here, and
+            // every plane placed at mission start reaches this tier, so that is paid
+            // on the startup path for coverage this does not need: every reported case
+            // is an aircraft set down on another aircraft or on a wreck, and both are
+            // vehicles. One query answers that. Structures are not consulted at all,
+            // which also sidesteps the reason the sweep was skipped in the first place,
+            // that a hangar reports itself as an obstacle.
+            //
+            // The aircraft being re-validated in place does not count against itself,
+            // and neither does anything the caller has already said to disregard, which
+            // is how a crewed profile's own pilots avoid rejecting their own hangar.
+            //
+            // Placed before the door test on purpose: that test walks the hangar's
+            // animation config and physically opens its doors, so an occupied hangar is
+            // now refused without paying for that, and without doors being swung open on
+            // a hangar this then turns down.
+            // Bounded by the HANGAR, not by the aircraft. This asks the engine for
+            // everything within a distance, and that question does not stop at a wall,
+            // so a radius sized to the aircraft plus its courtesy margin reaches out
+            // through the sides of an ordinary hangar and onto the apron. A lorry
+            // driving past the doors would then cost a bay that was empty. Half the
+            // building's narrower side is the distance from the middle of the bay to
+            // the nearest wall, so it keeps the question inside the building. Whichever
+            // is smaller wins: a snug hangar is measured by the hangar, a cavernous one
+            // by the aircraft, and neither reaches outside.
+            private _bayRadius = (_hazardRadius + _clearMargin) min (_hShort / 2);
+            private _bayBlockers = (nearestObjects [_hPos, ["AllVehicles"], _bayRadius])
+                - [_ownVeh] - _ignoreObjects;
+            if (count _bayBlockers > 0) then { continue };
+
+
             // Door precondition.
             if !([_hangar] call _fnc_doorsOpenable) then { continue };
 
@@ -819,13 +858,10 @@ if (count _found == 0 && {_preference in ["auto", "hangar"]} && _isPlane && !_is
             // aircraft will spawn at.
             private _hDir = [_hangar, _hPos] call _fnc_orientHangar;
 
-            // Registry check only. The bbox-fit test above already
-            // verified the aircraft physically fits the hangar
-            // interior; the open-door test verified accessibility.
-            // The obstacle-table footprint sweep can NOT be applied
-            // at the hangar centre because the hangar itself is a
-            // BUILDING-type terrain object - the check would always
-            // return the hangar as a hit and reject every candidate.
+
+            // Kept as well as the sweep, not instead of it: this catches a slot another
+            // aircraft has just been promised but has not yet occupied, which no amount
+            // of looking at the world can see.
             if !([_hPos, _minSeparation] call _fnc_registryClear) then { continue };
 
             _found = [_hPos, _hDir];
