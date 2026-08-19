@@ -65,6 +65,7 @@ See Also:
 
 Author:
 ARJay
+Jman
 
 Peer reviewed:
 nil
@@ -1488,6 +1489,19 @@ switch(_operation) do {
                     // artillery despawn-hold marker (see the entity branch)
                     if("ALiVE_artyHold" in (_profile select 1)) then {
                         [_profileVehicle, "ALiVE_artyHold", [_profile,"ALiVE_artyHold"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
+                    };
+
+                    // What is actually fitted to an aircraft's pylons, as opposed to whatever its
+                    // class carries by default. It was already being saved, but this rebuild names
+                    // every key it wants and this one was not on the list, so it was lost on every
+                    // load. An aircraft armed in the editor then came back reading as its bare
+                    // class, which decides what the air commander believes it can be sent to do:
+                    // a rocket-armed variant of an otherwise unarmed airframe read as unarmed.
+                    // Guarded like its neighbours because a save written before this has no such
+                    // key, and a two-argument hashGet answers a missing key with nothing, which
+                    // would delete the variable rather than leave it empty.
+                    if("pylonLoadout" in (_profile select 1)) then {
+                        [_profileVehicle, "pylonLoadout", [_profile,"pylonLoadout"] call ALIVE_fnc_hashGet] call ALIVE_fnc_hashSet;
                     };
 
                     _side = [_profile,"side"] call ALIVE_fnc_hashGet;
