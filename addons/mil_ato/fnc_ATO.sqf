@@ -442,6 +442,58 @@ private _fnc_isDroneClass = {
     (_v isKindOf "UAV") || {getNumber (configFile >> "CfgVehicles" >> _v >> "isUav") == 1}
 };
 
+// Whether the air commander should be holding this aircraft at all.
+//
+// Two places have to agree on this and until now only one of them asked. Aircraft are
+// admitted when they are first adopted, in registerProfile, and a mission loading a save
+// rebuilds the whole roster straight out of the stored data without asking anything. So a
+// roster saved under an older build carried forward whatever that build's rules let in,
+// and no later pass ever looked at it again. Corrections to the rules only reached new
+// missions, which is why several of them appeared not to work.
+//
+// Returns [admit, reason, roles, loadout]. The reason is for the log, so it reads as a
+// sentence. Roles and loadout are handed back because the caller needs them straight
+// after and they are worked out here anyway.
+//
+// Deliberately NOT covered here: the Combat Support exclusion, which can only be read off
+// a spawned vehicle and so cannot be answered at restore time when the profile is dormant.
+// That one stays at its own call site.
+private _fnc_admitAircraft = {
+    params ["_vehicleProfile", "_logic"];
+
+    private _cls = [_vehicleProfile, "vehicleClass", ""] call ALIVE_fnc_hashGet;
+    private _loadout = [_vehicleProfile, "pylonLoadout", []] call ALiVE_fnc_hashGet;
+    if (_cls isEqualTo "") exitWith {[false, "it has no vehicle class", [], _loadout]};
+
+    // Everything below is answerable from the class and the stored profile, so this can be
+    // asked of an aircraft that is not spawned. It is written that way on purpose, so the
+    // persistence restore can eventually ask the same question of a roster it rebuilds.
+    // Two things still stand in the way of that and neither is here: the restore would have
+    // to drop an aircraft without editing the saved roster, which is shared by reference with
+    // what gets written back, and the Combat Support test below cannot be answered at all
+    // when the profile is dormant.
+
+    // Air first: some ground drone bases descend from Car_F and carry the UAV flag too,
+    // and without the Air test a rover parked in the airspace could be taken on and
+    // tasked with a sortie.
+    private _isDrone = _cls isKindOf "Air" && {[_cls] call _fnc_isDroneClass};
+
+    if (_isDrone && {!([_logic, "useUAVs"] call MAINCLASS)}) exitWith {
+        [false, "drones are turned off for this commander", [], _loadout]
+    };
+
+    private _roles = [_cls, _loadout] call ALiVE_fnc_getAircraftRoles;
+    if (count _roles == 0) exitWith {
+        [false, "it resolves to no roles, so nothing could ever task it", _roles, _loadout]
+    };
+
+    if !(([_cls] call ALiVE_fnc_isArmed) || _isDrone) exitWith {
+        [false, "it carries no armament", _roles, _loadout]
+    };
+
+    [true, "", _roles, _loadout]
+};
+
 // The hangar diagnostics below run inside spawned threads and event handlers, which
 // cannot see a module's private _debug, so it is mirrored into this global. Set true
 // by the "debug" accessor and never cleared: with more than one ATO module on a
@@ -1316,10 +1368,15 @@ switch(_operation) do {
             // all - otherwise it counts towards the airframe totals that decide
             // whether the commander has enough aircraft to keep flying offensive
             // missions.
-            if (_isDroneAsset && {!([_logic,"useUAVs"] call MAINCLASS)}) exitWith {
+            // continue, not exitWith. This sits inside the forEach over every vehicle on
+            // the profile, and exitWith there abandons the whole loop rather than this one
+            // aircraft, so a single turned-off drone stopped every aircraft after it in the
+            // list from being adopted at all.
+            if (_isDroneAsset && {!([_logic,"useUAVs"] call MAINCLASS)}) then {
                 if (_debug) then {
                     ["ATO %1 ignoring %2 - drones are turned off for this commander", _logic, _vehicleClass] call ALiVE_fnc_dump;
                 };
+                continue;
             };
 
             // If Combat support asset, then do not register
@@ -1339,11 +1396,15 @@ switch(_operation) do {
                     _isCombatSupport = _vehicle getVariable ["ALIVE_CombatSupport", false];
                 };
             };
-            if (_isCombatSupport) exitWith {
+            // continue, not exitWith, for the same reason as the drone check above: one
+            // Combat Support aircraft used to stop every remaining vehicle on the profile
+            // from being adopted.
+            if (_isCombatSupport) then {
 
                 if (_debug) then {
                     ["ATO %1 ignoring %2 as it is a combat support asset", _logic, _vehicleClass] call ALiVE_fnc_dump;
                 };
+                continue;
 
             };
 
@@ -1378,16 +1439,18 @@ switch(_operation) do {
             // Worse, it made the commander look broken. Asked for air support it answered
             // that no appropriate aircraft were available, which reads as "your aircraft
             // were never picked up" when it actually meant "none of mine can do this job".
-            private _admitLoadout = [_vehicleProfile,"pylonLoadout",[]] call ALiVE_fnc_hashGet;
-            private _admitRoles = [_vehicleClass, _admitLoadout] call ALiVE_fnc_getAircraftRoles;
+            // One definition of what may be adopted, shared with the persistence restore
+            // so the two cannot drift apart. Everything it tests is answerable from the
+            // class and the stored profile, which is what lets the restore ask the same
+            // question of an aircraft that is not spawned.
+            ([_vehicleProfile, _logic] call _fnc_admitAircraft)
+                params ["_admitOK", "_admitWhy", "_admitRoles", "_admitLoadout"];
 
-            if (count _admitRoles == 0) then {
-                if (_debug) then {
-                    ["ATO %1 - not adopting %2: it resolves to no roles, so nothing could ever task it", _logic, _vehicleClass] call ALiVE_fnc_dump;
-                };
+            if (!_admitOK && {_debug}) then {
+                ["ATO %1 - not adopting %2: %3", _logic, _vehicleClass, _admitWhy] call ALiVE_fnc_dump;
             };
 
-            if ((([_vehicleClass] call ALiVE_fnc_isArmed) || _isDroneAsset) && {count _admitRoles > 0}) then {
+            if (_admitOK) then {
 
                 // make sure vehicle is set to side of logic
                 [_vehicleProfile, "side", [_logic,"side"] call MAINCLASS] call ALiVE_fnc_profileVehicle;
@@ -1702,10 +1765,6 @@ switch(_operation) do {
                     ["ATO %1 registered %2 (%3) as an asset.", _logic, _x, _vehicleClass] call ALiVE_fnc_dump;
                 };
 
-            } else {
-                if (_debug) then {
-                    ["ATO %1 not registering %2 (%3) as it is unarmed.", _logic, _x, _vehicleClass] call ALiVE_fnc_dump;
-                };
             };
         } forEach _vehicleProfileIDs;
 
@@ -3433,11 +3492,13 @@ switch(_operation) do {
                             };
 
                         } forEach (_aircraft select 1);
+
                     }
                 } forEach _factions;
 
                 [_logic, "assets" ,_assets] call ALiVE_fnc_ATO;
                 [_logic,"airspaceAssets",_as] call ALiVE_fnc_ATO;
+
             };
 
             // set as initial analysis complete
