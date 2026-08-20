@@ -86,6 +86,54 @@
     <English>If enabled, active zeus entities will spawn virtual groups when in range</English>
     <Chinesesimp>如果启用,活动的宙斯实体将在范围内生成虚拟组</Chinesesimp>
 </Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_SPAWNING">
+    <English>Air Combat</English>
+    <Chinesesimp>空中战斗</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_SPAWNING_COMMENT">
+    <English>Enables specialized spawning behavior. Aircraft and AAA profiles are always spawned.</English>
+    <Chinesesimp>启用专用生成行为。飞机和AAA配置文件始终会生成。</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PROFILE_ACTIVATORS">
+    <English>Modes</English>
+    <Chinesesimp>模式</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PROFILE_ACTIVATORS_COMMENT">
+    <English>Choose which profile spawn modes are enabled and configure the selected mode's settings. Proximity is enabled by default; Air Combat is disabled by default.</English>
+    <Chinesesimp>选择启用的配置文件生成模式并配置当前模式。接近模式默认启用；空中战斗模式默认禁用。</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SPAWNING">
+    <English>Proximity</English>
+    <Chinesesimp>接近</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SPAWNING_COMMENT">
+    <English>Proximity Spawn activates profiles in a radius around the player. The spawn radius can be adjusted based on the type of vehicle a player is in. This cannot be disabled.</English>
+    <Chinesesimp>接近生成会在玩家周围半径内激活配置文件。生成半径可根据玩家所乘载具类型调整。此功能无法禁用。</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_PROXIMITY_SETTINGS">
+    <English>Proximity Spawn</English>
+    <Chinesesimp>接近生成</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_SETTINGS">
+    <English>Air Combat Spawn</English>
+    <Chinesesimp>空战生成</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS">
+    <English>Plane Vehicle Radius (m):</English>
+    <Chinesesimp>飞机载具半径 (米):</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_PLANE_RADIUS_COMMENT">
+    <English>Distance around a player-controlled plane that ground vehicles spawn. Set to 0 to disable.</English>
+    <Chinesesimp>玩家控制的飞机周围生成地面载具的距离。设为0可禁用。</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS">
+    <English>Helicopter Vehicle Radius (m):</English>
+    <Chinesesimp>直升机载具半径 (米):</Chinesesimp>
+</Key>
+<Key ID="STR_ALIVE_PROFILE_SYSTEM_AIR_COMBAT_HELI_RADIUS_COMMENT">
+    <English>Distance around a player-controlled helicopter that ground vehicles spawn. Set to 0 to disable.</English>
+    <Chinesesimp>玩家控制的直升机周围生成地面载具的距离。设为0可禁用。</Chinesesimp>
+</Key>
 <Key ID="STR_ALIVE_PROFILE_SYSTEM_SPAWN_JET_RADIUS">
     <English>Spawn Planes Radius (m):</English>
     <Chinesesimp>平面生成半径</Chinesesimp>

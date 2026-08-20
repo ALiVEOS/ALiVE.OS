@@ -44,10 +44,156 @@ if(isServer) then {
     private _persistent = (_logic getVariable ["persistent","false"]) == "true";
     private _syncMode = _logic getVariable ["syncronised","ADD"];
     private _syncedUnits = synchronizedObjects _logic;
+    private _profileActivatorSettings = _logic getVariable ["profileActivatorSettings", []];
+    private _hasProfileActivatorSettings = false;
+    private _profileActivatorSettingsByName = createHashMap;
+    private _profileActivatorSettingNames = [
+        "proximity",
+        "airCombat",
+        "spawnRadius",
+        "spawnTypeHeliRadius",
+        "spawnTypeJetRadius",
+        "spawnRadiusUAV",
+        "airCombatPlaneVehicleRadius",
+        "airCombatHelicopterVehicleRadius"
+    ];
+
+    if (_profileActivatorSettings isEqualType []) then {
+        {
+            if (
+                _x isEqualType [] &&
+                {count _x > 1} &&
+                {(_x select 0) isEqualType ""} &&
+                {(_x select 0) in _profileActivatorSettingNames}
+            ) then {
+                _profileActivatorSettingsByName set [_x select 0,_x select 1];
+                _hasProfileActivatorSettings = true;
+            };
+        } forEach _profileActivatorSettings;
+    };
+
     private _spawnRadius = parseNumber (_logic getVariable ["spawnRadius","1500"]);
     private _spawnTypeHeliRadius = parseNumber (_logic getVariable ["spawnTypeHeliRadius","1500"]);
     private _spawnTypeJetRadius = parseNumber (_logic getVariable ["spawnTypeJetRadius","0"]);
     private _spawnTypeUAVRadius = parseNumber (_logic getVariable ["spawnRadiusUAV", "-1"]);
+    private _proximitySpawning = true;
+    private _airCombatSpawning = false;
+    private _airCombatPlaneVehicleRadius = 7000;
+    private _airCombatHelicopterVehicleRadius = 5000;
+    private _asBool = {
+        params ["_value", "_default"];
+        switch (typeName _value) do {
+            case "BOOL": { _value };
+            case "SCALAR": { _value != 0 };
+            case "STRING": {
+                private _text = toLower _value;
+                if (_text in ["true", "yes", "1", "on"]) then {
+                    true
+                } else {
+                    if (_text in ["false", "no", "0", "off"]) then { false } else { _default };
+                };
+            };
+            default { _default };
+        };
+    };
+    private _asNumber = {
+        params ["_value", "_default"];
+        switch (typeName _value) do {
+            case "SCALAR": { _value };
+            case "STRING": { parseNumber _value };
+            default { _default };
+        };
+    };
+
+    if (_hasProfileActivatorSettings) then {
+        _spawnRadius = 1500;
+        _spawnTypeHeliRadius = 1500;
+        _spawnTypeJetRadius = 0;
+        _spawnTypeUAVRadius = -1;
+
+        private _settingValue = _profileActivatorSettingsByName get "proximity";
+        if (!isNil "_settingValue" && {_settingValue isEqualType false}) then {
+            _proximitySpawning = _settingValue;
+        };
+
+        _settingValue = _profileActivatorSettingsByName get "airCombat";
+        if (!isNil "_settingValue" && {_settingValue isEqualType false}) then {
+            _airCombatSpawning = _settingValue;
+        };
+
+        _settingValue = _profileActivatorSettingsByName get "spawnRadius";
+        if (!isNil "_settingValue" && {_settingValue isEqualType ""}) then {
+            _spawnRadius = parseNumber _settingValue;
+        };
+
+        _settingValue = _profileActivatorSettingsByName get "spawnTypeHeliRadius";
+        if (!isNil "_settingValue" && {_settingValue isEqualType ""}) then {
+            _spawnTypeHeliRadius = parseNumber _settingValue;
+        };
+
+        _settingValue = _profileActivatorSettingsByName get "spawnTypeJetRadius";
+        if (!isNil "_settingValue" && {_settingValue isEqualType ""}) then {
+            _spawnTypeJetRadius = parseNumber _settingValue;
+        };
+
+        _settingValue = _profileActivatorSettingsByName get "spawnRadiusUAV";
+        if (!isNil "_settingValue" && {_settingValue isEqualType ""}) then {
+            _spawnTypeUAVRadius = parseNumber _settingValue;
+        };
+
+        _settingValue = _profileActivatorSettingsByName get "airCombatPlaneVehicleRadius";
+        if (!isNil "_settingValue" && {_settingValue isEqualType ""}) then {
+            _airCombatPlaneVehicleRadius = (parseNumber _settingValue) max 0;
+        };
+
+        _settingValue = _profileActivatorSettingsByName get "airCombatHelicopterVehicleRadius";
+        if (!isNil "_settingValue" && {_settingValue isEqualType ""}) then {
+            _airCombatHelicopterVehicleRadius = (parseNumber _settingValue) max 0;
+        };
+    } else {
+        private _legacyAirCombatSpawning = _logic getVariable ["airCombatSpawning", "false"];
+        _airCombatSpawning = switch (true) do {
+            case (_legacyAirCombatSpawning isEqualType false): {_legacyAirCombatSpawning};
+            case (_legacyAirCombatSpawning isEqualType ""): {toLower _legacyAirCombatSpawning == "true"};
+            default {false};
+        };
+    };
+
+    // Native Eden attributes take precedence over the former packed custom
+    // control. The packed values above remain as a read-only compatibility
+    // path for missions saved before this refactor.
+    // Proximity spawning is mandatory. Retain its visible Eden setting as an
+    // explicit indicator, but do not permit saved legacy values to disable it.
+    _proximitySpawning = true;
+    private _standardValue = _logic getVariable ["airCombatSpawning", nil];
+    if (!isNil "_standardValue") then {
+        _airCombatSpawning = [_standardValue, _airCombatSpawning] call _asBool;
+    };
+    _standardValue = _logic getVariable ["spawnRadius", nil];
+    if (!isNil "_standardValue") then {
+        _spawnRadius = [_standardValue, _spawnRadius] call _asNumber;
+    };
+    _standardValue = _logic getVariable ["spawnTypeHeliRadius", nil];
+    if (!isNil "_standardValue") then {
+        _spawnTypeHeliRadius = [_standardValue, _spawnTypeHeliRadius] call _asNumber;
+    };
+    _standardValue = _logic getVariable ["spawnTypeJetRadius", nil];
+    if (!isNil "_standardValue") then {
+        _spawnTypeJetRadius = [_standardValue, _spawnTypeJetRadius] call _asNumber;
+    };
+    _standardValue = _logic getVariable ["spawnRadiusUAV", nil];
+    if (!isNil "_standardValue") then {
+        _spawnTypeUAVRadius = [_standardValue, _spawnTypeUAVRadius] call _asNumber;
+    };
+    _standardValue = _logic getVariable ["airCombatPlaneVehicleRadius", nil];
+    if (!isNil "_standardValue") then {
+        _airCombatPlaneVehicleRadius = ([_standardValue, _airCombatPlaneVehicleRadius] call _asNumber) max 0;
+    };
+    _standardValue = _logic getVariable ["airCombatHelicopterVehicleRadius", nil];
+    if (!isNil "_standardValue") then {
+        _airCombatHelicopterVehicleRadius = ([_standardValue, _airCombatHelicopterVehicleRadius] call _asNumber) max 0;
+    };
+
     private _activeLimiter = parseNumber (_logic getVariable ["activeLimiter","30"]);
     private _zeusSpawn = (_logic getvariable ["zeusSpawn", "true"]) == "true";
     private _speedModifier = (_logic getVariable ["speedModifier","1"]) call BIS_fnc_parseNumber;
@@ -96,6 +242,10 @@ if(isServer) then {
     [ALIVE_profileSystem, "spawnTypeJetRadius", _spawnTypeJetRadius] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "spawnRadiusUAV", _spawnTypeUAVRadius] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "spawnTypeHeliRadius", _spawnTypeHeliRadius] call ALIVE_fnc_profileSystem;
+    [ALIVE_profileSystem, "proximitySpawning", _proximitySpawning] call ALIVE_fnc_profileSystem;
+    if (_airCombatSpawning) then {
+        [ALIVE_profileSystem, "createAirCombatActivator", [_airCombatPlaneVehicleRadius, _airCombatHelicopterVehicleRadius]] call ALIVE_fnc_profileSystem;
+    };
     [ALIVE_profileSystem, "activeLimiter", _activeLimiter] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "zeusSpawn", _zeusSpawn] call ALIVE_fnc_profileSystem;
     [ALIVE_profileSystem, "speedModifier", _speedModifier] call ALIVE_fnc_profileSystem;

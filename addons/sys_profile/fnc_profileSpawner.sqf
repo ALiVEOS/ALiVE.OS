@@ -31,6 +31,7 @@ private _claimState = _coordinator get "claimState";
 private _activators = _claimState select 0;
 private _completedIterations = _claimState select 1;
 private _claimCounts = _claimState select 2;
+private _profilesById = [MOD(profileHandler),"profilesById"] call ALiVE_fnc_hashGet;
 
 ///////////////////////////////////////
 //          Despawn Profiles
@@ -64,7 +65,7 @@ if !(_despawnQueue isEqualTo []) then {
         _despawnQueue deleteAt 0;
 
         if (isNil {_claimCounts get _profileID}) then {
-            private _profile = [MOD(profileHandler),"getProfile",_profileID] call ALiVE_fnc_profileHandler;
+            private _profile = _profilesById get _profileID;
 
             if (!isNil "_profile") then {
                 private _profileData = _profile select 2;
@@ -139,13 +140,12 @@ if (
         private _profile = if (_stale) then {
             nil
         } else {
-            [MOD(profileHandler),"getProfile",_profileID] call ALiVE_fnc_profileHandler
+            _profilesById get _profileID
         };
 
-        private _invalid =
-            _stale ||
+        private _invalid = _stale ||
             {isNil "_profile"} ||
-            {_profile select 2 select 1} ||
+            {(_profile select 2) select 1} ||
             {[_profile,"locked",false] call ALiVE_fnc_hashGet};
 
         if (_invalid) then {
@@ -160,13 +160,14 @@ if (
     if (!isNil "_profileToSpawn") then {
         private _profileID = _spawnQueue deleteAt 0;
         _spawnQueueMembership deleteAt _profileID;
+
         private _profile = _profileToSpawn;
         private _profileData = _profile select 2;
-
         private _activeLimiter = [MOD(profileSystem),"activeLimiter"] call ALiVE_fnc_profileSystem;
         private _activeEntityCount = count ([MOD(profileHandler),"getActiveEntities"] call ALiVE_fnc_profileHandler);
+        private _spawnAllowed = _activeEntityCount < _activeLimiter;
 
-        if (_activeEntityCount < _activeLimiter) then {
+        if (_spawnAllowed) then {
             if ((_profileData select 5) == "entity") then {
                 [_profile,"spawn"] spawn ALiVE_fnc_profileEntity;
             } else {
@@ -188,7 +189,7 @@ if (
                 {(_profileData select 5) == "entity"}
             ) then {
                 {
-                    private _vehicleProfile = [MOD(profileHandler),"getProfile",_x] call ALiVE_fnc_profileHandler;
+                    private _vehicleProfile = _profilesById get _x;
 
                     if (!isNil "_vehicleProfile") then {
                         [MOD(profileHandler),"unregisterProfile",_vehicleProfile] call ALiVE_fnc_profileHandler;

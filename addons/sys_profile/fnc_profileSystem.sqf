@@ -68,6 +68,7 @@ switch(_operation) do {
             [_logic,"spawnTypeJetRadius",1000] call ALIVE_fnc_hashSet;
             [_logic,"spawnTypeHeliRadius",1000] call ALIVE_fnc_hashSet;
             [_logic,"spawnRadiusUAV", 1000] call ALiVE_fnc_hashSet;
+            [_logic,"proximitySpawning", true] call ALIVE_fnc_hashSet;
             // Despawn linger defaults. See "start" case for the global publishing.
             [_logic,"playerOccupantGrace", 300] call ALIVE_fnc_hashSet;
             [_logic,"postDeathGrace", 120] call ALIVE_fnc_hashSet;
@@ -464,6 +465,30 @@ switch(_operation) do {
                     ALIVE_spawnRadiusUAV = _args;
             };
             _result = [_logic,"spawnRadiusUAV"] call ALIVE_fnc_hashGet;
+    };
+    case "proximitySpawning": {
+        if (
+            _args isEqualType false &&
+            {_args != ([_logic,"proximitySpawning",true] call ALiVE_fnc_hashGet)}
+        ) then {
+            private _profileActivationCoordinator = [_logic,"profileActivationCoordinator"] call ALiVE_fnc_hashGet;
+
+            if (_args) then {
+                private _playerProximityActivator = [nil,"create",[_logic]] call ALiVE_fnc_profileActivatorPlayerProximity;
+                [_profileActivationCoordinator,"registerActivator",_playerProximityActivator] call ALiVE_fnc_profileActivationCoordinator;
+            } else {
+                [_profileActivationCoordinator,"unregisterActivator","playerProximity"] call ALiVE_fnc_profileActivationCoordinator;
+            };
+
+            [_logic,"proximitySpawning", _args] call ALiVE_fnc_hashSet;
+        };
+
+        _result = [_logic,"proximitySpawning", true] call ALiVE_fnc_hashGet;
+    };
+    case "createAirCombatActivator": {
+        private _profileActivationCoordinator = [_logic,"profileActivationCoordinator"] call ALiVE_fnc_hashGet;
+        private _airCombatActivator = [nil,"create",_args] call ALiVE_fnc_profileActivatorAirCombat;
+        _result = [_profileActivationCoordinator,"registerActivator", _airCombatActivator] call ALiVE_fnc_profileActivationCoordinator;
     };
     case "playerOccupantGrace": {
             if(typeName _args == "SCALAR") then {

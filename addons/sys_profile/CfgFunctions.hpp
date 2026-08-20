@@ -221,6 +221,11 @@ class cfgFunctions {
                 file = "\x\alive\addons\sys_profile\fnc_profileActivatorPlayerProximity.sqf";
                 RECOMPILE;
             };
+            class profileActivatorAirCombat {
+                description = "Optional air-combat profile activator";
+                file = "\x\alive\addons\sys_profile\fnc_profileActivatorAirCombat.sqf";
+                RECOMPILE;
+            };
             class profileActivationTick {
                 description = "Per-frame profile activation pipeline";
                 file = "\x\alive\addons\sys_profile\fnc_profileActivationTick.sqf";

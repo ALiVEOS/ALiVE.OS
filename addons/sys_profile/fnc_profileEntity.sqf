@@ -1110,10 +1110,7 @@ switch(_operation) do {
     case "spawn": {
         private _profileData = _logic select 2;
 
-        // A non-entity profile reaching entity-spawn is a mis-dispatch: the slot reads
-        // below assume the entity schema (slot 18 = positions, an array), but a vehicle
-        // profile has slot 18 = canFire (a Bool), so count on it throws. Slot 5 = "type"
-        // in both schemas; bail with a clear log instead of crashing at the slot reads.
+        // A non-entity profile reaching entity-spawn is a mis-dispatch
         if ((_profileData select 5) != "entity") exitWith {
             ["ALiVE profileEntity spawn: non-entity profile dispatched (id %1, type %2) - aborting before the entity slot reads.", _profileData select 4, _profileData select 5] call ALiVE_fnc_dump;
         };
