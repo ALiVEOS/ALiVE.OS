@@ -153,6 +153,20 @@ class groupGarrisonSPE
 	RECOMPILE;
 };
 
+class claimGarrisonBuilding
+{
+	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_claimGarrisonBuilding.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
+class releaseGarrisonBuildings
+{
+	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_releaseGarrisonBuildings.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class garrisonUnitsOnCBAPositions
 {
 	file = "\x\alive\addons\x_lib\functions\behaviour\fnc_garrisonUnitsOnCBAPositions.sqf";

@@ -24,10 +24,8 @@ params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false
 
 private _units = units _group;
 _radius = 50;
-if (isNil {_group getVariable "alive_garrison_buildings"}) then {
-    _group setVariable ["alive_garrison_buildings", []];
-};
-private _garrisonedBuildings = _group getVariable ["alive_garrison_buildings", []];
+
+[_group] call ALiVE_fnc_releaseGarrisonBuildings;
 
 if (count _units < 2) exitwith {};
 

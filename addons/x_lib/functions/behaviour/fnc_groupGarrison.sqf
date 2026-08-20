@@ -27,6 +27,8 @@ private _units = units _group;
 private _unitPercentCount = ((count _units) * _guardPatrolPercentage) / 100;
 private _profile = nil;
 
+[_group] call ALiVE_fnc_releaseGarrisonBuildings;
+
 // DEBUG -------------------------------------------------------------------------------------
 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
  ["ALIVE_fnc_groupGarrison - _unitPercentCount: %1", _unitPercentCount] call ALiVE_fnc_dump;
@@ -41,11 +43,6 @@ if !(isNil "_profileID") then {
  };
  // DEBUG -------------------------------------------------------------------------------------
 };
-
-if (isNil {_group getVariable "alive_garrison_buildings"}) then {
-    _group setVariable ["alive_garrison_buildings", []];
-};
-private _garrisonedBuildings = _group getVariable ["alive_garrison_buildings", []];
 
 if (count _units < 2) exitwith {};
 
@@ -157,17 +154,9 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
     if (count _units == 0) exitWith {};
 
     private _building = _x;
-    private _class = typeOf _building;
-    private _buildingIsEmpty = true;
-    
-    {
-        if ((_x getVariable ["alive_garrison_buildings", []]) find _building != -1) exitWith {
-            _buildingIsEmpty = false;
-        };
-    } forEach (allGroups select {_x != _group && {side _x == side _group}});
+    private _buildingClaimed = [_building, _group] call ALiVE_fnc_claimGarrisonBuilding;
 
-
-    if (_buildingIsEmpty) then {
+    if (_buildingClaimed) then {
         private _buildingPositions = _building buildingPos -1;
 
         // composition props (tents, camo nets, shelters) carry no engine
@@ -190,11 +179,9 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
         _buildingPositions = [_buildingPositions, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;
         
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {     
-         ["ALIVE_fnc_groupgarrison - class: %1 count positions: %2, count _units: %3", _class, count _buildingPositions, count units _group] call ALiVE_fnc_dump;  	
+         ["ALIVE_fnc_groupgarrison - class: %1 count positions: %2, count _units: %3", typeOf _building, count _buildingPositions, count units _group] call ALiVE_fnc_dump;
         };
 
-        _garrisonedBuildings pushBackUnique _building;
-        
         { // foreach _buildingPositions
 
             if (count _units == 0) exitWith {};
@@ -231,7 +218,7 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
         } foreach _buildingPositions;
     } else {
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-            ["ALIVE_fnc_groupGarrison - _buildingIsEmpty: %3, count _buildings: %1, _buildings: %2", count _buildings, _buildings, _buildingIsEmpty] call ALiVE_fnc_dump;
+            ["ALIVE_fnc_groupGarrison - _buildingClaimed: %3, count _buildings: %1, _buildings: %2", count _buildings, _buildings, _buildingClaimed] call ALiVE_fnc_dump;
         };
     };
 } forEach _buildings;
