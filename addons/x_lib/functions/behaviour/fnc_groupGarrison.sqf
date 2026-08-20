@@ -152,7 +152,6 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
 	 	 [_group, [_position, _radius, _radius, 0, false]] call CBA_fnc_taskSearchArea;
 };
 
-
 { // forEach _buildings
 	
     if (count _units == 0) exitWith {};
@@ -234,14 +233,14 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
             ["ALIVE_fnc_groupGarrison - _buildingIsEmpty: %3, count _buildings: %1, _buildings: %2", count _buildings, _buildings, _buildingIsEmpty] call ALiVE_fnc_dump;
         };
-
-    	 // if no buildings then patrol!
-        if !(isNil "_profile") then {
-            if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-                ["ALIVE_fnc_groupGarrison - No more empty buildings, lets patrol! calling ALIVE_fnc_ambientMovement"] call ALiVE_fnc_dump;
-            };
-            [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
-            [_profile, [200,"SAFE"]] call ALIVE_fnc_ambientMovement;
-        };
     };
 } forEach _buildings;
+
+// If any units could not be garrisoned, fall back to ambient movement once.
+if (count _units > 0 && {!(isNil "_profile")}) then {
+    if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+        ["ALIVE_fnc_groupGarrison - %1 units remain ungarrisoned, calling ALIVE_fnc_ambientMovement", count _units] call ALiVE_fnc_dump;
+    };
+    [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+    [_profile, [200,"SAFE"]] call ALIVE_fnc_ambientMovement;
+};
