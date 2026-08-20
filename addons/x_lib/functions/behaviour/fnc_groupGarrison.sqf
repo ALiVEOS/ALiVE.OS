@@ -81,9 +81,9 @@ if (count _staticWeapons > 0) then
                 _unit assignAsGunner _weapon;
                 [_unit] orderGetIn true;
             };
-        };
 
-        _units deleteAt 0;
+            _units deleteAt 0;
+        };
     } forEach _staticWeapons;
 };
 
@@ -169,9 +169,8 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
 
 
     if (_buildingIsEmpty) then {
+        private _buildingPositions = _building buildingPos -1;
 
-        private _buildingPositions = [];
-		    _buildingPositions append (_building buildingPos -1);
         // composition props (tents, camo nets, shelters) carry no engine
         // buildingPos data - synthesise standing positions on a ring just
         // outside the prop's bounding box so the whitelist can seat units.
@@ -189,19 +188,17 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
         [_buildingPositions, true] call CBA_fnc_Shuffle;
             
         // sort based on height
-        _buildingPositions = [_buildingPositions, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;      
+        _buildingPositions = [_buildingPositions, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;
         
-        // DEBUG -------------------------------------------------------------------------------------  
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {     
          ["ALIVE_fnc_groupgarrison - class: %1 count positions: %2, count _units: %3", _class, count _buildingPositions, count units _group] call ALiVE_fnc_dump;  	
         };
-        // DEBUG -------------------------------------------------------------------------------------
+
+        _garrisonedBuildings pushBackUnique _building;
         
         { // foreach _buildingPositions
 
             if (count _units == 0) exitWith {};
-
-            _garrisonedBuildings pushBackUnique _building;
 
             private _unit = _units select 0;
             private _position = _x;
@@ -231,24 +228,20 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
                };
             };
             
-            
             _units deleteAt 0;
         } foreach _buildingPositions;
     } else {
-    	// DEBUG -------------------------------------------------------------------------------------
-    	if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-    	 ["ALIVE_fnc_groupGarrison - _buildingIsEmpty: %3, count _buildings: %1, _buildings: %2", count _buildings, _buildings, _buildingIsEmpty] call ALiVE_fnc_dump;
-    	};
-    	// DEBUG -------------------------------------------------------------------------------------
+        if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+            ["ALIVE_fnc_groupGarrison - _buildingIsEmpty: %3, count _buildings: %1, _buildings: %2", count _buildings, _buildings, _buildingIsEmpty] call ALiVE_fnc_dump;
+        };
+
     	 // if no buildings then patrol!
-    	 if !(isNil "_profile") then {
-    	 	 // DEBUG -------------------------------------------------------------------------------------
-    	 	 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-    	 	  ["ALIVE_fnc_groupGarrison - No more empty buildings, lets patrol! calling ALIVE_fnc_ambientMovement"] call ALiVE_fnc_dump;
-    	 	 };
-    	 	 // DEBUG -------------------------------------------------------------------------------------
-    	   [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
-         [_profile, [200,"SAFE"]] call ALIVE_fnc_ambientMovement;
-       };
+        if !(isNil "_profile") then {
+            if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+                ["ALIVE_fnc_groupGarrison - No more empty buildings, lets patrol! calling ALIVE_fnc_ambientMovement"] call ALiVE_fnc_dump;
+            };
+            [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+            [_profile, [200,"SAFE"]] call ALIVE_fnc_ambientMovement;
+        };
     };
 } forEach _buildings;
