@@ -5,9 +5,9 @@ SCRIPT(releaseGarrisonBuildings);
 Function: ALiVE_fnc_releaseGarrisonBuildings
 
 Description:
-Releases every building claimed by a group from the central garrison
-occupancy index.
-The index is local; all callers must use the same authoritative machine.
+Releases every building claimed by a group from the server-authoritative
+central garrison occupancy index.
+The index is local to the server; callers on other machines are rejected.
 
 Parameters:
 Group - Group whose claims should be released
@@ -26,6 +26,7 @@ ALiVE Dev Team
 
 params [["_group", grpNull, [grpNull]]];
 
+if (!isServer) exitWith {false};
 if (isNull _group) exitWith {false};
 
 private _claimHashes = _group getVariable "alive_garrison_building_claim_hashes";

@@ -1014,6 +1014,17 @@ switch(_operation) do {
             private _side = _logic select 2 select 3;       //[_logic, "side"] call MAINCLASS;
             private _sideObject = [_side] call ALIVE_fnc_sideTextToObject;
 
+            // Building claims belong to the active profile group only while it
+            // remains a garrison. Resizing ejects surplus units into an
+            // unprofiled group for transport, so release the old reservations
+            // on the server before either group's membership changes.
+            if (_active && {_size < count _unitClasses}) then {
+                private _group = _logic select 2 select 13;
+                if (!isNull _group) then {
+                    [_group] call ALiVE_fnc_releaseGarrisonBuildings;
+                };
+            };
+
             if(_active) then {
                 _newGroup = createGroup _sideObject;
             };

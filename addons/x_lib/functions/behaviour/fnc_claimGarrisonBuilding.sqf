@@ -5,10 +5,11 @@ SCRIPT(claimGarrisonBuilding);
 Function: ALiVE_fnc_claimGarrisonBuilding
 
 Description:
-Claims a building for a group in the central garrison occupancy index.
+Claims a building for a group in the server-authoritative central garrison
+occupancy index.
 Object keys are stored in collision-safe hashValue buckets because Objects
 cannot be used directly as HashMap keys.
-The index is local; all callers must use the same authoritative machine.
+The index is local to the server; callers on other machines are rejected.
 
 Parameters:
 Object - Building to claim
@@ -31,6 +32,7 @@ params [
     ["_group", grpNull, [grpNull]]
 ];
 
+if (!isServer) exitWith {false};
 if (isNull _building || {isNull _group}) exitWith {false};
 
 if (isNil "ALiVE_garrisonBuildingOccupancyIndex") then {
