@@ -51,7 +51,19 @@ params [
 
 if (_class isEqualType objNull) then { _class = typeOf _class };
 if (_class == "") exitWith { false };
-if !(_class isKindOf "LandVehicle") exitWith { false };
+
+if (isNil "ALIVE_isAntiAirCapableCache") then {
+    ALIVE_isAntiAirCapableCache = createHashMap;
+};
+
+if (_class in ALIVE_isAntiAirCapableCache) exitWith {
+    ALIVE_isAntiAirCapableCache get _class
+};
+
+if !(_class isKindOf "LandVehicle") exitWith {
+    ALIVE_isAntiAirCapableCache set [_class, false];
+    false
+};
 
 // Nothing to shoot with, nothing to suppress. On its own this removes the
 // unarmed vehicles that prompted the report.
@@ -59,7 +71,10 @@ private _magazines = [];
 if (!isNil "BIS_fnc_magazinesEntityType") then {
     _magazines = [_class, true] call BIS_fnc_magazinesEntityType;
 };
-if (count _magazines == 0) exitWith { false };
+if (count _magazines == 0) exitWith {
+    ALIVE_isAntiAirCapableCache set [_class, false];
+    false
+};
 
 // Munitions that can take a lock on something moving at aircraft speed.
 // airLock is the engine's own distinction and it is exact: 1 locks ground
@@ -78,7 +93,10 @@ private _airCapable = false;
     };
 } forEach _magazines;
 
-if (_airCapable) exitWith { true };
+if (_airCapable) exitWith {
+    ALIVE_isAntiAirCapableCache set [_class, true];
+    true
+};
 
 // Gun-based air defence carries no guided rounds, so fall back to a turret that
 // elevates far enough to track aircraft and is not an artillery piece. Only
@@ -86,5 +104,8 @@ if (_airCapable) exitWith { true };
 // unarmed hull with a high-elevation mount out of the result.
 private _maxElev = getNumber (configFile >> "CfgVehicles" >> _class >> "Turrets" >> "MainTurret" >> "maxElev");
 private _isArtillery = getNumber (configFile >> "CfgVehicles" >> _class >> "artilleryScanner") > 0;
+private _result = (_maxElev > 65) && {!_isArtillery};
 
-(_maxElev > 65) && {!_isArtillery}
+ALIVE_isAntiAirCapableCache set [_class, _result];
+
+_result
