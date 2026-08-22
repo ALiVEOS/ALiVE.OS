@@ -77,15 +77,18 @@ if (!_simAttacks) then {
     ([MOD(profileSystem), [
         "speedModifier",
         "seaTransport",
-        "pathfinding"
+        "pathfinding",
+        "spacialGridProfiles"
     ]] call ALiVE_fnc_hashGetMany) params [
         ["_speedModifier", 1],
         ["_seaTransportMode", "auto"],
-        ["_pathfindingEnabled", false]
+        ["_pathfindingEnabled", false],
+        "_spacialGridProfiles"
     ];
 
     _seaTransportMode = toLower _seaTransportMode;
     private _boatsEnabled = _seaTransportMode != "never";
+    private _enemySidesBySide = createHashMap;
 
     // find profile to sim
     // sim up to 4 profiles per frame
@@ -156,17 +159,36 @@ if (!_simAttacks) then {
                     if (!_vehicleCargo && !_isPlayer && !_isAir && !_combat) then {
                         // get enemy sides
                         private _side = _profile select 2 select 3;
-                        private _sideObj = [_side] call ALiVE_fnc_sideTextToObject;
-                        private _sidesEnemy = [];
-                        if (_sideObj getfriend east < 0.6) then {_sidesEnemy pushback "EAST"};
-                        if (_sideObj getfriend west < 0.6) then {_sidesEnemy pushback "WEST"};
-                        if (_sideObj getfriend resistance < 0.6) then {_sidesEnemy pushback "GUER"};
+                        private _sidesEnemy = _enemySidesBySide getOrDefaultCall [_side, {
+                            private _sideObj = [_side] call ALiVE_fnc_sideTextToObject;
+                            private _computedEnemySides = [];
+
+                            if (_sideObj getfriend east < 0.6) then {_computedEnemySides pushback "EAST"};
+                            if (_sideObj getfriend west < 0.6) then {_computedEnemySides pushback "WEST"};
+                            if (_sideObj getfriend resistance < 0.6) then {_computedEnemySides pushback "GUER"};
+
+                            _computedEnemySides
+                        }, true];
 
                         // find and attack enemy profiles in-range
                         // only attack non-player, inactive entities
 
-                        private _nearEnemies = [_profilePosition, _combatRange, [_sidesEnemy,"entity","none", {!(_x select 2 select 1) && !(_x select 2 select 30)}], true] call ALiVE_fnc_getNearProfiles;
-                        _nearEnemies = _nearEnemies apply {_x select 2 select 4};
+                        private _nearEnemies = [];
+                        if !(_sidesEnemy isEqualTo []) then {
+                            private _nearProfiles = [_spacialGridProfiles,"findInRange", [_profilePosition,_combatRange,true,true,true]] call ALiVE_fnc_spacialGrid;
+
+                            {
+                                private _nearProfileData = _x select 2;
+                                if (
+                                    (_nearProfileData select 3) in _sidesEnemy
+                                    && {(_nearProfileData select 5) == "entity"}
+                                    && {!(_nearProfileData select 1)}
+                                    && {!(_nearProfileData select 30)}
+                                ) then {
+                                    _nearEnemies pushBack (_nearProfileData select 4);
+                                };
+                            } foreach _nearProfiles;
+                        };
 
                         if !(_nearEnemies isEqualTo []) then {
 
@@ -805,11 +827,6 @@ if (!_simAttacks) then {
                                             if (_profileToAttackHealth isEqualTo []) then {
                                                 private _vehicleClass = _targetToAttack select 2 select 11;
                                                 private _totalHitpoints = _vehicleClass call ALiVE_fnc_configGetVehicleHitPoints;
-
-                                                if (_totalHitpoints isEqualTo []) then {
-                                                    private _hp = [(configfile >> "CfgVehicles" >> _vehicleClass >> "HitPoints"),0] call BIS_fnc_returnChildren;
-                                                    {_totalHitpoints pushBack (configName _x)} forEach _hp;
-                                                };
 
                                                 {_profileToAttackHealth pushback [_x,0]} foreach _totalHitpoints;
                                             };
