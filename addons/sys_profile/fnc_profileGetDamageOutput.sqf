@@ -119,7 +119,7 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
     // attacker is in vehicle(s)
     //--------------------------
 
-    if (([_victim,"type"] call ALiVE_fnc_hashGet) == "entity") then {
+    if ((_victim select 2 select 5) == "entity") then {
         // victim is infantry squad
         // figure damage of veh vs inf
 
@@ -135,7 +135,6 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
                     _critChance = 0.15;
                     _critDamage = 1;
                 } else {
-                    private _commandingEntity = [MOD(profileHandler),"getProfile", (_attacker select 2 select 8) select 0] call ALiVE_fnc_profileHandler;
                     private _unitCount = count (_attacker select 2 select 11);
 
                     _hitChance = 0.75;
@@ -153,7 +152,6 @@ if ((_attacker select 2 select 5) == "entity") then {               // [_attacke
                     _critChance = 0.15;
                     _critDamage = 1.1;
                 } else {
-                    private _commandingEntity = [MOD(profileHandler),"getProfile", (_attacker select 2 select 8) select 0] call ALiVE_fnc_profileHandler;
                     private _unitCount = count (_attacker select 2 select 11);
 
                     _hitChance = 0.75;

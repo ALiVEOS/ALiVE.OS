@@ -698,13 +698,15 @@ if (!_simAttacks) then {
 
     // Simulate attacks
 
-    private _combatRate = [MOD(profileCombatHandler),"combatRate"] call ALiVE_fnc_hashGet;
+    ([MOD(profileCombatHandler), ["combatRate","attacksByID"]] call ALiVE_fnc_hashGetMany) params [
+        "_combatRate",
+        "_attacksByID"
+    ];
     private _attacksToSim = [MOD(profileSystem),"profileAttacksToSim"] call ALiVE_fnc_hashGet;
 
     if (_attacksToSim isEqualTo []) then {
 
-        private _profileAttacks = [MOD(profileCombatHandler),"attacksByID"] call ALiVE_fnc_hashGet;
-        _attacksToSim append (_profileAttacks select 1);
+        _attacksToSim append (keys _attacksByID);
 
         [MOD(profileSystem),"simulatingAttacks", false] call ALiVE_fnc_hashSet;
 
@@ -721,28 +723,24 @@ if (!_simAttacks) then {
             private ["_attacker"];
 
             private _attackID = _attacksToSim select 0;
-            private _attack = [MOD(profileCombatHandler),"getAttack", _attackID] call ALiVE_fnc_profileCombatHandler;
+            private _attack = _attacksByID get _attackID;
             _attacksToSim deleteat 0;
 
             if (!isnil "_attack") then {
 
                 if (!_profileSystemPaused && !isGamePaused) then {
 
-                    ([_attack, ["cyclesLeft","timeLastSim"]] call ALiVE_fnc_hashGetMany) params [
-                        "_cyclesLeft",
-                        ["_timeLastSim", diag_tickTime - 0.001]
-                    ];
+                    private _cyclesLeft = _attack get "cyclesLeft";
+                    private _timeLastSim = _attack getOrDefault ["timeLastSim", diag_tickTime - 0.001];
                     private _simModifier = (diag_tickTime - _timeLastSim) * accTime;
 
                     private _active = false;
 
                     if (_cyclesLeft > 0) then {
-                        [_attack,"cyclesLeft", _cyclesLeft - 1] call ALiVE_fnc_hashSet;
+                        _attack set ["cyclesLeft", _cyclesLeft - 1];
 
-                        ([_attack, ["attacker","targets"]] call ALiVE_fnc_hashGetMany) params [
-                            "_attackerID",
-                            "_targetIDs"
-                        ];
+                        private _attackerID = _attack get "attacker";
+                        private _targetIDs = _attack get "targets";
 
                         _attacker = _profilesById get _attackerID;
 
@@ -762,178 +760,165 @@ if (!_simAttacks) then {
                                 private _attackerPos = _attacker select 2 select 2;                     // [_attacker,"position"] call ALiVE_fnc_hashGet;
                                 private _targetPos = _target select 2 select 2;                         // [_target,"position"] call ALiVE_fnc_hashGet;
 
-                              //  private _maxEngagementRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
-                                private _maxEngagementRange = [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet;
+                                if (_attackerPos distance2D _targetPos <= _combatRange) then {
+                                    private "_targetToAttack";
+                                    private _targetComponentsRemaining = 0;
+                                    private _targetVehiclesInCommandOf = _target select 2 select 8;
 
-                                if (_attackerPos distance2D _targetPos <= _maxEngagementRange) then {
-                                    // get profiles to attack with
-                                    // vehicles entity commands, or just the entity
+                                    {
+                                        private _targetVehicle = _profilesById get _x;
 
-                                    private _profilesToAttackWith = [];
+                                        if (!isnil "_targetVehicle") then {
+                                            _targetToAttack = _targetVehicle;
+                                            _targetComponentsRemaining = _targetComponentsRemaining + 1;
+                                        };
+                                    } foreach _targetVehiclesInCommandOf;
+
+                                    // entity shouldn't be attacked separately if it's in a vehicle
+                                    if (isnil "_targetToAttack") then {
+                                        _targetToAttack = _target;
+                                        _targetComponentsRemaining = 1;
+                                    };
+
+                                    // attack each target profile individually
+                                    // if vehicle is destroyed, unassign it from its entity
+
+                                    private _targetToAttackID = _targetToAttack select 2 select 4;
+                                    private _targetToAttackType = _targetToAttack select 2 select 5;
+
+                                    private _profileToAttackHealth = [];
+
+                                    if (_targetToAttackType == "entity") then {
+                                        // must be copied so that calling "removeUnit" doesn't alter the new damage array
+                                        _profileToAttackHealth = +([_targetToAttack,"damages"] call ALiVE_fnc_hashGet);
+                                    } else {
+                                        _profileToAttackHealth = [_targetToAttack,"damage"] call ALiVE_fnc_hashGet;
+
+                                        // if vehicle hasn't been spawned yet
+                                        // init hitpoint values
+
+                                        if (_profileToAttackHealth isEqualTo []) then {
+                                            private _vehicleClass = _targetToAttack select 2 select 11;
+                                            private _totalHitpoints = _vehicleClass call ALiVE_fnc_configGetVehicleHitPoints;
+
+                                            {_profileToAttackHealth pushback [_x,0]} foreach _totalHitpoints;
+                                        };
+                                    };
+
+                                    // get total damage that can be dealt this turn
+                                    // damage is calculated from each vehicle the entity controls
+                                    // if entity controls no vehicles, the entity itself attacks
+
+                                    private _damageToInflict = 0;
+                                    private _damageModifier = _combatRate * _simModifier;
+                                    private _attackerComponentFound = false;
                                     private _attackerVehiclesInCommandOf = _attacker select 2 select 8;
 
                                     {
                                         private _vehicleUnderCommand = _profilesById get _x;
 
                                         if (!isnil "_vehicleUnderCommand") then {
-                                            _profilesToAttackWith pushback _vehicleUnderCommand;
+                                            _attackerComponentFound = true;
+                                            _damageToInflict = _damageToInflict + (([_vehicleUnderCommand,_targetToAttack] call ALiVE_fnc_profileGetDamageOutput) * _damageModifier);
                                         };
                                     } foreach _attackerVehiclesInCommandOf;
 
-                                    // entity shouldn't attack separately if it's inside vehicle(s)
-                                    if (_profilesToAttackWith isEqualTo []) then {
-                                        _profilesToAttackWith pushback _attacker;
+                                    // Entity shouldn't attack separately if it has a valid commanded vehicle.
+                                    if (!_attackerComponentFound) then {
+                                        _damageToInflict = ([_attacker,_targetToAttack] call ALiVE_fnc_profileGetDamageOutput) * _damageModifier;
                                     };
 
-                                    // get targets to attack
-
-                                    private _targetsToAttack = [];
-                                    private _targetVehiclesInCommandOf = _target select 2 select 8;
-
-                                    {
-                                        private _targetToAttack = _profilesById get _x;
-
-                                        if (!isnil "_targetToAttack") then {
-                                            _targetsToAttack pushback _targetToAttack;
-                                        };
-                                    } foreach _targetVehiclesInCommandOf;
-
-                                    // entity shouldn't be attacked separately if it's in a vehicle
-                                    if (_targetsToAttack isEqualTo []) then {
-                                        _targetsToAttack pushback _target;
-                                    } else {
-                                        reverse _targetsToAttack; // destroy vehicles in reverse order to avoid corrupting unit assignment indexes
-                                    };
-
-                                    if !(_targetsToAttack isEqualTo []) then {
-                                        // attack each target profile individually
-                                        // if vehicle is destroyed, unassigned it from it's entity
-
-                                        private _targetToAttack = _targetsToAttack select 0;
-                                        private _targetToAttackID = _targetToAttack select 2 select 4;
-                                        private _targetToAttackType = _targetToAttack select 2 select 5;
-
-                                        private _profileToAttackHealth = [];
+                                    if (_damageToInflict > 0) then {
+                                        private _damageToInflictLeft = _damageToInflict;
 
                                         if (_targetToAttackType == "entity") then {
-                                            // must be copied so that calling "removeUnit" doesn't alter the new damage array
-                                            _profileToAttackHealth = +([_targetToAttack,"damages"] call ALiVE_fnc_hashGet);
-                                        } else {
-                                            _profileToAttackHealth = [_targetToAttack,"damage"] call ALiVE_fnc_hashGet;
+                                            // attacking entity
+                                            // spread damage randomly over units
 
-                                            // if vehicle hasn't been spawned yet
-                                            // init hitpoint values
+                                            private _unitCount = count _profileToAttackHealth;
 
-                                            if (_profileToAttackHealth isEqualTo []) then {
-                                                private _vehicleClass = _targetToAttack select 2 select 11;
-                                                private _totalHitpoints = _vehicleClass call ALiVE_fnc_configGetVehicleHitPoints;
+                                            if (_unitCount > 0) then {
+                                                private _dmgPerUnitEven = _damageToInflict / _unitCount;
 
-                                                {_profileToAttackHealth pushback [_x,0]} foreach _totalHitpoints;
-                                            };
-                                        };
+                                                private _randomDamageMin = _dmgPerUnitEven / 2;
+                                                private _randomDamageMax = _dmgPerUnitEven * 8;
 
-                                        // get total damage that can be dealt this turn
-                                        // damage is calculated from each vehicle the entity controls
-                                        // if entity controls no vehicles, the entity itself attacks
+                                                while {_damageToInflictLeft > 0 && {_unitCount > 0}} do {
+                                                    private _randomIndex = floor random _unitCount;
+                                                    private _randomIndexDamage = _profileToAttackHealth select _randomIndex;
 
-                                        private _damageToInflict = 0;
-                                        {
-                                            _damageToInflict = _damageToInflict + (([_x,_targetToAttack] call ALiVE_fnc_profileGetDamageOutput) * _combatRate * _simModifier);
-                                        } foreach _profilesToAttackWith;
-
-                                        if (_damageToInflict > 0) then {
-                                            private _damageToInflictLeft = _damageToInflict;
-
-                                            if (_targetToAttackType == "entity") then {
-                                                // attacking entity
-                                                // spread damage randomly over units
-
-                                                private _unitCount = count _profileToAttackHealth;
-
-                                                if (_unitCount > 0) then {
-                                                    private _dmgPerUnitEven = _damageToInflict / _unitCount;
-
-                                                    private _randomDamageMin = _dmgPerUnitEven / 2;
-                                                    private _randomDamageMax = _dmgPerUnitEven * 8;
-
-                                                    private _indexesToRemove = [];
-
-                                                    while {_damageToInflictLeft > 0 && {_unitCount > 0}} do {
-                                                        private _randomIndex = floor random _unitCount;
-                                                        private _randomIndexDamage = _profileToAttackHealth select _randomIndex;
-
-                                                        // calc damage - ensure no overdamage
-                                                        private _randomDamage = random [_randomDamageMin, _dmgPerUnitEven, _randomDamageMax];
-                                                        if (_randomDamage > _damageToInflictLeft) then {
-                                                            _randomDamage = _damageToInflictLeft;
-                                                        };
-
-                                                        _randomIndexDamage = _randomIndexDamage + _randomDamage;
-                                                        _damageToInflictLeft = _damageToInflictLeft - _randomDamage;
-
-                                                        if (_randomIndexDamage >= 1) then {
-                                                            _indexesToRemove pushback _randomIndex;
-                                                            _profileToAttackHealth deleteAt _randomIndex;
-                                                            _unitCount = _unitCount - 1;
-                                                        } else {
-                                                            _profileToAttackHealth set [_randomIndex,_randomIndexDamage];
-                                                        };
+                                                    // calc damage - ensure no overdamage
+                                                    private _randomDamage = random [_randomDamageMin, _dmgPerUnitEven, _randomDamageMax];
+                                                    if (_randomDamage > _damageToInflictLeft) then {
+                                                        _randomDamage = _damageToInflictLeft;
                                                     };
 
-                                                    {
-                                                        [_targetToAttack,"removeUnit", _x] call ALiVE_fnc_profileEntity;
+                                                    _randomIndexDamage = _randomIndexDamage + _randomDamage;
+                                                    _damageToInflictLeft = _damageToInflictLeft - _randomDamage;
+
+                                                    if (_randomIndexDamage >= 1) then {
+                                                        _profileToAttackHealth deleteAt _randomIndex;
+                                                        [_targetToAttack,"removeUnit", _randomIndex] call ALiVE_fnc_profileEntity;
                                                         _unitCount = _unitCount - 1;
-                                                    } foreach _indexesToRemove;
-
-                                                    [_targetToAttack,"damages", _profileToAttackHealth] call ALiVE_fnc_hashSet;
-
-                                                    if (_unitCount == 0) then {
-                                                        _toBeKilled pushbackunique [_attacker,_targetToAttack];
-                                                        _targetsToAttack deleteAt 0;
-
-                                                        private _attackTargetsKilled = _attack select 2 select 9;
-                                                        _attackTargetsKilled pushback (_targetToAttack select 2 select 4);
+                                                    } else {
+                                                        _profileToAttackHealth set [_randomIndex,_randomIndexDamage];
                                                     };
-                                                } else {
-                                                    _toBeKilled pushbackunique [_attacker,_targetToAttack];
-                                                    _targetsToAttack deleteAt 0;
+                                                };
 
-                                                    private _attackTargetsKilled = _attack select 2 select 9;
-                                                    _attackTargetsKilled pushback (_targetToAttack select 2 select 4);
+                                                [_targetToAttack,"damages", _profileToAttackHealth] call ALiVE_fnc_hashSet;
+
+                                                if (_unitCount == 0) then {
+                                                    _toBeKilled pushbackunique [_attacker,_targetToAttack];
+                                                    _targetComponentsRemaining = _targetComponentsRemaining - 1;
+
+                                                    private _attackTargetsKilled = _attack get "targetsKilled";
+                                                    _attackTargetsKilled pushback _targetToAttackID;
                                                 };
                                             } else {
-                                                // attacking vehicle
-                                                // spread damage randomly over hit points
+                                                _toBeKilled pushbackunique [_attacker,_targetToAttack];
+                                                _targetComponentsRemaining = _targetComponentsRemaining - 1;
 
-                                                private _hitPointCount = count _profileToAttackHealth;
+                                                private _attackTargetsKilled = _attack get "targetsKilled";
+                                                _attackTargetsKilled pushback _targetToAttackID;
+                                            };
+                                        } else {
+                                            // attacking vehicle
+                                            // spread damage randomly over hit points
+
+                                            private _hitPointCount = count _profileToAttackHealth;
+                                            if (_hitPointCount > 0) then {
                                                 private _dmgPerHitPointEven = _damageToInflict / _hitPointCount;
 
                                                 private _randomDamageMin = _dmgPerHitPointEven / 2;
                                                 private _randomDamageMax = _dmgPerHitPointEven * 8;
 
-                                                while {_damageToInflictLeft > 0} do {
-                                                    private _randomIndex = floor random _hitPointCount;
+                                                // HitFuel can lead to rapid explosions on spawn if damaged at all.
+                                                // Build the eligible index set once so every loop iteration makes progress.
+                                                private _damageableHitPointIndexes = [];
+                                                {
+                                                    if ((_x select 0) != "HitFuel") then {
+                                                        _damageableHitPointIndexes pushBack _forEachIndex;
+                                                    };
+                                                } foreach _profileToAttackHealth;
+
+                                                private _damageableHitPointCount = count _damageableHitPointIndexes;
+                                                while {_damageToInflictLeft > 0 && {_damageableHitPointCount > 0}} do {
+                                                    private _randomIndex = selectRandom _damageableHitPointIndexes;
                                                     private _randomHitPoint = _profileToAttackHealth select _randomIndex;
 
-                                                    private _randomHitPointNme = _randomHitPoint select 0;
                                                     private _randomHitPointDmg = _randomHitPoint select 1;
+                                                    private _randomDamage = random [_randomDamageMin, _dmgPerHitPointEven, _randomDamageMax];
 
-                                                    // HitFuel can lead to rapid explosions on spawn
-                                                    // if damaged at all
-                                                    if (_randomHitPointNme != "HitFuel") then {
-                                                        private _randomDamage = random [_randomDamageMin, _dmgPerHitPointEven, _randomDamageMax];
+                                                    _randomHitPointDmg = _randomHitPointDmg + _randomDamage;
+                                                    _damageToInflictLeft = _damageToInflictLeft - _randomDamage;
 
-                                                        _randomHitPointDmg = _randomHitPointDmg + _randomDamage;
-                                                        _damageToInflictLeft = _damageToInflictLeft - _randomDamage;
-
-                                                        if (_randomHitPointDmg >= 1) then {
-                                                            _randomHitPoint set [1,1];
-                                                        } else {
-                                                            _randomHitPoint set [1,_randomHitPointDmg];
-                                                        };
-
-                                                        _profileToAttackHealth set [_randomIndex,_randomHitPoint];
+                                                    if (_randomHitPointDmg >= 1) then {
+                                                        _randomHitPoint set [1,1];
+                                                    } else {
+                                                        _randomHitPoint set [1,_randomHitPointDmg];
                                                     };
+
+                                                    _profileToAttackHealth set [_randomIndex,_randomHitPoint];
                                                 };
 
                                                 // if all of the vehicles hitpoints are 0, vehicle is dead
@@ -954,10 +939,10 @@ if (!_simAttacks) then {
                                                 } else {
                                                     _toBeUnassigned pushbackunique [_target,_targetToAttack];
                                                     _toBeKilled pushbackunique [_attacker,_targetToAttack];
-                                                    _targetsToAttack deleteAt 0;
+                                                    _targetComponentsRemaining = _targetComponentsRemaining - 1;
 
-                                                    private _attackTargetsKilled = _attack select 2 select 9;
-                                                    _attackTargetsKilled pushback (_targetToAttack select 2 select 4);
+                                                    private _attackTargetsKilled = _attack get "targetsKilled";
+                                                    _attackTargetsKilled pushback _targetToAttackID;
 
                                                     // if this vehicle is the last vehicle it's commanding entity controls
                                                     // kill the commanding entity as well
@@ -972,16 +957,16 @@ if (!_simAttacks) then {
                                                             _attackTargetsKilled pushback _x;
                                                         };
                                                     } foreach ([_targetToAttack,"entitiesInCommandOf"] call ALiVE_fnc_hashGet);
-                                                };
+                                                    };
                                             };
                                         };
+                                    };
 
-                                        // combat simulation over
-                                        // end attack if no targets remain
+                                    // combat simulation over
+                                    // end attack if no targets remain
 
-                                        if !(_targetsToAttack isEqualTo []) then {
-                                            _active = true;
-                                        };
+                                    if (_targetComponentsRemaining > 0) then {
+                                        _active = true;
                                     };
                                 };
                             };
@@ -998,7 +983,7 @@ if (!_simAttacks) then {
 
                 };
 
-                [_attack,"timeLastSim", diag_tickTime] call ALiVE_fnc_hashSet;
+                _attack set ["timeLastSim", diag_tickTime];
             };
         };
 

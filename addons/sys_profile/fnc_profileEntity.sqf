@@ -1338,7 +1338,7 @@ switch(_operation) do {
               if (!isnil "_attack") then {
                 // if targets are active
                 // reveal them to use so we can keep the party going
-                private _targets = _attack select 2 select 8;
+                private _targets = _attack get "targets";
                 {
                     private _targetProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
                     if (!isnil "_targetProfile" && { [_targetProfile,"active"] call ALiVE_fnc_hashGet }) then {
@@ -1354,7 +1354,7 @@ switch(_operation) do {
                     };
                 } foreach _targets;
 
-                [MOD(profileCombatHandler),"removeAttacks", [_attack]] call ALiVE_fnc_profileCombatHandler;
+                [MOD(profileCombatHandler),"removeAttacks", [_attackID]] call ALiVE_fnc_profileCombatHandler;
               };
             };
 
