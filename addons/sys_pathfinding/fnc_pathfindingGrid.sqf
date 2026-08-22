@@ -8,17 +8,6 @@ params [
 
 private "_result";
 
-// CANDIDATE C: build + return a fresh decompressed water sector from the cached
-// template instead of deep-copying it. The decompress only sets fields 0-2, so the
-// new array shares the template's type (3) + modifiers (4) by reference - read-only
-// in the search, so safe - dropping the per-access deep-copy churn on coastal maps.
-private _fns_decompressWaterSector = {
-    params ["_template","_sectorIndex","_size","_radius"];
-    private _x = _sectorIndex select 0;
-    private _y = _sectorIndex select 1;
-    [_sectorIndex, [_size*_x,_size*_y], [_size*_x + _radius, _size*_y + _radius], _template select 3, _template select 4]
-};
-
 private _fnc_mapBoundsOuterLimit = {
     params ["_value"];
     
@@ -28,15 +17,11 @@ private _fnc_mapBoundsOuterLimit = {
     _value
 };
 
-// CANDIDATE C: the 8 neighbour offsets, built once and reused, instead of rebuilt on
-// every getNeighbor* call.
-if (isNil "ALiVE_pathfinding_neighborOffsets") then {
-    ALiVE_pathfinding_neighborOffsets = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
-};
-
 switch (_operation) do {
 
     case "create": {
+        ALiVE_pathfinding_neighborOffsets = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+
         _start = diag_tickTime;
         _args params ["_sectorSize","_subSectorSize"];
 
@@ -54,7 +39,7 @@ switch (_operation) do {
             };
         };
 
-        _logic = [[
+        _logic = createHashMapFromArray [
             ["sectors", createHashMapFromArray _sectors],
             ["subSectors", createHashMapFromArray _subSectors],
             ["sectorSize", _sectorSize],
@@ -62,8 +47,11 @@ switch (_operation) do {
             ["subSectorSize", _subSectorSize],
             ["subSectorRadius", _subSectorSize/2],
             ["gridWidth", _gridWidth],
+            // Lazy, mission-lifetime terrain water caches. The outer map selects
+            // a cache by [sea level, water margin, layer size]
+            ["waterEdgeCaches", createHashMap],
             ["debugMarkers", []]
-        ]] call ALiVE_fnc_hashCreate;
+        ];
         _stop = diag_tickTime;
         ["Pathfinding Grid Creation Time:%1",_stop-_start] call Alive_fnc_Dump;
         _result = _logic;
@@ -74,16 +62,22 @@ switch (_operation) do {
 
         _args params ["_x","_y"];
 
-        private _sectors = [_logic,"sectors"] call ALiVE_fnc_hashGet;
+        private _sectors = _logic get "sectors";
 
         _result = _sectors get [_x,_y];
 
         if (isnil "_result") exitwith {};
 
-        if (_result select 0 isEqualTo [-1,-1]) then { //Compressed water sector - build position info on the fly (shallow, via the helper)
-            private _sectorSize = [_logic,"sectorSize"] call ALiVE_fnc_hashGet;
-            private _sectorRadius = [_logic,"sectorRadius"] call ALiVE_fnc_hashGet;
-            _result = [_result, [_x,_y], _sectorSize, _sectorRadius] call _fns_decompressWaterSector;
+        if (_result select 0 isEqualTo [-1,-1]) then { //Compressed water sector - build position info on the fly without deep-copying the template
+            private _sectorSize = _logic get "sectorSize";
+            private _sectorRadius = _sectorSize / 2;
+            _result = [
+                [_x,_y],
+                [_sectorSize*_x,_sectorSize*_y],
+                [_sectorSize*_x + _sectorRadius,_sectorSize*_y + _sectorRadius],
+                _result select 3,
+                _result select 4
+            ];
         };
 
         _result;
@@ -93,16 +87,22 @@ switch (_operation) do {
 
         _args params ["_x","_y"];
 
-        private _subSectors = [_logic,"subSectors"] call ALiVE_fnc_hashGet;
+        private _subSectors = _logic get "subSectors";
 
         _result = _subSectors get [_x,_y];
 
         if (isnil "_result") exitwith {};
 
-        if (_result select 0 isEqualTo [-1,-1]) then { //Compressed water sector - build position info on the fly (shallow, via the helper)
-            private _subSectorSize = [_logic,"subSectorSize"] call ALiVE_fnc_hashGet;
-            private _subSectorRadius = [_logic,"subSectorRadius"] call ALiVE_fnc_hashGet;
-            _result = [_result, [_x,_y], _subSectorSize, _subSectorRadius] call _fns_decompressWaterSector;
+        if (_result select 0 isEqualTo [-1,-1]) then { //Compressed water sector - build position info on the fly without deep-copying the template
+            private _subSectorSize = _logic get "subSectorSize";
+            private _subSectorRadius = _subSectorSize / 2;
+            _result = [
+                [_x,_y],
+                [_subSectorSize*_x,_subSectorSize*_y],
+                [_subSectorSize*_x + _subSectorRadius,_subSectorSize*_y + _subSectorRadius],
+                _result select 3,
+                _result select 4
+            ];
         };
 
         _result;
@@ -112,7 +112,7 @@ switch (_operation) do {
 
         private _pos = _args;
 
-        private _sectorSize = [_logic,"sectorSize"] call ALiVE_fnc_hashGet;
+        private _sectorSize = _logic get "sectorSize";
 
         private _x = floor ((_pos select 0) / _sectorSize);
         private _y = floor ((_pos select 1) / _sectorSize);
@@ -125,7 +125,7 @@ switch (_operation) do {
 
         private _pos = _args;
 
-        private _subSectorSize = [_logic,"subSectorSize"] call ALiVE_fnc_hashGet;
+        private _subSectorSize = _logic get "subSectorSize";
 
         private _x = (floor ((_pos select 0) / _subSectorSize));
         private _y = (floor ((_pos select 1) / _subSectorSize));
@@ -184,9 +184,9 @@ switch (_operation) do {
         // + direct hash-gets per fetch instead of ~10 dispatches.
         private _sectorIndex = _args;
         if (isNil "_sectorIndex") exitWith { _result = []; };
-        private _sectors = [_logic,"sectors"] call ALiVE_fnc_hashGet;
-        private _sectorSize = [_logic,"sectorSize"] call ALiVE_fnc_hashGet;
-        private _sectorRadius = [_logic,"sectorRadius"] call ALiVE_fnc_hashGet;
+        private _sectors = _logic get "sectors";
+        private "_sectorSize";
+        private "_sectorRadius";
         private _ix = _sectorIndex select 0;
         private _iy = _sectorIndex select 1;
         private _neighbors = [];
@@ -195,7 +195,19 @@ switch (_operation) do {
             private _sector = _sectors get _ni;
             if (!isNil "_sector") then {
                 if ((_sector select 0) isEqualTo [-1,-1]) then {
-                    _sector = [_sector, _ni, _sectorSize, _sectorRadius] call _fns_decompressWaterSector;
+                    // Most expansions are over land
+                    // Fetch water-only metadata lazily when a compressed sector is present.
+                    if (isNil "_sectorSize") then {
+                        _sectorSize = _logic get "sectorSize";
+                        _sectorRadius = _sectorSize / 2;
+                    };
+                    _sector = [
+                        _ni,
+                        [_sectorSize*(_ni select 0),_sectorSize*(_ni select 1)],
+                        [_sectorSize*(_ni select 0) + _sectorRadius,_sectorSize*(_ni select 1) + _sectorRadius],
+                        _sector select 3,
+                        _sector select 4
+                    ];
                 };
                 _neighbors pushBack _sector;
             };
@@ -207,9 +219,9 @@ switch (_operation) do {
         // CANDIDATE A/C: fold getNeighborIndices + getSubSector in here.
         private _sectorIndex = _args;
         if (isNil "_sectorIndex") exitWith { _result = []; };
-        private _subSectors = [_logic,"subSectors"] call ALiVE_fnc_hashGet;
-        private _subSectorSize = [_logic,"subSectorSize"] call ALiVE_fnc_hashGet;
-        private _subSectorRadius = [_logic,"subSectorRadius"] call ALiVE_fnc_hashGet;
+        private _subSectors = _logic get "subSectors";
+        private "_subSectorSize";
+        private "_subSectorRadius";
         private _ix = _sectorIndex select 0;
         private _iy = _sectorIndex select 1;
         private _neighbors = [];
@@ -218,7 +230,17 @@ switch (_operation) do {
             private _subSector = _subSectors get _ni;
             if (!isNil "_subSector") then {
                 if ((_subSector select 0) isEqualTo [-1,-1]) then {
-                    _subSector = [_subSector, _ni, _subSectorSize, _subSectorRadius] call _fns_decompressWaterSector;
+                    if (isNil "_subSectorSize") then {
+                        _subSectorSize = _logic get "subSectorSize";
+                        _subSectorRadius = _subSectorSize / 2;
+                    };
+                    _subSector = [
+                        _ni,
+                        [_subSectorSize*(_ni select 0),_subSectorSize*(_ni select 1)],
+                        [_subSectorSize*(_ni select 0) + _subSectorRadius,_subSectorSize*(_ni select 1) + _subSectorRadius],
+                        _subSector select 3,
+                        _subSector select 4
+                    ];
                 };
                 _neighbors pushBack _subSector;
             };
@@ -228,17 +250,17 @@ switch (_operation) do {
 
     case "enableDebugMarkers": {
         _args params ["_enable"];
-        private _debugMarkers = [_logic,"debugMarkers"] call ALiVE_fnc_hashGet;
+        private _debugMarkers = _logic get "debugMarkers";
 
         // Enable: if not already drawn, build the coloured sector overlay and
         // store the created marker names. (sectors is a HashMap, so forEach gives
         // key=_x, value=_y - pass the sector value _y to the marker builder.)
         if (_enable) exitwith {
             if (count _debugMarkers > 0) exitWith { _result = true; };   // already drawn
-            private _sectors = [_logic, "sectors"] call Alive_fnc_hashGet;
-            private _size = [_logic,"sectorSize"] call Alive_fnc_hashGet;
+            private _sectors = _logic get "sectors";
+            private _size = _logic get "sectorSize";
             { _debugMarkers append ([nil, "createSectorDebugMarker", [_y,_size]] call Alive_fnc_pathfindingSector); } foreach _sectors;
-            [_logic,"debugMarkers",_debugMarkers] call ALiVE_fnc_hashSet;
+            _logic set ["debugMarkers", _debugMarkers];
             _result = true;
         };
 
@@ -246,7 +268,7 @@ switch (_operation) do {
         // enable will redraw (the previous version left stale names in the store,
         // which blocked re-enabling).
         { deleteMarker _x } forEach _debugMarkers;
-        [_logic,"debugMarkers",[]] call ALiVE_fnc_hashSet;
+        _logic set ["debugMarkers", []];
         _result = false;
     };
 

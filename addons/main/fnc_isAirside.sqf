@@ -71,6 +71,7 @@ if (count _position < 2) exitWith { false };
 private _px = _position select 0;
 private _py = _position select 1;
 private _hit = false;
+private _allKinds = _kinds isEqualTo [1,2,3];
 
 private _fieldCount = (count ALiVE_airsideBounds) / 4;
 
@@ -81,9 +82,15 @@ for "_i" from 0 to (_fieldCount - 1) do {
     // an airfield, and this rejects those in five arithmetic operations.
     private _dx = _px - (ALiVE_airsideBounds select _b);
     private _dy = _py - (ALiVE_airsideBounds select (_b + 1));
-    private _br = (ALiVE_airsideBounds select (_b + 2)) + _margin;
+    private _distance2 = (_dx * _dx) + (_dy * _dy);
+    private _insideBounds = if (_margin == 0) then {
+        _distance2 <= (ALiVE_airsideBounds select (_b + 3))
+    } else {
+        private _br = (ALiVE_airsideBounds select (_b + 2)) + _margin;
+        _distance2 <= (_br * _br)
+    };
 
-    if (((_dx * _dx) + (_dy * _dy)) <= (_br * _br)) then {
+    if (_insideBounds) then {
 
         private _caps = ALiVE_airsideCapsules param [_i, []];
         private _capCount = (count _caps) / 8;
@@ -91,10 +98,9 @@ for "_i" from 0 to (_fieldCount - 1) do {
         for "_j" from 0 to (_capCount - 1) do {
             private _c = _j * 8;
 
-            if ((_caps select (_c + 7)) in _kinds) then {
+            if (_allKinds || {(_caps select (_c + 7)) in _kinds}) then {
                 private _ax  = _caps select _c;
                 private _ay  = _caps select (_c + 1);
-                private _r   = (_caps select (_c + 4)) + _margin;
                 private _inv = _caps select (_c + 6);
 
                 private _vx = (_caps select (_c + 2)) - _ax;
@@ -111,8 +117,14 @@ for "_i" from 0 to (_fieldCount - 1) do {
 
                 private _ex = _wx - (_t * _vx);
                 private _ey = _wy - (_t * _vy);
+                private _radius2 = if (_margin == 0) then {
+                    _caps select (_c + 5)
+                } else {
+                    private _r = (_caps select (_c + 4)) + _margin;
+                    _r * _r
+                };
 
-                if (((_ex * _ex) + (_ey * _ey)) <= (_r * _r)) exitWith { _hit = true };
+                if (((_ex * _ex) + (_ey * _ey)) <= _radius2) exitWith { _hit = true };
             };
         };
     };
