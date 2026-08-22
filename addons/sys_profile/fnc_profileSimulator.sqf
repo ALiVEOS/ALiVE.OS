@@ -47,12 +47,20 @@ if (isGamePaused) exitwith {
 //_this = _this select 0;
 
 
-private _debug = [MOD(profileSystem),"debug"] call ALiVE_fnc_hashGet;
-private _profileSystemPaused = [MOD(profileSystem),"paused"] call ALiVE_fnc_hashGet;
+([MOD(profileSystem), [
+    "debug",
+    "paused",
+    "profilesToSim",
+    "simulatingAttacks"
+]] call ALiVE_fnc_hashGetMany) params [
+    "_debug",
+    "_profileSystemPaused",
+    "_profilesToSim",
+    "_simAttacks"
+];
 
 private _combatRange = [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet;
-private _profilesToSim = [MOD(profileSystem),"profilesToSim"] call ALiVE_fnc_hashGet;
-private _simAttacks = [MOD(profileSystem),"simulatingAttacks"] call ALiVE_fnc_hashGet;
+private _profilesById = [MOD(profileHandler),"profilesById"] call ALiVE_fnc_hashGet;
 
 if (_profilesToSim isEqualTo []) then {
     private _profilesByType = [MOD(profileHandler),"profilesByType"] call ALiVE_fnc_hashGet;
@@ -66,10 +74,18 @@ if (_profilesToSim isEqualTo []) then {
 
 if (!_simAttacks) then {
 
-    private _speedModifier = [MOD(profileSystem),"speedModifier", 1] call ALiVE_fnc_HashGet;
-    private _seaTransportMode = toLower ([MOD(profileSystem),"seaTransport", "auto"] call ALiVE_fnc_HashGet);
+    ([MOD(profileSystem), [
+        "speedModifier",
+        "seaTransport",
+        "pathfinding"
+    ]] call ALiVE_fnc_hashGetMany) params [
+        ["_speedModifier", 1],
+        ["_seaTransportMode", "auto"],
+        ["_pathfindingEnabled", false]
+    ];
+
+    _seaTransportMode = toLower _seaTransportMode;
     private _boatsEnabled = _seaTransportMode != "never";
-    private _pathfindingEnabled = [MOD(profileSystem),"pathfinding", false] call ALiVE_fnc_hashGet;
 
     // find profile to sim
     // sim up to 4 profiles per frame
@@ -81,7 +97,7 @@ if (!_simAttacks) then {
         private "_profile";
 
         while {isnil "_profile" && !(_profilesToSim isEqualTo [])} do {
-            _profile = [MOD(profileHandler),"getProfile", _profilesToSim select 0] call ALiVE_fnc_profileHandler;
+            _profile = _profilesById get (_profilesToSim select 0);
             _profilesToSim deleteat 0;
         };
 
@@ -90,15 +106,17 @@ if (!_simAttacks) then {
             if (!_profileSystemPaused && !isGamePaused) then {
                 // begin sim
 
-                private _locked = [_profile,"locked", false] call ALiVE_fnc_HashGet;
-                private _combat = [_profile,"combat", false] call ALiVE_fnc_HashGet;
+                ([_profile, ["locked","combat","timeLastSim"]] call ALiVE_fnc_hashGetMany) params [
+                    ["_locked", false],
+                    ["_combat", false],
+                    ["_timeLastSim", diag_tickTime - 0.001]
+                ];
 
                 // only sim if profile is not locked or in combat
                 // locked entities could be spawning/despawning or other
 
                 if (!_locked && !_combat) then {
 
-                    private _timeLastSim = [_profile,"timeLastSim", diag_tickTime - 0.001] call ALiVE_fnc_hashGet;
                     private _simModifier = diag_tickTime - _timeLastSim;
 
                     // gather info on this profile
@@ -118,7 +136,7 @@ if (!_simAttacks) then {
 
                         // determine if vehicles is a moving air unit
                         {
-                            private _vehicle = [MOD(ProfileHandler),"getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                            private _vehicle = _profilesById get _x;
 
                             // if engineOn and vehicleClass is air vehicle
                             if (!isnil "_vehicle" && {(_vehicle select 2 select 15)} && {(_vehicle select 2 select 11) isKindOf "Air"}) then {
@@ -160,8 +178,10 @@ if (!_simAttacks) then {
                             if (!isnil "_attackID") then {
                                 //["%1 begins attacking %2", _profileID, _nearEnemies] call ALiVE_fnc_Dump;
                                 _combat = true;
-                                [_profile,"combat", true] call ALiVE_fnc_HashSet;
-                                [_profile,"attackID", _attackID] call ALiVE_fnc_HashSet;
+                                [_profile, [
+                                    ["combat", true],
+                                    ["attackID", _attackID]
+                                ]] call ALiVE_fnc_hashSetMany;
                             };
                         };
                     };
@@ -179,15 +199,25 @@ if (!_simAttacks) then {
                                 // profile is not spawned, simulate movement
 
                                 private _activeWaypoint = _waypoints select 0;
-                                private _destination = [_activeWaypoint,"position"] call ALiVE_fnc_hashGet;
-                                private _completionRadius = [_activeWaypoint,"completionRadius"] call ALiVE_fnc_hashGet;
-                                private _statements = [_activeWaypoint,"statements"] call ALiVE_fnc_hashGet;
+                                ([_activeWaypoint, [
+                                    "position",
+                                    "completionRadius",
+                                    "statements",
+                                    "speed",
+                                    "type"
+                                ]] call ALiVE_fnc_hashGetMany) params [
+                                    "_destination",
+                                    "_completionRadius",
+                                    "_statements",
+                                    "_waypointSpeed",
+                                    "_waypointType"
+                                ];
                                 private _distanceToWaypoint = _profilePosition distance2D _destination;
 
                                 private _speedPerSecondArray = _profile select 2 select 22;
                                 private _speedPerSecond = _speedPerSecondArray select 1;
 
-                                switch ([_activeWaypoint,"speed"] call ALiVE_fnc_hashGet) do {
+                                switch (_waypointSpeed) do {
                                     case "LIMITED": {_speedPerSecond = _speedPerSecondArray select 0};
                                     case "NORMAL":  {_speedPerSecond = _speedPerSecondArray select 1};
                                     case "FULL":    {_speedPerSecond = _speedPerSecondArray select 2};
@@ -216,7 +246,7 @@ if (!_simAttacks) then {
                                     private _executeStatements = false;
                                     private _handleWPcomplete = {};
 
-                                    switch ([_activeWaypoint,"type"] call ALiVE_fnc_hashGet) do {
+                                    switch (_waypointType) do {
                                         case "CYCLE" : {
                                             _direction = _profilePosition getDir _destination;
                                             _newPosition = _profilePosition getPos [_moveDistance, _direction];
@@ -268,7 +298,7 @@ if (!_simAttacks) then {
                                         [_profile,"hasSimulated", true] call ALiVE_fnc_hashSet;
 
                                         {
-                                            private _vehicleProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                                            private _vehicleProfile = _profilesById get _x;
 
                                             if (!isnil "_vehicleProfile") then {
                                                 // turn engineOn virtually
@@ -287,7 +317,7 @@ if (!_simAttacks) then {
                                                 private _boat = [_profile,"boat"] call ALiVE_fnc_hashGet;
                                                 if (_boatsEnabled && {!isnil "_boat"} && {!surfaceIsWater _profilePosition}) then {
                                                     private _boatProfileID = _boat select 0;
-                                                    private _boatProfile = [MOD(profileHandler),"getProfile", _boatProfileID] call ALiVE_fnc_ProfileHandler;
+                                                    private _boatProfile = _profilesById get _boatProfileID;
 
                                                     if (isnil "_boatProfile") then {
                                                         if (_debug) then {["Profile Simulator _boatProfile is nil _profile is %1",_profile] call ALiVE_fnc_dumpR};
@@ -368,7 +398,7 @@ if (!_simAttacks) then {
                                             private _boat = [_profile,"boat"] call ALiVE_fnc_hashGet;
                                             if (_boatsEnabled && {!isnil "_boat"}) then {
                                                 private _boatProfileID = _boat select 0;
-                                                private _boatProfile = [MOD(profileHandler),"getProfile", _boatProfileID] call ALiVE_fnc_ProfileHandler;
+                                                private _boatProfile = _profilesById get _boatProfileID;
 
                                                 if (isnil "_boatProfile") then {
                                                     if (_debug) then {["Profile Simulator _boatProfile is nil _profile is %1",_profile] call ALiVE_fnc_dumpR};
@@ -417,8 +447,6 @@ if (!_simAttacks) then {
 
                                 if (!isnil "_newPosition" && {!(_newPosition isEqualTo [])} && {!isnil "_profilePosition"} && {!(_profilePosition isEqualTo [])}) then {
                                     private _activeWaypoint = _waypoints select 0;
-                                    private _type = [_activeWaypoint,"type"] call ALiVE_fnc_hashGet;
-                                    private _speed = [_activeWaypoint,"speed"] call ALiVE_fnc_hashGet;
                                     private _destination = [_activeWaypoint,"position"] call ALiVE_fnc_hashGet;
 
                                     private _moveDistance = _newPosition distance _profilePosition;
@@ -435,7 +463,7 @@ if (!_simAttacks) then {
                                             _newPosition = getPosATL vehicle _leader;
 
                                             {
-                                                private _vehicleProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                                                private _vehicleProfile = _profilesById get _x;
 
                                                 if (!isnil "_vehicleProfile") then {
                                                     [_vehicleProfile,"position", _newPosition] call ALiVE_fnc_profileVehicle;
@@ -450,7 +478,7 @@ if (!_simAttacks) then {
                                             if (_boatsEnabled && {((_newPosition) select 2) < 4} && {_nearDestination} && {!isnil "_boat"}) then {
                                                 private _boatProfileID = _boat select 0;
                                                 private _creation = ([_profile,"boat"] call ALiVE_fnc_hashGet) select 1;
-                                                private _boatProfile = [MOD(profileHandler),"getProfile", _boatProfileID] call ALiVE_fnc_ProfileHandler;
+                                                private _boatProfile = _profilesById get _boatProfileID;
 
                                                 if (isnil "_boatProfile") then {
                                                     if (_debug) then {["Profile Simulator _boatProfile is nil _profile is %1",_profile] call ALiVE_fnc_dumpR};
@@ -557,7 +585,7 @@ if (!_simAttacks) then {
                                                 _newPosition = getPosATL vehicle _leader;
 
                                                 {
-                                                    private _vehicleProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                                                    private _vehicleProfile = _profilesById get _x;
                                                     if (!isnil "_vehicleProfile") then {
                                                         [_vehicleProfile,"position", _newPosition] call ALiVE_fnc_profileVehicle;
                                                         [_vehicleProfile,"mergePositions"] call ALiVE_fnc_profileVehicle;
@@ -578,7 +606,7 @@ if (!_simAttacks) then {
                             // remove any ambient sea transport if no waypoint is assigned (should not happen - failsafe)
                             if (_boatsEnabled && {_vehicleCommander} && {!isnil {[_profile,"boat"] call ALiVE_fnc_hashGet}}) then {
                                 private _boatProfileID = ([_profile,"boat"] call ALiVE_fnc_hashGet) select 0;
-                                private _boatProfile = [ALiVE_ProfileHandler,"getProfile",_boatProfileID] call ALiVE_fnc_ProfileHandler;
+                                private _boatProfile = _profilesById get _boatProfileID;
 
                                 if (isnil "_boatProfile") then {
                                     ["Profile Simulator _boatProfile is nil _profile is %1",_profile] call ALiVE_fnc_dumpR;
@@ -615,7 +643,7 @@ if (!_simAttacks) then {
                                     _newPosition = getPosATL vehicle _leader;
 
                                     {
-                                        private _vehicleProfile = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_ProfileHandler;
+                                        private _vehicleProfile = _profilesById get _x;
                                         if (!isnil "_vehicleProfile") then {
                                             [_vehicleProfile,"position", _newPosition] call ALiVE_fnc_profileVehicle;
                                             [_vehicleProfile,"mergePositions"] call ALiVE_fnc_profileVehicle;
@@ -678,8 +706,10 @@ if (!_simAttacks) then {
 
                 if (!_profileSystemPaused && !isGamePaused) then {
 
-                    private _cyclesLeft = [_attack,"cyclesLeft"] call ALiVE_fnc_hashGet;
-                    private _timeLastSim = [_attack,"timeLastSim", diag_tickTime - 0.001] call ALiVE_fnc_hashGet;
+                    ([_attack, ["cyclesLeft","timeLastSim"]] call ALiVE_fnc_hashGetMany) params [
+                        "_cyclesLeft",
+                        ["_timeLastSim", diag_tickTime - 0.001]
+                    ];
                     private _simModifier = (diag_tickTime - _timeLastSim) * accTime;
 
                     private _active = false;
@@ -687,15 +717,17 @@ if (!_simAttacks) then {
                     if (_cyclesLeft > 0) then {
                         [_attack,"cyclesLeft", _cyclesLeft - 1] call ALiVE_fnc_hashSet;
 
-                        private _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
-                        private _targetIDs = [_attack,"targets"] call ALiVE_fnc_hashGet;
+                        ([_attack, ["attacker","targets"]] call ALiVE_fnc_hashGetMany) params [
+                            "_attackerID",
+                            "_targetIDs"
+                        ];
 
-                        _attacker = [MOD(profileHandler),"getProfile", _attackerID] call ALiVE_fnc_profileHandler;
+                        _attacker = _profilesById get _attackerID;
 
                         if (!isnil "_attacker") then {
                             private "_target";
                             while {isnil "_target" && !(_targetIDs isEqualTo [])} do {
-                                _target = [MOD(profileHandler),"getProfile", _targetIDs select 0] call ALiVE_fnc_profileHandler;
+                                _target = _profilesById get (_targetIDs select 0);
 
                                 // if target is active, remove it
                                 if (isnil "_target" || {_target select 2 select 1}) then {
@@ -719,7 +751,7 @@ if (!_simAttacks) then {
                                     private _attackerVehiclesInCommandOf = _attacker select 2 select 8;
 
                                     {
-                                        private _vehicleUnderCommand = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
+                                        private _vehicleUnderCommand = _profilesById get _x;
 
                                         if (!isnil "_vehicleUnderCommand") then {
                                             _profilesToAttackWith pushback _vehicleUnderCommand;
@@ -737,7 +769,7 @@ if (!_simAttacks) then {
                                     private _targetVehiclesInCommandOf = _target select 2 select 8;
 
                                     {
-                                        private _targetToAttack = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
+                                        private _targetToAttack = _profilesById get _x;
 
                                         if (!isnil "_targetToAttack") then {
                                             _targetsToAttack pushback _targetToAttack;
@@ -914,11 +946,11 @@ if (!_simAttacks) then {
                                                     // kill the commanding entity as well
 
                                                     {
-                                                        private _entityInCommandOf = [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler;
+                                                        private _entityInCommandOf = _profilesById get _x;
                                                         private _assignedVehicles = _entityInCommandOf select 2 select 8;
 
                                                         if (_assignedVehicles isEqualTo [_targetToAttackID]) then {
-                                                            _toBeKilled pushbackunique [_attacker, [MOD(profileHandler),"getProfile", _x] call ALiVE_fnc_profileHandler];
+                                                            _toBeKilled pushbackunique [_attacker, (_profilesById get _x)];
                                                             
                                                             _attackTargetsKilled pushback _x;
                                                         };
