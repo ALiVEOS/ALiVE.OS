@@ -5,22 +5,27 @@
 <Key ID="STR_ALIVE_SPEMP">
     <English>Military Placement (Garrison Obj.)</English>
     <Chinesesimp>军事布局</Chinesesimp>
+    <Spanish>Colocación militar (obj. de guarnición)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_COMMENT">
     <English>Custom Military Objective</English>
     <Chinesesimp>自定义军事目标</Chinesesimp>
+    <Spanish>Objetivo militar personalizado</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_DEBUG">
     <English>Enable Debug:</English>
     <Chinesesimp>启用测试</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_DEBUG_COMMENT">
     <English>Enables SPEMP Module Debug</English>
     <Chinesesimp>启用CMP模块调试</Chinesesimp>
+    <Spanish>Activa la depuración del módulo SPEMP</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_FACTION">
     <English>Force Faction:</English>
     <Chinesesimp>武力势力</Chinesesimp>
+    <Spanish>Facción de la fuerza:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_FACTION_COMMENT">
     <English>Faction of the units to be placed. To use a faction of your own, sync a Custom Faction Compiler module rather than choosing from this list.</English>
@@ -34,50 +39,62 @@
 <Key ID="STR_ALIVE_SPEMP_PRIORITY">
     <English>Objective priority:</English>
     <Chinesesimp>目标优先级</Chinesesimp>
+    <Spanish>Prioridad del objetivo:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_PRIORITY_COMMENT">
     <English>Priority of the custom objective. Used by OPCOM and others for target evaluation</English>
     <Chinesesimp>自定义目标的优先级,用于OPCOM和其他目标评估</Chinesesimp>
+    <Spanish>Prioridad del objetivo personalizado. La usan OPCOM y otros para evaluar objetivos</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_SIZE">
     <English>Objective size:</English>
     <Chinesesimp>目标大小</Chinesesimp>
+    <Spanish>Tamaño del objetivo:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_SIZE_COMMENT">
     <English>Size of the custom objective. Used by OPCOM and others for target evaluation</English>
     <Chinesesimp>自定义目标的大小。用于OPCOM和其他目标评估</Chinesesimp>
+    <Spanish>Tamaño del objetivo personalizado. Lo usan OPCOM y otros para evaluar objetivos</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS">
     <English>Infantry Group Classname:</English>
     <Chinesesimp>小组类名</Chinesesimp>
+    <Spanish>Classname del grupo de infantería:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_BEHAVIOUR">
     <English>Infantry Group AI Behaviour:</English>
     <Chinesesimp>小组AI行为</Chinesesimp>
+    <Spanish>Comportamiento de IA del grupo de infantería:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_BEHAVIOUR_COMMENT">
     <English>A group's behaviour determines how it is units move from one point to another, behave when idle, and how they engage an enemy.</English>
     <Chinesesimp>一个团队的行为决定了它的单位如何从一个点移动到另一个点，空闲时的行为，以及他们如何与敌人交战</Chinesesimp>
+    <Spanish>El comportamiento de un grupo determina cómo se desplazan sus unidades de un punto a otro, cómo actúan cuando están inactivas y cómo entran en combate.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_INFANTRY_CLASS_COMMENT">
     <English>Set classname of Infantry group to be spawned, set to empty for random. If vehicle classname is set, this will be ignored.</English>
     <Chinesesimp>设置要生成的步兵组的类名，随机设置为空。如果设置了车辆类名，这个将被忽略。</Chinesesimp>
+    <Spanish>Define el classname del grupo de infantería que se va a generar; déjalo vacío para uno aleatorio. Si se define un classname de vehículo, este se ignora.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS">
     <English>Vehicle Classname:</English>
     <Chinesesimp>载具类名</Chinesesimp>
+    <Spanish>Classname del vehículo:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_CLASS_COMMENT">
     <English>Set classname of Vehicle to be spawned. If empty, Infantry group will be spawned.</English>
     <Chinesesimp>设置要生成的载具的类名。如果是空的，则会生成步兵组。</Chinesesimp>
+    <Spanish>Define el classname del vehículo que se va a generar. Si está vacío, se generará un grupo de infantería.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY">
     <English>Spawn Vehicle Uncrewed:</English>
     <Chinesesimp>生成无人载具</Chinesesimp>
+    <Spanish>Generar vehículo sin tripulación:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_CUSTOM_VEHICLE_EMPTY_COMMENT">
     <English>If set to no, vehicle will be spawned with AI crew.</English>
     <Chinesesimp>如果设置为否，载具将拥有AI成员</Chinesesimp>
+    <Spanish>Si se establece en no, el vehículo se generará con tripulación de IA.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_USAGE">
     <English>Place the Spearhead Custom Military Objective module in the editor and set the size, priority and force you want. Choose the faction from the list. To use a faction of your own, sync a Custom Faction Compiler module to this one and its faction is used instead.</English>
@@ -91,9 +108,11 @@
 <Key ID="STR_ALIVE_SPEMP_ALLOW_PLAYER_TASK">
     <English>Allow player tasking:</English>
     <Chinesesimp>允许玩家任务:</Chinesesimp>
+    <Spanish>Permitir tareas de jugador:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_SPEMP_ALLOW_PLAYER_TASK_COMMENT">
     <English>MilAssault/MilDefend C2ISTAR tasks</English>
     <Chinesesimp>C2ISTAR军事进攻/军事防御任务</Chinesesimp>
+    <Spanish>Tareas C2ISTAR MilAssault/MilDefend</Spanish>
 </Key>
 </Container></Package></Project>

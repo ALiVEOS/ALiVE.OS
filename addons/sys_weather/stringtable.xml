@@ -5,88 +5,106 @@
 <Key ID="STR_ALIVE_WEATHER">
     <English>Ambient Dynamic Weather</English>
     <Chinesesimp>动态天气环境</Chinesesimp>
+    <Spanish>Meteorología dinámica ambiental</Spanish>
 </Key>
 <Key ID="STR_ALIVE_WEATHER_COMMENT">
     <English>Dynamic Weather module</English>
     <Chinesesimp>动态天气模块</Chinesesimp>
+    <Spanish>Módulo de meteorología dinámica</Spanish>
 </Key>
 <Key ID="STR_ALIVE_WEATHER_USAGE">
     <English>Place the Dynamic Weather module and choose between different climates! Find a high detailed set of adjustment options on the module to refine your mission!</English>
     <Chinesesimp>放置动态天气模块和选择不同的气候,在模块上找到一组高度详细的调整选项来完善你的任务！</Chinesesimp>
+    <Spanish>¡Coloca el módulo de meteorología dinámica y elige entre distintos climas! ¡Encontrarás en el módulo un conjunto detallado de opciones de ajuste para afinar tu misión!</Spanish>
 </Key>
 <Key ID="STR_ALIVE_WEATHER_DEBUG">
     <English>Enable Debug:</English>
     <Chinesesimp>启用调试:</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_COMMENT">
     <English>Enables dynamic weather module debug mode</English>
     <Chinesesimp>启用动态天气模块调试模式</Chinesesimp>
+    <Spanish>Activa el modo de depuración del módulo de meteorología dinámica</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_CYCLE">
     <English>Debug Output Delay:</English>
     <Chinesesimp>调试输出延迟:</Chinesesimp>
+    <Spanish>Intervalo de salida de depuración:</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_DEBUG_CYCLE_COMMENT">
     <English>Delay in seconds between each rpt output (Enable Debug must be enabled)</English>
     <Chinesesimp>每个rpt输出之间的延迟(以秒为单位)(必须启用“启用调试”)</Chinesesimp>
+    <Spanish>Espera en segundos entre cada salida al RPT (hay que activar «Activar depuración»)</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_ERROR1">
     <English>Only one dynamic weather module can be used</English>
     <Chinesesimp>只能使用一个动态天气模块</Chinesesimp>
+    <Spanish>Solo se puede usar un módulo de meteorología dinámica</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_INITIAL">
     <English>Weather Climate:</English>
     <Chinesesimp>天气气候:</Chinesesimp>
+    <Spanish>Clima:</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_INITIAL_COMMENT">
     <English>For a complete local explanation please refer to ALiVE wiki</English>
     <Chinesesimp>有关完整的本地解释,请参考ALiVE wiki</Chinesesimp>
+    <Spanish>Para una explicación local completa, consulta la wiki de ALiVE</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_OVERRIDE">
     <English>Weather Override:</English>
     <Chinesesimp>天气覆盖:</Chinesesimp>
+    <Spanish>Anulación de la meteorología:</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_OVERRIDE_COMMENT">
     <English>Set initial weather to one of the override settings</English>
     <Chinesesimp>将初始天气设置为覆盖设置之一</Chinesesimp>
+    <Spanish>Establece la meteorología inicial en uno de los ajustes de anulación</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_VARIANCE">
     <English>Cycle Variance:</English>
     <Chinesesimp>周期方差:</Chinesesimp>
+    <Spanish>Variación entre ciclos:</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_VARIANCE_COMMENT">
     <English>Amount of variance to weather between weather cycles</English>
     <Chinesesimp>不同天气周期之间的天气变化量</Chinesesimp>
+    <Spanish>Cantidad de variación meteorológica entre ciclos</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY">
     <English>Cycle Delay:</English>
     <Chinesesimp>周期延迟:</Chinesesimp>
+    <Spanish>Duración del ciclo:</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_CYCLE_DELAY_COMMENT">
     <English>Time in seconds between each weather cycle (minimum 1800 set by game engine)</English>
     <Chinesesimp>每个天气周期之间的时间(以秒为单位)(游戏引擎设置的最低1800秒)</Chinesesimp>
+    <Spanish>Tiempo en segundos entre cada ciclo meteorológico (mínimo 1800 impuesto por el motor del juego)</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_REAL_LOCATION">
     <English>Real Weather Loc:</English>
     <Chinesesimp>真实地点天气(同步真实地点的天气情况?):</Chinesesimp>
+    <Spanish>Localidad meteorológica real:</Spanish>
 </Key>
 
 <Key ID="STR_ALIVE_WEATHER_REAL_LOCATION_COMMENT">
     <English>For a complete list of valid Locales please refer to ALiVE wiki</English>
     <Chinesesimp>有关有效区域设置的完整列表,请参阅ALiVE wiki</Chinesesimp>
+    <Spanish>Para la lista completa de localidades válidas, consulta la wiki de ALiVE</Spanish>
 </Key>
 
 </Container></Package></Project>

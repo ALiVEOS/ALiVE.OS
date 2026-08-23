@@ -5,10 +5,12 @@
 <Key ID="STR_ALIVE_COMBATSUPPORT">
     <English>Player Combat Support</English>
     <Chinesesimp>玩家战斗支持</Chinesesimp>
+    <Spanish>Apoyo de combate para jugadores</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CS_COMMENT">
     <English>ALiVE Combat Support System (CAS/Artillery/Transport)</English>
     <Chinesesimp>现役作战支持系统（空对地/火炮/运输）</Chinesesimp>
+    <Spanish>Sistema de apoyo de combate de ALiVE (CAS/artillería/transporte)</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_ALLOW">
@@ -53,6 +55,7 @@
 <Key ID="STR_ALIVE_CAS_LIMIT">
     <English>CAS Respawn Limit:</English>
     <Chinesesimp>空中支援限额</Chinesesimp>
+    <Spanish>Límite de reaparición de CAS:</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_TRANS_LIMIT_COMMENT">
@@ -107,14 +110,17 @@
 <Key ID="STR_ALIVE_CS_AUDIO">
     <English>Radio Messages (Audio):</English>
     <Chinesesimp>无线电信息（音频）</Chinesesimp>
+    <Spanish>Mensajes de radio (audio):</Spanish>
 </Key>
 <Key ID="STR_ALIVE_CS_AUDIO_COMMENT">
     <English>Uses audible radio messages for support requests</English>
     <Chinesesimp>使用音频无线电信息请求支持</Chinesesimp>
+    <Spanish>Usa mensajes de radio audibles para las peticiones de apoyo</Spanish>
 </Key>
 <Key ID="STR_ALIVE_TRANS_LIMIT">
     <English>Transport Respawn Limit:</English>
     <Chinesesimp>运输支援限额</Chinesesimp>
+    <Spanish>Límite de reaparición de transporte:</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_RESPAWN_COMMENT">
@@ -129,6 +135,7 @@
 <Key ID="STR_ALIVE_CS_RESPAWN">
     <English>Respawn Time:</English>
     <Chinesesimp>支援间隔时间</Chinesesimp>
+    <Spanish>Tiempo de reaparición:</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_ALLOW_COMMENT">
@@ -143,6 +150,7 @@
 <Key ID="STR_ALIVE_CS_ERROR1">
     <English>Only one Combat Support module can be used</English>
     <Chinesesimp>只能使用一个作战支持模块</Chinesesimp>
+    <Spanish>Solo se puede usar un módulo de apoyo de combate</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_CS_USAGE">

@@ -5,73 +5,91 @@
 <Key ID="STR_ALIVE_ORBATCREATOR">
     <English>ALiVE ORBAT Creator</English>
     <Chinesesimp>ALiVE战斗序列(ORBAT)创造者</Chinesesimp>
+    <Spanish>Creador de ORBAT de ALiVE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_COMMENT">
     <English>Open the ORBAT Creator</English>
     <Chinesesimp>开启战斗序列(ORBAT)创造者</Chinesesimp>
+    <Spanish>Abre el creador de ORBAT</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_DEBUG">
     <English>Enable Debug:</English>
     <Chinesesimp>启用调试:</Chinesesimp>
+    <Spanish>Activar depuración:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_DEBUG_COMMENT">
     <English>Enables Module Debug</English>
     <Chinesesimp>启用模块调试</Chinesesimp>
+    <Spanish>Activa la depuración del módulo</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_BACKGROUND">
     <English>Enable Background:</English>
     <Chinesesimp>启用背景：</Chinesesimp>
+    <Spanish>Activar fondo:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_BACKGROUND_COMMENT">
     <English>Creates a grey background for editing purposes. Alternatively, the editor will use the current map and position of the module.</English>
     <Chinesesimp>为编辑目的创建灰色背景.或者,编辑器将使用模块的当前地图和位置.</Chinesesimp>
+    <Spanish>Crea un fondo gris para facilitar la edición. Si no, el editor usará el mapa y la posición actuales del módulo.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_PREFIX">
     <English>Addon Prefix:</English>
     <Chinesesimp>附加前缀:</Chinesesimp>
+    <Spanish>Prefijo del addon:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_PREFIX_COMMENT">
     <English>Enter an addon prefix here if applicable i.e. CUP</English>
     <Chinesesimp>在此处输入一个附加前缀,如适用,例如CUP</Chinesesimp>
+    <Spanish>Introduce aquí un prefijo de addon si procede, p. ej. CUP</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_COPY">
     <English>Copy Parent Classes:</English>
     <Chinesesimp>复制父本:</Chinesesimp>
+    <Spanish>Copiar clases padre:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_COPY_COMMENT">
     <English>Advanced usage - if you wish to copy the parent class of existing units, rather than existing class, select Yes. No by default.</English>
     <Chinesesimp>高级用法-如果要复制现有单位的父本,而不是现有类,请选择是.默认情况下为否.</Chinesesimp>
+    <Spanish>Uso avanzado: si quieres copiar la clase padre de las unidades existentes en lugar de la clase actual, selecciona Sí. No por defecto.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE">
     <English>Arsenal Type:</English>
     <Chinesesimp>军械库类型:</Chinesesimp>
+    <Spanish>Tipo de arsenal:</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_COMMENT">
     <English>Select which arsenal is used to edit ORBAT unit loadouts.</English>
     <Chinesesimp>选择用于编辑ORBAT单位装备的军械库.</Chinesesimp>
+    <Spanish>Selecciona qué arsenal se usa para editar el equipo de las unidades del ORBAT.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_BIS">
     <English>Virtual Arsenal</English>
     <Chinesesimp>Virtual军械库</Chinesesimp>
+    <Spanish>Arsenal virtual</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_ACE">
     <English>ACE Arsenal</English>
     <Chinesesimp>ACE军械库</Chinesesimp>
+    <Spanish>Arsenal de ACE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_SAVE">
     <English>Save Changes</English>
     <Chinesesimp>保存更改</Chinesesimp>
+    <Spanish>Guardar cambios</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_ACE_UNAVAILABLE">
     <English>ACE mod is not currently loaded</English>
     <Chinesesimp>ACE模组当前未加载</Chinesesimp>
+    <Spanish>El mod ACE no está cargado actualmente</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_RUNTIME_UNAVAILABLE">
     <English>ACE Arsenal is unavailable. Falling back to Virtual Arsenal.</English>
     <Chinesesimp>ACE军械库不可用.将改用Virtual军械库.</Chinesesimp>
+    <Spanish>El arsenal de ACE no está disponible. Se usará el arsenal virtual.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ORBATCREATOR_ARSENAL_TYPE_RUNTIME_FAILED">
     <English>ACE Arsenal could not be opened.</English>
     <Chinesesimp>无法打开ACE军械库.</Chinesesimp>
+    <Spanish>No se ha podido abrir el arsenal de ACE.</Spanish>
 </Key>
 </Container></Package></Project>

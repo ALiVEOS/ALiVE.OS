@@ -5,10 +5,12 @@
 <Key ID="STR_ALIVE_ARTILLERY">
     <English>Player Combat Support (Artillery)</English>
     <Chinesesimp>玩家战斗支援(火炮)</Chinesesimp>
+    <Spanish>Apoyo de combate para jugadores (artillería)</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_COMMENT">
     <English>Artillery Module for ALiVE Combat Support</English>
     <Chinesesimp>用于ALiVE作战支持的火炮模块</Chinesesimp>
+    <Spanish>Módulo de artillería para el apoyo de combate de ALiVE</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_USAGE">
@@ -23,10 +25,12 @@
 <Key ID="STR_ALIVE_ARTILLERY_CALLSIGN">
     <English>Callsign</English>
     <Chinesesimp>呼号</Chinesesimp>
+    <Spanish>Indicativo</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CALLSIGN_DESC">
     <English>Enter the Callsign, ensure that it is unique</English>
     <Chinesesimp>输入呼号，确保它是唯一的</Chinesesimp>
+    <Spanish>Introduce el indicativo; asegúrate de que sea único</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_TYPE">
@@ -71,38 +75,47 @@
 <Key ID="STR_ALIVE_ARTILLERY_HE">
     <English>Number of HE Rounds</English>
     <Chinesesimp>高爆弹数量</Chinesesimp>
+    <Spanish>Número de proyectiles HE</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_HE_DESC">
     <English>Set the number of rounds of HE available for the asset - Used by all Arty\Mortar Assets</English>
     <Chinesesimp>设置物资可用的高爆弹数量 - 由所有火炮\迫击炮使用</Chinesesimp>
+    <Spanish>Define cuántos proyectiles HE tiene disponibles el medio - Lo usan todos los medios de artillería\mortero</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ILLUM">
     <English>Number of ILLUM Rounds</English>
     <Chinesesimp>照明弹数量</Chinesesimp>
+    <Spanish>Número de proyectiles de iluminación</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ILLUM_DESC">
     <English>Set the number of rounds of ILLUM available for the asset - Used by all Arty\Mortar Assets</English>
     <Chinesesimp>设置物资可用的照明弹数量 - 由所有火炮\迫击炮使用</Chinesesimp>
+    <Spanish>Define cuántos proyectiles de iluminación tiene disponibles el medio - Lo usan todos los medios de artillería\mortero</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_SMOKE">
     <English>Number of SMOKE Rounds</English>
     <Chinesesimp>烟雾弹数量</Chinesesimp>
+    <Spanish>Número de proyectiles de humo</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_SMOKE_DESC">
     <English>Set the number of rounds of SMOKE available for the asset - Used by all Arty\Mortar Assets</English>
     <Chinesesimp>设置物资可用的烟雾弹数量 - 由所有火炮\迫击炮使用</Chinesesimp>
+    <Spanish>Define cuántos proyectiles de humo tiene disponibles el medio - Lo usan todos los medios de artillería\mortero</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_WP">
     <English>Number of WP Rounds</English>
     <Chinesesimp>白磷弹数量</Chinesesimp>
+    <Spanish>Número de proyectiles de fósforo blanco</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_WP_DESC">
     <English>Set the number of White Phosphorus rounds available for the asset. Only a gun that carries WP will offer it - most artillery has none, and vanilla artillery has none at all.</English>
+    <Spanish>Define cuántos proyectiles de fósforo blanco tiene disponibles el medio. Solo lo ofrecerá una pieza que lleve fósforo blanco: la mayoría de la artillería no tiene, y la artillería original del juego no tiene ninguno.</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_GUIDED">
     <English>Number of GUIDED Rounds</English>
     <Chinesesimp>制导导弹数量</Chinesesimp>
+    <Spanish>Número de proyectiles guiados</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_GUIDED_DESC">
@@ -117,46 +130,57 @@
 <Key ID="STR_ALIVE_ARTILLERY_CLUSTER">
     <English>Number of CLUSTER Rounds</English>
     <Chinesesimp>子母弹数量</Chinesesimp>
+    <Spanish>Número de proyectiles de racimo</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CLUSTER_DESC">
     <English>Set the number of rounds of CLUSTERS available for the asset - Only used by MBT</English>
     <Chinesesimp>设置物资可用的子母弹数量 - 仅主战坦克使用</Chinesesimp>
+    <Spanish>Define cuántos proyectiles de racimo tiene disponibles el medio - Solo lo usa el MBT</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_LG">
     <English>Number of Laser Guided Rounds</English>
     <Chinesesimp>激光制导导弹数量</Chinesesimp>
+    <Spanish>Número de proyectiles guiados por láser</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_LG_DESC">
     <English>Set the number of rounds of LG available for the asset - Only used by MBT</English>
     <Chinesesimp>设置物资可用的激光制导导弹数量 - 仅主战坦克使用</Chinesesimp>
+    <Spanish>Define cuántos proyectiles guiados por láser tiene disponibles el medio - Solo lo usa el MBT</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_MINE">
     <English>Number of MINE Rounds</English>
     <Chinesesimp>布雷弹数量</Chinesesimp>
+    <Spanish>Número de proyectiles de minas</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_MINE_DESC">
     <English>Set the number of rounds of MINE available for the asset - Only used by MBT</English>
     <Chinesesimp>设置物资可用的布雷弹数量 - 仅主战坦克使用</Chinesesimp>
+    <Spanish>Define cuántos proyectiles de minas tiene disponibles el medio - Solo lo usa el MBT</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ATMINE">
     <English>Number of AT MINE Rounds</English>
     <Chinesesimp>反坦克布雷弹数量</Chinesesimp>
+    <Spanish>Número de proyectiles de minas AT</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ATMINE_DESC">
     <English>Set the number of rounds of AT MINES available for the asset - Only used by MBT</English>
     <Chinesesimp>设置物资可用的反坦克布雷弹数量 - 仅主战坦克使用</Chinesesimp>
+    <Spanish>Define cuántos proyectiles de minas AT tiene disponibles el medio - Solo lo usa el MBT</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ROCKETS">
     <English>Number of ROCKET Rounds</English>
     <Chinesesimp>火箭弹数量</Chinesesimp>
+    <Spanish>Número de cohetes</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_ROCKETS_DESC">
     <English>Set the number of rounds of 230mm Titan Missile available for the asset - Only used by MLRS</English>
     <Chinesesimp>设置物资可用的230毫米泰坦导弹数量 - 仅多管火箭发射系统使用</Chinesesimp>
+    <Spanish>Define cuántos misiles Titan de 230 mm tiene disponibles el medio - Solo lo usa el MLRS</Spanish>
 </Key>
 <Key ID="STR_ALIVE_ARTILLERY_CODE">
     <English>Code</English>
     <Chinesesimp>代码</Chinesesimp>
+    <Spanish>Código</Spanish>
 </Key>
 <!-- AI-translated; native-speaker review welcome -->
 <Key ID="STR_ALIVE_ARTILLERY_CODE_DESC">
