@@ -1741,6 +1741,8 @@ switch(_operation) do {
                     _countObjectiveObjects_CP, _objCount_CP, _objBehaviour_CP] call ALiVE_fnc_dump;
             };
 
+            [_faction] call ALiVE_fnc_initFindVehicleTypeCache;
+
             // set module as started
             _logic setVariable ["startupComplete", true];
 

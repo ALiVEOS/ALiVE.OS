@@ -1646,6 +1646,20 @@ if (isServer) then { publicVariable "ALiVE_c2istar_orderRepeatBlock" };
                 } foreach _settings;
                 ["---------------------------------------------------------------------------------------------------", _logic] call ALiVE_fnc_dump;
             };
+
+            private _findVehicleTypeFactions = [];
+            {
+                _x params ["_modeProperty", "_factionProperty", "_enemyFactionProperty"];
+                if (([_logic, _modeProperty] call MAINCLASS) != "None") then {
+                    _findVehicleTypeFactions pushBackUnique ([_logic, _factionProperty] call MAINCLASS);
+                    _findVehicleTypeFactions pushBackUnique ([_logic, _enemyFactionProperty] call MAINCLASS);
+                };
+            } forEach [
+                ["autoGenerateBlufor", "autoGenerateBluforFaction", "autoGenerateBluforEnemyFaction"],
+                ["autoGenerateOpfor", "autoGenerateOpforFaction", "autoGenerateOpforEnemyFaction"],
+                ["autoGenerateIndfor", "autoGenerateIndforFaction", "autoGenerateIndforEnemyFaction"]
+            ];
+            [_findVehicleTypeFactions] call ALiVE_fnc_initFindVehicleTypeCache;
         };
 
 

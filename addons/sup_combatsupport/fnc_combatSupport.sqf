@@ -1157,6 +1157,21 @@ switch(_operation) do {
                             ["CS WARNING: Military Logistics Simulation requires a Military Logistics module to be placed in the mission - watchdog not started."] call ALiVE_fnc_dump;
                         };
 
+                        private _findVehicleTypeFactions = [];
+                        {
+                            private _class = _x param [2, ""];
+                            if (_class != "") then {
+                                _findVehicleTypeFactions pushBackUnique getText (configFile >> "CfgVehicles" >> _class >> "faction");
+                            };
+                        } forEach (SUP_CASARRAYS + SUP_TRANSPORTARRAYS);
+                        {
+                            private _class = _x param [1, ""];
+                            if (_class != "") then {
+                                _findVehicleTypeFactions pushBackUnique getText (configFile >> "CfgVehicles" >> _class >> "faction");
+                            };
+                        } forEach SUP_ARTYARRAYS;
+                        [_findVehicleTypeFactions] call ALiVE_fnc_initFindVehicleTypeCache;
+
                         //Now PV the logic to all clients indicate its ready
                         _logic setVariable ["init", true,true];
                         publicVariable "NEO_radioLogic";

@@ -25,40 +25,40 @@ Author:
 Wolffy.au
 ---------------------------------------------------------------------------- */
 
-private ["_id","_fac","_allvehs","_entry","_entryConfigName","_cargoslots","_type","_noWeapons","_nonconfigs","_nonsims","_facUnits","_err"];
+params [
+    "_cargoslots",
+    ["_fac", nil],
+    ["_type", nil],
+    ["_noWeapons", false],
+    ["_minScope", 1]
+];
 
-PARAMS_1(_cargoslots);
-_err = "cargo slots not valid";
-ASSERT_DEFINED("_cargoslots",_err);
-ASSERT_TRUE(typeName _cargoslots == "SCALAR",_err);
-
-DEFAULT_PARAM(1,_fac,nil);
-DEFAULT_PARAM(2,_type,nil);
-DEFAULT_PARAM(3,_noWeapons,false);
-DEFAULT_PARAM(4,_minScope,1);
-
-_id = _fac;
-
-if (typeName _fac == "ARRAY") then {
-    _id = str(_fac);
-    _id = [_id, "[", ""] call CBA_fnc_replace;
-    _id = [_id, "]", ""] call CBA_fnc_replace;
-    _id = [_id, "'", ""] call CBA_fnc_replace;
-    _id = [_id, toString [34], ""] call CBA_fnc_replace;
+if (isNil "ALiVE_findVehicleTypeCache") then {
+    ALiVE_findVehicleTypeCache = createHashMap;
 };
 
-private _searchBag = format["ALiVE_X_LIB_SEARCHBAG_%1_%2_%3",_id,_type,_noWeapons];
+// Faction-array order does not affect the query, so normalize it to avoid
+// duplicate cache entries for equivalent requests.
+private _cacheFaction = _fac;
+if (_cacheFaction isEqualType []) then {
+    _cacheFaction = +_cacheFaction;
+    _cacheFaction sort true;
+};
 
-if !(isnil {call compile _searchBag}) exitwith {call compile _searchBag};
+private _cacheKey = str [_cargoslots, _cacheFaction, _type, _noWeapons, _minScope];
+
+if (_cacheKey in ALiVE_findVehicleTypeCache) exitWith {
+    +(ALiVE_findVehicleTypeCache get _cacheKey)
+};
+
+[_cacheFaction] call ALiVE_fnc_initFindVehicleTypeCache;
 
 private _compiledVehicles = [];
-if (!isNil "ALiVE_fnc_factionCompilerFindVehicleType") then {
-    _compiledVehicles = [_cargoslots, _fac, _type, _noWeapons, _minScope] call ALiVE_fnc_factionCompilerFindVehicleType;
-};
-
-if (!isNil "ALiVE_fnc_factionCompilerIsCompiledFaction") then {
+if (!isNil "ALiVE_fnc_factionCompilerIsCompiledFaction" && {!isNil "ALiVE_fnc_factionCompilerFindVehicleType"}) then {
     if (_fac isEqualType "") then {
         if ([_fac] call ALiVE_fnc_factionCompilerIsCompiledFaction) then {
+            _compiledVehicles = [_cargoslots, _fac, _type, _noWeapons, _minScope] call ALiVE_fnc_factionCompilerFindVehicleType;
+
             if (count _compiledVehicles == 0) then {
                 _fac = [_fac] call ALiVE_fnc_factionCompilerGetConfigFaction;
             } else {
@@ -74,6 +74,8 @@ if (!isNil "ALiVE_fnc_factionCompilerIsCompiledFaction") then {
 
                     if (count _compiledFactionVehicles == 0) then {
                         _resolvedFactions pushBackUnique ([_x] call ALiVE_fnc_factionCompilerGetConfigFaction);
+                    } else {
+                        _compiledVehicles append _compiledFactionVehicles;
                     };
                 } else {
                     _resolvedFactions pushBackUnique _x;
@@ -83,82 +85,60 @@ if (!isNil "ALiVE_fnc_factionCompilerIsCompiledFaction") then {
         };
     };
 };
-_nonConfigs = ["StaticWeapon","CruiseMissile1","CruiseMissile2","Chukar_EP1","Chukar","Chukar_AllwaysEnemy_EP1"];
-_nonSims = ["parachute","house"];
+private _factions = if (_fac isEqualType []) then {_fac} else {[_fac]};
 
-_facUnits = [];
-if (typename _fac == "STRING") then {
-    private _factionConfigMission = missionConfigFile >> "CfgFactionClasses" >> _fac;
+[_factions] call ALiVE_fnc_initFindVehicleTypeCache;
 
-    if (isClass _factionConfigMission) then {
-        _facUnits append (_fac call ALiVE_fnc_configGetFactionUnitsByGroups);
+private _candidates = [];
+{
+    if (_x isEqualType "") then {
+        _candidates append (ALiVE_findVehicleTypeFactionIndex getOrDefault [_x, []]);
     };
-} else {
-    {
-        private _factionConfigMission = missionConfigFile >> "CfgFactionClasses" >> _x;
+} forEach _factions;
 
-        if (isClass _factionConfigMission) then {
-            _facUnits append (_x call ALiVE_fnc_configGetFactionUnitsByGroups);
-        };
-    } foreach _fac;
-};
+private _seenCandidates = createHashMap;
+private _seenResults = createHashMap;
+private _allvehs = [];
 
-_allvehs = +_compiledVehicles;
+{
+    if !(_x in _seenResults) then {
+        _seenResults set [_x, true];
+        _allvehs pushBack _x;
+    };
+} forEach _compiledVehicles;
 
-for "_y" from 1 to count(configFile >> "CfgVehicles") - 1 do {
-    _entry = (configFile >> "CfgVehicles") select _y;
+{
+    private _entryConfigName = _x;
 
-    if(getNumber (_entry >> "scope") >= _minScope) then {
-        if (!(getText(_entry >> "simulation") in _nonsims)) then {
-            _entryConfigName = configName _entry;
+    if !(_entryConfigName in _seenCandidates) then {
+        _seenCandidates set [_entryConfigName, true];
 
-            if ({(_entryConfigName isKindOf _x)} count _nonconfigs == 0) then {
-                if (getNumber(_entry >> "TransportSoldier") >= _cargoslots) then {
-                    private _entryFaction = getText (_entry >> "faction");
+        if (_entryConfigName in ALiVE_findVehicleTypeClassMetadata) then {
+            (ALiVE_findVehicleTypeClassMetadata get _entryConfigName) params ["_scope", "_cargoCapacity"];
 
-                    if (_fac isEqualType []) then {
-                        if (_entryFaction in _fac || {_entryConfigName in _facUnits}) then {
-                            if (!isnil "_type") then {
-                                if (_entryConfigName isKindOf _type) then {
-                                    if (_noWeapons) then {
-                                        if ([_entryConfigName] call ALiVE_fnc_isArmed) then {_allvehs pushback _entryConfigName};
-                                    } else {
-                                        _allvehs pushback _entryConfigName;
-                                    };
-                                };
-                            } else {
-                                if (_noWeapons) then {
-                                    if ([_entryConfigName] call ALiVE_fnc_isArmed) then {_allvehs pushback _entryConfigName};
-                                } else {
-                                    _allvehs pushback _entryConfigName;
-                                };
-                            };
+            if (_scope >= _minScope && {_cargoCapacity >= _cargoslots}) then {
+                if (isNil "_type" || {_entryConfigName isKindOf _type}) then {
+                    private _passesWeaponFilter = true;
+
+                    // Despite the legacy name, true has always meant "must be armed".
+                    if (_noWeapons) then {
+                        if !(_entryConfigName in ALiVE_findVehicleTypeArmedCache) then {
+                            ALiVE_findVehicleTypeArmedCache set [_entryConfigName, [_entryConfigName] call ALiVE_fnc_isArmed];
                         };
-                    } else {
-                        if (_entryFaction == _fac || {_entryConfigName in _facUnits}) then {
-                            if (!isnil "_type") then {
-                                if (_entryConfigName isKindOf _type) then {
-                                    if (_noWeapons) then {
-                                        if ([_entryConfigName] call ALiVE_fnc_isArmed) then {_allvehs pushback _entryConfigName};
-                                    } else {
-                                        _allvehs pushback _entryConfigName;
-                                    };
-                                };
-                            } else {
-                                if (_noWeapons) then {
-                                    if ([_entryConfigName] call ALiVE_fnc_isArmed) then {_allvehs pushback _entryConfigName};
-                                } else {
-                                    _allvehs pushback _entryConfigName;
-                                };
-                            };
-                        };
+                        _passesWeaponFilter = ALiVE_findVehicleTypeArmedCache get _entryConfigName;
+                    };
+
+                    if (_passesWeaponFilter && {!(_entryConfigName in _seenResults)}) then {
+                        _seenResults set [_entryConfigName, true];
+                        _allvehs pushBack _entryConfigName;
                     };
                 };
             };
         };
     };
-};
+} forEach _candidates;
 
-_allvehs = _allvehs arrayIntersect _allvehs;
+// Store and return separate arrays so callers cannot mutate cached data.
+ALiVE_findVehicleTypeCache set [_cacheKey, +_allvehs];
 
 _allvehs

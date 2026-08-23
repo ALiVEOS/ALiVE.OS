@@ -341,6 +341,7 @@ vehicles
 
 	ALiVE_fnc_anyAutonomousInRange
 	ALiVE_fnc_findVehicleType
+	ALiVE_fnc_initFindVehicleTypeCache
 	ALiVE_fnc_isAA
 	ALiVE_fnc_isArtillery
 	ALiVE_fnc_vehicleAssignGroup

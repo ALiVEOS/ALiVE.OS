@@ -589,6 +589,8 @@ switch (_operation) do {
 
         [_handler,"listen"] call MAINCLASS;
 
+        [_factions] call ALiVE_fnc_initFindVehicleTypeCache;
+
         [_handler,"startupComplete", true] call ALiVE_fnc_HashSet;
     };
 

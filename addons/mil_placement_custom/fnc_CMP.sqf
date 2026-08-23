@@ -2232,6 +2232,8 @@ switch(_operation) do {
             };
 
 
+            [_factions] call ALiVE_fnc_initFindVehicleTypeCache;
+
             // set module as started
             _logic setVariable ["startupComplete", true];
 

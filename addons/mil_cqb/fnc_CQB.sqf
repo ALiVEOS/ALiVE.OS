@@ -542,6 +542,8 @@ switch(_operation) do {
                 //Indicate startup is done on server for that instance
                 ["started the controller"] call _fnc_cqbDiagMark;
 
+                [_factions] call ALiVE_fnc_initFindVehicleTypeCache;
+
                 _logic setVariable ["init",true,true];
                 _logic setVariable ["startupComplete",true,true];
 

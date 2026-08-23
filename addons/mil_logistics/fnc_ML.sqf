@@ -3271,6 +3271,12 @@ switch(_operation) do {
             // DEBUG -------------------------------------------------------------------------------------
 
 
+            private _findVehicleTypeFactions = [];
+            {
+                _findVehicleTypeFactions append ([_x, "factions", []] call ALiVE_fnc_hashGet);
+            } forEach _modules;
+            [_findVehicleTypeFactions] call ALiVE_fnc_initFindVehicleTypeCache;
+
             _logic setVariable ["startupComplete", true];
 
             if(count _modules > 0) then {

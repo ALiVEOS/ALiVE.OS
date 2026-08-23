@@ -2537,6 +2537,8 @@ switch(_operation) do {
                     _logic, _countObjectiveObjects_ATO, _objCount_ATO, _objBehaviour_ATO] call ALiVE_fnc_dump;
             };
 
+            [_factions] call ALiVE_fnc_initFindVehicleTypeCache;
+
             _logic setVariable ["startupComplete", true];
 
             [_logic,"isCarrier", _isCarrier] call MAINCLASS;

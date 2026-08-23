@@ -1190,6 +1190,8 @@ switch (_operation) do {
                     _countObjectiveObjects_CPC, _objCount_CPC, _objSizeRadius_CPC, _objBehaviour_CPC] call ALiVE_fnc_dump;
             };
 
+            [_factions] call ALiVE_fnc_initFindVehicleTypeCache;
+
             _logic setVariable ["startupComplete", true];
         };
     };

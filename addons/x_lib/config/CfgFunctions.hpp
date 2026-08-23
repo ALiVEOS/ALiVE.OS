@@ -2126,6 +2126,13 @@ class findVehicleType
 	RECOMPILE;
 };
 
+class initFindVehicleTypeCache
+{
+	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_initFindVehicleTypeCache.sqf";
+	ext = ".sqf";
+	RECOMPILE;
+};
+
 class isAA
 {
 	file = "\x\alive\addons\x_lib\functions\vehicles\fnc_isAA.sqf";
