@@ -1,5 +1,26 @@
 #include "script_component.hpp"
 
+// Advance the shared ALiVE simulation clock only while the game is running.
+// On resume, establish a fresh baseline without counting the paused interval.
+[{
+    private _now = diag_tickTime;
+
+    if (isGamePaused) then {
+        ALiVE_simulationTimeHandler set ["paused", true];
+    } else {
+        private _wasPaused = ALiVE_simulationTimeHandler get "paused";
+        if (!_wasPaused) then {
+            private _timeLastUpdate = ALiVE_simulationTimeHandler get "timeLastUpdate";
+            private _simulationTime = ALiVE_simulationTimeHandler get "tickTime";
+            ALiVE_simulationTimeHandler set ["tickTime", _simulationTime + (_now - _timeLastUpdate)];
+        };
+
+        ALiVE_simulationTimeHandler set ["paused", false];
+    };
+
+    ALiVE_simulationTimeHandler set ["timeLastUpdate", _now];
+}, 0, []] call CBA_fnc_addPerFrameHandler;
+
 //To be enabled when ZEUS is stable
 PREPMAIN(ZEUSinit);
 [] call ALIVE_fnc_ZEUSinit;

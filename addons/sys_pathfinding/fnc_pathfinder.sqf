@@ -557,11 +557,11 @@ switch (_operation) do {
         private _pathJobs = _logic get "pathJobs";
         private _queuedPathCount = count _pathJobs;
         if (missionNamespace getVariable ["ALiVE_pathfinding_queueChat", true]) then {
-            systemChat format [
-                "ALiVE pathfinder: %1 total, %2 waiting",
-                _queuedPathCount,
-                (_queuedPathCount - 1) max 0
-            ];
+            //systemChat format [
+            //    "ALiVE pathfinder: %1 total, %2 waiting",
+            //    _queuedPathCount,
+            //    (_queuedPathCount - 1) max 0
+            //];
         };
         if (_queuedPathCount == 0) exitwith {};
 

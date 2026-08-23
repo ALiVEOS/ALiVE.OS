@@ -38,10 +38,9 @@ SpyderBlack723
 Jman
 ---------------------------------------------------------------------------- */
 
-if (isGamePaused) exitwith {
-    private _profiles = [MOD(profileHandler),"profiles"] call ALiVE_fnc_hashGet;
-    {[_x,"timeLastSim", diag_tickTime] call ALiVE_fnc_hashSet} foreach (_profiles select 2);
-};
+if (ALiVE_simulationTimeHandler get "paused") exitWith {};
+
+private _simulationTime = ALiVE_simulationTimeHandler get "tickTime";
 
 // parse CBA perFrameHandler arguments
 //_this = _this select 0;
@@ -106,13 +105,13 @@ if (!_simAttacks) then {
 
         if (!isnil "_profile") then {
 
-            if (!_profileSystemPaused && !isGamePaused) then {
+            if (!_profileSystemPaused) then {
                 // begin sim
 
                 ([_profile, ["locked","combat","timeLastSim"]] call ALiVE_fnc_hashGetMany) params [
                     ["_locked", false],
                     ["_combat", false],
-                    ["_timeLastSim", diag_tickTime - 0.001]
+                    ["_timeLastSim", _simulationTime - 0.001]
                 ];
 
                 // only sim if profile is not locked or in combat
@@ -120,7 +119,7 @@ if (!_simAttacks) then {
 
                 if (!_locked && !_combat) then {
 
-                    private _simModifier = diag_tickTime - _timeLastSim;
+                    private _simModifier = _simulationTime - _timeLastSim;
 
                     // gather info on this profile
 
@@ -690,7 +689,7 @@ if (!_simAttacks) then {
 
             };
 
-            [_profile,"timeLastSim", diag_tickTime] call ALiVE_fnc_hashSet;
+            [_profile,"timeLastSim", _simulationTime] call ALiVE_fnc_hashSet;
         };
     };
 
@@ -728,11 +727,11 @@ if (!_simAttacks) then {
 
             if (!isnil "_attack") then {
 
-                if (!_profileSystemPaused && !isGamePaused) then {
+                if (!_profileSystemPaused) then {
 
                     private _cyclesLeft = _attack get "cyclesLeft";
-                    private _timeLastSim = _attack getOrDefault ["timeLastSim", diag_tickTime - 0.001];
-                    private _simModifier = (diag_tickTime - _timeLastSim) * accTime;
+                    private _timeLastSim = _attack getOrDefault ["timeLastSim", _simulationTime - 0.001];
+                    private _simModifier = (_simulationTime - _timeLastSim) * accTime;
 
                     private _active = false;
 
@@ -983,7 +982,7 @@ if (!_simAttacks) then {
 
                 };
 
-                _attack set ["timeLastSim", diag_tickTime];
+                _attack set ["timeLastSim", _simulationTime];
             };
         };
 

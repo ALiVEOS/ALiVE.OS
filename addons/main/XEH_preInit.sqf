@@ -64,6 +64,14 @@ ALiVE_airsideSurveyed = [];
 // has run as it does on a map with no airfields, and those two need opposite answers.
 ALiVE_airsideCacheReady = false;
 
+// Shared clock for ALiVE systems which doesn't count time spent in pause menu
+private _simulationTimeNow = diag_tickTime;
+ALiVE_simulationTimeHandler = createHashMapFromArray [
+    ["paused", isGamePaused],
+    ["tickTime", _simulationTimeNow],
+    ["timeLastUpdate", _simulationTimeNow]
+];
+
 //Set ALiVE Interaction menu on custom userkey 20 and if none is defined fallback to 221 App key
 if ((count ActionKeys "User20") > 0) then {
     SELF_INTERACTION_KEY = [(ActionKeys "User20" select 0),[false,false,false]];
