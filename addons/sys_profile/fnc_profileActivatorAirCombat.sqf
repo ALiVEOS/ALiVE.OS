@@ -30,9 +30,8 @@ SpyderBlack723
 #define AIR_COMBAT_VEHICLES_DEFAULT_PLANE_RADIUS 7000
 #define AIR_COMBAT_VEHICLES_DEFAULT_HELICOPTER_RADIUS 5000
 #define AIR_COMBAT_VEHICLES_QUERY_FACTOR 1.2
-#define AIR_COMBAT_VEHICLES_LAND_OBJECT_TYPES ["Car","Tank","Armored","Truck","StaticWeapon","Vehicle"]
+#define AIR_COMBAT_VEHICLES_LAND_OBJECT_TYPES ["Car","Tank","Armored","Truck","StaticWeapon","Vehicle","Ship"]
 #define AIR_COMBAT_VEHICLES_AIR_OBJECT_TYPES ["Plane","Helicopter"]
-#define AIR_COMBAT_VEHICLES_OBJECT_TYPES ["Car","Tank","Armored","Truck","StaticWeapon","Vehicle","Plane","Helicopter"]
 
 
 params [
@@ -57,20 +56,16 @@ switch (_operation) do {
             ["scanPhase", 0],
             ["candidateIDs", []],
             ["candidateIDIndex", 0],
-            ["aaaClassCache", createHashMap],
             ["planeVehicleRadius", _planeVehicleRadius max 0],
             ["helicopterVehicleRadius", _helicopterVehicleRadius max 0],
-            ["vehicleIterationActive", false],
+            ["rangeScanStarted", false],
             ["rangeSources", []],
             ["rangeSourceIndex", 0],
             ["rangeProfiles", []],
             ["rangeProfileIndex", 0],
             ["rangeProfilesReady", false],
             ["rangeSeenProfileIDs", createHashMap],
-            ["cargoClaimQueue", []],
-            ["vehiclePublishedClaims", []],
-            ["vehiclePendingClaims", []],
-            ["claims", []]
+            ["cargoClaimQueue", []]
         ];
     };
 
@@ -79,9 +74,8 @@ switch (_operation) do {
         private _scanPhase = _logic get "scanPhase";
         private _candidateIDs = _logic get "candidateIDs";
         private _candidateIDIndex = _logic get "candidateIDIndex";
-        private _claims = _logic get "claims";
-        private _aaaClassCache = _logic get "aaaClassCache";
-        private _vehicleIterationActive = _logic get "vehicleIterationActive";
+        private _claimIDs = createHashMap;
+        private _rangeScanStarted = _logic get "rangeScanStarted";
         private _rangeSources = _logic get "rangeSources";
         private _rangeSourceIndex = _logic get "rangeSourceIndex";
         private _rangeProfiles = _logic get "rangeProfiles";
@@ -89,10 +83,6 @@ switch (_operation) do {
         private _rangeProfilesReady = _logic get "rangeProfilesReady";
         private _rangeSeenProfileIDs = _logic get "rangeSeenProfileIDs";
         private _cargoClaimQueue = _logic get "cargoClaimQueue";
-        private _vehiclePublishedClaims = _logic get "vehiclePublishedClaims";
-        private _vehiclePendingClaims = _logic get "vehiclePendingClaims";
-
-        _claims resize 0;
 
         private _iteration = _logic get "iteration";
 
@@ -102,10 +92,18 @@ switch (_operation) do {
             _scanPhase = 0;
             _candidateIDs = [];
             _candidateIDIndex = 0;
+            _rangeScanStarted = false;
+            _rangeSources resize 0;
+            _rangeSourceIndex = 0;
+            _rangeProfiles resize 0;
+            _rangeProfileIndex = 0;
+            _rangeProfilesReady = false;
+            _rangeSeenProfileIDs = createHashMap;
+            _cargoClaimQueue resize 0;
             _logic set ["iterationActive",true];
         };
 
-        private _workRemaining = AIR_COMBAT_SCAN_BATCH_SIZE;
+        private _workRemaining = if (_scanPhase < 4) then {AIR_COMBAT_SCAN_BATCH_SIZE} else {0};
         while {_workRemaining > 0} do {
             private _didWork = false;
 
@@ -118,7 +116,7 @@ switch (_operation) do {
                     private _helicopterIDs = [_profilesByVehicleType,"Helicopter", []] call ALiVE_fnc_hashGet;
 
                     _candidateIDs = +_planeIDs;
-                    _candidateIDs append (+_helicopterIDs);
+                    _candidateIDs append _helicopterIDs;
 
                     _candidateIDIndex = 0;
                     _scanPhase = 1;
@@ -171,13 +169,7 @@ switch (_operation) do {
 
                                     if !((toLower _objectType) in ["plane","helicopter"]) then {
                                         private _vehicleClass = _profileData select 11;
-
-                                        private _isAntiAirCapable = _aaaClassCache get _vehicleClass;
-
-                                        if (isNil "_isAntiAirCapable") then {
-                                            _isAntiAirCapable = [_vehicleClass] call ALiVE_fnc_isAntiAirCapable;
-                                            _aaaClassCache set [_vehicleClass, _isAntiAirCapable];
-                                        };
+                                        private _isAntiAirCapable = [_vehicleClass] call ALiVE_fnc_isAntiAirCapable;
 
                                         if (_isAntiAirCapable) then {
                                             private _canFire = _profileData select 18;
@@ -201,7 +193,7 @@ switch (_operation) do {
                                                     (_entityProfileData select 5) isEqualTo "entity" &&
                                                     {!(_entityProfileData select 30)} // isPlayer
                                                 ) then {
-                                                    _claims pushBackUnique _entityProfileID;
+                                                    _claimIDs set [_entityProfileID, true];
                                                 };
                                             };
                                         } forEach _entitiesInCommandOf;
@@ -209,7 +201,7 @@ switch (_operation) do {
                                 };
 
                                 if (_eligible) then {
-                                    _claims pushBackUnique _profileID;
+                                    _claimIDs set [_profileID, true];
                                 };
                             };
                         };
@@ -236,27 +228,15 @@ switch (_operation) do {
             if (!_didWork) exitWith {};
         };
 
-        private _complete = _scanPhase >= 4;
+        private _globalComplete = _scanPhase >= 4;
 
         _logic set ["scanPhase", _scanPhase];
         _logic set ["candidateIDs", _candidateIDs];
         _logic set ["candidateIDIndex", _candidateIDIndex];
 
-        if (_complete) then {
-            _logic set ["iterationActive", false];
-        };
-
-        if (!_vehicleIterationActive) then {
-            _vehiclePendingClaims resize 0;
-
-            _rangeSources resize 0;
-            _rangeSourceIndex = 0;
-            _rangeProfiles resize 0;
-            _rangeProfileIndex = 0;
-            _rangeProfilesReady = false;
-            _rangeSeenProfileIDs = createHashMap;
-            _cargoClaimQueue resize 0;
-
+        // Finish the global aircraft/AA snapshot before capturing proximity
+        // sources and beginning the extended-range vehicle scan.
+        if (_globalComplete && {!_rangeScanStarted}) then {
             private _sourceVehicles = [];
             private _players = allPlayers;
             private _playerIndex = 0;
@@ -293,10 +273,10 @@ switch (_operation) do {
                 _playerIndex = _playerIndex + 1;
             };
 
-            _vehicleIterationActive = true;
+            _rangeScanStarted = true;
         };
 
-        private _vehicleWorkRemaining = AIR_COMBAT_VEHICLES_SCAN_BATCH_SIZE;
+        private _vehicleWorkRemaining = if (_rangeScanStarted) then {AIR_COMBAT_VEHICLES_SCAN_BATCH_SIZE} else {0};
         while {_vehicleWorkRemaining > 0} do {
             private _didVehicleWork = false;
 
@@ -311,7 +291,7 @@ switch (_operation) do {
                         (_cargoProfileData select 5) isEqualTo "entity" &&
                         {!(_cargoProfileData select 30)}
                     ) then {
-                        _vehiclePendingClaims pushBackUnique _cargoProfileID;
+                        _claimIDs set [_cargoProfileID, true];
                     };
                 };
 
@@ -351,12 +331,7 @@ switch (_operation) do {
 
                                         if (_eligible && {_isLandVehicle}) then {
                                             private _vehicleClass = _profileData select 11;
-                                            private _isAntiAirCapable = _aaaClassCache get _vehicleClass;
-
-                                            if (isNil "_isAntiAirCapable") then {
-                                                _isAntiAirCapable = [_vehicleClass] call ALiVE_fnc_isAntiAirCapable;
-                                                _aaaClassCache set [_vehicleClass, _isAntiAirCapable];
-                                            };
+                                            private _isAntiAirCapable = [_vehicleClass] call ALiVE_fnc_isAntiAirCapable;
 
                                             _eligible = !_isAntiAirCapable;
                                         };
@@ -383,12 +358,12 @@ switch (_operation) do {
                                                             (_entityProfileData select 5) isEqualTo "entity" &&
                                                             {!(_entityProfileData select 30)}
                                                         ) then {
-                                                            _vehiclePendingClaims pushBackUnique _entityProfileID;
+                                                            _claimIDs set [_entityProfileID, true];
                                                         };
                                                     };
                                                 } forEach (_profileData select 8);
 
-                                                _vehiclePendingClaims pushBackUnique _rangeProfileID;
+                                                _claimIDs set [_rangeProfileID, true];
                                                 _cargoClaimQueue append (_profileData select 9);
                                                 _rangeState = 1;
                                             } else {
@@ -417,11 +392,12 @@ switch (_operation) do {
                         private _nearProfiles = [
                             _source select 0,
                             (_source select 1) * AIR_COMBAT_VEHICLES_QUERY_FACTOR,
-                            ["all","vehicle",AIR_COMBAT_VEHICLES_OBJECT_TYPES],
-                            true
+                            ["all","vehicle"],
+                            true,
+                            false
                         ] call ALiVE_fnc_getNearProfiles;
 
-                        _rangeProfiles = +_nearProfiles;
+                        _rangeProfiles = _nearProfiles;
                         _rangeProfileIndex = 0;
                         _rangeProfilesReady = true;
                         _didVehicleWork = true;
@@ -434,24 +410,20 @@ switch (_operation) do {
         };
 
         private _vehicleComplete = (
-            _cargoClaimQueue isEqualTo [] &&
+            _rangeScanStarted &&
+            {_cargoClaimQueue isEqualTo []} &&
             {!_rangeProfilesReady} &&
             {_rangeSourceIndex >= count _rangeSources}
         );
 
-        if (_vehicleComplete) then {
-            _vehiclePublishedClaims = +_vehiclePendingClaims;
-            _vehicleIterationActive = false;
+        private _complete = _globalComplete && {_vehicleComplete};
+        if (_complete) then {
+            _logic set ["iterationActive", false];
         };
 
-        {
-            _claims pushBackUnique _x;
-        } forEach _vehiclePublishedClaims;
-        {
-            _claims pushBackUnique _x;
-        } forEach _vehiclePendingClaims;
+        private _claims = keys _claimIDs;
 
-        _logic set ["vehicleIterationActive", _vehicleIterationActive];
+        _logic set ["rangeScanStarted", _rangeScanStarted];
         _logic set ["rangeSources", _rangeSources];
         _logic set ["rangeSourceIndex", _rangeSourceIndex];
         _logic set ["rangeProfiles", _rangeProfiles];
@@ -459,8 +431,6 @@ switch (_operation) do {
         _logic set ["rangeProfilesReady", _rangeProfilesReady];
         _logic set ["rangeSeenProfileIDs", _rangeSeenProfileIDs];
         _logic set ["cargoClaimQueue", _cargoClaimQueue];
-        _logic set ["vehiclePublishedClaims", _vehiclePublishedClaims];
-        _logic set ["vehiclePendingClaims", _vehiclePendingClaims];
 
         _result = [
             _logic get "id",
@@ -473,14 +443,11 @@ switch (_operation) do {
 
     case "reset": {
         (_logic get "candidateIDs") resize 0;
-        (_logic get "claims") resize 0;
         (_logic get "rangeSources") resize 0;
         (_logic get "rangeProfiles") resize 0;
         (_logic get "cargoClaimQueue") resize 0;
-        (_logic get "vehiclePublishedClaims") resize 0;
-        (_logic get "vehiclePendingClaims") resize 0;
         _logic set ["iterationActive",false];
-        _logic set ["vehicleIterationActive",false];
+        _logic set ["rangeScanStarted",false];
         _logic set ["scanPhase",0];
         _logic set ["candidateIDIndex",0];
         _logic set ["rangeSourceIndex",0];

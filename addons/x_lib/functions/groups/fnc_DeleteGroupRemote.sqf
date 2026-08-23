@@ -33,6 +33,14 @@ if !(_group isEqualType grpNull) exitWith {
 	["Warning: %1 which is not a group but a %2 was sent to ALiVE_fnc_DeleteGroupRemote by %3.", _group, typeName _group, _fnc_scriptNameParent] call ALiVE_fnc_dump;
 };
 
+// The server owns the garrison occupancy index. Route the whole deletion
+// through it so claims are released before the group is deleted on its owner.
+if (!isServer) exitWith {
+    _group remoteExecCall ["ALiVE_fnc_DeleteGroupRemote", 2];
+};
+
+[_group] call ALiVE_fnc_releaseGarrisonBuildings;
+
 // all is fine, group is not nil and actually a group
 if (local _group) then {
     deleteGroup _group;

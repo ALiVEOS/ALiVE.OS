@@ -9,8 +9,10 @@ from CBA's Custom Building Position module) found within a radius of a centre
 position. Consumes units from the passed array as it fills positions (the array is
 MUTATED in place -- filled units are removed), orients each unit to its position's
 facing, and skips any position that already has a non-player occupant so overlapping
-garrison groups don't stack two units on one slot. Does nothing when no CBA positions
-are present. Shared by ALIVE_fnc_groupGarrison and ALIVE_fnc_groupGarrisonSPE. (#945)
+garrison groups don't stack two units on one slot. Non-instant moves are returned as
+assignments for the caller's group movement worker. Does nothing when no CBA positions
+are present. Shared by ALIVE_fnc_groupGarrison and
+ALIVE_fnc_groupGarrisonSPE. (#945)
 
 Parameters:
 Array   - units still to place; MUTATED in place (filled units are removed)
@@ -19,11 +21,11 @@ Number  - search radius for CBA_buildingPos objects
 Boolean - optional, teleport (true, default) vs move-order (false)
 
 Returns:
-nil
+Array - non-instant movement assignments in the form [unit, ATL position, direction]
 
 Examples:
 (begin example)
-[_units, _position, _radius, true] call ALIVE_fnc_garrisonUnitsOnCBAPositions;
+private _movementAssignments = [_units, _position, _radius, false] call ALIVE_fnc_garrisonUnitsOnCBAPositions;
 (end)
 
 Author:
@@ -32,6 +34,7 @@ Jman
 
 params ["_units", "_position", "_radius", ["_moveInstantly", true]];
 
+private _movementAssignments = [];
 private _cbaObjects = nearestObjects [_position, ["CBA_buildingPos"], _radius];
 
 {
@@ -51,15 +54,11 @@ private _cbaObjects = nearestObjects [_position, ["CBA_buildingPos"], _radius];
             _unit setDir _cbaDir;
             doStop _unit;
         } else {
-            [_unit, _cbaPos, _cbaDir] spawn {
-                params ["_unit", "_cbaPos", "_cbaDir"];
-                [_unit, _cbaPos] call ALiVE_fnc_doMoveRemote;
-                waitUntil {sleep 1; _unit call ALiVE_fnc_unitReadyRemote};
-                _unit setDir _cbaDir;
-                doStop _unit;
-            };
+            _movementAssignments pushBack [_unit, _cbaPos, _cbaDir];
         };
 
         _units deleteAt 0;
     };
 } forEach _cbaObjects;
+
+_movementAssignments

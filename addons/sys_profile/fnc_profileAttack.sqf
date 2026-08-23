@@ -8,12 +8,12 @@ Description:
 Main handler for simulated attacks of one profile on others
 
 Parameters:
-Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
+Nil or HashMap - If Nil, return a new attack. If HashMap, reference an existing attack.
 String - The selected function
 Array - The selected parameters
 
 Returns:
-Any - The new instance or the result of the selected function and parameters
+Any - The new attack HashMap or the result of the selected function and parameters
 
 Examples:
 (begin example)
@@ -36,7 +36,7 @@ nil
 private ["_result"];
 
 params [
-    ["_logic", objNull, [objNull,[]]],
+    ["_logic", objNull, [objNull,[],createHashMap]],
     ["_operation", "", [""]],
     ["_args", objNull, [objNull,[],"",0,true,false]]
 ];
@@ -51,31 +51,29 @@ switch (_operation) do {
         private _targets = _args select 2;
         private _attackerSide = _args select 3;
 
-        _result = [
-            [
-                ["super", QUOTE(SUPERCLASS)],       // select 2 select 0
-                ["class", QUOTE(MAINCLASS)],        // select 2 select 1
-                ["cyclesLeft", 9999],               // select 2 select 2
-                ["attackID", ""],                   // select 2 select 3
-                ["attackerSide", _attackerSide],    // select 2 select 4
-                ["position", _position],            // select 2 select 5
-                ["timeStarted", time],              // select 2 select 6
-                ["attacker", _attacker],            // select 2 select 7
-                ["targets", _targets],              // select 2 select 8
-                ["targetsKilled", []],              // select 2 select 9
-                ["maxRange", [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet] // for arty set to max arty range, else leave default
-            ]
-        ] call ALiVE_fnc_hashCreate;
+        _result = createHashMapFromArray [
+            ["super", QUOTE(SUPERCLASS)],
+            ["class", QUOTE(MAINCLASS)],
+            ["cyclesLeft", 9999],
+            ["attackID", ""],
+            ["attackerSide", _attackerSide],
+            ["position", _position],
+            ["timeStarted", time],
+            ["attacker", _attacker],
+            ["targets", _targets],
+            ["targetsKilled", []],
+            ["maxRange", [MOD(profileCombatHandler),"combatRange"] call ALiVE_fnc_hashGet]
+        ];
 
     };
 
     case "attackID": {
 
         if (typename _args == "STRING") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _logic set [_operation, _args];
             _result = _args;
         } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+            _result = _logic get _operation;
         };
 
     };
@@ -84,10 +82,10 @@ switch (_operation) do {
     case "battleID": {
 
         if (typename _args == "STRING") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _logic set [_operation, _args];
             _result = _args;
         } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+            _result = _logic get _operation;
         };
 
     };
@@ -95,10 +93,10 @@ switch (_operation) do {
     case "position": {
 
         if (typename _args == "ARRAY") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _logic set [_operation, _args];
             _result = _args;
         } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+            _result = _logic get _operation;
         };
 
     };
@@ -106,10 +104,10 @@ switch (_operation) do {
     case "timeStarted": {
 
         if (typename _args == "SCALAR") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _logic set [_operation, _args];
             _result = _args;
         } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+            _result = _logic get _operation;
         };
 
     };
@@ -117,10 +115,10 @@ switch (_operation) do {
     case "attacker": {
 
         if (typename _args == "STRING") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _logic set [_operation, _args];
             _result = _args;
         } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+            _result = _logic get _operation;
         };
 
     };
@@ -128,10 +126,10 @@ switch (_operation) do {
     case "targets": {
 
         if (typename _args == "ARRAY") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _logic set [_operation, _args];
             _result = _args;
         } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+            _result = _logic get _operation;
         };
 
     };
@@ -139,10 +137,10 @@ switch (_operation) do {
     case "maxRange": {
 
         if (typename _args == "SCALAR") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _logic set [_operation, _args];
             _result = _args;
         } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+            _result = _logic get _operation;
         };
 
     };
@@ -150,27 +148,27 @@ switch (_operation) do {
     case "cyclesLeft": {
 
         if (typename _args == "SCALAR") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+            _logic set [_operation, _args];
             _result = _args;
         } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+            _result = _logic get _operation;
         };
 
     };
 
     case "attackerSide": {
 
-        if (typename _args == "SCALAR") then {
-            [_logic,_operation,_args] call ALiVE_fnc_hashSet;
+        if (typename _args == "STRING") then {
+            _logic set [_operation, _args];
             _result = _args;
         } else {
-            _result = [_logic,_operation] call ALiVE_fnc_hashGet;
+            _result = _logic get _operation;
         };
 
     };
 
     default {
-        _result = _this call SUPERCLASS;
+        _result = _logic get _operation;
     };
 
 };

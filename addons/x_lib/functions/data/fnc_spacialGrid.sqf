@@ -197,6 +197,7 @@ switch (_operation) do {
         private _radius = _args select 1;
         private _filter2D = _args param [2, false];
         private _returnItem = _args param [3, false];
+        private _preciseDistance = _args param [4, true];
 
         private _gridOrigin = _logic select 2 select 0;
         private _sectorSize = _logic select 2 select 1;
@@ -247,10 +248,12 @@ switch (_operation) do {
             };
         };
 
-        if (!_filter2D) then {
-            _result = _result select {((_x select 0) distance _center) <= _radius};
-        } else {
-            _result = _result select {((_x select 0) distance2D _center) <= _radius};
+        if (_preciseDistance) then {
+            if (!_filter2D) then {
+                _result = _result select {((_x select 0) distance _center) <= _radius};
+            } else {
+                _result = _result select {((_x select 0) distance2D _center) <= _radius};
+            };
         };
 
         if (_returnItem) then {

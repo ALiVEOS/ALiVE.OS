@@ -21,11 +21,18 @@ ARJay, Highhead, Jman
 ---------------------------------------------------------------------------- */
 #define RND(var) random 1 > var
 
+// Garrison occupancy is indexed on the server. Keeping the complete pass on
+// that authority makes release and claim operations atomic with respect to
+// other garrison groups.
+if (!isServer) exitWith {};
+
 params ["_group","_position","_radius","_moveInstantly", ["_onlyProfiled", false], ["_profileCount",0], ["_profileID",nil], ["_guardPatrolPercentage",50], ["_patrolBehaviour","SAFE"], ["_patrolSpeed","LIMITED"]];
 
 private _units = units _group;
 private _unitPercentCount = ((count _units) * _guardPatrolPercentage) / 100;
 private _profile = nil;
+
+[_group] call ALiVE_fnc_releaseGarrisonBuildings;
 
 // DEBUG -------------------------------------------------------------------------------------
 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
@@ -41,11 +48,6 @@ if !(isNil "_profileID") then {
  };
  // DEBUG -------------------------------------------------------------------------------------
 };
-
-if (isNil {_group getVariable "alive_garrison_buildings"}) then {
-    _group setVariable ["alive_garrison_buildings", []];
-};
-private _garrisonedBuildings = _group getVariable ["alive_garrison_buildings", []];
 
 if (count _units < 2) exitwith {};
 
@@ -81,9 +83,9 @@ if (count _staticWeapons > 0) then
                 _unit assignAsGunner _weapon;
                 [_unit] orderGetIn true;
             };
-        };
 
-        _units deleteAt 0;
+            _units deleteAt 0;
+        };
     } forEach _staticWeapons;
 };
 
@@ -93,9 +95,48 @@ if (count _units == 0) exitwith {};
 // e.g. trench slots) -- the vanilla buildingPos below does not return them, so prefer these
 // explicitly-placed positions over the auto-picked building slots. Consumes only the units it
 // fills (mutates _units), so a mission with no CBA positions is unaffected. (#945)
-[_units, _position, _radius, _moveInstantly] call ALIVE_fnc_garrisonUnitsOnCBAPositions;
+private _movementAssignments = [_units, _position, _radius, _moveInstantly] call ALIVE_fnc_garrisonUnitsOnCBAPositions;
 
-if (count _units == 0) exitwith {};
+private _fnc_startMovement = {
+    params ["_movementGroup", "_assignments"];
+    if (_assignments isEqualTo []) exitWith {};
+
+    [_movementGroup, _assignments] spawn {
+        params ["_movementGroup", "_assignments"];
+
+        {
+            _x params ["_unit", "_destination"];
+            if (!isNull _unit && {alive _unit} && {group _unit isEqualTo _movementGroup}) then {
+                [_unit, _destination] call ALiVE_fnc_doMoveRemote;
+            };
+        } forEach _assignments;
+
+        waitUntil {
+            sleep 3;
+
+            {
+                _x params ["_unit", "_destination", ["_direction", -1]];
+                private _stillAssigned = !isNull _unit && {alive _unit} && {group _unit isEqualTo _movementGroup};
+
+                if (!_stillAssigned || {_unit call ALiVE_fnc_unitReadyRemote}) then {
+                    if (_stillAssigned) then {
+                        if (_direction >= 0) then {
+                            _unit setDir _direction;
+                        };
+                        doStop _unit;
+                    };
+                    _assignments deleteAt _forEachIndex;
+                };
+            } forEachReversed _assignments;
+
+            _assignments isEqualTo []
+        };
+    };
+};
+
+if (count _units == 0) exitwith {
+    [_group, _movementAssignments] call _fnc_startMovement;
+};
 
 private _buildings = nearestObjects [_position,ALIVE_garrisonPositions select 1,_radius];
 if (count _buildings == 0 || _profileCount > 3) then {
@@ -129,6 +170,7 @@ private _fnc_ringParams = {
 // props without engine positions cannot host buildingPatrol.fsm circuits
 // (the FSM selectRandoms buildingPos) - patrol only position-bearing props
 private _patrolBuildings = _buildings select { !((_x buildingPos -1) isEqualTo []) };
+private _patrolWaypointsCleared = false;
 if (_patrolBuildings isEqualTo [] && {count _buildings > 0} && {ALiVE_SYS_PROFILE_DEBUG_ON}) then {
     ["ALIVE_fnc_groupGarrison - no patrol-capable props, garrison fully static"] call ALiVE_fnc_dump;
 };
@@ -136,6 +178,8 @@ if (_patrolBuildings isEqualTo [] && {count _buildings > 0} && {ALiVE_SYS_PROFIL
 
 
 if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] call ALiVE_fnc_HashGet)) exitwith {
+
+       [_group, _movementAssignments] call _fnc_startMovement;
 	
 	   private _id = [_profile,"profileID","error"] call ALiVE_fnc_HashGet;
 	 	 private _thisGroup = [_profile,"group"] call ALiVE_fnc_HashGet;
@@ -152,26 +196,16 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
 	 	 [_group, [_position, _radius, _radius, 0, false]] call CBA_fnc_taskSearchArea;
 };
 
-
 { // forEach _buildings
 	
     if (count _units == 0) exitWith {};
 
     private _building = _x;
-    private _class = typeOf _building;
-    private _buildingIsEmpty = true;
-    
-    {
-        if ((_x getVariable ["alive_garrison_buildings", []]) find _building != -1) exitWith {
-            _buildingIsEmpty = false;
-        };
-    } forEach (allGroups select {_x != _group && {side _x == side _group}});
+    private _buildingClaimed = [_building, _group] call ALiVE_fnc_claimGarrisonBuilding;
 
+    if (_buildingClaimed) then {
+        private _buildingPositions = _building buildingPos -1;
 
-    if (_buildingIsEmpty) then {
-
-        private _buildingPositions = [];
-		    _buildingPositions append (_building buildingPos -1);
         // composition props (tents, camo nets, shelters) carry no engine
         // buildingPos data - synthesise standing positions on a ring just
         // outside the prop's bounding box so the whitelist can seat units.
@@ -189,19 +223,15 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
         [_buildingPositions, true] call CBA_fnc_Shuffle;
             
         // sort based on height
-        _buildingPositions = [_buildingPositions, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;      
+        _buildingPositions = [_buildingPositions, [], { _x select 2 }, "DESCEND"] call BIS_fnc_sortBy;
         
-        // DEBUG -------------------------------------------------------------------------------------  
         if (ALiVE_SYS_PROFILE_DEBUG_ON) then {     
-         ["ALIVE_fnc_groupgarrison - class: %1 count positions: %2, count _units: %3", _class, count _buildingPositions, count units _group] call ALiVE_fnc_dump;  	
+         ["ALIVE_fnc_groupgarrison - class: %1 count positions: %2, count _units: %3", typeOf _building, count _buildingPositions, count units _group] call ALiVE_fnc_dump;
         };
-        // DEBUG -------------------------------------------------------------------------------------
-        
+
         { // foreach _buildingPositions
 
             if (count _units == 0) exitWith {};
-
-            _garrisonedBuildings pushBackUnique _building;
 
             private _unit = _units select 0;
             private _position = _x;
@@ -209,46 +239,40 @@ if ((count _buildings == 0) && !(isNil "_profile") && ([_profile,"isCycling"] ca
             if (_moveInstantly) then {
                 _unit setposATL _position;
                 _unit setdir ((_unit getRelDir _building)-180);
-                 dostop _unit; 
+                dostop _unit;
             } else {
-                [_unit, _position, _building] spawn {
-                    private _unit = _this select 0;
-                    private _position = _this select 1;
-                    private _building = _this select 2;
-                    [_unit, _position] call ALiVE_fnc_doMoveRemote;
-                    waitUntil {sleep 1; _unit call ALiVE_fnc_unitReadyRemote};
-                    doStop _unit;    
-                };
+                _movementAssignments pushBack [_unit, _position];
             };
             
             if (_guardPatrolPercentage > 0) then {
             	 if (_unitPercentCount > 0 && {count _patrolBuildings > 0}) then {
                  // Patrol the position-bearing buildings only - ring-scatter
                  // props would feed the FSM empty position lists
-                 [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                 if (!_patrolWaypointsCleared) then {
+                     [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+                     _patrolWaypointsCleared = true;
+                 };
                  [_group, _unit, _patrolBuildings, ALiVE_SYS_PROFILE_DEBUG_ON, _patrolBehaviour, _patrolSpeed] execFSM "\x\alive\addons\mil_command\buildingPatrol.fsm";
                  _unitPercentCount = _unitPercentCount -1;
                };
             };
             
-            
             _units deleteAt 0;
         } foreach _buildingPositions;
     } else {
-    	// DEBUG -------------------------------------------------------------------------------------
-    	if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-    	 ["ALIVE_fnc_groupGarrison - _buildingIsEmpty: %3, count _buildings: %1, _buildings: %2", count _buildings, _buildings, _buildingIsEmpty] call ALiVE_fnc_dump;
-    	};
-    	// DEBUG -------------------------------------------------------------------------------------
-    	 // if no buildings then patrol!
-    	 if !(isNil "_profile") then {
-    	 	 // DEBUG -------------------------------------------------------------------------------------
-    	 	 if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
-    	 	  ["ALIVE_fnc_groupGarrison - No more empty buildings, lets patrol! calling ALIVE_fnc_ambientMovement"] call ALiVE_fnc_dump;
-    	 	 };
-    	 	 // DEBUG -------------------------------------------------------------------------------------
-    	   [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
-         [_profile, [200,"SAFE"]] call ALIVE_fnc_ambientMovement;
-       };
+        if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+            ["ALIVE_fnc_groupGarrison - _buildingClaimed: %3, count _buildings: %1, _buildings: %2", count _buildings, _buildings, _buildingClaimed] call ALiVE_fnc_dump;
+        };
     };
 } forEach _buildings;
+
+[_group, _movementAssignments] call _fnc_startMovement;
+
+// If any units could not be garrisoned, fall back to ambient movement once.
+if (count _units > 0 && {!(isNil "_profile")}) then {
+    if (ALiVE_SYS_PROFILE_DEBUG_ON) then {
+        ["ALIVE_fnc_groupGarrison - %1 units remain ungarrisoned, calling ALIVE_fnc_ambientMovement", count _units] call ALiVE_fnc_dump;
+    };
+    [_profile,"clearWaypoints"] call ALIVE_fnc_profileEntity;
+    [_profile, [200,"SAFE"]] call ALIVE_fnc_ambientMovement;
+};

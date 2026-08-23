@@ -10,7 +10,7 @@ Main handler for simulated combat between profiles
 Parameters:
 Nil or Object - If Nil, return a new instance. If Object, reference an existing instance.
 String - The selected function
-Array - The selected parameters
+Any - The selected parameters
 
 Returns:
 Any - The new instance or the result of the selected function and parameters
@@ -38,15 +38,13 @@ private ["_result"];
 params [
     ["_logic", objNull, [objNull,[]]],
     ["_operation", "", [""]],
-    ["_args", objNull, [objNull,[],"",0,true,false]]
+    ["_args", objNull, [objNull,[],"",0,true,false,createHashMap]]
 ];
 
 
 switch (_operation) do {
 
     case "init": {
-
-        private _tmpHash = [] call ALiVE_fnc_hashCreate;
 
         [_logic,"super", QUOTE(SUPERCLASS)] call ALiVE_fnc_hashSet;     // select 2 select 0
         [_logic,"class", QUOTE(MAINCLASS)] call ALiVE_fnc_hashSet;      // select 2 select 1
@@ -55,17 +53,18 @@ switch (_operation) do {
         [_logic,"combatRange", 225] call ALiVE_fnc_hashSet;             // select 2 select 3
         [_logic,"combatRate", 1] call ALiVE_fnc_hashSet;                // select 2 select 4
 
-        private _profilesBySide = +_tmpHash;
-        [_profilesBySide,"EAST", []] call ALiVE_fnc_hashSet;            // select 2 select 5
-        [_profilesBySide,"WEST", []] call ALiVE_fnc_hashSet;            // select 2 select 6
-        [_profilesBySide,"GUER", []] call ALiVE_fnc_hashSet;            // select 2 select 7
+        private _profilesBySide = createHashMapFromArray [
+            ["EAST", []],
+            ["WEST", []],
+            ["GUER", []]
+        ];
 
-        [_logic,"profilesInCombatBySide", _profilesBySide] call ALiVE_fnc_hashSet;  // select 2 select 8
+        [_logic,"profilesInCombatBySide", _profilesBySide] call ALiVE_fnc_hashSet;  // select 2 select 5
 
-        [_logic,"attackCount", 0] call ALiVE_fnc_hashSet;               // select 2 select 9
+        [_logic,"attackCount", 0] call ALiVE_fnc_hashSet;               // select 2 select 6
 
-        private _attacksByID = +_tmpHash;
-        [_logic,"attacksByID", _attacksByID] call ALiVE_fnc_hashSet;    // select 2 select 10
+        private _attacksByID = createHashMap;
+        [_logic,"attacksByID", _attacksByID] call ALiVE_fnc_hashSet;    // select 2 select 7
 
     };
 
@@ -104,7 +103,7 @@ switch (_operation) do {
 
     case "profilesInCombatBySide": {
 
-        if (typename _args == "ARRAY") then {
+        if (typename _args == "HASHMAP") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
             _result = _args;
         } else {
@@ -126,7 +125,7 @@ switch (_operation) do {
 
     case "attacksByID": {
 
-        if (typename _args == "ARRAY") then {
+        if (typename _args == "HASHMAP") then {
             [_logic,_operation,_args] call ALiVE_fnc_hashSet;
             _result = _args;
         } else {
@@ -149,31 +148,29 @@ switch (_operation) do {
 
         // store attack in attacksByID
 
-        private _attacksByID = [_logic,"attacksByID"] call ALiVE_fnc_hashGet;
+        ([_logic, ["attacksByID","profilesInCombatBySide"]] call ALiVE_fnc_hashGetMany) params [
+            "_attacksByID",
+            "_profilesInCombatBySide"
+        ];
         private _attackID = [_logic,"getNextAttackID"] call MAINCLASS;
 
-        [_attack,"attackID", _attackID] call ALiVE_fnc_hashSet;
-        [_attacksByID,_attackID, _attack] call ALiVE_fnc_hashSet;
+        _attack set ["attackID", _attackID];
+        _attacksByID set [_attackID, _attack];
 
         // store attacker in combatBySide
 
-        private _profilesInCombatBySide = ([_logic,"profilesInCombatBySide"] call ALiVE_fnc_hashGet) select 2;
+        private _attackerID = _attack get "attacker";
+        private _attackerSide = _attack get "attackerSide";
 
-        private _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
-        private _attackerSide = [_attack,"attackerSide"] call ALiVE_fnc_hashGet;
-
-        switch (_attackerSide) do {
-            case "EAST": {(_profilesInCombatBySide select 0) pushback _attackerID};
-            case "WEST": {(_profilesInCombatBySide select 1) pushback _attackerID};
-            case "GUER": {(_profilesInCombatBySide select 2) pushback _attackerID};
-        };
+        private _sideProfiles = _profilesInCombatBySide getOrDefault [_attackerSide, [], true];
+        _sideProfiles pushback _attackerID;
 
         // log event
 
-        private _targets = [_attack,"targets"] call ALiVE_fnc_hashGet;
-        private _attackPosition = [_attack,"position"] call ALiVE_fnc_hashGet;
-        private _maxRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
-        private _cyclesLeft = [_attack,"cyclesLeft"] call ALiVE_fnc_hashGet;
+        private _targets = _attack get "targets";
+        private _attackPosition = _attack get "position";
+        private _maxRange = _attack get "maxRange";
+        private _cyclesLeft = _attack get "cyclesLeft";
 
         private _event = ['PROFILE_ATTACK_START', [_attackID,_attackerID,_targets,_attackPosition,_attackerSide,_maxRange,_cyclesLeft], "profileCombatHandler"] call ALiVE_fnc_event;
         [MOD(eventLog),"addEvent", _event] call ALiVE_fnc_eventLog;
@@ -186,50 +183,45 @@ switch (_operation) do {
 
         private _attacks = _args;
 
-        private _attacksByID = [_logic,"attacksByID"] call ALiVE_fnc_hashGet;
-        private _profilesInCombatBySide = ([_logic,"profilesInCombatBySide"] call ALiVE_fnc_hashGet) select 2;
-        private _debug = [_logic,"debug"] call ALiVE_fnc_hashGet;
+        ([_logic, ["attacksByID","profilesInCombatBySide"]] call ALiVE_fnc_hashGetMany) params [
+            "_attacksByID",
+            "_profilesInCombatBySide"
+        ];
+        private _profilesById = [MOD(profileHandler),"profilesById"] call ALiVE_fnc_hashGet;
 
         {
             if (isnil "_x") then { continue }; // why the fuck can we be nil here
 
             private _attackID = _x;
-            private _attack = [_attacksByID,_attackID] call ALiVE_fnc_hashGet;
+            private _attack = _attacksByID get _attackID;
 
             if (!isnil "_attack") then {
-                private _attackPosition = [_attack,"position"] call ALiVE_fnc_hashGet;
-                private _attackerID = [_attack,"attacker"] call ALiVE_fnc_hashGet;
-                private _targetsLeft = [_attack,"targets"] call ALiVE_fnc_hashGet;
+                private _attackPosition = _attack get "position";
+                private _attackerID = _attack get "attacker";
+                private _targetsLeft = _attack get "targets";
 
                 // remove from combatBySide
-                private _attackerSide = [_attack,"attackerSide"] call ALiVE_fnc_hashGet;
+                private _attackerSide = _attack get "attackerSide";
 
-                switch (_attackerSide) do {
-                    case "EAST": {
-                        private _array = (_profilesInCombatBySide select 0);
-                        _array deleteAt (_array find _attackerID);
-                    };
-                    case "WEST": {
-                        private _array = (_profilesInCombatBySide select 1);
-                        _array deleteAt (_array find _attackerID);
-                    };
-                    case "GUER": {
-                        private _array = (_profilesInCombatBySide select 2);
-                        _array deleteAt (_array find _attackerID);
-                    };
+                private _sideProfiles = _profilesInCombatBySide getOrDefault [_attackerSide, []];
+                private _sideProfileIndex = _sideProfiles find _attackerID;
+                if (_sideProfileIndex >= 0) then {
+                    _sideProfiles deleteAt _sideProfileIndex;
                 };
 
-                [_attacksByID,_attackID] call ALiVE_fnc_hashRem;
+                _attacksByID deleteAt _attackID;
 
-                private _attacker = [MOD(profileHandler),"getProfile", _attackerID] call ALiVE_fnc_profileHandler;
-                [_attacker,"attackID"] call ALiVE_fnc_hashRem;
+                private _attacker = _profilesById get _attackerID;
+                if (!isnil "_attacker") then {
+                    [_attacker,"attackID"] call ALiVE_fnc_hashRem;
+                };
 
                 // log event
 
-                private _timeStarted = [_attack,"timeStarted"] call ALiVE_fnc_hashGet;
-                private _maxRange = [_attack,"maxRange"] call ALiVE_fnc_hashGet;
-                private _cyclesLeft = [_attack,"cyclesLeft"] call ALiVE_fnc_hashGet;
-                private _targetsKilled = [_attack,"targetsKilled"] call ALiVE_fnc_hashGet;
+                private _timeStarted = _attack get "timeStarted";
+                private _maxRange = _attack get "maxRange";
+                private _cyclesLeft = _attack get "cyclesLeft";
+                private _targetsKilled = _attack get "targetsKilled";
 
                 private _event = ['PROFILE_ATTACK_END', [_attackID,_attackerID,_targetsLeft,_targetsKilled,_attackPosition,_attackerSide,_timeStarted,_maxRange,_cyclesLeft], "profileCombatHandler"] call ALiVE_fnc_event;
                 [MOD(eventLog),"addEvent", _event] call ALiVE_fnc_eventLog;
@@ -244,7 +236,7 @@ switch (_operation) do {
 
         private _attacksByID = [_logic,"attacksByID"] call ALiVE_fnc_hashGet;
 
-        _result = [_attacksByID,_attackID] call ALiVE_fnc_hashGet;
+        _result = _attacksByID get _attackID;
 
     };
 

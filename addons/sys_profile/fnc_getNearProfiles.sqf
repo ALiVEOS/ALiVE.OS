@@ -10,6 +10,9 @@ Returns an array of profiles within the passed radius
 Parameters:
 Array - position center of search
 Scalar - radius of search
+Array - category selector
+Boolean - use 2D distance for precise filtering
+Boolean - precisely filter candidates by distance, or return grid-sector matches
 
 Returns:
 Array of profiles
@@ -30,11 +33,12 @@ params [
     "_position",
     "_radius",
     ["_categorySelector", []],
-    ["_filter2D", false]
+    ["_filter2D", false],
+    ["_preciseDistance", true]
 ];
 
 private _spacialGrid = [ALiVE_profileSystem,"spacialGridProfiles"] call ALiVE_fnc_hashGet;
-private _near = [_spacialGrid,"findInRange", [_position,_radius,_filter2D,true]] call ALiVE_fnc_spacialGrid;
+private _near = [_spacialGrid,"findInRange", [_position,_radius,_filter2D,true,_preciseDistance]] call ALiVE_fnc_spacialGrid;
 
 if (_categorySelector isEqualTo []) then {
     _near select {(_x select 2 select 5) == "entity"};

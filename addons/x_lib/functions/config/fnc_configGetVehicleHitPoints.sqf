@@ -5,7 +5,7 @@ SCRIPT(configGetVehicleHitPoints);
 Function: ALIVE_fnc_configGetVehicleHitPoints
 
 Description:
-Get hit point data for a vehicle class
+    Get cached hit point data for a vehicle class, with a returnChildren fallback
 
 Parameters:
 String - vehicle class name
@@ -25,23 +25,31 @@ Author:
 ARJay
 ---------------------------------------------------------------------------- */
 
-private ["_type","_result","_hitPoints","_hitPoint","_hitName"];
+private _type = _this;
 
-_type = _this;
-
-_result = [];
-
-_hitPoints = configFile >> "CfgVehicles" >> _type >> "HitPoints";
-
-for "_i" from 0 to (count _hitPoints)-1 do
-{
-    _hitPoint = _hitPoints select _i;
-
-    if(isClass _hitPoint) then
-    {
-        _hitName = configName _hitPoint;
-        _result pushback _hitName;
-    };
+if (isnil "ALiVE_configVehicleHitPointsCache") then {
+    ALiVE_configVehicleHitPointsCache = createHashMap;
 };
 
-_result;
+private _result = ALiVE_configVehicleHitPointsCache getOrDefaultCall [_type, {
+    private _hitPointNames = [];
+    private _hitPoints = configFile >> "CfgVehicles" >> _type >> "HitPoints";
+
+    for "_i" from 0 to ((count _hitPoints) - 1) do {
+        private _hitPoint = _hitPoints select _i;
+
+        if (isClass _hitPoint) then {
+            _hitPointNames pushBack (configName _hitPoint);
+        };
+    };
+
+    if (_hitPointNames isEqualTo []) then {
+        {
+            _hitPointNames pushBack (configName _x);
+        } forEach ([_hitPoints, 0] call BIS_fnc_returnChildren);
+    };
+
+    _hitPointNames
+}, true];
+
++_result;

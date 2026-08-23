@@ -30,9 +30,11 @@ arrays
 
 behaviour
 
+	ALiVE_fnc_claimGarrisonBuilding
 	ALiVE_fnc_groupGarrison
 	ALiVE_fnc_groupGarrisonSPE
 	ALIVE_fnc_infantryGuardProbabilityCount
+	ALiVE_fnc_releaseGarrisonBuildings
 
 camera
 
